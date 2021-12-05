@@ -37,7 +37,6 @@ export const run = async context => {
     const { envName } = localEnvInfo;
     const { Region, AmplifyAppId } = teamProviderInfo[envName][providerName];
 
-    let adminUiName = await getAdminUIName(context);
     if (envName && AmplifyAppId) {
       consoleUrl = constructStatusURL(Region, AmplifyAppId, envName);
       const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
@@ -47,7 +46,7 @@ export const run = async context => {
           name: 'choice',
           message: 'Which site do you want to open?',
           choices: [
-            { name: 'Admin', message: adminUiName },
+            { name: 'Admin', message: 'Amplify Studio' },
             { name: 'Console', message: 'AWS console' },
           ],
           // actions is not part of the TS interface but it's part of the JS API

@@ -5,6 +5,8 @@ import * as path from 'path';
 import { validateFile } from 'cfn-lint';
 import glob from 'glob';
 import {
+  AmplifyCategories,
+  AmplifySupportedService,
   pathManager,
   PathConstants,
   stateManager,
@@ -23,7 +25,7 @@ import ora from 'ora';
 import { S3 } from './aws-utils/aws-s3';
 import Cloudformation from './aws-utils/aws-cfn';
 import { formUserAgentParam } from './aws-utils/user-agent';
-import constants, { ProviderName as providerName, FunctionCategoryName, FunctionServiceNameLambdaLayer } from './constants';
+import constants, { ProviderName as providerName } from './constants';
 import { uploadAppSyncFiles } from './upload-appsync-files';
 import { prePushGraphQLCodegen, postPushGraphQLCodegen } from './graphql-codegen';
 import { adminModelgen } from './admin-modelgen';
@@ -41,7 +43,7 @@ import { Fn } from 'cloudform-types';
 import { getGqlUpdatedResource } from './graphql-transformer/utils';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { fileLogger } from './utils/aws-logger';
-import { APIGW_AUTH_STACK_LOGICAL_ID, loadApiWithPrivacyParams } from './utils/consolidate-apigw-policies';
+import { APIGW_AUTH_STACK_LOGICAL_ID, loadApiCliInputs } from './utils/consolidate-apigw-policies';
 import { createEnvLevelConstructs } from './utils/env-level-constructs';
 import { NETWORK_STACK_LOGICAL_ID } from './network/stack';
 import { preProcessCFNTemplate, writeCustomPoliciesToCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processor';
@@ -98,7 +100,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
     } = context;
     let resources = !!context?.exeInfo?.forcePush || rebuild ? allResources : resourcesToBeCreated.concat(resourcesToBeUpdated);
 
-    layerResources = resources.filter(r => r.service === FunctionServiceNameLambdaLayer);
+    layerResources = resources.filter(r => r.service === AmplifySupportedService.LAMBDA_LAYER);
 
     if (deploymentStateManager.isDeploymentInProgress() && !deploymentStateManager.isDeploymentFinished()) {
       if (context.exeInfo?.forcePush || context.exeInfo?.iterativeRollback) {
@@ -154,19 +156,24 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
       }
     }
 
-    for (const resource of resources.filter(r => r.category === FunctionCategoryName && r.service === FunctionServiceNameLambdaLayer)) {
+    for (const resource of layerResources) {
       await legacyLayerMigration(context, resource.resourceName);
     }
 
-    await prePushLambdaLayerPrompt(context, resources);
-    await prepareBuildableResources(context, resources);
-    await buildOverridesEnabledResources(context);
-
+    /**
+     * calling transform schema here to support old project with out overrides
+     */
     await transformGraphQLSchema(context, {
       handleMigration: opts => updateStackForAPIMigration(context, 'api', undefined, opts),
       minify: options['minify'],
       promptApiKeyCreation: true,
     });
+
+    await prePushLambdaLayerPrompt(context, resources);
+    await prepareBuildableResources(context, resources);
+    await buildOverridesEnabledResources(context);
+
+    //Removed api transformation to generate resources befoe starting deploy/
 
     // If there is a deployment already in progress we have to fail the push operation as another
     // push in between could lead non-recoverable stacks and files.
@@ -340,7 +347,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
 
     const newAPIresources = [];
 
-    updatedAllResources = updatedAllResources.filter((resource: { service: string }) => resource.service === 'API Gateway');
+    updatedAllResources = updatedAllResources.filter((resource: { service: string }) => resource.service === AmplifySupportedService.APIGW);
 
     for (let i = 0; i < updatedAllResources.length; i++) {
       if (resources.findIndex(resource => resource.resourceName === updatedAllResources[i].resourceName) > -1) {
@@ -399,7 +406,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
     await downloadAPIModels(context, newAPIresources);
 
     // remove emphemeral Lambda layer state
-    if (resources.concat(resourcesToBeDeleted).filter(r => r.service === FunctionServiceNameLambdaLayer).length > 0) {
+    if (resources.concat(resourcesToBeDeleted).filter(r => r.service === AmplifySupportedService.LAMBDA_LAYER).length > 0) {
       await postPushLambdaLayerCleanup(context, resources, projectDetails.localEnvInfo.envName);
       await context.amplify.updateamplifyMetaAfterPush(resources);
     }
@@ -595,14 +602,14 @@ async function prepareBuildableResources(context: $TSContext, resources: $TSAny[
 }
 
 async function prepareResource(context: $TSContext, resource: $TSAny) {
-  resource.lastBuildTimeStamp = await context.amplify.invokePluginMethod(context, FunctionCategoryName, undefined, 'buildResource', [
+  resource.lastBuildTimeStamp = await context.amplify.invokePluginMethod(context, AmplifyCategories.FUNCTION, undefined, 'buildResource', [
     context,
     resource,
   ]);
 
   const result: { newPackageCreated: boolean; zipFilename: string; zipFilePath: string } = await context.amplify.invokePluginMethod(
     context,
-    FunctionCategoryName,
+    AmplifyCategories.FUNCTION,
     undefined,
     'packageResource',
     [context, resource],
@@ -657,13 +664,11 @@ async function prepareResource(context: $TSContext, resource: $TSAny) {
   const cfnFilePath = path.normalize(path.join(resourceDir, cfnFile));
   const paramType = { Type: 'String' };
 
-  if (resource.service === FunctionServiceNameLambdaLayer) {
+  if (resource.service === AmplifySupportedService.LAMBDA_LAYER) {
     storeS3BucketInfo(category, s3Bucket, envName, resourceName, s3Key);
   } else if (resource.service === ApiServiceNameElasticContainer) {
     const cfnParams = { ParamZipPath: s3Key };
-
-    const cfnParamsFilePath = path.normalize(path.join(resourceDir, 'parameters.json'));
-    JSONUtilities.writeJson(cfnParamsFilePath, cfnParams);
+    stateManager.setResourceParametersJson(undefined, category, resourceName, cfnParams);
   } else {
     const { cfnTemplate } = readCFNTemplate(cfnFilePath);
     cfnTemplate.Parameters.deploymentBucketName = paramType;
@@ -707,8 +712,8 @@ async function updateCloudFormationNestedStack(
   resourcesToBeCreated: $TSAny,
   resourcesToBeUpdated: $TSAny,
 ) {
-  const backEndDir = pathManager.getBackendDirPath();
   const projectRoot = pathManager.findProjectRoot();
+  const backEndDir = pathManager.getBackendDirPath(projectRoot);
   const rootStackFilePath = path.join(pathManager.getRootStackBuildDirPath(projectRoot), rootStackFileName);
   // deploy preprocess nested stack to disk
   await storeRootStackTemplate(context, nestedStack);
@@ -882,12 +887,14 @@ export async function formNestedStack(
       delete metaToBeUpdated[key];
     }
   }
+
+  const projectPath = pathManager.findProjectRoot();
+  const amplifyMeta = stateManager.getMeta(projectPath);
   // update amplify meta with updated root stack Info
   if (Object.keys(metaToBeUpdated).length) {
     context.amplify.updateProvideramplifyMeta(providerName, metaToBeUpdated);
     //update teamProviderInfo
     const { envName } = context.amplify.getEnvInfo();
-    const projectPath = pathManager.findProjectRoot();
     const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
     const tpiResourceParams: $TSAny = _.get(teamProviderInfo, [envName, 'awscloudformation'], {});
     _.assign(tpiResourceParams, metaToBeUpdated);
@@ -897,7 +904,6 @@ export async function formNestedStack(
 
   // Track Amplify Console generated stacks
   try {
-    const amplifyMeta = stateManager.getMeta();
     const appId = amplifyMeta.providers[providerName].AmplifyAppId;
     if ((await isAmplifyAdminApp(appId)).isAdminApp) {
       rootStack.Description = 'Root Stack for AWS Amplify Console';
@@ -906,11 +912,10 @@ export async function formNestedStack(
     // if it is not an AmplifyAdmin app, do nothing
   }
 
-  const { amplifyMeta } = projectDetails;
   let authResourceName: string;
 
   const { APIGatewayAuthURL, NetworkStackS3Url, AuthTriggerTemplateURL } = amplifyMeta.providers[constants.ProviderName];
-  const { envName } = stateManager.getLocalEnvInfo();
+  const { envName } = stateManager.getLocalEnvInfo(projectPath);
   if (APIGatewayAuthURL) {
     const stack = {
       Type: 'AWS::CloudFormation::Stack',
@@ -927,17 +932,15 @@ export async function formNestedStack(
         },
       },
     };
-    const apis = amplifyMeta?.api ?? {};
 
-    Object.keys(apis).forEach(apiName => {
-      const api = apis[apiName];
-
-      if (loadApiWithPrivacyParams(context, apiName, api)) {
+    const apis: $TSObject = amplifyMeta?.api ?? {};
+    for (const [apiName, api] of Object.entries(apis)) {
+      if (await loadApiCliInputs(context, apiName, api)) {
         stack.Properties.Parameters[apiName] = {
           'Fn::GetAtt': [api.providerMetadata.logicalId, 'Outputs.ApiId'],
         };
       }
-    });
+    }
 
     rootStack.Resources[APIGW_AUTH_STACK_LOGICAL_ID] = stack;
   }
@@ -1031,8 +1034,8 @@ export async function formNestedStack(
         const { dependsOn } = resourceDetails;
 
         if (dependsOn) {
-          for (let i = 0; i < dependsOn.length; i += 1) {
-            for (let j = 0; j < dependsOn[i]?.attributes?.length || 0; j += 1) {
+          for (let i = 0; i < dependsOn.length; ++i) {
+            for (const attribute of dependsOn[i]?.attributes || []) {
               // If the depends on resource is an imported resource we cannot form GetAtt type reference
               // since there is no such thing. We have to read the output.{AttributeName} from the meta
               // and inject the value itself into the parameters block
@@ -1045,11 +1048,11 @@ export async function formNestedStack(
               }
 
               if (dependentResource && dependentResource.serviceType === 'imported') {
-                const outputAttributeValue = _.get(dependentResource, ['output', dependsOn[i].attributes[j]], undefined);
+                const outputAttributeValue = _.get(dependentResource, ['output', attribute], undefined);
 
                 if (!outputAttributeValue) {
                   const error = new Error(
-                    `Cannot read the '${dependsOn[i].attributes[j]}' dependent attribute value from the output section of resource: '${dependsOn[i].resourceName}'.`,
+                    `Cannot read the '${attribute}' dependent attribute value from the output section of resource: '${dependsOn[i].resourceName}'.`,
                   );
                   error.stack = undefined;
 
@@ -1060,10 +1063,10 @@ export async function formNestedStack(
               } else {
                 // Fn::GetAtt adds dependency in root stack and dependsOn stack
                 const dependsOnStackName = dependsOn[i].category + dependsOn[i].resourceName;
-                parameterValue = { 'Fn::GetAtt': [dependsOnStackName, `Outputs.${dependsOn[i].attributes[j]}`] };
+                parameterValue = { 'Fn::GetAtt': [dependsOnStackName, `Outputs.${attribute}`] };
               }
 
-              const parameterKey = `${dependsOn[i].category}${dependsOn[i].resourceName}${dependsOn[i].attributes[j]}`;
+              const parameterKey = `${dependsOn[i].category}${dependsOn[i].resourceName}${attribute}`;
               if (!isAuthTrigger(dependsOn[i])) {
                 parameters[parameterKey] = parameterValue;
               }
@@ -1079,18 +1082,26 @@ export async function formNestedStack(
           }
         }
 
-        const values = Object.values(parameters);
-        const keys = Object.keys(parameters);
-
-        for (let a = 0; a < values.length; a += 1) {
-          if (Array.isArray(values[a])) {
-            parameters[keys[a]] = values[a].join();
+        for (const [key, value] of Object.entries(parameters)) {
+          if (Array.isArray(value)) {
+            parameters[key] = value.join();
           }
         }
 
-        if ((category === 'api' || category === 'hosting') && resourceDetails.service === ApiServiceNameElasticContainer) {
+        if (
+          (category === AmplifyCategories.API || category === AmplifyCategories.HOSTING) &&
+          resourceDetails.service === ApiServiceNameElasticContainer
+        ) {
           parameters['deploymentBucketName'] = Fn.Ref('DeploymentBucketName');
           parameters['rootStackName'] = Fn.Ref('AWS::StackName');
+        }
+
+        if (
+          category === AmplifyCategories.FUNCTION &&
+          [AmplifySupportedService.LAMBDA, AmplifySupportedService.LAMBDA_LAYER].includes(resourceDetails.service)
+        ) {
+          parameters['deploymentBucketName'] = resourceDetails.s3Bucket.deploymentBucketName;
+          parameters['s3Key'] = resourceDetails.s3Bucket.s3Key;
         }
 
         const currentEnv = context.amplify.getEnvInfo().envName;
@@ -1109,7 +1120,7 @@ export async function formNestedStack(
         const { imported, userPoolId, authRoleArn, authRoleName, unauthRoleArn, unauthRoleName } =
           context.amplify.getImportedAuthProperties(context);
 
-        if (category !== 'auth' && resourceDetails.service !== 'Cognito' && imported) {
+        if (category !== AmplifyCategories.AUTH && resourceDetails.service !== 'Cognito' && imported) {
           if (parameters.AuthCognitoUserPoolId) {
             parameters.AuthCognitoUserPoolId = userPoolId;
           }
@@ -1147,11 +1158,11 @@ export async function formNestedStack(
   });
 
   if (authResourceName) {
-    const importedAuth = _.get(amplifyMeta, ['auth', authResourceName], undefined);
+    const importedAuth = _.get(amplifyMeta, [AmplifyCategories.AUTH, authResourceName], undefined);
 
     // If auth is imported we cannot update the IDP as it is not part of the stack resources we deploy.
     if (importedAuth && importedAuth.serviceType !== 'imported') {
-      const authParameters = loadResourceParameters(context, 'auth', authResourceName);
+      const authParameters = loadResourceParameters(context, AmplifyCategories.AUTH, authResourceName);
 
       if (authParameters.identityPoolName) {
         updateIdPRolesInNestedStack(rootStack, authResourceName);
@@ -1204,7 +1215,7 @@ function rollbackLambdaLayers(layerResources: $TSAny[]) {
     const meta = stateManager.getMeta(projectRoot);
 
     layerResources.forEach(r => {
-      const layerMetaPath = [FunctionCategoryName, r.resourceName, 'latestPushedVersionHash'];
+      const layerMetaPath = [AmplifyCategories.FUNCTION, r.resourceName, 'latestPushedVersionHash'];
       const previousHash = _.get<string | undefined>(currentMeta, layerMetaPath, undefined);
       _.set(meta, layerMetaPath, previousHash);
     });

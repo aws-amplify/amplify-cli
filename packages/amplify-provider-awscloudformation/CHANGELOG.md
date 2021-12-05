@@ -3,6 +3,146 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.8.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.1...amplify-provider-awscloudformation@5.8.2) (2021-12-03)
+
+
+### Bug Fixes
+
+* incorrect function parameters in invokePluginMethod call ([#9182](https://github.com/aws-amplify/amplify-cli/issues/9182)) ([1be5b27](https://github.com/aws-amplify/amplify-cli/commit/1be5b2735fe009de2631194b07dbda8acd062387))
+
+
+
+
+
+## [5.8.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.0...amplify-provider-awscloudformation@5.8.1) (2021-12-02)
+
+
+
+## 7.6.1 (2021-12-02)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+# [5.8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.7.3...amplify-provider-awscloudformation@5.8.0) (2021-12-02)
+
+
+
+# 7.6.0 (2021-12-02)
+
+
+### Features
+
+* add uibuilder plugin ([#9178](https://github.com/aws-amplify/amplify-cli/issues/9178)) ([0e95dd8](https://github.com/aws-amplify/amplify-cli/commit/0e95dd8dc2b9cdcc54dcd7a7b896891e17b37f1d))
+
+
+
+
+
+## [5.7.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.7.2...amplify-provider-awscloudformation@5.7.3) (2021-12-02)
+
+
+
+## 7.5.6 (2021-12-01)
+
+
+### Bug Fixes
+
+* call the correct migration function for Admin Queries ([#9174](https://github.com/aws-amplify/amplify-cli/issues/9174)) ([1ab2e66](https://github.com/aws-amplify/amplify-cli/commit/1ab2e66e1b54d09d68def7186b85644cb6d91653))
+* function parameters not being properly added to root stack ([#9144](https://github.com/aws-amplify/amplify-cli/issues/9144)) ([2e600ca](https://github.com/aws-amplify/amplify-cli/commit/2e600ca5f3558e4eb40fe151fb6aba859b82f9d2))
+
+
+
+
+
+## [5.7.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.7.1...amplify-provider-awscloudformation@5.7.2) (2021-12-01)
+
+
+### Bug Fixes
+
+* migrate rest apis with protected routes on push ([#9068](https://github.com/aws-amplify/amplify-cli/issues/9068)) ([62b4436](https://github.com/aws-amplify/amplify-cli/commit/62b44365108ba3410c9023623394aa98a52db84e))
+
+
+
+
+
+## [5.7.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.7.0...amplify-provider-awscloudformation@5.7.1) (2021-11-29)
+
+
+### Bug Fixes
+
+* don't use path.join() for s3 upload path ([#9096](https://github.com/aws-amplify/amplify-cli/issues/9096)) ([c1787fb](https://github.com/aws-amplify/amplify-cli/commit/c1787fbbe029b5e53a7910877ec7b4a49822602e))
+
+
+
+
+
+# [5.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.6.2...amplify-provider-awscloudformation@5.7.0) (2021-11-26)
+
+
+
+## 7.5.3 (2021-11-26)
+
+
+### Bug Fixes
+
+* console override build issue ([#9078](https://github.com/aws-amplify/amplify-cli/issues/9078)) ([5c9bc5c](https://github.com/aws-amplify/amplify-cli/commit/5c9bc5c4003dd21c2897dc3c4faef9a9c19c1d99))
+* transformer version ([#9092](https://github.com/aws-amplify/amplify-cli/issues/9092)) ([acfa82c](https://github.com/aws-amplify/amplify-cli/commit/acfa82c9b275df0a7347ae0700a919dd8c03a4de))
+
+
+### Features
+
+* make modifying root stack async ([#9080](https://github.com/aws-amplify/amplify-cli/issues/9080)) ([5859e93](https://github.com/aws-amplify/amplify-cli/commit/5859e9399e838824047947347d5253ebaadb629b))
+
+
+
+
+
+## [5.6.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.6.1...amplify-provider-awscloudformation@5.6.2) (2021-11-25)
+
+
+
+## 7.5.2 (2021-11-24)
+
+
+### Bug Fixes
+
+* aggreagate paginated results in cfn.listStackResources call ([#9073](https://github.com/aws-amplify/amplify-cli/issues/9073)) ([807a0be](https://github.com/aws-amplify/amplify-cli/commit/807a0bef149b0c241024654553b6cc589f08f034))
+
+
+
+
+
+## [5.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.6.0...amplify-provider-awscloudformation@5.6.1) (2021-11-24)
+
+
+### Bug Fixes
+
+* change describeStackResources() call to listStackResources() ([#9060](https://github.com/aws-amplify/amplify-cli/issues/9060)) ([181ed31](https://github.com/aws-amplify/amplify-cli/commit/181ed31d4561b197764eb17c98392794b43fc26c))
+
+
+
+
+
+# [5.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.5.1...amplify-provider-awscloudformation@5.6.0) (2021-11-23)
+
+
+### Bug Fixes
+
+* allow custom admin roles to be passed into gql transformer ([#9041](https://github.com/aws-amplify/amplify-cli/issues/9041)) ([02b3d59](https://github.com/aws-amplify/amplify-cli/commit/02b3d59c013889a0c77c99d751896c4e1265d8f4))
+* **amplify-provider-awscloudformation:** fixed path as file name ([#9045](https://github.com/aws-amplify/amplify-cli/issues/9045)) ([46fdba3](https://github.com/aws-amplify/amplify-cli/commit/46fdba35f9cced62d146afc45fc1864d4c32d6b9))
+
+
+### Features
+
+* override support for api category ([#9013](https://github.com/aws-amplify/amplify-cli/issues/9013)) ([ae7b001](https://github.com/aws-amplify/amplify-cli/commit/ae7b001f274f327a29c99c67fe851272c6208e84)), closes [#9001](https://github.com/aws-amplify/amplify-cli/issues/9001) [#8954](https://github.com/aws-amplify/amplify-cli/issues/8954) [#8958](https://github.com/aws-amplify/amplify-cli/issues/8958) [#8960](https://github.com/aws-amplify/amplify-cli/issues/8960) [#8967](https://github.com/aws-amplify/amplify-cli/issues/8967) [#8971](https://github.com/aws-amplify/amplify-cli/issues/8971) [#8976](https://github.com/aws-amplify/amplify-cli/issues/8976) [#8975](https://github.com/aws-amplify/amplify-cli/issues/8975) [#8981](https://github.com/aws-amplify/amplify-cli/issues/8981) [#8983](https://github.com/aws-amplify/amplify-cli/issues/8983) [#8992](https://github.com/aws-amplify/amplify-cli/issues/8992) [#9000](https://github.com/aws-amplify/amplify-cli/issues/9000) [#9002](https://github.com/aws-amplify/amplify-cli/issues/9002) [#9005](https://github.com/aws-amplify/amplify-cli/issues/9005) [#9006](https://github.com/aws-amplify/amplify-cli/issues/9006) [#9007](https://github.com/aws-amplify/amplify-cli/issues/9007) [#9008](https://github.com/aws-amplify/amplify-cli/issues/9008) [#9010](https://github.com/aws-amplify/amplify-cli/issues/9010) [#9011](https://github.com/aws-amplify/amplify-cli/issues/9011) [#9012](https://github.com/aws-amplify/amplify-cli/issues/9012) [#9014](https://github.com/aws-amplify/amplify-cli/issues/9014) [#9015](https://github.com/aws-amplify/amplify-cli/issues/9015) [#9017](https://github.com/aws-amplify/amplify-cli/issues/9017) [#9020](https://github.com/aws-amplify/amplify-cli/issues/9020) [#9024](https://github.com/aws-amplify/amplify-cli/issues/9024) [#9027](https://github.com/aws-amplify/amplify-cli/issues/9027) [#9028](https://github.com/aws-amplify/amplify-cli/issues/9028) [#9029](https://github.com/aws-amplify/amplify-cli/issues/9029) [#9032](https://github.com/aws-amplify/amplify-cli/issues/9032) [#9031](https://github.com/aws-amplify/amplify-cli/issues/9031) [#9035](https://github.com/aws-amplify/amplify-cli/issues/9035) [#9038](https://github.com/aws-amplify/amplify-cli/issues/9038) [#9039](https://github.com/aws-amplify/amplify-cli/issues/9039)
+
+
+
+
+
 ## [5.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.5.0...amplify-provider-awscloudformation@5.5.1) (2021-11-21)
 
 

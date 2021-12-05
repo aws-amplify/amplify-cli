@@ -28,6 +28,7 @@ import {
   UploadedResourceDefinition,
   TransformedCfnResource,
 } from './types';
+import * as path from 'path';
 import { prePushTemplateDescriptionHandler } from '../template-description-utils';
 
 /**
@@ -229,7 +230,7 @@ export abstract class ResourcePackager {
     if (this.resourcesHasApiGatewaysButNotAdminQueries(resources)) {
       const { PROVIDER, PROVIDER_NAME } = Constants;
       const { StackName: stackName } = this.amplifyMeta[PROVIDER][PROVIDER_NAME];
-      consolidateApiGatewayPolicies(this.context, stackName);
+      await consolidateApiGatewayPolicies(this.context, stackName);
     }
     await prePushAuthTransform(this.context, resources);
     for await (const resource of resources) {
@@ -307,7 +308,8 @@ export abstract class ResourcePackager {
           await writeCFNTemplate(cfnTemplate, cfnFile, { templateFormat });
         }
         const transformedCFNPath = await preProcessCFNTemplate(cfnFile);
-        await writeCustomPoliciesToCFNTemplate(resource.resourceName, resource.service, cfnFile, resource.category);
+
+        await writeCustomPoliciesToCFNTemplate(resource.resourceName, resource.service, path.basename(cfnFile), resource.category);
         transformedCfnPaths.push(transformedCFNPath);
       }
       transformedCfnResources.push({

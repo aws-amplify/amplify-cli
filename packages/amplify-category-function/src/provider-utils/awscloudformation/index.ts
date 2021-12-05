@@ -1,6 +1,8 @@
 import {
   $TSAny,
   $TSContext,
+  AmplifyCategories,
+  AmplifySupportedService,
   JSONUtilities,
   open,
   PathConstants,
@@ -431,7 +433,14 @@ async function initTriggerEnvs(context, resourceParams, providerPlugin, envParam
     const currentTrigger = resourceParams.resourceName.replace(parentResourceParams.resourceName, '');
     if (currentTrigger && currentTrigger !== resourceParams.resourceName) {
       const currentEnvVariables = context.amplify.loadEnvResourceParameters(context, categoryName, resourceParams.resourceName);
-      const triggerPath = `${__dirname}/../../../../amplify-category-${resourceParams.parentStack}/provider-utils/${srvcMetaData.provider}/triggers/${currentTrigger}`;
+      const categoryPlugin = context.amplify.getCategoryPluginInfo(context, resourceParams.parentStack);
+      const triggerPath = path.join(
+        categoryPlugin.packageLocation,
+        'provider-utils',
+        `${srvcMetaData.provider}`,
+        'triggers',
+        `${currentTrigger}`,
+      );
       const isEnvCommand = context.input.command === 'env';
 
       if (!isEnvCommand) {

@@ -93,4 +93,4 @@ export const privateKeys = [
 export const UserPool = 'User Pool';
 export const IdentityPool = 'Identity Pool';
 export const BothPools = `${UserPool} and ${IdentityPool}`;
-export const AmplifyAdmin = 'Amplify admin UI';
+export const AmplifyAdmin = 'Amplify Studio';

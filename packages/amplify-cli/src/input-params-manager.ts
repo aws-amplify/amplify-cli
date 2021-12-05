@@ -38,12 +38,14 @@ function normalizeValue(value: string) {
 }
 
 function transform(inputParams: $TSAny) {
+  const headlessAmplify = !!inputParams.amplify;
   inputParams.amplify = inputParams.amplify || {};
   inputParams.providers = inputParams.providers || {};
   inputParams.frontend = inputParams.frontend || {};
 
   inputParams.amplify.providers = Object.keys(inputParams.providers);
   inputParams.amplify.frontend = inputParams.frontend.type || inputParams.frontend.frontend;
+  inputParams.amplify.headless = headlessAmplify;
 
   if (inputParams.amplify.frontend) {
     delete inputParams.frontend.type;

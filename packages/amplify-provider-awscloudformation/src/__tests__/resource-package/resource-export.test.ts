@@ -118,7 +118,7 @@ jest.mock('../../utils/env-level-constructs', () => ({
 }));
 jest.mock('../../utils/consolidate-apigw-policies', () => ({
   consolidateApiGatewayPolicies: mockconsolidateApiGatewayPolicies,
-  loadApiWithPrivacyParams: jest.fn(),
+  loadApiCliInputs: jest.fn(),
 }));
 jest.mock('../../transform-graphql-schema', () => ({
   transformGraphQLSchema: mockTransformGql,
@@ -211,10 +211,9 @@ const mockResource: DeploymentResources = {
 };
 
 jest.mock('glob', () => ({
-  sync: mockGlobSync,
+  sync: jest.fn((_, { cwd }) => [path.join(cwd, 'cfntemplate.json')]),
 }));
 
-const mockGlobSync = jest.fn((_, { cwd }) => [path.join(cwd, 'cfntemplate.json')]);
 const lambdaTemplate = {
   Resources: {
     LambdaLayerVersionb8059db0: {

@@ -129,7 +129,7 @@ const generateAuthOnModelQueryExpression = (
               set(ref(`${role.entity}Claim`), claimExpression),
               ifElse(
                 ref(`util.isString($ctx.args.${role.entity})`),
-                set(ref(`${role.entity}Condition`), parens(equals(ref(`${role.entity}Claim`), ref(`$ctx.args.${role.entity}`)))),
+                set(ref(`${role.entity}Condition`), parens(equals(ref(`${role.entity}Claim`), ref(`ctx.args.${role.entity}`)))),
                 set(
                   ref(`${role.entity}Condition`),
                   parens(

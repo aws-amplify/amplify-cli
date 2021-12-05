@@ -9,7 +9,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #if( $util.authType() == \\"IAM Authorization\\" )
   #set( $adminRoles = [\\"helloWorldFunction\\",\\"echoMessageFunction\\"] )
   #foreach( $adminRole in $adminRoles )
-    #if( $ctx.identity.userArn.contains($adminRole) )
+    #if( $ctx.identity.userArn.contains($adminRole) && $ctx.identity.userArn != $ctx.stash.authRole && $ctx.identity.userArn != $ctx.stash.unauthRole )
       #return($util.toJson({}))
     #end
   #end

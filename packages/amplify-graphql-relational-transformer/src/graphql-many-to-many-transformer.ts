@@ -127,8 +127,8 @@ export class ManyToManyTransformer extends TransformerPluginBase {
       const d2TypeName = directive2.object.name.value;
       const d1FieldName = d1TypeName.charAt(0).toLowerCase() + d1TypeName.slice(1);
       const d2FieldName = d2TypeName.charAt(0).toLowerCase() + d2TypeName.slice(1);
-      const d1PartitionKey = getPartitionKeyField(directive1.object);
-      const d2PartitionKey = getPartitionKeyField(directive2.object);
+      const d1PartitionKey = getPartitionKeyField(context, directive1.object);
+      const d2PartitionKey = getPartitionKeyField(context, directive2.object);
       const d1IndexName = `by${d1TypeName}`;
       const d2IndexName = `by${d2TypeName}`;
       const d1FieldNameId = `${d1FieldName}ID`;
@@ -166,7 +166,7 @@ export class ManyToManyTransformer extends TransformerPluginBase {
       directive1.indexName = d1IndexName;
       directive2.indexName = d2IndexName;
       directive1.fields = [d1PartitionKey.name.value];
-      directive2.fields = [d1PartitionKey.name.value];
+      directive2.fields = [d2PartitionKey.name.value];
       directive1.fieldNodes = [d1PartitionKey];
       directive2.fieldNodes = [d2PartitionKey];
       directive1.relatedType = joinType;

@@ -33,7 +33,7 @@ export class AuthInputState extends CategoryInputState {
   }
 
   public async isCLIInputsValid(cliInputs: CognitoCLIInputs = this.getCLIInputPayload()): Promise<boolean> {
-    const schemaValidator = new CLIInputSchemaValidator('awsCognito', this.#category, 'CognitoCLIInputs');
+    const schemaValidator = new CLIInputSchemaValidator(this.#service, this.#category, 'CognitoCLIInputs');
     return schemaValidator.validateInput(JSON.stringify(cliInputs));
   }
 

@@ -1,10 +1,11 @@
-import fs from 'fs-extra';
+import { $TSContext, $TSObject, pathManager } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 import extract from 'extract-zip';
+import * as fs from 'fs-extra';
 import sequential from 'promise-sequential';
-import { $TSContext, pathManager } from 'amplify-cli-core';
 import { APIGateway } from './aws-utils/aws-apigw';
 
-export async function downloadAPIModels(context: $TSContext, allResources) {
+export async function downloadAPIModels(context: $TSContext, allResources: $TSObject[]) {
   const { amplify } = context;
   const projectConfig = amplify.getProjectConfig();
 
@@ -18,21 +19,22 @@ export async function downloadAPIModels(context: $TSContext, allResources) {
   const promises = [];
 
   if (resources.length > 0) {
-    context.print.info('\nCreating API models...');
+    printer.blankLine();
+    printer.info('Creating API models...');
   }
 
-  for (let i = 0; i < resources.length; i += 1) {
-    if (resources[i].output.ApiName) {
-      promises.push(() => extractAPIModel(context, resources[i], framework));
+  for (const resource of resources) {
+    if (resource.output.ApiName) {
+      promises.push(() => extractAPIModel(context, resource, framework));
     }
   }
 
   return sequential(promises);
 }
 
-async function extractAPIModel(context: $TSContext, resource, framework) {
+async function extractAPIModel(context: $TSContext, resource: $TSObject, framework: string) {
   const apigw = await APIGateway.getInstance(context);
-  const apigwParams = getAPIGWRequestParams(context, resource, framework);
+  const apigwParams = getAPIGWRequestParams(resource, framework);
 
   const apiName = resource.output.ApiName;
 
@@ -53,8 +55,8 @@ async function extractAPIModel(context: $TSContext, resource, framework) {
   fs.removeSync(tempDir);
 }
 
-function copyFilesToSrc(context, apiName, framework) {
-  const backendDir = context.amplify.pathManager.getBackendDirPath();
+function copyFilesToSrc(context: $TSContext, apiName: string, framework: string) {
+  const backendDir = pathManager.getBackendDirPath();
   const tempDir = `${backendDir}/.temp`;
 
   switch (framework) {
@@ -85,7 +87,7 @@ function copyFilesToSrc(context, apiName, framework) {
   }
 }
 
-function getAPIGWRequestParams(_: $TSContext, resource, framework) {
+function getAPIGWRequestParams(resource: $TSObject, framework: string) {
   const apiUrl = resource.output.RootUrl;
   const apiName = resource.output.ApiName;
   const firstSplit = apiUrl.split('/');

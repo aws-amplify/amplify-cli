@@ -20,6 +20,7 @@ import {
   or,
   and,
   parens,
+  notEquals,
 } from 'graphql-mapping-template';
 import { NONE_VALUE } from 'graphql-transformer-common';
 import {
@@ -161,7 +162,14 @@ export const iamAdminRoleCheckExpression = (adminRoles: Array<string>): Expressi
   return compoundExpression([
     set(ref('adminRoles'), raw(JSON.stringify(adminRoles))),
     forEach(/*for */ ref('adminRole'), /* in */ ref('adminRoles'), [
-      iff(methodCall(ref('ctx.identity.userArn.contains'), ref('adminRole')), raw('#return($util.toJson({}))')),
+      iff(
+        and([
+          methodCall(ref('ctx.identity.userArn.contains'), ref('adminRole')),
+          notEquals(ref('ctx.identity.userArn'), ref(`ctx.stash.authRole`)),
+          notEquals(ref('ctx.identity.userArn'), ref(`ctx.stash.unauthRole`)),
+        ]),
+        raw('#return($util.toJson({}))'),
+      ),
     ]),
   ]);
 };
