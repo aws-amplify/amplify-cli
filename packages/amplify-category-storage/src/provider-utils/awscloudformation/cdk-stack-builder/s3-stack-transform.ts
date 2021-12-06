@@ -9,6 +9,7 @@ import {
   IAmplifyResource,
   JSONUtilities,
   pathManager,
+  stateManager
 } from 'amplify-cli-core';
 import { formatter, printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
@@ -222,7 +223,7 @@ export class AmplifyS3ResourceStackTransform {
      ** we don't save the dependsOn here. In all other cases, the resource-entry is updated with the new dependsOn entry
      */
     if (commandType !== CLISubCommandType.ADD) {
-      this._saveDependsOnToBackendConfig();
+      this._saveDependsOnToBackendConfig( );
     }
   }
 
@@ -333,7 +334,7 @@ export class AmplifyS3ResourceStackTransform {
   }
 
   //Helper: Save DependsOn entries to amplify-meta
-  _saveDependsOnToBackendConfig() {
+  _saveDependsOnToBackendConfig( ) {
     if (this.resourceTemplateObj) {
       //Get all collated resource dependencies
       const s3DependsOnResources = this.resourceTemplateObj.getS3DependsOn();
@@ -344,6 +345,15 @@ export class AmplifyS3ResourceStackTransform {
           'dependsOn',
           s3DependsOnResources,
         );
+      } else {
+        //Handle dependsOn removal (e.g. trigger)
+        this.context.amplify.updateamplifyMetaAfterResourceUpdate(
+          AmplifyCategories.STORAGE,
+          this.resourceName,
+          'dependsOn',
+          [],
+        );
+
       }
     }
   }
