@@ -8,18 +8,6 @@ const providerName = 'awscloudformation';
 actions.keys.j = 'down';
 actions.keys.k = 'up';
 
-const getAdminUIName = async context => {
-  let adminUiName = 'Amplify admin UI';
-  const promises = context.runtime.plugins.map(async plugin => {
-    if (plugin.commands.includes('overrideAdminUiName')) {
-      adminUiName = await context.amplify.invokePluginMethod(context, plugin.name, undefined, 'overrideAdminUiName', [context]);
-    }
-  });
-
-  await Promise.all(promises);
-  return adminUiName;
-};
-
 export const run = async context => {
   let consoleUrl = getDefaultURL();
 
