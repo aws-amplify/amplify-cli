@@ -298,7 +298,6 @@ describe('@index transformer', () => {
     await deleteItem('order3', sortKey, '2018-09-01T00:01:01.000Z');
   });
 
-  // skipping due to non functioning queryField
   test('Test update mutation validation with three part secondary key.', async () => {
     const createResponseMissingLastSortKey = await createShippingUpdate({ orderId: '1sttry', itemId: 'item1', name: '42' });
     expect(createResponseMissingLastSortKey.data.createShippingUpdate).toBeNull();
