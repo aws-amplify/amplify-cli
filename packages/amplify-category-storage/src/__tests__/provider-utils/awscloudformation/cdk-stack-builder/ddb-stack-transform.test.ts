@@ -3,7 +3,7 @@
 import { DDBStackTransform } from '../../../../provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform';
 import {
   DynamoDBCLIInputs,
-  FieldType,
+  FieldType
 } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/dynamoDB-user-input-types';
 import { DynamoDBInputState } from '../../../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state';
 
@@ -27,13 +27,21 @@ jest.mock('fs-extra', () => ({
 jest.mock('path', () => ({
   join: jest.fn().mockReturnValue('mockjoinedpath'),
   resolve: jest.fn().mockReturnValue('mockjoinedpath'),
+  normalize: jest.fn().mockReturnValue('mockjoinedpath')
 }));
 
 jest.mock('../../../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state');
 
+const getVmSandbox = jest.fn();
+jest.mock('@aws-amplify/cli-extensibility-helper', () => {
+  return {
+    getVmSandbox: () => getVmSandbox(),
+  }
+});
+
 describe('Test DDB transform generates correct CFN template', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
   });
 
   it('Generated ddb template with all CLI configurations set with no overrides', async () => {
@@ -77,5 +85,7 @@ describe('Test DDB transform generates correct CFN template', () => {
 
     expect(ddbTransform._cfn).toMatchSnapshot();
     expect(ddbTransform._cfnInputParams).toMatchSnapshot();
+    // no override.ts
+    expect(getVmSandbox).toBeCalledTimes(0);
   });
 });

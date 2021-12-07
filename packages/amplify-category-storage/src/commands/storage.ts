@@ -40,7 +40,7 @@ export async function run(context: $TSContext) {
     },
     {
       name: 'override',
-      description: `Generates 'overrides.ts' for ${categoryName} resource in your local backend. The resource properties can be overridden by editing this file. The resource is overridden in the cloud on the next push command. `,
+      description: `Generates 'override.ts' for ${categoryName} resource in your local backend. The resource properties can be overridden by editing this file. The resource is overridden in the cloud on the next push command. `,
     },
   ];
 

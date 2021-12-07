@@ -1,5 +1,10 @@
+// This file is used to override the S3 Storage resources configuration
+import type { AmplifyProjectInfo } from '@aws-amplify/cli-extensibility-helper';
 import { AmplifyS3ResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
 
 export function override(resources: AmplifyS3ResourceTemplate) {
-    
+  const projectInfo: AmplifyProjectInfo = global.amplify.projectInfo;
+  if (projectInfo.envName === 'production') {
+    // ... override for production
+  }
 }

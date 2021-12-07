@@ -18,13 +18,13 @@ import os from 'os';
 import { S3PermissionType, S3UserInputs } from '../service-walkthrough-types/s3-user-input-types';
 import { canResourceBeTransformed, S3CFNDependsOn, S3CFNPermissionType, S3InputState } from '../service-walkthroughs/s3-user-input-state';
 import { AmplifyS3ResourceCfnStack } from './s3-stack-builder';
-import { AmplifyS3ResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
+import { AmplifyS3ResourceTemplate, getVmSandbox } from '@aws-amplify/cli-extensibility-helper';
 import { AmplifyBuildParamsPermissions, AmplifyCfnParamType, AmplifyS3ResourceInputParameters } from './types';
 
 /**
- * Builds S3 resource stack, ingest overrides.ts and generates output-files.
+ * Builds S3 resource stack, ingest override.ts and generates output-files.
  * @param context CLI - Flow context
- * @param resource S3 resource to be transformed ( ingest overrides.ts and generate cloudformation )
+ * @param resource S3 resource to be transformed ( ingest override.ts and generate cloudformation )
  */
 export async function transformS3ResourceStack(context: $TSContext, resource: IAmplifyResource): Promise<void> {
   if (canResourceBeTransformed(resource.resourceName)) {
@@ -174,20 +174,21 @@ export class AmplifyS3ResourceStackTransform {
     //Skip if packageManager or override.ts not found
     if (isBuild) {
       const { override } = await import(overrideJSFilePath).catch(error => {
-        formatter.list(['No override File Found', `To override ${this.resourceName} run amplify override auth ${this.resourceName} `]);
+        formatter.list(['No override File Found', `To override ${this.resourceName} run amplify override storage ${this.resourceName} `]);
         return undefined;
       });
       // Pass stack object
       if (override && typeof override === 'function') {
         const overrideCode: string = await fs.readFile(overrideJSFilePath, 'utf-8').catch(() => {
-          formatter.list(['No override File Found', `To override ${this.resourceName} run amplify override auth`]);
+          formatter.list(['No override File Found', `To override ${this.resourceName} run amplify override storage`]);
           return '';
         });
 
+        const sandbox = getVmSandbox();
         const sandboxNode = new vm.NodeVM({
           console: 'inherit',
           timeout: 5000,
-          sandbox: {},
+          sandbox,
           require: {
             context: 'sandbox',
             builtin: ['path'],

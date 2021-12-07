@@ -1,4 +1,4 @@
-import { AmplifyDDBResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
+import { getVmSandbox, AmplifyDDBResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
 import * as cdk from '@aws-cdk/core';
 import { App } from '@aws-cdk/core';
 import { $TSAny, buildOverrideDir, JSONUtilities, pathManager } from 'amplify-cli-core';
@@ -182,20 +182,21 @@ export class DDBStackTransform {
     // skip if packageManager or override.ts not found
     if (isBuild) {
       const { override } = await import(overrideJSFilePath).catch(error => {
-        formatter.list(['No override File Found', `To override ${this._resourceName} run amplify override auth ${this._resourceName} `]);
+        formatter.list(['No override File Found', `To override ${this._resourceName} run amplify override storage ${this._resourceName} `]);
         return undefined;
       });
 
       if (typeof override === 'function' && override) {
         const overrideCode: string = await fs.readFile(overrideJSFilePath, 'utf-8').catch(() => {
-          formatter.list(['No override File Found', `To override ${this._resourceName} run amplify override auth`]);
+          formatter.list(['No override File Found', `To override ${this._resourceName} run amplify override storage`]);
           return '';
         });
 
+        const sandbox = getVmSandbox();
         const sandboxNode = new vm.NodeVM({
           console: 'inherit',
           timeout: 5000,
-          sandbox: {},
+          sandbox,
           require: {
             context: 'sandbox',
             builtin: ['path'],
