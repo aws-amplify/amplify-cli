@@ -1261,4 +1261,24 @@ describe('ModelTransformer: ', () => {
       expect(field.directives!.some(dir => dir.name.value === 'aws_api_key')).toEqual(true);
     }
   });
+
+  it('maps model resolvers to specified stack', () => {
+    const inputSchema = /* GraphQL */ `
+      type Blog @model {
+        id: ID!
+        name: String!
+      }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      stackMapping: {
+        CreateBlogResolver: 'myCustomStack1',
+        UpdateBlogResolver: 'myCustomStack2',
+      },
+    });
+
+    const result = transformer.transform(inputSchema);
+    expect(Object.keys(result.stacks['myCustomStack1'].Resources!).includes('CreateBlogResolver')).toBe(true);
+    expect(Object.keys(result.stacks['myCustomStack2'].Resources!).includes('UpdateBlogResolver')).toBe(true);
+  });
 });
