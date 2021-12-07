@@ -2,6 +2,17 @@ import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import * as path from 'path';
 import { PredictionsTransformer } from '..';
 
+const getVmSandbox = jest.fn();
+jest.mock('@aws-amplify/cli-extensibility-helper', () => {
+  return {
+    getVmSandbox: () => getVmSandbox(),
+  }
+});
+
+afterEach(() => {
+  jest.resetAllMocks();
+});
+
 test('it generates resources with overrides', () => {
   const validSchema = /* GraphQL */ `
     type Query {
@@ -21,4 +32,5 @@ test('it generates resources with overrides', () => {
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.stacks).toMatchSnapshot();
+  expect(getVmSandbox).toHaveBeenCalledTimes(1);
 });

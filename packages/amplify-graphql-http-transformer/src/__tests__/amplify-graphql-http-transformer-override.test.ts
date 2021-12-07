@@ -1,7 +1,19 @@
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
-import { HttpTransformer } from '..';
 import path from 'path';
+import { HttpTransformer } from '..';
+
+const getVmSandbox = jest.fn();
+jest.mock('@aws-amplify/cli-extensibility-helper', () => {
+  return {
+    getVmSandbox: () => getVmSandbox(),
+  }
+});
+
+afterEach(() => {
+  jest.resetAllMocks();
+});
+
 test('it generates the overrided resources', () => {
   const validSchema = /* GraphQL */ `
     type Comment {
@@ -27,4 +39,5 @@ test('it generates the overrided resources', () => {
   parse(out.schema);
   const stack = out.stacks.HttpStack;
   expect(stack).toMatchSnapshot();
+  expect(getVmSandbox).toBeCalledTimes(1);
 });

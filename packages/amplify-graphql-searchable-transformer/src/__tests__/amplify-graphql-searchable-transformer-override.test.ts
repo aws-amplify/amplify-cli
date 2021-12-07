@@ -16,7 +16,19 @@ const featureFlags = {
   getString: jest.fn(),
 };
 
+
+const getVmSandbox = jest.fn();
+jest.mock('@aws-amplify/cli-extensibility-helper', () => {
+  return {
+    getVmSandbox: () => getVmSandbox(),
+  }
+});
+
 test('it overrides expected resources', () => {
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
   const validSchema = `
     type Post @model @searchable {
         id: ID!
@@ -111,4 +123,5 @@ test('it overrides expected resources', () => {
       ResponseMappingTemplate: '$util.toJson($ctx.prev.result)',
     }),
   );
+  expect(getVmSandbox).toHaveBeenCalledTimes(1);
 });

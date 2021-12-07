@@ -1,4 +1,5 @@
 /* eslint-disable no-new */
+import { getVmSandbox } from '@aws-amplify/cli-extensibility-helper';
 import {
   AppSyncAuthConfiguration,
   FeatureFlagProvider,
@@ -30,6 +31,7 @@ import _ from 'lodash';
 import os from 'os';
 import * as path from 'path';
 import * as vm from 'vm2';
+import { MappingTemplate } from '../cdk-compat';
 import { ResolverConfig, TransformConfig } from '../config/transformer-config';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
 import { GraphQLApi } from '../graphql-api';
@@ -40,9 +42,7 @@ import { ConstructResourceMeta } from '../types/types';
 import { convertToAppsyncResourceObj, getStackMeta } from '../types/utils';
 import { adoptAuthModes, IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } from '../utils/authType';
 import * as SyncUtils from './sync-utils';
-import { MappingTemplate } from '../cdk-compat';
-
-import Template, { DeploymentResources, UserDefinedSlot, OverrideConfig } from './types';
+import Template, { DeploymentResources, OverrideConfig, UserDefinedSlot } from './types';
 import {
   makeSeenTransformationKey,
   matchArgumentDirective,
@@ -314,11 +314,14 @@ export class GraphQLTransform {
 
     let appsyncResourceObj = convertToAppsyncResourceObj(amplifyApiObj);
     if (!_.isEmpty(this.overrideConfig) && this.overrideConfig!.overrideFlag) {
-      const overrideCode: string = fs.readFileSync(path.join(this.overrideConfig!.overrideDir, 'build', 'override.js'), 'utf-8');
+      const overrideJSFilePath = path.join(this.overrideConfig!.overrideDir, 'build', 'override.js');
+      const overrideCode: string = fs.readFileSync(overrideJSFilePath, 'utf-8');
+
+      const sandbox = getVmSandbox();
       const sandboxNode = new vm.NodeVM({
         console: 'inherit',
         timeout: 5000,
-        sandbox: {},
+        sandbox,
         require: {
           context: 'sandbox',
           builtin: ['path'],
@@ -326,7 +329,7 @@ export class GraphQLTransform {
         },
       });
       try {
-        sandboxNode.run(overrideCode, path.join(this.overrideConfig!.overrideDir, 'build', 'override.js')).override(appsyncResourceObj);
+        sandboxNode.run(overrideCode, overrideJSFilePath).override(appsyncResourceObj);
       } catch (err) {
         const error = new Error(`Skipping override due to ${err}${os.EOL}`);
         printer.error(`${error}`);

@@ -2,6 +2,18 @@ import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
 import * as path from 'path';
 import { FunctionTransformer } from '..';
+
+const getVmSandbox = jest.fn();
+jest.mock('@aws-amplify/cli-extensibility-helper', () => {
+  return {
+    getVmSandbox: () => getVmSandbox(),
+  }
+});
+
+afterEach(() => {
+  jest.resetAllMocks();
+});
+
 test('it ovderrides the expected resources', () => {
   const validSchema = `
     type Query {
@@ -24,4 +36,5 @@ test('it ovderrides the expected resources', () => {
   const stack = out.stacks.FunctionDirectiveStack;
   expect(stack).toBeDefined();
   expect(stack).toMatchSnapshot();
+  expect(getVmSandbox).toHaveBeenCalledTimes(1);
 });

@@ -9,7 +9,18 @@ const featureFlags = {
   getString: jest.fn(),
 };
 
+const getVmSandbox = jest.fn();
+jest.mock('@aws-amplify/cli-extensibility-helper', () => {
+  return {
+    getVmSandbox: () => getVmSandbox(),
+  }
+});
+
 describe('ModelTransformer: ', () => {
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
   it('should override  model objects when given override config', () => {
     const validSchema = `
       type Post @model {
@@ -37,5 +48,6 @@ describe('ModelTransformer: ', () => {
 
     expect(postStack).toMatchSnapshot();
     expect(commentStack).toMatchSnapshot();
+    expect(getVmSandbox).toHaveBeenCalledTimes(1);
   });
 });
