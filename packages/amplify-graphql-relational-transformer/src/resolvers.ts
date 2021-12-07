@@ -85,10 +85,11 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
     );
   }
 
+  const resolverResourceId = ResolverResourceIDs.ResolverResourceID(object.name.value, field.name.value);
   const resolver = ctx.resolvers.generateQueryResolver(
     object.name.value,
     field.name.value,
-    ResolverResourceIDs.ResolverResourceID(object.name.value, field.name.value),
+    resolverResourceId,
     dataSource as any,
     MappingTemplate.s3MappingTemplateFromString(
       print(
@@ -145,7 +146,7 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
     ),
   );
 
-  resolver.mapToStack(getConnectionStack(ctx));
+  resolver.mapToStack(ctx.stackManager.getStackFor(resolverResourceId, CONNECTION_STACK));
   ctx.resolvers.addResolver(object.name.value, field.name.value, resolver);
 }
 
@@ -223,10 +224,11 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
   }
 
   const queryObj = DynamoDBMappingTemplate.query(queryArguments);
+  const resolverResourceId = ResolverResourceIDs.ResolverResourceID(object.name.value, field.name.value);
   const resolver = ctx.resolvers.generateQueryResolver(
     object.name.value,
     field.name.value,
-    ResolverResourceIDs.ResolverResourceID(object.name.value, field.name.value),
+    resolverResourceId,
     dataSource as any,
     MappingTemplate.s3MappingTemplateFromString(
       print(
@@ -252,7 +254,7 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
     ),
   );
 
-  resolver.mapToStack(getConnectionStack(ctx));
+  resolver.mapToStack(ctx.stackManager.getStackFor(resolverResourceId, CONNECTION_STACK));
   ctx.resolvers.addResolver(object.name.value, field.name.value, resolver);
 }
 
