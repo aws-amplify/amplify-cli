@@ -1,5 +1,6 @@
-const { printer } = require('amplify-prompts');
-async function shouldRenderComponents(context) {
+import { $TSContext } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
+export async function shouldRenderComponents(context: $TSContext) {
   if (process.env.FORCE_RENDER) {
     printer.debug('Forcing component render since environment variable flag is set.');
     return true;
@@ -31,7 +32,3 @@ async function shouldRenderComponents(context) {
 
   return true;
 }
-
-module.exports = {
-  shouldRenderComponents,
-};

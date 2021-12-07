@@ -1,16 +1,20 @@
-const aws = require('aws-sdk');
-const { printer } = require('amplify-prompts');
-const { resolveAppId } = require('amplify-provider-awscloudformation');
-const { createUiBuilderComponent, createUiBuilderTheme } = require('./createUiBuilderComponent');
-const { getUiBuilderComponentsPath } = require('./getUiBuilderComponentsPath');
-const { extractArgs } = require('./extractArgs');
-const getEnvName = (context, envName) => {
+import aws from 'aws-sdk';
+import { printer } from 'amplify-prompts';
+import { createUiBuilderComponent, createUiBuilderTheme } from './createUiBuilderComponent';
+import { getUiBuilderComponentsPath } from './getUiBuilderComponentsPath';
+import { extractArgs } from './extractArgs';
+import { $TSContext } from 'amplify-cli-core';
+export const getEnvName = (context: $TSContext, envName?: string) => {
   const args = extractArgs(context);
   return envName ? envName : args.environmentName ? args.environmentName : context.exeInfo.localEnvInfo.envName;
 };
 
-const getAppId = (context, environmentName) => {
-  const appId = extractArgs(context).appId || resolveAppId(context);
+const resolveAppId = async (context: $TSContext) => {
+  return await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'resolveAppId', [context]);
+};
+
+export const getAppId = async (context: $TSContext) => {
+  const appId = extractArgs(context).appId || (await resolveAppId(context));
   if (!appId) {
     throw new Error(
       'Unable to sync Studio components since appId could not be determined. This can happen when you hit the soft limit of number of apps that you can have in Amplify console.',
@@ -19,9 +23,9 @@ const getAppId = (context, environmentName) => {
   return appId;
 };
 
-async function listUiBuilderComponents(context, envName) {
+export async function listUiBuilderComponents(context: $TSContext, envName?: string) {
   const environmentName = getEnvName(context, envName);
-  const appId = getAppId(context, environmentName);
+  const appId = await getAppId(context);
 
   try {
     const amplifyUIBuilder = await getAmplifyUIBuilderService(context, environmentName, appId);
@@ -39,9 +43,9 @@ async function listUiBuilderComponents(context, envName) {
   }
 }
 
-async function listUiBuilderThemes(context, envName) {
+export async function listUiBuilderThemes(context: $TSContext, envName?: string) {
   const environmentName = getEnvName(context, envName);
-  const appId = getAppId(context, environmentName);
+  const appId = await getAppId(context);
 
   try {
     const amplifyUIBuilder = await getAmplifyUIBuilderService(context, environmentName, appId);
@@ -59,7 +63,7 @@ async function listUiBuilderThemes(context, envName) {
   }
 }
 
-function generateUiBuilderComponents(context, componentSchemas) {
+export function generateUiBuilderComponents(context: $TSContext, componentSchemas: any[]) {
   const componentResults = componentSchemas.map(schema => {
     try {
       const component = createUiBuilderComponent(context, schema);
@@ -79,7 +83,7 @@ function generateUiBuilderComponents(context, componentSchemas) {
   return componentResults;
 }
 
-function generateUiBuilderThemes(context, themeSchemas) {
+export function generateUiBuilderThemes(context: $TSContext, themeSchemas: any[]) {
   const themeResults = themeSchemas.map(schema => {
     try {
       const theme = createUiBuilderTheme(context, schema);
@@ -97,12 +101,12 @@ function generateUiBuilderThemes(context, themeSchemas) {
   return themeResults;
 }
 
-const getAmplifyUIBuilderService = async (context, environmentName, appId) => {
-  const awsConfigInfo = await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'loadConfigurationForEnv', [
+export const getAmplifyUIBuilderService = async (context: $TSContext, environmentName: string, appId: string) => {
+  const awsConfigInfo = (await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'loadConfigurationForEnv', [
     context,
     environmentName,
     appId,
-  ]);
+  ])) as any;
 
   if (process.env.UI_BUILDER_ENDPOINT) {
     awsConfigInfo.endpoint = process.env.UI_BUILDER_ENDPOINT;
@@ -113,12 +117,4 @@ const getAmplifyUIBuilderService = async (context, environmentName, appId) => {
   }
 
   return new aws.AmplifyUIBuilder(awsConfigInfo);
-};
-
-module.exports = {
-  getAmplifyUIBuilderService,
-  generateUiBuilderComponents,
-  generateUiBuilderThemes,
-  listUiBuilderComponents,
-  listUiBuilderThemes,
 };

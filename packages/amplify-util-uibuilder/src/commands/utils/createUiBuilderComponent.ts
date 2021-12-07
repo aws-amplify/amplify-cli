@@ -1,14 +1,15 @@
-const { StudioTemplateRendererManager, StudioTemplateRendererFactory } = require('@aws-amplify/codegen-ui');
-const {
+import { StudioTemplateRendererManager, StudioTemplateRendererFactory, StudioComponent } from '@aws-amplify/codegen-ui';
+import {
   AmplifyRenderer,
   ReactThemeStudioTemplateRenderer,
   ReactIndexStudioTemplateRenderer,
   ModuleKind,
   ScriptTarget,
   ScriptKind,
-} = require('@aws-amplify/codegen-ui-react');
-const { getUiBuilderComponentsPath } = require('./getUiBuilderComponentsPath');
-const { printer } = require('amplify-prompts');
+} from '@aws-amplify/codegen-ui-react';
+import { getUiBuilderComponentsPath } from './getUiBuilderComponentsPath';
+import { printer } from 'amplify-prompts';
+import { $TSContext } from 'amplify-cli-core';
 const config = {
   module: ModuleKind.ES2020,
   target: ScriptTarget.ES2020,
@@ -16,9 +17,9 @@ const config = {
   renderTypeDeclarations: true,
 };
 
-const createUiBuilderComponent = (context, schema) => {
+export const createUiBuilderComponent = (context: $TSContext, schema: any) => {
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
-  const rendererFactory = new StudioTemplateRendererFactory(component => new AmplifyRenderer(component, config));
+  const rendererFactory = new StudioTemplateRendererFactory((component: StudioComponent) => new AmplifyRenderer(component, config));
 
   const outputPathDir = uiBuilderComponentsPath;
   const outputConfig = {
@@ -31,9 +32,9 @@ const createUiBuilderComponent = (context, schema) => {
   return schema;
 };
 
-const createUiBuilderTheme = (context, schema) => {
+export const createUiBuilderTheme = (context: $TSContext, schema: any) => {
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
-  const rendererFactory = new StudioTemplateRendererFactory(component => new ReactThemeStudioTemplateRenderer(component, config));
+  const rendererFactory = new StudioTemplateRendererFactory((component: any) => new ReactThemeStudioTemplateRenderer(component, config));
 
   const outputPathDir = uiBuilderComponentsPath;
   const outputConfig = {
@@ -47,14 +48,15 @@ const createUiBuilderTheme = (context, schema) => {
     return schema;
   } catch (e) {
     printer.debug(e);
-    printer.debug({ msg: 'Skipping invalid theme with schema', schema: JSON.stringify(schema, null, 2) });
+    printer.debug('Skipping invalid theme with schema');
+    printer.debug(JSON.stringify(schema, null, 2));
     throw e;
   }
 };
 
-const generateAmplifyUiBuilderIndexFile = (context, schemas) => {
+export const generateAmplifyUiBuilderIndexFile = (context: $TSContext, schemas: any[]) => {
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
-  const rendererFactory = new StudioTemplateRendererFactory(component => new ReactIndexStudioTemplateRenderer(component, config));
+  const rendererFactory = new StudioTemplateRendererFactory((component: any) => new ReactIndexStudioTemplateRenderer(component, config));
 
   const outputPathDir = uiBuilderComponentsPath;
   const outputConfig = {
@@ -64,16 +66,10 @@ const generateAmplifyUiBuilderIndexFile = (context, schemas) => {
   const rendererManager = new StudioTemplateRendererManager(rendererFactory, outputConfig);
 
   try {
-    rendererManager.renderSchemaToTemplate(schemas);
+    return rendererManager.renderSchemaToTemplate(schemas);
   } catch (e) {
     printer.debug(e);
-    printer.debug({ msg: 'Failed to generate component index file' });
+    printer.debug('Failed to generate component index file');
     throw e;
   }
-};
-
-module.exports = {
-  createUiBuilderComponent,
-  createUiBuilderTheme,
-  generateAmplifyUiBuilderIndexFile,
 };
