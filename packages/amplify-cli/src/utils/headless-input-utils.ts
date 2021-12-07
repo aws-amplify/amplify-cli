@@ -1,5 +1,4 @@
 import readline from 'readline';
-import _ from 'lodash';
 import { Context } from '../domain/context';
 import { normalizeInputParams } from '../input-params-manager';
 import { $TSContext } from 'amplify-cli-core';
