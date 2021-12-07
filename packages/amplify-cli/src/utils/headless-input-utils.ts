@@ -1,5 +1,8 @@
 import readline from 'readline';
+import _ from 'lodash';
 import { Context } from '../domain/context';
+import { normalizeInputParams } from '../input-params-manager';
+import { $TSContext } from 'amplify-cli-core';
 
 const headlessPayloadReadTimeoutMillis = 2000;
 
@@ -29,4 +32,13 @@ export const readHeadlessPayload = async (): Promise<string> => {
   });
 };
 
-export const isYesFlagSet = (context: Context): boolean => context?.exeInfo?.inputParams?.yes;
+export const isYesFlagSet = (context: Context): boolean => {
+  if (context?.exeInfo?.inputParams) {
+    return context.exeInfo.inputParams.yes;
+  }
+
+  // No exeInfo is constructed, get the yes flag from the input directly.
+  const inputParams = normalizeInputParams(context as unknown as $TSContext);
+
+  return inputParams?.yes;
+};
