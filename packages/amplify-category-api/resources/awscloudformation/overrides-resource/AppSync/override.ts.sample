@@ -1,5 +1,10 @@
+// This file is used to override the AppSync API resources configuration
+import type { AmplifyProjectInfo } from '@aws-amplify/cli-extensibility-helper';
 import { AmplifyApiGraphQlResourceStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 
 export function override(resources: AmplifyApiGraphQlResourceStackTemplate) {
-    
+  const projectInfo: AmplifyProjectInfo = global.amplify.projectInfo;
+  if (projectInfo.envName === 'production') {
+    // ... override for production
+  }
 }

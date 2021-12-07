@@ -1,3 +1,4 @@
+import { getVmSandbox } from '@aws-amplify/cli-extensibility-helper';
 import * as cdk from '@aws-cdk/core';
 import {
   $TSAny,
@@ -18,8 +19,8 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as vm from 'vm2';
 import { AmplifyApigwResourceStack, ApigwInputs, CrudOperation, Path } from '.';
-import { ApigwInputState } from '../apigw-input-state';
 import { ADMIN_QUERIES_NAME } from '../../../category-constants';
+import { ApigwInputState } from '../apigw-input-state';
 export class ApigwStackTransform {
   _app: cdk.App;
   cliInputs: ApigwInputs;
@@ -196,20 +197,21 @@ export class ApigwStackTransform {
 
       if (override && typeof override === 'function') {
         const overrideCode: string = await fs.readFile(overrideJSFilePath, 'utf-8').catch(() => {
-          formatter.list(['No override File Found', `To override ${this.resourceName} run amplify override auth`]);
+          formatter.list(['No override File Found', `To override ${this.resourceName} run amplify override api`]);
           return '';
         });
 
-        const sandboxNode = new vm.NodeVM({
-          console: 'inherit',
-          timeout: 5000,
-          sandbox: {},
-          require: {
-            context: 'sandbox',
-            builtin: ['path'],
-            external: true,
-          },
-        });
+      const sandbox = getVmSandbox();
+      const sandboxNode = new vm.NodeVM({
+        console: 'inherit',
+        timeout: 5000,
+        sandbox,
+        require: {
+          context: 'sandbox',
+          builtin: ['path'],
+          external: true,
+        },
+      });
 
         try {
           await sandboxNode.run(overrideCode, overrideJSFilePath).override(this.resourceTemplateObj as AmplifyApigwResourceStack);
