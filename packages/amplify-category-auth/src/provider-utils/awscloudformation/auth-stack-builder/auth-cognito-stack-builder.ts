@@ -301,15 +301,15 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       }
 
       if (props.requiredAttributes && props.requiredAttributes.length > 0) {
+        let schemaAttributes: cognito.CfnUserPool.SchemaAttributeProperty[] = [];
         props.requiredAttributes.forEach(attr => {
-          this.userPool!.schema = [
-            {
-              name: attr,
-              required: true,
-              mutable: true,
-            },
-          ];
+          schemaAttributes.push({
+            name: attr,
+            required: true,
+            mutable: true,
+          });
         });
+        this.userPool!.schema = schemaAttributes;
       }
 
       if (!props.breakCircularDependency && props.triggers && props.dependsOn) {
