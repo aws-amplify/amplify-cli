@@ -1,15 +1,17 @@
-const { notifyMissingPackages } = require('./utils/notifyMissingPackages');
-const { shouldRenderComponents } = require('./utils/shouldRenderComponents');
-const {
+import { notifyMissingPackages } from './utils/notifyMissingPackages';
+import { shouldRenderComponents } from './utils/shouldRenderComponents';
+import {
   listUiBuilderComponents,
   listUiBuilderThemes,
   generateUiBuilderComponents,
   generateUiBuilderThemes,
-} = require('./utils/syncAmplifyUiBuilderComponents');
-const { generateAmplifyUiBuilderIndexFile } = require('./utils/createUiBuilderComponent');
-const { printer } = require('amplify-prompts');
-const ora = require('ora');
-async function run(context) {
+} from './utils/syncAmplifyUiBuilderComponents';
+import { generateAmplifyUiBuilderIndexFile } from './utils/createUiBuilderComponent';
+import { printer } from 'amplify-prompts';
+import ora from 'ora';
+import { $TSContext } from 'amplify-cli-core';
+
+export async function run(context: $TSContext) {
   printer.debug('Running generate components command in amplify-util-uibuilder');
   if (!(await shouldRenderComponents(context))) {
     return;
@@ -48,7 +50,3 @@ async function run(context) {
 
   notifyMissingPackages(context);
 }
-
-module.exports = {
-  run,
-};

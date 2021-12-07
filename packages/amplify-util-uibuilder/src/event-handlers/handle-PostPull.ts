@@ -1,6 +1,7 @@
-const { printer } = require('amplify-prompts');
+import { $TSContext } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 
-async function run(context) {
+export async function run(context: $TSContext) {
   try {
     await context.amplify.invokePluginMethod(context, 'ui-builder', undefined, 'executeAmplifyCommand', [context, 'generateComponents']);
   } catch (e) {
@@ -8,7 +9,3 @@ async function run(context) {
     printer.debug(e);
   }
 }
-
-module.exports = {
-  run,
-};

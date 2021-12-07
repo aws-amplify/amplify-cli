@@ -1,7 +1,9 @@
-const { shouldRenderComponents } = require('../shouldRenderComponents');
+import { $TSContext } from 'amplify-cli-core';
+
+const { shouldRenderComponents } = require('../commands/utils/shouldRenderComponents');
 
 describe('should render components', () => {
-  let context;
+  let context: $TSContext | any;
   beforeEach(() => {
     context = {
       input: {
