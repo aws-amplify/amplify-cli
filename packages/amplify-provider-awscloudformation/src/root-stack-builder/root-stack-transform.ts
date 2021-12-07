@@ -1,4 +1,4 @@
-import { AmplifyRootStackTemplate } from '@aws-amplify/cli-extensibility-helper';
+import { AmplifyRootStackTemplate, getVmSandbox } from '@aws-amplify/cli-extensibility-helper';
 import * as cdk from '@aws-cdk/core';
 import { $TSAny, $TSContext, buildOverrideDir, CFNTemplateFormat, pathManager, Template, writeCFNTemplate } from 'amplify-cli-core';
 import { printer, formatter } from 'amplify-prompts';
@@ -59,10 +59,12 @@ export class AmplifyRootStackTransform {
         formatter.list(['No override File Found', `To override ${this._resourceName} run amplify override auth`]);
         return '';
       });
+
+      const sandbox = getVmSandbox();
       const sandboxNode = new vm.NodeVM({
         console: 'inherit',
         timeout: 5000,
-        sandbox: {},
+        sandbox,
         require: {
           context: 'sandbox',
           builtin: ['path'],
