@@ -1096,14 +1096,6 @@ export async function formNestedStack(
           parameters['rootStackName'] = Fn.Ref('AWS::StackName');
         }
 
-        if (
-          category === AmplifyCategories.FUNCTION &&
-          [AmplifySupportedService.LAMBDA, AmplifySupportedService.LAMBDA_LAYER].includes(resourceDetails.service)
-        ) {
-          parameters['deploymentBucketName'] = resourceDetails.s3Bucket.deploymentBucketName;
-          parameters['s3Key'] = resourceDetails.s3Bucket.s3Key;
-        }
-
         const currentEnv = context.amplify.getEnvInfo().envName;
 
         if (!skipEnv && resourceName) {
