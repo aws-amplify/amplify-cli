@@ -8,8 +8,7 @@ import {
   CLISubCommandType,
   IAmplifyResource,
   JSONUtilities,
-  pathManager,
-  stateManager
+  pathManager
 } from 'amplify-cli-core';
 import { formatter, printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
@@ -338,23 +337,13 @@ export class AmplifyS3ResourceStackTransform {
     if (this.resourceTemplateObj) {
       //Get all collated resource dependencies
       const s3DependsOnResources = this.resourceTemplateObj.getS3DependsOn();
-      if (s3DependsOnResources && s3DependsOnResources.length > 0) {
-        this.context.amplify.updateamplifyMetaAfterResourceUpdate(
+      const dependsOn = [...s3DependsOnResources || []];
+      this.context.amplify.updateamplifyMetaAfterResourceUpdate(
           AmplifyCategories.STORAGE,
           this.resourceName,
           'dependsOn',
-          s3DependsOnResources,
-        );
-      } else {
-        //Handle dependsOn removal (e.g. trigger)
-        this.context.amplify.updateamplifyMetaAfterResourceUpdate(
-          AmplifyCategories.STORAGE,
-          this.resourceName,
-          'dependsOn',
-          [],
-        );
-
-      }
+          dependsOn,
+      );
     }
   }
 }
