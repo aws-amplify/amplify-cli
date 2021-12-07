@@ -869,6 +869,7 @@ export async function formNestedStack(
   resourceName?: string,
   serviceName?: string,
   skipEnv?: boolean,
+  useExistingMeta?: boolean
 ) {
   let rootStack;
   // CFN transform for Root stack
@@ -889,7 +890,7 @@ export async function formNestedStack(
   }
 
   const projectPath = pathManager.findProjectRoot();
-  const amplifyMeta = stateManager.getMeta(projectPath);
+  const amplifyMeta = useExistingMeta ? projectDetails.amplifyMeta : stateManager.getMeta(projectPath);
   // update amplify meta with updated root stack Info
   if (Object.keys(metaToBeUpdated).length) {
     context.amplify.updateProvideramplifyMeta(providerName, metaToBeUpdated);
@@ -1015,10 +1016,8 @@ export async function formNestedStack(
   let categories = Object.keys(amplifyMeta);
 
   categories = categories.filter(category => category !== 'providers');
-
   categories.forEach(category => {
     const resources = Object.keys(amplifyMeta[category]);
-
     resources.forEach(resource => {
       const resourceDetails = amplifyMeta[category][resource];
 
@@ -1032,7 +1031,6 @@ export async function formNestedStack(
       if (resourceDetails.providerPlugin) {
         const parameters = <$TSObject>loadResourceParameters(context, category, resource);
         const { dependsOn } = resourceDetails;
-
         if (dependsOn) {
           for (let i = 0; i < dependsOn.length; ++i) {
             for (const attribute of dependsOn[i]?.attributes || []) {
@@ -1096,14 +1094,6 @@ export async function formNestedStack(
           parameters['rootStackName'] = Fn.Ref('AWS::StackName');
         }
 
-        if (
-          category === AmplifyCategories.FUNCTION &&
-          [AmplifySupportedService.LAMBDA, AmplifySupportedService.LAMBDA_LAYER].includes(resourceDetails.service)
-        ) {
-          parameters['deploymentBucketName'] = resourceDetails.s3Bucket.deploymentBucketName;
-          parameters['s3Key'] = resourceDetails.s3Bucket.s3Key;
-        }
-
         const currentEnv = context.amplify.getEnvInfo().envName;
 
         if (!skipEnv && resourceName) {
@@ -1141,7 +1131,6 @@ export async function formNestedStack(
             parameters.unauthRoleName = unauthRoleName;
           }
         }
-
         if (resourceDetails.providerMetadata) {
           templateURL = resourceDetails.providerMetadata.s3TemplateURL;
 
