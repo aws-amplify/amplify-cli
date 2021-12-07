@@ -24,6 +24,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
+    "test": "jest",
     "clean": "rimraf ./lib"
   },
   "dependencies": {
