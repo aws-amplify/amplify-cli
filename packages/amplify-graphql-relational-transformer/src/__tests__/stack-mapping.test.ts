@@ -26,7 +26,9 @@ describe('transformer stack mapping', () => {
     });
 
     const result = transformer.transform(inputSchema);
-    expect(Object.keys(result.stacks['myCustomStack1'].Resources!).includes('BlogpostsResolver')).toBe(true);
-    expect(Object.keys(result.stacks['myCustomStack2'].Resources!).includes('PostblogResolver')).toBe(true);
+    expect(Object.keys(result.stacks.myCustomStack1.Resources!).includes('BlogpostsResolver')).toBe(true);
+    expect(Object.keys(result.stacks.myCustomStack2.Resources!).includes('PostblogResolver')).toBe(true);
+
+    expect(result.stacks.ConnectionStack).toBeUndefined();
   });
 });

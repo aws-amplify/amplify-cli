@@ -1278,7 +1278,10 @@ describe('ModelTransformer: ', () => {
     });
 
     const result = transformer.transform(inputSchema);
-    expect(Object.keys(result.stacks['myCustomStack1'].Resources!).includes('CreateBlogResolver')).toBe(true);
-    expect(Object.keys(result.stacks['myCustomStack2'].Resources!).includes('UpdateBlogResolver')).toBe(true);
+    expect(Object.keys(result.stacks.myCustomStack1.Resources!).includes('CreateBlogResolver')).toBe(true);
+    expect(Object.keys(result.stacks.myCustomStack2.Resources!).includes('UpdateBlogResolver')).toBe(true);
+
+    expect(Object.keys(result.stacks.Blog.Resources!).includes('CreateBlogResolver')).toBe(false);
+    expect(Object.keys(result.stacks.Blog.Resources!).includes('UpdateBlogResolver')).toBe(false);
   });
 });

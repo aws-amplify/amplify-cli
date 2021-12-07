@@ -377,11 +377,3 @@ function appendIndex(list: any, newIndex: any): any[] {
 
   return [newIndex];
 }
-
-function getConnectionStack(ctx: TransformerContextProvider): cdk.Stack {
-  if (ctx.stackManager.hasStack(CONNECTION_STACK)) {
-    return ctx.stackManager.getStack(CONNECTION_STACK);
-  }
-
-  return ctx.stackManager.createStack(CONNECTION_STACK);
-}
