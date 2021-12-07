@@ -201,7 +201,7 @@ export function validateDisallowedDataStoreRelationships(
 
   if (hasUnsupportedConnectionFields) {
     throw new InvalidDirectiveError(
-      `${modelType} and ${relatedType.name.value} cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead.`,
+      `${modelType} and ${relatedType.name.value} cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead. See https://docs.amplify.aws/cli/graphql/data-modeling/#belongs-to-relationship`,
     );
   }
 }
