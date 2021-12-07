@@ -1,5 +1,10 @@
+// This file is used to override the Cognito Auth resources configuration
+import type { AmplifyProjectInfo } from '@aws-amplify/cli-extensibility-helper';
 import { AmplifyAuthCognitoStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 
 export function override(resources: AmplifyAuthCognitoStackTemplate) {
-    
+  const projectInfo: AmplifyProjectInfo = global.amplify.projectInfo;
+  if (projectInfo.envName === 'production') {
+    // ... override for production
+  }
 }

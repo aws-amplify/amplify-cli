@@ -1,3 +1,4 @@
+import { getVmSandbox } from '@aws-amplify/cli-extensibility-helper';
 import {
   $TSContext,
   AmplifyCategories,
@@ -183,10 +184,11 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
         formatter.list(['No override File Found', `To override ${this._resourceName} run amplify override auth`]);
         return '';
       });
+      const sandbox = getVmSandbox();
       const sandboxNode = new vm.NodeVM({
         console: 'inherit',
         timeout: 5000,
-        sandbox: {},
+        sandbox,
       });
       try {
         sandboxNode.run(overrideCode).override(this._userPoolGroupTemplateObj as AmplifyUserPoolGroupStack & AmplifyStackTemplate);

@@ -1,3 +1,4 @@
+import { getVmSandbox } from '@aws-amplify/cli-extensibility-helper';
 import {
   AmplifyCategories,
   AmplifySupportedService,
@@ -111,10 +112,11 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
         return '';
       });
 
+      const sandbox = getVmSandbox();
       const sandboxNode = new vm.NodeVM({
         console: 'inherit',
         timeout: 5000,
-        sandbox: {},
+        sandbox,
         require: {
           context: 'sandbox',
           builtin: ['path'],
