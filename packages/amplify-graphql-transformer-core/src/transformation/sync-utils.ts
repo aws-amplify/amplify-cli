@@ -1,4 +1,4 @@
-import { AttributeType, BillingMode, StreamViewType, Table, TableEncryption } from '@aws-cdk/aws-dynamodb';
+import { AttributeType, BillingMode, StreamViewType, Table } from '@aws-cdk/aws-dynamodb';
 import * as cdk from '@aws-cdk/core';
 import * as iam from '@aws-cdk/aws-iam';
 import { ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
@@ -19,7 +19,7 @@ export function createSyncTable(context: TransformerContext) {
   const stack = context.stackManager.getStackFor(SyncResourceIDs.syncTableName);
   const tableName = context.resourceHelper.generateResourceName(SyncResourceIDs.syncTableName);
   // eslint-disable-next-line no-new
-  new Table(stack, SyncResourceIDs.syncTableName, {
+  new Table(stack, SyncResourceIDs.syncDataSourceID, {
     tableName,
     partitionKey: {
       name: SyncResourceIDs.syncPrimaryKey,
@@ -30,7 +30,6 @@ export function createSyncTable(context: TransformerContext) {
       type: AttributeType.STRING,
     },
     stream: StreamViewType.NEW_AND_OLD_IMAGES,
-    encryption: TableEncryption.DEFAULT,
     removalPolicy: cdk.RemovalPolicy.DESTROY,
     billingMode: BillingMode.PAY_PER_REQUEST,
     timeToLiveAttribute: '_ttl',
@@ -41,7 +40,7 @@ export function createSyncTable(context: TransformerContext) {
 
 function createSyncIAMRole(context: TransformerContext, stack: cdk.Stack, tableName: string) {
   const role = new iam.Role(stack, SyncResourceIDs.syncIAMRoleName, {
-    roleName: context.resourceHelper.generateResourceName(SyncResourceIDs.syncIAMRoleName),
+    roleName: context.resourceHelper.generateIAMRoleName(SyncResourceIDs.syncIAMRoleName),
     assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
   });
 
@@ -90,7 +89,7 @@ export function syncDataSourceConfig(): DeltaSyncConfig {
 export function validateResolverConfigForType(ctx: TransformerSchemaVisitStepContextProvider, typeName: string): void {
   const resolverConfig = ctx.getResolverConfig<ResolverConfig>();
   const typeResolverConfig = resolverConfig?.models?.[typeName];
-  if (!typeResolverConfig || !typeResolverConfig.ConflictDetection || !typeResolverConfig.ConflictHandler) {
+  if (typeResolverConfig && (!typeResolverConfig.ConflictDetection || !typeResolverConfig.ConflictHandler)) {
     console.warn(`Invalid resolverConfig for type ${typeName}. Using the project resolverConfig instead.`);
   }
 }

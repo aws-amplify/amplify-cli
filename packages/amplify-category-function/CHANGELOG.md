@@ -3,6 +3,180 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.3.7...amplify-category-function@3.3.8) (2021-12-03)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+## [3.3.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.3.6...amplify-category-function@3.3.7) (2021-12-02)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+## [3.3.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.3.5...amplify-category-function@3.3.6) (2021-12-01)
+
+
+### Bug Fixes
+
+* trigger resources path ([#9131](https://github.com/aws-amplify/amplify-cli/issues/9131)) ([ec7b03d](https://github.com/aws-amplify/amplify-cli/commit/ec7b03dc5510b002f8e3d75c09d193ee55340767))
+
+
+
+
+
+## [3.3.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.3.4...amplify-category-function@3.3.5) (2021-11-26)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+## [3.3.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.3.3...amplify-category-function@3.3.4) (2021-11-23)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+## [3.3.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.3.2...amplify-category-function@3.3.3) (2021-11-21)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+## [3.3.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.3.1...amplify-category-function@3.3.2) (2021-11-20)
+
+
+### Bug Fixes
+
+* remove await from sync read cfn calls ([#8977](https://github.com/aws-amplify/amplify-cli/issues/8977)) ([7ef6fb7](https://github.com/aws-amplify/amplify-cli/commit/7ef6fb72739d4618d02dba689a927831b53cb098))
+
+
+
+
+
+## [3.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.3.0...amplify-category-function@3.3.1) (2021-11-17)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([f529b54](https://github.com/aws-amplify/amplify-cli/commit/f529b541e2607eb4d2dd9e27810621fca141d6e2))
+
+
+
+
+
+# [3.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.37.0...amplify-category-function@3.3.0) (2021-11-15)
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+
+
+
+
+
+# [3.0.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.36.1...amplify-category-function@3.0.0) (2021-11-13)
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+
+
+
+# 6.4.0 (2021-11-10)
+
+
+### Bug Fixes
+
+* function comments to use os.EOL constant, ref [#8177](https://github.com/aws-amplify/amplify-cli/issues/8177) ([#8327](https://github.com/aws-amplify/amplify-cli/issues/8327)) ([c94405c](https://github.com/aws-amplify/amplify-cli/commit/c94405cd94ee3949d4be82018296b98aec20b5f6))
+
+
+### Features
+
+* flag to allow destructive schema changes ([#8273](https://github.com/aws-amplify/amplify-cli/issues/8273)) ([18de856](https://github.com/aws-amplify/amplify-cli/commit/18de856fb61bf2df8f73375e4e55a58c6159a232))
+
+
+### Reverts
+
+* Revert "Lambda auth minor fixes (#8741)" (#8762) ([aa1096c](https://github.com/aws-amplify/amplify-cli/commit/aa1096ca504bdb7e6a2dca2963c546f957116f9d)), closes [#8741](https://github.com/aws-amplify/amplify-cli/issues/8741) [#8762](https://github.com/aws-amplify/amplify-cli/issues/8762)
+
+
+
+
+
+# [2.37.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.36.1...amplify-category-function@2.37.0) (2021-11-11)
+
+
+
+# 6.4.0 (2021-11-10)
+
+
+### Bug Fixes
+
+* function comments to use os.EOL constant, ref [#8177](https://github.com/aws-amplify/amplify-cli/issues/8177) ([#8327](https://github.com/aws-amplify/amplify-cli/issues/8327)) ([c94405c](https://github.com/aws-amplify/amplify-cli/commit/c94405cd94ee3949d4be82018296b98aec20b5f6))
+
+
+### Features
+
+* flag to allow destructive schema changes ([#8273](https://github.com/aws-amplify/amplify-cli/issues/8273)) ([18de856](https://github.com/aws-amplify/amplify-cli/commit/18de856fb61bf2df8f73375e4e55a58c6159a232))
+
+
+### Reverts
+
+* Revert "Lambda auth minor fixes (#8741)" (#8762) ([aa1096c](https://github.com/aws-amplify/amplify-cli/commit/aa1096ca504bdb7e6a2dca2963c546f957116f9d)), closes [#8741](https://github.com/aws-amplify/amplify-cli/issues/8741) [#8762](https://github.com/aws-amplify/amplify-cli/issues/8762)
+
+
+
+
+
+## [2.36.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.36.0...amplify-category-function@2.36.1) (2021-10-10)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+# [2.36.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.35.0...amplify-category-function@2.36.0) (2021-10-06)
+
+
+### Features
+
+* Custom policies IAM Policies for Lambda and Containers ([#8068](https://github.com/aws-amplify/amplify-cli/issues/8068)) ([3e1ce0d](https://github.com/aws-amplify/amplify-cli/commit/3e1ce0de4d25ab239adcdcef778cc82f30b17a94))
+
+
+
+
+
+# [2.35.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.34.7...amplify-category-function@2.35.0) (2021-09-27)
+
+
+### Features
+
+* Flag to allow schema changes that require table replacement ([#8144](https://github.com/aws-amplify/amplify-cli/issues/8144)) ([2d4e65a](https://github.com/aws-amplify/amplify-cli/commit/2d4e65acfd034d33c6fa8ac1f5f8582e7e3bc399))
+
+
+### Reverts
+
+* Revert "feat: Flag to allow schema changes that require table replacement (#8144)" (#8268) ([422dd04](https://github.com/aws-amplify/amplify-cli/commit/422dd04425c72aa7276e086d38ce4d5f4681f9f3)), closes [#8144](https://github.com/aws-amplify/amplify-cli/issues/8144) [#8268](https://github.com/aws-amplify/amplify-cli/issues/8268)
+
+
+
+
+
 ## [2.34.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.34.6...amplify-category-function@2.34.7) (2021-09-18)
 
 **Note:** Version bump only for package amplify-category-function

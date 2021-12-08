@@ -6,7 +6,7 @@ import {
   TransformerTransformSchemaStepContextProvider,
   TransformerValidationStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { DirectiveNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
+import { DirectiveNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
 import {
   blankObject,
   getBaseType,
@@ -24,6 +24,7 @@ import { ManyToManyDirectiveConfiguration, ManyToManyRelation } from './types';
 import { validateModelDirective } from './utils';
 import { makeQueryConnectionWithKeyResolver, updateTableForConnection } from './resolvers';
 import { ensureHasManyConnectionField, extendTypeWithConnection, getPartitionKeyField } from './schema';
+import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { IndexTransformer } from '@aws-amplify/graphql-index-transformer';
 import { HasOneTransformer } from './graphql-has-one-transformer';
@@ -40,12 +41,19 @@ export class ManyToManyTransformer extends TransformerPluginBase {
   private modelTransformer: ModelTransformer;
   private indexTransformer: IndexTransformer;
   private hasOneTransformer: HasOneTransformer;
+  private authTransformer: AuthTransformer;
 
-  constructor(modelTransformer: ModelTransformer, indexTransformer: IndexTransformer, hasOneTransformer: HasOneTransformer) {
+  constructor(
+    modelTransformer: ModelTransformer,
+    indexTransformer: IndexTransformer,
+    hasOneTransformer: HasOneTransformer,
+    authTransformer: AuthTransformer,
+  ) {
     super('amplify-many-to-many-transformer', directiveDefinition);
     this.modelTransformer = modelTransformer;
     this.indexTransformer = indexTransformer;
     this.hasOneTransformer = hasOneTransformer;
+    this.authTransformer = authTransformer;
   }
 
   field = (
@@ -108,15 +116,19 @@ export class ManyToManyTransformer extends TransformerPluginBase {
   prepare = (ctx: TransformerPrepareStepContextProvider): void => {
     // The @manyToMany directive creates a join table, injects it into the existing transformer, and then functions like one to many.
     const context = ctx as TransformerContextProvider;
+    if (!ctx.metadata.has('joinTypeList')) {
+      ctx.metadata.set('joinTypeList', []);
+    }
 
     this.relationMap.forEach(relation => {
       const { directive1, directive2, name } = relation;
+      ctx.metadata.get<Array<string>>('joinTypeList')!.push(name);
       const d1TypeName = directive1.object.name.value;
       const d2TypeName = directive2.object.name.value;
       const d1FieldName = d1TypeName.charAt(0).toLowerCase() + d1TypeName.slice(1);
       const d2FieldName = d2TypeName.charAt(0).toLowerCase() + d2TypeName.slice(1);
-      const d1PartitionKey = getPartitionKeyField(directive1.object);
-      const d2PartitionKey = getPartitionKeyField(directive2.object);
+      const d1PartitionKey = getPartitionKeyField(context, directive1.object);
+      const d2PartitionKey = getPartitionKeyField(context, directive2.object);
       const d1IndexName = `by${d1TypeName}`;
       const d2IndexName = `by${d2TypeName}`;
       const d1FieldNameId = `${d1FieldName}ID`;
@@ -136,10 +148,17 @@ export class ManyToManyTransformer extends TransformerPluginBase {
       const d2RelatedField = makeField(d2FieldNameId, [], wrapNonNull(makeNamedType(getBaseType(d2PartitionKey.type))), [d2IndexDirective]);
       const d1Field = makeField(d1FieldName, [], wrapNonNull(makeNamedType(d1TypeName)), [d1HasOneDirective]);
       const d2Field = makeField(d2FieldName, [], wrapNonNull(makeNamedType(d2TypeName)), [d2HasOneDirective]);
+      const joinTableDirectives = [joinModelDirective];
+      const joinTableAuthDirective = createJoinTableAuthDirective(directive1.object, directive2.object);
+
+      if (joinTableAuthDirective) {
+        joinTableDirectives.push(joinTableAuthDirective);
+      }
+
       const joinType = {
         ...blankObject(name),
         fields: [makeField('id', [], wrapNonNull(makeNamedType('ID'))), d1RelatedField, d2RelatedField, d1Field, d2Field],
-        directives: [joinModelDirective],
+        directives: joinTableDirectives,
       };
 
       ctx.output.addObject(joinType);
@@ -147,7 +166,7 @@ export class ManyToManyTransformer extends TransformerPluginBase {
       directive1.indexName = d1IndexName;
       directive2.indexName = d2IndexName;
       directive1.fields = [d1PartitionKey.name.value];
-      directive2.fields = [d1PartitionKey.name.value];
+      directive2.fields = [d2PartitionKey.name.value];
       directive1.fieldNodes = [d1PartitionKey];
       directive2.fieldNodes = [d2PartitionKey];
       directive1.relatedType = joinType;
@@ -160,6 +179,11 @@ export class ManyToManyTransformer extends TransformerPluginBase {
       this.indexTransformer.field(joinType, d2RelatedField, d2IndexDirective, context);
       this.hasOneTransformer.field(joinType, d1Field, d1HasOneDirective, context);
       this.hasOneTransformer.field(joinType, d2Field, d2HasOneDirective, context);
+
+      if (joinTableAuthDirective) {
+        this.authTransformer.object(joinType, joinTableAuthDirective, context);
+      }
+
       context.providerRegistry.registerDataSourceProvider(joinType, this.modelTransformer);
     });
   };
@@ -205,4 +229,18 @@ function addDirectiveToRelationMap(map: Map<string, ManyToManyRelation>, directi
 
 function getGraphqlRelationName(name: string): string {
   return graphqlName(toUpper(name));
+}
+
+function createJoinTableAuthDirective(table1: ObjectTypeDefinitionNode, table2: ObjectTypeDefinitionNode) {
+  const t1Auth = table1.directives!.find(directive => directive.name.value === 'auth');
+  const t2Auth = table2.directives!.find(directive => directive.name.value === 'auth');
+  const t1Rules = ((t1Auth?.arguments ?? []).find(arg => arg.name.value === 'rules')?.value as any)?.values ?? [];
+  const t2Rules = ((t2Auth?.arguments ?? []).find(arg => arg.name.value === 'rules')?.value as any)?.values ?? [];
+  const rules = [...t1Rules, ...t2Rules];
+
+  if (rules.length === 0) {
+    return;
+  }
+
+  return makeDirective('auth', [makeArgument('rules', { kind: Kind.LIST, values: rules })]);
 }

@@ -17,6 +17,7 @@ import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from '@aws-c
 import { CfnResource, Construct, Duration, Stack } from '@aws-cdk/core';
 import { TransformerSchema } from './cdk-compat/schema-asset';
 import { DefaultTransformHost } from './transform-host';
+import * as cdk from '@aws-cdk/core';
 
 export interface GraphqlApiProps {
   /**
@@ -113,6 +114,8 @@ export class IamResource implements APIIAMResourceProvider {
 export type TransformerAPIProps = GraphqlApiProps & {
   readonly createApiKey?: boolean;
   readonly host?: TransformHostProvider;
+  readonly sandboxModeEnabled?: boolean;
+  readonly environmentName?: string;
 };
 export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   /**
@@ -125,7 +128,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
    * The TransformHost object provides resource creation utilities in AWS
    * such as a LambdaDataSource or a DynamoDBDataSource
    */
-  public readonly host: TransformHostProvider
+  public readonly host: TransformHostProvider;
 
   /**
    * the ARN of the API
@@ -161,10 +164,20 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
    */
   public readonly apiKey?: string;
 
+  /**
+   * Global Sandbox Mode for GraphQL API
+   */
+  public readonly sandboxModeEnabled?: boolean;
+
+  /**
+   * the amplify environment name
+   */
+  public readonly environmentName?: string;
+
   private schemaResource: CfnGraphQLSchema;
   private api: CfnGraphQLApi;
   private apiKeyResource?: CfnApiKey;
-  private authorizationConfig?: Required<AuthorizationConfig>;
+  private authorizationConfig?: Required<any>;
 
   constructor(scope: Construct, id: string, props: TransformerAPIProps) {
     super(scope, id);
@@ -178,7 +191,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     const modes = [defaultMode, ...additionalModes];
 
     this.modes = modes.map(mode => mode.authorizationType);
-
+    this.environmentName = props.environmentName;
     this.validateAuthorizationProps(modes);
 
     this.api = new CfnGraphQLApi(this, 'Resource', {
@@ -187,6 +200,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       logConfig: this.setupLogConfig(props.logConfig),
       openIdConnectConfig: this.setupOpenIdConnectConfig(defaultMode.openIdConnectConfig),
       userPoolConfig: this.setupUserPoolConfig(defaultMode.userPoolConfig),
+      lambdaAuthorizerConfig: this.setupLambdaConfig(defaultMode.lambdaAuthorizerConfig),
       additionalAuthenticationProviders: this.setupAdditionalAuthorizationModes(additionalModes),
       xrayEnabled: props.xrayEnabled,
     });
@@ -198,7 +212,9 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     this.schema = props.schema ?? new TransformerSchema();
     this.schemaResource = this.schema.bind(this);
 
-    if (props.createApiKey && modes.some(mode => mode.authorizationType === AuthorizationType.API_KEY)) {
+    const hasApiKey = modes.some(mode => mode.authorizationType === AuthorizationType.API_KEY);
+
+    if (props.createApiKey && hasApiKey) {
       const config = modes.find((mode: AuthorizationMode) => {
         return mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig;
       })?.apiKeyConfig;
@@ -207,13 +223,14 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       this.apiKey = this.apiKeyResource.attrApiKey;
     }
 
+    if (hasApiKey && props.sandboxModeEnabled) this.sandboxModeEnabled = true;
+
     if (props.host) {
       this.host = props.host;
       this.host.setAPI(this);
-    }
-    else {
+    } else {
       this.host = new DefaultTransformHost({
-        api: this
+        api: this,
       });
     }
   }
@@ -297,7 +314,9 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   }
 
   private setupLogConfig(config?: LogConfig) {
-    if (!config) return undefined;
+    if (!config) {
+      return undefined;
+    }
     const role = new Role(this, 'ApiLogsRole', {
       assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
       managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs')],
@@ -310,7 +329,9 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   }
 
   private setupOpenIdConnectConfig(config?: OpenIdConnectConfig) {
-    if (!config) return undefined;
+    if (!config) {
+      return undefined;
+    }
     return {
       authTtl: config.tokenExpiryFromAuth,
       clientId: config.clientId,
@@ -320,7 +341,9 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   }
 
   private setupUserPoolConfig(config?: UserPoolConfig) {
-    if (!config) return undefined;
+    if (!config) {
+      return undefined;
+    }
     return {
       userPoolId: config.userPool.userPoolId,
       awsRegion: config.userPool.stack.region,
@@ -329,7 +352,22 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     };
   }
 
-  private setupAdditionalAuthorizationModes(modes?: AuthorizationMode[]) {
+  private setupLambdaConfig(config?: any) {
+    if (!config) {
+      return undefined;
+    }
+    return {
+      authorizerUri: this.lambdaArnKey(config.lambdaFunction),
+      authorizerResultTtlInSeconds: config.ttlSeconds,
+      identityValidationExpression: "",
+    };
+  }
+
+  private lambdaArnKey(name: string) {
+    return `arn:${cdk.Aws.PARTITION}:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:function:${name}-${this.environmentName}`;
+  }
+
+  private setupAdditionalAuthorizationModes(modes?: Array<any>) {
     if (!modes || modes.length === 0) return undefined;
     return modes.reduce<CfnGraphQLApi.AdditionalAuthenticationProviderProperty[]>(
       (acc, mode) => [
@@ -338,6 +376,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
           authenticationType: mode.authorizationType,
           userPoolConfig: this.setupUserPoolConfig(mode.userPoolConfig),
           openIdConnectConfig: this.setupOpenIdConnectConfig(mode.openIdConnectConfig),
+          lambdaAuthorizerConfig: this.setupLambdaConfig(mode.lambdaAuthorizerConfig),
         },
       ],
       [],

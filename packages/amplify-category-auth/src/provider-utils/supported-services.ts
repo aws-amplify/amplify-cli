@@ -51,7 +51,7 @@ const supportedServices = {
       },
       {
         key: 'resourceName',
-        question: 'Please provide a friendly name for your resource that will be used to label this category in the project:',
+        question: 'Provide a friendly name for your resource that will be used to label this category in the project:',
         andConditions: [
           {
             preventEdit: 'always',
@@ -71,7 +71,7 @@ const supportedServices = {
       },
       {
         key: 'identityPoolName',
-        question: 'Please enter a name for your identity pool.',
+        question: 'Enter a name for your identity pool.',
         required: true,
         learnMore:
           'Amazon Cognito identity pools provide temporary AWS credentials for users who are guests (unauthenticated) and for users who have been authenticated and received a token. An identity pool is a store of user identity data specific to your account.\nThe name of the identity pool should be between 1 and 128 characters.',
@@ -260,7 +260,7 @@ const supportedServices = {
       },
       {
         key: 'userPoolName',
-        question: 'Please provide a name for your user pool:',
+        question: 'Provide a name for your user pool:',
         required: true,
         validation: {
           operator: 'regex',
@@ -435,7 +435,7 @@ const supportedServices = {
       },
       {
         key: 'smsAuthenticationMessage',
-        question: 'Please specify an SMS authentication message:',
+        question: 'Specify an SMS authentication message:',
         required: true,
         type: 'input',
         validation: {
@@ -478,7 +478,7 @@ const supportedServices = {
       },
       {
         key: 'emailVerificationSubject',
-        question: 'Please specify an email verification subject:',
+        question: 'Specify an email verification subject:',
         required: true,
         type: 'input',
         andConditions: [
@@ -501,7 +501,7 @@ const supportedServices = {
       },
       {
         key: 'emailVerificationMessage',
-        question: 'Please specify an email verification message:',
+        question: 'Specify an email verification message:',
         required: true,
         type: 'input',
         validation: {

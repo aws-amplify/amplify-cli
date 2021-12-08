@@ -1,15 +1,20 @@
-import { AuthorizationConfig, AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync';
+import { AuthorizationConfig, AuthorizationType } from '@aws-cdk/aws-appsync';
 import { UserPool } from '@aws-cdk/aws-cognito';
 import { Duration, Expiration } from '@aws-cdk/core';
-import { AppSyncAuthConfiguration, AppSyncAuthConfigurationEntry, AppSyncAuthMode } from '../config';
 import { StackManager } from '../transformer-context/stack-manager';
+import { AppSyncAuthConfiguration, AppSyncAuthConfigurationEntry, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
 
-const authTypeMap: Record<AppSyncAuthMode, AuthorizationType> = {
+const authTypeMap: Record<AppSyncAuthMode, any> = {
   API_KEY: AuthorizationType.API_KEY,
   AMAZON_COGNITO_USER_POOLS: AuthorizationType.USER_POOL,
   AWS_IAM: AuthorizationType.IAM,
   OPENID_CONNECT: AuthorizationType.OIDC,
+  AWS_LAMBDA: "AWS_LAMBDA",
 };
+
+export const IAM_AUTH_ROLE_PARAMETER = 'authRoleName';
+export const IAM_UNAUTH_ROLE_PARAMETER = 'unauthRoleName';
+
 export function adoptAuthModes(stack: StackManager, authConfig: AppSyncAuthConfiguration): AuthorizationConfig {
   return {
     defaultAuthorization: adoptAuthMode(stack, authConfig.defaultAuthentication),
@@ -17,15 +22,17 @@ export function adoptAuthModes(stack: StackManager, authConfig: AppSyncAuthConfi
   };
 }
 
-export function adoptAuthMode(stackManager: StackManager, entry: AppSyncAuthConfigurationEntry): AuthorizationMode {
+export function adoptAuthMode(stackManager: StackManager, entry: AppSyncAuthConfigurationEntry): any {
   const authType = authTypeMap[entry.authenticationType];
   switch (entry.authenticationType) {
     case AuthorizationType.API_KEY:
       return {
         authorizationType: authType,
         apiKeyConfig: {
-          description: entry.apiKeyConfig.description,
-          expires: Expiration.after(Duration.days(entry.apiKeyConfig.apiKeyExpirationDays)),
+          description: entry.apiKeyConfig?.description,
+          expires: entry.apiKeyConfig?.apiKeyExpirationDays
+            ? Expiration.after(Duration.days(entry.apiKeyConfig.apiKeyExpirationDays))
+            : undefined,
         },
       };
     case AuthorizationType.USER_POOL:
@@ -51,6 +58,14 @@ export function adoptAuthMode(stackManager: StackManager, entry: AppSyncAuthConf
           clientId: entry.openIDConnectConfig!.clientId,
           tokenExpiryFromAuth: strToNumber(entry.openIDConnectConfig!.authTTL),
           tokenExpiryFromIssue: strToNumber(entry.openIDConnectConfig!.iatTTL),
+        },
+      };
+    case 'AWS_LAMBDA':
+      return {
+        authorizationType: authType,
+        lambdaAuthorizerConfig: {
+          lambdaFunction: entry.lambdaAuthorizerConfig!.lambdaFunction,
+          ttlSeconds: strToNumber(entry.lambdaAuthorizerConfig!.ttlSeconds),
         },
       };
     default:

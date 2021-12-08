@@ -1,6 +1,8 @@
+import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { IndexTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { parse } from 'graphql';
 import { HasOneTransformer, ManyToManyTransformer } from '..';
 
@@ -169,19 +171,190 @@ test('valid schema', () => {
   validateModelSchema(schema);
 
   expect(out.schema).toMatchSnapshot();
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
 });
 
-function createTransformer() {
+test('join table inherits auth from first table', () => {
+  const inputSchema = `
+    type Foo @model @auth(rules: [{ allow: public, provider: apiKey }]) {
+      id: ID!
+      bars: [Bar] @manyToMany(relationName: "FooBar")
+    }
+    type Bar @model {
+      id: ID!
+      foos: [Foo] @manyToMany(relationName: "FooBar")
+    }`;
+  const transformer = createTransformer();
+  const out = transformer.transform(inputSchema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+
+  expect(out.resolvers['Query.getFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Query.getFoo.auth.1.req.vtl']);
+  expect(out.resolvers['Query.getFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Query.getFoo.postAuth.1.req.vtl']);
+  expect(out.resolvers['Query.getFooBar.res.vtl']).toEqual(out.resolvers['Query.getFoo.res.vtl']);
+  expect(out.resolvers['Query.listFooBars.auth.1.req.vtl']).toEqual(out.resolvers['Query.listFoos.auth.1.req.vtl']);
+  expect(out.resolvers['Query.listFooBars.postAuth.1.req.vtl']).toEqual(out.resolvers['Query.listFoos.postAuth.1.req.vtl']);
+  expect(out.resolvers['Mutation.createFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.createFoo.auth.1.req.vtl']);
+  expect(out.resolvers['Mutation.createFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.createFoo.postAuth.1.req.vtl']);
+  expect(out.resolvers['Mutation.deleteFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.deleteFoo.auth.1.req.vtl']);
+  expect(out.resolvers['Mutation.deleteFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.deleteFoo.postAuth.1.req.vtl']);
+  expect(out.resolvers['Mutation.deleteFooBar.auth.1.res.vtl']).toEqual(out.resolvers['Mutation.deleteFoo.auth.1.res.vtl']);
+  expect(out.resolvers['Mutation.deleteFooBar.req.vtl']).toEqual(out.resolvers['Mutation.deleteFoo.req.vtl']);
+  expect(out.resolvers['Mutation.deleteFooBar.res.vtl']).toEqual(out.resolvers['Mutation.deleteFoo.res.vtl']);
+  expect(out.resolvers['Mutation.updateFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.updateFoo.auth.1.req.vtl']);
+  expect(out.resolvers['Mutation.updateFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.updateFoo.postAuth.1.req.vtl']);
+  expect(out.resolvers['Mutation.updateFooBar.auth.1.res.vtl']).toEqual(out.resolvers['Mutation.updateFoo.auth.1.res.vtl']);
+  expect(out.resolvers['Mutation.updateFooBar.req.vtl']).toEqual(out.resolvers['Mutation.updateFoo.req.vtl']);
+  expect(out.resolvers['Mutation.updateFooBar.res.vtl']).toEqual(out.resolvers['Mutation.updateFoo.res.vtl']);
+});
+
+test('join table inherits auth from second table', () => {
+  const inputSchema = `
+    type Foo @model {
+      id: ID!
+      bars: [Bar] @manyToMany(relationName: "FooBar")
+    }
+    type Bar @model @auth(rules: [{ allow: public, provider: apiKey }]) {
+      id: ID!
+      foos: [Foo] @manyToMany(relationName: "FooBar")
+    }`;
+  const transformer = createTransformer();
+  const out = transformer.transform(inputSchema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+
+  expect(out.resolvers['Query.getFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Query.getBar.auth.1.req.vtl']);
+  expect(out.resolvers['Query.getFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Query.getBar.postAuth.1.req.vtl']);
+  expect(out.resolvers['Query.getFooBar.res.vtl']).toEqual(out.resolvers['Query.getBar.res.vtl']);
+  expect(out.resolvers['Query.listFooBars.auth.1.req.vtl']).toEqual(out.resolvers['Query.listBars.auth.1.req.vtl']);
+  expect(out.resolvers['Query.listFooBars.postAuth.1.req.vtl']).toEqual(out.resolvers['Query.listBars.postAuth.1.req.vtl']);
+  expect(out.resolvers['Mutation.createFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.createBar.auth.1.req.vtl']);
+  expect(out.resolvers['Mutation.createFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.createBar.postAuth.1.req.vtl']);
+  expect(out.resolvers['Mutation.deleteFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.deleteBar.auth.1.req.vtl']);
+  expect(out.resolvers['Mutation.deleteFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.deleteBar.postAuth.1.req.vtl']);
+  expect(out.resolvers['Mutation.deleteFooBar.auth.1.res.vtl']).toEqual(out.resolvers['Mutation.deleteBar.auth.1.res.vtl']);
+  expect(out.resolvers['Mutation.deleteFooBar.req.vtl']).toEqual(out.resolvers['Mutation.deleteBar.req.vtl']);
+  expect(out.resolvers['Mutation.deleteFooBar.res.vtl']).toEqual(out.resolvers['Mutation.deleteBar.res.vtl']);
+  expect(out.resolvers['Mutation.updateFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.updateBar.auth.1.req.vtl']);
+  expect(out.resolvers['Mutation.updateFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.updateBar.postAuth.1.req.vtl']);
+  expect(out.resolvers['Mutation.updateFooBar.auth.1.res.vtl']).toEqual(out.resolvers['Mutation.updateBar.auth.1.res.vtl']);
+  expect(out.resolvers['Mutation.updateFooBar.req.vtl']).toEqual(out.resolvers['Mutation.updateBar.req.vtl']);
+  expect(out.resolvers['Mutation.updateFooBar.res.vtl']).toEqual(out.resolvers['Mutation.updateBar.res.vtl']);
+});
+
+test('join table inherits auth from both tables', () => {
+  const inputSchema = `
+    type Foo @model @auth(rules: [{ allow: public, provider: iam }]) {
+      id: ID!
+      bars: [Bar] @manyToMany(relationName: "FooBar")
+    }
+    type Bar @model @auth(rules: [{ allow: public, provider: apiKey }]) {
+      id: ID!
+      foos: [Foo] @manyToMany(relationName: "FooBar")
+    }`;
+  const transformer = createTransformer();
+  const out = transformer.transform(inputSchema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+
+  expect(out.resolvers['Query.getFooBar.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Query.getFooBar.postAuth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Query.getFooBar.res.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Query.listFooBars.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Query.listFooBars.postAuth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.createFooBar.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.createFooBar.postAuth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.deleteFooBar.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.deleteFooBar.postAuth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.deleteFooBar.auth.1.res.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.deleteFooBar.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.deleteFooBar.res.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.updateFooBar.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.updateFooBar.postAuth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.updateFooBar.auth.1.res.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.updateFooBar.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.updateFooBar.res.vtl']).toMatchSnapshot();
+});
+
+test('join table inherits auth from tables with similar rules', () => {
+  const inputSchema = `
+    type Foo @model @auth(rules: [{ allow: owner }, { allow: private, provider: iam }]) {
+      id: ID!
+      bars: [Bar] @manyToMany(relationName: "FooBar")
+    }
+    type Bar @model @auth(rules: [{ allow: owner }, { allow: public, provider: apiKey }]) {
+      id: ID!
+      foos: [Foo] @manyToMany(relationName: "FooBar")
+    }`;
+  const transformer = createTransformer({
+    defaultAuthentication: {
+      authenticationType: 'API_KEY',
+    },
+    additionalAuthenticationProviders: [{ authenticationType: 'AWS_IAM' }, { authenticationType: 'AMAZON_COGNITO_USER_POOLS' }],
+  });
+  const out = transformer.transform(inputSchema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+
+  expect(out.resolvers['Query.getFooBar.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Query.getFooBar.postAuth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Query.getFooBar.res.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Query.listFooBars.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Query.listFooBars.postAuth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.createFooBar.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.createFooBar.postAuth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.deleteFooBar.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.deleteFooBar.postAuth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.deleteFooBar.auth.1.res.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.deleteFooBar.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.deleteFooBar.res.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.updateFooBar.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.updateFooBar.postAuth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.updateFooBar.auth.1.res.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.updateFooBar.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.updateFooBar.res.vtl']).toMatchSnapshot();
+});
+
+test('creates join table with implicitly defined primary keys', () => {
+  const inputSchema = `
+    type Foo @model {
+      fooName: String
+      bars: [Bar] @manyToMany(relationName: "FooBar")
+    }
+    type Bar @model {
+      barName: String
+      foos: [Foo] @manyToMany(relationName: "FooBar")
+    }`;
+  const transformer = createTransformer();
+  const out = transformer.transform(inputSchema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+});
+
+function createTransformer(authConfig?: AppSyncAuthConfiguration) {
+  const transformerAuthConfig: AppSyncAuthConfiguration = authConfig ?? {
+    defaultAuthentication: {
+      authenticationType: 'API_KEY',
+    },
+    additionalAuthenticationProviders: [{ authenticationType: 'AWS_IAM' }],
+  };
+  const authTransformer = new AuthTransformer();
   const modelTransformer = new ModelTransformer();
   const indexTransformer = new IndexTransformer();
   const hasOneTransformer = new HasOneTransformer();
   const transformer = new GraphQLTransform({
+    authConfig: transformerAuthConfig,
     transformers: [
       modelTransformer,
       indexTransformer,
       hasOneTransformer,
-      new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer),
+      new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
+      authTransformer,
     ],
   });
 

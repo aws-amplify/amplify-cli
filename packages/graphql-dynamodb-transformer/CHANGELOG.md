@@ -3,6 +3,127 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.2.9](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@7.2.8...graphql-dynamodb-transformer@7.2.9) (2021-12-03)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
+## [7.2.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@7.2.7...graphql-dynamodb-transformer@7.2.8) (2021-12-02)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
+## [7.2.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@7.2.6...graphql-dynamodb-transformer@7.2.7) (2021-12-01)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
+## [7.2.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@7.2.5...graphql-dynamodb-transformer@7.2.6) (2021-11-26)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
+## [7.2.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@7.2.4...graphql-dynamodb-transformer@7.2.5) (2021-11-23)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
+## [7.2.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@7.2.3...graphql-dynamodb-transformer@7.2.4) (2021-11-21)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
+## [7.2.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@7.2.2...graphql-dynamodb-transformer@7.2.3) (2021-11-20)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
+## [7.2.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@7.2.1...graphql-dynamodb-transformer@7.2.2) (2021-11-17)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
+## [7.2.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.23.0...graphql-dynamodb-transformer@7.2.1) (2021-11-15)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
+# [7.0.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.22.25...graphql-dynamodb-transformer@7.0.0) (2021-11-13)
+
+
+### Features
+
+* generate list types as non-null ([#8166](https://github.com/aws-amplify/amplify-cli/issues/8166)) ([93786c1](https://github.com/aws-amplify/amplify-cli/commit/93786c13ef04c72748ca32a1ef7878c0e6b5b129))
+
+
+
+
+
+# [6.23.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.22.25...graphql-dynamodb-transformer@6.23.0) (2021-11-11)
+
+
+### Features
+
+* generate list types as non-null ([#8166](https://github.com/aws-amplify/amplify-cli/issues/8166)) ([93786c1](https://github.com/aws-amplify/amplify-cli/commit/93786c13ef04c72748ca32a1ef7878c0e6b5b129))
+
+
+
+
+
+## [6.22.25](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.22.24...graphql-dynamodb-transformer@6.22.25) (2021-10-10)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
+## [6.22.24](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.22.23...graphql-dynamodb-transformer@6.22.24) (2021-10-06)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
+## [6.22.23](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.22.22...graphql-dynamodb-transformer@6.22.23) (2021-09-27)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** iam role name does not exceed 64 characters ([#8244](https://github.com/aws-amplify/amplify-cli/issues/8244)) ([812a671](https://github.com/aws-amplify/amplify-cli/commit/812a67163d6dd33160bf7ace9afd538c83a7af1a))
+
+
+
+
+
 ## [6.22.22](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.22.21...graphql-dynamodb-transformer@6.22.22) (2021-09-18)
 
 **Note:** Version bump only for package graphql-dynamodb-transformer

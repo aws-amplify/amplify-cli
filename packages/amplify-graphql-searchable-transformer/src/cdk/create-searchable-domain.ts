@@ -1,9 +1,10 @@
+import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { EbsDeviceVolumeType } from '@aws-cdk/aws-ec2';
 import { CfnDomain, Domain, ElasticsearchVersion } from '@aws-cdk/aws-elasticsearch';
 import { IRole, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { CfnParameter, Construct, Fn } from '@aws-cdk/core';
 import { ResourceConstants } from 'graphql-transformer-common';
-
+import assert from 'assert';
 export const createSearchableDomain = (stack: Construct, parameterMap: Map<string, CfnParameter>, apiId: string): Domain => {
   const { OpenSearchEBSVolumeGB, OpenSearchInstanceType, OpenSearchInstanceCount } = ResourceConstants.PARAMETERS;
   const { OpenSearchDomainLogicalID } = ResourceConstants.RESOURCES;
@@ -31,20 +32,16 @@ export const createSearchableDomain = (stack: Construct, parameterMap: Map<strin
 };
 
 export const createSearchableDomainRole = (
+  context: TransformerContextProvider,
   stack: Construct,
   parameterMap: Map<string, CfnParameter>,
-  apiId: string,
-  envParam: CfnParameter,
 ): IRole => {
   const { OpenSearchAccessIAMRoleLogicalID } = ResourceConstants.RESOURCES;
   const { OpenSearchAccessIAMRoleName } = ResourceConstants.PARAMETERS;
-  const { HasEnvironmentParameter } = ResourceConstants.CONDITIONS;
+  const roleName = parameterMap.get(OpenSearchAccessIAMRoleName)?.valueAsString;
+  assert(roleName);
   return new Role(stack, OpenSearchAccessIAMRoleLogicalID, {
     assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
-    roleName: Fn.conditionIf(
-      HasEnvironmentParameter,
-      Fn.join('-', [parameterMap.get(OpenSearchAccessIAMRoleName)!.valueAsString, apiId, envParam.valueAsString]),
-      Fn.join('-', [parameterMap.get(OpenSearchAccessIAMRoleName)!.valueAsString, apiId, envParam.valueAsString]),
-    ).toString(),
+    roleName: context.resourceHelper.generateIAMRoleName(roleName),
   });
 };

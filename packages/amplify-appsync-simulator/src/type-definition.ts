@@ -78,6 +78,7 @@ export enum AmplifyAppSyncSimulatorAuthenticationType {
   AWS_IAM = 'AWS_IAM',
   AMAZON_COGNITO_USER_POOLS = 'AMAZON_COGNITO_USER_POOLS',
   OPENID_CONNECT = 'OPENID_CONNECT',
+  AWS_LAMBDA = 'AWS_LAMBDA',
 }
 
 export type AmplifyAppSyncAuthenticationProviderAPIConfig = {
@@ -103,15 +104,28 @@ export type AmplifyAppSyncAuthenticationProviderOIDCConfig = {
   };
 };
 
+export type AmplifyAppSyncAuthenticationProviderLambdaConfig = {
+  authenticationType: AmplifyAppSyncSimulatorAuthenticationType.AWS_LAMBDA;
+  lambdaAuthorizerConfig: {
+    AuthorizerUri: string;
+    AuthorizerResultTtlInSeconds?: number;
+  };
+};
+
 export type AmplifyAppSyncAuthenticationProviderConfig =
   | AmplifyAppSyncAuthenticationProviderAPIConfig
   | AmplifyAppSyncAuthenticationProviderIAMConfig
   | AmplifyAppSyncAuthenticationProviderCognitoConfig
-  | AmplifyAppSyncAuthenticationProviderOIDCConfig;
+  | AmplifyAppSyncAuthenticationProviderOIDCConfig
+  | AmplifyAppSyncAuthenticationProviderLambdaConfig;
 
 export type AmplifyAppSyncAPIConfig = {
   name: string;
   defaultAuthenticationType: AmplifyAppSyncAuthenticationProviderConfig;
+  authRoleName?: string; // assumed-role/authRole/CognitoIdentityCredentials
+  unAuthRoleName?: string; // assumed-role/unAuthRole/CognitoIdentityCredentials
+  authAccessKeyId?: string; // when accessKeyId matches assume the authRole. Otherwise, use unAuthRole
+  accountId?: string;
   apiKey?: string;
   additionalAuthenticationProviders: AmplifyAppSyncAuthenticationProviderConfig[];
 };

@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { nspawn as spawn, getCLIPath, createNewProjectDir, KEY_DOWN_ARROW, readJsonFile } from '..';
+import { nspawn as spawn, getCLIPath, createNewProjectDir, KEY_DOWN_ARROW, readJsonFile, getNpxPath } from '..';
 import _ from 'lodash';
 import { spawnSync } from 'child_process';
 import { getBackendAmplifyMeta } from '../utils';
@@ -129,6 +129,21 @@ export function amplifyPushWithUpdate(cwd: string): Promise<void> {
   });
 }
 
+export function amplifyPublishWithUpdate(cwd: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['publish'], { cwd, stripColors: true })
+      .wait('Are you sure you want to continue?')
+      .sendCarriageReturn()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 export function amplifyPublishWithoutUpdate(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['publish'], { cwd, stripColors: true }).run((err: Error) => {
@@ -164,7 +179,7 @@ export async function createReactTestProject(): Promise<string> {
   const projectName = path.basename(projRoot);
   const projectDir = path.dirname(projRoot);
 
-  spawnSync('npx', ['create-react-app', projectName], { cwd: projectDir });
+  spawnSync(getNpxPath(), ['create-react-app', projectName], { cwd: projectDir });
 
   return projRoot;
 }

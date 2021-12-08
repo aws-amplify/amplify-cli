@@ -1,6 +1,6 @@
 {
     "name": "@aws-amplify/graphql-model-transformer",
-    "version": "0.6.2",
+    "version": "0.10.1",
     "description": "Amplify graphql @model transformer",
     "repository": {
         "type": "git",
@@ -28,8 +28,8 @@
         "test-watch": "jest --watch"
     },
     "dependencies": {
-        "@aws-amplify/graphql-transformer-core": "0.9.0",
-        "@aws-amplify/graphql-transformer-interfaces": "1.9.0",
+        "@aws-amplify/graphql-transformer-core": "0.15.0",
+        "@aws-amplify/graphql-transformer-interfaces": "1.12.3",
         "@aws-cdk/assets": "~1.124.0",
         "@aws-cdk/aws-applicationautoscaling": "~1.124.0",
         "@aws-cdk/aws-appsync": "~1.124.0",
@@ -57,12 +57,14 @@
         "@aws-cdk/region-info": "~1.124.0",
         "constructs": "^3.3.125",
         "graphql": "^14.5.8",
-        "graphql-mapping-template": "4.18.3",
-        "graphql-transformer-common": "4.19.9",
-        "lodash": "^4.17.21"
+        "graphql-mapping-template": "4.20.1",
+        "graphql-transformer-common": "4.22.2",
+        "lodash": "^4.17.21",
+        "md5": "^2.3.0"
     },
     "devDependencies": {
         "@types/fs-extra": "^8.0.1",
+        "@types/md5": "^2.3.1",
         "@types/node": "^12.12.6"
     },
     "jest": {
@@ -79,6 +81,9 @@
             "json",
             "node"
         ],
-        "collectCoverage": true
+        "collectCoverage": true,
+        "modulePathIgnorePatterns": [
+            "overrides"
+        ]
     }
 }

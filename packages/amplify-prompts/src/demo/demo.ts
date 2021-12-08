@@ -1,5 +1,5 @@
 import { printer } from '../printer';
-import { prompter } from '../prompter';
+import { byValue, prompter } from '../prompter';
 import { alphanumeric, and, integer, minLength } from '../validators';
 
 const printResult = (result: any) => console.log(`Prompt result was [${result}]`);
@@ -117,10 +117,17 @@ const demo = async () => {
   printer.info('When multiSelect is on, an array of initial indexes can be specified');
   printResult(await prompter.pick<'many', number>('Pick your favorite colors', choices2, { returnSize: 'many', initial: [1, 2] }));
 
+  printer.info('Choices can also be selected by value using the provided helper function "byValue" (or "byValues" for multi-select)');
+  printResult(await prompter.pick<'one', number>('Pick your favorite color', choices2, { initial: byValue(4) }));
+
   printer.info('Individual choices can be disabled or have hint text next to them');
   (choices2[1] as any).hint = 'definitely the best';
   (choices2[2] as any).disabled = true;
   printResult(await prompter.pick<'many', number>('Pick your favorite Skittle color', choices2, { returnSize: 'many' }));
+
+  printer.info('A minimum and / or maximum number of choices can be specified');
+  (choices2[2] as any).disabled = false;
+  printResult(await prompter.pick<'many', number>('Pick 2 to 4 colors', choices2, { returnSize: 'many', pickAtLeast: 2, pickAtMost: 4 }));
 };
 
 demo().catch(console.error);

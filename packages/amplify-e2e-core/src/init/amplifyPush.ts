@@ -15,7 +15,7 @@ export function amplifyPush(cwd: string, testingWithLatestCodebase: boolean = fa
     spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait(/.*/)
       .run((err: Error) => {
-        if ( err ){
+        if (err) {
           reject(err);
         }
       });
@@ -24,7 +24,40 @@ export function amplifyPush(cwd: string, testingWithLatestCodebase: boolean = fa
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
       .wait('Do you want to generate code for your newly created GraphQL API')
-      .sendLine('n')
+      .sendConfirmNo()
+      .wait(/.*/)
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function amplifyPushGraphQlWithCognitoPrompt(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
+  return new Promise((resolve, reject) => {
+    //Test detailed status
+    spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+      .wait(/.*/)
+      .run((err: Error) => {
+        if (err) {
+          reject(err);
+        }
+      });
+    //Test amplify push
+    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+      .wait('Are you sure you want to continue?')
+      .sendConfirmYes()
+      .wait(/.*Do you want to use the default authentication and security configuration.*/)
+      .sendCarriageReturn()
+      .wait(/.*How do you want users to be able to sign in.*/)
+      .sendCarriageReturn()
+      .wait(/.*Do you want to configure advanced settings.*/)
+      .sendCarriageReturn()
+      .wait('Do you want to generate code for your newly created GraphQL API')
+      .sendConfirmNo()
       .wait(/.*/)
       .run((err: Error) => {
         if (!err) {
@@ -50,6 +83,14 @@ export function amplifyPushForce(cwd: string, testingWithLatestCodebase: boolean
         }
       });
   });
+}
+
+export function amplifyPushForceWithYesFlag(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
+  return spawn(getCLIPath(testingWithLatestCodebase), ['push', '--force', '--yes'], {
+    cwd,
+    stripColors: true,
+    noOutputTimeout: pushTimeoutMS,
+  }).runAsync();
 }
 
 /**
@@ -83,9 +124,17 @@ export function cancelIterativeAmplifyPush(
   });
 }
 
-export function amplifyPushWithoutCodegen(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
+export function amplifyPushWithoutCodegen(
+  cwd: string,
+  testingWithLatestCodebase: boolean = false,
+  allowDestructiveUpdates: boolean = false,
+): Promise<void> {
+  const args = ['push'];
+  if (allowDestructiveUpdates) {
+    args.push('--allow-destructive-graphql-schema-updates');
+  }
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    spawn(getCLIPath(testingWithLatestCodebase), args, { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendCarriageReturn()
       .run((err: Error) => {
@@ -98,9 +147,18 @@ export function amplifyPushWithoutCodegen(cwd: string, testingWithLatestCodebase
   });
 }
 
-export function amplifyPushUpdate(cwd: string, waitForText?: RegExp, testingWithLatestCodebase: boolean = false): Promise<void> {
+export function amplifyPushUpdate(
+  cwd: string,
+  waitForText?: RegExp,
+  testingWithLatestCodebase: boolean = false,
+  allowDestructiveUpdates: boolean = false,
+): Promise<void> {
+  const args = ['push'];
+  if (allowDestructiveUpdates) {
+    args.push('--allow-destructive-graphql-schema-updates');
+  }
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    spawn(getCLIPath(testingWithLatestCodebase), args, { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
       .wait(waitForText || /.*/)
@@ -130,9 +188,17 @@ export function amplifyPushAuth(cwd: string, testingWithLatestCodebase: boolean 
   });
 }
 
-export function amplifyPushUpdateForDependentModel(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
+export function amplifyPushUpdateForDependentModel(
+  cwd: string,
+  testingWithLatestCodebase: boolean = false,
+  allowDestructiveUpdates: boolean = false,
+): Promise<void> {
+  const args = ['push'];
+  if (allowDestructiveUpdates) {
+    args.push('--allow-destructive-graphql-schema-updates');
+  }
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    spawn(getCLIPath(testingWithLatestCodebase), args, { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
       .wait(/.*/)
@@ -251,6 +317,46 @@ export function amplifyPushWithNoChanges(cwd: string, testingWithLatestCodebase:
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('No changes detected')
-      .run((err: Error) => err ? reject(err) : resolve());
+      .run((err: Error) => (err ? reject(err) : resolve()));
+  });
+}
+
+export function amplifyPushDestructiveApiUpdate(cwd: string, includeForce: boolean) {
+  return new Promise<void>((resolve, reject) => {
+    const args = ['push', '--yes'];
+    if (includeForce) {
+      args.push('--force');
+    }
+    const chain = spawn(getCLIPath(), args, { cwd, stripColors: true });
+    if (includeForce) {
+      chain.wait('All resources are updated in the cloud').run(err => (err ? reject(err) : resolve()));
+    } else {
+      chain.wait('If this is intended, rerun the command with').run(err => (err ? resolve(err) : reject())); // in this case, we expect the CLI to error out
+    }
+  });
+}
+
+export function amplifyPushOverride(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
+  return new Promise((resolve, reject) => {
+    //Test detailed status
+    spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+      .wait(/.*/)
+      .run((err: Error) => {
+        if (err) {
+          reject(err);
+        }
+      });
+    //Test amplify push
+    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+      .wait('Are you sure you want to continue?')
+      .sendConfirmYes()
+      .wait(/.*/)
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
   });
 }

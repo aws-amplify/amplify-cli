@@ -6,7 +6,7 @@ import { Context } from '../domain/context';
 import { PluginInfo } from '../domain/plugin-info';
 import { PluginManifest } from '../domain/plugin-manifest';
 import * as UsageData from '../domain/amplify-usageData';
-
+import { stateManager } from 'amplify-cli-core';
 jest.mock('../domain/amplify-usageData/', () => {
   return {
     UsageData: {
@@ -22,6 +22,7 @@ jest.mock('../domain/amplify-usageData/', () => {
   };
 });
 jest.mock('../app-config');
+jest.mock('amplify-cli-core');
 
 describe('test attachUsageData', () => {
   const version = 'latestversion';
@@ -35,7 +36,15 @@ describe('test attachUsageData', () => {
   mockContext.pluginPlatform = new PluginPlatform();
   mockContext.pluginPlatform.plugins['core'] = [new PluginInfo('', version, '', new PluginManifest('', ''))];
 
-  afterEach(() => {});
+  const stateManagerMocked = stateManager as jest.Mocked<typeof stateManager>;
+  stateManagerMocked.metaFileExists.mockReturnValue(true);
+  stateManagerMocked.getMeta.mockReturnValue({
+    providers: {
+      awscloudformation: {
+        StackId: 'arn:aws:cloudformation:us-east-1:accountId:stack/amplify/8b4ba810-5208-11ec-bb0f-12f4d8376f67',
+      },
+    },
+  });
 
   it('constructContext', () => {
     const context = constructContext(mockContext.pluginPlatform, mockContext.input);
@@ -60,7 +69,7 @@ describe('test attachUsageData', () => {
       returnValue.usageDataConfig.installationUuid,
       version,
       mockContext.input,
-      '',
+      'accountId',
       {},
     );
   });
@@ -80,7 +89,7 @@ describe('test attachUsageData', () => {
       returnValue.usageDataConfig.installationUuid,
       version,
       mockContext.input,
-      '',
+      'accountId',
       {},
     );
   });

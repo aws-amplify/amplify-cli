@@ -159,6 +159,11 @@ export const checkAuthConfig = async (context: $TSContext, parameters: Pick<Reso
       parameters.name,
     ]);
 
+    // If auth is not added, throw error
+    if (!checkResult.authEnabled) {
+      throw new Error(`Adding ${service} to your project requires the Auth category for managing authentication rules. Please add auth using "amplify add auth"`);
+    }
+
     // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
     // configuration.
     if (checkResult.authImported === true && checkResult.errors && checkResult.errors.length > 0) {
@@ -170,9 +175,7 @@ export const checkAuthConfig = async (context: $TSContext, parameters: Pick<Reso
     }
 
     // If auth is not imported and there were errors, adjust or enable auth configuration
-    if (!checkResult.authEnabled || !checkResult.requirementsMet) {
-      printer.warn(`Adding ${service} to your project requires the Auth category for managing authentication rules.`);
-
+    if (!checkResult.requirementsMet) {
       try {
         await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
           context,
@@ -219,8 +222,16 @@ export const getServicePermissionPolicies = (
 export const verifySupportedRegion = (): boolean => {
   const currentRegion = stateManager.getMeta()?.providers[provider]?.Region;
   if(!supportedRegions.includes(currentRegion)) {
-    printer.error(`Geo category is not supported in your region: ${currentRegion}`);
+    printer.error(`Geo category is not supported in the region: [${currentRegion}]`);
     return false;
   }
   return true;
 };
+
+/**
+ * Check if any Geo resource exists
+ */
+ export const checkAnyGeoResourceExists = async (): Promise<boolean> => {
+  const geoMeta = stateManager.getMeta()?.[category];
+  return geoMeta && Object.keys(geoMeta) && Object.keys(geoMeta).length > 0;
+}

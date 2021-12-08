@@ -54,6 +54,10 @@ import { NoUndefinedVariables } from 'graphql/validation/rules/NoUndefinedVariab
 import { NoUnusedVariables } from 'graphql/validation/rules/NoUnusedVariables';
 import { UniqueDirectivesPerLocation } from 'graphql/validation/rules/UniqueDirectivesPerLocation';
 
+// AuthMode Types
+import { AppSyncAuthConfiguration, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
+import { validateSDL } from 'graphql/validation/validate';
+
 /**
  * This set includes all validation rules defined by the GraphQL spec.
  *
@@ -138,7 +142,35 @@ export const validateModelSchema = (doc: DocumentNode) => {
   if (!existingQueryType) {
     fullDocument.definitions.push(...NOOP_QUERY.definitions);
   }
-
-  const schema = buildASTSchema(fullDocument);
+  let schema;
+  const errors = validateSDL(fullDocument);
+  if (errors.length > 0) {
+    return errors;
+  }
+  schema = buildASTSchema(fullDocument, { assumeValid: true });
   return validate(schema, fullDocument, specifiedRules);
+};
+
+export const validateAuthModes = (authConfig: AppSyncAuthConfiguration) => {
+  let additionalAuthModes: AppSyncAuthMode[] = [];
+
+  if (authConfig.additionalAuthenticationProviders) {
+    additionalAuthModes = authConfig.additionalAuthenticationProviders.map(p => p.authenticationType).filter(t => !!t);
+  }
+
+  const authModes: AppSyncAuthMode[] = [...additionalAuthModes, authConfig.defaultAuthentication.authenticationType];
+
+  for (let i = 0; i < authModes.length; i++) {
+    const mode = authModes[i];
+
+    if (
+      mode !== 'API_KEY' &&
+      mode !== 'AMAZON_COGNITO_USER_POOLS' &&
+      mode !== 'AWS_IAM' &&
+      mode !== 'OPENID_CONNECT' &&
+      mode !== 'AWS_LAMBDA'
+    ) {
+      throw new Error(`Invalid auth mode ${mode}`);
+    }
+  }
 };

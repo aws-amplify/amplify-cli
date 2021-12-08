@@ -3,6 +3,7 @@ import {
   DataSourceProvider,
   TransformerContextProvider,
   TransformerSchemaVisitStepContextProvider,
+  TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from '@aws-cdk/aws-appsync';
 import { Table } from '@aws-cdk/aws-dynamodb';
@@ -26,17 +27,22 @@ import {
   graphqlName,
   plurality,
   toUpper,
+  ResolverResourceIDs,
+  makeDirective,
 } from 'graphql-transformer-common';
 import { createParametersStack as createParametersInStack } from './cdk/create-cfnParameters';
-import { requestTemplate, responseTemplate } from './generate-resolver-vtl';
+import { requestTemplate, responseTemplate, sandboxMappingTemplate } from './generate-resolver-vtl';
 import {
   makeSearchableScalarInputObject,
   makeSearchableSortDirectionEnumObject,
   makeSearchableXFilterInputObject,
   makeSearchableXSortableFieldsEnumObject,
+  makeSearchableXAggregateFieldEnumObject,
   makeSearchableXSortInputObject,
   makeSearchableXAggregationInputObject,
   makeSearchableAggregateTypeEnumObject,
+  AGGREGATE_TYPES,
+  extendTypeWithDirectives,
 } from './definitions';
 import assert from 'assert';
 import { setMappings } from './cdk/create-layer-cfnMapping';
@@ -49,6 +55,7 @@ const nonKeywordTypes = ['Int', 'Float', 'Boolean', 'AWSTimestamp', 'AWSDate', '
 const STACK_NAME = 'SearchableStack';
 export class SearchableModelTransformer extends TransformerPluginBase {
   searchableObjectTypeDefinitions: { node: ObjectTypeDefinitionNode; fieldName: string }[];
+  searchableObjectNames: string[];
   constructor() {
     super(
       'amplify-searchable-transformer',
@@ -60,6 +67,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       `,
     );
     this.searchableObjectTypeDefinitions = [];
+    this.searchableObjectNames = [];
   }
 
   generateResolvers = (context: TransformerContextProvider): void => {
@@ -86,7 +94,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
     const domain = createSearchableDomain(stack, parameterMap, context.api.apiId);
 
-    const openSearchRole = createSearchableDomainRole(stack, parameterMap, context.api.apiId, envParam);
+    const openSearchRole = createSearchableDomainRole(context, stack, parameterMap);
 
     domain.grantReadWrite(openSearchRole);
 
@@ -99,7 +107,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     );
 
     // streaming lambda role
-    const lambdaRole = createLambdaRole(stack, parameterMap);
+    const lambdaRole = createLambdaRole(context, stack, parameterMap);
     domain.grantWrite(lambdaRole);
 
     // creates streaming lambda
@@ -115,6 +123,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
     for (const def of this.searchableObjectTypeDefinitions) {
       const type = def.node.name.value;
+      const fields = def.node.fields?.map(f => f.name.value) ?? [];
       const typeName = context.output.getQueryTypeName();
       const table = getTable(context, def.node);
       const ddbTable = table as Table;
@@ -126,19 +135,29 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       createEventSourceMapping(stack, type, lambda, parameterMap, ddbTable.tableStreamArn);
 
       const { attributeName } = (table as any).keySchema.find((att: any) => att.keyType === 'HASH');
+      const keyFields = getKeyFields(attributeName, table);
+
       assert(typeName);
       const resolver = context.resolvers.generateQueryResolver(
         typeName,
         def.fieldName,
+        ResolverResourceIDs.ElasticsearchSearchResolverResourceID(type),
         datasource as DataSourceProvider,
         MappingTemplate.s3MappingTemplateFromString(
-          requestTemplate(attributeName, getNonKeywordFields(def.node), false, type),
+          requestTemplate(attributeName, getNonKeywordFields(def.node), context.isProjectUsingDataStore(), type, keyFields),
           `${typeName}.${def.fieldName}.req.vtl`,
         ),
         MappingTemplate.s3MappingTemplateFromString(responseTemplate(false), `${typeName}.${def.fieldName}.res.vtl`),
       );
+      resolver.addToSlot(
+        'postAuth',
+        MappingTemplate.s3MappingTemplateFromString(
+          sandboxMappingTemplate(context.sandboxModeEnabled, fields),
+          `${typeName}.${def.fieldName}.{slotName}.{slotIndex}.res.vtl`,
+        ),
+      );
       resolver.mapToStack(stack);
-      context.resolvers.addResolver(type, def.fieldName, resolver);
+      context.resolvers.addResolver('Search', toUpper(type), resolver);
     }
 
     createStackOutputs(stack, domain.domainEndpoint, context.api.apiId, domain.domainArn);
@@ -146,6 +165,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
   object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider): void => {
     const modelDirective = definition?.directives?.find(dir => dir.name.value === 'model');
+    const hasAuth = definition.directives?.some(dir => dir.name.value === 'auth') ?? false;
     if (!modelDirective) {
       throw new InvalidDirectiveError('Types annotated with @searchable must also be annotated with @model.');
     }
@@ -171,9 +191,13 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     });
 
     if (shouldMakeSearch) {
-      this.generateSearchableInputs(ctx, definition);
+      this.searchableObjectNames.push(definition.name.value);
       this.generateSearchableXConnectionType(ctx, definition);
       this.generateSearchableAggregateTypes(ctx);
+      const directives = [];
+      if (!hasAuth && ctx.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
+        directives.push(makeDirective('aws_api_key', []));
+      }
       const queryField = makeField(
         fieldName,
         [
@@ -185,9 +209,26 @@ export class SearchableModelTransformer extends TransformerPluginBase {
           makeInputValueDefinition('aggregates', makeListType(makeNamedType(`Searchable${definition.name.value}AggregationInput`))),
         ],
         makeNamedType(`Searchable${definition.name.value}Connection`),
+        directives,
       );
-
       ctx.output.addQueryFields([queryField]);
+    }
+  };
+
+  transformSchema = (ctx: TransformerTransformSchemaStepContextProvider) => {
+    for (const name of this.searchableObjectNames) {
+      const searchObject = ctx.output.getObject(name) as ObjectTypeDefinitionNode;
+      this.generateSearchableInputs(ctx, searchObject);
+    }
+    // add api key to aggregate types if sandbox mode is enabled
+    if (ctx.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
+      for (let aggType of AGGREGATE_TYPES) {
+        const aggObject = ctx.output.getObject(aggType)!;
+        const hasApiKey = aggObject.directives?.some(dir => dir.name.value === 'aws_api_key') ?? false;
+        if (!hasApiKey) {
+          extendTypeWithDirectives(ctx, aggType, [makeDirective('aws_api_key', [])]);
+        }
+      }
     }
   };
 
@@ -204,12 +245,12 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     // Create TableXConnection type with items and nextToken
     let connectionTypeExtension = blankObjectExtension(searchableXConnectionName);
     connectionTypeExtension = extensionWithFields(connectionTypeExtension, [
-      makeField('items', [], makeListType(makeNamedType(definition.name.value))),
+      makeField('items', [], makeNonNullType(makeListType(makeNonNullType(makeNamedType(definition.name.value))))),
     ]);
     connectionTypeExtension = extensionWithFields(connectionTypeExtension, [
       makeField('nextToken', [], makeNamedType('String')),
       makeField('total', [], makeNamedType('Int')),
-      makeField('aggregateItems', [], makeListType(makeNamedType(`SearchableAggregateResult`))),
+      makeField('aggregateItems', [], makeNonNullType(makeListType(makeNonNullType(makeNamedType(`SearchableAggregateResult`))))),
     ]);
     ctx.output.addObjectExtension(connectionTypeExtension);
   }
@@ -339,14 +380,19 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       ctx.output.addInput(searchableXSortableInputDirection);
     }
 
-    if (!ctx.output.hasType(`Searchable${definition.name.value}AggregationInput`)) {
-      const searchableXAggregationInputDirection = makeSearchableXAggregationInputObject(definition);
-      ctx.output.addInput(searchableXAggregationInputDirection);
-    }
-
     if (!ctx.output.hasType('SearchableAggregateType')) {
       const searchableAggregateTypeEnum = makeSearchableAggregateTypeEnumObject();
       ctx.output.addEnum(searchableAggregateTypeEnum);
+    }
+
+    if (!ctx.output.hasType(`Searchable${definition.name.value}AggregateField`)) {
+      const searchableXAggregationField = makeSearchableXAggregateFieldEnumObject(definition, ctx.inputDocument);
+      ctx.output.addEnum(searchableXAggregationField);
+    }
+
+    if (!ctx.output.hasType(`Searchable${definition.name.value}AggregationInput`)) {
+      const searchableXAggregationInput = makeSearchableXAggregationInputObject(definition);
+      ctx.output.addInput(searchableXAggregationInput);
     }
   }
 }
@@ -362,6 +408,22 @@ function getNonKeywordFields(def: ObjectTypeDefinitionNode): Expression[] {
   const nonKeywordTypeSet = new Set(nonKeywordTypes);
 
   return def.fields?.filter(field => nonKeywordTypeSet.has(getBaseType(field.type))).map(field => str(field.name.value)) || [];
+}
+
+/**
+ * Returns all the keys fields - primaryKey and sortKeys
+ * @param primaryKey
+ * @param table
+ * @returns Expression[] keyFields
+ */
+function getKeyFields(primaryKey: string, table: IConstruct): Expression[] {
+  let keyFields = [];
+  keyFields.push(primaryKey);
+  let { attributeName } = (table as any).keySchema.find((att: any) => att.keyType === 'RANGE') || {};
+  if (attributeName) {
+    keyFields.push(...attributeName.split('#'));
+  }
+  return keyFields.map(key => str(key));
 }
 
 interface SearchableQueryMap {

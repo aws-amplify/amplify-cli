@@ -7,7 +7,7 @@ import {
 import { DirectiveNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { getBaseType, isListType } from 'graphql-transformer-common';
 import { makeGetItemConnectionWithKeyResolver } from './resolvers';
-import { ensureHasOneConnectionField } from './schema';
+import { ensureBelongsToConnectionField } from './schema';
 import { BelongsToDirectiveConfiguration } from './types';
 import {
   ensureFieldsArray,
@@ -53,7 +53,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       config.relatedTypeIndex = getRelatedTypeIndex(config, context);
-      ensureHasOneConnectionField(config, context);
+      ensureBelongsToConnectionField(config, context);
     }
   };
 
@@ -87,7 +87,12 @@ function validate(config: BelongsToDirectiveConfiguration, ctx: TransformerConte
     }
 
     return relatedField.directives!.some(relatedDirective => {
-      return relatedDirective.name.value === 'hasOne' || relatedDirective.name.value === 'hasMany';
+      if (relatedDirective.name.value === 'hasOne' || relatedDirective.name.value === 'hasMany') {
+        config.relatedField = relatedField;
+        config.relationType = relatedDirective.name.value;
+        return true;
+      }
+      return false;
     });
   });
 

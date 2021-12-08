@@ -59,7 +59,6 @@ const istestProjectSubPath = childPath => {
   return relativePath && !relativePath.startsWith('..') && !path.isAbsolute(relativePath);
 };
 
-jest.mock('process');
 jest.mock('amplify-cli-core', () => ({ ...Object.assign({}, jest.requireActual('amplify-cli-core')) }));
 jest.mock('glob', () => {
   const actualGlob = jest.requireActual('glob');

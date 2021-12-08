@@ -3,16 +3,18 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
-    "allowJs": true
+    "allowJs": false
   },
   "exclude": [
     "coverage",
     "lib",
-    "resources",
+    "resources"
   ],
   "references": [
     { "path": "../amplify-cli-core" },
+    { "path": "../amplify-headless-interface" },
     { "path": "../amplify-prompts" },
-    { "path": "../amplify-util-import" }
+    { "path": "../amplify-util-import" },
+    { "path": "../amplify-cli-extensibility-helper" }
   ]
 }

@@ -1,8 +1,9 @@
-import { $TSContext } from 'amplify-cli-core';
-import { ProviderUtils } from '../import/types';
-
-import { ServiceQuestionsResult } from '../service-walkthrough-types';
+import { $TSContext, stateManager } from 'amplify-cli-core';
 import { getSupportedServices } from '../../supported-services';
+import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
+import { ProviderUtils } from '../import/types';
+import { CognitoConfiguration } from '../service-walkthrough-types/awsCognito-user-input-types';
+import { ServiceQuestionHeadlessResult } from '../service-walkthrough-types/cognito-user-input-types';
 
 export type UserPoolMessageConfiguration = {
   mfaConfiguration?: string;
@@ -10,7 +11,7 @@ export type UserPoolMessageConfiguration = {
   usernameAttributes?: string[];
 };
 
-export const doesConfigurationIncludeSMS = (request: ServiceQuestionsResult): boolean => {
+export const doesConfigurationIncludeSMS = (request: CognitoConfiguration | ServiceQuestionHeadlessResult): boolean => {
   if ((request.mfaConfiguration === 'OPTIONAL' || request.mfaConfiguration === 'ON') && request.mfaTypes?.includes('SMS Text Message')) {
     return true;
   }
@@ -31,9 +32,26 @@ const getProviderPlugin = (context: $TSContext): ProviderUtils => {
 
   return context.amplify.getPluginInstance(context, provider);
 };
-export const loadResourceParameters = (context: $TSContext, resourceName: string): UserPoolMessageConfiguration => {
-  const providerPlugin = getProviderPlugin(context);
-  return providerPlugin.loadResourceParameters(context, 'auth', resourceName) as ServiceQuestionsResult;
+
+async function loadResourceParametersLegacyCode(authResourceName: string): Promise<UserPoolMessageConfiguration> {
+  const legacyParameters = await stateManager.getResourceParametersJson(undefined, 'auth', authResourceName);
+  let userPoolMessageConfig: UserPoolMessageConfiguration = {
+    mfaConfiguration: legacyParameters.mfaConfiguration,
+    mfaTypes: legacyParameters.mfaTypes,
+    usernameAttributes: legacyParameters.usernameAttributes,
+  };
+  return userPoolMessageConfig;
+}
+export const loadResourceParameters = async (context: $TSContext, authResourceName: string): Promise<UserPoolMessageConfiguration> => {
+  const cliState = new AuthInputState(authResourceName);
+  let userPoolMessageConfig;
+  try {
+    userPoolMessageConfig = (await cliState.loadResourceParameters(context, cliState.getCLIInputPayload())) as UserPoolMessageConfiguration;
+  } catch (error) {
+    //Generated with legacy code - needs migration
+    userPoolMessageConfig = await loadResourceParametersLegacyCode(authResourceName);
+  }
+  return userPoolMessageConfig;
 };
 
 export const loadImportedAuthParameters = async (context: $TSContext, userPoolName: string): Promise<UserPoolMessageConfiguration> => {

@@ -10,6 +10,7 @@ import {
   DataSourceInstance,
   TransformerPluginProvider,
   TransformerModelEnhancementProvider,
+  TransformerAuthProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 
 import {
@@ -59,6 +60,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
 
@@ -67,6 +69,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
 
@@ -75,6 +78,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
 
@@ -83,6 +87,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
 
@@ -91,6 +96,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
 
@@ -99,6 +105,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
 
@@ -107,6 +114,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
 
@@ -115,6 +123,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
 
@@ -123,6 +132,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
 
@@ -173,6 +183,12 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
 
 export abstract class TransformerModelEnhancerBase extends TransformerModelBase implements TransformerModelEnhancementProvider {
   constructor(name: string, doc: DocumentNode | string, type: TransformerPluginType = TransformerPluginType.DATA_SOURCE_ENHANCER) {
+    super(name, doc, type);
+  }
+}
+
+export abstract class TransformerAuthBase extends TransformerPluginBase implements TransformerAuthProvider {
+  constructor(name: string, doc: DocumentNode | string, type: TransformerPluginType = TransformerPluginType.AUTH) {
     super(name, doc, type);
   }
 }

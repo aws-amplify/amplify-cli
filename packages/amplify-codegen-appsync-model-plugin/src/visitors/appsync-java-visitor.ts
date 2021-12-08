@@ -800,6 +800,9 @@ export class AppSyncModelJavaVisitor<
           case AuthStrategy.public:
             authRule.push('allow = AuthStrategy.PUBLIC');
             break;
+          case AuthStrategy.custom:
+            authRule.push('allow = AuthStrategy.CUSTOM');
+            break;
           case AuthStrategy.groups:
             authRule.push('allow = AuthStrategy.GROUPS');
             authRule.push(`groupClaim = "${rule.groupClaim}"`);

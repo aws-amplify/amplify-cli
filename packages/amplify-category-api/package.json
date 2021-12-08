@@ -1,6 +1,6 @@
 {
-  "name": "amplify-category-api",
-  "version": "2.31.23",
+  "name": "@aws-amplify/amplify-category-api",
+  "version": "1.1.6",
   "description": "amplify-cli api plugin",
   "repository": {
     "type": "git",
@@ -14,9 +14,14 @@
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
-    "test": "jest"
+    "test": "jest",
+    "generateSchemas": "ts-node ./scripts/generateApiSchemas.ts"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
+    "@aws-amplify/graphql-transformer-migrator": "1.2.12",
     "@aws-cdk/assets": "~1.124.0",
     "@aws-cdk/aws-apigateway": "~1.124.0",
     "@aws-cdk/aws-apigatewayv2": "~1.124.0",
@@ -63,20 +68,22 @@
     "@aws-cdk/region-info": "~1.124.0",
     "@graphql-tools/merge": "^6.0.18",
     "@octokit/rest": "^18.0.9",
-    "amplify-cli-core": "1.29.0",
-    "amplify-headless-interface": "1.10.0",
-    "amplify-util-headless-input": "1.5.4",
+    "amplify-cli-core": "2.4.3",
+    "amplify-headless-interface": "1.13.1",
+    "amplify-prompts": "1.6.0",
+    "amplify-provider-awscloudformation": "4.61.1",
+    "amplify-util-headless-input": "1.8.1",
     "chalk": "^4.1.1",
     "constructs": "^3.3.125",
     "fs-extra": "^8.1.0",
     "graphql": "^14.5.8",
-    "graphql-relational-schema-transformer": "2.18.6",
-    "graphql-transformer-core": "6.29.7",
+    "graphql-relational-schema-transformer": "2.21.0",
+    "graphql-transformer-core": "7.3.0",
     "inquirer": "^7.3.3",
     "js-yaml": "^4.0.0",
     "lodash": "^4.17.21",
     "ora": "^4.0.3",
-    "uuid": "^3.4.0"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.0"

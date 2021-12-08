@@ -128,6 +128,14 @@ export const getUserPool = async (userpoolId, region) => {
   return res;
 };
 
+export const getMFAConfiguration = async (
+  userPoolId: string,
+  region: string,
+): Promise<CognitoIdentityServiceProvider.GetUserPoolMfaConfigResponse> => {
+  config.update({ region });
+  return await new CognitoIdentityServiceProvider().getUserPoolMfaConfig({ UserPoolId: userPoolId }).promise();
+};
+
 export const getLambdaFunction = async (functionName: string, region: string) => {
   const lambda = new Lambda({ region });
   try {
@@ -199,6 +207,16 @@ export const getEventSourceMappings = async (functionName: string, region: strin
 export const deleteTable = async (tableName: string, region: string) => {
   const service = new DynamoDB({ region });
   return await service.deleteTable({ TableName: tableName }).promise();
+};
+
+export const putItemInTable = async (tableName: string, region: string, item: unknown) => {
+  const ddb = new DynamoDB.DocumentClient({ region });
+  return await ddb.put({ TableName: tableName, Item: item }).promise();
+};
+
+export const scanTable = async (tableName: string, region: string) => {
+  const ddb = new DynamoDB.DocumentClient({ region });
+  return await ddb.scan({ TableName: tableName }).promise();
 };
 
 export const getAppSyncApi = async (appSyncApiId: string, region: string) => {
