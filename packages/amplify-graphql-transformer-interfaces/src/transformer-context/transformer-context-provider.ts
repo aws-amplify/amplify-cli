@@ -62,6 +62,7 @@ export type TransformerValidationStepContextProvider = Pick<
   | 'metadata'
   | 'authConfig'
   | 'sandboxModeEnabled'
+  | 'resourceHelper'
 >;
 export type TransformerPrepareStepContextProvider = TransformerValidationStepContextProvider;
 export type TransformerTransformSchemaStepContextProvider = TransformerValidationStepContextProvider;

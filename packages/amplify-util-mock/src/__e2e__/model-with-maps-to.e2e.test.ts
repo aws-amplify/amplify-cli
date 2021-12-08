@@ -21,7 +21,7 @@ beforeAll(async () => {
     `;
   try {
     const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer(), new AuthTransformer({ addAwsIamAuthInOutputSchema: false }), new MapsToTransformer()],
+      transformers: [new ModelTransformer(), new AuthTransformer(), new MapsToTransformer()],
     });
     const out = transformer.transform(validSchema);
 
