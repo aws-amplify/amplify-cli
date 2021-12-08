@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.6.0-flutter-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.5.5...amplify-e2e-tests@3.6.0-flutter-preview.0) (2021-12-08)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** use in memory meta for export ([#9208](https://github.com/aws-amplify/amplify-cli/issues/9208)) ([b3ca83b](https://github.com/aws-amplify/amplify-cli/commit/b3ca83b9bec986f0fd525d46738b277eb93e4384))
+
+
+### Features
+
+* **cli:** bump versions for preview ([fafb030](https://github.com/aws-amplify/amplify-cli/commit/fafb0303638f8200e17d324d4bacfb349b37314a))
+
+
+
+
+
 ## [3.5.6-flutter-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.5.5...amplify-e2e-tests@3.5.6-flutter-preview.0) (2021-12-08)
 
 

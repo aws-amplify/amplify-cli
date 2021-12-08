@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.9.0-flutter-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.2...amplify-provider-awscloudformation@5.9.0-flutter-preview.0) (2021-12-08)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** use in memory meta for export ([#9208](https://github.com/aws-amplify/amplify-cli/issues/9208)) ([b3ca83b](https://github.com/aws-amplify/amplify-cli/commit/b3ca83b9bec986f0fd525d46738b277eb93e4384))
+* incorrect logic from PR [#9144](https://github.com/aws-amplify/amplify-cli/issues/9144), fixes issue [#9197](https://github.com/aws-amplify/amplify-cli/issues/9197) ([#9215](https://github.com/aws-amplify/amplify-cli/issues/9215)) ([98e2cfd](https://github.com/aws-amplify/amplify-cli/commit/98e2cfd1f72aec2c06c7f2d5833bc4fb21e2a498))
+
+
+### Features
+
+* **cli:** bump versions for preview ([fafb030](https://github.com/aws-amplify/amplify-cli/commit/fafb0303638f8200e17d324d4bacfb349b37314a))
+
+
+
+
+
 ## [5.8.3-flutter-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.2...amplify-provider-awscloudformation@5.8.3-flutter-preview.0) (2021-12-08)
 
 

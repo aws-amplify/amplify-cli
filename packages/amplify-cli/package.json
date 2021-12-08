@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli",
-  "version": "7.7.0-flutter-preview.0",
+  "version": "7.7.0-flutter-preview.1",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
@@ -67,11 +67,11 @@
     "amplify-nodejs-function-runtime-provider": "2.2.8",
     "amplify-nodejs-function-template-provider": "2.2.9",
     "amplify-prompts": "1.6.0",
-    "amplify-provider-awscloudformation": "5.8.3-flutter-preview.0",
+    "amplify-provider-awscloudformation": "5.9.0-flutter-preview.0",
     "amplify-python-function-runtime-provider": "2.2.8",
     "amplify-python-function-template-provider": "1.3.13",
     "amplify-util-import": "2.2.8",
-    "amplify-util-mock": "4.2.21-flutter-preview.0",
+    "amplify-util-mock": "4.3.0-flutter-preview.0",
     "aws-sdk": "^2.963.0",
     "chalk": "^4.1.1",
     "ci-info": "^2.0.0",
