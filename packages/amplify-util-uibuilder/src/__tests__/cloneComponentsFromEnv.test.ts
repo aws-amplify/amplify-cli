@@ -4,11 +4,6 @@ describe('can clone components to new environment', () => {
   let listUiBuilderComponents: any;
   let extractArgs: any;
   beforeEach(() => {
-    /*
-    import aws from 'aws-sdk';
-    import { extractArgs } from './utils/extractArgs';
-    import { listUiBuilderComponents } from './utils/syncAmplifyUiBuilderComponents';
-    */
     context = {
       amplify: {
         invokePluginMethod: () => true,

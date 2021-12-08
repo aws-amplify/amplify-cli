@@ -320,6 +320,7 @@ module.exports = {
     '/packages/graphql-transformer-*/lib',
     '/packages/amplify-headless-interface/lib',
     '/packages/amplify-util-headless-input/lib',
+    '/packages/amplify-util-uibuilder/lib',
     '/packages/amplify-graphql-*transformer*/lib',
     '/packages/amplify-provider-awscloudformation/lib',
     '/packages/amplify-console-integration-tests/lib',
