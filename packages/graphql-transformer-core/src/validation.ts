@@ -53,6 +53,7 @@ import { UniqueVariableNames } from 'graphql/validation/rules/UniqueVariableName
 import { NoUndefinedVariables } from 'graphql/validation/rules/NoUndefinedVariables';
 import { NoUnusedVariables } from 'graphql/validation/rules/NoUnusedVariables';
 import { UniqueDirectivesPerLocation } from 'graphql/validation/rules/UniqueDirectivesPerLocation';
+import { validateSDL } from 'graphql/validation/validate';
 
 /**
  * This set includes all validation rules defined by the GraphQL spec.
@@ -140,6 +141,10 @@ export const validateModelSchema = (doc: DocumentNode) => {
     fullDocument.definitions.push(...NOOP_QUERY.definitions);
   }
 
-  const schema = buildASTSchema(fullDocument);
+const errors = validateSDL(fullDocument);
+if (errors.length > 0) {
+  return errors;
+}
+  const schema = buildASTSchema(fullDocument, { assumeValid: true });
   return validate(schema, fullDocument, specifiedRules);
 };

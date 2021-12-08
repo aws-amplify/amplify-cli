@@ -1,9 +1,7 @@
 import {
   addApiWithoutSchema,
   updateApiSchema,
-  addApi,
   addAuthWithDefault,
-  addDDBWithTrigger,
   addFunction,
   addS3StorageWithSettings,
   addSimpleDDB,
@@ -14,18 +12,12 @@ import {
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
-  getBackendAmplifyMeta,
   getFunctionSrcNode,
   getProjectMeta,
   initJSProjectWithProfile,
   invokeFunction,
   overrideFunctionSrcNode,
-  addNodeDependencies,
-  readJsonFile,
   updateFunction,
-  overrideFunctionCodeNode,
-  getBackendConfig,
-  addFeatureFlag,
   addAuthWithGroupsAndAdminAPI,
   getFunction,
   loadFunctionTestFile,
@@ -129,7 +121,7 @@ describe('nodejs', () => {
       const ddbName = `integtestddb${random}`;
 
       // test ability to scan both appsync @model-backed and regular ddb tables
-      await addApiWithoutSchema(projRoot);
+      await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
       await updateApiSchema(projRoot, 'dynamodbscan', 'simple_model.graphql');
       await addSimpleDDB(projRoot, { name: ddbName });
 
@@ -215,7 +207,7 @@ describe('nodejs', () => {
       expect(functionName).toBeDefined();
       expect(region).toBeDefined();
 
-      await addApiWithoutSchema(projRoot);
+      await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
       await updateApiSchema(projRoot, appName, 'simple_model.graphql');
       await updateFunction(
         projRoot,
@@ -251,7 +243,7 @@ describe('nodejs', () => {
       await initJSProjectWithProfile(projRoot, {
         name: 'modelbackedlambda',
       });
-      await addApiWithoutSchema(projRoot);
+      await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
       await updateApiSchema(projRoot, 'modelbackedlambda', 'simple_model.graphql');
 
       const random = Math.floor(Math.random() * 10000);

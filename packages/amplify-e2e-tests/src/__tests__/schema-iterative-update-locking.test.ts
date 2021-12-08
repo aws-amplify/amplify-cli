@@ -41,7 +41,7 @@ describe('Schema iterative update - locking', () => {
 
     // Create and push project with API
     const initialSchema = path.join('iterative-push', 'change-model-name', 'initial-schema.graphql');
-    await addApiWithoutSchema(projectRoot, { apiKeyExpirationDays: 7 });
+    await addApiWithoutSchema(projectRoot, { apiKeyExpirationDays: 7, transformerVersion: 1 });
     await updateApiSchema(projectRoot, apiName, initialSchema);
     await amplifyPush(projectRoot);
 

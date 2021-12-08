@@ -40,19 +40,12 @@ test('per-field auth on relational field', () => {
   };
   const transformer = new GraphQLTransform({
     authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new HasManyTransformer(),
-      new AuthTransformer({
-        authConfig,
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new HasManyTransformer(), new AuthTransformer()],
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
 
-  expect(out.pipelineFunctions['Post.comments.auth.1.req.vtl']).toContain(
+  expect(out.resolvers['Post.comments.auth.1.req.vtl']).toContain(
     '#set( $staticGroupRoles = [{"claim":"cognito:groups","entity":"admin"}] )',
   );
 });
@@ -141,10 +134,7 @@ const getTransformer = (authConfig: AppSyncAuthConfiguration) => {
       new IndexTransformer(),
       new HasManyTransformer(),
       new BelongsToTransformer(),
-      new AuthTransformer({
-        authConfig,
-        addAwsIamAuthInOutputSchema: false,
-      }),
+      new AuthTransformer(),
     ],
   });
 };

@@ -8,6 +8,7 @@ import * as helpCommand from './commands/geo/help';
 import { getServicePermissionPolicies } from './service-utils/resourceUtils';
 import { ServiceName } from './service-utils/constants';
 import { printer } from 'amplify-prompts';
+import { addResourceHeadless, updateResourceHeadless } from './provider-controllers';
 
 export const executeAmplifyCommand = async (context: $TSContext) => {
   switch (context.input.command) {
@@ -59,5 +60,23 @@ export const getPermissionPolicies = (context: $TSContext, resourceOpsMapping: $
     }
   });
 
-  return { permissionPolicies, resourceAttributes };
+    return { permissionPolicies, resourceAttributes };
+}
+
+/**
+ * Entry point for headless commands
+ * @param {any} context The amplify context object
+ * @param {string} headlessPayload The serialized payload from the platform
+ */
+ export const executeAmplifyHeadlessCommand = async (context: $TSContext, headlessPayload: string) => {
+  switch (context.input.command) {
+    case 'add':
+      await addResourceHeadless(context, headlessPayload);
+      break;
+    case 'update':
+      await updateResourceHeadless(context, headlessPayload);
+      break;
+    default:
+      printer.error(`Headless mode for ${context.input.command} geo is not implemented yet`);
+  }
 };

@@ -5,7 +5,7 @@ import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } fro
 import { updateSchemaInTestProject, testMutations, testQueries } from '../common';
 
 export async function runTest(projectDir: string, testModule: any) {
-  await addApi(projectDir);
+  await addApi(projectDir, { transformerVersion: 1 });
   updateSchemaInTestProject(projectDir, testModule.schema);
   await amplifyPush(projectDir);
   await new Promise<void>(res => setTimeout(() => res(), 60000));

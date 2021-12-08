@@ -108,6 +108,22 @@ test('throws if @index uses a sort key field that is a non-scalar', () => {
   }).toThrow(`The sort key of index 'wontwork' on type 'Test.email' cannot be a non-scalar.`);
 });
 
+test('throws if @index refers to itself', () => {
+  const schema = `
+    type Test @model {
+      id: ID! @index(name: "wontwork", sortKeyFields: ["id"])
+      email: String
+    }`;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new IndexTransformer()],
+  });
+
+  expect(() => {
+    transformer.transform(schema);
+  }).toThrow(`@index field 'id' cannot reference itself.`);
+});
+
 test('@index with multiple sort keys adds a query field and GSI correctly', () => {
   const inputSchema = `
     type Test @model {
@@ -161,7 +177,7 @@ test('@index with multiple sort keys adds a query field and GSI correctly', () =
     }),
   );
 
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
 
   const queryType = schema.definitions.find((def: any) => def.name && def.name.value === 'Query') as any;
   expect(queryType).toBeDefined();
@@ -229,7 +245,7 @@ test('@index with a single sort key adds a query field and GSI correctly', () =>
     }),
   );
 
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
 
   const queryType = schema.definitions.find((def: any) => def.name && def.name.value === 'Query') as any;
   expect(queryType).toBeDefined();
@@ -291,7 +307,7 @@ test('@index with no sort key field adds a query field and GSI correctly', () =>
     }),
   );
 
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
 
   const queryType = schema.definitions.find((def: any) => def.name && def.name.value === 'Query') as any;
   expect(queryType).toBeDefined();
@@ -382,7 +398,7 @@ test('creates a primary key and a secondary index', () => {
     }),
   );
 
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
 
   const queryType = schema.definitions.find((def: any) => def.name && def.name.value === 'Query') as any;
   expect(queryType).toBeDefined();
@@ -618,7 +634,7 @@ test('validate resolver code', () => {
   });
   const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
   validateModelSchema(parse(out.schema));
 });
 
@@ -827,8 +843,8 @@ test('GSI composite sort keys are wrapped in conditional to check presence in mu
   const schema = parse(out.schema);
 
   validateModelSchema(schema);
-  expect(out.pipelineFunctions['Mutation.createPerson.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Mutation.updatePerson.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.createPerson.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.updatePerson.req.vtl']).toMatchSnapshot();
 });
 
 it('should support index/primary key with sync resolvers', () => {
@@ -851,10 +867,8 @@ it('should support index/primary key with sync resolvers', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    transformConfig: {
-      ResolverConfig: {
-        project: config,
-      },
+    resolverConfig: {
+      project: config,
     },
   });
 
@@ -863,7 +877,7 @@ it('should support index/primary key with sync resolvers', () => {
 
   const definition = out.schema;
   expect(definition).toBeDefined();
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
 
   validateModelSchema(parse(definition));
 });

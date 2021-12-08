@@ -294,6 +294,7 @@ export class GraphQLResourceManager {
       }
       return _.uniq(
         diffs
+          // diff.path looks like [ "stacks", "ModelName.json", "Resources", "TableName", "Properties", "KeySchema", 0, "AttributeName"]
           .filter(
             diff =>
               (diff.kind === 'E' && diff.path.length === 8 && diff.path[5] === 'KeySchema') || diff.path.includes('LocalSecondaryIndexes'),

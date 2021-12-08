@@ -14,18 +14,60 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #end
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #if( !$isAuthorized )
-    #set( $authFilter = [{
-  \\"owner\\": {
-      \\"eq\\":     $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\"))
-  }
-}] )
-    $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #set( $authFilter = [] )
+    #set( $role0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+    #if( $role0 != \\"___xamznone____\\" )
+      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0 }}))
+    #end
+    #if( !$authFilter.isEmpty() )
+      $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #end
   #end
 #end
-#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) && $primaryFieldMap.isEmpty() )
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
 $util.unauthorized()
 #end
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`test multi auth model with field auth with conflict resolution 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#set( $nullAllowedFields = [] )
+#set( $deniedFields = {} )
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $ctx.identity.userArn == $ctx.stash.authRole )
+    #set( $isAuthorized = true )
+  #end
+#end
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  $util.qr($allowedFields.addAll([\\"id\\",\\"writeable\\",\\"_version\\",\\"_deleted\\",\\"_lastChangedAt\\"]))
+  $util.qr($nullAllowedFields.addAll([]))
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() && $nullAllowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #foreach( $entry in $util.map.copyAndRetainAllKeys($ctx.args.input, $inputFields).entrySet() )
+    #if( $util.isNull($entry.value) && !$nullAllowedFields.contains($entry.key) )
+      $util.qr($deniedFields.put($entry.key, \\"\\"))
+    #end
+  #end
+  #foreach( $deniedField in $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+    $util.qr($deniedFields.put($deniedField, \\"\\"))
+  #end
+#end
+#if( $deniedFields.keySet().size() > 0 )
+  $util.error(\\"Unauthorized on \${deniedFields.keySet()}\\", \\"Unauthorized\\")
+#end
+$util.toJson({})
 ## [End] Authorization Steps. **"
 `;
 
@@ -36,15 +78,17 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $primaryFieldMap = {} )
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #if( !$isAuthorized )
-    #set( $authFilter = [{
-  \\"owner\\": {
-      \\"eq\\":     $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\"))
-  }
-}] )
-    $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #set( $authFilter = [] )
+    #set( $role0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+    #if( $role0 != \\"___xamznone____\\" )
+      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0 }}))
+    #end
+    #if( !$authFilter.isEmpty() )
+      $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #end
   #end
 #end
-#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) && $primaryFieldMap.isEmpty() )
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
 $util.unauthorized()
 #end
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})

@@ -17,7 +17,7 @@ export function ReadTags(tagsFilePath: string): Tag[] {
   return tags;
 }
 
-export function validate(tags: Tag[]): void {
+export function validate(tags: Tag[], skipProjectEnv: boolean = false): void {
   const allowedKeySet = new Set(['Key', 'Value']);
 
   //check if Tags have the right format
@@ -34,7 +34,8 @@ export function validate(tags: Tag[]): void {
   // check if the tags has valid keys and values
   _.each(tags, tag => {
     const tagValidationRegExp = /[^a-z0-9_.:/=+@\- ]/gi;
-    if (tagValidationRegExp.test(tag.Value)) {
+    const tagValue = skipProjectEnv ? tag.Value.replace('{project-env}', '') : tag.Value;
+    if (tagValidationRegExp.test(tagValue)) {
       throw new Error(
         'Invalid character found in Tag Value. Tag values may only contain unicode letters, digits, whitespace, or one of these symbols: _ . : / = + - @',
       );
@@ -56,19 +57,20 @@ export function validate(tags: Tag[]): void {
   });
 }
 
-export function HydrateTags(tags: Tag[], tagVariables: TagVariables): Tag[] {
+export function HydrateTags(tags: Tag[], tagVariables: TagVariables, skipProjectEnv: boolean = false): Tag[] {
   const { envName, projectName } = tagVariables;
   const replace: any = {
     '{project-name}': projectName,
     '{project-env}': envName,
   };
+  const regexMatcher = skipProjectEnv ? /{project-name}/g : /{project-name}|{project-env}/g;
   const hydrdatedTags = tags.map(tag => {
     return {
       ...tag,
-      Value: tag.Value.replace(/{project-name}|{project-env}/g, (matched: string) => replace[matched]),
+      Value: tag.Value.replace(regexMatcher, (matched: string) => replace[matched]),
     };
   });
-  validate(hydrdatedTags);
+  validate(hydrdatedTags, skipProjectEnv);
   return hydrdatedTags;
 }
 

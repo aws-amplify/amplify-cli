@@ -48,3 +48,22 @@ export interface DeploymentResources extends ResolversFunctionsAndSchema, Nested
   // The full stack mapping for the deployment.
   stackMapping: StackMapping;
 }
+
+export type UserDefinedSlot = {
+  resolverTypeName: string;
+  resolverFieldName: string;
+  slotName: string;
+  requestResolver?: UserDefinedResolver;
+  responseResolver?: UserDefinedResolver;
+};
+
+export type UserDefinedResolver = {
+  fileName: string;
+  template: string;
+};
+
+export type OverrideConfig = {
+  overrideFlag: boolean;
+  overrideDir: string;
+  resourceName: string;
+};

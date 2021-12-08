@@ -222,7 +222,7 @@ export function processResources(
   return { resources: processedResources, stackExports: cfnExports };
 }
 
-export function processOutputs(
+export function processExports(
   output: CloudFormationOutputs,
   parameters: Record<string, any>,
   conditions: Record<string, boolean>,
@@ -251,16 +251,38 @@ export function processOutputs(
   return stackExports;
 }
 
+export function processOutputs(
+  output: CloudFormationOutputs,
+  parameters: Record<string, any>,
+  conditions: Record<string, boolean>,
+  resources: Record<string, any>,
+  cfnExports: Record<string, any> = {},
+): Record<string, any> {
+  const outputs = {};
+  const cfnContext = { params: parameters, conditions, resources, exports: cfnExports };
+  Object.entries(output).forEach(([name, res]) => {
+    outputs[name] = parseValue(res.Value, cfnContext);
+  });
+  return outputs;
+}
+
 export function processCloudFormationStack(
   template: CloudFormationTemplate,
   parameters: Record<string, any>,
   cfnExports: Record<string, any>,
   cfnTemplateFetcher: CloudFormationTemplateFetcher,
-): { resources: Record<string, any>; stackExports: Record<string, any> } {
+): { resources: Record<string, any>; stackExports: Record<string, any>; outputs: Record<string, any> } {
   const mergedParameters = mergeParameters(template.Parameters || {}, parameters || {});
   const processedConditions = processConditions(template.Conditions || {}, mergedParameters);
   const processedResources = processResources(mergedParameters, processedConditions, template.Resources, cfnExports, cfnTemplateFetcher);
-  const processedExports = processOutputs(
+  const processedOutput = processOutputs(
+    template.Outputs || {},
+    mergedParameters,
+    processedConditions,
+    processedResources.resources,
+    processedResources.stackExports,
+  );
+  const processedExports = processExports(
     template.Outputs || {},
     mergedParameters,
     processedConditions,
@@ -270,5 +292,6 @@ export function processCloudFormationStack(
   return {
     resources: processedResources.resources,
     stackExports: processedExports,
+    outputs: processedOutput,
   };
 }

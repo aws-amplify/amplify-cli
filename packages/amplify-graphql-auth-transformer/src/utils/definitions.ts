@@ -1,6 +1,6 @@
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-export type AuthStrategy = 'owner' | 'groups' | 'public' | 'private';
-export type AuthProvider = 'apiKey' | 'iam' | 'oidc' | 'userPools';
+export type AuthStrategy = 'owner' | 'groups' | 'public' | 'private' | 'custom';
+export type AuthProvider = 'apiKey' | 'iam' | 'oidc' | 'userPools' | 'function';
 export type ModelQuery = 'get' | 'list';
 export type ModelMutation = 'create' | 'update' | 'delete';
 export type ModelOperation = 'create' | 'update' | 'delete' | 'read';
@@ -12,13 +12,23 @@ export interface SearchableConfig {
   };
 }
 
+export interface AuthTransformerConfig {
+  /** used mainly in the before step to pass the authConfig from the transformer core down to the directive */
+  authConfig?: AppSyncAuthConfiguration;
+  /** using the iam provider the resolvers checks will lets the roles in this list passthrough the acm */
+  adminRoles?: Array<string>;
+  /** when authorizing private/public @auth can also check authenticated/unauthenticated status for a given identityPoolId */
+  identityPoolId?: string;
+}
+
 export interface RolesByProvider {
-  cogntoStaticRoles: Array<RoleDefinition>;
+  cognitoStaticRoles: Array<RoleDefinition>;
   cognitoDynamicRoles: Array<RoleDefinition>;
   oidcStaticRoles: Array<RoleDefinition>;
   oidcDynamicRoles: Array<RoleDefinition>;
   iamRoles: Array<RoleDefinition>;
   apiKeyRoles: Array<RoleDefinition>;
+  lambdaRoles: Array<RoleDefinition>;
 }
 
 export interface AuthRule {
@@ -56,14 +66,10 @@ export interface ConfiguredAuthProviders {
   hasUserPools: boolean;
   hasOIDC: boolean;
   hasIAM: boolean;
-  hasAdminUIEnabled: boolean;
-  adminUserPoolID?: string;
-}
-
-export interface AuthTransformerConfig {
-  addAwsIamAuthInOutputSchema: boolean;
-  authConfig?: AppSyncAuthConfiguration;
-  adminUserPoolID?: string;
+  hasLambda: boolean;
+  hasAdminRolesEnabled: boolean;
+  adminRoles: Array<string>;
+  identityPoolId?: string;
 }
 
 export const authDirectiveDefinition = `
@@ -83,12 +89,14 @@ export const authDirectiveDefinition = `
     groups
     private
     public
+    custom
   }
   enum AuthProvider {
     apiKey
     iam
     oidc
     userPools
+    function
   }
   enum ModelOperation {
     create

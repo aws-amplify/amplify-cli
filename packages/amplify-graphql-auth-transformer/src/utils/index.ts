@@ -2,6 +2,7 @@ import { AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Stack } from '@aws-cdk/core';
 import { ObjectTypeDefinitionNode } from 'graphql';
+import { AccessControlMatrix } from '..';
 import { AuthProvider, AuthRule, AuthTransformerConfig, ConfiguredAuthProviders, RoleDefinition, RolesByProvider } from './definitions';
 
 export * from './constants';
@@ -12,12 +13,13 @@ export * from './iam';
 
 export const splitRoles = (roles: Array<RoleDefinition>): RolesByProvider => {
   return {
-    cogntoStaticRoles: roles.filter(r => r.static && r.provider === 'userPools'),
+    cognitoStaticRoles: roles.filter(r => r.static && r.provider === 'userPools'),
     cognitoDynamicRoles: roles.filter(r => !r.static && r.provider === 'userPools'),
     oidcStaticRoles: roles.filter(r => r.static && r.provider === 'oidc'),
     oidcDynamicRoles: roles.filter(r => !r.static && r.provider === 'oidc'),
     iamRoles: roles.filter(r => r.provider === 'iam'),
     apiKeyRoles: roles.filter(r => r.provider === 'apiKey'),
+    lambdaRoles: roles.filter(r => r.provider === 'function'),
   };
 };
 /**
@@ -39,6 +41,9 @@ export const ensureAuthRuleDefaults = (rules: AuthRule[]) => {
           break;
         case 'public':
           rule.provider = 'apiKey';
+          break;
+        case 'custom':
+          rule.provider = 'function';
           break;
         default:
           throw new Error(`Need to specify an allow to assigned a provider: ${rule}`);
@@ -88,18 +93,41 @@ export const getConfiguredAuthProviders = (config: AuthTransformerConfig): Confi
         return 'iam';
       case 'OPENID_CONNECT':
         return 'oidc';
+      case 'AWS_LAMBDA':
+        return 'function';
     }
   };
   const hasIAM = providers.some(p => p === 'AWS_IAM');
   const configuredProviders: ConfiguredAuthProviders = {
     default: getAuthProvider(config.authConfig.defaultAuthentication.authenticationType),
     onlyDefaultAuthProviderConfigured: config.authConfig.additionalAuthenticationProviders.length === 0,
-    hasAdminUIEnabled: hasIAM && config.addAwsIamAuthInOutputSchema,
-    adminUserPoolID: config.adminUserPoolID!,
+    hasAdminRolesEnabled: hasIAM && config.adminRoles?.length > 0,
+    adminRoles: config.adminRoles,
+    identityPoolId: config.identityPoolId,
     hasApiKey: providers.some(p => p === 'API_KEY'),
     hasUserPools: providers.some(p => p === 'AMAZON_COGNITO_USER_POOLS'),
     hasOIDC: providers.some(p => p === 'OPENID_CONNECT'),
+    hasLambda: providers.some(p => p === 'AWS_LAMBDA'),
     hasIAM,
   };
   return configuredProviders;
+};
+
+/**
+ * util to get allowed roles for field
+ * if we have a rule like cognito private we can remove all other related roles from the field since it has top level
+ * access by the provider
+ */
+export const getReadRolesForField = (acm: AccessControlMatrix, readRoles: Array<string>, fieldName: string): Array<string> => {
+  const hasCognitoPrivateRole = readRoles.some(r => r === 'userPools:private') && acm.isAllowed('userPools:private', fieldName, 'read');
+  const hasOIDCPrivateRole = readRoles.some(r => r === 'oidc:private') && acm.isAllowed('oidc:private', fieldName, 'read');
+  let allowedRoles = [...readRoles];
+
+  if (hasCognitoPrivateRole) {
+    allowedRoles = allowedRoles.filter(r => !(r.startsWith('userPools:') && r !== 'userPools:private'));
+  }
+  if (hasOIDCPrivateRole) {
+    allowedRoles = allowedRoles.filter(r => !(r.startsWith('oidc:') && r !== 'oidc:private'));
+  }
+  return allowedRoles;
 };

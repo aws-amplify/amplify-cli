@@ -10,65 +10,60 @@ const CONCURRENCY = 25;
 // (examples: sending line endings when we shouldn't, java/gradle not installed on windows host)
 // Each of these failures should be independently investigated, resolved, and removed from this list.
 // For now, this list is being used to skip creation of circleci jobs for these tasks
-const WINDOWS_TEST_FAILURES = [
-  'api_6-amplify_e2e_tests',
-  'datastore-modelgen-amplify_e2e_tests',
-  'delete-amplify_e2e_tests',
-  'env-amplify_e2e_tests',
-  'feature-flags-amplify_e2e_tests',
-  'function_1-amplify_e2e_tests',
-  'function_2-amplify_e2e_tests',
-  'function_3-amplify_e2e_tests',
-  'function_4-amplify_e2e_tests',
-  'function_5-amplify_e2e_tests',
-  'function_6-amplify_e2e_tests',
-  'function_7-amplify_e2e_tests',
-  'function_8-amplify_e2e_tests',
-  'function_9-amplify_e2e_tests',
-  'geo-remove-amplify_e2e_tests',
-  'geo-update-amplify_e2e_tests',
-  'layer-1-amplify_e2e_tests',
-  'layer-2-amplify_e2e_tests',
-  'layer-3-amplify_e2e_tests',
-  'layer-4-amplify_e2e_tests',
-  'migration-api-connection-migration-amplify_e2e_tests',
-  'migration-api-connection-migration2-amplify_e2e_tests',
-  'migration-api-key-migration1-amplify_e2e_tests',
-  'migration-api-key-migration2-amplify_e2e_tests',
-  'pull-amplify_e2e_tests',
-  'schema-iterative-rollback-1-amplify_e2e_tests',
-  'schema-iterative-rollback-2-amplify_e2e_tests',
-  'schema-iterative-update-1-amplify_e2e_tests',
-  'schema-iterative-update-2-amplify_e2e_tests',
-  'schema-iterative-update-3-amplify_e2e_tests',
-  'schema-iterative-update-4-amplify_e2e_tests',
-  'schema-iterative-update-locking-amplify_e2e_tests',
-  'schema-key-amplify_e2e_tests',
-  'api_4-amplify_e2e_tests',
-  'api_3-amplify_e2e_tests',
-  'api_2-amplify_e2e_tests',
-  'api_1-amplify_e2e_tests',
-  'amplify-app-amplify_e2e_tests',
-  'import_s3_1-amplify_e2e_tests',
-  'import_s3_3-amplify_e2e_tests',
-  'auth_4-amplify_e2e_tests',
-  'auth_3-amplify_e2e_tests',
-  'custom_policies_container-amplify_e2e_tests',
-  'custom_policies_function-amplify_e2e_tests',
-  'storage-4-amplify_e2e_tests',
-  'resolvers-amplify_e2e_tests',
-  'migration-api-key-migration3-amplify_e2e_tests',
-  'migration-api-key-migration4-amplify_e2e_tests',
-  'migration-api-key-migration5-amplify_e2e_tests',
 
-  // 👇 These fail due to ExpiredToken. 👇
-  // 👇 Tests should be split to speed up execution time. 👇
-  'geo-add-amplify_e2e_tests',
-  'import_auth_1-amplify_e2e_tests',
-  'import_auth_2-amplify_e2e_tests',
-  'import_auth_3-amplify_e2e_tests',
-  'import_dynamodb_2-amplify_e2e_tests',
-  'import_s3_2-amplify_e2e_tests',
+// Todo: update the split test strategy to use parallelization so circleci results dont go over the limits of github payload size
+const WINDOWS_TEST_ALLOWLIST = [
+  // 'schema-function-1_pkg',
+  // 'tags_pkg',
+  // 'hosting_pkg',
+  // 'schema-auth-9_pkg',
+  // 'schema-model_pkg',
+  // 'schema-auth-5_pkg',
+  // 'api_lambda_auth_pkg',
+  // 'node-function_pkg',
+  // 'schema-function-2_pkg',
+  // 'notifications_pkg',
+  // 'interactions_pkg',
+  // 'analytics_pkg',
+  // 'schema-auth-7_pkg',
+  // 'schema-auth-11_pkg',
+  // 'auth_6_pkg',
+  // 'frontend_config_drift_pkg',
+  // 'hooks_pkg',
+  // 'plugin_pkg',
+  // 'schema-versioned_pkg',
+  // 'schema-auth-3_pkg',
+  // 'schema-auth-8_pkg',
+  // 'import_dynamodb_1_pkg',
+  // 'schema-connection_pkg',
+  // 'auth_7_pkg',
+  // 'iam-permissions-boundary_pkg',
+  // 'storage-1_pkg',
+  // 'init-special-case_pkg',
+  // 'schema-data-access-patterns_pkg',
+  // 'schema-auth-10_pkg',
+  // 'schema-searchable_pkg',
+  // 'schema-auth-6_pkg',
+  // 'auth_8_pkg',
+  // 's3-sse_pkg',
+  // 'storage-2_pkg',
+  // 'containers-api_pkg',
+  // 'schema-auth-4_pkg',
+  // 'configure-project_pkg',
+  // 'schema-auth-12_pkg',
+  // 'storage-3_pkg',
+  // 'amplify-configure_pkg',
+  // 'schema-predictions_pkg',
+  // 'predictions_pkg',
+  // 'auth_1_pkg',
+  // 'schema-auth-1_pkg',
+  // 'schema-auth-2_pkg',
+  // 'container-hosting_pkg',
+  // 'schema-auth-13_pkg',
+  // 'init_pkg',
+  // 'hostingPROD_pkg',
+  // 'auth_5_pkg',
+  // 'auth_2_pkg',
 ];
 
 // Ensure to update packages/amplify-e2e-tests/src/cleanup-e2e-resources.ts is also updated this gets updated
@@ -84,19 +79,19 @@ const AWS_REGIONS_TO_RUN_TESTS = [
 
 // Some services (eg. amazon lex) are not available in all regions
 // Tests added to this list will always run in us-west-2
-const FORCE_US_WEST_2 = ['interactions-amplify_e2e_tests'];
+const FORCE_US_WEST_2 = ['interactions'];
 
 const USE_PARENT_ACCOUNT = [
-  'api_2-amplify_e2e_tests',
-  'api_1-amplify_e2e_tests',
-  'auth_2-amplify_e2e_tests',
-  'import_dynamodb_1-amplify_e2e_tests',
-  'import_s3_1-amplify_e2e_tests',
-  'migration-api-key-migration2-amplify_e2e_tests',
-  'migration-api-key-migration3-amplify_e2e_tests',
-  'migration-api-key-migration4-amplify_e2e_tests',
-  'migration-api-key-migration5-amplify_e2e_tests',
-  'storage-amplify_e2e_tests',
+  'api_2',
+  'api_1',
+  'auth_2',
+  'import_dynamodb_1',
+  'import_s3_1',
+  'api-key-migration2',
+  'api-key-migration3',
+  'api-key-migration4',
+  'api-key-migration5',
+  'storage',
 ];
 
 // This array needs to be update periodically when new tests suites get added
@@ -227,12 +222,17 @@ function getTestFiles(dir: string, pattern = 'src/**/*.test.ts'): string[] {
 }
 
 function generateJobName(baseName: string, testSuitePath: string): string {
-  return `${testSuitePath
-    .replace('src/', '')
-    .replace('__tests__/', '')
-    .replace(/test\.ts$/, '')
-    .replace(/\//g, '-')
-    .replace(/\./g, '-')}${baseName}`;
+  const startIndex = testSuitePath.lastIndexOf('/') + 1;
+  const endIndex = testSuitePath.lastIndexOf('.test');
+  let name = testSuitePath.substring(startIndex, endIndex).split('.e2e').join('').split('.').join('-');
+  if (baseName.includes('pkg')) {
+    name = name + '_pkg';
+  }
+  if (baseName.includes('amplify_migration_tests')) {
+    const startIndex = baseName.lastIndexOf('_');
+    name = name + baseName.substring(startIndex);
+  }
+  return name;
 }
 
 /**
@@ -250,6 +250,7 @@ function splitTests(
   workflowName: string,
   jobRootDir: string,
   concurrency: number = CONCURRENCY,
+  isMigration: boolean = false,
 ): CircleCIConfig {
   const output: CircleCIConfig = { ...config };
   const jobs = { ...config.jobs };
@@ -273,9 +274,15 @@ function splitTests(
     const isPkg = newJobName.endsWith('_pkg');
     if (!isPkg) {
       (newJob.environment as any) = {
-        AMPLIFY_DIR: '/home/circleci/repo/packages/amplify-cli/bin',
-        AMPLIFY_PATH: '/home/circleci/repo/packages/amplify-cli/bin/amplify',
         ...newJob.environment,
+        ...(isMigration
+          ? {
+              AMPLIFY_PATH: '/home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify',
+            }
+          : {
+              AMPLIFY_DIR: '/home/circleci/repo/packages/amplify-cli/bin',
+              AMPLIFY_PATH: '/home/circleci/repo/packages/amplify-cli/bin/amplify',
+            }),
       };
     }
     return { ...acc, [newJobName]: newJob };
@@ -317,10 +324,7 @@ function splitTests(
                 requires: [...(requires ? [requires] : workflowJob[jobName].requires || [])],
                 matrix: {
                   parameters: {
-                    os:
-                      WINDOWS_TEST_FAILURES.some(failingJob => newJobName.startsWith(failingJob)) || !newJobName.endsWith('_pkg')
-                        ? ['linux']
-                        : ['linux', 'windows'],
+                    os: WINDOWS_TEST_ALLOWLIST.includes(newJobName) ? ['l', 'w'] : ['l'],
                   },
                 },
               },
@@ -472,21 +476,23 @@ function main(): void {
     join(repoRoot, 'packages', 'graphql-transformers-e2e-tests'),
     CONCURRENCY,
   );
-  const splitV4MigrationTests = splitTests(
+  const splitV5MigrationTests = splitTests(
     splitGqlTests,
-    'amplify_migration_tests_v4',
+    'amplify_migration_tests_v5',
     'build_test_deploy',
     join(repoRoot, 'packages', 'amplify-migration-tests'),
     CONCURRENCY,
+    true,
   );
-  const splitLatestMigrationTests = splitTests(
-    splitV4MigrationTests,
-    'amplify_migration_tests_latest',
+  const splitV6MigrationTests = splitTests(
+    splitV5MigrationTests,
+    'amplify_migration_tests_v6',
     'build_test_deploy',
     join(repoRoot, 'packages', 'amplify-migration-tests'),
     CONCURRENCY,
+    true,
   );
-  saveConfig(splitLatestMigrationTests);
+  saveConfig(splitV6MigrationTests);
   verifyConfig();
 }
 main();

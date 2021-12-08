@@ -15,7 +15,8 @@ export function getRelatedTypeIndex(
   ctx: TransformerContextProvider,
   indexName?: string,
 ): FieldDefinitionNode[] {
-  const { directiveName, field, fieldNodes, relatedType } = config;
+  const { directiveName, field, fieldNodes } = config;
+  const relatedType = ctx.output.getType(config.relatedType.name.value) as any;
   const fieldMap = new Map<string, FieldDefinitionNode>();
   let partitionFieldName;
   let partitionField;

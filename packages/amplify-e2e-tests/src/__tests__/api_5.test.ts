@@ -1,33 +1,25 @@
 import {
-  amplifyPush,
-  amplifyPushUpdate,
-  deleteProject,
-  initJSProjectWithProfile,
-  listAttachedRolePolicies,
-  listRolePolicies,
-  updateAuthAddAdminQueries,
-} from 'amplify-e2e-core';
-import * as path from 'path';
-import { existsSync, readFileSync, readdirSync, writeFileSync } from 'fs';
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import gql from 'graphql-tag';
-const providerName = 'awscloudformation';
-
-import {
-  addRestApi,
+  addApiWithoutSchema,
+  addFeatureFlag,
   addFunction,
+  addRestApi,
   addSimpleDDB,
+  amplifyPushGraphQlWithCognitoPrompt,
+  amplifyPushUpdate,
   checkIfBucketExists,
   createNewProjectDir,
+  deleteProject,
   deleteProjectDir,
   getAppSyncApi,
   getProjectMeta,
-  getLocalEnvInfo,
-  getTransformConfig,
-  enableAdminUI,
+  initJSProjectWithProfile,
+  listAttachedRolePolicies,
+  listRolePolicies,
+  updateApiSchema,
+  updateAuthAddAdminQueries,
 } from 'amplify-e2e-core';
-import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
-import _ from 'lodash';
+import { readdirSync, readFileSync } from 'fs';
+import * as path from 'path';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -41,7 +33,12 @@ describe('amplify add api (REST)', () => {
   });
 
   afterEach(async () => {
-    const meta = getProjectMeta(projRoot);
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
+  });
+
+  const validateMeta = async (meta?) => {
+    meta = meta ?? getProjectMeta(projRoot);
     expect(meta.providers.awscloudformation).toBeDefined();
     const {
       AuthRoleArn: authRoleArn,
@@ -71,18 +68,15 @@ describe('amplify add api (REST)', () => {
       expect(lastPushDirHash).toBeDefined();
       seenAtLeastOneFunc = true;
     }
-    expect(seenAtLeastOneFunc).toBeTruthy();
-
-    await deleteProject(projRoot);
-    deleteProjectDir(projRoot);
-  });
+    expect(seenAtLeastOneFunc).toBe(true);
+  };
 
   it('init a project, add a DDB, then add a crud rest api', async () => {
     const randomId = await global.getRandomId();
     const DDB_NAME = `ddb${randomId}`;
     await initJSProjectWithProfile(projRoot, {});
     await addSimpleDDB(projRoot, { name: DDB_NAME });
-    await addRestApi(projRoot, { isCrud: true });
+    await addRestApi(projRoot, { isCrud: true, projectContainsFunctions: false });
     await amplifyPushUpdate(projRoot);
 
     const meta = getProjectMeta(projRoot);
@@ -91,12 +85,14 @@ describe('amplify add api (REST)', () => {
     expect(service).toBe('DynamoDB');
     expect(lastPushTimeStamp).toBeDefined();
     expect(lastPushDirHash).toBeDefined();
+    validateMeta(meta);
   });
 
   it('init a project, then add a serverless rest api', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addRestApi(projRoot, { isCrud: false });
     await amplifyPushUpdate(projRoot);
+    validateMeta();
   });
 
   it('init a project, create lambda and attach it to an api', async () => {
@@ -104,6 +100,7 @@ describe('amplify add api (REST)', () => {
     await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
     await addRestApi(projRoot, { existingLambda: true });
     await amplifyPushUpdate(projRoot);
+    validateMeta();
   });
 
   it('init a project, create lambda and attach multiple rest apis', async () => {
@@ -127,7 +124,7 @@ describe('amplify add api (REST)', () => {
       allowGuestUsers: false,
     });
     await addRestApi(projRoot, { isFirstRestApi: false, existingLambda: true });
-    await updateAuthAddAdminQueries(projRoot);
+    await updateAuthAddAdminQueries(projRoot, undefined, {});
     await amplifyPushUpdate(projRoot);
 
     const amplifyMeta = getProjectMeta(projRoot);
@@ -140,16 +137,18 @@ describe('amplify add api (REST)', () => {
     const authPolicies = await listAttachedRolePolicies(AuthRoleName, Region);
     expect(authPolicies.length).toBeGreaterThan(0);
 
-    for (let i = 0; i < authPolicies.length; i++) {
-      expect(authPolicies[i].PolicyName).toMatch(/PolicyAPIGWAuth\d/);
+    for (const { PolicyName } of authPolicies) {
+      expect(PolicyName).toMatch(/PolicyAPIGWAuth\d/);
     }
 
     const unauthPolicies = await listAttachedRolePolicies(UnauthRoleName, Region);
     expect(unauthPolicies.length).toBeGreaterThan(0);
 
-    for (let i = 0; i < unauthPolicies.length; i++) {
-      expect(unauthPolicies[i].PolicyName).toMatch(/PolicyAPIGWUnauth\d/);
+    for (const { PolicyName } of unauthPolicies) {
+      expect(PolicyName).toMatch(/PolicyAPIGWUnauth\d/);
     }
+
+    validateMeta(amplifyMeta);
   });
 
   it('adds a rest api and then adds a path to the existing api', async () => {
@@ -158,6 +157,7 @@ describe('amplify add api (REST)', () => {
     await addRestApi(projRoot, { existingLambda: true });
     await addRestApi(projRoot, { isFirstRestApi: false, existingLambda: true, path: '/newpath' });
     await amplifyPushUpdate(projRoot);
+    validateMeta();
   });
 
   it('migrates malformed project files during push', async () => {
@@ -169,13 +169,39 @@ describe('amplify add api (REST)', () => {
     const apis = readdirSync(apisDirectory);
     const apiName = apis[0];
     const apiDirectory = path.join(apisDirectory, apiName);
-    const cfnTemplateFile = path.join(apiDirectory, `${apiName}-cloudformation-template.json`);
+    const cfnTemplateFile = path.join(apiDirectory, 'build', `${apiName}-cloudformation-template.json`);
     const cfnTemplate = JSON.parse(readFileSync(cfnTemplateFile, 'utf8'));
 
-    // The ApiId output is required, and will be added automatically if it is missing.
-    cfnTemplate.Outputs.ApiId = undefined;
+    // The ApiId output is required
+    expect(cfnTemplate.Outputs.ApiId).toBeDefined();
 
-    writeFileSync(cfnTemplateFile, JSON.stringify(cfnTemplate));
     await amplifyPushUpdate(projRoot);
+    validateMeta();
+  });
+
+  it('amplify push prompt for cognito configuration if auth mode is missing', async () => {
+    const envName = 'devtest';
+    const projName = 'lambdaauthmode';
+    await initJSProjectWithProfile(projRoot, { name: projName, envName });
+    await addFeatureFlag(projRoot, 'graphqltransformer', 'useexperimentalpipelinedtransformer', true);
+    await addFeatureFlag(projRoot, 'graphqltransformer', 'transformerversion', 2);
+    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
+    await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
+    await updateApiSchema(projRoot, projName, 'cognito_simple_model.graphql');
+    await amplifyPushGraphQlWithCognitoPrompt(projRoot);
+
+    const meta = getProjectMeta(projRoot);
+    const region = meta.providers.awscloudformation.Region;
+    const { output } = meta.api.lambdaauthmode;
+    const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
+    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, region);
+
+    expect(GraphQLAPIIdOutput).toBeDefined();
+    expect(GraphQLAPIEndpointOutput).toBeDefined();
+    expect(GraphQLAPIKeyOutput).toBeDefined();
+
+    expect(graphqlApi).toBeDefined();
+    expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
+    validateMeta(meta);
   });
 });

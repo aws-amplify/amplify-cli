@@ -32,6 +32,8 @@ import {
   RESOLVER_VERSION_ID,
   set,
   str,
+  notEquals,
+  toJson,
 } from 'graphql-mapping-template';
 import {
   applyKeyExpressionForCompositeKey,
@@ -39,11 +41,13 @@ import {
   getBaseType,
   graphqlName,
   ModelResourceIDs,
+  ResolverResourceIDs,
   ResourceConstants,
   toCamelCase,
 } from 'graphql-transformer-common';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from './types';
 import { lookupResolverName } from './utils';
+const API_KEY = 'API Key Authorization';
 
 export function replaceDdbPrimaryKey(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
   // Replace the table's primary key with the value from @primaryKey.
@@ -439,6 +443,7 @@ function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Transformer
   const resolver = ctx.resolvers.generateQueryResolver(
     queryTypeName,
     queryField,
+    ResolverResourceIDs.ResolverResourceID(queryTypeName, queryField),
     dataSource as DataSourceProvider,
     MappingTemplate.s3MappingTemplateFromString(
       print(
@@ -507,7 +512,13 @@ function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Transformer
       `${queryTypeName}.${queryField}.res.vtl`,
     ),
   );
-
+  resolver.addToSlot(
+    'postAuth',
+    MappingTemplate.s3MappingTemplateFromString(
+      generateAuthExpressionForSandboxMode(ctx.sandboxModeEnabled),
+      `${queryTypeName}.${queryField}.{slotName}.{slotIndex}.res.vtl`,
+    ),
+  );
   resolver.mapToStack(table.stack);
   ctx.resolvers.addResolver(object.name.value, queryField, resolver);
 }
@@ -805,3 +816,16 @@ function generateSyncResolverInit() {
   );
   return block(`Set map initialization for @key`, expressions);
 }
+/**
+ * Util function to generate sandbox mode expression
+ */
+export const generateAuthExpressionForSandboxMode = (enabled: boolean): string => {
+  let exp;
+
+  if (enabled) exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY)), methodCall(ref('util.unauthorized')));
+  else exp = methodCall(ref('util.unauthorized'));
+
+  return printBlock(`Sandbox Mode ${enabled ? 'Enabled' : 'Disabled'}`)(
+    compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), exp), toJson(obj({}))]),
+  );
+};

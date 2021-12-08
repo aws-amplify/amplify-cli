@@ -4,10 +4,10 @@ import { RESOLVER_KIND, AppSyncSimulatorPipelineResolverConfig } from '../../typ
 describe('Pipeline Resolvers', () => {
   const getFunction = jest.fn();
   const getMappingTemplate = jest.fn();
-  const simulatorContext: AmplifyAppSyncSimulator = ({
+  const simulatorContext: AmplifyAppSyncSimulator = {
     getFunction,
     getMappingTemplate,
-  } as any) as AmplifyAppSyncSimulator;
+  } as any as AmplifyAppSyncSimulator;
   let baseConfig;
   beforeEach(() => {
     jest.resetAllMocks();
@@ -63,35 +63,35 @@ describe('Pipeline Resolvers', () => {
     beforeEach(() => {
       fnImpl = {
         fn1: {
-          resolve: jest.fn().mockImplementation((source, args, stash, prevResult, context, info) => {
-            return {
-              result: 'FN1-RESULT',
-              stash: { ...stash, exeSeq: [...(stash.exeSeq || []), 'fn1'] },
-            };
-          }),
+          resolve: jest.fn().mockImplementation((source, args, stash, prevResult, context, info) => ({
+            result: 'FN1-RESULT',
+            args,
+            stash: { ...stash, exeSeq: [...(stash.exeSeq || []), 'fn1'] },
+          })),
         },
         fn2: {
-          resolve: jest.fn().mockImplementation((source, args, stash, prevResult, context, info) => {
-            return {
-              result: 'FN2-RESULT',
-              stash: { ...stash, exeSeq: [...(stash.exeSeq || []), 'fn2'] },
-            };
-          }),
+          resolve: jest.fn().mockImplementation((source, args, stash, prevResult, context, info) => ({
+            args,
+            result: 'FN2-RESULT',
+            stash: { ...stash, exeSeq: [...(stash.exeSeq || []), 'fn2'] },
+          })),
         },
       };
       getFunction.mockImplementation(fnName => fnImpl[fnName]);
       templates = {
         request: {
-          render: jest.fn().mockImplementation(({ stash }) => ({
+          render: jest.fn().mockImplementation(({ stash, arguments: args }) => ({
             result: 'REQUEST_TEMPLATE_RESULT',
             errors: [],
+            args,
             stash: { ...stash, exeSeq: [...(stash.exeSeq || []), 'REQUEST-MAPPING-TEMPLATE'] },
           })),
         },
         response: {
-          render: jest.fn().mockImplementation(({ stash }) => ({
+          render: jest.fn().mockImplementation(({ stash, arguments: args }) => ({
             result: 'RESPONSE_TEMPLATE_RESULT',
             errors: [],
+            args,
             stash: { ...stash, exeSeq: [...stash.exeSeq, 'fn2'] },
           })),
         },
@@ -155,6 +155,48 @@ describe('Pipeline Resolvers', () => {
         {
           source,
           arguments: args,
+          prevResult: 'FN2-RESULT',
+          result: 'FN2-RESULT',
+          stash: { exeSeq: ['REQUEST-MAPPING-TEMPLATE', 'fn1', 'fn2'] },
+        },
+        context,
+        info,
+      );
+    });
+
+    it('should preserve changes arguments between the pipeline functions', async () => {
+      const source = 'SOURCE';
+      const args = { arg1: 'val' };
+      const context = {
+        appsyncErrors: [],
+      };
+      const info = {};
+      fnImpl.fn1.resolve.mockImplementation((source, args, stash, prevResult, context, info) => ({
+        result: 'FN1-RESULT',
+        args: { ...args, fn1Arg: 'FN1-ARG1' },
+        stash: { ...stash, exeSeq: [...(stash.exeSeq || []), 'fn1'] },
+      }));
+      fnImpl.fn2.resolve.mockImplementation((source, args, stash, prevResult, context, info) => ({
+        result: 'FN2-RESULT',
+        args: { ...args, fn2Arg: 'FN2-ARG1' },
+        stash: { ...stash, exeSeq: [...(stash.exeSeq || []), 'fn2'] },
+      }));
+
+      await resolver.resolve(source, args, context, info);
+
+      expect(fnImpl.fn2.resolve).toHaveBeenLastCalledWith(
+        source,
+        { ...args, fn1Arg: 'FN1-ARG1' },
+        { exeSeq: ['REQUEST-MAPPING-TEMPLATE', 'fn1'] },
+        'FN1-RESULT',
+        context,
+        info,
+      );
+
+      expect(templates['response'].render).toHaveBeenCalledWith(
+        {
+          source,
+          arguments: { ...args, fn1Arg: 'FN1-ARG1', fn2Arg: 'FN2-ARG1' },
           prevResult: 'FN2-RESULT',
           result: 'FN2-RESULT',
           stash: { exeSeq: ['REQUEST-MAPPING-TEMPLATE', 'fn1', 'fn2'] },

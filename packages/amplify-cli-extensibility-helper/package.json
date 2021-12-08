@@ -1,0 +1,58 @@
+{
+  "name": "@aws-amplify/cli-extensibility-helper",
+  "version": "2.3.3",
+  "description": "Amplify CLI Extensibility Helper utility package",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-cli-extensibility-helper"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "keywords": [
+    "graphql",
+    "cli",
+    "cloudformation",
+    "aws",
+    "amplify"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rimraf ./lib"
+  },
+  "dependencies": {
+    "@aws-amplify/amplify-category-custom": "2.3.7",
+    "@aws-cdk/aws-apigateway": "~1.124.0",
+    "@aws-cdk/aws-appsync": "~1.124.0",
+    "@aws-cdk/aws-cognito": "~1.124.0",
+    "@aws-cdk/aws-dynamodb": "~1.124.0",
+    "@aws-cdk/aws-elasticsearch": "~1.124.0",
+    "@aws-cdk/aws-iam": "~1.124.0",
+    "@aws-cdk/aws-lambda": "~1.124.0",
+    "@aws-cdk/aws-s3": "~1.124.0",
+    "@aws-cdk/core": "~1.124.0",
+    "amplify-cli-core": "2.4.3",
+    "amplify-prompts": "1.6.0"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.(ts|tsx)?$": "ts-jest"
+    },
+    "testRegex": "(src/__tests__/.*.test.ts)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "collectCoverage": true
+  }
+}

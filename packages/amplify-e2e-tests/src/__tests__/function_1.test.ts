@@ -63,7 +63,7 @@ describe('nodejs', () => {
       await initJSProjectWithProfile(projRoot, {
         name: 'graphqltriggerinfra',
       });
-      await addApiWithoutSchema(projRoot);
+      await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
       await updateApiSchema(projRoot, 'graphqltriggerinfra', 'simple_model.graphql');
       await addFunction(projRoot, { functionTemplate: 'Lambda trigger', triggerType: 'DynamoDB' }, 'nodejs', addLambdaTrigger);
 

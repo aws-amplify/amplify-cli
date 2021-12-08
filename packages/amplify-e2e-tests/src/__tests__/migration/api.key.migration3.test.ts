@@ -22,7 +22,7 @@ describe('amplify add api', () => {
     await initJSProjectWithProfile(projRoot, { name: projectName });
     addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
 
-    await addApiWithoutSchema(projRoot);
+    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, projectName, initialSchema);
     await amplifyPush(projRoot);
 
@@ -43,7 +43,7 @@ describe('amplify add api', () => {
     await initJSProjectWithProfile(projRoot, { name: projectName });
     addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
 
-    await addApiWithoutSchema(projRoot);
+    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, projectName, initialSchema);
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema1);

@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`validate update geo request returns valid payload for map 1`] = `
+Object {
+  "serviceModification": Object {
+    "accessType": "AuthorizedAndGuestUsers",
+    "name": "mymapname",
+    "serviceName": "Map",
+    "setAsDefault": true,
+  },
+  "version": 1,
+}
+`;

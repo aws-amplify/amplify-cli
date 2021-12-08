@@ -28,54 +28,65 @@ const authFilter = ref('ctx.stash.authFilter');
 const API_KEY = 'API Key Authorization';
 const allowedAggFieldsList = 'allowedAggFields';
 
-export function requestTemplate(
-  primaryKey: string,
-  nonKeywordFields: Expression[],
-  includeVersion: boolean = false,
-  indexName: string,
-): string {
+export function requestTemplate(primaryKey: string, nonKeywordFields: Expression[], includeVersion: boolean = false, indexName: string, type: string, keyFields: Expression[] = []): string {
   return print(
     compoundExpression([
       set(ref('indexPath'), str(`/${indexName.toLowerCase()}/doc/_search`)),
       set(ref('allowedAggFields'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.allowedAggFields'), list([]))),
       set(ref('aggFieldsFilterMap'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.aggFieldsFilterMap'), obj({}))),
       set(ref('nonKeywordFields'), list(nonKeywordFields)),
+      set(ref('keyFields'), list(keyFields)),
       set(ref('sortValues'), list([])),
+      set(ref('sortFields'), list([])),
       set(ref('aggregateValues'), obj({})),
       set(ref('primaryKey'), str(primaryKey)),
-      ifElse(
-        ref('util.isNullOrEmpty($context.args.sort)'),
+      iff(
+        not(ref('util.isNullOrEmpty($context.args.sort)')),
         compoundExpression([
-          ifElse(
-            ref('nonKeywordFields.contains($primaryKey)'),
-            set(ref('sortField'), ref('util.toJson($primaryKey)')),
-            set(ref('sortField'), ref('util.toJson("${primaryKey}.keyword")')),
-          ),
-          set(ref('sortDirection'), ref('util.toJson({"order": "desc"})')),
-          qref('$sortValues.add("{$sortField: $sortDirection}")'),
-        ]),
-        forEach(ref('sortItem'), ref('context.args.sort'), [
-          ifElse(
-            ref('util.isNullOrEmpty($sortItem.field)'),
+          // Sort based on the config passed on the request
+          forEach(ref('sortItem'), ref('context.args.sort'), [
             ifElse(
-              ref('nonKeywordFields.contains($primaryKey)'),
-              set(ref('sortField'), ref('util.toJson($primaryKey)')),
-              set(ref('sortField'), ref('util.toJson("${primaryKey}.keyword")')),
+              ref('util.isNullOrEmpty($sortItem.field)'),
+              qref('$sortFields.add($primaryKey)'),
+              qref('$sortFields.add($sortItem.field)'),
             ),
             ifElse(
-              ref('nonKeywordFields.contains($sortItem.field)'),
-              set(ref('sortField'), ref('util.toJson($sortItem.field)')),
-              set(ref('sortField'), ref('util.toJson("${sortItem.field}.keyword")')),
+              ref('util.isNullOrEmpty($sortItem.field)'),
+              ifElse(
+                ref('nonKeywordFields.contains($primaryKey)'),
+                set(ref('sortField'), ref('util.toJson($primaryKey)')),
+                set(ref('sortField'), ref('util.toJson("${primaryKey}.keyword")')),
+              ),
+              ifElse(
+                ref('nonKeywordFields.contains($sortItem.field)'),
+                set(ref('sortField'), ref('util.toJson($sortItem.field)')),
+                set(ref('sortField'), ref('util.toJson("${sortItem.field}.keyword")')),
+              ),
             ),
-          ),
-          ifElse(
-            ref('util.isNullOrEmpty($sortItem.direction)'),
-            set(ref('sortDirection'), ref('util.toJson({"order": "desc"})')),
-            set(ref('sortDirection'), ref('util.toJson({"order": $sortItem.direction})')),
-          ),
-          qref('$sortValues.add("{$sortField: $sortDirection}")'),
+            ifElse(
+              ref('util.isNullOrEmpty($sortItem.direction)'),
+              set(ref('sortDirection'), ref('util.toJson({"order": "desc"})')),
+              set(ref('sortDirection'), ref('util.toJson({"order": $sortItem.direction})')),
+            ),
+            qref('$sortValues.add("{$sortField: $sortDirection}")'),
+          ]),
         ]),
       ),
+      // Add the key field to sort if not included already
+      forEach(ref('keyItem'), ref('keyFields'), [
+        iff(
+          not(ref('sortFields.contains($keyItem)')),
+          compoundExpression([
+            ifElse(
+              ref('nonKeywordFields.contains($keyItem)'),
+              set(ref('sortField'), ref('util.toJson($keyItem)')),
+              set(ref('sortField'), ref('util.toJson("${keyItem}.keyword")')),
+            ),
+            set(ref('sortDirection'), ref('util.toJson({"order": "desc"})')),
+            qref('$sortValues.add("{$sortField: $sortDirection}")'),
+          ]),
+        ),
+      ]),
       forEach(ref('aggItem'), ref('context.args.aggregates'), [
         raw(
           '#if( $allowedAggFields.contains($aggItem.field) )\n' +

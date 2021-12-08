@@ -17,7 +17,7 @@ import { CfnFunction, Code, Function, IFunction, ILayerVersion, Runtime } from '
 import { AppSyncFunctionConfiguration } from './appsync-function';
 import { IRole } from '@aws-cdk/aws-iam';
 import { InlineTemplate, S3MappingFunctionCode } from './cdk-compat/template-asset';
-import { toCamelCase } from 'graphql-transformer-common';
+import { ResolverResourceIDs, resourceName, toCamelCase } from 'graphql-transformer-common';
 import { GraphQLApi } from './graphql-api';
 
 export interface DefaultTransformHostOptions {
@@ -133,6 +133,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     fieldName: string,
     requestMappingTemplate: MappingTemplateProvider,
     responseMappingTemplate: MappingTemplateProvider,
+    resolverLogicalId?: string,
     dataSourceName?: string,
     pipelineConfig?: string[],
     stack?: Stack,
@@ -143,10 +144,11 @@ export class DefaultTransformHost implements TransformHostProvider {
 
     const requestTemplateLocation = requestMappingTemplate.bind(this.api);
     const responseTemplateLocation = responseMappingTemplate.bind(this.api);
-    const resolverName = toCamelCase([typeName, fieldName, 'Resolver']);
+    const resolverName = toCamelCase([resourceName(typeName), resourceName(fieldName), 'Resolver']);
+    const resourceId = resolverLogicalId ?? ResolverResourceIDs.ResolverResourceID(typeName, fieldName);
+
     if (dataSourceName) {
       const dataSource = this.dataSources.get(dataSourceName);
-
       const resolver = new CfnResolver(stack || this.api, resolverName, {
         apiId: this.api.apiId,
         fieldName: fieldName,
@@ -160,6 +162,7 @@ export class DefaultTransformHost implements TransformHostProvider {
           ? { responseMappingTemplate: responseTemplateLocation }
           : { responseMappingTemplateS3Location: responseTemplateLocation }),
       });
+      resolver.overrideLogicalId(resourceId);
       this.api.addSchemaDependency(resolver);
       return resolver;
     } else if (pipelineConfig) {
@@ -178,6 +181,7 @@ export class DefaultTransformHost implements TransformHostProvider {
           functions: pipelineConfig,
         },
       });
+      resolver.overrideLogicalId(resourceId);
       this.api.addSchemaDependency(resolver);
       this.resolvers.set(`${typeName}:${fieldName}`, resolver);
       return resolver;
@@ -240,13 +244,17 @@ export class DefaultTransformHost implements TransformHostProvider {
    * @param stack  Stack to which this datasource needs to mapped to
    */
   protected doAddDynamoDbDataSource(id: string, table: ITable, options?: DynamoDbDataSourceOptions, stack?: Stack): DynamoDbDataSource {
-    return new DynamoDbDataSource(stack ?? this.api, id, {
+    const ds = new DynamoDbDataSource(stack ?? this.api, id, {
       api: this.api,
       table,
       name: options?.name,
       description: options?.description,
       serviceRole: options?.serviceRole,
     });
+
+    (ds as any).node.defaultChild.overrideLogicalId(id);
+
+    return ds;
   }
 
   /**
@@ -258,13 +266,17 @@ export class DefaultTransformHost implements TransformHostProvider {
    * @param stack Stack to which the http datasource needs to be created in
    */
   protected doAddHttpDataSource(id: string, endpoint: string, options?: HttpDataSourceOptions, stack?: Stack): HttpDataSource {
-    return new HttpDataSource(stack ?? this.api, id, {
+    const ds = new HttpDataSource(stack ?? this.api, id, {
       api: this.api,
       endpoint,
       name: options?.name,
       description: options?.description,
       authorizationConfig: options?.authorizationConfig,
     });
+
+    (ds as any).node.defaultChild.overrideLogicalId(id);
+
+    return ds;
   }
 
   /**
@@ -300,11 +312,15 @@ export class DefaultTransformHost implements TransformHostProvider {
    * @param options The optional configuration for this data source
    */
   protected doAddLambdaDataSource(id: string, lambdaFunction: IFunction, options?: DataSourceOptions, stack?: Stack): LambdaDataSource {
-    return new LambdaDataSource(stack || this.api, id, {
+    const ds = new LambdaDataSource(stack || this.api, id, {
       api: this.api,
       lambdaFunction,
       name: options?.name,
       description: options?.description,
     });
+
+    (ds as any).node.defaultChild.overrideLogicalId(id);
+
+    return ds;
   }
 }

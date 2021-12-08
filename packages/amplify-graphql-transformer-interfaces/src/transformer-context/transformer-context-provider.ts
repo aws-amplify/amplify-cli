@@ -27,6 +27,7 @@ export interface TransformerContextProvider {
   resourceHelper: TransformerResourceHelperProvider;
   featureFlags: FeatureFlagProvider;
   authConfig: AppSyncAuthConfiguration;
+  sandboxModeEnabled: boolean;
 
   isProjectUsingDataStore(): boolean;
   getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;
@@ -34,7 +35,7 @@ export interface TransformerContextProvider {
 
 export type TransformerBeforeStepContextProvider = Pick<
   TransformerContextProvider,
-  'inputDocument' | 'featureFlags' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig'
+  'inputDocument' | 'featureFlags' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig' | 'stackManager' | 'sandboxModeEnabled'
 >;
 export type TransformerSchemaVisitStepContextProvider = Pick<
   TransformerContextProvider,
@@ -47,6 +48,7 @@ export type TransformerSchemaVisitStepContextProvider = Pick<
   | 'metadata'
   | 'authConfig'
   | 'resourceHelper'
+  | 'sandboxModeEnabled'
 >;
 export type TransformerValidationStepContextProvider = Pick<
   TransformerContextProvider,
@@ -59,6 +61,7 @@ export type TransformerValidationStepContextProvider = Pick<
   | 'getResolverConfig'
   | 'metadata'
   | 'authConfig'
+  | 'sandboxModeEnabled'
 >;
 export type TransformerPrepareStepContextProvider = TransformerValidationStepContextProvider;
 export type TransformerTransformSchemaStepContextProvider = TransformerValidationStepContextProvider;

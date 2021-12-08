@@ -50,6 +50,10 @@ function moveBackendResourcesToCurrentCloudBackend(resources: $TSObject[]) {
   const amplifyCloudMetaFilePath = pathManager.getCurrentAmplifyMetaFilePath();
   const backendConfigFilePath = pathManager.getBackendConfigFilePath();
   const backendConfigCloudFilePath = pathManager.getCurrentBackendConfigFilePath();
+  const overridePackageJsonBackendFilePath = path.join(pathManager.getBackendDirPath(), 'package.json');
+  const overrideTsConfigJsonBackendFilePath = path.join(pathManager.getBackendDirPath(), 'tsconfig.json');
+  const overridePackageJsonCurrentCloudBackendFilePath = path.join(pathManager.getCurrentCloudBackendDirPath(), 'package.json');
+  const overrideTsConfigJsonCurrentCloudBackendFilePath = path.join(pathManager.getCurrentCloudBackendDirPath(), 'tsconfig.json');
 
   for (const resource of resources) {
     const sourceDir = path.normalize(path.join(pathManager.getBackendDirPath(), resource.category, resource.resourceName));
@@ -64,7 +68,7 @@ function moveBackendResourcesToCurrentCloudBackend(resources: $TSObject[]) {
     // in the case that the resource is being deleted, the sourceDir won't exist
     if (fs.pathExistsSync(sourceDir)) {
       fs.copySync(sourceDir, targetDir);
-      if (resource?.service === ServiceName.LambdaFunction) {
+      if (resource?.service === ServiceName.LambdaFunction || (resource?.service && resource?.service.includes('custom'))) {
         removeNodeModulesDir(targetDir);
       }
     }
@@ -72,6 +76,24 @@ function moveBackendResourcesToCurrentCloudBackend(resources: $TSObject[]) {
 
   fs.copySync(amplifyMetaFilePath, amplifyCloudMetaFilePath, { overwrite: true });
   fs.copySync(backendConfigFilePath, backendConfigCloudFilePath, { overwrite: true });
+  /**
+   * copying package.json and tsconfig.json to current cloud backend
+   */
+  try {
+    fs.writeFileSync(overridePackageJsonCurrentCloudBackendFilePath, fs.readFileSync(overridePackageJsonBackendFilePath));
+  } catch (err) {
+    if (err.code !== 'ENOENT') {
+      throw err;
+    }
+  }
+
+  try {
+    fs.writeFileSync(overrideTsConfigJsonCurrentCloudBackendFilePath, fs.readFileSync(overrideTsConfigJsonBackendFilePath));
+  } catch (err) {
+    if (err.code !== 'ENOENT') {
+      throw err;
+    }
+  }
 }
 
 function removeNodeModulesDir(currentCloudBackendDir: string) {

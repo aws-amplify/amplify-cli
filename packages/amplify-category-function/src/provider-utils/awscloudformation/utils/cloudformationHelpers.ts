@@ -9,7 +9,7 @@ const functionCloudFormationFilePath = (functionName: string) =>
   path.join(pathManager.getBackendDirPath(), categoryName, functionName, `${functionName}-cloudformation-template.json`);
 
 export const getFunctionCloudFormationTemplate = async (functionName: string) => {
-  const { cfnTemplate } = await readCFNTemplate(functionCloudFormationFilePath(functionName));
+  const { cfnTemplate } = readCFNTemplate(functionCloudFormationFilePath(functionName));
   return cfnTemplate;
 };
 

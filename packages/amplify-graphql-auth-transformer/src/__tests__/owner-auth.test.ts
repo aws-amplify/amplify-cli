@@ -22,19 +22,44 @@ test('auth transformer validation happy case', () => {
     }`;
   const transformer = new GraphQLTransform({
     authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        authConfig,
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
     'AMAZON_COGNITO_USER_POOLS',
   );
+});
+
+test('ownerfield where the field is a list', () => {
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    },
+    additionalAuthenticationProviders: [],
+  };
+  const validSchema = `
+    type Post @model @auth(rules: [{allow: owner, ownerField: "editors" }]) {
+      id: ID!
+      title: String!
+      editors: [String]
+      createdAt: String
+      updatedAt: String
+    }`;
+  const transformer = new GraphQLTransform({
+    authConfig,
+    transformers: [new ModelTransformer(), new AuthTransformer()],
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
+    'AMAZON_COGNITO_USER_POOLS',
+  );
+  expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.updatePost.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.deletePost.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Query.getPost.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Query.listPosts.auth.1.req.vtl']).toMatchSnapshot();
 });
 
 test('ownerfield with subscriptions', () => {
@@ -54,13 +79,7 @@ test('ownerfield with subscriptions', () => {
     }`;
   const transformer = new GraphQLTransform({
     authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        authConfig,
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -71,13 +90,13 @@ test('ownerfield with subscriptions', () => {
   expect(out.schema).toContain('onDeletePost(postOwner: String)');
 
   // expect logic in the resolvers to check for postOwner args as an allowed owner
-  expect(out.pipelineFunctions['Subscription.onCreatePost.auth.1.req.vtl']).toContain(
+  expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain(
     '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.postOwner, null) )',
   );
-  expect(out.pipelineFunctions['Subscription.onUpdatePost.auth.1.req.vtl']).toContain(
+  expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain(
     '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.postOwner, null) )',
   );
-  expect(out.pipelineFunctions['Subscription.onDeletePost.auth.1.req.vtl']).toContain(
+  expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain(
     '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.postOwner, null) )',
   );
 });
@@ -104,13 +123,7 @@ test('multiple owner rules with subscriptions', () => {
   };
   const transformer = new GraphQLTransform({
     authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        authConfig,
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -121,24 +134,24 @@ test('multiple owner rules with subscriptions', () => {
   expect(out.schema).toContain('onDeletePost(owner: String, editor: String)');
 
   // expect logic in the resolvers to check for owner args as an allowedOwner
-  expect(out.pipelineFunctions['Subscription.onCreatePost.auth.1.req.vtl']).toContain(
+  expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain(
     '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.owner, null) )',
   );
-  expect(out.pipelineFunctions['Subscription.onUpdatePost.auth.1.req.vtl']).toContain(
+  expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain(
     '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.owner, null) )',
   );
-  expect(out.pipelineFunctions['Subscription.onDeletePost.auth.1.req.vtl']).toContain(
+  expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain(
     '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.owner, null) )',
   );
 
   // expect logic in the resolvers to check for editor args as an allowedOwner
-  expect(out.pipelineFunctions['Subscription.onCreatePost.auth.1.req.vtl']).toContain(
+  expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain(
     '#set( $ownerEntity1 = $util.defaultIfNull($ctx.args.editor, null) )',
   );
-  expect(out.pipelineFunctions['Subscription.onUpdatePost.auth.1.req.vtl']).toContain(
+  expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain(
     '#set( $ownerEntity1 = $util.defaultIfNull($ctx.args.editor, null) )',
   );
-  expect(out.pipelineFunctions['Subscription.onDeletePost.auth.1.req.vtl']).toContain(
+  expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain(
     '#set( $ownerEntity1 = $util.defaultIfNull($ctx.args.editor, null) )',
   );
 });
@@ -152,13 +165,7 @@ test('implicit owner fields get added to the type', () => {
   };
   const transformer = new GraphQLTransform({
     authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        authConfig,
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   const validSchema = `
   type Post @model
@@ -206,13 +213,7 @@ test('implicit owner fields from field level auth get added to the type', () => 
   };
   const transformer = new GraphQLTransform({
     authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        authConfig,
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();

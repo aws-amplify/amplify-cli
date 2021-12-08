@@ -166,13 +166,7 @@ const getRecursiveSchemaWithDiffModesOnParentType = (authDir1: string, authDir2:
 const getTransformer = (authConfig: AppSyncAuthConfiguration) =>
   new GraphQLTransform({
     authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        authConfig,
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
 
 const getObjectType = (doc: DocumentNode, type: string): ObjectTypeDefinitionNode | undefined => {
@@ -366,12 +360,12 @@ describe('schema generation directive tests', () => {
     // Check that resolvers containing the authMode check block
     const authStepSnippet = '## [Start] Authorization Steps. **';
 
-    expect(out.pipelineFunctions['Query.getPost.auth.1.req.vtl']).toContain(authStepSnippet);
-    expect(out.pipelineFunctions['Query.listPosts.auth.1.req.vtl']).toContain(authStepSnippet);
-    expect(out.pipelineFunctions['Mutation.createPost.auth.1.req.vtl']).toContain(authStepSnippet);
-    expect(out.pipelineFunctions['Mutation.createPost.auth.1.req.vtl']).toContain(authStepSnippet);
-    expect(out.pipelineFunctions['Mutation.updatePost.auth.1.res.vtl']).toContain(authStepSnippet);
-    expect(out.pipelineFunctions['Mutation.deletePost.auth.1.res.vtl']).toContain(authStepSnippet);
+    expect(out.resolvers['Query.getPost.auth.1.req.vtl']).toContain(authStepSnippet);
+    expect(out.resolvers['Query.listPosts.auth.1.req.vtl']).toContain(authStepSnippet);
+    expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toContain(authStepSnippet);
+    expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toContain(authStepSnippet);
+    expect(out.resolvers['Mutation.updatePost.auth.1.res.vtl']).toContain(authStepSnippet);
+    expect(out.resolvers['Mutation.deletePost.auth.1.res.vtl']).toContain(authStepSnippet);
   });
 
   test(`Operation fields are getting the directive added, when type has the @auth only for allowed operations`, () => {
@@ -425,10 +419,10 @@ describe('schema generation directive tests', () => {
     // Check that resolvers containing the authMode check block
     const authModeCheckSnippet = '## [Start] Field Authorization Steps. **';
     // resolvers to check is all other resolvers other than protected
-    expect(out.pipelineFunctions['Post.id.req.vtl']).toContain(authModeCheckSnippet);
-    expect(out.pipelineFunctions['Post.title.req.vtl']).toContain(authModeCheckSnippet);
-    expect(out.pipelineFunctions['Post.createdAt.req.vtl']).toContain(authModeCheckSnippet);
-    expect(out.pipelineFunctions['Post.updatedAt.req.vtl']).toContain(authModeCheckSnippet);
+    expect(out.resolvers['Post.id.req.vtl']).toContain(authModeCheckSnippet);
+    expect(out.resolvers['Post.title.req.vtl']).toContain(authModeCheckSnippet);
+    expect(out.resolvers['Post.createdAt.req.vtl']).toContain(authModeCheckSnippet);
+    expect(out.resolvers['Post.updatedAt.req.vtl']).toContain(authModeCheckSnippet);
   });
 
   test(`'groups' @auth at field level is propagated to type and the type related operations`, () => {
@@ -452,10 +446,10 @@ describe('schema generation directive tests', () => {
     const authModeCheckSnippet = '## [Start] Field Authorization Steps. **';
 
     // resolvers to check is all other resolvers other than protected
-    expect(out.pipelineFunctions['Post.id.req.vtl']).toContain(authModeCheckSnippet);
-    expect(out.pipelineFunctions['Post.title.req.vtl']).toContain(authModeCheckSnippet);
-    expect(out.pipelineFunctions['Post.createdAt.req.vtl']).toContain(authModeCheckSnippet);
-    expect(out.pipelineFunctions['Post.updatedAt.req.vtl']).toContain(authModeCheckSnippet);
+    expect(out.resolvers['Post.id.req.vtl']).toContain(authModeCheckSnippet);
+    expect(out.resolvers['Post.title.req.vtl']).toContain(authModeCheckSnippet);
+    expect(out.resolvers['Post.createdAt.req.vtl']).toContain(authModeCheckSnippet);
+    expect(out.resolvers['Post.updatedAt.req.vtl']).toContain(authModeCheckSnippet);
   });
 
   test(`'groups' @auth at field level is propagated to type and the type related operations, also default provider for read`, () => {
@@ -478,10 +472,10 @@ describe('schema generation directive tests', () => {
     const groupCheckSnippet = '#set( $staticGroupRoles = [{"claim":"cognito:groups","entity":"admin"}] )';
 
     // resolvers to check is all other resolvers other than protected by the group rule
-    expect(out.pipelineFunctions['Post.id.req.vtl']).toContain(groupCheckSnippet);
-    expect(out.pipelineFunctions['Post.title.req.vtl']).toContain(groupCheckSnippet);
-    expect(out.pipelineFunctions['Post.createdAt.req.vtl']).toContain(groupCheckSnippet);
-    expect(out.pipelineFunctions['Post.updatedAt.req.vtl']).toContain(groupCheckSnippet);
+    expect(out.resolvers['Post.id.req.vtl']).toContain(groupCheckSnippet);
+    expect(out.resolvers['Post.title.req.vtl']).toContain(groupCheckSnippet);
+    expect(out.resolvers['Post.createdAt.req.vtl']).toContain(groupCheckSnippet);
+    expect(out.resolvers['Post.updatedAt.req.vtl']).toContain(groupCheckSnippet);
   });
 
   test(`Nested types without @model not getting directives applied for iam, and no policy is generated`, () => {
@@ -567,6 +561,18 @@ describe('schema generation directive tests', () => {
     expectMultiple(tagType, expectedDirectiveNames);
   });
 
+  test('OIDC works with private', () => {
+    const cognitoUserPoolAndOidcAuthRules =
+      '@auth(rules: [ { allow: private, provider: oidc, operations: [read] } { allow: owner, ownerField: "editors" } { allow: groups, groupsField: "groups"} ])';
+    const authConfig = withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS', 'OPENID_CONNECT']);
+
+    (authConfig.additionalAuthenticationProviders[1] as AppSyncAuthConfigurationOIDCEntry).openIDConnectConfig = {
+      name: 'Test Provider',
+      issuerUrl: 'https://abc.def/',
+    };
+    transformTest(cognitoUserPoolAndOidcAuthRules, authConfig, [userPoolsDirectiveName, openIdDirectiveName]);
+  });
+
   test(`Nested types without @model getting directives applied (cognito default, api key additional)`, () => {
     const schema = getSchemaWithNonModelField(privateAndPublicDirective);
     const transformer = getTransformer(withAuthModes(userPoolsDefaultConfig, ['API_KEY']));
@@ -597,5 +603,55 @@ describe('schema generation directive tests', () => {
 
       expect(expectedDireciveNameCount).toEqual(addressType.directives.length);
     }
+  });
+});
+
+describe('iam checks', () => {
+  const identityPoolId = 'us-fake-1:1234abc';
+  const adminRoles = ['helloWorldFunction', 'echoMessageFunction'];
+
+  test('identity pool check gets added when using private rule', () => {
+    const schema = getSchema(privateIAMDirective);
+    const transformer = new GraphQLTransform({
+      authConfig: iamDefaultConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId })],
+    });
+    const out = transformer.transform(schema);
+    expect(out).toBeDefined();
+    const createResolver = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
+    expect(createResolver).toContain(
+      `#if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == \"${identityPoolId}\" && $ctx.identity.cognitoIdentityAuthType == \"authenticated\") )`,
+    );
+    const queryResolver = out.resolvers['Query.listPosts.auth.1.req.vtl'];
+    expect(queryResolver).toContain(
+      `#if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == \"${identityPoolId}\" && $ctx.identity.cognitoIdentityAuthType == \"authenticated\") )`,
+    );
+  });
+
+  test('identity pool check does not get added when using public rule', () => {
+    const schema = getSchema(publicIAMAuthDirective);
+    const transformer = new GraphQLTransform({
+      authConfig: iamDefaultConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId })],
+    });
+    const out = transformer.transform(schema);
+    expect(out).toBeDefined();
+    const createResolver = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
+    expect(createResolver).toContain(`#if( $ctx.identity.userArn == $ctx.stash.unauthRole )`);
+    const queryResolver = out.resolvers['Query.listPosts.auth.1.req.vtl'];
+    expect(queryResolver).toContain(`#if( $ctx.identity.userArn == $ctx.stash.unauthRole )`);
+  });
+
+  test('test that admin roles are added when functions have access to the graphql api', () => {
+    const schema = getSchema(privateIAMDirective);
+    const transformer = new GraphQLTransform({
+      authConfig: iamDefaultConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer({ adminRoles })],
+    });
+    const out = transformer.transform(schema);
+    expect(out).toBeDefined();
+    const createResolver = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
+    expect(createResolver).toContain(`#set( $adminRoles = [\"helloWorldFunction\",\"echoMessageFunction\"] )`);
+    expect(createResolver).toMatchSnapshot();
   });
 });

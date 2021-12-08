@@ -164,12 +164,8 @@ export class ResourceDiff {
 
   //helper: wrapper around readCFNTemplate type to handle expressions.
   private safeReadCFNTemplate = async (filePath: string) => {
-    try {
-      const templateResult = await readCFNTemplate(filePath);
-      return templateResult.cfnTemplate;
-    } catch (e) {
-      return {};
-    }
+    const templateResult = readCFNTemplate(filePath, { throwIfNotExist: false });
+    return templateResult?.cfnTemplate || {};
   };
 
   //helper: Select cloudformation file path from build folder or non build folder.
@@ -253,6 +249,7 @@ export interface ICategoryStatusCollection {
   resourcesToBeUpdated: any[];
   resourcesToBeDeleted: any[];
   resourcesToBeSynced: any[];
+  rootStackUpdated?: boolean;
   allResources: any[];
   tagsUpdated: boolean;
 }

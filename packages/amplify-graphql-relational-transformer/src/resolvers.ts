@@ -37,12 +37,14 @@ import {
   attributeTypeFromScalar,
   ModelResourceIDs,
   NONE_VALUE,
+  ResolverResourceIDs,
   ResourceConstants,
   toCamelCase,
 } from 'graphql-transformer-common';
 import { HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from './types';
 import { getConnectionAttributeName } from './utils';
 
+const CONNECTION_STACK = 'ConnectionStack';
 const authFilter = ref('ctx.stash.authFilter');
 
 export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider) {
@@ -86,6 +88,7 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
   const resolver = ctx.resolvers.generateQueryResolver(
     object.name.value,
     field.name.value,
+    ResolverResourceIDs.ResolverResourceID(object.name.value, field.name.value),
     dataSource as any,
     MappingTemplate.s3MappingTemplateFromString(
       print(
@@ -142,7 +145,7 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
     ),
   );
 
-  resolver.mapToStack(table.stack);
+  resolver.mapToStack(getConnectionStack(ctx));
   ctx.resolvers.addResolver(object.name.value, field.name.value, resolver);
 }
 
@@ -223,6 +226,7 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
   const resolver = ctx.resolvers.generateQueryResolver(
     object.name.value,
     field.name.value,
+    ResolverResourceIDs.ResolverResourceID(object.name.value, field.name.value),
     dataSource as any,
     MappingTemplate.s3MappingTemplateFromString(
       print(
@@ -248,7 +252,7 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
     ),
   );
 
-  resolver.mapToStack(table.stack);
+  resolver.mapToStack(getConnectionStack(ctx));
   ctx.resolvers.addResolver(object.name.value, field.name.value, resolver);
 }
 
@@ -371,4 +375,12 @@ function appendIndex(list: any, newIndex: any): any[] {
   }
 
   return [newIndex];
+}
+
+function getConnectionStack(ctx: TransformerContextProvider): cdk.Stack {
+  if (ctx.stackManager.hasStack(CONNECTION_STACK)) {
+    return ctx.stackManager.getStack(CONNECTION_STACK);
+  }
+
+  return ctx.stackManager.createStack(CONNECTION_STACK);
 }

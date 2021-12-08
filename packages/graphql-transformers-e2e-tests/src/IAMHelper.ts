@@ -49,6 +49,26 @@ export class IAMHelper {
 
     return { authRole: authRole.Role, unauthRole: unauthRole.Role };
   }
+  async createRoleForCognitoGroup(name: string): Promise<IAM.Role> {
+    const role = await this.client
+      .createRole({
+        RoleName: name,
+        AssumeRolePolicyDocument: `{
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Principal": {
+              "Federated": "cognito-identity.amazonaws.com"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity"
+          }
+        ]
+      }`,
+      })
+      .promise();
+    return role.Role;
+  }
 
   async createLambdaExecutionRole(name: string) {
     return await this.client

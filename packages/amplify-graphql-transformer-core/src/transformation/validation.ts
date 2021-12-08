@@ -56,6 +56,7 @@ import { UniqueDirectivesPerLocation } from 'graphql/validation/rules/UniqueDire
 
 // AuthMode Types
 import { AppSyncAuthConfiguration, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
+import { validateSDL } from 'graphql/validation/validate';
 
 /**
  * This set includes all validation rules defined by the GraphQL spec.
@@ -112,7 +113,6 @@ directive @aws_api_key on FIELD_DEFINITION | OBJECT
 directive @aws_iam on FIELD_DEFINITION | OBJECT
 directive @aws_oidc on FIELD_DEFINITION | OBJECT
 directive @aws_cognito_user_pools(cognito_groups: [String!]) on FIELD_DEFINITION | OBJECT
-directive @allow_public_data_access_with_api_key(in: [String!]) on OBJECT
 
 # Allows transformer libraries to deprecate directive arguments.
 directive @deprecated(reason: String) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION | ENUM | ENUM_VALUE
@@ -142,8 +142,12 @@ export const validateModelSchema = (doc: DocumentNode) => {
   if (!existingQueryType) {
     fullDocument.definitions.push(...NOOP_QUERY.definitions);
   }
-
-  const schema = buildASTSchema(fullDocument);
+  let schema;
+  const errors = validateSDL(fullDocument);
+  if (errors.length > 0) {
+    return errors;
+  }
+  schema = buildASTSchema(fullDocument, { assumeValid: true });
   return validate(schema, fullDocument, specifiedRules);
 };
 
@@ -159,7 +163,13 @@ export const validateAuthModes = (authConfig: AppSyncAuthConfiguration) => {
   for (let i = 0; i < authModes.length; i++) {
     const mode = authModes[i];
 
-    if (mode !== 'API_KEY' && mode !== 'AMAZON_COGNITO_USER_POOLS' && mode !== 'AWS_IAM' && mode !== 'OPENID_CONNECT') {
+    if (
+      mode !== 'API_KEY' &&
+      mode !== 'AMAZON_COGNITO_USER_POOLS' &&
+      mode !== 'AWS_IAM' &&
+      mode !== 'OPENID_CONNECT' &&
+      mode !== 'AWS_LAMBDA'
+    ) {
       throw new Error(`Invalid auth mode ${mode}`);
     }
   }

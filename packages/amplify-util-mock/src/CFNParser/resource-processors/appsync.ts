@@ -34,7 +34,7 @@ export function dynamoDBResourceHandler(resourceName, resource, cfnContext: Clou
 
 export type AppSyncDataSourceProcessedResource = CloudFormationProcessedResourceResult & {
   name: string;
-  type: 'AMAZON_DYNAMODB' | 'AWS_LAMBDA' | 'NONE';
+  type: 'AMAZON_DYNAMODB' | 'AWS_LAMBDA' | 'AMAZON_ELASTICSEARCH' | 'NONE';
   LambdaFunctionArn?: string;
   config?: {
     tableName: string;
@@ -76,6 +76,16 @@ export function appSyncDataSourceHandler(
       type: 'AWS_LAMBDA',
       name: resource.Properties.Name,
       LambdaFunctionArn: lambdaArn,
+    };
+  }
+
+  if (typeName === 'AMAZON_ELASTICSEARCH') {
+    console.log(`@searchable mocking is not supported. Search queries will not work as expected.`);
+
+    return {
+      ...commonProps,
+      type: 'AMAZON_ELASTICSEARCH',
+      name: resource.Properties.Name,
     };
   }
 

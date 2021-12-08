@@ -36,7 +36,7 @@ describe('Iterative Rollback - add 2 @keys ', () => {
   });
   it('should support rolling back from the 2nd deployment on adding gsis', async () => {
     const initialSchema = path.join('iterative-push', 'two-key-add', 'initial-schema.graphql');
-    await addApiWithoutSchema(projectDir, { apiKeyExpirationDays: 7 });
+    await addApiWithoutSchema(projectDir, { apiKeyExpirationDays: 7, transformerVersion: 1 });
     await updateApiSchema(projectDir, appName, initialSchema);
     await amplifyPush(projectDir);
 

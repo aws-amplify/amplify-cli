@@ -18,8 +18,8 @@ export const supportedServices = {
         question: 'Provide API name:',
         validation: {
           operator: 'regex',
-          value: '^[a-zA-Z0-9]+$',
-          onErrorMsg: 'You can use the following characters: a-z A-Z 0-9',
+          value: '^[a-zA-Z0-9]{1,80}$',
+          onErrorMsg: 'You can use the following characters: a-z A-Z 0-9 with maximum length of 80',
         },
         required: true,
       },
@@ -122,7 +122,6 @@ export const supportedServices = {
       },
     ],
     alias: 'GraphQL',
-    defaultValuesFilename: 'appSync-defaults.js',
     serviceWalkthroughFilename: 'appSync-walkthrough.js',
     cfnFilename: 'appSync-cloudformation-template-default.yml.ejs',
     provider: 'awscloudformation',
@@ -148,9 +147,7 @@ export const supportedServices = {
       },
     ],
     alias: 'REST',
-    defaultValuesFilename: 'apigw-defaults.js',
     serviceWalkthroughFilename: 'apigw-walkthrough.js',
-    cfnFilename: 'apigw-cloudformation-template-default.json.ejs',
     provider: 'awscloudformation',
   },
 };
