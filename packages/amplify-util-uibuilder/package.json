@@ -2,7 +2,7 @@
   "name": "@aws-amplify/amplify-util-uibuilder",
   "version": "1.1.2",
   "description": "",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "test": "jest"
   },
