@@ -66,8 +66,8 @@ export async function appSyncClient<ResponseDataType = unknown, VarsType = Recor
 
     case AmplifyAppSyncSimulatorAuthenticationType.AWS_IAM:
     default:
-      // doing just enough to cheat amplify-appsync-simulator/src/utils/auth-helpers/current-auth-mode.ts
-      headers.Authorization = 'AWS4-HMAC-SHA256-mock-signature';
+      // doing just enough to cheat amplify-appsync-simulator/src/utils/auth-helpers/helpers.ts
+      headers.Authorization = `AWS4-HMAC-SHA256 Credential=${appSync.appSyncConfig.authAccessKeyId}/2021-12-12`;
   }
 
   return await new Promise((resolve, reject) => {
