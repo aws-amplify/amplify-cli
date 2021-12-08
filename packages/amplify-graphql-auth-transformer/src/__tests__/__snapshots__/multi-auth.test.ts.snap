@@ -1,5 +1,63 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`iam checks test groups and owner auth rules 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $staticGroupRoles = [{\\"claim\\":\\"cognito:groups\\",\\"entity\\":\\"admin\\"}] )
+    #foreach( $groupRole in $staticGroupRoles )
+      #set( $groupsInToken = $util.defaultIfNull($ctx.identity.claims.get($groupRole.claim), []) )
+      #if( $groupsInToken.contains($groupRole.entity) )
+        #set( $isAuthorized = true )
+        #break
+      #end
+    #end
+  #end
+  #if( !$util.isNull($ctx.args.id) )
+    #set( $idClaim = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+    #if( $util.isString($ctx.args.id) )
+      #set( $idCondition = ($idClaim == $ctx.args.id) )
+    #else
+      #set( $idCondition = ($idClaim == $util.defaultIfNull($ctx.args.id.get(\\"eq\\"), \\"___xamznone____\\")) )
+    #end
+    #if( $idCondition )
+      #set( $isAuthorized = true )
+      $util.qr($ctx.stash.put(\\"authFilter\\", null))
+    #end
+  #else
+    $util.qr($primaryFieldMap.put(\\"id\\", $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\"))))
+  #end
+  #if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) && !$primaryFieldMap.isEmpty() )
+    #set( $modelQueryExpression = $util.defaultIfNull($ctx.stash.modelQueryExpression, {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+}) )
+    #if( $util.isNullOrBlank($modelQueryExpression.expression) )
+      #set( $expressions = [] )
+    #else
+      #set( $expressions = [$modelQueryExpression.expression] )
+    #end
+    #foreach( $entry in $primaryFieldMap.entrySet() )
+      $util.qr($expressions.add(\\"#\${entry.key} = :\${entry.value}\\"))
+      $util.qr($modelQueryExpression.expressionNames.put(\\"#\${entry.key}\\", $entry.key))
+      $util.qr($modelQueryExpression.expressionValues.put(\\":\${entry.value}\\", $util.dynamodb.toDynamoDB($entry.value)))
+    #end
+    $util.qr($modelQueryExpression.put(\\"expression\\", $expressions.join(' AND ')))
+    $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
+    #set( $isAuthorized = true )
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
 exports[`iam checks test that admin roles are added when functions have access to the graphql api 1`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
