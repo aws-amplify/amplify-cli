@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.7.0-flutter-preview.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.2...@aws-amplify/cli@7.7.0-flutter-preview.0) (2021-12-08)
+
+
+### Features
+
+* **cli:** bump flutter to preview ([1c09c95](https://github.com/aws-amplify/amplify-cli/commit/1c09c95b91f288a620c49f7c65b6c37578a437c7))
+
+
+
+
+
 ## [7.6.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.1...@aws-amplify/cli@7.6.2) (2021-12-03)
 
 

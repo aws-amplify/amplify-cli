@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.21-flutter-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.20...amplify-util-mock@4.2.21-flutter-preview.0) (2021-12-08)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
 ## [4.2.20](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.19...amplify-util-mock@4.2.20) (2021-12-03)
 
 **Note:** Version bump only for package amplify-util-mock
