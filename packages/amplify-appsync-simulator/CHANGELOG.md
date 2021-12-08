@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.1...amplify-appsync-simulator@2.3.2-beta.0) (2021-12-08)
+
+
+### Bug Fixes
+
+* add support for IAM roles in mock ([#9139](https://github.com/aws-amplify/amplify-cli/issues/9139)) ([8f9adbf](https://github.com/aws-amplify/amplify-cli/commit/8f9adbf36b350f147c1252168565b9c982bbac0f)), closes [#9107](https://github.com/aws-amplify/amplify-cli/issues/9107)
+
+
+
+
+
 ## [2.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.0...amplify-appsync-simulator@2.3.1) (2021-12-03)
 
 
