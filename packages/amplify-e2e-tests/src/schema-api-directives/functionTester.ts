@@ -1,5 +1,5 @@
 import path from 'path';
-import uuid from 'uuid';
+import { v4 as uuid } from 'uuid';
 import fs from 'fs-extra';
 import { amplifyPush, addFunction, addApi } from 'amplify-e2e-core';
 

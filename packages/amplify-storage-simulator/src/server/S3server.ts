@@ -9,7 +9,7 @@ import e2p from 'event-to-promise';
 import serveStatic from 'serve-static';
 import * as glob from 'glob';
 import o2x from 'object-to-xml';
-import uuid from 'uuid';
+import { v4 as uuid } from 'uuid';
 import etag from 'etag';
 import { EventEmitter } from 'events';
 

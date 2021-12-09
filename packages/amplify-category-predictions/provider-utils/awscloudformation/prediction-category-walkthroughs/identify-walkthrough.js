@@ -533,7 +533,7 @@ async function postCFNGenUpdateLambdaResourceInPredictions(context, predictionsR
 
 async function createNewFunction(context, predictionsResourceName, s3ResourceName) {
   const targetDir = pathManager.getBackendDirPath();
-  const [shortId] = uuid().split('-');
+  const [shortId] = uuid.v4().split('-');
   const functionName = `RekognitionIndexFacesTrigger${shortId}`;
   const pluginDir = __dirname;
 
