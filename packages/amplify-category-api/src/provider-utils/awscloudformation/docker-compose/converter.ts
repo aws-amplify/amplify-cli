@@ -19,8 +19,8 @@ function isV38Service(obj: any): obj is v38Types.DefinitionsService {
 const mapComposeEntriesToContainer = (record: [string, v1Types.DefinitionsService | v2Types.DefinitionsService]): Container => {
   const [k, v] = record;
 
-  const { image, ports, build, command, entrypoint, env_file, environment, working_dir, user } = v;
-  const { container_name: name = k } = v;
+  const { container_name, image, ports, build, command, entrypoint, env_file, environment, working_dir, user } = v;
+  const name = container_name || k;
 
   var healthcheck: v2Types.DefinitionsHealthcheck = {};
   if (hasHealthCheck(v)) {
