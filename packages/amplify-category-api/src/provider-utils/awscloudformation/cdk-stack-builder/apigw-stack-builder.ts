@@ -12,20 +12,21 @@ const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'API Gateway Resource for AWS Amplify CLI';
 
 export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigwResourceTemplate {
-  _scope: cdk.Construct;
-  restApi!: apigw.CfnRestApi;
+  restApi: apigw.CfnRestApi;
   deploymentResource: apigw.CfnDeployment;
-  _lambdaPermission: lambda.CfnPermission;
-  _props: ApigwInputs;
-  paths: $TSObject;
   policies: { [pathName: string]: ApigwPathPolicy };
-  _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
+  private _scope: cdk.Construct;
+  private _props: ApigwInputs;
+  private _paths: $TSObject;
+  private _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
+  private _seenLogicalIds: Set<string>;
 
   constructor(scope: cdk.Construct, id: string, props: ApigwInputs) {
     super(scope, id, undefined);
     this._scope = scope;
     this._props = props;
-    this.paths = {};
+    this._paths = {};
+    this._seenLogicalIds = new Set();
     this.policies = {};
     this.templateOptions.templateFormatVersion = CFN_TEMPLATE_FORMAT_VERSION;
     this.templateOptions.description = ROOT_CFN_DESCRIPTION;
@@ -37,7 +38,11 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
    * @param logicalId
    */
   addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void {
+    if (this._seenLogicalIds.has(logicalId)) {
+      throw new Error(`logical id "${logicalId}" already exists`);
+    }
     new cdk.CfnOutput(this, logicalId, props);
+    this._seenLogicalIds.add(logicalId);
   }
 
   /**
@@ -46,7 +51,11 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
    * @param logicalId
    */
   addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void {
+    if (this._seenLogicalIds.has(logicalId)) {
+      throw new Error(`logical id "${logicalId}" already exists`);
+    }
     new cdk.CfnMapping(this, logicalId, props);
+    this._seenLogicalIds.add(logicalId);
   }
 
   /**
@@ -55,7 +64,11 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
    * @param logicalId
    */
   addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void {
+    if (this._seenLogicalIds.has(logicalId)) {
+      throw new Error(`logical id "${logicalId}" already exists`);
+    }
     new cdk.CfnCondition(this, logicalId, props);
+    this._seenLogicalIds.add(logicalId);
   }
 
   /**
@@ -64,7 +77,11 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
    * @param logicalId
    */
   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void {
+    if (this._seenLogicalIds.has(logicalId)) {
+      throw new Error(`logical id "${logicalId}" already exists`);
+    }
     new cdk.CfnResource(this, logicalId, props);
+    this._seenLogicalIds.add(logicalId);
   }
 
   /**
@@ -73,7 +90,11 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
    * @param logicalId
    */
   addLambdaPermissionCfnResource(props: lambda.CfnPermissionProps, logicalId: string): void {
+    if (this._seenLogicalIds.has(logicalId)) {
+      throw new Error(`logical id "${logicalId}" already exists`);
+    }
     new lambda.CfnPermission(this, logicalId, props);
+    this._seenLogicalIds.add(logicalId);
   }
 
   /**
@@ -86,6 +107,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
       throw new Error(`logical id "${logicalId}" already exists`);
     }
     this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
+    this._seenLogicalIds.add(logicalId);
   }
 
   private _craftPolicyDocument(apiResourceName: string, pathName: string, supportedOperations: string[]) {
@@ -155,7 +177,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
         host: cdk.Fn.join('', ['apigateway.', cdk.Fn.ref('AWS::Region'), '.amazonaws.com']),
         basePath: cdk.Fn.conditionIf('ShouldNotCreateEnvResources', '/Prod', cdk.Fn.join('', ['/', cdk.Fn.ref('env')])),
         schemes: ['https'],
-        paths: this.paths,
+        paths: this._paths,
         securityDefinitions: {
           Cognito: {
             type: 'apiKey',
@@ -211,7 +233,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
         host: cdk.Fn.join('', ['apigateway.', cdk.Fn.ref('AWS::Region'), '.amazonaws.com']),
         basePath: cdk.Fn.conditionIf('ShouldNotCreateEnvResources', '/Prod', cdk.Fn.join('', ['/', cdk.Fn.ref('env')])),
         schemes: ['https'],
-        paths: this.paths,
+        paths: this._paths,
         securityDefinitions: {
           sigv4: {
             type: 'apiKey',
@@ -263,11 +285,11 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
     for (const [pathName, path] of Object.entries(this._props.paths)) {
       let lambdaPermissionLogicalId: string;
       if (resourceName === ADMIN_QUERIES_NAME) {
-        this.paths[`/{proxy+}`] = getAdminQueriesPathObject(path.lambdaFunction);
+        this._paths[`/{proxy+}`] = getAdminQueriesPathObject(path.lambdaFunction);
         lambdaPermissionLogicalId = `${ADMIN_QUERIES_NAME}APIGWPolicyForLambda`;
       } else {
-        this.paths[pathName] = createPathObject(path);
-        this.paths[`${pathName}/{proxy+}`] = createPathObject(path);
+        this._paths[pathName] = createPathObject(path);
+        this._paths[`${pathName}/{proxy+}`] = createPathObject(path);
         lambdaPermissionLogicalId = `function${path.lambdaFunction}Permission${resourceName}`;
       }
 
