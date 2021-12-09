@@ -12,8 +12,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/codegen-ui": "^1.1.0",
-    "@aws-amplify/codegen-ui-react": "^1.1.0",
+    "@aws-amplify/codegen-ui": "1.1.0",
+    "@aws-amplify/codegen-ui-react": "1.1.0",
     "amplify-cli-core": "2.4.3",
     "amplify-prompts": "1.6.0",
     "amplify-provider-awscloudformation": "5.8.1",

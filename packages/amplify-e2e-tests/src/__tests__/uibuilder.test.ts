@@ -1,6 +1,6 @@
 import { getAppId, amplifyPull, createNewProjectDir, deleteProject, deleteProjectDir, initJSProjectWithProfile } from 'amplify-e2e-core';
-import { getNpxPath } from 'amplify-e2e-core';
-import { spawnSync } from 'child_process';
+import { getNpxPath, getNpmPath } from 'amplify-e2e-core';
+import { spawnSync, spawn } from 'child_process';
 import fs from 'fs-extra';
 import path from 'path';
 import aws from 'aws-sdk';
@@ -8,7 +8,9 @@ import aws from 'aws-sdk';
 describe('amplify pull with uibuilder', () => {
   let projRoot: string;
   let projRoot2: string;
+  let projectDir: string;
   let projectName: string;
+  let reactDir: string;
   let appId: string;
   let envName = 'integtest';
   let mockComponent = {
@@ -2445,6 +2447,9 @@ describe('amplify pull with uibuilder', () => {
     projRoot = await createNewProjectDir('pull-uibuilder');
     projRoot2 = await createNewProjectDir('pull-uibuilder-2');
     projectName = path.basename(projRoot) + 'reactapp';
+    projectDir = path.dirname(projRoot2);
+    reactDir = `${projectDir}/${projectName}`;
+
     await initJSProjectWithProfile(projRoot, {
       disableAmplifyAppCreation: false,
       name: 'uibuildertest',
@@ -2466,16 +2471,36 @@ describe('amplify pull with uibuilder', () => {
     await deleteProject(projRoot);
     deleteProjectDir(projRoot);
     deleteProjectDir(projRoot2);
+    deleteProjectDir(reactDir);
   });
 
   it('appropriate uibiulder files are generated', async () => {
-    const projectDir = path.dirname(projRoot2);
     spawnSync(getNpxPath(), ['create-react-app', projectName], { cwd: projectDir });
-    await amplifyPull(`${projectDir}/${projectName}`, { appId, envName, emptyDir: true });
-    const fileList = fs.readdirSync(`${projectDir}/${projectName}/src/ui-components/`);
+    await amplifyPull(reactDir, { appId, envName, emptyDir: true });
+    const fileList = fs.readdirSync(`${reactDir}/src/ui-components/`);
     expect(fileList).toContain('FormCheckout.jsx');
     expect(fileList).toContain('FormCheckout.jsx.d.ts');
     expect(fileList).toContain('index.js');
     expect(fileList).toHaveLength(3);
+
+    spawnSync(
+      getNpmPath(),
+      ['install', '-E', '@types/react', 'cypress', '@aws-amplify/ui-react', 'aws-amplify', '@radix-ui/react-id@0.1.1'],
+      { cwd: reactDir },
+    );
+
+    fs.unlinkSync(`${reactDir}/src/App.js`);
+    fs.writeFileSync(`${reactDir}/src/App.js`, fs.readFileSync(path.join(__dirname, '..', 'cypress', 'uibuilder', 'uibuilder-app.js')));
+    fs.writeFileSync(`${reactDir}/cypress.json`, '{}');
+    fs.mkdirsSync(`${reactDir}/cypress/integration/`);
+    fs.writeFileSync(
+      `${reactDir}/cypress/integration/sample_spec.js`,
+      fs.readFileSync(path.join(__dirname, '..', 'cypress', 'uibuilder', 'uibuilder-spec.js')),
+    );
+
+    spawn(getNpmPath(), ['start'], { cwd: reactDir });
+    const res = spawnSync(getNpxPath(), ['cypress', 'run'], { cwd: reactDir, encoding: 'utf8' });
+    spawnSync('kill $(lsof -t -i:3000)');
+    expect(res.status).toBe(0);
   });
 });
