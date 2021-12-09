@@ -31,7 +31,7 @@ const allowedAggFieldsList = 'allowedAggFields';
 export function requestTemplate(primaryKey: string, nonKeywordFields: Expression[], includeVersion: boolean = false, type: string, keyFields: Expression[] = []): string {
   return print(
     compoundExpression([
-      set(ref('indexPath'), str(`/${type.toLowerCase()}/_doc/_search`)),
+      set(ref('indexPath'), str(`/${type.toLowerCase()}/_search`)),
       set(ref('allowedAggFields'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.allowedAggFields'), list([]))),
       set(ref('aggFieldsFilterMap'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.aggFieldsFilterMap'), obj({}))),
       set(ref('nonKeywordFields'), list(nonKeywordFields)),
