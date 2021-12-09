@@ -107,7 +107,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     if (!this._cfnResourceMap.has(logicalId)) {
       this._cfnResourceMap.set(logicalId, new cdk.CfnResource(this, logicalId, props));
     } else {
-      throw new Error(`Cfn Resource with LogicalId ${logicalId} doesnt exist`);
+      throw new Error(`Cfn Resource with LogicalId ${logicalId} already exists`);
     }
   }
   getCfnOutput(logicalId: string): cdk.CfnOutput {
@@ -134,7 +134,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     if (!this._cfnOutputMap.has(logicalId)) {
       this._cfnOutputMap.set(logicalId, new cdk.CfnOutput(this, logicalId, props));
     } else {
-      throw new Error(`Cfn Parameter with LogicalId ${logicalId} doesnt exist`);
+      throw new Error(`Cfn Parameter with LogicalId ${logicalId} already exists`);
     }
   }
 
@@ -147,7 +147,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     if (!this._cfnMappingMap.has(logicalId)) {
       this._cfnMappingMap.set(logicalId, new cdk.CfnMapping(this, logicalId, props));
     } else {
-      throw new Error(`Cfn Parameter with LogicalId ${logicalId} doesnt exist`);
+      throw new Error(`Cfn Parameter with LogicalId ${logicalId} already exists`);
     }
   }
 
@@ -160,7 +160,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     if (!this._cfnConditionMap.has(logicalId)) {
       this._cfnConditionMap.set(logicalId, new cdk.CfnCondition(this, logicalId, props));
     } else {
-      throw new Error(`Cfn Parameter with LogicalId ${logicalId} doesnt exist`);
+      throw new Error(`Cfn Parameter with LogicalId ${logicalId} already exists`);
     }
   }
 
@@ -173,7 +173,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     if (!this._cfnParameterMap.has(logicalId)) {
       this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
     } else {
-      throw new Error(`Cfn Parameter with LogicalId ${logicalId} doesnt exist`);
+      throw new Error(`Cfn Parameter with LogicalId ${logicalId} already exists`);
     }
   }
 
