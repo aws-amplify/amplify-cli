@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.5.5...amplify-e2e-tests@3.5.6) (2021-12-09)
+
+
+
+## 7.6.3 (2021-12-07)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** use in memory meta for export ([#9208](https://github.com/aws-amplify/amplify-cli/issues/9208)) ([b3ca83b](https://github.com/aws-amplify/amplify-cli/commit/b3ca83b9bec986f0fd525d46738b277eb93e4384))
+
+
+
+
+
 ## [3.5.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.5.4...amplify-e2e-tests@3.5.5) (2021-12-03)
 
 **Note:** Version bump only for package amplify-e2e-tests
