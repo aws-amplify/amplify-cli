@@ -11,6 +11,7 @@ import {
 import inquirer from 'inquirer';
 import _ from 'lodash';
 import * as path from 'path';
+import { supportedDatasources } from '../../provider-utils/supported-datasources';
 
 const subcommand = 'add-graphql-datasource';
 const categories = 'categories';
@@ -21,10 +22,9 @@ export const name = subcommand;
 
 export const run = async (context: $TSContext) => {
   try {
-    const servicesMetadata = (await import(path.join('..', '..', 'provider-utils', 'supported-services'))).supportedServices;
     const AWS = await getAwsClient(context, 'list');
 
-    const result: $TSAny = await datasourceSelectionPrompt(context, servicesMetadata);
+    const result: $TSAny = await datasourceSelectionPrompt(context, supportedDatasources);
 
     const providerController = await import(path.join('..', '..', 'provider-utils', result.providerName, 'index'));
 
