@@ -5,7 +5,7 @@ export async function shouldRenderComponents(context: $TSContext) {
     printer.debug('Forcing component render since environment variable flag is set.');
     return true;
   }
-  if (context.input.options && context.input.options['no-codegen']) {
+  if (context?.input?.options?.['no-codegen']) {
     printer.debug('Not pulling components because --no-codegen flag is set');
     return false;
   }
