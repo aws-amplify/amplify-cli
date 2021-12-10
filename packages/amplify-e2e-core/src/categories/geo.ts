@@ -1,10 +1,14 @@
 import { getCLIPath, nspawn as spawn, KEY_DOWN_ARROW, generateRandomShortId } from '..';
+import path from 'path';
 
 export type GeoConfig = {
   isFirstGeoResource?: boolean;
   isAdditional?: boolean;
   isDefault?: boolean;
   resourceName?: string;
+  geoJSONFileName?: string;
+  isRootLevelID?: boolean;
+  customProperty?: string;
 };
 
 const defaultGeoConfig: GeoConfig = {
@@ -12,10 +16,18 @@ const defaultGeoConfig: GeoConfig = {
   isAdditional: false,
   isDefault: true,
   resourceName: '\r',
+  geoJSONFileName: 'valid-root-level-id.json',
+  isRootLevelID: true,
+  customProperty: 'name'
 };
 
 const defaultSearchIndexQuestion = `Set this search index as the default? It will be used in Amplify search index API calls if no explicit reference is provided.`;
 const defaultMapQuestion = `Set this Map as the default? It will be used in Amplify Map API calls if no explicit reference is provided.`;
+const defaultGeofenceCollectionQuestion = `Set this geofence collection as the default? It will be used in Amplify geofence collection API calls if no explicit reference is provided.`;
+
+export function getGeoJSONFilePath(fileName: string): string {
+  return path.join(__dirname, '..', '..', '..', 'amplify-e2e-tests', 'geo-json-files', fileName);
+}
 
 /**
  * Add map with default values. Assume auth is already configured
@@ -92,6 +104,73 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
         resolve();
       } else {
         reject();
+      }
+    });
+  });
+}
+
+/**
+ * Add geofence collection with default values. Assume auth and cognito group are configured
+ * @param cwd command directory
+ */
+ export function addGeofenceCollectionWithDefault(cwd: string, settings: GeoConfig = {}): Promise<void> {
+  const config = { ...defaultGeoConfig, ...settings };
+  return new Promise((resolve, reject) => {
+    const chain = spawn(getCLIPath(), ['geo', 'add'], { cwd, stripColors: true })
+      .wait('Select which capability you want to add:')
+      .sendKeyDown(2)
+      .sendCarriageReturn()
+      .wait('Provide a name for the Geofence Collection:')
+      .sendLine(config.resourceName)
+      .wait('What kind of access do you want')
+      .sendCtrlA()
+      .sendCarriageReturn()
+      .wait('Are you tracking or directing commercial assets for your business in your app?')
+      .sendCarriageReturn();
+
+    if (config.isAdditional === true) {
+      chain.wait(defaultGeofenceCollectionQuestion);
+      if (config.isDefault === true) {
+        chain.sendConfirmYes();
+      } else {
+        chain.sendConfirmNo();
+      }
+    }
+    chain.run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
+  });
+}
+
+/**
+ * Add geofence collection with default values. Assume auth and cognito group are configured
+ * @param cwd command directory
+ */
+ export function populateGeofencesWithDefault(cwd: string, settings: GeoConfig = {}): Promise<void> {
+  const config = { ...defaultGeoConfig, ...settings };
+  return new Promise((resolve, reject) => {
+    const chain = spawn(getCLIPath(), ['geo', 'populate'], { cwd, stripColors: true })
+      .wait('Provide the path to GeoJSON file containing the Geofences')
+      .sendLine(getGeoJSONFilePath(config.geoJSONFileName))
+      .wait('Do you have an identifier field in the Geofence(Feature) properties?');
+    if (config.isRootLevelID) {
+      chain.sendCarriageReturn(); //root level ID
+    } else {
+      chain
+      .sendKeyDown()
+      .sendCarriageReturn() //custom property
+      .wait('Provide the name of the property to use as a unique geofence identifier')
+      .sendLine(config.customProperty)
+    }
+    chain.run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
       }
     });
   });
