@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
-import { addFeatureFlag, getCLIPath, nspawn as spawn, setTransformerVersionFlag, updateSchema } from '..';
+import { addFeatureFlag, ExecutionContext, getCLIPath, nspawn as spawn, setTransformerVersionFlag, updateSchema } from '..';
 import { multiSelect, singleSelect } from '../utils/selectors';
 import { selectRuntime, selectTemplate } from './lambda-function';
 import { modifiedApi } from './resources/modified-api-index';
@@ -446,13 +446,18 @@ export function addRestApi(cwd: string, settings: any) {
         .sendCarriageReturn() // Add another path
         .wait('Provide a path')
         .sendLine(settings.path)
-        .wait('Choose a lambda source')
-        .sendKeyDown()
-        .sendCarriageReturn() // Existing lambda
-        .wait('Choose the Lambda function to invoke by this path');
+        .wait('Choose a lambda source');
 
-      if (settings.projectContainsFunctions) {
-        chain.sendCarriageReturn(); // Pick first one
+      if (settings.existingLambda) {
+        chain
+          .sendKeyDown()
+          .sendCarriageReturn() // Existing lambda
+          .wait('Choose the Lambda function to invoke by this path');
+        if (settings.projectContainsFunctions) {
+          chain.sendCarriageReturn(); // Pick first one
+        }
+      } else {
+        chooseLambdaFunctionForRestApi(chain, settings);
       }
 
       chain
@@ -482,31 +487,7 @@ export function addRestApi(cwd: string, settings: any) {
       .sendCarriageReturn() // Existing lambda
       .wait('Choose the Lambda function to invoke by this path'); // Expect only 1 Lambda is present
   } else {
-    if (settings.projectContainsFunctions) {
-      chain.sendCarriageReturn(); // Create new Lambda function
-    }
-    chain.wait('Provide an AWS Lambda function name').sendCarriageReturn();
-
-    selectRuntime(chain, 'nodejs');
-
-    const templateName = settings.isCrud
-      ? 'CRUD function for DynamoDB (Integration with API Gateway)'
-      : 'Serverless ExpressJS function (Integration with API Gateway)';
-    selectTemplate(chain, templateName, 'nodejs');
-
-    if (settings.isCrud) {
-      chain
-        .wait('Choose a DynamoDB data source option')
-        .sendCarriageReturn() // Use DDB table configured in current project
-        .wait('Choose from one of the already configured DynamoDB tables')
-        .sendCarriageReturn(); // Use first one in the list
-    }
-
-    chain
-      .wait('Do you want to configure advanced settings?')
-      .sendConfirmNo()
-      .wait('Do you want to edit the local lambda function now')
-      .sendConfirmNo();
+    chooseLambdaFunctionForRestApi(chain, settings);
   }
 
   chain.wait('Restrict API access');
@@ -543,6 +524,34 @@ export function addRestApi(cwd: string, settings: any) {
   chain.wait('Do you want to add another path').sendNo().sendEof();
 
   return chain.runAsync();
+}
+
+function chooseLambdaFunctionForRestApi(chain: ExecutionContext, settings: any) {
+  if (settings.projectContainsFunctions) {
+    chain.sendCarriageReturn(); // Create new Lambda function
+  }
+  chain.wait('Provide an AWS Lambda function name').sendCarriageReturn();
+
+  selectRuntime(chain, 'nodejs');
+
+  const templateName = settings.isCrud
+    ? 'CRUD function for DynamoDB (Integration with API Gateway)'
+    : 'Serverless ExpressJS function (Integration with API Gateway)';
+  selectTemplate(chain, templateName, 'nodejs');
+
+  if (settings.isCrud) {
+    chain
+      .wait('Choose a DynamoDB data source option')
+      .sendCarriageReturn() // Use DDB table configured in current project
+      .wait('Choose from one of the already configured DynamoDB tables')
+      .sendCarriageReturn(); // Use first one in the list
+  }
+
+  chain
+    .wait('Do you want to configure advanced settings?')
+    .sendConfirmNo()
+    .wait('Do you want to edit the local lambda function now')
+    .sendConfirmNo();
 }
 
 const updateRestApiDefaultSettings = {
