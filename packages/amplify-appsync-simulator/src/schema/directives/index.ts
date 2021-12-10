@@ -1,4 +1,4 @@
-import { GraphQLSchema, DocumentNode } from 'graphql';
+import { GraphQLSchema } from 'graphql';
 import { getAuthDirectiveTransformer, getAuthDirectives } from './auth';
 import { getAwsSubscribeDirectiveTransformer, getAwsSubscribeDirective } from './aws-subscribe';
 import { AmplifyAppSyncSimulator } from '../..';

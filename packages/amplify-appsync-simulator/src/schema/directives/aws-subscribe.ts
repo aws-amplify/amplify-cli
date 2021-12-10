@@ -1,4 +1,4 @@
-import { GraphQLFieldMap, GraphQLSchema, subscribe } from 'graphql';
+import { GraphQLFieldMap, GraphQLSchema } from 'graphql';
 import { mapSchema, getDirective, MapperKind } from '@graphql-tools/utils';
 import { AmplifyAppSyncSimulator } from '../..';
 

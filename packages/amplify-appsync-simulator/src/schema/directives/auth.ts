@@ -7,7 +7,7 @@ import {
   DirectiveNode,
   valueFromASTUntyped,
 } from 'graphql';
-import { mapSchema, getDirectives, MapperKind } from '@graphql-tools/utils';
+import { mapSchema, MapperKind } from '@graphql-tools/utils';
 import { AmplifyAppSyncSimulator, AmplifyAppSyncSimulatorRequestContext } from '../..';
 import { AmplifyAppSyncSimulatorAuthenticationType } from '../../type-definition';
 import { Unauthorized } from '../../velocity/util';
