@@ -7310,13 +7310,6 @@
   dependencies:
     "@types/node" "*"
 
-"@types/event-to-promise@^0.7.0":
-  version "0.7.2"
-  resolved "https://registry.yarnpkg.com/@types/event-to-promise/-/event-to-promise-0.7.2.tgz#ce49b290eff883c6e77d0fa31145d50b125de530"
-  integrity sha512-sPQiphFvR56m5rg6HRttG7PzIxV4ZcVvU+w/Bksiz/n/CTxQdSGIMQYu2YpSq+qsi2vCDnAc854uWGR6VbsxHQ==
-  dependencies:
-    "@types/node" "*"
-
 "@types/exit@^0.1.31":
   version "0.1.31"
   resolved "https://registry.yarnpkg.com/@types/exit/-/exit-0.1.31.tgz#681387d7724b42b91c29c7822da7967e05db5255"
@@ -13078,11 +13071,6 @@ event-target-shim@^5.0.0:
   resolved "https://registry.yarnpkg.com/event-target-shim/-/event-target-shim-5.0.1.tgz#5d4d3ebdf9583d63a5333ce2deb7480ab2b05789"
   integrity sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==
 
-event-to-promise@^0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/event-to-promise/-/event-to-promise-0.8.0.tgz#4b84f11772b6f25f7752fc74d971531ac6f5b626"
-  integrity sha1-S4TxF3K28l93Uvx02XFTGsb1tiY=
-
 eventemitter3@^3.1.0:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-3.1.2.tgz#2d3d48f9c346698fce83a85d7d664e98535df6e7"
@@ -17718,7 +17706,7 @@ make-dir@^3.0.0, make-dir@^3.0.2, make-dir@^3.1.0:
   dependencies:
     semver "^6.0.0"
 
-make-error@1.x, make-error@^1, make-error@^1.1.1:
+make-error@1.x, make-error@^1, make-error@^1.1.1, make-error@^1.3.2:
   version "1.3.6"
   resolved "https://registry.yarnpkg.com/make-error/-/make-error-1.3.6.tgz#2eb2e37ea9b67c4891f684a1394799af484cf7a2"
   integrity sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==
@@ -20793,6 +20781,13 @@ promise-sequential@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/promise-sequential/-/promise-sequential-1.1.1.tgz#f79e8950ef86e7a7a85bf320452643592f6d2fb2"
   integrity sha1-956JUO+G56eoW/MgRSZDWS9tL7I=
+
+promise-toolbox@^0.20.0:
+  version "0.20.0"
+  resolved "https://registry.npmjs.org/promise-toolbox/-/promise-toolbox-0.20.0.tgz#af04d7338038c2362b8fb7c27546c57d893bf562"
+  integrity sha512-VXF6waqUheD19yOU7zxsXhw/HCKlXqXwUc4jM8mchtBqZFNA+GHA7dbJsQDLHP4IUpQuTLpCQRd0lCr5z4CqXQ==
+  dependencies:
+    make-error "^1.3.2"
 
 promise@^7.1.1:
   version "7.3.1"
