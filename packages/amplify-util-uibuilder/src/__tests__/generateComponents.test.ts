@@ -1,13 +1,27 @@
+jest.mock('../commands/utils/shouldRenderComponents');
+import * as shouldRenderComponentsDependency from '../commands/utils/shouldRenderComponents';
+// @ts-ignore
+shouldRenderComponentsDependency.shouldRenderComponents = jest.fn().mockImplementation(() => true);
+
+jest.mock('../commands/utils/notifyMissingPackages');
+import * as notifyMissingPackagesDependency from '../commands/utils/notifyMissingPackages';
+// @ts-ignore
+notifyMissingPackagesDependency.notifyMissingPackages = jest.fn().mockImplementation(() => true);
+
+jest.mock('../commands/utils/syncAmplifyUiBuilderComponents');
+jest.mock('../commands/utils/createUiBuilderComponent');
+import * as listUiBuilderComponentsDependency from '../commands/utils/syncAmplifyUiBuilderComponents';
+import * as generateUiBuilderComponentsDependency from '../commands/utils/syncAmplifyUiBuilderComponents';
+import * as generateUiBuilderThemesDependency from '../commands/utils/syncAmplifyUiBuilderComponents';
+import * as listUiBuilderThemesDependency from '../commands/utils/syncAmplifyUiBuilderComponents';
+import * as generateAmplifyUiBuilderIndexFileDependency from '../commands/utils/createUiBuilderComponent';
+import { run } from '../commands/generateComponents';
+
 describe('can generate components', () => {
   let context: any;
   let schemas: any;
-  let shouldRenderComponents: any;
-  let notifyMissingPackages: any;
-  let listUiBuilderComponents: any;
-  let listUiBuilderThemes: any;
   let generateUiBuilderComponents: any;
   let generateUiBuilderThemes: any;
-  let generateAmplifyUiBuilderIndexFile: any;
   beforeEach(() => {
     context = {};
     schemas = {
@@ -18,29 +32,20 @@ describe('can generate components', () => {
         },
       ],
     };
-    jest.mock('../commands/utils/shouldRenderComponents');
-    shouldRenderComponents = require('../commands/utils/shouldRenderComponents').shouldRenderComponents;
-    shouldRenderComponents.mockImplementation(() => true);
-
-    jest.mock('../commands/utils/notifyMissingPackages');
-    notifyMissingPackages = require('../commands/utils/notifyMissingPackages').notifyMissingPackages;
-    notifyMissingPackages.mockImplementation(() => true);
-
-    jest.mock('../commands/utils/syncAmplifyUiBuilderComponents');
-    jest.mock('../commands/utils/createUiBuilderComponent');
-    listUiBuilderComponents = require('../commands/utils/syncAmplifyUiBuilderComponents').listUiBuilderComponents;
-    generateUiBuilderComponents = require('../commands/utils/syncAmplifyUiBuilderComponents').generateUiBuilderComponents;
-    generateUiBuilderThemes = require('../commands/utils/syncAmplifyUiBuilderComponents').generateUiBuilderThemes;
-    listUiBuilderThemes = require('../commands/utils/syncAmplifyUiBuilderComponents').listUiBuilderThemes;
-    generateAmplifyUiBuilderIndexFile = require('../commands/utils/createUiBuilderComponent').generateAmplifyUiBuilderIndexFile;
-    listUiBuilderComponents.mockImplementation(() => schemas);
-    listUiBuilderThemes.mockImplementation(() => schemas);
-    generateUiBuilderComponents.mockImplementation(() => schemas.entities);
-    generateUiBuilderThemes.mockImplementation(() => schemas.entities);
-    generateAmplifyUiBuilderIndexFile.mockImplementation(() => true);
+    // @ts-ignore
+    listUiBuilderComponentsDependency.listUiBuilderComponents = jest.fn().mockImplementation(() => schemas);
+    // @ts-ignore
+    listUiBuilderThemesDependency.listUiBuilderThemes = jest.fn().mockImplementation(() => schemas);
+    // @ts-ignore
+    generateUiBuilderComponentsDependency.generateUiBuilderComponents = jest.fn().mockImplementation(() => schemas.entities);
+    // @ts-ignore
+    generateUiBuilderThemesDependency.generateUiBuilderThemes = jest.fn().mockImplementation(() => schemas.entities);
+    // @ts-ignore
+    generateAmplifyUiBuilderIndexFileDependency.generateAmplifyUiBuilderIndexFile = jest.fn().mockImplementation(() => true);
   });
   it('runs generateComponents', async () => {
-    const { run } = require('../commands/generateComponents');
     await run(context);
+    expect(generateUiBuilderComponentsDependency.generateUiBuilderComponents).toBeCalledTimes(1);
+    expect(generateUiBuilderThemesDependency.generateUiBuilderThemes).toBeCalledTimes(1);
   });
 });

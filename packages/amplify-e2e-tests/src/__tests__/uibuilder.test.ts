@@ -2457,7 +2457,7 @@ describe('amplify pull with uibuilder', () => {
 
     appId = getAppId(projRoot);
 
-    const amplifyUIBuilder = new aws.AmplifyUIBuilder({ region: 'us-west-2' });
+    const amplifyUIBuilder = new aws.AmplifyUIBuilder({ region: process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-west-2' });
     return await amplifyUIBuilder
       .createComponent({
         appId,
@@ -2499,6 +2499,8 @@ describe('amplify pull with uibuilder', () => {
     );
 
     spawn(getNpmPath(), ['start'], { cwd: reactDir });
+    // Give react server time to start
+    await new Promise(resolve => setTimeout(resolve, 45000));
     const res = spawnSync(getNpxPath(), ['cypress', 'run'], { cwd: reactDir, encoding: 'utf8' });
     spawnSync('kill $(lsof -t -i:3000)');
     expect(res.status).toBe(0);

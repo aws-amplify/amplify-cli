@@ -1,6 +1,5 @@
-import { $TSContext } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 
-export async function run(context: $TSContext) {
+export async function run() {
   printer.info('Supported commands: generateComponents, cloneComponentsFromEnv');
 }

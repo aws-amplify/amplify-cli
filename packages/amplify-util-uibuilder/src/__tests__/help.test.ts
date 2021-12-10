@@ -1,14 +1,10 @@
+jest.mock('amplify-prompts');
+import { printer } from 'amplify-prompts';
+import { run } from '../commands/help';
+printer.info = jest.fn();
 describe('can run help script', () => {
-  let context: any;
-  beforeEach(() => {
-    context = {
-      print: {
-        info: () => true,
-      },
-    };
-  });
   it('runs help script', async () => {
-    const { run } = require('../commands/help');
-    await run(context);
+    await run();
+    expect(printer.info).toBeCalledTimes(1);
   });
 });

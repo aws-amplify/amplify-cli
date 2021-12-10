@@ -1,18 +1,21 @@
+import { run as runPostEnvAdd } from '../event-handlers/handle-PostEnvAdd';
+import { run as runPostPull } from '../event-handlers/handle-PostPull';
+
 describe('can handle events', () => {
   let context: any;
   beforeEach(() => {
     context = {
       amplify: {
-        invokePluginMethod: () => true,
+        invokePluginMethod: jest.fn(),
       },
     };
   });
   it('handles postEnvAdd', async () => {
-    const { run } = require('../event-handlers/handle-PostEnvAdd');
-    await run(context);
+    await runPostEnvAdd(context);
+    expect(context.amplify.invokePluginMethod).toBeCalledTimes(1);
   });
   it('handles postPull', async () => {
-    const { run } = require('../event-handlers/handle-PostPull');
-    await run(context);
+    await runPostPull(context);
+    expect(context.amplify.invokePluginMethod).toBeCalledTimes(1);
   });
 });

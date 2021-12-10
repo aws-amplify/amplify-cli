@@ -1,37 +1,37 @@
+jest.mock('aws-sdk', () => {
+  return {
+    AmplifyUIBuilder: jest.fn(() => {
+      return {
+        createComponent: () => ({
+          promise: () => true,
+        }),
+      };
+    }),
+  };
+});
+jest.mock('../commands/utils/extractArgs');
+import * as extractArgsDependency from '../commands/utils/extractArgs';
+jest.mock('../commands/utils/syncAmplifyUiBuilderComponents');
+import * as listUiBuilderComponentsDependency from '../commands/utils/syncAmplifyUiBuilderComponents';
+import { run } from '../commands/cloneComponentsFromEnv';
+
 describe('can clone components to new environment', () => {
   let context: any;
-  let aws: any;
-  let listUiBuilderComponents: any;
-  let extractArgs: any;
   beforeEach(() => {
     context = {
       amplify: {
         invokePluginMethod: () => true,
       },
     };
-    jest.mock('aws-sdk', () => {
-      return {
-        AmplifyUIBuilder: jest.fn(() => {
-          return {
-            createComponent: () => ({
-              promise: () => true,
-            }),
-          };
-        }),
-      };
-    });
-    jest.mock('../commands/utils/extractArgs');
-    jest.mock('../commands/utils/syncAmplifyUiBuilderComponents');
-    aws = require('aws-sdk');
-    extractArgs = require('../commands/utils/extractArgs').extractArgs;
-    listUiBuilderComponents = require('../commands/utils/syncAmplifyUiBuilderComponents').listUiBuilderComponents;
-    extractArgs.mockImplementation(() => ({
+    // @ts-ignore
+    extractArgsDependency.extractArgs = jest.fn().mockImplementation(() => ({
       sourceEnvName: 'sourceEnvName',
       newEnvName: 'newEnvName',
       appId: 'appId',
       environmentName: 'environmentName',
     }));
-    listUiBuilderComponents.mockImplementation((context: any, envName: any) => {
+    // @ts-ignore
+    listUiBuilderComponentsDependency.listUiBuilderComponents = jest.fn().mockImplementation((context: any, envName: any) => {
       if (envName === 'newEnvName') {
         return {
           entities: [],
@@ -43,7 +43,7 @@ describe('can clone components to new environment', () => {
     });
   });
   it('clones components to a new env', async () => {
-    const { run } = require('../commands/cloneComponentsFromEnv');
     await run(context);
+    expect(listUiBuilderComponentsDependency.listUiBuilderComponents).toBeCalledTimes(2);
   });
 });

@@ -1,6 +1,6 @@
 import { $TSContext } from 'amplify-cli-core';
 
-const { shouldRenderComponents } = require('../commands/utils/shouldRenderComponents');
+import { shouldRenderComponents } from '../commands/utils/shouldRenderComponents';
 
 describe('should render components', () => {
   let context: $TSContext | any;
