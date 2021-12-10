@@ -5,23 +5,12 @@ import {
   initJSProjectWithProfile,
   addAuthWithDefault,
   updateAuthAddUserGroups,
-  addMapWithDefault,
-  addPlaceIndexWithDefault,
-  getProjectMeta,
   amplifyPushWithoutCodegen,
-  removeMap,
-  amplifyPushUpdate,
-  removePlaceIndex,
-  removeFirstDefaultMap,
-  removeFirstDefaultPlaceIndex,
-  generateResourceIdsInOrder,
-  getGeoJSConfiguration,
   addGeofenceCollectionWithDefault,
   populateGeofencesWithDefault,
 } from 'amplify-e2e-core';
 import { existsSync } from 'fs';
 import path from 'path';
-import { getAWSExports } from '../aws-exports/awsExports';
 
 describe('amplify geo populate', () => {
   let projRoot: string;
