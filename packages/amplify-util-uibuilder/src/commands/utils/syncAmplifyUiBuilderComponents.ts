@@ -9,12 +9,13 @@ export const getEnvName = (context: $TSContext, envName?: string) => {
   return envName ? envName : args.environmentName ? args.environmentName : context.exeInfo.localEnvInfo.envName;
 };
 
-const resolveAppId = async (context: $TSContext) => {
+export const resolveAppId = async (context: $TSContext) => {
   return await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'resolveAppId', [context]);
 };
 
 export const getAppId = async (context: $TSContext) => {
   const appId = extractArgs(context).appId || (await resolveAppId(context));
+
   if (!appId) {
     throw new Error(
       'Unable to sync Studio components since appId could not be determined. This can happen when you hit the soft limit of number of apps that you can have in Amplify console.',
