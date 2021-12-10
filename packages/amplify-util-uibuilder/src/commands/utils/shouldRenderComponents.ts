@@ -10,7 +10,7 @@ export async function shouldRenderComponents(context: $TSContext) {
     return false;
   }
 
-  if (!context.exeInfo || !context.exeInfo.projectConfig) {
+  if (!context?.exeInfo?.projectConfig) {
     printer.debug('Not pulling components because there is no projectConfig set for this project');
     return false;
   }
