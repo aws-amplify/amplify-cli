@@ -2,7 +2,7 @@ import aws from 'aws-sdk';
 import { extractArgs } from './utils/extractArgs';
 import { listUiBuilderComponents } from './utils/syncAmplifyUiBuilderComponents';
 import { printer } from 'amplify-prompts';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from 'amplify-cli-core';
 
 export async function run(context: $TSContext) {
   printer.debug('Running create components command in amplify-util-uibuilder');
@@ -30,7 +30,7 @@ export async function run(context: $TSContext) {
     context,
     newEnvName,
     appId,
-  ])) as any;
+  ])) as $TSAny;
 
   if (process.env.UI_BUILDER_ENDPOINT) {
     awsConfigInfo.endpoint = process.env.UI_BUILDER_ENDPOINT;

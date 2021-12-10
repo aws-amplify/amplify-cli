@@ -3,7 +3,7 @@ import { printer } from 'amplify-prompts';
 import { createUiBuilderComponent, createUiBuilderTheme } from './createUiBuilderComponent';
 import { getUiBuilderComponentsPath } from './getUiBuilderComponentsPath';
 import { extractArgs } from './extractArgs';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from 'amplify-cli-core';
 export const getEnvName = (context: $TSContext, envName?: string) => {
   const args = extractArgs(context);
   return envName ? envName : args.environmentName ? args.environmentName : context.exeInfo.localEnvInfo.envName;
@@ -107,7 +107,7 @@ export const getAmplifyUIBuilderService = async (context: $TSContext, environmen
     context,
     environmentName,
     appId,
-  ])) as any;
+  ])) as $TSAny;
 
   if (process.env.UI_BUILDER_ENDPOINT) {
     awsConfigInfo.endpoint = process.env.UI_BUILDER_ENDPOINT;
