@@ -23,7 +23,7 @@ export const notifyMissingPackages = (context: $TSContext) => {
     const packageIsInstalled = Object.keys((packageJson as any).dependencies).includes(packageName);
     if (!packageIsInstalled) {
       printer.warn(
-        `UIBuilder components required "${packageName}" that is not in your package.json. Please run \`npm install ${packageName}\``,
+        `UIBuilder components required "${packageName}" that is not in your package.json. Run \`npm install ${packageName}\``,
       );
     }
   });
