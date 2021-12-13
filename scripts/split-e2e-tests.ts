@@ -107,6 +107,7 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/tags.test.ts',
   'src/__tests__/notifications.test.ts',
   //<15m
+  'src/__tests__/geo-populate.test.ts',
   'src/__tests__/schema-versioned.test.ts',
   'src/__tests__/schema-data-access-patterns.test.ts',
   'src/__tests__/interactions.test.ts',

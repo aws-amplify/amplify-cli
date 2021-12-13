@@ -372,3 +372,10 @@ export const getPlaceIndex = async (placeIndexName: string, region: string) => {
     IndexName: placeIndexName
   }).promise()
 }
+
+export const getGeofenceCollection = async (geofenceCollectionName: string, region: string) => {
+  const service = new Location({region});
+  return await service.describeGeofenceCollection({
+    CollectionName: geofenceCollectionName
+  }).promise()
+}
