@@ -108,9 +108,8 @@ function getTransformerFactory(
     }
 
     const customTransformersConfig = await readTransformerConfiguration(resourceDir);
-    const customTransformers = (
-      customTransformersConfig && customTransformersConfig.transformers ? customTransformersConfig.transformers : []
-    )
+    const customTransformerList = customTransformersConfig?.config?.transformers;
+    const customTransformers = (Array.isArray(customTransformerList) ? customTransformerList : [])
       .map(transformer => {
         const fileUrlMatch = /^file:\/\/(.*)\s*$/m.exec(transformer);
         const modulePath = fileUrlMatch ? fileUrlMatch[1] : transformer;
