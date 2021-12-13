@@ -50,9 +50,6 @@ export class ApigwStackTransform {
     // Generate cloudformation stack from cli-inputs.json
     this.generateStack(authResourceName, pathsWithUserPoolGroups);
 
-    // Generate cloudformation stack input params from cli-inputs.json
-    this.generateCfnInputParameters();
-
     try {
       // Modify cloudformation files based on overrides
       await this.applyOverrides();
@@ -61,12 +58,15 @@ export class ApigwStackTransform {
       return;
     }
 
+    // Generate cloudformation stack input params from cli-inputs.json
+    this.generateCfnInputParameters();
+
     // Save generated cloudformation.json and parameters.json files
     await this.saveBuildFiles();
   }
 
   generateCfnInputParameters() {
-    this.cfnInputParams = {};
+    this.cfnInputParams = this.resourceTemplateObj._cfnParameterValues;
   }
 
   generateStack(authResourceName?: string, pathsWithUserPoolGroups: [string, Path][] = []) {

@@ -19,6 +19,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
   private _props: ApigwInputs;
   private _paths: $TSObject;
   private _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
+  _cfnParameterValues: $TSObject;
   private _seenLogicalIds: Set<string>;
 
   constructor(scope: cdk.Construct, id: string, props: ApigwInputs) {
@@ -27,6 +28,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
     this._props = props;
     this._paths = {};
     this._seenLogicalIds = new Set();
+    this._cfnParameterValues = {};
     this.policies = {};
     this.templateOptions.templateFormatVersion = CFN_TEMPLATE_FORMAT_VERSION;
     this.templateOptions.description = ROOT_CFN_DESCRIPTION;
@@ -89,7 +91,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
    * @param props
    * @param logicalId
    */
-  addLambdaPermissionCfnResource(props: lambda.CfnPermissionProps, logicalId: string): void {
+  addCfnLambdaPermissionResource(props: lambda.CfnPermissionProps, logicalId: string): void {
     if (this._seenLogicalIds.has(logicalId)) {
       throw new Error(`logical id "${logicalId}" already exists`);
     }
@@ -108,6 +110,15 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
     }
     this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
     this._seenLogicalIds.add(logicalId);
+  }
+
+  /**
+   *
+   * @param logicalId
+   * @param value
+   */
+  addCfnParameterValue(logicalId: string, value: string | $TSObject): void {
+    this._cfnParameterValues[logicalId] = value;
   }
 
   private _craftPolicyDocument(apiResourceName: string, pathName: string, supportedOperations: string[]) {
@@ -295,7 +306,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
 
       if (!addedFunctionPermissions.has(path.lambdaFunction)) {
         addedFunctionPermissions.add(path.lambdaFunction);
-        this.addLambdaPermissionCfnResource(
+        this.addCfnLambdaPermissionResource(
           {
             functionName: cdk.Fn.ref(`function${path.lambdaFunction}Name`),
             action: 'lambda:InvokeFunction',

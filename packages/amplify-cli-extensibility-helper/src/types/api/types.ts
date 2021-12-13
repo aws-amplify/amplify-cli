@@ -7,6 +7,7 @@ export type AmplifyCDKL1 = {
   addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void;
   addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void;
   addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void;
+  addCfnParameterValue(logicalId: string, value: string | Map<string, any>): void;
   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void;
 };
 
