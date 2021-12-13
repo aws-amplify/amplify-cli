@@ -1,13 +1,11 @@
-jest.resetAllMocks();
-jest.mock('amplify-prompts');
 import * as printerDependency from 'amplify-prompts';
+import * as JSONUtilitiesDependency from 'amplify-cli-core';
+import { notifyMissingPackages } from '../commands/utils/notifyMissingPackages';
+jest.mock('amplify-prompts');
+jest.mock('amplify-cli-core');
 printerDependency.printer.info = jest.fn();
 printerDependency.printer.debug = jest.fn();
 printerDependency.printer.warn = jest.fn();
-
-jest.mock('amplify-cli-core');
-import * as JSONUtilitiesDependency from 'amplify-cli-core';
-import { notifyMissingPackages } from '../commands/utils/notifyMissingPackages';
 
 describe('should notify when packages are missing', () => {
   beforeEach(() => {

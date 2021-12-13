@@ -1,10 +1,11 @@
-jest.mock('@aws-amplify/codegen-ui');
 import * as codegen from '@aws-amplify/codegen-ui';
 import {
   generateAmplifyUiBuilderIndexFile,
   createUiBuilderTheme,
   createUiBuilderComponent,
 } from '../commands/utils/createUiBuilderComponent';
+jest.mock('@aws-amplify/codegen-ui');
+const codegen_mock = codegen as any;
 const renderSchemaToTemplateMock = jest.fn();
 
 describe('can create a ui builder component', () => {
@@ -40,24 +41,20 @@ describe('can create a ui builder component', () => {
       properties: {},
       variants: [],
     };
-    // @ts-ignore
-    codegen.StudioTemplateRendererManager = jest.fn().mockImplementation(() => ({
+    codegen_mock.StudioTemplateRendererManager = jest.fn().mockImplementation(() => ({
       renderSchemaToTemplate: renderSchemaToTemplateMock,
     }));
   });
   it('calls the renderManager', async () => {
     await createUiBuilderComponent(context, schema);
-    // @ts-ignore
-    expect(new codegen.StudioTemplateRendererManager().renderSchemaToTemplate).toBeCalled();
+    expect(new codegen_mock.StudioTemplateRendererManager().renderSchemaToTemplate).toBeCalled();
   });
   it('calls the renderManager for themes', async () => {
     await createUiBuilderTheme(context, schema);
-    // @ts-ignore
-    expect(new codegen.StudioTemplateRendererManager().renderSchemaToTemplate).toBeCalled();
+    expect(new codegen_mock.StudioTemplateRendererManager().renderSchemaToTemplate).toBeCalled();
   });
   it('calls the renderManager for index file', async () => {
     await generateAmplifyUiBuilderIndexFile(context, [schema]);
-    // @ts-ignore
-    expect(new codegen.StudioTemplateRendererManager().renderSchemaToTemplate).toBeCalled();
+    expect(new codegen_mock.StudioTemplateRendererManager().renderSchemaToTemplate).toBeCalled();
   });
 });
