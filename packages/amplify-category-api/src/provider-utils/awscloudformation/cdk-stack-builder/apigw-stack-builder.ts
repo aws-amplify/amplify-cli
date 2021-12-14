@@ -4,6 +4,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { $TSObject, JSONUtilities } from 'amplify-cli-core';
 import _ from 'lodash';
+import { v4 as uuid } from 'uuid';
 import { ADMIN_QUERIES_NAME } from '../../../category-constants';
 import { AmplifyApigwResourceTemplate, ApigwInputs, ApigwPathPolicy, Path, PermissionSetting } from './types';
 
@@ -284,7 +285,8 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
   }
 
   private _setDeploymentResource = (resourceName: string) => {
-    this.deploymentResource = new apigw.CfnDeployment(this, `DeploymentAPIGW${resourceName}`, {
+    const [shortId] = uuid().split('-');
+    this.deploymentResource = new apigw.CfnDeployment(this, `DeploymentAPIGW${resourceName}${shortId}`, {
       description: 'The Development stage deployment of your API.',
       stageName: cdk.Fn.conditionIf('ShouldNotCreateEnvResources', 'Prod', cdk.Fn.ref('env')).toString(),
       restApiId: cdk.Fn.ref(resourceName),
