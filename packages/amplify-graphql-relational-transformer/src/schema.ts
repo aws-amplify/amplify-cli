@@ -171,12 +171,13 @@ export function ensureBelongsToConnectionField(config: BelongsToDirectiveConfigu
     ensureHasOneConnectionField(config, ctx);
   } else {
     // hasMany
-    config.connectionFields.push(getConnectionAttributeName(relatedType.name.value, relatedField.name.value));
+    // config.connectionFields.push(getConnectionAttributeName(relatedType.name.value, relatedField.name.value));
+
+    // The connection field name needs to be reset to the original name specified by @mapsTo in the resolvers
+    // Setting it here so it will get picked up by the resolver generation logic
+    config.connectionFields.length = 0; // remove existing elements
+    config.connectionFields.push(getBackendConnectionAttributeName(ctx, relatedType.name.value, relatedField.name.value));
   }
-  // The connection field name need to be mapped to the original name specified by @mapsTo in the resolvers
-  // Setting it here so it will get picked up by the resolver generation logic
-  config.connectionFields.length = 0; // remove existing elements
-  config.connectionFields.push(getBackendConnectionAttributeName(ctx, relatedType.name.value, relatedField.name.value));
 }
 
 export function ensureHasManyConnectionField(

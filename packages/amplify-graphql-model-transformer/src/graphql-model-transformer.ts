@@ -9,6 +9,7 @@ import {
   FieldWrapper,
   InputObjectDefinitionWrapper,
   ObjectDefinitionWrapper,
+  getFieldNameFor,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncDataSourceType,
@@ -227,20 +228,20 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const directiveWrapped: DirectiveWrapper = new DirectiveWrapper(directive);
     const options = directiveWrapped.getArguments({
       queries: {
-        get: toCamelCase(['get', typeName]),
-        list: toCamelCase(['list', plurality(typeName, true)]),
-        ...(ctx.isProjectUsingDataStore() ? { sync: toCamelCase(['sync', plurality(typeName, true)]) } : undefined),
+        get: getFieldNameFor('get', typeName),
+        list: getFieldNameFor('list', typeName),
+        ...(ctx.isProjectUsingDataStore() ? { sync: getFieldNameFor('sync', typeName) } : undefined),
       },
       mutations: {
-        create: toCamelCase(['create', typeName]),
-        update: toCamelCase(['update', typeName]),
-        delete: toCamelCase(['delete', typeName]),
+        create: getFieldNameFor('create', typeName),
+        update: getFieldNameFor('update', typeName),
+        delete: getFieldNameFor('delete', typeName),
       },
       subscriptions: {
         level: SubscriptionLevel.on,
-        onCreate: [this.ensureValidSubscriptionName(toCamelCase(['onCreate', typeName]))],
-        onDelete: [this.ensureValidSubscriptionName(toCamelCase(['onDelete', typeName]))],
-        onUpdate: [this.ensureValidSubscriptionName(toCamelCase(['onUpdate', typeName]))],
+        onCreate: [getFieldNameFor('onCreate', typeName)],
+        onDelete: [getFieldNameFor('onDelete', typeName)],
+        onUpdate: [getFieldNameFor('onUpdate', typeName)],
       },
       timestamps: {
         createdAt: 'createdAt',

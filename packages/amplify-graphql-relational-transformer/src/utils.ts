@@ -1,6 +1,6 @@
 import assert from 'assert';
 import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
-import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerContextProvider, TransformerResourceHelperProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveNode, EnumTypeDefinitionNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode, StringValueNode } from 'graphql';
 import { getBaseType, isScalarOrEnum, toCamelCase } from 'graphql-transformer-common';
 import {
@@ -174,4 +174,8 @@ export function getConnectionAttributeName(type: string, field: string) {
 
 export function getBackendConnectionAttributeName(ctx: TransformerContextProvider, type: string, field: string) {
   return getConnectionAttributeName(ctx.resourceHelper.getModelNameMapping(type), field);
+}
+
+export function isThisTypeRenamed(typeName: string, resourceHelper: TransformerResourceHelperProvider): boolean {
+  return resourceHelper.getModelNameMapping(typeName) !== typeName;
 }

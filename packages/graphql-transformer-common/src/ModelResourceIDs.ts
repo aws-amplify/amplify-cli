@@ -8,9 +8,6 @@ export class ModelResourceIDs {
    * Used to inject a table name mapping that will be used for generated table resource IDs
    */
   static setModelNameMap = (modelToTableNameMap: Map<string, string>) => {
-    if (ModelResourceIDs.#modelNameMap) {
-      throw new Error('modelNameMap cannot be reassigned once set');
-    }
     ModelResourceIDs.#modelNameMap = modelToTableNameMap;
   };
 

@@ -21,6 +21,7 @@ export {
   IAM_AUTH_ROLE_PARAMETER,
   IAM_UNAUTH_ROLE_PARAMETER,
 } from './utils';
+export * from './utils/operation-names';
 export * from './errors';
 export {
   TransformerModelBase,

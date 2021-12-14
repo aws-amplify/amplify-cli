@@ -1,6 +1,14 @@
-import { DirectiveWrapper, InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
+import {
+  DirectiveWrapper,
+  InvalidDirectiveError,
+  getFieldNameFor,
+  MappingTemplate,
+  TransformerPluginBase,
+} from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
+  TransformerResolversManagerProvider,
+  TransformerResourceHelperProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
@@ -11,12 +19,15 @@ import { ensureHasManyConnectionField, extendTypeWithConnection } from './schema
 import { HasManyDirectiveConfiguration } from './types';
 import {
   ensureFieldsArray,
+  getConnectionAttributeName,
   getFieldsNodes,
   getRelatedType,
   getRelatedTypeIndex,
+  isThisTypeRenamed,
   validateModelDirective,
   validateRelatedModelDirective,
 } from './utils';
+import { createMutationMapping, createPostDataLoadMapping } from '@aws-amplify/graphql-maps-to-transformer';
 
 const directiveName = 'hasMany';
 const defaultLimit = 100;
@@ -66,8 +77,60 @@ export class HasManyTransformer extends TransformerPluginBase {
     for (const config of this.directiveList) {
       updateTableForConnection(config, context);
       makeQueryConnectionWithKeyResolver(config, context);
+      if (isThisTypeRenamed(config.object.name.value, context.resourceHelper)) {
+        makeForeignKeyMappingResolvers(
+          config.relatedType.name.value,
+          context.resolvers,
+          context.resourceHelper,
+          config.object.name.value,
+          config.field.name.value,
+        );
+      }
     }
   };
+}
+
+function makeForeignKeyMappingResolvers(
+  relatedTypeName: string,
+  resolvers: TransformerResolversManagerProvider,
+  resourceHelper: TransformerResourceHelperProvider,
+  thisTypeName: string,
+  thisFieldName: string,
+): void {
+  const currAttrName = getConnectionAttributeName(thisTypeName, thisFieldName);
+  const origAttrName = getConnectionAttributeName(resourceHelper.getModelNameMapping(thisTypeName), thisFieldName);
+
+  (['create', 'update'] as const).forEach(op => {
+    const mutationFieldName = getFieldNameFor(op, relatedTypeName);
+    const mutationResolver = resolvers.getResolver('Mutation', mutationFieldName);
+    if (!mutationResolver) {
+      return;
+    }
+    createMutationMapping({ mutationResolver, mutationFieldName, origAttrName, currAttrName });
+  });
+
+  (['get', 'list'] as const).forEach(op => {
+    const resolverFieldName = getFieldNameFor(op, relatedTypeName);
+    const resolverTypeName = 'Query';
+    const resolver = resolvers.getResolver(resolverTypeName, resolverFieldName);
+    if (!resolver) {
+      return;
+    }
+    createPostDataLoadMapping({ resolver, resolverTypeName, resolverFieldName, currAttrName, origAttrName, isList: op === 'list' });
+  });
+
+  const fieldResolver = resolvers.getResolver(thisTypeName, thisFieldName);
+  if (!fieldResolver) {
+    return;
+  }
+  createPostDataLoadMapping({
+    resolver: fieldResolver,
+    resolverTypeName: thisTypeName,
+    resolverFieldName: thisFieldName,
+    currAttrName,
+    origAttrName,
+    isList: true,
+  });
 }
 
 function validate(config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider): void {
