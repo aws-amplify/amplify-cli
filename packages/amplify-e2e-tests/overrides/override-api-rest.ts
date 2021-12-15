@@ -9,9 +9,8 @@ export function override(resources: any) {
       description: 'Test parameter',
     },
     'DESCRIPTION',
+    desc,
   );
-
-  resources.addCfnParameterValue('DESCRIPTION', desc);
 
   resources.restApi.description = { Ref: 'DESCRIPTION' };
 }

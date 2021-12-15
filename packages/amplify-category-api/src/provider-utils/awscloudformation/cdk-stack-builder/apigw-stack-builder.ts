@@ -103,22 +103,17 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
    *
    * @param props
    * @param logicalId
+   * @param value optional value which will be stored in parameters.json
    */
-  addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
+  addCfnParameter(props: cdk.CfnParameterProps, logicalId: string, value?: string | $TSObject): void {
     if (this._cfnParameterMap.has(logicalId)) {
       throw new Error(`logical id "${logicalId}" already exists`);
     }
     this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
     this._seenLogicalIds.add(logicalId);
-  }
-
-  /**
-   *
-   * @param logicalId
-   * @param value
-   */
-  addCfnParameterValue(logicalId: string, value: string | $TSObject): void {
-    this._cfnParameterValues[logicalId] = value;
+    if (value !== undefined) {
+      this._cfnParameterValues[logicalId] = value;
+    }
   }
 
   private _craftPolicyDocument(apiResourceName: string, pathName: string, supportedOperations: string[]) {
