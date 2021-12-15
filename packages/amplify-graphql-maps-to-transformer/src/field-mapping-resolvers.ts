@@ -15,6 +15,7 @@ type CreateMutationMappingParams = {
 
 /**
  * Adds an 'init' slot to the given resolver that maps currAttrName to origAttrName in the incoming request
+ * Calls createPostDataLoadMapping to map the response object back to the current attr name
  */
 export const createMutationMapping = ({
   mutationResolver,
@@ -22,6 +23,7 @@ export const createMutationMapping = ({
   origAttrName,
   currAttrName,
 }: CreateMutationMappingParams): void => {
+  const mutationTypeName = 'Mutation';
   mutationResolver.addToSlot(
     'init',
     MappingTemplate.s3MappingTemplateFromString(
@@ -29,14 +31,23 @@ export const createMutationMapping = ({
         compoundExpression([
           qref(methodCall(ref('ctx.args.input.put'), str(origAttrName), ref(`ctx.args.input.${currAttrName}`))),
           qref(methodCall(ref('ctx.args.input.remove'), str(currAttrName))),
+          toJson(raw('{}')),
         ]),
       ),
-      `Mutation.${mutationFieldName}.{slotName}.{slotIndex}.req.vtl`,
+      `${mutationTypeName}.${mutationFieldName}.{slotName}.{slotIndex}.req.vtl`,
     ),
   );
+  createReturnDataMapping('finish', {
+    resolver: mutationResolver,
+    resolverFieldName: mutationFieldName,
+    resolverTypeName: mutationTypeName,
+    origAttrName,
+    currAttrName,
+    isList: false,
+  });
 };
 
-type CreatePostDataLoadMappingParams = {
+type CreateReturnDataMappingParams = {
   resolver: TransformerResolverProvider; // The get / list / field resolver
   resolverFieldName: string; // The resolver field name
   resolverTypeName: string; // The resolver type name
@@ -47,16 +58,16 @@ type CreatePostDataLoadMappingParams = {
 /**
  * Adds a 'postDataLoad' slot to the given a resolver that maps origAttrName to currAttrName in the outgoing result
  */
-export const createPostDataLoadMapping = ({
-  resolver,
-  resolverFieldName,
-  resolverTypeName,
-  origAttrName,
-  currAttrName,
-  isList,
-}: CreatePostDataLoadMappingParams): void => {
+export const createPostDataLoadMapping = (params: CreateReturnDataMappingParams): void => {
+  createReturnDataMapping('postDataLoad', params);
+};
+
+const createReturnDataMapping = (
+  slotName: 'postDataLoad' | 'finish',
+  { resolver, resolverFieldName, resolverTypeName, origAttrName, currAttrName, isList }: CreateReturnDataMappingParams,
+) => {
   resolver.addToSlot(
-    'postDataLoad',
+    slotName,
     undefined,
     MappingTemplate.s3MappingTemplateFromString(
       print(

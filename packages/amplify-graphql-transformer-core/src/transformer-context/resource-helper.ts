@@ -7,7 +7,8 @@ import { ModelResourceIDs } from 'graphql-transformer-common';
 export class TransformerResourceHelper implements TransformerResourceHelperProvider {
   api?: GraphQLAPIProvider;
   readonly #modelNameMap = new Map<string, string>();
-  // eslint-disable-next-line no-useless-constructor
+  readonly #fieldNameMap = new Map<string, string>();
+
   constructor(private stackManager: StackManager) {
     ModelResourceIDs.setModelNameMap(this.#modelNameMap);
   }
@@ -43,6 +44,15 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
   };
 
   getModelNameMapping = (modelName: string) => this.#modelNameMap.get(modelName) ?? modelName;
+
+  setFieldNameMapping = (modelName: string, fieldName: string, mappedFieldName: string) => {
+    this.#fieldNameMap.set(this.fieldNameKey(modelName, fieldName), mappedFieldName);
+  };
+
+  getFieldNameMapping = (modelName: string, fieldName: string) =>
+    this.#fieldNameMap.get(this.fieldNameKey(modelName, fieldName)) ?? fieldName;
+
+  private fieldNameKey = (modelName: string, fieldName: string) => `${modelName}.${fieldName}`;
 
   private ensureEnv = (): void => {
     if (!this.stackManager.getParameter('env')) {

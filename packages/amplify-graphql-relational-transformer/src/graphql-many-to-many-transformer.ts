@@ -123,8 +123,10 @@ export class ManyToManyTransformer extends TransformerPluginBase {
     this.relationMap.forEach(relation => {
       const { directive1, directive2, name } = relation;
       ctx.metadata.get<Array<string>>('joinTypeList')!.push(name);
-      const d1TypeName = directive1.object.name.value;
-      const d2TypeName = directive2.object.name.value;
+      const d1TypeNameCurr = directive1.object.name.value;
+      const d2TypeNameCurr = directive2.object.name.value;
+      const d1TypeName = ctx.resourceHelper.getModelNameMapping(directive1.object.name.value);
+      const d2TypeName = ctx.resourceHelper.getModelNameMapping(directive2.object.name.value);
       const d1FieldName = d1TypeName.charAt(0).toLowerCase() + d1TypeName.slice(1);
       const d2FieldName = d2TypeName.charAt(0).toLowerCase() + d2TypeName.slice(1);
       const d1PartitionKey = getPartitionKeyField(context, directive1.object);
@@ -146,8 +148,8 @@ export class ManyToManyTransformer extends TransformerPluginBase {
       const d2HasOneDirective = makeDirective('hasOne', [makeArgument('fields', makeValueNode([d2FieldNameId]))]);
       const d1RelatedField = makeField(d1FieldNameId, [], wrapNonNull(makeNamedType(getBaseType(d1PartitionKey.type))), [d1IndexDirective]);
       const d2RelatedField = makeField(d2FieldNameId, [], wrapNonNull(makeNamedType(getBaseType(d2PartitionKey.type))), [d2IndexDirective]);
-      const d1Field = makeField(d1FieldName, [], wrapNonNull(makeNamedType(d1TypeName)), [d1HasOneDirective]);
-      const d2Field = makeField(d2FieldName, [], wrapNonNull(makeNamedType(d2TypeName)), [d2HasOneDirective]);
+      const d1Field = makeField(d1FieldName, [], wrapNonNull(makeNamedType(d1TypeNameCurr)), [d1HasOneDirective]);
+      const d2Field = makeField(d2FieldName, [], wrapNonNull(makeNamedType(d2TypeNameCurr)), [d2HasOneDirective]);
       const joinTableDirectives = [joinModelDirective];
       const joinTableAuthDirective = createJoinTableAuthDirective(directive1.object, directive2.object);
 

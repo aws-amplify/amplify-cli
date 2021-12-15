@@ -5,6 +5,7 @@
     "outDir": "lib"
   },
   "references": [
+    {"path": "../amplify-graphql-maps-to-transformer"},
     {"path": "../amplify-graphql-transformer-interfaces"},
     {"path": "../graphql-mapping-template"}
   ]

@@ -10,6 +10,7 @@ import {
   EnumValueDefinitionNode,
   DirectiveNode,
   NamedTypeNode,
+  NameNode,
 } from 'graphql';
 import {
   graphqlName,
@@ -25,7 +26,10 @@ import {
   extendFieldWithDirectives,
 } from 'graphql-transformer-common';
 import assert from 'assert';
-import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  TransformerResourceHelperProvider,
+  TransformerTransformSchemaStepContextProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
 const ID_CONDITIONS = [
   'ne',
   'gt',
@@ -80,7 +84,11 @@ export function makeSearchableScalarInputObject(type: string): InputObjectTypeDe
   };
 }
 
-export function makeSearchableXFilterInputObject(obj: ObjectTypeDefinitionNode, document: DocumentNode): InputObjectTypeDefinitionNode {
+export function makeSearchableXFilterInputObject(
+  obj: ObjectTypeDefinitionNode,
+  document: DocumentNode,
+  resourceHelper: TransformerResourceHelperProvider,
+): InputObjectTypeDefinitionNode {
   const name = SearchableResourceIDs.SearchableFilterInputTypeName(obj.name.value);
   assert(obj.fields);
   const fields: InputValueDefinitionNode[] = obj.fields
@@ -89,7 +97,10 @@ export function makeSearchableXFilterInputObject(obj: ObjectTypeDefinitionNode, 
       (field: FieldDefinitionNode) =>
         ({
           kind: Kind.INPUT_VALUE_DEFINITION,
-          name: field.name,
+          name: {
+            kind: 'Name',
+            value: resourceHelper.getFieldNameMapping(obj.name.value, field.name.value),
+          },
           type: makeNamedType(SearchableResourceIDs.SearchableFilterInputTypeName(getBaseType(field.type))),
           // TODO: Service does not support new style descriptions so wait.
           // description: field.description,

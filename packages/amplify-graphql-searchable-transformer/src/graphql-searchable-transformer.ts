@@ -2,6 +2,7 @@ import { TransformerPluginBase, InvalidDirectiveError, MappingTemplate, Directiv
 import {
   DataSourceProvider,
   TransformerContextProvider,
+  TransformerResourceHelperProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
@@ -50,6 +51,7 @@ import { createSearchableDomain, createSearchableDomainRole } from './cdk/create
 import { createSearchableDataSource } from './cdk/create-searchable-datasource';
 import { createEventSourceMapping, createLambda, createLambdaRole } from './cdk/create-streaming-lambda';
 import { createStackOutputs } from './cdk/create-cfnOutput';
+import { createPostDataLoadMapping } from '@aws-amplify/graphql-maps-to-transformer';
 
 const nonKeywordTypes = ['Int', 'Float', 'Boolean', 'AWSTimestamp', 'AWSDate', 'AWSDateTime'];
 const STACK_NAME = 'SearchableStack';
@@ -145,7 +147,14 @@ export class SearchableModelTransformer extends TransformerPluginBase {
         ResolverResourceIDs.ElasticsearchSearchResolverResourceID(type),
         datasource as DataSourceProvider,
         MappingTemplate.s3MappingTemplateFromString(
-          requestTemplate(attributeName, getNonKeywordFields(def.node), context.isProjectUsingDataStore(), openSearchIndexName, type, keyFields),
+          requestTemplate(
+            attributeName,
+            getNonKeywordFields(def.node),
+            context.isProjectUsingDataStore(),
+            openSearchIndexName,
+            type,
+            keyFields,
+          ),
           `${typeName}.${def.fieldName}.req.vtl`,
         ),
         MappingTemplate.s3MappingTemplateFromString(responseTemplate(false), `${typeName}.${def.fieldName}.res.vtl`),
@@ -157,6 +166,22 @@ export class SearchableModelTransformer extends TransformerPluginBase {
           `${typeName}.${def.fieldName}.{slotName}.{slotIndex}.res.vtl`,
         ),
       );
+
+      this.getMappedFields(
+        context.resourceHelper,
+        type,
+        context.output.getObject(type)?.fields?.map(field => field.name.value) || [],
+      ).forEach(({ field, mappedField }) =>
+        createPostDataLoadMapping({
+          resolver,
+          resolverTypeName: typeName,
+          resolverFieldName: def.fieldName,
+          currAttrName: field,
+          origAttrName: mappedField,
+          isList: true,
+        }),
+      );
+
       resolver.mapToStack(stack);
       context.resolvers.addResolver('Search', toUpper(type), resolver);
     }
@@ -232,6 +257,12 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       }
     }
   };
+
+  // a model is expected to have zero or one mapped
+  private getMappedFields = (resourceHelper: TransformerResourceHelperProvider, modelName: string, fields: string[]) =>
+    fields
+      .map(field => ({ field, mappedField: resourceHelper.getFieldNameMapping(modelName, field) }))
+      .filter(mapping => mapping.field !== mapping.mappedField);
 
   private generateSearchableXConnectionType(ctx: TransformerSchemaVisitStepContextProvider, definition: ObjectTypeDefinitionNode): void {
     const searchableXConnectionName = `Searchable${definition.name.value}Connection`;
@@ -361,7 +392,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       .map(makeSearchableScalarInputObject)
       .forEach((node: InputObjectTypeDefinitionNode) => ctx.output.addInput(node));
 
-    const searchableXQueryFilterInput = makeSearchableXFilterInputObject(definition, ctx.inputDocument);
+    const searchableXQueryFilterInput = makeSearchableXFilterInputObject(definition, ctx.inputDocument, ctx.resourceHelper);
     if (!ctx.output.hasType(searchableXQueryFilterInput.name.value)) {
       ctx.output.addInput(searchableXQueryFilterInput);
     }

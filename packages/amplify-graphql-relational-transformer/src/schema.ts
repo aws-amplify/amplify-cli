@@ -28,7 +28,7 @@ import {
   HasOneDirectiveConfiguration,
   ManyToManyDirectiveConfiguration,
 } from './types';
-import { getBackendConnectionAttributeName, getConnectionAttributeName } from './utils';
+import { getBackendConnectionAttributeName, getConnectionAttributeName, isThisTypeRenamed } from './utils';
 
 export function extendTypeWithConnection(config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider) {
   const { field, object } = config;
@@ -123,6 +123,13 @@ export function ensureHasOneConnectionField(
   // Update the create and update input objects for this type.
   if (!connectionAttributeName) {
     connectionAttributeName = getConnectionAttributeName(object.name.value, field.name.value);
+    if (isThisTypeRenamed(object.name.value, ctx.resourceHelper)) {
+      ctx.resourceHelper.setFieldNameMapping(
+        object.name.value,
+        field.name.value,
+        getBackendConnectionAttributeName(ctx, object.name.value, field.name.value),
+      );
+    }
   }
 
   const typeObject = ctx.output.getType(object.name.value) as ObjectTypeDefinitionNode;
@@ -192,6 +199,14 @@ export function ensureHasManyConnectionField(
   }
 
   const connectionAttributeName = getConnectionAttributeName(object.name.value, field.name.value);
+
+  if (isThisTypeRenamed(object.name.value, ctx.resourceHelper)) {
+    ctx.resourceHelper.setFieldNameMapping(
+      relatedType.name.value,
+      connectionAttributeName,
+      getBackendConnectionAttributeName(ctx, object.name.value, field.name.value),
+    );
+  }
 
   const relatedTypeObject = ctx.output.getType(relatedType.name.value) as ObjectTypeDefinitionNode;
   if (relatedTypeObject) {
