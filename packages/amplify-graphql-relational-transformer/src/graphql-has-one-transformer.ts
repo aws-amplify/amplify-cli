@@ -1,4 +1,4 @@
-import { createMutationMapping, createPostDataLoadMapping } from '@aws-amplify/graphql-maps-to-transformer';
+import { attachMutationMappingSlots, attachPostDataLoadMappingSlot } from '@aws-amplify/graphql-maps-to-transformer';
 import { DirectiveWrapper, getFieldNameFor, InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
@@ -97,7 +97,7 @@ function makeForeignKeyMappingResolvers(
     if (!mutationResolver) {
       return;
     }
-    createMutationMapping({ mutationResolver, mutationFieldName, currAttrName, origAttrName });
+    attachMutationMappingSlots({ mutationResolver, mutationFieldName, currAttrName, origAttrName });
   });
 
   (['get', 'list'] as const).forEach(op => {
@@ -107,7 +107,7 @@ function makeForeignKeyMappingResolvers(
     if (!resolver) {
       return;
     }
-    createPostDataLoadMapping({ resolver, resolverTypeName, resolverFieldName, currAttrName, origAttrName, isList: op === 'list' });
+    attachPostDataLoadMappingSlot({ resolver, resolverTypeName, resolverFieldName, currAttrName, origAttrName, isList: op === 'list' });
   });
 
   const fieldResolver = resolvers.getResolver(thisTypeName, thisFieldName);
@@ -119,7 +119,7 @@ function makeForeignKeyMappingResolvers(
   if (isThisTypeRenamed(relatedTypeName, resourceHelper) && relatedHasOneField !== undefined) {
     const relatedCurrAttrName = getConnectionAttributeName(relatedTypeName, relatedHasOneField);
     const relatedOrigAttrName = getConnectionAttributeName(resourceHelper.getModelNameMapping(relatedTypeName), relatedHasOneField);
-    createPostDataLoadMapping({
+    attachPostDataLoadMappingSlot({
       resolver: fieldResolver,
       resolverTypeName: thisTypeName,
       resolverFieldName: thisFieldName,

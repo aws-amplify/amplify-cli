@@ -28,7 +28,7 @@ import {
   validateModelDirective,
   validateRelatedModelDirective,
 } from './utils';
-import { createMutationMapping, createPostDataLoadMapping } from '@aws-amplify/graphql-maps-to-transformer';
+import { attachMutationMappingSlots, attachPostDataLoadMappingSlot } from '@aws-amplify/graphql-maps-to-transformer';
 
 const directiveName = 'hasMany';
 const defaultLimit = 100;
@@ -107,7 +107,7 @@ function makeForeignKeyMappingResolvers(
     if (!mutationResolver) {
       return;
     }
-    createMutationMapping({ mutationResolver, mutationFieldName, origAttrName, currAttrName });
+    attachMutationMappingSlots({ mutationResolver, mutationFieldName, origAttrName, currAttrName });
   });
 
   (['get', 'list'] as const).forEach(op => {
@@ -117,14 +117,14 @@ function makeForeignKeyMappingResolvers(
     if (!resolver) {
       return;
     }
-    createPostDataLoadMapping({ resolver, resolverTypeName, resolverFieldName, currAttrName, origAttrName, isList: op === 'list' });
+    attachPostDataLoadMappingSlot({ resolver, resolverTypeName, resolverFieldName, currAttrName, origAttrName, isList: op === 'list' });
   });
 
   const fieldResolver = resolvers.getResolver(thisTypeName, thisFieldName);
   if (!fieldResolver) {
     return;
   }
-  createPostDataLoadMapping({
+  attachPostDataLoadMappingSlot({
     resolver: fieldResolver,
     resolverTypeName: thisTypeName,
     resolverFieldName: thisFieldName,

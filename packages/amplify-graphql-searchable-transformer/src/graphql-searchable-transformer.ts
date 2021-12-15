@@ -51,7 +51,7 @@ import { createSearchableDomain, createSearchableDomainRole } from './cdk/create
 import { createSearchableDataSource } from './cdk/create-searchable-datasource';
 import { createEventSourceMapping, createLambda, createLambdaRole } from './cdk/create-streaming-lambda';
 import { createStackOutputs } from './cdk/create-cfnOutput';
-import { createPostDataLoadMapping } from '@aws-amplify/graphql-maps-to-transformer';
+import { attachPostDataLoadMappingSlot } from '@aws-amplify/graphql-maps-to-transformer';
 
 const nonKeywordTypes = ['Int', 'Float', 'Boolean', 'AWSTimestamp', 'AWSDate', 'AWSDateTime'];
 const STACK_NAME = 'SearchableStack';
@@ -172,7 +172,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
         type,
         context.output.getObject(type)?.fields?.map(field => field.name.value) || [],
       ).forEach(({ field, mappedField }) =>
-        createPostDataLoadMapping({
+        attachPostDataLoadMappingSlot({
           resolver,
           resolverTypeName: typeName,
           resolverFieldName: def.fieldName,
