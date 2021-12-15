@@ -1,11 +1,11 @@
-FROM circleci/node:12
+FROM circleci/node:14
 RUN sudo npm install -g npm@7
 RUN npm -v
 WORKDIR /tmp
 RUN sudo apt-get update && sudo apt-get install -y \
   xdg-utils
 
-# Install Java 
+# Install Java
 WORKDIR /tmp
 RUN curl -O https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz
 RUN tar zxvf openjdk-11.0.2_linux-x64_bin.tar.gz
