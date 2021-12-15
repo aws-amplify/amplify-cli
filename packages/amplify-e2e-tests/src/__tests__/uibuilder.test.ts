@@ -2475,7 +2475,7 @@ describe('amplify pull with uibuilder', () => {
   });
 
   it('appropriate uibiulder files are generated', async () => {
-    spawnSync(getNpxPath(), ['create-react-app', projectName], { cwd: projectDir });
+    spawnSync(getNpxPath(), ['create-react-app', projectName, '--scripts-version', '4.0.3'], { cwd: projectDir, encoding: 'utf-8' });
     await amplifyPull(reactDir, { appId, envName, emptyDir: true });
     const fileList = fs.readdirSync(`${reactDir}/src/ui-components/`);
     expect(fileList).toContain('FormCheckout.jsx');
@@ -2498,11 +2498,12 @@ describe('amplify pull with uibuilder', () => {
       fs.readFileSync(path.join(__dirname, '..', 'cypress', 'uibuilder', 'uibuilder-spec.js')),
     );
 
-    spawn(getNpmPath(), ['start'], { cwd: reactDir });
+    const npmStartProcess = spawn(getNpmPath(), ['start'], { cwd: reactDir });
     // Give react server time to start
     await new Promise(resolve => setTimeout(resolve, 45000));
     const res = spawnSync(getNpxPath(), ['cypress', 'run'], { cwd: reactDir, encoding: 'utf8' });
-    spawnSync('kill $(lsof -t -i:3000)');
+    spawnSync(`kill ${npmStartProcess.pid}`);
+    spawnSync(`kill ${res.pid}`);
     expect(res.status).toBe(0);
   });
 });

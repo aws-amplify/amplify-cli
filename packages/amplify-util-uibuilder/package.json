@@ -4,6 +4,7 @@
   "description": "",
   "main": "lib/index.js",
   "scripts": {
+    "build": "tsc",
     "test": "jest"
   },
   "author": "Amazon Web Services",
