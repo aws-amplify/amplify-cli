@@ -1,6 +1,6 @@
 {
   "name": "graphql-connection-transformer",
-  "version": "5.2.10-beta.0",
+  "version": "5.2.10-beta.1",
   "description": "An AppSync model transform for connecting objects.",
   "repository": {
     "type": "git",
@@ -24,11 +24,11 @@
   "dependencies": {
     "cloudform-types": "^4.2.0",
     "graphql": "^14.5.8",
-    "graphql-dynamodb-transformer": "7.2.10-beta.0",
-    "graphql-key-transformer": "3.2.10-beta.0",
+    "graphql-dynamodb-transformer": "7.2.10-beta.1",
+    "graphql-key-transformer": "3.2.10-beta.1",
     "graphql-mapping-template": "4.20.1",
     "graphql-transformer-common": "4.22.2",
-    "graphql-transformer-core": "7.3.1-beta.0"
+    "graphql-transformer-core": "7.3.1-beta.1"
   },
   "devDependencies": {
     "@types/node": "^12.12.6"
