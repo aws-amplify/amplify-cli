@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.4.3...amplify-cli-core@2.4.4-beta.0) (2021-12-16)
+
+
+### Bug Fixes
+
+* improve api migration logic, update migration prompt ([#9267](https://github.com/aws-amplify/amplify-cli/issues/9267)) ([beed4f9](https://github.com/aws-amplify/amplify-cli/commit/beed4f9aa77bfbbb92ff0cb504e8019ce01e48f6))
+
+
+
+
+
 ## [2.4.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.4.2...amplify-cli-core@2.4.3) (2021-12-02)
 
 
