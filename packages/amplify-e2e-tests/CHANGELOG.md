@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.7-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.5.6...amplify-e2e-tests@3.5.7-beta.2) (2021-12-16)
+
+
+### Bug Fixes
+
+* add missing salt to deployment logicalId ([#9234](https://github.com/aws-amplify/amplify-cli/issues/9234)) ([d4109e2](https://github.com/aws-amplify/amplify-cli/commit/d4109e2e8a18e2e9b787a97b1508efb1bf97fac9))
+* update gql v2 custom transformer loading logic ([#9252](https://github.com/aws-amplify/amplify-cli/issues/9252)) ([f728b4b](https://github.com/aws-amplify/amplify-cli/commit/f728b4bb835674afd32dab7243dd3d826601d333))
+
+
+
+
+
 ## [3.5.7-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.5.6...amplify-e2e-tests@3.5.7-beta.1) (2021-12-16)
 
 
