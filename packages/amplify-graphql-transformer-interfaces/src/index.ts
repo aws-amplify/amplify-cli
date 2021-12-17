@@ -15,6 +15,11 @@ export {
   TransformerSchemaVisitStepContextProvider,
   TransformerValidationStepContextProvider,
   TransformerResourceHelperProvider,
+  ResolverKey,
+  CurrentFieldName,
+  OriginalFieldName,
+  FieldMap,
+  ResolverMapEntry,
 } from './transformer-context';
 export { TransformerPluginProvider, TransformerPluginType } from './transformer-plugin-provider';
 export {

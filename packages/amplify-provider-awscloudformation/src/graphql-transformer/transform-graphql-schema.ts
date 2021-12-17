@@ -101,13 +101,13 @@ function getTransformerFactory(
       new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
       new DefaultValueTransformer(),
       authTransformer,
-      new MapsToTransformer(), // this transformer needs to execute after the relational transformers
       // TODO: initialize transformer plugins
     ];
 
     if (options?.addSearchableTransformer) {
       transformerList.push(new SearchableModelTransformer());
     }
+    transformerList.push(new MapsToTransformer()); // this transformer must execute at the end
 
     const customTransformersConfig = await readTransformerConfiguration(resourceDir);
     const customTransformerList = customTransformersConfig?.config?.transformers;

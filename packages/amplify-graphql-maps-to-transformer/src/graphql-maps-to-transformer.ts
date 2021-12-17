@@ -2,12 +2,10 @@ import { TransformerPluginBase, InvalidDirectiveError } from '@aws-amplify/graph
 import {
   TransformerContextProvider,
   TransformerPluginType,
-  TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { ResolverKey } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/resource-resource-provider';
 import { ObjectTypeDefinitionNode, DirectiveNode } from 'graphql';
-import { attachInputMappingSlot, attachResponseMappingSlot } from '.';
+import { attachInputMappingSlot, attachResponseMappingSlot } from './field-mapping-resolvers';
 
 const directiveName = 'mapsTo';
 

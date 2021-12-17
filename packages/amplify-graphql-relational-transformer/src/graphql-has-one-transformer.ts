@@ -48,12 +48,17 @@ export class HasOneTransformer extends TransformerPluginBase {
 
     validate(args, context as TransformerContextProvider);
     this.directiveList.push(args);
-    registerHasOneForeignKeyMappings({
-      resourceHelper: context.resourceHelper,
-      thisTypeName: args.object.name.value,
-      thisFieldName: args.field.name.value,
-      relatedTypeName: args.relatedType.name.value,
-      relatedFieldName: biDiHasOneField(args.relatedType, args.object.name.value),
+  };
+
+  prepare = (context: TransformerContextProvider) => {
+    this.directiveList.forEach(config => {
+      registerHasOneForeignKeyMappings({
+        resourceHelper: context.resourceHelper,
+        thisTypeName: config.object.name.value,
+        thisFieldName: config.field.name.value,
+        relatedTypeName: config.relatedType.name.value,
+        relatedFieldName: biDiHasOneField(config.relatedType, config.object.name.value),
+      });
     });
   };
 

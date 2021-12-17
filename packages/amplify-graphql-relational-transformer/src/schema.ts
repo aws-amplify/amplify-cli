@@ -28,7 +28,7 @@ import {
   HasOneDirectiveConfiguration,
   ManyToManyDirectiveConfiguration,
 } from './types';
-import { getBackendConnectionAttributeName, getConnectionAttributeName } from './utils';
+import { getConnectionAttributeName } from './utils';
 
 export function extendTypeWithConnection(config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider) {
   const { field, object } = config;
@@ -216,12 +216,16 @@ export function ensureHasManyConnectionField(
   const filterInputName = toPascalCase(['Model', relatedType.name.value, 'FilterInput']);
   const filterInput = ctx.output.getType(filterInputName) as InputObjectTypeDefinitionNode;
   if (filterInput) {
+    // use the mapped connection attribute name for FilterInput because the input can be nested which is a mess to map in VTL
+    // instead the input will retain the original field name
     ctx.output.putType(updateFilterConnectionInputWithConnectionField(filterInput, mappedConnectionAttributeName));
   }
 
   const conditionInputName = toPascalCase(['Model', relatedType.name.value, 'ConditionInput']);
   const conditionInput = ctx.output.getType(conditionInputName) as InputObjectTypeDefinitionNode;
   if (conditionInput) {
+    // use the mapped connection attribute name for ConditionInput because the input can be nested which is a mess to map in VTL
+    // instead the input will retain the original field name
     ctx.output.putType(updateFilterConnectionInputWithConnectionField(conditionInput, mappedConnectionAttributeName));
   }
 

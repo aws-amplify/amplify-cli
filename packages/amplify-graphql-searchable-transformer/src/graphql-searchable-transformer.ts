@@ -166,16 +166,8 @@ export class SearchableModelTransformer extends TransformerPluginBase {
         ),
       );
 
-      this.getMappedFields(
-        context.resourceHelper,
-        type,
-        context.output.getObject(type)?.fields?.map(field => field.name.value) || [],
-      ).forEach(({ field, mappedField }) =>
-        context.resourceHelper.addResolverFieldMapEntry(typeName, def.fieldName, type, [field, mappedField], true),
-      );
-
       resolver.mapToStack(stack);
-      context.resolvers.addResolver('Search', toUpper(type), resolver);
+      context.resolvers.addResolver(typeName, def.fieldName, resolver);
     }
 
     createStackOutputs(stack, domain.domainEndpoint, context.api.apiId, domain.domainArn);
@@ -238,6 +230,19 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       const searchObject = ctx.output.getObject(name) as ObjectTypeDefinitionNode;
       this.generateSearchableInputs(ctx, searchObject);
     }
+    // this step looks through renamed fields in the searchable models and adds resolver mappings if any are found
+    // note that this must go in transformSchema because it relies on the relational directives adding the foreign key fields into the
+    // outpt which happens during transformSchema
+    for (const def of this.searchableObjectTypeDefinitions) {
+      const modelName = def.node.name.value;
+      this.getMappedFields(
+        ctx.resourceHelper,
+        modelName,
+        ctx.output.getObject(modelName)?.fields?.map(field => field.name.value) || [],
+      ).forEach(({ field, mappedField }) =>
+        ctx.resourceHelper.addResolverFieldMapEntry(ctx.output.getQueryTypeName()!, def.fieldName, modelName, [field, mappedField], true),
+      );
+    }
     // add api key to aggregate types if sandbox mode is enabled
     if (ctx.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
       for (let aggType of AGGREGATE_TYPES) {
@@ -250,7 +255,6 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     }
   };
 
-  // a model is expected to have zero or one mapped
   private getMappedFields = (resourceHelper: TransformerResourceHelperProvider, modelName: string, fields: string[]) =>
     fields
       .map(field => ({ field, mappedField: resourceHelper.getFieldNameMapping(modelName, field) }))

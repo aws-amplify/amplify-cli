@@ -1,7 +1,6 @@
-import { DirectiveWrapper, InvalidDirectiveError, getFieldNameFor, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
+import { DirectiveWrapper, InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
-  TransformerResourceHelperProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
@@ -12,7 +11,6 @@ import { ensureHasManyConnectionField, extendTypeWithConnection } from './schema
 import { HasManyDirectiveConfiguration } from './types';
 import {
   ensureFieldsArray,
-  getConnectionAttributeName,
   getFieldsNodes,
   getRelatedType,
   getRelatedTypeIndex,
@@ -54,6 +52,17 @@ export class HasManyTransformer extends TransformerPluginBase {
     this.directiveList.push(args);
   };
 
+  prepare = (context: TransformerContextProvider): void => {
+    this.directiveList.forEach(config => {
+      registerHasManyForeignKeyMappings({
+        resourceHelper: context.resourceHelper,
+        thisTypeName: config.object.name.value,
+        thisFieldName: config.field.name.value,
+        relatedTypeName: config.relatedType.name.value,
+      });
+    });
+  };
+
   transformSchema = (ctx: TransformerTransformSchemaStepContextProvider): void => {
     const context = ctx as TransformerContextProvider;
 
@@ -70,12 +79,6 @@ export class HasManyTransformer extends TransformerPluginBase {
     for (const config of this.directiveList) {
       updateTableForConnection(config, context);
       makeQueryConnectionWithKeyResolver(config, context);
-      registerHasManyForeignKeyMappings({
-        resourceHelper: ctx.resourceHelper,
-        thisTypeName: config.object.name.value,
-        thisFieldName: config.field.name.value,
-        relatedTypeName: config.relatedType.name.value,
-      });
     }
   };
 }

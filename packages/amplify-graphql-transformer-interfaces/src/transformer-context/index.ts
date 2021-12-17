@@ -7,7 +7,14 @@ export {
 export { TransformerContextOutputProvider } from './transformer-context-output-provider';
 export { TransformerProviderRegistry } from './transformer-provider-registry';
 export { TransformerResolverProvider, TransformerResolversManagerProvider } from './transformer-resolver-provider';
-export { TransformerResourceHelperProvider } from './resource-resource-provider';
+export {
+  TransformerResourceHelperProvider,
+  ResolverKey,
+  CurrentFieldName,
+  OriginalFieldName,
+  FieldMap,
+  ResolverMapEntry,
+} from './resource-resource-provider';
 export {
   TransformerContextProvider,
   TransformerTransformSchemaStepContextProvider,

@@ -1,17 +1,18 @@
-import { GraphQLAPIProvider, TransformerResourceHelperProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { CfnParameter, Token } from '@aws-cdk/core';
-import { StackManager } from './stack-manager';
-import md5 from 'md5';
-import { ModelResourceIDs } from 'graphql-transformer-common';
 import {
+  GraphQLAPIProvider,
+  TransformerResourceHelperProvider,
   CurrentFieldName,
   OriginalFieldName,
   ResolverKey,
   ResolverMapEntry,
-} from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/resource-resource-provider';
+} from '@aws-amplify/graphql-transformer-interfaces';
+import { CfnParameter, Token } from '@aws-cdk/core';
+import { StackManager } from './stack-manager';
+import md5 from 'md5';
+import { ModelResourceIDs } from 'graphql-transformer-common';
 
 export class TransformerResourceHelper implements TransformerResourceHelperProvider {
-  api?: GraphQLAPIProvider;
+  private api?: GraphQLAPIProvider;
   readonly #modelNameMap = new Map<string, string>();
   readonly #fieldNameMap = new Map<string, string>();
   readonly #resolverMapRegistry = new Map<ResolverKey, ResolverMapEntry>();
@@ -58,11 +59,11 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
    * The only way to set a field name mapping is through addResolverFieldMapEntry
    */
   private setFieldNameMapping = (modelName: string, fieldName: string, mappedFieldName: string) => {
-    this.#fieldNameMap.set(this.fieldNameKey(modelName, fieldName), mappedFieldName);
+    this.#fieldNameMap.set(this.makeTupleKey(modelName, fieldName), mappedFieldName);
   };
 
   getFieldNameMapping = (modelName: string, fieldName: string) =>
-    this.#fieldNameMap.get(this.fieldNameKey(modelName, fieldName)) ?? fieldName;
+    this.#fieldNameMap.get(this.makeTupleKey(modelName, fieldName)) ?? fieldName;
 
   /**
    * @param typeName The GraphQL type name of the resolver (Query, Mutation, ModelName, etc). Note that this is not the same as the modelName
@@ -78,7 +79,7 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
     newEntry: [CurrentFieldName, OriginalFieldName],
     isResultList = false,
   ) => {
-    const key = makeResolverKey(typeName, fieldName);
+    const key = this.makeTupleKey(typeName, fieldName);
     if (this.#resolverMapRegistry.has(key)) {
       const entry = this.#resolverMapRegistry.get(key)!;
       if (entry.isResultList !== isResultList) {
@@ -98,7 +99,7 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
 
   getResolverMapRegistry = (): Map<ResolverKey, ResolverMapEntry> => this.#resolverMapRegistry;
 
-  private fieldNameKey = (modelName: string, fieldName: string) => `${modelName}.${fieldName}`;
+  private makeTupleKey = (modelName: string, fieldName: string) => `${modelName}.${fieldName}`;
 
   private ensureEnv = (): void => {
     if (!this.stackManager.getParameter('env')) {
@@ -109,5 +110,3 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
     }
   };
 }
-
-const makeResolverKey = (typeName: string, fieldName: string): ResolverKey => `${typeName}.${fieldName}`;

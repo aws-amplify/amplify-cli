@@ -47,16 +47,21 @@ export class BelongsToTransformer extends TransformerPluginBase {
 
     validate(args, context as TransformerContextProvider);
     this.directiveList.push(args);
-    if (args.relationType === 'hasOne') {
-      // a belongsTo with hasOne behaves the same as hasOne
-      registerHasOneForeignKeyMappings({
-        resourceHelper: context.resourceHelper,
-        thisTypeName: args.object.name.value,
-        thisFieldName: args.field.name.value,
-        relatedTypeName: args.relatedType.name.value,
-        relatedFieldName: args.relatedField.name.value,
+  };
+
+  prepare = (context: TransformerContextProvider) => {
+    this.directiveList
+      .filter(config => config.relationType === 'hasOne')
+      .forEach(config => {
+        // a belongsTo with hasOne behaves the same as hasOne
+        registerHasOneForeignKeyMappings({
+          resourceHelper: context.resourceHelper,
+          thisTypeName: config.object.name.value,
+          thisFieldName: config.field.name.value,
+          relatedTypeName: config.relatedType.name.value,
+          relatedFieldName: config.relatedField.name.value,
+        });
       });
-    }
   };
 
   transformSchema = (ctx: TransformerTransformSchemaStepContextProvider): void => {
