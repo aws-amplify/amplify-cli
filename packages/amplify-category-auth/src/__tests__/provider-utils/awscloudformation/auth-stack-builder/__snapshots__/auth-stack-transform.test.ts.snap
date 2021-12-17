@@ -329,9 +329,6 @@ Object {
             },
           ],
         },
-        "UsernameConfiguration": Object {
-          "CaseSensitive": false,
-        },
       },
       "Type": "AWS::Cognito::UserPool",
     },
@@ -1876,9 +1873,6 @@ exports.handler = (event, context, callback) => {
               ],
             },
           ],
-        },
-        "UsernameConfiguration": Object {
-          "CaseSensitive": false,
         },
       },
       "Type": "AWS::Cognito::UserPool",
