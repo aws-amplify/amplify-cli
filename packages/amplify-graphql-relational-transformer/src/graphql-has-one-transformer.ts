@@ -1,9 +1,6 @@
-import { attachMutationMappingSlots, attachPostDataLoadMappingSlot } from '@aws-amplify/graphql-maps-to-transformer';
-import { DirectiveWrapper, getFieldNameFor, InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
+import { DirectiveWrapper, InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
-  TransformerResolversManagerProvider,
-  TransformerResourceHelperProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
@@ -14,11 +11,10 @@ import { ensureHasOneConnectionField } from './schema';
 import { HasOneDirectiveConfiguration } from './types';
 import {
   ensureFieldsArray,
-  getConnectionAttributeName,
   getFieldsNodes,
   getRelatedType,
   getRelatedTypeIndex,
-  isThisTypeRenamed,
+  registerHasOneForeignKeyMappings,
   validateDisallowedDataStoreRelationships,
   validateModelDirective,
   validateRelatedModelDirective,
@@ -52,6 +48,13 @@ export class HasOneTransformer extends TransformerPluginBase {
 
     validate(args, context as TransformerContextProvider);
     this.directiveList.push(args);
+    registerHasOneForeignKeyMappings({
+      resourceHelper: context.resourceHelper,
+      thisTypeName: args.object.name.value,
+      thisFieldName: args.field.name.value,
+      relatedTypeName: args.relatedType.name.value,
+      relatedFieldName: biDiHasOneField(args.relatedType, args.object.name.value),
+    });
   };
 
   transformSchema = (ctx: TransformerTransformSchemaStepContextProvider): void => {
@@ -68,66 +71,8 @@ export class HasOneTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       makeGetItemConnectionWithKeyResolver(config, context);
-      // if this type has been renamed
-      if (isThisTypeRenamed(config.object.name.value, context.resourceHelper)) {
-        makeForeignKeyMappingResolvers(
-          context.resolvers,
-          context.resourceHelper,
-          config.object.name.value,
-          config.field.name.value,
-          config.relatedType,
-        );
-      }
     }
   };
-}
-
-function makeForeignKeyMappingResolvers(
-  resolvers: TransformerResolversManagerProvider,
-  resourceHelper: TransformerResourceHelperProvider,
-  thisTypeName: string,
-  thisFieldName: string,
-  relatedType: ObjectTypeDefinitionNode,
-) {
-  const currAttrName = getConnectionAttributeName(thisTypeName, thisFieldName);
-  const origAttrName = getConnectionAttributeName(resourceHelper.getModelNameMapping(thisTypeName), thisFieldName);
-  (['create', 'update'] as const).forEach(op => {
-    const mutationFieldName = getFieldNameFor(op, thisTypeName);
-    const mutationResolver = resolvers.getResolver('Mutation', mutationFieldName);
-    if (!mutationResolver) {
-      return;
-    }
-    attachMutationMappingSlots({ mutationResolver, mutationFieldName, currAttrName, origAttrName });
-  });
-
-  (['get', 'list'] as const).forEach(op => {
-    const resolverFieldName = getFieldNameFor(op, thisTypeName);
-    const resolverTypeName = 'Query';
-    const resolver = resolvers.getResolver(resolverTypeName, resolverFieldName);
-    if (!resolver) {
-      return;
-    }
-    attachPostDataLoadMappingSlot({ resolver, resolverTypeName, resolverFieldName, currAttrName, origAttrName, isList: op === 'list' });
-  });
-
-  const fieldResolver = resolvers.getResolver(thisTypeName, thisFieldName);
-  if (!fieldResolver) {
-    return;
-  }
-  const relatedTypeName = relatedType.name.value;
-  const relatedHasOneField = biDiHasOneField(relatedType, thisTypeName);
-  if (isThisTypeRenamed(relatedTypeName, resourceHelper) && relatedHasOneField !== undefined) {
-    const relatedCurrAttrName = getConnectionAttributeName(relatedTypeName, relatedHasOneField);
-    const relatedOrigAttrName = getConnectionAttributeName(resourceHelper.getModelNameMapping(relatedTypeName), relatedHasOneField);
-    attachPostDataLoadMappingSlot({
-      resolver: fieldResolver,
-      resolverTypeName: thisTypeName,
-      resolverFieldName: thisFieldName,
-      currAttrName: relatedCurrAttrName,
-      origAttrName: relatedOrigAttrName,
-      isList: false,
-    });
-  }
 }
 
 function biDiHasOneField(relatedType: ObjectTypeDefinitionNode, thisTypeName: string): undefined | string {

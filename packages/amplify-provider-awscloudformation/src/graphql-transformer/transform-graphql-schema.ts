@@ -97,11 +97,11 @@ function getTransformerFactory(
       indexTransformer,
       new BelongsToTransformer(),
       new HasManyTransformer(),
-      new MapsToTransformer(),
       hasOneTransformer,
       new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
       new DefaultValueTransformer(),
       authTransformer,
+      new MapsToTransformer(), // this transformer needs to execute after the relational transformers
       // TODO: initialize transformer plugins
     ];
 

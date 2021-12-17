@@ -1,13 +1,6 @@
-import {
-  attachMutationMappingSlots,
-  attachPostDataLoadMappingSlot,
-  attachReadFieldMappingSlot,
-} from '@aws-amplify/graphql-maps-to-transformer';
-import { DirectiveWrapper, getFieldNameFor, InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
+import { DirectiveWrapper, InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
-  TransformerResolversManagerProvider,
-  TransformerResourceHelperProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
@@ -18,11 +11,10 @@ import { ensureBelongsToConnectionField } from './schema';
 import { BelongsToDirectiveConfiguration } from './types';
 import {
   ensureFieldsArray,
-  getConnectionAttributeName,
   getFieldsNodes,
   getRelatedType,
   getRelatedTypeIndex,
-  isThisTypeRenamed,
+  registerHasOneForeignKeyMappings,
   validateModelDirective,
   validateRelatedModelDirective,
 } from './utils';
@@ -55,6 +47,16 @@ export class BelongsToTransformer extends TransformerPluginBase {
 
     validate(args, context as TransformerContextProvider);
     this.directiveList.push(args);
+    if (args.relationType === 'hasOne') {
+      // a belongsTo with hasOne behaves the same as hasOne
+      registerHasOneForeignKeyMappings({
+        resourceHelper: context.resourceHelper,
+        thisTypeName: args.object.name.value,
+        thisFieldName: args.field.name.value,
+        relatedTypeName: args.relatedType.name.value,
+        relatedFieldName: args.relatedField.name.value,
+      });
+    }
   };
 
   transformSchema = (ctx: TransformerTransformSchemaStepContextProvider): void => {
@@ -71,73 +73,8 @@ export class BelongsToTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       makeGetItemConnectionWithKeyResolver(config, context);
-      if (isThisTypeRenamed(config.object.name.value, context.resourceHelper) && config.relationType === 'hasOne') {
-        makeForeignKeyMappingResolvers(
-          context.resolvers,
-          context.resourceHelper,
-          config.object.name.value,
-          config.field.name.value,
-          config.relatedType.name.value,
-          config.relatedField.name.value,
-        );
-      }
     }
   };
-}
-
-function makeForeignKeyMappingResolvers(
-  resolvers: TransformerResolversManagerProvider,
-  resourceHelper: TransformerResourceHelperProvider,
-  thisTypeName: string,
-  thisFieldName: string,
-  relatedTypeName: string,
-  relatedFieldName: string,
-) {
-  const currAttrName = getConnectionAttributeName(thisTypeName, thisFieldName);
-  const origAttrName = getConnectionAttributeName(resourceHelper.getModelNameMapping(thisTypeName), thisFieldName);
-  (['create', 'update'] as const).forEach(op => {
-    const mutationFieldName = getFieldNameFor(op, thisTypeName);
-    const mutationResolver = resolvers.getResolver('Mutation', mutationFieldName);
-    if (!mutationResolver) {
-      return;
-    }
-    attachMutationMappingSlots({ mutationResolver, mutationFieldName, currAttrName, origAttrName });
-  });
-
-  (['get', 'list'] as const).forEach(op => {
-    const resolverFieldName = getFieldNameFor(op, thisTypeName);
-    const resolverTypeName = 'Query';
-    const resolver = resolvers.getResolver(resolverTypeName, resolverFieldName);
-    if (!resolver) {
-      return;
-    }
-    attachPostDataLoadMappingSlot({ resolver, resolverTypeName, resolverFieldName, currAttrName, origAttrName, isList: op === 'list' });
-  });
-
-  const fieldResolver = resolvers.getResolver(thisTypeName, thisFieldName);
-  if (!fieldResolver) {
-    return;
-  }
-  attachReadFieldMappingSlot({
-    resolver: fieldResolver,
-    resolverTypeName: thisTypeName,
-    resolverFieldName: thisFieldName,
-    currAttrName,
-    origAttrName,
-  });
-
-  if (isThisTypeRenamed(relatedTypeName, resourceHelper)) {
-    const relatedTypeCurrAttrName = getConnectionAttributeName(relatedTypeName, relatedFieldName);
-    const relatedTypeOrigAttrName = getConnectionAttributeName(resourceHelper.getModelNameMapping(relatedTypeName), relatedFieldName);
-    attachPostDataLoadMappingSlot({
-      resolver: fieldResolver,
-      resolverTypeName: thisTypeName,
-      resolverFieldName: thisFieldName,
-      currAttrName: relatedTypeCurrAttrName,
-      origAttrName: relatedTypeOrigAttrName,
-      isList: false,
-    });
-  }
 }
 
 function validate(config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void {

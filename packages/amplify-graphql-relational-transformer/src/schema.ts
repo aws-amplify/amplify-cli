@@ -28,7 +28,7 @@ import {
   HasOneDirectiveConfiguration,
   ManyToManyDirectiveConfiguration,
 } from './types';
-import { getBackendConnectionAttributeName, getConnectionAttributeName, isThisTypeRenamed } from './utils';
+import { getBackendConnectionAttributeName, getConnectionAttributeName } from './utils';
 
 export function extendTypeWithConnection(config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider) {
   const { field, object } = config;
@@ -123,14 +123,8 @@ export function ensureHasOneConnectionField(
   // Update the create and update input objects for this type.
   if (!connectionAttributeName) {
     connectionAttributeName = getConnectionAttributeName(object.name.value, field.name.value);
-    if (isThisTypeRenamed(object.name.value, ctx.resourceHelper)) {
-      ctx.resourceHelper.setFieldNameMapping(
-        object.name.value,
-        field.name.value,
-        getBackendConnectionAttributeName(ctx, object.name.value, field.name.value),
-      );
-    }
   }
+  const mappedConnectionAttributeName = ctx.resourceHelper.getFieldNameMapping(object.name.value, connectionAttributeName);
 
   const typeObject = ctx.output.getType(object.name.value) as ObjectTypeDefinitionNode;
   if (typeObject) {
@@ -155,15 +149,19 @@ export function ensureHasOneConnectionField(
   const filterInputName = toPascalCase(['Model', object.name.value, 'FilterInput']);
   const filterInput = ctx.output.getType(filterInputName) as InputObjectTypeDefinitionNode;
   if (filterInput) {
-    ctx.output.putType(updateFilterConnectionInputWithConnectionField(filterInput, connectionAttributeName));
+    // use the mapped connection attribute name for FilterInput because the input can be nested which is a mess to map in VTL
+    // instead the input will retain the original field name
+    ctx.output.putType(updateFilterConnectionInputWithConnectionField(filterInput, mappedConnectionAttributeName));
   }
 
   const conditionInputName = toPascalCase(['Model', object.name.value, 'ConditionInput']);
   const conditionInput = ctx.output.getType(conditionInputName) as InputObjectTypeDefinitionNode;
   if (conditionInput) {
-    ctx.output.putType(updateFilterConnectionInputWithConnectionField(conditionInput, connectionAttributeName));
+    // use the mapped connection attribute name for ConditionInput because the input can be nested which is a mess to map in VTL
+    // instead the input will retain the original field name
+    ctx.output.putType(updateFilterConnectionInputWithConnectionField(conditionInput, mappedConnectionAttributeName));
   }
-  config.connectionFields.push(getBackendConnectionAttributeName(ctx, object.name.value, field.name.value));
+  config.connectionFields.push(connectionAttributeName);
 }
 
 /**
@@ -178,12 +176,7 @@ export function ensureBelongsToConnectionField(config: BelongsToDirectiveConfigu
     ensureHasOneConnectionField(config, ctx);
   } else {
     // hasMany
-    // config.connectionFields.push(getConnectionAttributeName(relatedType.name.value, relatedField.name.value));
-
-    // The connection field name needs to be reset to the original name specified by @mapsTo in the resolvers
-    // Setting it here so it will get picked up by the resolver generation logic
-    config.connectionFields.length = 0; // remove existing elements
-    config.connectionFields.push(getBackendConnectionAttributeName(ctx, relatedType.name.value, relatedField.name.value));
+    config.connectionFields.push(getConnectionAttributeName(relatedType.name.value, relatedField.name.value));
   }
 }
 
@@ -199,14 +192,7 @@ export function ensureHasManyConnectionField(
   }
 
   const connectionAttributeName = getConnectionAttributeName(object.name.value, field.name.value);
-
-  if (isThisTypeRenamed(object.name.value, ctx.resourceHelper)) {
-    ctx.resourceHelper.setFieldNameMapping(
-      relatedType.name.value,
-      connectionAttributeName,
-      getBackendConnectionAttributeName(ctx, object.name.value, field.name.value),
-    );
-  }
+  const mappedConnectionAttributeName = ctx.resourceHelper.getFieldNameMapping(object.name.value, connectionAttributeName);
 
   const relatedTypeObject = ctx.output.getType(relatedType.name.value) as ObjectTypeDefinitionNode;
   if (relatedTypeObject) {
@@ -230,13 +216,13 @@ export function ensureHasManyConnectionField(
   const filterInputName = toPascalCase(['Model', relatedType.name.value, 'FilterInput']);
   const filterInput = ctx.output.getType(filterInputName) as InputObjectTypeDefinitionNode;
   if (filterInput) {
-    ctx.output.putType(updateFilterConnectionInputWithConnectionField(filterInput, connectionAttributeName));
+    ctx.output.putType(updateFilterConnectionInputWithConnectionField(filterInput, mappedConnectionAttributeName));
   }
 
   const conditionInputName = toPascalCase(['Model', relatedType.name.value, 'ConditionInput']);
   const conditionInput = ctx.output.getType(conditionInputName) as InputObjectTypeDefinitionNode;
   if (conditionInput) {
-    ctx.output.putType(updateFilterConnectionInputWithConnectionField(conditionInput, connectionAttributeName));
+    ctx.output.putType(updateFilterConnectionInputWithConnectionField(conditionInput, mappedConnectionAttributeName));
   }
 
   let connectionFieldName = 'id';

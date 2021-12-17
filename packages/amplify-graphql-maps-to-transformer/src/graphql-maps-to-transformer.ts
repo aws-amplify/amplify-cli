@@ -1,6 +1,13 @@
 import { TransformerPluginBase, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
-import { TransformerPluginType, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  TransformerContextProvider,
+  TransformerPluginType,
+  TransformerPrepareStepContextProvider,
+  TransformerSchemaVisitStepContextProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
+import { ResolverKey } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/resource-resource-provider';
 import { ObjectTypeDefinitionNode, DirectiveNode } from 'graphql';
+import { attachInputMappingSlot, attachResponseMappingSlot } from '.';
 
 const directiveName = 'mapsTo';
 
@@ -27,4 +34,25 @@ export class MapsToTransformer extends TransformerPluginBase {
     const originalName = prevNameNode.value.value;
     ctx.resourceHelper.setModelNameMapping(modelName, originalName);
   };
+
+  generateResolvers = (context: TransformerContextProvider) =>
+    context.resourceHelper.getResolverMapRegistry().forEach(({ resolverTypeName, resolverFieldName, fieldMap, isResultList }) => {
+      const resolver = context.resolvers.getResolver(resolverTypeName, resolverFieldName);
+      if (!resolver) {
+        return;
+      }
+      if (resolverTypeName === 'Mutation') {
+        attachInputMappingSlot({ resolver, resolverFieldName, resolverTypeName, fieldMap });
+        attachResponseMappingSlot({ slotName: 'postUpdate', resolver, resolverFieldName, resolverTypeName, fieldMap, isList: false });
+        return;
+      }
+      attachResponseMappingSlot({
+        slotName: 'postDataLoad',
+        resolver,
+        resolverFieldName,
+        resolverTypeName,
+        fieldMap: fieldMap,
+        isList: isResultList,
+      });
+    });
 }

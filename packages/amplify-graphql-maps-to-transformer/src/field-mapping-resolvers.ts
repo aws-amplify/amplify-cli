@@ -1,75 +1,54 @@
 import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { FieldMap } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/resource-resource-provider';
 import { compoundExpression, Expression, forEach, methodCall, print, qref, raw, ref, str, toJson } from 'graphql-mapping-template';
 
 /**
- * Contains functions for mapping relational fields of renamed models to their original name
+ * Contains functions that generate VTL to to map renamed fields of models to their original name
  */
 
-type AttachMutationMappingSlotsParams = {
-  mutationResolver: TransformerResolverProvider; // The create or update resolver that needs a mapping added to it
-  mutationFieldName: string; // The create or update resolver name
-  origAttrName: string; // The original foreign key attribute name
-  currAttrName: string; // The current foreign key attribute name
+type AttachInputMappingSlotParams = {
+  resolver: TransformerResolverProvider; // The create or update resolver that needs a mapping added to it
+  resolverTypeName: string; // The resolver type name
+  resolverFieldName: string; // The create or update resolver name
+  fieldMap: FieldMap; // A map of renamed fields
 };
 
 /**
  * Adds an init slot to the given resolver that maps currAttrName to origAttrName in the incoming request
  * Calls createPostDataLoadMapping to create a slot to map origAttrName back to currAttrName in the response
  */
-export const attachMutationMappingSlots = ({
-  mutationResolver,
-  mutationFieldName,
-  origAttrName,
-  currAttrName,
-}: AttachMutationMappingSlotsParams): void => {
-  const mutationTypeName = 'Mutation';
-  mutationResolver.addToSlot(
+export const attachInputMappingSlot = ({ resolver, resolverTypeName, resolverFieldName, fieldMap }: AttachInputMappingSlotParams): void => {
+  resolver.addToSlot(
     'init',
     MappingTemplate.s3MappingTemplateFromString(
-      print(
-        compoundExpression([
-          createSingleRemapExpression('ctx.args.input', currAttrName, origAttrName),
-          qref(methodCall(ref('ctx.args.input.remove'), str(currAttrName))),
-          toJson(raw('{}')),
-        ]),
-      ),
-      `${mutationTypeName}.${mutationFieldName}.{slotName}.{slotIndex}.req.vtl`,
+      print(compoundExpression([createMultiRemapExpression('ctx.args.input', fieldMap, 'CURR_TO_ORIG'), toJson(raw('{}'))])),
+      `${resolverTypeName}.${resolverFieldName}.{slotName}.{slotIndex}.req.vtl`,
     ),
   );
-  attachResponseMappingSlot('finish', {
-    resolver: mutationResolver,
-    resolverFieldName: mutationFieldName,
-    resolverTypeName: mutationTypeName,
-    origAttrName,
-    currAttrName,
-    isList: false,
-  });
 };
 
 type AttachResponseMappingSlotParams = {
+  slotName: 'postDataLoad' | 'postUpdate'; // the slot to insert into
   resolver: TransformerResolverProvider; // The get / list / field resolver
   resolverFieldName: string; // The resolver field name
   resolverTypeName: string; // The resolver type name
-  origAttrName: string; // The original foreign key attribute name
-  currAttrName: string; // The current foreign key attribute name
+  fieldMap: FieldMap;
   isList: boolean; // true if the previous pipeline function is expected to return a list, false otherwise. Specifically, $ctx.prev.result.items is expected to be a list if true
-};
-/**
- * Adds a postDataLoad slot to the given a resolver that maps origAttrName to currAttrName in the outgoing result
- */
-export const attachPostDataLoadMappingSlot = (params: AttachResponseMappingSlotParams): void => {
-  attachResponseMappingSlot('postDataLoad', params);
 };
 
 /**
  * Attaches either a postDataLoad or finish slot to the given resolver. The template maps the original foreign key name to current foreign key name in the result object
  * @param slotName Which slot type to insert
  */
-const attachResponseMappingSlot = (
-  slotName: 'postDataLoad' | 'finish',
-  { resolver, resolverFieldName, resolverTypeName, origAttrName, currAttrName, isList }: AttachResponseMappingSlotParams,
-) => {
+export const attachResponseMappingSlot = ({
+  slotName,
+  resolver,
+  resolverFieldName,
+  resolverTypeName,
+  fieldMap,
+  isList,
+}: AttachResponseMappingSlotParams) => {
   resolver.addToSlot(
     slotName,
     undefined,
@@ -77,8 +56,8 @@ const attachResponseMappingSlot = (
       print(
         compoundExpression([
           isList
-            ? createListRemapExpression('ctx.prev.result.items', origAttrName, currAttrName)
-            : createSingleRemapExpression('ctx.prev.result', origAttrName, currAttrName),
+            ? createListRemapExpression('ctx.prev.result.items', fieldMap, 'ORIG_TO_CURR')
+            : createMultiRemapExpression('ctx.prev.result', fieldMap, 'ORIG_TO_CURR'),
           toJson(ref('ctx.prev.result')),
         ]),
       ),
@@ -87,36 +66,23 @@ const attachResponseMappingSlot = (
   );
 };
 
-type AttachReadFieldMappingSlot = {
-  resolver: TransformerResolverProvider; // The field resolver
-  resolverFieldName: string; // The resolver field name
-  resolverTypeName: string; // The resolver type name
-  origAttrName: string; // The original foreign key attribute name
-  currAttrName: string; // The current foreign key attribute name
+const createListRemapExpression = (resultListName: string, fieldMap: FieldMap, direction: 'ORIG_TO_CURR' | 'CURR_TO_ORIG'): Expression =>
+  forEach(ref('item'), ref(resultListName), [createMultiRemapExpression('item', fieldMap, direction)]);
+
+const createMultiRemapExpression = (vtlMapName: string, fieldMap: FieldMap, direction: 'ORIG_TO_CURR' | 'CURR_TO_ORIG') => {
+  const expressions: Expression[] = [];
+  fieldMap.forEach((origFieldName, currentFieldName) => {
+    if (direction === 'ORIG_TO_CURR') {
+      expressions.push(createRemapExpression(vtlMapName, origFieldName, currentFieldName));
+    } else {
+      expressions.push(createRemapExpression(vtlMapName, currentFieldName, origFieldName));
+    }
+  });
+  return compoundExpression(expressions);
 };
 
-/**
- * Attaches an init slot to a model field resolver where the parent object needs a foreign key name remap before fetching the nested object.
- * It maps the current foreign key name to the original foreign key name
- */
-export const attachReadFieldMappingSlot = ({
-  resolver,
-  resolverFieldName,
-  resolverTypeName,
-  origAttrName,
-  currAttrName,
-}: AttachReadFieldMappingSlot) => {
-  resolver.addToSlot(
-    'init',
-    MappingTemplate.s3MappingTemplateFromString(
-      print(compoundExpression([createSingleRemapExpression('ctx.source', currAttrName, origAttrName), toJson(raw('{}'))])),
-      `${resolverTypeName}.${resolverFieldName}.{slotName}.{slotIndex}.req.vtl`,
-    ),
-  );
-};
-
-const createListRemapExpression = (resultListName: string, sourceAttrName: string, destAttrName: string): Expression =>
-  forEach(ref('item'), ref(resultListName), [createSingleRemapExpression('item', sourceAttrName, destAttrName)]);
-
-const createSingleRemapExpression = (vtlMapName: string, sourceAttrName: string, destAttrName: string): Expression =>
-  qref(methodCall(ref(`${vtlMapName}.put`), str(destAttrName), ref(`${vtlMapName}.${sourceAttrName}`)));
+const createRemapExpression = (vtlMapName: string, sourceAttrName: string, destAttrName: string): Expression =>
+  compoundExpression([
+    qref(methodCall(ref(`${vtlMapName}.put`), str(destAttrName), ref(`${vtlMapName}.${sourceAttrName}`))),
+    qref(methodCall(ref(`${vtlMapName}.remove`), str(sourceAttrName))),
+  ]);

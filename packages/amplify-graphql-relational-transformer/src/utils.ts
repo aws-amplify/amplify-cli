@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
+import { getFieldNameFor, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider, TransformerResourceHelperProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveNode, EnumTypeDefinitionNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode, StringValueNode } from 'graphql';
 import { getBaseType, isScalarOrEnum, toCamelCase } from 'graphql-transformer-common';
@@ -172,12 +172,8 @@ export function getConnectionAttributeName(type: string, field: string) {
   return toCamelCase([type, field, 'id']);
 }
 
-export function getBackendConnectionAttributeName(ctx: TransformerContextProvider, type: string, field: string) {
-  return getConnectionAttributeName(ctx.resourceHelper.getModelNameMapping(type), field);
-}
-
-export function isThisTypeRenamed(typeName: string, resourceHelper: TransformerResourceHelperProvider): boolean {
-  return resourceHelper.getModelNameMapping(typeName) !== typeName;
+export function getBackendConnectionAttributeName(resourceHelper: TransformerResourceHelperProvider, type: string, field: string) {
+  return getConnectionAttributeName(resourceHelper.getModelNameMapping(type), field);
 }
 
 export function validateDisallowedDataStoreRelationships(
@@ -212,4 +208,72 @@ export function validateDisallowedDataStoreRelationships(
       `${modelType} and ${relatedType.name.value} cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead. See https://docs.amplify.aws/cli/graphql/data-modeling/#belongs-to-relationship`,
     );
   }
+}
+
+type RegisterForeignKeyMappingParams = {
+  resourceHelper: TransformerResourceHelperProvider; // resourceHelper from the transformer context object
+  thisTypeName: string; // the "source type" of the relation
+  thisFieldName: string; // the field with the relational directive
+  relatedTypeName: string; // the type that the relation points to
+  relatedFieldName?: string; // the related field name that points back to this type (if any)
+};
+
+/**
+ * Registers a mapping for a renamed model with a hasOne relation
+ * If thisTypeName maps to a different value, it registers a mapping for the CRUD resolvers of this type
+ * It also checks if the related type as been renamed and if so registers a mapping for fetching the related type through this type
+ */
+export function registerHasOneForeignKeyMappings({
+  resourceHelper,
+  thisTypeName,
+  thisFieldName,
+  relatedTypeName,
+  relatedFieldName,
+}: RegisterForeignKeyMappingParams) {
+  if (resourceHelper.isModelRenamed(thisTypeName)) {
+    const currAttrName = getConnectionAttributeName(thisTypeName, thisFieldName);
+    const origAttrName = getBackendConnectionAttributeName(resourceHelper, thisTypeName, thisFieldName);
+
+    (['create', 'update', 'get', 'list'] as const).forEach(op => {
+      const opFieldName = getFieldNameFor(op, thisTypeName);
+      const opTypeName = op === 'create' || op === 'update' ? 'Mutation' : 'Query';
+      resourceHelper.addResolverFieldMapEntry(opTypeName, opFieldName, thisTypeName, [currAttrName, origAttrName], op === 'list');
+    });
+  }
+
+  if (resourceHelper.isModelRenamed(relatedTypeName) && relatedFieldName !== undefined) {
+    const relatedCurrAttrName = getConnectionAttributeName(relatedTypeName, relatedFieldName);
+    const relatedOrigAttrName = getBackendConnectionAttributeName(resourceHelper, relatedTypeName, relatedFieldName);
+    resourceHelper.addResolverFieldMapEntry(thisTypeName, thisFieldName, thisTypeName, [relatedCurrAttrName, relatedOrigAttrName], false);
+  }
+}
+
+/**
+ * This function is similar to registerHasOneForeignKeyMappings but subtly different
+ * Because hasMany creates a foreign key field on the related type, this function registers the mapping on the related type.
+ * It attaches a mapping to it's own field resolver to map the related type results as well
+ */
+export function registerHasManyForeignKeyMappings({
+  resourceHelper,
+  thisTypeName,
+  thisFieldName,
+  relatedTypeName,
+}: RegisterForeignKeyMappingParams) {
+  if (!resourceHelper.isModelRenamed(thisTypeName)) {
+    return;
+  }
+
+  const currAttrName = getConnectionAttributeName(thisTypeName, thisFieldName);
+  const origAttrName = getBackendConnectionAttributeName(resourceHelper, thisTypeName, thisFieldName);
+
+  (['create', 'update', 'get', 'list'] as const).forEach(op => {
+    const fieldName = getFieldNameFor(op, relatedTypeName);
+    const typeName = op === 'create' || op === 'update' ? 'Mutation' : 'Query';
+
+    // registers field mappings for CRUD resolvers on related type
+    resourceHelper.addResolverFieldMapEntry(typeName, fieldName, relatedTypeName, [currAttrName, origAttrName], op === 'list');
+  });
+
+  // registers field mappings for getting the related type through the hasMany resolver
+  resourceHelper.addResolverFieldMapEntry(thisTypeName, thisFieldName, relatedTypeName, [currAttrName, origAttrName], true);
 }
