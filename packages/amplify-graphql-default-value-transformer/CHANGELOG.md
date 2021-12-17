@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-default-value-transformer@0.5.6...@aws-amplify/graphql-default-value-transformer@0.5.7) (2021-12-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-default-value-transformer
+
+
+
+
+
 ## [0.5.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-default-value-transformer@0.5.5...@aws-amplify/graphql-default-value-transformer@0.5.6) (2021-12-03)
 
 **Note:** Version bump only for package @aws-amplify/graphql-default-value-transformer

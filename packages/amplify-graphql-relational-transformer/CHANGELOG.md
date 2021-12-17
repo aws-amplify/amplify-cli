@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.12](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.6.11...@aws-amplify/graphql-relational-transformer@0.6.12) (2021-12-17)
+
+
+### Bug Fixes
+
+* **graphql-relational-transformer:** [@belongs](https://github.com/belongs)To directive support for Int fields ([#9175](https://github.com/aws-amplify/amplify-cli/issues/9175)) ([452b115](https://github.com/aws-amplify/amplify-cli/commit/452b11549aac4f5ce7cc8fb0720c3e1b10e2457e))
+* prevent A <-> B [@has](https://github.com/has)One or [@has](https://github.com/has)Many relationships with DS ([#9230](https://github.com/aws-amplify/amplify-cli/issues/9230)) ([ffa5fc7](https://github.com/aws-amplify/amplify-cli/commit/ffa5fc74e76988a821e152ab8ae3f386b5967381))
+
+
+
+
+
 ## [0.6.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.6.10...@aws-amplify/graphql-relational-transformer@0.6.11) (2021-12-03)
 
 **Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
