@@ -2,6 +2,7 @@ import { TransformerPluginBase, InvalidDirectiveError, MappingTemplate, Directiv
 import {
   DataSourceProvider,
   TransformerContextProvider,
+  TransformerPrepareStepContextProvider,
   TransformerResourceHelperProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
@@ -225,23 +226,17 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     }
   };
 
+  prepare = (ctx: TransformerPrepareStepContextProvider) => {
+    for (const def of this.searchableObjectTypeDefinitions) {
+      const modelName = def.node.name.value;
+      ctx.resourceHelper.getModelFieldMap(modelName).addResolverReference({ typeName: 'Query', fieldName: def.fieldName, isList: true });
+    }
+  };
+
   transformSchema = (ctx: TransformerTransformSchemaStepContextProvider) => {
     for (const name of this.searchableObjectNames) {
       const searchObject = ctx.output.getObject(name) as ObjectTypeDefinitionNode;
       this.generateSearchableInputs(ctx, searchObject);
-    }
-    // this step looks through renamed fields in the searchable models and adds resolver mappings if any are found
-    // note that this must go in transformSchema because it relies on the relational directives adding the foreign key fields into the
-    // outpt which happens during transformSchema
-    for (const def of this.searchableObjectTypeDefinitions) {
-      const modelName = def.node.name.value;
-      this.getMappedFields(
-        ctx.resourceHelper,
-        modelName,
-        ctx.output.getObject(modelName)?.fields?.map(field => field.name.value) || [],
-      ).forEach(({ field, mappedField }) =>
-        ctx.resourceHelper.addResolverFieldMapEntry(ctx.output.getQueryTypeName()!, def.fieldName, modelName, [field, mappedField], true),
-      );
     }
     // add api key to aggregate types if sandbox mode is enabled
     if (ctx.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {

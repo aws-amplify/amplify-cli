@@ -4,6 +4,7 @@ import { StackManager } from './stack-manager';
 import md5 from 'md5';
 import { ModelResourceIDs } from 'graphql-transformer-common';
 import { ModelFieldMapImpl } from './model-field-map';
+import { MappingTemplate } from '..';
 
 export class TransformerResourceHelper implements TransformerResourceHelperProvider {
   private api?: GraphQLAPIProvider;
@@ -57,6 +58,18 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
       this.#modelFieldMaps.set(modelName, new ModelFieldMapImpl());
     }
     return this.#modelFieldMaps.get(modelName)!;
+  };
+
+  getFieldNameMapping = (modelName: string, fieldName: string): string => {
+    if (!this.#modelFieldMaps.has(modelName)) {
+      return fieldName;
+    }
+    return (
+      this.#modelFieldMaps
+        .get(modelName)
+        ?.getMappedFields()
+        .find(entry => entry.currentFieldName === fieldName)?.originalFieldName || fieldName
+    );
   };
 
   getModelFieldMapKeys = () => [...this.#modelFieldMaps.keys()];

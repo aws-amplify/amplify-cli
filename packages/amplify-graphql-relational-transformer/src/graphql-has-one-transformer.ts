@@ -58,7 +58,6 @@ export class HasOneTransformer extends TransformerPluginBase {
         thisTypeName: config.object.name.value,
         thisFieldName: config.field.name.value,
         relatedTypeName: config.relatedType.name.value,
-        relatedFieldName: biDiHasOneField(config.relatedType, config.object.name.value),
       });
     });
   };

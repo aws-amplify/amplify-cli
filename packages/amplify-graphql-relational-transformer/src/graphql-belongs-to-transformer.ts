@@ -60,7 +60,6 @@ export class BelongsToTransformer extends TransformerPluginBase {
           thisTypeName: config.object.name.value,
           thisFieldName: config.field.name.value,
           relatedTypeName: config.relatedType.name.value,
-          relatedFieldName: config.relatedField.name.value,
         });
       });
   };

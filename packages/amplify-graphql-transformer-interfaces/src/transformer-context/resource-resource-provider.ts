@@ -6,6 +6,7 @@ export interface TransformerResourceHelperProvider {
   isModelRenamed(modelName: string): boolean;
   getModelFieldMap(modelName: string): ModelFieldMap;
   getModelFieldMapKeys(): string[];
+  getFieldNameMapping(modelName: string, fieldName: string): string;
 }
 
 export type ModelFieldMap = {

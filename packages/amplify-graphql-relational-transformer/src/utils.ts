@@ -1,6 +1,6 @@
 import assert from 'assert';
 import { getFieldNameFor, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
-import { TransformerContextProvider, TransformerResourceHelperProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { ModelFieldMap, TransformerContextProvider, TransformerResourceHelperProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveNode, EnumTypeDefinitionNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode, StringValueNode } from 'graphql';
 import { getBaseType, isScalarOrEnum, toCamelCase } from 'graphql-transformer-common';
 import {
@@ -214,8 +214,7 @@ type RegisterForeignKeyMappingParams = {
   resourceHelper: TransformerResourceHelperProvider; // resourceHelper from the transformer context object
   thisTypeName: string; // the "source type" of the relation
   thisFieldName: string; // the field with the relational directive
-  relatedTypeName: string; // the type that the relation points to
-  relatedFieldName?: string; // the related field name that points back to this type (if any)
+  relatedTypeName: string; // the related type
 };
 
 /**
@@ -223,21 +222,29 @@ type RegisterForeignKeyMappingParams = {
  * If thisTypeName maps to a different value, it registers a mapping for the CRUD resolvers of this type
  * It also checks if the related type as been renamed and if so registers a mapping for fetching the related type through this type
  */
-export function registerHasOneForeignKeyMappings({ resourceHelper, thisTypeName, thisFieldName }: RegisterForeignKeyMappingParams) {
+export function registerHasOneForeignKeyMappings({
+  resourceHelper,
+  thisTypeName,
+  thisFieldName,
+  relatedTypeName,
+}: RegisterForeignKeyMappingParams) {
   if (resourceHelper.isModelRenamed(thisTypeName)) {
     const currAttrName = getConnectionAttributeName(thisTypeName, thisFieldName);
     const origAttrName = getBackendConnectionAttributeName(resourceHelper, thisTypeName, thisFieldName);
 
     const modelFieldMap = resourceHelper.getModelFieldMap(thisTypeName);
-    modelFieldMap
-      .addMappedField({ currentFieldName: currAttrName, originalFieldName: origAttrName })
-      .addResolverReference({ typeName: thisTypeName, fieldName: thisFieldName, isList: false });
+    modelFieldMap.addMappedField({ currentFieldName: currAttrName, originalFieldName: origAttrName });
 
     (['create', 'update', 'get', 'list'] as const).forEach(op => {
       const opFieldName = getFieldNameFor(op, thisTypeName);
       const opTypeName = op === 'create' || op === 'update' ? 'Mutation' : 'Query';
       modelFieldMap.addResolverReference({ typeName: opTypeName, fieldName: opFieldName, isList: op === 'list' });
     });
+
+    // register that the related field is reference by this hasOne field
+    resourceHelper
+      .getModelFieldMap(relatedTypeName)
+      .addResolverReference({ typeName: thisTypeName, fieldName: thisFieldName, isList: false });
   }
 }
 
@@ -259,14 +266,16 @@ export function registerHasManyForeignKeyMappings({
   const currAttrName = getConnectionAttributeName(thisTypeName, thisFieldName);
   const origAttrName = getBackendConnectionAttributeName(resourceHelper, thisTypeName, thisFieldName);
 
+  const modelFieldMap = resourceHelper.getModelFieldMap(relatedTypeName);
+  modelFieldMap
+    .addMappedField({ currentFieldName: currAttrName, originalFieldName: origAttrName })
+    .addResolverReference({ typeName: thisTypeName, fieldName: thisFieldName, isList: true });
+
   (['create', 'update', 'get', 'list'] as const).forEach(op => {
-    const fieldName = getFieldNameFor(op, relatedTypeName);
-    const typeName = op === 'create' || op === 'update' ? 'Mutation' : 'Query';
+    const opFieldName = getFieldNameFor(op, relatedTypeName);
+    const opTypeName = op === 'create' || op === 'update' ? 'Mutation' : 'Query';
 
     // registers field mappings for CRUD resolvers on related type
-    resourceHelper.addResolverFieldMapEntry(typeName, fieldName, relatedTypeName, [currAttrName, origAttrName], op === 'list');
+    modelFieldMap.addResolverReference({ typeName: opTypeName, fieldName: opFieldName, isList: op === 'list' });
   });
-
-  // registers field mappings for getting the related type through the hasMany resolver
-  resourceHelper.addResolverFieldMapEntry(thisTypeName, thisFieldName, relatedTypeName, [currAttrName, origAttrName], true);
 }

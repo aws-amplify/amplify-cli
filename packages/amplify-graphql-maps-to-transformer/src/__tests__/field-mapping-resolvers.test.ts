@@ -1,4 +1,4 @@
-import { TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { FieldMapEntry, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { attachInputMappingSlot, attachResponseMappingSlot } from '../field-mapping-resolvers';
 
 const addToSlot_mock = jest.fn();
@@ -9,11 +9,22 @@ const resolver_stub = {
 
 const resolver_typed = resolver_stub as unknown as TransformerResolverProvider;
 
-const singleTestFieldMap = new Map([['newFieldName', 'origFieldName']]);
-const multiTestFieldMap = new Map([
-  ['newFieldName', 'origFieldName'],
-  ['anotherOne', 'theOG'],
-]);
+const singleTestFieldMap: FieldMapEntry[] = [
+  {
+    currentFieldName: 'newFieldName',
+    originalFieldName: 'origFieldName',
+  },
+];
+const multiTestFieldMap: FieldMapEntry[] = [
+  {
+    currentFieldName: 'newFieldName',
+    originalFieldName: 'origFieldName',
+  },
+  {
+    currentFieldName: 'anotherOne',
+    originalFieldName: 'theOG',
+  },
+];
 
 beforeEach(jest.clearAllMocks);
 

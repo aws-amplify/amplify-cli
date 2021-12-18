@@ -1,5 +1,9 @@
 import { DirectiveNode, ObjectTypeDefinitionNode } from 'graphql';
-import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  ModelFieldMap,
+  TransformerContextProvider,
+  TransformerSchemaVisitStepContextProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { MapsToTransformer } from '../graphql-maps-to-transformer';
 import { attachInputMappingSlot, attachResponseMappingSlot } from '../field-mapping-resolvers';
 
@@ -13,8 +17,9 @@ describe('@mapsTo directive', () => {
   let stubDirective: DirectiveNode;
 
   const setModelNameMapping_mock = jest.fn();
-  const getResolverMapRegistry_mock = jest.fn();
   const getResolver_mock = jest.fn();
+  const getModelFieldMapKeys_mock = jest.fn();
+  const getModelFieldMap_mock = jest.fn();
 
   const stubTransformerContext = {
     resolvers: {
@@ -22,7 +27,8 @@ describe('@mapsTo directive', () => {
     },
     resourceHelper: {
       setModelNameMapping: setModelNameMapping_mock,
-      getResolverMapRegistry: getResolverMapRegistry_mock,
+      getModelFieldMapKeys: getModelFieldMapKeys_mock,
+      getModelFieldMap: getModelFieldMap_mock,
     },
   };
 
@@ -79,28 +85,34 @@ describe('@mapsTo directive', () => {
   });
 
   it('attaches input and response mapping templates for mutations', () => {
-    const testFieldMap = new Map([
-      ['currFieldName', 'origFieldName'],
-      ['anotherFieldName', 'otherOrigField'],
-    ]);
-    stubTransformerContext.resourceHelper.getResolverMapRegistry.mockReturnValueOnce(
-      new Map([
-        [
-          'Mutation.createTestType',
-          {
-            resolverTypeName: 'Mutation',
-            resolverFieldName: 'createTestType',
-            fieldMap: testFieldMap,
-            isResultList: false,
-          },
-        ],
-      ]),
-    );
+    // setup
+    const testFieldMap = [
+      {
+        currentFieldName: 'newFieldName',
+        originalFieldName: 'origFieldName',
+      },
+    ];
+    stubTransformerContext.resourceHelper.getModelFieldMapKeys.mockReturnValueOnce(['TestType']);
+    const modelFieldMap: ModelFieldMap = {
+      getMappedFields: () => testFieldMap,
+      getResolverReferences: () => [
+        {
+          typeName: 'Mutation',
+          fieldName: 'createTestType',
+          isList: false,
+        },
+      ],
+    } as unknown as ModelFieldMap;
+    stubTransformerContext.resourceHelper.getModelFieldMap.mockReturnValueOnce(modelFieldMap);
     const dummyResolver = { obj: 'this is a dummy resolver' };
     stubTransformerContext.resolvers.getResolver.mockImplementationOnce((typeName: string, fieldName: string) =>
       typeName === 'Mutation' && fieldName === 'createTestType' ? dummyResolver : undefined,
     );
+
+    // test
     mapsToTransformer.generateResolvers(stubTransformerContext as unknown as TransformerContextProvider);
+
+    // assert
     expect(attachInputMappingSlot_mock).toBeCalledTimes(1);
     expect(attachInputMappingSlot_mock).toBeCalledWith({
       resolver: dummyResolver,
@@ -120,28 +132,34 @@ describe('@mapsTo directive', () => {
   });
 
   it('only attaches response mapping templates for queries', () => {
-    const testFieldMap = new Map([
-      ['currFieldName', 'origFieldName'],
-      ['anotherFieldName', 'otherOrigField'],
-    ]);
-    stubTransformerContext.resourceHelper.getResolverMapRegistry.mockReturnValueOnce(
-      new Map([
-        [
-          'Query.getTestType',
-          {
-            resolverTypeName: 'Query',
-            resolverFieldName: 'getTestType',
-            fieldMap: testFieldMap,
-            isResultList: false,
-          },
-        ],
-      ]),
-    );
+    // setup
+    const testFieldMap = [
+      {
+        currentFieldName: 'newFieldName',
+        originalFieldName: 'origFieldName',
+      },
+    ];
+    stubTransformerContext.resourceHelper.getModelFieldMapKeys.mockReturnValueOnce(['TestType']);
+    const modelFieldMap: ModelFieldMap = {
+      getMappedFields: () => testFieldMap,
+      getResolverReferences: () => [
+        {
+          typeName: 'Query',
+          fieldName: 'getTestType',
+          isList: false,
+        },
+      ],
+    } as unknown as ModelFieldMap;
+    stubTransformerContext.resourceHelper.getModelFieldMap.mockReturnValueOnce(modelFieldMap);
     const dummyResolver = { obj: 'this is a dummy resolver' };
     stubTransformerContext.resolvers.getResolver.mockImplementationOnce((typeName: string, fieldName: string) =>
       typeName === 'Query' && fieldName === 'getTestType' ? dummyResolver : undefined,
     );
+
+    // test
     mapsToTransformer.generateResolvers(stubTransformerContext as unknown as TransformerContextProvider);
+
+    // assert
     expect(attachInputMappingSlot_mock).not.toBeCalled();
     expect(attachResponseMappingSlot_mock).toBeCalledTimes(1);
     expect(attachResponseMappingSlot_mock).toBeCalledWith({
@@ -155,25 +173,31 @@ describe('@mapsTo directive', () => {
   });
 
   it('does not attach mappings if no resolver found', () => {
-    const testFieldMap = new Map([
-      ['currFieldName', 'origFieldName'],
-      ['anotherFieldName', 'otherOrigField'],
-    ]);
-    stubTransformerContext.resourceHelper.getResolverMapRegistry.mockReturnValueOnce(
-      new Map([
-        [
-          'Query.getTestType',
-          {
-            resolverTypeName: 'Query',
-            resolverFieldName: 'getTestType',
-            fieldMap: testFieldMap,
-            isResultList: false,
-          },
-        ],
-      ]),
-    );
+    // setup
+    const testFieldMap = [
+      {
+        currentFieldName: 'newFieldName',
+        originalFieldName: 'origFieldName',
+      },
+    ];
+    stubTransformerContext.resourceHelper.getModelFieldMapKeys.mockReturnValueOnce(['TestType']);
+    const modelFieldMap: ModelFieldMap = {
+      getMappedFields: () => testFieldMap,
+      getResolverReferences: () => [
+        {
+          typeName: 'Query',
+          fieldName: 'getTestType',
+          isList: false,
+        },
+      ],
+    } as unknown as ModelFieldMap;
+    stubTransformerContext.resourceHelper.getModelFieldMap.mockReturnValueOnce(modelFieldMap);
     stubTransformerContext.resolvers.getResolver.mockReturnValueOnce(undefined);
+
+    // test
     mapsToTransformer.generateResolvers(stubTransformerContext as unknown as TransformerContextProvider);
+
+    // assert
     expect(attachInputMappingSlot_mock).not.toBeCalled();
     expect(attachResponseMappingSlot_mock).not.toBeCalled();
   });
