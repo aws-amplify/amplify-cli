@@ -4,26 +4,26 @@ export interface TransformerResourceHelperProvider {
   setModelNameMapping(modelName: string, mappedName: string): void;
   getModelNameMapping(modelName: string): string;
   isModelRenamed(modelName: string): boolean;
-  addResolverFieldMapEntry(
-    typeName: string,
-    fieldName: string,
-    modelName: string,
-    newEntry: [CurrentFieldName, OriginalFieldName],
-    isResultList?: boolean,
-  ): void;
-  getFieldNameMapping(modelName: string, fieldName: string): string;
-  getResolverMapRegistry(): Readonly<Map<ResolverKey, ResolverMapEntry>>;
+  getModelFieldMap(modelName: string): ModelFieldMap;
+  getModelFieldMapKeys(): string[];
 }
 
-export type ResolverKey = string;
-export type CurrentFieldName = string;
-export type OriginalFieldName = string;
+export type ModelFieldMap = {
+  addMappedField: (entry: FieldMapEntry) => ModelFieldMap;
+  addResolverReference: (entry: ResolverReferenceEntry) => ModelFieldMap;
+  getMappedFields: () => ReadonlyArray<FieldMapEntry>;
+  getResolverReferences: () => ReadonlyArray<ResolverReferenceEntry>;
+};
 
-export type FieldMap = Map<CurrentFieldName, OriginalFieldName>;
+export type ResolverReferenceEntry = {
+  typeName: string;
+  fieldName: string;
+  isList: boolean;
+};
 
-export type ResolverMapEntry = Readonly<{
-  resolverTypeName: string;
-  resolverFieldName: string;
-  fieldMap: FieldMap;
-  isResultList: boolean;
-}>;
+export type FieldMapEntry = {
+  originalFieldName: string;
+  currentFieldName: string;
+};
+
+export type ReadonlyArray<T> = Readonly<Array<Readonly<T>>>;

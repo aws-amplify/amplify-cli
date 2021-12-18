@@ -1,6 +1,7 @@
 import { DirectiveWrapper, InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
+  TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
@@ -52,7 +53,7 @@ export class HasManyTransformer extends TransformerPluginBase {
     this.directiveList.push(args);
   };
 
-  prepare = (context: TransformerContextProvider): void => {
+  prepare = (context: TransformerPrepareStepContextProvider): void => {
     this.directiveList.forEach(config => {
       registerHasManyForeignKeyMappings({
         resourceHelper: context.resourceHelper,

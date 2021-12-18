@@ -223,28 +223,21 @@ type RegisterForeignKeyMappingParams = {
  * If thisTypeName maps to a different value, it registers a mapping for the CRUD resolvers of this type
  * It also checks if the related type as been renamed and if so registers a mapping for fetching the related type through this type
  */
-export function registerHasOneForeignKeyMappings({
-  resourceHelper,
-  thisTypeName,
-  thisFieldName,
-  relatedTypeName,
-  relatedFieldName,
-}: RegisterForeignKeyMappingParams) {
+export function registerHasOneForeignKeyMappings({ resourceHelper, thisTypeName, thisFieldName }: RegisterForeignKeyMappingParams) {
   if (resourceHelper.isModelRenamed(thisTypeName)) {
     const currAttrName = getConnectionAttributeName(thisTypeName, thisFieldName);
     const origAttrName = getBackendConnectionAttributeName(resourceHelper, thisTypeName, thisFieldName);
 
+    const modelFieldMap = resourceHelper.getModelFieldMap(thisTypeName);
+    modelFieldMap
+      .addMappedField({ currentFieldName: currAttrName, originalFieldName: origAttrName })
+      .addResolverReference({ typeName: thisTypeName, fieldName: thisFieldName, isList: false });
+
     (['create', 'update', 'get', 'list'] as const).forEach(op => {
       const opFieldName = getFieldNameFor(op, thisTypeName);
       const opTypeName = op === 'create' || op === 'update' ? 'Mutation' : 'Query';
-      resourceHelper.addResolverFieldMapEntry(opTypeName, opFieldName, thisTypeName, [currAttrName, origAttrName], op === 'list');
+      modelFieldMap.addResolverReference({ typeName: opTypeName, fieldName: opFieldName, isList: op === 'list' });
     });
-  }
-
-  if (resourceHelper.isModelRenamed(relatedTypeName) && relatedFieldName !== undefined) {
-    const relatedCurrAttrName = getConnectionAttributeName(relatedTypeName, relatedFieldName);
-    const relatedOrigAttrName = getBackendConnectionAttributeName(resourceHelper, relatedTypeName, relatedFieldName);
-    resourceHelper.addResolverFieldMapEntry(thisTypeName, thisFieldName, thisTypeName, [relatedCurrAttrName, relatedOrigAttrName], false);
   }
 }
 

@@ -33,24 +33,40 @@ export class MapsToTransformer extends TransformerPluginBase {
     ctx.resourceHelper.setModelNameMapping(modelName, originalName);
   };
 
-  generateResolvers = (context: TransformerContextProvider) =>
-    context.resourceHelper.getResolverMapRegistry().forEach(({ resolverTypeName, resolverFieldName, fieldMap, isResultList }) => {
-      const resolver = context.resolvers.getResolver(resolverTypeName, resolverFieldName);
-      if (!resolver) {
-        return;
-      }
-      if (resolverTypeName === 'Mutation') {
-        attachInputMappingSlot({ resolver, resolverFieldName, resolverTypeName, fieldMap });
-        attachResponseMappingSlot({ slotName: 'postUpdate', resolver, resolverFieldName, resolverTypeName, fieldMap, isList: false });
-        return;
-      }
-      attachResponseMappingSlot({
-        slotName: 'postDataLoad',
-        resolver,
-        resolverFieldName,
-        resolverTypeName,
-        fieldMap: fieldMap,
-        isList: isResultList,
+  generateResolvers = (context: TransformerContextProvider) => {
+    context.resourceHelper.getModelFieldMapKeys().forEach(modelName => {
+      const modelFieldMap = context.resourceHelper.getModelFieldMap(modelName);
+      modelFieldMap.getResolverReferences().forEach(({ typeName, fieldName, isList }) => {
+        const resolver = context.resolvers.getResolver(typeName, fieldName);
+        if (!resolver) {
+          return;
+        }
+        if (typeName === 'Mutation') {
+          attachInputMappingSlot({
+            resolver,
+            resolverTypeName: typeName,
+            resolverFieldName: fieldName,
+            fieldMap: modelFieldMap.getMappedFields(),
+          });
+          attachResponseMappingSlot({
+            slotName: 'postUpdate',
+            resolver,
+            resolverTypeName: typeName,
+            resolverFieldName: fieldName,
+            fieldMap: modelFieldMap.getMappedFields(),
+            isList: false,
+          });
+          return;
+        }
+        attachResponseMappingSlot({
+          slotName: 'postDataLoad',
+          resolver,
+          resolverTypeName: typeName,
+          resolverFieldName: fieldName,
+          fieldMap: modelFieldMap.getMappedFields(),
+          isList,
+        });
       });
     });
+  };
 }

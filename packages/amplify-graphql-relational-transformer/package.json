@@ -28,7 +28,6 @@
   },
   "dependencies": {
     "@aws-amplify/graphql-index-transformer": "0.8.2",
-    "@aws-amplify/graphql-maps-to-transformer": "1.0.0",
     "@aws-amplify/graphql-model-transformer": "0.10.2",
     "@aws-amplify/graphql-transformer-core": "0.15.1",
     "@aws-cdk/aws-appsync": "~1.124.0",

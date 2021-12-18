@@ -3,7 +3,6 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ConflictHandlerType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { Kind, parse } from 'graphql';
 import { HasManyTransformer, HasOneTransformer } from '..';
-import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
 
 test('fails if @hasOne was used on an object that is not a model type', () => {
   const inputSchema = `
@@ -444,54 +443,4 @@ test('@hasOne and @hasOne cannot point at each other if DataStore is enabled', (
   expect(() => transformer.transform(inputSchema)).toThrowError(
     `Blog and Post cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead.`,
   );
-});
-
-test('@hasOne maps relational fields of renamed models', () => {
-  const inputSchema = /* GraphQL */ `
-    type BlogRename @model @mapsTo(name: "Blog") {
-      id: ID!
-      posts: Post @hasOne
-    }
-
-    type Post @model {
-      id: ID!
-    }
-  `;
-  const transformer = new GraphQLTransform({
-    resolverConfig: {
-      project: {
-        ConflictDetection: 'VERSION',
-        ConflictHandler: ConflictHandlerType.AUTOMERGE,
-      },
-    },
-    transformers: [new ModelTransformer(), new HasOneTransformer(), new MapsToTransformer()],
-  });
-  const result = transformer.transform(inputSchema);
-  expect(result.resolvers['BlogRename.posts.req.vtl']).toMatchInlineSnapshot(`
-    "#if( $ctx.source.deniedField )
-      #return($util.toJson(null))
-    #end
-    #if( $util.isNull($ctx.source.blogPostsId) )
-      #return
-    #else
-      #set( $GetRequest = {
-      \\"version\\": \\"2018-05-29\\",
-      \\"operation\\": \\"Query\\"
-    } )
-      $util.qr($GetRequest.put(\\"query\\", {
-      \\"expression\\": \\"#partitionKey = :partitionValue\\",
-      \\"expressionNames\\": {
-          \\"#partitionKey\\": \\"id\\"
-      },
-      \\"expressionValues\\": {
-          \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.blogPostsId, \\"___xamznone____\\")))
-      }
-    }))
-      #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-        $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
-      #end
-      $util.toJson($GetRequest)
-    #end"
-  `);
-  expect(result.resolvers['BlogRename.posts.init.1.req.vtl']).toMatchInlineSnapshot(`undefined`);
 });

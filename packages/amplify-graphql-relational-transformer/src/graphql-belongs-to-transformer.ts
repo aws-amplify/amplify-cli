@@ -1,6 +1,7 @@
 import { DirectiveWrapper, InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
+  TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
@@ -49,7 +50,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
     this.directiveList.push(args);
   };
 
-  prepare = (context: TransformerContextProvider) => {
+  prepare = (context: TransformerPrepareStepContextProvider) => {
     this.directiveList
       .filter(config => config.relationType === 'hasOne')
       .forEach(config => {

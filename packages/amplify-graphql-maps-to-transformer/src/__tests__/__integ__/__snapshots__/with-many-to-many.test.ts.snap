@@ -1,0 +1,70 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`mapsTo with manyToMany creates resources with original GSIs and field names 1`] = `
+Array [
+  Object {
+    "IndexName": "byPerson",
+    "KeySchema": Array [
+      Object {
+        "AttributeName": "personID",
+        "KeyType": "HASH",
+      },
+      Object {
+        "AttributeName": "todoID",
+        "KeyType": "RANGE",
+      },
+    ],
+    "Projection": Object {
+      "ProjectionType": "ALL",
+    },
+    "ProvisionedThroughput": Object {
+      "Fn::If": Array [
+        "ShouldUsePayPerRequestBilling",
+        Object {
+          "Ref": "AWS::NoValue",
+        },
+        Object {
+          "ReadCapacityUnits": Object {
+            "Ref": "DynamoDBModelTableReadIOPS",
+          },
+          "WriteCapacityUnits": Object {
+            "Ref": "DynamoDBModelTableWriteIOPS",
+          },
+        },
+      ],
+    },
+  },
+  Object {
+    "IndexName": "byTodo",
+    "KeySchema": Array [
+      Object {
+        "AttributeName": "todoID",
+        "KeyType": "HASH",
+      },
+      Object {
+        "AttributeName": "personID",
+        "KeyType": "RANGE",
+      },
+    ],
+    "Projection": Object {
+      "ProjectionType": "ALL",
+    },
+    "ProvisionedThroughput": Object {
+      "Fn::If": Array [
+        "ShouldUsePayPerRequestBilling",
+        Object {
+          "Ref": "AWS::NoValue",
+        },
+        Object {
+          "ReadCapacityUnits": Object {
+            "Ref": "DynamoDBModelTableReadIOPS",
+          },
+          "WriteCapacityUnits": Object {
+            "Ref": "DynamoDBModelTableWriteIOPS",
+          },
+        },
+      ],
+    },
+  },
+]
+`;

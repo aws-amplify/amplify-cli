@@ -1,6 +1,5 @@
 import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
-import { TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { FieldMap } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/resource-resource-provider';
+import { TransformerResolverProvider, FieldMapEntry, ReadonlyArray } from '@aws-amplify/graphql-transformer-interfaces';
 import { compoundExpression, Expression, forEach, methodCall, print, qref, raw, ref, str, toJson } from 'graphql-mapping-template';
 
 /**
@@ -11,7 +10,7 @@ type AttachInputMappingSlotParams = {
   resolver: TransformerResolverProvider; // The create or update resolver that needs a mapping added to it
   resolverTypeName: string; // The resolver type name
   resolverFieldName: string; // The create or update resolver name
-  fieldMap: FieldMap; // A map of renamed fields
+  fieldMap: ReadonlyArray<FieldMapEntry>; // A map of renamed fields
 };
 
 /**
@@ -33,7 +32,7 @@ type AttachResponseMappingSlotParams = {
   resolver: TransformerResolverProvider; // The get / list / field resolver
   resolverFieldName: string; // The resolver field name
   resolverTypeName: string; // The resolver type name
-  fieldMap: FieldMap;
+  fieldMap: ReadonlyArray<FieldMapEntry>;
   isList: boolean; // true if the previous pipeline function is expected to return a list, false otherwise. Specifically, $ctx.prev.result.items is expected to be a list if true
 };
 
@@ -66,16 +65,23 @@ export const attachResponseMappingSlot = ({
   );
 };
 
-const createListRemapExpression = (resultListName: string, fieldMap: FieldMap, direction: 'ORIG_TO_CURR' | 'CURR_TO_ORIG'): Expression =>
-  forEach(ref('item'), ref(resultListName), [createMultiRemapExpression('item', fieldMap, direction)]);
+const createListRemapExpression = (
+  resultListName: string,
+  fieldMap: ReadonlyArray<FieldMapEntry>,
+  direction: 'ORIG_TO_CURR' | 'CURR_TO_ORIG',
+): Expression => forEach(ref('item'), ref(resultListName), [createMultiRemapExpression('item', fieldMap, direction)]);
 
-const createMultiRemapExpression = (vtlMapName: string, fieldMap: FieldMap, direction: 'ORIG_TO_CURR' | 'CURR_TO_ORIG') => {
+const createMultiRemapExpression = (
+  vtlMapName: string,
+  fieldMap: ReadonlyArray<FieldMapEntry>,
+  direction: 'ORIG_TO_CURR' | 'CURR_TO_ORIG',
+) => {
   const expressions: Expression[] = [];
-  fieldMap.forEach((origFieldName, currentFieldName) => {
+  fieldMap.forEach(({ originalFieldName, currentFieldName }) => {
     if (direction === 'ORIG_TO_CURR') {
-      expressions.push(createRemapExpression(vtlMapName, origFieldName, currentFieldName));
+      expressions.push(createRemapExpression(vtlMapName, originalFieldName, currentFieldName));
     } else {
-      expressions.push(createRemapExpression(vtlMapName, currentFieldName, origFieldName));
+      expressions.push(createRemapExpression(vtlMapName, currentFieldName, originalFieldName));
     }
   });
   return compoundExpression(expressions);

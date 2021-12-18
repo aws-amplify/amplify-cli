@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 1`] = `
+"$util.qr($ctx.prev.result.put(\\"employeeTaskId\\", $ctx.prev.result.personTaskId))
+$util.qr($ctx.prev.result.remove(\\"personTaskId\\"))
+$util.toJson($ctx.prev.result)"
+`;
+
+exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 2`] = `
+"$util.qr($ctx.args.input.put(\\"personTaskId\\", $ctx.args.input.employeeTaskId))
+$util.qr($ctx.args.input.remove(\\"employeeTaskId\\"))
+$util.toJson({})"
+`;
+
+exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 3`] = `
+"$util.qr($ctx.prev.result.put(\\"employeeTaskId\\", $ctx.prev.result.personTaskId))
+$util.qr($ctx.prev.result.remove(\\"personTaskId\\"))
+$util.toJson($ctx.prev.result)"
+`;
+
+exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 4`] = `
+"$util.qr($ctx.args.input.put(\\"personTaskId\\", $ctx.args.input.employeeTaskId))
+$util.qr($ctx.args.input.remove(\\"employeeTaskId\\"))
+$util.toJson({})"
+`;
+
+exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 5`] = `
+"$util.qr($ctx.prev.result.put(\\"employeeTaskId\\", $ctx.prev.result.personTaskId))
+$util.qr($ctx.prev.result.remove(\\"personTaskId\\"))
+$util.toJson($ctx.prev.result)"
+`;
+
+exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 6`] = `
+"#foreach( $item in $ctx.prev.result.items )
+  $util.qr($item.put(\\"employeeTaskId\\", $item.personTaskId))
+  $util.qr($item.remove(\\"personTaskId\\"))
+#end
+$util.toJson($ctx.prev.result)"
+`;

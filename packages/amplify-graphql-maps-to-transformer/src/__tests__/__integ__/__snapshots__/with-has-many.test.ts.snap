@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related type and maps related type in hasMany field resolver 1`] = `
+"$util.qr($ctx.prev.result.put(\\"employeeTasksId\\", $ctx.prev.result.personTasksId))
+$util.qr($ctx.prev.result.remove(\\"personTasksId\\"))
+$util.toJson($ctx.prev.result)"
+`;
+
+exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related type and maps related type in hasMany field resolver 2`] = `
+"$util.qr($ctx.args.input.put(\\"personTasksId\\", $ctx.args.input.employeeTasksId))
+$util.qr($ctx.args.input.remove(\\"employeeTasksId\\"))
+$util.toJson({})"
+`;
+
+exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related type and maps related type in hasMany field resolver 3`] = `
+"$util.qr($ctx.prev.result.put(\\"employeeTasksId\\", $ctx.prev.result.personTasksId))
+$util.qr($ctx.prev.result.remove(\\"personTasksId\\"))
+$util.toJson($ctx.prev.result)"
+`;
+
+exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related type and maps related type in hasMany field resolver 4`] = `
+"$util.qr($ctx.args.input.put(\\"personTasksId\\", $ctx.args.input.employeeTasksId))
+$util.qr($ctx.args.input.remove(\\"employeeTasksId\\"))
+$util.toJson({})"
+`;
+
+exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related type and maps related type in hasMany field resolver 5`] = `
+"$util.qr($ctx.prev.result.put(\\"employeeTasksId\\", $ctx.prev.result.personTasksId))
+$util.qr($ctx.prev.result.remove(\\"personTasksId\\"))
+$util.toJson($ctx.prev.result)"
+`;
+
+exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related type and maps related type in hasMany field resolver 6`] = `
+"#foreach( $item in $ctx.prev.result.items )
+  $util.qr($item.put(\\"employeeTasksId\\", $item.personTasksId))
+  $util.qr($item.remove(\\"personTasksId\\"))
+#end
+$util.toJson($ctx.prev.result)"
+`;
+
+exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related type and maps related type in hasMany field resolver 7`] = `
+"#foreach( $item in $ctx.prev.result.items )
+  $util.qr($item.put(\\"employeeTasksId\\", $item.personTasksId))
+  $util.qr($item.remove(\\"personTasksId\\"))
+#end
+$util.toJson($ctx.prev.result)"
+`;

@@ -1,21 +1,18 @@
-import {
-  GraphQLAPIProvider,
-  TransformerResourceHelperProvider,
-  CurrentFieldName,
-  OriginalFieldName,
-  ResolverKey,
-  ResolverMapEntry,
-} from '@aws-amplify/graphql-transformer-interfaces';
+import { GraphQLAPIProvider, TransformerResourceHelperProvider, ModelFieldMap } from '@aws-amplify/graphql-transformer-interfaces';
 import { CfnParameter, Token } from '@aws-cdk/core';
 import { StackManager } from './stack-manager';
 import md5 from 'md5';
 import { ModelResourceIDs } from 'graphql-transformer-common';
+import { ModelFieldMapImpl } from './model-field-map';
 
 export class TransformerResourceHelper implements TransformerResourceHelperProvider {
   private api?: GraphQLAPIProvider;
+
+  // a mapping of models that have been renamed with @mapsTo
   readonly #modelNameMap = new Map<string, string>();
-  readonly #fieldNameMap = new Map<string, string>();
-  readonly #resolverMapRegistry = new Map<ResolverKey, ResolverMapEntry>();
+
+  // a map of objects that define fields of a model that are renamed
+  readonly #modelFieldMaps = new Map<string, ModelFieldMap>();
 
   constructor(private stackManager: StackManager) {
     ModelResourceIDs.setModelNameMap(this.#modelNameMap);
@@ -55,51 +52,14 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
 
   isModelRenamed = (modelName: string) => this.#modelNameMap.get(modelName) !== modelName;
 
-  /**
-   * The only way to set a field name mapping is through addResolverFieldMapEntry
-   */
-  private setFieldNameMapping = (modelName: string, fieldName: string, mappedFieldName: string) => {
-    this.#fieldNameMap.set(this.makeTupleKey(modelName, fieldName), mappedFieldName);
-  };
-
-  getFieldNameMapping = (modelName: string, fieldName: string) =>
-    this.#fieldNameMap.get(this.makeTupleKey(modelName, fieldName)) ?? fieldName;
-
-  /**
-   * @param typeName The GraphQL type name of the resolver (Query, Mutation, ModelName, etc). Note that this is not the same as the modelName
-   * @param fieldName The GraphQL field name of the resolver. Note this is not the renamed field
-   * @param modelName The GraphQL model with the renamed field
-   * @param newEntry The mapping of "current field name" => "original field name"
-   * @param isResultList Whether the result resolver should expect a list or not
-   */
-  addResolverFieldMapEntry = (
-    typeName: string,
-    fieldName: string,
-    modelName: string,
-    newEntry: [CurrentFieldName, OriginalFieldName],
-    isResultList = false,
-  ) => {
-    const key = this.makeTupleKey(typeName, fieldName);
-    if (this.#resolverMapRegistry.has(key)) {
-      const entry = this.#resolverMapRegistry.get(key)!;
-      if (entry.isResultList !== isResultList) {
-        throw new Error(`isResultList for ${key} already set to ${entry.isResultList}`);
-      }
-      entry.fieldMap.set(newEntry[0], newEntry[1]);
-    } else {
-      this.#resolverMapRegistry.set(key, {
-        resolverTypeName: typeName,
-        resolverFieldName: fieldName,
-        fieldMap: new Map([newEntry]),
-        isResultList,
-      });
+  getModelFieldMap = (modelName: string) => {
+    if (!this.#modelFieldMaps.has(modelName)) {
+      this.#modelFieldMaps.set(modelName, new ModelFieldMapImpl());
     }
-    this.setFieldNameMapping(modelName, newEntry[0], newEntry[1]);
+    return this.#modelFieldMaps.get(modelName)!;
   };
 
-  getResolverMapRegistry = (): Map<ResolverKey, ResolverMapEntry> => this.#resolverMapRegistry;
-
-  private makeTupleKey = (modelName: string, fieldName: string) => `${modelName}.${fieldName}`;
+  getModelFieldMapKeys = () => [...this.#modelFieldMaps.keys()];
 
   private ensureEnv = (): void => {
     if (!this.stackManager.getParameter('env')) {
