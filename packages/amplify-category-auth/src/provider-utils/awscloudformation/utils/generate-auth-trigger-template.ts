@@ -8,6 +8,7 @@ import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
 import { AuthTriggerConnection, CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
 import { CustomResource } from '@aws-cdk/core';
 import { authTriggerAssetFilePath } from '../constants';
+import { v4 as uuid } from 'uuid';
 
 type CustomResourceAuthStackProps = Readonly<{
   description: string;
@@ -48,7 +49,7 @@ export class CustomResourceAuthStack extends cdk.Stack {
       config.lambdaFunctionArn = fnArn.valueAsString;
     });
 
-    createCustomResource(this, props.authTriggerConnections, userpoolId, userpoolArn);
+    createCustomResource(this, props.authTriggerConnections, userpoolId);
   }
 
   toCloudFormation() {
@@ -84,12 +85,7 @@ async function createCustomResourceforAuthTrigger(authTriggerConnections: AuthTr
   return cfn;
 }
 
-function createCustomResource(
-  stack: cdk.Stack,
-  authTriggerConnections: AuthTriggerConnection[],
-  userpoolId: cdk.CfnParameter,
-  userpoolArn: cdk.CfnParameter,
-) {
+function createCustomResource(stack: cdk.Stack, authTriggerConnections: AuthTriggerConnection[], userpoolId: cdk.CfnParameter) {
   const triggerCode = fs.readFileSync(authTriggerAssetFilePath, 'utf-8');
   const authTriggerFn = new lambda.Function(stack, 'authTriggerFn', {
     runtime: lambda.Runtime.NODEJS_12_X,
@@ -107,10 +103,12 @@ function createCustomResource(
       }),
     );
   }
+
   // The custom resource that uses the provider to supply value
+  // Passing in a nonce parameter to ensure that the custom resource is triggered on every deployment
   new CustomResource(stack, 'CustomAuthTriggerResource', {
     serviceToken: authTriggerFn.functionArn,
-    properties: { userpoolId: userpoolId.valueAsString, lambdaConfig: authTriggerConnections },
+    properties: { userpoolId: userpoolId.valueAsString, lambdaConfig: authTriggerConnections, nonce: uuid() },
     resourceType: 'Custom::CustomAuthTriggerResourceOutputs',
   });
 }

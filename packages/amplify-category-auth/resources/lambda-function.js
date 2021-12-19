@@ -2,6 +2,8 @@ const response = require('cfn-response');
 const aws = require('aws-sdk');
 
 exports.handler = async function (event, context) {
+  const physicalResourceId = `${event.LogicalResourceId}-${event.ResourceProperties.userpoolId}`;
+
   try {
     const userPoolId = event.ResourceProperties.userpoolId;
     const lambdaConfig = event.ResourceProperties.lambdaConfig;
@@ -41,31 +43,31 @@ exports.handler = async function (event, context) {
     }
 
     lambdaConfig.forEach(lambda => (config[`${lambda.triggerType}`] = lambda.lambdaFunctionArn));
-    if (event.RequestType == 'Delete') {
+    if (event.RequestType === 'Delete') {
       try {
         updateUserPoolConfig.LambdaConfig = {};
         const result = await cognitoClient.updateUserPool(updateUserPoolConfig).promise();
         console.log('delete response data ' + JSON.stringify(result));
-        await response.send(event, context, response.SUCCESS, {});
+        await response.send(event, context, response.SUCCESS, {}, physicalResourceId);
       } catch (err) {
         console.log(err.stack);
-        await response.send(event, context, response.FAILED, { err });
+        await response.send(event, context, response.FAILED, { err }, physicalResourceId);
       }
     }
-    if (event.RequestType == 'Update' || event.RequestType == 'Create') {
+    if (event.RequestType === 'Update' || event.RequestType === 'Create') {
       updateUserPoolConfig.LambdaConfig = config;
-      console.log(updateUserPoolConfig);
+      console.log(`${event.RequestType}: ${updateUserPoolConfig}`);
       try {
         const result = await cognitoClient.updateUserPool(updateUserPoolConfig).promise();
         console.log('createOrUpdate response data ' + JSON.stringify(result));
-        await response.send(event, context, response.SUCCESS, { result });
+        await response.send(event, context, response.SUCCESS, {}, physicalResourceId);
       } catch (err) {
         console.log(err.stack);
-        await response.send(event, context, response.FAILED, { err });
+        await response.send(event, context, response.FAILED, { err }, physicalResourceId);
       }
     }
   } catch (err) {
     console.log(err.stack);
-    await response.send(event, context, response.FAILED, { err });
+    await response.send(event, context, response.FAILED, { err }, physicalResourceId);
   }
 };
