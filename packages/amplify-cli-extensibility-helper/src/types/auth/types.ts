@@ -4,7 +4,15 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cognito from '@aws-cdk/aws-cognito';
 import * as lambda from '@aws-cdk/aws-lambda';
 
-export interface AmplifyAuthCognitoStackTemplate {
+export type AmplifyCDKL1 = {
+  addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void;
+  addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void;
+  addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void;
+  addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void;
+  addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void;
+};
+
+export type AmplifyAuthCognitoStackTemplate = {
   customMessageConfirmationBucket?: s3.CfnBucket;
   snsRole?: iam.CfnRole;
   userPool?: cognito.CfnUserPool;
@@ -48,12 +56,12 @@ export interface AmplifyAuthCognitoStackTemplate {
   openIdLambdaIAMPolicy?: iam.CfnPolicy;
   openIdLambdaInputs?: cdk.CustomResource;
   openIdLambdaRole?: iam.CfnRole;
-}
+} & AmplifyCDKL1;
 
-export interface AmplifyUserPoolGroupStackTemplate {
+export type AmplifyUserPoolGroupStackTemplate = {
   userPoolGroup?: Record<string, cognito.CfnUserPoolGroup>;
   userPoolGroupRole?: Record<string, iam.CfnRole>;
   roleMapCustomResource?: cdk.CustomResource;
   lambdaExecutionRole?: iam.CfnRole;
   roleMapLambdaFunction?: lambda.CfnFunction;
-}
+} & AmplifyCDKL1;
