@@ -600,11 +600,10 @@ Static group authorization should perform as expected.`,
   ): void => {
     const acmFields = acm.getResources();
     const modelFields = def.fields ?? [];
-    const name = acm.getName();
     // only add readonly fields if they exist
     const allowedAggFields = modelFields.map(f => f.name.value).filter(f => !acmFields.includes(f));
     let leastAllowedFields = acmFields;
-    const resolver = ctx.resolvers.getResolver('Search', toUpper(name)) as TransformerResolverProvider;
+    const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     // to protect search and aggregation queries we need to collect all the roles which can query
     // and the allowed fields to run field auth on aggregation queries
     const readRoleDefinitions = acm.getRolesPerOperation('read').map(role => {
