@@ -49,7 +49,6 @@ import {
   makeNonNullType,
   makeValueNode,
   ModelResourceIDs,
-  plurality,
   ResolverResourceIDs,
   ResourceConstants,
   SyncResourceIDs,

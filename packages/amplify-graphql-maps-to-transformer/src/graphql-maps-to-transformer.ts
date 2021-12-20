@@ -18,6 +18,9 @@ export class MapsToTransformer extends TransformerPluginBase {
     super(`amplify-maps-to-transformer`, directiveDefinition, TransformerPluginType.GENERIC);
   }
 
+  /**
+   * During the AST tree walking, the mapsTo transformer registers any renamed models with the ctx.resourceHelper
+   */
   object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider) => {
     const modelName = definition.name.value;
     const prevNameNode = directive.arguments?.find(arg => arg.name.value === 'name');
@@ -33,6 +36,10 @@ export class MapsToTransformer extends TransformerPluginBase {
     ctx.resourceHelper.setModelNameMapping(modelName, originalName);
   };
 
+  /**
+   * During the generateResolvers step, the mapsTo transformer reads all of the model field mappings from the resourceHelper and generates
+   * VTL to map the current field names to the new field names
+   */
   generateResolvers = (context: TransformerContextProvider) => {
     context.resourceHelper.getModelFieldMapKeys().forEach(modelName => {
       const modelFieldMap = context.resourceHelper.getModelFieldMap(modelName);

@@ -37,7 +37,7 @@ type AttachResponseMappingSlotParams = {
 };
 
 /**
- * Attaches either a postDataLoad or finish slot to the given resolver. The template maps the original foreign key name to current foreign key name in the result object
+ * Attaches either a postDataLoad or postUpdate slot to the given resolver. The template maps the original foreign key name to current foreign key name in the result object
  * @param slotName Which slot type to insert
  */
 export const attachResponseMappingSlot = ({

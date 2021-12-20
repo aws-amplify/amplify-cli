@@ -10,7 +10,6 @@ import {
   EnumValueDefinitionNode,
   DirectiveNode,
   NamedTypeNode,
-  NameNode,
 } from 'graphql';
 import {
   graphqlName,

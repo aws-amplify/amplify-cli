@@ -6,7 +6,7 @@ import {
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
-import { getBaseType, isListType } from 'graphql-transformer-common';
+import { isListType } from 'graphql-transformer-common';
 import { makeGetItemConnectionWithKeyResolver } from './resolvers';
 import { ensureHasOneConnectionField } from './schema';
 import { HasOneDirectiveConfiguration } from './types';
@@ -51,6 +51,9 @@ export class HasOneTransformer extends TransformerPluginBase {
     this.directiveList.push(args);
   };
 
+  /**
+   * During the prepare step, register any foreign keys that are renamed due to a model rename
+   */
   prepare = (context: TransformerPrepareStepContextProvider) => {
     this.directiveList.forEach(config => {
       registerHasOneForeignKeyMappings({
@@ -78,14 +81,6 @@ export class HasOneTransformer extends TransformerPluginBase {
       makeGetItemConnectionWithKeyResolver(config, context);
     }
   };
-}
-
-function biDiHasOneField(relatedType: ObjectTypeDefinitionNode, thisTypeName: string): undefined | string {
-  return relatedType.fields?.find(
-    field =>
-      getBaseType(field.type) === thisTypeName &&
-      field.directives?.find(directive => directive.name.value === 'hasOne' || directive.name.value === 'belongsTo'),
-  )?.name.value;
 }
 
 function validate(config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider): void {

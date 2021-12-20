@@ -1,10 +1,17 @@
 import { FieldMapEntry, ModelFieldMap, ResolverReferenceEntry } from '@aws-amplify/graphql-transformer-interfaces';
 import _ from 'lodash';
 
+/**
+ * Holds the source of truth for which fields need to be mapped in which VTL resolvers
+ */
 export class ModelFieldMapImpl implements ModelFieldMap {
   readonly #fieldMapping: FieldMapEntry[] = [];
   readonly #resolverReferences: ResolverReferenceEntry[] = [];
 
+  /**
+   * Registers a field mapping. Does not insert duplicates.
+   * Returns this object to enable method chaining
+   */
   addMappedField = (entry: FieldMapEntry) => {
     if (!this.#fieldMapping.find(fieldMapEqualsPredicate(entry))) {
       this.#fieldMapping.push(entry);
@@ -12,6 +19,10 @@ export class ModelFieldMapImpl implements ModelFieldMap {
     return this;
   };
 
+  /**
+   * Registers a resolver where the model is referenced. Does not insert duplicates.
+   * If an entry already exists with a different isList value, an error is thrown.
+   */
   addResolverReference = (entry: ResolverReferenceEntry) => {
     const existingEntry = this.#resolverReferences.find(resolverReferenceEqualsPredicate(entry));
     if (!existingEntry) {
@@ -26,8 +37,14 @@ export class ModelFieldMapImpl implements ModelFieldMap {
     return this;
   };
 
+  /**
+   * Gets a readonly copy of the fieldMapping array
+   */
   getMappedFields = (): Readonly<Array<Readonly<FieldMapEntry>>> => _.cloneDeep(this.#fieldMapping);
 
+  /**
+   * Gets a readonly copy of the resolverReferences array
+   */
   getResolverReferences = (): Readonly<Array<Readonly<ResolverReferenceEntry>>> => _.cloneDeep(this.#resolverReferences);
 }
 

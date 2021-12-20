@@ -53,6 +53,9 @@ export class HasManyTransformer extends TransformerPluginBase {
     this.directiveList.push(args);
   };
 
+  /**
+   * During the prepare step, register any foreign keys that are renamed due to a model rename
+   */
   prepare = (context: TransformerPrepareStepContextProvider): void => {
     this.directiveList.forEach(config => {
       registerHasManyForeignKeyMappings({

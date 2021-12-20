@@ -1,6 +1,6 @@
 import assert from 'assert';
 import { getFieldNameFor, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
-import { ModelFieldMap, TransformerContextProvider, TransformerResourceHelperProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerContextProvider, TransformerResourceHelperProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveNode, EnumTypeDefinitionNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode, StringValueNode } from 'graphql';
 import { getBaseType, isScalarOrEnum, toCamelCase } from 'graphql-transformer-common';
 import {
@@ -218,9 +218,7 @@ type RegisterForeignKeyMappingParams = {
 };
 
 /**
- * Registers a mapping for a renamed model with a hasOne relation
- * If thisTypeName maps to a different value, it registers a mapping for the CRUD resolvers of this type
- * It also checks if the related type as been renamed and if so registers a mapping for fetching the related type through this type
+ * If thisTypeName maps to a different value, it registers the auto-generated foreign key fields to map to their original name
  */
 export function registerHasOneForeignKeyMappings({
   resourceHelper,
@@ -253,7 +251,7 @@ export function registerHasOneForeignKeyMappings({
 /**
  * This function is similar to registerHasOneForeignKeyMappings but subtly different
  * Because hasMany creates a foreign key field on the related type, this function registers the mapping on the related type.
- * It attaches a mapping to it's own field resolver to map the related type results as well
+ * It attaches a resolver reference to the hasMany field so the renamed foreign key is mapped when fetching the related object through the hasMany field
  */
 export function registerHasManyForeignKeyMappings({
   resourceHelper,

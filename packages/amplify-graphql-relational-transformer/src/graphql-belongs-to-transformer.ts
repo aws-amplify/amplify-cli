@@ -50,6 +50,9 @@ export class BelongsToTransformer extends TransformerPluginBase {
     this.directiveList.push(args);
   };
 
+  /**
+   * During the prepare step, register any foreign keys that are renamed due to a model rename
+   */
   prepare = (context: TransformerPrepareStepContextProvider) => {
     this.directiveList
       .filter(config => config.relationType === 'hasOne')

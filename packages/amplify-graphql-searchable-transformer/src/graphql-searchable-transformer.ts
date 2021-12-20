@@ -227,6 +227,9 @@ export class SearchableModelTransformer extends TransformerPluginBase {
   };
 
   prepare = (ctx: TransformerPrepareStepContextProvider) => {
+    // register search query resolvers in field mapping
+    // if no mappings are registered elsewhere, this won't do anything
+    // but if mappings are defined this will ensure the mapping is also applied to the search results
     for (const def of this.searchableObjectTypeDefinitions) {
       const modelName = def.node.name.value;
       ctx.resourceHelper.getModelFieldMap(modelName).addResolverReference({ typeName: 'Query', fieldName: def.fieldName, isList: true });
@@ -249,11 +252,6 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       }
     }
   };
-
-  private getMappedFields = (resourceHelper: TransformerResourceHelperProvider, modelName: string, fields: string[]) =>
-    fields
-      .map(field => ({ field, mappedField: resourceHelper.getFieldNameMapping(modelName, field) }))
-      .filter(mapping => mapping.field !== mapping.mappedField);
 
   private generateSearchableXConnectionType(ctx: TransformerSchemaVisitStepContextProvider, definition: ObjectTypeDefinitionNode): void {
     const searchableXConnectionName = `Searchable${definition.name.value}Connection`;
