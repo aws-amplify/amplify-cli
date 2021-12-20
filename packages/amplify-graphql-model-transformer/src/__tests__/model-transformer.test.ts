@@ -1286,4 +1286,30 @@ describe('ModelTransformer: ', () => {
     const schema = parse(out.schema);
     validateModelSchema(schema);
   });
+
+  it('handles custom subscriptions passed as strings', () => {
+    const validSchema = `type Post @model(subscriptions: {
+          onCreate: "onFeedCreated",
+          onUpdate: "onFeedUpdated",
+          onDelete: "onFeedDeleted"
+      }) {
+        id: ID!
+    }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+    const parsed = parse(definition);
+    validateModelSchema(parsed);
+
+    const subscriptionType = getObjectType(parsed, 'Subscription');
+    expect(subscriptionType).toBeDefined();
+    expect(subscriptionType!.fields!.length).toEqual(3);
+    expectFields(subscriptionType!, ['onFeedCreated', 'onFeedUpdated', 'onFeedDeleted']);
+  });
 });
