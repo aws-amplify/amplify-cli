@@ -9,7 +9,7 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
   private api?: GraphQLAPIProvider;
 
   // a mapping of models that have been renamed with @mapsTo
-  readonly modelNameMap = new Map<string, string>();
+  readonly #modelNameMap = new Map<string, string>();
 
   // a map of objects that define fields of a model that are renamed
   readonly #modelFieldMaps = new Map<string, ModelFieldMap>();
@@ -18,7 +18,7 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
     // set the model name mapping in ModelResourceIDs to use the same mapping as this class
     // yes, it would be better if ModelResourceIDs didn't have a bunch of static methods and this map could be injected into that class
     // but it would also be better if I could eat chocolate cake all day
-    ModelResourceIDs.setModelNameMap(this.modelNameMap);
+    ModelResourceIDs.setModelNameMap(this.#modelNameMap);
   }
   generateTableName = (modelName: string): string => {
     if (!this.api) {
@@ -27,7 +27,7 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
     this.ensureEnv();
     const env = (this.stackManager.getParameter('env') as CfnParameter).valueAsString;
     const apiId = this.api!.apiId;
-    const baseName = this.modelNameMap.get(modelName) ?? modelName;
+    const baseName = this.#modelNameMap.get(modelName) ?? modelName;
     return `${baseName}-${apiId}-${env}`;
   };
 
@@ -48,10 +48,10 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
   }
 
   setModelNameMapping = (modelName: string, mappedName: string) => {
-    this.modelNameMap.set(modelName, mappedName);
+    this.#modelNameMap.set(modelName, mappedName);
   };
 
-  getModelNameMapping = (modelName: string) => this.modelNameMap.get(modelName) ?? modelName;
+  getModelNameMapping = (modelName: string) => this.#modelNameMap.get(modelName) ?? modelName;
 
   isModelRenamed = (modelName: string) => this.getModelNameMapping(modelName) !== modelName;
 

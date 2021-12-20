@@ -6,12 +6,23 @@ export class ModelFieldMapImpl implements ModelFieldMap {
   readonly #resolverReferences: ResolverReferenceEntry[] = [];
 
   addMappedField = (entry: FieldMapEntry) => {
-    this.#fieldMapping.push(entry);
+    if (!this.#fieldMapping.find(fieldMapEqualsPredicate(entry))) {
+      this.#fieldMapping.push(entry);
+    }
     return this;
   };
 
   addResolverReference = (entry: ResolverReferenceEntry) => {
-    this.#resolverReferences.push(entry);
+    const existingEntry = this.#resolverReferences.find(resolverReferenceEqualsPredicate(entry));
+    if (!existingEntry) {
+      this.#resolverReferences.push(entry);
+    } else {
+      if (existingEntry.isList !== entry.isList) {
+        throw new Error(
+          `Resolver of type [${existingEntry.typeName}] and field [${existingEntry.fieldName}] already registered with isList set to [${existingEntry.isList}]`,
+        );
+      }
+    }
     return this;
   };
 
@@ -19,3 +30,11 @@ export class ModelFieldMapImpl implements ModelFieldMap {
 
   getResolverReferences = (): Readonly<Array<Readonly<ResolverReferenceEntry>>> => _.cloneDeep(this.#resolverReferences);
 }
+
+const fieldMapEqualsPredicate = (compareTo: FieldMapEntry) => (entry: FieldMapEntry) =>
+  compareTo.currentFieldName === entry.currentFieldName && compareTo.originalFieldName === entry.originalFieldName;
+
+// not that this predicate does NOT compare the isList property of the ResolverReferenceEntry
+// that is handled separately in the addResolverReference method above
+const resolverReferenceEqualsPredicate = (compareTo: ResolverReferenceEntry) => (entry: ResolverReferenceEntry) =>
+  compareTo.typeName === entry.typeName && compareTo.fieldName === entry.fieldName;
