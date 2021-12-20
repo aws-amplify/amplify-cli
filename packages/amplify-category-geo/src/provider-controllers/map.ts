@@ -73,7 +73,6 @@ export const addMapResourceHeadless = async (
     providerContext: setProviderContext(context, ServiceName.Map),
     name: config.name,
     accessType: config.accessType,
-    pricingPlan: config.pricingPlan,
     isDefault: config.setAsDefault,
     ...getMapStyleComponents(config.mapStyle)
   };
@@ -110,12 +109,11 @@ export const updateMapResourceWithParams = async (
   context: $TSContext,
   mapParams: Partial<MapParameters>
 ): Promise<string> => {
-  if (mapParams.name && mapParams.isDefault !== undefined && mapParams.accessType && mapParams.pricingPlan) {
+  if (mapParams.name && mapParams.isDefault !== undefined && mapParams.accessType) {
     modifyMapResource(context, {
       accessType: mapParams.accessType,
       name: mapParams.name,
-      isDefault: mapParams.isDefault,
-      pricingPlan: mapParams.pricingPlan
+      isDefault: mapParams.isDefault
     });
   } else {
     throw insufficientInfoForUpdateError(ServiceName.Map);

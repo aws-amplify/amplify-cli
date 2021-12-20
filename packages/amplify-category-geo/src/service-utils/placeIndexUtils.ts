@@ -9,8 +9,7 @@ import {
   generateTemplateFile,
   updateDefaultResource,
   readResourceMetaParameters,
-  checkAuthConfig,
-  updateGeoPricingPlan
+  checkAuthConfig
 } from './resourceUtils';
 import { App } from '@aws-cdk/core';
 import { getTemplateMappings } from '../provider-controllers';
@@ -33,17 +32,12 @@ export const createPlaceIndexResource = async (context: $TSContext, parameters: 
     await updateDefaultResource(context, ServiceName.PlaceIndex);
   }
 
-  // update the pricing plan for All Geo resources
-  if (parameters.pricingPlan) {
-    await updateGeoPricingPlan(context, parameters.pricingPlan);
-  }
-
   context.amplify.updateamplifyMetaAfterResourceAdd(category, parameters.name, placeIndexMetaParameters);
 };
 
 export const modifyPlaceIndexResource = async (
   context: $TSContext,
-  parameters: Pick<PlaceIndexParameters, 'accessType' | 'name' | 'isDefault' | 'pricingPlan'>,
+  parameters: Pick<PlaceIndexParameters, 'accessType' | 'name' | 'isDefault'>,
 ) => {
   // allow unauth access for identity pool if guest access is enabled
   await checkAuthConfig(context, parameters, ServiceName.PlaceIndex);
@@ -58,11 +52,6 @@ export const modifyPlaceIndexResource = async (
     await updateDefaultResource(context, ServiceName.PlaceIndex, parameters.name);
   }
 
-  // update the pricing plan for All Geo resources
-  if (parameters.pricingPlan) {
-    await updateGeoPricingPlan(context, parameters.pricingPlan);
-  }
-
   const paramsToUpdate = ['accessType'];
   paramsToUpdate.forEach(param => {
     context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.name, param, (parameters as $TSObject)[param]);
@@ -70,7 +59,7 @@ export const modifyPlaceIndexResource = async (
 };
 
 function saveCFNParameters(
-  parameters: Pick<PlaceIndexParameters, 'name' | 'dataProvider' | 'dataSourceIntendedUse' | 'pricingPlan' | 'isDefault'>,
+  parameters: Pick<PlaceIndexParameters, 'name' | 'dataProvider' | 'dataSourceIntendedUse' | 'isDefault'>,
 ) {
   const params = {
     authRoleName: {
@@ -82,7 +71,6 @@ function saveCFNParameters(
     indexName: parameters.name,
     dataProvider: parameters.dataProvider,
     dataSourceIntendedUse: parameters.dataSourceIntendedUse,
-    pricingPlan: parameters.pricingPlan,
     isDefault: parameters.isDefault,
   };
   updateParametersFile(params, parameters.name, parametersFileName);
@@ -98,7 +86,6 @@ export const constructPlaceIndexMetaParameters = (params: PlaceIndexParameters):
     service: ServiceName.PlaceIndex,
     dataProvider: params.dataProvider,
     dataSourceIntendedUse: params.dataSourceIntendedUse,
-    pricingPlan: params.pricingPlan,
     accessType: params.accessType,
   };
   return result;
@@ -109,7 +96,7 @@ export const constructPlaceIndexMetaParameters = (params: PlaceIndexParameters):
  */
 export type PlaceIndexMetaParameters = Pick<
   PlaceIndexParameters,
-  'isDefault' | 'pricingPlan' | 'accessType' | 'dataSourceIntendedUse' | 'dataProvider'
+  'isDefault' | 'accessType' | 'dataSourceIntendedUse' | 'dataProvider'
 > & {
   providerPlugin: string;
   service: string;
@@ -120,7 +107,6 @@ export const getCurrentPlaceIndexParameters = async (indexName: string): Promise
   return {
     dataProvider: currentIndexMetaParameters.dataProvider,
     dataSourceIntendedUse: currentIndexMetaParameters.dataSourceIntendedUse,
-    pricingPlan: currentIndexMetaParameters.pricingPlan,
     accessType: currentIndexMetaParameters.accessType,
     isDefault: currentIndexMetaParameters.isDefault,
   };

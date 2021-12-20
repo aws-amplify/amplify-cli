@@ -35,12 +35,11 @@ export const updatePlaceIndexResource = async (
   // populate the parameters for the resource
   await updatePlaceIndexWalkthrough(context, placeIndexParams);
 
-  if (placeIndexParams.name && placeIndexParams.isDefault !== undefined && placeIndexParams.accessType && placeIndexParams.pricingPlan) {
+  if (placeIndexParams.name && placeIndexParams.isDefault !== undefined && placeIndexParams.accessType) {
     modifyPlaceIndexResource(context, {
       accessType: placeIndexParams.accessType,
       name: placeIndexParams.name,
-      isDefault: placeIndexParams.isDefault,
-      pricingPlan: placeIndexParams.pricingPlan
+      isDefault: placeIndexParams.isDefault
     });
   }
   else {

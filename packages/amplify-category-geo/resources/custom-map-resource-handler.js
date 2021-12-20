@@ -8,8 +8,7 @@ exports.handler = async function (event, context) {
         MapName: event.ResourceProperties.mapName,
         Configuration: {
           Style: event.ResourceProperties.mapStyle,
-        },
-        PricingPlan: event.ResourceProperties.pricingPlan,
+        }
       };
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.createMap(params).promise();
@@ -22,8 +21,7 @@ exports.handler = async function (event, context) {
     }
     if (event.RequestType == 'Update') {
       let params = {
-        MapName: event.ResourceProperties.mapName,
-        PricingPlan: event.ResourceProperties.pricingPlan,
+        MapName: event.ResourceProperties.mapName
       };
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.updateMap(params).promise();

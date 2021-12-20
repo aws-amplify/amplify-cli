@@ -10,8 +10,7 @@ import {
   generateTemplateFile,
   updateDefaultResource,
   readResourceMetaParameters,
-  checkAuthConfig,
-  updateGeoPricingPlan
+  checkAuthConfig
 } from './resourceUtils';
 import { App } from '@aws-cdk/core';
 import { getTemplateMappings } from '../provider-controllers';
@@ -34,15 +33,10 @@ export const createMapResource = async (context: $TSContext, parameters: MapPara
     await updateDefaultResource(context, ServiceName.Map);
   }
 
-  // update the pricing plan for All Geo resources
-  if (parameters.pricingPlan) {
-    await updateGeoPricingPlan(context, parameters.pricingPlan);
-  }
-
   context.amplify.updateamplifyMetaAfterResourceAdd(category, parameters.name, mapMetaParameters);
 };
 
-export const modifyMapResource = async (context: $TSContext, parameters: Pick<MapParameters, 'accessType' | 'name' | 'isDefault' | 'pricingPlan'>) => {
+export const modifyMapResource = async (context: $TSContext, parameters: Pick<MapParameters, 'accessType' | 'name' | 'isDefault'>) => {
   // allow unauth access for identity pool if guest access is enabled
   await checkAuthConfig(context, parameters, ServiceName.Map);
 
@@ -56,18 +50,13 @@ export const modifyMapResource = async (context: $TSContext, parameters: Pick<Ma
     await updateDefaultResource(context, ServiceName.Map, parameters.name);
   }
 
-  // update the pricing plan for All Geo resources
-  if (parameters.pricingPlan) {
-    await updateGeoPricingPlan(context, parameters.pricingPlan);
-  }
-
   const paramsToUpdate = ['accessType'];
   paramsToUpdate.forEach(param => {
     context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.name, param, (parameters as $TSObject)[param]);
   });
 };
 
-function saveCFNParameters(parameters: Pick<MapParameters, 'name' | 'mapStyleType' | 'dataProvider' | 'pricingPlan' | 'isDefault'>) {
+function saveCFNParameters(parameters: Pick<MapParameters, 'name' | 'mapStyleType' | 'dataProvider' | 'isDefault'>) {
   const params = {
     authRoleName: {
       Ref: 'AuthRoleName',
@@ -77,7 +66,6 @@ function saveCFNParameters(parameters: Pick<MapParameters, 'name' | 'mapStyleTyp
     },
     mapName: parameters.name,
     mapStyle: getGeoMapStyle(parameters.dataProvider, parameters.mapStyleType),
-    pricingPlan: parameters.pricingPlan,
     isDefault: parameters.isDefault,
   };
   updateParametersFile(params, parameters.name, parametersFileName);
@@ -92,7 +80,6 @@ export const constructMapMetaParameters = (params: MapParameters): MapMetaParame
     providerPlugin: provider,
     service: ServiceName.Map,
     mapStyle: getGeoMapStyle(params.dataProvider, params.mapStyleType),
-    pricingPlan: params.pricingPlan,
     accessType: params.accessType,
   };
   return result;
@@ -101,7 +88,7 @@ export const constructMapMetaParameters = (params: MapParameters): MapMetaParame
 /**
  * The Meta information stored for a Map Resource
  */
-export type MapMetaParameters = Pick<MapParameters, 'isDefault' | 'pricingPlan' | 'accessType'> & {
+export type MapMetaParameters = Pick<MapParameters, 'isDefault' | 'accessType'> & {
   providerPlugin: string;
   service: string;
   mapStyle: string;
@@ -112,7 +99,6 @@ export const getCurrentMapParameters = async (mapName: string): Promise<Partial<
   return {
     mapStyleType: getMapStyleComponents(currentMapMetaParameters.mapStyle).mapStyleType,
     dataProvider: getMapStyleComponents(currentMapMetaParameters.mapStyle).dataProvider,
-    pricingPlan: currentMapMetaParameters.pricingPlan,
     accessType: currentMapMetaParameters.accessType,
     isDefault: currentMapMetaParameters.isDefault,
   };
