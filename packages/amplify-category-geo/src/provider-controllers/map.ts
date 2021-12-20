@@ -73,7 +73,6 @@ export const addMapResourceHeadless = async (
     providerContext: setProviderContext(context, ServiceName.Map),
     name: config.name,
     accessType: config.accessType,
-    pricingPlan: config.pricingPlan,
     isDefault: config.setAsDefault,
     ...getMapStyleComponents(config.mapStyle)
   };

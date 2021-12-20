@@ -39,7 +39,6 @@ export class PlaceIndexStack extends BaseStack {
       'indexName',
       'dataProvider',
       'dataSourceIntendedUse',
-      'pricingPlan',
       'env',
       'isDefault'
     );
@@ -87,8 +86,6 @@ export class PlaceIndexStack extends BaseStack {
 
     const dataSourceIntendedUse = this.parameters.get('dataSourceIntendedUse')!.valueAsString;
 
-    const indexPricingPlan = this.parameters.get('pricingPlan')!.valueAsString;
-
     const customPlaceIndexLambdaCode = fs.readFileSync(customPlaceIndexLambdaCodePath, 'utf-8');
     const customPlaceIndexLambda = new lambda.Function(this, 'CustomPlaceIndexLambda', {
       code: lambda.Code.fromInline(customPlaceIndexLambdaCode),
@@ -106,7 +103,6 @@ export class PlaceIndexStack extends BaseStack {
         indexName: this.placeIndexName,
         dataSource: dataSource,
         dataSourceIntendedUse: dataSourceIntendedUse,
-        pricingPlan: indexPricingPlan,
         region: this.placeIndexRegion,
         env: cdk.Fn.ref('env'),
       },

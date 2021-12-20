@@ -10,7 +10,6 @@ import {
   updateDefaultResource,
   readResourceMetaParameters,
   checkAuthConfig,
-  updateGeoPricingPlan,
   getAuthResourceName,
   ResourceDependsOn
 } from './resourceUtils';
@@ -41,11 +40,6 @@ export const createPlaceIndexResource = async (context: $TSContext, parameters: 
     await updateDefaultResource(context, ServiceName.PlaceIndex);
   }
 
-  // update the pricing plan for All Geo resources
-  if (parameters.pricingPlan) {
-    await updateGeoPricingPlan(context, parameters.pricingPlan);
-  }
-
   context.amplify.updateamplifyMetaAfterResourceAdd(category, parameters.name, placeIndexMetaParameters);
 };
 
@@ -66,11 +60,6 @@ export const modifyPlaceIndexResource = async (context: $TSContext, parameters: 
     await updateDefaultResource(context, ServiceName.PlaceIndex, parameters.name);
   }
 
-  // update the pricing plan for All Geo resources
-  if (parameters.pricingPlan) {
-    await updateGeoPricingPlan(context, parameters.pricingPlan);
-  }
-
   const placeIndexMetaParameters = constructPlaceIndexMetaParameters(parameters, authResourceName);
 
   const paramsToUpdate = ['accessType', 'pricingPlan', 'dependsOn'];
@@ -80,7 +69,7 @@ export const modifyPlaceIndexResource = async (context: $TSContext, parameters: 
 };
 
 function saveCFNParameters(
-  parameters: Pick<PlaceIndexParameters, 'name' | 'dataProvider' | 'dataSourceIntendedUse' | 'pricingPlan' | 'isDefault'>,
+  parameters: Pick<PlaceIndexParameters, 'name' | 'dataProvider' | 'dataSourceIntendedUse' | 'isDefault'>,
 ) {
   const params = {
     authRoleName: {
@@ -92,7 +81,6 @@ function saveCFNParameters(
     indexName: parameters.name,
     dataProvider: parameters.dataProvider,
     dataSourceIntendedUse: parameters.dataSourceIntendedUse,
-    pricingPlan: parameters.pricingPlan,
     isDefault: parameters.isDefault,
   };
   updateParametersFile(params, parameters.name, parametersFileName);
@@ -123,7 +111,6 @@ export const constructPlaceIndexMetaParameters = (params: PlaceIndexParameters, 
     service: ServiceName.PlaceIndex,
     dataProvider: params.dataProvider,
     dataSourceIntendedUse: params.dataSourceIntendedUse,
-    pricingPlan: params.pricingPlan,
     accessType: params.accessType,
     dependsOn: dependsOnResources
   };
@@ -135,7 +122,7 @@ export const constructPlaceIndexMetaParameters = (params: PlaceIndexParameters, 
  */
 export type PlaceIndexMetaParameters = Pick<
   PlaceIndexParameters,
-  'isDefault' | 'pricingPlan' | 'accessType' | 'dataSourceIntendedUse' | 'dataProvider'
+  'isDefault' | 'accessType' | 'dataSourceIntendedUse' | 'dataProvider'
 > & {
   providerPlugin: string;
   service: string;
@@ -148,7 +135,6 @@ export const getCurrentPlaceIndexParameters = async (indexName: string): Promise
   return {
     dataProvider: currentIndexMetaParameters.dataProvider,
     dataSourceIntendedUse: currentIndexMetaParameters.dataSourceIntendedUse,
-    pricingPlan: currentIndexMetaParameters.pricingPlan,
     accessType: currentIndexMetaParameters.accessType,
     isDefault: currentIndexMetaParameters.isDefault,
     groupPermissions: currentIndexParameters.groupPermissions

@@ -11,7 +11,6 @@ import {
   updateDefaultResource,
   readResourceMetaParameters,
   checkAuthConfig,
-  updateGeoPricingPlan,
   getAuthResourceName,
   ResourceDependsOn
 } from './resourceUtils';
@@ -41,11 +40,6 @@ export const createMapResource = async (context: $TSContext, parameters: MapPara
     await updateDefaultResource(context, ServiceName.Map);
   }
 
-  // update the pricing plan for All Geo resources
-  if (parameters.pricingPlan) {
-    await updateGeoPricingPlan(context, parameters.pricingPlan);
-  }
-
   context.amplify.updateamplifyMetaAfterResourceAdd(category, parameters.name, mapMetaParameters);
 };
 
@@ -66,11 +60,6 @@ export const modifyMapResource = async (context: $TSContext, parameters: MapPara
     await updateDefaultResource(context, ServiceName.Map, parameters.name);
   }
 
-  // update the pricing plan for All Geo resources
-  if (parameters.pricingPlan) {
-    await updateGeoPricingPlan(context, parameters.pricingPlan);
-  }
-
   const mapMetaParameters = constructMapMetaParameters(parameters, authResourceName);
 
   const paramsToUpdate = ['accessType', 'pricingPlan', 'dependsOn'];
@@ -79,7 +68,7 @@ export const modifyMapResource = async (context: $TSContext, parameters: MapPara
   });
 };
 
-function saveCFNParameters(parameters: Pick<MapParameters, 'name' | 'mapStyleType' | 'dataProvider' | 'pricingPlan' | 'isDefault'>) {
+function saveCFNParameters(parameters: Pick<MapParameters, 'name' | 'mapStyleType' | 'dataProvider' | 'isDefault'>) {
   const params = {
     authRoleName: {
       Ref: 'AuthRoleName',
@@ -89,7 +78,6 @@ function saveCFNParameters(parameters: Pick<MapParameters, 'name' | 'mapStyleTyp
     },
     mapName: parameters.name,
     mapStyle: getGeoMapStyle(parameters.dataProvider, parameters.mapStyleType),
-    pricingPlan: parameters.pricingPlan,
     isDefault: parameters.isDefault,
   };
   updateParametersFile(params, parameters.name, parametersFileName);
@@ -119,7 +107,6 @@ export const constructMapMetaParameters = (params: MapParameters, authResourceNa
     providerPlugin: provider,
     service: ServiceName.Map,
     mapStyle: getGeoMapStyle(params.dataProvider, params.mapStyleType),
-    pricingPlan: params.pricingPlan,
     accessType: params.accessType,
     dependsOn: dependsOnResources
   };
@@ -129,7 +116,7 @@ export const constructMapMetaParameters = (params: MapParameters, authResourceNa
 /**
  * The Meta information stored for a Map Resource
  */
-export type MapMetaParameters = Pick<MapParameters, 'isDefault' | 'pricingPlan' | 'accessType'> & {
+export type MapMetaParameters = Pick<MapParameters, 'isDefault' | 'accessType'> & {
   providerPlugin: string;
   service: string;
   mapStyle: string;
@@ -142,7 +129,6 @@ export const getCurrentMapParameters = async (mapName: string): Promise<Partial<
   return {
     mapStyleType: getMapStyleComponents(currentMapMetaParameters.mapStyle).mapStyleType,
     dataProvider: getMapStyleComponents(currentMapMetaParameters.mapStyle).dataProvider,
-    pricingPlan: currentMapMetaParameters.pricingPlan,
     accessType: currentMapMetaParameters.accessType,
     isDefault: currentMapMetaParameters.isDefault,
     groupPermissions: currentMapParameters.groupPermissions
