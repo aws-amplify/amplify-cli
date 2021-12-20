@@ -1,7 +1,7 @@
 import { $TSContext, open } from 'amplify-cli-core';
 import { run } from '../setup-new-user';
 
-const context_stub = ({
+const context_stub = {
   print: {
     info: jest.fn(),
     warning: jest.fn(),
@@ -13,7 +13,7 @@ const context_stub = ({
       run: jest.fn().mockReturnValue(new Promise(resolve => resolve(true))),
     },
   },
-} as unknown) as jest.Mocked<$TSContext>;
+} as unknown as jest.Mocked<$TSContext>;
 
 jest.mock('amplify-cli-core', () => ({
   open: jest.fn().mockReturnValue(Promise.resolve()),
@@ -44,10 +44,8 @@ describe('setupNewUser.run', () => {
   });
   it('should print deepLinkURL', async () => {
     await run(context_stub);
-    expect(
-      open,
-    ).toBeCalledWith(
-      'https://console.aws.amazon.com/iam/home?region=test#/users$new?step=final&accessKey&userNames=test&permissionType=policies&policies=arn:aws:iam::aws:policy%2FAdministratorAccess',
+    expect(open).toBeCalledWith(
+      'https://console.aws.amazon.com/iam/home?region=test#/users$new?step=final&accessKey&userNames=test&permissionType=policies&policies=arn:aws:iam::aws:policy%2FAdministratorAccess-Amplify',
       { wait: false },
     );
   });
@@ -56,10 +54,8 @@ describe('setupNewUser.run', () => {
       value: 'win32',
     });
     await run(context_stub);
-    expect(
-      open,
-    ).toBeCalledWith(
-      'https://console.aws.amazon.com/iam/home?region=test#/users`$new?step=final&accessKey&userNames=test&permissionType=policies&policies=arn:aws:iam::aws:policy%2FAdministratorAccess',
+    expect(open).toBeCalledWith(
+      'https://console.aws.amazon.com/iam/home?region=test#/users`$new?step=final&accessKey&userNames=test&permissionType=policies&policies=arn:aws:iam::aws:policy%2FAdministratorAccess-Amplify',
       { wait: false },
     );
   });
