@@ -1,0 +1,63 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`@mapsTo with multiple foreign key field renames on single model 1`] = `
+"$util.qr($ctx.prev.result.put(\\"agendaTodosId\\", $ctx.prev.result.checklistTodosId))
+$util.qr($ctx.prev.result.remove(\\"checklistTodosId\\"))
+$util.qr($ctx.prev.result.put(\\"todoLocId\\", $ctx.prev.result.taskLocId))
+$util.qr($ctx.prev.result.remove(\\"taskLocId\\"))
+$util.qr($ctx.prev.result.put(\\"todoDayId\\", $ctx.prev.result.taskDayId))
+$util.qr($ctx.prev.result.remove(\\"taskDayId\\"))
+$util.toJson($ctx.prev.result)"
+`;
+
+exports[`@mapsTo with multiple foreign key field renames on single model 2`] = `
+"$util.qr($ctx.args.input.put(\\"checklistTodosId\\", $ctx.args.input.agendaTodosId))
+$util.qr($ctx.args.input.remove(\\"agendaTodosId\\"))
+$util.qr($ctx.args.input.put(\\"taskLocId\\", $ctx.args.input.todoLocId))
+$util.qr($ctx.args.input.remove(\\"todoLocId\\"))
+$util.qr($ctx.args.input.put(\\"taskDayId\\", $ctx.args.input.todoDayId))
+$util.qr($ctx.args.input.remove(\\"todoDayId\\"))
+$util.toJson({})"
+`;
+
+exports[`@mapsTo with multiple foreign key field renames on single model 3`] = `
+"$util.qr($ctx.prev.result.put(\\"agendaTodosId\\", $ctx.prev.result.checklistTodosId))
+$util.qr($ctx.prev.result.remove(\\"checklistTodosId\\"))
+$util.qr($ctx.prev.result.put(\\"todoLocId\\", $ctx.prev.result.taskLocId))
+$util.qr($ctx.prev.result.remove(\\"taskLocId\\"))
+$util.qr($ctx.prev.result.put(\\"todoDayId\\", $ctx.prev.result.taskDayId))
+$util.qr($ctx.prev.result.remove(\\"taskDayId\\"))
+$util.toJson($ctx.prev.result)"
+`;
+
+exports[`@mapsTo with multiple foreign key field renames on single model 4`] = `
+"$util.qr($ctx.args.input.put(\\"checklistTodosId\\", $ctx.args.input.agendaTodosId))
+$util.qr($ctx.args.input.remove(\\"agendaTodosId\\"))
+$util.qr($ctx.args.input.put(\\"taskLocId\\", $ctx.args.input.todoLocId))
+$util.qr($ctx.args.input.remove(\\"todoLocId\\"))
+$util.qr($ctx.args.input.put(\\"taskDayId\\", $ctx.args.input.todoDayId))
+$util.qr($ctx.args.input.remove(\\"todoDayId\\"))
+$util.toJson({})"
+`;
+
+exports[`@mapsTo with multiple foreign key field renames on single model 5`] = `
+"$util.qr($ctx.prev.result.put(\\"agendaTodosId\\", $ctx.prev.result.checklistTodosId))
+$util.qr($ctx.prev.result.remove(\\"checklistTodosId\\"))
+$util.qr($ctx.prev.result.put(\\"todoLocId\\", $ctx.prev.result.taskLocId))
+$util.qr($ctx.prev.result.remove(\\"taskLocId\\"))
+$util.qr($ctx.prev.result.put(\\"todoDayId\\", $ctx.prev.result.taskDayId))
+$util.qr($ctx.prev.result.remove(\\"taskDayId\\"))
+$util.toJson($ctx.prev.result)"
+`;
+
+exports[`@mapsTo with multiple foreign key field renames on single model 6`] = `
+"#foreach( $item in $ctx.prev.result.items )
+  $util.qr($item.put(\\"agendaTodosId\\", $item.checklistTodosId))
+  $util.qr($item.remove(\\"checklistTodosId\\"))
+  $util.qr($item.put(\\"todoLocId\\", $item.taskLocId))
+  $util.qr($item.remove(\\"taskLocId\\"))
+  $util.qr($item.put(\\"todoDayId\\", $item.taskDayId))
+  $util.qr($item.remove(\\"taskDayId\\"))
+#end
+$util.toJson($ctx.prev.result)"
+`;
