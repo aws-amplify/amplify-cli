@@ -36,6 +36,9 @@ export class MapsToTransformer extends TransformerPluginBase {
   generateResolvers = (context: TransformerContextProvider) => {
     context.resourceHelper.getModelFieldMapKeys().forEach(modelName => {
       const modelFieldMap = context.resourceHelper.getModelFieldMap(modelName);
+      if (!modelFieldMap.getMappedFields().length) {
+        return;
+      }
       modelFieldMap.getResolverReferences().forEach(({ typeName, fieldName, isList }) => {
         const resolver = context.resolvers.getResolver(typeName, fieldName);
         if (!resolver) {

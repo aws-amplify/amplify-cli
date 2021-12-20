@@ -1,5 +1,6 @@
 import { DirectiveNode, ObjectTypeDefinitionNode } from 'graphql';
 import {
+  FieldMapEntry,
   ModelFieldMap,
   TransformerContextProvider,
   TransformerSchemaVisitStepContextProvider,
@@ -180,6 +181,31 @@ describe('@mapsTo directive', () => {
         originalFieldName: 'origFieldName',
       },
     ];
+    stubTransformerContext.resourceHelper.getModelFieldMapKeys.mockReturnValueOnce(['TestType']);
+    const modelFieldMap: ModelFieldMap = {
+      getMappedFields: () => testFieldMap,
+      getResolverReferences: () => [
+        {
+          typeName: 'Query',
+          fieldName: 'getTestType',
+          isList: false,
+        },
+      ],
+    } as unknown as ModelFieldMap;
+    stubTransformerContext.resourceHelper.getModelFieldMap.mockReturnValueOnce(modelFieldMap);
+    stubTransformerContext.resolvers.getResolver.mockReturnValueOnce(undefined);
+
+    // test
+    mapsToTransformer.generateResolvers(stubTransformerContext as unknown as TransformerContextProvider);
+
+    // assert
+    expect(attachInputMappingSlot_mock).not.toBeCalled();
+    expect(attachResponseMappingSlot_mock).not.toBeCalled();
+  });
+
+  it('does not attach resolvers if no mappings defined', () => {
+    // setup
+    const testFieldMap: FieldMapEntry[] = [];
     stubTransformerContext.resourceHelper.getModelFieldMapKeys.mockReturnValueOnce(['TestType']);
     const modelFieldMap: ModelFieldMap = {
       getMappedFields: () => testFieldMap,

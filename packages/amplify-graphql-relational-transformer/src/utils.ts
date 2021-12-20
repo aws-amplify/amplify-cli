@@ -240,12 +240,14 @@ export function registerHasOneForeignKeyMappings({
       const opTypeName = op === 'create' || op === 'update' ? 'Mutation' : 'Query';
       modelFieldMap.addResolverReference({ typeName: opTypeName, fieldName: opFieldName, isList: op === 'list' });
     });
-
-    // register that the related field is reference by this hasOne field
-    resourceHelper
-      .getModelFieldMap(relatedTypeName)
-      .addResolverReference({ typeName: thisTypeName, fieldName: thisFieldName, isList: false });
   }
+
+  // register that the related type is referenced by this hasOne field
+  // this is necessary because even if this model is not renamed, the related one could be and the field mappings would need to be applied
+  // on this resolver
+  resourceHelper
+    .getModelFieldMap(relatedTypeName)
+    .addResolverReference({ typeName: thisTypeName, fieldName: thisFieldName, isList: false });
 }
 
 /**

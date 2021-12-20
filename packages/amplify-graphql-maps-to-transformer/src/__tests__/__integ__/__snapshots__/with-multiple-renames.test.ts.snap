@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`@mapsTo with multiple foreign key field renames on single model 1`] = `
-"$util.qr($ctx.prev.result.put(\\"agendaTodosId\\", $ctx.prev.result.checklistTodosId))
-$util.qr($ctx.prev.result.remove(\\"checklistTodosId\\"))
+"$util.qr($ctx.prev.result.put(\\"agendaTasksId\\", $ctx.prev.result.checklistTasksId))
+$util.qr($ctx.prev.result.remove(\\"checklistTasksId\\"))
 $util.qr($ctx.prev.result.put(\\"todoLocId\\", $ctx.prev.result.taskLocId))
 $util.qr($ctx.prev.result.remove(\\"taskLocId\\"))
 $util.qr($ctx.prev.result.put(\\"todoDayId\\", $ctx.prev.result.taskDayId))
@@ -11,8 +11,8 @@ $util.toJson($ctx.prev.result)"
 `;
 
 exports[`@mapsTo with multiple foreign key field renames on single model 2`] = `
-"$util.qr($ctx.args.input.put(\\"checklistTodosId\\", $ctx.args.input.agendaTodosId))
-$util.qr($ctx.args.input.remove(\\"agendaTodosId\\"))
+"$util.qr($ctx.args.input.put(\\"checklistTasksId\\", $ctx.args.input.agendaTasksId))
+$util.qr($ctx.args.input.remove(\\"agendaTasksId\\"))
 $util.qr($ctx.args.input.put(\\"taskLocId\\", $ctx.args.input.todoLocId))
 $util.qr($ctx.args.input.remove(\\"todoLocId\\"))
 $util.qr($ctx.args.input.put(\\"taskDayId\\", $ctx.args.input.todoDayId))
@@ -21,8 +21,8 @@ $util.toJson({})"
 `;
 
 exports[`@mapsTo with multiple foreign key field renames on single model 3`] = `
-"$util.qr($ctx.prev.result.put(\\"agendaTodosId\\", $ctx.prev.result.checklistTodosId))
-$util.qr($ctx.prev.result.remove(\\"checklistTodosId\\"))
+"$util.qr($ctx.prev.result.put(\\"agendaTasksId\\", $ctx.prev.result.checklistTasksId))
+$util.qr($ctx.prev.result.remove(\\"checklistTasksId\\"))
 $util.qr($ctx.prev.result.put(\\"todoLocId\\", $ctx.prev.result.taskLocId))
 $util.qr($ctx.prev.result.remove(\\"taskLocId\\"))
 $util.qr($ctx.prev.result.put(\\"todoDayId\\", $ctx.prev.result.taskDayId))
@@ -31,8 +31,8 @@ $util.toJson($ctx.prev.result)"
 `;
 
 exports[`@mapsTo with multiple foreign key field renames on single model 4`] = `
-"$util.qr($ctx.args.input.put(\\"checklistTodosId\\", $ctx.args.input.agendaTodosId))
-$util.qr($ctx.args.input.remove(\\"agendaTodosId\\"))
+"$util.qr($ctx.args.input.put(\\"checklistTasksId\\", $ctx.args.input.agendaTasksId))
+$util.qr($ctx.args.input.remove(\\"agendaTasksId\\"))
 $util.qr($ctx.args.input.put(\\"taskLocId\\", $ctx.args.input.todoLocId))
 $util.qr($ctx.args.input.remove(\\"todoLocId\\"))
 $util.qr($ctx.args.input.put(\\"taskDayId\\", $ctx.args.input.todoDayId))
@@ -41,8 +41,8 @@ $util.toJson({})"
 `;
 
 exports[`@mapsTo with multiple foreign key field renames on single model 5`] = `
-"$util.qr($ctx.prev.result.put(\\"agendaTodosId\\", $ctx.prev.result.checklistTodosId))
-$util.qr($ctx.prev.result.remove(\\"checklistTodosId\\"))
+"$util.qr($ctx.prev.result.put(\\"agendaTasksId\\", $ctx.prev.result.checklistTasksId))
+$util.qr($ctx.prev.result.remove(\\"checklistTasksId\\"))
 $util.qr($ctx.prev.result.put(\\"todoLocId\\", $ctx.prev.result.taskLocId))
 $util.qr($ctx.prev.result.remove(\\"taskLocId\\"))
 $util.qr($ctx.prev.result.put(\\"todoDayId\\", $ctx.prev.result.taskDayId))
@@ -52,8 +52,8 @@ $util.toJson($ctx.prev.result)"
 
 exports[`@mapsTo with multiple foreign key field renames on single model 6`] = `
 "#foreach( $item in $ctx.prev.result.items )
-  $util.qr($item.put(\\"agendaTodosId\\", $item.checklistTodosId))
-  $util.qr($item.remove(\\"checklistTodosId\\"))
+  $util.qr($item.put(\\"agendaTasksId\\", $item.checklistTasksId))
+  $util.qr($item.remove(\\"checklistTasksId\\"))
   $util.qr($item.put(\\"todoLocId\\", $item.taskLocId))
   $util.qr($item.remove(\\"taskLocId\\"))
   $util.qr($item.put(\\"todoDayId\\", $item.taskDayId))
