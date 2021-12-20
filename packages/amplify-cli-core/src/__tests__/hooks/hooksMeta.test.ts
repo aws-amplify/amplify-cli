@@ -1,4 +1,14 @@
 import { HooksMeta } from '../../hooks/hooksMeta';
+import { stateManager } from '../../state-manager';
+
+const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
+jest.mock('../../state-manager');
+stateManager_mock.localEnvInfoExists.mockReturnValue(true);
+stateManager_mock.getLocalEnvInfo.mockReturnValue({
+  projectPath: '/project-path',
+  defaultEditor: 'vscode',
+  envName: 'production',
+});
 
 describe('HooksMeta tests', () => {
   beforeEach(async () => {
@@ -48,6 +58,16 @@ describe('HooksMeta tests', () => {
 
     expect(hooksMeta.getHookEvent()?.command).toEqual(undefined);
     expect(hooksMeta.getHookEvent()?.subCommand).toEqual(undefined);
+  });
+
+  test('should identify environment name', () => {
+    const input = { command: 'publish', plugin: 'core' };
+    const hooksMeta = HooksMeta.getInstance();
+    hooksMeta.setHookEventFromInput(input);
+
+    expect(hooksMeta.getHookEvent()?.command).toEqual('publish');
+    expect(hooksMeta.getHookEvent()?.subCommand).toEqual(undefined);
+    expect(hooksMeta.getDataParameter()?.amplify.environment).toEqual('production');
   });
 
   test('should return correct HooksMeta object - getInstance', () => {

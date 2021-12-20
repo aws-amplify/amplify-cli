@@ -28,7 +28,7 @@ export class HooksMeta {
     }
     HooksMeta.instance.setEventPrefix(eventPrefix);
     if (stateManager.localEnvInfoExists()) {
-      HooksMeta.instance.setEnvironmentName(stateManager.getLocalEnvInfo());
+      HooksMeta.instance.setEnvironmentName(stateManager.getLocalEnvInfo().envName);
     }
     HooksMeta.instance.mergeDataParameter({
       amplify: {
