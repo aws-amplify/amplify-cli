@@ -526,7 +526,7 @@ async function displayApiInformation(context: $TSContext, resource: $TSObject, p
   authModes.push(
     `- Default: ${await displayAuthMode(context, resource, resource.output.authConfig.defaultAuthentication.authenticationType)}`,
   );
-  await resource.output.authConfig.additionalAuthenticationProviders.map(async authMode => {
+  await resource.output.authConfig.additionalAuthenticationProviders?.map(async authMode => {
     authModes.push(`- ${await displayAuthMode(context, resource, authMode.authenticationType)}`);
   });
 

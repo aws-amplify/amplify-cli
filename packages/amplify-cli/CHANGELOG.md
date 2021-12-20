@@ -3,6 +3,79 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.6.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.3...@aws-amplify/cli@7.6.4) (2021-12-17)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [7.6.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.2...@aws-amplify/cli@7.6.3) (2021-12-09)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [7.6.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.1...@aws-amplify/cli@7.6.2) (2021-12-03)
+
+
+### Bug Fixes
+
+* **graphql:** display invalid directive error on amplify push ([#9179](https://github.com/aws-amplify/amplify-cli/issues/9179)) ([d6cfbca](https://github.com/aws-amplify/amplify-cli/commit/d6cfbca25ed99cefca28d50fcb4c4df771ac7fbe))
+
+
+
+
+
+## [7.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.0...@aws-amplify/cli@7.6.1) (2021-12-02)
+
+
+
+## 7.6.1 (2021-12-02)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+# [7.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.5.6...@aws-amplify/cli@7.6.0) (2021-12-02)
+
+
+
+# 7.6.0 (2021-12-02)
+
+
+### Features
+
+* add uibuilder plugin ([#9178](https://github.com/aws-amplify/amplify-cli/issues/9178)) ([0e95dd8](https://github.com/aws-amplify/amplify-cli/commit/0e95dd8dc2b9cdcc54dcd7a7b896891e17b37f1d))
+
+
+
+
+
+## [7.5.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.5.5...@aws-amplify/cli@7.5.6) (2021-12-02)
+
+
+### Performance Improvements
+
+* **cli:** get AccountId from meta instead of sts ([#9155](https://github.com/aws-amplify/amplify-cli/issues/9155)) ([6edfd88](https://github.com/aws-amplify/amplify-cli/commit/6edfd8879c451798b6f4d405cdca9c033396077f))
+
+
+
+
+
+## [7.5.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.5.4...@aws-amplify/cli@7.5.5) (2021-12-01)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
 ## [7.5.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.5.3...@aws-amplify/cli@7.5.4) (2021-11-29)
 
 **Note:** Version bump only for package @aws-amplify/cli

@@ -115,6 +115,43 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     }
   }
 
+  /**
+   * This check is required because, in legacy code S3bucket triggers are configured without prefix.
+   * When adding a predictions element, we need to remove the global trigger function and apply it to a subfolder.
+   * @param triggerFunction
+   * @returns triggerLambdaFunctionParams: S3UserInputTriggerFunctionParams
+   */
+  _conditionallyBuildTriggerLambdaParams( triggerFunction : string ){
+    let triggerLambdaFunctionParams: S3UserInputTriggerFunctionParams;
+    if (
+          this._props.adminTriggerFunction?.triggerFunction &&
+          this._props.adminTriggerFunction.triggerFunction != 'NONE' &&
+          this._props.adminTriggerFunction.triggerFunction != this._props.triggerFunction
+        ) {
+          triggerLambdaFunctionParams = {
+            category: AmplifyCategories.STORAGE,
+            tag: 'triggerFunction',
+            triggerFunction: triggerFunction,
+            permissions: [S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ, S3PermissionType.DELETE],
+            triggerEvents: [S3TriggerEventType.OBJ_PUT_POST_COPY, S3TriggerEventType.OBJ_REMOVED],
+            triggerPrefix: [
+              { prefix: 'protected/', prefixTransform: S3TriggerPrefixTransform.ATTACH_REGION },
+              { prefix: 'private/', prefixTransform: S3TriggerPrefixTransform.ATTACH_REGION },
+              { prefix: 'public/', prefixTransform: S3TriggerPrefixTransform.ATTACH_REGION },
+            ],
+          };
+    } else {
+        triggerLambdaFunctionParams = {
+          category: AmplifyCategories.STORAGE,
+          tag: 'triggerFunction',
+          triggerFunction: triggerFunction,
+          permissions: [S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ, S3PermissionType.DELETE],
+          triggerEvents: [S3TriggerEventType.OBJ_PUT_POST_COPY, S3TriggerEventType.OBJ_REMOVED]
+        };
+    }
+    return triggerLambdaFunctionParams;
+  }
+
   //Generate cloudformation stack for S3 resource
   async generateCfnStackResources(context: $TSContext) {
     //1. Create the S3 bucket and configure CORS
@@ -126,18 +163,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     this.s3Bucket.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
     //2. Configure Notifications on the S3 bucket.
     if (this._props.triggerFunction && this._props.triggerFunction != 'NONE') {
-      const triggerLambdaFunctionParams: S3UserInputTriggerFunctionParams = {
-        category: AmplifyCategories.STORAGE,
-        tag: 'triggerFunction',
-        triggerFunction: this._props.triggerFunction,
-        permissions: [S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ, S3PermissionType.DELETE],
-        triggerEvents: [S3TriggerEventType.OBJ_PUT_POST_COPY, S3TriggerEventType.OBJ_REMOVED],
-        triggerPrefix: [
-          { prefix: 'protected/', prefixTransform: S3TriggerPrefixTransform.ATTACH_REGION },
-          { prefix: 'private/', prefixTransform: S3TriggerPrefixTransform.ATTACH_REGION },
-          { prefix: 'public/', prefixTransform: S3TriggerPrefixTransform.ATTACH_REGION },
-        ],
-      };
+      const triggerLambdaFunctionParams: S3UserInputTriggerFunctionParams = this._conditionallyBuildTriggerLambdaParams(this._props.triggerFunction);
       const newLambdaConfigurations = this.buildLambdaConfigFromTriggerParams(triggerLambdaFunctionParams);
       this._addNotificationsLambdaConfigurations(newLambdaConfigurations);
       this.triggerLambdaPermissions = this.createInvokeFunctionS3Permission('TriggerPermissions', this._props.triggerFunction);
@@ -477,6 +503,12 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
             };
             lambdaConfigurations.push(lambdaConfig);
           }
+        } else {
+          const lambdaConfig: $TSAny = {
+            event: triggerEvent,
+            function: triggerFunctionArnRef,
+          };
+          lambdaConfigurations.push(lambdaConfig);
         }
       }
     }

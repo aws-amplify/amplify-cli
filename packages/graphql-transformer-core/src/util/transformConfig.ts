@@ -193,7 +193,7 @@ export async function loadProject(projectDirectory: string, opts?: ProjectOption
           continue;
         }
         const pipelineFunctionPath = path.join(pipelineFunctionDirectory, pipelineFunctionFile);
-        pipelineFunctions[pipelineFunctionFile] = await fs.readFile(pipelineFunctionPath);
+        pipelineFunctions[pipelineFunctionFile] = await fs.readFile(pipelineFunctionPath, 'utf8');
       }
     }
   }
@@ -210,7 +210,7 @@ export async function loadProject(projectDirectory: string, opts?: ProjectOption
           continue;
         }
         const resolverFilePath = path.join(resolverDirectory, resolverFile);
-        resolvers[resolverFile] = await fs.readFile(resolverFilePath);
+        resolvers[resolverFile] = await fs.readFile(resolverFilePath, 'utf8');
       }
     }
   }

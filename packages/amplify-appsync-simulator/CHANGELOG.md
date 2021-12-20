@@ -3,6 +3,43 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.1...amplify-appsync-simulator@2.3.2) (2021-12-09)
+
+
+### Bug Fixes
+
+* add support for IAM roles in mock ([#9139](https://github.com/aws-amplify/amplify-cli/issues/9139)) ([8f9adbf](https://github.com/aws-amplify/amplify-cli/commit/8f9adbf36b350f147c1252168565b9c982bbac0f)), closes [#9107](https://github.com/aws-amplify/amplify-cli/issues/9107)
+
+
+
+
+
+## [2.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.0...amplify-appsync-simulator@2.3.1) (2021-12-03)
+
+
+### Bug Fixes
+
+* pass updated args between pipeline function in mock ([#9192](https://github.com/aws-amplify/amplify-cli/issues/9192)) ([983a131](https://github.com/aws-amplify/amplify-cli/commit/983a1310730a3b1d6f447547d39e18949c2e5d77))
+
+
+
+
+
+# [2.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.2.3...amplify-appsync-simulator@2.3.0) (2021-12-02)
+
+
+
+# 7.6.0 (2021-12-02)
+
+
+### Features
+
+* add uibuilder plugin ([#9178](https://github.com/aws-amplify/amplify-cli/issues/9178)) ([0e95dd8](https://github.com/aws-amplify/amplify-cli/commit/0e95dd8dc2b9cdcc54dcd7a7b896891e17b37f1d))
+
+
+
+
+
 ## [2.2.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.2.2...amplify-appsync-simulator@2.2.3) (2021-11-23)
 
 **Note:** Version bump only for package amplify-appsync-simulator

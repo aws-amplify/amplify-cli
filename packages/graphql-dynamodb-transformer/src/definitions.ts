@@ -739,7 +739,7 @@ export function makeModelConnectionType(typeName: string, isSync: Boolean = fals
   const connectionName = ModelResourceIDs.ModelConnectionTypeName(typeName);
   let connectionTypeExtension = blankObjectExtension(connectionName);
   connectionTypeExtension = extensionWithFields(connectionTypeExtension, [
-    makeField('items', [], makeNonNullType(makeListType(makeNonNullType(makeNamedType(typeName))))),
+    makeField('items', [], makeNonNullType(makeListType(makeNamedType(typeName)))),
   ]);
   connectionTypeExtension = extensionWithFields(connectionTypeExtension, [makeField('nextToken', [], makeNamedType('String'))]);
   if (isSync) {

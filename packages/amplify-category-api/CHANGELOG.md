@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.1.6...@aws-amplify/amplify-category-api@1.1.7) (2021-12-17)
+
+
+### Bug Fixes
+
+* add missing salt to deployment logicalId ([#9234](https://github.com/aws-amplify/amplify-cli/issues/9234)) ([d4109e2](https://github.com/aws-amplify/amplify-cli/commit/d4109e2e8a18e2e9b787a97b1508efb1bf97fac9))
+* add-graphql-datasource command ([#9288](https://github.com/aws-amplify/amplify-cli/issues/9288)) ([f4cb8cb](https://github.com/aws-amplify/amplify-cli/commit/f4cb8cb2acdbe3024ff26385395860127fa78b5c))
+* improve api migration logic, update migration prompt ([#9267](https://github.com/aws-amplify/amplify-cli/issues/9267)) ([beed4f9](https://github.com/aws-amplify/amplify-cli/commit/beed4f9aa77bfbbb92ff0cb504e8019ce01e48f6))
+
+
+
+
+
+## [1.1.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.1.5...@aws-amplify/amplify-category-api@1.1.6) (2021-12-03)
+
+
+
+## 7.6.2 (2021-12-02)
+
+
+### Bug Fixes
+
+* add safety check ([#9193](https://github.com/aws-amplify/amplify-cli/issues/9193)) ([4c12eb1](https://github.com/aws-amplify/amplify-cli/commit/4c12eb16805e5866dc99d74c36fd1c97130bcd70))
+
+
+
+
+
+## [1.1.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.1.4...@aws-amplify/amplify-category-api@1.1.5) (2021-12-02)
+
+
+
+## 7.5.6 (2021-12-01)
+
+
+### Bug Fixes
+
+* call the correct migration function for Admin Queries ([#9174](https://github.com/aws-amplify/amplify-cli/issues/9174)) ([1ab2e66](https://github.com/aws-amplify/amplify-cli/commit/1ab2e66e1b54d09d68def7186b85644cb6d91653))
+
+
+
+
+
+## [1.1.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.1.3...@aws-amplify/amplify-category-api@1.1.4) (2021-12-01)
+
+
+### Bug Fixes
+
+* migrate rest apis with protected routes on push ([#9068](https://github.com/aws-amplify/amplify-cli/issues/9068)) ([62b4436](https://github.com/aws-amplify/amplify-cli/commit/62b44365108ba3410c9023623394aa98a52db84e))
+
+
+
+
+
 ## [1.1.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.1.2...@aws-amplify/amplify-category-api@1.1.3) (2021-11-29)
 
 

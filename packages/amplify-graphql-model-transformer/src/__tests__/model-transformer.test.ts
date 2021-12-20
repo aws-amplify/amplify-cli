@@ -1261,4 +1261,29 @@ describe('ModelTransformer: ', () => {
       expect(field.directives!.some(dir => dir.name.value === 'aws_api_key')).toEqual(true);
     }
   });
+
+  it('allow aws_lambda to pass through', () => {
+    const validSchema = `
+    type Todo @aws_lambda {
+      id: ID!
+      name: String!
+      description: String
+    }
+
+    schema {
+      query: Query
+    }
+
+    type Query {
+      todo: Todo @aws_lambda
+    }`;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
+  });
 });
