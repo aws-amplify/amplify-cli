@@ -7,7 +7,6 @@ exports.handler = async function (event, context) {
       const params = {
         IndexName: event.ResourceProperties.indexName,
         DataSource: event.ResourceProperties.dataSource,
-        PricingPlan: event.ResourceProperties.pricingPlan,
         DataSourceConfiguration: {
           IntendedUse: event.ResourceProperties.dataSourceIntendedUse,
         },
@@ -25,7 +24,6 @@ exports.handler = async function (event, context) {
     if (event.RequestType == 'Update') {
       const params = {
         IndexName: event.ResourceProperties.indexName,
-        PricingPlan: event.ResourceProperties.pricingPlan,
         DataSourceConfiguration: {
           IntendedUse: event.ResourceProperties.dataSourceIntendedUse,
         },

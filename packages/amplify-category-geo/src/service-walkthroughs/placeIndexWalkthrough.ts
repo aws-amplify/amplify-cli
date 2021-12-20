@@ -5,9 +5,9 @@ import { DataSourceIntendedUse, PlaceIndexParameters } from '../service-utils/pl
 import { apiDocs, ServiceName } from '../service-utils/constants';
 import { $TSContext } from 'amplify-cli-core';
 import { getCurrentPlaceIndexParameters } from '../service-utils/placeIndexUtils';
-import { getGeoServiceMeta, updateDefaultResource, geoServiceExists, getGeoPricingPlan, checkGeoResourceExists } from '../service-utils/resourceUtils';
-import { authAndGuestAccessWalkthrough, pricingPlanWalkthrough, dataProviderWalkthrough, getServiceFriendlyName, defaultResourceQuestion } from './resourceWalkthrough';
-import { DataProvider, PricingPlan } from '../service-utils/resourceParams';
+import { getGeoServiceMeta, updateDefaultResource, checkGeoResourceExists } from '../service-utils/resourceUtils';
+import { authAndGuestAccessWalkthrough, dataProviderWalkthrough, getServiceFriendlyName, defaultResourceQuestion } from './resourceWalkthrough';
+import { DataProvider } from '../service-utils/resourceParams';
 import { printer, formatter, prompter, alphanumeric } from 'amplify-prompts';
 
 const searchServiceFriendlyName = getServiceFriendlyName(ServiceName.PlaceIndex);
@@ -26,15 +26,8 @@ export const createPlaceIndexWalkthrough = async (
   // get the access
   parameters = merge(parameters, await authAndGuestAccessWalkthrough(parameters, ServiceName.PlaceIndex));
 
-  // initiate pricing plan walkthrough if this is the first Place Index added
-  let includePricingPlanInAdvancedWalkthrough = true;
-  if (!(await geoServiceExists(ServiceName.PlaceIndex))) {
-    parameters = merge(parameters, await pricingPlanWalkthrough(context, parameters, false));
-    includePricingPlanInAdvancedWalkthrough = false;
-  }
-
   // optional advanced walkthrough
-  parameters = merge(parameters, await placeIndexAdvancedWalkthrough(context, parameters, includePricingPlanInAdvancedWalkthrough));
+  parameters = merge(parameters, await placeIndexAdvancedWalkthrough(context, parameters));
 
   // ask if the place index should be set as a default. Default to true if it's the only place index
   const currentPlaceIndexResources = await getGeoServiceMeta(ServiceName.PlaceIndex);
@@ -69,14 +62,9 @@ export const placeIndexNameWalkthrough = async (context: any): Promise<Partial<P
 
 export const placeIndexAdvancedWalkthrough = async (
     context: $TSContext,
-    parameters: Partial<PlaceIndexParameters>,
-    includePricingPlan: boolean
+    parameters: Partial<PlaceIndexParameters>
 ): Promise<Partial<PlaceIndexParameters>> => {
-    const currentPricingPlan = parameters.pricingPlan || await getGeoPricingPlan() || PricingPlan.RequestBasedUsage;
     const advancedSettingOptions: string[] = ['Search data provider (default: Esri)'];
-    if (includePricingPlan) {
-        advancedSettingOptions.push(`Search pricing plan (current: ${currentPricingPlan})`);
-    }
     advancedSettingOptions.push('Search result storage location (default: no result storage)');
     printer.info('Available advanced settings:');
     formatter.list(advancedSettingOptions);
@@ -85,27 +73,10 @@ export const placeIndexAdvancedWalkthrough = async (
     if(await prompter.yesOrNo('Do you want to configure advanced settings?', false)) {
         // get the place index data provider
         parameters = merge(parameters, await dataProviderWalkthrough(parameters, ServiceName.PlaceIndex));
-
-        if (includePricingPlan) {
-            // get the pricing plan
-            parameters = merge(parameters, await pricingPlanWalkthrough(context, parameters));
-        }
-        else {
-            parameters.pricingPlan = currentPricingPlan;
-        }
-
-        // get the place index data storage option if the pricing plan is RequestBasedUsage
-        if (parameters.pricingPlan === PricingPlan.RequestBasedUsage) {
-          parameters = merge(parameters, await placeIndexDataStorageWalkthrough(context, parameters));
-        }
-        else {
-          parameters.dataSourceIntendedUse = DataSourceIntendedUse.SingleUse;
-        }
     }
     else {
       parameters.dataProvider = DataProvider.Esri;
       parameters.dataSourceIntendedUse = DataSourceIntendedUse.SingleUse;
-      parameters.pricingPlan = currentPricingPlan;
     }
 
     return parameters;
@@ -156,14 +127,6 @@ export const updatePlaceIndexWalkthrough = async (
 
     // overwrite the parameters based on user input
     parameters.accessType = (await authAndGuestAccessWalkthrough(parameters, ServiceName.PlaceIndex)).accessType;
-
-    // enable flow to update the pricing plan for Place Index
-    printer.info('Available advanced settings:');
-    printer.info(`- Pricing Plan (current: ${parameters.pricingPlan})`);
-    const showAdvancedSettings = await prompter.yesOrNo('Do you want to update advanced settings?', false);
-    if (showAdvancedSettings) {
-        parameters.pricingPlan = (await pricingPlanWalkthrough(context, parameters, false)).pricingPlan;
-    }
 
     const otherIndexResources = indexResourceNames.filter(indexResourceName => indexResourceName != resourceToUpdate);
     // if this is the only place index, default cannot be removed

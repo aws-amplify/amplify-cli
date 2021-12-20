@@ -4,7 +4,7 @@ import path from 'path';
 import _ from 'lodash';
 import { BaseStack } from '../service-stacks/baseStack';
 import { parametersFileName, ServiceName } from './constants';
-import { PricingPlan, ResourceParameters, AccessType } from './resourceParams';
+import { ResourceParameters, AccessType } from './resourceParams';
 import os from 'os';
 import { getMapIamPolicies } from './mapUtils';
 import { getPlaceIndexIamPolicies } from './placeIndexUtils';
@@ -103,45 +103,6 @@ export const updateDefaultResource = async (
 export const geoServiceExists = async (service: ServiceName): Promise<boolean> => {
   const serviceMeta = await getGeoServiceMeta(service);
   return serviceMeta && Object.keys(serviceMeta).length > 0;
-}
-
-/**
- * Get the pricing plan for Geo resources
- */
-export const getGeoPricingPlan = async (): Promise<PricingPlan> => {
-  const geoMeta = stateManager.getMeta()?.[category];
-  let pricingPlan = PricingPlan.RequestBasedUsage;
-  if (geoMeta !== undefined) {
-    Object.keys(geoMeta).forEach(resource => {
-      pricingPlan = geoMeta[resource].pricingPlan || pricingPlan;
-    });
-  }
-  return pricingPlan;
-}
-
-/**
- * Update Geo pricing plan
- */
-export const updateGeoPricingPlan = async (context: $TSContext, pricingPlan: PricingPlan) => {
-  const geoMeta = stateManager.getMeta()?.[category];
-  if (geoMeta !== undefined) {
-    Object.keys(geoMeta).forEach(resource => {
-      // update pricing plan in meta for all Geo resources
-      context.amplify.updateamplifyMetaAfterResourceUpdate(
-        category,
-        resource,
-        'pricingPlan',
-        pricingPlan
-      );
-
-      // update CFN parameters for all Geo resources
-      updateParametersFile(
-        { pricingPlan: pricingPlan },
-        resource,
-        parametersFileName
-      );
-    });
-  }
 }
 
 /**
