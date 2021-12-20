@@ -188,6 +188,11 @@ export function validateDisallowedDataStoreRelationships(
   const relatedType = ctx.output.getType(config.relatedType.name.value) as ObjectTypeDefinitionNode;
   assert(relatedType);
 
+  // Recursive relationships on the same type are allowed.
+  if (modelType === relatedType.name.value) {
+    return;
+  }
+
   const hasUnsupportedConnectionFields = relatedType.fields!.some(field => {
     // If the related field has the same data type as this model, and @hasOne or @hasMany
     // is present, then the connection is unsupported.
