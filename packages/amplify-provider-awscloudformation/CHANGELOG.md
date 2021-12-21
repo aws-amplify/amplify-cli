@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.8.5-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.4...amplify-provider-awscloudformation@5.8.5-beta.1) (2021-12-21)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** validate IDP roles on import (ref [#9286](https://github.com/aws-amplify/amplify-cli/issues/9286)) ([#9294](https://github.com/aws-amplify/amplify-cli/issues/9294)) ([3ecd842](https://github.com/aws-amplify/amplify-cli/commit/3ecd842dfc50d81c5c89c80c3400d05159ddf885))
+
+
+
+
+
 ## [5.8.5-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.4...amplify-provider-awscloudformation@5.8.5-beta.0) (2021-12-21)
 
 

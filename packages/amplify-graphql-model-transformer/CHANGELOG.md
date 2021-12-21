@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.3-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.10.2...@aws-amplify/graphql-model-transformer@0.10.3-beta.1) (2021-12-21)
+
+
+### Bug Fixes
+
+* generate list types will nullable elements ([#9310](https://github.com/aws-amplify/amplify-cli/issues/9310)) ([e972956](https://github.com/aws-amplify/amplify-cli/commit/e9729565fef2ac7df51f7fc7f345da536f385ac1))
+* **graphql-model-transformer:** [@aws](https://github.com/aws)_lambda GQL transformer pass through directive list ([#9231](https://github.com/aws-amplify/amplify-cli/issues/9231)) ([25f0c9d](https://github.com/aws-amplify/amplify-cli/commit/25f0c9d6d8735bd7f44a70de52b462826aabd8ed))
+* handle strings as custom subscription names ([#9210](https://github.com/aws-amplify/amplify-cli/issues/9210)) ([7b068c6](https://github.com/aws-amplify/amplify-cli/commit/7b068c6318b3f9934e5fc1d8e9a142dc31fb5fc1))
+
+
+
+
+
 ## [0.10.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.10.2...@aws-amplify/graphql-model-transformer@0.10.3-beta.0) (2021-12-21)
 
 

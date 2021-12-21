@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.2.11-beta.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@7.2.10...graphql-dynamodb-transformer@7.2.11-beta.1) (2021-12-21)
+
+
+### Bug Fixes
+
+* generate list types will nullable elements ([#9310](https://github.com/aws-amplify/amplify-cli/issues/9310)) ([e972956](https://github.com/aws-amplify/amplify-cli/commit/e9729565fef2ac7df51f7fc7f345da536f385ac1))
+
+
+
+
+
 ## [7.2.11-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@7.2.10...graphql-dynamodb-transformer@7.2.11-beta.0) (2021-12-21)
 
 

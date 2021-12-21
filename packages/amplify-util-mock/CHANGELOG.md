@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.23-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.22...amplify-util-mock@4.2.23-beta.1) (2021-12-21)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** fix key condition expression ([#9264](https://github.com/aws-amplify/amplify-cli/issues/9264)) ([5794692](https://github.com/aws-amplify/amplify-cli/commit/5794692a05c16f23d903321644fe37a4913861e0))
+
+
+
+
+
 ## [4.2.23-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.22...amplify-util-mock@4.2.23-beta.0) (2021-12-21)
 
 
