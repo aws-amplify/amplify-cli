@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.13](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.6.12...@aws-amplify/graphql-relational-transformer@0.6.13) (2021-12-21)
+
+
+
+## 7.6.5 (2021-12-20)
+
+
+### Bug Fixes
+
+* generate list types will nullable elements ([#9310](https://github.com/aws-amplify/amplify-cli/issues/9310)) ([e972956](https://github.com/aws-amplify/amplify-cli/commit/e9729565fef2ac7df51f7fc7f345da536f385ac1))
+* support recursive [@has](https://github.com/has)One/[@has](https://github.com/has)Many with DataStore ([#9336](https://github.com/aws-amplify/amplify-cli/issues/9336)) ([48e51e6](https://github.com/aws-amplify/amplify-cli/commit/48e51e6fbdc429218f84aae7e808bdf9fa280c0d))
+
+
+
+
+
 ## [0.6.12](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.6.11...@aws-amplify/graphql-relational-transformer@0.6.12) (2021-12-17)
 
 
