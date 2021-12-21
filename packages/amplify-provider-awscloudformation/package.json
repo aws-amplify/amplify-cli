@@ -1,6 +1,6 @@
 {
   "name": "amplify-provider-awscloudformation",
-  "version": "5.8.3-codegen-gqlv2-fix.0",
+  "version": "5.8.3-codegen-gqlv2-fix.1",
   "description": "AWS CloudFormation Provider",
   "repository": {
     "type": "git",
