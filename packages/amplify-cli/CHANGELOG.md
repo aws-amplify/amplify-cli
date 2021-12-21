@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.6.5-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.4...@aws-amplify/cli@7.6.5-beta.0) (2021-12-21)
+
+
+### Bug Fixes
+
+* removing old FF logic for extensibility ([#9249](https://github.com/aws-amplify/amplify-cli/issues/9249)) ([936ee8f](https://github.com/aws-amplify/amplify-cli/commit/936ee8f7e937a8bb407244210fd04320a41b418a))
+
+
+
+
+
 ## [7.6.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.3...@aws-amplify/cli@7.6.4) (2021-12-17)
 
 **Note:** Version bump only for package @aws-amplify/cli

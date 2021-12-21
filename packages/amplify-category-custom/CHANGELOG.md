@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.9-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.3.8...@aws-amplify/amplify-category-custom@2.3.9-beta.0) (2021-12-21)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-custom
+
+
+
+
+
 ## [2.3.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.3.7...@aws-amplify/amplify-category-custom@2.3.8) (2021-12-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-custom
