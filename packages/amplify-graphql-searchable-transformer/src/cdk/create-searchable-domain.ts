@@ -4,7 +4,7 @@ import { CfnDomain, Domain, ElasticsearchVersion } from '@aws-cdk/aws-elasticsea
 import { IRole, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { CfnParameter, Construct, Fn } from '@aws-cdk/core';
 import { ResourceConstants } from 'graphql-transformer-common';
-
+import assert from 'assert';
 export const createSearchableDomain = (stack: Construct, parameterMap: Map<string, CfnParameter>, apiId: string): Domain => {
   const { OpenSearchEBSVolumeGB, OpenSearchInstanceType, OpenSearchInstanceCount } = ResourceConstants.PARAMETERS;
   const { OpenSearchDomainLogicalID } = ResourceConstants.RESOURCES;
@@ -38,8 +38,10 @@ export const createSearchableDomainRole = (
 ): IRole => {
   const { OpenSearchAccessIAMRoleLogicalID } = ResourceConstants.RESOURCES;
   const { OpenSearchAccessIAMRoleName } = ResourceConstants.PARAMETERS;
+  const roleName = parameterMap.get(OpenSearchAccessIAMRoleName)?.valueAsString;
+  assert(roleName);
   return new Role(stack, OpenSearchAccessIAMRoleLogicalID, {
     assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
-    roleName: context.resourceHelper.generateIAMRoleName(parameterMap.get(OpenSearchAccessIAMRoleName)!.valueAsString),
+    roleName: context.resourceHelper.generateIAMRoleName(roleName),
   });
 };

@@ -163,7 +163,7 @@ export class SearchableModelTransformer extends Transformer {
     // Create TableXConnection type with items and nextToken
     let connectionTypeExtension = blankObjectExtension(searchableXConnectionName);
     connectionTypeExtension = extensionWithFields(connectionTypeExtension, [
-      makeField('items', [], makeNonNullType(makeListType(makeNonNullType(makeNamedType(def.name.value))))),
+      makeField('items', [], makeNonNullType(makeListType(makeNamedType(def.name.value)))),
     ]);
     connectionTypeExtension = extensionWithFields(connectionTypeExtension, [
       makeField('nextToken', [], makeNamedType('String')),

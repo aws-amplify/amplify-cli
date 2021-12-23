@@ -13,6 +13,4 @@ export interface TransformerProjectConfig {
   resolvers: Record<string, string>;
   stacks: Record<string, Template>;
   config: TransformConfig;
-  // Custom transformer plugins
-  transformers?: string[];
 }

@@ -41,6 +41,26 @@ export function extractJwtToken(authorization: string): JWTToken {
   }
 }
 
+export function extractIamToken(authorization: string, appSyncConfig: AmplifyAppSyncAPIConfig): IAMToken {
+  const accessKeyId = authorization.includes('Credential=') ? authorization.split('Credential=')[1]?.split('/')[0] : undefined;
+  if (!accessKeyId) {
+    throw new Error('missing accessKeyId');
+  }
+  if (accessKeyId === appSyncConfig.authAccessKeyId) {
+    return {
+      accountId: appSyncConfig.accountId,
+      userArn: `arn:aws:sts::${appSyncConfig.accountId}:${appSyncConfig.authRoleName}`,
+      username: 'auth-user',
+    };
+  } else {
+    return {
+      accountId: appSyncConfig.accountId,
+      userArn: `arn:aws:sts::${appSyncConfig.accountId}:${appSyncConfig.unAuthRoleName}`,
+      username: 'unauth-user',
+    };
+  }
+}
+
 export function isValidOIDCToken(token: JWTToken, configuredAuthTypes: AmplifyAppSyncAuthenticationProviderConfig[]): boolean {
   const oidcIssuers = configuredAuthTypes
     .filter(authType => authType.authenticationType === AmplifyAppSyncSimulatorAuthenticationType.OPENID_CONNECT)

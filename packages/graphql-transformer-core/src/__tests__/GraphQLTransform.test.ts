@@ -68,11 +68,7 @@ test('Test graphql transformer validation. Unknown directive.', () => {
   const transformer = new GraphQLTransform({
     transformers: [new InvalidObjectTransformer()],
   });
-  try {
-    transformer.transform(invalidSchema);
-  } catch (e) {
-    expect(e.message).toEqual('Unknown directive "UnknownDirective".');
-  }
+  expect(() => transformer.transform(invalidSchema)).toThrowError(/Unknown directive/);
 });
 
 class PingTransformer extends Transformer {

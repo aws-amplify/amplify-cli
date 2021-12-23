@@ -1,9 +1,7 @@
 import { AmplifyRootStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 import * as cdk from '@aws-cdk/core';
-import { App } from '@aws-cdk/core';
 import { $TSAny, $TSContext, buildOverrideDir, CFNTemplateFormat, pathManager, Template, writeCFNTemplate } from 'amplify-cli-core';
-import * as amplifyPrinter from 'amplify-prompts';
-import { printer } from 'amplify-prompts';
+import { printer, formatter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import os from 'os';
 import * as path from 'path';
@@ -12,7 +10,7 @@ import { AmplifyRootStack, AmplifyRootStackOutputs } from './root-stack-builder'
 import { RootStackSythesizer } from './stack-synthesizer';
 
 export class AmplifyRootStackTransform {
-  private app: App | undefined;
+  private app: cdk.App | undefined;
   private _rootTemplateObj: AmplifyRootStack; // Props to modify Root stack data
   private _synthesizer: RootStackSythesizer;
   private _synthesizerOutputs: RootStackSythesizer;
@@ -22,7 +20,7 @@ export class AmplifyRootStackTransform {
   constructor(resourceName: string) {
     this._resourceName = resourceName;
     this._synthesizer = new RootStackSythesizer();
-    this.app = new App();
+    this.app = new cdk.App();
     this._synthesizerOutputs = new RootStackSythesizer();
   }
 
@@ -58,7 +56,7 @@ export class AmplifyRootStackTransform {
     // skip if packageManager or override.ts not found
     if (isBuild) {
       const overrideCode: string = await fs.readFile(path.join(overrideFilePath, 'build', 'override.js'), 'utf-8').catch(() => {
-        amplifyPrinter.formatter.list(['No override File Found', `To override ${this._resourceName} run amplify override auth`]);
+        formatter.list(['No override File Found', `To override ${this._resourceName} run amplify override auth`]);
         return '';
       });
       const sandboxNode = new vm.NodeVM({
@@ -215,7 +213,7 @@ export class AmplifyRootStackTransform {
     if (this._rootTemplateObj != null) {
       return this._rootTemplateObj;
     } else {
-      throw new Error('Root Stack Template doesnt exist');
+      throw new Error(`Root Stack Template doesn't exist.`);
     }
   }
 }
