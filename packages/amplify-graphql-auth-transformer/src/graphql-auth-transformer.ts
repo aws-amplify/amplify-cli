@@ -697,9 +697,10 @@ Static group authorization should perform as expected.`,
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     const fields = acm.getResources();
     const createRoles = acm.getRolesPerOperation('create').map(role => {
+      const dataStoreFields = ctx.isProjectUsingDataStore() ? ['_version', '_deleted', '_lastChangedAt'] : [];
       const allowedFields = fields.filter(resource => acm.isAllowed(role, resource, 'create'));
       const roleDefinition = this.roleMap.get(role)!;
-      roleDefinition.allowedFields = allowedFields.length === fields.length ? [] : allowedFields;
+      roleDefinition.allowedFields = allowedFields.length === fields.length ? [] : [...allowedFields, ...dataStoreFields];
       return roleDefinition;
     });
     const authExpression = generateAuthExpressionForCreate(this.configuredAuthProviders, createRoles, def.fields ?? []);
@@ -720,11 +721,12 @@ Static group authorization should perform as expected.`,
     const updateDeleteRoles = [...new Set([...acm.getRolesPerOperation('update'), ...acm.getRolesPerOperation('delete')])];
     // protect fields to be updated and fields that can't be set to null (partial delete on fields)
     const totalRoles = updateDeleteRoles.map(role => {
+      const dataStoreFields = ctx.isProjectUsingDataStore() ? ['_version', '_deleted', '_lastChangedAt'] : [];
       const allowedFields = fields.filter(resource => acm.isAllowed(role, resource, 'update'));
-      const nullAllowedFileds = fields.filter(resource => acm.isAllowed(role, resource, 'delete'));
+      const nullAllowedFields = fields.filter(resource => acm.isAllowed(role, resource, 'delete'));
       const roleDefinition = this.roleMap.get(role)!;
-      roleDefinition.allowedFields = allowedFields.length === fields.length ? [] : allowedFields;
-      roleDefinition.nullAllowedFields = nullAllowedFileds.length === fields.length ? [] : nullAllowedFileds;
+      roleDefinition.allowedFields = allowedFields.length === fields.length ? [] : [...allowedFields, ...dataStoreFields];
+      roleDefinition.nullAllowedFields = nullAllowedFields.length === fields.length ? [] : nullAllowedFields;
       return roleDefinition;
     });
     const datasource = ctx.api.host.getDataSource(`${def.name.value}Table`) as DataSourceProvider;

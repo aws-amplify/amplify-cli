@@ -3,6 +3,73 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.4.6...amplify-e2e-core@2.4.7) (2021-12-21)
+
+**Note:** Version bump only for package amplify-e2e-core
+
+
+
+
+
+## [2.4.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.4.5...amplify-e2e-core@2.4.6) (2021-12-17)
+
+
+### Bug Fixes
+
+* add missing salt to deployment logicalId ([#9234](https://github.com/aws-amplify/amplify-cli/issues/9234)) ([d4109e2](https://github.com/aws-amplify/amplify-cli/commit/d4109e2e8a18e2e9b787a97b1508efb1bf97fac9))
+* update gql v2 custom transformer loading logic ([#9252](https://github.com/aws-amplify/amplify-cli/issues/9252)) ([f728b4b](https://github.com/aws-amplify/amplify-cli/commit/f728b4bb835674afd32dab7243dd3d826601d333))
+
+
+
+
+
+## [2.4.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.4.4...amplify-e2e-core@2.4.5) (2021-12-03)
+
+
+### Bug Fixes
+
+* incorrect function parameters in invokePluginMethod call ([#9182](https://github.com/aws-amplify/amplify-cli/issues/9182)) ([1be5b27](https://github.com/aws-amplify/amplify-cli/commit/1be5b2735fe009de2631194b07dbda8acd062387))
+
+
+
+
+
+## [2.4.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.4.3...amplify-e2e-core@2.4.4) (2021-12-02)
+
+
+
+## 7.6.1 (2021-12-02)
+
+**Note:** Version bump only for package amplify-e2e-core
+
+
+
+
+
+## [2.4.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.4.2...amplify-e2e-core@2.4.3) (2021-12-02)
+
+**Note:** Version bump only for package amplify-e2e-core
+
+
+
+
+
+## [2.4.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.4.1...amplify-e2e-core@2.4.2) (2021-12-01)
+
+**Note:** Version bump only for package amplify-e2e-core
+
+
+
+
+
+## [2.4.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.4.0...amplify-e2e-core@2.4.1) (2021-11-26)
+
+**Note:** Version bump only for package amplify-e2e-core
+
+
+
+
+
 # [2.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.3.4...amplify-e2e-core@2.4.0) (2021-11-23)
 
 

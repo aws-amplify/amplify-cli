@@ -108,8 +108,8 @@ export class ApigwInputState {
     }
     const resourceDirPath = pathManager.getResourceDirectoryPath(this.projectRootPath, AmplifyCategories.API, this.resourceName);
 
-    this.context.filesystem.remove(join(resourceDirPath, PathConstants.ParametersJsonFileName));
-    this.context.filesystem.remove(join(resourceDirPath, 'admin-queries-cloudformation-template.json'));
+    fs.removeSync(join(resourceDirPath, PathConstants.ParametersJsonFileName));
+    fs.removeSync(join(resourceDirPath, 'admin-queries-cloudformation-template.json'));
 
     return this.updateAdminQueriesResource(adminQueriesProps);
   };
@@ -153,11 +153,15 @@ export class ApigwInputState {
       return Array.from(new Set(deprecatedPrivacyArray.map(op => opMap[op])));
     }
 
+    if (!Array.isArray(deprecatedParameters.paths) || deprecatedParameters.paths.length < 1) {
+      throw new Error(`Expected paths to be defined in "${deprecatedParametersFilePath}", but none found.`);
+    }
+
     deprecatedParameters.paths.forEach((path: $TSObject) => {
       let pathPermissionSetting =
-        path.privacy.open === true
+        path.privacy?.open === true
           ? PermissionSetting.OPEN
-          : path.privacy.private === true
+          : path.privacy?.private === true
           ? PermissionSetting.PRIVATE
           : PermissionSetting.PROTECTED;
 
@@ -165,15 +169,15 @@ export class ApigwInputState {
       let guest;
       let groups;
       // convert deprecated permissions to CRUD structure
-      if (typeof path.privacy.auth === 'string' && ['r', 'rw'].includes(path.privacy.auth)) {
+      if (typeof path.privacy?.auth === 'string' && ['r', 'rw'].includes(path.privacy.auth)) {
         auth = _convertDeprecatedPermissionStringToCRUD(path.privacy.auth);
-      } else if (Array.isArray(path.privacy.auth)) {
+      } else if (Array.isArray(path.privacy?.auth)) {
         auth = _convertDeprecatedPermissionArrayToCRUD(path.privacy.auth);
       }
 
-      if (typeof path.privacy.unauth === 'string' && ['r', 'rw'].includes(path.privacy.unauth)) {
+      if (typeof path.privacy?.unauth === 'string' && ['r', 'rw'].includes(path.privacy.unauth)) {
         guest = _convertDeprecatedPermissionStringToCRUD(path.privacy.unauth);
-      } else if (Array.isArray(path.privacy.unauth)) {
+      } else if (Array.isArray(path.privacy?.unauth)) {
         guest = _convertDeprecatedPermissionArrayToCRUD(path.privacy.unauth);
       }
 
@@ -199,9 +203,9 @@ export class ApigwInputState {
       };
     });
 
-    this.context.filesystem.remove(deprecatedParametersFilePath);
-    this.context.filesystem.remove(join(resourceDirPath, PathConstants.ParametersJsonFileName));
-    this.context.filesystem.remove(join(resourceDirPath, `${this.resourceName}-cloudformation-template.json`));
+    fs.removeSync(deprecatedParametersFilePath);
+    fs.removeSync(join(resourceDirPath, PathConstants.ParametersJsonFileName));
+    fs.removeSync(join(resourceDirPath, `${this.resourceName}-cloudformation-template.json`));
 
     await this.createApigwArtifacts();
   };

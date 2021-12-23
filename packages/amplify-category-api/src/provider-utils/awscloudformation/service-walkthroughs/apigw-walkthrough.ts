@@ -13,6 +13,7 @@ import {
 } from 'amplify-cli-core';
 import { byValues, printer, prompter } from 'amplify-prompts';
 import inquirer from 'inquirer';
+import _ from 'lodash';
 import os from 'os';
 import { v4 as uuid } from 'uuid';
 import { ADMIN_QUERIES_NAME } from '../../../category-constants';
@@ -78,6 +79,11 @@ export async function updateWalkthrough(context: $TSContext) {
   if (!stateManager.resourceInputsJsonExists(projRoot, category, selectedApiName)) {
     // Not yet migrated
     await migrate(context, projRoot, selectedApiName);
+
+    // chose not to migrate
+    if (!stateManager.resourceInputsJsonExists(projRoot, category, selectedApiName)) {
+      exitOnNextTick(0);
+    }
   }
 
   const parameters = stateManager.getResourceInputsJson(projRoot, category, selectedApiName);
@@ -592,6 +598,27 @@ async function askLambdaArn(context: $TSContext, currentPath?: ApigwPath) {
 
 export async function migrate(context: $TSContext, projectPath: string, resourceName: string) {
   const apigwInputState = new ApigwInputState(context, resourceName);
+
+  if (resourceName === ADMIN_QUERIES_NAME) {
+    const meta = stateManager.getMeta();
+    const adminQueriesDependsOn = _.get(meta, [AmplifyCategories.API, ADMIN_QUERIES_NAME, 'dependsOn'], undefined);
+
+    if (!adminQueriesDependsOn) {
+      throw new Error('Failed to migrate Admin Queries API. Could not find expected information in amplify-meta.json.');
+    }
+
+    const functionName = adminQueriesDependsOn.filter(dependency => dependency.category === AmplifyCategories.FUNCTION)?.[0]?.resourceName;
+
+    const adminQueriesProps = {
+      apiName: resourceName,
+      authResourceName: getAuthResourceName(),
+      functionName,
+      dependsOn: adminQueriesDependsOn,
+    };
+
+    return apigwInputState.migrateAdminQueries(adminQueriesProps);
+  }
+
   return apigwInputState.migrateApigwResource(resourceName);
 }
 

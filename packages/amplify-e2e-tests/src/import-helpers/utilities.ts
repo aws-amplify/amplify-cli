@@ -1,9 +1,4 @@
-import * as aws from 'aws-sdk';
-import * as path from 'path';
-
 import { $TSObject, JSONUtilities } from 'amplify-cli-core';
-import { AppClientSettings, DynamoDBProjectDetails } from './types';
-import { AuthProjectDetails, createIDPAndUserPoolWithOAuthSettings, createUserPoolOnlyWithOAuthSettings, StorageProjectDetails } from '.';
 import {
   addAuthIdentityPoolAndUserPoolWithOAuth,
   addAuthUserPoolOnlyWithOAuth,
@@ -12,9 +7,13 @@ import {
   getProjectMeta,
   getTeamProviderInfo,
 } from 'amplify-e2e-core';
-
+import * as aws from 'aws-sdk';
+import * as fs from 'fs-extra';
 import _ from 'lodash';
+import * as path from 'path';
 import { v4 as uuid } from 'uuid';
+import { AuthProjectDetails, createIDPAndUserPoolWithOAuthSettings, createUserPoolOnlyWithOAuthSettings, StorageProjectDetails } from '.';
+import { AppClientSettings, DynamoDBProjectDetails } from './types';
 
 export const getShortId = (): string => {
   const [shortId] = uuid().split('-');
@@ -126,10 +125,16 @@ export const getOGAuthProjectDetails = (projectRoot: string): AuthProjectDetails
 };
 
 export const readResourceParametersJson = (projectRoot: string, category: string, resourceName: string): $TSObject => {
-  const parametersFilePath = path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'build', 'parameters.json');
-  const parameters = JSONUtilities.readJson(parametersFilePath);
+  const parametersFilePath = path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'parameters.json');
+  const parametersFileBuildPath = path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'build', 'parameters.json');
 
-  return parameters;
+  if (fs.existsSync(parametersFilePath)) {
+    return JSONUtilities.readJson(parametersFilePath);
+  } else if (fs.existsSync(parametersFileBuildPath)) {
+    return JSONUtilities.readJson(parametersFileBuildPath);
+  } else {
+    throw new Error(`parameters.json doesn't exist`);
+  }
 };
 
 export const readRootStack = (projectRoot: string): $TSObject => {

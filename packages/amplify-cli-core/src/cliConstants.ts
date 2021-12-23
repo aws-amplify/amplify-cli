@@ -40,6 +40,7 @@ export const AmplifySupportedService = {
   COGNITO: 'Cognito',
   COGNITOUSERPOOLGROUPS: 'Cognito-UserPool-Groups',
   LAMBDA: 'Lambda',
+  LAMBDA_LAYER: 'LambdaLayer',
 };
 
 export const overriddenCategories = [AmplifyCategories.AUTH, AmplifyCategories.STORAGE, AmplifyCategories.CUSTOM, AmplifyCategories.API];

@@ -83,7 +83,7 @@ export interface PredictionsDirectiveStack {
   TranslateDataSourceServiceRole: CfnRole;
   predictionsLambdaIAMRole: CfnRole;
   predictionsLambdaFunction: CfnFunction;
-  PredictionsLambdaAccess: CfnRole;
+  PredictionsLambdaAccess: CfnPolicy;
   predictionsIAMRole: CfnRole;
   PredictionsStorageAccess: CfnPolicy;
   identifyTextAccess: CfnPolicy;

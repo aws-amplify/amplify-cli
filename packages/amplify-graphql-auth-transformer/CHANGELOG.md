@@ -3,6 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.5.4...@aws-amplify/graphql-auth-transformer@0.5.5) (2021-12-21)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** fix key condition expression ([#9264](https://github.com/aws-amplify/amplify-cli/issues/9264)) ([5794692](https://github.com/aws-amplify/amplify-cli/commit/5794692a05c16f23d903321644fe37a4913861e0))
+
+
+
+
+
+## [0.5.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.5.3...@aws-amplify/graphql-auth-transformer@0.5.4) (2021-12-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+
+
+
+
+## [0.5.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.5.2...@aws-amplify/graphql-auth-transformer@0.5.3) (2021-12-03)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+
+
+
+
+## [0.5.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.5.1...@aws-amplify/graphql-auth-transformer@0.5.2) (2021-12-01)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** fix datastore fields auth ([#9135](https://github.com/aws-amplify/amplify-cli/issues/9135)) ([cb9fdd3](https://github.com/aws-amplify/amplify-cli/commit/cb9fdd30c5212e36149d942f929d77601c75b8e7))
+
+
+
+
+
+## [0.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.5.0...@aws-amplify/graphql-auth-transformer@0.5.1) (2021-11-26)
+
+
+### Bug Fixes
+
+* remove extra $ in vtl template ([#9077](https://github.com/aws-amplify/amplify-cli/issues/9077)) ([3dc4dc4](https://github.com/aws-amplify/amplify-cli/commit/3dc4dc49ce1698683251dacd85fd4433ead1688f))
+
+
+
+
+
 # [0.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.4.6...@aws-amplify/graphql-auth-transformer@0.5.0) (2021-11-23)
 
 

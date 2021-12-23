@@ -6,7 +6,7 @@
     "strict": false, // TODO enable
     "allowJs": true,
     "checkJs": false, // TODO enable till we move everything to TS
-    "lib": ["ESNext"]
+    "lib": ["ESNext", "dom"]
   },
   "exclude": [
     "lib",

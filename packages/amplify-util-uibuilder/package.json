@@ -1,0 +1,22 @@
+{
+  "name": "@aws-amplify/amplify-util-uibuilder",
+  "version": "1.1.2",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@aws-amplify/codegen-ui": "^1.0.0",
+    "@aws-amplify/codegen-ui-react": "^1.0.0",
+    "aws-sdk": "^2.1042.0"
+  },
+  "devDependencies": {
+    "amplify-cli-core": "2.4.1"
+  }
+}

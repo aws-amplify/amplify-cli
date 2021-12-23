@@ -3,6 +3,66 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.4.4...amplify-cli-core@2.4.5) (2021-12-21)
+
+
+### Bug Fixes
+
+* include tsconfig in npmignore ([#9211](https://github.com/aws-amplify/amplify-cli/issues/9211)) ([df9e4b0](https://github.com/aws-amplify/amplify-cli/commit/df9e4b0e41578deb789c3104cd6dc1dda1f04eb4))
+
+
+
+
+
+## [2.4.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.4.3...amplify-cli-core@2.4.4) (2021-12-17)
+
+
+### Bug Fixes
+
+* improve api migration logic, update migration prompt ([#9267](https://github.com/aws-amplify/amplify-cli/issues/9267)) ([beed4f9](https://github.com/aws-amplify/amplify-cli/commit/beed4f9aa77bfbbb92ff0cb504e8019ce01e48f6))
+
+
+
+
+
+## [2.4.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.4.2...amplify-cli-core@2.4.3) (2021-12-02)
+
+
+### Bug Fixes
+
+* function parameters not being properly added to root stack ([#9144](https://github.com/aws-amplify/amplify-cli/issues/9144)) ([2e600ca](https://github.com/aws-amplify/amplify-cli/commit/2e600ca5f3558e4eb40fe151fb6aba859b82f9d2))
+
+
+
+
+
+## [2.4.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.4.1...amplify-cli-core@2.4.2) (2021-12-01)
+
+
+### Bug Fixes
+
+* adding parameters file based on cli-inputs ([#9138](https://github.com/aws-amplify/amplify-cli/issues/9138)) ([61fd87d](https://github.com/aws-amplify/amplify-cli/commit/61fd87d69f143fd012a22ab8eff95eac74cd8df2))
+
+
+
+
+
+## [2.4.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.4.0...amplify-cli-core@2.4.1) (2021-11-26)
+
+
+
+## 7.5.3 (2021-11-26)
+
+
+### Bug Fixes
+
+* console override build issue ([#9078](https://github.com/aws-amplify/amplify-cli/issues/9078)) ([5c9bc5c](https://github.com/aws-amplify/amplify-cli/commit/5c9bc5c4003dd21c2897dc3c4faef9a9c19c1d99))
+* transformer version ([#9092](https://github.com/aws-amplify/amplify-cli/issues/9092)) ([acfa82c](https://github.com/aws-amplify/amplify-cli/commit/acfa82c9b275df0a7347ae0700a919dd8c03a4de))
+
+
+
+
+
 # [2.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.3.3...amplify-cli-core@2.4.0) (2021-11-23)
 
 

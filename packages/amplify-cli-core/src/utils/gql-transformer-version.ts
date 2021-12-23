@@ -1,9 +1,9 @@
-import { $TSContext } from "../index";
+import { $TSContext } from '../index';
 
 import { FeatureFlags } from '../feature-flags';
-import { stateManager, pathManager } from '../state-manager'
+import { stateManager, pathManager } from '../state-manager';
 
-export function getTransformerVersion(context: $TSContext): number {
+export async function getTransformerVersion(context: $TSContext): Promise<number> {
   migrateToTransformerVersionFeatureFlag(context);
 
   const transformerVersion = FeatureFlags.getNumber('graphQLTransformer.transformerVersion');

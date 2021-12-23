@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.3.4...@aws-amplify/cli-extensibility-helper@2.3.5) (2021-12-21)
+
+
+### Bug Fixes
+
+* implemented method to add CFN resource via overrides in auth ([#9277](https://github.com/aws-amplify/amplify-cli/issues/9277)) ([3826e80](https://github.com/aws-amplify/amplify-cli/commit/3826e809e5d3f367786113935ba06a7a1a76aa00))
+
+
+
+
+
+## [2.3.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.3.3...@aws-amplify/cli-extensibility-helper@2.3.4) (2021-12-17)
+
+**Note:** Version bump only for package @aws-amplify/cli-extensibility-helper
+
+
+
+
+
+## [2.3.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.3.2...@aws-amplify/cli-extensibility-helper@2.3.3) (2021-12-02)
+
+**Note:** Version bump only for package @aws-amplify/cli-extensibility-helper
+
+
+
+
+
+## [2.3.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.3.1...@aws-amplify/cli-extensibility-helper@2.3.2) (2021-12-01)
+
+**Note:** Version bump only for package @aws-amplify/cli-extensibility-helper
+
+
+
+
+
+## [2.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.3.0...@aws-amplify/cli-extensibility-helper@2.3.1) (2021-11-26)
+
+**Note:** Version bump only for package @aws-amplify/cli-extensibility-helper
+
+
+
+
+
 # [2.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.2.4...@aws-amplify/cli-extensibility-helper@2.3.0) (2021-11-23)
 
 

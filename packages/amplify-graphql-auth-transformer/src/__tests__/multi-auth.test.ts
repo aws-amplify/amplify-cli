@@ -65,6 +65,8 @@ const publicUserPoolsAuthDirective = '@auth(rules: [{allow: public, provider: us
 const privateAndPublicDirective = '@auth(rules: [{allow: private}, {allow: public}])';
 const privateIAMDirective = '@auth(rules: [{allow: private, provider: iam}])';
 // const privateAndPrivateIAMDirective = '@auth(rules: [{allow: private}, {allow: private, provider: iam}])';
+const groupsAndOwnerAuthDirective =
+  '@auth(rules: [{ allow: groups, groups: ["admin"] } { allow: owner, ownerField: "id", operations: [read] }])';
 
 const getSchema = (authDirective: string) => {
   return `
@@ -653,5 +655,18 @@ describe('iam checks', () => {
     const createResolver = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
     expect(createResolver).toContain(`#set( $adminRoles = [\"helloWorldFunction\",\"echoMessageFunction\"] )`);
     expect(createResolver).toMatchSnapshot();
+  });
+
+  test('test groups and owner auth rules', () => {
+    const schema = getSchema(groupsAndOwnerAuthDirective);
+    const transformer = new GraphQLTransform({
+      authConfig: userPoolsDefaultConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer({ adminRoles })],
+    });
+    const out = transformer.transform(schema);
+    expect(out).toBeDefined();
+    const listResolver = out.resolvers['Query.listPosts.auth.1.req.vtl'];
+    expect(listResolver).toContain('$util.qr($expressions.add("#${entry.key} = :${entry.value}"))');
+    expect(listResolver).toMatchSnapshot();
   });
 });
