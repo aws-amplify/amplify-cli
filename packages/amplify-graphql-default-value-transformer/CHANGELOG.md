@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-default-value-transformer@0.5.7...@aws-amplify/graphql-default-value-transformer@0.5.8) (2021-12-21)
+
+
+### Bug Fixes
+
+* generate list types will nullable elements ([#9310](https://github.com/aws-amplify/amplify-cli/issues/9310)) ([e972956](https://github.com/aws-amplify/amplify-cli/commit/e9729565fef2ac7df51f7fc7f345da536f385ac1))
+
+
+
+
+
+## [0.5.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-default-value-transformer@0.5.6...@aws-amplify/graphql-default-value-transformer@0.5.7) (2021-12-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-default-value-transformer
+
+
+
+
+
+## [0.5.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-default-value-transformer@0.5.5...@aws-amplify/graphql-default-value-transformer@0.5.6) (2021-12-03)
+
+**Note:** Version bump only for package @aws-amplify/graphql-default-value-transformer
+
+
+
+
+
 ## [0.5.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-default-value-transformer@0.5.4...@aws-amplify/graphql-default-value-transformer@0.5.5) (2021-11-23)
 
 **Note:** Version bump only for package @aws-amplify/graphql-default-value-transformer

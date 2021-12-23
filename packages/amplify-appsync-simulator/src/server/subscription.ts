@@ -223,7 +223,7 @@ export class SubscriptionServer {
         setTimeout(() => {
           (asyncIterator as AsyncIterator<ExecutionResult>).return();
           this.mqttIteratorTimeout.delete(clientId);
-        }, CONNECTION_TIMEOUT),
+        }, CONNECTION_TIMEOUT) as any,
       );
     } else {
       // reusing existing subscription. Client unsubscribed to the topic earlier but

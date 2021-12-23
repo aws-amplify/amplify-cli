@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.6...amplify-migration-tests@4.4.7) (2021-12-21)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.5...amplify-migration-tests@4.4.6) (2021-12-17)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.4...amplify-migration-tests@4.4.5) (2021-12-03)
+
+
+### Bug Fixes
+
+* incorrect function parameters in invokePluginMethod call ([#9182](https://github.com/aws-amplify/amplify-cli/issues/9182)) ([1be5b27](https://github.com/aws-amplify/amplify-cli/commit/1be5b2735fe009de2631194b07dbda8acd062387))
+
+
+
+
+
+## [4.4.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.3...amplify-migration-tests@4.4.4) (2021-12-02)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.2...amplify-migration-tests@4.4.3) (2021-12-02)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.1...amplify-migration-tests@4.4.2) (2021-12-01)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.0...amplify-migration-tests@4.4.1) (2021-11-26)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
 # [4.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.3.4...amplify-migration-tests@4.4.0) (2021-11-23)
 
 

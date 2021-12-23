@@ -1,5 +1,6 @@
 import { $TSContext, getMigrateResourceMessageForOverride, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import { prompter } from 'amplify-prompts';
+import * as fs from 'fs-extra';
 import { ApigwInputState } from '../../../provider-utils/awscloudformation/apigw-input-state';
 
 jest.mock('amplify-cli-core');
@@ -7,6 +8,7 @@ jest.mock('fs-extra');
 jest.mock('path');
 jest.mock('../../../provider-utils/awscloudformation/cdk-stack-builder');
 
+const fs_mock = fs as jest.Mocked<typeof fs>;
 const JSONUtilities_mock = JSONUtilities as jest.Mocked<typeof JSONUtilities>;
 const pathManager_mock = pathManager as jest.Mocked<typeof pathManager>;
 const prompter_mock = prompter as jest.Mocked<typeof prompter>;
@@ -16,9 +18,6 @@ const context_mock = {
   amplify: {
     updateamplifyMetaAfterResourceAdd: jest.fn(),
     updateamplifyMetaAfterResourceUpdate: jest.fn(),
-  },
-  filesystem: {
-    remove: jest.fn(),
   },
 } as unknown as $TSContext;
 
@@ -131,7 +130,7 @@ describe('REST API input state', () => {
       paths: mockApiPaths,
     });
     expect(stateManager_mock.setResourceParametersJson).toHaveBeenCalled();
-    expect(context_mock.filesystem.remove).toHaveBeenCalledTimes(3);
+    expect(fs_mock.removeSync).toHaveBeenCalledTimes(3);
   });
 
   it('does nothing when choosing NOT to migrate a REST API', async () => {
@@ -145,7 +144,7 @@ describe('REST API input state', () => {
     expect(stateManager_mock.setResourceInputsJson).not.toHaveBeenCalled();
     expect(stateManager_mock.setResourceParametersJson).not.toHaveBeenCalled();
     expect(context_mock.amplify.updateamplifyMetaAfterResourceUpdate).not.toHaveBeenCalled();
-    expect(context_mock.filesystem.remove).not.toHaveBeenCalled();
+    expect(fs_mock.removeSync).not.toHaveBeenCalled();
   });
 
   it('generates expected artifacts when choosing to migrate an Admin Queries API', async () => {
@@ -162,7 +161,7 @@ describe('REST API input state', () => {
     expect(getMigrateResourceMessageForOverride).toHaveBeenCalled();
     expect(stateManager_mock.setResourceInputsJson).toHaveBeenCalled();
     expect(stateManager_mock.setResourceParametersJson).toHaveBeenCalled();
-    expect(context_mock.filesystem.remove).toHaveBeenCalledTimes(2);
+    expect(fs_mock.removeSync).toHaveBeenCalledTimes(2);
   });
 
   it('does nothing when choosing NOT to migrate an Admin Queries API', async () => {
@@ -181,7 +180,7 @@ describe('REST API input state', () => {
     expect(stateManager_mock.setResourceInputsJson).not.toHaveBeenCalled();
     expect(stateManager_mock.setResourceParametersJson).not.toHaveBeenCalled();
     expect(context_mock.amplify.updateamplifyMetaAfterResourceUpdate).not.toHaveBeenCalled();
-    expect(context_mock.filesystem.remove).not.toHaveBeenCalled();
+    expect(fs_mock.removeSync).not.toHaveBeenCalled();
   });
 
   it('generates expected artifacts when adding an Admin Queries API', async () => {

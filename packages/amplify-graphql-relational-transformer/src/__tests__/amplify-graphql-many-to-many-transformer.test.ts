@@ -319,6 +319,23 @@ test('join table inherits auth from tables with similar rules', () => {
   expect(out.resolvers['Mutation.updateFooBar.res.vtl']).toMatchSnapshot();
 });
 
+test('creates join table with implicitly defined primary keys', () => {
+  const inputSchema = `
+    type Foo @model {
+      fooName: String
+      bars: [Bar] @manyToMany(relationName: "FooBar")
+    }
+    type Bar @model {
+      barName: String
+      foos: [Foo] @manyToMany(relationName: "FooBar")
+    }`;
+  const transformer = createTransformer();
+  const out = transformer.transform(inputSchema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+});
+
 function createTransformer(authConfig?: AppSyncAuthConfiguration) {
   const transformerAuthConfig: AppSyncAuthConfiguration = authConfig ?? {
     defaultAuthentication: {

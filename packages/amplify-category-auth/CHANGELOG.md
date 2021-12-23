@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.5...@aws-amplify/amplify-category-auth@2.4.6) (2021-12-21)
+
+
+### Bug Fixes
+
+* [#8997](https://github.com/aws-amplify/amplify-cli/issues/8997) - auth trigger detached after push ([#9312](https://github.com/aws-amplify/amplify-cli/issues/9312)) ([d5b4e8f](https://github.com/aws-amplify/amplify-cli/commit/d5b4e8f23dad32d40596d8ac2b36190b03d7a975))
+* implemented method to add CFN resource via overrides in auth ([#9277](https://github.com/aws-amplify/amplify-cli/issues/9277)) ([3826e80](https://github.com/aws-amplify/amplify-cli/commit/3826e809e5d3f367786113935ba06a7a1a76aa00))
+
+
+
+
+
+## [2.4.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.4...@aws-amplify/amplify-category-auth@2.4.5) (2021-12-17)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
+## [2.4.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.3...@aws-amplify/amplify-category-auth@2.4.4) (2021-12-02)
+
+
+
+## 7.6.1 (2021-12-02)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
+## [2.4.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.2...@aws-amplify/amplify-category-auth@2.4.3) (2021-12-02)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
+## [2.4.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.1...@aws-amplify/amplify-category-auth@2.4.2) (2021-12-01)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
+## [2.4.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.0...@aws-amplify/amplify-category-auth@2.4.1) (2021-11-26)
+
+
+### Bug Fixes
+
+* console override build issue ([#9078](https://github.com/aws-amplify/amplify-cli/issues/9078)) ([5c9bc5c](https://github.com/aws-amplify/amplify-cli/commit/5c9bc5c4003dd21c2897dc3c4faef9a9c19c1d99))
+
+
+
+
+
 # [2.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.3.8...@aws-amplify/amplify-category-auth@2.4.0) (2021-11-23)
 
 

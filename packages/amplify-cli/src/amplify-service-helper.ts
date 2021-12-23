@@ -31,6 +31,7 @@ export const postPullCodegen = async (context: $TSContext) => {
   }
   const meta = stateManager.getCurrentMeta(undefined, { throwIfNotExist: false });
   const gqlApiName = _.entries(meta?.api).find(([_, value]) => (value as { service: string }).service === 'AppSync')?.[0];
+  await context.amplify.invokePluginMethod(context, 'ui-builder', undefined, 'executeAmplifyCommand', [context, 'generateComponents']);
   if (!gqlApiName) {
     return;
   }

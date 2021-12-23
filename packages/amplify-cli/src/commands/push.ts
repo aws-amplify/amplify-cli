@@ -63,10 +63,8 @@ export const run = async (context: $TSContext) => {
     await syncCurrentCloudBackend(context);
     return await context.amplify.pushResources(context);
   } catch (e) {
-    if (e.name !== 'InvalidDirectiveError') {
-      const message = e.name === 'GraphQLError' ? e.toString() : e.message;
-      printer.error(`An error occurred during the push operation: ${message}`);
-    }
+    const message = e.name === 'GraphQLError' ? e.toString() : e.message;
+    printer.error(`An error occurred during the push operation: ${message}`);
     await context.usageData.emitError(e);
     exitOnNextTick(1);
   }

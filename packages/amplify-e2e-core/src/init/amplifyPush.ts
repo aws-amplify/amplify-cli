@@ -85,6 +85,14 @@ export function amplifyPushForce(cwd: string, testingWithLatestCodebase: boolean
   });
 }
 
+export function amplifyPushForceWithYesFlag(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
+  return spawn(getCLIPath(testingWithLatestCodebase), ['push', '--force', '--yes'], {
+    cwd,
+    stripColors: true,
+    noOutputTimeout: pushTimeoutMS,
+  }).runAsync();
+}
+
 /**
  *
  * @param cwd
