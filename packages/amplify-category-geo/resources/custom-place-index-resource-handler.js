@@ -10,6 +10,7 @@ exports.handler = async function (event, context) {
         DataSourceConfiguration: {
           IntendedUse: event.ResourceProperties.dataSourceIntendedUse,
         },
+        PricingPlan: 'RequestBasedUsage'
       };
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.createPlaceIndex(params).promise();
@@ -27,6 +28,7 @@ exports.handler = async function (event, context) {
         DataSourceConfiguration: {
           IntendedUse: event.ResourceProperties.dataSourceIntendedUse,
         },
+        PricingPlan: 'RequestBasedUsage'
       };
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.updatePlaceIndex(params).promise();
@@ -40,7 +42,7 @@ exports.handler = async function (event, context) {
     }
     if (event.RequestType == 'Delete') {
       const params = {
-        IndexName: event.ResourceProperties.indexName,
+        IndexName: event.ResourceProperties.indexName
       };
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.deletePlaceIndex(params).promise();

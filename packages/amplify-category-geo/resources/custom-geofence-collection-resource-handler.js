@@ -5,11 +5,9 @@ exports.handler = async function (event, context) {
     console.log('REQUEST RECEIVED:' + JSON.stringify(event));
     if (event.RequestType == 'Create') {
       const params = {
-        CollectionName: event.ResourceProperties.collectionName
+        CollectionName: event.ResourceProperties.collectionName,
+        PricingPlan: 'RequestBasedUsage'
       };
-      // if (params.PricingPlan !== 'RequestBasedUsage') {
-      //   params['PricingPlanDataSource'] = event.ResourceProperties.dataSource;
-      // }
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.createGeofenceCollection(params).promise();
       console.log('create resource response data' + JSON.stringify(res));
@@ -21,11 +19,9 @@ exports.handler = async function (event, context) {
     }
     if (event.RequestType == 'Update') {
       const params = {
-        CollectionName: event.ResourceProperties.collectionName
+        CollectionName: event.ResourceProperties.collectionName,
+        PricingPlan: 'RequestBasedUsage'
       };
-      // if (params.PricingPlan !== 'RequestBasedUsage') {
-      //   params['PricingPlanDataSource'] = event.ResourceProperties.dataSource;
-      // }
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.updateGeofenceCollection(params).promise();
       console.log('update resource response data' + JSON.stringify(res));

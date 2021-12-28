@@ -48,9 +48,6 @@
                       "VectorHereBerlin"
                   ]
               },
-              "pricingPlan": {
-                  "$ref": "#/definitions/PricingPlan"
-              },
               "accessType": {
                   "$ref": "#/definitions/AccessType"
               },
@@ -63,17 +60,7 @@
               "name",
               "mapStyle",
               "accessType",
-              "pricingPlan",
               "setAsDefault"
-          ]
-      },
-      "PricingPlan": {
-          "description": "The pricing plan for amazon location service.",
-          "type": "string",
-          "enum": [
-              "RequestBasedUsage",
-              "MobileAssetTracking",
-              "MobileAssetManagement"
           ]
       },
       "AccessType": {
