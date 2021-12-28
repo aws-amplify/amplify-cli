@@ -1,6 +1,6 @@
 import { $TSContext, $TSObject, stateManager, pathManager, JSONUtilities, $TSAny } from 'amplify-cli-core';
 import { GeofenceCollectionParameters } from '../../service-utils/geofenceCollectionParams';
-import { AccessType, DataProvider, PricingPlan } from '../../service-utils/resourceParams';
+import { AccessType, DataProvider } from '../../service-utils/resourceParams';
 import { provider, ServiceName } from '../../service-utils/constants';
 import { category } from '../../constants';
 import { printer, prompter } from 'amplify-prompts';
@@ -25,8 +25,7 @@ describe('Geofence Collection walkthrough works as expected', () => {
     };
     const mockPlaceIndexResource = {
         resourceName: 'placeIndex12345',
-        service: ServiceName.PlaceIndex,
-        pricingPlan: PricingPlan.MobileAssetTracking
+        service: ServiceName.PlaceIndex
     };
 
     const mockGroupPermissions: Record<string, string[]> = {};
@@ -43,7 +42,6 @@ describe('Geofence Collection walkthrough works as expected', () => {
         },
         name: mockGeofenceCollectionName,
         dataProvider: DataProvider.Esri,
-        pricingPlan: PricingPlan.MobileAssetTracking,
         accessType: AccessType.CognitoGroups,
         isDefault: false,
         groupPermissions: mockGroupPermissions

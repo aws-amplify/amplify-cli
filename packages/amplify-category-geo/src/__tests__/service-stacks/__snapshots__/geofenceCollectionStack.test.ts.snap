@@ -76,9 +76,6 @@ Object {
     "isDefault": Object {
       "Type": "String",
     },
-    "pricingPlan": Object {
-      "Type": "String",
-    },
   },
   "Resources": Object {
     "CustomGeofenceCollection": Object {
@@ -109,9 +106,6 @@ Object {
         "env": Object {
           "Ref": "env",
         },
-        "pricingPlan": Object {
-          "Ref": "pricingPlan",
-        },
         "region": Object {
           "Fn::FindInMap": Array [
             "RegionMapping",
@@ -140,11 +134,8 @@ exports.handler = async function (event, context) {
     if (event.RequestType == 'Create') {
       const params = {
         CollectionName: event.ResourceProperties.collectionName,
-        PricingPlan: event.ResourceProperties.pricingPlan
+        PricingPlan: 'RequestBasedUsage'
       };
-      if (params.PricingPlan !== 'RequestBasedUsage') {
-        params['PricingPlanDataSource'] = event.ResourceProperties.dataSource;
-      }
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.createGeofenceCollection(params).promise();
       console.log('create resource response data' + JSON.stringify(res));
@@ -157,11 +148,8 @@ exports.handler = async function (event, context) {
     if (event.RequestType == 'Update') {
       const params = {
         CollectionName: event.ResourceProperties.collectionName,
-        PricingPlan: event.ResourceProperties.pricingPlan
+        PricingPlan: 'RequestBasedUsage'
       };
-      if (params.PricingPlan !== 'RequestBasedUsage') {
-        params['PricingPlanDataSource'] = event.ResourceProperties.dataSource;
-      }
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.updateGeofenceCollection(params).promise();
       console.log('update resource response data' + JSON.stringify(res));
@@ -447,9 +435,6 @@ Object {
     "isDefault": Object {
       "Type": "String",
     },
-    "pricingPlan": Object {
-      "Type": "String",
-    },
   },
   "Resources": Object {
     "CustomGeofenceCollection": Object {
@@ -480,9 +465,6 @@ Object {
         "env": Object {
           "Ref": "env",
         },
-        "pricingPlan": Object {
-          "Ref": "pricingPlan",
-        },
         "region": Object {
           "Fn::FindInMap": Array [
             "RegionMapping",
@@ -511,11 +493,8 @@ exports.handler = async function (event, context) {
     if (event.RequestType == 'Create') {
       const params = {
         CollectionName: event.ResourceProperties.collectionName,
-        PricingPlan: event.ResourceProperties.pricingPlan
+        PricingPlan: 'RequestBasedUsage'
       };
-      if (params.PricingPlan !== 'RequestBasedUsage') {
-        params['PricingPlanDataSource'] = event.ResourceProperties.dataSource;
-      }
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.createGeofenceCollection(params).promise();
       console.log('create resource response data' + JSON.stringify(res));
@@ -528,11 +507,8 @@ exports.handler = async function (event, context) {
     if (event.RequestType == 'Update') {
       const params = {
         CollectionName: event.ResourceProperties.collectionName,
-        PricingPlan: event.ResourceProperties.pricingPlan
+        PricingPlan: 'RequestBasedUsage'
       };
-      if (params.PricingPlan !== 'RequestBasedUsage') {
-        params['PricingPlanDataSource'] = event.ResourceProperties.dataSource;
-      }
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.updateGeofenceCollection(params).promise();
       console.log('update resource response data' + JSON.stringify(res));
