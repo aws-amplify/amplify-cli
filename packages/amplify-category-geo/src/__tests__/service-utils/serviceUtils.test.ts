@@ -2,7 +2,7 @@ import { stateManager, JSONUtilities, pathManager } from 'amplify-cli-core';
 import { provider, ServiceName } from '../../service-utils/constants';
 import { getMapStyleComponents, MapStyle } from '../../service-utils/mapParams';
 import { DataSourceIntendedUse } from '../../service-utils/placeIndexParams';
-import { AccessType, DataProvider, PricingPlan } from '../../service-utils/resourceParams';
+import { AccessType, DataProvider } from '../../service-utils/resourceParams';
 
 jest.mock('amplify-cli-core');
 
@@ -12,7 +12,6 @@ describe('Test Map resource utility functions', () => {
         isDefault: false,
         providerPlugin: provider,
         mapStyle: MapStyle.VectorEsriNavigation,
-        pricingPlan: PricingPlan.MobileAssetTracking,
         accessType: AccessType.AuthorizedAndGuestUsers
     };
     const map2Params = {
@@ -20,7 +19,6 @@ describe('Test Map resource utility functions', () => {
         isDefault: true,
         providerPlugin: provider,
         mapStyle: MapStyle.VectorEsriStreets,
-        pricingPlan: PricingPlan.MobileAssetManagement,
         accessType: AccessType.AuthorizedUsers
     };
     const placeIndex1Params = {
@@ -29,7 +27,6 @@ describe('Test Map resource utility functions', () => {
         providerPlugin: provider,
         dataProvider: DataProvider.Esri,
         dataSourceIntendedUse: DataSourceIntendedUse.Storage,
-        pricingPlan: PricingPlan.RequestBasedUsage,
         accessType: AccessType.AuthorizedAndGuestUsers
     };
     const placeIndex2Params = {
@@ -38,7 +35,6 @@ describe('Test Map resource utility functions', () => {
         providerPlugin: provider,
         dataProvider: DataProvider.Here,
         dataSourceIntendedUse: DataSourceIntendedUse.SingleUse,
-        pricingPlan: PricingPlan.MobileAssetManagement,
         accessType: AccessType.AuthorizedUsers
     };
     const geofenceCollection1Params = {
@@ -46,7 +42,6 @@ describe('Test Map resource utility functions', () => {
         isDefault: false,
         providerPlugin: provider,
         dataProvider: DataProvider.Esri,
-        pricingPlan: PricingPlan.MobileAssetManagement,
         accessType: AccessType.CognitoGroups
     };
 
@@ -72,7 +67,6 @@ describe('Test Map resource utility functions', () => {
         const mapParams = await getCurrentMapParameters('map1');
         expect({
             ...getMapStyleComponents(map1Params.mapStyle),
-            pricingPlan: map1Params.pricingPlan,
             accessType: map1Params.accessType,
             isDefault: map1Params.isDefault,
             groupPermissions: groupPermissions
@@ -97,7 +91,6 @@ describe('Test Map resource utility functions', () => {
         expect({
             dataProvider: placeIndex1Params.dataProvider,
             dataSourceIntendedUse: placeIndex1Params.dataSourceIntendedUse,
-            pricingPlan: placeIndex1Params.pricingPlan,
             accessType: placeIndex1Params.accessType,
             isDefault: placeIndex1Params.isDefault,
             groupPermissions: groupPermissions
@@ -117,7 +110,6 @@ describe('Test Map resource utility functions', () => {
         const geofenceCollectionParams = await getCurrentGeofenceCollectionParameters('geofenceCollection1');
         expect({
             dataProvider: geofenceCollection1Params.dataProvider,
-            pricingPlan: geofenceCollection1Params.pricingPlan,
             accessType: geofenceCollection1Params.accessType,
             isDefault: geofenceCollection1Params.isDefault,
             groupPermissions: groupPermissions

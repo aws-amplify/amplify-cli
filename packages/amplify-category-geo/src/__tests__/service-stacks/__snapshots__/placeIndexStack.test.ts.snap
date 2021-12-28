@@ -63,9 +63,6 @@ Object {
     "isDefault": Object {
       "Type": "String",
     },
-    "pricingPlan": Object {
-      "Type": "String",
-    },
     "unauthRoleName": Object {
       "Type": "String",
     },
@@ -102,9 +99,6 @@ Object {
             ],
           ],
         },
-        "pricingPlan": Object {
-          "Ref": "pricingPlan",
-        },
         "region": Object {
           "Fn::FindInMap": Array [
             "RegionMapping",
@@ -134,10 +128,10 @@ exports.handler = async function (event, context) {
       const params = {
         IndexName: event.ResourceProperties.indexName,
         DataSource: event.ResourceProperties.dataSource,
-        PricingPlan: event.ResourceProperties.pricingPlan,
         DataSourceConfiguration: {
           IntendedUse: event.ResourceProperties.dataSourceIntendedUse,
         },
+        PricingPlan: 'RequestBasedUsage'
       };
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.createPlaceIndex(params).promise();
@@ -152,10 +146,10 @@ exports.handler = async function (event, context) {
     if (event.RequestType == 'Update') {
       const params = {
         IndexName: event.ResourceProperties.indexName,
-        PricingPlan: event.ResourceProperties.pricingPlan,
         DataSourceConfiguration: {
           IntendedUse: event.ResourceProperties.dataSourceIntendedUse,
         },
+        PricingPlan: 'RequestBasedUsage'
       };
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.updatePlaceIndex(params).promise();
@@ -169,7 +163,7 @@ exports.handler = async function (event, context) {
     }
     if (event.RequestType == 'Delete') {
       const params = {
-        IndexName: event.ResourceProperties.indexName,
+        IndexName: event.ResourceProperties.indexName
       };
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.deletePlaceIndex(params).promise();
@@ -419,9 +413,6 @@ Object {
     "isDefault": Object {
       "Type": "String",
     },
-    "pricingPlan": Object {
-      "Type": "String",
-    },
     "unauthRoleName": Object {
       "Type": "String",
     },
@@ -458,9 +449,6 @@ Object {
             ],
           ],
         },
-        "pricingPlan": Object {
-          "Ref": "pricingPlan",
-        },
         "region": Object {
           "Fn::FindInMap": Array [
             "RegionMapping",
@@ -490,10 +478,10 @@ exports.handler = async function (event, context) {
       const params = {
         IndexName: event.ResourceProperties.indexName,
         DataSource: event.ResourceProperties.dataSource,
-        PricingPlan: event.ResourceProperties.pricingPlan,
         DataSourceConfiguration: {
           IntendedUse: event.ResourceProperties.dataSourceIntendedUse,
         },
+        PricingPlan: 'RequestBasedUsage'
       };
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.createPlaceIndex(params).promise();
@@ -508,10 +496,10 @@ exports.handler = async function (event, context) {
     if (event.RequestType == 'Update') {
       const params = {
         IndexName: event.ResourceProperties.indexName,
-        PricingPlan: event.ResourceProperties.pricingPlan,
         DataSourceConfiguration: {
           IntendedUse: event.ResourceProperties.dataSourceIntendedUse,
         },
+        PricingPlan: 'RequestBasedUsage'
       };
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.updatePlaceIndex(params).promise();
@@ -525,7 +513,7 @@ exports.handler = async function (event, context) {
     }
     if (event.RequestType == 'Delete') {
       const params = {
-        IndexName: event.ResourceProperties.indexName,
+        IndexName: event.ResourceProperties.indexName
       };
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.deletePlaceIndex(params).promise();
