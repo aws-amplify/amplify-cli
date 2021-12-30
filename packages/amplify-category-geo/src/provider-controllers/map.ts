@@ -110,17 +110,11 @@ export const updateMapResourceWithParams = async (
   context: $TSContext,
   mapParams: Partial<MapParameters>
 ): Promise<string> => {
-  if (mapParams.name && mapParams.isDefault !== undefined && mapParams.accessType && mapParams.pricingPlan) {
-    modifyMapResource(context, {
-      accessType: mapParams.accessType,
-      name: mapParams.name,
-      isDefault: mapParams.isDefault,
-      pricingPlan: mapParams.pricingPlan
-    });
-  } else {
-    throw insufficientInfoForUpdateError(ServiceName.Map);
-  }
+  const completeParameters: MapParameters = convertToCompleteMapParams(mapParams);
+  
+  await modifyMapResource(context, completeParameters);
+  
   printer.success(`Successfully updated resource ${mapParams.name} locally.`);
   printNextStepsSuccessMessage(context);
-  return mapParams.name;
+  return completeParameters.name;
 }

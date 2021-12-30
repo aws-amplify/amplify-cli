@@ -47,6 +47,12 @@ Object {
     "authRoleName": Object {
       "Type": "String",
     },
+    "authmockAuthUserPoolId": Object {
+      "Type": "String",
+    },
+    "authuserPoolGroupsadminGroupGroupRole": Object {
+      "Type": "String",
+    },
     "env": Object {
       "Type": "String",
     },
@@ -325,6 +331,17 @@ exports.handler = async function (event, context) {
           Object {
             "Ref": "unauthRoleName",
           },
+          Object {
+            "Fn::Join": Array [
+              "-",
+              Array [
+                Object {
+                  "Ref": "authmockAuthUserPoolId",
+                },
+                "adminGroupGroupRole",
+              ],
+            ],
+          },
         ],
       },
       "Type": "AWS::IAM::Policy",
@@ -378,6 +395,12 @@ Object {
   },
   "Parameters": Object {
     "authRoleName": Object {
+      "Type": "String",
+    },
+    "authmockAuthUserPoolId": Object {
+      "Type": "String",
+    },
+    "authuserPoolGroupsadminGroupGroupRole": Object {
       "Type": "String",
     },
     "env": Object {
@@ -654,6 +677,17 @@ exports.handler = async function (event, context) {
         "Roles": Array [
           Object {
             "Ref": "authRoleName",
+          },
+          Object {
+            "Fn::Join": Array [
+              "-",
+              Array [
+                Object {
+                  "Ref": "authmockAuthUserPoolId",
+                },
+                "adminGroupGroupRole",
+              ],
+            ],
           },
         ],
       },

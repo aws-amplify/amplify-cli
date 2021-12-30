@@ -6,6 +6,7 @@ import _ from 'lodash';
  */
 export type MapParameters = ResourceParameters & {
     mapStyleType: MapStyleType;
+    groupPermissions: string[];
 };
 
 /**

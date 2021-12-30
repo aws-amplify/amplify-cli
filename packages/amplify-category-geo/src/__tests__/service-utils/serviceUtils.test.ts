@@ -65,13 +65,22 @@ describe('Test Map resource utility functions', () => {
 
 
     it('gets current map parameters from meta file', async() => {
+        const groupPermissions = {
+            mockCognitoGroup: [
+                "Read geofence",
+                "Create/Update geofence"
+            ]
+        }
+        JSONUtilities.readJson = jest.fn().mockReturnValue({groupPermissions: groupPermissions});
+        pathManager.getBackendDirPath = jest.fn().mockReturnValue('');
         const getCurrentMapParameters = require('../../service-utils/mapUtils').getCurrentMapParameters;
         const mapParams = await getCurrentMapParameters('map1');
         expect({
             ...getMapStyleComponents(map1Params.mapStyle),
             pricingPlan: map1Params.pricingPlan,
             accessType: map1Params.accessType,
-            isDefault: map1Params.isDefault
+            isDefault: map1Params.isDefault,
+            groupPermissions: groupPermissions
         }).toEqual(mapParams);
     });
 
@@ -85,6 +94,14 @@ describe('Test Map resource utility functions', () => {
     });
 
     it('gets current place index parameters from meta file', async() => {
+        const groupPermissions = {
+            mockCognitoGroup: [
+                "Read geofence",
+                "Create/Update geofence"
+            ]
+        }
+        JSONUtilities.readJson = jest.fn().mockReturnValue({groupPermissions: groupPermissions});
+        pathManager.getBackendDirPath = jest.fn().mockReturnValue('');
         const getCurrentPlaceIndexParameters = require('../../service-utils/placeIndexUtils').getCurrentPlaceIndexParameters;
         const placeIndexParams = await getCurrentPlaceIndexParameters('placeIndex1');
         expect({
@@ -92,7 +109,8 @@ describe('Test Map resource utility functions', () => {
             dataSourceIntendedUse: placeIndex1Params.dataSourceIntendedUse,
             pricingPlan: placeIndex1Params.pricingPlan,
             accessType: placeIndex1Params.accessType,
-            isDefault: placeIndex1Params.isDefault
+            isDefault: placeIndex1Params.isDefault,
+            groupPermissions: groupPermissions
         }).toEqual(placeIndexParams);
     });
 

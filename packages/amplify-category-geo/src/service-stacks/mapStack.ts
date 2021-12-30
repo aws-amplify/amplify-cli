@@ -10,29 +10,39 @@ import { Runtime } from '@aws-cdk/aws-lambda';
 import { customMapLambdaCodePath } from '../service-utils/constants';
 import * as fs from 'fs-extra';
 
-type MapStackProps = Pick<MapParameters, 'accessType'> & TemplateMappings;
+type MapStackProps = Pick<MapParameters, 'accessType' | 'groupPermissions'> & 
+  TemplateMappings & { authResourceName: string };
 
 export class MapStack extends BaseStack {
+  protected readonly groupPermissions: string[];
   protected readonly accessType: string;
   protected readonly mapResource: cdk.CustomResource;
   protected readonly mapRegion: string;
   protected readonly mapName: string;
+  protected readonly authResourceName: string;
 
   constructor(scope: cdk.Construct, id: string, private readonly props: MapStackProps) {
     super(scope, id, props);
 
     this.accessType = this.props.accessType;
+    this.groupPermissions = this.props.groupPermissions;
+    this.authResourceName = this.props.authResourceName;
     this.mapRegion = this.regionMapping.findInMap(cdk.Fn.ref('AWS::Region'), 'locationServiceRegion');
 
-    this.parameters = this.constructInputParameters([
+    const inputParameters: string[] = this.props.groupPermissions.map(
+      (group: string) => `authuserPoolGroups${group}GroupRole`
+    );
+    inputParameters.push(
+      `auth${this.authResourceName}UserPoolId`,
       'authRoleName',
       'unauthRoleName',
       'mapName',
       'mapStyle',
       'pricingPlan',
       'env',
-      'isDefault',
-    ]);
+      'isDefault'
+    );
+    this.parameters = this.constructInputParameters(inputParameters);
 
     this.mapName = Fn.join('-', [this.parameters.get('mapName')!.valueAsString, this.parameters.get('env')!.valueAsString]);
     this.mapResource = this.constructMapResource();
@@ -116,9 +126,23 @@ export class MapStack extends BaseStack {
     });
 
     let cognitoRoles: Array<string> = new Array();
-    cognitoRoles.push(this.parameters.get('authRoleName')!.valueAsString);
+    if (this.accessType === AccessType.AuthorizedUsers || 
+      this.accessType === AccessType.AuthorizedAndGuestUsers) {
+      cognitoRoles.push(this.parameters.get('authRoleName')!.valueAsString);
+    }
     if (this.accessType == AccessType.AuthorizedAndGuestUsers) {
       cognitoRoles.push(this.parameters.get('unauthRoleName')!.valueAsString);
+    }
+    if (this.groupPermissions && this.authResourceName) {
+      this.groupPermissions.forEach((group: string) => {
+        cognitoRoles.push(
+          cdk.Fn.join('-',
+          [
+            this.parameters.get(`auth${this.authResourceName}UserPoolId`)!.valueAsString,
+            `${group}GroupRole`
+          ])
+        );
+      });
     }
 
     return new iam.CfnPolicy(this, 'MapPolicy', {
