@@ -10,7 +10,7 @@ import { customPlaceIndexLambdaCodePath } from '../service-utils/constants';
 import * as fs from 'fs-extra';
 import { Runtime } from '@aws-cdk/aws-lambda';
 
-type PlaceIndexStackProps = Pick<PlaceIndexParameters, 'accessType' | 'groupPermissions'> & 
+type PlaceIndexStackProps = Pick<PlaceIndexParameters, 'accessType' | 'groupPermissions'> &
   TemplateMappings & { authResourceName: string };
 
 export class PlaceIndexStack extends BaseStack {
@@ -128,7 +128,7 @@ export class PlaceIndexStack extends BaseStack {
     });
 
     let cognitoRoles: Array<string> = new Array();
-    if (this.accessType === AccessType.AuthorizedUsers || 
+    if (this.accessType === AccessType.AuthorizedUsers ||
       this.accessType === AccessType.AuthorizedAndGuestUsers) {
       cognitoRoles.push(this.parameters.get('authRoleName')!.valueAsString);
     }

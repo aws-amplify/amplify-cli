@@ -111,9 +111,9 @@ export const updateMapResourceWithParams = async (
   mapParams: Partial<MapParameters>
 ): Promise<string> => {
   const completeParameters: MapParameters = convertToCompleteMapParams(mapParams);
-  
+
   await modifyMapResource(context, completeParameters);
-  
+
   printer.success(`Successfully updated resource ${mapParams.name} locally.`);
   printNextStepsSuccessMessage(context);
   return completeParameters.name;

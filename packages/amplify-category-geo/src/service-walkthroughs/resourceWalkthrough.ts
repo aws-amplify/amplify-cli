@@ -26,8 +26,8 @@ export async function resourceAccessWalkthrough<T extends ResourceParameters & {
             if (parameters.accessType === AccessType.CognitoGroups) {
                 defaultPermission = 'Individual Groups'
             }
-            else if (parameters.groupPermissions && 
-                parameters.groupPermissions.length > 0 && 
+            else if (parameters.groupPermissions &&
+                parameters.groupPermissions.length > 0 &&
                 parameters.accessType !== AccessType.CognitoGroups) {
                 defaultPermission = 'Both'
             }
@@ -48,7 +48,7 @@ export async function resourceAccessWalkthrough<T extends ResourceParameters & {
         if (parameters.accessType === AccessType.AuthorizedAndGuestUsers) {
             accessTypeDefaultIndex = 1;
         }
-    
+
         parameters.accessType = await prompter.pick<'one', string>(
             `Who can access this ${getServiceFriendlyName(service)}?`,
             accessChoices,

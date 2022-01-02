@@ -116,7 +116,7 @@ export const constructPlaceIndexMetaParameters = (params: PlaceIndexParameters, 
       attributes: [`${group}GroupRole`]
     });
   });
-  
+
   let result: PlaceIndexMetaParameters = {
     isDefault: params.isDefault,
     providerPlugin: provider,

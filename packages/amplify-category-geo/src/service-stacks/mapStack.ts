@@ -10,7 +10,7 @@ import { Runtime } from '@aws-cdk/aws-lambda';
 import { customMapLambdaCodePath } from '../service-utils/constants';
 import * as fs from 'fs-extra';
 
-type MapStackProps = Pick<MapParameters, 'accessType' | 'groupPermissions'> & 
+type MapStackProps = Pick<MapParameters, 'accessType' | 'groupPermissions'> &
   TemplateMappings & { authResourceName: string };
 
 export class MapStack extends BaseStack {
@@ -126,7 +126,7 @@ export class MapStack extends BaseStack {
     });
 
     let cognitoRoles: Array<string> = new Array();
-    if (this.accessType === AccessType.AuthorizedUsers || 
+    if (this.accessType === AccessType.AuthorizedUsers ||
       this.accessType === AccessType.AuthorizedAndGuestUsers) {
       cognitoRoles.push(this.parameters.get('authRoleName')!.valueAsString);
     }
