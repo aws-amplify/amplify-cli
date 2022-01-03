@@ -1009,8 +1009,8 @@ $util.toJson({})
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $ListRequest.filter = $filterExpression )
   #end
