@@ -36,7 +36,7 @@ export const updatePlaceIndexResource = async (
   await updatePlaceIndexWalkthrough(context, placeIndexParams);
 
   const completeParameters: PlaceIndexParameters = convertToCompletePlaceIndexParams(placeIndexParams);
-  modifyPlaceIndexResource(context, completeParameters);
+  await modifyPlaceIndexResource(context, completeParameters);
 
   printer.success(`Successfully updated resource ${placeIndexParams.name} locally.`);
   printNextStepsSuccessMessage(context);
