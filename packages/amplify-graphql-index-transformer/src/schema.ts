@@ -240,7 +240,7 @@ export function updateMutationConditionInput(
 function createHashField(config: PrimaryKeyDirectiveConfiguration | IndexDirectiveConfiguration): InputValueDefinitionNode {
   const { field } = config;
 
-  return makeInputValueDefinition(field.name.value, makeNamedType(getBaseType(field.type)));
+  return makeInputValueDefinition(field.name.value, makeNonNullType(makeNamedType(getBaseType(field.type))));
 }
 
 function createSimpleSortField(
