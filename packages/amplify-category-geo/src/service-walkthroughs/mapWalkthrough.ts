@@ -6,7 +6,7 @@ import { apiDocs, ServiceName } from '../service-utils/constants';
 import { $TSContext } from 'amplify-cli-core';
 import { getCurrentMapParameters, getMapFriendlyNames } from '../service-utils/mapUtils';
 import { getGeoServiceMeta, updateDefaultResource, geoServiceExists, getGeoPricingPlan, checkGeoResourceExists} from '../service-utils/resourceUtils';
-import { authAndGuestAccessWalkthrough, pricingPlanWalkthrough, defaultResourceQuestion } from './resourceWalkthrough';
+import { resourceAccessWalkthrough, pricingPlanWalkthrough, defaultResourceQuestion } from './resourceWalkthrough';
 import { DataProvider, PricingPlan } from '../service-utils/resourceParams';
 import { printer, formatter, prompter, alphanumeric } from 'amplify-prompts';
 
@@ -23,7 +23,7 @@ export const createMapWalkthrough = async (
   parameters = merge(parameters, await mapNameWalkthrough(context));
 
   // get the access
-  parameters = merge(parameters, await authAndGuestAccessWalkthrough(parameters, ServiceName.Map));
+  parameters = merge(parameters, await resourceAccessWalkthrough(context, parameters, ServiceName.Map));
 
   // initiate pricing plan walkthrough if this is the first Map added
   let includePricingPlanInAdvancedWalkthrough = true;
@@ -157,7 +157,9 @@ export const updateMapWalkthrough = async (
     parameters = merge(parameters, await getCurrentMapParameters(resourceToUpdate));
 
     // overwrite the parameters based on user input
-    parameters.accessType = (await authAndGuestAccessWalkthrough(parameters, ServiceName.Map)).accessType;
+    const mapAccessSettings = (await resourceAccessWalkthrough(context, parameters, ServiceName.Map));
+    parameters.accessType = mapAccessSettings.accessType;
+    parameters.groupPermissions = mapAccessSettings.groupPermissions;
 
     // enable flow to update the pricing plan for Map
     printer.info('Available advanced settings:');

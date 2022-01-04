@@ -4,7 +4,6 @@ import { AccessType, DataProvider, PricingPlan } from '../../service-utils/resou
 import { provider, ServiceName } from '../../service-utils/constants';
 import { category } from '../../constants';
 import { printer, prompter } from 'amplify-prompts';
-import { updateDefaultPlaceIndexWalkthrough } from '../../service-walkthroughs/placeIndexWalkthrough';
 
 jest.mock('amplify-cli-core');
 jest.mock('amplify-prompts');
@@ -14,6 +13,7 @@ describe('Search walkthrough works as expected', () => {
     const service = ServiceName.PlaceIndex;
     const mockPlaceIndexName = 'mockindex12345';
     const secondaryPlaceIndexName = 'secondaryindex12345';
+    const mockUserPoolGroup: string = 'mockCognitoGroup';
     const mockMapResource = {
         resourceName: 'map12345',
         service: ServiceName.Map,
@@ -40,7 +40,8 @@ describe('Search walkthrough works as expected', () => {
         dataSourceIntendedUse: DataSourceIntendedUse.SingleUse,
         pricingPlan: PricingPlan.MobileAssetTracking,
         accessType: AccessType.AuthorizedUsers,
-        isDefault: false
+        isDefault: false,
+        groupPermissions: [mockUserPoolGroup]
     };
 
     const mockContext = ({
@@ -76,6 +77,8 @@ describe('Search walkthrough works as expected', () => {
                 });
             });
         });
+        mockContext.amplify.getUserPoolGroupList = jest.fn().mockReturnValue([mockUserPoolGroup]);
+
         pathManager.getBackendDirPath = jest.fn().mockReturnValue('');
         JSONUtilities.readJson = jest.fn().mockReturnValue({});
         JSONUtilities.writeJson = jest.fn().mockReturnValue('');
@@ -95,6 +98,12 @@ describe('Search walkthrough works as expected', () => {
         });
         prompter.pick = jest.fn().mockImplementation((message: string): Promise<any> => {
             let mockUserInput = 'mock';
+            if (message === 'Select one or more cognito groups to give access:') {
+                mockUserInput = mockUserPoolGroup;
+            }
+            if (message === 'Restrict access by?') {
+                mockUserInput = 'Both';
+            }
             if (message === 'Who can access this search index?') {
                 mockUserInput = mockPlaceIndexParameters.accessType;
             }

@@ -234,3 +234,9 @@ export const getAuthResourceName = async (context: $TSContext): Promise<string> 
   }
   return authResources[0].resourceName;
 }
+
+export type ResourceDependsOn = {
+  category: string;
+  resourceName: string;
+  attributes: string[];
+};
