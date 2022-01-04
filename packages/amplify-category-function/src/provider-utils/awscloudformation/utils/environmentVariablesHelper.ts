@@ -2,7 +2,7 @@ import path from 'path';
 import _ from 'lodash';
 import uuid from 'uuid';
 import inquirer from 'inquirer';
-import { $TSContext, stateManager, pathManager, JSONUtilities, exitOnNextTick } from 'amplify-cli-core';
+import { $TSContext, stateManager, pathManager, JSONUtilities, exitOnNextTick, isCI } from 'amplify-cli-core';
 import { functionParametersFileName } from './constants';
 import { categoryName } from '../../../constants';
 import { formatter, maxLength, printer, prompter } from 'amplify-prompts';
@@ -190,7 +190,7 @@ export const ensureEnvironmentVariableValues = async (context: $TSContext) => {
 
   // there are some missing env vars
 
-  if (yesFlagSet) {
+  if (yesFlagSet || isCI()) {
     // in this case, we can't prompt for missing values, so fail gracefully
     const errMessage = `Cannot push Amplify environment "${currentEnvName}" due to missing Lambda function environment variable values. Rerun 'amplify push' without '--yes' to fix.`;
     printer.error(errMessage);
