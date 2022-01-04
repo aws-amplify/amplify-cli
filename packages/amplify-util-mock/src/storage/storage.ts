@@ -63,7 +63,7 @@ export class StorageTest {
       context.amplify.addCleanUpTask(async context => {
         await this.stop();
       });
-      this.configOverrideManager = ConfigOverrideManager.getInstance(context);
+      this.configOverrideManager = await ConfigOverrideManager.getInstance(context);
       this.storageName = await this.getStorage(context);
       const storageConfig = { port, route, localDirS3 };
       this.storageSimulator = new AmplifyStorageSimulator(storageConfig);

@@ -32,19 +32,16 @@ export class APITest {
   private ddbEmulator;
   private configOverrideManager: ConfigOverrideManager;
   private apiParameters: object = {};
-  private currentApiMetadata: any;
 
   async start(context, port: number = MOCK_API_PORT, wsPort: number = 20003) {
     try {
       context.amplify.addCleanUpTask(async context => {
         await this.stop(context);
       });
-      const metadata = await getAmplifyMeta(context);
-      this.configOverrideManager = ConfigOverrideManager.getInstance(context);
+      this.configOverrideManager = await ConfigOverrideManager.getInstance(context);
       // check java version
       await checkJavaVersion(context);
       this.apiName = await this.getAppSyncAPI(context);
-      this.currentApiMetadata = metadata.api[this.apiName];
       this.ddbClient = await this.startDynamoDBLocalServer(context);
       const resolverDirectory = await this.getResolverTemplateDirectory(context);
       this.resolverOverrideManager = new ResolverOverrides(resolverDirectory);
@@ -84,7 +81,6 @@ export class APITest {
       context.print.error(`Failed to stop DynamoDB Local Server ${e.message}`);
     }
 
-    await this.resetFrontendExports(context);
     await this.appSyncSimulator.stop();
     this.resolverOverrideManager.stop();
   }
@@ -180,13 +176,6 @@ export class APITest {
       securityType: this.transformerResult.appSync.authenticationType,
       testMode: true,
     });
-  }
-
-  private async resetFrontendExports(context) {
-    const override = {};
-    override[this.apiName] = this.currentApiMetadata;
-    this.configOverrideManager.addOverride('api', override);
-    await this.configOverrideManager.generateOverriddenFrontendExports(context);
   }
 
   private async ensureDDBTables(config) {
