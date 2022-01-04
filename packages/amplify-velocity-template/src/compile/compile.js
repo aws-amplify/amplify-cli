@@ -1,9 +1,9 @@
-module.exports = function(Velocity, utils) {
+module.exports = function (Velocity, utils) {
   /**
    * compile
    */
   utils.mixin(Velocity.prototype, {
-    init: function() {
+    init: function () {
       this.context = {};
       this.macros = {};
       this.defines = {};
@@ -14,7 +14,7 @@ module.exports = function(Velocity, utils) {
 
       var self = this;
       this.directive = {
-        stop: function() {
+        stop: function () {
           self._state.stop = true;
           return '';
         },
@@ -27,7 +27,7 @@ module.exports = function(Velocity, utils) {
      * @param silent {bool} 如果是true，$foo变量将原样输出
      * @return str
      */
-    render: function(context, macros, silence) {
+    render: function (context, macros, silence) {
       this._state = { stop: false, break: false, return: false };
       this.silence = !!silence;
       this.context = context || {};
@@ -49,7 +49,7 @@ module.exports = function(Velocity, utils) {
      * 取值，都放在一个this.local下，通过contextId查找
      * @return {string}解析后的字符串
      */
-    _render: function(asts, contextId) {
+    _render: function (asts, contextId) {
       var str = '';
       asts = asts || this.asts;
 
@@ -65,10 +65,15 @@ module.exports = function(Velocity, utils) {
 
       utils.forEach(
         asts,
-        function(ast) {
+        function (ast) {
           // 进入stop，直接退出
           if (this._state.stop === true) {
             return false;
+          }
+
+          // Don't process anything after the break is encountered.
+          if (this._state.break === true) {
+            return;
           }
 
           switch (ast.type) {
@@ -119,7 +124,7 @@ module.exports = function(Velocity, utils) {
 
       return str;
     },
-    format: function(value) {
+    format: function (value) {
       if (utils.isArray(value)) {
         return '[' + value.map(this.format.bind(this)).join(', ') + ']';
       }
@@ -129,16 +134,10 @@ module.exports = function(Velocity, utils) {
           return value;
         }
 
-        var kvJoin = function(k) {
+        var kvJoin = function (k) {
           return k + '=' + this.format(value[k]);
         }.bind(this);
-        return (
-          '{' +
-          Object.keys(value)
-            .map(kvJoin)
-            .join(', ') +
-          '}'
-        );
+        return '{' + Object.keys(value).map(kvJoin).join(', ') + '}';
       }
 
       return value;
