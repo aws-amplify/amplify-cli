@@ -217,8 +217,9 @@ export function getResourcesToBeCreated(amplifyMeta, currentAmplifyMeta, categor
           (!amplifyMeta[dependsOnCategory][dependsOnResourcename]?.lastPushTimeStamp ||
             !currentAmplifyMeta[dependsOnCategory] ||
             !currentAmplifyMeta[dependsOnCategory][dependsOnResourcename]) &&
-          amplifyMeta[dependsOnCategory][dependsOnResourcename].serviceType !== 'imported' &&
-          !resources.includes(amplifyMeta[dependsOnCategory][dependsOnResourcename])
+          amplifyMeta[dependsOnCategory][dependsOnResourcename]?.serviceType !== 'imported' &&
+          !resources.includes(amplifyMeta[dependsOnCategory][dependsOnResourcename]) &&
+          amplifyMeta[dependsOnCategory][dependsOnResourcename]
         ) {
           resources.push(amplifyMeta[dependsOnCategory][dependsOnResourcename]);
         }
