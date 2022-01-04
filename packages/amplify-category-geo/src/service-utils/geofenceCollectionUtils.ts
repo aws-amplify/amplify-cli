@@ -10,7 +10,8 @@ import {
   updateDefaultResource,
   readResourceMetaParameters,
   getAuthResourceName,
-  updateGeoPricingPlan
+  updateGeoPricingPlan,
+  ResourceDependsOn
 } from './resourceUtils';
 import { App } from '@aws-cdk/core';
 import { getTemplateMappings } from '../provider-controllers';
@@ -122,12 +123,6 @@ export const constructGeofenceCollectionMetaParameters = (params: GeofenceCollec
     dependsOn: dependsOnResources
   };
   return result;
-};
-
-export type ResourceDependsOn = {
-  category: string;
-  resourceName: string;
-  attributes: string[];
 };
 
 /**

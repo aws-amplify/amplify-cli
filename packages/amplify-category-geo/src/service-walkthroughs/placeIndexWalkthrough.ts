@@ -6,7 +6,7 @@ import { apiDocs, ServiceName } from '../service-utils/constants';
 import { $TSContext } from 'amplify-cli-core';
 import { getCurrentPlaceIndexParameters } from '../service-utils/placeIndexUtils';
 import { getGeoServiceMeta, updateDefaultResource, geoServiceExists, getGeoPricingPlan, checkGeoResourceExists } from '../service-utils/resourceUtils';
-import { authAndGuestAccessWalkthrough, pricingPlanWalkthrough, dataProviderWalkthrough, getServiceFriendlyName, defaultResourceQuestion } from './resourceWalkthrough';
+import { resourceAccessWalkthrough, pricingPlanWalkthrough, dataProviderWalkthrough, getServiceFriendlyName, defaultResourceQuestion } from './resourceWalkthrough';
 import { DataProvider, PricingPlan } from '../service-utils/resourceParams';
 import { printer, formatter, prompter, alphanumeric } from 'amplify-prompts';
 
@@ -24,7 +24,7 @@ export const createPlaceIndexWalkthrough = async (
   parameters = merge(parameters, await placeIndexNameWalkthrough(context));
 
   // get the access
-  parameters = merge(parameters, await authAndGuestAccessWalkthrough(parameters, ServiceName.PlaceIndex));
+  parameters = merge(parameters, await resourceAccessWalkthrough(context, parameters, ServiceName.PlaceIndex));
 
   // initiate pricing plan walkthrough if this is the first Place Index added
   let includePricingPlanInAdvancedWalkthrough = true;
@@ -155,7 +155,9 @@ export const updatePlaceIndexWalkthrough = async (
     parameters = merge(parameters, await getCurrentPlaceIndexParameters(resourceToUpdate));
 
     // overwrite the parameters based on user input
-    parameters.accessType = (await authAndGuestAccessWalkthrough(parameters, ServiceName.PlaceIndex)).accessType;
+    const placeIndexAccessSettings = (await resourceAccessWalkthrough(context, parameters, ServiceName.PlaceIndex));
+    parameters.accessType = placeIndexAccessSettings.accessType;
+    parameters.groupPermissions = placeIndexAccessSettings.groupPermissions;
 
     // enable flow to update the pricing plan for Place Index
     printer.info('Available advanced settings:');

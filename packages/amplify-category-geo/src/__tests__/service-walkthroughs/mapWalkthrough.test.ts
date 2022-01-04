@@ -4,7 +4,6 @@ import { AccessType, DataProvider, PricingPlan } from '../../service-utils/resou
 import { provider, ServiceName, apiDocs } from '../../service-utils/constants';
 import { category } from '../../constants';
 import { printer, prompter } from 'amplify-prompts';
-import { updateDefaultMapWalkthrough } from '../../service-walkthroughs/mapWalkthrough';
 
 jest.mock('amplify-cli-core');
 jest.mock('amplify-prompts');
@@ -14,6 +13,7 @@ describe('Map walkthrough works as expected', () => {
     const service = ServiceName.Map;
     const mockMapName = 'mockmap12345';
     const secondaryMapName = 'secondarymap12345';
+    const mockUserPoolGroup: string = 'mockCognitoGroup';
     const mockMapResource = {
         resourceName: mockMapName,
         service: service,
@@ -44,7 +44,8 @@ describe('Map walkthrough works as expected', () => {
         dataProvider: DataProvider.Esri,
         pricingPlan: PricingPlan.MobileAssetTracking,
         accessType: AccessType.AuthorizedUsers,
-        isDefault: false
+        isDefault: false,
+        groupPermissions: [mockUserPoolGroup]
     };
 
     const mockContext = ({
@@ -80,6 +81,8 @@ describe('Map walkthrough works as expected', () => {
                 });
             });
         });
+        mockContext.amplify.getUserPoolGroupList = jest.fn().mockReturnValue([mockUserPoolGroup]);
+
         pathManager.getBackendDirPath = jest.fn().mockReturnValue('');
         JSONUtilities.readJson = jest.fn().mockReturnValue({});
         JSONUtilities.writeJson = jest.fn().mockReturnValue('');
@@ -99,6 +102,12 @@ describe('Map walkthrough works as expected', () => {
         });
         prompter.pick = jest.fn().mockImplementation((message: string): Promise<any> => {
             let mockUserInput = 'mock';
+            if (message === 'Select one or more cognito groups to give access:') {
+                mockUserInput = mockUserPoolGroup;
+            }
+            if (message === 'Restrict access by?') {
+                mockUserInput = 'Both';
+            }
             if (message === `Specify the map style. Refer ${apiDocs.mapStyles}`) {
                 mockUserInput = getGeoMapStyle(mockMapParameters.dataProvider, mockMapParameters.mapStyleType);
             }

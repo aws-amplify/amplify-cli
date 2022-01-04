@@ -1,8 +1,8 @@
-import { $TSContext, $TSObject } from 'amplify-cli-core';
+import { $TSContext, $TSObject, JSONUtilities, pathManager } from 'amplify-cli-core';
 import { MapParameters, getGeoMapStyle, getMapStyleComponents } from './mapParams';
 import _ from 'lodash';
 import { parametersFileName, provider, ServiceName } from './constants';
-import { category } from '../constants';
+import { authCategoryName, category } from '../constants';
 import { MapStack } from '../service-stacks/mapStack';
 import {
   updateParametersFile,
@@ -11,22 +11,29 @@ import {
   updateDefaultResource,
   readResourceMetaParameters,
   checkAuthConfig,
-  updateGeoPricingPlan
+  updateGeoPricingPlan,
+  getAuthResourceName,
+  ResourceDependsOn
 } from './resourceUtils';
 import { App } from '@aws-cdk/core';
 import { getTemplateMappings } from '../provider-controllers';
+import * as path from 'path';
+
+const mapParamsFileName = 'map-params.json';
 
 export const createMapResource = async (context: $TSContext, parameters: MapParameters) => {
   // allow unauth access for identity pool if guest access is enabled
   await checkAuthConfig(context, parameters, ServiceName.Map);
 
+  const authResourceName = await getAuthResourceName(context);
   // generate CFN files
   const templateMappings = await getTemplateMappings(context);
-  const mapStack = new MapStack(new App(), 'MapStack', { ...parameters, ...templateMappings });
+  const mapStack = new MapStack(new App(), 'MapStack', { ...parameters, ...templateMappings, authResourceName });
   generateTemplateFile(mapStack, parameters.name);
   saveCFNParameters(parameters);
+  writeMapParams(parameters);
 
-  const mapMetaParameters = constructMapMetaParameters(parameters);
+  const mapMetaParameters = constructMapMetaParameters(parameters, authResourceName);
 
   // update the default map
   if (parameters.isDefault) {
@@ -42,14 +49,17 @@ export const createMapResource = async (context: $TSContext, parameters: MapPara
   context.amplify.updateamplifyMetaAfterResourceAdd(category, parameters.name, mapMetaParameters);
 };
 
-export const modifyMapResource = async (context: $TSContext, parameters: Pick<MapParameters, 'accessType' | 'name' | 'isDefault' | 'pricingPlan'>) => {
+export const modifyMapResource = async (context: $TSContext, parameters: MapParameters) => {
   // allow unauth access for identity pool if guest access is enabled
   await checkAuthConfig(context, parameters, ServiceName.Map);
 
+  const authResourceName = await getAuthResourceName(context);
   // generate CFN files
   const templateMappings = await getTemplateMappings(context);
-  const mapStack = new MapStack(new App(), 'MapStack', { ...parameters, ...templateMappings });
+  const mapStack = new MapStack(new App(), 'MapStack', { ...parameters, ...templateMappings, authResourceName });
   generateTemplateFile(mapStack, parameters.name);
+  saveCFNParameters(parameters);
+  writeMapParams(parameters);
 
   // update the default map
   if (parameters.isDefault) {
@@ -61,9 +71,11 @@ export const modifyMapResource = async (context: $TSContext, parameters: Pick<Ma
     await updateGeoPricingPlan(context, parameters.pricingPlan);
   }
 
-  const paramsToUpdate = ['accessType'];
+  const mapMetaParameters = constructMapMetaParameters(parameters, authResourceName);
+
+  const paramsToUpdate = ['accessType', 'pricingPlan', 'dependsOn'];
   paramsToUpdate.forEach(param => {
-    context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.name, param, (parameters as $TSObject)[param]);
+    context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.name, param, (mapMetaParameters as $TSObject)[param]);
   });
 };
 
@@ -86,7 +98,22 @@ function saveCFNParameters(parameters: Pick<MapParameters, 'name' | 'mapStyleTyp
 /**
  * Gives the Map resource configurations to be stored in Amplify Meta file
  */
-export const constructMapMetaParameters = (params: MapParameters): MapMetaParameters => {
+export const constructMapMetaParameters = (params: MapParameters, authResourceName: string): MapMetaParameters => {
+  const dependsOnResources = [
+    {
+      category: authCategoryName,
+      resourceName: authResourceName,
+      attributes: ['UserPoolId']
+    }
+  ];
+  params.groupPermissions.forEach( group => {
+    dependsOnResources.push({
+      category: authCategoryName,
+      resourceName: 'userPoolGroups',
+      attributes: [`${group}GroupRole`]
+    });
+  });
+
   let result: MapMetaParameters = {
     isDefault: params.isDefault,
     providerPlugin: provider,
@@ -94,6 +121,7 @@ export const constructMapMetaParameters = (params: MapParameters): MapMetaParame
     mapStyle: getGeoMapStyle(params.dataProvider, params.mapStyleType),
     pricingPlan: params.pricingPlan,
     accessType: params.accessType,
+    dependsOn: dependsOnResources
   };
   return result;
 };
@@ -105,16 +133,19 @@ export type MapMetaParameters = Pick<MapParameters, 'isDefault' | 'pricingPlan' 
   providerPlugin: string;
   service: string;
   mapStyle: string;
+  dependsOn: ResourceDependsOn[];
 };
 
 export const getCurrentMapParameters = async (mapName: string): Promise<Partial<MapParameters>> => {
   const currentMapMetaParameters = (await readResourceMetaParameters(ServiceName.Map, mapName)) as MapMetaParameters;
+  const currentMapParameters = await readMapParams(mapName);
   return {
     mapStyleType: getMapStyleComponents(currentMapMetaParameters.mapStyle).mapStyleType,
     dataProvider: getMapStyleComponents(currentMapMetaParameters.mapStyle).dataProvider,
     pricingPlan: currentMapMetaParameters.pricingPlan,
     accessType: currentMapMetaParameters.accessType,
     isDefault: currentMapMetaParameters.isDefault,
+    groupPermissions: currentMapParameters.groupPermissions
   };
 };
 
@@ -180,4 +211,23 @@ export const getMapIamPolicies = (resourceName: string, crudOptions: string[]): 
   const attributes = ['Name'];
 
   return { policy, attributes };
+};
+
+export const readMapParams = async (resourceName: string): Promise<Pick<MapParameters, 'groupPermissions'>> => {
+  const groupPermissions = JSONUtilities.readJson<Pick<MapParameters, 'groupPermissions'>>(
+    getMapParamsFilePath(resourceName),
+    { throwIfNotExist: false }
+  ) || { groupPermissions: [] };
+  return groupPermissions;
+};
+
+export const writeMapParams = async (params: Pick<MapParameters, 'name' | 'groupPermissions'>) => {
+  JSONUtilities.writeJson(
+    getMapParamsFilePath(params.name),
+    { groupPermissions: params.groupPermissions }
+  );
+}
+
+export const getMapParamsFilePath = (resourceName: string): string => {
+  return path.join(pathManager.getBackendDirPath(), category, resourceName, mapParamsFileName);
 };
