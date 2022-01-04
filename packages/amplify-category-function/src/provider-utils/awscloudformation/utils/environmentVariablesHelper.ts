@@ -172,7 +172,7 @@ export const ensureEnvironmentVariableValues = async (context: $TSContext) => {
     return;
   }
 
-  const funcConfigMissingEnvVars = functionNames
+  const functionConfigMissingEnvVars = functionNames
     .map(funcName => {
       const storedList = getStoredList(funcName);
       const keyValues = getStoredKeyValue(funcName);
@@ -184,7 +184,7 @@ export const ensureEnvironmentVariableValues = async (context: $TSContext) => {
     })
     .filter(envVars => envVars.missingEnvVars.length);
 
-  if (!funcConfigMissingEnvVars.length) {
+  if (_.isEmpty(functionConfigMissingEnvVars)) {
     return;
   }
 
@@ -194,9 +194,10 @@ export const ensureEnvironmentVariableValues = async (context: $TSContext) => {
     // in this case, we can't prompt for missing values, so fail gracefully
     const errMessage = `Cannot push Amplify environment "${currentEnvName}" due to missing Lambda function environment variable values. Rerun 'amplify push' without '--yes' to fix.`;
     printer.error(errMessage);
-    const missingEnvVarsMessage = funcConfigMissingEnvVars
-      .flatMap(({ missingEnvVars, funcName }) => missingEnvVars.map(missing => ({ ...missing, funcName: funcName })))
-      .map(({ funcName, environmentVariableName: envName }) => `Missing value for ${envName} in ${funcName} function`);
+    const missingEnvVarsMessage = functionConfigMissingEnvVars.map(({ missingEnvVars, funcName }) => {
+      const missingEnvVarsString = missingEnvVars.map(missing => missing.environmentVariableName).join(', ');
+      return `Function ${funcName} is missing values for environment variables: ${missingEnvVarsString}`;
+    });
     formatter.list(missingEnvVarsMessage);
     await context.usageData.emitError(new Error(errMessage));
     exitOnNextTick(1);
@@ -205,9 +206,9 @@ export const ensureEnvironmentVariableValues = async (context: $TSContext) => {
   printer.info('Some Lambda function environment variables are missing values in this Amplify environment.');
 
   // prompt for the missing env vars
-  for (const { funcName, existingKeyValues: keyValues, missingEnvVars } of funcConfigMissingEnvVars) {
-    for (const { cloudFormationParameterName: cfnName, environmentVariableName: envName } of missingEnvVars) {
-      const newValue = await prompter.input(`Enter the missing environment variable value of ${envName} in ${funcName}:`, {
+  for (const { funcName, existingKeyValues: keyValues, missingEnvVars } of functionConfigMissingEnvVars) {
+    for (const { cloudFormationParameterName: cfnName, environmentVariableName: envVarName } of missingEnvVars) {
+      const newValue = await prompter.input(`Enter the missing environment variable value of ${envVarName} in ${funcName}:`, {
         validate: maxLength(2048),
       });
       keyValues[cfnName] = newValue;
