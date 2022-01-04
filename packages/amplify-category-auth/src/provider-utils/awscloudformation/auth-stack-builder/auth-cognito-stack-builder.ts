@@ -294,7 +294,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         },
       });
 
-      if (props.aliasAttributes?.includes(AttributeType.PREFERRED_USERNAME) && props.usernameCaseSensitive !== undefined) {
+      if (props.usernameCaseSensitive !== undefined) {
         this.userPool.usernameConfiguration = {
           caseSensitive: props.usernameCaseSensitive,
         };
