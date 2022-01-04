@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.1-geo.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.3.1-geo.0...amplify-migration-tests@4.3.1-geo.1) (2022-01-04)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
 ## [4.3.1-geo.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.3.0...amplify-migration-tests@4.3.1-geo.0) (2021-11-18)
 
 **Note:** Version bump only for package amplify-migration-tests
