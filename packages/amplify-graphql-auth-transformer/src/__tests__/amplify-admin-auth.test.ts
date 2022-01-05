@@ -300,3 +300,36 @@ test('Test simple model with AdminUI enabled should add IAM policy only for fiel
     expect(out.resolvers[r]).toMatchSnapshot();
   });
 });
+
+test('admin roles should be return the field name inside field resolvers', () => {
+  const validSchema = `
+    type Student @model @auth(rules: [{ allow: groups, groups: ["staff"] }, { allow: owner }]) {
+      id: ID!
+      name: String
+      description: String
+      secretValue: String @auth(rules: [{ allow: owner }])
+    }`;
+  const transformer = new GraphQLTransform({
+    authConfig: {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [
+        {
+          authenticationType: 'AWS_IAM',
+        },
+      ],
+    },
+    transformers: [
+      new ModelTransformer(),
+      new AuthTransformer({
+        adminRoles: ADMIN_UI_ROLES,
+      }),
+    ],
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+
+  expect(out.resolvers['Student.secretValue.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.createStudent.auth.1.req.vtl']).toMatchSnapshot();
+});
