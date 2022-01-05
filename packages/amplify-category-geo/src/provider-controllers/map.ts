@@ -8,8 +8,7 @@ import { printNextStepsSuccessMessage, setProviderContext, insufficientInfoForUp
 import { ServiceName } from '../service-utils/constants';
 import { printer } from 'amplify-prompts';
 import { getMapStyleComponents } from '../service-utils/mapParams';
-import { MapConfiguration, MapModification } from 'amplify-headless-interface';
-import { checkAnyGeoResourceExists, checkGeoResourceExists } from '../service-utils/resourceUtils';
+import { GeoServiceConfiguration, GeoServiceModification } from 'amplify-headless-interface';
 
 export const addMapResource = async (
   context: $TSContext
@@ -69,7 +68,7 @@ export const removeMapResource = async (
 
 export const addMapResourceHeadless = async (
   context: $TSContext,
-  config: MapConfiguration
+  config: GeoServiceConfiguration
 ): Promise<string> => {
   // initialize the Map parameters
   let mapParams: Partial<MapParameters> = {
@@ -86,7 +85,7 @@ export const addMapResourceHeadless = async (
 
 export const updateMapResourceHeadless = async (
   context: $TSContext,
-  config: MapModification
+  config: GeoServiceModification
 ): Promise<string> => {
   // initialize the Map parameters
   let mapParams: Partial<MapParameters> = {
