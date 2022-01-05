@@ -90,6 +90,7 @@ body:
         - configure project
         - delete
         - env
+        - export
         - init
         - publish
         - pull
