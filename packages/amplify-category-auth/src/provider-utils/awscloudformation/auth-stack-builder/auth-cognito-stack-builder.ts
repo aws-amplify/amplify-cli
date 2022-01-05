@@ -294,12 +294,13 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         },
       });
 
+      if (props.usernameCaseSensitive !== undefined) {
+        this.userPool.usernameConfiguration = {
+          caseSensitive: props.usernameCaseSensitive,
+        };
+      }
+
       if (props.requiredAttributes && props.requiredAttributes.length > 0) {
-        if (props.usernameCaseSensitive !== undefined) {
-          this.userPool.usernameConfiguration = {
-            caseSensitive: props.usernameCaseSensitive,
-          };
-        }
         props.requiredAttributes.forEach(attr => {
           this.userPool!.schema = [
             {
@@ -310,6 +311,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
           ];
         });
       }
+
       if (!props.breakCircularDependency && props.triggers && props.dependsOn) {
         props.dependsOn!.forEach(trigger => {
           if (trigger.resourceName.includes('CreateAuthChallenge')) {
