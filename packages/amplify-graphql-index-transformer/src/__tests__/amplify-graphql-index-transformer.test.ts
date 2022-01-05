@@ -198,6 +198,8 @@ test('@index with multiple sort keys adds a query field and GSI correctly', () =
   expect(queryField).toBeDefined();
   expect(queryField.arguments).toHaveLength(6);
   expect(queryField.arguments[0].name.value).toEqual('email');
+  expect(queryField.arguments[0].type.kind).toEqual('NonNullType');
+  expect(queryField.arguments[0].type.type.name.value).toEqual('String');
   expect(queryField.arguments[1].name.value).toEqual('kindDate');
   expect(queryField.arguments[2].name.value).toEqual('sortDirection');
   expect(queryField.arguments[2].type.name.value).toEqual('ModelSortDirection');
