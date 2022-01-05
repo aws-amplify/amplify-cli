@@ -87,7 +87,7 @@ async function initWorkflow(cwd: string, settings: { accessKeyId: string; secret
 
     singleSelect(chain, settings.region, amplifyRegions);
 
-    chain.wait('Try "amplify add api" to create a backend API and then "amplify push" to deploy everything').run((err: Error) => {
+    chain.wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything').run((err: Error) => {
       if (!err) {
         resolve();
       } else {
