@@ -73,8 +73,9 @@ export async function migrate(context: $TSContext, serviceName?: string) {
       }
     }
   }
-
-  await Promise.all(migrateResourcePromises);
+  for (const migrateResourcePromise of migrateResourcePromises) {
+    await migrateResourcePromise;
+  }
 }
 
 export async function initEnv(context: $TSContext) {

@@ -1284,4 +1284,81 @@ describe('ModelTransformer: ', () => {
     expect(Object.keys(result.stacks.Blog.Resources!).includes('CreateBlogResolver')).toBe(false);
     expect(Object.keys(result.stacks.Blog.Resources!).includes('UpdateBlogResolver')).toBe(false);
   });
+  
+  it('allow aws_lambda to pass through', () => {
+    const validSchema = `
+    type Todo @aws_lambda {
+      id: ID!
+      name: String!
+      description: String
+    }
+
+    schema {
+      query: Query
+    }
+
+    type Query {
+      todo: Todo @aws_lambda
+    }`;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
+  });
+
+  it('handles custom subscriptions passed as strings', () => {
+    const validSchema = `type Post @model(subscriptions: {
+          onCreate: "onFeedCreated",
+          onUpdate: "onFeedUpdated",
+          onDelete: "onFeedDeleted"
+      }) {
+        id: ID!
+    }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+    const parsed = parse(definition);
+    validateModelSchema(parsed);
+
+    const subscriptionType = getObjectType(parsed, 'Subscription');
+    expect(subscriptionType).toBeDefined();
+    expect(subscriptionType!.fields!.length).toEqual(3);
+    expectFields(subscriptionType!, ['onFeedCreated', 'onFeedUpdated', 'onFeedDeleted']);
+  });
+
+  it('should generate id for the update input object', async () => {
+    const validSchema = `
+      type Todo @model {
+        uid: String!
+        username: String
+      }
+    `;
+
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+
+    const parsed = parse(definition);
+    validateModelSchema(parsed);
+
+    const updateTodoInput = getInputType(parsed, 'UpdateTodoInput');
+    expect(updateTodoInput).toBeDefined();
+
+    expectFieldsOnInputType(updateTodoInput!, ['id']);
+  });
 });

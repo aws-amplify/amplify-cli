@@ -25,7 +25,7 @@ import {
 import Enquirer from 'enquirer';
 import _ from 'lodash';
 import { importMessages } from './messages';
-import uuid from 'uuid';
+import { v4 as uuid } from 'uuid';
 import { hostedUIProviders, coreAttributes } from '../assets/string-maps';
 
 // Currently the CLI only supports the output generation of these providers

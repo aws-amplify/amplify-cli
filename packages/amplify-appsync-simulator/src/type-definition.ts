@@ -45,12 +45,20 @@ export interface AppSyncSimulatorUnitResolver extends AppSyncSimulatorUnitResolv
 export interface AppSyncSimulatorPipelineResolver extends AppSyncSimulatorUnitResolverConfig {
   functions: string[];
 }
+
+export const enum AppSyncSimulatorDataSourceType {
+  DynamoDB = 'AMAZON_DYNAMODB',
+  Lambda = 'AWS_LAMBDA',
+  OpenSearch = 'AMAZON_ELASTICSEARCH',
+  None = 'NONE',
+}
+
 export interface AppSyncSimulatorDataSourceBaseConfig {
   name: string;
-  type: string;
+  type: AppSyncSimulatorDataSourceType | `${AppSyncSimulatorDataSourceType}`;
 }
 export interface AppSyncSimulatorDataSourceDDBConfig extends AppSyncSimulatorDataSourceBaseConfig {
-  type: 'AMAZON_DYNAMODB';
+  type: AppSyncSimulatorDataSourceType.DynamoDB | `${AppSyncSimulatorDataSourceType.DynamoDB}`;
   config: {
     endpoint: string;
     region?: string;
@@ -60,10 +68,10 @@ export interface AppSyncSimulatorDataSourceDDBConfig extends AppSyncSimulatorDat
   };
 }
 export interface AppSyncSimulatorDataSourceNoneConfig extends AppSyncSimulatorDataSourceBaseConfig {
-  type: 'None';
+  type: AppSyncSimulatorDataSourceType.None | `${AppSyncSimulatorDataSourceType.None}`;
 }
 export interface AppSyncSimulatorDataSourceLambdaConfig extends AppSyncSimulatorDataSourceBaseConfig {
-  type: 'AWS_LAMBDA';
+  type: AppSyncSimulatorDataSourceType.Lambda | `${AppSyncSimulatorDataSourceType.Lambda}`;
   invoke: Function;
 }
 export type AppSyncSimulatorDataSourceConfig =

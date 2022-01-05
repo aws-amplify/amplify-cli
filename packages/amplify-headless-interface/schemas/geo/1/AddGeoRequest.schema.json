@@ -1,93 +1,114 @@
 {
-  "description": "Defines the json object expected by `amplify add geo --headless` with map service",
-  "type": "object",
-  "properties": {
-      "version": {
-          "description": "The schema version.",
-          "type": "number",
-          "enum": [
-              1
-          ]
-      },
-      "serviceConfiguration": {
-          "description": "The service configuration that will be interpreted by Amplify.",
-          "oneOf": [
-              {"$ref": "#/definitions/MapServiceConfiguration"}
-          ]
-      }
-  },
-  "required": [
-      "serviceConfiguration",
-      "version"
-  ],
-  "definitions": {
-      "MapServiceConfiguration": {
-          "description": "Configuration exposed by Map.",
-          "type": "object",
-          "properties": {
-              "serviceName": {
-                "description": "The service name of the resource provider.",
-                "type": "string",
-                "enum": [
-                    "Map"
-                ]
-              },
-              "name": {
-                  "description": "The name of the map that will be created.",
-                  "type": "string"
-              },
-              "mapStyle": {
-                  "description": "The map style type.",
-                  "type": "string",
-                  "enum": [
-                      "VectorEsriNavigation",
-                      "VectorEsriStreets",
-                      "VectorEsriTopographic",
-                      "VectorEsriDarkGrayCanvas",
-                      "VectorEsriLightGrayCanvas",
-                      "VectorHereBerlin"
-                  ]
-              },
-              "pricingPlan": {
-                  "$ref": "#/definitions/PricingPlan"
-              },
-              "accessType": {
-                  "$ref": "#/definitions/AccessType"
-              },
-              "setAsDefault": {
-                  "$ref": "#/definitions/SetAsDefault"
-              }
-          },
-          "required": [
-              "serviceName",
-              "name",
-              "mapStyle",
-              "accessType",
-              "pricingPlan",
-              "setAsDefault"
-          ]
-      },
-      "PricingPlan": {
-          "description": "The pricing plan for amazon location service.",
-          "type": "string",
-          "enum": [
-              "RequestBasedUsage",
-              "MobileAssetTracking",
-              "MobileAssetManagement"
-          ]
-      },
-      "AccessType": {
-          "description": "The access policy for geo resources.",
-          "type": "string",
-          "enum": [
-              "AuthorizedUsers",
-              "AuthorizedAndGuestUsers"
-          ]
-      },
-      "SetAsDefault": {
-          "description": "Whether the geo resource added is set to default.",
-          "type": "boolean"
-      }
-  },
-  "$schema": "http://json-schema.org/draft-07/schema#"
-} 
+    "description": "Defines the json object expected by `amplify add geo --headless`",
+    "type": "object",
+    "properties": {
+        "version": {
+            "description": "The schema version.",
+            "type": "number",
+            "enum": [
+                1
+            ]
+        },
+        "serviceConfiguration": {
+            "description": "The service configuration that will be interpreted by Amplify.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/BaseGeoServiceConfiguration"
+                },
+                {
+                    "$ref": "#/definitions/MapConfiguration"
+                }
+            ]
+        }
+    },
+    "required": [
+        "serviceConfiguration",
+        "version"
+    ],
+    "definitions": {
+        "BaseGeoServiceConfiguration": {
+            "description": "Configuration that applies to all geo service configuration.",
+            "type": "object",
+            "properties": {
+                "serviceName": {
+                    "description": "The service name of the resource provider.",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "The name of the map that will be created.",
+                    "type": "string"
+                },
+                "accessType": {
+                    "$ref": "#/definitions/AccessType",
+                    "description": "The access policy for geo resources."
+                },
+                "pricingPlan": {
+                    "$ref": "#/definitions/PricingPlan",
+                    "description": "The pricing plan for amazon location service."
+                },
+                "setAsDefault": {
+                    "description": "Whether the geo resource added is set to default.",
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "accessType",
+                "name",
+                "pricingPlan",
+                "serviceName",
+                "setAsDefault"
+            ]
+        },
+        "AccessType": {
+            "description": "Definition of access type",
+            "enum": [
+                "AuthorizedAndGuestUsers",
+                "AuthorizedUsers"
+            ],
+            "type": "string"
+        },
+        "PricingPlan": {
+            "description": "Pricing plan of Amazon Location Service.",
+            "enum": [
+                "MobileAssetManagement",
+                "MobileAssetTracking",
+                "RequestBasedUsage"
+            ],
+            "type": "string"
+        },
+        "MapConfiguration": {
+            "description": "Specifies configuration for map.",
+            "type": "object",
+            "properties": {
+                "serviceName": {
+                    "description": "The service name of the resource provider.",
+                    "type": "string",
+                    "enum": [
+                        "Map"
+                    ]
+                },
+                "mapStyle": {
+                    "$ref": "#/definitions/MapStyle",
+                    "description": "The map style type."
+                }
+            },
+            "required": [
+                "mapStyle",
+                "serviceName"
+            ]
+        },
+        "MapStyle": {
+            "description": "Supported Geo Map Styles",
+            "enum": [
+                "VectorEsriDarkGrayCanvas",
+                "VectorEsriLightGrayCanvas",
+                "VectorEsriNavigation",
+                "VectorEsriStreets",
+                "VectorEsriTopographic",
+                "VectorHereBerlin"
+            ],
+            "type": "string"
+        }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#"
+}

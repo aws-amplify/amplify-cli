@@ -2,7 +2,7 @@ const uuid = require('uuid');
 
 const getAllDefaults = project => {
   const appName = project.projectConfig.projectName.toLowerCase();
-  const [shortId] = uuid().split('-');
+  const [shortId] = uuid.v4().split('-');
 
   const authRoleName = {
     Ref: 'AuthRoleName',

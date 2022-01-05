@@ -288,14 +288,16 @@ export class S3InputState {
   private _confirmLambdaTriggerPrefixUnique(triggerFunctionName: string, triggerPrefixList: S3TriggerPrefixType[]): boolean {
     if (this._inputPayload?.additionalTriggerFunctions) {
       for (const triggerParams of this._inputPayload.additionalTriggerFunctions) {
-        for (const configuredTriggerPrefix of triggerParams.triggerPrefix) {
-          if (
-            this.checkPrefixExists(triggerPrefixList, configuredTriggerPrefix.prefix) &&
-            triggerParams.triggerFunction !== triggerFunctionName
-          ) {
-            throw new Error(
-              `Error installing additional Lambda Trigger : trigger ${triggerParams.triggerFunction} already configured on prefix ${triggerParams.triggerPrefix}`,
-            );
+        if (triggerParams.triggerPrefix) {
+          for (const configuredTriggerPrefix of triggerParams.triggerPrefix) {
+            if (
+              this.checkPrefixExists(triggerPrefixList, configuredTriggerPrefix.prefix) &&
+              triggerParams.triggerFunction !== triggerFunctionName
+            ) {
+              throw new Error(
+                `Error installing additional Lambda Trigger : trigger ${triggerParams.triggerFunction} already configured on prefix ${triggerParams.triggerPrefix}`,
+              );
+            }
           }
         }
       }
@@ -334,7 +336,9 @@ export class S3InputState {
     if (!this._inputPayload) {
       throw new Error(`Error installing additional Lambda Trigger : Storage resource ${this._resourceName} not configured`);
     }
-    this._confirmLambdaTriggerPrefixUnique(triggerFunctionParams.triggerFunction, triggerFunctionParams.triggerPrefix);
+    if ( triggerFunctionParams.triggerPrefix ) {
+      this._confirmLambdaTriggerPrefixUnique(triggerFunctionParams.triggerFunction, triggerFunctionParams.triggerPrefix);
+    }
     if ((this._inputPayload as S3UserInputs).additionalTriggerFunctions) {
       let functionExists = false;
       const existingTriggerFunctions = (this._inputPayload as S3UserInputs).additionalTriggerFunctions;

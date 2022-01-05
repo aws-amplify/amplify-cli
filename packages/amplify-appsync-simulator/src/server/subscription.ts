@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import crypto from 'crypto';
-import e2p from 'event-to-promise';
+import { fromEvent } from 'promise-toolbox';
 import { DocumentNode, ExecutableDefinitionNode, ExecutionResult, FieldNode } from 'graphql';
 import { createServer as createHTTPServer, Server } from 'http';
 import { address as getLocalIpAddress } from 'ip';
@@ -81,7 +81,7 @@ export class SubscriptionServer {
     }
     const server = this.mqttWebSocketServer.listen(this.port);
 
-    return await e2p(server, 'listening').then(() => {
+    return await fromEvent(server, 'listening').then(() => {
       const address = server.address() as AddressInfo;
       this.url = `ws://${getLocalIpAddress()}:${address.port}/`;
       return server;
@@ -178,23 +178,15 @@ export class SubscriptionServer {
   async register(document: DocumentNode, variables: Record<string, any>, context, asyncIterator: AsyncIterableIterator<ExecutionResult>) {
     const connection = context.request.connection;
     const remoteAddress = `${connection.remoteAddress}:${connection.remotePort}`;
-    const clientId = crypto
-      .createHash('MD5')
-      .update(remoteAddress)
-      .digest()
-      .toString('hex');
+    const clientId = crypto.createHash('MD5').update(remoteAddress).digest().toString('hex');
 
     // move next line to a helper function
-    const subscriptionName = ((document.definitions[0] as ExecutableDefinitionNode).selectionSet.selections.find(
-      s => s.kind === 'Field',
-    ) as FieldNode).name.value;
+    const subscriptionName = (
+      (document.definitions[0] as ExecutableDefinitionNode).selectionSet.selections.find(s => s.kind === 'Field') as FieldNode
+    ).name.value;
     const paramHash =
       variables && Object.keys(variables).length
-        ? crypto
-            .createHash('MD5')
-            .update(JSON.stringify(variables))
-            .digest()
-            .toString('hex')
+        ? crypto.createHash('MD5').update(JSON.stringify(variables)).digest().toString('hex')
         : null;
     const topicId = [clientId, subscriptionName, paramHash].join('/');
 

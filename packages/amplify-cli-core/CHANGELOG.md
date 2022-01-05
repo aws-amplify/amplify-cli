@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.4.4...amplify-cli-core@2.4.5) (2021-12-21)
+
+
+### Bug Fixes
+
+* include tsconfig in npmignore ([#9211](https://github.com/aws-amplify/amplify-cli/issues/9211)) ([df9e4b0](https://github.com/aws-amplify/amplify-cli/commit/df9e4b0e41578deb789c3104cd6dc1dda1f04eb4))
+
+
+
+
+
+## [2.4.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.4.3...amplify-cli-core@2.4.4) (2021-12-17)
+
+
+### Bug Fixes
+
+* improve api migration logic, update migration prompt ([#9267](https://github.com/aws-amplify/amplify-cli/issues/9267)) ([beed4f9](https://github.com/aws-amplify/amplify-cli/commit/beed4f9aa77bfbbb92ff0cb504e8019ce01e48f6))
+
+
+
+
+
 ## [2.4.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.4.2...amplify-cli-core@2.4.3) (2021-12-02)
 
 

@@ -247,6 +247,19 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         updatedAt: 'updatedAt',
       },
     });
+
+    if (options.subscriptions?.onCreate && !Array.isArray(options.subscriptions.onCreate)) {
+      options.subscriptions.onCreate = [options.subscriptions.onCreate];
+    }
+
+    if (options.subscriptions?.onDelete && !Array.isArray(options.subscriptions.onDelete)) {
+      options.subscriptions.onDelete = [options.subscriptions.onDelete];
+    }
+
+    if (options.subscriptions?.onUpdate && !Array.isArray(options.subscriptions.onUpdate)) {
+      options.subscriptions.onUpdate = [options.subscriptions.onUpdate];
+    }
+
     this.modelDirectiveConfig.set(typeName, options);
     this.typesWithModelDirective.add(typeName);
   };

@@ -1,6 +1,6 @@
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { ConflictHandlerType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { Kind, parse } from 'graphql';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
 
@@ -645,4 +645,73 @@ test('validates VTL of a complex schema', () => {
   const schema = parse(out.schema);
   validateModelSchema(schema);
   expect(out.resolvers).toMatchSnapshot();
+});
+
+test('@hasMany and @hasMany can point at each other if DataStore is not enabled', () => {
+  const inputSchema = `
+    type Blog @model {
+      id: ID!
+      posts: [Post] @hasMany
+    }
+
+    type Post @model {
+      id: ID!
+      blog: [Blog] @hasMany
+    }`;
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new HasManyTransformer()],
+  });
+
+  const out = transformer.transform(inputSchema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+});
+
+test('@hasMany and @hasMany cannot point at each other if DataStore is enabled', () => {
+  const inputSchema = `
+    type Blog @model {
+      id: ID!
+      posts: [Post] @hasMany
+    }
+
+    type Post @model {
+      id: ID!
+      blog: [Blog] @hasMany
+    }`;
+  const transformer = new GraphQLTransform({
+    resolverConfig: {
+      project: {
+        ConflictDetection: 'VERSION',
+        ConflictHandler: ConflictHandlerType.AUTOMERGE,
+      },
+    },
+    transformers: [new ModelTransformer(), new HasOneTransformer(), new HasManyTransformer()],
+  });
+
+  expect(() => transformer.transform(inputSchema)).toThrowError(
+    `Blog and Post cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead.`,
+  );
+});
+
+test('recursive @hasMany relationships are supported if DataStore is enabled', () => {
+  const inputSchema = `
+    type Blog @model {
+      id: ID!
+      posts: [Blog] @hasMany
+    }`;
+  const transformer = new GraphQLTransform({
+    resolverConfig: {
+      project: {
+        ConflictDetection: 'VERSION',
+        ConflictHandler: ConflictHandlerType.AUTOMERGE,
+      },
+    },
+    transformers: [new ModelTransformer(), new HasManyTransformer()],
+  });
+
+  const out = transformer.transform(inputSchema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
 });

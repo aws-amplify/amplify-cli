@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.8.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.4...amplify-provider-awscloudformation@5.8.5) (2021-12-21)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** validate IDP roles on import (ref [#9286](https://github.com/aws-amplify/amplify-cli/issues/9286)) ([#9294](https://github.com/aws-amplify/amplify-cli/issues/9294)) ([3ecd842](https://github.com/aws-amplify/amplify-cli/commit/3ecd842dfc50d81c5c89c80c3400d05159ddf885))
+
+
+
+
+
+## [5.8.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.3...amplify-provider-awscloudformation@5.8.4) (2021-12-17)
+
+
+### Bug Fixes
+
+* update gql v2 custom transformer loading logic ([#9252](https://github.com/aws-amplify/amplify-cli/issues/9252)) ([f728b4b](https://github.com/aws-amplify/amplify-cli/commit/f728b4bb835674afd32dab7243dd3d826601d333))
+
+
+
+
+
+## [5.8.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.2...amplify-provider-awscloudformation@5.8.3) (2021-12-09)
+
+
+
+## 7.6.3 (2021-12-07)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** use in memory meta for export ([#9208](https://github.com/aws-amplify/amplify-cli/issues/9208)) ([b3ca83b](https://github.com/aws-amplify/amplify-cli/commit/b3ca83b9bec986f0fd525d46738b277eb93e4384))
+* incorrect logic from PR [#9144](https://github.com/aws-amplify/amplify-cli/issues/9144), fixes issue [#9197](https://github.com/aws-amplify/amplify-cli/issues/9197) ([#9215](https://github.com/aws-amplify/amplify-cli/issues/9215)) ([98e2cfd](https://github.com/aws-amplify/amplify-cli/commit/98e2cfd1f72aec2c06c7f2d5833bc4fb21e2a498))
+
+
+
+
+
 ## [5.8.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.1...amplify-provider-awscloudformation@5.8.2) (2021-12-03)
 
 

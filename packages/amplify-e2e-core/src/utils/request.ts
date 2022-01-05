@@ -1,4 +1,5 @@
 const https = require('https');
+import fetch from 'node-fetch';
 
 export function post({ body, ...options }) {
   return new Promise((resolve, reject) => {
@@ -26,4 +27,8 @@ export function post({ body, ...options }) {
     }
     req.end();
   });
+}
+
+export async function get(url: string) {
+  return fetch(url);
 }

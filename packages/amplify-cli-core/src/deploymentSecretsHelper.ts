@@ -9,8 +9,11 @@ export const mergeDeploymentSecrets = (deploymentSecretsModifier: deploymentSecr
     environments: {},
   };
   _.set(newDeploymentAppSecret, ['environments', envName, category, resource, keyName], value);
+
+  const filteredSecrets = currentDeploymentSecrets.appSecrets?.filter(appSecret => appSecret.rootStackId !== rootStackId) || [];
+
   return {
-    appSecrets: [...currentDeploymentSecrets.appSecrets.filter(appSecret => appSecret.rootStackId !== rootStackId), newDeploymentAppSecret],
+    appSecrets: [...filteredSecrets, newDeploymentAppSecret],
   };
 };
 
@@ -20,7 +23,8 @@ export const removeFromDeploymentSecrets = (deploymentSecretsModifier: deploymen
   if (secretsByAppId) {
     recursiveOmit(secretsByAppId.environments, [envName, category, resource, keyName]);
     if (Object.keys(secretsByAppId.environments).length === 0) {
-      currentDeploymentSecrets.appSecrets = currentDeploymentSecrets.appSecrets.filter(r => r.rootStackId !== rootStackId);
+      currentDeploymentSecrets.appSecrets =
+        currentDeploymentSecrets.appSecrets?.filter(appSecret => appSecret.rootStackId !== rootStackId) || [];
     }
   }
   return currentDeploymentSecrets;
