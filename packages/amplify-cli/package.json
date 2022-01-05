@@ -124,6 +124,7 @@
     "nock": "^12.0.3"
   },
   "jest": {
+    "testEnvironment": "node",
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
