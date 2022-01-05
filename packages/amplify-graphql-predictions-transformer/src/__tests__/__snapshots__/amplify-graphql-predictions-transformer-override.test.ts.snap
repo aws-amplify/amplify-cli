@@ -40,7 +40,7 @@ Object {
           "LambdaConfig": Object {
             "LambdaFunctionArn": Object {
               "Fn::GetAtt": Array [
-                "predictionsLambdahandlerC696C27E",
+                "predictionsLambda8B880A74",
                 "Arn",
               ],
             },
@@ -82,7 +82,7 @@ Object {
                 "Effect": "Allow",
                 "Resource": Object {
                   "Fn::GetAtt": Array [
-                    "predictionsLambdahandlerC696C27E",
+                    "predictionsLambda8B880A74",
                     "Arn",
                   ],
                 },
@@ -108,7 +108,7 @@ Object {
                 "Effect": "Allow",
                 "Resource": Object {
                   "Fn::GetAtt": Array [
-                    "predictionsLambdahandlerC696C27E",
+                    "predictionsLambda8B880A74",
                     "Arn",
                   ],
                 },
@@ -660,6 +660,40 @@ $utils.error($ctx.result.body)
         },
         "Type": "AWS::IAM::Role",
       },
+      "predictionsLambda8B880A74": Object {
+        "DependsOn": Array [
+          "predictionsLambdaIAMRoleB8AC96D3",
+        ],
+        "Properties": Object {
+          "Code": Object {
+            "S3Bucket": Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+            },
+            "S3Key": Object {
+              "Fn::Join": Array [
+                "",
+                Array [
+                  Object {
+                    "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+                  },
+                  "/functions/predictionsLambdaFunction.zip",
+                ],
+              ],
+            },
+          },
+          "FunctionName": "predictionsLambda",
+          "Handler": "predictionsLambda.handler",
+          "Role": Object {
+            "Fn::GetAtt": Array [
+              "predictionsLambdaIAMRoleB8AC96D3",
+              "Arn",
+            ],
+          },
+          "Runtime": "nodejs12.x",
+          "Timeout": 60,
+        },
+        "Type": "AWS::Lambda::Function",
+      },
       "predictionsLambdaIAMRoleB8AC96D3": Object {
         "Properties": Object {
           "AssumeRolePolicyDocument": Object {
@@ -721,39 +755,6 @@ $utils.error($ctx.result.body)
           },
         },
         "Type": "AWS::IAM::Role",
-      },
-      "predictionsLambdahandlerC696C27E": Object {
-        "DependsOn": Array [
-          "predictionsLambdaIAMRoleB8AC96D3",
-        ],
-        "Properties": Object {
-          "Code": Object {
-            "S3Bucket": Object {
-              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-            },
-            "S3Key": Object {
-              "Fn::Join": Array [
-                "",
-                Array [
-                  Object {
-                    "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-                  },
-                  "/functions/predictionsLambdaFunction.zip",
-                ],
-              ],
-            },
-          },
-          "Handler": "predictionsLambda.handler",
-          "Role": Object {
-            "Fn::GetAtt": Array [
-              "predictionsLambdaIAMRoleB8AC96D3",
-              "Arn",
-            ],
-          },
-          "Runtime": "nodejs12.x",
-          "Timeout": 60,
-        },
-        "Type": "AWS::Lambda::Function",
       },
       "translateTextAccess74D3AE90": Object {
         "Properties": Object {
