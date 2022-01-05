@@ -389,12 +389,12 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       }
 
       this.userPool.mfaConfiguration = cdk.Fn.ref('mfaConfiguration');
-      if (props.useEnabledMfas && props.mfaConfiguration != 'OFF') {
+      if (props.useEnabledMfas && props.mfaConfiguration !== 'OFF') {
         if (configureSMS) {
           this.userPool.enabledMfas = ['SMS_MFA'];
         }
         if (!_.isEmpty(props.mfaTypes) && props.mfaTypes!.includes('TOTP')) {
-          this.userPool.enabledMfas!.push('SOFTWARE_TOKEN_MFA');
+          this.userPool.enabledMfas = [...(this.userPool.enabledMfas || []), 'SOFTWARE_TOKEN_MFA'];
         }
       }
 
