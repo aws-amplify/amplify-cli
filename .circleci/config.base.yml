@@ -72,6 +72,9 @@ jobs:
     steps:
       - checkout
       - run: yarn run production-build
+      - run:
+          name: Build tests
+          command: yarn build-tests
       - save_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
           paths:
