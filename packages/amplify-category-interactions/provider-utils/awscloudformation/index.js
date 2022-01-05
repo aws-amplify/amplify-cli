@@ -110,7 +110,7 @@ function updateResource(context, category, service) {
   const { updateWalkthrough } = require(serviceWalkthroughSrc);
 
   return updateWalkthrough(context, defaultValuesFilename, serviceMetadata).then(answers => {
-    answers.shortId = uuid().substring(0, 8);
+    answers.shortId = uuid.v4().substring(0, 8);
     copyCfnTemplate(context, category, answers, cfnFilename);
 
     const parameters = { ...answers };

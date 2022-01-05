@@ -63,7 +63,7 @@ class AmplifyPrompter implements Prompter {
    * @returns The prompt response
    */
   input = async <RS extends ReturnSize = 'one', T = string>(message: string, ...options: MaybeOptionalInputOptions<RS, T>) => {
-    const opts = options?.[0] || {};
+    const opts = options?.[0] ?? ({} as InputOptions<RS, T>);
     if (isYes) {
       if (opts.initial) {
         return opts.initial as PromptReturn<RS, T>;
@@ -88,7 +88,7 @@ class AmplifyPrompter implements Prompter {
 
     if (typeof opts.transform === 'function') {
       if (Array.isArray(result)) {
-        return (await Promise.all(result.map(async part => (opts.transform as Function)(part) as T))) as PromptReturn<RS, T>;
+        return (await Promise.all(result.map(async part => (opts.transform as Function)(part) as T))) as unknown as PromptReturn<RS, T>;
       }
       return opts.transform(result as string) as unknown as PromptReturn<RS, T>;
     } else {

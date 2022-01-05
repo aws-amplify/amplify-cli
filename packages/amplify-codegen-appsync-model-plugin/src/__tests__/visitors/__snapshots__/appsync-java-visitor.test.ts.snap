@@ -90,7 +90,7 @@ public final class customClaim implements Model {
       return new Builder();
   }
   
-  /** 
+  /**
    * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
    * This is a convenience method to return an instance of the object with only its ID populated
    * to be used in the context of a parameter in a delete mutation or referencing a foreign key
@@ -155,7 +155,7 @@ public final class customClaim implements Model {
         return this;
     }
     
-    /** 
+    /**
      * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
      * This should only be set when referring to an already existing object.
      * @param id id
@@ -289,7 +289,7 @@ public final class customClaim implements Model {
       return new Builder();
   }
   
-  /** 
+  /**
    * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
    * This is a convenience method to return an instance of the object with only its ID populated
    * to be used in the context of a parameter in a delete mutation or referencing a foreign key
@@ -354,7 +354,7 @@ public final class customClaim implements Model {
         return this;
     }
     
-    /** 
+    /**
      * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
      * This should only be set when referring to an already existing object.
      * @param id id
@@ -501,7 +501,7 @@ public final class Employee implements Model {
       return new Builder();
   }
   
-  /** 
+  /**
    * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
    * This is a convenience method to return an instance of the object with only its ID populated
    * to be used in the context of a parameter in a delete mutation or referencing a foreign key
@@ -587,7 +587,7 @@ public final class Employee implements Model {
         return this;
     }
     
-    /** 
+    /**
      * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
      * This should only be set when referring to an already existing object.
      * @param id id
@@ -727,7 +727,7 @@ public final class dynamicGroups implements Model {
       return new Builder();
   }
   
-  /** 
+  /**
    * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
    * This is a convenience method to return an instance of the object with only its ID populated
    * to be used in the context of a parameter in a delete mutation or referencing a foreign key
@@ -792,7 +792,7 @@ public final class dynamicGroups implements Model {
         return this;
     }
     
-    /** 
+    /**
      * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
      * This should only be set when referring to an already existing object.
      * @param id id
@@ -926,7 +926,7 @@ public final class simpleOwnerAuth implements Model {
       return new Builder();
   }
   
-  /** 
+  /**
    * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
    * This is a convenience method to return an instance of the object with only its ID populated
    * to be used in the context of a parameter in a delete mutation or referencing a foreign key
@@ -991,7 +991,7 @@ public final class simpleOwnerAuth implements Model {
         return this;
     }
     
-    /** 
+    /**
      * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
      * This should only be set when referring to an already existing object.
      * @param id id
@@ -1125,7 +1125,7 @@ public final class allowRead implements Model {
       return new Builder();
   }
   
-  /** 
+  /**
    * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
    * This is a convenience method to return an instance of the object with only its ID populated
    * to be used in the context of a parameter in a delete mutation or referencing a foreign key
@@ -1190,7 +1190,7 @@ public final class allowRead implements Model {
         return this;
     }
     
-    /** 
+    /**
      * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
      * This should only be set when referring to an already existing object.
      * @param id id
@@ -1324,7 +1324,7 @@ public final class privateType implements Model {
       return new Builder();
   }
   
-  /** 
+  /**
    * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
    * This is a convenience method to return an instance of the object with only its ID populated
    * to be used in the context of a parameter in a delete mutation or referencing a foreign key
@@ -1389,7 +1389,7 @@ public final class privateType implements Model {
         return this;
     }
     
-    /** 
+    /**
      * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
      * This should only be set when referring to an already existing object.
      * @param id id
@@ -1525,7 +1525,7 @@ public final class privateType implements Model {
       return new Builder();
   }
   
-  /** 
+  /**
    * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
    * This is a convenience method to return an instance of the object with only its ID populated
    * to be used in the context of a parameter in a delete mutation or referencing a foreign key
@@ -1590,7 +1590,7 @@ public final class privateType implements Model {
         return this;
     }
     
-    /** 
+    /**
      * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
      * This should only be set when referring to an already existing object.
      * @param id id
@@ -1724,7 +1724,7 @@ public final class publicType implements Model {
       return new Builder();
   }
   
-  /** 
+  /**
    * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
    * This is a convenience method to return an instance of the object with only its ID populated
    * to be used in the context of a parameter in a delete mutation or referencing a foreign key
@@ -1789,7 +1789,7 @@ public final class publicType implements Model {
         return this;
     }
     
-    /** 
+    /**
      * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
      * This should only be set when referring to an already existing object.
      * @param id id
@@ -1923,7 +1923,7 @@ public final class staticGroups implements Model {
       return new Builder();
   }
   
-  /** 
+  /**
    * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
    * This is a convenience method to return an instance of the object with only its ID populated
    * to be used in the context of a parameter in a delete mutation or referencing a foreign key
@@ -1988,7 +1988,7 @@ public final class staticGroups implements Model {
         return this;
     }
     
-    /** 
+    /**
      * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
      * This should only be set when referring to an already existing object.
      * @param id id
@@ -2137,7 +2137,7 @@ public final class Landmark implements Model {
       return new Builder();
   }
   
-  /** 
+  /**
    * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
    * This is a convenience method to return an instance of the object with only its ID populated
    * to be used in the context of a parameter in a delete mutation or referencing a foreign key
@@ -2239,7 +2239,7 @@ public final class Landmark implements Model {
         return this;
     }
     
-    /** 
+    /**
      * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
      * This should only be set when referring to an already existing object.
      * @param id id
@@ -2511,7 +2511,7 @@ public final class task implements Model {
       return new Builder();
   }
   
-  /** 
+  /**
    * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
    * This is a convenience method to return an instance of the object with only its ID populated
    * to be used in the context of a parameter in a delete mutation or referencing a foreign key
@@ -2587,7 +2587,7 @@ public final class task implements Model {
         return this;
     }
     
-    /** 
+    /**
      * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
      * This should only be set when referring to an already existing object.
      * @param id id
@@ -2708,7 +2708,7 @@ public final class Todo implements Model {
       return new Builder();
   }
   
-  /** 
+  /**
    * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
    * This is a convenience method to return an instance of the object with only its ID populated
    * to be used in the context of a parameter in a delete mutation or referencing a foreign key
@@ -2751,7 +2751,7 @@ public final class Todo implements Model {
           id);
     }
     
-    /** 
+    /**
      * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
      * This should only be set when referring to an already existing object.
      * @param id id
@@ -2869,7 +2869,7 @@ public final class SimpleModel implements Model {
       return new Builder();
   }
   
-  /** 
+  /**
    * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
    * This is a convenience method to return an instance of the object with only its ID populated
    * to be used in the context of a parameter in a delete mutation or referencing a foreign key
@@ -2934,7 +2934,7 @@ public final class SimpleModel implements Model {
         return this;
     }
     
-    /** 
+    /**
      * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
      * This should only be set when referring to an already existing object.
      * @param id id
@@ -3063,7 +3063,7 @@ public final class SimpleModel implements Model {
       return new Builder();
   }
   
-  /** 
+  /**
    * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
    * This is a convenience method to return an instance of the object with only its ID populated
    * to be used in the context of a parameter in a delete mutation or referencing a foreign key
@@ -3128,7 +3128,7 @@ public final class SimpleModel implements Model {
         return this;
     }
     
-    /** 
+    /**
      * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
      * This should only be set when referring to an already existing object.
      * @param id id
@@ -3257,7 +3257,7 @@ public final class SimpleModel implements Model {
       return new Builder();
   }
   
-  /** 
+  /**
    * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
    * This is a convenience method to return an instance of the object with only its ID populated
    * to be used in the context of a parameter in a delete mutation or referencing a foreign key
@@ -3322,7 +3322,7 @@ public final class SimpleModel implements Model {
         return this;
     }
     
-    /** 
+    /**
      * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
      * This should only be set when referring to an already existing object.
      * @param id id
@@ -3483,7 +3483,7 @@ public final class task implements Model {
       return new Builder();
   }
   
-  /** 
+  /**
    * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
    * This is a convenience method to return an instance of the object with only its ID populated
    * to be used in the context of a parameter in a delete mutation or referencing a foreign key
@@ -3591,7 +3591,7 @@ public final class task implements Model {
         return this;
     }
     
-    /** 
+    /**
      * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
      * This should only be set when referring to an already existing object.
      * @param id id
@@ -3784,7 +3784,7 @@ public final class Todo implements Model {
       return new Builder();
   }
   
-  /** 
+  /**
    * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
    * This is a convenience method to return an instance of the object with only its ID populated
    * to be used in the context of a parameter in a delete mutation or referencing a foreign key
@@ -3908,7 +3908,7 @@ public final class Todo implements Model {
         return this;
     }
     
-    /** 
+    /**
      * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
      * This should only be set when referring to an already existing object.
      * @param id id
@@ -4082,7 +4082,7 @@ public final class TypeWithAWSDateScalars implements Model {
       return new Builder();
   }
   
-  /** 
+  /**
    * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
    * This is a convenience method to return an instance of the object with only its ID populated
    * to be used in the context of a parameter in a delete mutation or referencing a foreign key
@@ -4169,7 +4169,7 @@ public final class TypeWithAWSDateScalars implements Model {
         return this;
     }
     
-    /** 
+    /**
      * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
      * This should only be set when referring to an already existing object.
      * @param id id
@@ -4343,7 +4343,7 @@ public final class authorBook implements Model {
       return new Builder();
   }
   
-  /** 
+  /**
    * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
    * This is a convenience method to return an instance of the object with only its ID populated
    * to be used in the context of a parameter in a delete mutation or referencing a foreign key
@@ -4440,7 +4440,7 @@ public final class authorBook implements Model {
         return this;
     }
     
-    /** 
+    /**
      * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
      * This should only be set when referring to an already existing object.
      * @param id id
@@ -4571,7 +4571,7 @@ public final class NonCamelCaseField implements Model {
       return new Builder();
   }
   
-  /** 
+  /**
    * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
    * This is a convenience method to return an instance of the object with only its ID populated
    * to be used in the context of a parameter in a delete mutation or referencing a foreign key
@@ -4625,7 +4625,7 @@ public final class NonCamelCaseField implements Model {
         return this;
     }
     
-    /** 
+    /**
      * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
      * This should only be set when referring to an already existing object.
      * @param id id
@@ -4738,7 +4738,7 @@ public final class snake_case implements Model {
       return new Builder();
   }
   
-  /** 
+  /**
    * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
    * This is a convenience method to return an instance of the object with only its ID populated
    * to be used in the context of a parameter in a delete mutation or referencing a foreign key
@@ -4792,7 +4792,7 @@ public final class snake_case implements Model {
         return this;
     }
     
-    /** 
+    /**
      * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
      * This should only be set when referring to an already existing object.
      * @param id id
@@ -4905,7 +4905,7 @@ public final class SnakeCaseField implements Model {
       return new Builder();
   }
   
-  /** 
+  /**
    * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
    * This is a convenience method to return an instance of the object with only its ID populated
    * to be used in the context of a parameter in a delete mutation or referencing a foreign key
@@ -4959,7 +4959,7 @@ public final class SnakeCaseField implements Model {
         return this;
     }
     
-    /** 
+    /**
      * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
      * This should only be set when referring to an already existing object.
      * @param id id

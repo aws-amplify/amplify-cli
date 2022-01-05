@@ -2,7 +2,7 @@ import { stateManager } from 'amplify-cli-core';
 import { DeletionPolicy, Fn, IntrinsicFunction, Refs } from 'cloudform-types';
 import Lambda from 'cloudform-types/types/lambda';
 import _ from 'lodash';
-import uuid from 'uuid';
+import { v4 as uuid } from 'uuid';
 import { LayerCfnLogicalNamePrefix } from './constants';
 import { LayerCloudState } from './layerCloudState';
 import { getLayerVersionPermissionsToBeUpdatedInCfn, getLayerVersionsToBeRemovedByCfn } from './layerConfiguration';
