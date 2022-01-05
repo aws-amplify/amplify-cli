@@ -736,15 +736,41 @@ test('Should not validate reserved type names when validateTypeNameReservedWords
   `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer()],
-    featureFlags: ({
+    featureFlags: {
       getBoolean: jest.fn().mockImplementation(name => (name === 'validateTypeNameReservedWords' ? false : undefined)),
-    } as unknown) as FeatureFlagProvider,
+    } as unknown as FeatureFlagProvider,
   });
   const out = transformer.transform(schema);
   expect(out).toBeDefined();
   const parsed = parse(out.schema);
   const subscriptionType = getObjectType(parsed, 'Subscription');
   expect(subscriptionType).toBeDefined();
+});
+
+it('should generate id for the update input object', async () => {
+  const validSchema = `
+    type Todo @model {
+      uid: String!
+      username: String
+    }
+  `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer()],
+    featureFlags,
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+
+  const definition = out.schema;
+  expect(definition).toBeDefined();
+
+  const parsed = parse(definition);
+
+  const updateTodoInput = getInputType(parsed, 'UpdateTodoInput');
+  expect(updateTodoInput).toBeDefined();
+
+  expectFieldsOnInputType(updateTodoInput!, ['id']);
 });
 
 function transformerVersionSnapshot(version: number): string {
