@@ -655,7 +655,7 @@ Static group authorization should perform as expected.`,
     if (ctx.api.host.hasResolver(typeName, fieldName)) {
       // TODO: move pipeline resolvers created in the api host to the resolver manager
       const fieldResolver = ctx.api.host.getResolver(typeName, fieldName) as any;
-      const fieldAuthExpression = generateAuthExpressionForField(this.configuredAuthProviders, roleDefinitions, []);
+      const fieldAuthExpression = generateAuthExpressionForField(this.configuredAuthProviders, roleDefinitions, [], fieldName);
       if (!ctx.api.host.hasDataSource(NONE_DS)) {
         ctx.api.host.addNoneDataSource(NONE_DS);
       }
@@ -668,7 +668,12 @@ Static group authorization should perform as expected.`,
       );
       (fieldResolver.pipelineConfig.functions as string[]).unshift(authFunction.functionId);
     } else {
-      const fieldAuthExpression = generateAuthExpressionForField(this.configuredAuthProviders, roleDefinitions, def.fields ?? []);
+      const fieldAuthExpression = generateAuthExpressionForField(
+        this.configuredAuthProviders,
+        roleDefinitions,
+        def.fields ?? [],
+        fieldName,
+      );
       const subsEnabled = hasModelDirective ? this.modelDirectiveConfig.get(typeName)!.subscriptions?.level === 'on' : false;
       const fieldResponse = generateFieldAuthResponse('Mutation', fieldName, subsEnabled);
       const resolver = ctx.resolvers.addResolver(

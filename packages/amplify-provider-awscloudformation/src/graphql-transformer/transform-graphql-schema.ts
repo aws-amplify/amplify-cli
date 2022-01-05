@@ -47,7 +47,6 @@ import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-
 import { isAuthModeUpdated } from '../utils/auth-mode-compare';
 import { schemaHasSandboxModeEnabled, showGlobalSandboxModeWarning, showSandboxModePrompts } from '../utils/sandbox-mode-helpers';
 import { GraphQLSanityCheck, SanityCheckRules } from './sanity-check';
-import { loadProject as readTransformerConfiguration } from './transform-config';
 import { parseUserDefinedSlots } from './user-defined-slots';
 import { getAdminRoles, getIdentityPoolId, mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
 
@@ -107,10 +106,9 @@ function getTransformerFactory(
       transformerList.push(new SearchableModelTransformer());
     }
 
-    const customTransformersConfig = await readTransformerConfiguration(resourceDir);
-    const customTransformers = (
-      customTransformersConfig && customTransformersConfig.transformers ? customTransformersConfig.transformers : []
-    )
+    const customTransformersConfig = await loadProject(resourceDir);
+    const customTransformerList = customTransformersConfig?.config?.transformers;
+    const customTransformers = (Array.isArray(customTransformerList) ? customTransformerList : [])
       .map(transformer => {
         const fileUrlMatch = /^file:\/\/(.*)\s*$/m.exec(transformer);
         const modulePath = fileUrlMatch ? fileUrlMatch[1] : transformer;

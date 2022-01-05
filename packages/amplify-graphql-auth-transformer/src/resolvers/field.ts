@@ -96,6 +96,7 @@ export const generateAuthExpressionForField = (
   providers: ConfiguredAuthProviders,
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
+  fieldName: string = undefined,
 ): string => {
   const { cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, iamRoles, apiKeyRoles, lambdaRoles } =
     splitRoles(roles);
@@ -107,7 +108,9 @@ export const generateAuthExpressionForField = (
     totalAuthExpressions.push(lambdaExpression(lambdaRoles));
   }
   if (providers.hasIAM) {
-    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.adminRoles, providers.identityPoolId));
+    totalAuthExpressions.push(
+      iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.adminRoles, providers.identityPoolId, fieldName),
+    );
   }
   if (providers.hasUserPools) {
     totalAuthExpressions.push(

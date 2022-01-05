@@ -1,5 +1,5 @@
 import { Unauthorized, ValidateError, TemplateSentError } from './errors';
-import autoId from 'uuid/v4';
+import { v4 as autoId } from 'uuid';
 import { JavaString } from '../value-mapper/string';
 import { JavaArray } from '../value-mapper/array';
 import { JavaMap } from '../value-mapper/map';
@@ -24,11 +24,11 @@ export const generalUtils = {
   },
   base64Encode(value) {
     // eslint-disable-next-line
-    return new Buffer(value).toString('base64');
+    return Buffer.from(value).toString('base64');
   },
   base64Decode(value) {
     // eslint-disable-next-line
-    return new Buffer(value, 'base64').toString('ascii');
+    return Buffer.from(value, 'base64').toString('ascii');
   },
   parseJson(value) {
     return JSON.parse(value);
