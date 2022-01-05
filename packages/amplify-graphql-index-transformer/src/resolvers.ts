@@ -489,8 +489,8 @@ function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Transformer
                 not(methodCall(ref('util.isNullOrBlank'), ref('filterExpression.expression'))),
                 compoundExpression([
                   iff(
-                    equals(methodCall(ref('filterEpression.expressionValues.size')), int(0)),
-                    qref(methodCall(ref('filterEpression.remove'), str('expressionValues'))),
+                    equals(methodCall(ref('filterExpression.expressionValues.size')), int(0)),
+                    qref(methodCall(ref('filterExpression.remove'), str('expressionValues'))),
                   ),
                   set(ref(`${requestVariable}.filter`), ref(`filterExpression`)),
                 ]),
