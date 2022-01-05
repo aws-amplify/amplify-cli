@@ -80,7 +80,7 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
         .sendLine(s.profileName);
     }
 
-    chain.wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything').run((err: Error) => {
+    chain.wait('Try "amplify add api" to create a backend API and then "amplify push" to deploy everything').run((err: Error) => {
       if (err) {
         reject(err);
       } else {
