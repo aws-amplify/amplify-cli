@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.3.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.3.1...graphql-transformer-core@7.3.2) (2021-12-21)
+
+
+### Bug Fixes
+
+* **amplify-util-mock:** fix cleanup V2 resolvers on mock exit ([#9319](https://github.com/aws-amplify/amplify-cli/issues/9319)) ([5b0bcac](https://github.com/aws-amplify/amplify-cli/commit/5b0bcacbefeabaf57113e242b3f32cff74422dc5))
+
+
+
+
+
 ## [7.3.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.3.0...graphql-transformer-core@7.3.1) (2021-12-17)
 
 **Note:** Version bump only for package graphql-transformer-core

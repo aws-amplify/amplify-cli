@@ -1,5 +1,5 @@
 import inquirer from 'inquirer';
-import uuid from 'uuid';
+import { v4 as uuid } from 'uuid';
 import { FunctionParameters } from 'amplify-function-plugin-interface';
 import { advancedSettingsList } from '../utils/constants';
 

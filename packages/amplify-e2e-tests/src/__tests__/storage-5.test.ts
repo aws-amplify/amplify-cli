@@ -21,7 +21,7 @@ import {
 } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import uuid from 'uuid';
+import * as uuid from 'uuid';
 
 function getServiceMeta(projectRoot: string, category: string, service: string): $TSAny {
   const meta = getProjectMeta(projectRoot);

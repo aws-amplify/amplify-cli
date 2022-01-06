@@ -48,7 +48,6 @@ import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-
 import { isAuthModeUpdated } from '../utils/auth-mode-compare';
 import { schemaHasSandboxModeEnabled, showGlobalSandboxModeWarning, showSandboxModePrompts } from '../utils/sandbox-mode-helpers';
 import { GraphQLSanityCheck, SanityCheckRules } from './sanity-check';
-import { loadProject as readTransformerConfiguration } from './transform-config';
 import { parseUserDefinedSlots } from './user-defined-slots';
 import { getAdminRoles, getIdentityPoolId, mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
 
@@ -109,7 +108,7 @@ function getTransformerFactory(
     }
     transformerList.push(new MapsToTransformer()); // this transformer must execute at the end
 
-    const customTransformersConfig = await readTransformerConfiguration(resourceDir);
+    const customTransformersConfig = await loadProject(resourceDir);
     const customTransformerList = customTransformersConfig?.config?.transformers;
     const customTransformers = (Array.isArray(customTransformerList) ? customTransformerList : [])
       .map(transformer => {

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.5.7...amplify-e2e-tests@3.5.8) (2021-12-21)
+
+
+### Bug Fixes
+
+* [#8997](https://github.com/aws-amplify/amplify-cli/issues/8997) - auth trigger detached after push ([#9312](https://github.com/aws-amplify/amplify-cli/issues/9312)) ([d5b4e8f](https://github.com/aws-amplify/amplify-cli/commit/d5b4e8f23dad32d40596d8ac2b36190b03d7a975))
+
+
+
+
+
 ## [3.5.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.5.6...amplify-e2e-tests@3.5.7) (2021-12-17)
 
 

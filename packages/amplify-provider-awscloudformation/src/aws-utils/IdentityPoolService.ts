@@ -84,6 +84,10 @@ export class IdentityPoolService implements IIdentityPoolService {
       })
       .promise();
 
+    if (!response.Roles || !response.Roles['authenticated'] || !response.Roles['unauthenticated']) {
+      throw new Error(`Cannot import Identity Pool without roles.`);
+    }
+
     return {
       authRoleArn: response.Roles['authenticated'],
       authRoleName: this.getResourceNameFromArn(response.Roles['authenticated']),
