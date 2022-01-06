@@ -771,6 +771,8 @@ it('should generate id for the update input object', async () => {
   expect(updateTodoInput).toBeDefined();
 
   expectFieldsOnInputType(updateTodoInput!, ['id']);
+  const updateTodoIdField = getFieldOnInputType(updateTodoInput!, 'id');
+  expect(updateTodoIdField.type.kind).toBe('NonNullType');
 });
 
 function transformerVersionSnapshot(version: number): string {

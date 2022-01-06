@@ -275,7 +275,7 @@ export function makeUpdateInputObject(
     },
     fields: [
       // add default id field and expose that
-      ...(hasIdField ? [] : [makeInputValueDefinition('id', makeNamedType('ID'))]),
+      ...(hasIdField ? [] : [makeInputValueDefinition('id', makeNonNullType(makeNamedType('ID')))]),
       ...fields,
     ],
     directives: [],
