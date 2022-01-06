@@ -326,9 +326,9 @@ test('Test that a secondary @key with a multiple field adds an GSI.', () => {
   expectNullableFields(createInput, ['description']);
   expect(createInput.fields).toHaveLength(4);
   const updateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTestInput') as ObjectTypeDefinitionNode;
-  expectNonNullFields(updateInput, ['email', 'createdAt']);
+  expectNonNullFields(updateInput, ['id', 'email', 'createdAt']);
   expectNullableFields(updateInput, ['category', 'description']);
-  expect(updateInput.fields).toHaveLength(4);
+  expect(updateInput.fields).toHaveLength(5);
   const deleteInput = schema.definitions.find((def: any) => def.name && def.name.value === 'DeleteTestInput') as ObjectTypeDefinitionNode;
   expectNonNullFields(deleteInput, ['email', 'createdAt']);
   expect(deleteInput.fields).toHaveLength(2);
