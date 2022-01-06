@@ -105,7 +105,7 @@ export function initJSProjectWithProfile(cwd: string, settings: Object, testingW
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendLine(s.profileName)
-      .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
+      .wait('Try "amplify add api" to create a backend API and then "amplify push" to deploy everything')
       .run((err: Error) => {
         if (!err) {
           resolve();
