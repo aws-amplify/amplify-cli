@@ -327,8 +327,8 @@ test('Test that a secondary @key with a multiple field adds an GSI.', () => {
   expect(createInput.fields).toHaveLength(4);
   const updateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTestInput') as ObjectTypeDefinitionNode;
   expectNonNullFields(updateInput, ['email', 'createdAt']);
-  expectNullableFields(updateInput, ['id', 'category', 'description']);
-  expect(updateInput.fields).toHaveLength(5);
+  expectNullableFields(updateInput, ['category', 'description']);
+  expect(updateInput.fields).toHaveLength(4);
   const deleteInput = schema.definitions.find((def: any) => def.name && def.name.value === 'DeleteTestInput') as ObjectTypeDefinitionNode;
   expectNonNullFields(deleteInput, ['email', 'createdAt']);
   expect(deleteInput.fields).toHaveLength(2);
@@ -347,13 +347,13 @@ test('Test that a secondary @key with a multiple field adds an LSI with GSI FF t
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
-    featureFlags: ({
+    featureFlags: {
       getBoolean: (featureName: string, defaultValue: boolean) => {
         if (featureName === 'secondaryKeyAsGSI') return false;
         if (featureName === 'improvePluralization') return true;
         return defaultValue || false;
       },
-    } as unknown) as FeatureFlagProvider,
+    } as unknown as FeatureFlagProvider,
   });
 
   const out = transformer.transform(validSchema);
@@ -391,13 +391,13 @@ test('Test that a secondary @key with a multiple field adds an GSI based on enab
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
-    featureFlags: ({
+    featureFlags: {
       getBoolean: (featureName: string, defaultValue: boolean) => {
         if (featureName === 'secondaryKeyAsGSI') return true;
         if (featureName === 'improvePluralization') return true;
         return defaultValue || false;
       },
-    } as unknown) as FeatureFlagProvider,
+    } as unknown as FeatureFlagProvider,
   });
 
   const out = transformer.transform(validSchema);

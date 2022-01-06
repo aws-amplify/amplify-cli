@@ -1337,5 +1337,7 @@ describe('ModelTransformer: ', () => {
     expect(updateTodoInput).toBeDefined();
 
     expectFieldsOnInputType(updateTodoInput!, ['id']);
+    const updateTodoIdField = getFieldOnInputType(updateTodoInput!, 'id');
+    expect(updateTodoIdField.type.kind).toBe('NonNullType');
   });
 });
