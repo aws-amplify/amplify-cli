@@ -1,6 +1,6 @@
 import path from 'path';
 import _ from 'lodash';
-import uuid from 'uuid';
+import * as uuid from 'uuid';
 import inquirer from 'inquirer';
 import { $TSContext, stateManager, pathManager, JSONUtilities, exitOnNextTick, isCI } from 'amplify-cli-core';
 import { functionParametersFileName } from './constants';

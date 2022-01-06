@@ -3,7 +3,7 @@
  * storage category. (primarily s3 api used by predictions for identity)
  * @param {*} context
  */
-import uuid from 'uuid';
+import * as uuid from 'uuid';
 
 /**
  * @returns Name of S3 resource or undefined
