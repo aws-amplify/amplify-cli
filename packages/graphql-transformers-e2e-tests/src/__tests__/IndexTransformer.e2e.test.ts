@@ -852,7 +852,7 @@ async function listGSIShippingUpdate(orderId: string, itemId: object, sortDirect
   const input = { orderId, itemId, sortDirection };
   const result = await GRAPHQL_CLIENT.query(
     `query queryGSI(
-        $orderId: ID,
+        $orderId: ID!,
         $itemIdStatus: ModelShippingUpdateByOrderItemStatusCompositeKeyConditionInput,
         $sortDirection:  ModelSortDirection) {
             shippingUpdates(
