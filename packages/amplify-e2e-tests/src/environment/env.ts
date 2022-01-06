@@ -200,7 +200,7 @@ export function addEnvironmentHostedUI(cwd: string, settings: { envName: string 
       .sendLine(APPLE_KEY_ID)
       .wait('Enter your Private Key for your OAuth flow:')
       .sendLine(APPLE_PRIVATE_KEY)
-      .wait('Try "amplify add api" to create a backend API and then "amplify push" to deploy everything')
+      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
         if (!err) {
           resolve();
