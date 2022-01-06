@@ -110,10 +110,10 @@
     "@aws-amplify/api-graphql" "2.2.18"
     "@aws-amplify/api-rest" "2.0.29"
 
-"@aws-amplify/appsync-modelgen-plugin@1.29.10":
-  version "1.29.10"
-  resolved "https://registry.npmjs.org/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-1.29.10.tgz#9cbe219dbba14427acbdadd58b886688367fe640"
-  integrity sha512-U3DmZ/gAAIeoQwJ+TDBdvWmRywfdIQbtngvai8IAHtEEE0RKFUvollq4UmXTBd8yooj6awRuF5pHMHMFnTLTNg==
+"@aws-amplify/appsync-modelgen-plugin@1.29.12":
+  version "1.29.12"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-1.29.12.tgz#b51d412325dd36991b29a9ff41c21cb4d2fe258d"
+  integrity sha512-l+t5CHn1upGHB1n22CjhVthVIspJEX3GpbEx0hixLzWmRmS4WxY6q6CWxn/HRZWkiNY+zQ37LU/27r1p1pQYkQ==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^1.12.2"
     "@graphql-codegen/visitor-plugin-common" "1.12.2"
@@ -7787,12 +7787,12 @@ amplify-cli-core@2.4.1:
     typescript-json-schema "^0.51.0"
     which "^2.0.2"
 
-amplify-codegen@^2.23.1:
-  version "2.26.19"
-  resolved "https://registry.npmjs.org/amplify-codegen/-/amplify-codegen-2.26.19.tgz#622de3e9948355d464a90a6ddb4c84d97c8ce9ca"
-  integrity sha512-GmKTewhGaUwt+nxWLr/OWCosbwCAddo9x6y4fa54KR8jtOW4LwHftY2Efa40Qb1DtR5vJaZjmC3FMe4XnEWqTQ==
+amplify-codegen@2.26.22:
+  version "2.26.22"
+  resolved "https://registry.yarnpkg.com/amplify-codegen/-/amplify-codegen-2.26.22.tgz#fecbbc49ed3f8a68de15022888a3d2bc47f6c237"
+  integrity sha512-2+y8ZLwqgI3EdjOk41bGrdfJycUFVwvieUwtbHx69QWL1eJnFbvnpOo2b8rFEzmGoOezNYPu1WlSxiR1UTSr8Q==
   dependencies:
-    "@aws-amplify/appsync-modelgen-plugin" "1.29.10"
+    "@aws-amplify/appsync-modelgen-plugin" "1.29.12"
     "@aws-amplify/graphql-docs-generator" "2.4.2"
     "@aws-amplify/graphql-types-generator" "2.8.6"
     "@graphql-codegen/core" "1.8.3"
@@ -16138,11 +16138,6 @@ jmespath@0.15.0:
   version "0.15.0"
   resolved "https://registry.npmjs.org/jmespath/-/jmespath-0.15.0.tgz#a3f222a9aae9f966f5d27c796510e28091764217"
   integrity sha1-o/Iiqarp+Wb10nx5ZRDigJF2Qhc=
-
-jose@^4.3.7:
-  version "4.3.7"
-  resolved "https://registry.yarnpkg.com/jose/-/jose-4.3.7.tgz#5000e4a2d41ae411a5abdd11e6baf63fc2973a69"
-  integrity sha512-S7Xfsy8nN9Iw/AZxk+ZxEbd5ImIwJPM0TfAo8zI8FF+3lidQ2yiK4dqzsaPKSbZD0woNVSY0KCql6rlKc5V7ug==
 
 jose@^4.3.7:
   version "4.3.7"
