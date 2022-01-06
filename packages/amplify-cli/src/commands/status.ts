@@ -15,6 +15,12 @@ export const run = async (context: $TSContext) => {
     context.print.info(view.getStyledHelp());
   } else if (cliParams.cliOptions?.api && cliParams.cliOptions?.acm) {
     try {
+      if (typeof cliParams.cliOptions?.acm !== 'string') {
+        // In this case we have no model name passed in so error out
+        printer.error('You must pass in a model name for the acm option.');
+        return;
+      }
+
       await showApiAuthAcm(context);
     } catch (err) {
       printer.error(err?.message);
@@ -65,6 +71,23 @@ async function showApiAuthAcm(context) {
     printer.error(
       'You have multiple GraphQL APIs in the project. Only one GraphQL API is allowed per project. Run `amplify remove api` to remove an API.',
     );
+    return;
+  }
+
+  // Do a full schema compilation to make sure we are not printing an ACM for an invalid schema
+  try {
+    await providerPlugin.compileSchema(context, {
+      forceCompile: true,
+    });
+  } catch (error) {
+    printer.warn('ACM generation requires a valid schema, the provided schema is invalid.');
+
+    if (error.name) {
+      printer.error(`${error.name}: ${error.message?.trim()}`);
+    } else {
+      printer.error(`An error has occured during schema compilation: ${error.message?.trim()}`);
+    }
+
     return;
   }
 
