@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`SearchableModelTransformer with external versioning 1`] = `
-"#set( $indexPath = \\"/post/doc/_search\\" )
+"#set( $indexPath = \\"/post/_search\\" )
 #set( $nonKeywordFields = [] )
 #if( $util.isNullOrEmpty($context.args.sort) )
   #set( $sortDirection = \\"desc\\" )

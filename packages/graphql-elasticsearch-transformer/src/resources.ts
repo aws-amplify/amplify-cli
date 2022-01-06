@@ -472,7 +472,7 @@ export class ResourceFactory {
       TypeName: queryTypeName,
       RequestMappingTemplate: print(
         compoundExpression([
-          set(ref('indexPath'), str(`/${type.toLowerCase()}/doc/_search`)),
+          set(ref('indexPath'), str(`/${type.toLowerCase()}/_search`)),
           set(ref('nonKeywordFields'), list(nonKeywordFields)),
           ifElse(
             ref('util.isNullOrEmpty($context.args.sort)'),
