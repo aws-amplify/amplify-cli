@@ -3,6 +3,7 @@ const aws = require('aws-sdk');
 exports.handler = async function (event, context) {
   try {
     console.log('REQUEST RECEIVED:' + JSON.stringify(event));
+    const pricingPlan = 'RequestBasedUsage';
     if (event.RequestType == 'Create') {
       const params = {
         IndexName: event.ResourceProperties.indexName,
@@ -10,7 +11,7 @@ exports.handler = async function (event, context) {
         DataSourceConfiguration: {
           IntendedUse: event.ResourceProperties.dataSourceIntendedUse,
         },
-        PricingPlan: 'RequestBasedUsage'
+        PricingPlan: pricingPlan
       };
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.createPlaceIndex(params).promise();
@@ -28,7 +29,7 @@ exports.handler = async function (event, context) {
         DataSourceConfiguration: {
           IntendedUse: event.ResourceProperties.dataSourceIntendedUse,
         },
-        PricingPlan: 'RequestBasedUsage'
+        PricingPlan: pricingPlan
       };
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.updatePlaceIndex(params).promise();

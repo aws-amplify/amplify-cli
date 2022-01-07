@@ -100,7 +100,7 @@ export async function dataProviderWalkthrough<T extends ResourceParameters>(
     );
     const provider = (Object.keys(DataProvider).find(key => DataProvider[key as keyof typeof DataProvider] === dataProviderInput)) as DataProvider;
     if (provider === DataProvider.Esri) {
-        printer.warn(`This resource with ${DataProvider.Esri} data provider does not support tracking and routing commercial assets. Refer to ${apiDocs.pricingPlan} `);
+        printer.warn(`${DataProvider.Esri} does not support tracking and routing commercial assets. Refer to ${apiDocs.pricingPlan} `);
     }
     parameters.dataProvider = provider;
     return parameters;

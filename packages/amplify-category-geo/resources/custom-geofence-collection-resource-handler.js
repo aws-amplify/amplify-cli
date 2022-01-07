@@ -3,10 +3,11 @@ const aws = require('aws-sdk');
 exports.handler = async function (event, context) {
   try {
     console.log('REQUEST RECEIVED:' + JSON.stringify(event));
+    const pricingPlan = 'RequestBasedUsage';
     if (event.RequestType == 'Create') {
       const params = {
         CollectionName: event.ResourceProperties.collectionName,
-        PricingPlan: 'RequestBasedUsage'
+        PricingPlan: pricingPlan
       };
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.createGeofenceCollection(params).promise();
@@ -20,7 +21,7 @@ exports.handler = async function (event, context) {
     if (event.RequestType == 'Update') {
       const params = {
         CollectionName: event.ResourceProperties.collectionName,
-        PricingPlan: 'RequestBasedUsage'
+        PricingPlan: pricingPlan
       };
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.updateGeofenceCollection(params).promise();
