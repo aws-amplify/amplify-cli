@@ -42,7 +42,7 @@ test('auth with hasMany relation - only partition key', () => {
       new ModelTransformer(),
       new HasManyTransformer(),
       new BelongsToTransformer(),
-      new AuthTransformer()
+      new AuthTransformer(),
     ],
   });
   let out;
@@ -93,7 +93,7 @@ test('auth with hasOne relation mismatch fields count - missing sort key must th
       new HasOneTransformer(),
       new HasManyTransformer(),
       new BelongsToTransformer(),
-      new AuthTransformer()
+      new AuthTransformer(),
     ],
   });
   let out;
@@ -140,7 +140,7 @@ test('auth with hasOne relation match fields count - single sort key do not thro
       new HasOneTransformer(),
       new HasManyTransformer(),
       new BelongsToTransformer(),
-      new AuthTransformer()
+      new AuthTransformer(),
     ],
   });
   let out;
@@ -189,7 +189,7 @@ test('auth with hasOne relation mismatch fields count - partial missing sort key
       new HasOneTransformer(),
       new HasManyTransformer(),
       new BelongsToTransformer(),
-      new AuthTransformer()
+      new AuthTransformer(),
     ],
   });
   let out;
@@ -238,7 +238,7 @@ test('auth with hasOne relation match fields count - multiple sort keys do not t
       new HasOneTransformer(),
       new HasManyTransformer(),
       new BelongsToTransformer(),
-      new AuthTransformer()
+      new AuthTransformer(),
     ],
   });
   let out;
