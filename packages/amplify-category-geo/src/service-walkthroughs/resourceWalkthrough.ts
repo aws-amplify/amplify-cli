@@ -96,7 +96,7 @@ export async function dataProviderWalkthrough<T extends ResourceParameters>(
     const dataProviderInput = await prompter.pick<'one', string>(
         dataProviderPrompt,
         Object.values(DataProvider),
-        { initial: (parameters.dataProvider === DataProvider.Here) ? 1 : 0 }
+        { initial: (parameters.dataProvider === DataProvider.Esri) ? 0 : 1 }
     );
     const provider = (Object.keys(DataProvider).find(key => DataProvider[key as keyof typeof DataProvider] === dataProviderInput)) as DataProvider;
     if (provider === DataProvider.Esri) {

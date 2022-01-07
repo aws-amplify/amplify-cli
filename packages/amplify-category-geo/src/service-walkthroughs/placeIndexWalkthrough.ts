@@ -73,6 +73,9 @@ export const placeIndexAdvancedWalkthrough = async (
     if(await prompter.yesOrNo('Do you want to configure advanced settings?', false)) {
         // get the place index data provider
         parameters = merge(parameters, await dataProviderWalkthrough(parameters, ServiceName.PlaceIndex));
+
+        // get the data storage setting
+        parameters = merge(parameters, await placeIndexDataStorageWalkthrough(parameters));
     }
     else {
       parameters.dataProvider = DataProvider.Here;
@@ -82,7 +85,7 @@ export const placeIndexAdvancedWalkthrough = async (
     return parameters;
 };
 
-export const placeIndexDataStorageWalkthrough = async (context:$TSContext, parameters: Partial<PlaceIndexParameters>): Promise<Partial<PlaceIndexParameters>> => {
+export const placeIndexDataStorageWalkthrough = async (parameters: Partial<PlaceIndexParameters>): Promise<Partial<PlaceIndexParameters>> => {
   const areResultsStored = await prompter.yesOrNo(
     `Do you want to cache or store the results of search operations? Refer ${apiDocs.dataSourceUsage}`,
     parameters.dataSourceIntendedUse === DataSourceIntendedUse.Storage

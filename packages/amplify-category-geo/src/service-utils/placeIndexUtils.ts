@@ -16,6 +16,7 @@ import {
 import { App } from '@aws-cdk/core';
 import { getTemplateMappings } from '../provider-controllers';
 import * as path from 'path';
+import { DataProvider } from './resourceParams';
 
 const placeIndexParamsFileName = 'place-index-params.json';
 
@@ -79,7 +80,7 @@ function saveCFNParameters(
       Ref: 'UnauthRoleName',
     },
     indexName: parameters.name,
-    dataProvider: parameters.dataProvider,
+    dataProvider: parameters.dataProvider === DataProvider.Esri ? 'Esri' : 'Here',
     dataSourceIntendedUse: parameters.dataSourceIntendedUse,
     isDefault: parameters.isDefault,
   };
