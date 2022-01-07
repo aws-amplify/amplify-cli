@@ -65,18 +65,17 @@ export const modifyGeofenceCollectionResource = async (
 
   const geofenceCollectionMetaParameters = constructGeofenceCollectionMetaParameters(parameters, authResourceName);
 
-  const paramsToUpdate = ['accessType', 'dependsOn', 'dataProvider'];
+  const paramsToUpdate = ['accessType', 'dependsOn'];
   paramsToUpdate.forEach(param => {
     context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.name, param, (geofenceCollectionMetaParameters as $TSObject)[param]);
   });
 };
 
 function saveCFNParameters(
-  parameters: Pick<GeofenceCollectionParameters, 'name' | 'dataProvider' | 'isDefault'>,
+  parameters: Pick<GeofenceCollectionParameters, 'name' | 'isDefault'>,
 ) {
   const params = {
     collectionName: parameters.name,
-    dataProvider: parameters.dataProvider,
     isDefault: parameters.isDefault
   };
   updateParametersFile(params, parameters.name, parametersFileName);
@@ -105,7 +104,6 @@ export const constructGeofenceCollectionMetaParameters = (params: GeofenceCollec
     isDefault: params.isDefault,
     providerPlugin: provider,
     service: ServiceName.GeofenceCollection,
-    dataProvider: params.dataProvider,
     accessType: params.accessType,
     dependsOn: dependsOnResources
   };
@@ -117,7 +115,7 @@ export const constructGeofenceCollectionMetaParameters = (params: GeofenceCollec
  */
 export type GeofenceCollectionMetaParameters = Pick<
   GeofenceCollectionParameters,
-  'isDefault' | 'accessType' | 'dataProvider'
+  'isDefault' | 'accessType'
 > & {
   providerPlugin: string;
   service: string;
@@ -128,7 +126,6 @@ export const getCurrentGeofenceCollectionParameters = async (collectionName: str
   const currentCollectionMetaParameters = (await readResourceMetaParameters(ServiceName.GeofenceCollection, collectionName)) as GeofenceCollectionMetaParameters;
   const currentCollectionParameters = await readGeofenceCollectionParams(collectionName);
   return {
-    dataProvider: currentCollectionMetaParameters.dataProvider,
     accessType: currentCollectionMetaParameters.accessType,
     isDefault: currentCollectionMetaParameters.isDefault,
     groupPermissions: currentCollectionParameters.groupPermissions

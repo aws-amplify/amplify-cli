@@ -12,7 +12,7 @@ export type GeofenceCollectionParameters = ResourceParameters & {
  * check if all necessary geofence collection configuration parameters are available
  */
 export const isCompleteGeofenceCollectionParams = (partial: Partial<GeofenceCollectionParameters>): partial is GeofenceCollectionParameters => {
-    const requiredFields = ['providerContext', 'name', 'dataProvider', 'accessType', 'isDefault'];
+    const requiredFields = ['providerContext', 'name', 'accessType', 'isDefault'];
     const missingField = requiredFields.find(field => !_.keys(partial).includes(field));
     return !missingField;
 };

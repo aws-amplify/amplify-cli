@@ -1,5 +1,5 @@
 import { AccessType, DataProvider, ResourceParameters } from "../service-utils/resourceParams";
-import { ServiceName } from "../service-utils/constants";
+import { apiDocs, ServiceName } from "../service-utils/constants";
 import { prompter, printer, byValue, byValues } from 'amplify-prompts';
 import { $TSContext } from "amplify-cli-core";
 
@@ -99,6 +99,9 @@ export async function dataProviderWalkthrough<T extends ResourceParameters>(
         { initial: (parameters.dataProvider === DataProvider.Here) ? 1 : 0 }
     );
     const provider = (Object.keys(DataProvider).find(key => DataProvider[key as keyof typeof DataProvider] === dataProviderInput)) as DataProvider;
+    if (provider === DataProvider.Esri) {
+        printer.warn(`This resource with ${DataProvider.Esri} data provider does not support tracking and routing commercial assets. Refer to ${apiDocs.pricingPlan} `);
+    }
     parameters.dataProvider = provider;
     return parameters;
 };

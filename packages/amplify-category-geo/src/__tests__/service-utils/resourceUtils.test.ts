@@ -205,35 +205,3 @@ describe('Test reading the resource meta information', () => {
         expect(async () => await readResourceMetaParameters(ServiceName.GeofenceCollection, nonExistingGeofenceCollection)).rejects.toThrowError(errorMessage(nonExistingGeofenceCollection));
     });
 });
-
-describe('Test reading the current pricing plan for Geo resources', () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
-        stateManager.getMeta = jest.fn().mockReturnValue({
-            geo: {
-                map1: map1Params,
-                map2: map2Params,
-                placeIndex1: placeIndex1Params,
-                placeIndex2: placeIndex2Params,
-                geofenceCollection1: geofenceCollection1Params,
-                geofenceCollection2: geofenceCollection2Params
-            }
-        });
-    });
-});
-
-describe('Test updating the pricing plan for all Geo resources', () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
-        stateManager.getMeta = jest.fn().mockReturnValue({
-            geo: {
-                map1: map1Params,
-                placeIndex1: placeIndex1Params,
-                geofenceCollection1: geofenceCollection1Params
-            }
-        });
-        pathManager.getBackendDirPath = jest.fn().mockReturnValue('');
-        JSONUtilities.readJson = jest.fn().mockReturnValue({});
-        JSONUtilities.writeJson = jest.fn().mockReturnValue('');
-    });
-});

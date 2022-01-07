@@ -6,7 +6,7 @@ import { AccessType, DataProvider } from '../../service-utils/resourceParams';
 
 jest.mock('amplify-cli-core');
 
-describe('Test Map resource utility functions', () => {
+describe('Test resource utility functions', () => {
     const map1Params = {
         service: ServiceName.Map,
         isDefault: false,
@@ -41,7 +41,6 @@ describe('Test Map resource utility functions', () => {
         service: ServiceName.GeofenceCollection,
         isDefault: false,
         providerPlugin: provider,
-        dataProvider: DataProvider.Esri,
         accessType: AccessType.CognitoGroups
     };
 
@@ -109,7 +108,6 @@ describe('Test Map resource utility functions', () => {
         const getCurrentGeofenceCollectionParameters = require('../../service-utils/geofenceCollectionUtils').getCurrentGeofenceCollectionParameters;
         const geofenceCollectionParams = await getCurrentGeofenceCollectionParameters('geofenceCollection1');
         expect({
-            dataProvider: geofenceCollection1Params.dataProvider,
             accessType: geofenceCollection1Params.accessType,
             isDefault: geofenceCollection1Params.isDefault,
             groupPermissions: groupPermissions

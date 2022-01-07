@@ -6,7 +6,7 @@ import { ServiceName } from '../service-utils/constants';
 import { $TSContext } from 'amplify-cli-core';
 import { getCurrentGeofenceCollectionParameters, crudPermissionsMap } from '../service-utils/geofenceCollectionUtils';
 import { getGeoServiceMeta, updateDefaultResource, checkGeoResourceExists } from '../service-utils/resourceUtils';
-import { dataProviderWalkthrough, getServiceFriendlyName, defaultResourceQuestion } from './resourceWalkthrough';
+import { getServiceFriendlyName, defaultResourceQuestion } from './resourceWalkthrough';
 import { AccessType } from '../service-utils/resourceParams';
 import { printer, prompter, alphanumeric, byValues } from 'amplify-prompts';
 
@@ -25,9 +25,6 @@ export const createGeofenceCollectionWalkthrough = async (
 
   // get the access
   parameters = merge(parameters, await geofenceCollectionAccessWalkthrough(context, parameters));
-
-  // get the data provider
-  parameters = merge(parameters, await dataProviderWalkthrough(parameters, ServiceName.GeofenceCollection));
 
   // ask if the geofence collection should be set as a default. Default to true if it's the only geofence collection
   const currentGeofenceCollectionResources = await getGeoServiceMeta(ServiceName.GeofenceCollection);
@@ -157,7 +154,6 @@ export const updateGeofenceCollectionWalkthrough = async (
     // overwrite the parameters based on user input
 
     parameters.groupPermissions = (await geofenceCollectionAccessWalkthrough(context, parameters)).groupPermissions;
-    parameters.dataProvider = (await dataProviderWalkthrough(parameters, ServiceName.GeofenceCollection)).dataProvider;
 
     const otherCollectionResources = collectionResourceNames.filter(collectionResourceName => collectionResourceName != resourceToUpdate);
     // if this is the only geofence collection, default cannot be removed

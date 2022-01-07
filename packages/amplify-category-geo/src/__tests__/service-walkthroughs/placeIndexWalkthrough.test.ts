@@ -33,7 +33,7 @@ describe('Search walkthrough works as expected', () => {
             projectName: projectName
         },
         name: mockPlaceIndexName,
-        dataProvider: DataProvider.Esri,
+        dataProvider: DataProvider.Here,
         dataSourceIntendedUse: DataSourceIntendedUse.SingleUse,
         accessType: AccessType.AuthorizedUsers,
         isDefault: false,

@@ -64,7 +64,7 @@ export const placeIndexAdvancedWalkthrough = async (
     context: $TSContext,
     parameters: Partial<PlaceIndexParameters>
 ): Promise<Partial<PlaceIndexParameters>> => {
-    const advancedSettingOptions: string[] = ['Search data provider (default: Esri)'];
+    const advancedSettingOptions: string[] = ['Search data provider (default: HERE)'];
     advancedSettingOptions.push('Search result storage location (default: no result storage)');
     printer.info('Available advanced settings:');
     formatter.list(advancedSettingOptions);
@@ -75,7 +75,7 @@ export const placeIndexAdvancedWalkthrough = async (
         parameters = merge(parameters, await dataProviderWalkthrough(parameters, ServiceName.PlaceIndex));
     }
     else {
-      parameters.dataProvider = DataProvider.Esri;
+      parameters.dataProvider = DataProvider.Here;
       parameters.dataSourceIntendedUse = DataSourceIntendedUse.SingleUse;
     }
 

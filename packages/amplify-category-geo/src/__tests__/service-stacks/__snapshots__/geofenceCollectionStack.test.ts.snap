@@ -67,9 +67,6 @@ Object {
     "collectionName": Object {
       "Type": "String",
     },
-    "dataProvider": Object {
-      "Type": "String",
-    },
     "env": Object {
       "Type": "String",
     },
@@ -99,9 +96,6 @@ Object {
               },
             ],
           ],
-        },
-        "dataSource": Object {
-          "Ref": "dataProvider",
         },
         "env": Object {
           "Ref": "env",
@@ -426,9 +420,6 @@ Object {
     "collectionName": Object {
       "Type": "String",
     },
-    "dataProvider": Object {
-      "Type": "String",
-    },
     "env": Object {
       "Type": "String",
     },
@@ -458,9 +449,6 @@ Object {
               },
             ],
           ],
-        },
-        "dataSource": Object {
-          "Ref": "dataProvider",
         },
         "env": Object {
           "Ref": "env",
