@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.9.0-flutter-preview.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.0-flutter-preview.0...amplify-provider-awscloudformation@5.9.0-flutter-preview.1) (2022-01-07)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
 # [5.9.0-flutter-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.2...amplify-provider-awscloudformation@5.9.0-flutter-preview.0) (2021-12-08)
 
 

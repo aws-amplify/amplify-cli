@@ -1,6 +1,6 @@
 {
   "name": "amplify-provider-awscloudformation",
-  "version": "5.9.0-flutter-preview.0",
+  "version": "5.9.0-flutter-preview.1",
   "description": "AWS CloudFormation Provider",
   "repository": {
     "type": "git",
