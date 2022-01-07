@@ -46,7 +46,7 @@ export const makeUpdateInputField = (
 
   if (!hasIdField) {
     // Add id field and make it optional
-    input.addField(InputFieldWrapper.create('id', 'ID', true));
+    input.addField(InputFieldWrapper.create('id', 'ID', false));
   } else {
     const idField = input.fields.find(f => f.name === 'id');
     if (idField) {
