@@ -83,10 +83,10 @@
     strip-indent "^3.0.0"
     ts-dedent "^1.1.0"
 
-"@aws-amplify/appsync-modelgen-plugin@1.30.0-flutter-preview.0":
-  version "1.30.0-flutter-preview.0"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-1.30.0-flutter-preview.0.tgz#0d456631e3e8b20caa57cdd1d01eec94e50ed908"
-  integrity sha512-47R/hTq/Emkb6SUN5FvqC6a8WMlvMKnnQK3BXFds054fhzPjq4rYEV0ONpZVtQxXUGxlcRbic6BOGobOkJqZEA==
+"@aws-amplify/appsync-modelgen-plugin@1.30.0-flutter-preview.1":
+  version "1.30.0-flutter-preview.1"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-1.30.0-flutter-preview.1.tgz#c5a5160ed65da9e7fd8f56b37b0ffd1b8b76be26"
+  integrity sha512-lGmahJl3Kr0CfQzRsDJJ4w4xBbvEWWkPoGZ1s9sJY47tfICjnAPu8tcrk+B5usvmfhI0xKwZfDO9Z58kWuInMw==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^1.12.2"
     "@graphql-codegen/visitor-plugin-common" "1.12.2"
@@ -8378,12 +8378,12 @@ amplify-cli-core@2.4.1:
     typescript-json-schema "^0.51.0"
     which "^2.0.2"
 
-amplify-codegen@2.27.0-flutter-preview.0:
-  version "2.27.0-flutter-preview.0"
-  resolved "https://registry.yarnpkg.com/amplify-codegen/-/amplify-codegen-2.27.0-flutter-preview.0.tgz#b72ff58888707a86239a336b1cff0f9acbdaa61e"
-  integrity sha512-7n5KTi92DMypht+oMimXrIH6d06ebgkTyriuSaiswTSsJdQ1VeZxCUIYgQ54Mk2Jgp7x9fDBnKsX/zcNjNacRg==
+amplify-codegen@2.27.0-flutter-preview.1:
+  version "2.27.0-flutter-preview.1"
+  resolved "https://registry.yarnpkg.com/amplify-codegen/-/amplify-codegen-2.27.0-flutter-preview.1.tgz#8256a8430cafcbad9687b2e6f96a15cadc0af6f0"
+  integrity sha512-38ng4XHeIZowMx89w5wTAHuctxp6p4M3zXHuDgVdEaXhj/qk2xF0Oj+SE0VY6MFkZ5JTNj8sVqP7+QkUJO6N4Q==
   dependencies:
-    "@aws-amplify/appsync-modelgen-plugin" "1.30.0-flutter-preview.0"
+    "@aws-amplify/appsync-modelgen-plugin" "1.30.0-flutter-preview.1"
     "@aws-amplify/graphql-docs-generator" "2.4.2"
     "@aws-amplify/graphql-types-generator" "2.8.6"
     "@graphql-codegen/core" "1.8.3"
