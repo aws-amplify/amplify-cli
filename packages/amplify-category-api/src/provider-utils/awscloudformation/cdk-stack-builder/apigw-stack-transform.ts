@@ -62,7 +62,7 @@ export class ApigwStackTransform {
   }
 
   generateCfnInputParameters() {
-    this.cfnInputParams = {};
+    this.cfnInputParams = stateManager.getResourceParametersJson(undefined, AmplifyCategories.API, this.resourceName);
   }
 
   generateStack(authResourceName?: string, pathsWithUserPoolGroups: [string, Path][] = []) {
