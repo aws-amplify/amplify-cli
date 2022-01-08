@@ -242,6 +242,14 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
             set(ref(`groupClaim${idx}`), getIdentityClaimExp(str(role.claim!), list([]))),
             set(ref(`groupAllowedFields${idx}`), raw(JSON.stringify(role.allowedFields))),
             set(ref(`groupNullAllowedFields${idx}`), raw(JSON.stringify(role.nullAllowedFields))),
+            iff(
+              methodCall(ref(`util.isString`), ref(`groupClaim${idx}`)),
+              ifElse(
+                methodCall(ref(`util.isList`), methodCall(ref(`util.parseJson`), ref(`groupClaim${idx}`))),
+                set(ref(`groupClaim${idx}`), methodCall(ref(`util.parseJson`), ref(`groupClaim${idx}`))),
+                set(ref(`groupClaim${idx}`), list([ref(`groupClaim${idx}`)])),
+              ),
+            ),
             forEach(ref('userGroup'), ref(`groupClaim${idx}`), [
               iff(
                 entityIsList
