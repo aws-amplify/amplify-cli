@@ -1,6 +1,6 @@
 {
   "name": "amplify-cli-logger",
-  "version": "1.1.0",
+  "version": "1.1.1-beta.0",
   "description": "Amplify CLI Logger",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
