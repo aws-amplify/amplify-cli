@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-relational-transformer",
-  "version": "0.6.14-beta.3",
+  "version": "0.6.14-beta.4",
   "description": "Amplify GraphQL relational modeling transformers",
   "repository": {
     "type": "git",
@@ -27,17 +27,17 @@
     "test": "jest"
   },
   "dependencies": {
-    "@aws-amplify/graphql-auth-transformer": "0.5.6-beta.3",
-    "@aws-amplify/graphql-index-transformer": "0.8.4-beta.3",
-    "@aws-amplify/graphql-model-transformer": "0.10.4-beta.3",
-    "@aws-amplify/graphql-transformer-core": "0.15.3-beta.3",
-    "@aws-amplify/graphql-transformer-interfaces": "1.12.4-beta.3",
+    "@aws-amplify/graphql-auth-transformer": "0.5.6-beta.4",
+    "@aws-amplify/graphql-index-transformer": "0.8.4-beta.4",
+    "@aws-amplify/graphql-model-transformer": "0.10.4-beta.4",
+    "@aws-amplify/graphql-transformer-core": "0.15.3-beta.4",
+    "@aws-amplify/graphql-transformer-interfaces": "1.12.4-beta.4",
     "@aws-cdk/aws-appsync": "~1.124.0",
     "@aws-cdk/aws-dynamodb": "~1.124.0",
     "@aws-cdk/core": "~1.124.0",
     "graphql": "^14.5.8",
-    "graphql-mapping-template": "4.20.2-beta.3",
-    "graphql-transformer-common": "4.22.3-beta.3"
+    "graphql-mapping-template": "4.20.2-beta.4",
+    "graphql-transformer-common": "4.22.3-beta.4"
   },
   "devDependencies": {
     "@aws-cdk/assert": "~1.124.0"
