@@ -77,7 +77,7 @@
     "ci-info": "^2.0.0",
     "cli-table3": "^0.6.0",
     "cloudform-types": "^4.2.0",
-    "colors": "^1.4.0",
+    "colors": "1.4.0",
     "ejs": "^3.0.1",
     "enquirer": "^2.3.6",
     "env-editor": "^0.5.0",
