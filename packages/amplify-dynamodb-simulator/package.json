@@ -1,6 +1,6 @@
 {
   "name": "amplify-dynamodb-simulator",
-  "version": "2.2.11-beta.2",
+  "version": "2.2.11-beta.3",
   "description": "DynamoDB emulator nodejs wrapper",
   "repository": {
     "type": "git",
@@ -20,7 +20,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "amplify-cli-core": "2.4.6-beta.2",
+    "amplify-cli-core": "2.4.6-beta.3",
     "aws-sdk": "^2.963.0",
     "detect-port": "^1.3.0",
     "execa": "^5.1.1",

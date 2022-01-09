@@ -1,6 +1,6 @@
 {
   "name": "amplify-cli-core",
-  "version": "2.4.6-beta.2",
+  "version": "2.4.6-beta.3",
   "description": "Amplify CLI Core",
   "repository": {
     "type": "git",
@@ -25,8 +25,8 @@
   },
   "dependencies": {
     "ajv": "^6.12.3",
-    "amplify-cli-logger": "1.1.1-beta.2",
-    "amplify-prompts": "1.6.1-beta.2",
+    "amplify-cli-logger": "1.1.1-beta.3",
+    "amplify-prompts": "1.6.1-beta.3",
     "chalk": "^4.1.1",
     "ci-info": "^2.0.0",
     "cloudform-types": "^4.2.0",
@@ -52,7 +52,7 @@
     "@types/node": "^12.12.6",
     "@types/rimraf": "^3.0.0",
     "@types/uuid": "^8.0.0",
-    "amplify-function-plugin-interface": "1.9.3-beta.2",
+    "amplify-function-plugin-interface": "1.9.3-beta.3",
     "nock": "^13.0.11",
     "rimraf": "^3.0.0",
     "strip-ansi": "^6.0.0",
