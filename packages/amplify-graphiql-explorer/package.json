@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphiql-explorer",
-  "version": "2.4.2-beta.5",
+  "version": "2.4.2-beta.6",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.4",
