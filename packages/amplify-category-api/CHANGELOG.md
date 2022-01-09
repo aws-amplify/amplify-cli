@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.9-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.1.8...@aws-amplify/amplify-category-api@1.1.9-beta.0) (2022-01-09)
+
+
+### Bug Fixes
+
+* update dep and use node test environment ([#9434](https://github.com/aws-amplify/amplify-cli/issues/9434)) ([1691327](https://github.com/aws-amplify/amplify-cli/commit/1691327740ea40d0ebb974e6aeabc64c62b288ef))
+
+
+
+
+
 ## [1.1.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.1.7...@aws-amplify/amplify-category-api@1.1.8) (2021-12-21)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.13.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.13.1...amplify-headless-interface@1.13.2-beta.0) (2022-01-09)
+
+
+### Bug Fixes
+
+* add e2e test for geo headless and update schema ([#8636](https://github.com/aws-amplify/amplify-cli/issues/8636)) ([1e76668](https://github.com/aws-amplify/amplify-cli/commit/1e76668ae92cb120ebe53a8bf93fa42bee9560fb))
+
+
+
+
+
 ## [1.13.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.11.0...amplify-headless-interface@1.13.1) (2021-11-15)
 
 **Note:** Version bump only for package amplify-headless-interface

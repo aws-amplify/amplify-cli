@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.10.3...@aws-amplify/graphql-model-transformer@0.10.4-beta.0) (2022-01-09)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** add id field to update input objects ([#9276](https://github.com/aws-amplify/amplify-cli/issues/9276)) ([45cd973](https://github.com/aws-amplify/amplify-cli/commit/45cd9736b5fc09d78a3f445f62fc2a971c11fec7))
+* **graphql:** correct typo filterExpression on v2 resolvers ([#9412](https://github.com/aws-amplify/amplify-cli/issues/9412)) ([71bf468](https://github.com/aws-amplify/amplify-cli/commit/71bf4688952a5f43640297bf31ea9c59d1c679c9))
+* make update input id field required ([#9452](https://github.com/aws-amplify/amplify-cli/issues/9452)) ([345fe28](https://github.com/aws-amplify/amplify-cli/commit/345fe28a60bbf1de32496430e38e25463a77e96c))
+
+
+
+
+
 ## [0.10.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.10.2...@aws-amplify/graphql-model-transformer@0.10.3) (2021-12-21)
 
 

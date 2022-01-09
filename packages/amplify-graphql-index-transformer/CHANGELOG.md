@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.8.3...@aws-amplify/graphql-index-transformer@0.8.4-beta.0) (2022-01-09)
+
+
+### Bug Fixes
+
+* **graphql:** correct typo filterExpression on v2 resolvers ([#9412](https://github.com/aws-amplify/amplify-cli/issues/9412)) ([71bf468](https://github.com/aws-amplify/amplify-cli/commit/71bf4688952a5f43640297bf31ea9c59d1c679c9))
+* **graphql:** make hash key as non null type for index transformer ([#9411](https://github.com/aws-amplify/amplify-cli/issues/9411)) ([e0f7de6](https://github.com/aws-amplify/amplify-cli/commit/e0f7de6bdba1ddc484de341e903bc56460bbb442))
+* update [@primary](https://github.com/primary)Key get/list queries for lowercase models ([#9409](https://github.com/aws-amplify/amplify-cli/issues/9409)) ([9c718ae](https://github.com/aws-amplify/amplify-cli/commit/9c718ae82548b795ced2b51ebb689f4cb6b300e7))
+
+
+
+
+
 ## [0.8.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.8.2...@aws-amplify/graphql-index-transformer@0.8.3) (2021-12-21)
 
 
