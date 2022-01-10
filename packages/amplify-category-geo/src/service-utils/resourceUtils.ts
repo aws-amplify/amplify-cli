@@ -119,6 +119,11 @@ export const checkAuthConfig = async (context: $TSContext, parameters: Pick<Reso
       parameters.name,
     ]);
 
+    // If auth is not added, throw error
+    if (!checkResult.authEnabled) {
+      throw new Error(`Adding ${service} to your project requires the Auth category for managing authentication rules. Please add auth using "amplify add auth"`);
+    }
+
     // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
     // configuration.
     if (checkResult.authImported === true && checkResult.errors && checkResult.errors.length > 0) {
@@ -130,9 +135,7 @@ export const checkAuthConfig = async (context: $TSContext, parameters: Pick<Reso
     }
 
     // If auth is not imported and there were errors, adjust or enable auth configuration
-    if (!checkResult.authEnabled || !checkResult.requirementsMet) {
-      printer.warn(`Adding ${service} to your project requires the Auth category for managing authentication rules.`);
-
+    if (!checkResult.requirementsMet) {
       try {
         await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
           context,

@@ -18,7 +18,7 @@ executors:
 
   l: &linux-e2e-executor
     docker:
-      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
     resource_class: large
     environment:
@@ -72,6 +72,9 @@ jobs:
     steps:
       - checkout
       - run: yarn run production-build
+      - run:
+          name: Build tests
+          command: yarn build-tests
       - save_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
           paths:
@@ -290,7 +293,7 @@ jobs:
       # - clean_e2e_resources:
       #     os: << parameters.os >>
 
-  amplify_migration_tests_v4:
+  amplify_migration_tests_v5:
     <<: *defaults
     steps:
       - attach_workspace:
@@ -300,12 +303,38 @@ jobs:
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: Run tests migrating from CLI v4.0.0
+          name: Run tests migrating from CLI v5.2.0
           command: |
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v4.0.0 --maxWorkers=3 $TEST_SUITE
+            retry yarn run migration_v5.2.0 --maxWorkers=3 $TEST_SUITE
+          no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
+      - store_test_results:
+          path: packages/amplify-migration-tests/
+      - store_artifacts:
+          path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
+    working_directory: ~/repo
+
+  amplify_migration_tests_v6:
+    environment:
+      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: Run tests migrating from CLI v6.1.0
+          command: |
+            source .circleci/local_publish_helpers.sh
+            changeNpmGlobalPath
+            cd packages/amplify-migration-tests
+            retry yarn run migration_v6.1.0 --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -358,32 +387,6 @@ jobs:
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
             retry yarn run migration_v4.52.0_multienv_layers --maxWorkers=3 $TEST_SUITE
-          no_output_timeout: 90m
-      - run: *scan_e2e_test_artifacts
-      - store_test_results:
-          path: packages/amplify-migration-tests/
-      - store_artifacts:
-          path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
-    working_directory: ~/repo
-
-  amplify_migration_tests_latest:
-    environment:
-      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ./
-      - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
-      - restore_cache:
-          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
-      - run:
-          name: Run tests migrating from latest CLI
-          command: |
-            source .circleci/local_publish_helpers.sh
-            changeNpmGlobalPath
-            cd packages/amplify-migration-tests
-            retry yarn run migration --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -762,7 +765,7 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build_pkg_binaries
-      - amplify_migration_tests_latest:
+      - amplify_migration_tests_v6:
           context:
             - amplify-ecr-image-pull
             - e2e-auth-credentials
@@ -778,7 +781,7 @@ workflows:
             - build
           # post-steps:
           #   - run: *clean_e2e_resources
-      - amplify_migration_tests_v4:
+      - amplify_migration_tests_v5:
           context:
             - amplify-ecr-image-pull
             - e2e-auth-credentials
@@ -864,8 +867,8 @@ workflows:
           requires:
             - amplify_e2e_tests
             - amplify_e2e_tests_pkg
-            - amplify_migration_tests_latest
-            - amplify_migration_tests_v4
+            - amplify_migration_tests_v6
+            - amplify_migration_tests_v5
 
       - deploy:
           context:
@@ -880,8 +883,8 @@ workflows:
             - amplify_e2e_tests_pkg
             - amplify_sudo_install_test
             - amplify_console_integration_tests
-            - amplify_migration_tests_latest
-            - amplify_migration_tests_v4
+            - amplify_migration_tests_v6
+            - amplify_migration_tests_v5
             - amplify_migration_tests_non_multi_env_layers
             - amplify_migration_tests_multi_env_layers
             - github_prerelease_install_sanity_check

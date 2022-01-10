@@ -1,7 +1,7 @@
 const uuid = require('uuid');
 const { booleanOptions, oAuthScopes } = require('./string-maps');
 
-const [sharedId] = uuid().split('-');
+const [sharedId] = uuid.v4().split('-');
 
 const generalDefaults = projectName => ({
   sharedId,

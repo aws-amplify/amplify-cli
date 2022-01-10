@@ -1,11 +1,20 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager } from 'amplify-cli-core';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
+import {
+  $TSAny,
+  $TSContext,
+  $TSObject,
+  AmplifyCategories,
+  AmplifySupportedService,
+  exitOnNextTick,
+  JSONUtilities,
+  pathManager,
+  stateManager,
+} from 'amplify-cli-core';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 import { ProviderName } from '../constants';
-import { getResourceDirPath } from '../resourceParams';
 
 type ApiGatewayAuthStackProps = Readonly<{
   description: string;
@@ -27,10 +36,9 @@ type ApiGatewayPolicyCreationState = {
 };
 
 export const APIGW_AUTH_STACK_LOGICAL_ID = 'APIGatewayAuthStack';
-const API_PARAMS_FILE = 'api-params.json';
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const MAX_MANAGED_POLICY_SIZE = 6_144;
-const S3_UPLOAD_PATH = `api/${APIGW_AUTH_STACK_LOGICAL_ID}.json`;
+const S3_UPLOAD_PATH = `${AmplifyCategories.API}/${APIGW_AUTH_STACK_LOGICAL_ID}.json`;
 const AUTH_ROLE_NAME = 'authRoleName';
 const UNAUTH_ROLE_NAME = 'unauthRoleName';
 
@@ -61,10 +69,6 @@ class ApiGatewayAuthStack extends cdk.Stack {
     let unauthManagedPolicy;
 
     props.apiGateways.forEach(apiGateway => {
-      if (!Array.isArray(apiGateway.params.paths)) {
-        return;
-      }
-
       const apiRef = new cdk.CfnParameter(this, apiGateway.resourceName, {
         type: 'String',
       });
@@ -82,11 +86,12 @@ class ApiGatewayAuthStack extends cdk.Stack {
         namePrefix: '',
       };
 
-      apiGateway.params.paths.forEach(path => {
-        state.path = path;
+      Object.keys(apiGateway.params.paths).forEach(pathName => {
+        state.path = apiGateway.params.paths[pathName];
+        state.path.name = pathName;
 
-        if (apiGateway.params.privacy.auth) {
-          state.methods = Array.isArray(path?.privacy?.auth) ? path.privacy.auth : [];
+        if (Array.isArray(apiGateway?.params?.paths?.[pathName]?.permissions?.auth)) {
+          state.methods = convertCrudOperationsToPermissions(apiGateway.params.paths[pathName].permissions.auth);
           state.roleCount = authRoleCount;
           state.roleName = authRoleName;
           state.policyDocSize = authPolicyDocSize;
@@ -96,8 +101,8 @@ class ApiGatewayAuthStack extends cdk.Stack {
           ({ roleCount: authRoleCount, policyDocSize: authPolicyDocSize, managedPolicy: authManagedPolicy } = state);
         }
 
-        if (apiGateway.params.privacy.unauth) {
-          state.methods = Array.isArray(path?.privacy?.unauth) ? path.privacy.unauth : [];
+        if (Array.isArray(apiGateway?.params?.paths?.[pathName]?.permissions?.guest)) {
+          state.methods = convertCrudOperationsToPermissions(apiGateway.params.paths[pathName].permissions.guest);
           state.roleCount = unauthRoleCount;
           state.roleName = unauthRoleName;
           state.policyDocSize = unauthPolicyDocSize;
@@ -117,9 +122,10 @@ class ApiGatewayAuthStack extends cdk.Stack {
 
   private createPoliciesFromResources(options: ApiGatewayPolicyCreationState) {
     const { apiGateway, apiRef, env, roleName, path, methods, namePrefix } = options;
+    const policyResourceName = String(path.name).replace(/{[a-zA-Z0-9\-]+}/g, '*');
 
     methods.forEach(method => {
-      const policySizeIncrease = computePolicySizeIncrease(method.length, path.policyResourceName.length, apiGateway.resourceName.length);
+      const policySizeIncrease = computePolicySizeIncrease(method.length, policyResourceName.length, apiGateway.resourceName.length);
 
       options.policyDocSize += policySizeIncrease;
       // If a managed policy hasn't been created yet, or the maximum
@@ -127,13 +133,13 @@ class ApiGatewayAuthStack extends cdk.Stack {
       if (options.roleCount === 0 || options.policyDocSize > MAX_MANAGED_POLICY_SIZE) {
         // Initial size of 100 for version, statement, etc.
         options.policyDocSize = 100 + policySizeIncrease;
-        options.roleCount++;
-        options.managedPolicy = createManagedPolicy(this, `${namePrefix}${options.roleCount}`, (roleName as unknown) as string);
+        ++options.roleCount;
+        options.managedPolicy = createManagedPolicy(this, `${namePrefix}${options.roleCount}`, roleName as unknown as string);
       }
 
       options.managedPolicy.policyDocument.Statement[0].Resource.push(
-        createApiResource(this.region, this.account, apiRef, env, method, `${path.policyResourceName}/*`),
-        createApiResource(this.region, this.account, apiRef, env, method, path.policyResourceName),
+        createApiResource(this.region, this.account, apiRef, env, method, `${policyResourceName}/*`),
+        createApiResource(this.region, this.account, apiRef, env, method, policyResourceName),
       );
     });
   }
@@ -158,7 +164,7 @@ function createApiResource(region, account, api, env, method, resourceName) {
     ':',
     api,
     '/',
-    (cdk.Fn.conditionIf('ShouldNotCreateEnvResources', 'Prod', env) as unknown) as string,
+    cdk.Fn.conditionIf('ShouldNotCreateEnvResources', 'Prod', env) as unknown as string,
     method,
     resourceName,
   ]);
@@ -173,46 +179,58 @@ function computePolicySizeIncrease(methodLength: number, pathLength: number, nam
   return 380 + 2 * (methodLength + pathLength + nameLength);
 }
 
-export function consolidateApiGatewayPolicies(context: $TSContext, stackName: string): $TSObject {
+export async function consolidateApiGatewayPolicies(context: $TSContext, stackName: string): Promise<$TSObject> {
   const apiGateways = [];
-  const { amplifyMeta } = context.amplify.getProjectDetails();
-  const apis = amplifyMeta?.api ?? {};
+  const meta = stateManager.getMeta();
+  const apis: $TSObject = meta?.api ?? {};
 
   try {
-    const cfnPath = path.join(pathManager.getBackendDirPath(), 'api', `${APIGW_AUTH_STACK_LOGICAL_ID}.json`);
+    const cfnPath = path.join(pathManager.getBackendDirPath(), AmplifyCategories.API, `${APIGW_AUTH_STACK_LOGICAL_ID}.json`);
     fs.unlinkSync(cfnPath);
   } catch {}
 
-  Object.keys(apis).forEach(resourceName => {
-    const resource = apis[resourceName];
-    const apiParams = loadApiWithPrivacyParams(context, resourceName, resource);
+  for (const [resourceName, resource] of Object.entries(apis)) {
+    const cliInputs = await loadApiCliInputs(context, resourceName, resource);
 
-    if (!apiParams) {
-      return;
+    if (cliInputs) {
+      const api = { ...resource, resourceName, params: cliInputs };
+      apiGateways.push(api);
     }
-
-    const api = { ...resource, resourceName, params: apiParams };
-    updateExistingApiCfn(context, api);
-    apiGateways.push(api);
-  });
+  }
 
   if (apiGateways.length === 0) {
     return { APIGatewayAuthURL: undefined };
   }
 
-  return { APIGatewayAuthURL: createApiGatewayAuthResources(context, stackName, apiGateways) };
+  return { APIGatewayAuthURL: createApiGatewayAuthResources(stackName, apiGateways) };
 }
 
-function createApiGatewayAuthResources(context: $TSContext, stackName: string, apiGateways: $TSAny): string | undefined {
+enum CrudOperation {
+  CREATE = 'create',
+  READ = 'read',
+  UPDATE = 'update',
+  DELETE = 'delete',
+}
+
+function convertCrudOperationsToPermissions(crudOps: CrudOperation[]) {
+  const opMap: Record<CrudOperation, string[]> = {
+    [CrudOperation.CREATE]: ['/POST'],
+    [CrudOperation.READ]: ['/GET'],
+    [CrudOperation.UPDATE]: ['/PUT', '/PATCH'],
+    [CrudOperation.DELETE]: ['/DELETE'],
+  };
+  return crudOps.flatMap(op => opMap[op]);
+}
+
+function createApiGatewayAuthResources(stackName: string, apiGateways: $TSAny): string | undefined {
   const stack = new ApiGatewayAuthStack(undefined, 'Amplify', {
     description: 'API Gateway policy stack created using Amplify CLI',
     stackName,
     apiGateways,
   });
   const cfn = stack.toCloudFormation();
-  const { amplify } = context;
-  const { DeploymentBucketName } = amplify.getProjectMeta()?.providers?.[ProviderName] ?? {};
-  const cfnPath = path.join(pathManager.getBackendDirPath(), 'api', `${APIGW_AUTH_STACK_LOGICAL_ID}.json`);
+  const { DeploymentBucketName } = stateManager.getMeta()?.providers?.[ProviderName] ?? {};
+  const cfnPath = path.join(pathManager.getBackendDirPath(), AmplifyCategories.API, `${APIGW_AUTH_STACK_LOGICAL_ID}.json`);
 
   if (!cfn.Resources || Object.keys(cfn.Resources).length === 0) {
     return;
@@ -223,113 +241,32 @@ function createApiGatewayAuthResources(context: $TSContext, stackName: string, a
   return `https://s3.amazonaws.com/${DeploymentBucketName}/amplify-cfn-templates/${S3_UPLOAD_PATH}`;
 }
 
-export function loadApiWithPrivacyParams(context: $TSContext, name: string, resource: any): object | undefined {
-  if (resource.providerPlugin !== ProviderName || resource.service !== 'API Gateway' || name === 'AdminQueries') {
+export async function loadApiCliInputs(context: $TSContext, resourceName: string, resource: $TSObject): Promise<$TSObject | undefined> {
+  if (resource.providerPlugin !== ProviderName || resource.service !== AmplifySupportedService.APIGW || resourceName === 'AdminQueries') {
     return;
   }
 
-  const apiParamsPath = path.join(getResourceDirPath(context, 'api', name), API_PARAMS_FILE);
-  const apiParams: any = JSONUtilities.readJson(apiParamsPath, { throwIfNotExist: false }) ?? {};
+  const projectRoot = pathManager.findProjectRoot();
 
-  if (apiParams?.privacy?.auth === 0 && apiParams?.privacy?.unauth === 0) {
-    return;
-  }
+  if (!stateManager.resourceInputsJsonExists(projectRoot, AmplifyCategories.API, resourceName)) {
+    const legacyParamsFilePath = path.join(
+      pathManager.getResourceDirectoryPath(projectRoot, AmplifyCategories.API, resourceName),
+      'api-params.json',
+    );
 
-  return apiParams;
-}
+    if (fs.existsSync(legacyParamsFilePath)) {
+      // migration is required
+      await context.amplify.invokePluginMethod(context, AmplifyCategories.API, AmplifySupportedService.APIGW, 'migrate', [
+        context,
+        AmplifySupportedService.APIGW,
+      ]);
 
-function updateExistingApiCfn(context: $TSContext, api: $TSObject): void {
-  const resourceName = api.resourceName || api.params.resourceName;
-  const resourceDir = getResourceDirPath(context, 'api', resourceName);
-  const cfnTemplate = path.join(resourceDir, `${resourceName}-cloudformation-template.json`);
-  const paramsFile = path.join(resourceDir, 'parameters.json');
-  const apiParamsFile = path.join(resourceDir, API_PARAMS_FILE);
-  const cfn: any = JSONUtilities.readJson(cfnTemplate, { throwIfNotExist: false }) ?? {};
-  const parameterJson = JSONUtilities.readJson(paramsFile, { throwIfNotExist: false }) ?? {};
-
-  if (!cfn) {
-    throw new Error(`CloudFormation template missing for REST API ${resourceName}`);
-  }
-
-  const parameters = cfn.Parameters ?? {};
-  const resources = cfn.Resources ?? {};
-  let modified = false;
-
-  for (const parameterName in parameters) {
-    if (parameterName === AUTH_ROLE_NAME || parameterName === UNAUTH_ROLE_NAME) {
-      delete parameters[parameterName];
-      modified = true;
-    }
-  }
-
-  for (const parameterName in parameterJson as any) {
-    if (parameterName === AUTH_ROLE_NAME || parameterName === UNAUTH_ROLE_NAME) {
-      delete parameterJson[parameterName];
-      modified = true;
-    }
-  }
-
-  // eslint-disable-next-line guard-for-in
-  for (const resourceName in resources) {
-    const resource = resources[resourceName];
-
-    if (resource.Type === 'AWS::IAM::Policy') {
-      const roles = resource?.Properties?.Roles;
-
-      if (Array.isArray(roles) && roles.length === 1) {
-        const roleName = roles[0].Ref;
-
-        if (roleName === AUTH_ROLE_NAME || roleName === UNAUTH_ROLE_NAME) {
-          delete resources[resourceName];
-          modified = true;
-        }
-      }
-    } else if (resource.Type === 'AWS::ApiGateway::RestApi') {
-      cfn.Outputs ??= {};
-
-      // Ensure that th REST API's ID is an output of the stack.
-      if (!cfn.Outputs.ApiId) {
-        cfn.Outputs.ApiId = {
-          Description: 'API ID (prefix of API URL)',
-          Value: { Ref: resourceName },
-        };
-        modified = true;
+      // answered no to migration
+      if (!stateManager.resourceInputsJsonExists(undefined, AmplifyCategories.API, resourceName)) {
+        exitOnNextTick(0);
       }
     }
   }
 
-  if (Array.isArray(api.params.paths)) {
-    api.params.paths.forEach(path => {
-      if (!path.policyResourceName) {
-        path.policyResourceName = String(path.name).replace(/{[a-zA-Z0-9\-]+}/g, '*');
-        modified = true;
-      }
-
-      if (typeof path?.privacy?.auth === 'string') {
-        path.privacy.auth = convertPermissionStringToCrud(path.privacy.auth);
-        modified = true;
-      }
-
-      if (typeof path?.privacy?.unauth === 'string') {
-        path.privacy.unauth = convertPermissionStringToCrud(path.privacy.unauth);
-        modified = true;
-      }
-    });
-  }
-
-  if (modified) {
-    JSONUtilities.writeJson(cfnTemplate, cfn);
-    JSONUtilities.writeJson(paramsFile, parameterJson);
-    JSONUtilities.writeJson(apiParamsFile, api.params);
-  }
-}
-
-function convertPermissionStringToCrud(permissions: string): string[] {
-  if (permissions === 'r') {
-    return ['/GET'];
-  } else if (permissions === 'rw') {
-    return ['/POST', '/GET', '/PUT', '/PATCH', '/DELETE'];
-  }
-
-  return [];
+  return stateManager.getResourceInputsJson(projectRoot, AmplifyCategories.API, resourceName, { throwIfNotExist: false });
 }

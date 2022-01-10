@@ -2,7 +2,7 @@ const uuid = require('uuid');
 
 const getAllS3Defaults = project => {
   const name = project.projectConfig.projectName.toLowerCase();
-  const [shortId] = uuid().split('-');
+  const [shortId] = uuid.v4().split('-');
 
   const authRoleName = {
     Ref: 'AuthRoleName',
@@ -14,7 +14,7 @@ const getAllS3Defaults = project => {
 
   const defaults = {
     resourceName: `s3${shortId}`,
-    bucketName: `${name}${uuid().replace(/-/g, '')}`,
+    bucketName: `${name}${uuid.v4().replace(/-/g, '')}`,
     authPolicyName: `s3_amplify_${shortId}`,
     unauthPolicyName: `s3_amplify_${shortId}`,
 
@@ -29,7 +29,7 @@ const getAllS3Defaults = project => {
 };
 
 const getAllAuthDefaults = () => {
-  const [policyId] = uuid().split('-');
+  const [policyId] = uuid.v4().split('-');
   const authAnswers = {
     AuthenticatedAllowList: 'ALLOW',
     GuestAllowList: 'DISALLOW',
@@ -49,15 +49,14 @@ const getAllAuthDefaults = () => {
 
   return authAnswers;
 };
-const getAllAuthDefaultPerm = ( userInput ) => {
-  userInput.authAccess =  ['CREATE_AND_UPDATE', 'READ', 'DELETE'];
+const getAllAuthDefaultPerm = userInput => {
+  userInput.authAccess = ['CREATE_AND_UPDATE', 'READ', 'DELETE'];
   userInput.guestAccess = [];
   return userInput;
-}
-
+};
 
 const getAllAuthAndGuestDefaults = () => {
-  const [policyId] = uuid().split('-');
+  const [policyId] = uuid.v4().split('-');
   const authAndGuestAnswers = {
     AuthenticatedAllowList: 'ALLOW',
     GuestAllowList: 'ALLOW',
@@ -79,11 +78,11 @@ const getAllAuthAndGuestDefaults = () => {
   return authAndGuestAnswers;
 };
 
-const getAllAuthAndGuestDefaultPerm = ( userInput ) => {
-  userInput.authAccess =  ['CREATE_AND_UPDATE', 'READ', 'DELETE'];
+const getAllAuthAndGuestDefaultPerm = userInput => {
+  userInput.authAccess = ['CREATE_AND_UPDATE', 'READ', 'DELETE'];
   userInput.guestAccess = ['CREATE_AND_UPDATE', 'READ', 'DELETE'];
   return userInput;
-}
+};
 
 module.exports = {
   getAllS3Defaults,

@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.12.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.12.3...@aws-amplify/graphql-transformer-interfaces@1.12.5) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-interfaces
+
+
+
+
+
+## [1.12.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.12.2...@aws-amplify/graphql-transformer-interfaces@1.12.3) (2021-11-21)
+
+
+### Bug Fixes
+
+* group response and request resolvers by slot ([#8980](https://github.com/aws-amplify/amplify-cli/issues/8980)) ([74cbcc3](https://github.com/aws-amplify/amplify-cli/commit/74cbcc3799201eea4b68c26f4e44ad6bee6704ad))
+
+
+
+
+
+## [1.12.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.12.1...@aws-amplify/graphql-transformer-interfaces@1.12.2) (2021-11-17)
+
+
+### Bug Fixes
+
+* append apiKey if global auth is enabled and its not default auth ([#8843](https://github.com/aws-amplify/amplify-cli/issues/8843)) ([3aadcde](https://github.com/aws-amplify/amplify-cli/commit/3aadcde2225f0ede5c5d94c2a4cd9d1afece5288))
+* passing ddb params from root to nested model stacks ([#8766](https://github.com/aws-amplify/amplify-cli/issues/8766)) ([7124cc0](https://github.com/aws-amplify/amplify-cli/commit/7124cc0c8df9fa3261b51141184c0c635bdff738))
+
+
+
+
+
 ## [1.12.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.10.1...@aws-amplify/graphql-transformer-interfaces@1.12.1) (2021-11-15)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-interfaces

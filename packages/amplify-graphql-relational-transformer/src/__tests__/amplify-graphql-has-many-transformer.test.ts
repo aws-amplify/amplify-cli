@@ -1,6 +1,6 @@
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { ConflictHandlerType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { Kind, parse } from 'graphql';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
 
@@ -279,8 +279,8 @@ test('bidirectional has many query case', () => {
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
-  expect((out.stacks as any).User.Resources.PostauthorResolver).toBeTruthy();
-  expect((out.stacks as any).Post.Resources.UserpostsResolver).toBeTruthy();
+  expect((out.stacks as any).ConnectionStack.Resources.PostauthorResolver).toBeTruthy();
+  expect((out.stacks as any).ConnectionStack.Resources.UserpostsResolver).toBeTruthy();
 
   const userType = schema.definitions.find((def: any) => def.name && def.name.value === 'User') as any;
   expect(userType).toBeDefined();
@@ -327,7 +327,7 @@ test('has many query with a composite sort key', () => {
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
-  expect((out.stacks as any).Test1.Resources.TestotherPartsResolver).toBeTruthy();
+  expect((out.stacks as any).ConnectionStack.Resources.TestotherPartsResolver).toBeTruthy();
 
   const testObjType = schema.definitions.find((def: any) => def.name && def.name.value === 'Test') as any;
   expect(testObjType).toBeDefined();
@@ -543,7 +543,7 @@ test('the limit of 100 is used by default', () => {
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
-  expect(out.pipelineFunctions['Post.comments.req.vtl']).toContain('#set( $limit = $util.defaultIfNull($context.args.limit, 100) )');
+  expect(out.resolvers['Post.comments.req.vtl']).toContain('#set( $limit = $util.defaultIfNull($context.args.limit, 100) )');
 });
 
 test('the default limit argument can be overridden', () => {
@@ -566,7 +566,7 @@ test('the default limit argument can be overridden', () => {
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
-  expect(out.pipelineFunctions['Post.comments.req.vtl']).toContain('#set( $limit = $util.defaultIfNull($context.args.limit, 50) )');
+  expect(out.resolvers['Post.comments.req.vtl']).toContain('#set( $limit = $util.defaultIfNull($context.args.limit, 50) )');
 });
 
 test('validates VTL of a complex schema', () => {
@@ -644,5 +644,74 @@ test('validates VTL of a complex schema', () => {
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
+});
+
+test('@hasMany and @hasMany can point at each other if DataStore is not enabled', () => {
+  const inputSchema = `
+    type Blog @model {
+      id: ID!
+      posts: [Post] @hasMany
+    }
+
+    type Post @model {
+      id: ID!
+      blog: [Blog] @hasMany
+    }`;
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new HasManyTransformer()],
+  });
+
+  const out = transformer.transform(inputSchema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+});
+
+test('@hasMany and @hasMany cannot point at each other if DataStore is enabled', () => {
+  const inputSchema = `
+    type Blog @model {
+      id: ID!
+      posts: [Post] @hasMany
+    }
+
+    type Post @model {
+      id: ID!
+      blog: [Blog] @hasMany
+    }`;
+  const transformer = new GraphQLTransform({
+    resolverConfig: {
+      project: {
+        ConflictDetection: 'VERSION',
+        ConflictHandler: ConflictHandlerType.AUTOMERGE,
+      },
+    },
+    transformers: [new ModelTransformer(), new HasOneTransformer(), new HasManyTransformer()],
+  });
+
+  expect(() => transformer.transform(inputSchema)).toThrowError(
+    `Blog and Post cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead.`,
+  );
+});
+
+test('recursive @hasMany relationships are supported if DataStore is enabled', () => {
+  const inputSchema = `
+    type Blog @model {
+      id: ID!
+      posts: [Blog] @hasMany
+    }`;
+  const transformer = new GraphQLTransform({
+    resolverConfig: {
+      project: {
+        ConflictDetection: 'VERSION',
+        ConflictHandler: ConflictHandlerType.AUTOMERGE,
+      },
+    },
+    transformers: [new ModelTransformer(), new HasManyTransformer()],
+  });
+
+  const out = transformer.transform(inputSchema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
 });

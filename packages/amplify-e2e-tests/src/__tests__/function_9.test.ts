@@ -79,7 +79,7 @@ describe('nodejs', () => {
       await initJSProjectWithProfile(projRoot, {
         name: appName,
       });
-      await addApiWithoutSchema(projRoot);
+      await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
       await updateApiSchema(projRoot, appName, 'two-model-schema.graphql');
 
       const random = Math.floor(Math.random() * 10000);
@@ -146,7 +146,7 @@ describe('nodejs', () => {
       await initJSProjectWithProfile(projRoot, {
         name: appName,
       });
-      await addApiWithoutSchema(projRoot);
+      await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
       await updateApiSchema(projRoot, appName, 'two-model-schema.graphql');
 
       const random = Math.floor(Math.random() * 10000);
@@ -214,6 +214,7 @@ describe('nodejs', () => {
       await initJSProjectWithProfile(projRoot, {});
       await addApi(projRoot, {
         IAM: {},
+        transformerVersion: 1,
       });
       const beforeMeta = getBackendConfig(projRoot);
       const apiName = Object.keys(beforeMeta.api)[0];
@@ -270,9 +271,9 @@ describe('nodejs', () => {
           }
         }`;
       await initJSProjectWithProfile(projRoot, { name: appName });
-      addFeatureFlag(projRoot, 'graphqltransformer', 'transformerversion', GraphQLTransformerLatestVersion);
       await addApi(projRoot, {
         IAM: {},
+        transformerVersion: GraphQLTransformerLatestVersion,
       });
       updateApiSchema(projRoot, appName, 'iam_simple_model.graphql');
       const beforeMeta = getBackendConfig(projRoot);
@@ -321,6 +322,7 @@ describe('nodejs', () => {
       await initJSProjectWithProfile(projRoot, {});
       await addApi(projRoot, {
         IAM: {},
+        transformerVersion: 1,
       });
       const beforeMeta = getBackendConfig(projRoot);
       const apiName = Object.keys(beforeMeta.api)[0];

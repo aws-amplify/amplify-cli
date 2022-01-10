@@ -83,6 +83,7 @@ function saveCFNParameters(
     dataProvider: parameters.dataProvider === DataProvider.Esri ? 'Esri' : 'Here',
     dataSourceIntendedUse: parameters.dataSourceIntendedUse,
     isDefault: parameters.isDefault,
+    pricingPlan: undefined
   };
   updateParametersFile(params, parameters.name, parametersFileName);
 }

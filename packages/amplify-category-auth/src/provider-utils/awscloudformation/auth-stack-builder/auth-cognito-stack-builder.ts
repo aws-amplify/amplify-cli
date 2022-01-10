@@ -50,6 +50,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   private _cfnConditionMap: Map<string, cdk.CfnCondition> = new Map();
   private _cfnOutputMap: Map<string, cdk.CfnOutput> = new Map();
   private _cfnMappingMap: Map<string, cdk.CfnMapping> = new Map();
+  private _cfnResourceMap: Map<string, cdk.CfnResource> = new Map();
   customMessageConfirmationBucket?: s3.CfnBucket;
   snsRole: iam.CfnRole | undefined;
   userPool: cognito.CfnUserPool | undefined;
@@ -103,13 +104,25 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     this.lambdaTriggerPermissions = {};
   }
   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void {
-    throw new Error('Method not implemented.');
+    if (!this._cfnResourceMap.has(logicalId)) {
+      this._cfnResourceMap.set(logicalId, new cdk.CfnResource(this, logicalId, props));
+    } else {
+      throw new Error(`Cfn Resource with LogicalId ${logicalId} already exists`);
+    }
   }
   getCfnOutput(logicalId: string): cdk.CfnOutput {
-    throw new Error('Method not implemented.');
+    if (this._cfnOutputMap.has(logicalId)) {
+      return this._cfnOutputMap.get(logicalId)!;
+    } else {
+      throw new Error(`Cfn Output with LogicalId ${logicalId} doesnt exist`);
+    }
   }
   getCfnMapping(logicalId: string): cdk.CfnMapping {
-    throw new Error('Method not implemented.');
+    if (this._cfnMappingMap.has(logicalId)) {
+      return this._cfnMappingMap.get(logicalId)!;
+    } else {
+      throw new Error(`Cfn Mapping with LogicalId ${logicalId} doesnt exist`);
+    }
   }
 
   /**
@@ -121,7 +134,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     if (!this._cfnOutputMap.has(logicalId)) {
       this._cfnOutputMap.set(logicalId, new cdk.CfnOutput(this, logicalId, props));
     } else {
-      throw new Error(`Cfn Parameter with LogicalId ${logicalId} doesnt exist`);
+      throw new Error(`Cfn Parameter with LogicalId ${logicalId} already exists`);
     }
   }
 
@@ -134,7 +147,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     if (!this._cfnMappingMap.has(logicalId)) {
       this._cfnMappingMap.set(logicalId, new cdk.CfnMapping(this, logicalId, props));
     } else {
-      throw new Error(`Cfn Parameter with LogicalId ${logicalId} doesnt exist`);
+      throw new Error(`Cfn Parameter with LogicalId ${logicalId} already exists`);
     }
   }
 
@@ -147,7 +160,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     if (!this._cfnConditionMap.has(logicalId)) {
       this._cfnConditionMap.set(logicalId, new cdk.CfnCondition(this, logicalId, props));
     } else {
-      throw new Error(`Cfn Parameter with LogicalId ${logicalId} doesnt exist`);
+      throw new Error(`Cfn Parameter with LogicalId ${logicalId} already exists`);
     }
   }
 
@@ -160,7 +173,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     if (!this._cfnParameterMap.has(logicalId)) {
       this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
     } else {
-      throw new Error(`Cfn Parameter with LogicalId ${logicalId} doesnt exist`);
+      throw new Error(`Cfn Parameter with LogicalId ${logicalId} already exists`);
     }
   }
 
@@ -281,12 +294,13 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         },
       });
 
+      if (props.usernameCaseSensitive !== undefined) {
+        this.userPool.usernameConfiguration = {
+          caseSensitive: props.usernameCaseSensitive,
+        };
+      }
+
       if (props.requiredAttributes && props.requiredAttributes.length > 0) {
-        if (props.usernameCaseSensitive !== undefined) {
-          this.userPool.usernameConfiguration = {
-            caseSensitive: props.usernameCaseSensitive,
-          };
-        }
         props.requiredAttributes.forEach(attr => {
           this.userPool!.schema = [
             {
@@ -297,6 +311,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
           ];
         });
       }
+
       if (!props.breakCircularDependency && props.triggers && props.dependsOn) {
         props.dependsOn!.forEach(trigger => {
           if (trigger.resourceName.includes('CreateAuthChallenge')) {
@@ -374,12 +389,12 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       }
 
       this.userPool.mfaConfiguration = cdk.Fn.ref('mfaConfiguration');
-      if (props.useEnabledMfas && props.mfaConfiguration != 'OFF') {
+      if (props.useEnabledMfas && props.mfaConfiguration !== 'OFF') {
         if (configureSMS) {
           this.userPool.enabledMfas = ['SMS_MFA'];
         }
         if (!_.isEmpty(props.mfaTypes) && props.mfaTypes!.includes('TOTP')) {
-          this.userPool.enabledMfas!.push('SOFTWARE_TOKEN_MFA');
+          this.userPool.enabledMfas = [...(this.userPool.enabledMfas || []), 'SOFTWARE_TOKEN_MFA'];
         }
       }
 

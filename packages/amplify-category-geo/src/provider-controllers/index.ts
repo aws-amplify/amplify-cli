@@ -9,7 +9,6 @@ import { printer, prompter } from 'amplify-prompts';
 import { getServiceFriendlyName } from '../service-walkthroughs/resourceWalkthrough';
 import { TemplateMappings } from '../service-stacks/baseStack';
 import { validateAddGeoRequest, validateUpdateGeoRequest } from 'amplify-util-headless-input';
-import { MapConfiguration, MapModification } from 'amplify-headless-interface';
 import { checkGeoResourceExists } from '../service-utils/resourceUtils';
 
 /**
@@ -153,7 +152,7 @@ export const addResourceHeadless = async (
   }
   switch (serviceName) {
     case ServiceName.Map:
-      return addMapResourceHeadless(context, serviceConfiguration as MapConfiguration);
+      return addMapResourceHeadless(context, serviceConfiguration);
     default:
       throw badHeadlessServiceError(serviceName);
   }
@@ -173,7 +172,7 @@ export const updateResourceHeadless = async (
   }
   switch (serviceName) {
     case ServiceName.Map:
-      return updateMapResourceHeadless(context, serviceModification as MapModification);
+      return updateMapResourceHeadless(context, serviceModification);
     default:
       throw badHeadlessServiceError(serviceName);
   }

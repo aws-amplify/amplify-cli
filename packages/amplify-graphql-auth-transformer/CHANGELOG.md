@@ -3,6 +3,134 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.5.5...@aws-amplify/graphql-auth-transformer@0.5.7) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* return field value for admin roles on field resolver fixes issue [#9242](https://github.com/aws-amplify/amplify-cli/issues/9242) ([#9275](https://github.com/aws-amplify/amplify-cli/issues/9275)) ([dbef299](https://github.com/aws-amplify/amplify-cli/commit/dbef2992e53b65789d1ab51a0d342a0671f9661f))
+
+
+
+
+
+## [0.5.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.5.4...@aws-amplify/graphql-auth-transformer@0.5.5) (2021-12-21)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** fix key condition expression ([#9264](https://github.com/aws-amplify/amplify-cli/issues/9264)) ([5794692](https://github.com/aws-amplify/amplify-cli/commit/5794692a05c16f23d903321644fe37a4913861e0))
+
+
+
+
+
+## [0.5.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.5.3...@aws-amplify/graphql-auth-transformer@0.5.4) (2021-12-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+
+
+
+
+## [0.5.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.5.2...@aws-amplify/graphql-auth-transformer@0.5.3) (2021-12-03)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+
+
+
+
+## [0.5.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.5.1...@aws-amplify/graphql-auth-transformer@0.5.2) (2021-12-01)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** fix datastore fields auth ([#9135](https://github.com/aws-amplify/amplify-cli/issues/9135)) ([cb9fdd3](https://github.com/aws-amplify/amplify-cli/commit/cb9fdd30c5212e36149d942f929d77601c75b8e7))
+
+
+
+
+
+## [0.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.5.0...@aws-amplify/graphql-auth-transformer@0.5.1) (2021-11-26)
+
+
+### Bug Fixes
+
+* remove extra $ in vtl template ([#9077](https://github.com/aws-amplify/amplify-cli/issues/9077)) ([3dc4dc4](https://github.com/aws-amplify/amplify-cli/commit/3dc4dc49ce1698683251dacd85fd4433ead1688f))
+
+
+
+
+
+# [0.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.4.6...@aws-amplify/graphql-auth-transformer@0.5.0) (2021-11-23)
+
+
+### Bug Fixes
+
+* update admin role check to make sure the name is not authRole or unauthRole ([#9046](https://github.com/aws-amplify/amplify-cli/issues/9046)) ([27fb223](https://github.com/aws-amplify/amplify-cli/commit/27fb223c73da79fe5a2bd72ed8b3bd44d8b04960))
+* use not equals for iam role check ([#9048](https://github.com/aws-amplify/amplify-cli/issues/9048)) ([352763c](https://github.com/aws-amplify/amplify-cli/commit/352763ceae03444ba9b0697c25af3cf6957e536c))
+
+
+### Features
+
+* override support for api category ([#9013](https://github.com/aws-amplify/amplify-cli/issues/9013)) ([ae7b001](https://github.com/aws-amplify/amplify-cli/commit/ae7b001f274f327a29c99c67fe851272c6208e84)), closes [#9001](https://github.com/aws-amplify/amplify-cli/issues/9001) [#8954](https://github.com/aws-amplify/amplify-cli/issues/8954) [#8958](https://github.com/aws-amplify/amplify-cli/issues/8958) [#8960](https://github.com/aws-amplify/amplify-cli/issues/8960) [#8967](https://github.com/aws-amplify/amplify-cli/issues/8967) [#8971](https://github.com/aws-amplify/amplify-cli/issues/8971) [#8976](https://github.com/aws-amplify/amplify-cli/issues/8976) [#8975](https://github.com/aws-amplify/amplify-cli/issues/8975) [#8981](https://github.com/aws-amplify/amplify-cli/issues/8981) [#8983](https://github.com/aws-amplify/amplify-cli/issues/8983) [#8992](https://github.com/aws-amplify/amplify-cli/issues/8992) [#9000](https://github.com/aws-amplify/amplify-cli/issues/9000) [#9002](https://github.com/aws-amplify/amplify-cli/issues/9002) [#9005](https://github.com/aws-amplify/amplify-cli/issues/9005) [#9006](https://github.com/aws-amplify/amplify-cli/issues/9006) [#9007](https://github.com/aws-amplify/amplify-cli/issues/9007) [#9008](https://github.com/aws-amplify/amplify-cli/issues/9008) [#9010](https://github.com/aws-amplify/amplify-cli/issues/9010) [#9011](https://github.com/aws-amplify/amplify-cli/issues/9011) [#9012](https://github.com/aws-amplify/amplify-cli/issues/9012) [#9014](https://github.com/aws-amplify/amplify-cli/issues/9014) [#9015](https://github.com/aws-amplify/amplify-cli/issues/9015) [#9017](https://github.com/aws-amplify/amplify-cli/issues/9017) [#9020](https://github.com/aws-amplify/amplify-cli/issues/9020) [#9024](https://github.com/aws-amplify/amplify-cli/issues/9024) [#9027](https://github.com/aws-amplify/amplify-cli/issues/9027) [#9028](https://github.com/aws-amplify/amplify-cli/issues/9028) [#9029](https://github.com/aws-amplify/amplify-cli/issues/9029) [#9032](https://github.com/aws-amplify/amplify-cli/issues/9032) [#9031](https://github.com/aws-amplify/amplify-cli/issues/9031) [#9035](https://github.com/aws-amplify/amplify-cli/issues/9035) [#9038](https://github.com/aws-amplify/amplify-cli/issues/9038) [#9039](https://github.com/aws-amplify/amplify-cli/issues/9039)
+
+
+
+
+
+## [0.4.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.4.5...@aws-amplify/graphql-auth-transformer@0.4.6) (2021-11-21)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+
+
+
+
+## [0.4.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.4.4...@aws-amplify/graphql-auth-transformer@0.4.5) (2021-11-20)
+
+
+### Bug Fixes
+
+* update field auth check logic and error message to account for subscription level ([#8951](https://github.com/aws-amplify/amplify-cli/issues/8951)) ([acfefd4](https://github.com/aws-amplify/amplify-cli/commit/acfefd4b957d534b6d2031df22c56237d43d0261))
+
+
+
+
+
+## [0.4.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.4.2...@aws-amplify/graphql-auth-transformer@0.4.4) (2021-11-19)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+
+
+
+
+## [0.4.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.4.2...@aws-amplify/graphql-auth-transformer@0.4.3) (2021-11-19)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+
+
+
+
+## [0.4.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.4.1...@aws-amplify/graphql-auth-transformer@0.4.2) (2021-11-17)
+
+
+### Bug Fixes
+
+* append apiKey if global auth is enabled and its not default auth ([#8843](https://github.com/aws-amplify/amplify-cli/issues/8843)) ([3aadcde](https://github.com/aws-amplify/amplify-cli/commit/3aadcde2225f0ede5c5d94c2a4cd9d1afece5288))
+* update error message for auth on non null fields ([#8863](https://github.com/aws-amplify/amplify-cli/issues/8863)) ([bffb4d2](https://github.com/aws-amplify/amplify-cli/commit/bffb4d290e33dfd4362733c4344dd1a7e584234c))
+
+
+
+
+
 ## [0.4.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.2.0...@aws-amplify/graphql-auth-transformer@0.4.1) (2021-11-15)
 
 **Note:** Version bump only for package @aws-amplify/graphql-auth-transformer

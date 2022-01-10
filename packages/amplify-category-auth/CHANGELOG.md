@@ -3,6 +3,184 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.6...@aws-amplify/amplify-category-auth@2.4.8) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* [#9070](https://github.com/aws-amplify/amplify-cli/issues/9070) TOTP only auth configs are failing ([#9214](https://github.com/aws-amplify/amplify-cli/issues/9214)) ([412ebb7](https://github.com/aws-amplify/amplify-cli/commit/412ebb7520df440ba831ee91901421918d626df2))
+* update cognito stack builder to set case sensitivity based on aliasAttribute ([#9339](https://github.com/aws-amplify/amplify-cli/issues/9339)) ([40311ba](https://github.com/aws-amplify/amplify-cli/commit/40311bac8e5d4073ac48e7b67b2295e81d57f17a)), closes [#8895](https://github.com/aws-amplify/amplify-cli/issues/8895)
+
+
+
+
+
+## [2.4.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.5...@aws-amplify/amplify-category-auth@2.4.6) (2021-12-21)
+
+
+### Bug Fixes
+
+* [#8997](https://github.com/aws-amplify/amplify-cli/issues/8997) - auth trigger detached after push ([#9312](https://github.com/aws-amplify/amplify-cli/issues/9312)) ([d5b4e8f](https://github.com/aws-amplify/amplify-cli/commit/d5b4e8f23dad32d40596d8ac2b36190b03d7a975))
+* implemented method to add CFN resource via overrides in auth ([#9277](https://github.com/aws-amplify/amplify-cli/issues/9277)) ([3826e80](https://github.com/aws-amplify/amplify-cli/commit/3826e809e5d3f367786113935ba06a7a1a76aa00))
+
+
+
+
+
+## [2.4.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.4...@aws-amplify/amplify-category-auth@2.4.5) (2021-12-17)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
+## [2.4.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.3...@aws-amplify/amplify-category-auth@2.4.4) (2021-12-02)
+
+
+
+## 7.6.1 (2021-12-02)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
+## [2.4.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.2...@aws-amplify/amplify-category-auth@2.4.3) (2021-12-02)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
+## [2.4.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.1...@aws-amplify/amplify-category-auth@2.4.2) (2021-12-01)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
+## [2.4.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.0...@aws-amplify/amplify-category-auth@2.4.1) (2021-11-26)
+
+
+### Bug Fixes
+
+* console override build issue ([#9078](https://github.com/aws-amplify/amplify-cli/issues/9078)) ([5c9bc5c](https://github.com/aws-amplify/amplify-cli/commit/5c9bc5c4003dd21c2897dc3c4faef9a9c19c1d99))
+
+
+
+
+
+# [2.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.3.8...@aws-amplify/amplify-category-auth@2.4.0) (2021-11-23)
+
+
+### Features
+
+* override support for api category ([#9013](https://github.com/aws-amplify/amplify-cli/issues/9013)) ([ae7b001](https://github.com/aws-amplify/amplify-cli/commit/ae7b001f274f327a29c99c67fe851272c6208e84)), closes [#9001](https://github.com/aws-amplify/amplify-cli/issues/9001) [#8954](https://github.com/aws-amplify/amplify-cli/issues/8954) [#8958](https://github.com/aws-amplify/amplify-cli/issues/8958) [#8960](https://github.com/aws-amplify/amplify-cli/issues/8960) [#8967](https://github.com/aws-amplify/amplify-cli/issues/8967) [#8971](https://github.com/aws-amplify/amplify-cli/issues/8971) [#8976](https://github.com/aws-amplify/amplify-cli/issues/8976) [#8975](https://github.com/aws-amplify/amplify-cli/issues/8975) [#8981](https://github.com/aws-amplify/amplify-cli/issues/8981) [#8983](https://github.com/aws-amplify/amplify-cli/issues/8983) [#8992](https://github.com/aws-amplify/amplify-cli/issues/8992) [#9000](https://github.com/aws-amplify/amplify-cli/issues/9000) [#9002](https://github.com/aws-amplify/amplify-cli/issues/9002) [#9005](https://github.com/aws-amplify/amplify-cli/issues/9005) [#9006](https://github.com/aws-amplify/amplify-cli/issues/9006) [#9007](https://github.com/aws-amplify/amplify-cli/issues/9007) [#9008](https://github.com/aws-amplify/amplify-cli/issues/9008) [#9010](https://github.com/aws-amplify/amplify-cli/issues/9010) [#9011](https://github.com/aws-amplify/amplify-cli/issues/9011) [#9012](https://github.com/aws-amplify/amplify-cli/issues/9012) [#9014](https://github.com/aws-amplify/amplify-cli/issues/9014) [#9015](https://github.com/aws-amplify/amplify-cli/issues/9015) [#9017](https://github.com/aws-amplify/amplify-cli/issues/9017) [#9020](https://github.com/aws-amplify/amplify-cli/issues/9020) [#9024](https://github.com/aws-amplify/amplify-cli/issues/9024) [#9027](https://github.com/aws-amplify/amplify-cli/issues/9027) [#9028](https://github.com/aws-amplify/amplify-cli/issues/9028) [#9029](https://github.com/aws-amplify/amplify-cli/issues/9029) [#9032](https://github.com/aws-amplify/amplify-cli/issues/9032) [#9031](https://github.com/aws-amplify/amplify-cli/issues/9031) [#9035](https://github.com/aws-amplify/amplify-cli/issues/9035) [#9038](https://github.com/aws-amplify/amplify-cli/issues/9038) [#9039](https://github.com/aws-amplify/amplify-cli/issues/9039)
+
+
+
+
+
+## [2.3.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.3.7...@aws-amplify/amplify-category-auth@2.3.8) (2021-11-21)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
+## [2.3.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.3.6...@aws-amplify/amplify-category-auth@2.3.7) (2021-11-20)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
+## [2.3.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.3.5...@aws-amplify/amplify-category-auth@2.3.6) (2021-11-19)
+
+
+
+## 7.4.3 (2021-11-19)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** auth cloudformation corruption fixed for outputs ([#8968](https://github.com/aws-amplify/amplify-cli/issues/8968)) ([9aa8f56](https://github.com/aws-amplify/amplify-cli/commit/9aa8f5657de1fbff759ba6df73a4fc9772db61ad))
+* **amplify-category-auth:** fix async await and update unit-tests ([#8964](https://github.com/aws-amplify/amplify-cli/issues/8964)) ([3f1b821](https://github.com/aws-amplify/amplify-cli/commit/3f1b821af99429d65f00561b1a04bde91d992e05))
+
+
+
+
+
+## [2.3.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.3.4...@aws-amplify/amplify-category-auth@2.3.5) (2021-11-18)
+
+
+
+## 7.4.1 (2021-11-18)
+
+
+### Bug Fixes
+
+* auth cloudformation generation error leading to push failure ([#8941](https://github.com/aws-amplify/amplify-cli/issues/8941)) ([d166d23](https://github.com/aws-amplify/amplify-cli/commit/d166d23ddb201a8e519ce6463d1f48f8a8eddf88))
+
+
+
+
+
+## [2.3.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.3.3...@aws-amplify/amplify-category-auth@2.3.4) (2021-11-18)
+
+
+### Bug Fixes
+
+* change default to string for the 'hostedUIProviderCreds' input param ([#8929](https://github.com/aws-amplify/amplify-cli/issues/8929)) ([8f87b7e](https://github.com/aws-amplify/amplify-cli/commit/8f87b7ec4688f2faf7d589f8a1820389031fe069))
+
+
+
+
+
+## [2.3.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.3.2...@aws-amplify/amplify-category-auth@2.3.3) (2021-11-17)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
+## [2.3.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.3.1...@aws-amplify/amplify-category-auth@2.3.2) (2021-11-17)
+
+
+
+## 7.3.5 (2021-11-17)
+
+
+### Bug Fixes
+
+* remove hardcoding for build/parameters.json file for auth resource ([#8911](https://github.com/aws-amplify/amplify-cli/issues/8911)) ([06a8988](https://github.com/aws-amplify/amplify-cli/commit/06a89888e39fa38318c7751fe002ddfab881e499))
+
+
+
+
+
+## [2.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.3.0...@aws-amplify/amplify-category-auth@2.3.1) (2021-11-16)
+
+
+### Bug Fixes
+
+* trigger when break circular dependency  FF is off ([#8879](https://github.com/aws-amplify/amplify-cli/issues/8879)) ([d90d01f](https://github.com/aws-amplify/amplify-cli/commit/d90d01f8f9d7cacfb6279c1e1aff0bcc0cfeb193))
+
+
+
+
+
 # 2.3.0 (2021-11-15)
 
 

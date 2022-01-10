@@ -317,7 +317,7 @@ function createResolver(
   context: TransformerContextProvider,
   stack: cdk.Stack,
   config: PredictionsDirectiveConfiguration,
-  pipelineFunctions: any[],
+  resolvers: any[],
   bucketName: string,
 ): appsync.CfnResolver {
   const substitutions: { [key: string]: string } = {
@@ -385,7 +385,7 @@ function createResolver(
     ),
     undefined,
     undefined,
-    pipelineFunctions,
+    resolvers,
     stack,
   );
 }
@@ -411,7 +411,7 @@ function createPredictionsLambda(context: TransformerContextProvider, stack: cdk
   // Update the runtime to Node 14 once the following issue is resolved:
   // https://github.com/aws-cloudformation/cloudformation-coverage-roadmap/issues/80#issuecomment-831796699
   return context.api.host.addLambdaFunction(
-    PredictionsResourceIDs.lambdaHandlerName,
+    PredictionsResourceIDs.lambdaName,
     `functions/${functionId}.zip`,
     PredictionsResourceIDs.lambdaHandlerName,
     path.join(__dirname, '..', 'lib', 'predictionsLambdaFunction.zip'),

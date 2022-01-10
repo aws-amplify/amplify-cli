@@ -1,4 +1,4 @@
-import { $TSAny, JSONUtilities } from 'amplify-cli-core';
+import { $TSAny, $TSObject, JSONUtilities } from 'amplify-cli-core';
 import {
   addAuthWithDefault,
   addDDBWithTrigger,
@@ -21,7 +21,7 @@ import {
 } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import uuid from 'uuid';
+import * as uuid from 'uuid';
 
 function getServiceMeta(projectRoot: string, category: string, service: string): $TSAny {
   const meta = getProjectMeta(projectRoot);
@@ -57,7 +57,7 @@ describe('s3 override tests', () => {
     const cfnFilePath = path.join(projRoot, 'amplify', 'backend', 'storage', resourceName, 'build', 'cloudformation-template.json');
     fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
     await buildOverrideStorage(projRoot, {});
-    let s3CFNFileJSON: any = JSONUtilities.readJson(cfnFilePath);
+    let s3CFNFileJSON = JSONUtilities.readJson<$TSObject>(cfnFilePath);
     // check if overrides are applied to the cfn file
     expect(s3CFNFileJSON?.Resources?.S3Bucket?.Properties?.VersioningConfiguration?.Status).toEqual('Enabled');
 
@@ -178,7 +178,7 @@ describe('ddb override tests', () => {
 
     fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
     await buildOverrideStorage(projRoot, {});
-    let ddbCFNFileJSON: any = JSONUtilities.readJson(cfnFilePath);
+    let ddbCFNFileJSON = JSONUtilities.readJson<$TSObject>(cfnFilePath);
     // check if overrides are applied to the cfn file
     expect(ddbCFNFileJSON?.Resources?.DynamoDBTable?.Properties?.StreamSpecification?.StreamViewType).toEqual('NEW_AND_OLD_IMAGES');
     await updateDDBWithTrigger(projRoot, {});

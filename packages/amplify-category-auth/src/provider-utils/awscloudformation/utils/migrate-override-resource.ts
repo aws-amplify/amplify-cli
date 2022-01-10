@@ -1,7 +1,7 @@
 import { $TSObject, AmplifyCategories, JSONUtilities, NotInitializedError, pathManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as path from 'path';
-import uuid from 'uuid';
+import { v4 as uuid } from 'uuid';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import {

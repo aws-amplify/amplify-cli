@@ -17,7 +17,7 @@ import { Constants } from './constants';
 import { consolidateApiGatewayPolicies } from '../utils/consolidate-apigw-policies';
 import { prePushAuthTransform } from '../auth-transform';
 import { Fn, Template } from 'cloudform-types';
-import { preProcessCFNTemplate } from '../pre-push-cfn-processor/cfn-pre-processor';
+import { preProcessCFNTemplate, writeCustomPoliciesToCFNTemplate } from '../pre-push-cfn-processor/cfn-pre-processor';
 import {
   DeploymentResources,
   ResourceDefinition,
@@ -28,6 +28,8 @@ import {
   UploadedResourceDefinition,
   TransformedCfnResource,
 } from './types';
+import * as path from 'path';
+import { prePushTemplateDescriptionHandler } from '../template-description-utils';
 
 /**
  * Abstract class that holds logic for building, packaging and cfn generation
@@ -195,12 +197,21 @@ export abstract class ResourcePackager {
     );
   }
 
+  protected resourcesHasApiGatewaysButNotAdminQueries(packagedResources: PackagedResourceDefinition[]): boolean {
+    const { API_CATEGORY } = Constants;
+    const resources = packagedResources.filter(r => r.resourceName !== 'AdminQueries');
+    return this.resourcesHasCategoryService(resources, API_CATEGORY.NAME, API_CATEGORY.SERVICE.API_GATEWAY);
+  }
+
   /**
    * Saves providerMetadata s3 information
    * @param packagedResource
    * @param bucketName
    */
   protected storeS3BucketInfo(packagedResource: PackagedResourceDefinition, bucketName: string): void {
+    if(!packagedResource.build){
+      return;
+    }
     const s3Info = {
       deploymentBucketName: bucketName,
       s3Key: packagedResource.packagerParams.zipFilename,
@@ -211,6 +222,7 @@ export abstract class ResourcePackager {
       [this.envInfo.envName, CATEGORIES, packagedResource.category, packagedResource.resourceName],
       s3Info,
     );
+    _.set(packagedResource, ['s3Bucket'], s3Info);
     _.set(this.amplifyMeta, [packagedResource.category, packagedResource.resourceName, S3_BUCKET], s3Info);
   }
 
@@ -219,10 +231,10 @@ export abstract class ResourcePackager {
    * @param resources
    */
   protected async generateCategoryCloudFormation(resources: UploadedResourceDefinition[] | PackagedResourceDefinition[]) {
-    if (this.resourcesHasContainers(resources)) {
+    if (this.resourcesHasApiGatewaysButNotAdminQueries(resources)) {
       const { PROVIDER, PROVIDER_NAME } = Constants;
       const { StackName: stackName } = this.amplifyMeta[PROVIDER][PROVIDER_NAME];
-      consolidateApiGatewayPolicies(this.context, stackName);
+      await consolidateApiGatewayPolicies(this.context, stackName);
     }
     await prePushAuthTransform(this.context, resources);
     for await (const resource of resources) {
@@ -269,6 +281,7 @@ export abstract class ResourcePackager {
   protected async postGenerateCategoryCloudFormation(resources: PackagedResourceDefinition[]): Promise<TransformedCfnResource[]> {
     const { API_CATEGORY, FUNCTION_CATEGORY } = Constants;
     const transformedCfnResources: TransformedCfnResource[] = [];
+    await prePushTemplateDescriptionHandler(this.context, resources);
     for await (const resource of resources) {
       const cfnFiles = this.getCfnTemplatePathsForResource(resource);
       const transformedCfnPaths: string[] = [];
@@ -278,7 +291,7 @@ export abstract class ResourcePackager {
           resource.service !== API_CATEGORY.SERVICE.ELASTIC_CONTAINER &&
           resource.service !== FUNCTION_CATEGORY.SERVICE.LAMBDA_LAYER
         ) {
-          const { cfnTemplate, templateFormat } = await readCFNTemplate(cfnFile);
+          const { cfnTemplate, templateFormat } = readCFNTemplate(cfnFile);
           const paramType = { Type: 'String' };
           const deploymentBucketNameRef = 'deploymentBucketName';
           const s3KeyRef = 's3Key';
@@ -299,8 +312,11 @@ export abstract class ResourcePackager {
           await writeCFNTemplate(cfnTemplate, cfnFile, { templateFormat });
         }
         const transformedCFNPath = await preProcessCFNTemplate(cfnFile);
+
+        await writeCustomPoliciesToCFNTemplate(resource.resourceName, resource.service, path.basename(cfnFile), resource.category);
         transformedCfnPaths.push(transformedCFNPath);
       }
+      this.storeS3BucketInfo(resource, 'deploymentBucketRef');
       transformedCfnResources.push({
         ...resource,
         transformedCfnPaths,
@@ -317,7 +333,7 @@ export abstract class ResourcePackager {
   }
 
   protected async generateRootStack(): Promise<Template> {
-    return await formNestedStack(this.context, { amplifyMeta: this.amplifyMeta });
+    return await formNestedStack(this.context, { amplifyMeta: this.amplifyMeta }, undefined, undefined, undefined, undefined, true);
   }
 
   private resourcesHasCategoryService = (resources: ResourceDefinition[], category: string, service?: string): boolean =>

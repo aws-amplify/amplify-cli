@@ -94,16 +94,10 @@ test('it generates the expected resources', () => {
       FunctionVersion: '2018-05-29',
       Name: 'InvokeEchofunctionLambdaDataSource',
       RequestMappingTemplateS3Location: {
-        'Fn::Join': [
-          '',
-          ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/pipelineFunctions/InvokeEchofunctionLambdaDataSource.req.vtl'],
-        ],
+        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/resolvers/InvokeEchofunctionLambdaDataSource.req.vtl']],
       },
       ResponseMappingTemplateS3Location: {
-        'Fn::Join': [
-          '',
-          ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/pipelineFunctions/InvokeEchofunctionLambdaDataSource.res.vtl'],
-        ],
+        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/resolvers/InvokeEchofunctionLambdaDataSource.res.vtl']],
       },
     }),
   );
@@ -118,11 +112,11 @@ test('it generates the expected resources', () => {
       },
       RequestMappingTemplate: anything(),
       ResponseMappingTemplateS3Location: {
-        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/pipelineFunctions/Query.echo.res.vtl']],
+        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/resolvers/Query.echo.res.vtl']],
       },
     }),
   );
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
 });
 
 test('two @function directives for the same lambda should produce a single datasource, single role and two resolvers', () => {

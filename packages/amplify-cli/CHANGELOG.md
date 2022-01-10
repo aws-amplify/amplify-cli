@@ -3,6 +3,281 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.6.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.5...@aws-amplify/cli@7.6.7) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* [#9061](https://github.com/aws-amplify/amplify-cli/issues/9061) secret migration could fail and --yes was not working ([#9246](https://github.com/aws-amplify/amplify-cli/issues/9246)) ([31d07a2](https://github.com/aws-amplify/amplify-cli/commit/31d07a2f214dc13708341a53b6aa7de44d4bf2db))
+* [#9363](https://github.com/aws-amplify/amplify-cli/issues/9363) - additional checks in case of previously failed add auth ([1dfbce6](https://github.com/aws-amplify/amplify-cli/commit/1dfbce6b1c7362d245126390f2806eb98a938aea))
+* append missing env vars in team provider on push ([#9250](https://github.com/aws-amplify/amplify-cli/issues/9250)) ([3b9c865](https://github.com/aws-amplify/amplify-cli/commit/3b9c865ea9c7afecdaa5347a5812a38fe64b29ad))
+* compile schema before acm generation and validate acm argument ([#9438](https://github.com/aws-amplify/amplify-cli/issues/9438)) ([fbc9b59](https://github.com/aws-amplify/amplify-cli/commit/fbc9b598bb509d5994f072a2d671ec30059ddcfd))
+* update dep and use node test environment ([#9434](https://github.com/aws-amplify/amplify-cli/issues/9434)) ([1691327](https://github.com/aws-amplify/amplify-cli/commit/1691327740ea40d0ebb974e6aeabc64c62b288ef))
+
+
+
+
+
+## [7.6.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.4...@aws-amplify/cli@7.6.5) (2021-12-21)
+
+
+### Bug Fixes
+
+* removing old FF logic for extensibility ([#9249](https://github.com/aws-amplify/amplify-cli/issues/9249)) ([936ee8f](https://github.com/aws-amplify/amplify-cli/commit/936ee8f7e937a8bb407244210fd04320a41b418a))
+
+
+
+
+
+## [7.6.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.3...@aws-amplify/cli@7.6.4) (2021-12-17)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [7.6.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.2...@aws-amplify/cli@7.6.3) (2021-12-09)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [7.6.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.1...@aws-amplify/cli@7.6.2) (2021-12-03)
+
+
+### Bug Fixes
+
+* **graphql:** display invalid directive error on amplify push ([#9179](https://github.com/aws-amplify/amplify-cli/issues/9179)) ([d6cfbca](https://github.com/aws-amplify/amplify-cli/commit/d6cfbca25ed99cefca28d50fcb4c4df771ac7fbe))
+
+
+
+
+
+## [7.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.0...@aws-amplify/cli@7.6.1) (2021-12-02)
+
+
+
+## 7.6.1 (2021-12-02)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+# [7.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.5.6...@aws-amplify/cli@7.6.0) (2021-12-02)
+
+
+
+# 7.6.0 (2021-12-02)
+
+
+### Features
+
+* add uibuilder plugin ([#9178](https://github.com/aws-amplify/amplify-cli/issues/9178)) ([0e95dd8](https://github.com/aws-amplify/amplify-cli/commit/0e95dd8dc2b9cdcc54dcd7a7b896891e17b37f1d))
+
+
+
+
+
+## [7.5.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.5.5...@aws-amplify/cli@7.5.6) (2021-12-02)
+
+
+### Performance Improvements
+
+* **cli:** get AccountId from meta instead of sts ([#9155](https://github.com/aws-amplify/amplify-cli/issues/9155)) ([6edfd88](https://github.com/aws-amplify/amplify-cli/commit/6edfd8879c451798b6f4d405cdca9c033396077f))
+
+
+
+
+
+## [7.5.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.5.4...@aws-amplify/cli@7.5.5) (2021-12-01)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [7.5.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.5.3...@aws-amplify/cli@7.5.4) (2021-11-29)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [7.5.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.5.2...@aws-amplify/cli@7.5.3) (2021-11-26)
+
+
+
+## 7.5.3 (2021-11-26)
+
+
+### Bug Fixes
+
+* console override build issue ([#9078](https://github.com/aws-amplify/amplify-cli/issues/9078)) ([5c9bc5c](https://github.com/aws-amplify/amplify-cli/commit/5c9bc5c4003dd21c2897dc3c4faef9a9c19c1d99))
+* e2e fixes when updating current-cloud-backend ([#9079](https://github.com/aws-amplify/amplify-cli/issues/9079)) ([356687a](https://github.com/aws-amplify/amplify-cli/commit/356687ace1f064f5628d12eda3da1f40ddba8ded))
+* transformer version ([#9092](https://github.com/aws-amplify/amplify-cli/issues/9092)) ([acfa82c](https://github.com/aws-amplify/amplify-cli/commit/acfa82c9b275df0a7347ae0700a919dd8c03a4de))
+
+
+
+
+
+## [7.5.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.5.1...@aws-amplify/cli@7.5.2) (2021-11-25)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [7.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.5.0...@aws-amplify/cli@7.5.1) (2021-11-24)
+
+
+
+## 7.5.1 (2021-11-24)
+
+
+### Bug Fixes
+
+* **cli:** fix for headless project configure ([#9064](https://github.com/aws-amplify/amplify-cli/issues/9064)) ([ae385b7](https://github.com/aws-amplify/amplify-cli/commit/ae385b748665c40ea170b0f6c8cb15e450965486))
+* **cli:** fix headless project configure ([#9057](https://github.com/aws-amplify/amplify-cli/issues/9057)) ([37669bd](https://github.com/aws-amplify/amplify-cli/commit/37669bd1d55931c4635a6c4e240dcdd4c18d0c19))
+
+
+
+
+
+# [7.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.4.5...@aws-amplify/cli@7.5.0) (2021-11-23)
+
+
+### Features
+
+* add amplify status api -acm Model ([#9030](https://github.com/aws-amplify/amplify-cli/issues/9030)) ([be7eb91](https://github.com/aws-amplify/amplify-cli/commit/be7eb91910e9a2897cdb3e2776d1823560dbc294))
+* override support for api category ([#9013](https://github.com/aws-amplify/amplify-cli/issues/9013)) ([ae7b001](https://github.com/aws-amplify/amplify-cli/commit/ae7b001f274f327a29c99c67fe851272c6208e84)), closes [#9001](https://github.com/aws-amplify/amplify-cli/issues/9001) [#8954](https://github.com/aws-amplify/amplify-cli/issues/8954) [#8958](https://github.com/aws-amplify/amplify-cli/issues/8958) [#8960](https://github.com/aws-amplify/amplify-cli/issues/8960) [#8967](https://github.com/aws-amplify/amplify-cli/issues/8967) [#8971](https://github.com/aws-amplify/amplify-cli/issues/8971) [#8976](https://github.com/aws-amplify/amplify-cli/issues/8976) [#8975](https://github.com/aws-amplify/amplify-cli/issues/8975) [#8981](https://github.com/aws-amplify/amplify-cli/issues/8981) [#8983](https://github.com/aws-amplify/amplify-cli/issues/8983) [#8992](https://github.com/aws-amplify/amplify-cli/issues/8992) [#9000](https://github.com/aws-amplify/amplify-cli/issues/9000) [#9002](https://github.com/aws-amplify/amplify-cli/issues/9002) [#9005](https://github.com/aws-amplify/amplify-cli/issues/9005) [#9006](https://github.com/aws-amplify/amplify-cli/issues/9006) [#9007](https://github.com/aws-amplify/amplify-cli/issues/9007) [#9008](https://github.com/aws-amplify/amplify-cli/issues/9008) [#9010](https://github.com/aws-amplify/amplify-cli/issues/9010) [#9011](https://github.com/aws-amplify/amplify-cli/issues/9011) [#9012](https://github.com/aws-amplify/amplify-cli/issues/9012) [#9014](https://github.com/aws-amplify/amplify-cli/issues/9014) [#9015](https://github.com/aws-amplify/amplify-cli/issues/9015) [#9017](https://github.com/aws-amplify/amplify-cli/issues/9017) [#9020](https://github.com/aws-amplify/amplify-cli/issues/9020) [#9024](https://github.com/aws-amplify/amplify-cli/issues/9024) [#9027](https://github.com/aws-amplify/amplify-cli/issues/9027) [#9028](https://github.com/aws-amplify/amplify-cli/issues/9028) [#9029](https://github.com/aws-amplify/amplify-cli/issues/9029) [#9032](https://github.com/aws-amplify/amplify-cli/issues/9032) [#9031](https://github.com/aws-amplify/amplify-cli/issues/9031) [#9035](https://github.com/aws-amplify/amplify-cli/issues/9035) [#9038](https://github.com/aws-amplify/amplify-cli/issues/9038) [#9039](https://github.com/aws-amplify/amplify-cli/issues/9039)
+
+
+
+
+
+## [7.4.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.4.4...@aws-amplify/cli@7.4.5) (2021-11-21)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [7.4.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.4.3...@aws-amplify/cli@7.4.4) (2021-11-20)
+
+
+### Bug Fixes
+
+* remove await from sync read cfn calls ([#8977](https://github.com/aws-amplify/amplify-cli/issues/8977)) ([7ef6fb7](https://github.com/aws-amplify/amplify-cli/commit/7ef6fb72739d4618d02dba689a927831b53cb098))
+
+
+
+
+
+## [7.4.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.4.1...@aws-amplify/cli@7.4.3) (2021-11-19)
+
+
+### Bug Fixes
+
+* **graphql:** add warning to missing auth modes on amplify push yes flag ([#8925](https://github.com/aws-amplify/amplify-cli/issues/8925)) ([80c9147](https://github.com/aws-amplify/amplify-cli/commit/80c9147edbda68b44ccd02d0830dccd0c4dcc887))
+
+
+
+
+
+## [7.4.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.4.1...@aws-amplify/cli@7.4.2) (2021-11-19)
+
+
+### Bug Fixes
+
+* **graphql:** add warning to missing auth modes on amplify push yes flag ([#8925](https://github.com/aws-amplify/amplify-cli/issues/8925)) ([80c9147](https://github.com/aws-amplify/amplify-cli/commit/80c9147edbda68b44ccd02d0830dccd0c4dcc887))
+
+
+
+
+
+## [7.4.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.4.0...@aws-amplify/cli@7.4.1) (2021-11-18)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+# [7.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.3.6...@aws-amplify/cli@7.4.0) (2021-11-18)
+
+
+
+# 7.4.0 (2021-11-17)
+
+
+### Features
+
+* **cli:** add arbitary data and accountId to usageData ([#8754](https://github.com/aws-amplify/amplify-cli/issues/8754)) ([31f8dc6](https://github.com/aws-amplify/amplify-cli/commit/31f8dc6d417e8f702642acb2d13c05c92d22861c))
+
+
+
+
+
+## [7.3.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.3.5...@aws-amplify/cli@7.3.6) (2021-11-17)
+
+
+### Bug Fixes
+
+* **cli:** handle multiple unconfigured auth directives on push ([#8791](https://github.com/aws-amplify/amplify-cli/issues/8791)) ([901c79f](https://github.com/aws-amplify/amplify-cli/commit/901c79f4c1df00b89de4bcc627fd5c88a8b1fc92))
+* upgrade to latest pkg to fix zlib issue ([#8841](https://github.com/aws-amplify/amplify-cli/issues/8841)) ([2d0ba78](https://github.com/aws-amplify/amplify-cli/commit/2d0ba78947fbe1850048b2c8f0fefc7438bc28af))
+
+
+
+
+
+## [7.3.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.3.4...@aws-amplify/cli@7.3.5) (2021-11-17)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [7.3.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.3.3...@aws-amplify/cli@7.3.4) (2021-11-16)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [7.3.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.3.2...@aws-amplify/cli@7.3.3) (2021-11-16)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [7.3.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.3.1...@aws-amplify/cli@7.3.2) (2021-11-16)
+
+
+### Bug Fixes
+
+* trigger when break circular dependency  FF is off ([#8879](https://github.com/aws-amplify/amplify-cli/issues/8879)) ([d90d01f](https://github.com/aws-amplify/amplify-cli/commit/d90d01f8f9d7cacfb6279c1e1aff0bcc0cfeb193))
+
+
+
+
+
 ## [7.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.3.0...@aws-amplify/cli@7.3.1) (2021-11-15)
 
 **Note:** Version bump only for package @aws-amplify/cli

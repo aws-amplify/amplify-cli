@@ -14,6 +14,7 @@ export * from './categories';
 export * from './utils/sdk-calls';
 export * from './export/';
 export { addFeatureFlag } from './utils/feature-flags';
+export * from './cli-version-controller';
 
 declare global {
   namespace NodeJS {
@@ -44,7 +45,6 @@ export function isTestingWithLatestCodebase(scriptRunnerPath) {
 
 export function getScriptRunnerPath(testingWithLatestCodebase = false) {
   if (!testingWithLatestCodebase) {
-
     return process.platform === 'win32' ? 'node.exe' : 'exec';
   }
 
@@ -58,6 +58,14 @@ export function getNpxPath() {
     npxPath = getScriptRunnerPath().replace('node.exe', 'npx.cmd');
   }
   return npxPath;
+}
+
+export function getNpmPath() {
+  let npmPath = 'npm';
+  if (process.platform === 'win32') {
+    npmPath = getScriptRunnerPath().replace('node.exe', 'npm.cmd');
+  }
+  return npmPath;
 }
 
 export function isCI(): boolean {
@@ -76,7 +84,7 @@ export function npmInstall(cwd: string) {
 }
 
 export async function installAmplifyCLI(version: string = 'latest') {
-  spawnSync('npm', ['install', '-g', `@aws-amplify/cli@${version}`], {
+  spawnSync('npm', ['install', '-g', 'colors@1.4.0', `@aws-amplify/cli@${version}`], {
     cwd: process.cwd(),
     env: process.env,
     stdio: 'inherit',

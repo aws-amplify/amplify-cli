@@ -3,6 +3,163 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.5.8...amplify-e2e-tests@3.5.10) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* add e2e test for geo headless and update schema ([#8636](https://github.com/aws-amplify/amplify-cli/issues/8636)) ([1e76668](https://github.com/aws-amplify/amplify-cli/commit/1e76668ae92cb120ebe53a8bf93fa42bee9560fb))
+* remove next template from destructive iterative update ([#9198](https://github.com/aws-amplify/amplify-cli/issues/9198)) ([16bc38a](https://github.com/aws-amplify/amplify-cli/commit/16bc38a43df7e2850cb182cc3947c190f498f042))
+* update uuid imports ([#9448](https://github.com/aws-amplify/amplify-cli/issues/9448)) ([e1af620](https://github.com/aws-amplify/amplify-cli/commit/e1af6209fcc6943ad26a25df4741ea4567a2d22a))
+
+
+
+
+
+## [3.5.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.5.7...amplify-e2e-tests@3.5.8) (2021-12-21)
+
+
+### Bug Fixes
+
+* [#8997](https://github.com/aws-amplify/amplify-cli/issues/8997) - auth trigger detached after push ([#9312](https://github.com/aws-amplify/amplify-cli/issues/9312)) ([d5b4e8f](https://github.com/aws-amplify/amplify-cli/commit/d5b4e8f23dad32d40596d8ac2b36190b03d7a975))
+
+
+
+
+
+## [3.5.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.5.6...amplify-e2e-tests@3.5.7) (2021-12-17)
+
+
+### Bug Fixes
+
+* add missing salt to deployment logicalId ([#9234](https://github.com/aws-amplify/amplify-cli/issues/9234)) ([d4109e2](https://github.com/aws-amplify/amplify-cli/commit/d4109e2e8a18e2e9b787a97b1508efb1bf97fac9))
+* update gql v2 custom transformer loading logic ([#9252](https://github.com/aws-amplify/amplify-cli/issues/9252)) ([f728b4b](https://github.com/aws-amplify/amplify-cli/commit/f728b4bb835674afd32dab7243dd3d826601d333))
+
+
+
+
+
+## [3.5.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.5.5...amplify-e2e-tests@3.5.6) (2021-12-09)
+
+
+
+## 7.6.3 (2021-12-07)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** use in memory meta for export ([#9208](https://github.com/aws-amplify/amplify-cli/issues/9208)) ([b3ca83b](https://github.com/aws-amplify/amplify-cli/commit/b3ca83b9bec986f0fd525d46738b277eb93e4384))
+
+
+
+
+
+## [3.5.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.5.4...amplify-e2e-tests@3.5.5) (2021-12-03)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [3.5.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.5.3...amplify-e2e-tests@3.5.4) (2021-12-02)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [3.5.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.5.2...amplify-e2e-tests@3.5.3) (2021-12-02)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [3.5.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.5.1...amplify-e2e-tests@3.5.2) (2021-12-01)
+
+
+
+## 7.5.5 (2021-11-30)
+
+
+### Bug Fixes
+
+* fixes import category parameters file path ([#9140](https://github.com/aws-amplify/amplify-cli/issues/9140)) ([6a7893e](https://github.com/aws-amplify/amplify-cli/commit/6a7893eb4d8932f8106cef2a311c2c945c5b8195))
+
+
+
+
+
+## [3.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.5.0...amplify-e2e-tests@3.5.1) (2021-11-26)
+
+
+### Bug Fixes
+
+* console override build issue ([#9078](https://github.com/aws-amplify/amplify-cli/issues/9078)) ([5c9bc5c](https://github.com/aws-amplify/amplify-cli/commit/5c9bc5c4003dd21c2897dc3c4faef9a9c19c1d99))
+
+
+
+
+
+# [3.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.4.2...amplify-e2e-tests@3.5.0) (2021-11-23)
+
+
+### Bug Fixes
+
+* allow custom admin roles to be passed into gql transformer ([#9041](https://github.com/aws-amplify/amplify-cli/issues/9041)) ([02b3d59](https://github.com/aws-amplify/amplify-cli/commit/02b3d59c013889a0c77c99d751896c4e1265d8f4))
+* use not equals for iam role check ([#9048](https://github.com/aws-amplify/amplify-cli/issues/9048)) ([352763c](https://github.com/aws-amplify/amplify-cli/commit/352763ceae03444ba9b0697c25af3cf6957e536c))
+
+
+### Features
+
+* override support for api category ([#9013](https://github.com/aws-amplify/amplify-cli/issues/9013)) ([ae7b001](https://github.com/aws-amplify/amplify-cli/commit/ae7b001f274f327a29c99c67fe851272c6208e84)), closes [#9001](https://github.com/aws-amplify/amplify-cli/issues/9001) [#8954](https://github.com/aws-amplify/amplify-cli/issues/8954) [#8958](https://github.com/aws-amplify/amplify-cli/issues/8958) [#8960](https://github.com/aws-amplify/amplify-cli/issues/8960) [#8967](https://github.com/aws-amplify/amplify-cli/issues/8967) [#8971](https://github.com/aws-amplify/amplify-cli/issues/8971) [#8976](https://github.com/aws-amplify/amplify-cli/issues/8976) [#8975](https://github.com/aws-amplify/amplify-cli/issues/8975) [#8981](https://github.com/aws-amplify/amplify-cli/issues/8981) [#8983](https://github.com/aws-amplify/amplify-cli/issues/8983) [#8992](https://github.com/aws-amplify/amplify-cli/issues/8992) [#9000](https://github.com/aws-amplify/amplify-cli/issues/9000) [#9002](https://github.com/aws-amplify/amplify-cli/issues/9002) [#9005](https://github.com/aws-amplify/amplify-cli/issues/9005) [#9006](https://github.com/aws-amplify/amplify-cli/issues/9006) [#9007](https://github.com/aws-amplify/amplify-cli/issues/9007) [#9008](https://github.com/aws-amplify/amplify-cli/issues/9008) [#9010](https://github.com/aws-amplify/amplify-cli/issues/9010) [#9011](https://github.com/aws-amplify/amplify-cli/issues/9011) [#9012](https://github.com/aws-amplify/amplify-cli/issues/9012) [#9014](https://github.com/aws-amplify/amplify-cli/issues/9014) [#9015](https://github.com/aws-amplify/amplify-cli/issues/9015) [#9017](https://github.com/aws-amplify/amplify-cli/issues/9017) [#9020](https://github.com/aws-amplify/amplify-cli/issues/9020) [#9024](https://github.com/aws-amplify/amplify-cli/issues/9024) [#9027](https://github.com/aws-amplify/amplify-cli/issues/9027) [#9028](https://github.com/aws-amplify/amplify-cli/issues/9028) [#9029](https://github.com/aws-amplify/amplify-cli/issues/9029) [#9032](https://github.com/aws-amplify/amplify-cli/issues/9032) [#9031](https://github.com/aws-amplify/amplify-cli/issues/9031) [#9035](https://github.com/aws-amplify/amplify-cli/issues/9035) [#9038](https://github.com/aws-amplify/amplify-cli/issues/9038) [#9039](https://github.com/aws-amplify/amplify-cli/issues/9039)
+
+
+
+
+
+## [3.4.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.4.1...amplify-e2e-tests@3.4.2) (2021-11-21)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [3.4.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.4.0...amplify-e2e-tests@3.4.1) (2021-11-20)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+# [3.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.3.1...amplify-e2e-tests@3.4.0) (2021-11-17)
+
+
+### Features
+
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([87b532d](https://github.com/aws-amplify/amplify-cli/commit/87b532da226c4a3cab619fee115e8b7fd0476d71))
+
+
+
+
+
+## [3.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.3.0...amplify-e2e-tests@3.3.1) (2021-11-17)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
 # [3.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.55.0...amplify-e2e-tests@3.3.0) (2021-11-15)
 
 

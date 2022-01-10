@@ -3,6 +3,140 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.15](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.6.13...@aws-amplify/graphql-relational-transformer@0.6.15) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* **graphql:** correct typo filterExpression on v2 resolvers ([#9412](https://github.com/aws-amplify/amplify-cli/issues/9412)) ([71bf468](https://github.com/aws-amplify/amplify-cli/commit/71bf4688952a5f43640297bf31ea9c59d1c679c9))
+
+
+
+
+
+## [0.6.13](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.6.12...@aws-amplify/graphql-relational-transformer@0.6.13) (2021-12-21)
+
+
+
+## 7.6.5 (2021-12-20)
+
+
+### Bug Fixes
+
+* generate list types will nullable elements ([#9310](https://github.com/aws-amplify/amplify-cli/issues/9310)) ([e972956](https://github.com/aws-amplify/amplify-cli/commit/e9729565fef2ac7df51f7fc7f345da536f385ac1))
+* support recursive [@has](https://github.com/has)One/[@has](https://github.com/has)Many with DataStore ([#9336](https://github.com/aws-amplify/amplify-cli/issues/9336)) ([48e51e6](https://github.com/aws-amplify/amplify-cli/commit/48e51e6fbdc429218f84aae7e808bdf9fa280c0d))
+
+
+
+
+
+## [0.6.12](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.6.11...@aws-amplify/graphql-relational-transformer@0.6.12) (2021-12-17)
+
+
+### Bug Fixes
+
+* **graphql-relational-transformer:** [@belongs](https://github.com/belongs)To directive support for Int fields ([#9175](https://github.com/aws-amplify/amplify-cli/issues/9175)) ([452b115](https://github.com/aws-amplify/amplify-cli/commit/452b11549aac4f5ce7cc8fb0720c3e1b10e2457e))
+* prevent A <-> B [@has](https://github.com/has)One or [@has](https://github.com/has)Many relationships with DS ([#9230](https://github.com/aws-amplify/amplify-cli/issues/9230)) ([ffa5fc7](https://github.com/aws-amplify/amplify-cli/commit/ffa5fc74e76988a821e152ab8ae3f386b5967381))
+
+
+
+
+
+## [0.6.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.6.10...@aws-amplify/graphql-relational-transformer@0.6.11) (2021-12-03)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+
+
+
+
+## [0.6.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.6.9...@aws-amplify/graphql-relational-transformer@0.6.10) (2021-12-01)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+
+
+
+
+## [0.6.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.6.8...@aws-amplify/graphql-relational-transformer@0.6.9) (2021-11-29)
+
+
+
+## 7.5.4 (2021-11-28)
+
+
+### Bug Fixes
+
+* handle implicit primary keys in [@many](https://github.com/many)ToMany ([#9111](https://github.com/aws-amplify/amplify-cli/issues/9111)) ([82357a8](https://github.com/aws-amplify/amplify-cli/commit/82357a8fcb9c6565bdde4942efa9b7ba1f192f5e))
+
+
+
+
+
+## [0.6.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.6.7...@aws-amplify/graphql-relational-transformer@0.6.8) (2021-11-26)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+
+
+
+
+## [0.6.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.6.6...@aws-amplify/graphql-relational-transformer@0.6.7) (2021-11-23)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+
+
+
+
+## [0.6.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.6.5...@aws-amplify/graphql-relational-transformer@0.6.6) (2021-11-21)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+
+
+
+
+## [0.6.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.6.4...@aws-amplify/graphql-relational-transformer@0.6.5) (2021-11-20)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+
+
+
+
+## [0.6.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.6.2...@aws-amplify/graphql-relational-transformer@0.6.4) (2021-11-19)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+
+
+
+
+## [0.6.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.6.2...@aws-amplify/graphql-relational-transformer@0.6.3) (2021-11-19)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+
+
+
+
+## [0.6.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.6.1...@aws-amplify/graphql-relational-transformer@0.6.2) (2021-11-17)
+
+
+### Bug Fixes
+
+* **graphql-relational-transformer:** fixes belongs to relation field name ([#8865](https://github.com/aws-amplify/amplify-cli/issues/8865)) ([068b03b](https://github.com/aws-amplify/amplify-cli/commit/068b03bd4c78c840c74557b05f5d109c2c300210))
+* reintroduce connection stack in transformer v2 ([#8757](https://github.com/aws-amplify/amplify-cli/issues/8757)) ([81ffeeb](https://github.com/aws-amplify/amplify-cli/commit/81ffeeb7fecfbad1200e45291cb8052be025f761))
+
+
+
+
+
 ## [0.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.4.0...@aws-amplify/graphql-relational-transformer@0.6.1) (2021-11-15)
 
 **Note:** Version bump only for package @aws-amplify/graphql-relational-transformer

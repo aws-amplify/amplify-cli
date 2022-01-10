@@ -102,8 +102,8 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     const backendDir = pathManager.getBackendDirPath();
     const overrideDir = path.join(backendDir, this._category, this.resourceName);
     const isBuild = await buildOverrideDir(backendDir, overrideDir).catch(error => {
-      printer.debug(`Skipping build as ${error.message}`);
-      return false;
+      printer.error(`Build error : ${error.message}`);
+      throw new Error(error);
     });
     if (isBuild) {
       const overrideCode: string = await fs.readFile(path.join(overrideDir, 'build', 'override.js'), 'utf-8').catch(() => {
@@ -213,11 +213,11 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       cognitoStackFileName,
     );
     // write CFN template
-    writeCFNTemplate(template, cognitostackFilePath, {
+    await writeCFNTemplate(template, cognitostackFilePath, {
       templateFormat: CFNTemplateFormat.JSON,
     });
     // write parameters.json
-    this.writeBuildFiles(context);
+    await this.writeBuildFiles(context);
   };
 
   private writeBuildFiles = async (context: $TSContext) => {
@@ -503,7 +503,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       this._authTemplateObj.addCfnParameter(
         {
           type: 'String',
-          default: [],
+          default: '[]',
         },
         'hostedUIProviderCreds',
       );

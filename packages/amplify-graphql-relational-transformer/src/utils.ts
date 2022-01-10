@@ -171,3 +171,42 @@ function getIndexName(directive: DirectiveNode): string | undefined {
 export function getConnectionAttributeName(type: string, field: string) {
   return toCamelCase([type, field, 'id']);
 }
+
+export function validateDisallowedDataStoreRelationships(
+  config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+) {
+  // If DataStore is enabled, the following scenario is not supported:
+  // Model A includes a @hasOne or @hasMany relationship with Model B, while
+  // Model B includes a @hasOne or @hasMany relationship back to Model A.
+
+  if (!ctx.isProjectUsingDataStore()) {
+    return;
+  }
+
+  const modelType = config.object.name.value;
+  const relatedType = ctx.output.getType(config.relatedType.name.value) as ObjectTypeDefinitionNode;
+  assert(relatedType);
+
+  // Recursive relationships on the same type are allowed.
+  if (modelType === relatedType.name.value) {
+    return;
+  }
+
+  const hasUnsupportedConnectionFields = relatedType.fields!.some(field => {
+    // If the related field has the same data type as this model, and @hasOne or @hasMany
+    // is present, then the connection is unsupported.
+    return (
+      getBaseType(field.type) === modelType &&
+      field.directives!.some(directive => {
+        return directive.name.value === 'hasOne' || directive.name.value === 'hasMany';
+      })
+    );
+  });
+
+  if (hasUnsupportedConnectionFields) {
+    throw new InvalidDirectiveError(
+      `${modelType} and ${relatedType.name.value} cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead. See https://docs.amplify.aws/cli/graphql/data-modeling/#belongs-to-relationship`,
+    );
+  }
+}

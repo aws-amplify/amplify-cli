@@ -30,7 +30,7 @@ describe('Schema iterative update - delete', () => {
     const apiName = 'deletekeys';
 
     const initialSchema = path.join('iterative-push', 'multiple-key-delete', 'initial-schema.graphql');
-    await addApiWithoutSchema(projectDir, { apiKeyExpirationDays: 7 });
+    await addApiWithoutSchema(projectDir, { apiKeyExpirationDays: 7, transformerVersion: 1 });
     await updateApiSchema(projectDir, apiName, initialSchema);
     await amplifyPush(projectDir);
 

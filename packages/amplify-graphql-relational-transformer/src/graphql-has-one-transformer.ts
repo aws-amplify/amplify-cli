@@ -14,6 +14,7 @@ import {
   getFieldsNodes,
   getRelatedType,
   getRelatedTypeIndex,
+  validateDisallowedDataStoreRelationships,
   validateModelDirective,
   validateRelatedModelDirective,
 } from './utils';
@@ -80,4 +81,5 @@ function validate(config: HasOneDirectiveConfiguration, ctx: TransformerContextP
   config.relatedType = getRelatedType(config, ctx);
   config.connectionFields = [];
   validateRelatedModelDirective(config);
+  validateDisallowedDataStoreRelationships(config, ctx);
 }

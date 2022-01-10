@@ -3,6 +3,118 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.3.12](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.3.10...graphql-transformers-e2e-tests@7.3.12) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* make update input id field required ([#9452](https://github.com/aws-amplify/amplify-cli/issues/9452)) ([345fe28](https://github.com/aws-amplify/amplify-cli/commit/345fe28a60bbf1de32496430e38e25463a77e96c))
+* update graphqltransformer e2e tests ([#9446](https://github.com/aws-amplify/amplify-cli/issues/9446)) ([db1e3e9](https://github.com/aws-amplify/amplify-cli/commit/db1e3e9602b611f1c64c8734dd33d3c241a01dd9))
+* use id as nullable field ([#9449](https://github.com/aws-amplify/amplify-cli/issues/9449)) ([301e2c3](https://github.com/aws-amplify/amplify-cli/commit/301e2c35071451ed848b88a5568e8b62c51e5235))
+
+
+
+
+
+## [7.3.10](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.3.9...graphql-transformers-e2e-tests@7.3.10) (2021-12-21)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+## [7.3.9](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.3.8...graphql-transformers-e2e-tests@7.3.9) (2021-12-17)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+## [7.3.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.3.7...graphql-transformers-e2e-tests@7.3.8) (2021-12-03)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+## [7.3.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.3.6...graphql-transformers-e2e-tests@7.3.7) (2021-12-02)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+## [7.3.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.3.5...graphql-transformers-e2e-tests@7.3.6) (2021-12-01)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+## [7.3.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.3.4...graphql-transformers-e2e-tests@7.3.5) (2021-11-26)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+## [7.3.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.3.3...graphql-transformers-e2e-tests@7.3.4) (2021-11-23)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+## [7.3.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.3.2...graphql-transformers-e2e-tests@7.3.3) (2021-11-21)
+
+
+
+## 7.4.5 (2021-11-21)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+## [7.3.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.3.1...graphql-transformers-e2e-tests@7.3.2) (2021-11-20)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+## [7.3.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.3.0...graphql-transformers-e2e-tests@7.3.1) (2021-11-19)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+# [7.3.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.2.1...graphql-transformers-e2e-tests@7.3.0) (2021-11-17)
+
+
+### Features
+
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([87b532d](https://github.com/aws-amplify/amplify-cli/commit/87b532da226c4a3cab619fee115e8b7fd0476d71))
+
+
+
+
+
 ## [7.2.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.29.0...graphql-transformers-e2e-tests@7.2.1) (2021-11-15)
 
 **Note:** Version bump only for package graphql-transformers-e2e-tests

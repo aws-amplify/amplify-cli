@@ -1,21 +1,10 @@
-import fs from 'fs-extra';
-import path from 'path';
-import importGlobal from 'import-global';
-import { print } from 'graphql';
-import importFrom from 'import-from';
-import { TransformerPluginProvider, AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  getAppSyncServiceExtraDirectives,
-  GraphQLTransform,
-  collectDirectivesByTypeNames,
-  TransformerProjectConfig,
-} from '@aws-amplify/graphql-transformer-core';
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
+import { DefaultValueTransformer } from '@aws-amplify/graphql-default-value-transformer';
 import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
 import { HttpTransformer } from '@aws-amplify/graphql-http-transformer';
-import { PredictionsTransformer } from '@aws-amplify/graphql-predictions-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { PredictionsTransformer } from '@aws-amplify/graphql-predictions-transformer';
 import {
   BelongsToTransformer,
   HasManyTransformer,
@@ -23,20 +12,43 @@ import {
   ManyToManyTransformer,
 } from '@aws-amplify/graphql-relational-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
-import { DefaultValueTransformer } from '@aws-amplify/graphql-default-value-transformer';
+import {
+  collectDirectivesByTypeNames,
+  getAppSyncServiceExtraDirectives,
+  GraphQLTransform,
+  ResolverConfig,
+  TransformerProjectConfig,
+} from '@aws-amplify/graphql-transformer-core';
+import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
+import { OverrideConfig } from '@aws-amplify/graphql-transformer-core/src/transformation/types';
+import { AppSyncAuthConfiguration, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  $TSContext,
+  AmplifyCategories,
+  getGraphQLTransformerAuthDocLink,
+  AmplifySupportedService,
+  JSONUtilities,
+  pathManager,
+  stateManager,
+} from 'amplify-cli-core';
+import { getTransformerVersion, searchablePushChecks } from '../transform-graphql-schema';
+import { printer } from 'amplify-prompts';
+import fs from 'fs-extra';
+import { print } from 'graphql';
+import { ResourceConstants } from 'graphql-transformer-common';
+import { getSanityCheckRules, loadProject } from 'graphql-transformer-core';
+import importFrom from 'import-from';
+import importGlobal from 'import-global';
+import _ from 'lodash';
+import path from 'path';
 import { destructiveUpdatesFlag, ProviderName as providerName } from '../constants';
 import { hashDirectory } from '../upload-appsync-files';
-import { getAdminRoles, getIdentityPoolId, mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
-import { loadProject as readTransformerConfiguration } from './transform-config';
-import { getSanityCheckRules, loadProject } from 'graphql-transformer-core';
-import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
 import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
-import { JSONUtilities, $TSContext } from 'amplify-cli-core';
-import { searchablePushChecks } from '../transform-graphql-schema';
-import { ResourceConstants } from 'graphql-transformer-common';
-import { showGlobalSandboxModeWarning, showSandboxModePrompts, schemaHasSandboxModeEnabled } from '../utils/sandbox-mode-helpers';
-import { printer } from 'amplify-prompts';
+import { isAuthModeUpdated } from '../utils/auth-mode-compare';
+import { schemaHasSandboxModeEnabled, showGlobalSandboxModeWarning, showSandboxModePrompts } from '../utils/sandbox-mode-helpers';
 import { GraphQLSanityCheck, SanityCheckRules } from './sanity-check';
+import { parseUserDefinedSlots } from './user-defined-slots';
+import { getAdminRoles, getIdentityPoolId, mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
 
 const API_CATEGORY = 'api';
 const STORAGE_CATEGORY = 'storage';
@@ -48,7 +60,7 @@ const S3_SERVICE_NAME = 'S3';
 
 const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
 
-function warnOnAuth(map) {
+function warnOnAuth(map, docLink) {
   const a: boolean = true;
   const unAuthModelTypes = Object.keys(map).filter(type => !map[type].includes('auth') && map[type].includes('model'));
   if (unAuthModelTypes.length) {
@@ -58,7 +70,7 @@ function warnOnAuth(map) {
       'yellow',
     );
     printer.info(unAuthModelTypes.map(type => `\t - ${type}`).join('\n'), 'yellow');
-    printer.info('Learn more about "@auth" authorization rules here: https://docs.amplify.aws/cli/graphql-transformer/auth\n', 'yellow');
+    printer.info(`Learn more about "@auth" authorization rules here: ${docLink}`, 'yellow');
   }
 }
 
@@ -94,10 +106,9 @@ function getTransformerFactory(
       transformerList.push(new SearchableModelTransformer());
     }
 
-    const customTransformersConfig = await readTransformerConfiguration(resourceDir);
-    const customTransformers = (
-      customTransformersConfig && customTransformersConfig.transformers ? customTransformersConfig.transformers : []
-    )
+    const customTransformersConfig = await loadProject(resourceDir);
+    const customTransformerList = customTransformersConfig?.config?.transformers;
+    const customTransformers = (Array.isArray(customTransformerList) ? customTransformerList : [])
       .map(transformer => {
         const fileUrlMatch = /^file:\/\/(.*)\s*$/m.exec(transformer);
         const modulePath = fileUrlMatch ? fileUrlMatch[1] : transformer;
@@ -239,28 +250,38 @@ export async function transformGraphQLSchema(context, options) {
 
   let { authConfig }: { authConfig: AppSyncAuthConfiguration } = options;
 
-  //
-  // If we don't have an authConfig from the caller, use it from the
-  // already read resources[0], which is an AppSync API.
-  //
-
-  if (!authConfig) {
-    if (resources[0].output.securityType) {
-      // Convert to multi-auth format if needed.
-      authConfig = {
-        defaultAuthentication: {
-          authenticationType: resources[0].output.securityType,
-        },
-        additionalAuthenticationProviders: [],
-      };
-    } else {
-      ({ authConfig } = resources[0].output);
+  if (_.isEmpty(authConfig) && !_.isEmpty(resources)) {
+    authConfig = await context.amplify.invokePluginMethod(
+      context,
+      AmplifyCategories.API,
+      AmplifySupportedService.APPSYNC,
+      'getAuthConfig',
+      [resources[0].resourceName],
+    );
+    // handle case where auth project is not migrated , if Auth not migrated above function will return empty Object
+    if (_.isEmpty(authConfig)) {
+      //
+      // If we don't have an authConfig from the caller, use it from the
+      // already read resources[0], which is an AppSync API.
+      //
+      if (resources[0].output.securityType) {
+        // Convert to multi-auth format if needed.
+        authConfig = {
+          defaultAuthentication: {
+            authenticationType: resources[0].output.securityType,
+          },
+          additionalAuthenticationProviders: [],
+        };
+      } else {
+        ({ authConfig } = resources[0].output);
+      }
     }
   }
 
   // for auth transformer we get any admin roles and a cognito identity pool to check for potential authenticated roles outside of the provided authRole
   const adminRoles = await getAdminRoles(context, resourceName);
   const identityPoolId = await getIdentityPoolId(context);
+
   // for the predictions directive get storage config
   const s3Resource = s3ResourceAlreadyExists(context);
   const storageConfig = s3Resource ? getBucketName(context, s3Resource, backEndDir) : undefined;
@@ -291,16 +312,20 @@ export async function transformGraphQLSchema(context, options) {
   const lastDeployedProjectConfig = fs.existsSync(previouslyDeployedBackendDir)
     ? await loadProject(previouslyDeployedBackendDir)
     : undefined;
-
-  const sandboxModeEnabled = schemaHasSandboxModeEnabled(project.schema);
+  const transformerVersion = await getTransformerVersion(context);
+  const docLink = getGraphQLTransformerAuthDocLink(transformerVersion);
+  const sandboxModeEnabled = schemaHasSandboxModeEnabled(project.schema, docLink);
   const directiveMap = collectDirectivesByTypeNames(project.schema);
   const hasApiKey =
     authConfig.defaultAuthentication.authenticationType === 'API_KEY' ||
     authConfig.additionalAuthenticationProviders.some(a => a.authenticationType === 'API_KEY');
   const showSandboxModeMessage = sandboxModeEnabled && hasApiKey;
 
-  if (showSandboxModeMessage) showGlobalSandboxModeWarning();
-  else warnOnAuth(directiveMap.types);
+  if (showSandboxModeMessage) {
+    const transformerVersion = await getTransformerVersion(context);
+    const docLink = getGraphQLTransformerAuthDocLink(transformerVersion);
+    showGlobalSandboxModeWarning(docLink);
+  } else warnOnAuth(directiveMap.types, docLink);
 
   searchablePushChecks(context, directiveMap.types, parameters[ResourceConstants.PARAMETERS.AppSyncApiName]);
 
@@ -322,6 +347,24 @@ export async function transformGraphQLSchema(context, options) {
   const isNewAppSyncAPI: boolean = resourcesToBeCreated.some(resource => resource.service === 'AppSync');
   const allowDestructiveUpdates = context?.input?.options?.[destructiveUpdatesFlag] || context?.input?.options?.force;
   const sanityCheckRules = getSanityCheckRules(isNewAppSyncAPI, ff, allowDestructiveUpdates);
+  let resolverConfig = {};
+  if (!_.isEmpty(resources)) {
+    resolverConfig = await context.amplify.invokePluginMethod(
+      context,
+      AmplifyCategories.API,
+      AmplifySupportedService.APPSYNC,
+      'getResolverConfig',
+      [resources[0].resourceName],
+    );
+  }
+
+  /**
+   * if Auth is not migrated , we need to fetch resolver Config from transformer.conf.json
+   * since above function will return empt object
+   */
+  if (_.isEmpty(resolverConfig)) {
+    resolverConfig = project.config.ResolverConfig;
+  }
 
   const buildConfig: ProjectOptions<TransformerFactoryArgs> = {
     ...options,
@@ -343,6 +386,7 @@ export async function transformGraphQLSchema(context, options) {
     authConfig,
     sandboxModeEnabled,
     sanityCheckRules,
+    resolverConfig: resolverConfig,
   };
 
   const transformerOutput = await buildAPIProject(buildConfig);
@@ -350,6 +394,9 @@ export async function transformGraphQLSchema(context, options) {
   context.print.success(`GraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
 place .graphql files in a directory at ${schemaDirPath}`);
 
+  if (isAuthModeUpdated(options)) {
+    parameters.AuthModeLastUpdated = new Date();
+  }
   if (!options.dryRun) {
     JSONUtilities.writeJson(parametersFilePath, parameters);
   }
@@ -417,8 +464,15 @@ function getBucketName(context, s3ResourceName, backEndDir) {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
   const stackName = amplifyMeta.providers.awscloudformation.StackName;
-  const parametersFilePath = path.join(backEndDir, STORAGE_CATEGORY, s3ResourceName, PARAMETERS_FILENAME);
-  const bucketParameters = context.amplify.readJsonFile(parametersFilePath);
+  const s3ResourcePath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.STORAGE, s3ResourceName);
+  const cliInputsPath = path.join(s3ResourcePath, 'cli-inputs.json');
+  let bucketParameters;
+  // get bucketParameters 1st from cli-inputs , if not present, then parameters.json
+  if (fs.existsSync(cliInputsPath)) {
+    bucketParameters = JSONUtilities.readJson(cliInputsPath);
+  } else {
+    bucketParameters = stateManager.getResourceParametersJson(undefined, AmplifyCategories.STORAGE, s3ResourceName);
+  }
   const bucketName = stackName.startsWith('amplify-')
     ? `${bucketParameters.bucketName}\${hash}-\${env}`
     : `${bucketParameters.bucketName}${s3ResourceName}-\${env}`;
@@ -432,6 +486,7 @@ type TransformerFactoryArgs = {
   adminRoles?: Array<string>;
   identityPoolId?: string;
 };
+
 export type ProjectOptions<T> = {
   buildParameters: {
     S3DeploymentBucket: string;
@@ -445,11 +500,13 @@ export type ProjectOptions<T> = {
   minify: boolean;
   lastDeployedProjectConfig?: TransformerProjectConfig;
   projectConfig: TransformerProjectConfig;
+  resolverConfig?: ResolverConfig;
   dryRun?: boolean;
   authConfig?: AppSyncAuthConfiguration;
   stacks: Record<string, Template>;
   sandboxModeEnabled?: boolean;
   sanityCheckRules: SanityCheckRules;
+  overrideConfig: OverrideConfig;
 };
 
 export async function buildAPIProject(opts: ProjectOptions<TransformerFactoryArgs>) {
@@ -479,6 +536,11 @@ export async function buildAPIProject(opts: ProjectOptions<TransformerFactoryArg
 async function _buildProject(opts: ProjectOptions<TransformerFactoryArgs>) {
   const userProjectConfig = opts.projectConfig;
   const stackMapping = userProjectConfig.config.StackMapping;
+  const userDefinedSlots = {
+    ...parseUserDefinedSlots(userProjectConfig.pipelineFunctions),
+    ...parseUserDefinedSlots(userProjectConfig.resolvers),
+  };
+
   // Create the transformer instances, we've to make sure we're not reusing them within the same CLI command
   // because the StackMapping feature already builds the project once.
   const transformers = await opts.transformersFactory(opts.transformersFactoryArgs);
@@ -491,10 +553,13 @@ async function _buildProject(opts: ProjectOptions<TransformerFactoryArgs>) {
     stacks: opts.projectConfig.stacks || {},
     featureFlags: new AmplifyCLIFeatureFlagAdapter(),
     sandboxModeEnabled: opts.sandboxModeEnabled,
+    userDefinedSlots,
+    resolverConfig: opts.resolverConfig,
+    overrideConfig: opts.overrideConfig,
   });
 
   const schema = userProjectConfig.schema.toString();
   const transformOutput = transform.transform(schema);
 
-  return mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput);
+  return mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput, opts);
 }

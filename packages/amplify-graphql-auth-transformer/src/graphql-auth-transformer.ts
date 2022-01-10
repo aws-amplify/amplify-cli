@@ -55,6 +55,7 @@ import {
   hasRelationalDirective,
   getTable,
   getRelationalPrimaryMap,
+  getReadRolesForField,
 } from './utils';
 import {
   DirectiveNode,
@@ -299,6 +300,7 @@ Static group authorization should perform as expected.`,
     for (let [modelName, acm] of this.authModelConfig) {
       const indexKeyName = `${modelName}:indicies`;
       const def = context.output.getObject(modelName)!;
+      const modelNameConfig = this.modelDirectiveConfig.get(modelName);
       const searchableDirective = def.directives.find(dir => dir.name.value === 'searchable');
       // queries
       const queryFields = getQueryFieldNames(this.modelDirectiveConfig.get(modelName)!);
@@ -335,18 +337,26 @@ Static group authorization should perform as expected.`,
       // or there is a relational directive on the field then we should protect that as well
       const readRoles = acm.getRolesPerOperation('read');
       const modelFields = def.fields?.filter(f => acm.hasResource(f.name.value)) ?? [];
+      const errorFields = new Array<string>();
       for (let field of modelFields) {
-        const allowedRoles = readRoles.filter(r => acm.isAllowed(r, field.name.value, 'read'));
-        const needsFieldResolver = allowedRoles.length < readRoles.length;
+        const fieldReadRoles = getReadRolesForField(acm, readRoles, field.name.value);
+        const allowedRoles = fieldReadRoles.filter(r => acm.isAllowed(r, field.name.value, 'read'));
+        const needsFieldResolver = allowedRoles.length < fieldReadRoles.length;
         if (needsFieldResolver && field.type.kind === Kind.NON_NULL_TYPE) {
-          throw new InvalidDirectiveError(`\nPer-field auth on the required field ${field.name.value} is not supported with subscriptions.
-  Either make the field optional, set auth on the object and not the field, or disable subscriptions for the object (setting level to off or public)\n`);
-        }
-        if (hasRelationalDirective(field)) {
+          errorFields.push(field.name.value);
+        } else if (hasRelationalDirective(field)) {
           this.protectRelationalResolver(context, def, modelName, field, needsFieldResolver ? allowedRoles : null);
         } else if (needsFieldResolver) {
           this.protectFieldResolver(context, def, modelName, field.name.value, allowedRoles);
         }
+      }
+      if (errorFields.length > 0 && modelNameConfig.subscriptions.level === SubscriptionLevel.on) {
+        throw new InvalidDirectiveError(
+          `Because "${def.name.value}" has a field-level authorization rule and subscriptions are enabled,` +
+            ` you need to either apply field-level authorization rules to all required fields where all rules have read access ${JSON.stringify(
+              errorFields,
+            )}, make those fields nullable, or disable subscriptions for "${def.name.value}" (setting level to off or public).`,
+        );
       }
       const mutationFields = getMutationFieldNames(this.modelDirectiveConfig.get(modelName)!);
       for (let mutation of mutationFields.values()) {
@@ -522,7 +532,7 @@ Static group authorization should perform as expected.`,
       );
     } else {
       // if the related @model does not have auth we need to add a sandbox mode expression
-      relatedAuthExpression = generateSandboxExpressionForField((ctx as any).resourceHelper.api.sandboxModeEnabled);
+      relatedAuthExpression = generateSandboxExpressionForField(ctx.sandboxModeEnabled);
     }
     // if there is field auth on the relational query then we need to add field auth read rules first
     // in the request we then add the rules of the related type
@@ -645,7 +655,7 @@ Static group authorization should perform as expected.`,
     if (ctx.api.host.hasResolver(typeName, fieldName)) {
       // TODO: move pipeline resolvers created in the api host to the resolver manager
       const fieldResolver = ctx.api.host.getResolver(typeName, fieldName) as any;
-      const fieldAuthExpression = generateAuthExpressionForField(this.configuredAuthProviders, roleDefinitions, []);
+      const fieldAuthExpression = generateAuthExpressionForField(this.configuredAuthProviders, roleDefinitions, [], fieldName);
       if (!ctx.api.host.hasDataSource(NONE_DS)) {
         ctx.api.host.addNoneDataSource(NONE_DS);
       }
@@ -658,7 +668,12 @@ Static group authorization should perform as expected.`,
       );
       (fieldResolver.pipelineConfig.functions as string[]).unshift(authFunction.functionId);
     } else {
-      const fieldAuthExpression = generateAuthExpressionForField(this.configuredAuthProviders, roleDefinitions, def.fields ?? []);
+      const fieldAuthExpression = generateAuthExpressionForField(
+        this.configuredAuthProviders,
+        roleDefinitions,
+        def.fields ?? [],
+        fieldName,
+      );
       const subsEnabled = hasModelDirective ? this.modelDirectiveConfig.get(typeName)!.subscriptions.level === 'on' : false;
       const fieldResponse = generateFieldAuthResponse('Mutation', fieldName, subsEnabled);
       const resolver = ctx.resolvers.addResolver(
@@ -687,9 +702,10 @@ Static group authorization should perform as expected.`,
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     const fields = acm.getResources();
     const createRoles = acm.getRolesPerOperation('create').map(role => {
+      const dataStoreFields = ctx.isProjectUsingDataStore() ? ['_version', '_deleted', '_lastChangedAt'] : [];
       const allowedFields = fields.filter(resource => acm.isAllowed(role, resource, 'create'));
       const roleDefinition = this.roleMap.get(role)!;
-      roleDefinition.allowedFields = allowedFields.length === fields.length ? [] : allowedFields;
+      roleDefinition.allowedFields = allowedFields.length === fields.length ? [] : [...allowedFields, ...dataStoreFields];
       return roleDefinition;
     });
     const authExpression = generateAuthExpressionForCreate(this.configuredAuthProviders, createRoles, def.fields ?? []);
@@ -710,11 +726,12 @@ Static group authorization should perform as expected.`,
     const updateDeleteRoles = [...new Set([...acm.getRolesPerOperation('update'), ...acm.getRolesPerOperation('delete')])];
     // protect fields to be updated and fields that can't be set to null (partial delete on fields)
     const totalRoles = updateDeleteRoles.map(role => {
+      const dataStoreFields = ctx.isProjectUsingDataStore() ? ['_version', '_deleted', '_lastChangedAt'] : [];
       const allowedFields = fields.filter(resource => acm.isAllowed(role, resource, 'update'));
-      const nullAllowedFileds = fields.filter(resource => acm.isAllowed(role, resource, 'delete'));
+      const nullAllowedFields = fields.filter(resource => acm.isAllowed(role, resource, 'delete'));
       const roleDefinition = this.roleMap.get(role)!;
-      roleDefinition.allowedFields = allowedFields.length === fields.length ? [] : allowedFields;
-      roleDefinition.nullAllowedFields = nullAllowedFileds.length === fields.length ? [] : nullAllowedFileds;
+      roleDefinition.allowedFields = allowedFields.length === fields.length ? [] : [...allowedFields, ...dataStoreFields];
+      roleDefinition.nullAllowedFields = nullAllowedFields.length === fields.length ? [] : nullAllowedFields;
       return roleDefinition;
     });
     const datasource = ctx.api.host.getDataSource(`${def.name.value}Table`) as DataSourceProvider;

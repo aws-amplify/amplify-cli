@@ -4,7 +4,7 @@ import * as lambdaCdk from '@aws-cdk/aws-lambda';
 import * as s3Cdk from '@aws-cdk/aws-s3';
 import { HttpMethods } from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import { $TSAny, $TSContext, $TSObject, AmplifyCategories } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, AmplifyCategories, stateManager } from 'amplify-cli-core';
 import {
   defaultS3UserInputs,
   GroupAccessType,
@@ -115,6 +115,43 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     }
   }
 
+  /**
+   * This check is required because, in legacy code S3bucket triggers are configured without prefix.
+   * When adding a predictions element, we need to remove the global trigger function and apply it to a subfolder.
+   * @param triggerFunction
+   * @returns triggerLambdaFunctionParams: S3UserInputTriggerFunctionParams
+   */
+  _conditionallyBuildTriggerLambdaParams( triggerFunction : string ){
+    let triggerLambdaFunctionParams: S3UserInputTriggerFunctionParams;
+    if (
+          this._props.adminTriggerFunction?.triggerFunction &&
+          this._props.adminTriggerFunction.triggerFunction != 'NONE' &&
+          this._props.adminTriggerFunction.triggerFunction != this._props.triggerFunction
+        ) {
+          triggerLambdaFunctionParams = {
+            category: AmplifyCategories.STORAGE,
+            tag: 'triggerFunction',
+            triggerFunction: triggerFunction,
+            permissions: [S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ, S3PermissionType.DELETE],
+            triggerEvents: [S3TriggerEventType.OBJ_PUT_POST_COPY, S3TriggerEventType.OBJ_REMOVED],
+            triggerPrefix: [
+              { prefix: 'protected/', prefixTransform: S3TriggerPrefixTransform.ATTACH_REGION },
+              { prefix: 'private/', prefixTransform: S3TriggerPrefixTransform.ATTACH_REGION },
+              { prefix: 'public/', prefixTransform: S3TriggerPrefixTransform.ATTACH_REGION },
+            ],
+          };
+    } else {
+        triggerLambdaFunctionParams = {
+          category: AmplifyCategories.STORAGE,
+          tag: 'triggerFunction',
+          triggerFunction: triggerFunction,
+          permissions: [S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ, S3PermissionType.DELETE],
+          triggerEvents: [S3TriggerEventType.OBJ_PUT_POST_COPY, S3TriggerEventType.OBJ_REMOVED]
+        };
+    }
+    return triggerLambdaFunctionParams;
+  }
+
   //Generate cloudformation stack for S3 resource
   async generateCfnStackResources(context: $TSContext) {
     //1. Create the S3 bucket and configure CORS
@@ -126,18 +163,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     this.s3Bucket.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
     //2. Configure Notifications on the S3 bucket.
     if (this._props.triggerFunction && this._props.triggerFunction != 'NONE') {
-      const triggerLambdaFunctionParams: S3UserInputTriggerFunctionParams = {
-        category: AmplifyCategories.STORAGE,
-        tag: 'triggerFunction',
-        triggerFunction: this._props.triggerFunction,
-        permissions: [S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ, S3PermissionType.DELETE],
-        triggerEvents: [S3TriggerEventType.OBJ_PUT_POST_COPY, S3TriggerEventType.OBJ_REMOVED],
-        triggerPrefix: [
-          { prefix: 'protected/', prefixTransform: S3TriggerPrefixTransform.ATTACH_REGION },
-          { prefix: 'private/', prefixTransform: S3TriggerPrefixTransform.ATTACH_REGION },
-          { prefix: 'public/', prefixTransform: S3TriggerPrefixTransform.ATTACH_REGION },
-        ],
-      };
+      const triggerLambdaFunctionParams: S3UserInputTriggerFunctionParams = this._conditionallyBuildTriggerLambdaParams(this._props.triggerFunction);
       const newLambdaConfigurations = this.buildLambdaConfigFromTriggerParams(triggerLambdaFunctionParams);
       this._addNotificationsLambdaConfigurations(newLambdaConfigurations);
       this.triggerLambdaPermissions = this.createInvokeFunctionS3Permission('TriggerPermissions', this._props.triggerFunction);
@@ -373,14 +399,28 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     };
   }
 
+  /**
+   * Legacy stack names did not start with amplify-
+   * the s3bucket was constructed without resourceName
+   * @returns boolean  (true if legacy stack (2019/18))
+   */
+  isAmplifyStackLegacy():boolean{
+    const amplifyMeta = stateManager.getMeta();
+    const stackName :string = amplifyMeta.providers.awscloudformation.StackName;
+    return !stackName.startsWith('amplify-');
+  }
+
   buildBucketName() {
-    const bucketNameSuffixRef = cdk.Fn.select(3, cdk.Fn.split('-', cdk.Fn.ref('AWS::StackName')));
     const bucketRef = cdk.Fn.ref('bucketName');
     const envRef = cdk.Fn.ref('env');
+    const bucketNameSuffixRef = cdk.Fn.select(3, cdk.Fn.split('-', cdk.Fn.ref('AWS::StackName')));
+    const bucketFinalName = this.isAmplifyStackLegacy()
+      ? cdk.Fn.join('', [bucketRef,'-' ,envRef])
+      : cdk.Fn.join('', [bucketRef, bucketNameSuffixRef, '-', envRef]);
     return cdk.Fn.conditionIf(
       'ShouldNotCreateEnvResources',
       bucketRef,
-      cdk.Fn.join('', [bucketRef, bucketNameSuffixRef, '-', envRef]),
+      bucketFinalName
     ).toString();
   }
 
@@ -463,6 +503,12 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
             };
             lambdaConfigurations.push(lambdaConfig);
           }
+        } else {
+          const lambdaConfig: $TSAny = {
+            event: triggerEvent,
+            function: triggerFunctionArnRef,
+          };
+          lambdaConfigurations.push(lambdaConfig);
         }
       }
     }

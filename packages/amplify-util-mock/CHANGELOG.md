@@ -3,6 +3,210 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.25](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.23...amplify-util-mock@4.2.25) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* **graphql:** reset api config on mock exit ([#9385](https://github.com/aws-amplify/amplify-cli/issues/9385)) ([d0a76f4](https://github.com/aws-amplify/amplify-cli/commit/d0a76f4a94e847c87ab330394e70d9755244ac9d))
+* return field value for admin roles on field resolver fixes issue [#9242](https://github.com/aws-amplify/amplify-cli/issues/9242) ([#9275](https://github.com/aws-amplify/amplify-cli/issues/9275)) ([dbef299](https://github.com/aws-amplify/amplify-cli/commit/dbef2992e53b65789d1ab51a0d342a0671f9661f))
+
+
+
+
+
+## [4.2.23](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.22...amplify-util-mock@4.2.23) (2021-12-21)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** fix key condition expression ([#9264](https://github.com/aws-amplify/amplify-cli/issues/9264)) ([5794692](https://github.com/aws-amplify/amplify-cli/commit/5794692a05c16f23d903321644fe37a4913861e0))
+
+
+
+
+
+## [4.2.22](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.21...amplify-util-mock@4.2.22) (2021-12-17)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.2.21](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.20...amplify-util-mock@4.2.21) (2021-12-09)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.2.20](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.19...amplify-util-mock@4.2.20) (2021-12-03)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.2.19](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.18...amplify-util-mock@4.2.19) (2021-12-02)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.2.18](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.17...amplify-util-mock@4.2.18) (2021-12-02)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.2.17](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.16...amplify-util-mock@4.2.17) (2021-12-02)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.2.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.15...amplify-util-mock@4.2.16) (2021-12-01)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.2.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.14...amplify-util-mock@4.2.15) (2021-11-29)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.2.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.13...amplify-util-mock@4.2.14) (2021-11-26)
+
+
+
+## 7.5.3 (2021-11-26)
+
+
+### Bug Fixes
+
+* transformer version ([#9092](https://github.com/aws-amplify/amplify-cli/issues/9092)) ([acfa82c](https://github.com/aws-amplify/amplify-cli/commit/acfa82c9b275df0a7347ae0700a919dd8c03a4de))
+
+
+
+
+
+## [4.2.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.12...amplify-util-mock@4.2.13) (2021-11-25)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.2.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.11...amplify-util-mock@4.2.12) (2021-11-24)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.2.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.10...amplify-util-mock@4.2.11) (2021-11-23)
+
+
+
+# 7.5.0 (2021-11-23)
+
+
+### Bug Fixes
+
+* update mock cfn parsing to support stack outputs in intrinsic fns ([#9056](https://github.com/aws-amplify/amplify-cli/issues/9056)) ([5d60832](https://github.com/aws-amplify/amplify-cli/commit/5d6083265cd48038d2a9d7a3c66f2df5dec12ad6))
+
+
+
+
+
+## [4.2.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.9...amplify-util-mock@4.2.10) (2021-11-21)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.2.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.8...amplify-util-mock@4.2.9) (2021-11-20)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.2.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.6...amplify-util-mock@4.2.8) (2021-11-19)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.2.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.6...amplify-util-mock@4.2.7) (2021-11-19)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.2.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.5...amplify-util-mock@4.2.6) (2021-11-18)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.2.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.4...amplify-util-mock@4.2.5) (2021-11-17)
+
+
+### Bug Fixes
+
+* allow mock to run if [@searchable](https://github.com/searchable) is used ([#8864](https://github.com/aws-amplify/amplify-cli/issues/8864)) ([995d895](https://github.com/aws-amplify/amplify-cli/commit/995d8952bb9d8f9423a5fbd4bb3fa911d3dd5ac8))
+
+
+
+
+
+## [4.2.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.3...amplify-util-mock@4.2.4) (2021-11-16)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.2.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.2...amplify-util-mock@4.2.3) (2021-11-16)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
 ## [4.2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.1...amplify-util-mock@4.2.2) (2021-11-15)
 
 **Note:** Version bump only for package amplify-util-mock

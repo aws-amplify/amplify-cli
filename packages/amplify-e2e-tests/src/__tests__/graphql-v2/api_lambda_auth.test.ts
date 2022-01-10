@@ -8,14 +8,13 @@ import {
   getProjectMeta,
   initJSProjectWithProfile,
   updateApiSchema,
-  addApiWithAllAuthModesV2,
+  addApiWithAllAuthModes,
   amplifyPush,
 } from 'amplify-e2e-core';
 import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { addEnvironment, checkoutEnvironment, listEnvironment } from '../../environment/env';
 const providerName = 'awscloudformation';
-
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -69,9 +68,7 @@ describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
     const envName = 'devtest';
     const projName = 'lambdaauthenv';
     await initJSProjectWithProfile(projRoot, { name: projName, envName });
-    await addFeatureFlag(projRoot, 'graphqltransformer', 'useexperimentalpipelinedtransformer', true);
-    await addFeatureFlag(projRoot, 'graphqltransformer', 'transformerversion', 2);
-    await addApiWithAllAuthModesV2(projRoot);
+    await addApiWithAllAuthModes(projRoot);
     await updateApiSchema(projRoot, projName, 'lambda-auth-field-auth-v2.graphql');
     await amplifyPush(projRoot);
 
@@ -95,11 +92,11 @@ describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
 
     meta = getProjectMeta(projRoot);
     region = meta.providers.awscloudformation.Region;
-    output = meta.api[projName]["output"];
-    GraphQLAPIIdOutput = output["GraphQLAPIIdOutput"];
-    GraphQLAPIEndpointOutput = output["GraphQLAPIEndpointOutput"];
-    GraphQLAPIKeyOutput = output["GraphQLAPIKeyOutput"];
-    graphqlApi = (await getAppSyncApi(GraphQLAPIIdOutput, region))["graphqlApi"];
+    output = meta.api[projName]['output'];
+    GraphQLAPIIdOutput = output['GraphQLAPIIdOutput'];
+    GraphQLAPIEndpointOutput = output['GraphQLAPIEndpointOutput'];
+    GraphQLAPIKeyOutput = output['GraphQLAPIKeyOutput'];
+    graphqlApi = (await getAppSyncApi(GraphQLAPIIdOutput, region))['graphqlApi'];
 
     expect(GraphQLAPIIdOutput).toBeDefined();
     expect(GraphQLAPIEndpointOutput).toBeDefined();
@@ -113,9 +110,7 @@ describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
     const envName = 'devtest';
     const projName = 'lambdaauthmode';
     await initJSProjectWithProfile(projRoot, { name: projName, envName });
-    await addFeatureFlag(projRoot, 'graphqltransformer', 'useexperimentalpipelinedtransformer', true);
-    await addFeatureFlag(projRoot, 'graphqltransformer', 'transformerversion', 2);
-    await addApiWithAllAuthModesV2(projRoot);
+    await addApiWithAllAuthModes(projRoot);
     await updateApiSchema(projRoot, projName, 'lambda-auth-field-auth-v2.graphql');
     await amplifyPush(projRoot);
 
@@ -131,7 +126,6 @@ describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
 
     expect(graphqlApi).toBeDefined();
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
-
 
     const url = GraphQLAPIEndpointOutput as string;
     const apiKey = GraphQLAPIKeyOutput as string;
@@ -205,9 +199,7 @@ describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
     const envName = 'devtest';
     const projName = 'lambdaauthmodeerr';
     await initJSProjectWithProfile(projRoot, { name: projName, envName });
-    await addFeatureFlag(projRoot, 'graphqltransformer', 'useexperimentalpipelinedtransformer', true);
-    await addFeatureFlag(projRoot, 'graphqltransformer', 'transformerversion', 2);
-    await addApiWithAllAuthModesV2(projRoot);
+    await addApiWithAllAuthModes(projRoot);
     await updateApiSchema(projRoot, projName, 'lambda-auth-field-auth-1-v2.graphql');
     await amplifyPush(projRoot);
 
@@ -223,7 +215,6 @@ describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
 
     expect(graphqlApi).toBeDefined();
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
-
 
     const url = GraphQLAPIEndpointOutput as string;
     const apiKey = GraphQLAPIKeyOutput as string;
@@ -267,11 +258,13 @@ describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
         }
       }
     `;
-    
-    await expect(appSyncClient.query({
-      query: gql(listNotesQuery),
-      fetchPolicy: 'no-cache',
-    })).rejects.toThrow(`GraphQL error: Not Authorized to access note on type String`);
+
+    await expect(
+      appSyncClient.query({
+        query: gql(listNotesQuery),
+        fetchPolicy: 'no-cache',
+      }),
+    ).rejects.toThrow(`GraphQL error: Not Authorized to access note on type String`);
 
     const appSyncInvalidClient = new AWSAppSyncClient({
       url,
@@ -283,19 +276,19 @@ describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
       },
     });
 
-    await expect(appSyncInvalidClient.query({
-      query: gql(listNotesQuery),
-      fetchPolicy: 'no-cache',
-    })).rejects.toThrow(`Network error: Response not successful: Received status code 401`);
+    await expect(
+      appSyncInvalidClient.query({
+        query: gql(listNotesQuery),
+        fetchPolicy: 'no-cache',
+      }),
+    ).rejects.toThrow(`Network error: Response not successful: Received status code 401`);
   });
 
   it('lambda auth with no create access', async () => {
     const envName = 'devtest';
     const projName = 'lambdaauth2';
     await initJSProjectWithProfile(projRoot, { name: projName, envName });
-    await addFeatureFlag(projRoot, 'graphqltransformer', 'useexperimentalpipelinedtransformer', true);
-    await addFeatureFlag(projRoot, 'graphqltransformer', 'transformerversion', 2);
-    await addApiWithAllAuthModesV2(projRoot);
+    await addApiWithAllAuthModes(projRoot);
     await updateApiSchema(projRoot, projName, 'lambda-auth-field-auth-2-v2.graphql');
     await amplifyPush(projRoot);
 
@@ -339,11 +332,13 @@ describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
         note: 'initial note',
       },
     };
-    
-    await expect(appSyncClient.mutate({
-      mutation: gql(createMutation),
-      fetchPolicy: 'no-cache',
-      variables: createInput,
-    })).rejects.toThrow(`GraphQL error: Unauthorized on [note]`);
+
+    await expect(
+      appSyncClient.mutate({
+        mutation: gql(createMutation),
+        fetchPolicy: 'no-cache',
+        variables: createInput,
+      }),
+    ).rejects.toThrow(`GraphQL error: Unauthorized on [note]`);
   });
 });

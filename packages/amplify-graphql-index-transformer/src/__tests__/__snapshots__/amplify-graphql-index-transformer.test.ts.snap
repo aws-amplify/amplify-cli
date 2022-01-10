@@ -435,6 +435,12 @@ $util.unauthorized()
   $util.toJson(null)
 #end
 ## [End] Get Response template. **",
+  "Query.listByEmailKindDate.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.listByEmailKindDate.req.vtl": "## [Start] Set query expression for key **
 #set( $modelQueryExpression = {} )
 ## [Start] Validate key arguments. **
@@ -568,8 +574,8 @@ $util.unauthorized()
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end
@@ -609,8 +615,8 @@ $util.toJson({})
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $ListRequest.filter = $filterExpression )
   #end
@@ -638,6 +644,12 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
+  "Query.testsByCategory.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.testsByCategory.req.vtl": "## [Start] Set query expression for key **
 #set( $modelQueryExpression = {} )
 ## [Start] Validate key arguments. **
@@ -725,8 +737,8 @@ $util.toJson($ListRequest)
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end
@@ -1219,6 +1231,12 @@ $util.unauthorized()
   $util.toJson(null)
 #end
 ## [End] Get Response template. **",
+  "Query.listByEmailKindDate.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.listByEmailKindDate.req.vtl": "## [Start] Set query expression for key **
 #set( $modelQueryExpression = {} )
 ## [Start] Validate key arguments. **
@@ -1352,8 +1370,8 @@ $util.unauthorized()
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end
@@ -1393,8 +1411,8 @@ $util.toJson({})
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $ListRequest.filter = $filterExpression )
   #end
@@ -1905,6 +1923,12 @@ $util.unauthorized()
   $util.toJson(null)
 #end
 ## [End] Get Response template. **",
+  "Query.listByEmailKindDate.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.listByEmailKindDate.req.vtl": "## [Start] Set query expression for key **
 #set( $modelQueryExpression = {} )
 ## [Start] Validate key arguments. **
@@ -2038,8 +2062,8 @@ $util.unauthorized()
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end
@@ -2079,8 +2103,8 @@ $util.toJson({})
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $ListRequest.filter = $filterExpression )
   #end
@@ -2108,6 +2132,12 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
+  "Query.testsByCategory.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.testsByCategory.req.vtl": "## [Start] Set query expression for key **
 #set( $modelQueryExpression = {} )
 ## [Start] Validate key arguments. **
@@ -2195,8 +2225,8 @@ $util.toJson($ListRequest)
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end
@@ -2206,6 +2236,12 @@ $util.toJson($QueryRequest)",
   $util.error($ctx.error.message, $ctx.error.type)
 #end
 $util.toJson($ctx.result)",
+  "Query.testsByEmail.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.testsByEmail.req.vtl": "## [Start] Set query expression for key **
 #if( !$util.isNull($ctx.args.sortDirection) )
   $util.error(\\"sortDirection is not supported for List operations without a Sort key defined.\\", \\"InvalidArgumentsError\\")
@@ -2253,8 +2289,8 @@ $util.toJson($ctx.result)",
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end
@@ -2922,6 +2958,12 @@ $util.unauthorized()
   $util.toJson(null)
 #end
 ## [End] Get Response template. **",
+  "Query.listByEmailKindDate.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.listByEmailKindDate.req.vtl": "## [Start] Set query expression for key **
 #set( $modelQueryExpression = {} )
 ## [Start] Validate key arguments. **
@@ -3055,8 +3097,8 @@ $util.unauthorized()
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end
@@ -3158,8 +3200,8 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $ListRequest.filter = $filterExpression )
   #end
@@ -3187,6 +3229,12 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
+  "Query.testsByCategory.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.testsByCategory.req.vtl": "## [Start] Set query expression for key **
 #set( $modelQueryExpression = {} )
 ## [Start] Validate key arguments. **
@@ -3274,8 +3322,8 @@ $util.toJson($ListRequest)
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end
@@ -3285,6 +3333,12 @@ $util.toJson($QueryRequest)",
   $util.error($ctx.error.message, $ctx.error.type)
 #end
 $util.toJson($ctx.result)",
+  "Query.testsByEmail.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.testsByEmail.req.vtl": "## [Start] Set query expression for key **
 #if( !$util.isNull($ctx.args.sortDirection) )
   $util.error(\\"sortDirection is not supported for List operations without a Sort key defined.\\", \\"InvalidArgumentsError\\")
@@ -3332,8 +3386,8 @@ $util.toJson($ctx.result)",
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end
@@ -6273,6 +6327,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
+  "Query.byCreatedAt.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.byCreatedAt.req.vtl": "## [Start] Set query expression for key **
 #if( !$util.isNull($ctx.args.sortDirection) )
   $util.error(\\"sortDirection is not supported for List operations without a Sort key defined.\\", \\"InvalidArgumentsError\\")
@@ -6320,8 +6380,8 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end
@@ -6564,6 +6624,12 @@ $util.unauthorized()
   $util.toJson(null)
 #end
 ## [End] Get Response template. **",
+  "Query.getPersonByNameByDate.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.getPersonByNameByDate.req.vtl": "## [Start] Set query expression for key **
 #set( $modelQueryExpression = {} )
 ## [Start] Validate key arguments. **
@@ -6697,8 +6763,8 @@ $util.unauthorized()
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end
@@ -6881,6 +6947,12 @@ $util.unauthorized()
   $util.toJson(null)
 #end
 ## [End] Get Response template. **",
+  "Query.itemsByCreatedAt.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.itemsByCreatedAt.req.vtl": "## [Start] Set query expression for key **
 #set( $modelQueryExpression = {} )
 ## [Start] Validate key arguments. **
@@ -6968,8 +7040,8 @@ $util.unauthorized()
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end
@@ -6979,6 +7051,12 @@ $util.toJson($QueryRequest)",
   $util.error($ctx.error.message, $ctx.error.type)
 #end
 $util.toJson($ctx.result)",
+  "Query.itemsByStatus.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.itemsByStatus.req.vtl": "## [Start] Set query expression for key **
 #set( $modelQueryExpression = {} )
 ## [Start] Validate key arguments. **
@@ -7066,8 +7144,8 @@ $util.toJson($ctx.result)",
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end
@@ -7107,8 +7185,8 @@ $util.toJson({})
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $ListRequest.filter = $filterExpression )
   #end
@@ -7136,6 +7214,12 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
+  "Query.listByEmailKindDate.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.listByEmailKindDate.req.vtl": "## [Start] Set query expression for key **
 #set( $modelQueryExpression = {} )
 ## [Start] Validate key arguments. **
@@ -7269,8 +7353,8 @@ $util.toJson($ListRequest)
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end
@@ -7372,8 +7456,8 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $ListRequest.filter = $filterExpression )
   #end
@@ -7401,6 +7485,12 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
+  "Query.listContentByCategory.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.listContentByCategory.req.vtl": "## [Start] Set query expression for key **
 #set( $modelQueryExpression = {} )
 ## [Start] Validate key arguments. **
@@ -7551,8 +7641,8 @@ $util.toJson($ListRequest)
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end
@@ -7700,8 +7790,8 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $ListRequest.filter = $filterExpression )
   #end
@@ -7867,8 +7957,8 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $ListRequest.filter = $filterExpression )
   #end
@@ -7988,8 +8078,8 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $ListRequest.filter = $filterExpression )
   #end
@@ -8017,6 +8107,12 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
+  "Query.listReviewsById.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.listReviewsById.req.vtl": "## [Start] Set query expression for key **
 #if( !$util.isNull($ctx.args.sortDirection) )
   $util.error(\\"sortDirection is not supported for List operations without a Sort key defined.\\", \\"InvalidArgumentsError\\")
@@ -8064,8 +8160,8 @@ $util.toJson($ListRequest)
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end
@@ -8075,6 +8171,12 @@ $util.toJson($QueryRequest)",
   $util.error($ctx.error.message, $ctx.error.type)
 #end
 $util.toJson($ctx.result)",
+  "Query.listReviewsByService.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.listReviewsByService.req.vtl": "## [Start] Set query expression for key **
 #set( $modelQueryExpression = {} )
 ## [Start] Validate key arguments. **
@@ -8162,8 +8264,8 @@ $util.toJson($ctx.result)",
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end
@@ -8173,6 +8275,12 @@ $util.toJson($QueryRequest)",
   $util.error($ctx.error.message, $ctx.error.type)
 #end
 $util.toJson($ctx.result)",
+  "Query.listReviewsByStatus.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.listReviewsByStatus.req.vtl": "## [Start] Set query expression for key **
 #set( $modelQueryExpression = {} )
 ## [Start] Validate key arguments. **
@@ -8306,8 +8414,8 @@ $util.toJson($ctx.result)",
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end
@@ -8409,8 +8517,8 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $ListRequest.filter = $filterExpression )
   #end
@@ -8722,8 +8830,8 @@ null
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $filter = $filterExpression )
   #end
@@ -8748,6 +8856,12 @@ null
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
+  "Query.testsByCategory.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.testsByCategory.req.vtl": "## [Start] Set query expression for key **
 #set( $modelQueryExpression = {} )
 ## [Start] Validate key arguments. **
@@ -8835,8 +8949,8 @@ null
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end
@@ -8846,6 +8960,12 @@ $util.toJson($QueryRequest)",
   $util.error($ctx.error.message, $ctx.error.type)
 #end
 $util.toJson($ctx.result)",
+  "Query.testsByEmail.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.testsByEmail.req.vtl": "## [Start] Set query expression for key **
 #if( !$util.isNull($ctx.args.sortDirection) )
   $util.error(\\"sortDirection is not supported for List operations without a Sort key defined.\\", \\"InvalidArgumentsError\\")
@@ -8893,8 +9013,8 @@ $util.toJson($ctx.result)",
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end
@@ -8904,6 +9024,12 @@ $util.toJson($QueryRequest)",
   $util.error($ctx.error.message, $ctx.error.type)
 #end
 $util.toJson($ctx.result)",
+  "Query.testsByEmailByUpdatedAt.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.testsByEmailByUpdatedAt.req.vtl": "## [Start] Set query expression for key **
 #set( $modelQueryExpression = {} )
 ## [Start] Validate key arguments. **
@@ -8991,8 +9117,8 @@ $util.toJson($ctx.result)",
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end
@@ -10844,6 +10970,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
+  "Query.byCreatedAt.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.byCreatedAt.req.vtl": "## [Start] Set query expression for key **
 #if( !$util.isNull($ctx.args.sortDirection) )
   $util.error(\\"sortDirection is not supported for List operations without a Sort key defined.\\", \\"InvalidArgumentsError\\")
@@ -10891,8 +11023,8 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end
@@ -11128,6 +11260,12 @@ $util.unauthorized()
   $util.toJson(null)
 #end
 ## [End] Get Response template. **",
+  "Query.itemsByCreatedAt.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.itemsByCreatedAt.req.vtl": "## [Start] Set query expression for key **
 #set( $modelQueryExpression = {} )
 ## [Start] Validate key arguments. **
@@ -11215,8 +11353,8 @@ $util.unauthorized()
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end
@@ -11226,6 +11364,12 @@ $util.toJson($QueryRequest)",
   $util.error($ctx.error.message, $ctx.error.type)
 #end
 $util.toJson($ctx.result)",
+  "Query.itemsByStatus.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.itemsByStatus.req.vtl": "## [Start] Set query expression for key **
 #set( $modelQueryExpression = {} )
 ## [Start] Validate key arguments. **
@@ -11313,8 +11457,8 @@ $util.toJson($ctx.result)",
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end
@@ -11354,8 +11498,8 @@ $util.toJson({})
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $ListRequest.filter = $filterExpression )
   #end
@@ -11383,6 +11527,12 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
+  "Query.listByEmailKindDate.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.listByEmailKindDate.req.vtl": "## [Start] Set query expression for key **
 #set( $modelQueryExpression = {} )
 ## [Start] Validate key arguments. **
@@ -11516,8 +11666,8 @@ $util.toJson($ListRequest)
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end
@@ -11527,6 +11677,12 @@ $util.toJson($QueryRequest)",
   $util.error($ctx.error.message, $ctx.error.type)
 #end
 $util.toJson($ctx.result)",
+  "Query.listContentByCategory.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.listContentByCategory.req.vtl": "## [Start] Set query expression for key **
 #set( $modelQueryExpression = {} )
 ## [Start] Validate key arguments. **
@@ -11677,8 +11833,8 @@ $util.toJson($ctx.result)",
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end
@@ -11826,8 +11982,8 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $ListRequest.filter = $filterExpression )
   #end
@@ -11947,8 +12103,8 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $ListRequest.filter = $filterExpression )
   #end
@@ -11976,6 +12132,12 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
+  "Query.testsByCategory.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.testsByCategory.req.vtl": "## [Start] Set query expression for key **
 #set( $modelQueryExpression = {} )
 ## [Start] Validate key arguments. **
@@ -12063,8 +12225,8 @@ $util.toJson($ListRequest)
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end
@@ -12074,6 +12236,12 @@ $util.toJson($QueryRequest)",
   $util.error($ctx.error.message, $ctx.error.type)
 #end
 $util.toJson($ctx.result)",
+  "Query.testsByEmail.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.testsByEmail.req.vtl": "## [Start] Set query expression for key **
 #if( !$util.isNull($ctx.args.sortDirection) )
   $util.error(\\"sortDirection is not supported for List operations without a Sort key defined.\\", \\"InvalidArgumentsError\\")
@@ -12121,8 +12289,8 @@ $util.toJson($ctx.result)",
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end
@@ -12132,6 +12300,12 @@ $util.toJson($QueryRequest)",
   $util.error($ctx.error.message, $ctx.error.type)
 #end
 $util.toJson($ctx.result)",
+  "Query.testsByEmailByUpdatedAt.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.testsByEmailByUpdatedAt.req.vtl": "## [Start] Set query expression for key **
 #set( $modelQueryExpression = {} )
 ## [Start] Validate key arguments. **
@@ -12219,8 +12393,8 @@ $util.toJson($ctx.result)",
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $QueryRequest.filter = $filterExpression )
   #end

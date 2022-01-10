@@ -156,7 +156,7 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
     );
 
     // generate resources
-    this._userPoolGroupTemplateObj.generateUserPoolGroupResources(props);
+    await this._userPoolGroupTemplateObj.generateUserPoolGroupResources(props);
 
     // generate CFN outputs again to generate same Output Names as cdk doesnt allow resource with same logical names
     if (props.identityPoolName) {
@@ -175,8 +175,8 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
     const backendDir = pathManager.getBackendDirPath();
     const overrideDir = path.join(backendDir, this._category, this._resourceName);
     const isBuild = await buildOverrideDir(backendDir, overrideDir).catch(error => {
-      printer.debug(`Skipping build as ${error.message}`);
-      return false;
+      printer.error(`Build error : ${error.message}`);
+      throw new Error(error);
     });
     if (isBuild) {
       const overrideCode: string = await fs.readFile(path.join(overrideDir, 'build', 'override.js'), 'utf-8').catch(() => {
@@ -222,10 +222,11 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
   public synthesizeTemplates = async (): Promise<Template> => {
     this._app.synth();
     const templates = this._synthesizer.collectStacks();
-    const cfnTemplate = templates.get('AmplifyUserPoolGroupStack')!;
-    const cfnTemplateOutputs = templates.get('AmplifyUserPoolGroupStackOutputs')!;
-    Object.assign(cfnTemplate, cfnTemplateOutputs);
-    return cfnTemplate;
+    const cfnUserPoolGroupStack: Template = templates.get('AmplifyUserPoolGroupStack')!;
+    const templatesOutput = this._synthesizerOutputs.collectStacks();
+    const cfnUserPoolGroupOutputs: Template = templatesOutput.get('AmplifyUserPoolGroupStackOutputs')!;
+    cfnUserPoolGroupStack.Outputs = cfnUserPoolGroupOutputs.Outputs;
+    return cfnUserPoolGroupStack;
   };
 
   public saveBuildFiles = async (context: $TSContext, template: Template): Promise<void> => {

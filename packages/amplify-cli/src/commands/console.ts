@@ -29,8 +29,8 @@ export const run = async context => {
           name: 'choice',
           message: 'Which site do you want to open?',
           choices: [
-            { name: 'Admin', message: 'Amplify admin UI' },
-            { name: 'Console', message: 'Amplify console' },
+            { name: 'Admin', message: 'Amplify Studio' },
+            { name: 'Console', message: 'AWS console' },
           ],
         });
         if (choice === 'Admin') {

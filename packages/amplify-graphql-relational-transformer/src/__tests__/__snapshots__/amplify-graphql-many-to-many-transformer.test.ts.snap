@@ -15,7 +15,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #end
   #end
 #end
-#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) && $primaryFieldMap.isEmpty() )
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
 $util.unauthorized()
 #end
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
@@ -62,7 +62,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #end
   #end
 #end
-#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) && $primaryFieldMap.isEmpty() )
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
 $util.unauthorized()
 #end
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
@@ -457,15 +457,17 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #end
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #if( !$isAuthorized )
-    #set( $authFilter = [{
-  \\"owner\\": {
-      \\"eq\\":     $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\"))
-  }
-}] )
-    $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #set( $authFilter = [] )
+    #set( $role0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+    #if( $role0 != \\"___xamznone____\\" )
+      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0 }}))
+    #end
+    #if( !$authFilter.isEmpty() )
+      $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #end
   #end
 #end
-#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) && $primaryFieldMap.isEmpty() )
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
 $util.unauthorized()
 #end
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
@@ -514,15 +516,17 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #end
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #if( !$isAuthorized )
-    #set( $authFilter = [{
-  \\"owner\\": {
-      \\"eq\\":     $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\"))
-  }
-}] )
-    $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #set( $authFilter = [] )
+    #set( $role0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+    #if( $role0 != \\"___xamznone____\\" )
+      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0 }}))
+    #end
+    #if( !$authFilter.isEmpty() )
+      $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #end
   #end
 #end
-#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) && $primaryFieldMap.isEmpty() )
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
 $util.unauthorized()
 #end
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
@@ -1065,7 +1069,7 @@ enum ModelSortDirection {
 }
 
 type ModelFooConnection {
-  items: [Foo!]!
+  items: [Foo]!
   nextToken: String
 }
 
@@ -1128,7 +1132,7 @@ type Subscription {
 }
 
 type ModelBarConnection {
-  items: [Bar!]!
+  items: [Bar]!
   nextToken: String
 }
 
@@ -1158,7 +1162,7 @@ input DeleteBarInput {
 }
 
 type ModelFooBarConnection {
-  items: [FooBar!]!
+  items: [FooBar]!
   nextToken: String
 }
 
@@ -1282,8 +1286,8 @@ Object {
   #if( !$util.isNullOrEmpty($filter) )
     #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
     #if( !$util.isNullOrBlank($filterExpression.expression) )
-      #if( $filterEpression.expressionValues.size() == 0 )
-        $util.qr($filterEpression.remove(\\"expressionValues\\"))
+      #if( $filterExpression.expressionValues.size() == 0 )
+        $util.qr($filterExpression.remove(\\"expressionValues\\"))
       #end
       #set( $filter = $filterExpression )
     #end
@@ -1395,8 +1399,8 @@ $util.error($ctx.error.message, $ctx.error.type)
   #if( !$util.isNullOrEmpty($filter) )
     #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
     #if( !$util.isNullOrBlank($filterExpression.expression) )
-      #if( $filterEpression.expressionValues.size() == 0 )
-        $util.qr($filterEpression.remove(\\"expressionValues\\"))
+      #if( $filterExpression.expressionValues.size() == 0 )
+        $util.qr($filterExpression.remove(\\"expressionValues\\"))
       #end
       #set( $filter = $filterExpression )
     #end
@@ -2636,8 +2640,8 @@ $util.toJson({})
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $ListRequest.filter = $filterExpression )
   #end
@@ -2695,8 +2699,8 @@ $util.toJson({})
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $ListRequest.filter = $filterExpression )
   #end
@@ -2754,8 +2758,8 @@ $util.toJson({})
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
-    #if( $filterEpression.expressionValues.size() == 0 )
-      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
     #end
     #set( $ListRequest.filter = $filterExpression )
   #end

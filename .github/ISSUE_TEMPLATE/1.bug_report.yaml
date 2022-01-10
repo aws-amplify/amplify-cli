@@ -49,6 +49,12 @@ body:
       description: 'For example: Mac, Windows, Ubuntu.'
     validations:
       required: true
+  - type: textarea
+    attributes:
+      label: Did you make any manual changes to the cloud resources managed by Amplify? Please describe the changes made.
+      description: 'For example: "Deleted DynamoDB GSIs from the AWS Console or using AWS CLI" Or "No manual changes made"'
+    validations:
+      required: true
   - type: dropdown
     attributes:
       label: Amplify Categories
@@ -84,6 +90,7 @@ body:
         - configure project
         - delete
         - env
+        - export
         - init
         - publish
         - pull

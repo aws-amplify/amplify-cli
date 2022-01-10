@@ -12,17 +12,49 @@
   serviceConfiguration: GeoServiceConfiguration;
 }
 
-export interface GeoServiceConfiguration {
+/**
+ * Defines AWS Location Service parameters.
+ */
+export type GeoServiceConfiguration = BaseGeoServiceConfiguration & MapConfiguration;
+
+/**
+ * Configuration that applies to all geo service configuration.
+ */
+export interface BaseGeoServiceConfiguration {
+  /**
+   * The service name of the resource provider.
+   */
   serviceName: string;
+  /**
+   * The name of the map that will be created.
+   */
   name: string;
+  /**
+   * The access policy for geo resources.
+   */
   accessType: AccessType;
+  /**
+   * Whether the geo resource added is set to default.
+   */
   setAsDefault: boolean;
 }
-export interface MapConfiguration extends GeoServiceConfiguration {
+/**
+ * Specifies configuration for map.
+ */
+export interface MapConfiguration {
+  /**
+   * The service name of the resource provider.
+   */
   serviceName: "Map";
+  /**
+   * The map style type.
+   */
   mapStyle: MapStyle;
 }
 
+/**
+ * Definition of access type
+ */
 export enum AccessType {
   AuthorizedUsers = "AuthorizedUsers",
   AuthorizedAndGuestUsers = "AuthorizedAndGuestUsers"

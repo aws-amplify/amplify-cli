@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.22.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.22.2...graphql-transformer-common@4.22.4) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+**Note:** Version bump only for package graphql-transformer-common
+
+
+
+
+
+## [4.22.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.22.1...graphql-transformer-common@4.22.2) (2021-11-17)
+
+
+### Bug Fixes
+
+* append apiKey if global auth is enabled and its not default auth ([#8843](https://github.com/aws-amplify/amplify-cli/issues/8843)) ([3aadcde](https://github.com/aws-amplify/amplify-cli/commit/3aadcde2225f0ede5c5d94c2a4cd9d1afece5288))
+
+
+
+
+
 ## [4.22.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.20.0...graphql-transformer-common@4.22.1) (2021-11-15)
 
 **Note:** Version bump only for package graphql-transformer-common

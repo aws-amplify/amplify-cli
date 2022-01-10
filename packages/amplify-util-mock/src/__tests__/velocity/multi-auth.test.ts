@@ -59,7 +59,7 @@ describe('@model + @auth with oidc provider', () => {
     };
 
     const out = transformer.transform(validSchema);
-    const createRequestTemplate = out.pipelineFunctions['Mutation.createProfile.auth.1.req.vtl'];
+    const createRequestTemplate = out.resolvers['Mutation.createProfile.auth.1.req.vtl'];
     const createRequestAsSubOwner = vtlTemplate.render(createRequestTemplate, {
       context: createProfileInput,
       requestParameters: subIdUser,
@@ -94,8 +94,8 @@ describe('@model + @auth with oidc provider', () => {
       },
     };
     const out = transformer.transform(validSchema);
-    const createRequestTemplate = out.pipelineFunctions['Mutation.createComment.auth.1.req.vtl'];
-    const getRequestTemplate = out.pipelineFunctions['Query.getComment.auth.1.req.vtl'];
+    const createRequestTemplate = out.resolvers['Mutation.createComment.auth.1.req.vtl'];
+    const getRequestTemplate = out.resolvers['Query.getComment.auth.1.req.vtl'];
     // mutations
     const createRequestAsEditor = vtlTemplate.render(createRequestTemplate, {
       context: createCommentInput,

@@ -20,6 +20,7 @@ import {
   toCamelCase,
   toPascalCase,
   toUpper,
+  wrapNonNull,
 } from 'graphql-transformer-common';
 import {
   BelongsToDirectiveConfiguration,
@@ -71,7 +72,7 @@ function generateModelXConnectionType(
   let connectionTypeExtension = blankObjectExtension(tableXConnectionName);
 
   connectionTypeExtension = extensionWithFields(connectionTypeExtension, [
-    makeField('items', [], makeNonNullType(makeListType(makeNonNullType(makeNamedType(relatedType.name.value))))),
+    makeField('items', [], makeNonNullType(makeListType(makeNamedType(relatedType.name.value)))),
   ]);
   connectionTypeExtension = extensionWithFields(connectionTypeExtension, [makeField('nextToken', [], makeNamedType('String'))]);
 
@@ -168,7 +169,7 @@ export function ensureHasOneConnectionField(
 export function ensureBelongsToConnectionField(config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider) {
   const { relationType, relatedType, relatedField } = config;
   if (relationType === 'hasOne') {
-    ensureHasOneConnectionField(config, ctx, getConnectionAttributeName(relatedType.name.value, relatedField.name.value));
+    ensureHasOneConnectionField(config, ctx);
   } else {
     // hasMany
     config.connectionFields.push(getConnectionAttributeName(relatedType.name.value, relatedField.name.value));
@@ -410,11 +411,13 @@ function makeModelXFilterInputObject(
   };
 }
 
-export function getPartitionKeyField(object: ObjectTypeDefinitionNode): FieldDefinitionNode {
+export function getPartitionKeyField(ctx: TransformerContextProvider, object: ObjectTypeDefinitionNode): FieldDefinitionNode {
+  const outputObject = ctx.output.getType(object.name.value) as ObjectTypeDefinitionNode;
+  assert(outputObject);
   const fieldMap = new Map<string, FieldDefinitionNode>();
   let name = 'id';
 
-  for (const field of object.fields!) {
+  for (const field of outputObject.fields!) {
     fieldMap.set(field.name.value, field);
 
     for (const directive of field.directives!) {
@@ -425,5 +428,5 @@ export function getPartitionKeyField(object: ObjectTypeDefinitionNode): FieldDef
     }
   }
 
-  return fieldMap.get(name)!;
+  return fieldMap.get(name) ?? makeField('id', [], wrapNonNull(makeNamedType('ID')));
 }

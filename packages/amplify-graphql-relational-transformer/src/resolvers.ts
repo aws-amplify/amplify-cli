@@ -1,9 +1,9 @@
-import assert from 'assert';
 import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from '@aws-cdk/aws-appsync';
 import { Table } from '@aws-cdk/aws-dynamodb';
 import * as cdk from '@aws-cdk/core';
+import assert from 'assert';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import {
   and,
@@ -44,7 +44,21 @@ import {
 import { HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from './types';
 import { getConnectionAttributeName } from './utils';
 
+const CONNECTION_STACK = 'ConnectionStack';
 const authFilter = ref('ctx.stash.authFilter');
+
+function buildKeyValueExpression(fieldName: string, object: ObjectTypeDefinitionNode) {
+  const field = object.fields?.find(it => it.name.value === fieldName);
+
+  // can be auto-generated
+  const attributeType = field ? attributeTypeFromScalar(field.type) : 'S';
+
+  return ref(
+    `util.parseJson($util.dynamodb.toDynamoDBJson($util.${
+      attributeType === 'S' ? 'defaultIfNullOrBlank' : 'defaultIfNull'
+    }($ctx.source.${fieldName}, "${NONE_VALUE}")))`,
+  );
+}
 
 export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider) {
   const { connectionFields, field, fields, object, relatedType, relatedTypeIndex } = config;
@@ -58,10 +72,9 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
   let totalExpressionNames: Record<string, Expression> = {
     [`#partitionKey`]: str(partitionKeyName),
   };
+
   let totalExpressionValues: Record<string, Expression> = {
-    [`:partitionValue`]: ref(
-      `util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${localFields[0]}, "${NONE_VALUE}")))`,
-    ),
+    [`:partitionValue`]: buildKeyValueExpression(localFields[0], object),
   };
 
   // Add a composite sort key or simple sort key if there is one.
@@ -79,9 +92,7 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
     const sortKeyName = keySchema[1].attributeName;
     totalExpressions.push(`#sortKeyName = :sortKeyName`);
     totalExpressionNames['#sortKeyName'] = str(sortKeyName);
-    totalExpressionValues[':sortKeyName'] = ref(
-      `util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${localFields[1]}, "${NONE_VALUE}")))`,
-    );
+    totalExpressionValues[':sortKeyName'] = buildKeyValueExpression(localFields[1], object);
   }
 
   const resolver = ctx.resolvers.generateQueryResolver(
@@ -144,7 +155,7 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
     ),
   );
 
-  resolver.mapToStack(table.stack);
+  resolver.mapToStack(getConnectionStack(ctx));
   ctx.resolvers.addResolver(object.name.value, field.name.value, resolver);
 }
 
@@ -195,8 +206,8 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
           not(methodCall(ref('util.isNullOrBlank'), ref('filterExpression.expression'))),
           compoundExpression([
             iff(
-              equals(methodCall(ref('filterEpression.expressionValues.size')), int(0)),
-              qref(methodCall(ref('filterEpression.remove'), str('expressionValues'))),
+              equals(methodCall(ref('filterExpression.expressionValues.size')), int(0)),
+              qref(methodCall(ref('filterExpression.remove'), str('expressionValues'))),
             ),
             set(ref('filter'), ref('filterExpression')),
           ]),
@@ -251,7 +262,7 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
     ),
   );
 
-  resolver.mapToStack(table.stack);
+  resolver.mapToStack(getConnectionStack(ctx));
   ctx.resolvers.addResolver(object.name.value, field.name.value, resolver);
 }
 
@@ -373,4 +384,12 @@ function appendIndex(list: any, newIndex: any): any[] {
   }
 
   return [newIndex];
+}
+
+function getConnectionStack(ctx: TransformerContextProvider): cdk.Stack {
+  if (ctx.stackManager.hasStack(CONNECTION_STACK)) {
+    return ctx.stackManager.getStack(CONNECTION_STACK);
+  }
+
+  return ctx.stackManager.createStack(CONNECTION_STACK);
 }

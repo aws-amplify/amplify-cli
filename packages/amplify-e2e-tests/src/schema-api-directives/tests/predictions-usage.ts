@@ -14,7 +14,7 @@ const imageKey = 'public/myimage.jpg';
 export async function runTest(projectDir: string, testModule: any) {
   await addAuthWithDefault(projectDir);
   await addS3Storage(projectDir);
-  await addApi(projectDir);
+  await addApi(projectDir, { transformerVersion: 1 });
   updateSchemaInTestProject(projectDir, testModule.schema);
 
   await amplifyPush(projectDir);

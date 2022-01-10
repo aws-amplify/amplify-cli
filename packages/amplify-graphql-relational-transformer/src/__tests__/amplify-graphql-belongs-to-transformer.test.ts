@@ -1,8 +1,8 @@
-import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { Kind, parse } from 'graphql';
-import { BelongsToTransformer, HasOneTransformer } from '..';
+import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
 
 test('fails if @belongsTo was used on an object that is not a model type', () => {
   const inputSchema = `
@@ -282,7 +282,7 @@ test('creates belongs to relationship with implicit fields', () => {
   expect(create1Input.fields.find((f: any) => f.name.value === 'id')).toBeDefined();
   expect(create1Input.fields.find((f: any) => f.name.value === 'friendID')).toBeDefined();
   expect(create1Input.fields.find((f: any) => f.name.value === 'email')).toBeDefined();
-  expect(create1Input.fields.find((f: any) => f.name.value === 'testOtherHalfId')).toBeDefined();
+  expect(create1Input.fields.find((f: any) => f.name.value === 'test1OtherHalf2Id')).toBeDefined();
 
   const update1Input = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTest1Input') as any;
   expect(update1Input).toBeDefined();
@@ -290,7 +290,7 @@ test('creates belongs to relationship with implicit fields', () => {
   expect(update1Input.fields.find((f: any) => f.name.value === 'id')).toBeDefined();
   expect(update1Input.fields.find((f: any) => f.name.value === 'friendID')).toBeDefined();
   expect(update1Input.fields.find((f: any) => f.name.value === 'email')).toBeDefined();
-  expect(update1Input.fields.find((f: any) => f.name.value === 'testOtherHalfId')).toBeDefined();
+  expect(update1Input.fields.find((f: any) => f.name.value === 'test1OtherHalf2Id')).toBeDefined();
 
   const createInput = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateTestInput') as any;
   expect(createInput).toBeDefined();
@@ -327,4 +327,40 @@ test('regression test for implicit id field on related type', () => {
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
+});
+
+test('support for belongs to with Int fields', () => {
+  const inputSchema = `
+    type ItemBank @model {
+      bankId: Int! @primaryKey
+      bankName: String!
+      bankDescription: String!
+      bankItems: [ExamItem] @hasMany(indexName: "byBank", fields: ["bankId"])
+    }
+
+    type ExamItem @model {
+      examItemId: Int! @primaryKey
+      currentIterationId: Int!
+      owningBankId: Int! @index(name: "byBank", sortKeyFields: ["examItemId"])
+      owningBank: ItemBank @belongsTo(fields: ["owningBankId"])
+    }`;
+
+  const transformer = new GraphQLTransform({
+    transformers: [
+      new ModelTransformer(),
+      new PrimaryKeyTransformer(),
+      new IndexTransformer(),
+      new HasManyTransformer(),
+      new BelongsToTransformer(),
+    ],
+  });
+
+  const out = transformer.transform(inputSchema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+  expect(out.resolvers['ExamItem.owningBank.req.vtl']).toContain('$util.defaultIfNull($ctx.source.owningBankId, "___xamznone____"))');
+  expect(out.resolvers['ExamItem.owningBank.req.vtl']).not.toContain(
+    '$util.defaultIfNullOrBlank($ctx.source.owningBankId, "___xamznone____"))',
+  );
 });

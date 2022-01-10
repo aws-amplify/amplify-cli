@@ -3,6 +3,104 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.10.3...@aws-amplify/graphql-searchable-transformer@0.10.5) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* **graphql:** correct typo filterExpression on v2 resolvers ([#9412](https://github.com/aws-amplify/amplify-cli/issues/9412)) ([71bf468](https://github.com/aws-amplify/amplify-cli/commit/71bf4688952a5f43640297bf31ea9c59d1c679c9))
+
+
+
+
+
+## [0.10.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.10.2...@aws-amplify/graphql-searchable-transformer@0.10.3) (2021-12-21)
+
+
+### Bug Fixes
+
+* generate list types will nullable elements ([#9310](https://github.com/aws-amplify/amplify-cli/issues/9310)) ([e972956](https://github.com/aws-amplify/amplify-cli/commit/e9729565fef2ac7df51f7fc7f345da536f385ac1))
+
+
+
+
+
+## [0.10.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.10.1...@aws-amplify/graphql-searchable-transformer@0.10.2) (2021-12-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer
+
+
+
+
+
+## [0.10.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.10.0...@aws-amplify/graphql-searchable-transformer@0.10.1) (2021-12-03)
+
+
+### Bug Fixes
+
+* skip truncating unresolved tokens ([#9152](https://github.com/aws-amplify/amplify-cli/issues/9152)) ([f83ac70](https://github.com/aws-amplify/amplify-cli/commit/f83ac70753a4564a2b458584fd2176274771b4fb))
+
+
+
+
+
+# [0.10.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.9.5...@aws-amplify/graphql-searchable-transformer@0.10.0) (2021-11-23)
+
+
+### Features
+
+* override support for api category ([#9013](https://github.com/aws-amplify/amplify-cli/issues/9013)) ([ae7b001](https://github.com/aws-amplify/amplify-cli/commit/ae7b001f274f327a29c99c67fe851272c6208e84)), closes [#9001](https://github.com/aws-amplify/amplify-cli/issues/9001) [#8954](https://github.com/aws-amplify/amplify-cli/issues/8954) [#8958](https://github.com/aws-amplify/amplify-cli/issues/8958) [#8960](https://github.com/aws-amplify/amplify-cli/issues/8960) [#8967](https://github.com/aws-amplify/amplify-cli/issues/8967) [#8971](https://github.com/aws-amplify/amplify-cli/issues/8971) [#8976](https://github.com/aws-amplify/amplify-cli/issues/8976) [#8975](https://github.com/aws-amplify/amplify-cli/issues/8975) [#8981](https://github.com/aws-amplify/amplify-cli/issues/8981) [#8983](https://github.com/aws-amplify/amplify-cli/issues/8983) [#8992](https://github.com/aws-amplify/amplify-cli/issues/8992) [#9000](https://github.com/aws-amplify/amplify-cli/issues/9000) [#9002](https://github.com/aws-amplify/amplify-cli/issues/9002) [#9005](https://github.com/aws-amplify/amplify-cli/issues/9005) [#9006](https://github.com/aws-amplify/amplify-cli/issues/9006) [#9007](https://github.com/aws-amplify/amplify-cli/issues/9007) [#9008](https://github.com/aws-amplify/amplify-cli/issues/9008) [#9010](https://github.com/aws-amplify/amplify-cli/issues/9010) [#9011](https://github.com/aws-amplify/amplify-cli/issues/9011) [#9012](https://github.com/aws-amplify/amplify-cli/issues/9012) [#9014](https://github.com/aws-amplify/amplify-cli/issues/9014) [#9015](https://github.com/aws-amplify/amplify-cli/issues/9015) [#9017](https://github.com/aws-amplify/amplify-cli/issues/9017) [#9020](https://github.com/aws-amplify/amplify-cli/issues/9020) [#9024](https://github.com/aws-amplify/amplify-cli/issues/9024) [#9027](https://github.com/aws-amplify/amplify-cli/issues/9027) [#9028](https://github.com/aws-amplify/amplify-cli/issues/9028) [#9029](https://github.com/aws-amplify/amplify-cli/issues/9029) [#9032](https://github.com/aws-amplify/amplify-cli/issues/9032) [#9031](https://github.com/aws-amplify/amplify-cli/issues/9031) [#9035](https://github.com/aws-amplify/amplify-cli/issues/9035) [#9038](https://github.com/aws-amplify/amplify-cli/issues/9038) [#9039](https://github.com/aws-amplify/amplify-cli/issues/9039)
+
+
+
+
+
+## [0.9.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.9.4...@aws-amplify/graphql-searchable-transformer@0.9.5) (2021-11-21)
+
+**Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer
+
+
+
+
+
+## [0.9.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.9.2...@aws-amplify/graphql-searchable-transformer@0.9.4) (2021-11-19)
+
+
+### Bug Fixes
+
+* **graphql:** use output type definition to generate searchable filter ([#8934](https://github.com/aws-amplify/amplify-cli/issues/8934)) ([ff214be](https://github.com/aws-amplify/amplify-cli/commit/ff214befba58a1cc8ce0a0908b3b1581ae3fffe4))
+
+
+
+
+
+## [0.9.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.9.2...@aws-amplify/graphql-searchable-transformer@0.9.3) (2021-11-19)
+
+
+### Bug Fixes
+
+* **graphql:** use output type definition to generate searchable filter ([#8934](https://github.com/aws-amplify/amplify-cli/issues/8934)) ([ff214be](https://github.com/aws-amplify/amplify-cli/commit/ff214befba58a1cc8ce0a0908b3b1581ae3fffe4))
+
+
+
+
+
+## [0.9.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.9.1...@aws-amplify/graphql-searchable-transformer@0.9.2) (2021-11-17)
+
+
+### Bug Fixes
+
+* append apiKey if global auth is enabled and its not default auth ([#8843](https://github.com/aws-amplify/amplify-cli/issues/8843)) ([3aadcde](https://github.com/aws-amplify/amplify-cli/commit/3aadcde2225f0ede5c5d94c2a4cd9d1afece5288))
+* **graphql:** add enum to aggregate field type ([#8846](https://github.com/aws-amplify/amplify-cli/issues/8846)) ([4e919e7](https://github.com/aws-amplify/amplify-cli/commit/4e919e7e6ae29d1545b403b31f30e21b6aebfa26))
+
+
+
+
+
 ## [0.9.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.7.0...@aws-amplify/graphql-searchable-transformer@0.9.1) (2021-11-15)
 
 **Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer

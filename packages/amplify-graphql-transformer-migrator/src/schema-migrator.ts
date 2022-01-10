@@ -8,6 +8,7 @@ import { DocumentNode } from 'graphql/language';
 import { printer, prompter } from 'amplify-prompts';
 import * as path from 'path';
 import {
+  authRuleUsesQueriesOrMutations,
   detectCustomRootTypes,
   detectDeprecatedConnectionUsage,
   detectOverriddenResolvers,
@@ -30,7 +31,7 @@ const cliToMigratorAuthMap: Map<string, string> = new Map<string, string>([
   ['OPENID_CONNECT', 'oidc'],
 ]);
 
-const MIGRATION_DOCS_URL = '<insert migration docs URL here>';
+const MIGRATION_DOCS_URL = 'https://docs.amplify.aws/cli/migration/transformer-migration/';
 
 export async function attemptV2TransformerMigration(resourceDir: string, apiName: string, envName?: string): Promise<void> {
   const schemaDocs = await getSchemaDocs(resourceDir);
@@ -47,6 +48,14 @@ export async function attemptV2TransformerMigration(resourceDir: string, apiName
   const authMode = cliToMigratorAuthMap.get(defaultAuth);
   if (!authMode) {
     throw Error(`Unidentified authorization mode for API found: ${defaultAuth}`);
+  }
+
+  if (schemaHasComments(fullSchema)) {
+    printer.warn(
+      `Warning: The migration will not carry over any existing comments in your GraphQL schema, you'll be able to manually copy them in from the back-ups stored at ${backupLocation(
+        resourceDir,
+      )}.`,
+    );
   }
 
   try {
@@ -154,6 +163,10 @@ async function getSchemaDocs(resourceDir: string): Promise<SchemaDocument[]> {
   return [];
 }
 
+function schemaHasComments(fullSchema: string): boolean {
+  return /#/.test(fullSchema);
+}
+
 // returns true if the project can be auto-migrated to v2, or a message explaining why the project cannot be auto-migrated
 async function canAutoMigrate(fullSchema: string, apiName: string, resourceDir: string): Promise<true | string> {
   if (graphQLUsingSQL(apiName)) {
@@ -167,6 +180,9 @@ async function canAutoMigrate(fullSchema: string, apiName: string, resourceDir: 
   }
   if (doesBackupExist(resourceDir)) {
     return `A schema backup already exists at ${backupLocation(resourceDir)}. Remove or copy these files to a different location.`;
+  }
+  if (authRuleUsesQueriesOrMutations(fullSchema)) {
+    return 'You are using queries or mutations in at least one @auth rule. These cannot be automatically migrated.';
   }
   return true;
 }

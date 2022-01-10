@@ -20,6 +20,7 @@ import {
   or,
   and,
   parens,
+  notEquals,
 } from 'graphql-mapping-template';
 import { NONE_VALUE } from 'graphql-transformer-common';
 import {
@@ -135,17 +136,26 @@ export const lambdaExpression = (roles: Array<RoleDefinition>) => {
     compoundExpression([...(roles.length > 0 ? [set(ref(IS_AUTHORIZED_FLAG), bool(true))] : [])]),
   );
 };
-
+/**
+ *
+ * @param roles
+ * @param adminRolesEnabled
+ * @param adminRoles - the list of iam role names to check for
+ * @param identityPoolId - identityPoolId used to validate authorized idp users
+ * @param fieldName - if the admin role check should return early with empty object or the field name
+ * @returns
+ */
 export const iamExpression = (
   roles: Array<RoleDefinition>,
   adminRolesEnabled: boolean,
   adminRoles: Array<string> = [],
-  identityPoolId?: string,
+  identityPoolId: string = undefined,
+  fieldName: string = undefined,
 ) => {
   const expression = new Array<Expression>();
   // allow if using an admin role
   if (adminRolesEnabled) {
-    expression.push(iamAdminRoleCheckExpression(adminRoles));
+    expression.push(iamAdminRoleCheckExpression(adminRoles, fieldName));
   }
   if (roles.length > 0) {
     for (let role of roles) {
@@ -157,11 +167,18 @@ export const iamExpression = (
   return iff(equals(ref('util.authType()'), str(IAM_AUTH_TYPE)), compoundExpression(expression));
 };
 
-export const iamAdminRoleCheckExpression = (adminRoles: Array<string>): Expression => {
+export const iamAdminRoleCheckExpression = (adminRoles: Array<string>, fieldName?: string): Expression => {
   return compoundExpression([
     set(ref('adminRoles'), raw(JSON.stringify(adminRoles))),
     forEach(/*for */ ref('adminRole'), /* in */ ref('adminRoles'), [
-      iff(methodCall(ref('ctx.identity.userArn.contains'), ref('adminRole')), raw('#return($util.toJson({}))')),
+      iff(
+        and([
+          methodCall(ref('ctx.identity.userArn.contains'), ref('adminRole')),
+          notEquals(ref('ctx.identity.userArn'), ref(`ctx.stash.authRole`)),
+          notEquals(ref('ctx.identity.userArn'), ref(`ctx.stash.unauthRole`)),
+        ]),
+        fieldName ? raw(`#return($context.source.${fieldName})`) : raw('#return($util.toJson({}))'),
+      ),
     ]),
   ]);
 };
