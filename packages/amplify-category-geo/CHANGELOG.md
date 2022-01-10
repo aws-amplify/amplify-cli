@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.2.11...amplify-category-geo@2.2.13) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* add e2e test for geo headless and update schema ([#8636](https://github.com/aws-amplify/amplify-cli/issues/8636)) ([1e76668](https://github.com/aws-amplify/amplify-cli/commit/1e76668ae92cb120ebe53a8bf93fa42bee9560fb))
+
+
+
+
+
+## [2.2.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.2.10...amplify-category-geo@2.2.11) (2021-12-21)
+
+**Note:** Version bump only for package amplify-category-geo
+
+
+
+
+
+## [2.2.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.2.9...amplify-category-geo@2.2.10) (2021-12-17)
+
+**Note:** Version bump only for package amplify-category-geo
+
+
+
+
+
 ## [2.2.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.2.8...amplify-category-geo@2.2.9) (2021-12-03)
 
 

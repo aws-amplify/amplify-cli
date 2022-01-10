@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.3.10...amplify-category-function@3.3.12) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* append missing env vars in team provider on push ([#9250](https://github.com/aws-amplify/amplify-cli/issues/9250)) ([3b9c865](https://github.com/aws-amplify/amplify-cli/commit/3b9c865ea9c7afecdaa5347a5812a38fe64b29ad))
+* temp remove isCI check from env var flow ([#9450](https://github.com/aws-amplify/amplify-cli/issues/9450)) ([b58ab2c](https://github.com/aws-amplify/amplify-cli/commit/b58ab2c69457c85c22cf527888bdf2b1186ab1e3))
+* update uuid imports ([#9448](https://github.com/aws-amplify/amplify-cli/issues/9448)) ([e1af620](https://github.com/aws-amplify/amplify-cli/commit/e1af6209fcc6943ad26a25df4741ea4567a2d22a))
+
+
+
+
+
+## [3.3.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.3.9...amplify-category-function@3.3.10) (2021-12-21)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+## [3.3.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.3.8...amplify-category-function@3.3.9) (2021-12-17)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
 ## [3.3.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.3.7...amplify-category-function@3.3.8) (2021-12-03)
 
 **Note:** Version bump only for package amplify-category-function

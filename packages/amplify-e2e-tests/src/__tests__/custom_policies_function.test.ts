@@ -60,14 +60,14 @@ it(`should init and deploy storage DynamoDB + Lambda trigger, attach custom poli
   // Put SSM parameter
   const ssmClient = new AWS.SSM({ region });
   await ssmClient.putParameter({
-    Name: 'testCustomPolicies',
+    Name: '/amplify/testCustomPolicies',
     Value: 'testCustomPoliciesValue',
     Type: 'String',
     Overwrite: true,
   }).promise();
   
   const getParaResponse = await ssmClient.getParameter({
-    Name: 'testCustomPolicies'
+    Name: '/amplify/testCustomPolicies'
   }).promise();
   var ssmParameterArn = getParaResponse.Parameter.ARN;
 
@@ -81,7 +81,7 @@ it(`should init and deploy storage DynamoDB + Lambda trigger, attach custom poli
   await amplifyPushAuth(projRoot);
 
   const lambdaEvent = {
-    secretName: 'testCustomPolicies',
+    secretName: '/amplify/testCustomPolicies',
   };
   
 

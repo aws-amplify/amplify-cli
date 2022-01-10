@@ -1,4 +1,4 @@
-import uuid from 'uuid';
+import { v4 as uuid } from 'uuid';
 import { Input } from '../input';
 import https from 'https';
 import { UrlWithStringQuery } from 'url';
@@ -22,7 +22,7 @@ export class UsageData implements IUsageData {
   private static instance: UsageData;
 
   private constructor() {
-    this.sessionUuid = uuid.v4();
+    this.sessionUuid = uuid();
     this.url = getUrl();
     this.input = new Input([]);
     this.projectSettings = {};

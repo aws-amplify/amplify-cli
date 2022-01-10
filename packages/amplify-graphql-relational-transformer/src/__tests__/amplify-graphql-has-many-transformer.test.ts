@@ -693,3 +693,25 @@ test('@hasMany and @hasMany cannot point at each other if DataStore is enabled',
     `Blog and Post cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead.`,
   );
 });
+
+test('recursive @hasMany relationships are supported if DataStore is enabled', () => {
+  const inputSchema = `
+    type Blog @model {
+      id: ID!
+      posts: [Blog] @hasMany
+    }`;
+  const transformer = new GraphQLTransform({
+    resolverConfig: {
+      project: {
+        ConflictDetection: 'VERSION',
+        ConflictHandler: ConflictHandlerType.AUTOMERGE,
+      },
+    },
+    transformers: [new ModelTransformer(), new HasManyTransformer()],
+  });
+
+  const out = transformer.transform(inputSchema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+});

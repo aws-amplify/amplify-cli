@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.6...@aws-amplify/amplify-category-auth@2.4.8) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* [#9070](https://github.com/aws-amplify/amplify-cli/issues/9070) TOTP only auth configs are failing ([#9214](https://github.com/aws-amplify/amplify-cli/issues/9214)) ([412ebb7](https://github.com/aws-amplify/amplify-cli/commit/412ebb7520df440ba831ee91901421918d626df2))
+* update cognito stack builder to set case sensitivity based on aliasAttribute ([#9339](https://github.com/aws-amplify/amplify-cli/issues/9339)) ([40311ba](https://github.com/aws-amplify/amplify-cli/commit/40311bac8e5d4073ac48e7b67b2295e81d57f17a)), closes [#8895](https://github.com/aws-amplify/amplify-cli/issues/8895)
+
+
+
+
+
+## [2.4.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.5...@aws-amplify/amplify-category-auth@2.4.6) (2021-12-21)
+
+
+### Bug Fixes
+
+* [#8997](https://github.com/aws-amplify/amplify-cli/issues/8997) - auth trigger detached after push ([#9312](https://github.com/aws-amplify/amplify-cli/issues/9312)) ([d5b4e8f](https://github.com/aws-amplify/amplify-cli/commit/d5b4e8f23dad32d40596d8ac2b36190b03d7a975))
+* implemented method to add CFN resource via overrides in auth ([#9277](https://github.com/aws-amplify/amplify-cli/issues/9277)) ([3826e80](https://github.com/aws-amplify/amplify-cli/commit/3826e809e5d3f367786113935ba06a7a1a76aa00))
+
+
+
+
+
+## [2.4.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.4...@aws-amplify/amplify-category-auth@2.4.5) (2021-12-17)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
 ## [2.4.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.3...@aws-amplify/amplify-category-auth@2.4.4) (2021-12-02)
 
 

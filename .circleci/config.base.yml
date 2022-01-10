@@ -18,7 +18,7 @@ executors:
 
   l: &linux-e2e-executor
     docker:
-      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
     resource_class: large
     environment:
@@ -72,6 +72,9 @@ jobs:
     steps:
       - checkout
       - run: yarn run production-build
+      - run:
+          name: Build tests
+          command: yarn build-tests
       - save_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
           paths:

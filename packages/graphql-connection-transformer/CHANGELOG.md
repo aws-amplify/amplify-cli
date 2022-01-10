@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.13](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@5.2.11...graphql-connection-transformer@5.2.13) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [5.2.11](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@5.2.10...graphql-connection-transformer@5.2.11) (2021-12-21)
+
+
+### Bug Fixes
+
+* generate list types will nullable elements ([#9310](https://github.com/aws-amplify/amplify-cli/issues/9310)) ([e972956](https://github.com/aws-amplify/amplify-cli/commit/e9729565fef2ac7df51f7fc7f345da536f385ac1))
+
+
+
+
+
+## [5.2.10](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@5.2.9...graphql-connection-transformer@5.2.10) (2021-12-17)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
 ## [5.2.9](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@5.2.8...graphql-connection-transformer@5.2.9) (2021-12-03)
 
 **Note:** Version bump only for package graphql-connection-transformer

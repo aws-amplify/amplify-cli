@@ -3,6 +3,45 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.8.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.5...amplify-provider-awscloudformation@5.8.7) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* add gql transformer version to status output ([#9202](https://github.com/aws-amplify/amplify-cli/issues/9202)) ([f6e0eb0](https://github.com/aws-amplify/amplify-cli/commit/f6e0eb044a3c24ec4e82df506864b4c0de3e5f52))
+* remove next template from destructive iterative update ([#9198](https://github.com/aws-amplify/amplify-cli/issues/9198)) ([16bc38a](https://github.com/aws-amplify/amplify-cli/commit/16bc38a43df7e2850cb182cc3947c190f498f042))
+* update dep and use node test environment ([#9434](https://github.com/aws-amplify/amplify-cli/issues/9434)) ([1691327](https://github.com/aws-amplify/amplify-cli/commit/1691327740ea40d0ebb974e6aeabc64c62b288ef))
+
+
+
+
+
+## [5.8.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.4...amplify-provider-awscloudformation@5.8.5) (2021-12-21)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** validate IDP roles on import (ref [#9286](https://github.com/aws-amplify/amplify-cli/issues/9286)) ([#9294](https://github.com/aws-amplify/amplify-cli/issues/9294)) ([3ecd842](https://github.com/aws-amplify/amplify-cli/commit/3ecd842dfc50d81c5c89c80c3400d05159ddf885))
+
+
+
+
+
+## [5.8.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.3...amplify-provider-awscloudformation@5.8.4) (2021-12-17)
+
+
+### Bug Fixes
+
+* update gql v2 custom transformer loading logic ([#9252](https://github.com/aws-amplify/amplify-cli/issues/9252)) ([f728b4b](https://github.com/aws-amplify/amplify-cli/commit/f728b4bb835674afd32dab7243dd3d826601d333))
+
+
+
+
+
 ## [5.8.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.2...amplify-provider-awscloudformation@5.8.3) (2021-12-09)
 
 

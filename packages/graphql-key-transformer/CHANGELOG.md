@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.13](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@3.2.11...graphql-key-transformer@3.2.13) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* make update input id field required ([#9452](https://github.com/aws-amplify/amplify-cli/issues/9452)) ([345fe28](https://github.com/aws-amplify/amplify-cli/commit/345fe28a60bbf1de32496430e38e25463a77e96c))
+
+
+
+
+
+## [3.2.11](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@3.2.10...graphql-key-transformer@3.2.11) (2021-12-21)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+## [3.2.10](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@3.2.9...graphql-key-transformer@3.2.10) (2021-12-17)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
 ## [3.2.9](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@3.2.8...graphql-key-transformer@3.2.9) (2021-12-03)
 
 **Note:** Version bump only for package graphql-key-transformer

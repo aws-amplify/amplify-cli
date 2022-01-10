@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.1.5...@aws-amplify/amplify-category-storage@3.1.7) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-storage
+
+
+
+
+
+## [3.1.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.1.4...@aws-amplify/amplify-category-storage@3.1.5) (2021-12-21)
+
+
+### Bug Fixes
+
+* global notification configuration is replaced with private/protected/public ([#9235](https://github.com/aws-amplify/amplify-cli/issues/9235)) ([ef51f09](https://github.com/aws-amplify/amplify-cli/commit/ef51f09ffadd406343f43c2151ec30d8fbc68288))
+
+
+
+
+
+## [3.1.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.1.3...@aws-amplify/amplify-category-storage@3.1.4) (2021-12-17)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-storage
+
+
+
+
+
 ## [3.1.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.1.2...@aws-amplify/amplify-category-storage@3.1.3) (2021-12-02)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-storage

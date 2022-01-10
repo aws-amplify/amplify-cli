@@ -1,6 +1,6 @@
 import url from 'url';
 import nock from 'nock';
-import uuid from 'uuid';
+import * as uuid from 'uuid';
 
 import { UsageData } from '../domain/amplify-usageData/UsageData';
 import { getUrl } from '../domain/amplify-usageData/getUsageDataUrl';
