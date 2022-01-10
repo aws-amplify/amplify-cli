@@ -30,7 +30,7 @@ function generatePkgCli {
 
   # Build pkg cli
   cp package.json ../build/node_modules/package.json
-  npx pkg -t node12-macos-x64,node12-linux-x64,node12-win-x64 ../build/node_modules --out-path out
+  npx pkg -t node12-macos-x64,node12-linux-x64,node12-win-x64 ../build/node_modules --out-path ../out
 }
 
 function loginToLocalRegistry {
@@ -156,7 +156,7 @@ function setAwsAccountCredentials {
 
 function runE2eTest {
     if [[ "$OSTYPE" == "linux-gnu" ]]; then
-        sudo apt-get install -y libatk-bridge2.0-0 libgtk-3.0 libasound2
+        sudo apt-get install -y libatk-bridge2.0-0 libgtk-3.0 libasound2 lsof
     fi
     if [ -z "$FIRST_RUN" ] || [ "$FIRST_RUN" == "true" ]; then
         startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
