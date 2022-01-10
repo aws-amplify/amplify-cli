@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.5.8...amplify-e2e-tests@3.5.9) (2022-01-10)
+
+
+### Bug Fixes
+
+* add e2e test for geo headless and update schema ([#8636](https://github.com/aws-amplify/amplify-cli/issues/8636)) ([1e76668](https://github.com/aws-amplify/amplify-cli/commit/1e76668ae92cb120ebe53a8bf93fa42bee9560fb))
+* remove next template from destructive iterative update ([#9198](https://github.com/aws-amplify/amplify-cli/issues/9198)) ([16bc38a](https://github.com/aws-amplify/amplify-cli/commit/16bc38a43df7e2850cb182cc3947c190f498f042))
+* update uuid imports ([#9448](https://github.com/aws-amplify/amplify-cli/issues/9448)) ([e1af620](https://github.com/aws-amplify/amplify-cli/commit/e1af6209fcc6943ad26a25df4741ea4567a2d22a))
+
+
+
+
+
 ## [3.5.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.5.7...amplify-e2e-tests@3.5.8) (2021-12-21)
 
 

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.2...amplify-appsync-simulator@2.3.3) (2022-01-10)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** none data source type definition and add test ([#8277](https://github.com/aws-amplify/amplify-cli/issues/8277)) ([9e5e50f](https://github.com/aws-amplify/amplify-cli/commit/9e5e50f3bfec3f42061bd0c52b8e7b39089b024b))
+* **graphql:** add *in* expression handler to appsync simulator ([#9324](https://github.com/aws-amplify/amplify-cli/issues/9324)) ([d5093d3](https://github.com/aws-amplify/amplify-cli/commit/d5093d375c1b4504005d019fd0af872c3b90bf02))
+
+
+
+
+
 ## [2.3.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.1...amplify-appsync-simulator@2.3.2) (2021-12-09)
 
 

@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.3.11](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.3.10...graphql-transformers-e2e-tests@7.3.11) (2022-01-10)
+
+
+### Bug Fixes
+
+* make update input id field required ([#9452](https://github.com/aws-amplify/amplify-cli/issues/9452)) ([345fe28](https://github.com/aws-amplify/amplify-cli/commit/345fe28a60bbf1de32496430e38e25463a77e96c))
+* update graphqltransformer e2e tests ([#9446](https://github.com/aws-amplify/amplify-cli/issues/9446)) ([db1e3e9](https://github.com/aws-amplify/amplify-cli/commit/db1e3e9602b611f1c64c8734dd33d3c241a01dd9))
+* use id as nullable field ([#9449](https://github.com/aws-amplify/amplify-cli/issues/9449)) ([301e2c3](https://github.com/aws-amplify/amplify-cli/commit/301e2c35071451ed848b88a5568e8b62c51e5235))
+
+
+
+
+
 ## [7.3.10](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.3.9...graphql-transformers-e2e-tests@7.3.10) (2021-12-21)
 
 **Note:** Version bump only for package graphql-transformers-e2e-tests

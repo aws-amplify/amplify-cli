@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.6...@aws-amplify/amplify-category-auth@2.4.7) (2022-01-10)
+
+
+### Bug Fixes
+
+* [#9070](https://github.com/aws-amplify/amplify-cli/issues/9070) TOTP only auth configs are failing ([#9214](https://github.com/aws-amplify/amplify-cli/issues/9214)) ([412ebb7](https://github.com/aws-amplify/amplify-cli/commit/412ebb7520df440ba831ee91901421918d626df2))
+* update cognito stack builder to set case sensitivity based on aliasAttribute ([#9339](https://github.com/aws-amplify/amplify-cli/issues/9339)) ([40311ba](https://github.com/aws-amplify/amplify-cli/commit/40311bac8e5d4073ac48e7b67b2295e81d57f17a)), closes [#8895](https://github.com/aws-amplify/amplify-cli/issues/8895)
+
+
+
+
+
 ## [2.4.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.5...@aws-amplify/amplify-category-auth@2.4.6) (2021-12-21)
 
 

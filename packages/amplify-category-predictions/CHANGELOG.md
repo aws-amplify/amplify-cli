@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@3.2.10...amplify-category-predictions@3.2.11) (2022-01-10)
+
+
+### Bug Fixes
+
+* update uuid imports ([#9448](https://github.com/aws-amplify/amplify-cli/issues/9448)) ([e1af620](https://github.com/aws-amplify/amplify-cli/commit/e1af6209fcc6943ad26a25df4741ea4567a2d22a))
+
+
+
+
+
 ## [3.2.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@3.2.9...amplify-category-predictions@3.2.10) (2021-12-21)
 
 **Note:** Version bump only for package amplify-category-predictions
