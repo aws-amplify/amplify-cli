@@ -1,10 +1,10 @@
 import { EsriMapStyleType, MapParameters } from '../../service-utils/mapParams';
-import { merge, updateDefaultResource, readResourceMetaParameters, getGeoPricingPlan, updateGeoPricingPlan } from '../../service-utils/resourceUtils';
+import { merge, updateDefaultResource, readResourceMetaParameters } from '../../service-utils/resourceUtils';
 import { stateManager, $TSContext, pathManager, JSONUtilities } from 'amplify-cli-core';
 import { provider, ServiceName } from '../../service-utils/constants';
 import { MapStyle } from '../../service-utils/mapParams';
 import { DataSourceIntendedUse } from '../../service-utils/placeIndexParams';
-import { AccessType, DataProvider, PricingPlan } from '../../service-utils/resourceParams';
+import { AccessType, DataProvider } from '../../service-utils/resourceParams';
 import { category } from '../../constants';
 
 describe('parameter merge utility function works as expected', () => {
@@ -40,7 +40,6 @@ const map1Params = {
     isDefault: false,
     providerPlugin: provider,
     mapStyle: MapStyle.VectorEsriNavigation,
-    pricingPlan: PricingPlan.MobileAssetManagement,
     accessType: AccessType.AuthorizedAndGuestUsers
 };
 const map2Params = {
@@ -48,7 +47,6 @@ const map2Params = {
     isDefault: true,
     providerPlugin: provider,
     mapStyle: MapStyle.VectorEsriStreets,
-    pricingPlan: PricingPlan.MobileAssetManagement,
     accessType: AccessType.AuthorizedUsers
 };
 const placeIndex1Params = {
@@ -57,7 +55,6 @@ const placeIndex1Params = {
     providerPlugin: provider,
     dataProvider: DataProvider.Esri,
     dataSourceIntendedUse: DataSourceIntendedUse.Storage,
-    pricingPlan: PricingPlan.MobileAssetManagement,
     accessType: AccessType.AuthorizedAndGuestUsers
 };
 const placeIndex2Params = {
@@ -66,7 +63,6 @@ const placeIndex2Params = {
     providerPlugin: provider,
     dataProvider: DataProvider.Here,
     dataSourceIntendedUse: DataSourceIntendedUse.SingleUse,
-    pricingPlan: PricingPlan.MobileAssetManagement,
     accessType: AccessType.AuthorizedUsers
 };
 const geofenceCollection1Params = {
@@ -75,7 +71,6 @@ const geofenceCollection1Params = {
     providerPlugin: provider,
     dataProvider: DataProvider.Esri,
     groupPermissions: {},
-    pricingPlan: PricingPlan.MobileAssetManagement,
     accessType: AccessType.CognitoGroups
 };
 const geofenceCollection2Params = {
@@ -84,7 +79,6 @@ const geofenceCollection2Params = {
     providerPlugin: provider,
     dataProvider: DataProvider.Here,
     groupPermissions: {},
-    pricingPlan: PricingPlan.MobileAssetManagement,
     accessType: AccessType.CognitoGroups
 };
 
@@ -209,74 +203,5 @@ describe('Test reading the resource meta information', () => {
 
         const nonExistingGeofenceCollection = 'geofenceCollection12345';
         expect(async () => await readResourceMetaParameters(ServiceName.GeofenceCollection, nonExistingGeofenceCollection)).rejects.toThrowError(errorMessage(nonExistingGeofenceCollection));
-    });
-});
-
-describe('Test reading the current pricing plan for Geo resources', () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
-        stateManager.getMeta = jest.fn().mockReturnValue({
-            geo: {
-                map1: map1Params,
-                map2: map2Params,
-                placeIndex1: placeIndex1Params,
-                placeIndex2: placeIndex2Params,
-                geofenceCollection1: geofenceCollection1Params,
-                geofenceCollection2: geofenceCollection2Params
-            }
-        });
-    });
-
-    it('reads the current Geo pricing plan correctly', async() => {
-        const actualPricingPlan = await getGeoPricingPlan();
-        expect(actualPricingPlan).toEqual(map1Params.pricingPlan);
-    });
-
-    it('gives the default pricing plan if none available', async() => {
-        stateManager.getMeta = jest.fn().mockReturnValue({});
-        const actualPricingPlan = await getGeoPricingPlan();
-        expect(actualPricingPlan).toEqual(PricingPlan.RequestBasedUsage);
-    });
-});
-
-describe('Test updating the pricing plan for all Geo resources', () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
-        stateManager.getMeta = jest.fn().mockReturnValue({
-            geo: {
-                map1: map1Params,
-                placeIndex1: placeIndex1Params,
-                geofenceCollection1: geofenceCollection1Params
-            }
-        });
-        pathManager.getBackendDirPath = jest.fn().mockReturnValue('');
-        JSONUtilities.readJson = jest.fn().mockReturnValue({});
-        JSONUtilities.writeJson = jest.fn().mockReturnValue('');
-    });
-
-    it('updates given pricing plan correctly for all Geo resources in project', async() => {
-        mockContext.amplify.updateamplifyMetaAfterResourceUpdate = jest.fn();
-        const updatedPricingPlan = PricingPlan.MobileAssetTracking;
-        // check that current pricing plan is not same as pricing plan to be updated
-        expect(map1Params.pricingPlan).not.toEqual(updatedPricingPlan);
-        expect(placeIndex1Params.pricingPlan).not.toEqual(updatedPricingPlan);
-        expect(geofenceCollection1Params.pricingPlan).not.toEqual(updatedPricingPlan);
-
-        // update the pricing plan
-        await updateGeoPricingPlan(mockContext, updatedPricingPlan);
-
-        expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledTimes(3);
-        expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
-            category, 'map1', 'pricingPlan', updatedPricingPlan);
-        expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
-            category, 'placeIndex1', 'pricingPlan', updatedPricingPlan);
-        expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
-            category, 'geofenceCollection1', 'pricingPlan', updatedPricingPlan);
-        
-        // pricing plan is also updated in the resource stack parameters
-        expect(JSONUtilities.writeJson).toBeCalledTimes(3);
-        expect(JSONUtilities.writeJson).toBeCalledWith("geo/map1/parameters.json", {"pricingPlan": updatedPricingPlan});
-        expect(JSONUtilities.writeJson).toBeCalledWith("geo/placeIndex1/parameters.json", {"pricingPlan": updatedPricingPlan});
-        expect(JSONUtilities.writeJson).toBeCalledWith("geo/geofenceCollection1/parameters.json", {"pricingPlan": updatedPricingPlan});
     });
 });

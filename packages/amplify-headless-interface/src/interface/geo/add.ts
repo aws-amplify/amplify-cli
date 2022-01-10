@@ -16,18 +16,11 @@ export interface GeoServiceConfiguration {
   serviceName: string;
   name: string;
   accessType: AccessType;
-  pricingPlan: PricingPlan;
   setAsDefault: boolean;
 }
 export interface MapConfiguration extends GeoServiceConfiguration {
   serviceName: "Map";
   mapStyle: MapStyle;
-}
-
-export enum PricingPlan {
-  RequestBasedUsage = "RequestBasedUsage",
-  MobileAssetTracking = "MobileAssetTracking",
-  MobileAssetManagement = "MobileAssetManagement"
 }
 
 export enum AccessType {

@@ -4,7 +4,7 @@ import { category } from '../constants';
 import { updateDefaultGeofenceCollectionWalkthrough, createGeofenceCollectionWalkthrough, updateGeofenceCollectionWalkthrough } from '../service-walkthroughs/geofenceCollectionWalkthrough';
 import { convertToCompleteGeofenceCollectionParams, GeofenceCollectionParameters } from '../service-utils/geofenceCollectionParams';
 import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { printNextStepsSuccessMessage, setProviderContext, insufficientInfoForUpdateError } from './index';
+import { printNextStepsSuccessMessage, setProviderContext } from './index';
 import { ServiceName } from '../service-utils/constants';
 import { printer } from 'amplify-prompts';
 

@@ -10,7 +10,6 @@ import {
   updateDefaultResource,
   readResourceMetaParameters,
   getAuthResourceName,
-  updateGeoPricingPlan,
   ResourceDependsOn
 } from './resourceUtils';
 import { App } from '@aws-cdk/core';
@@ -40,11 +39,6 @@ export const createGeofenceCollectionResource = async (context: $TSContext, para
     await updateDefaultResource(context, ServiceName.GeofenceCollection);
   }
 
-  // update the pricing plan for All Geo resources
-  if (parameters.pricingPlan) {
-    await updateGeoPricingPlan(context, parameters.pricingPlan);
-  }
-
   context.amplify.updateamplifyMetaAfterResourceAdd(category, parameters.name, geofenceCollectionMetaParameters);
 };
 
@@ -69,26 +63,19 @@ export const modifyGeofenceCollectionResource = async (
     await updateDefaultResource(context, ServiceName.GeofenceCollection, parameters.name);
   }
 
-  // update the pricing plan for All Geo resources
-  if (parameters.pricingPlan) {
-    await updateGeoPricingPlan(context, parameters.pricingPlan);
-  }
-
   const geofenceCollectionMetaParameters = constructGeofenceCollectionMetaParameters(parameters, authResourceName);
 
-  const paramsToUpdate = ['pricingPlan', 'accessType', 'dependsOn', 'dataProvider'];
+  const paramsToUpdate = ['accessType', 'dependsOn'];
   paramsToUpdate.forEach(param => {
     context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.name, param, (geofenceCollectionMetaParameters as $TSObject)[param]);
   });
 };
 
 function saveCFNParameters(
-  parameters: Pick<GeofenceCollectionParameters, 'name' | 'dataProvider' | 'pricingPlan' | 'isDefault'>,
+  parameters: Pick<GeofenceCollectionParameters, 'name' | 'isDefault'>,
 ) {
   const params = {
     collectionName: parameters.name,
-    dataProvider: parameters.dataProvider,
-    pricingPlan: parameters.pricingPlan,
     isDefault: parameters.isDefault
   };
   updateParametersFile(params, parameters.name, parametersFileName);
@@ -117,8 +104,6 @@ export const constructGeofenceCollectionMetaParameters = (params: GeofenceCollec
     isDefault: params.isDefault,
     providerPlugin: provider,
     service: ServiceName.GeofenceCollection,
-    dataProvider: params.dataProvider,
-    pricingPlan: params.pricingPlan,
     accessType: params.accessType,
     dependsOn: dependsOnResources
   };
@@ -130,7 +115,7 @@ export const constructGeofenceCollectionMetaParameters = (params: GeofenceCollec
  */
 export type GeofenceCollectionMetaParameters = Pick<
   GeofenceCollectionParameters,
-  'isDefault' | 'pricingPlan' | 'accessType' | 'dataProvider'
+  'isDefault' | 'accessType'
 > & {
   providerPlugin: string;
   service: string;
@@ -141,8 +126,6 @@ export const getCurrentGeofenceCollectionParameters = async (collectionName: str
   const currentCollectionMetaParameters = (await readResourceMetaParameters(ServiceName.GeofenceCollection, collectionName)) as GeofenceCollectionMetaParameters;
   const currentCollectionParameters = await readGeofenceCollectionParams(collectionName);
   return {
-    dataProvider: currentCollectionMetaParameters.dataProvider,
-    pricingPlan: currentCollectionMetaParameters.pricingPlan,
     accessType: currentCollectionMetaParameters.accessType,
     isDefault: currentCollectionMetaParameters.isDefault,
     groupPermissions: currentCollectionParameters.groupPermissions

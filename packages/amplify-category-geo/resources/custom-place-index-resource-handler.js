@@ -3,14 +3,15 @@ const aws = require('aws-sdk');
 exports.handler = async function (event, context) {
   try {
     console.log('REQUEST RECEIVED:' + JSON.stringify(event));
+    const pricingPlan = 'RequestBasedUsage';
     if (event.RequestType == 'Create') {
       const params = {
         IndexName: event.ResourceProperties.indexName,
         DataSource: event.ResourceProperties.dataSource,
-        PricingPlan: event.ResourceProperties.pricingPlan,
         DataSourceConfiguration: {
           IntendedUse: event.ResourceProperties.dataSourceIntendedUse,
         },
+        PricingPlan: pricingPlan
       };
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.createPlaceIndex(params).promise();
@@ -25,10 +26,10 @@ exports.handler = async function (event, context) {
     if (event.RequestType == 'Update') {
       const params = {
         IndexName: event.ResourceProperties.indexName,
-        PricingPlan: event.ResourceProperties.pricingPlan,
         DataSourceConfiguration: {
           IntendedUse: event.ResourceProperties.dataSourceIntendedUse,
         },
+        PricingPlan: pricingPlan
       };
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.updatePlaceIndex(params).promise();
@@ -42,7 +43,7 @@ exports.handler = async function (event, context) {
     }
     if (event.RequestType == 'Delete') {
       const params = {
-        IndexName: event.ResourceProperties.indexName,
+        IndexName: event.ResourceProperties.indexName
       };
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.deletePlaceIndex(params).promise();

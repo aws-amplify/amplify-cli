@@ -5,9 +5,9 @@ import { GeofenceCollectionParameters } from '../service-utils/geofenceCollectio
 import { ServiceName } from '../service-utils/constants';
 import { $TSContext } from 'amplify-cli-core';
 import { getCurrentGeofenceCollectionParameters, crudPermissionsMap } from '../service-utils/geofenceCollectionUtils';
-import { getGeoServiceMeta, updateDefaultResource, geoServiceExists, getGeoPricingPlan, checkGeoResourceExists } from '../service-utils/resourceUtils';
-import { pricingPlanWalkthrough, dataProviderWalkthrough, getServiceFriendlyName, defaultResourceQuestion } from './resourceWalkthrough';
-import { AccessType, DataProvider, PricingPlan } from '../service-utils/resourceParams';
+import { getGeoServiceMeta, updateDefaultResource, checkGeoResourceExists } from '../service-utils/resourceUtils';
+import { getServiceFriendlyName, defaultResourceQuestion } from './resourceWalkthrough';
+import { AccessType } from '../service-utils/resourceParams';
 import { printer, prompter, alphanumeric, byValues } from 'amplify-prompts';
 
 const geofencingServiceFriendlyName = getServiceFriendlyName(ServiceName.GeofenceCollection);
@@ -25,24 +25,6 @@ export const createGeofenceCollectionWalkthrough = async (
 
   // get the access
   parameters = merge(parameters, await geofenceCollectionAccessWalkthrough(context, parameters));
-
-  // initiate pricing plan walkthrough if this is the first geofence collection added
-  // or if the current pricing plan is RequestBasedUsage
-  const currentPricingPlan = await getGeoPricingPlan();
-  if (!(await geoServiceExists(ServiceName.GeofenceCollection)) || currentPricingPlan === PricingPlan.RequestBasedUsage) {
-    parameters = merge(parameters, await geofenceCollectionPricingPlanWalkthrough(context, parameters));
-  }
-  else {
-      // If the geofence collection is not the first and the pricing plan is set to something other than RequestBasedUsage
-      // Then pricing plan can be set in Advanced settings
-      printer.info('Available advanced settings:');
-      printer.info(`- Pricing Plan (current: ${currentPricingPlan})`);
-      printer.info(`- Data Provider for Pricing Plan (current: ${parameters.dataProvider ? parameters.dataProvider : 'Esri'})`);
-      const showAdvancedSettings = await prompter.yesOrNo('Do you want to configure advanced settings?', false);
-      if (showAdvancedSettings) {
-        parameters = merge(parameters, await geofenceCollectionPricingPlanWalkthrough(context, parameters));
-      }
-  }
 
   // ask if the geofence collection should be set as a default. Default to true if it's the only geofence collection
   const currentGeofenceCollectionResources = await getGeoServiceMeta(ServiceName.GeofenceCollection);
@@ -172,15 +154,6 @@ export const updateGeofenceCollectionWalkthrough = async (
     // overwrite the parameters based on user input
 
     parameters.groupPermissions = (await geofenceCollectionAccessWalkthrough(context, parameters)).groupPermissions;
-    printer.info('Available advanced settings:');
-    printer.info(`- Pricing Plan (current: ${parameters.pricingPlan})`);
-    printer.info(`- Data Provider for Pricing Plan (current: ${parameters.dataProvider ? parameters.dataProvider : 'Esri'})`);
-    const showAdvancedSettings = await prompter.yesOrNo('Do you want to update advanced settings?', false);
-    if (showAdvancedSettings) {
-        const pricingPlanSelections = await geofenceCollectionPricingPlanWalkthrough(context, parameters);
-        parameters.pricingPlan = pricingPlanSelections.pricingPlan;
-        parameters.dataProvider = pricingPlanSelections.dataProvider;
-    }
 
     const otherCollectionResources = collectionResourceNames.filter(collectionResourceName => collectionResourceName != resourceToUpdate);
     // if this is the only geofence collection, default cannot be removed
@@ -221,24 +194,4 @@ export const updateDefaultGeofenceCollectionWalkthrough = async (
         await updateDefaultResource(context, ServiceName.GeofenceCollection, defaultIndexName);
     }
     return currentDefault;
-}
-
-/**
- * Walkthrough to get the pricing plan and pricing plan data source for a Geofence Collection
- * @param context The Amplify Context object
- * @param parameters The configurations of the geofence collection resource
- */
-export const geofenceCollectionPricingPlanWalkthrough = async (
-    context: $TSContext,
-    parameters: Partial<GeofenceCollectionParameters>
-): Promise<Partial<GeofenceCollectionParameters>> => {
-    parameters.pricingPlan = (await pricingPlanWalkthrough(context, parameters, true)).pricingPlan;
-    if (parameters.pricingPlan !== PricingPlan.RequestBasedUsage) {
-        parameters.dataProvider = (await dataProviderWalkthrough(parameters, ServiceName.GeofenceCollection)).dataProvider;
-    }
-    else {
-        // set the default data provider
-        parameters.dataProvider = DataProvider.Esri;
-    }
-    return parameters;
 }

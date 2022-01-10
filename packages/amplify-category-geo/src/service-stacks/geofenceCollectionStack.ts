@@ -34,8 +34,6 @@ export class GeofenceCollectionStack extends BaseStack {
     inputParameters.push(
       `auth${this.authResourceName}UserPoolId`,
       'collectionName',
-      'dataProvider',
-      'pricingPlan',
       'env',
       'isDefault'
     );
@@ -86,9 +84,6 @@ export class GeofenceCollectionStack extends BaseStack {
     geoUpdateDeleteCollectionStatement.addActions('geo:UpdateGeofenceCollection', 'geo:DeleteGeofenceCollection');
     geoUpdateDeleteCollectionStatement.addResources(geofenceCollectionARN);
 
-    const dataSource = this.parameters.get('dataProvider')!.valueAsString;
-    const collectionPricingPlan = this.parameters.get('pricingPlan')!.valueAsString;
-
     const customGeofenceCollectionLambdaCode = fs.readFileSync(customGeofenceCollectionLambdaCodePath, 'utf-8');
     const customGeofenceCollectionLambda = new lambda.Function(this, 'CustomGeofenceCollectionLambda', {
       code: lambda.Code.fromInline(customGeofenceCollectionLambdaCode),
@@ -104,8 +99,6 @@ export class GeofenceCollectionStack extends BaseStack {
       resourceType: 'Custom::LambdaCallout',
       properties: {
         collectionName: this.geofenceCollectionName,
-        dataSource: dataSource,
-        pricingPlan: collectionPricingPlan,
         region: this.geofenceCollectionRegion,
         env: cdk.Fn.ref('env')
       },

@@ -38,7 +38,6 @@ export class MapStack extends BaseStack {
       'unauthRoleName',
       'mapName',
       'mapStyle',
-      'pricingPlan',
       'env',
       'isDefault'
     );
@@ -86,8 +85,6 @@ export class MapStack extends BaseStack {
 
     const mapStyle = this.parameters.get('mapStyle')!.valueAsString;
 
-    const mapPricingPlan = this.parameters.get('pricingPlan')!.valueAsString;
-
     const customMapLambdaCode = fs.readFileSync(customMapLambdaCodePath, 'utf-8');
     const customMapLambda = new lambda.Function(this, 'CustomMapLambda', {
       code: lambda.Code.fromInline(customMapLambdaCode),
@@ -104,7 +101,6 @@ export class MapStack extends BaseStack {
       properties: {
         mapName: this.mapName,
         mapStyle: mapStyle,
-        pricingPlan: mapPricingPlan,
         region: this.mapRegion,
         env: cdk.Fn.ref('env'),
       },
