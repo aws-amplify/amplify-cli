@@ -11,10 +11,10 @@ import { getPlaceIndexIamPolicies } from './placeIndexUtils';
 import { getGeofenceCollectionIamPolicies } from './geofenceCollectionUtils';
 import { printer } from 'amplify-prompts';
 
-// Merges other with existing in a non-destructive way.
-// Specifically, scalar values will not be overwritten
-// Objects will have field added but not removed or modified
-// Arrays will be appended to, duplicates are removed
+/* Merges other with existing in a non-destructive way. Specifically, scalar values will not be overwritten
+Objects will have field added but not removed or modified
+Arrays will be appended to, duplicates are removed.
+*/
 export function merge<T>(existing: Partial<T>, other?: Partial<T>): Partial<T> {
   const mergeFunc = (oldVal: any, newVal: any) => {
     if (!_.isObject(oldVal)) {
