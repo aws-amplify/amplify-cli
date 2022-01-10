@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.26-amplify-codegen-e2e-tests.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.25...amplify-util-mock@4.2.26-amplify-codegen-e2e-tests.0) (2022-01-10)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
 ## [4.2.25](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.23...amplify-util-mock@4.2.25) (2022-01-10)
 
 

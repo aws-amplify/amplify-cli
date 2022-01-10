@@ -1,6 +1,6 @@
 {
   "name": "amplify-provider-awscloudformation",
-  "version": "5.8.7",
+  "version": "5.8.8-amplify-codegen-e2e-tests.0",
   "description": "AWS CloudFormation Provider",
   "repository": {
     "type": "git",
