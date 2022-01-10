@@ -155,6 +155,9 @@ function setAwsAccountCredentials {
 }
 
 function runE2eTest {
+    if [[ "$OSTYPE" == "linux-gnu" ]]; then
+        sudo apt-get install -y libatk-bridge2.0-0 libgtk-3.0 libasound2
+    fi
     if [ -z "$FIRST_RUN" ] || [ "$FIRST_RUN" == "true" ]; then
         startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
         setNpmRegistryUrlToLocal
