@@ -27,6 +27,7 @@
         "test": "jest"
     },
     "dependencies": {
+        "@aws-amplify/graphql-model-transformer": "0.10.5",
         "@aws-amplify/graphql-transformer-core": "0.15.4",
         "@aws-amplify/graphql-transformer-interfaces": "1.12.5",
         "@aws-cdk/aws-appsync": "~1.124.0",
@@ -42,7 +43,6 @@
     },
     "devDependencies": {
         "@aws-cdk/assert": "~1.124.0",
-        "@types/fs-extra": "^8.0.1",
         "@types/node": "^10.17.13"
     },
     "jest": {
