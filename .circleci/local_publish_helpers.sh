@@ -20,7 +20,7 @@ function generatePkgCli {
   yarn --production
 
   # Optimize package size
-  rm -rf **/*.d.ts **/*.js.map **/*.d.ts.map **/README.md **/readme.md **/Readme.md **/CHANGELOG.md **/changelog.md **/Changelog.md **/HISTORY.md **/history.md **/History.md
+  yarn rimraf **/*.d.ts **/*.js.map **/*.d.ts.map **/README.md **/readme.md **/Readme.md **/CHANGELOG.md **/changelog.md **/Changelog.md **/HISTORY.md **/history.md **/History.md
 
   # Restore .d.ts files required by @aws-amplify/codegen-ui at runtime
   cp ../node_modules/typescript/lib/*.d.ts node_modules/typescript/lib/
