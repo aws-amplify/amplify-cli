@@ -1,7 +1,7 @@
 import { existsSync } from "fs-extra";
 import path from "path";
 import { addAuthWithDefault, addHeadlessGeo, amplifyPushAuth, createNewProjectDir, deleteProject, deleteProjectDir, getMap, getProjectMeta, initJSProjectWithProfile, updateHeadlessGeo } from "amplify-e2e-core";
-import { AccessType, AddGeoRequest, MapStyle, PricingPlan, UpdateGeoRequest } from "amplify-headless-interface";
+import { AccessType, AddGeoRequest, MapStyle, UpdateGeoRequest } from "amplify-headless-interface";
 import { v4 as uuid } from 'uuid';
 
 describe('Geo headless tests', () => {
@@ -27,7 +27,6 @@ describe('Geo headless tests', () => {
           serviceName: "Map",
           name: mapId,
           accessType: AccessType.AuthorizedUsers,
-          pricingPlan: PricingPlan.RequestBasedUsage,
           mapStyle: MapStyle.VectorEsriDarkGrayCanvas,
           setAsDefault: true
         }

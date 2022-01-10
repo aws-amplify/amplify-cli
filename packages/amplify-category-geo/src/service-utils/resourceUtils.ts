@@ -4,7 +4,7 @@ import path from 'path';
 import _ from 'lodash';
 import { BaseStack } from '../service-stacks/baseStack';
 import { parametersFileName, ServiceName, provider } from './constants';
-import { PricingPlan, ResourceParameters, AccessType } from './resourceParams';
+import { ResourceParameters, AccessType } from './resourceParams';
 import os from 'os';
 import { getMapIamPolicies } from './mapUtils';
 import { getPlaceIndexIamPolicies } from './placeIndexUtils';
@@ -102,47 +102,6 @@ export const updateDefaultResource = async (
 export const geoServiceExists = async (service: ServiceName): Promise<boolean> => {
   const serviceMeta = await getGeoServiceMeta(service);
   return serviceMeta && Object.keys(serviceMeta).length > 0;
-}
-
-/**
- * Get the pricing plan for Geo resources
- */
-export const getGeoPricingPlan = async (): Promise<PricingPlan> => {
-  // search Map resources
-  const mapServiceMeta = await getGeoServiceMeta(ServiceName.Map);
-  const placeIndexServiceMeta = await getGeoServiceMeta(ServiceName.PlaceIndex);
-  if (mapServiceMeta && Object.keys(mapServiceMeta).length > 0) {
-    return mapServiceMeta[Object.keys(mapServiceMeta)[0]].pricingPlan;
-  }
-  else if (placeIndexServiceMeta && Object.keys(placeIndexServiceMeta).length > 0) {
-    return placeIndexServiceMeta[Object.keys(placeIndexServiceMeta)[0]].pricingPlan;
-  }
-  return PricingPlan.RequestBasedUsage; // default
-}
-
-/**
- * Update Geo pricing plan
- */
-export const updateGeoPricingPlan = async (context: $TSContext, pricingPlan: PricingPlan) => {
-  const geoMeta = stateManager.getMeta()?.[category];
-  if (geoMeta !== undefined) {
-    Object.keys(geoMeta).forEach(resource => {
-      // update pricing plan in meta for all Geo resources
-      context.amplify.updateamplifyMetaAfterResourceUpdate(
-        category,
-        resource,
-        'pricingPlan',
-        pricingPlan
-      );
-
-      // update CFN parameters for all Geo resources
-      updateParametersFile(
-        { pricingPlan: pricingPlan },
-        resource,
-        parametersFileName
-      );
-    });
-  }
 }
 
 /**

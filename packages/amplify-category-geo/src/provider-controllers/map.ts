@@ -75,7 +75,6 @@ export const addMapResourceHeadless = async (
     providerContext: setProviderContext(context, ServiceName.Map),
     name: config.name,
     accessType: config.accessType,
-    pricingPlan: config.pricingPlan,
     isDefault: config.setAsDefault,
     ...getMapStyleComponents(config.mapStyle)
   };
@@ -112,16 +111,10 @@ export const updateMapResourceWithParams = async (
   context: $TSContext,
   mapParams: Partial<MapParameters>
 ): Promise<string> => {
-  if (mapParams.name && mapParams.isDefault !== undefined && mapParams.accessType) {
-    modifyMapResource(context, {
-      accessType: mapParams.accessType,
-      name: mapParams.name,
-      isDefault: mapParams.isDefault
-    });
-  } else {
-    throw insufficientInfoForUpdateError(ServiceName.Map);
-  }
+  const completeParameters: MapParameters = convertToCompleteMapParams(mapParams);
+  await modifyMapResource(context, completeParameters);
+
   printer.success(`Successfully updated resource ${mapParams.name} locally.`);
   printNextStepsSuccessMessage(context);
-  return mapParams.name;
+  return completeParameters.name;
 }

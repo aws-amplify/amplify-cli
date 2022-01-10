@@ -35,20 +35,12 @@ export const updatePlaceIndexResource = async (
   // populate the parameters for the resource
   await updatePlaceIndexWalkthrough(context, placeIndexParams);
 
-  if (placeIndexParams.name && placeIndexParams.isDefault !== undefined && placeIndexParams.accessType) {
-    modifyPlaceIndexResource(context, {
-      accessType: placeIndexParams.accessType,
-      name: placeIndexParams.name,
-      isDefault: placeIndexParams.isDefault
-    });
-  }
-  else {
-    throw insufficientInfoForUpdateError(ServiceName.PlaceIndex);
-  }
+  const completeParameters: PlaceIndexParameters = convertToCompletePlaceIndexParams(placeIndexParams);
+  await modifyPlaceIndexResource(context, completeParameters);
 
   printer.success(`Successfully updated resource ${placeIndexParams.name} locally.`);
   printNextStepsSuccessMessage(context);
-  return placeIndexParams.name;
+  return completeParameters.name;
 };
 
 export const removePlaceIndexResource = async (
