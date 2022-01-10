@@ -2498,12 +2498,16 @@ describe('amplify pull with uibuilder', () => {
       fs.readFileSync(path.join(__dirname, '..', 'cypress', 'uibuilder', 'uibuilder-spec.js')),
     );
 
-    const npmStartProcess = spawn(getNpmPath(), ['start'], { cwd: reactDir });
+    const npmStartProcess = spawn(getNpmPath(), ['start'], { cwd: reactDir, timeout: 300000 });
     // Give react server time to start
-    await new Promise(resolve => setTimeout(resolve, 45000));
+    await new Promise(resolve => setTimeout(resolve, 60000));
     const res = spawnSync(getNpxPath(), ['cypress', 'run'], { cwd: reactDir, encoding: 'utf8' });
-    spawnSync(`kill ${npmStartProcess.pid}`);
-    spawnSync(`kill ${res.pid}`);
+    // kill the react server process
+    spawnSync('kill', [`${npmStartProcess.pid}`], { encoding: 'utf8' });
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Seriously, kill the react server process
+    // react-scripts somehow resurrects the process automatically after the first kill.
+    spawnSync('pkill', ['-f', 'react'], { encoding: 'utf8' });
     expect(res.status).toBe(0);
   });
 });
