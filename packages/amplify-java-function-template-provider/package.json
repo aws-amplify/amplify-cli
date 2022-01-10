@@ -1,6 +1,6 @@
 {
   "name": "amplify-java-function-template-provider",
-  "version": "1.5.11",
+  "version": "1.5.12",
   "description": "JAVA templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
     "clean": "rimraf lib tsconfig.tsbuildinfo"
   },
   "dependencies": {
-    "amplify-function-plugin-interface": "1.9.3",
+    "amplify-function-plugin-interface": "1.9.4",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
