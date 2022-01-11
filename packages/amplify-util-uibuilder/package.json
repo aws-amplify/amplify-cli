@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-util-uibuilder",
-  "version": "1.1.4",
+  "version": "1.2.0",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -20,7 +20,6 @@
     "amplify-provider-awscloudformation": "5.8.1",
     "aws-sdk": "^2.1042.0"
   },
-
   "jest": {
     "testRunner": "jest-circus/runner",
     "preset": "ts-jest",
