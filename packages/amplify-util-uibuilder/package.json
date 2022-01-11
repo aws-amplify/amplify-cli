@@ -48,5 +48,11 @@
       "json",
       "node"
     ]
+  },
+  "jest-junit": {
+    "outputDirectory": "reports/junit/",
+    "outputName": "js-test-results.xml",
+    "usePathForSuiteName": "true",
+    "addFileAttribute": "true"
   }
 }
