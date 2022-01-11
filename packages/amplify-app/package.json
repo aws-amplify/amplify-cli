@@ -28,9 +28,9 @@
     "@aws-amplify/cli": ">=5.0.0"
   },
   "dependencies": {
-    "amplify-frontend-android": "3.3.2",
+    "amplify-frontend-android": "3.4.0-geo.0",
     "amplify-frontend-flutter": "1.3.2",
-    "amplify-frontend-ios": "3.3.11",
+    "amplify-frontend-ios": "3.4.0-geo.0",
     "amplify-frontend-javascript": "3.3.11",
     "chalk": "^4.1.1",
     "execa": "^5.1.1",
