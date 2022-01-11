@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-auth-transformer",
-  "version": "0.5.7",
+  "version": "0.5.8-geo.0",
   "description": "Amplify GraphQL @auth Transformer",
   "repository": {
     "type": "git",
@@ -27,22 +27,22 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@aws-amplify/graphql-model-transformer": "0.10.5",
-    "@aws-amplify/graphql-transformer-core": "0.15.4",
-    "@aws-amplify/graphql-transformer-interfaces": "1.12.5",
+    "@aws-amplify/graphql-model-transformer": "0.10.6-geo.0",
+    "@aws-amplify/graphql-transformer-core": "0.15.5-geo.0",
+    "@aws-amplify/graphql-transformer-interfaces": "1.12.6-geo.0",
     "@aws-cdk/aws-appsync": "~1.124.0",
     "@aws-cdk/aws-dynamodb": "~1.124.0",
     "@aws-cdk/aws-iam": "~1.124.0",
     "@aws-cdk/core": "~1.124.0",
     "constructs": "^3.3.125",
     "graphql": "^14.5.8",
-    "graphql-mapping-template": "4.20.3",
-    "graphql-transformer-common": "4.22.4",
+    "graphql-mapping-template": "4.20.4-geo.0",
+    "graphql-transformer-common": "4.22.5-geo.0",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-index-transformer": "0.8.5",
-    "@aws-amplify/graphql-searchable-transformer": "0.10.5",
+    "@aws-amplify/graphql-index-transformer": "0.8.6-geo.0",
+    "@aws-amplify/graphql-searchable-transformer": "0.10.6-geo.0",
     "@aws-cdk/assert": "~1.124.0",
     "@types/fs-extra": "^8.0.1",
     "@types/node": "^12.12.6"

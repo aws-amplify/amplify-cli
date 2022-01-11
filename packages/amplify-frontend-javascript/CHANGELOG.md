@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.12-geo.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.3.11...amplify-frontend-javascript@3.3.12-geo.0) (2022-01-11)
+
+
+### Bug Fixes
+
+* **amplify-category-geo:** make resource names env specific ([344d977](https://github.com/aws-amplify/amplify-cli/commit/344d977146c0a4b01e0ec3a9f0359c26adba5499))
+* **amplify-category-geo:** merge master ([591b822](https://github.com/aws-amplify/amplify-cli/commit/591b822cfabc374d1fd7516ce58a1bf16b66da2c))
+* **amplify-category-geo:** minor changes to place index walkthrough ([ee8b00e](https://github.com/aws-amplify/amplify-cli/commit/ee8b00ec161881b7bb07db601254f8520d73def0))
+* **amplify-category-geo:** modify the pricing plan walkthrough ([b91a03f](https://github.com/aws-amplify/amplify-cli/commit/b91a03ffbb9425689fa984d7acee02541cd57abf))
+* **amplify-category-geo:** pricing plan, data provider,  JS plugin name updates ([#8155](https://github.com/aws-amplify/amplify-cli/issues/8155)) ([38b962f](https://github.com/aws-amplify/amplify-cli/commit/38b962ff7dbeb97c792564ea6067417b9d7f7688))
+
+
+
+
+
 ## [3.3.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.3.9...amplify-frontend-javascript@3.3.11) (2022-01-10)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0-geo.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.1.4...@aws-amplify/amplify-util-uibuilder@1.2.0-geo.0) (2022-01-11)
+
+
+### Features
+
+* add uibuilder improvements including ts generation for components ([#9287](https://github.com/aws-amplify/amplify-cli/issues/9287)) ([4531d0a](https://github.com/aws-amplify/amplify-cli/commit/4531d0aaf293ded66abda32d8b4db7c2137daa27))
+
+
+
+
+
 ## [1.1.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.1.2...@aws-amplify/amplify-util-uibuilder@1.1.4) (2022-01-10)
 
 

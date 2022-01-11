@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.4-geo.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.8.3...amplify-util-headless-input@1.8.4-geo.0) (2022-01-11)
+
+
+### Bug Fixes
+
+* **amplify-util-headless-input:** update geo headless add and remove pricing plan ([e9e4066](https://github.com/aws-amplify/amplify-cli/commit/e9e40665cb8e026b555ffcf5d27f4e1b2b7ca5c6))
+
+
+
+
+
 ## [1.8.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.8.1...amplify-util-headless-input@1.8.3) (2022-01-10)
 
 

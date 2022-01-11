@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.13-geo.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.2.12...amplify-app@4.2.13-geo.0) (2022-01-11)
+
+
+### Bug Fixes
+
+* **amplify-category-geo:** update package versions due to conflicting tag versions ([5af0437](https://github.com/aws-amplify/amplify-cli/commit/5af04378cb5a61428cb2c5c775e833480da6e646))
+
+
+
+
+
 ## [4.2.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.2.10...amplify-app@4.2.12) (2022-01-10)
 
 

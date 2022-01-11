@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.13.4-geo.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.13.3...amplify-headless-interface@1.13.4-geo.0) (2022-01-11)
+
+
+### Bug Fixes
+
+* **amplify-category-geo:** merge master ([591b822](https://github.com/aws-amplify/amplify-cli/commit/591b822cfabc374d1fd7516ce58a1bf16b66da2c))
+
+
+
+
+
 ## [1.13.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.13.1...amplify-headless-interface@1.13.3) (2022-01-10)
 
 
