@@ -1,26 +1,32 @@
-const aws = require('aws-sdk');
-const { createUiBuilderComponent, createUiBuilderTheme } = require('./createUiBuilderComponent');
-const { getUiBuilderComponentsPath } = require('./getUiBuilderComponentsPath');
-const logger = require('./logger');
-const { extractArgs } = require('./extractArgs');
-const { mockUiBuilderComponents, mockUiBuilderThemes } = require('./mockUiBuilderData');
-
-const getEnvName = (context, envName) => {
+import aws from 'aws-sdk';
+import { printer } from 'amplify-prompts';
+import { createUiBuilderComponent, createUiBuilderTheme } from './createUiBuilderComponent';
+import { getUiBuilderComponentsPath } from './getUiBuilderComponentsPath';
+import { extractArgs } from './extractArgs';
+import { $TSAny, $TSContext } from 'amplify-cli-core';
+export const getEnvName = (context: $TSContext, envName?: string) => {
   const args = extractArgs(context);
   return envName ? envName : args.environmentName ? args.environmentName : context.exeInfo.localEnvInfo.envName;
 };
 
-const getAppId = (context, environmentName) => {
-  return extractArgs(context).appId || context.exeInfo.teamProviderInfo[environmentName].awscloudformation.AmplifyAppId;
+export const resolveAppId = async (context: $TSContext) => {
+  return await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'resolveAppId', [context]);
 };
 
-async function listUiBuilderComponents(context, envName) {
-  if (process.env.MOCK_UI_BUILDER_BACKEND) {
-    return mockUiBuilderComponents;
-  }
+export const getAppId = async (context: $TSContext) => {
+  const appId = extractArgs(context).appId || (await resolveAppId(context));
 
+  if (!appId) {
+    throw new Error(
+      'Unable to sync Studio components since appId could not be determined. This can happen when you hit the soft limit of number of apps that you can have in Amplify console.',
+    );
+  }
+  return appId;
+};
+
+export async function listUiBuilderComponents(context: $TSContext, envName?: string) {
   const environmentName = getEnvName(context, envName);
-  const appId = getAppId(context, environmentName);
+  const appId = await getAppId(context);
 
   try {
     const amplifyUIBuilder = await getAmplifyUIBuilderService(context, environmentName, appId);
@@ -30,21 +36,17 @@ async function listUiBuilderComponents(context, envName) {
         environmentName,
       })
       .promise();
-    logger.info(JSON.stringify(uiBuilderComponents, null, 2));
+    printer.debug(JSON.stringify(uiBuilderComponents, null, 2));
     return uiBuilderComponents;
   } catch (e) {
-    logger.error(e);
+    printer.debug(e);
     throw e;
   }
 }
 
-async function listUiBuilderThemes(context, envName) {
-  if (process.env.MOCK_UI_BUILDER_BACKEND) {
-    return mockUiBuilderThemes;
-  }
-
+export async function listUiBuilderThemes(context: $TSContext, envName?: string) {
   const environmentName = getEnvName(context, envName);
-  const appId = getAppId(context, environmentName);
+  const appId = await getAppId(context);
 
   try {
     const amplifyUIBuilder = await getAmplifyUIBuilderService(context, environmentName, appId);
@@ -54,27 +56,27 @@ async function listUiBuilderThemes(context, envName) {
         environmentName,
       })
       .promise();
-    logger.info(JSON.stringify(uiBuilderThemes, null, 2));
+    printer.debug(JSON.stringify(uiBuilderThemes, null, 2));
     return uiBuilderThemes;
   } catch (e) {
-    logger.error(e);
+    printer.debug(e);
     throw e;
   }
 }
 
-function generateUiBuilderComponents(context, componentSchemas) {
+export function generateUiBuilderComponents(context: $TSContext, componentSchemas: any[]) {
   const componentResults = componentSchemas.map(schema => {
     try {
       const component = createUiBuilderComponent(context, schema);
       return { resultType: 'SUCCESS', component };
     } catch (e) {
-      logger.error(`Failure caught processing ${schema.name}`);
-      logger.error(e);
+      printer.debug(`Failure caught processing ${schema.name}`);
+      printer.debug(e);
       return { resultType: 'FAILURE', schemaName: schema.name, error: e };
     }
   });
 
-  logger.info(
+  printer.debug(
     `Generated ${componentResults.filter(result => result.resultType === 'SUCCESS').length} components in ${getUiBuilderComponentsPath(
       context,
     )}`,
@@ -82,30 +84,30 @@ function generateUiBuilderComponents(context, componentSchemas) {
   return componentResults;
 }
 
-function generateUiBuilderThemes(context, themeSchemas) {
+export function generateUiBuilderThemes(context: $TSContext, themeSchemas: any[]) {
   const themeResults = themeSchemas.map(schema => {
     try {
       const theme = createUiBuilderTheme(context, schema);
       return { resultType: 'SUCCESS', theme };
     } catch (e) {
-      logger.error(`Failure caught processing ${schema.name}`);
-      logger.error(e);
+      printer.debug(`Failure caught processing ${schema.name}`);
+      printer.debug(e);
       return { resultType: 'FAILURE', schemaName: schema.name, error: e };
     }
   });
 
-  logger.info(
+  printer.debug(
     `Generated ${themeResults.filter(result => result.resultType === 'SUCCESS').length} themes in ${getUiBuilderComponentsPath(context)}`,
   );
   return themeResults;
 }
 
-const getAmplifyUIBuilderService = async (context, environmentName, appId) => {
-  const awsConfigInfo = await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'loadConfigurationForEnv', [
+export const getAmplifyUIBuilderService = async (context: $TSContext, environmentName: string, appId: string) => {
+  const awsConfigInfo = (await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'loadConfigurationForEnv', [
     context,
     environmentName,
     appId,
-  ]);
+  ])) as $TSAny;
 
   if (process.env.UI_BUILDER_ENDPOINT) {
     awsConfigInfo.endpoint = process.env.UI_BUILDER_ENDPOINT;
@@ -116,12 +118,4 @@ const getAmplifyUIBuilderService = async (context, environmentName, appId) => {
   }
 
   return new aws.AmplifyUIBuilder(awsConfigInfo);
-};
-
-module.exports = {
-  getAmplifyUIBuilderService,
-  generateUiBuilderComponents,
-  generateUiBuilderThemes,
-  listUiBuilderComponents,
-  listUiBuilderThemes,
 };

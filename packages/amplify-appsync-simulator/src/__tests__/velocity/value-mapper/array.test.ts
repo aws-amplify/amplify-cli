@@ -1,4 +1,5 @@
 import { JavaArray } from '../../../velocity/value-mapper/array';
+import { JavaString } from '../../../velocity/value-mapper/string';
 
 const identityMapper = jest.fn(v => v);
 
@@ -74,6 +75,19 @@ describe(' Velocity ValueMapper JavaArray', () => {
     const arr = new JavaArray(NEW_ARR, identityMapper);
     arr.removeAll([3, 2]);
     expect(arr.toJSON()).toEqual([1]);
+  });
+
+  it('indexOf', () => {
+    const obj = { prop: 1 };
+    const NEW_ARR = [1, 2, 3, 'someStr', true, obj];
+    const arr = new JavaArray(NEW_ARR, identityMapper);
+    expect(arr.indexOf(3)).toEqual(2);
+    expect(arr.indexOf(122)).toEqual(-1);
+    expect(arr.indexOf('someStr')).toEqual(3);
+    expect(arr.indexOf(new JavaString('someStr'))).toEqual(3);
+    expect(arr.indexOf(true)).toEqual(4);
+    expect(arr.indexOf(obj)).toEqual(5);
+    expect(arr.indexOf({ prop: 1 })).toEqual(-1);
   });
 
   // it('retainAll', () => {

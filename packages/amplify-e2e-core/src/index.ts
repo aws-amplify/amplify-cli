@@ -60,6 +60,14 @@ export function getNpxPath() {
   return npxPath;
 }
 
+export function getNpmPath() {
+  let npmPath = 'npm';
+  if (process.platform === 'win32') {
+    npmPath = getScriptRunnerPath().replace('node.exe', 'npm.cmd');
+  }
+  return npmPath;
+}
+
 export function isCI(): boolean {
   return process.env.CI && process.env.CIRCLECI ? true : false;
 }
