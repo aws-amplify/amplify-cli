@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.4.7...amplify-e2e-core@2.4.9) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* add e2e test for geo headless and update schema ([#8636](https://github.com/aws-amplify/amplify-cli/issues/8636)) ([1e76668](https://github.com/aws-amplify/amplify-cli/commit/1e76668ae92cb120ebe53a8bf93fa42bee9560fb))
+
+
+
+
+
 ## [2.4.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.4.6...amplify-e2e-core@2.4.7) (2021-12-21)
 
 **Note:** Version bump only for package amplify-e2e-core

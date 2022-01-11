@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.8.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.5...amplify-provider-awscloudformation@5.8.7) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* add gql transformer version to status output ([#9202](https://github.com/aws-amplify/amplify-cli/issues/9202)) ([f6e0eb0](https://github.com/aws-amplify/amplify-cli/commit/f6e0eb044a3c24ec4e82df506864b4c0de3e5f52))
+* remove next template from destructive iterative update ([#9198](https://github.com/aws-amplify/amplify-cli/issues/9198)) ([16bc38a](https://github.com/aws-amplify/amplify-cli/commit/16bc38a43df7e2850cb182cc3947c190f498f042))
+* update dep and use node test environment ([#9434](https://github.com/aws-amplify/amplify-cli/issues/9434)) ([1691327](https://github.com/aws-amplify/amplify-cli/commit/1691327740ea40d0ebb974e6aeabc64c62b288ef))
+
+
+
+
+
 ## [5.8.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.4...amplify-provider-awscloudformation@5.8.5) (2021-12-21)
 
 

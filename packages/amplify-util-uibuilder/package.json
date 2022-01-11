@@ -1,9 +1,10 @@
 {
   "name": "@aws-amplify/amplify-util-uibuilder",
-  "version": "1.1.2",
+  "version": "1.1.4",
   "description": "",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
+    "build": "tsc",
     "test": "jest"
   },
   "author": "Amazon Web Services",
@@ -12,11 +13,41 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/codegen-ui": "^1.0.0",
-    "@aws-amplify/codegen-ui-react": "^1.0.0",
+    "@aws-amplify/codegen-ui": "1.2.0",
+    "@aws-amplify/codegen-ui-react": "1.2.0",
+    "amplify-cli-core": "2.4.3",
+    "amplify-prompts": "1.6.0",
+    "amplify-provider-awscloudformation": "5.8.1",
     "aws-sdk": "^2.1042.0"
   },
-  "devDependencies": {
-    "amplify-cli-core": "2.4.1"
+
+  "jest": {
+    "testRunner": "jest-circus/runner",
+    "preset": "ts-jest",
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!**/node_modules/**",
+      "!src/__tests__/**",
+      "!lib/**"
+    ],
+    "reporters": [
+      "default",
+      "jest-junit"
+    ],
+    "testEnvironment": "node",
+    "testURL": "http://localhost/",
+    "testRegex": "(src/(__tests__|__e2e__|__e2e_v2__)/.*.test.ts)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
   }
 }

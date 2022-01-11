@@ -188,6 +188,7 @@ jobs:
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
             changeNpmGlobalPath
+            yarn yarn-use-bash
             yarn pkg-all
             unsetNpmRegistryUrl
       - save_cache:

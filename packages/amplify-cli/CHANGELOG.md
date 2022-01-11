@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.6.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.5...@aws-amplify/cli@7.6.7) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* [#9061](https://github.com/aws-amplify/amplify-cli/issues/9061) secret migration could fail and --yes was not working ([#9246](https://github.com/aws-amplify/amplify-cli/issues/9246)) ([31d07a2](https://github.com/aws-amplify/amplify-cli/commit/31d07a2f214dc13708341a53b6aa7de44d4bf2db))
+* [#9363](https://github.com/aws-amplify/amplify-cli/issues/9363) - additional checks in case of previously failed add auth ([1dfbce6](https://github.com/aws-amplify/amplify-cli/commit/1dfbce6b1c7362d245126390f2806eb98a938aea))
+* append missing env vars in team provider on push ([#9250](https://github.com/aws-amplify/amplify-cli/issues/9250)) ([3b9c865](https://github.com/aws-amplify/amplify-cli/commit/3b9c865ea9c7afecdaa5347a5812a38fe64b29ad))
+* compile schema before acm generation and validate acm argument ([#9438](https://github.com/aws-amplify/amplify-cli/issues/9438)) ([fbc9b59](https://github.com/aws-amplify/amplify-cli/commit/fbc9b598bb509d5994f072a2d671ec30059ddcfd))
+* update dep and use node test environment ([#9434](https://github.com/aws-amplify/amplify-cli/issues/9434)) ([1691327](https://github.com/aws-amplify/amplify-cli/commit/1691327740ea40d0ebb974e6aeabc64c62b288ef))
+
+
+
+
+
 ## [7.6.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.4...@aws-amplify/cli@7.6.5) (2021-12-21)
 
 

@@ -1,8 +1,9 @@
-const path = require('path');
-const fs = require('fs-extra');
-const { extractArgs } = require('./extractArgs');
+import path from 'path';
+import fs from 'fs-extra';
+import { extractArgs } from './extractArgs';
+import { $TSContext } from 'amplify-cli-core';
 
-const getUiBuilderComponentsPath = context => {
+export const getUiBuilderComponentsPath = (context: $TSContext) => {
   const args = extractArgs(context);
   const srcDir = args.srcDir ? args.srcDir : context.exeInfo.projectConfig.javascript.config.SourceDir;
   const uiBuilderComponentsPath = path.resolve(path.join('.', srcDir, 'ui-components'));
@@ -12,8 +13,4 @@ const getUiBuilderComponentsPath = context => {
   }
 
   return uiBuilderComponentsPath;
-};
-
-module.exports = {
-  getUiBuilderComponentsPath,
 };
