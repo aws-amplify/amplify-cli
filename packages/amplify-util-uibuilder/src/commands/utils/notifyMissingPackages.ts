@@ -3,7 +3,7 @@ import { printer } from 'amplify-prompts';
 import fs from 'fs-extra';
 import path from 'path';
 import { extractArgs } from './extractArgs';
-const REQUIRED_PACKAGES: { [key: string]: string } = { '@aws-amplify/ui-react': '1.2.0', 'aws-amplify': '*' };
+const REQUIRED_PACKAGES: { [key: string]: string } = { '@aws-amplify/ui-react': '*', 'aws-amplify': '*' };
 
 export const notifyMissingPackages = (context: $TSContext) => {
   const args = extractArgs(context);
