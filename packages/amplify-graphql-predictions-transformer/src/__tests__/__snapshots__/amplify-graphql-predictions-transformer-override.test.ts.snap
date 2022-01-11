@@ -681,7 +681,6 @@ $utils.error($ctx.result.body)
               ],
             },
           },
-          "FunctionName": "predictionsLambda",
           "Handler": "predictionsLambda.handler",
           "Role": Object {
             "Fn::GetAtt": Array [
