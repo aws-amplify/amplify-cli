@@ -30,11 +30,11 @@
     "graphql-transformer-core": "7.3.4"
   },
   "devDependencies": {
-    "@types/node": "^12.12.6",
     "cloudform-types": "^4.2.0",
     "graphql-dynamodb-transformer": "7.2.13",
     "graphql-elasticsearch-transformer": "5.2.13",
     "graphql-function-transformer": "3.3.4",
+    "lodash": "^4.17.21",
     "rimraf": "^3.0.0"
   },
   "jest": {
