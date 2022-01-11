@@ -14,7 +14,11 @@ export async function generateCloudFormationFromCDK(resourceName: string) {
 
   const amplifyResourceProps: AmplifyResourceProps = { category: categoryName, resourceName };
 
-  const customStack: cdk.Stack = new cdkStack(undefined, undefined, undefined, amplifyResourceProps);
+  const env = {
+    region: 'Aws.region',
+    account: 'Aws.accountId',
+  };
+  const customStack: cdk.Stack = new cdkStack(undefined, undefined, { env }, amplifyResourceProps);
 
   // @ts-ignore
   JSONUtilities.writeJson(path.join(targetDir, 'build', `${resourceName}-cloudformation-template.json`), customStack._toCloudFormation());
