@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.6.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.5.10...amplify-e2e-tests@3.6.0-beta.0) (2022-01-11)
+
+
+### Features
+
+* add uibuilder improvements including ts generation for components ([#9287](https://github.com/aws-amplify/amplify-cli/issues/9287)) ([4531d0a](https://github.com/aws-amplify/amplify-cli/commit/4531d0aaf293ded66abda32d8b4db7c2137daa27))
+
+
+
+
+
 ## [3.5.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.5.8...amplify-e2e-tests@3.5.10) (2022-01-10)
 
 
