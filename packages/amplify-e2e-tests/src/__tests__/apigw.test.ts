@@ -10,7 +10,6 @@ import {
   addAuthWithGroupsAndAdminAPI,
 } from 'amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
-import { get } from 'lodash';
 import fetch from 'node-fetch';
 
 const [shortId] = uuid().split('-');
@@ -81,7 +80,7 @@ describe('API Gateway e2e tests', () => {
     const projMeta = getProjectMeta(projRoot);
     expect(projMeta).toBeDefined();
     expect(projMeta.api).toBeDefined();
-    const apiPath = get(projMeta, `api.${apiName}.output.RootUrl`);
+    const apiPath = projMeta?.api?.[apiName]?.output?.RootUrl;
     expect(apiPath).toBeDefined();
     const res = await fetch(apiPath);
     expect(res.status).toEqual(403);
