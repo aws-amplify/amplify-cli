@@ -244,6 +244,16 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
         },
       },
     });
+    new apigw.CfnGatewayResponse(this, `${resourceName}Default4XXResponse`, {
+      responseType: 'DEFAULT_4XX',
+      restApiId: cdk.Fn.ref(resourceName),
+      responseParameters: defaultCorsGatewayResponseParams,
+    });
+    new apigw.CfnGatewayResponse(this, `${resourceName}Default5XXResponse`, {
+      responseType: 'DEFAULT_5XX',
+      restApiId: cdk.Fn.ref(resourceName),
+      responseParameters: defaultCorsGatewayResponseParams,
+    });
 
     this._setDeploymentResource(resourceName);
   };
@@ -455,6 +465,13 @@ const defaultCorsResponseObject = {
       "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
     'method.response.header.Access-Control-Allow-Origin': "'*'",
   },
+};
+
+const defaultCorsGatewayResponseParams = {
+  'gatewayresponse.header.Access-Control-Allow-Origin': "'*'",
+  'gatewayresponse.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+  'gatewayresponse.header.Access-Control-Allow-Methods': "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+  'gatewayresponse.header.Access-Control-Expose-Headers': "'Date,X-Amzn-ErrorType'",
 };
 
 const response200 = {

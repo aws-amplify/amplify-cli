@@ -275,6 +275,21 @@
     "@aws-cdk/cx-api" "1.124.0"
     constructs "^3.3.69"
 
+"@aws-cdk/assertions@~1.124.0":
+  version "1.124.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/assertions/-/assertions-1.124.0.tgz#4d61226f341cf4f8ba66238cf46fa9150cc87afb"
+  integrity sha512-jvJf701HizOu3gZHFeC0YQHED2P9aRzKuBk76kA07pAVxxLN7AWTbPrMBtC0ToCVnhazZ1sftxjnLOkxLyyloA==
+  dependencies:
+    "@aws-cdk/cloud-assembly-schema" "1.124.0"
+    "@aws-cdk/core" "1.124.0"
+    "@aws-cdk/cx-api" "1.124.0"
+    colors "^1.4.0"
+    constructs "^3.3.69"
+    diff "^5.0.0"
+    fast-deep-equal "^3.1.3"
+    string-width "^4.2.2"
+    table "^6.7.1"
+
 "@aws-cdk/assets@1.124.0", "@aws-cdk/assets@~1.124.0":
   version "1.124.0"
   resolved "https://registry.npmjs.org/@aws-cdk/assets/-/assets-1.124.0.tgz#eaeacef8f2c03b93e3b742b6fe767b69e3cad4b3"
