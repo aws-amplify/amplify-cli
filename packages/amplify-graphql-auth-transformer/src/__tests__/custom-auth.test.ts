@@ -104,7 +104,7 @@ test('allow: custom error out when there is no lambda auth mode defined', () => 
         id: ID!
         title: String!
         createdAt: String
-        updatedAt: String  
+        updatedAt: String
     }`;
   const transformer = new GraphQLTransform({
     authConfig,

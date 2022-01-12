@@ -32,7 +32,6 @@ packages/amplify-cli-core/lib
 packages/amplify-cli-logger/lib
 packages/amplify-mqtt-server/lib
 packages/amplify-appsync-simulator/lib
-packages/amplify-codegen-appsync-model-plugin/lib
 packages/amplify-e2e-core/lib
 packagea/amplify-graphiql-explorer/build
 packages/amplify-graphql*/lib
@@ -53,6 +52,7 @@ packages/amplify-provider-awscloudformation/lib
 packages/amplify-prompts/lib
 packages/amplify-util-import/lib
 packages/amplify-util-headless-input/lib
+packages/amplify-util-uibuilder/lib
 packages/*/node_modules
 packages/*/package-lock.json
 **/.env

@@ -1262,6 +1262,29 @@ describe('ModelTransformer: ', () => {
     }
   });
 
+  it('maps model resolvers to specified stack', () => {
+    const inputSchema = /* GraphQL */ `
+      type Blog @model {
+        id: ID!
+        name: String!
+      }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      stackMapping: {
+        CreateBlogResolver: 'myCustomStack1',
+        UpdateBlogResolver: 'myCustomStack2',
+      },
+    });
+
+    const result = transformer.transform(inputSchema);
+    expect(Object.keys(result.stacks.myCustomStack1.Resources!).includes('CreateBlogResolver')).toBe(true);
+    expect(Object.keys(result.stacks.myCustomStack2.Resources!).includes('UpdateBlogResolver')).toBe(true);
+
+    expect(Object.keys(result.stacks.Blog.Resources!).includes('CreateBlogResolver')).toBe(false);
+    expect(Object.keys(result.stacks.Blog.Resources!).includes('UpdateBlogResolver')).toBe(false);
+  });
+  
   it('allow aws_lambda to pass through', () => {
     const validSchema = `
     type Todo @aws_lambda {
