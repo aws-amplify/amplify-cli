@@ -32,11 +32,6 @@ export function addMapWithDefault(cwd: string, settings: GeoConfig = {}): Promis
       .wait('Who can access this Map?')
       .sendCarriageReturn();
 
-    if (config.isFirstGeoResource === true) {
-      chain.wait('Are you tracking commercial assets for your business in your app?').sendCarriageReturn();
-      chain.wait('Successfully set RequestBasedUsage pricing plan for your Geo resources.');
-    }
-
     chain.wait('Do you want to configure advanced settings?').sendConfirmNo();
 
     if (config.isAdditional === true) {
@@ -72,11 +67,6 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
       .sendLine(config.resourceName)
       .wait('Who can access this Search Index?')
       .sendCarriageReturn();
-
-    if (config.isFirstGeoResource === true) {
-      chain.wait('Are you tracking commercial assets for your business in your app?').sendConfirmNo();
-      chain.wait('Successfully set RequestBasedUsage pricing plan for your Geo resources.');
-    }
 
     chain.wait('Do you want to configure advanced settings?').sendConfirmNo();
     if (config.isAdditional === true) {
