@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.5-sub-identity-claim.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-function-transformer@3.3.4...graphql-function-transformer@3.3.5-sub-identity-claim.0) (2022-01-12)
+
+**Note:** Version bump only for package graphql-function-transformer
+
+
+
+
+
 ## [3.3.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-function-transformer@3.3.2...graphql-function-transformer@3.3.4) (2022-01-10)
 
 

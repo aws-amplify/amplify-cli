@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.8-sub-identity-claim.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.5.7...@aws-amplify/graphql-auth-transformer@0.5.8-sub-identity-claim.0) (2022-01-12)
+
+
+### Bug Fixes
+
+* add feature flag to use sub as default identity claim ([80516bd](https://github.com/aws-amplify/amplify-cli/commit/80516bd9aa449b5f5243cfe326ba62b84f03d478))
+
+
+
+
+
 ## [0.5.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.5.5...@aws-amplify/graphql-auth-transformer@0.5.7) (2022-01-10)
 
 

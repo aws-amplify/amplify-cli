@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.6.8-sub-identity-claim.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.7...@aws-amplify/cli@7.6.8-sub-identity-claim.0) (2022-01-12)
+
+
+### Bug Fixes
+
+* bump codegen to tagged release ([9eb63cc](https://github.com/aws-amplify/amplify-cli/commit/9eb63cc0f8c1a989e1e39b010bbda010599f4860))
+
+
+
+
+
 ## [7.6.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.5...@aws-amplify/cli@7.6.7) (2022-01-10)
 
 

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.14-sub-identity-claim.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@5.2.13...graphql-elasticsearch-transformer@5.2.14-sub-identity-claim.0) (2022-01-12)
+
+**Note:** Version bump only for package graphql-elasticsearch-transformer
+
+
+
+
+
 ## [5.2.13](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@5.2.11...graphql-elasticsearch-transformer@5.2.13) (2022-01-10)
 
 

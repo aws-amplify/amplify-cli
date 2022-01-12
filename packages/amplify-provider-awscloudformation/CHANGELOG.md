@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.8.8-sub-identity-claim.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.7...amplify-provider-awscloudformation@5.8.8-sub-identity-claim.0) (2022-01-12)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
 ## [5.8.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.5...amplify-provider-awscloudformation@5.8.7) (2022-01-10)
 
 

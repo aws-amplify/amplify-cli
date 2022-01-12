@@ -1,6 +1,6 @@
 {
   "name": "amplify-console-integration-tests",
-  "version": "2.2.15",
+  "version": "2.2.16-sub-identity-claim.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@types/ini": "^1.3.30",
-    "amplify-e2e-core": "2.4.9",
+    "amplify-e2e-core": "2.5.0-sub-identity-claim.0",
     "aws-sdk": "^2.963.0",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.14-sub-identity-claim.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.2.13...amplify-nodejs-function-template-provider@2.2.14-sub-identity-claim.0) (2022-01-12)
+
+**Note:** Version bump only for package amplify-nodejs-function-template-provider
+
+
+
+
+
 ## [2.2.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.2.11...amplify-nodejs-function-template-provider@2.2.13) (2022-01-10)
 
 
