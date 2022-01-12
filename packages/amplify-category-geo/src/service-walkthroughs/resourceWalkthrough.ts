@@ -35,7 +35,7 @@ export async function dataProviderWalkthrough<T extends ResourceParameters>(
     );
     const provider = (Object.keys(DataProvider).find(key => DataProvider[key as keyof typeof DataProvider] === dataProviderInput)) as DataProvider;
     if (provider === DataProvider.Esri) {
-        printer.warn(`${DataProvider.Esri} does not support tracking and routing commercial assets. Refer to ${apiDocs.pricingPlan} `);
+        printer.warn(`If your application is tracking or routing assets you use in your business (such as delivery vehicles or employees), you may only use HERE as your geolocation provider. See section 82 of ${apiDocs.locationServiceTerms} for more details.`);
     }
     parameters.dataProvider = provider;
     return parameters;
