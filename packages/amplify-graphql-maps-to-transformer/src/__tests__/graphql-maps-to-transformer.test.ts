@@ -1,4 +1,4 @@
-import { DirectiveNode, ObjectTypeDefinitionNode } from 'graphql';
+import { DirectiveNode, Kind, ObjectTypeDefinitionNode, parse } from 'graphql';
 import {
   FieldMapEntry,
   ModelFieldMap,
@@ -35,27 +35,27 @@ describe('@mapsTo directive', () => {
 
   const mapsToTransformer = new MapsToTransformer();
 
+  const getMapsToObjectDefAndDirective = () => {
+    const modelName = 'TestName';
+    const schema = /* GraphQL */ `
+      type ${modelName} @model @mapsTo(name: "OriginalName") {
+        id: ID!
+      }
+    `;
+    const ast = parse(schema);
+    const stubDefinition = ast.definitions.find(
+      def => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === modelName,
+    ) as ObjectTypeDefinitionNode;
+    const stubDirective = stubDefinition.directives?.find(directive => directive.name.value === 'mapsTo')!;
+    return {
+      stubDefinition,
+      stubDirective,
+    };
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
-
-    stubDefinition = {
-      name: {
-        value: 'TestName',
-      },
-    } as ObjectTypeDefinitionNode;
-    stubDirective = {
-      arguments: [
-        {
-          name: {
-            value: 'name',
-          },
-          value: {
-            kind: 'StringValue',
-            value: 'OriginalName',
-          },
-        },
-      ],
-    } as unknown as DirectiveNode;
+    ({ stubDefinition, stubDirective } = getMapsToObjectDefAndDirective());
   });
 
   it('requires a name to be specified', () => {

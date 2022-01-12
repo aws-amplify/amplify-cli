@@ -3,23 +3,6 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { MapsToTransformer } from '../../graphql-maps-to-transformer';
 
-test('@mapsTo with multiple foreign key field renames on single model', () => {
-  const out = transformSchema(multipleForeignKeyRenmaes);
-  const expectedUndefinedResovlers = ['Location', 'Day', 'Agenda'].flatMap(crudResolvers);
-  expectedUndefinedResovlers.forEach(resolver => expect(out.resolvers[resolver]).toBeUndefined());
-
-  const expectedRemappingResolvers = ['Todo'].flatMap(crudResolvers);
-  expectedRemappingResolvers.forEach(resolver => {
-    expect(out.resolvers[resolver]).toMatchSnapshot();
-  });
-});
-
-test('maps-to-transformer does not apply any resolvers to non-mapped models', () => {
-  const out = transformSchema(originalSchema);
-  const expectUndefinedResolversList = ['Checklist', 'Task', 'Location', 'Day'].flatMap(crudResolvers);
-  expectUndefinedResolversList.forEach(resolver => expect(out.resolvers[resolver]).toBeUndefined());
-});
-
 const originalSchema = /* GraphQL */ `
   type Checklist @model {
     id: ID!
@@ -90,3 +73,20 @@ const crudResolvers = (modelName: string) => [
   `Query.get${modelName}.postDataLoad.1.res.vtl`,
   `Query.list${modelName}s.postDataLoad.1.res.vtl`,
 ];
+
+test('@mapsTo with multiple foreign key field renames on single model', () => {
+  const out = transformSchema(multipleForeignKeyRenmaes);
+  const expectedUndefinedResovlers = ['Location', 'Day', 'Agenda'].flatMap(crudResolvers);
+  expectedUndefinedResovlers.forEach(resolver => expect(out.resolvers[resolver]).toBeUndefined());
+
+  const expectedRemappingResolvers = ['Todo'].flatMap(crudResolvers);
+  expectedRemappingResolvers.forEach(resolver => {
+    expect(out.resolvers[resolver]).toMatchSnapshot();
+  });
+});
+
+test('maps-to-transformer does not apply any resolvers to non-mapped models', () => {
+  const out = transformSchema(originalSchema);
+  const expectUndefinedResolversList = ['Checklist', 'Task', 'Location', 'Day'].flatMap(crudResolvers);
+  expectUndefinedResolversList.forEach(resolver => expect(out.resolvers[resolver]).toBeUndefined());
+});

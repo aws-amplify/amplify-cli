@@ -9,13 +9,17 @@ export class ModelFieldMapImpl implements ModelFieldMap {
   readonly #resolverReferences: ResolverReferenceEntry[] = [];
 
   /**
-   * Registers a field mapping. Does not insert duplicates.
+   * Registers a field mapping. Errors if a duplicate is inserted
    * Returns this object to enable method chaining
    */
   addMappedField = (entry: FieldMapEntry) => {
-    if (!this.#fieldMapping.find(fieldMapEqualsPredicate(entry))) {
-      this.#fieldMapping.push(entry);
+    const existingEntry = this.#fieldMapping.find(fieldMapEqualsPredicate(entry));
+    if (existingEntry) {
+      throw new Error(
+        `Field mapping for [${existingEntry.currentFieldName}] to [${existingEntry.originalFieldName}] already exists. Cannot insert mapping to [${entry.originalFieldName}]`,
+      );
     }
+    this.#fieldMapping.push(entry);
     return this;
   };
 
@@ -48,10 +52,11 @@ export class ModelFieldMapImpl implements ModelFieldMap {
   getResolverReferences = (): Readonly<Array<Readonly<ResolverReferenceEntry>>> => _.cloneDeep(this.#resolverReferences);
 }
 
+// checks the currentFieldName of two FieldMapEntry objects for equivalence
 const fieldMapEqualsPredicate = (compareTo: FieldMapEntry) => (entry: FieldMapEntry) =>
-  compareTo.currentFieldName === entry.currentFieldName && compareTo.originalFieldName === entry.originalFieldName;
+  compareTo.currentFieldName === entry.currentFieldName;
 
-// not that this predicate does NOT compare the isList property of the ResolverReferenceEntry
+// note that this predicate does NOT compare the isList property of the ResolverReferenceEntry
 // that is handled separately in the addResolverReference method above
 const resolverReferenceEqualsPredicate = (compareTo: ResolverReferenceEntry) => (entry: ResolverReferenceEntry) =>
   compareTo.typeName === entry.typeName && compareTo.fieldName === entry.fieldName;

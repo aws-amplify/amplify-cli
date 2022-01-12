@@ -192,7 +192,7 @@ export function ensureHasManyConnectionField(
   }
 
   const connectionAttributeName = getConnectionAttributeName(object.name.value, field.name.value);
-  const mappedConnectionAttributeName = ctx.resourceHelper.getFieldNameMapping(object.name.value, connectionAttributeName);
+  const mappedConnectionAttributeName = ctx.resourceHelper.getFieldNameMapping(relatedType.name.value, connectionAttributeName);
 
   const relatedTypeObject = ctx.output.getType(relatedType.name.value) as ObjectTypeDefinitionNode;
   if (relatedTypeObject) {

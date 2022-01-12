@@ -243,7 +243,7 @@ export async function getResourcesForCfn(context, resourceName, resourcePolicy, 
   // replace resource attributes for @model-backed dynamoDB tables
   const cfnResources = await Promise.all<$TSAny>(
     resourceAttributes.map(async attributes =>
-      attributes.resourceName && attributes.resourceName.endsWith(appsyncTableSuffix)
+      attributes.resourceName?.endsWith(appsyncTableSuffix)
         ? {
             resourceName: appsyncResourceName,
             category: 'api',

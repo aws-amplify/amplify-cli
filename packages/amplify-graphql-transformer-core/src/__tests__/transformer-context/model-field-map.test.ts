@@ -9,10 +9,12 @@ beforeEach(() => {
 
 describe('addMappedField', () => {
   it('does not add duplicate entries', () => {
-    modelFieldMap
-      .addMappedField({ currentFieldName: 'currTest', originalFieldName: 'origTest' })
-      .addMappedField({ currentFieldName: 'currTest', originalFieldName: 'origTest' });
-    expect(modelFieldMap.getMappedFields()).toEqual([{ currentFieldName: 'currTest', originalFieldName: 'origTest' }]);
+    modelFieldMap.addMappedField({ currentFieldName: 'currTest', originalFieldName: 'origTest' });
+    expect(() =>
+      modelFieldMap.addMappedField({ currentFieldName: 'currTest', originalFieldName: 'conflictingName' }),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Field mapping for [currTest] to [origTest] already exists. Cannot insert mapping to [conflictingName]"`,
+    );
   });
 });
 

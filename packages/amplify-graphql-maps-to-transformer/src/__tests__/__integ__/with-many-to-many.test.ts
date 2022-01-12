@@ -6,18 +6,6 @@ import { IndexTransformer } from '@aws-amplify/graphql-index-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { ObjectTypeDefinitionNode, parse } from 'graphql';
 
-describe('mapsTo with manyToMany', () => {
-  it('creates resources with original GSIs and field names', () => {
-    const out = transformSchema(manyToManyMapped);
-    expect(out.stacks.EmployeeTasks!.Resources!.EmployeeTasksTable.Properties.GlobalSecondaryIndexes).toMatchSnapshot();
-    const outSchema = parse(out.schema);
-    const employeeTasksFields = (
-      outSchema.definitions.find(def => (def as any)?.name.value === 'EmployeeTasks')! as ObjectTypeDefinitionNode
-    ).fields!.map(field => field.name.value);
-    expect(employeeTasksFields).toEqual(expect.arrayContaining(['id', 'personID', 'todoID', 'todo', 'person', 'createdAt', 'updatedAt']));
-  });
-});
-
 const manyToManyMapped = /* GraphQL */ `
   type Employee @model @mapsTo(name: "Person") {
     id: ID!
@@ -49,3 +37,15 @@ const transformSchema = (schema: string) => {
   });
   return transformer.transform(schema);
 };
+
+describe('mapsTo with manyToMany', () => {
+  it('creates resources with original GSIs and field names', () => {
+    const out = transformSchema(manyToManyMapped);
+    expect(out.stacks.EmployeeTasks!.Resources!.EmployeeTasksTable.Properties.GlobalSecondaryIndexes).toMatchSnapshot();
+    const outSchema = parse(out.schema);
+    const employeeTasksFields = (
+      outSchema.definitions.find(def => (def as any)?.name.value === 'EmployeeTasks')! as ObjectTypeDefinitionNode
+    ).fields!.map(field => field.name.value);
+    expect(employeeTasksFields).toEqual(expect.arrayContaining(['id', 'personID', 'todoID', 'todo', 'person', 'createdAt', 'updatedAt']));
+  });
+});

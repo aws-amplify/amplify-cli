@@ -4,7 +4,7 @@ import {
   TransformerPluginType,
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { ObjectTypeDefinitionNode, DirectiveNode } from 'graphql';
+import { ObjectTypeDefinitionNode, DirectiveNode, Kind, DefinitionNode } from 'graphql';
 import { attachInputMappingSlot, attachResponseMappingSlot } from './field-mapping-resolvers';
 
 const directiveName = 'mapsTo';
@@ -24,6 +24,13 @@ export class MapsToTransformer extends TransformerPluginBase {
   object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider) => {
     const modelName = definition.name.value;
     const prevNameNode = directive.arguments?.find(arg => arg.name.value === 'name');
+
+    const hasModelDirective = !!definition.directives?.find(directive => directive.name.value === 'model');
+    if (!hasModelDirective) {
+      throw new InvalidDirectiveError(`@mapsTo can only be used on an @model type`);
+    }
+
+    // the following checks should never fail because the graphql schema already validates them, but TS complains without them
     if (!prevNameNode) {
       throw new InvalidDirectiveError(`name is required in @${directiveName} directive`);
     }
@@ -33,12 +40,17 @@ export class MapsToTransformer extends TransformerPluginBase {
     }
 
     const originalName = prevNameNode.value.value;
+
+    const schemaHasConflictingModel = !!ctx.inputDocument.definitions.find(hasModelWithNamePredicate(originalName));
+    if (schemaHasConflictingModel) {
+      throw new InvalidDirectiveError(`Type ${modelName} cannot map to ${originalName} because ${originalName} is a model in the schema.`);
+    }
     ctx.resourceHelper.setModelNameMapping(modelName, originalName);
   };
 
   /**
    * During the generateResolvers step, the mapsTo transformer reads all of the model field mappings from the resourceHelper and generates
-   * VTL to map the current field names to the new field names
+   * VTL to map the current field names to the original field names
    */
   generateResolvers = (context: TransformerContextProvider) => {
     context.resourceHelper.getModelFieldMapKeys().forEach(modelName => {
@@ -66,17 +78,22 @@ export class MapsToTransformer extends TransformerPluginBase {
             fieldMap: modelFieldMap.getMappedFields(),
             isList: false,
           });
-          return;
+        } else {
+          // typeName is Query
+          attachResponseMappingSlot({
+            slotName: 'postDataLoad',
+            resolver,
+            resolverTypeName: typeName,
+            resolverFieldName: fieldName,
+            fieldMap: modelFieldMap.getMappedFields(),
+            isList,
+          });
         }
-        attachResponseMappingSlot({
-          slotName: 'postDataLoad',
-          resolver,
-          resolverTypeName: typeName,
-          resolverFieldName: fieldName,
-          fieldMap: modelFieldMap.getMappedFields(),
-          isList,
-        });
       });
     });
   };
 }
+
+// returns a predicate for determining if a DefinitionNode is an model object with the given name
+const hasModelWithNamePredicate = (name: string) => (node: DefinitionNode) =>
+  node.kind === Kind.OBJECT_TYPE_DEFINITION && !!node.directives?.find(dir => dir.name.value === 'model') && node.name.value === name;
