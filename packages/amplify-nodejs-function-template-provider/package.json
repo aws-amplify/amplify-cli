@@ -1,6 +1,6 @@
 {
   "name": "amplify-nodejs-function-template-provider",
-  "version": "2.2.14-sub-identity-claim.0",
+  "version": "2.2.14-sub-identity-claim.1",
   "description": "Node JS templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
@@ -21,9 +21,9 @@
     "clean": "rimraf lib tsconfig.tsbuildinfo"
   },
   "dependencies": {
-    "amplify-cli-core": "2.4.8-sub-identity-claim.0",
+    "amplify-cli-core": "2.4.8-sub-identity-claim.1",
     "amplify-function-plugin-interface": "1.9.4",
-    "graphql-transformer-core": "7.3.5-sub-identity-claim.0",
+    "graphql-transformer-core": "7.3.5-sub-identity-claim.1",
     "lodash": "^4.17.21"
   },
   "devDependencies": {

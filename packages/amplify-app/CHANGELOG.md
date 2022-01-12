@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.13-sub-identity-claim.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.2.12...amplify-app@4.2.13-sub-identity-claim.1) (2022-01-12)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
 ## [4.2.13-sub-identity-claim.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.2.12...amplify-app@4.2.13-sub-identity-claim.0) (2022-01-12)
 
 **Note:** Version bump only for package amplify-app

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-util-uibuilder",
-  "version": "1.2.0-sub-identity-claim.0",
+  "version": "1.2.0-sub-identity-claim.1",
   "description": "",
   "main": "lib/index.js",
   "scripts": {

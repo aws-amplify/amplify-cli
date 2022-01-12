@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "3.6.0-sub-identity-claim.0",
+  "version": "3.6.0-sub-identity-claim.1",
   "description": "",
   "repository": {
     "type": "git",
@@ -24,8 +24,8 @@
   },
   "dependencies": {
     "@aws-amplify/graphql-transformer-core": "0.15.4",
-    "amplify-cli-core": "2.4.8-sub-identity-claim.0",
-    "amplify-e2e-core": "2.5.0-sub-identity-claim.0",
+    "amplify-cli-core": "2.4.8-sub-identity-claim.1",
+    "amplify-e2e-core": "2.5.0-sub-identity-claim.1",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-sdk": "^2.1042.0",
@@ -36,7 +36,7 @@
     "fs-extra": "^8.1.0",
     "graphql-schema-diff": "^2.2.0",
     "graphql-tag": "^2.10.1",
-    "graphql-transformer-core": "7.3.5-sub-identity-claim.0",
+    "graphql-transformer-core": "7.3.5-sub-identity-claim.1",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.1",
     "promise-sequential": "^1.1.1",

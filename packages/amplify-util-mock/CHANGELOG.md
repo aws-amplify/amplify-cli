@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.26-sub-identity-claim.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.25...amplify-util-mock@4.2.26-sub-identity-claim.1) (2022-01-12)
+
+
+### Bug Fixes
+
+* add feature flag to use sub as default identity claim ([80516bd](https://github.com/aws-amplify/amplify-cli/commit/80516bd9aa449b5f5243cfe326ba62b84f03d478))
+
+
+
+
+
 ## [4.2.26-sub-identity-claim.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.25...amplify-util-mock@4.2.26-sub-identity-claim.0) (2022-01-12)
 
 

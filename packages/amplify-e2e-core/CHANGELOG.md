@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.5.0-sub-identity-claim.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.4.9...amplify-e2e-core@2.5.0-sub-identity-claim.1) (2022-01-12)
+
+
+### Features
+
+* add uibuilder improvements including ts generation for components ([#9287](https://github.com/aws-amplify/amplify-cli/issues/9287)) ([4531d0a](https://github.com/aws-amplify/amplify-cli/commit/4531d0aaf293ded66abda32d8b4db7c2137daa27))
+
+
+
+
+
 # [2.5.0-sub-identity-claim.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.4.9...amplify-e2e-core@2.5.0-sub-identity-claim.0) (2022-01-12)
 
 
