@@ -3,6 +3,83 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.14-beta.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-versioned-transformer@5.2.13...graphql-versioned-transformer@5.2.14-beta.6) (2022-01-13)
+
+
+### Bug Fixes
+
+* clean up missing and unused GraphQL v1 dependencies ([#9496](https://github.com/aws-amplify/amplify-cli/issues/9496)) ([fe8201b](https://github.com/aws-amplify/amplify-cli/commit/fe8201be17f42db233fce0bb366ff4d0c8358ec0))
+
+
+
+
+
+## [5.2.14-beta.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-versioned-transformer@5.2.13...graphql-versioned-transformer@5.2.14-beta.5) (2022-01-13)
+
+
+### Bug Fixes
+
+* clean up missing and unused GraphQL v1 dependencies ([#9496](https://github.com/aws-amplify/amplify-cli/issues/9496)) ([fe8201b](https://github.com/aws-amplify/amplify-cli/commit/fe8201be17f42db233fce0bb366ff4d0c8358ec0))
+
+
+
+
+
+## [5.2.14-beta.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-versioned-transformer@5.2.13...graphql-versioned-transformer@5.2.14-beta.4) (2022-01-13)
+
+
+### Bug Fixes
+
+* clean up missing and unused GraphQL v1 dependencies ([#9496](https://github.com/aws-amplify/amplify-cli/issues/9496)) ([fe8201b](https://github.com/aws-amplify/amplify-cli/commit/fe8201be17f42db233fce0bb366ff4d0c8358ec0))
+
+
+
+
+
+## [5.2.14-beta.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-versioned-transformer@5.2.13...graphql-versioned-transformer@5.2.14-beta.3) (2022-01-13)
+
+
+### Bug Fixes
+
+* clean up missing and unused GraphQL v1 dependencies ([#9496](https://github.com/aws-amplify/amplify-cli/issues/9496)) ([fe8201b](https://github.com/aws-amplify/amplify-cli/commit/fe8201be17f42db233fce0bb366ff4d0c8358ec0))
+
+
+
+
+
+## [5.2.14-beta.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-versioned-transformer@5.2.13...graphql-versioned-transformer@5.2.14-beta.2) (2022-01-13)
+
+
+### Bug Fixes
+
+* clean up missing and unused GraphQL v1 dependencies ([#9496](https://github.com/aws-amplify/amplify-cli/issues/9496)) ([fe8201b](https://github.com/aws-amplify/amplify-cli/commit/fe8201be17f42db233fce0bb366ff4d0c8358ec0))
+
+
+
+
+
+## [5.2.14-beta.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-versioned-transformer@5.2.13...graphql-versioned-transformer@5.2.14-beta.1) (2022-01-13)
+
+
+### Bug Fixes
+
+* clean up missing and unused GraphQL v1 dependencies ([#9496](https://github.com/aws-amplify/amplify-cli/issues/9496)) ([fe8201b](https://github.com/aws-amplify/amplify-cli/commit/fe8201be17f42db233fce0bb366ff4d0c8358ec0))
+
+
+
+
+
+## [5.2.14-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-versioned-transformer@5.2.13...graphql-versioned-transformer@5.2.14-beta.0) (2022-01-12)
+
+
+### Bug Fixes
+
+* clean up missing and unused GraphQL v1 dependencies ([#9496](https://github.com/aws-amplify/amplify-cli/issues/9496)) ([fe8201b](https://github.com/aws-amplify/amplify-cli/commit/fe8201be17f42db233fce0bb366ff4d0c8358ec0))
+
+
+
+
+
 ## [5.2.13](https://github.com/aws-amplify/amplify-cli/compare/graphql-versioned-transformer@5.2.11...graphql-versioned-transformer@5.2.13) (2022-01-10)
 
 

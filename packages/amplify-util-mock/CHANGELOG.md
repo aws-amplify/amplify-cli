@@ -3,6 +3,90 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.26-beta.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.25...amplify-util-mock@4.2.26-beta.6) (2022-01-13)
+
+
+### Bug Fixes
+
+* **amplify-util-mock:** correct mock env variable name to match name used at runtime ([#9272](https://github.com/aws-amplify/amplify-cli/issues/9272)) ([0be3ace](https://github.com/aws-amplify/amplify-cli/commit/0be3acea6026bbf7d52109b5a327966344dc9d47))
+* GraphQL V2 fix for codegen ([#9489](https://github.com/aws-amplify/amplify-cli/issues/9489)) ([d8b82b9](https://github.com/aws-amplify/amplify-cli/commit/d8b82b9bf3182efef3c57f02f76b6963bd4d2839))
+
+
+
+
+
+## [4.2.26-beta.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.25...amplify-util-mock@4.2.26-beta.5) (2022-01-13)
+
+
+### Bug Fixes
+
+* **amplify-util-mock:** correct mock env variable name to match name used at runtime ([#9272](https://github.com/aws-amplify/amplify-cli/issues/9272)) ([0be3ace](https://github.com/aws-amplify/amplify-cli/commit/0be3acea6026bbf7d52109b5a327966344dc9d47))
+* GraphQL V2 fix for codegen ([#9489](https://github.com/aws-amplify/amplify-cli/issues/9489)) ([d8b82b9](https://github.com/aws-amplify/amplify-cli/commit/d8b82b9bf3182efef3c57f02f76b6963bd4d2839))
+
+
+
+
+
+## [4.2.26-beta.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.25...amplify-util-mock@4.2.26-beta.4) (2022-01-13)
+
+
+### Bug Fixes
+
+* **amplify-util-mock:** correct mock env variable name to match name used at runtime ([#9272](https://github.com/aws-amplify/amplify-cli/issues/9272)) ([0be3ace](https://github.com/aws-amplify/amplify-cli/commit/0be3acea6026bbf7d52109b5a327966344dc9d47))
+* GraphQL V2 fix for codegen ([#9489](https://github.com/aws-amplify/amplify-cli/issues/9489)) ([d8b82b9](https://github.com/aws-amplify/amplify-cli/commit/d8b82b9bf3182efef3c57f02f76b6963bd4d2839))
+
+
+
+
+
+## [4.2.26-beta.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.25...amplify-util-mock@4.2.26-beta.3) (2022-01-13)
+
+
+### Bug Fixes
+
+* **amplify-util-mock:** correct mock env variable name to match name used at runtime ([#9272](https://github.com/aws-amplify/amplify-cli/issues/9272)) ([0be3ace](https://github.com/aws-amplify/amplify-cli/commit/0be3acea6026bbf7d52109b5a327966344dc9d47))
+* GraphQL V2 fix for codegen ([#9489](https://github.com/aws-amplify/amplify-cli/issues/9489)) ([d8b82b9](https://github.com/aws-amplify/amplify-cli/commit/d8b82b9bf3182efef3c57f02f76b6963bd4d2839))
+
+
+
+
+
+## [4.2.26-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.25...amplify-util-mock@4.2.26-beta.2) (2022-01-13)
+
+
+### Bug Fixes
+
+* **amplify-util-mock:** correct mock env variable name to match name used at runtime ([#9272](https://github.com/aws-amplify/amplify-cli/issues/9272)) ([0be3ace](https://github.com/aws-amplify/amplify-cli/commit/0be3acea6026bbf7d52109b5a327966344dc9d47))
+* GraphQL V2 fix for codegen ([#9489](https://github.com/aws-amplify/amplify-cli/issues/9489)) ([d8b82b9](https://github.com/aws-amplify/amplify-cli/commit/d8b82b9bf3182efef3c57f02f76b6963bd4d2839))
+
+
+
+
+
+## [4.2.26-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.25...amplify-util-mock@4.2.26-beta.1) (2022-01-13)
+
+
+### Bug Fixes
+
+* **amplify-util-mock:** correct mock env variable name to match name used at runtime ([#9272](https://github.com/aws-amplify/amplify-cli/issues/9272)) ([0be3ace](https://github.com/aws-amplify/amplify-cli/commit/0be3acea6026bbf7d52109b5a327966344dc9d47))
+* GraphQL V2 fix for codegen ([#9489](https://github.com/aws-amplify/amplify-cli/issues/9489)) ([d8b82b9](https://github.com/aws-amplify/amplify-cli/commit/d8b82b9bf3182efef3c57f02f76b6963bd4d2839))
+
+
+
+
+
+## [4.2.26-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.25...amplify-util-mock@4.2.26-beta.0) (2022-01-12)
+
+
+### Bug Fixes
+
+* **amplify-util-mock:** correct mock env variable name to match name used at runtime ([#9272](https://github.com/aws-amplify/amplify-cli/issues/9272)) ([0be3ace](https://github.com/aws-amplify/amplify-cli/commit/0be3acea6026bbf7d52109b5a327966344dc9d47))
+* GraphQL V2 fix for codegen ([#9489](https://github.com/aws-amplify/amplify-cli/issues/9489)) ([d8b82b9](https://github.com/aws-amplify/amplify-cli/commit/d8b82b9bf3182efef3c57f02f76b6963bd4d2839))
+
+
+
+
+
 ## [4.2.25](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.23...amplify-util-mock@4.2.25) (2022-01-10)
 
 

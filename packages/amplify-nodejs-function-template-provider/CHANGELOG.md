@@ -3,6 +3,62 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.14-beta.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.2.13...amplify-nodejs-function-template-provider@2.2.14-beta.6) (2022-01-13)
+
+**Note:** Version bump only for package amplify-nodejs-function-template-provider
+
+
+
+
+
+## [2.2.14-beta.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.2.13...amplify-nodejs-function-template-provider@2.2.14-beta.5) (2022-01-13)
+
+**Note:** Version bump only for package amplify-nodejs-function-template-provider
+
+
+
+
+
+## [2.2.14-beta.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.2.13...amplify-nodejs-function-template-provider@2.2.14-beta.4) (2022-01-13)
+
+**Note:** Version bump only for package amplify-nodejs-function-template-provider
+
+
+
+
+
+## [2.2.14-beta.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.2.13...amplify-nodejs-function-template-provider@2.2.14-beta.3) (2022-01-13)
+
+**Note:** Version bump only for package amplify-nodejs-function-template-provider
+
+
+
+
+
+## [2.2.14-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.2.13...amplify-nodejs-function-template-provider@2.2.14-beta.2) (2022-01-13)
+
+**Note:** Version bump only for package amplify-nodejs-function-template-provider
+
+
+
+
+
+## [2.2.14-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.2.13...amplify-nodejs-function-template-provider@2.2.14-beta.1) (2022-01-13)
+
+**Note:** Version bump only for package amplify-nodejs-function-template-provider
+
+
+
+
+
+## [2.2.14-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.2.13...amplify-nodejs-function-template-provider@2.2.14-beta.0) (2022-01-12)
+
+**Note:** Version bump only for package amplify-nodejs-function-template-provider
+
+
+
+
+
 ## [2.2.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.2.11...amplify-nodejs-function-template-provider@2.2.13) (2022-01-10)
 
 

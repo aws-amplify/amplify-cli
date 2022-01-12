@@ -3,6 +3,83 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.6-beta.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-velocity-template@1.4.5...amplify-velocity-template@1.4.6-beta.6) (2022-01-13)
+
+
+### Bug Fixes
+
+* fix the behavior of velocity template renderer not to run anything after #break ([#9421](https://github.com/aws-amplify/amplify-cli/issues/9421)) ([c43a70f](https://github.com/aws-amplify/amplify-cli/commit/c43a70febafc9efa7d43f163674df40c133a14a4)), closes [#8779](https://github.com/aws-amplify/amplify-cli/issues/8779)
+
+
+
+
+
+## [1.4.6-beta.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-velocity-template@1.4.5...amplify-velocity-template@1.4.6-beta.5) (2022-01-13)
+
+
+### Bug Fixes
+
+* fix the behavior of velocity template renderer not to run anything after #break ([#9421](https://github.com/aws-amplify/amplify-cli/issues/9421)) ([c43a70f](https://github.com/aws-amplify/amplify-cli/commit/c43a70febafc9efa7d43f163674df40c133a14a4)), closes [#8779](https://github.com/aws-amplify/amplify-cli/issues/8779)
+
+
+
+
+
+## [1.4.6-beta.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-velocity-template@1.4.5...amplify-velocity-template@1.4.6-beta.4) (2022-01-13)
+
+
+### Bug Fixes
+
+* fix the behavior of velocity template renderer not to run anything after #break ([#9421](https://github.com/aws-amplify/amplify-cli/issues/9421)) ([c43a70f](https://github.com/aws-amplify/amplify-cli/commit/c43a70febafc9efa7d43f163674df40c133a14a4)), closes [#8779](https://github.com/aws-amplify/amplify-cli/issues/8779)
+
+
+
+
+
+## [1.4.6-beta.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-velocity-template@1.4.5...amplify-velocity-template@1.4.6-beta.3) (2022-01-13)
+
+
+### Bug Fixes
+
+* fix the behavior of velocity template renderer not to run anything after #break ([#9421](https://github.com/aws-amplify/amplify-cli/issues/9421)) ([c43a70f](https://github.com/aws-amplify/amplify-cli/commit/c43a70febafc9efa7d43f163674df40c133a14a4)), closes [#8779](https://github.com/aws-amplify/amplify-cli/issues/8779)
+
+
+
+
+
+## [1.4.6-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-velocity-template@1.4.5...amplify-velocity-template@1.4.6-beta.2) (2022-01-13)
+
+
+### Bug Fixes
+
+* fix the behavior of velocity template renderer not to run anything after #break ([#9421](https://github.com/aws-amplify/amplify-cli/issues/9421)) ([c43a70f](https://github.com/aws-amplify/amplify-cli/commit/c43a70febafc9efa7d43f163674df40c133a14a4)), closes [#8779](https://github.com/aws-amplify/amplify-cli/issues/8779)
+
+
+
+
+
+## [1.4.6-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-velocity-template@1.4.5...amplify-velocity-template@1.4.6-beta.1) (2022-01-13)
+
+
+### Bug Fixes
+
+* fix the behavior of velocity template renderer not to run anything after #break ([#9421](https://github.com/aws-amplify/amplify-cli/issues/9421)) ([c43a70f](https://github.com/aws-amplify/amplify-cli/commit/c43a70febafc9efa7d43f163674df40c133a14a4)), closes [#8779](https://github.com/aws-amplify/amplify-cli/issues/8779)
+
+
+
+
+
+## [1.4.6-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-velocity-template@1.4.5...amplify-velocity-template@1.4.6-beta.0) (2022-01-12)
+
+
+### Bug Fixes
+
+* fix the behavior of velocity template renderer not to run anything after #break ([#9421](https://github.com/aws-amplify/amplify-cli/issues/9421)) ([c43a70f](https://github.com/aws-amplify/amplify-cli/commit/c43a70febafc9efa7d43f163674df40c133a14a4)), closes [#8779](https://github.com/aws-amplify/amplify-cli/issues/8779)
+
+
+
+
+
 ## [1.4.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-velocity-template@1.4.4...amplify-velocity-template@1.4.5) (2021-05-26)
 
 **Note:** Version bump only for package amplify-velocity-template
