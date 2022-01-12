@@ -13,16 +13,15 @@ jest.mock('../field-mapping-resolvers');
 const attachInputMappingSlot_mock = attachInputMappingSlot as jest.MockedFunction<typeof attachInputMappingSlot>;
 const attachResponseMappingSlot_mock = attachResponseMappingSlot as jest.MockedFunction<typeof attachResponseMappingSlot>;
 
-describe('@mapsTo directive', () => {
-  let stubDefinition: ObjectTypeDefinitionNode;
-  let stubDirective: DirectiveNode;
+type DeepWriteable<T> = { -readonly [P in keyof T]: DeepWriteable<T[P]> };
 
+describe('@mapsTo directive', () => {
   const setModelNameMapping_mock = jest.fn();
   const getResolver_mock = jest.fn();
   const getModelFieldMapKeys_mock = jest.fn();
   const getModelFieldMap_mock = jest.fn();
 
-  const stubTransformerContext = {
+  const stubTransformerContextBase = {
     resolvers: {
       getResolver: getResolver_mock,
     },
@@ -35,54 +34,66 @@ describe('@mapsTo directive', () => {
 
   const mapsToTransformer = new MapsToTransformer();
 
-  const getMapsToObjectDefAndDirective = () => {
-    const modelName = 'TestName';
-    const schema = /* GraphQL */ `
-      type ${modelName} @model @mapsTo(name: "OriginalName") {
-        id: ID!
-      }
-    `;
+  const modelName = 'TestName';
+
+  const simpleSchema = /* GraphQL */ `
+    type ${modelName} @model @mapsTo(name: "OriginalName") {
+      id: ID!
+    }
+  `;
+
+  const conflictingModelSchema = /* GraphQL */ `
+    type ${modelName} @model @mapsTo(name: "OriginalName") {
+      id: ID!
+    }
+
+    type OriginalName @model {
+      id: ID!
+    }
+  `;
+
+  const getTransformerInputsFromSchema = (schema: string) => {
     const ast = parse(schema);
     const stubDefinition = ast.definitions.find(
       def => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === modelName,
     ) as ObjectTypeDefinitionNode;
     const stubDirective = stubDefinition.directives?.find(directive => directive.name.value === 'mapsTo')!;
-    return {
-      stubDefinition,
-      stubDirective,
-    };
+    return [
+      stubDefinition as DeepWriteable<ObjectTypeDefinitionNode>,
+      stubDirective as DeepWriteable<DirectiveNode>,
+      { ...stubTransformerContextBase, inputDocument: ast } as unknown as TransformerSchemaVisitStepContextProvider,
+    ] as const;
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
-    ({ stubDefinition, stubDirective } = getMapsToObjectDefAndDirective());
   });
 
   it('requires a name to be specified', () => {
-    (stubDirective as any).arguments = [];
-    expect(() =>
-      mapsToTransformer.object(
-        stubDefinition,
-        stubDirective,
-        stubTransformerContext as unknown as TransformerSchemaVisitStepContextProvider,
-      ),
-    ).toThrowErrorMatchingInlineSnapshot(`"name is required in @mapsTo directive"`);
+    const [stubDefinition, stubDirective, stubTransformerContext] = getTransformerInputsFromSchema(simpleSchema);
+    stubDirective.arguments = [];
+    expect(() => mapsToTransformer.object(stubDefinition, stubDirective, stubTransformerContext)).toThrowErrorMatchingInlineSnapshot(
+      `"name is required in @mapsTo directive"`,
+    );
   });
 
   it('requires a string value for name', () => {
-    (stubDirective as any).arguments[0].value.kind = 'OtherKind';
-    expect(() =>
-      mapsToTransformer.object(
-        stubDefinition,
-        stubDirective,
-        stubTransformerContext as unknown as TransformerSchemaVisitStepContextProvider,
-      ),
-    ).toThrowErrorMatchingInlineSnapshot(`"A single string must be provided for \\"name\\" in @mapsTo directive"`);
+    const [stubDefinition, stubDirective, stubTransformerContext] = getTransformerInputsFromSchema(simpleSchema);
+    stubDirective.arguments![0].value.kind = 'ListValue';
+    expect(() => mapsToTransformer.object(stubDefinition, stubDirective, stubTransformerContext)).toThrowErrorMatchingInlineSnapshot(
+      `"A single string must be provided for \\"name\\" in @mapsTo directive"`,
+    );
   });
 
   it('registers the rename mapping', () => {
-    mapsToTransformer.object(stubDefinition, stubDirective, stubTransformerContext as unknown as TransformerSchemaVisitStepContextProvider);
+    mapsToTransformer.object(...getTransformerInputsFromSchema(simpleSchema));
     expect(setModelNameMapping_mock.mock.calls[0]).toEqual(['TestName', 'OriginalName']);
+  });
+
+  it('throws if a conflicting model name is present in the schema', () => {
+    expect(() => mapsToTransformer.object(...getTransformerInputsFromSchema(conflictingModelSchema))).toThrowErrorMatchingInlineSnapshot(
+      `"Type TestName cannot map to OriginalName because OriginalName is a model in the schema."`,
+    );
   });
 
   it('attaches input and response mapping templates for mutations', () => {
@@ -93,7 +104,7 @@ describe('@mapsTo directive', () => {
         originalFieldName: 'origFieldName',
       },
     ];
-    stubTransformerContext.resourceHelper.getModelFieldMapKeys.mockReturnValueOnce(['TestType']);
+    stubTransformerContextBase.resourceHelper.getModelFieldMapKeys.mockReturnValueOnce(['TestType']);
     const modelFieldMap: ModelFieldMap = {
       getMappedFields: () => testFieldMap,
       getResolverReferences: () => [
@@ -104,14 +115,14 @@ describe('@mapsTo directive', () => {
         },
       ],
     } as unknown as ModelFieldMap;
-    stubTransformerContext.resourceHelper.getModelFieldMap.mockReturnValueOnce(modelFieldMap);
+    stubTransformerContextBase.resourceHelper.getModelFieldMap.mockReturnValueOnce(modelFieldMap);
     const dummyResolver = { obj: 'this is a dummy resolver' };
-    stubTransformerContext.resolvers.getResolver.mockImplementationOnce((typeName: string, fieldName: string) =>
+    stubTransformerContextBase.resolvers.getResolver.mockImplementationOnce((typeName: string, fieldName: string) =>
       typeName === 'Mutation' && fieldName === 'createTestType' ? dummyResolver : undefined,
     );
 
     // test
-    mapsToTransformer.generateResolvers(stubTransformerContext as unknown as TransformerContextProvider);
+    mapsToTransformer.generateResolvers(stubTransformerContextBase as unknown as TransformerContextProvider);
 
     // assert
     expect(attachInputMappingSlot_mock).toBeCalledTimes(1);
@@ -140,7 +151,7 @@ describe('@mapsTo directive', () => {
         originalFieldName: 'origFieldName',
       },
     ];
-    stubTransformerContext.resourceHelper.getModelFieldMapKeys.mockReturnValueOnce(['TestType']);
+    stubTransformerContextBase.resourceHelper.getModelFieldMapKeys.mockReturnValueOnce(['TestType']);
     const modelFieldMap: ModelFieldMap = {
       getMappedFields: () => testFieldMap,
       getResolverReferences: () => [
@@ -151,14 +162,14 @@ describe('@mapsTo directive', () => {
         },
       ],
     } as unknown as ModelFieldMap;
-    stubTransformerContext.resourceHelper.getModelFieldMap.mockReturnValueOnce(modelFieldMap);
+    stubTransformerContextBase.resourceHelper.getModelFieldMap.mockReturnValueOnce(modelFieldMap);
     const dummyResolver = { obj: 'this is a dummy resolver' };
-    stubTransformerContext.resolvers.getResolver.mockImplementationOnce((typeName: string, fieldName: string) =>
+    stubTransformerContextBase.resolvers.getResolver.mockImplementationOnce((typeName: string, fieldName: string) =>
       typeName === 'Query' && fieldName === 'getTestType' ? dummyResolver : undefined,
     );
 
     // test
-    mapsToTransformer.generateResolvers(stubTransformerContext as unknown as TransformerContextProvider);
+    mapsToTransformer.generateResolvers(stubTransformerContextBase as unknown as TransformerContextProvider);
 
     // assert
     expect(attachInputMappingSlot_mock).not.toBeCalled();
@@ -181,7 +192,7 @@ describe('@mapsTo directive', () => {
         originalFieldName: 'origFieldName',
       },
     ];
-    stubTransformerContext.resourceHelper.getModelFieldMapKeys.mockReturnValueOnce(['TestType']);
+    stubTransformerContextBase.resourceHelper.getModelFieldMapKeys.mockReturnValueOnce(['TestType']);
     const modelFieldMap: ModelFieldMap = {
       getMappedFields: () => testFieldMap,
       getResolverReferences: () => [
@@ -192,11 +203,11 @@ describe('@mapsTo directive', () => {
         },
       ],
     } as unknown as ModelFieldMap;
-    stubTransformerContext.resourceHelper.getModelFieldMap.mockReturnValueOnce(modelFieldMap);
-    stubTransformerContext.resolvers.getResolver.mockReturnValueOnce(undefined);
+    stubTransformerContextBase.resourceHelper.getModelFieldMap.mockReturnValueOnce(modelFieldMap);
+    stubTransformerContextBase.resolvers.getResolver.mockReturnValueOnce(undefined);
 
     // test
-    mapsToTransformer.generateResolvers(stubTransformerContext as unknown as TransformerContextProvider);
+    mapsToTransformer.generateResolvers(stubTransformerContextBase as unknown as TransformerContextProvider);
 
     // assert
     expect(attachInputMappingSlot_mock).not.toBeCalled();
@@ -206,7 +217,7 @@ describe('@mapsTo directive', () => {
   it('does not attach resolvers if no mappings defined', () => {
     // setup
     const testFieldMap: FieldMapEntry[] = [];
-    stubTransformerContext.resourceHelper.getModelFieldMapKeys.mockReturnValueOnce(['TestType']);
+    stubTransformerContextBase.resourceHelper.getModelFieldMapKeys.mockReturnValueOnce(['TestType']);
     const modelFieldMap: ModelFieldMap = {
       getMappedFields: () => testFieldMap,
       getResolverReferences: () => [
@@ -217,11 +228,11 @@ describe('@mapsTo directive', () => {
         },
       ],
     } as unknown as ModelFieldMap;
-    stubTransformerContext.resourceHelper.getModelFieldMap.mockReturnValueOnce(modelFieldMap);
-    stubTransformerContext.resolvers.getResolver.mockReturnValueOnce(undefined);
+    stubTransformerContextBase.resourceHelper.getModelFieldMap.mockReturnValueOnce(modelFieldMap);
+    stubTransformerContextBase.resolvers.getResolver.mockReturnValueOnce(undefined);
 
     // test
-    mapsToTransformer.generateResolvers(stubTransformerContext as unknown as TransformerContextProvider);
+    mapsToTransformer.generateResolvers(stubTransformerContextBase as unknown as TransformerContextProvider);
 
     // assert
     expect(attachInputMappingSlot_mock).not.toBeCalled();
