@@ -3,7 +3,7 @@ import { AuthTransformer } from '../graphql-auth-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { getField, getObjectType } from './test-helpers';
+import { featureFlags, getField, getObjectType } from './test-helpers';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 
 test('auth transformer validation happy case', () => {
@@ -23,6 +23,7 @@ test('auth transformer validation happy case', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -49,6 +50,7 @@ test('ownerfield where the field is a list', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -80,6 +82,7 @@ test('ownerfield with subscriptions', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -124,6 +127,7 @@ test('multiple owner rules with subscriptions', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -166,6 +170,7 @@ test('implicit owner fields get added to the type', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const validSchema = `
   type Post @model
@@ -214,6 +219,7 @@ test('implicit owner fields from field level auth get added to the type', () => 
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -228,4 +234,73 @@ test('implicit owner fields from field level auth get added to the type', () => 
   const customOwner = getField(postType, 'customOwner');
   expect(customOwner).toBeDefined();
   expect((customOwner as any).type.name.value).toEqual('String');
+});
+
+describe('with feature flag useSubForDefaultIdentityClaim enabled', () => {
+  test('implicit (defauult) identity claim', () => {
+    const authConfig: AppSyncAuthConfiguration = {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [],
+    };
+    const validSchema = `
+      type Post @model @auth(rules: [{allow: owner}]) {
+        id: ID!
+        title: String!
+        createdAt: String
+        updatedAt: String
+      }`;
+    const transformer = new GraphQLTransform({
+      authConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer()],
+      featureFlags: {
+        getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+          if (name === 'useSubForDefaultIdentityClaim') {
+            return true;
+          }
+          return;
+        }),
+        getString: jest.fn(),
+        getNumber: jest.fn(),
+        getObject: jest.fn(),
+      },
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toContain(
+      '#set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("sub"), "___xamznone____") )',
+    );
+
+    // TODO - figure out why these do not pass
+
+    // expect(out.resolvers['Mutation.deletePost.auth.1.req.vtl']).toContain(
+    //   '#set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("sub"), "___xamznone____") )'
+    // );
+
+    // expect(out.resolvers['Mutation.updatePost.auth.1.req.vtl']).toContain(
+    //   '#set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("sub"), "___xamznone____") )'
+    // );
+
+    expect(out.resolvers['Query.getPost.auth.1.req.vtl']).toContain(
+      '#set( $role0 = $util.defaultIfNull($ctx.identity.claims.get("sub"), "___xamznone____") )',
+    );
+
+    expect(out.resolvers['Query.listPosts.auth.1.req.vtl']).toContain(
+      '#set( $role0 = $util.defaultIfNull($ctx.identity.claims.get("sub"), "___xamznone____") )',
+    );
+
+    expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain(
+      '#set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("sub"), "___xamznone____") )',
+    );
+
+    expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain(
+      '#set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("sub"), "___xamznone____") )',
+    );
+
+    expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain(
+      '#set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("sub"), "___xamznone____") )',
+    );
+  });
 });

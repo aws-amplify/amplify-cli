@@ -3,6 +3,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration, AppSyncAuthConfigurationOIDCEntry, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode, ObjectTypeDefinitionNode, Kind, FieldDefinitionNode, parse, InputValueDefinitionNode } from 'graphql';
+import { featureFlags, getObjectType } from './test-helpers';
 
 const userPoolsDefaultConfig: AppSyncAuthConfiguration = {
   defaultAuthentication: {
@@ -169,13 +170,14 @@ const getTransformer = (authConfig: AppSyncAuthConfiguration) =>
   new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
 
-const getObjectType = (doc: DocumentNode, type: string): ObjectTypeDefinitionNode | undefined => {
-  return doc.definitions.find(def => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type) as
-    | ObjectTypeDefinitionNode
-    | undefined;
-};
+// const getObjectType = (doc: DocumentNode, type: string): ObjectTypeDefinitionNode | undefined => {
+//   return doc.definitions.find(def => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type) as
+//     | ObjectTypeDefinitionNode
+//     | undefined;
+// };
 
 const expectNone = fieldOrType => {
   expect(fieldOrType.directives.length === 0);
@@ -617,6 +619,7 @@ describe('iam checks', () => {
     const transformer = new GraphQLTransform({
       authConfig: iamDefaultConfig,
       transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId })],
+      featureFlags,
     });
     const out = transformer.transform(schema);
     expect(out).toBeDefined();
@@ -635,6 +638,7 @@ describe('iam checks', () => {
     const transformer = new GraphQLTransform({
       authConfig: iamDefaultConfig,
       transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId })],
+      featureFlags,
     });
     const out = transformer.transform(schema);
     expect(out).toBeDefined();
@@ -649,6 +653,7 @@ describe('iam checks', () => {
     const transformer = new GraphQLTransform({
       authConfig: iamDefaultConfig,
       transformers: [new ModelTransformer(), new AuthTransformer({ adminRoles })],
+      featureFlags,
     });
     const out = transformer.transform(schema);
     expect(out).toBeDefined();
@@ -662,6 +667,7 @@ describe('iam checks', () => {
     const transformer = new GraphQLTransform({
       authConfig: userPoolsDefaultConfig,
       transformers: [new ModelTransformer(), new AuthTransformer({ adminRoles })],
+      featureFlags,
     });
     const out = transformer.transform(schema);
     expect(out).toBeDefined();

@@ -336,6 +336,18 @@ test('creates join table with implicitly defined primary keys', () => {
   validateModelSchema(schema);
 });
 
+const featureFlags = {
+  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+    if (name === 'useSubForDefaultIdentityClaim') {
+      return false;
+    }
+    return;
+  }),
+  getNumber: jest.fn(),
+  getObject: jest.fn(),
+  getString: jest.fn(),
+};
+
 function createTransformer(authConfig?: AppSyncAuthConfiguration) {
   const transformerAuthConfig: AppSyncAuthConfiguration = authConfig ?? {
     defaultAuthentication: {
@@ -356,6 +368,7 @@ function createTransformer(authConfig?: AppSyncAuthConfiguration) {
       new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
       authTransformer,
     ],
+    featureFlags,
   });
 
   return transformer;

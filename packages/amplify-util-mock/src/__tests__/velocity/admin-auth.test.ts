@@ -15,6 +15,18 @@ describe('admin roles query checks', () => {
     headers: {},
   };
 
+  const featureFlags = {
+    getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+      if (name === 'useSubForDefaultIdentityClaim') {
+        return false;
+      }
+      return;
+    }),
+    getNumber: jest.fn(),
+    getObject: jest.fn(),
+    getString: jest.fn(),
+  };
+
   beforeEach(() => {
     const authConfig: AppSyncAuthConfiguration = {
       defaultAuthentication: {
@@ -34,6 +46,7 @@ describe('admin roles query checks', () => {
           adminRoles: [ADMIN_UI_ROLE],
         }),
       ],
+      featureFlags,
     });
 
     vtlTemplate = new VelocityTemplateSimulator({ authConfig });

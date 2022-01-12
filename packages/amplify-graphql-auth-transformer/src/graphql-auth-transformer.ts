@@ -108,6 +108,7 @@ import { generateSandboxExpressionForField } from './resolvers/field';
 export class AuthTransformer extends TransformerAuthBase implements TransformerAuthProvider {
   private config: AuthTransformerConfig;
   private configuredAuthProviders: ConfiguredAuthProviders;
+  private useSubForDefaultIdentityClaim: boolean;
   // access control
   private roleMap: Map<string, RoleDefinition>;
   private authModelConfig: Map<string, AccessControlMatrix>;
@@ -142,6 +143,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     // if there was no auth config in the props we add the authConfig from the context
     this.config.authConfig = this.config.authConfig ?? context.authConfig;
     this.configuredAuthProviders = getConfiguredAuthProviders(this.config);
+    this.useSubForDefaultIdentityClaim = context.featureFlags?.getBoolean('useSubForDefaultIdentityClaim');
   };
 
   object = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider): void => {
@@ -843,7 +845,8 @@ Static group authorization should perform as expected.`,
               };
             } else if (rule.allow === 'owner') {
               const ownerField = rule.ownerField || DEFAULT_OWNER_FIELD;
-              const ownerClaim = rule.identityClaim || DEFAULT_IDENTITY_CLAIM;
+              const defaultIdentityClaim = this.useSubForDefaultIdentityClaim && 'sub';
+              const ownerClaim = rule.identityClaim || defaultIdentityClaim || DEFAULT_IDENTITY_CLAIM;
               roleName = `${rule.provider}:owner:${ownerField}:${ownerClaim}`;
               roleDefinition = {
                 provider: rule.provider,

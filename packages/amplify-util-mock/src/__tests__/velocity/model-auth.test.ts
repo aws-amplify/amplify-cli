@@ -7,6 +7,18 @@ import { VelocityTemplateSimulator, AppSyncVTLContext, getJWTToken } from '../..
 
 const USER_POOL_ID = 'us-fake-1ID';
 
+const featureFlags = {
+  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+    if (name === 'useSubForDefaultIdentityClaim') {
+      return false;
+    }
+    return;
+  }),
+  getNumber: jest.fn(),
+  getObject: jest.fn(),
+  getString: jest.fn(),
+};
+
 describe('@model owner mutation checks', () => {
   let vtlTemplate: VelocityTemplateSimulator;
   let transformer: GraphQLTransform;
@@ -27,6 +39,7 @@ describe('@model owner mutation checks', () => {
     transformer = new GraphQLTransform({
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
+      featureFlags,
     });
     vtlTemplate = new VelocityTemplateSimulator({ authConfig });
   });
@@ -284,6 +297,7 @@ describe('@model operations', () => {
     transformer = new GraphQLTransform({
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
+      featureFlags,
     });
     vtlTemplate = new VelocityTemplateSimulator({ authConfig });
   });
@@ -452,6 +466,7 @@ describe('@model field auth', () => {
     transformer = new GraphQLTransform({
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
+      featureFlags,
     });
     vtlTemplate = new VelocityTemplateSimulator({ authConfig });
   });

@@ -3,6 +3,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ConflictHandlerType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { Kind, parse } from 'graphql';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
+import { stateManager, FeatureFlags, JSONUtilities } from 'amplify-cli-core';
 
 test('fails if used as a has one relation', () => {
   const inputSchema = `

@@ -3,7 +3,7 @@ import { IndexTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
-import { DocumentNode, ObjectTypeDefinitionNode, Kind, FieldDefinitionNode, parse, InputValueDefinitionNode } from 'graphql';
+import { DocumentNode, ObjectTypeDefinitionNode, Kind, parse } from 'graphql';
 import { HasManyTransformer, BelongsToTransformer } from '..';
 
 const iamDefaultConfig: AppSyncAuthConfiguration = {
@@ -41,6 +41,7 @@ test('per-field auth on relational field', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new HasManyTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -126,6 +127,18 @@ test(`ModelXConnection type is getting the directives added, when a field has @c
   expect((modelPostEditorConnectionType as any).directives.some((dir: any) => dir.name.value === 'aws_cognito_user_pools')).toBe(true);
 });
 
+const featureFlags = {
+  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+    if (name === 'useSubForDefaultIdentityClaim') {
+      return true;
+    }
+    return;
+  }),
+  getNumber: jest.fn(),
+  getObject: jest.fn(),
+  getString: jest.fn(),
+};
+
 const getTransformer = (authConfig: AppSyncAuthConfiguration) => {
   return new GraphQLTransform({
     authConfig,
@@ -136,6 +149,7 @@ const getTransformer = (authConfig: AppSyncAuthConfiguration) => {
       new BelongsToTransformer(),
       new AuthTransformer(),
     ],
+    featureFlags,
   });
 };
 

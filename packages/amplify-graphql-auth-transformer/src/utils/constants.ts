@@ -1,8 +1,8 @@
 import { AuthProvider, ModelOperation } from './definitions';
 export const DEFAULT_OWNER_FIELD = 'owner';
 export const DEFAULT_GROUPS_FIELD = 'groups';
+export const COGNITO_USERNAME_IDENTITY_CLAIM = 'cognito:username';
 export const DEFAULT_IDENTITY_CLAIM = 'username';
-export const DEFAULT_COGNITO_IDENTITY_CLAIM = 'cognito:username';
 export const DEFAULT_GROUP_CLAIM = 'cognito:groups';
 export const ON_CREATE_FIELD = 'onCreate';
 export const ON_UPDATE_FIELD = 'onUpdate';

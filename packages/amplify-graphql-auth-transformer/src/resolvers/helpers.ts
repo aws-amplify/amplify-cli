@@ -24,7 +24,7 @@ import {
 } from 'graphql-mapping-template';
 import { NONE_VALUE } from 'graphql-transformer-common';
 import {
-  DEFAULT_COGNITO_IDENTITY_CLAIM,
+  COGNITO_USERNAME_IDENTITY_CLAIM,
   RoleDefinition,
   IS_AUTHORIZED_FLAG,
   ALLOWED_FIELDS,
@@ -86,7 +86,7 @@ export const iamCheck = (claim: string, exp: Expression, identityPoolId?: string
  */
 export const getOwnerClaim = (ownerClaim: string): Expression => {
   if (ownerClaim === 'username') {
-    return getIdentityClaimExp(str(ownerClaim), getIdentityClaimExp(str(DEFAULT_COGNITO_IDENTITY_CLAIM), str(NONE_VALUE)));
+    return getIdentityClaimExp(str(ownerClaim), getIdentityClaimExp(str(COGNITO_USERNAME_IDENTITY_CLAIM), str(NONE_VALUE)));
   }
   return getIdentityClaimExp(str(ownerClaim), str(NONE_VALUE));
 };

@@ -4,22 +4,36 @@ import { PrimaryKeyTransformer, IndexTransformer } from '@aws-amplify/graphql-in
 import { HasManyTransformer, HasOneTransformer, BelongsToTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionContext } from 'amplify-appsync-simulator';
+import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionContext, JWTToken } from 'amplify-appsync-simulator';
 import { VelocityTemplateSimulator, getJWTToken, getIAMToken } from '../../velocity';
+
+const featureFlags = {
+  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+    if (name === 'useSubForDefaultIdentityClaim') {
+      return true;
+    }
+    return;
+  }),
+  getNumber: jest.fn(),
+  getObject: jest.fn(),
+  getString: jest.fn(),
+};
 
 const USER_POOL_ID = 'us-fake-1ID';
 
 describe('relational tests', () => {
   let vtlTemplate: VelocityTemplateSimulator;
   let transformer: GraphQLTransform;
+  const ownerRequestJWTToken: JWTToken = getJWTToken(USER_POOL_ID, 'user1', 'user1@test.com');
   const ownerRequest: AppSyncGraphQLExecutionContext = {
     requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS,
-    jwt: getJWTToken(USER_POOL_ID, 'user1', 'user1@test.com'),
+    jwt: ownerRequestJWTToken,
     headers: {},
   };
+  const adminGroupRequestJWTToken: JWTToken = getJWTToken(USER_POOL_ID, 'user2', 'user2@test.com', ['admin']);
   const adminGroupRequest: AppSyncGraphQLExecutionContext = {
     requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS,
-    jwt: getJWTToken(USER_POOL_ID, 'user2', 'user2@test.com', ['admin']),
+    jwt: adminGroupRequestJWTToken,
     headers: {},
   };
   const iamAuthRole: AppSyncGraphQLExecutionContext = {
@@ -55,6 +69,7 @@ describe('relational tests', () => {
         new HasOneTransformer(),
         new BelongsToTransformer(),
       ],
+      featureFlags,
     });
     vtlTemplate = new VelocityTemplateSimulator({ authConfig });
   });
@@ -66,7 +81,7 @@ describe('relational tests', () => {
       type Blog @model @auth(rules: [{ allow: private, operations: [read], provider: userPools }]) {
         id: ID!
         name: String
-        title: String        
+        title: String
         editor: Editor @hasOne(fields: ["id", "name"])
       }
 
@@ -95,26 +110,26 @@ describe('relational tests', () => {
     expect(ownerFieldResponse.hadException).toBe(false);
     expect(ownerFieldResponse.stash.authFilter).toEqual(
       expect.objectContaining({
-        or: [{ owner: { eq: 'user1' } }],
+        or: [{ owner: { eq: ownerRequestJWTToken.sub } }],
       }),
     );
   });
 
-  test('1:M nested auth read', () => {
+  test.only('1:M nested auth read', () => {
     // checking for the following cases
     // don't apply the authFilter if the owner is not in any valid groups
     // remove auth filter if the primaryRole (ex. the owner rule) condition is met
     // pass the auth filter if the primaryRole condition is not met
 
     const validSchema = `
-    type Post @model @auth(rules: [{allow: owner}, { allow: groups, groupsField: "editors" }]) {
+    type Post @model @auth(rules: [{ allow: owner }, { allow: groups, groupsField: "editors" }]) {
       id: ID!
       title: String!
       editors: [String]
       author: User @belongsTo(fields: ["owner"])
       owner: ID! @index(name: "byOwner", sortKeyFields: ["id"])
     }
-    
+
     type User @model @auth(rules: [{ allow: owner }]) {
       id: ID!
       name: String
@@ -140,7 +155,7 @@ describe('relational tests', () => {
     // response where the editor member is the owner therefore the auth filter does not need to be applied
     const adminWithNoFilterResponse = vtlTemplate.render(userPostTemplate, {
       context: {
-        source: { id: 'user2' },
+        source: { id: adminGroupRequestJWTToken.sub },
       },
       requestParameters: adminGroupRequest,
     });

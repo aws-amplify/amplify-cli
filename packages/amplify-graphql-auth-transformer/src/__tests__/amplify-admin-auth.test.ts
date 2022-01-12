@@ -1,6 +1,7 @@
 import { AuthTransformer } from '../graphql-auth-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { featureFlags } from './test-helpers';
 import _ from 'lodash';
 
 const ADMIN_UI_ROLES = ['us-fake-1_uuid_Full-access/CognitoIdentityCredentials', 'us-fake-1_uuid_Manage-only/CognitoIdentityCredentials'];
@@ -30,6 +31,7 @@ test('test simple model with public auth rule and amplify admin app is present',
         adminRoles: ADMIN_UI_ROLES,
       }),
     ],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -53,6 +55,7 @@ test('Test simple model with public auth rule and amplify admin app is not enabl
       additionalAuthenticationProviders: [],
     },
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -85,6 +88,7 @@ test('Test model with public auth rule without all operations and amplify admin 
         adminRoles: ADMIN_UI_ROLES,
       }),
     ],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -125,6 +129,7 @@ test('Test simple model with private auth rule and amplify admin app is present'
         adminRoles: ADMIN_UI_ROLES,
       }),
     ],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -152,6 +157,7 @@ test('Test simple model with private auth rule and amplify admin app not enabled
       ],
     },
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -184,6 +190,7 @@ test('Test simple model with private auth rule, few operations, and amplify admi
         adminRoles: ADMIN_UI_ROLES,
       }),
     ],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -224,6 +231,7 @@ test('Test simple model with private IAM auth rule, few operations, and amplify 
       ],
     },
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -264,6 +272,7 @@ test('Test simple model with AdminUI enabled should add IAM policy only for fiel
         adminRoles: ADMIN_UI_ROLES,
       }),
     ],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -326,6 +335,7 @@ test('admin roles should be return the field name inside field resolvers', () =>
         adminRoles: ADMIN_UI_ROLES,
       }),
     ],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();

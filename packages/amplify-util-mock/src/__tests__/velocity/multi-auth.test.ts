@@ -5,6 +5,18 @@ import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-inter
 import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionContext } from 'amplify-appsync-simulator';
 import { VelocityTemplateSimulator, AppSyncVTLContext, getGenericToken } from '../../velocity';
 
+const featureFlags = {
+  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+    if (name === 'useSubForDefaultIdentityClaim') {
+      return false;
+    }
+    return;
+  }),
+  getNumber: jest.fn(),
+  getObject: jest.fn(),
+  getString: jest.fn(),
+};
+
 // oidc needs claim values to know where to check in the token otherwise it will use cognito defaults precendence order below
 // - owner: 'username' -> 'cognito:username' -> default to null
 // - group: 'cognito:groups' -> default to null or empty list
@@ -37,6 +49,7 @@ describe('@model + @auth with oidc provider', () => {
     transformer = new GraphQLTransform({
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
+      featureFlags,
     });
     vtlTemplate = new VelocityTemplateSimulator({ authConfig });
   });

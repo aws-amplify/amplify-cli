@@ -3,6 +3,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
+import { featureFlags } from './test-helpers';
 
 test('happy case with lambda auth mode as default auth mode', () => {
   const authConfig: AppSyncAuthConfiguration = {
@@ -25,6 +26,7 @@ test('happy case with lambda auth mode as default auth mode', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -56,6 +58,7 @@ test('happy case with lambda auth mode as additional auth mode', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -86,6 +89,7 @@ test('allow: custom defaults provider to function', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -104,11 +108,12 @@ test('allow: custom error out when there is no lambda auth mode defined', () => 
         id: ID!
         title: String!
         createdAt: String
-        updatedAt: String  
+        updatedAt: String
     }`;
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   expect(() => transformer.transform(validSchema)).toThrowError(
     `@auth directive with 'function' provider found, but the project has no Lambda authentication provider configured.`,
@@ -136,6 +141,7 @@ test('allow: custom and provider: iam error out for invalid combination', () => 
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   expect(() => transformer.transform(validSchema)).toThrowError(
     `@auth directive with 'custom' strategy only supports 'function' (default) provider, but found 'iam' assigned.`,
@@ -163,6 +169,7 @@ test('allow: non-custom and provider: function error out for invalid combination
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   expect(() => transformer.transform(validSchema)).toThrowError(
     `@auth directive with 'public' strategy only supports 'apiKey' (default) and 'iam' providers, but found 'function' assigned.`,

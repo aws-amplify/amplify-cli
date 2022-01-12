@@ -2,6 +2,7 @@ import { AuthTransformer } from '../graphql-auth-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform, ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
 import _ from 'lodash';
+import { featureFlags } from './test-helpers';
 
 test('test single auth model is enabled with conflict resolution', () => {
   const validSchema = `
@@ -26,6 +27,7 @@ test('test single auth model is enabled with conflict resolution', () => {
       },
     },
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -58,6 +60,7 @@ test('test multi auth model with conflict resolution', () => {
       },
     },
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -107,6 +110,7 @@ test('test multi auth model with field auth with conflict resolution', () => {
       },
     },
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();

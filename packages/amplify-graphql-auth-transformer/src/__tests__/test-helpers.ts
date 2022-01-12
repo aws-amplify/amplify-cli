@@ -5,6 +5,19 @@ export const getObjectType = (doc: DocumentNode, type: string): ObjectTypeDefini
     | ObjectTypeDefinitionNode
     | undefined;
 };
+
 export const getField = (obj: ObjectTypeDefinitionNode, fieldName: string): FieldDefinitionNode | void => {
   return obj.fields?.find(f => f.name.value === fieldName);
+};
+
+export const featureFlags = {
+  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+    if (name === 'useSubForDefaultIdentityClaim') {
+      return false;
+    }
+    return;
+  }),
+  getString: jest.fn(),
+  getNumber: jest.fn(),
+  getObject: jest.fn(),
 };
