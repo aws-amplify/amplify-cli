@@ -15,18 +15,18 @@ import fetch from 'node-fetch';
 const [shortId] = uuid().split('-');
 const projName = `apigwtest${shortId}`;
 
-let projRoot: string;
-beforeAll(async () => {
-  projRoot = await createNewProjectDir(projName);
-  await initJSProjectWithProfile(projRoot, { name: projName });
-});
-
-afterAll(async () => {
-  await deleteProject(projRoot);
-  deleteProjectDir(projRoot);
-});
-
 describe('API Gateway e2e tests', () => {
+  let projRoot: string;
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir(projName);
+    await initJSProjectWithProfile(projRoot, { name: projName });
+  });
+
+  afterEach(async () => {
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
+  });
+
   it('adds multiple rest apis and pushes', async () => {
     const firstRestApi = `firstE2eRestApi${shortId}`;
     const secondRestApi = `secondE2eRestApi${shortId}`;
