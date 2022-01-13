@@ -33,34 +33,34 @@ describe('amplify api add', () => {
     deleteProjectDir(projRoot);
   });
 
-  // it('init project, enable containers and add multicontainer api', async () => {
-  //   const envName = 'devtest';
-  //   await initJSProjectWithProfile(projRoot, { name: 'multicontainer', envName });
-  //   await setupAmplifyProject(projRoot);
-  //   await addRestContainerApi(projRoot);
-  //   await amplifyPushWithoutCodegen(projRoot);
-  //   const awsExports: any = getAWSExports(projRoot).default;
-  //   const {
-  //     aws_cloud_logic_custom: [{ name, endpoint }],
-  //   } = awsExports;
-  //   expect(name).toBeDefined();
-  //   expect(endpoint).toBeDefined();
+  it('init project, enable containers and add multicontainer api', async () => {
+    const envName = 'devtest';
+    await initJSProjectWithProfile(projRoot, { name: 'multicontainer', envName });
+    await setupAmplifyProject(projRoot);
+    await addRestContainerApi(projRoot);
+    await amplifyPushWithoutCodegen(projRoot);
+    const awsExports: any = getAWSExports(projRoot).default;
+    const {
+      aws_cloud_logic_custom: [{ name, endpoint }],
+    } = awsExports;
+    expect(name).toBeDefined();
+    expect(endpoint).toBeDefined();
 
-  //   const result = await (await fetch(`${endpoint}/images`)).text();
-  //   expect(result).toEqual('Processing images...');
-  // });
+    const result = await (await fetch(`${endpoint}/images`)).text();
+    expect(result).toEqual('Processing images...');
+  });
 
-  // it('init project, enable containers and add multicontainer api push, edit and push', async () => {
-  //   const envName = 'devtest';
-  //   await initJSProjectWithProfile(projRoot, { name: 'multicontainer', envName });
-  //   await setupAmplifyProject(projRoot);
-  //   await addRestContainerApi(projRoot);
-  //   await amplifyPushWithoutCodegen(projRoot);
-  //   const meta = await getProjectMeta(projRoot);
-  //   const apiName = Object.keys(meta['api'])[0];
-  //   modifyRestAPI(projRoot, apiName);
-  //   await amplifyPushWithoutCodegen(projRoot);
-  // });
+  it('init project, enable containers and add multicontainer api push, edit and push', async () => {
+    const envName = 'devtest';
+    await initJSProjectWithProfile(projRoot, { name: 'multicontainer', envName });
+    await setupAmplifyProject(projRoot);
+    await addRestContainerApi(projRoot);
+    await amplifyPushWithoutCodegen(projRoot);
+    const meta = await getProjectMeta(projRoot);
+    const apiName = Object.keys(meta['api'])[0];
+    modifyRestAPI(projRoot, apiName);
+    await amplifyPushWithoutCodegen(projRoot);
+  });
 
   it('init project, api container secrets should work', async () => {
     const envName = 'devtest';
