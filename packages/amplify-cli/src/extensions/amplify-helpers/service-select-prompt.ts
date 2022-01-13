@@ -75,7 +75,7 @@ async function serviceQuestionWalkthrough(
   const question = [
     {
       name: 'service',
-      message: customQuestion || 'Please select from one of the below mentioned services:',
+      message: customQuestion || 'Select from one of the below mentioned services:',
       type: 'list',
       choices: options,
     },

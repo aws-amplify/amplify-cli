@@ -5,7 +5,6 @@
     "accessType": "AuthorizedUsers",
     "setAsDefault": true,
     "mapStyle": "VectorEsriNavigation",
-    "name": "mymapname",
-    "pricingPlan": "MobileAssetManagement"
+    "name": "mymapname"
   }
 }

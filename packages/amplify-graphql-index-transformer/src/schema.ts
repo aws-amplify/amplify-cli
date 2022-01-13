@@ -19,6 +19,7 @@ import {
   makeCompositeKeyConditionInputForKey,
   makeCompositeKeyInputForKey,
   makeConnectionField,
+  makeDirective,
   makeField,
   makeInputValueDefinition,
   makeListType,
@@ -238,8 +239,8 @@ export function updateMutationConditionInput(
 
 function createHashField(config: PrimaryKeyDirectiveConfiguration | IndexDirectiveConfiguration): InputValueDefinitionNode {
   const { field } = config;
-
-  return makeInputValueDefinition(field.name.value, makeNamedType(getBaseType(field.type)));
+  const type = "queryField" in config ? makeNonNullType(makeNamedType(getBaseType(field.type))) : makeNamedType(getBaseType(field.type));
+  return makeInputValueDefinition(field.name.value, type);
 }
 
 function createSimpleSortField(
@@ -318,6 +319,8 @@ function replaceDeleteInput(config: PrimaryKeyDirectiveConfiguration, input: Inp
 
 export function ensureQueryField(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void {
   const { name, object, queryField, sortKey } = config;
+  const hasAuth = object.directives?.some(dir => dir.name.value === 'auth');
+  const directives = [];
 
   if (!queryField) {
     return;
@@ -342,8 +345,10 @@ export function ensureQueryField(config: IndexDirectiveConfiguration, ctx: Trans
   }
 
   args.push(makeInputValueDefinition('sortDirection', makeNamedType('ModelSortDirection')));
-
-  const queryFieldObj = makeConnectionField(queryField, object.name.value, args);
+  if (!hasAuth && ctx.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
+    directives.push(makeDirective('aws_api_key', []));
+  }
+  const queryFieldObj = makeConnectionField(queryField, object.name.value, args, directives);
 
   ctx.output.addQueryFields([queryFieldObj]);
   ensureModelSortDirectionEnum(ctx);
@@ -363,7 +368,7 @@ function generateModelXConnectionType(config: IndexDirectiveConfiguration, ctx: 
   let connectionTypeExtension = blankObjectExtension(tableXConnectionName);
 
   connectionTypeExtension = extensionWithFields(connectionTypeExtension, [
-    makeField('items', [], makeNonNullType(makeListType(makeNonNullType(makeNamedType(object.name.value))))),
+    makeField('items', [], makeNonNullType(makeListType(makeNamedType(object.name.value)))),
   ]);
   connectionTypeExtension = extensionWithFields(connectionTypeExtension, [makeField('nextToken', [], makeNamedType('String'))]);
 

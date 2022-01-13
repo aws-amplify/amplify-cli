@@ -1,7 +1,7 @@
 import * as os from 'os';
 import { Input } from '../input';
 import { getLatestPayloadVersion } from './VersionManager';
-import ci from 'ci-info';
+import { isCI } from 'amplify-cli-core';
 export class UsageDataPayload {
   sessionUuid: string;
   installationUuid: string;
@@ -18,6 +18,7 @@ export class UsageDataPayload {
   isCi: boolean;
   accountId: string;
   projectSetting: ProjectSettings;
+  record: Record<string, any>[];
   constructor(
     sessionUuid: string,
     installationUuid: string,
@@ -28,6 +29,7 @@ export class UsageDataPayload {
     accountId: string,
     project: ProjectSettings,
     inputOptions: InputOptions,
+    record: Record<string, any>[],
   ) {
     this.sessionUuid = sessionUuid;
     this.installationUuid = installationUuid;
@@ -40,9 +42,10 @@ export class UsageDataPayload {
     this.state = state;
     this.payloadVersion = getLatestPayloadVersion();
     this.accountId = accountId;
-    this.isCi = ci.isCI;
+    this.isCi = isCI();
     this.projectSetting = project;
     this.inputOptions = inputOptions;
+    this.record = record;
     if (error) {
       this.error = new SerializableError(error);
     }

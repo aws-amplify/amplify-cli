@@ -3,6 +3,118 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.4...amplify-appsync-simulator@2.3.5) (2022-01-13)
+
+
+### Bug Fixes
+
+* velocity list.indexOf method ([#9422](https://github.com/aws-amplify/amplify-cli/issues/9422)) ([97aad82](https://github.com/aws-amplify/amplify-cli/commit/97aad8241344601dd5bf35dcbfdd978d9eee1840)), closes [#8830](https://github.com/aws-amplify/amplify-cli/issues/8830)
+
+
+
+
+
+## [2.3.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.2...amplify-appsync-simulator@2.3.4) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** none data source type definition and add test ([#8277](https://github.com/aws-amplify/amplify-cli/issues/8277)) ([9e5e50f](https://github.com/aws-amplify/amplify-cli/commit/9e5e50f3bfec3f42061bd0c52b8e7b39089b024b))
+* **graphql:** add *in* expression handler to appsync simulator ([#9324](https://github.com/aws-amplify/amplify-cli/issues/9324)) ([d5093d3](https://github.com/aws-amplify/amplify-cli/commit/d5093d375c1b4504005d019fd0af872c3b90bf02))
+
+
+
+
+
+## [2.3.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.1...amplify-appsync-simulator@2.3.2) (2021-12-09)
+
+
+### Bug Fixes
+
+* add support for IAM roles in mock ([#9139](https://github.com/aws-amplify/amplify-cli/issues/9139)) ([8f9adbf](https://github.com/aws-amplify/amplify-cli/commit/8f9adbf36b350f147c1252168565b9c982bbac0f)), closes [#9107](https://github.com/aws-amplify/amplify-cli/issues/9107)
+
+
+
+
+
+## [2.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.0...amplify-appsync-simulator@2.3.1) (2021-12-03)
+
+
+### Bug Fixes
+
+* pass updated args between pipeline function in mock ([#9192](https://github.com/aws-amplify/amplify-cli/issues/9192)) ([983a131](https://github.com/aws-amplify/amplify-cli/commit/983a1310730a3b1d6f447547d39e18949c2e5d77))
+
+
+
+
+
+# [2.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.2.3...amplify-appsync-simulator@2.3.0) (2021-12-02)
+
+
+
+# 7.6.0 (2021-12-02)
+
+
+### Features
+
+* add uibuilder plugin ([#9178](https://github.com/aws-amplify/amplify-cli/issues/9178)) ([0e95dd8](https://github.com/aws-amplify/amplify-cli/commit/0e95dd8dc2b9cdcc54dcd7a7b896891e17b37f1d))
+
+
+
+
+
+## [2.2.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.2.2...amplify-appsync-simulator@2.2.3) (2021-11-23)
+
+**Note:** Version bump only for package amplify-appsync-simulator
+
+
+
+
+
+## [2.2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.2.1...amplify-appsync-simulator@2.2.2) (2021-11-17)
+
+
+### Bug Fixes
+
+* allow mock to run if [@searchable](https://github.com/searchable) is used ([#8864](https://github.com/aws-amplify/amplify-cli/issues/8864)) ([995d895](https://github.com/aws-amplify/amplify-cli/commit/995d8952bb9d8f9423a5fbd4bb3fa911d3dd5ac8))
+
+
+
+
+
+## [2.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.27.8...amplify-appsync-simulator@2.2.1) (2021-11-15)
+
+**Note:** Version bump only for package amplify-appsync-simulator
+
+
+
+
+
+# [2.0.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.27.8...amplify-appsync-simulator@2.0.0) (2021-11-13)
+
+**Note:** Version bump only for package amplify-appsync-simulator
+
+
+
+
+
+## [1.27.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.27.7...amplify-appsync-simulator@1.27.8) (2021-11-11)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** fixed app sync simulator util auth type mock ([#8451](https://github.com/aws-amplify/amplify-cli/issues/8451)) ([2ce306f](https://github.com/aws-amplify/amplify-cli/commit/2ce306f1f8182dfed70dc15b7c45af172cc32964))
+* update appsync simulators ip address validation ([#8375](https://github.com/aws-amplify/amplify-cli/issues/8375)) ([4b494fc](https://github.com/aws-amplify/amplify-cli/commit/4b494fccfd3423ea60d305117235df1d03e73117)), closes [#8359](https://github.com/aws-amplify/amplify-cli/issues/8359)
+* vtl list utils & update model test scenarios ([#8701](https://github.com/aws-amplify/amplify-cli/issues/8701)) ([402cd9b](https://github.com/aws-amplify/amplify-cli/commit/402cd9b12e1603403511b5933404b525bb0de176))
+
+
+
+
+
 ## [1.27.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.27.6...amplify-appsync-simulator@1.27.7) (2021-08-24)
 
 **Note:** Version bump only for package amplify-appsync-simulator

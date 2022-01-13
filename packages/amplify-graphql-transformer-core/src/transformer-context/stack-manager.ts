@@ -33,14 +33,13 @@ export class StackManager implements StackManagerProvider {
 
   getStackFor = (resourceId: string, defaultStackName?: string): Stack => {
     const stackName = this.resourceToStackMap.has(resourceId) ? this.resourceToStackMap.get(resourceId) : defaultStackName;
-    if (stackName) {
-      try {
-        this.getStack(stackName);
-      } catch (e) {
-        return this.createStack(stackName);
-      }
+    if (!stackName) {
+      return this.rootStack;
     }
-    return this.rootStack;
+    if (this.hasStack(stackName)) {
+      return this.getStack(stackName);
+    }
+    return this.createStack(stackName);
   };
 
   getStack = (stackName: string): Stack => {

@@ -112,7 +112,7 @@ async function testDeletion(projRoot: string, settings: { ios?: Boolean; android
   expect(meta.Region).toBeDefined();
   const { AuthRoleName, UnauthRoleName } = meta;
   await addEnvironment(projRoot, { envName: 'test' });
-  await addApiWithoutSchema(projRoot);
+  await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
   await addCodegen(projRoot, settings);
   const deploymentBucketName2 = getProjectMeta(projRoot).providers.awscloudformation.DeploymentBucketName;
   expect(await bucketExists(deploymentBucketName1)).toBe(true);

@@ -99,7 +99,7 @@ export class VelocityTemplate {
     info: GraphQLResolveInfo,
   ): any {
     const { source, arguments: argument, result, stash, prevResult, error } = ctxValues;
-    const { jwt } = requestContext;
+    const { jwt, sourceIp, iamToken } = requestContext;
     const { iss: issuer, sub, 'cognito:username': cognitoUserName, username } = jwt || {};
 
     const util = createUtil([], new Date(Date.now()), info, requestContext);
@@ -110,20 +110,31 @@ export class VelocityTemplate {
       identity = convertToJavaTypes({
         sub,
         issuer,
+        sourceIp,
         claims: requestContext.jwt,
       });
     } else if (requestContext.requestAuthorizationMode === AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS) {
       identity = convertToJavaTypes({
         sub,
         issuer,
+        sourceIp,
         'cognito:username': cognitoUserName,
         username: username || cognitoUserName,
-        sourceIp: requestContext.sourceIp,
         claims: requestContext.jwt,
         ...(this.simulatorContext.appSyncConfig.defaultAuthenticationType.authenticationType ===
         AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS
           ? { defaultAuthStrategy: 'ALLOW' }
           : {}),
+      });
+    } else if (requestContext.requestAuthorizationMode === AmplifyAppSyncSimulatorAuthenticationType.AWS_IAM) {
+      identity = convertToJavaTypes({
+        sourceIp,
+        username: iamToken.username,
+        userArn: iamToken.userArn,
+        cognitoIdentityPoolId: iamToken?.cognitoIdentityPoolId,
+        cognitoIdentityId: iamToken?.cognitoIdentityId,
+        cognitoIdentityAuthType: iamToken?.cognitoIdentityAuthType,
+        cognitoIdentityAuthProvider: iamToken?.cognitoIdentityAuthProvider,
       });
     }
 

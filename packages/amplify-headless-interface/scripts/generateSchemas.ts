@@ -48,6 +48,16 @@ const typeDefs: TypeDef[] = [
     category: 'storage',
     relativeSourcePaths: [path.join('storage', 'remove.ts')],
   },
+  {
+    typeName: 'AddGeoRequest',
+    category: 'geo',
+    relativeSourcePaths: [path.join('geo', 'add.ts')],
+  },
+  {
+    typeName: 'UpdateGeoRequest',
+    category: 'geo',
+    relativeSourcePaths: ['add.ts', 'update.ts'].map(file => path.join('geo', file)),
+  }
 ];
 
 const schemaFileName = (typeName: string) => `${typeName}.schema.json`;

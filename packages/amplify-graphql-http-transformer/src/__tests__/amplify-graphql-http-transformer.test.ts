@@ -1,6 +1,6 @@
 'use strict';
-import { anything, countResources, expect as cdkExpect, haveResource } from '@aws-cdk/assert';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { anything, countResources, expect as cdkExpect, haveResource } from '@aws-cdk/assert';
 import { parse } from 'graphql';
 import { HttpTransformer } from '..';
 
@@ -26,6 +26,7 @@ test('generates expected VTL', () => {
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
+  expect(out.resolvers).toMatchSnapshot();
   expect(out.pipelineFunctions).toMatchSnapshot();
   parse(out.schema);
 });
@@ -48,7 +49,7 @@ test('it generates the expected resources', () => {
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
   parse(out.schema);
-  const stack = out.stacks.HttpDirectiveStack;
+  const stack = out.stacks.HttpStack;
   cdkExpect(stack).to(
     haveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
@@ -119,22 +120,14 @@ test('it generates the expected resources', () => {
     }),
   );
   cdkExpect(stack).to(countResources('AWS::AppSync::Resolver', 5));
+  cdkExpect(stack).to(countResources('AWS::AppSync::FunctionConfiguration', 5));
   expect(stack.Resources!.CommentcontentResolver).toBeTruthy();
   cdkExpect(stack).to(
     haveResource('AWS::AppSync::Resolver', {
       ApiId: { Ref: anything() },
       FieldName: 'content',
       TypeName: 'Comment',
-      DataSourceName: {
-        'Fn::GetAtt': [anything(), 'Name'],
-      },
-      Kind: 'UNIT',
-      RequestMappingTemplateS3Location: {
-        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/pipelineFunctions/Comment.content.req.vtl']],
-      },
-      ResponseMappingTemplateS3Location: {
-        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/pipelineFunctions/Comment.content.res.vtl']],
-      },
+      Kind: 'PIPELINE',
     }),
   );
   expect(stack.Resources!.Commentcontent2Resolver).toBeTruthy();
@@ -143,16 +136,7 @@ test('it generates the expected resources', () => {
       ApiId: { Ref: anything() },
       FieldName: 'content2',
       TypeName: 'Comment',
-      DataSourceName: {
-        'Fn::GetAtt': [anything(), 'Name'],
-      },
-      Kind: 'UNIT',
-      RequestMappingTemplateS3Location: {
-        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/pipelineFunctions/Comment.content2.req.vtl']],
-      },
-      ResponseMappingTemplateS3Location: {
-        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/pipelineFunctions/Comment.content2.res.vtl']],
-      },
+      Kind: 'PIPELINE',
     }),
   );
   expect(stack.Resources!.CommentmoreResolver).toBeTruthy();
@@ -161,16 +145,7 @@ test('it generates the expected resources', () => {
       ApiId: { Ref: anything() },
       FieldName: 'more',
       TypeName: 'Comment',
-      DataSourceName: {
-        'Fn::GetAtt': [anything(), 'Name'],
-      },
-      Kind: 'UNIT',
-      RequestMappingTemplateS3Location: {
-        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/pipelineFunctions/Comment.more.req.vtl']],
-      },
-      ResponseMappingTemplateS3Location: {
-        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/pipelineFunctions/Comment.more.res.vtl']],
-      },
+      Kind: 'PIPELINE',
     }),
   );
   expect(stack.Resources!.CommentevenMoreResolver).toBeTruthy();
@@ -179,16 +154,7 @@ test('it generates the expected resources', () => {
       ApiId: { Ref: anything() },
       FieldName: 'evenMore',
       TypeName: 'Comment',
-      DataSourceName: {
-        'Fn::GetAtt': [anything(), 'Name'],
-      },
-      Kind: 'UNIT',
-      RequestMappingTemplateS3Location: {
-        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/pipelineFunctions/Comment.evenMore.req.vtl']],
-      },
-      ResponseMappingTemplateS3Location: {
-        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/pipelineFunctions/Comment.evenMore.res.vtl']],
-      },
+      Kind: 'PIPELINE',
     }),
   );
   expect(stack.Resources!.CommentstillMoreResolver).toBeTruthy();
@@ -197,16 +163,7 @@ test('it generates the expected resources', () => {
       ApiId: { Ref: anything() },
       FieldName: 'stillMore',
       TypeName: 'Comment',
-      DataSourceName: {
-        'Fn::GetAtt': [anything(), 'Name'],
-      },
-      Kind: 'UNIT',
-      RequestMappingTemplateS3Location: {
-        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/pipelineFunctions/Comment.stillMore.req.vtl']],
-      },
-      ResponseMappingTemplateS3Location: {
-        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/pipelineFunctions/Comment.stillMore.res.vtl']],
-      },
+      Kind: 'PIPELINE',
     }),
   );
 });
@@ -254,7 +211,7 @@ test('URL params happy path', () => {
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
   parse(out.schema);
-  const stack = out.stacks.HttpDirectiveStack;
+  const stack = out.stacks.HttpStack;
   cdkExpect(stack).to(countResources('AWS::AppSync::DataSource', 1));
   cdkExpect(stack).to(countResources('AWS::AppSync::Resolver', 7));
   expect(stack.Resources!.CommentcomplexResolver).toBeTruthy();
@@ -296,8 +253,9 @@ test('env on the URI path', () => {
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
   parse(out.schema);
-  const stack = out.stacks.HttpDirectiveStack;
-  const reqTemplate = stack.Resources!.CommentcontentResolver.Properties.RequestMappingTemplate;
+  const stack = out.stacks.HttpStack;
+  const functionId = stack.Resources!.CommentcontentResolver.Properties.PipelineConfig.Functions[0]['Fn::GetAtt'][0];
+  const reqTemplate = stack.Resources![functionId].Properties.RequestMappingTemplate;
   expect(reqTemplate['Fn::Sub']).toBeTruthy();
   expect(reqTemplate['Fn::Sub'][0]).toMatch('"resourcePath": "/ping${env}"');
   expect(reqTemplate['Fn::Sub'][1].env.Ref).toBeTruthy();
@@ -321,7 +279,7 @@ test('env on the hostname', () => {
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
   parse(out.schema);
-  const stack = out.stacks.HttpDirectiveStack;
+  const stack = out.stacks.HttpStack;
   cdkExpect(stack).to(countResources('AWS::AppSync::DataSource', 4));
   cdkExpect(stack).to(
     haveResource('AWS::AppSync::DataSource', {
@@ -411,8 +369,9 @@ test('aws_region on the URI path', () => {
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
   parse(out.schema);
-  const stack = out.stacks.HttpDirectiveStack;
-  const reqTemplate = stack.Resources!.CommentcontentResolver.Properties.RequestMappingTemplate;
+  const stack = out.stacks.HttpStack;
+  const functionId = stack.Resources!.CommentcontentResolver.Properties.PipelineConfig.Functions[0]['Fn::GetAtt'][0];
+  const reqTemplate = stack.Resources![functionId].Properties.RequestMappingTemplate;
   expect(reqTemplate['Fn::Sub']).toBeTruthy();
   expect(reqTemplate['Fn::Sub'][0]).toMatch('"resourcePath": "/ping${aws_region}"');
   expect(reqTemplate['Fn::Sub'][1].aws_region.Ref).toBeTruthy();
@@ -436,7 +395,7 @@ test('aws_region on the hostname', () => {
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
   parse(out.schema);
-  const stack = out.stacks.HttpDirectiveStack;
+  const stack = out.stacks.HttpStack;
   cdkExpect(stack).to(countResources('AWS::AppSync::DataSource', 4));
   cdkExpect(stack).to(
     haveResource('AWS::AppSync::DataSource', {

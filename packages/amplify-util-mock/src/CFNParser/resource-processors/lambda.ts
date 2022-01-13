@@ -1,6 +1,11 @@
 import { CloudFormationParseContext } from '../types';
 import { parseValue } from '../field-parser';
-import { CloudFormationResource, CloudFormationResourceProperty, ProcessedLambdaFunction } from '../stack/types';
+import {
+  CloudFormationResource,
+  CloudFormationResourceProperty,
+  ProcessedLambdaEventSource,
+  ProcessedLambdaFunction,
+} from '../stack/types';
 
 /**
  * Handles the parsing of a lambda CFN resource into relevant bits of information
@@ -30,5 +35,24 @@ export const lambdaFunctionHandler = (
     name,
     handler,
     environment,
+  };
+};
+
+export const lambdaEventSourceHandler = (
+  resourceName: string,
+  resource: CloudFormationResource,
+  cfnContext: CloudFormationParseContext,
+): ProcessedLambdaEventSource => {
+  const batchSize: number = parseValue(resource.Properties.BatchSize, cfnContext);
+  const eventSourceArn: string = parseValue(resource.Properties.EventSourceArn, cfnContext);
+  const functionName: string = parseValue(resource.Properties.FunctionName, cfnContext);
+  const startingPosition: string = parseValue(resource.Properties.StartingPosition, cfnContext);
+
+  return {
+    cfnExposedAttributes: {},
+    batchSize,
+    eventSourceArn,
+    functionName,
+    startingPosition,
   };
 };

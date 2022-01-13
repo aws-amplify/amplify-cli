@@ -31,6 +31,7 @@ export async function runTest(projectDir: string, testModule: any) {
       ttlaAuthInMillisecond: '3600000',
     },
     IAM: {},
+    transformerVersion: 1,
   });
 
   updateSchemaInTestProject(projectDir, testModule.schema);
@@ -54,8 +55,8 @@ export async function runTest(projectDir: string, testModule: any) {
 //schema
 export const schema = `
 # private authorization with provider override
-#error: InvalidDirectiveError: @auth directive with 'private' strategy only supports 'userPools' (default) and 'iam' providers, 
-#but found 'oidc' assigned. 
+#error: InvalidDirectiveError: @auth directive with 'private' strategy only supports 'userPools' (default) and 'iam' providers,
+#but found 'oidc' assigned.
 #change: changed type Post's @auth provider from oidc to iam
 type Post @model @auth(rules: [{allow: private, provider: iam}]) {
   id: ID!
@@ -72,7 +73,7 @@ type Profile @model @auth(rules: [{allow: owner, provider: oidc, identityClaim: 
 
 const createPostMutation = `
 mutation CreatePost {
-  createPost(input:{  
+  createPost(input:{
     id: "1",
     title: "title1"
   }) {

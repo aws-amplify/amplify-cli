@@ -12,7 +12,9 @@ export * from './init/';
 export * from './utils/';
 export * from './categories';
 export * from './utils/sdk-calls';
+export * from './export/';
 export { addFeatureFlag } from './utils/feature-flags';
+export * from './cli-version-controller';
 
 declare global {
   namespace NodeJS {
@@ -56,6 +58,14 @@ export function getNpxPath() {
     npxPath = getScriptRunnerPath().replace('node.exe', 'npx.cmd');
   }
   return npxPath;
+}
+
+export function getNpmPath() {
+  let npmPath = 'npm';
+  if (process.platform === 'win32') {
+    npmPath = getScriptRunnerPath().replace('node.exe', 'npm.cmd');
+  }
+  return npmPath;
 }
 
 export function isCI(): boolean {

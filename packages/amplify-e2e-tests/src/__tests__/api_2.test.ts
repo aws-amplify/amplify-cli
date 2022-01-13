@@ -1,14 +1,13 @@
+import { JSONUtilities } from 'amplify-cli-core';
 import {
+  addApi,
   addApiWithBlankSchemaAndConflictDetection,
   addApiWithoutSchema,
-  addFunction,
-  addRestApi,
-  addSimpleDDB,
   amplifyPush,
   amplifyPushUpdate,
   apiDisableDataStore,
   apiEnableDataStore,
-  checkIfBucketExists,
+  apiGqlCompile,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -18,14 +17,12 @@ import {
   getProjectMeta,
   getTransformConfig,
   initJSProjectWithProfile,
-  listAttachedRolePolicies,
-  listRolePolicies,
   updateApiSchema,
   updateAPIWithResolutionStrategyWithModels,
-  updateAuthAddAdminQueries,
+  setCustomRolesConfig,
 } from 'amplify-e2e-core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { existsSync, readdirSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import gql from 'graphql-tag';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import _ from 'lodash';
@@ -54,7 +51,7 @@ describe('amplify add api (GraphQL)', () => {
   it('init a project with conflict detection enabled and a schema with @key, test update mutation', async () => {
     const name = `keyconflictdetection`;
     await initJSProjectWithProfile(projRoot, { name });
-    await addApiWithBlankSchemaAndConflictDetection(projRoot);
+    await addApiWithBlankSchemaAndConflictDetection(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, name, 'key-conflict-detection.graphql');
     await amplifyPush(projRoot);
 
@@ -139,7 +136,7 @@ describe('amplify add api (GraphQL)', () => {
   it('init a project with conflict detection enabled and toggle disable', async () => {
     const name = `conflictdetection`;
     await initJSProjectWithProfile(projRoot, { name });
-    await addApiWithBlankSchemaAndConflictDetection(projRoot);
+    await addApiWithBlankSchemaAndConflictDetection(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, name, 'simple_model.graphql');
 
     await amplifyPush(projRoot);
@@ -189,7 +186,7 @@ describe('amplify add api (GraphQL)', () => {
     // setupAdminUI
     await enableAdminUI(appId, envName, region);
 
-    await addApiWithBlankSchemaAndConflictDetection(projRoot);
+    await addApiWithBlankSchemaAndConflictDetection(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, name, 'simple_model.graphql');
     await amplifyPush(projRoot);
 
@@ -211,7 +208,7 @@ describe('amplify add api (GraphQL)', () => {
   it('init a sync enabled project and update conflict resolution strategy', async () => {
     const name = `syncenabled`;
     await initJSProjectWithProfile(projRoot, { name });
-    await addApiWithBlankSchemaAndConflictDetection(projRoot);
+    await addApiWithBlankSchemaAndConflictDetection(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, name, 'simple_model.graphql');
 
     let transformConfig = getTransformConfig(projRoot, name);
@@ -249,7 +246,7 @@ describe('amplify add api (GraphQL)', () => {
   it('init a datastore enabled project and then remove datastore config in update', async () => {
     const name = 'withoutdatastore';
     await initJSProjectWithProfile(projRoot, { name });
-    await addApiWithoutSchema(projRoot);
+    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, name, 'simple_model.graphql');
     await amplifyPush(projRoot);
 
@@ -278,6 +275,35 @@ describe('amplify add api (GraphQL)', () => {
     expect(transformConfigWithDS.ResolverConfig.project).toBeDefined();
     expect(transformConfigWithDS.ResolverConfig.project.ConflictHandler).toEqual('AUTOMERGE');
     expect(transformConfigWithDS.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
+  });
+
+  it('init a project and add custom iam roles - local test with gql v2', async () => {
+    const name = 'customadminroles';
+    await initJSProjectWithProfile(projRoot, { name });
+    await addApi(projRoot, { transformerVersion: 2, IAM: {}, 'Amazon Cognito User Pool': {} });
+    updateApiSchema(projRoot, name, 'cognito_simple_model.graphql');
+    await apiGqlCompile(projRoot);
+    const createResolver = path.join(
+      projRoot,
+      'amplify',
+      'backend',
+      'api',
+      name,
+      'build',
+      'resolvers',
+      'Mutation.createTodo.auth.1.req.vtl',
+    );
+    const beforeAdminConfig = readFileSync(createResolver).toString();
+    expect(beforeAdminConfig).toMatchSnapshot();
+
+    const customRolesConfig = {
+      adminRoleNames: ['myAdminRoleName'],
+    };
+    setCustomRolesConfig(projRoot, name, customRolesConfig);
+    await apiGqlCompile(projRoot);
+    const afterAdminConfig = readFileSync(createResolver).toString();
+    expect(afterAdminConfig).toMatchSnapshot();
+    expect(beforeAdminConfig).not.toEqual(afterAdminConfig);
   });
 
   // TODO: Disabling for now until further conversation.

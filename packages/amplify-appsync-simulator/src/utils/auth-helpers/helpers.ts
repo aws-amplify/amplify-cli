@@ -18,8 +18,19 @@ export type JWTToken = {
   nbf?: number;
   username?: string;
   email?: string;
+  groups?: string[];
   'cognito:username'?: string;
-  'cognitio:groups'?: string[];
+  'cognito:groups'?: string[];
+};
+
+export type IAMToken = {
+  accountId: string;
+  userArn: string;
+  username: string;
+  cognitoIdentityPoolId?: string;
+  cognitoIdentityId?: string;
+  cognitoIdentityAuthType?: 'authenticated' | 'unauthenticated';
+  cognitoIdentityAuthProvider?: string;
 };
 
 export function extractJwtToken(authorization: string): JWTToken {
@@ -27,6 +38,26 @@ export function extractJwtToken(authorization: string): JWTToken {
     return jwtDecode(authorization);
   } catch (_) {
     return undefined;
+  }
+}
+
+export function extractIamToken(authorization: string, appSyncConfig: AmplifyAppSyncAPIConfig): IAMToken {
+  const accessKeyId = authorization.includes('Credential=') ? authorization.split('Credential=')[1]?.split('/')[0] : undefined;
+  if (!accessKeyId) {
+    throw new Error('missing accessKeyId');
+  }
+  if (accessKeyId === appSyncConfig.authAccessKeyId) {
+    return {
+      accountId: appSyncConfig.accountId,
+      userArn: `arn:aws:sts::${appSyncConfig.accountId}:${appSyncConfig.authRoleName}`,
+      username: 'auth-user',
+    };
+  } else {
+    return {
+      accountId: appSyncConfig.accountId,
+      userArn: `arn:aws:sts::${appSyncConfig.accountId}:${appSyncConfig.unAuthRoleName}`,
+      username: 'unauth-user',
+    };
   }
 }
 

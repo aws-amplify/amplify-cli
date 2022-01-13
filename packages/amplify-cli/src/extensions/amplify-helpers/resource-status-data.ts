@@ -1,13 +1,14 @@
-import _ from 'lodash';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import { ServiceName as FunctionServiceName, hashLayerResource } from 'amplify-category-function';
-import { removeGetUserEndpoints } from '../amplify-helpers/remove-pinpoint-policy';
-import { pathManager, stateManager, NotInitializedError, ViewResourceTableParams } from 'amplify-cli-core';
+import { hashLayerResource, ServiceName as FunctionServiceName } from 'amplify-category-function';
+import { NotInitializedError, pathManager, stateManager, ViewResourceTableParams } from 'amplify-cli-core';
 import { hashElement, HashElementOptions } from 'folder-hash';
+import * as fs from 'fs-extra';
+import _ from 'lodash';
+import * as path from 'path';
+import { removeGetUserEndpoints } from '../amplify-helpers/remove-pinpoint-policy';
 import { CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus } from './get-cloud-init-status';
 import * as resourceStatus from './resource-status-diff';
-import { IResourceDiffCollection, capitalize } from './resource-status-diff';
+import { capitalize, IResourceDiffCollection } from './resource-status-diff';
+import { getHashForRootStack, isRootStackModifiedSinceLastPush } from './root-stack-status';
 
 //API: Filter resource status for the given categories
 export async function getMultiCategoryStatus(inputs: ViewResourceTableParams | undefined) {
@@ -131,11 +132,15 @@ export async function getResourceStatus(
   // if not equal there is a tag update
   const tagsUpdated = !_.isEqual(stateManager.getProjectTags(), stateManager.getCurrentProjectTags());
 
+  // if not equal there is a root stack update
+  const rootStackUpdated = await isRootStackModifiedSinceLastPush(getHashForRootStack);
+
   return {
     resourcesToBeCreated,
     resourcesToBeUpdated,
     resourcesToBeSynced,
     resourcesToBeDeleted,
+    rootStackUpdated,
     tagsUpdated,
     allResources,
   };
@@ -212,7 +217,8 @@ export function getResourcesToBeCreated(amplifyMeta, currentAmplifyMeta, categor
           (!amplifyMeta[dependsOnCategory][dependsOnResourcename]?.lastPushTimeStamp ||
             !currentAmplifyMeta[dependsOnCategory] ||
             !currentAmplifyMeta[dependsOnCategory][dependsOnResourcename]) &&
-          amplifyMeta[dependsOnCategory][dependsOnResourcename].serviceType !== 'imported' &&
+          amplifyMeta[dependsOnCategory][dependsOnResourcename] &&
+          amplifyMeta[dependsOnCategory][dependsOnResourcename]?.serviceType !== 'imported' &&
           !resources.includes(amplifyMeta[dependsOnCategory][dependsOnResourcename])
         ) {
           resources.push(amplifyMeta[dependsOnCategory][dependsOnResourcename]);

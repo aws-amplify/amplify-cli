@@ -1,10 +1,11 @@
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
-import { IndexTransformer } from '@aws-amplify/graphql-index-transformer';
+import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
-import { DocumentNode, ObjectTypeDefinitionNode, Kind, FieldDefinitionNode, parse, InputValueDefinitionNode } from 'graphql';
-import { HasManyTransformer, BelongsToTransformer } from '..';
+import { DocumentNode, ObjectTypeDefinitionNode, Kind, parse } from 'graphql';
+import { HasManyTransformer, BelongsToTransformer, HasOneTransformer } from '..';
+import { ResourceConstants } from 'graphql-transformer-common';
 
 const iamDefaultConfig: AppSyncAuthConfiguration = {
   defaultAuthentication: {
@@ -45,7 +46,7 @@ test('per-field auth on relational field', () => {
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
 
-  expect(out.pipelineFunctions['Post.comments.auth.1.req.vtl']).toContain(
+  expect(out.resolvers['Post.comments.auth.1.req.vtl']).toContain(
     '#set( $staticGroupRoles = [{"claim":"cognito:groups","entity":"admin"}] )',
   );
 });
@@ -180,3 +181,235 @@ const expectTwo = (fieldOrType: any, directiveNames: string[]) => {
   expect(fieldOrType.directives.find((d: any) => d.name.value === directiveNames[0])).toBeDefined();
   expect(fieldOrType.directives.find((d: any) => d.name.value === directiveNames[1])).toBeDefined();
 };
+
+test('auth with hasMany relation - only partition key', () => {
+  const validSchema = `
+      type Post
+        @model
+        @auth(rules: [
+                {allow: owner},
+                {allow: groups, groups: ["Moderator"]}
+            ]) {
+        id: ID!
+        title: String
+        description: String
+        comments: [Comment] @hasMany
+      }
+      
+      type Comment
+        @model
+        @auth(rules: [
+          {allow: owner},
+          {allow: groups, groups: ["Moderator"]}
+      ]) {
+        id: ID!
+        text: String
+        post: Post @belongsTo
+      }`;
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    },
+    additionalAuthenticationProviders: [],
+  };
+  const transformer = new GraphQLTransform({
+    authConfig,
+    transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer(), new AuthTransformer()],
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  
+  const schemaDoc = parse(out.schema);
+  const modelPostConnectionType = getObjectType(schemaDoc, 'ModelPostConnection');
+  expect(modelPostConnectionType).toBeDefined();
+});
+
+test('auth with hasOne relation mismatch fields count - missing sort key must throw an error', () => {
+  const validSchema = `
+      type Student
+        @model
+        @auth(rules: [
+            {allow: owner}
+        ]) {
+        id: ID!
+        firstName: String
+        lastName: String
+        courseId: ID!
+        scores: StudentScore @hasOne(fields: ["id"])
+      }
+      
+      type StudentScore
+        @model
+        @auth(rules: [
+          {allow: owner}
+        ]) {
+        studentId: ID! @primaryKey(sortKeyFields: ["courseId"])
+        courseId: ID!
+        score: Int
+        student: Student @belongsTo
+      }`;
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    },
+    additionalAuthenticationProviders: [],
+  };
+  const transformer = new GraphQLTransform({
+    authConfig,
+    transformers: [
+      new ModelTransformer(),
+      new PrimaryKeyTransformer(),
+      new HasOneTransformer(),
+      new HasManyTransformer(),
+      new BelongsToTransformer(),
+      new AuthTransformer(),
+    ],
+  });
+  let out;
+  expect(() => {
+    out = transformer.transform(validSchema);
+  }).toThrowError('Invalid @hasOne on Student:scores. Provided fields do not match the size of primary key(s) for StudentScore');
+});
+
+test('auth with hasOne relation match fields count - single sort key do not throw error', () => {
+  const validSchema = `
+    type Student
+      @model
+      @auth(rules: [
+          {allow: owner}
+      ]) {
+      id: ID!
+      firstName: String
+      lastName: String
+      courseId: ID!
+      scores: [StudentScore] @hasMany(fields: ["id", "courseId"])
+    }
+    
+    type StudentScore
+      @model
+      @auth(rules: [
+        {allow: owner}
+      ]) {
+      studentId: ID! @primaryKey(sortKeyFields: ["courseId"])
+      courseId: ID!
+      score: Int
+      student: Student @belongsTo
+    }`;
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    },
+    additionalAuthenticationProviders: [],
+  };
+  const transformer = new GraphQLTransform({
+    authConfig,
+    transformers: [
+      new ModelTransformer(),
+      new PrimaryKeyTransformer(),
+      new HasOneTransformer(),
+      new HasManyTransformer(),
+      new BelongsToTransformer(),
+      new AuthTransformer(),
+    ],
+  });
+
+  // Graphql transform should not throw an error
+  const out = transformer.transform(validSchema);
+});
+
+test('auth with hasOne relation mismatch fields count - partial missing sort key must throw an error', () => {
+  const validSchema = `
+    type Student
+      @model
+      @auth(rules: [
+          {allow: owner}
+      ]) {
+      id: ID!
+      firstName: String
+      lastName: String
+      courseId: ID!
+      localId: ID!
+      scores: StudentScore @hasOne(fields: ["id", "courseId"])
+    }
+    
+    type StudentScore
+      @model
+      @auth(rules: [
+        {allow: owner}
+      ]) {
+      studentId: ID! @primaryKey(sortKeyFields: ["courseId", "localId"])
+      courseId: ID!
+      localId: ID!
+      score: Int
+      student: Student @belongsTo
+    }`;
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    },
+    additionalAuthenticationProviders: [],
+  };
+  const transformer = new GraphQLTransform({
+    authConfig,
+    transformers: [
+      new ModelTransformer(),
+      new PrimaryKeyTransformer(),
+      new HasOneTransformer(),
+      new HasManyTransformer(),
+      new BelongsToTransformer(),
+      new AuthTransformer(),
+    ],
+  });
+  let out;
+  expect(() => {
+    out = transformer.transform(validSchema);
+  }).toThrowError('Invalid @hasOne directive on scores. Partial sort keys are not accepted.');
+});
+
+test('auth with hasOne relation match fields count - multiple sort keys do not throw error', () => {
+  const validSchema = `
+    type Student
+      @model
+      @auth(rules: [
+          {allow: owner}
+      ]) {
+      id: ID!
+      firstName: String
+      lastName: String
+      courseId: ID!
+      localId: ID!
+      scores: StudentScore @hasOne(fields: ["id", "courseId", "localId"])
+    }
+    
+    type StudentScore
+      @model
+      @auth(rules: [
+        {allow: owner}
+      ]) {
+      studentId: ID! @primaryKey(sortKeyFields: ["courseId", "localId"])
+      courseId: ID!
+      localId: ID!
+      score: Int
+      student: Student @belongsTo
+    }`;
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    },
+    additionalAuthenticationProviders: [],
+  };
+  const transformer = new GraphQLTransform({
+    authConfig,
+    transformers: [
+      new ModelTransformer(),
+      new PrimaryKeyTransformer(),
+      new HasOneTransformer(),
+      new HasManyTransformer(),
+      new BelongsToTransformer(),
+      new AuthTransformer(),
+    ],
+  });
+
+  // Graphql transform should not throw an error
+  const out = transformer.transform(validSchema);
+});

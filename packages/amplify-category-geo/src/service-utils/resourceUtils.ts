@@ -4,7 +4,7 @@ import path from 'path';
 import _ from 'lodash';
 import { BaseStack } from '../service-stacks/baseStack';
 import { parametersFileName, ServiceName, provider } from './constants';
-import { PricingPlan, ResourceParameters, AccessType } from './resourceParams';
+import { ResourceParameters, AccessType } from './resourceParams';
 import os from 'os';
 import { getMapIamPolicies } from './mapUtils';
 import { getPlaceIndexIamPolicies } from './placeIndexUtils';
@@ -105,47 +105,6 @@ export const geoServiceExists = async (service: ServiceName): Promise<boolean> =
 }
 
 /**
- * Get the pricing plan for Geo resources
- */
-export const getGeoPricingPlan = async (): Promise<PricingPlan> => {
-  // search Map resources
-  const mapServiceMeta = await getGeoServiceMeta(ServiceName.Map);
-  const placeIndexServiceMeta = await getGeoServiceMeta(ServiceName.PlaceIndex);
-  if (mapServiceMeta && Object.keys(mapServiceMeta).length > 0) {
-    return mapServiceMeta[Object.keys(mapServiceMeta)[0]].pricingPlan;
-  }
-  else if (placeIndexServiceMeta && Object.keys(placeIndexServiceMeta).length > 0) {
-    return placeIndexServiceMeta[Object.keys(placeIndexServiceMeta)[0]].pricingPlan;
-  }
-  return PricingPlan.RequestBasedUsage; // default
-}
-
-/**
- * Update Geo pricing plan
- */
-export const updateGeoPricingPlan = async (context: $TSContext, pricingPlan: PricingPlan) => {
-  const geoMeta = stateManager.getMeta()?.[category];
-  if (geoMeta !== undefined) {
-    Object.keys(geoMeta).forEach(resource => {
-      // update pricing plan in meta for all Geo resources
-      context.amplify.updateamplifyMetaAfterResourceUpdate(
-        category,
-        resource,
-        'pricingPlan',
-        pricingPlan
-      );
-
-      // update CFN parameters for all Geo resources
-      updateParametersFile(
-        { pricingPlan: pricingPlan },
-        resource,
-        parametersFileName
-      );
-    });
-  }
-}
-
-/**
  * Check and ensure if unauth access needs to be enabled for identity pool
  */
 export const checkAuthConfig = async (context: $TSContext, parameters: Pick<ResourceParameters, 'name' | 'accessType'>, service: ServiceName) => {
@@ -159,6 +118,11 @@ export const checkAuthConfig = async (context: $TSContext, parameters: Pick<Reso
       parameters.name,
     ]);
 
+    // If auth is not added, throw error
+    if (!checkResult.authEnabled) {
+      throw new Error(`Adding ${service} to your project requires the Auth category for managing authentication rules. Please add auth using "amplify add auth"`);
+    }
+
     // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
     // configuration.
     if (checkResult.authImported === true && checkResult.errors && checkResult.errors.length > 0) {
@@ -170,9 +134,7 @@ export const checkAuthConfig = async (context: $TSContext, parameters: Pick<Reso
     }
 
     // If auth is not imported and there were errors, adjust or enable auth configuration
-    if (!checkResult.authEnabled || !checkResult.requirementsMet) {
-      printer.warn(`Adding ${service} to your project requires the Auth category for managing authentication rules.`);
-
+    if (!checkResult.requirementsMet) {
       try {
         await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
           context,

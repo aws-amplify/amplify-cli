@@ -134,7 +134,7 @@ Object {
     },
   },
   "Resources": Object {
-    "LambdaDataSource4DD51D23": Object {
+    "LambdaDataSource": Object {
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
@@ -142,7 +142,7 @@ Object {
         "LambdaConfig": Object {
           "LambdaFunctionArn": Object {
             "Fn::GetAtt": Array [
-              "predictionsLambdahandlerC696C27E",
+              "predictionsLambda8B880A74",
               "Arn",
             ],
           },
@@ -184,7 +184,7 @@ Object {
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::GetAtt": Array [
-                  "predictionsLambdahandlerC696C27E",
+                  "predictionsLambda8B880A74",
                   "Arn",
                 ],
               },
@@ -210,7 +210,7 @@ Object {
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::GetAtt": Array [
-                  "predictionsLambdahandlerC696C27E",
+                  "predictionsLambda8B880A74",
                   "Arn",
                 ],
               },
@@ -927,7 +927,7 @@ Object {
       },
       "Type": "AWS::AppSync::Resolver",
     },
-    "RekognitionDataSourceC6790FED": Object {
+    "RekognitionDataSource": Object {
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
@@ -974,7 +974,7 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "TranslateDataSource2C33F90C": Object {
+    "TranslateDataSource": Object {
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
@@ -1023,7 +1023,7 @@ Object {
     },
     "convertTextToSpeechFunctionconvertTextToSpeechFunctionAppSyncFunction15BC20B8": Object {
       "DependsOn": Array [
-        "LambdaDataSource4DD51D23",
+        "LambdaDataSource",
       ],
       "Properties": Object {
         "ApiId": Object {
@@ -1031,7 +1031,7 @@ Object {
         },
         "DataSourceName": Object {
           "Fn::GetAtt": Array [
-            "LambdaDataSource4DD51D23",
+            "LambdaDataSource",
             "Name",
           ],
         },
@@ -1081,7 +1081,7 @@ $util.toJson($ctx.result.url)",
     },
     "identifyLabelsFunctionidentifyLabelsFunctionAppSyncFunction7C2A1E61": Object {
       "DependsOn": Array [
-        "RekognitionDataSourceC6790FED",
+        "RekognitionDataSource",
       ],
       "Properties": Object {
         "ApiId": Object {
@@ -1089,7 +1089,7 @@ $util.toJson($ctx.result.url)",
         },
         "DataSourceName": Object {
           "Fn::GetAtt": Array [
-            "RekognitionDataSourceC6790FED",
+            "RekognitionDataSource",
             "Name",
           ],
         },
@@ -1159,7 +1159,7 @@ $util.error($ctx.result.body)
     },
     "identifyTextFunctionidentifyTextFunctionAppSyncFunction7877885A": Object {
       "DependsOn": Array [
-        "RekognitionDataSourceC6790FED",
+        "RekognitionDataSource",
       ],
       "Properties": Object {
         "ApiId": Object {
@@ -1167,7 +1167,7 @@ $util.error($ctx.result.body)
         },
         "DataSourceName": Object {
           "Fn::GetAtt": Array [
-            "RekognitionDataSourceC6790FED",
+            "RekognitionDataSource",
             "Name",
           ],
         },
@@ -1260,6 +1260,40 @@ $utils.error($ctx.result.body)
       },
       "Type": "AWS::IAM::Role",
     },
+    "predictionsLambda8B880A74": Object {
+      "DependsOn": Array [
+        "predictionsLambdaIAMRoleB8AC96D3",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+          },
+          "S3Key": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                Object {
+                  "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+                },
+                "/functions/predictionsLambdaFunction.zip",
+              ],
+            ],
+          },
+        },
+        "FunctionName": "predictionsLambda",
+        "Handler": "predictionsLambda.handler",
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "predictionsLambdaIAMRoleB8AC96D3",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs12.x",
+        "Timeout": 60,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
     "predictionsLambdaIAMRoleB8AC96D3": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
@@ -1322,39 +1356,6 @@ $utils.error($ctx.result.body)
       },
       "Type": "AWS::IAM::Role",
     },
-    "predictionsLambdahandlerC696C27E": Object {
-      "DependsOn": Array [
-        "predictionsLambdaIAMRoleB8AC96D3",
-      ],
-      "Properties": Object {
-        "Code": Object {
-          "S3Bucket": Object {
-            "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-          },
-          "S3Key": Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                Object {
-                  "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-                },
-                "/functions/predictionsLambdaFunction.zip",
-              ],
-            ],
-          },
-        },
-        "Handler": "predictionsLambda.handler",
-        "Role": Object {
-          "Fn::GetAtt": Array [
-            "predictionsLambdaIAMRoleB8AC96D3",
-            "Arn",
-          ],
-        },
-        "Runtime": "nodejs12.x",
-        "Timeout": 60,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
     "translateTextAccess74D3AE90": Object {
       "Properties": Object {
         "PolicyDocument": Object {
@@ -1378,7 +1379,7 @@ $utils.error($ctx.result.body)
     },
     "translateTextFunctiontranslateTextFunctionAppSyncFunction77C9D7A9": Object {
       "DependsOn": Array [
-        "TranslateDataSource2C33F90C",
+        "TranslateDataSource",
       ],
       "Properties": Object {
         "ApiId": Object {
@@ -1386,7 +1387,7 @@ $utils.error($ctx.result.body)
         },
         "DataSourceName": Object {
           "Fn::GetAtt": Array [
-            "TranslateDataSource2C33F90C",
+            "TranslateDataSource",
             "Name",
           ],
         },

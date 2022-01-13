@@ -1,16 +1,9 @@
-import * as fs from 'fs-extra';
-import * as path from 'path';
-
-import { $TSObject, JSONUtilities } from 'amplify-cli-core';
 import {
-  AddAuthUserPoolOnlyWithOAuthSettings,
-  addApiWithCognitoUserPoolAuthTypeWhenAuthExists,
   addAuthUserPoolOnlyWithOAuth,
+  AddAuthUserPoolOnlyWithOAuthSettings,
   addFunction,
   amplifyPull,
-  amplifyPush,
   amplifyPushAuth,
-  amplifyStatus,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -19,34 +12,24 @@ import {
   getTeamProviderInfo,
   initJSProjectWithProfile,
   initProjectWithAccessKey,
-  addApi,
-  updateApiSchema,
 } from 'amplify-e2e-core';
+import { addEnvironmentWithImportedAuth, checkoutEnvironment, removeEnvironment } from '../environment/env';
 import {
+  addAppClientWithoutSecret,
+  addAppClientWithSecret,
   AppClientSettings,
   AuthProjectDetails,
-  addAppClientWithSecret,
-  addAppClientWithoutSecret,
-  addS3WithAuthConfigurationMismatchErrorExit,
   createUserPoolOnlyWithOAuthSettings,
   deleteAppClient,
-  expectApiHasCorrectAuthConfig,
   expectAuthLocalAndOGMetaFilesOutputMatching,
   expectAuthProjectDetailsMatch,
   expectLocalAndCloudMetaFilesMatching,
   expectLocalAndPulledBackendConfigMatching,
-  expectLocalTeamInfoHasNoCategories,
-  expectNoAuthInMeta,
   getAuthProjectDetails,
   getOGAuthProjectDetails,
   getShortId,
-  importIdentityPoolAndUserPool,
   importUserPoolOnly,
-  readRootStack,
-  removeImportedAuthWithDefault,
 } from '../import-helpers';
-import { addEnvironmentWithImportedAuth, checkoutEnvironment, removeEnvironment } from '../environment/env';
-
 import { getCognitoResourceName } from '../schema-api-directives/authHelper';
 import { randomizedFunctionName } from '../schema-api-directives/functionTester';
 

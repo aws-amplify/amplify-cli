@@ -1,4 +1,4 @@
-import { externalAuthEnable } from 'amplify-category-auth';
+import { externalAuthEnable } from '@aws-amplify/amplify-category-auth';
 import { $TSAny, PathConstants, pathManager, stateManager } from 'amplify-cli-core';
 import chalk from 'chalk';
 import _ from 'lodash';
@@ -9,7 +9,7 @@ import { moveSecretsFromTeamProviderToDeployment } from './move-secrets-to-deplo
 const message = `Amplify has been upgraded to handle secrets more securely by migrating some values in ${chalk.red(
   PathConstants.TeamProviderInfoFileName,
 )} to ${chalk.green(PathConstants.DeploymentSecretsFileName)}
-You can create a back up of the ${chalk.red(PathConstants.TeamProviderInfoFileName)} file before proceeding.`;
+You can create a backup of the ${chalk.red(PathConstants.TeamProviderInfoFileName)} file before proceeding.`;
 const hostedUIProviderCredsField = 'hostedUIProviderCreds';
 
 // return true if the current state of the app does not contain secrets in the team provider info

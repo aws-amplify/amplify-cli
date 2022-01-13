@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-function-plugin-interface@1.9.2...amplify-function-plugin-interface@1.9.4) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+**Note:** Version bump only for package amplify-function-plugin-interface
+
+
+
+
+
+## [1.9.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-function-plugin-interface@1.9.1...amplify-function-plugin-interface@1.9.2) (2021-11-17)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([f529b54](https://github.com/aws-amplify/amplify-cli/commit/f529b541e2607eb4d2dd9e27810621fca141d6e2))
+
+
+
+# 6.4.0 (2021-11-10)
+
+
+### Reverts
+
+* Revert "Lambda auth minor fixes (#8741)" (#8762) ([aa1096c](https://github.com/aws-amplify/amplify-cli/commit/aa1096ca504bdb7e6a2dca2963c546f957116f9d)), closes [#8741](https://github.com/aws-amplify/amplify-cli/issues/8741) [#8762](https://github.com/aws-amplify/amplify-cli/issues/8762)
+
+
+
+
+
 ## [1.9.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-function-plugin-interface@1.9.0...amplify-function-plugin-interface@1.9.1) (2021-07-30)
 
 

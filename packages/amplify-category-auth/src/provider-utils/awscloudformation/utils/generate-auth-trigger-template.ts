@@ -1,13 +1,14 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { $TSContext, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { JSONUtilities, pathManager } from 'amplify-cli-core';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
-import { AuthTriggerConnection, ServiceQuestionsResult } from '../service-walkthrough-types';
+import { AuthTriggerConnection, CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
 import { CustomResource } from '@aws-cdk/core';
 import { authTriggerAssetFilePath } from '../constants';
+import { v4 as uuid } from 'uuid';
 
 type CustomResourceAuthStackProps = Readonly<{
   description: string;
@@ -48,7 +49,7 @@ export class CustomResourceAuthStack extends cdk.Stack {
       config.lambdaFunctionArn = fnArn.valueAsString;
     });
 
-    createCustomResource(this, props.authTriggerConnections, userpoolId, userpoolArn);
+    createCustomResource(this, props.authTriggerConnections, userpoolId);
   }
 
   toCloudFormation() {
@@ -57,13 +58,13 @@ export class CustomResourceAuthStack extends cdk.Stack {
   }
 }
 
-export async function generateNestedAuthTriggerTemplate(context: $TSContext, category: string, request: ServiceQuestionsResult) {
+export async function generateNestedAuthTriggerTemplate(category: string, resourceName: string, request: CognitoStackOptions) {
   const cfnFileName = 'auth-trigger-cloudformation-template.json';
-  const targetDir = path.join(pathManager.getBackendDirPath(), category, request.resourceName!);
+  const targetDir = path.join(pathManager.getBackendDirPath(), category, resourceName, 'build');
   const authTriggerCfnFilePath = path.join(targetDir, cfnFileName);
   const { authTriggerConnections } = request;
   if (authTriggerConnections) {
-    const cfnObject = await createCustomResourceforAuthTrigger(context, JSON.parse(authTriggerConnections));
+    const cfnObject = await createCustomResourceforAuthTrigger(authTriggerConnections);
     JSONUtilities.writeJson(authTriggerCfnFilePath, cfnObject);
   } else {
     // delete the custom stack template if the triggers arent defined
@@ -75,7 +76,7 @@ export async function generateNestedAuthTriggerTemplate(context: $TSContext, cat
   }
 }
 
-async function createCustomResourceforAuthTrigger(context: any, authTriggerConnections: AuthTriggerConnection[]) {
+async function createCustomResourceforAuthTrigger(authTriggerConnections: AuthTriggerConnection[]) {
   const stack = new CustomResourceAuthStack(undefined as any, 'Amplify', {
     description: 'Custom Resource stack for Auth Trigger created using Amplify CLI',
     authTriggerConnections: authTriggerConnections,
@@ -84,12 +85,7 @@ async function createCustomResourceforAuthTrigger(context: any, authTriggerConne
   return cfn;
 }
 
-function createCustomResource(
-  stack: cdk.Stack,
-  authTriggerConnections: AuthTriggerConnection[],
-  userpoolId: cdk.CfnParameter,
-  userpoolArn: cdk.CfnParameter,
-) {
+function createCustomResource(stack: cdk.Stack, authTriggerConnections: AuthTriggerConnection[], userpoolId: cdk.CfnParameter) {
   const triggerCode = fs.readFileSync(authTriggerAssetFilePath, 'utf-8');
   const authTriggerFn = new lambda.Function(stack, 'authTriggerFn', {
     runtime: lambda.Runtime.NODEJS_12_X,
@@ -107,10 +103,12 @@ function createCustomResource(
       }),
     );
   }
+
   // The custom resource that uses the provider to supply value
+  // Passing in a nonce parameter to ensure that the custom resource is triggered on every deployment
   new CustomResource(stack, 'CustomAuthTriggerResource', {
     serviceToken: authTriggerFn.functionArn,
-    properties: { userpoolId: userpoolId.valueAsString, lambdaConfig: authTriggerConnections },
+    properties: { userpoolId: userpoolId.valueAsString, lambdaConfig: authTriggerConnections, nonce: uuid() },
     resourceType: 'Custom::CustomAuthTriggerResourceOutputs',
   });
 }

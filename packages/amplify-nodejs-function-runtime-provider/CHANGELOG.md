@@ -3,6 +3,117 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@2.2.10...amplify-nodejs-function-runtime-provider@2.2.12) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+**Note:** Version bump only for package amplify-nodejs-function-runtime-provider
+
+
+
+
+
+## [2.2.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@2.2.9...amplify-nodejs-function-runtime-provider@2.2.10) (2021-12-21)
+
+**Note:** Version bump only for package amplify-nodejs-function-runtime-provider
+
+
+
+
+
+## [2.2.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@2.2.8...amplify-nodejs-function-runtime-provider@2.2.9) (2021-12-17)
+
+**Note:** Version bump only for package amplify-nodejs-function-runtime-provider
+
+
+
+
+
+## [2.2.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@2.2.7...amplify-nodejs-function-runtime-provider@2.2.8) (2021-12-02)
+
+**Note:** Version bump only for package amplify-nodejs-function-runtime-provider
+
+
+
+
+
+## [2.2.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@2.2.6...amplify-nodejs-function-runtime-provider@2.2.7) (2021-12-01)
+
+**Note:** Version bump only for package amplify-nodejs-function-runtime-provider
+
+
+
+
+
+## [2.2.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@2.2.5...amplify-nodejs-function-runtime-provider@2.2.6) (2021-11-26)
+
+**Note:** Version bump only for package amplify-nodejs-function-runtime-provider
+
+
+
+
+
+## [2.2.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@2.2.4...amplify-nodejs-function-runtime-provider@2.2.5) (2021-11-23)
+
+**Note:** Version bump only for package amplify-nodejs-function-runtime-provider
+
+
+
+
+
+## [2.2.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@2.2.3...amplify-nodejs-function-runtime-provider@2.2.4) (2021-11-21)
+
+**Note:** Version bump only for package amplify-nodejs-function-runtime-provider
+
+
+
+
+
+## [2.2.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@2.2.2...amplify-nodejs-function-runtime-provider@2.2.3) (2021-11-20)
+
+**Note:** Version bump only for package amplify-nodejs-function-runtime-provider
+
+
+
+
+
+## [2.2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@2.2.1...amplify-nodejs-function-runtime-provider@2.2.2) (2021-11-17)
+
+**Note:** Version bump only for package amplify-nodejs-function-runtime-provider
+
+
+
+
+
+## [2.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.6.15...amplify-nodejs-function-runtime-provider@2.2.1) (2021-11-15)
+
+**Note:** Version bump only for package amplify-nodejs-function-runtime-provider
+
+
+
+
+
+# [2.0.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.6.15...amplify-nodejs-function-runtime-provider@2.0.0) (2021-11-13)
+
+**Note:** Version bump only for package amplify-nodejs-function-runtime-provider
+
+
+
+
+
+## [1.6.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.6.14...amplify-nodejs-function-runtime-provider@1.6.15) (2021-11-11)
+
+
+### Bug Fixes
+
+* **amplify-nodejs-function-runtime-provider:** catch yarn 2 error on lambda build ([#8263](https://github.com/aws-amplify/amplify-cli/issues/8263)) ([2c80057](https://github.com/aws-amplify/amplify-cli/commit/2c80057223963f238206bcdec421c9e118c10626))
+
+
+
+
+
 ## [1.6.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.6.13...amplify-nodejs-function-runtime-provider@1.6.14) (2021-10-10)
 
 **Note:** Version bump only for package amplify-nodejs-function-runtime-provider

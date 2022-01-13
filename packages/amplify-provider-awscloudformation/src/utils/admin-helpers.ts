@@ -19,7 +19,7 @@ export function doAdminTokensExist(appId: string): boolean {
 
 export async function isAmplifyAdminApp(appId: string): Promise<{ isAdminApp: boolean; region: string; userPoolID: string }> {
   if (!appId) {
-    throw `Failed to check if Admin UI is enabled: appId is undefined`;
+    throw `Failed to check if Amplify Studio is enabled: appId is undefined`;
   }
   let appState = await getAdminAppState(appId, 'us-east-1');
   if (appState.appId && appState.region && appState.region !== 'us-east-1') {

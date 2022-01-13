@@ -10,3 +10,4 @@ The following table lists the current set of commands supported by the Amplify S
 | amplify storage update | Takes you through steps in the CLI to update a storage resource.  |
 | amplify storage push | Provisions only storage cloud resources with the latest local developments.  |
 | amplify storage remove | Removes storage resource from your local backend. The resources are removed from the cloud on the next push command. |
+| amplify storage override | Generates 'overrides.ts' for storage resource in your local backend. The resource properties can be overridden by editing this file. The resource is overridden in the cloud on the next push command. |

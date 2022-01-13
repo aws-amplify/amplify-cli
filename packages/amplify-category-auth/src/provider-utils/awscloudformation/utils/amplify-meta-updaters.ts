@@ -1,6 +1,5 @@
 import * as path from 'path';
-import { JSONUtilities, pathManager } from 'amplify-cli-core';
-import { transformUserPoolGroupSchema } from './transform-user-pool-group';
+import { JSONUtilities, pathManager, $TSAny } from 'amplify-cli-core';
 import { hostedUIProviders } from '../assets/string-maps';
 import { AuthParameters } from '../import/types';
 
@@ -18,7 +17,7 @@ export const getPostAddAuthMetaUpdater =
       service: resultMetadata.service,
       providerPlugin: resultMetadata.providerName,
     };
-    const parametersJSONPath = path.join(context.amplify.pathManager.getBackendDirPath(), 'auth', resourceName, 'parameters.json');
+    const parametersJSONPath = path.join(context.amplify.pathManager.getBackendDirPath(), 'auth', resourceName, 'build', 'parameters.json');
     const authParameters = JSONUtilities.readJson<AuthParameters>(parametersJSONPath)!;
 
     if (authParameters.dependsOn) {
@@ -65,7 +64,7 @@ export const getPostAddAuthMetaUpdater =
  * @param context The amplify context
  */
 export const getPostUpdateAuthMetaUpdater = (context: any) => async (resourceName: string) => {
-  const resourceDirPath = path.join(pathManager.getBackendDirPath(), 'auth', resourceName, 'parameters.json');
+  const resourceDirPath = path.join(pathManager.getBackendDirPath(), 'auth', resourceName, 'build', 'parameters.json');
   const authParameters = JSONUtilities.readJson<AuthParameters>(resourceDirPath)!;
   if (authParameters.dependsOn) {
     context.amplify.updateamplifyMetaAfterResourceUpdate('auth', resourceName, 'dependsOn', authParameters.dependsOn);
@@ -73,7 +72,7 @@ export const getPostUpdateAuthMetaUpdater = (context: any) => async (resourceNam
 
   let customAuthConfigured = false;
   if (authParameters.triggers) {
-    const triggers = JSON.parse(authParameters.triggers);
+    const triggers = JSONUtilities.parse<$TSAny>(authParameters.triggers);
     customAuthConfigured =
       !!triggers.DefineAuthChallenge &&
       triggers.DefineAuthChallenge.length > 0 &&
@@ -101,7 +100,6 @@ export const getPostUpdateAuthMetaUpdater = (context: any) => async (resourceNam
     ];
 
     context.amplify.updateamplifyMetaAfterResourceUpdate('auth', 'userPoolGroups', 'dependsOn', userPoolGroupDependsOn);
-    await transformUserPoolGroupSchema(context);
   }
   return resourceName;
 };

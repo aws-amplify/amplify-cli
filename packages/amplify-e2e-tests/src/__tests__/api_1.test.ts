@@ -49,7 +49,7 @@ describe('amplify add api (GraphQL)', () => {
     const envName = 'devtest';
     const projName = 'simplemodel';
     await initJSProjectWithProfile(projRoot, { name: projName, envName });
-    await addApiWithoutSchema(projRoot);
+    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, projName, 'simple_model.graphql');
     await amplifyPush(projRoot);
 
@@ -81,7 +81,7 @@ describe('amplify add api (GraphQL)', () => {
     const envName = 'devtest';
     const projName = 'simplemodel';
     await initIosProjectWithProfile(projRoot, { name: projName, envName });
-    await addApiWithoutSchema(projRoot);
+    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, projName, 'simple_model.graphql');
     await amplifyPush(projRoot);
 
@@ -107,7 +107,7 @@ describe('amplify add api (GraphQL)', () => {
     const envName = 'devtest';
     const projName = 'simplemodel';
     await initFlutterProjectWithProfile(projRoot, { name: projName, envName });
-    await addApiWithoutSchema(projRoot);
+    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, projName, 'simple_model.graphql');
     await amplifyPushWithoutCodegen(projRoot);
 
@@ -141,7 +141,7 @@ describe('amplify add api (GraphQL)', () => {
     const initialSchema = 'initial_key_blog.graphql';
     const nextSchema = 'next_key_blog.graphql';
     await initJSProjectWithProfile(projRoot, { name: projectName });
-    await addApiWithoutSchema(projRoot);
+    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, projectName, initialSchema);
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema);
@@ -157,7 +157,7 @@ describe('amplify add api (GraphQL)', () => {
   it('init a project and add the simple_model api with multiple authorization providers', async () => {
     const appName = createRandomName();
     await initJSProjectWithProfile(projRoot, { name: appName });
-    await addApiWithoutSchema(projRoot);
+    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, appName, 'simple_model.graphql');
     await updateApiWithMultiAuth(projRoot, {});
     await amplifyPush(projRoot);
@@ -201,7 +201,7 @@ describe('amplify add api (GraphQL)', () => {
   it('init a project and add the simple_model api, match transformer version to current version', async () => {
     const name = `simplemodelv${TRANSFORM_CURRENT_VERSION}`;
     await initJSProjectWithProfile(projRoot, { name });
-    await addApiWithoutSchema(projRoot);
+    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, name, 'simple_model.graphql');
     await amplifyPush(projRoot);
 
@@ -230,7 +230,7 @@ describe('amplify add api (GraphQL)', () => {
     const initialSchema = 'two-model-schema.graphql';
     const fnName = `integtestfn${random}`;
     await initJSProjectWithProfile(projRoot, { name: projectName });
-    await addApiWithoutSchema(projRoot);
+    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, projectName, initialSchema);
     await addFunction(
       projRoot,
@@ -278,7 +278,7 @@ describe('amplify add api (GraphQL)', () => {
   it('api force push with no changes', async () => {
     const projectName = `apinochange`;
     await initJSProjectWithProfile(projRoot, { name: projectName });
-    await addApiWithoutSchema(projRoot);
+    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, projectName, 'two-model-schema.graphql');
     await amplifyPush(projRoot);
     let meta = getBackendAmplifyMeta(projRoot);

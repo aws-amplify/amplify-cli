@@ -20,7 +20,7 @@ let projRoot;
 beforeEach(async () => {
   projRoot = await createNewProjectDir(projName);
   await initJSProjectWithProfile(projRoot, { name: projName });
-  await addApiWithoutSchema(projRoot);
+  await addApiWithoutSchema(projRoot, { transformerVersion: 2 });
   await amplifyPush(projRoot);
 });
 afterEach(async () => {
@@ -28,7 +28,7 @@ afterEach(async () => {
   deleteProjectDir(projRoot);
 });
 
-describe('amplify reset api', () => {
+describe('amplify rebuild api', () => {
   it('recreates all model tables', async () => {
     const projMeta = getProjectMeta(projRoot);
     const apiId = projMeta?.api?.[projName]?.output?.GraphQLAPIIdOutput;

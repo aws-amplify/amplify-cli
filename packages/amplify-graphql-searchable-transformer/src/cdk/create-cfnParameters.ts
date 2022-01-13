@@ -72,7 +72,7 @@ export function createParametersStack(stack: Stack): Map<string, CfnParameter> {
       OpenSearchAccessIAMRoleName,
       new CfnParameter(stack, OpenSearchStreamingIAMRoleName, {
         description: 'The name of the streaming lambda function IAM role.',
-        default: 'SearchableLambdaIAMRole',
+        default: 'SearchLambdaIAMRole',
       }),
     ],
 

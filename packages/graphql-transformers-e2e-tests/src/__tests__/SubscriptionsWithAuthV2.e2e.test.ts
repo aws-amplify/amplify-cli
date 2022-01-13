@@ -160,7 +160,7 @@ beforeAll(async () => {
   # Instructors may create Student records.
   # Any authenticated user may view Student names & emails.
   # Only Owners can see the ssn
-  
+
   type Student @model
   @auth(rules: [
       {allow: owner}
@@ -171,7 +171,7 @@ beforeAll(async () => {
       email: AWSEmail,
       ssn: String @auth(rules: [{allow: owner}])
   }
-  
+
   type Member @model
   @auth(rules: [
     { allow: groups, groups: ["Admin"] }
@@ -182,7 +182,7 @@ beforeAll(async () => {
     createdAt: AWSDateTime
     updatedAt: AWSDateTime
   }
-  
+
   type Post @model
       @auth(rules: [
           { allow: owner, ownerField: "postOwner" }
@@ -193,7 +193,7 @@ beforeAll(async () => {
       title: String
       postOwner: String
   }
-  
+
   type Todo @model @auth(rules: [
       { allow: private, provider: iam }
       { allow: public }
@@ -350,6 +350,7 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const observer = API.graphql({
+    // @ts-ignore
     query: gql`
       subscription OnCreateStudent {
         onCreateStudent {
@@ -394,6 +395,7 @@ test('Test that an user not in the group is not allowed to view the subscription
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME3, REAL_PASSWORD);
   const observer = API.graphql({
+    // @ts-ignore
     query: gql`
       subscription OnCreateStudent {
         onCreateStudent {
@@ -437,6 +439,7 @@ test('Test a subscription on update', async () => {
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME2, REAL_PASSWORD);
   const observer = API.graphql({
+    // @ts-ignore
     query: gql`
       subscription OnUpdateStudent {
         onUpdateStudent {
@@ -490,6 +493,7 @@ test('Test a subscription on delete', async () => {
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME2, REAL_PASSWORD);
   const observer = API.graphql({
+    // @ts-ignore
     query: gql`
       subscription OnDeleteStudent {
         onDeleteStudent {
@@ -554,6 +558,7 @@ test('test that group is only allowed to listen to subscriptions and listen to o
 
   // though they should see when a new member is created
   const observer = API.graphql({
+    // @ts-ignore
     query: gql`
       subscription OnCreateMember {
         onCreateMember {
@@ -596,6 +601,7 @@ test('authorized group is allowed to listen to onUpdate', async () => {
   await Auth.signIn(USERNAME2, REAL_PASSWORD);
 
   const observer = API.graphql({
+    // @ts-ignore
     query: gql`
       subscription OnUpdateMember {
         onUpdateMember {
@@ -646,6 +652,7 @@ test('authorized group is allowed to listen to onDelete', async () => {
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME2, REAL_PASSWORD);
   const observer = API.graphql({
+    // @ts-ignore
     query: gql`
       subscription OnDeleteMember {
         onDeleteMember {
@@ -695,6 +702,7 @@ test('Test subscription onCreatePost with ownerField', async () => {
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const observer = API.graphql({
+    // @ts-ignore
     query: gql`
     subscription OnCreatePost {
         onCreatePost(postOwner: "${USERNAME1}") {
@@ -733,6 +741,7 @@ test('Test onCreatePost with optional argument', async () => {
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const failedObserver = API.graphql({
+    // @ts-ignore
     query: gql`
       subscription OnCreatePost {
         onCreatePost {
@@ -770,6 +779,7 @@ test('Test that IAM can listen and read to onCreatePost', async () => {
   reconfigureAmplifyAPI('AWS_IAM');
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const observer = API.graphql({
+    // @ts-ignore
     query: gql`
       subscription OnCreatePost {
         onCreatePost {
@@ -813,6 +823,7 @@ test('test that subcsription with apiKey', async () => {
   reconfigureAmplifyAPI('API_KEY', API_KEY);
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const observer = API.graphql({
+    // @ts-ignore
     query: gql`
       subscription OnCreateTodo {
         onCreateTodo {
@@ -854,6 +865,7 @@ test('test that subscription with apiKey onUpdate', async () => {
   reconfigureAmplifyAPI('API_KEY', API_KEY);
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const observer = API.graphql({
+    // @ts-ignore
     query: gql`
       subscription OnUpdateTodo {
         onUpdateTodo {
@@ -909,6 +921,7 @@ test('test that subscription with apiKey onDelete', async () => {
   reconfigureAmplifyAPI('API_KEY', API_KEY);
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const observer = API.graphql({
+    // @ts-ignore
     query: gql`
       subscription OnDeleteTodo {
         onDeleteTodo {

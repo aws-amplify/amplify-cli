@@ -181,7 +181,7 @@ test('a primary key with no sort key is properly configured', () => {
     }),
   );
 
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
 
   const queryType: any = schema.definitions.find((def: any) => def.name && def.name.value === 'Query');
   const getTestField: any = queryType.fields.find((f: any) => f.name && f.name.value === 'getTest');
@@ -231,7 +231,7 @@ test('a primary key with a single sort key field is properly configured', () => 
     }),
   );
 
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
 
   const queryType: any = schema.definitions.find((def: any) => def.name && def.name.value === 'Query');
   const getTestField: any = queryType.fields.find((f: any) => f.name && f.name.value === 'getTest');
@@ -271,7 +271,7 @@ test('a primary key with a composite sort key is properly configured', () => {
     }),
   );
 
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
 
   const queryType: any = schema.definitions.find((def: any) => def.name && def.name.value === 'Query');
   const getTestField: any = queryType.fields.find((f: any) => f.name && f.name.value === 'getTest');
@@ -347,7 +347,7 @@ test('enums are supported in keys', () => {
     }),
   );
 
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
 
   const queryType: any = schema.definitions.find((def: any) => def.name && def.name.value === 'Query');
   const getTestField: any = queryType.fields.find((f: any) => f.name && f.name.value === 'getTest');
@@ -474,7 +474,7 @@ test('resolvers can be renamed by @model', () => {
   const query: any = schema.definitions.find((d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === 'Query');
   const mutation: any = schema.definitions.find((d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === 'Mutation');
 
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
 
   expect(query).toBeDefined();
   expect(query.fields.length).toEqual(2);
@@ -517,7 +517,7 @@ test('individual resolvers can be made null by @model', () => {
   const stack = out.stacks.Test;
   const query: any = schema.definitions.find((d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === 'Query');
 
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
   expect(query).toBeDefined();
   expect(query.fields.length).toEqual(1);
   const getQuery = query.fields.find((f: any) => f.name.value === 'testGet');
@@ -676,6 +676,41 @@ test('list queries use correct pluralization', () => {
   const listQuery = query.fields.find((f: any) => f.name.value === 'listBosses');
   expect(listQuery).toBeDefined();
 
-  expect(out.pipelineFunctions['Query.listBosses.req.vtl']).toBeDefined();
-  expect(out.pipelineFunctions['Query.listBosses.res.vtl']).toBeDefined();
+  expect(out.resolvers['Query.listBosses.req.vtl']).toBeDefined();
+  expect(out.resolvers['Query.listBosses.res.vtl']).toBeDefined();
+});
+
+test('lowercase model names generate the correct get/list query arguments', () => {
+  const inputSchema = `
+    type test @model {
+      email: String! @primaryKey(sortKeyFields: ["lastName"])
+      lastName: String!
+      firstName: String
+    }`;
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+  });
+
+  const out = transformer.transform(inputSchema);
+  const schema = parse(out.schema);
+
+  validateModelSchema(schema);
+
+  const query: any = schema.definitions.find((d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === 'Query');
+  const getQuery = query.fields.find((f: any) => f.name.value === 'getTest');
+  const listQuery = query.fields.find((f: any) => f.name.value === 'listTests');
+
+  expect(getQuery).toBeDefined();
+  expect(getQuery.arguments.length).toEqual(2);
+  expect(getQuery.arguments[0].name.value).toEqual('email');
+  expect(getQuery.arguments[1].name.value).toEqual('lastName');
+
+  expect(listQuery).toBeDefined();
+  expect(listQuery.arguments.length).toEqual(6);
+  expect(listQuery.arguments[0].name.value).toEqual('email');
+  expect(listQuery.arguments[1].name.value).toEqual('lastName');
+  expect(listQuery.arguments[2].name.value).toEqual('filter');
+  expect(listQuery.arguments[3].name.value).toEqual('limit');
+  expect(listQuery.arguments[4].name.value).toEqual('nextToken');
+  expect(listQuery.arguments[5].name.value).toEqual('sortDirection');
 });

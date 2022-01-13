@@ -87,11 +87,11 @@ export const supportedServices = {
             value: 'idea14ce',
           },
           {
-            name: 'Vim (via Terminal, Mac OS only)',
+            name: 'Vim (via Terminal, macOS only)',
             value: 'vim',
           },
           {
-            name: 'Emacs (via Terminal, Mac OS only)',
+            name: 'Emacs (via Terminal, macOS only)',
             value: 'emacs',
           },
           {
@@ -122,7 +122,6 @@ export const supportedServices = {
       },
     ],
     alias: 'GraphQL',
-    defaultValuesFilename: 'appSync-defaults.js',
     serviceWalkthroughFilename: 'appSync-walkthrough.js',
     cfnFilename: 'appSync-cloudformation-template-default.yml.ejs',
     provider: 'awscloudformation',
@@ -148,9 +147,7 @@ export const supportedServices = {
       },
     ],
     alias: 'REST',
-    defaultValuesFilename: 'apigw-defaults.js',
     serviceWalkthroughFilename: 'apigw-walkthrough.js',
-    cfnFilename: 'apigw-cloudformation-template-default.json.ejs',
     provider: 'awscloudformation',
   },
 };

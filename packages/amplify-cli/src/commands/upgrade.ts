@@ -8,6 +8,8 @@ import chalk from 'chalk';
 import gunzip from 'gunzip-maybe';
 import tar from 'tar-fs';
 import ProgressBar from 'progress';
+import { pipeline } from 'stream';
+import { promisify } from 'util';
 
 const repoOwner = 'aws-amplify';
 const repoName = 'amplify-cli';
@@ -65,14 +67,9 @@ const upgradeCli = async (print, version: string) => {
     renderThrottle: 100,
   });
   print.info('Downloading latest Amplify CLI');
-  await new Promise((resolve, reject) =>
-    response.body
-      .on('data', chunk => progressBar.tick(chunk.length))
-      .pipe(gunzip())
-      .pipe(tar.extract(binDir))
-      .on('finish', resolve)
-      .on('error', reject),
-  );
+  const downloadPromise = promisify(pipeline)(response.body, gunzip(), tar.extract(binDir));
+  response.body.on('data', chunk => progressBar.tick(chunk.length));
+  await downloadPromise;
   await fs.move(extractedPath, binPath, { overwrite: true });
   await fs.chmod(binPath, '700');
 };
@@ -84,5 +81,5 @@ const getLatestVersion = async (): Promise<string> => {
   if (response.status >= 400) {
     throw new Error(`${response.status}: Request to ${latestVersionUrl} failed:\n${JSON.stringify(result, null, 2)}`);
   }
-  return (result.tag_name as string).slice(1).trim(); // strip of leading 'v' from tag to convert to semver string
+  return (result.tag_name as string).slice(1).trim(); // strip off leading 'v' from tag to convert to semver string
 };

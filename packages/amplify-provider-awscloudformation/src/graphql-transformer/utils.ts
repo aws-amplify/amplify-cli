@@ -3,17 +3,23 @@ import * as path from 'path';
 import { TransformerProjectConfig, DeploymentResources } from '@aws-amplify/graphql-transformer-core';
 import rimraf from 'rimraf';
 import { ProviderName as providerName } from '../constants';
-import { $TSContext, JSONUtilities, stateManager } from 'amplify-cli-core';
+import { $TSContext, AmplifyCategories, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import { CloudFormation, Template, Fn } from 'cloudform';
 import { Diff, diff as getDiffs } from 'deep-diff';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { pullAllBy, find } from 'lodash';
 import { isAmplifyAdminApp } from '../utils/admin-helpers';
+import { printer } from 'amplify-prompts';
 
 const ROOT_STACK_FILE_NAME = 'cloudformation-template.json';
 const PARAMETERS_FILE_NAME = 'parameters.json';
+const CUSTOM_ROLES_FILE_NAME = 'custom-roles.json';
 const AMPLIFY_ADMIN_ROLE = '_Full-access/CognitoIdentityCredentials';
 const AMPLIFY_MANAGE_ROLE = '_Manage-only/CognitoIdentityCredentials';
+
+export interface CustomRolesConfig {
+  adminRoleNames?: Array<string>;
+}
 export interface DiffableProject {
   stacks: {
     [stackName: string]: Template;
@@ -36,7 +42,7 @@ export const getIdentityPoolId = async (ctx: $TSContext): Promise<string | undef
   return authResource?.output?.IdentityPoolId;
 };
 
-export const getAdminRoles = async (ctx: $TSContext, apiResourceName: string): Promise<Array<string>> => {
+export const getAdminRoles = async (ctx: $TSContext, apiResourceName: string | undefined): Promise<Array<string>> => {
   const currentEnv = ctx.amplify.getEnvInfo().envName;
   const adminRoles = new Array<string>();
   //admin ui roles
@@ -49,15 +55,29 @@ export const getAdminRoles = async (ctx: $TSContext, apiResourceName: string): P
     }
   } catch (err) {
     // no need to error if not admin ui app
-    console.info('App not deployed yet.');
   }
 
-  // lambda functions which have access to the api
-  const { allResources, resourcesToBeDeleted } = await ctx.amplify.getResourceStatus('function');
-  const resources = pullAllBy(allResources, resourcesToBeDeleted, 'resourceName')
-    .filter((r: any) => r.dependsOn?.some((d: any) => d?.resourceName === apiResourceName))
-    .map((r: any) => `${r.resourceName}-${currentEnv}`);
-  adminRoles.push(...resources);
+  // additonal admin role checks
+  if (apiResourceName) {
+    // lambda functions which have access to the api
+    const { allResources, resourcesToBeDeleted } = await ctx.amplify.getResourceStatus('function');
+    const resources = pullAllBy(allResources, resourcesToBeDeleted, 'resourceName')
+      .filter((r: any) => r.dependsOn?.some((d: any) => d?.resourceName === apiResourceName))
+      .map((r: any) => `${r.resourceName}-${currentEnv}`);
+    adminRoles.push(...resources);
+
+    // check for custom iam admin roles
+    const customRoleFile = path.join(
+      pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.API, apiResourceName),
+      CUSTOM_ROLES_FILE_NAME,
+    );
+    if (fs.existsSync(customRoleFile)) {
+      const customRoleConfig = JSONUtilities.readJson<CustomRolesConfig>(customRoleFile);
+      if (customRoleConfig && customRoleConfig.adminRoleNames) {
+        adminRoles.push(...customRoleConfig.adminRoleNames);
+      }
+    }
+  }
   return adminRoles;
 };
 
@@ -117,23 +137,48 @@ export function readFromPath(directory: string): any {
 export function mergeUserConfigWithTransformOutput(
   userConfig: TransformerProjectConfig,
   transformOutput: DeploymentResources,
+  opts?: any,
 ): DeploymentResources {
   const userFunctions = userConfig.functions || {};
   const userResolvers = userConfig.resolvers || {};
   const userPipelineFunctions = userConfig.pipelineFunctions || {};
   const functions = transformOutput.functions;
+  const resolvers = transformOutput.resolvers;
   const pipelineFunctions = transformOutput.pipelineFunctions;
 
-  for (const userFunction of Object.keys(userFunctions)) functions[userFunction] = userFunctions[userFunction];
-  for (const userPipelineFunction of Object.keys(userPipelineFunctions))
-    pipelineFunctions[userPipelineFunction] = userPipelineFunctions[userPipelineFunction];
-  for (const userResolver of Object.keys(userResolvers)) pipelineFunctions[userResolver] = userResolvers[userResolver];
+  if (!opts?.disableFunctionOverrides) {
+    for (const userFunction of Object.keys(userFunctions)) {
+      functions[userFunction] = userFunctions[userFunction];
+    }
+  }
+
+  if (!opts?.disablePipelineFunctionOverrides) {
+    const pipelineFunctionKeys = Object.keys(userPipelineFunctions);
+
+    if (pipelineFunctionKeys.length > 0) {
+      printer.warn(
+        ' You are using the "pipelineFunctions" directory for overridden and custom resolvers. ' +
+          'Please use the "resolvers" directory as "pipelineFunctions" will be deprecated.\n',
+      );
+    }
+
+    for (const userPipelineFunction of pipelineFunctionKeys) resolvers[userPipelineFunction] = userPipelineFunctions[userPipelineFunction];
+  }
+
+  if (!opts?.disableResolverOverrides) {
+    for (const userResolver of Object.keys(userResolvers)) {
+      if (userResolver !== 'README.md') {
+        resolvers[userResolver] = userResolvers[userResolver].toString();
+      }
+    }
+  }
 
   const stacks = overrideUserDefinedStacks(userConfig, transformOutput);
 
   return {
     ...transformOutput,
     functions,
+    resolvers,
     pipelineFunctions,
     stacks,
   };
@@ -222,9 +267,9 @@ export async function writeDeploymentToDisk(
   buildParameters: Object,
   minify = false,
 ) {
-  // Delete the last deployments resources.
-  rimraf.sync(directory);
   fs.ensureDirSync(directory);
+  // Delete the last deployments resources except for tsconfig if present
+  emptyBuildDirPreserveTsconfig(directory);
 
   // Write the schema to disk
   const schema = deployment.schema;
@@ -296,10 +341,6 @@ function initStacksAndResolversDirectories(directory: string) {
   if (!fs.existsSync(resolverRootPath)) {
     fs.mkdirSync(resolverRootPath);
   }
-  const pipelineFunctionRootPath = pipelineFunctionDirectoryPath(directory);
-  if (!fs.existsSync(pipelineFunctionRootPath)) {
-    fs.mkdirSync(pipelineFunctionRootPath);
-  }
   const stackRootPath = stacksDirectoryPath(directory);
   if (!fs.existsSync(stackRootPath)) {
     fs.mkdirSync(stackRootPath);
@@ -327,3 +368,15 @@ export function throwIfNotJSONExt(stackFile: string) {
     throw new Error(`Invalid extension ${extension} for stack ${stackFile}`);
   }
 }
+
+const emptyBuildDirPreserveTsconfig = (directory: string) => {
+  const files = fs.readdirSync(directory);
+  files.forEach(file => {
+    const fileDir = path.join(directory, file);
+    if (fs.lstatSync(fileDir).isDirectory()) {
+      rimraf.sync(fileDir);
+    } else if (!file.endsWith('tsconfig.resource.json')) {
+      fs.unlinkSync(fileDir);
+    }
+  });
+};

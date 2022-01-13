@@ -35,7 +35,7 @@ describe('feature flags', () => {
       name: 'apifeatureflag',
       disableAmplifyAppCreation: false,
     });
-    await addApiWithoutSchema(projRoot);
+    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, 'apifeatureflag', 'simple_model.graphql');
 
     const envName = 'test';

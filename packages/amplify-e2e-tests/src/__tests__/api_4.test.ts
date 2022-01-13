@@ -32,7 +32,7 @@ describe('multi-key GSI behavior', () => {
   beforeEach(async () => {
     projRoot = await createNewProjectDir(projName);
     await initJSProjectWithProfile(projRoot, { name: projName });
-    await addApiWithoutSchema(projRoot);
+    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, projName, 'multi-gsi.graphql');
     await amplifyPush(projRoot);
 

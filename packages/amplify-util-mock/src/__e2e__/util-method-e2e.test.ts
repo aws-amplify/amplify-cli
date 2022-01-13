@@ -1,9 +1,6 @@
 import { AmplifyAppSyncSimulator } from 'amplify-appsync-simulator';
-import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-import { not } from 'graphql-mapping-template';
 import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
-import { values } from 'lodash';
 import { GraphQLClient } from './utils/graphql-client';
 import { deploy, launchDDBLocal, terminateDDB, logDebug, reDeploy } from './utils/index';
 

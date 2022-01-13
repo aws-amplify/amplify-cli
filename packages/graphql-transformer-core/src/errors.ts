@@ -1,6 +1,7 @@
-import { GraphQLError } from 'graphql';
+import { GraphQLError, printError } from 'graphql';
 import * as os from 'os';
 
+const GRAPHQL_TRANSFORMER_V2_DIRECTIVES = ['hasOne', 'index', 'primaryKey', 'belongsTo', 'manyToMany', 'hasMany', 'default'];
 export class InvalidTransformerError extends Error {
   constructor(message: string) {
     super(message);
@@ -14,7 +15,36 @@ export class InvalidTransformerError extends Error {
 
 export class SchemaValidationError extends Error {
   constructor(errors: Readonly<GraphQLError[]>) {
-    super(`Schema Errors:\n\n${errors.join('\n')}`);
+    const v2DirectivesInUse = new Set<string>();
+    const newErrors = errors.filter(error => {
+      if (!error.message.startsWith('Unknown directive')) {
+        return true;
+      }
+      const dir = GRAPHQL_TRANSFORMER_V2_DIRECTIVES.find(d => error.message.endsWith(`"${d}".`));
+      if (!dir) {
+        return true;
+      }
+      v2DirectivesInUse.add(dir);
+      return false;
+    });
+
+    if (v2DirectivesInUse.size > 0) {
+      const v2DirectiveErrorMessage = `Your GraphQL Schema is using ${Array.from(v2DirectivesInUse.values())
+        .map(d => `"@${d}"`)
+        .join(', ')} ${
+        v2DirectivesInUse.size > 1 ? 'directives' : 'directive'
+      } from the newer version of the GraphQL Transformer. Visit https://docs.amplify.aws/cli/migration/transformer-migration/ to learn how to migrate your GraphQL schema.`;
+      if (newErrors.length === 0) {
+        super(v2DirectiveErrorMessage);
+      } else {
+        super(
+          v2DirectiveErrorMessage +
+            ` There are additional validation errors listed below: \n\n ${newErrors.map(error => printError(error)).join('\n\n')}`,
+        );
+      }
+    } else {
+      super(`Schema validation failed.\n\n${newErrors.map(error => printError(error)).join('\n\n')} `);
+    }
     Object.setPrototypeOf(this, SchemaValidationError.prototype);
     this.name = 'SchemaValidationError';
     if ((Error as any).captureStackTrace) {
@@ -22,7 +52,6 @@ export class SchemaValidationError extends Error {
     }
   }
 }
-
 /**
  * Thrown by transformers when a user provided schema breaks some contract expected by the transformer.
  *

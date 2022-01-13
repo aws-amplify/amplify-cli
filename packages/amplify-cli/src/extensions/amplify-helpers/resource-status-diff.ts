@@ -164,7 +164,7 @@ export class ResourceDiff {
 
   //helper: wrapper around readCFNTemplate type to handle expressions.
   private safeReadCFNTemplate = async (filePath: string) => {
-    const templateResult = await readCFNTemplate(filePath, { throwIfNotExist: false });
+    const templateResult = readCFNTemplate(filePath, { throwIfNotExist: false });
     return templateResult?.cfnTemplate || {};
   };
 
@@ -249,6 +249,7 @@ export interface ICategoryStatusCollection {
   resourcesToBeUpdated: any[];
   resourcesToBeDeleted: any[];
   resourcesToBeSynced: any[];
+  rootStackUpdated?: boolean;
   allResources: any[];
   tagsUpdated: boolean;
 }
