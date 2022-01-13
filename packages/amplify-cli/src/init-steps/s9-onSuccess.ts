@@ -23,10 +23,15 @@ export async function onSuccess(context: $TSContext) {
   const backendDirPath = pathManager.getBackendDirPath(projectPath);
   const currentBackendDirPath = pathManager.getCurrentCloudBackendDirPath(projectPath);
 
-  fs.ensureDirSync(amplifyDirPath);
-  fs.ensureDirSync(dotConfigDirPath);
-  fs.ensureDirSync(backendDirPath);
-  fs.ensureDirSync(currentBackendDirPath);
+  if (context.exeInfo.isNewProject) {
+    fs.ensureDirSync(amplifyDirPath);
+    fs.ensureDirSync(dotConfigDirPath);
+    fs.ensureDirSync(backendDirPath);
+    fs.ensureDirSync(currentBackendDirPath);
+  } else {
+    // new env init. cleanup currentCloudBackend dir
+    fs.emptyDirSync(currentBackendDirPath);
+  }
 
   const providerPlugins = getProviderPlugins(context);
   const providerOnSuccessTasks: (() => Promise<any>)[] = [];
