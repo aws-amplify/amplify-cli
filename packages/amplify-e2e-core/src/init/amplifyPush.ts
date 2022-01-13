@@ -147,6 +147,31 @@ export function amplifyPushWithoutCodegen(
   });
 }
 
+export function amplifyPushSecretsWithoutCodegen(
+  cwd: string,
+  testingWithLatestCodebase: boolean = false,
+  allowDestructiveUpdates: boolean = false,
+): Promise<void> {
+  const args = ['push'];
+  if (allowDestructiveUpdates) {
+    args.push('--allow-destructive-graphql-schema-updates');
+  }
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(testingWithLatestCodebase), args, { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+      .wait('Are you sure you want to continue?')
+      .sendCarriageReturn()
+      .wait('Secret configuration detected. Do you wish to store new values in the cloud?')
+      .sendConfirmYes()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 export function amplifyPushUpdate(
   cwd: string,
   waitForText?: RegExp,
