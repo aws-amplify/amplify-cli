@@ -14,11 +14,12 @@ import {
  * @param cfnContext The parameters, exports and other context required to parse the CFN
  */
 export const lambdaFunctionHandler = (
-  _,
+  resourceName,
   resource: CloudFormationResource,
   cfnContext: CloudFormationParseContext,
 ): ProcessedLambdaFunction => {
-  const name: string = parseValue(resource.Properties.FunctionName, cfnContext);
+  // Use the resource name as a fallback in case the optional functionName is not present in CFN.
+  const name: string = parseValue(resource.Properties.FunctionName ?? resourceName, cfnContext);
   const handler = parseValue(resource.Properties.Handler, cfnContext);
   const cfnEnvVars = (resource?.Properties?.Environment as CloudFormationResourceProperty)?.Variables || {};
   const environment = Object.entries(cfnEnvVars).reduce(
