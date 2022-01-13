@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.8-beta.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.5.7...@aws-amplify/graphql-auth-transformer@0.5.8-beta.7) (2022-01-13)
+
+
+### Bug Fixes
+
+* clean up missing and unused GraphQL v2 dependencies ([#9486](https://github.com/aws-amplify/amplify-cli/issues/9486)) ([a6ca44e](https://github.com/aws-amplify/amplify-cli/commit/a6ca44e6ea0ec0a70b648e399fc3e849ccc2a7c9))
+* dynamic group auth VTL error ([#9463](https://github.com/aws-amplify/amplify-cli/issues/9463)) ([e64124f](https://github.com/aws-amplify/amplify-cli/commit/e64124f8f846e65b0c1a198ed63167e15a08445c))
+* **graphql:** modify fields match logic for hasOne directive when using auth directive ([#9459](https://github.com/aws-amplify/amplify-cli/issues/9459)) ([a924892](https://github.com/aws-amplify/amplify-cli/commit/a92489298625d46255263d50bbceb074eb6d2269))
+* use optional field access for subscriptions.level ([#9213](https://github.com/aws-amplify/amplify-cli/issues/9213)) ([8cbd507](https://github.com/aws-amplify/amplify-cli/commit/8cbd507357b93e856fc2d5a3f455bc340b507333))
+
+
+
+
+
 ## [0.5.8-beta.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.5.7...@aws-amplify/graphql-auth-transformer@0.5.8-beta.6) (2022-01-13)
 
 

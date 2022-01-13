@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.6.0...amplify-e2e-tests@3.7.0-beta.7) (2022-01-13)
+
+
+### Features
+
+* **amplify-category-api:** enable default 4xx and 5xx api gateway cors response ([#9158](https://github.com/aws-amplify/amplify-cli/issues/9158)) ([b35cbda](https://github.com/aws-amplify/amplify-cli/commit/b35cbda1a567142b72dc068081abd8fb65860074)), closes [#5183](https://github.com/aws-amplify/amplify-cli/issues/5183)
+* **amplify-category-geo:** remove pricing plan walkthrough for Maps and Search ([#9479](https://github.com/aws-amplify/amplify-cli/issues/9479)) ([7b0079d](https://github.com/aws-amplify/amplify-cli/commit/7b0079dff4fdf13df5bd8f90213d4b91ccd2287b))
+
+
+
+
+
 # [3.7.0-beta.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.6.0...amplify-e2e-tests@3.7.0-beta.6) (2022-01-13)
 
 

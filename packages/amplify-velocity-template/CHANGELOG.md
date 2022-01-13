@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.6-beta.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-velocity-template@1.4.5...amplify-velocity-template@1.4.6-beta.7) (2022-01-13)
+
+
+### Bug Fixes
+
+* fix the behavior of velocity template renderer not to run anything after #break ([#9421](https://github.com/aws-amplify/amplify-cli/issues/9421)) ([c43a70f](https://github.com/aws-amplify/amplify-cli/commit/c43a70febafc9efa7d43f163674df40c133a14a4)), closes [#8779](https://github.com/aws-amplify/amplify-cli/issues/8779)
+
+
+
+
+
 ## [1.4.6-beta.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-velocity-template@1.4.5...amplify-velocity-template@1.4.6-beta.6) (2022-01-13)
 
 

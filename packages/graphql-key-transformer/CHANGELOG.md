@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.14-beta.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@3.2.13...graphql-key-transformer@3.2.14-beta.7) (2022-01-13)
+
+
+### Bug Fixes
+
+* clean up missing and unused GraphQL v1 dependencies ([#9496](https://github.com/aws-amplify/amplify-cli/issues/9496)) ([fe8201b](https://github.com/aws-amplify/amplify-cli/commit/fe8201be17f42db233fce0bb366ff4d0c8358ec0))
+
+
+
+
+
 ## [3.2.14-beta.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@3.2.13...graphql-key-transformer@3.2.14-beta.6) (2022-01-13)
 
 

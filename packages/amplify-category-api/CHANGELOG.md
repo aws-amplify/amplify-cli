@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0-beta.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.1.10...@aws-amplify/amplify-category-api@1.2.0-beta.7) (2022-01-13)
+
+
+### Features
+
+* **amplify-category-api:** enable default 4xx and 5xx api gateway cors response ([#9158](https://github.com/aws-amplify/amplify-cli/issues/9158)) ([b35cbda](https://github.com/aws-amplify/amplify-cli/commit/b35cbda1a567142b72dc068081abd8fb65860074)), closes [#5183](https://github.com/aws-amplify/amplify-cli/issues/5183)
+
+
+
+
+
 # [1.2.0-beta.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.1.10...@aws-amplify/amplify-category-api@1.2.0-beta.6) (2022-01-13)
 
 
