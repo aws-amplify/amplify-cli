@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.5.0...amplify-e2e-core@2.6.0) (2022-01-13)
+
+
+### Features
+
+* **amplify-category-geo:** remove pricing plan walkthrough for Maps and Search ([#9479](https://github.com/aws-amplify/amplify-cli/issues/9479)) ([7b0079d](https://github.com/aws-amplify/amplify-cli/commit/7b0079dff4fdf13df5bd8f90213d4b91ccd2287b))
+
+
+
+
+
 # [2.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.4.9...amplify-e2e-core@2.5.0) (2022-01-11)
 
 

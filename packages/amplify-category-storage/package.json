@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-storage",
-  "version": "3.1.7",
+  "version": "3.1.8",
   "description": "amplify-cli storage plugin",
   "repository": {
     "type": "git",
@@ -31,7 +31,7 @@
     "@aws-cdk/aws-s3": "~1.124.0",
     "@aws-cdk/core": "~1.124.0",
     "amplify-cli-core": "2.4.7",
-    "amplify-headless-interface": "1.13.3",
+    "amplify-headless-interface": "1.14.0",
     "amplify-prompts": "1.6.2",
     "amplify-util-import": "2.2.12",
     "chalk": "^4.1.1",
