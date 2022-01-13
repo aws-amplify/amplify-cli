@@ -349,7 +349,7 @@ export abstract class ContainersStack extends cdk.Stack {
 
         containerSecrets.forEach((s, i) => {
           if (secretsArns.has(s)) {
-            secrets[s] = ecs.Secret.fromSecretsManager(ssm.Secret.fromSecretCompleteArn(this, `${name}secret${i + 1}`, secretsArns.get(s)));
+            secrets[s] = ecs.Secret.fromSecretsManager(ssm.Secret.fromSecretPartialArn(this, `${name}secret${i + 1}`, secretsArns.get(s)));
           }
 
           delete environmentWithoutSecrets[s];

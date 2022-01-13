@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.8.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.7...amplify-provider-awscloudformation@5.8.8) (2022-01-13)
+
+
+### Bug Fixes
+
+* GraphQL V2 fix for codegen ([#9489](https://github.com/aws-amplify/amplify-cli/issues/9489)) ([d8b82b9](https://github.com/aws-amplify/amplify-cli/commit/d8b82b9bf3182efef3c57f02f76b6963bd4d2839))
+* update amplify configure to use AdministratorAccess-Amplify ([#9355](https://github.com/aws-amplify/amplify-cli/issues/9355)) ([2d2a8aa](https://github.com/aws-amplify/amplify-cli/commit/2d2a8aaec1a47297126b4bc680625a932c6edcc6))
+
+
+
+
+
 ## [5.8.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.5...amplify-provider-awscloudformation@5.8.7) (2022-01-10)
 
 

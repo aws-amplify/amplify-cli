@@ -283,6 +283,14 @@ const generateAuthFilter = (roles: Array<RoleDefinition>, fields: ReadonlyArray<
           ...[
             set(ref(`role${idx}`), getIdentityClaimExp(str(role.claim!), list([]))),
             iff(
+              methodCall(ref(`util.isString`), ref(`role${idx}`)),
+              ifElse(
+                methodCall(ref(`util.isList`), methodCall(ref(`util.parseJson`), ref(`role${idx}`))),
+                set(ref(`role${idx}`), methodCall(ref(`util.parseJson`), ref(`role${idx}`))),
+                set(ref(`role${idx}`), list([ref(`role${idx}`)])),
+              ),
+            ),
+            iff(
               not(methodCall(ref(`role${idx}.isEmpty`))),
               qref(methodCall(ref('authFilter.add'), raw(`{ "${role.entity}": { "in": $role${idx} } }`))),
             ),
