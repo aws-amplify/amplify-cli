@@ -753,8 +753,8 @@ export function addApiWithCognitoUserPoolAuthTypeWhenAuthExists(
     setTransformerVersionFlag(projectDir, options.transformerVersion);
   });
 }
-
-export function addRestContainerApi(projectDir: string) {
+export function addRestContainerApi(projectDir: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
+  const options = _.assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'api'], { cwd: projectDir, stripColors: true })
       .wait('Select from one of the below mentioned services:')
@@ -764,6 +764,7 @@ export function addRestContainerApi(projectDir: string) {
       .sendKeyDown()
       .sendCarriageReturn()
       .wait('Provide a friendly name for your resource to be used as a label for this category in the project:')
+      .send(options.apiName)
       .sendCarriageReturn()
       .wait('What image would you like to use')
       .sendKeyDown()
