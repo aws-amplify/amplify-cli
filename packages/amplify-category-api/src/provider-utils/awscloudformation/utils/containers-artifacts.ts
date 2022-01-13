@@ -291,7 +291,7 @@ export async function processDockerConfig(
         version: uuid(),
       });
 
-      const [prefix, suffix] = secretArn.toString().split(ssmSecretName);
+      const [prefix,] = secretArn.toString().split(ssmSecretName);
       const secretArnRef = cdk.Fn.join('', [
         prefix,
         cdk.Fn.ref('rootStackName'),

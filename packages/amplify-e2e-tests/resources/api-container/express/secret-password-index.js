@@ -1,6 +1,5 @@
 const express = require("express");
 const bodyParser = require('body-parser');
-const http = require('http');
 const port = process.env.PORT || 3001;
 
 const app = express();
@@ -13,20 +12,6 @@ app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
     next()
 });
-
-const checkAuthRules = (req, res, next) => {
-    const jwt = req.header("Authorization") || "";
-
-    const [, jwtBody] = jwt.split(".");
-
-    const obj = JSON.parse(
-        jwtBody ? Buffer.from(jwtBody, "base64").toString("utf-8") : "{}"
-    );
-
-    next();
-}
-
-app.use(checkAuthRules);
 
 app.get("/password", async (req, res, next) => {
     try {
