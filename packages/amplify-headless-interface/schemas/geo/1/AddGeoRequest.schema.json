@@ -42,10 +42,6 @@
                     "$ref": "#/definitions/AccessType",
                     "description": "The access policy for geo resources."
                 },
-                "pricingPlan": {
-                    "$ref": "#/definitions/PricingPlan",
-                    "description": "The pricing plan for amazon location service."
-                },
                 "setAsDefault": {
                     "description": "Whether the geo resource added is set to default.",
                     "type": "boolean"
@@ -54,7 +50,6 @@
             "required": [
                 "accessType",
                 "name",
-                "pricingPlan",
                 "serviceName",
                 "setAsDefault"
             ]
@@ -64,15 +59,6 @@
             "enum": [
                 "AuthorizedAndGuestUsers",
                 "AuthorizedUsers"
-            ],
-            "type": "string"
-        },
-        "PricingPlan": {
-            "description": "Pricing plan of Amazon Location Service.",
-            "enum": [
-                "MobileAssetManagement",
-                "MobileAssetTracking",
-                "RequestBasedUsage"
             ],
             "type": "string"
         },

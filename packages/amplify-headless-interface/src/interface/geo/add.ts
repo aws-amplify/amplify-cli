@@ -34,10 +34,6 @@ export interface BaseGeoServiceConfiguration {
    */
   accessType: AccessType;
   /**
-   * The pricing plan for amazon location service.
-   */
-  pricingPlan: PricingPlan;
-  /**
    * Whether the geo resource added is set to default.
    */
   setAsDefault: boolean;
@@ -54,15 +50,6 @@ export interface MapConfiguration {
    * The map style type.
    */
   mapStyle: MapStyle;
-}
-
-/**
- * Pricing plan of Amazon Location Service.
- */
-export enum PricingPlan {
-  RequestBasedUsage = "RequestBasedUsage",
-  MobileAssetTracking = "MobileAssetTracking",
-  MobileAssetManagement = "MobileAssetManagement"
 }
 
 /**

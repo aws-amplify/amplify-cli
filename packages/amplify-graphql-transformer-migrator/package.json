@@ -27,7 +27,6 @@
     },
     "dependencies": {
         "@aws-amplify/graphql-transformer-core": "0.15.4",
-        "@aws-amplify/graphql-transformer-interfaces": "1.12.5",
         "amplify-cli-core": "2.4.7",
         "amplify-prompts": "1.6.2",
         "fs-extra": "^8.1.0",
@@ -37,9 +36,7 @@
         "lodash": "^4.17.21"
     },
     "devDependencies": {
-        "@types/diff": "^5.0.0",
         "@types/fs-extra": "^8.0.1",
-        "@types/md5": "^2.3.1",
         "@types/node": "^12.12.6"
     },
     "jest": {

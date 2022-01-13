@@ -121,3 +121,77 @@ test('no @auth rules list', () => {
   });
   expect(() => transformer.transform(invalidSchema)).toThrowError('@auth on Post does not have any auth rules.');
 });
+
+test('dynamic group auth generates authorized fields list correctly', () => {
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    },
+    additionalAuthenticationProviders: [],
+  };
+  const schema = /* GraphQL */ `
+    type Todo @model(subscriptions: { level: off }) {
+      id: ID! @auth(rules: [{ allow: groups, groupsField: "allowedGroups", operations: [read, update], provider: userPools }])
+      name: String!
+      description: String @auth(rules: [{ allow: groups, groupsField: "allowedGroups", operations: [read, update], provider: userPools }])
+      allowedGroups: [String]
+    }
+  `;
+  const transformer = new GraphQLTransform({
+    authConfig,
+    transformers: [new ModelTransformer(), new AuthTransformer()],
+  });
+  const result = transformer.transform(schema);
+  // ideally this could be a more specific test rather than a big snapshot test
+  // the part we are looking for here is that the allowedFields and nullAllowedFields are set to groupAllowedFields0 and groupNullAllowedFields0, respectively.
+  // a more targeted test would require some bigger refactoring
+  expect(result.resolvers['Mutation.updateTodo.auth.1.res.vtl']).toMatchInlineSnapshot(`
+    "## [Start] Authorization Steps. **
+    $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+    #if( $ctx.error )
+      $util.error($ctx.error.message, $ctx.error.type)
+    #end
+    #set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+    #set( $isAuthorized = false )
+    #set( $allowedFields = [] )
+    #set( $nullAllowedFields = [] )
+    #set( $deniedFields = {} )
+    #if( $util.authType() == \\"User Pool Authorization\\" )
+      #if( !$isAuthorized )
+        #set( $groupEntity0 = $util.defaultIfNull($ctx.result.allowedGroups, []) )
+        #set( $groupClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+        #set( $groupAllowedFields0 = [\\"id\\",\\"description\\"] )
+        #set( $groupNullAllowedFields0 = [] )
+        #foreach( $userGroup in $groupClaim0 )
+          #if( $groupEntity0.contains($userGroup) )
+            #if( !$groupAllowedFields0.isEmpty() || !$groupNullAllowedFields0.isEmpty() )
+              $util.qr($allowedFields.addAll($groupAllowedFields0))
+              $util.qr($nullAllowedFields.addAll($groupNullAllowedFields0))
+            #else
+              #set( $isAuthorized = true )
+              #break
+            #end
+          #end
+        #end
+      #end
+    #end
+    #if( !$isAuthorized && $allowedFields.isEmpty() && $nullAllowedFields.isEmpty() )
+    $util.unauthorized()
+    #end
+    #if( !$isAuthorized )
+      #foreach( $entry in $util.map.copyAndRetainAllKeys($ctx.args.input, $inputFields).entrySet() )
+        #if( $util.isNull($entry.value) && !$nullAllowedFields.contains($entry.key) )
+          $util.qr($deniedFields.put($entry.key, \\"\\"))
+        #end
+      #end
+      #foreach( $deniedField in $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+        $util.qr($deniedFields.put($deniedField, \\"\\"))
+      #end
+    #end
+    #if( $deniedFields.keySet().size() > 0 )
+      $util.error(\\"Unauthorized on \${deniedFields.keySet()}\\", \\"Unauthorized\\")
+    #end
+    $util.toJson({})
+    ## [End] Authorization Steps. **"
+  `);
+});

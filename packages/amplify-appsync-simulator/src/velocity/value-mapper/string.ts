@@ -106,4 +106,7 @@ export class JavaString {
   length() {
     return this.value && this.value.length;
   }
+  toJson() {
+    return this.value;
+  }
 }

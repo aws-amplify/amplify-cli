@@ -1836,7 +1836,87 @@ exports.handler = (event, context, callback) => {
         "Schema": Array [
           Object {
             "Mutable": true,
+            "Name": "address",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "birthdate",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
             "Name": "email",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "family_name",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "middle_name",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "gender",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "locale",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "given_name",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "name",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "nickname",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "phone_number",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "preferred_username",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "picture",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "profile",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "updated_at",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "website",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "zoneinfo",
             "Required": true,
           },
         ],

@@ -62,6 +62,7 @@ body:
       multiple: true
       options:
         - auth
+        - custom
         - storage
         - function
         - api
@@ -92,6 +93,7 @@ body:
         - env
         - export
         - init
+        - override
         - publish
         - pull
         - push

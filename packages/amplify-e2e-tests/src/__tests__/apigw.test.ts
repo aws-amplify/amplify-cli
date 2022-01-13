@@ -10,22 +10,23 @@ import {
   addAuthWithGroupsAndAdminAPI,
 } from 'amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
+import fetch from 'node-fetch';
 
 const [shortId] = uuid().split('-');
 const projName = `apigwtest${shortId}`;
 
-let projRoot: string;
-beforeAll(async () => {
-  projRoot = await createNewProjectDir(projName);
-  await initJSProjectWithProfile(projRoot, { name: projName });
-});
-
-afterAll(async () => {
-  await deleteProject(projRoot);
-  deleteProjectDir(projRoot);
-});
-
 describe('API Gateway e2e tests', () => {
+  let projRoot: string;
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir(projName);
+    await initJSProjectWithProfile(projRoot, { name: projName });
+  });
+
+  afterEach(async () => {
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
+  });
+
   it('adds multiple rest apis and pushes', async () => {
     const firstRestApi = `firstE2eRestApi${shortId}`;
     const secondRestApi = `secondE2eRestApi${shortId}`;
@@ -68,5 +69,24 @@ describe('API Gateway e2e tests', () => {
     expect(firstItemsResJson).toEqual({ success: 'get call succeed!', url: '/items' });
     expect(fooResJson).toEqual({ success: 'get call succeed!', url: '/foo' });
     expect(secondItemsResJson).toEqual({ message: 'Missing Authentication Token' }); // Restricted API
+  });
+
+  it('adds rest api and verify the default 4xx response', async () => {
+    const apiName = 'integtest';
+    await addRestApi(projRoot, {
+      apiName,
+    });
+    await amplifyPushAuth(projRoot);
+    const projMeta = getProjectMeta(projRoot);
+    expect(projMeta).toBeDefined();
+    expect(projMeta.api).toBeDefined();
+    const apiPath = projMeta?.api?.[apiName]?.output?.RootUrl;
+    expect(apiPath).toBeDefined();
+    const res = await fetch(apiPath);
+    expect(res.status).toEqual(403);
+    expect(res.headers.get('access-control-allow-headers')).toEqual('Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token');
+    expect(res.headers.get('access-control-allow-methods')).toEqual('DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT');
+    expect(res.headers.get('access-control-allow-origin')).toEqual('*');
+    expect(res.headers.get('access-control-expose-headers')).toEqual('Date,X-Amzn-ErrorType');
   });
 });

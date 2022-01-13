@@ -350,7 +350,7 @@ Static group authorization should perform as expected.`,
           this.protectFieldResolver(context, def, modelName, field.name.value, allowedRoles);
         }
       }
-      if (errorFields.length > 0 && modelNameConfig.subscriptions.level === SubscriptionLevel.on) {
+      if (errorFields.length > 0 && modelNameConfig.subscriptions?.level === SubscriptionLevel.on) {
         throw new InvalidDirectiveError(
           `Because "${def.name.value}" has a field-level authorization rule and subscriptions are enabled,` +
             ` you need to either apply field-level authorization rules to all required fields where all rules have read access ${JSON.stringify(
@@ -538,7 +538,7 @@ Static group authorization should perform as expected.`,
     // in the request we then add the rules of the related type
     if (fieldRoles) {
       const roleDefinitions = fieldRoles.map(r => this.roleMap.get(r)!);
-      const hasSubsEnabled = this.modelDirectiveConfig.get(typeName)!.subscriptions.level === 'on';
+      const hasSubsEnabled = this.modelDirectiveConfig.get(typeName)!.subscriptions?.level === 'on';
       relatedAuthExpression = setDeniedFieldFlag('Mutation', hasSubsEnabled) + '\n' + relatedAuthExpression;
       fieldAuthExpression = generateAuthExpressionForField(this.configuredAuthProviders, roleDefinitions, def.fields ?? []);
     }
@@ -673,7 +673,7 @@ Static group authorization should perform as expected.`,
         def.fields ?? [],
         fieldName,
       );
-      const subsEnabled = hasModelDirective ? this.modelDirectiveConfig.get(typeName)!.subscriptions.level === 'on' : false;
+      const subsEnabled = hasModelDirective ? this.modelDirectiveConfig.get(typeName)!.subscriptions?.level === 'on' : false;
       const fieldResponse = generateFieldAuthResponse('Mutation', fieldName, subsEnabled);
       const resolver = ctx.resolvers.addResolver(
         typeName,
