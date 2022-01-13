@@ -76,6 +76,14 @@ const generateDynamicAuthReadExpression = (roles: Array<RoleDefinition>, fields:
           compoundExpression([
             set(ref(`groupEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.source.${role.entity!}`), nul())),
             set(ref(`groupClaim${idx}`), getIdentityClaimExp(str(role.claim), list([]))),
+            iff(
+              methodCall(ref(`util.isString`), ref(`groupClaim${idx}`)),
+              ifElse(
+                methodCall(ref(`util.isList`), methodCall(ref(`util.parseJson`), ref(`groupClaim${idx}`))),
+                set(ref(`groupClaim${idx}`), methodCall(ref(`util.parseJson`), ref(`groupClaim${idx}`))),
+                set(ref(`groupClaim${idx}`), list([ref(`groupClaim${idx}`)])),
+              ),
+            ),
             entityIsList
               ? forEach(ref('userGroup'), ref(`groupClaim${idx}`), [
                   iff(
