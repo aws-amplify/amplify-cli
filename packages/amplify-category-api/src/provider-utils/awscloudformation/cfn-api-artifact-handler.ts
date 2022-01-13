@@ -10,7 +10,7 @@ import {
 import { printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import { readTransformerConfiguration, TRANSFORM_CURRENT_VERSION, writeTransformerConfiguration } from 'graphql-transformer-core';
-import _, { has } from 'lodash';
+import _ from 'lodash';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import { category } from '../../category-constants';
@@ -149,7 +149,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, apiName, 'output', { authConfig });
     this.context.amplify.updateBackendConfigAfterResourceUpdate(category, apiName, 'output', { authConfig });
 
-    // If we have cognito configured no but before update it was not there then add dependsOn for the API
+    // If we have cognito configured now but before update it was not there then add dependsOn for the API
     if (this.hasCognitoAuthMode(authConfig) && !this.hasCognitoAuthMode(previousAuthConfig)) {
       const dependsOn: Array<DependsOnEntry> = this.createDependsOnFromAuthConfig(authConfig);
       const authResourceName = checkIfAuthExists();
