@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, isResourceNameUnique, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, isResourceNameUnique, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import {
   AddApiRequest,
   AppSyncServiceConfiguration,
@@ -10,7 +10,7 @@ import {
 import { printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import { readTransformerConfiguration, TRANSFORM_CURRENT_VERSION, writeTransformerConfiguration } from 'graphql-transformer-core';
-import _ from 'lodash';
+import _, { has } from 'lodash';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import { category } from '../../category-constants';
@@ -22,6 +22,12 @@ import { authConfigHasApiKey, checkIfAuthExists, getAppSyncAuthConfig, getAppSyn
 import { appSyncAuthTypeToAuthConfig } from './utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { printApiKeyWarnings } from './utils/print-api-key-warnings';
 import { conflictResolutionToResolverConfig } from './utils/resolver-config-to-conflict-resolution-bi-di-mapper';
+
+type DependsOnEntry = {
+  category: string;
+  resourceName: string;
+  attributes: Array<string>;
+};
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaFunction = 'Lambda';
@@ -96,7 +102,9 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
       authConfig,
     });
 
-    this.context.amplify.updateamplifyMetaAfterResourceAdd(category, serviceConfig.apiName, this.createAmplifyMeta(authConfig));
+    const dependsOn: Array<DependsOnEntry> = this.createDependsOnFromAuthConfig(authConfig);
+
+    this.context.amplify.updateamplifyMetaAfterResourceAdd(category, serviceConfig.apiName, this.createAmplifyMeta(authConfig, dependsOn));
     return serviceConfig.apiName;
   };
 
@@ -140,6 +148,45 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
 
     this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, apiName, 'output', { authConfig });
     this.context.amplify.updateBackendConfigAfterResourceUpdate(category, apiName, 'output', { authConfig });
+
+    // If we have cognito configured no but before update it was not there then add dependsOn for the API
+    if (this.hasCognitoAuthMode(authConfig) && !this.hasCognitoAuthMode(previousAuthConfig)) {
+      const dependsOn: Array<DependsOnEntry> = this.createDependsOnFromAuthConfig(authConfig);
+      const authResourceName = checkIfAuthExists();
+
+      if (dependsOn) {
+        const existingDependsOn = _.get(stateManager.getMeta(), [category, apiName, 'dependsOn'], []);
+
+        // If existing dependsOn does not have a cognito dependsOn entry then add it, otherwise skip update
+        if (existingDependsOn.find(dep => dep.category === 'auth' && dep.resourceName === authResourceName) === undefined) {
+          // There is always a single entry in the constructed dependsOn array
+          existingDependsOn.push(dependsOn[0]);
+
+          this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, apiName, 'dependsOn', dependsOn);
+        }
+      }
+    } else if (!this.hasCognitoAuthMode(authConfig) && this.hasCognitoAuthMode(previousAuthConfig)) {
+      // If previously we had cognito configured but now we don't then remove dependsOn for the API
+
+      let existingDependsOn: Array<$TSObject> = _.get(stateManager.getMeta(), [category, apiName, 'dependsOn'], []);
+      const authResourceName = checkIfAuthExists();
+
+      const existingAuthDependencyIndex = existingDependsOn.findIndex(
+        dep => dep.category === 'auth' && dep.resourceName === authResourceName,
+      );
+
+      if (existingDependsOn && existingAuthDependencyIndex >= 0) {
+        existingDependsOn.splice(existingAuthDependencyIndex, 1);
+
+        // To be consistent set the object to undefined if no entries left in it before writing it back to the meta
+        if (existingDependsOn.length === 0) {
+          existingDependsOn = undefined;
+        }
+
+        this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, apiName, 'dependsOn', existingDependsOn);
+      }
+    }
+
     printApiKeyWarnings(oldConfigHadApiKey, authConfigHasApiKey(authConfig));
   };
 
@@ -149,9 +196,10 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
 
   private getResourceDir = (apiName: string) => pathManager.getResourceDirectoryPath(undefined, category, apiName);
 
-  private createAmplifyMeta = authConfig => ({
+  private createAmplifyMeta = (authConfig, dependsOn: DependsOnEntry[] | undefined) => ({
     service: 'AppSync',
     providerPlugin: provider,
+    dependsOn,
     output: {
       authConfig,
     },
@@ -318,6 +366,34 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     await cliState.saveCLIInputPayload(appsyncInputs);
     return appsyncInputs;
   };
+
+  private createDependsOnFromAuthConfig(authConfig: { defaultAuthentication: any; additionalAuthenticationProviders: any[] }) {
+    let dependsOn: Array<DependsOnEntry>;
+
+    if (this.hasCognitoAuthMode(authConfig)) {
+      // get the auth resource name
+      const authResourceName = checkIfAuthExists();
+
+      if (authResourceName) {
+        dependsOn = [
+          {
+            category: 'auth',
+            resourceName: authResourceName,
+            attributes: ['UserPoolId'],
+          },
+        ];
+      }
+    }
+
+    return dependsOn;
+  }
+
+  private hasCognitoAuthMode(authConfig: { defaultAuthentication: any; additionalAuthenticationProviders: any[] }) {
+    return (
+      authConfig?.defaultAuthentication?.authenticationType === 'AMAZON_COGNITO_USER_POOLS' ||
+      authConfig?.additionalAuthenticationProviders?.find(aap => aap.authenticationType === 'AMAZON_COGNITO_USER_POOLS') !== undefined
+    );
+  }
 }
 
 /**
