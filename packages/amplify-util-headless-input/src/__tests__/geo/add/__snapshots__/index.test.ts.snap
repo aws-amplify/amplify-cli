@@ -6,7 +6,6 @@ Object {
     "accessType": "AuthorizedUsers",
     "mapStyle": "VectorEsriNavigation",
     "name": "mymapname",
-    "pricingPlan": "MobileAssetManagement",
     "serviceName": "Map",
     "setAsDefault": true,
   },

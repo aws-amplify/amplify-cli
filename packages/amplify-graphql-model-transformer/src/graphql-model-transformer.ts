@@ -354,7 +354,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
             `${query.typeName}.${query.fieldName}.{slotName}.{slotIndex}.req.vtl`,
           ),
         );
-        resolver.mapToStack(stack);
+        resolver.mapToStack(context.stackManager.getStackFor(query.resolverLogicalId, def!.name.value));
         context.resolvers.addResolver(query.typeName, query.fieldName, resolver);
       }
 
@@ -381,7 +381,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
             `${mutation.typeName}.${mutation.fieldName}.{slotName}.{slotIndex}.req.vtl`,
           ),
         );
-        resolver.mapToStack(stack);
+        resolver.mapToStack(context.stackManager.getStackFor(mutation.resolverLogicalId, def!.name.value));
         context.resolvers.addResolver(mutation.typeName, mutation.fieldName, resolver);
       }
 
@@ -429,7 +429,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
               `${subscription.typeName}.${subscription.fieldName}.{slotName}.{slotIndex}.req.vtl`,
             ),
           );
-          resolver.mapToStack(stack);
+          resolver.mapToStack(context.stackManager.getStackFor(subscription.resolverLogicalId, def!.name.value));
           context.resolvers.addResolver(subscription.typeName, subscription.fieldName, resolver);
         }
       }

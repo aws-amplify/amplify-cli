@@ -1,6 +1,6 @@
 import { $TSContext, $TSObject, stateManager, pathManager, JSONUtilities } from 'amplify-cli-core';
 import { EsriMapStyleType, getGeoMapStyle, MapParameters, MapStyle } from '../../service-utils/mapParams';
-import { AccessType, DataProvider, PricingPlan } from '../../service-utils/resourceParams';
+import { AccessType, DataProvider } from '../../service-utils/resourceParams';
 import { provider, ServiceName, apiDocs } from '../../service-utils/constants';
 import { category } from '../../constants';
 import { printer, prompter } from 'amplify-prompts';
@@ -27,8 +27,7 @@ describe('Map walkthrough works as expected', () => {
     };
     const mockPlaceIndexResource = {
         resourceName: 'placeIndex12345',
-        service: ServiceName.PlaceIndex,
-        pricingPlan: PricingPlan.MobileAssetTracking
+        service: ServiceName.PlaceIndex
     };
 
     const mockMapParameters: MapParameters = {
@@ -40,7 +39,6 @@ describe('Map walkthrough works as expected', () => {
         name: mockMapName,
         mapStyleType: EsriMapStyleType.Streets,
         dataProvider: DataProvider.Esri,
-        pricingPlan: PricingPlan.MobileAssetTracking,
         accessType: AccessType.AuthorizedUsers,
         isDefault: false
     };
@@ -199,7 +197,7 @@ describe('Map walkthrough works as expected', () => {
 
         expect({ ...mockMapParameters, isDefault: true }).toMatchObject(mapParams);
         // map default setting question is skipped
-        expect(prompter.yesOrNo).toBeCalledTimes(2);
+        expect(prompter.yesOrNo).toBeCalledTimes(1);
         expect(prompter.yesOrNo).toBeCalledWith('Do you want to configure advanced settings?', false);
     });
 

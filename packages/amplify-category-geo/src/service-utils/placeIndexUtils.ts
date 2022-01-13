@@ -13,6 +13,7 @@ import {
 } from './resourceUtils';
 import { App } from '@aws-cdk/core';
 import { getTemplateMappings } from '../provider-controllers';
+import { DataProvider } from './resourceParams';
 
 export const createPlaceIndexResource = async (context: $TSContext, parameters: PlaceIndexParameters) => {
   // allow unauth access for identity pool if guest access is enabled
@@ -37,7 +38,7 @@ export const createPlaceIndexResource = async (context: $TSContext, parameters: 
 
 export const modifyPlaceIndexResource = async (
   context: $TSContext,
-  parameters: Pick<PlaceIndexParameters, 'accessType' | 'name' | 'isDefault'>,
+  parameters: PlaceIndexParameters,
 ) => {
   // allow unauth access for identity pool if guest access is enabled
   await checkAuthConfig(context, parameters, ServiceName.PlaceIndex);
@@ -46,20 +47,22 @@ export const modifyPlaceIndexResource = async (
   const templateMappings = await getTemplateMappings(context);
   const placeIndexStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', { ...parameters, ...templateMappings });
   generateTemplateFile(placeIndexStack, parameters.name);
+  saveCFNParameters(parameters);
 
   // update the default place index
   if (parameters.isDefault) {
     await updateDefaultResource(context, ServiceName.PlaceIndex, parameters.name);
   }
 
-  const paramsToUpdate = ['accessType'];
+  const placeIndexMetaParameters = constructPlaceIndexMetaParameters(parameters);
+  const paramsToUpdate = ['accessType', 'pricingPlan'];
   paramsToUpdate.forEach(param => {
-    context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.name, param, (parameters as $TSObject)[param]);
+    context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.name, param, (placeIndexMetaParameters as $TSObject)[param]);
   });
 };
 
 function saveCFNParameters(
-  parameters: Pick<PlaceIndexParameters, 'name' | 'dataProvider' | 'dataSourceIntendedUse' | 'pricingPlan' | 'isDefault'>,
+  parameters: Pick<PlaceIndexParameters, 'name' | 'dataProvider' | 'dataSourceIntendedUse' | 'isDefault'>,
 ) {
   const params = {
     authRoleName: {
@@ -69,10 +72,10 @@ function saveCFNParameters(
       Ref: 'UnauthRoleName',
     },
     indexName: parameters.name,
-    dataProvider: parameters.dataProvider,
+    dataProvider: parameters.dataProvider === DataProvider.Esri ? 'Esri' : 'Here',
     dataSourceIntendedUse: parameters.dataSourceIntendedUse,
-    pricingPlan: parameters.pricingPlan,
     isDefault: parameters.isDefault,
+    pricingPlan: undefined
   };
   updateParametersFile(params, parameters.name, parametersFileName);
 }
@@ -87,7 +90,6 @@ export const constructPlaceIndexMetaParameters = (params: PlaceIndexParameters):
     service: ServiceName.PlaceIndex,
     dataProvider: params.dataProvider,
     dataSourceIntendedUse: params.dataSourceIntendedUse,
-    pricingPlan: params.pricingPlan,
     accessType: params.accessType,
   };
   return result;
@@ -98,7 +100,7 @@ export const constructPlaceIndexMetaParameters = (params: PlaceIndexParameters):
  */
 export type PlaceIndexMetaParameters = Pick<
   PlaceIndexParameters,
-  'isDefault' | 'pricingPlan' | 'accessType' | 'dataSourceIntendedUse' | 'dataProvider'
+  'isDefault' | 'accessType' | 'dataSourceIntendedUse' | 'dataProvider'
 > & {
   providerPlugin: string;
   service: string;
@@ -109,7 +111,6 @@ export const getCurrentPlaceIndexParameters = async (indexName: string): Promise
   return {
     dataProvider: currentIndexMetaParameters.dataProvider,
     dataSourceIntendedUse: currentIndexMetaParameters.dataSourceIntendedUse,
-    pricingPlan: currentIndexMetaParameters.pricingPlan,
     accessType: currentIndexMetaParameters.accessType,
     isDefault: currentIndexMetaParameters.isDefault,
   };

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.14](https://github.com/aws-amplify/amplify-cli/compare/graphql-versioned-transformer@5.2.13...graphql-versioned-transformer@5.2.14) (2022-01-13)
+
+
+### Bug Fixes
+
+* clean up missing and unused GraphQL v1 dependencies ([#9496](https://github.com/aws-amplify/amplify-cli/issues/9496)) ([fe8201b](https://github.com/aws-amplify/amplify-cli/commit/fe8201be17f42db233fce0bb366ff4d0c8358ec0))
+
+
+
+
+
 ## [5.2.13](https://github.com/aws-amplify/amplify-cli/compare/graphql-versioned-transformer@5.2.11...graphql-versioned-transformer@5.2.13) (2022-01-10)
 
 

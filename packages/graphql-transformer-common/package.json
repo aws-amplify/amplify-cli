@@ -1,6 +1,6 @@
 {
   "name": "graphql-transformer-common",
-  "version": "4.22.4",
+  "version": "4.22.5",
   "description": "Common code and constants for AppSync Transformers",
   "repository": {
     "type": "git",
@@ -29,8 +29,7 @@
     "pluralize": "8.0.0"
   },
   "devDependencies": {
-    "@types/md5": "^2.3.1",
-    "@types/node": "^12.12.6"
+    "@types/md5": "^2.3.1"
   },
   "jest": {
     "collectCoverage": true,

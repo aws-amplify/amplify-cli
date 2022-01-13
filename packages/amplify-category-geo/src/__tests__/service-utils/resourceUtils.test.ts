@@ -4,7 +4,7 @@ import { stateManager, $TSContext, pathManager, JSONUtilities } from 'amplify-cl
 import { provider, ServiceName } from '../../service-utils/constants';
 import { MapStyle } from '../../service-utils/mapParams';
 import { DataSourceIntendedUse } from '../../service-utils/placeIndexParams';
-import { AccessType, DataProvider, PricingPlan } from '../../service-utils/resourceParams';
+import { AccessType, DataProvider } from '../../service-utils/resourceParams';
 import { category } from '../../constants';
 
 describe('parameter merge utility function works as expected', () => {
@@ -40,7 +40,6 @@ const map1Params = {
     isDefault: false,
     providerPlugin: provider,
     mapStyle: MapStyle.VectorEsriNavigation,
-    pricingPlan: PricingPlan.MobileAssetTracking,
     accessType: AccessType.AuthorizedAndGuestUsers
 };
 const map2Params = {
@@ -48,7 +47,6 @@ const map2Params = {
     isDefault: true,
     providerPlugin: provider,
     mapStyle: MapStyle.VectorEsriStreets,
-    pricingPlan: PricingPlan.MobileAssetManagement,
     accessType: AccessType.AuthorizedUsers
 };
 const placeIndex1Params = {
@@ -57,7 +55,6 @@ const placeIndex1Params = {
     providerPlugin: provider,
     dataProvider: DataProvider.Esri,
     dataSourceIntendedUse: DataSourceIntendedUse.Storage,
-    pricingPlan: PricingPlan.RequestBasedUsage,
     accessType: AccessType.AuthorizedAndGuestUsers
 };
 const placeIndex2Params = {
@@ -66,7 +63,6 @@ const placeIndex2Params = {
     providerPlugin: provider,
     dataProvider: DataProvider.Here,
     dataSourceIntendedUse: DataSourceIntendedUse.SingleUse,
-    pricingPlan: PricingPlan.MobileAssetManagement,
     accessType: AccessType.AuthorizedUsers
 };
 

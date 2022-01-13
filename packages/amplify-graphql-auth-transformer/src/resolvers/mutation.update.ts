@@ -242,6 +242,14 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
             set(ref(`groupClaim${idx}`), getIdentityClaimExp(str(role.claim!), list([]))),
             set(ref(`groupAllowedFields${idx}`), raw(JSON.stringify(role.allowedFields))),
             set(ref(`groupNullAllowedFields${idx}`), raw(JSON.stringify(role.nullAllowedFields))),
+            iff(
+              methodCall(ref(`util.isString`), ref(`groupClaim${idx}`)),
+              ifElse(
+                methodCall(ref(`util.isList`), methodCall(ref(`util.parseJson`), ref(`groupClaim${idx}`))),
+                set(ref(`groupClaim${idx}`), methodCall(ref(`util.parseJson`), ref(`groupClaim${idx}`))),
+                set(ref(`groupClaim${idx}`), list([ref(`groupClaim${idx}`)])),
+              ),
+            ),
             forEach(ref('userGroup'), ref(`groupClaim${idx}`), [
               iff(
                 entityIsList
@@ -250,8 +258,8 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
                 ifElse(
                   or([not(ref(`groupAllowedFields${idx}.isEmpty()`)), not(ref(`groupNullAllowedFields${idx}.isEmpty()`))]),
                   compoundExpression([
-                    qref(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), ref('groupRole.allowedFields'))),
-                    qref(methodCall(ref(`${NULL_ALLOWED_FIELDS}.addAll`), ref('groupRole.nullAllowedFields'))),
+                    qref(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), ref(`groupAllowedFields${idx}`))),
+                    qref(methodCall(ref(`${NULL_ALLOWED_FIELDS}.addAll`), ref(`groupNullAllowedFields${idx}`))),
                   ]),
                   compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')]),
                 ),

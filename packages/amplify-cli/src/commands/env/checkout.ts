@@ -21,8 +21,15 @@ export const run = async context => {
   localEnvInfo.envName = envName;
   stateManager.setLocalEnvInfo(undefined, localEnvInfo);
 
-  // Setup exeinfo
+  if (localEnvInfo.noUpdateBackend) {
+    context.print.error(
+      `The local environment configuration does not allow modifying the backend.\nUse amplify env pull --envName ${envName}`,
+    );
+    process.exitCode = 1;
+    return;
+  }
 
+  // Setup exeinfo
   context.amplify.constructExeInfo(context);
   context.exeInfo.forcePush = false;
   context.exeInfo.isNewEnv = false;
