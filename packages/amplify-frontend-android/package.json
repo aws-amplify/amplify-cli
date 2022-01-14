@@ -1,6 +1,6 @@
 {
   "name": "amplify-frontend-android",
-  "version": "3.3.2",
+  "version": "3.3.3-mapsto.0",
   "description": "amplify-cli front-end plugin for Android project",
   "repository": {
     "type": "git",

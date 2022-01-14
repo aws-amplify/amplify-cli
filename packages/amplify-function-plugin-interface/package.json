@@ -1,6 +1,6 @@
 {
   "name": "amplify-function-plugin-interface",
-  "version": "1.9.4",
+  "version": "1.9.5-mapsto.0",
   "description": "Interface for plugins that provide additional functionality to function category plugins",
   "repository": {
     "type": "git",

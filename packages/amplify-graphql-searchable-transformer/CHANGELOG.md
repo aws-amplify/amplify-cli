@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.11.0-mapsto.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.10.6...@aws-amplify/graphql-searchable-transformer@0.11.0-mapsto.0) (2022-01-14)
+
+
+### Bug Fixes
+
+* auth and searchable table translation ([add8731](https://github.com/aws-amplify/amplify-cli/commit/add873195e472cacb01da367b00e11a456932b86))
+* issue with transformer dependency chain ([8975b22](https://github.com/aws-amplify/amplify-cli/commit/8975b22be871edbea9d099bed453ae086e9a6748))
+* more searchable issues and mock test ([4d58931](https://github.com/aws-amplify/amplify-cli/commit/4d58931fa9e3adfc0e4bb57eee9a155938523b70))
+* refactor complete with tests passing ([86b59ca](https://github.com/aws-amplify/amplify-cli/commit/86b59ca268a2c85ce29efe8384a457650efe5ead))
+* refactor to support multiple renamings per type ([46d4028](https://github.com/aws-amplify/amplify-cli/commit/46d40281431afff578fcb883b70600b77979b024))
+* searchable transformer with renamed model ([1a20bff](https://github.com/aws-amplify/amplify-cli/commit/1a20bff346fe636ebf42c6cf14df78a20d66a66d))
+
+
+### Features
+
+* mapsTo with searchable ([b280b7c](https://github.com/aws-amplify/amplify-cli/commit/b280b7c2e218f86e352e414aaf55f96f1f8219e9))
+
+
+
+
+
 ## [0.10.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.10.5...@aws-amplify/graphql-searchable-transformer@0.10.6) (2022-01-13)
 
 

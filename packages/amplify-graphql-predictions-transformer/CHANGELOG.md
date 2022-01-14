@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.7-mapsto.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-predictions-transformer@0.6.6...@aws-amplify/graphql-predictions-transformer@0.6.7-mapsto.0) (2022-01-14)
+
+
+### Bug Fixes
+
+* remove functionName from transform-host lambdas ([#9491](https://github.com/aws-amplify/amplify-cli/issues/9491)) ([959d6d8](https://github.com/aws-amplify/amplify-cli/commit/959d6d85056c672b3281794163a7bc534340a513))
+
+
+
+
+
 ## [0.6.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-predictions-transformer@0.6.5...@aws-amplify/graphql-predictions-transformer@0.6.6) (2022-01-13)
 
 **Note:** Version bump only for package @aws-amplify/graphql-predictions-transformer

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.13-mapsto.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.12...amplify-java-function-template-provider@1.5.13-mapsto.0) (2022-01-14)
+
+**Note:** Version bump only for package amplify-java-function-template-provider
+
+
+
+
+
 ## [1.5.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.10...amplify-java-function-template-provider@1.5.12) (2022-01-10)
 
 

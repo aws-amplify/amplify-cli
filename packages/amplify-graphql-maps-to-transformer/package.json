@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-maps-to-transformer",
-  "version": "1.0.0",
+  "version": "1.1.0-mapsto.0",
   "description": "Amplify GraphQL @mapsTo transformer",
   "repository": {
     "type": "git",
@@ -29,29 +29,29 @@
     "test": "jest"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-core": "0.15.5",
-    "@aws-amplify/graphql-transformer-interfaces": "1.12.6",
+    "@aws-amplify/graphql-transformer-core": "0.16.0-mapsto.0",
+    "@aws-amplify/graphql-transformer-interfaces": "1.13.0-mapsto.0",
     "graphql": "^14.5.8",
-    "graphql-mapping-template": "4.20.3"
+    "graphql-mapping-template": "4.20.4-mapsto.0"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-model-transformer":"0.10.6",
-    "@aws-amplify/graphql-relational-transformer":"0.6.16",
-    "@aws-amplify/graphql-searchable-transformer":"0.10.6"
+    "@aws-amplify/graphql-model-transformer": "0.11.0-mapsto.0",
+    "@aws-amplify/graphql-relational-transformer": "0.7.0-mapsto.0",
+    "@aws-amplify/graphql-searchable-transformer": "0.11.0-mapsto.0"
   },
   "jest": {
     "transform": {
-        "^.+\\.tsx?$": "ts-jest"
+      "^.+\\.tsx?$": "ts-jest"
     },
     "testURL": "http://localhost",
     "testRegex": "(src/__tests__/.*\\.(test|spec))\\.(jsx?|tsx?)$",
     "moduleFileExtensions": [
-        "ts",
-        "tsx",
-        "js",
-        "jsx",
-        "json",
-        "node"
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
     ],
     "collectCoverage": true
   }

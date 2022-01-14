@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.15-mapsto.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.2.14...amplify-nodejs-function-template-provider@2.2.15-mapsto.0) (2022-01-14)
+
+**Note:** Version bump only for package amplify-nodejs-function-template-provider
+
+
+
+
+
 ## [2.2.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.2.13...amplify-nodejs-function-template-provider@2.2.14) (2022-01-13)
 
 **Note:** Version bump only for package amplify-nodejs-function-template-provider

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.22.6-mapsto.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.22.5...graphql-transformer-common@4.22.6-mapsto.0) (2022-01-14)
+
+
+### Bug Fixes
+
+* renamed relations except for manyToMany working ([ba3897f](https://github.com/aws-amplify/amplify-cli/commit/ba3897f97a805bb3b278af89e5b4f51ce75b2070))
+
+
+
+
+
 ## [4.22.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.22.4...graphql-transformer-common@4.22.5) (2022-01-13)
 
 

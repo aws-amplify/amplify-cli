@@ -1,6 +1,6 @@
 {
   "name": "amplify-storage-simulator",
-  "version": "1.6.3",
+  "version": "1.6.4-mapsto.0",
   "description": "An S3 simulator to test S3 APIs",
   "repository": {
     "type": "git",

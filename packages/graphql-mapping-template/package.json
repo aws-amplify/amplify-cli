@@ -1,6 +1,6 @@
 {
   "name": "graphql-mapping-template",
-  "version": "4.20.3",
+  "version": "4.20.4-mapsto.0",
   "description": "An AST wrapper around AWS AppSync resolvers",
   "repository": {
     "type": "git",

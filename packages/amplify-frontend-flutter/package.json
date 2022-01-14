@@ -1,6 +1,6 @@
 {
   "name": "amplify-frontend-flutter",
-  "version": "1.3.2",
+  "version": "1.3.3-mapsto.0",
   "description": "amplify-cli front-end plugin for Flutter projects",
   "repository": {
     "type": "git",

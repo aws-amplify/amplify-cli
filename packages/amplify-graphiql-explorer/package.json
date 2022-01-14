@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphiql-explorer",
-  "version": "2.4.3",
+  "version": "2.4.4-mapsto.0",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.4",

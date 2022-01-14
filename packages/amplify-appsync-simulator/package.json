@@ -1,6 +1,6 @@
 {
   "name": "amplify-appsync-simulator",
-  "version": "2.3.5",
+  "version": "2.3.6-mapsto.0",
   "description": "An AppSync Simulator to test AppSync API.",
   "repository": {
     "type": "git",
@@ -28,7 +28,7 @@
   "dependencies": {
     "@graphql-tools/schema": "^8.3.1",
     "@graphql-tools/utils": "^8.5.1",
-    "amplify-velocity-template": "1.4.6",
+    "amplify-velocity-template": "1.4.7-mapsto.0",
     "aws-sdk": "^2.963.0",
     "chalk": "^4.1.1",
     "cors": "^2.8.5",
@@ -38,8 +38,8 @@
     "graphql-iso-date": "^3.6.1",
     "graphql-subscriptions": "^1.1.0",
     "ip": "^1.1.5",
-    "jsonwebtoken": "^8.5.1",
     "js-string-escape": "^1.0.1",
+    "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^2.2.0",
     "libphonenumber-js": "^1.7.31",
     "lodash": "^4.17.21",
@@ -65,7 +65,7 @@
     "@types/node": "^12.12.6",
     "@types/pino": "^6.3.11",
     "@types/ws": "^7.4.4",
-    "amplify-graphiql-explorer": "2.4.3"
+    "amplify-graphiql-explorer": "2.4.4-mapsto.0"
   },
   "jest": {
     "testRunner": "jest-circus/runner",
