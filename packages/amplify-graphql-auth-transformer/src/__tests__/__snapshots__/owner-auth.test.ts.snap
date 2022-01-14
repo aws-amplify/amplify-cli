@@ -135,13 +135,13 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $primaryFieldMap = {} )
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #if( !$util.isNull($ctx.args.parent) )
-    #set( $parentClaim = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
+    #set( $parentClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
     #if( $util.isString($ctx.args.parent) )
-      #set( $parentCondition = ($parentClaim == $ctx.args.parent) )
+      #set( $parentCondition0 = ($parentClaim0 == $ctx.args.parent) )
     #else
-      #set( $parentCondition = ($parentClaim == $util.defaultIfNull($ctx.args.parent.get(\\"eq\\"), \\"___xamznone____\\")) )
+      #set( $parentCondition0 = ($parentClaim0 == $util.defaultIfNull($ctx.args.parent.get(\\"eq\\"), \\"___xamznone____\\")) )
     #end
-    #if( $parentCondition )
+    #if( $parentCondition0 )
       #set( $isAuthorized = true )
       $util.qr($ctx.stash.put(\\"authFilter\\", null))
     #end
@@ -149,13 +149,13 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     $util.qr($primaryFieldMap.put(\\"parent\\", $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\")))
   #end
   #if( !$util.isNull($ctx.args.child) )
-    #set( $childClaim = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
+    #set( $childClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
     #if( $util.isString($ctx.args.child) )
-      #set( $childCondition = ($childClaim == $ctx.args.child) )
+      #set( $childCondition1 = ($childClaim1 == $ctx.args.child) )
     #else
-      #set( $childCondition = ($childClaim == $util.defaultIfNull($ctx.args.child.get(\\"eq\\"), \\"___xamznone____\\")) )
+      #set( $childCondition1 = ($childClaim1 == $util.defaultIfNull($ctx.args.child.get(\\"eq\\"), \\"___xamznone____\\")) )
     #end
-    #if( $childCondition )
+    #if( $childCondition1 )
       #set( $isAuthorized = true )
       $util.qr($ctx.stash.put(\\"authFilter\\", null))
     #end
