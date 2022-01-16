@@ -12,13 +12,14 @@ test('happy case with static groups', () => {
     },
     additionalAuthenticationProviders: [],
   };
-  const validSchema = `
-  type Post @model @auth(rules: [{allow: groups, groups: ["Admin", "Dev"]}]) {
-    id: ID!
-    title: String!
-    createdAt: String
-    updatedAt: String
-  }`;
+  const validSchema = /* GraphQL */ `
+    type Post @model @auth(rules: [{ allow: groups, groups: ["Admin", "Dev"] }]) {
+      id: ID!
+      title: String!
+      createdAt: String
+      updatedAt: String
+    }
+  `;
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
@@ -30,22 +31,22 @@ test('happy case with static groups', () => {
   );
 });
 
-test('happy case with dynamic groups', () => {
+test(`'groups' @auth with dynamic groups and custom claim on String entity`, () => {
   const authConfig: AppSyncAuthConfiguration = {
     defaultAuthentication: {
       authenticationType: 'AMAZON_COGNITO_USER_POOLS',
     },
     additionalAuthenticationProviders: [],
   };
-  const validSchema = `
-    type Post @model @auth(rules: [{allow: groups, groupsField: "groups"}]) {
-        id: ID!
-        title: String!
-        groups: [String]
-        createdAt: String
-        updatedAt: String
+  const validSchema = /* GraphQL */ `
+    type Post @model @auth(rules: [{ allow: groups, groupsField: "group" }]) {
+      id: ID!
+      title: String!
+      group: String!
+      createdAt: String
+      updatedAt: String
     }
-    `;
+  `;
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
@@ -61,16 +62,65 @@ test('happy case with dynamic groups', () => {
   expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toContain('#if( $util.isList($util.parseJson($groupClaim0)) )');
   expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = $util.parseJson($groupClaim0) )');
   expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = [$groupClaim0] )');
+  expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toContain('#if( $groupEntity0 == $userGroup )');
 
   expect(out.resolvers['Mutation.updatePost.auth.1.res.vtl']).toContain('#if( $util.isString($groupClaim0) )');
   expect(out.resolvers['Mutation.updatePost.auth.1.res.vtl']).toContain('#if( $util.isList($util.parseJson($groupClaim0)) )');
   expect(out.resolvers['Mutation.updatePost.auth.1.res.vtl']).toContain('#set( $groupClaim0 = $util.parseJson($groupClaim0) )');
   expect(out.resolvers['Mutation.updatePost.auth.1.res.vtl']).toContain('#set( $groupClaim0 = [$groupClaim0] )');
+  expect(out.resolvers['Mutation.updatePost.auth.1.res.vtl']).toContain('#if( $groupEntity0 == $userGroup )');
 
   expect(out.resolvers['Mutation.deletePost.auth.1.res.vtl']).toContain('#if( $util.isString($groupClaim0) )');
   expect(out.resolvers['Mutation.deletePost.auth.1.res.vtl']).toContain('#if( $util.isList($util.parseJson($groupClaim0)) )');
   expect(out.resolvers['Mutation.deletePost.auth.1.res.vtl']).toContain('#set( $groupClaim0 = $util.parseJson($groupClaim0) )');
   expect(out.resolvers['Mutation.deletePost.auth.1.res.vtl']).toContain('#set( $groupClaim0 = [$groupClaim0] )');
+  expect(out.resolvers['Mutation.deletePost.auth.1.res.vtl']).toContain('#if( $groupEntity0 == $userGroup )');
+});
+
+test(`'groups' @auth with dynamic groups and custom claim on list entity`, () => {
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    },
+    additionalAuthenticationProviders: [],
+  };
+  const validSchema = /* GraphQL */ `
+    type Post @model @auth(rules: [{ allow: groups, groupsField: "groups" }]) {
+      id: ID!
+      title: String!
+      groups: [String!]
+      createdAt: String
+      updatedAt: String
+    }
+  `;
+  const transformer = new GraphQLTransform({
+    authConfig,
+    transformers: [new ModelTransformer(), new AuthTransformer()],
+  });
+  const out = transformer.transform(validSchema);
+
+  expect(out).toBeDefined();
+  expect(out.rootStack!.Resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
+    'AMAZON_COGNITO_USER_POOLS',
+  );
+
+  expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toContain('#if( $util.isString($groupClaim0) )');
+  expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toContain('#if( $util.isList($util.parseJson($groupClaim0)) )');
+  expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = $util.parseJson($groupClaim0) )');
+  expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toContain('#set( $groupClaim0 = [$groupClaim0] )');
+  expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toContain('#if( $groupEntity0.contains($userGroup) )');
+
+  expect(out.resolvers['Mutation.updatePost.auth.1.res.vtl']).toContain('#if( $util.isString($groupClaim0) )');
+  expect(out.resolvers['Mutation.updatePost.auth.1.res.vtl']).toContain('#if( $util.isList($util.parseJson($groupClaim0)) )');
+  expect(out.resolvers['Mutation.updatePost.auth.1.res.vtl']).toContain('#set( $groupClaim0 = $util.parseJson($groupClaim0) )');
+  expect(out.resolvers['Mutation.updatePost.auth.1.res.vtl']).toContain('#set( $groupClaim0 = [$groupClaim0] )');
+  expect(out.resolvers['Mutation.updatePost.auth.1.res.vtl']).toContain('#if( $groupEntity0.contains($userGroup) )');
+
+  expect(out.resolvers['Mutation.deletePost.auth.1.res.vtl']).toContain('#if( $util.isString($groupClaim0) )');
+  expect(out.resolvers['Mutation.deletePost.auth.1.res.vtl']).toContain('#if( $util.isList($util.parseJson($groupClaim0)) )');
+  expect(out.resolvers['Mutation.deletePost.auth.1.res.vtl']).toContain('#set( $groupClaim0 = $util.parseJson($groupClaim0) )');
+  expect(out.resolvers['Mutation.deletePost.auth.1.res.vtl']).toContain('#set( $groupClaim0 = [$groupClaim0] )');
+  expect(out.resolvers['Mutation.deletePost.auth.1.res.vtl']).toContain('#if( $groupEntity0.contains($userGroup) )');
 });
 
 test(`'groups' @auth with dynamic groups and custom claim on index query`, () => {
@@ -80,16 +130,16 @@ test(`'groups' @auth with dynamic groups and custom claim on index query`, () =>
     },
     additionalAuthenticationProviders: [],
   };
-  const validSchema = `
-    type Post @model @auth(rules: [{allow: groups, groupsField: "group", groupClaim: "tenants"}]) {
-        id: ID!
-        title: String!
-        userId: ID! @index(name: "byUser", queryField: "postsByUser")
-        group: String!
-        createdAt: String
-        updatedAt: String
+  const validSchema = /* GraphQL */ `
+    type Post @model @auth(rules: [{ allow: groups, groupsField: "group", groupClaim: "tenants" }]) {
+      id: ID!
+      title: String!
+      userId: ID! @index(name: "byUser", queryField: "postsByUser")
+      group: String!
+      createdAt: String
+      updatedAt: String
     }
-    `;
+  `;
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer(), new IndexTransformer()],
@@ -119,14 +169,15 @@ test('validation on @auth on a non-@model type', () => {
     },
     additionalAuthenticationProviders: [],
   };
-  const invalidSchema = `
-    type Post @auth(rules: [{allow: groups, groupsField: "groups"}]) {
-        id: ID!
-        title: String!
-        group: String
-        createdAt: String
-        updatedAt: String
-    }`;
+  const invalidSchema = /* GraphQL */ `
+    type Post @auth(rules: [{ allow: groups, groupsField: "groups" }]) {
+      id: ID!
+      title: String!
+      group: String
+      createdAt: String
+      updatedAt: String
+    }
+  `;
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
@@ -141,14 +192,15 @@ test('empty groups list', () => {
     },
     additionalAuthenticationProviders: [],
   };
-  const invalidSchema = `
+  const invalidSchema = /* GraphQL */ `
     type Post @model @auth(rules: [{ allow: groups, groups: [] }]) {
       id: ID!
       title: String!
       group: String
       createdAt: String
       updatedAt: String
-    }`;
+    }
+  `;
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
@@ -163,14 +215,15 @@ test('no @auth rules list', () => {
     },
     additionalAuthenticationProviders: [],
   };
-  const invalidSchema = `
+  const invalidSchema = /* GraphQL */ `
     type Post @model @auth(rules: []) {
       id: ID!
       title: String!
       group: String
       createdAt: String
       updatedAt: String
-    }`;
+    }
+  `;
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
