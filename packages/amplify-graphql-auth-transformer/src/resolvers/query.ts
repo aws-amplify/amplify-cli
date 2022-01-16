@@ -83,21 +83,18 @@ const generateAuthOnRelationalModelQueryExpression = (
         modelQueryExpression.push(
           set(ref(`primaryRole${idx}`), getOwnerClaim(role.claim!)),
           ifElse(
-            and([
-              parens(not(ref(`util.isNull($ctx.${claim}.${field})`))),
-              parens(equals(ref(`ctx.${claim}.${field}`), ref(`primaryRole${idx}`))),
-            ]),
-            compoundExpression([
-              set(ref(IS_AUTHORIZED_FLAG), bool(true)),
-              qref(methodCall(ref('ctx.stash.put'), str('authFilter'), nul())),
-            ]),
+            not(ref(`util.isNull($ctx.${claim}.${field})`)),
             iff(
-              and([not(ref(IS_AUTHORIZED_FLAG)), methodCall(ref('util.isNull'), ref('ctx.stash.authFilter'))]),
+              equals(ref(`ctx.${claim}.${field}`), ref(`primaryRole${idx}`)),
               compoundExpression([
-                qref(methodCall(ref(`ctx.${claim}.put`), str(field), ref(`primaryRole${idx}`))),
+                qref(methodCall(ref('ctx.stash.put'), str('authFilter'), nul())),
                 set(ref(IS_AUTHORIZED_FLAG), bool(true)),
               ]),
             ),
+            compoundExpression([
+              qref(methodCall(ref(`ctx.${claim}.put`), str(field), ref(`primaryRole${idx}`))),
+              set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+            ]),
           ),
         );
       } else if (role.strategy === 'groups') {
@@ -105,21 +102,18 @@ const generateAuthOnRelationalModelQueryExpression = (
         modelQueryExpression.push(
           set(ref(`primaryRole${idx}`), getIdentityClaimExp(str(role.claim!), str(NONE_VALUE))),
           ifElse(
-            and([
-              parens(not(ref(`util.isNull($ctx.${claim}.${field})`))),
-              parens(equals(ref(`ctx.${claim}.${field}`), ref(`primaryRole${idx}`))),
-            ]),
-            compoundExpression([
-              set(ref(IS_AUTHORIZED_FLAG), bool(true)),
-              qref(methodCall(ref('ctx.stash.put'), str('authFilter'), nul())),
-            ]),
+            not(ref(`util.isNull($ctx.${claim}.${field})`)),
             iff(
-              and([not(ref(IS_AUTHORIZED_FLAG)), methodCall(ref('util.isNull'), ref('ctx.stash.authFilter'))]),
+              equals(ref(`ctx.${claim}.${field}`), ref(`primaryRole${idx}`)),
               compoundExpression([
-                qref(methodCall(ref(`ctx.${claim}.put`), str(field), ref(`primaryRole${idx}`))),
+                qref(methodCall(ref('ctx.stash.put'), str('authFilter'), nul())),
                 set(ref(IS_AUTHORIZED_FLAG), bool(true)),
               ]),
             ),
+            compoundExpression([
+              qref(methodCall(ref(`ctx.${claim}.put`), str(field), ref(`primaryRole${idx}`))),
+              set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+            ]),
           ),
         );
       }
