@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.3.0-mapsto2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.26...amplify-util-mock@4.3.0-mapsto2.0) (2022-01-18)
+
+
+### Bug Fixes
+
+* more searchable issues and mock test ([4d58931](https://github.com/aws-amplify/amplify-cli/commit/4d58931fa9e3adfc0e4bb57eee9a155938523b70))
+* remove functionName from transform-host lambdas ([#9491](https://github.com/aws-amplify/amplify-cli/issues/9491)) ([959d6d8](https://github.com/aws-amplify/amplify-cli/commit/959d6d85056c672b3281794163a7bc534340a513))
+
+
+### Features
+
+* support table renames in mock ([63d60e1](https://github.com/aws-amplify/amplify-cli/commit/63d60e15ae02986d7365c54e9f9983965dc9b622))
+
+
+### Reverts
+
+* Revert "chore: codegen version bump (#9512)" (#9524) ([b653441](https://github.com/aws-amplify/amplify-cli/commit/b65344134a20785afc96abf1798af89eec93fd84)), closes [#9512](https://github.com/aws-amplify/amplify-cli/issues/9512) [#9524](https://github.com/aws-amplify/amplify-cli/issues/9524)
+
+
+
+
+
 ## [4.2.26](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.25...amplify-util-mock@4.2.26) (2022-01-13)
 
 

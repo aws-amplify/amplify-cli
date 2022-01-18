@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.11.0-mapsto2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.10.6...@aws-amplify/graphql-model-transformer@0.11.0-mapsto2.0) (2022-01-18)
+
+
+### Bug Fixes
+
+* address most PR comments ([8f432f3](https://github.com/aws-amplify/amplify-cli/commit/8f432f3e598ab665ae0590bd9888c13fcf1fcd62))
+* push failures for dependent functions ([184dcfa](https://github.com/aws-amplify/amplify-cli/commit/184dcfa05698f535b3ade5a062dd02d5619a4d91))
+* renamed relations except for manyToMany working ([ba3897f](https://github.com/aws-amplify/amplify-cli/commit/ba3897f97a805bb3b278af89e5b4f51ce75b2070))
+* test failures ([129f66c](https://github.com/aws-amplify/amplify-cli/commit/129f66c28cda4650ca9f1d4fea095c103daab8bd))
+
+
+### Features
+
+* retain original table on type rename ([43b1204](https://github.com/aws-amplify/amplify-cli/commit/43b12048f9ee65b5eeb758e32a715d25673d4fee))
+
+
+
+
+
 ## [0.10.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.10.5...@aws-amplify/graphql-model-transformer@0.10.6) (2022-01-13)
 
 

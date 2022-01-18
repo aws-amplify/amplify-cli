@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.13.0-mapsto2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.12.6...@aws-amplify/graphql-transformer-interfaces@1.13.0-mapsto2.0) (2022-01-18)
+
+
+### Bug Fixes
+
+* issue with transformer dependency chain ([8975b22](https://github.com/aws-amplify/amplify-cli/commit/8975b22be871edbea9d099bed453ae086e9a6748))
+* refactor complete with tests passing ([86b59ca](https://github.com/aws-amplify/amplify-cli/commit/86b59ca268a2c85ce29efe8384a457650efe5ead))
+* refactor to support multiple renamings per type ([46d4028](https://github.com/aws-amplify/amplify-cli/commit/46d40281431afff578fcb883b70600b77979b024))
+
+
+### Features
+
+* mapsTo with searchable ([b280b7c](https://github.com/aws-amplify/amplify-cli/commit/b280b7c2e218f86e352e414aaf55f96f1f8219e9))
+* retain original table on type rename ([43b1204](https://github.com/aws-amplify/amplify-cli/commit/43b12048f9ee65b5eeb758e32a715d25673d4fee))
+
+
+
+
+
 ## [1.12.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.12.5...@aws-amplify/graphql-transformer-interfaces@1.12.6) (2022-01-13)
 
 
