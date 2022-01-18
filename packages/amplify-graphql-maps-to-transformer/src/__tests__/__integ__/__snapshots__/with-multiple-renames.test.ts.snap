@@ -61,3 +61,15 @@ exports[`@mapsTo with multiple foreign key field renames on single model 6`] = `
 #end
 $util.toJson($ctx.prev.result)"
 `;
+
+exports[`maps sync resolvers when DataStore is enabled 1`] = `
+"#foreach( $item in $ctx.prev.result.items )
+  $util.qr($item.put(\\"agendaTasksId\\", $item.checklistTasksId))
+  $util.qr($item.remove(\\"checklistTasksId\\"))
+  $util.qr($item.put(\\"todoLocId\\", $item.taskLocId))
+  $util.qr($item.remove(\\"taskLocId\\"))
+  $util.qr($item.put(\\"todoDayId\\", $item.taskDayId))
+  $util.qr($item.remove(\\"taskDayId\\"))
+#end
+$util.toJson($ctx.prev.result)"
+`;
