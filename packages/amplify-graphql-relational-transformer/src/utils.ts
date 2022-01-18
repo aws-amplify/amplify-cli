@@ -238,10 +238,11 @@ export function registerHasOneForeignKeyMappings({
     const modelFieldMap = resourceHelper.getModelFieldMap(thisTypeName);
     modelFieldMap.addMappedField({ currentFieldName: currAttrName, originalFieldName: origAttrName });
 
-    (['create', 'update', 'get', 'list'] as const).forEach(op => {
+    (['create', 'update', 'get', 'list', 'sync'] as const).forEach(op => {
       const opFieldName = getFieldNameFor(op, thisTypeName);
       const opTypeName = op === 'create' || op === 'update' ? 'Mutation' : 'Query';
-      modelFieldMap.addResolverReference({ typeName: opTypeName, fieldName: opFieldName, isList: op === 'list' });
+      const opIsList = op === 'list' || op === 'sync';
+      modelFieldMap.addResolverReference({ typeName: opTypeName, fieldName: opFieldName, isList: opIsList });
     });
   }
 
@@ -276,11 +277,12 @@ export function registerHasManyForeignKeyMappings({
     .addMappedField({ currentFieldName: currAttrName, originalFieldName: origAttrName })
     .addResolverReference({ typeName: thisTypeName, fieldName: thisFieldName, isList: true });
 
-  (['create', 'update', 'get', 'list'] as const).forEach(op => {
+  (['create', 'update', 'get', 'list', 'sync'] as const).forEach(op => {
     const opFieldName = getFieldNameFor(op, relatedTypeName);
     const opTypeName = op === 'create' || op === 'update' ? 'Mutation' : 'Query';
+    const opIsList = op === 'list' || op === 'sync';
 
     // registers field mappings for CRUD resolvers on related type
-    modelFieldMap.addResolverReference({ typeName: opTypeName, fieldName: opFieldName, isList: op === 'list' });
+    modelFieldMap.addResolverReference({ typeName: opTypeName, fieldName: opFieldName, isList: opIsList });
   });
 }
