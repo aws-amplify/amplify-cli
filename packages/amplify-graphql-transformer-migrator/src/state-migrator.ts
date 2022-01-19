@@ -15,6 +15,7 @@ export const revertTransformerVersion = async (env?: string): Promise<void> => {
     _.set(cliJSON, ['features', 'graphqltransformer', 'useexperimentalpipelinedtransformer'], false);
     _.set(cliJSON, ['features', 'graphqltransformer', 'transformerversion'], 1);
     _.set(cliJSON, ['features', 'graphqltransformer', 'suppressschemamigrationprompt'], false);
+    _.set(cliJSON, ['features', 'codegen', 'useappsyncmodelgenplugin'], true);
   };
   await mutateCliJsonFile(mutation, env);
 };
