@@ -1,5 +1,5 @@
 import { $TSAny, $TSContext, exitOnNextTick } from 'amplify-cli-core';
-import { alphanumeric, and, maxLength, minLength, printer, prompter } from 'amplify-prompts';
+import { regexValidator, alphanumeric, and, maxLength, minLength, printer, prompter } from 'amplify-prompts';
 import {
   getRoleAccessDefaultValues,
   S3AccessType,
@@ -92,7 +92,7 @@ export async function askBucketNameQuestion(context: $TSContext, defaultValues: 
   const message = 'Provide bucket name:';
   const onErrorMsg =
     'Bucket name can only use the following characters: a-z 0-9 - and should have minimum 3 character and max of 47 character';
-  const validator = and([alphanumeric(), minLength(3), maxLength(47)], onErrorMsg);
+  const validator = and([regexValidator('Input can only contain the following characters: a-z 0-9', RegExp(/^[a-z0-9-]+$/) ),minLength(3), maxLength(47)], onErrorMsg);
   const bucketName = await prompter.input<'one', string>(message, { validate: validator, initial: defaultValues['bucketName'] });
   return bucketName;
 }
