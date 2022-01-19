@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.3-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@3.3.2...amplify-frontend-android@3.3.3-beta.1) (2022-01-19)
+
+
+### Bug Fixes
+
+* fix amplify pull and init to regenerated frontend configuration  ([#9499](https://github.com/aws-amplify/amplify-cli/issues/9499)) ([e3e9c2d](https://github.com/aws-amplify/amplify-cli/commit/e3e9c2dc8be90432d95751db09c706eb9ace2863))
+
+
+
+
+
 ## [3.3.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@3.3.2...amplify-frontend-android@3.3.3-beta.0) (2022-01-19)
 
 

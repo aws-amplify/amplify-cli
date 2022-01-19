@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.27-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.26...amplify-util-mock@4.2.27-beta.1) (2022-01-19)
+
+
+### Bug Fixes
+
+* remove functionName from transform-host lambdas ([#9491](https://github.com/aws-amplify/amplify-cli/issues/9491)) ([959d6d8](https://github.com/aws-amplify/amplify-cli/commit/959d6d85056c672b3281794163a7bc534340a513))
+
+
+### Reverts
+
+* Revert "chore: codegen version bump (#9512)" (#9524) ([b653441](https://github.com/aws-amplify/amplify-cli/commit/b65344134a20785afc96abf1798af89eec93fd84)), closes [#9512](https://github.com/aws-amplify/amplify-cli/issues/9512) [#9524](https://github.com/aws-amplify/amplify-cli/issues/9524)
+
+
+
+
+
 ## [4.2.27-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.26...amplify-util-mock@4.2.27-beta.0) (2022-01-19)
 
 

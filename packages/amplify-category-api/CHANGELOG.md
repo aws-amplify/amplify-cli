@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.1-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.2.0...@aws-amplify/amplify-category-api@1.2.1-beta.1) (2022-01-19)
+
+
+### Bug Fixes
+
+* **api:** container secrets pickup correct environment values ([#9513](https://github.com/aws-amplify/amplify-cli/issues/9513)) ([9986bd6](https://github.com/aws-amplify/amplify-cli/commit/9986bd6e0885609a04080f617db6c7331fb76f6a))
+
+
+
+
+
 ## [1.2.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.2.0...@aws-amplify/amplify-category-api@1.2.1-beta.0) (2022-01-19)
 
 
