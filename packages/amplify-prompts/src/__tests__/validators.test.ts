@@ -112,7 +112,7 @@ describe('regexpValidator', () => {
   });
 
   it('returns default error message for strings not matching regexp', () => {
-    expect(matchRegex(undefined, RegExp(/^[a-z0-9-]+$/))('test_logs_*')).toMatchInlineSnapshot(`"Input must satisfy regular expression"`);
+    expect(matchRegex(undefined, RegExp(/^[a-z0-9-]+$/))('test_logs_*')).toMatchInlineSnapshot(`"Input must match regular expression"`);
   });
 
   it('returns specified error message for strings not matching regexp', () => {
