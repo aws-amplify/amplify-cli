@@ -3,6 +3,7 @@ import {
   addAuthWithDefault,
   addAuthWithGroupsAndAdminAPI,
   addS3AndAuthWithAuthOnlyAccess,
+  addS3StorageWithSettings,
   addS3WithGroupAccess,
   addS3WithGuestAccess,
   addS3WithTrigger,
@@ -18,6 +19,7 @@ import {
 } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { getShortId } from '../import-helpers';
 
 function getServiceMeta(projectRoot: string, category: string, service: string): $TSAny {
   const meta = getProjectMeta(projectRoot);
@@ -53,6 +55,14 @@ describe('amplify add/update storage(S3)', () => {
   it('init a project and add S3 bucket with Auth user access only', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addS3AndAuthWithAuthOnlyAccess(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    await validate(projRoot);
+  });
+
+  it('init a project and add S3 bucket with hyphenated-name and Auth only access', async () => {
+    const bucketParams = { bucketName : `test-hyphenated-bucketname-${getShortId()}`};
+    await initJSProjectWithProfile(projRoot, {});
+    await addS3AndAuthWithAuthOnlyAccess(projRoot, bucketParams);
     await amplifyPushAuth(projRoot);
     await validate(projRoot);
   });
