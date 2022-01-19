@@ -17,8 +17,8 @@ export const alphanumeric =
   (input: string) =>
     /^[a-zA-Z0-9]+$/.test(input) ? true : message;
 
-export const regexValidator =
-  (message: string = 'Input must satisfy regular expression', validatorRegex : RegExp = /^[a-zA-Z0-9]+$/ ): Validator =>
+export const matchRegex =
+  (message: string = 'Input must satisfy regular expression', validatorRegex : RegExp): Validator =>
   (input: string) =>
     validatorRegex.test(input) ? true : message;
 

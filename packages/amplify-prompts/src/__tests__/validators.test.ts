@@ -1,4 +1,4 @@
-import { alphanumeric, and, integer, maxLength, minLength, not, or, regexValidator } from '../validators';
+import { alphanumeric, and, integer, maxLength, minLength, not, or, matchRegex } from '../validators';
 
 describe('alphanumeric', () => {
   it('returns true for alphanumeric strings', () => {
@@ -108,14 +108,14 @@ describe('not', () => {
 
 describe('regexpValidator', () => {
   it('returns true for strings matching regexp', () => {
-    expect(regexValidator('regExp test', RegExp(/^[a-z0-9-]+$/))('test-logs-20220118')).toBe(true);
+    expect(matchRegex('regExp test', RegExp(/^[a-z0-9-]+$/))('test-logs-20220118')).toBe(true);
   });
 
   it('returns default error message for strings not matching regexp', () => {
-    expect(regexValidator(undefined, RegExp(/^[a-z0-9-]+$/))('test_logs_*')).toMatchInlineSnapshot(`"Input must satisfy regular expression"`);
+    expect(matchRegex(undefined, RegExp(/^[a-z0-9-]+$/))('test_logs_*')).toMatchInlineSnapshot(`"Input must satisfy regular expression"`);
   });
 
   it('returns specified error message for strings not matching regexp', () => {
-    expect(regexValidator("Only alphanumeric chars and hyphen allowed in string", RegExp(/^[a-z0-9-]+$/))('test_logs_*')).toMatchInlineSnapshot(`"Only alphanumeric chars and hyphen allowed in string"`);
+    expect(matchRegex("Only alphanumeric chars and hyphen allowed in string", RegExp(/^[a-z0-9-]+$/))('test_logs_*')).toMatchInlineSnapshot(`"Only alphanumeric chars and hyphen allowed in string"`);
   });
 });
