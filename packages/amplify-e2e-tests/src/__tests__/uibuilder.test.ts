@@ -1,4 +1,5 @@
-import { getAppId, amplifyPull, createNewProjectDir, deleteProject, deleteProjectDir, initJSProjectWithProfile } from 'amplify-e2e-core';
+import { getBackendAmplifyMeta, getAppId, amplifyPull, createNewProjectDir, deleteProject, deleteProjectDir, initJSProjectWithProfile } from 'amplify-e2e-core';
+
 import { getNpxPath, getNpmPath } from 'amplify-e2e-core';
 import { spawnSync, spawn } from 'child_process';
 import fs from 'fs-extra';
@@ -2456,8 +2457,8 @@ describe('amplify pull with uibuilder', () => {
     });
 
     appId = getAppId(projRoot);
-
-    const amplifyUIBuilder = new aws.AmplifyUIBuilder({ region: process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-west-2' });
+    const meta = getBackendAmplifyMeta(projRoot);
+    const amplifyUIBuilder = new aws.AmplifyUIBuilder({ region: meta.providers.awscloudformation.Region });
     return await amplifyUIBuilder
       .createComponent({
         appId,
