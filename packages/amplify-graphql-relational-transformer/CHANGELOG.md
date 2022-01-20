@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.18-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.6.17...@aws-amplify/graphql-relational-transformer@0.6.18-beta.1) (2022-01-20)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+
+
+
+
 ## [0.6.18-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.6.17...@aws-amplify/graphql-relational-transformer@0.6.18-beta.0) (2022-01-20)
 
 **Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
