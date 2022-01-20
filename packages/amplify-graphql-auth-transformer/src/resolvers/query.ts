@@ -211,25 +211,12 @@ const generateAuthOnModelQueryExpression = (
             not(ref('primaryFieldMap.isEmpty()')),
           ]),
           compoundExpression([
-            set(
-              ref('modelQueryExpression'),
-              methodCall(
-                ref('util.defaultIfNull'),
-                ref('ctx.stash.modelQueryExpression'),
-                obj({ expression: str(''), expressionNames: obj({}), expressionValues: obj({}) }),
-              ),
-            ),
-            ifElse(
-              methodCall(ref('util.isNullOrBlank'), ref('modelQueryExpression.expression')),
-              set(ref('expressions'), list([])),
-              set(ref('expressions'), list([ref('modelQueryExpression.expression')])),
-            ),
+            set(ref('modelQueryExpression'), ref('ctx.stash.modelQueryExpression')),
             forEach(ref('entry'), ref('primaryFieldMap.entrySet()'), [
-              qref(ref('expressions.add("#${entry.key} = :${entry.value}")')),
+              set(ref('modelQueryExpression.expression'), str('${modelQueryExpression.expression} AND #${entry.key} = :${entry.value}')),
               qref(ref('modelQueryExpression.expressionNames.put("#${entry.key}", $entry.key)')),
               qref(ref('modelQueryExpression.expressionValues.put(":${entry.value}", $util.dynamodb.toDynamoDB($entry.value))')),
             ]),
-            qref(ref('modelQueryExpression.put("expression", $expressions.join(\' AND \'))')),
             qref(methodCall(ref('ctx.stash.put'), str('modelQueryExpression'), ref('modelQueryExpression'))),
             set(ref(IS_AUTHORIZED_FLAG), bool(true)),
           ]),
