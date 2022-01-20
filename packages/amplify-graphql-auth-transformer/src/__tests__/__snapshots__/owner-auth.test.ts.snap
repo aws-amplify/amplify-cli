@@ -127,3 +127,71 @@ $util.unauthorized()
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **"
 `;
+
+exports[`test owner fields on primaryKey create authfilter for scan operation 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$util.isNull($ctx.args.parent) )
+    #set( $parentClaim = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
+    #if( $util.isString($ctx.args.parent) )
+      #set( $parentCondition = ($parentClaim == $ctx.args.parent) )
+    #else
+      #set( $parentCondition = ($parentClaim == $util.defaultIfNull($ctx.args.parent.get(\\"eq\\"), \\"___xamznone____\\")) )
+    #end
+    #if( $parentCondition )
+      #set( $isAuthorized = true )
+      $util.qr($ctx.stash.put(\\"authFilter\\", null))
+    #end
+  #else
+    $util.qr($primaryFieldMap.put(\\"parent\\", $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\")))
+  #end
+  #if( !$util.isNull($ctx.args.child) )
+    #set( $childClaim = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
+    #if( $util.isString($ctx.args.child) )
+      #set( $childCondition = ($childClaim == $ctx.args.child) )
+    #else
+      #set( $childCondition = ($childClaim == $util.defaultIfNull($ctx.args.child.get(\\"eq\\"), \\"___xamznone____\\")) )
+    #end
+    #if( $childCondition )
+      #set( $isAuthorized = true )
+      $util.qr($ctx.stash.put(\\"authFilter\\", null))
+    #end
+  #else
+    $util.qr($primaryFieldMap.put(\\"child\\", $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\")))
+  #end
+  #if( !$isAuthorized && !$primaryFieldMap.isEmpty() )
+    #if( $util.isNull($ctx.args.parent) )
+      #set( $authFilter = $util.defaultIfNull($ctx.stash.get(\\"authFilter\\").get(\\"or\\"), []) )
+      #foreach( $entry in $primaryFieldMap.entrySet() )
+        #set( $filterMap = {} )
+        #if( $util.isList($entry.value) )
+          $util.qr($filterMap.put($entry.key, { \\"in\\": $entry.value }))
+        #else
+          $util.qr($filterMap.put($entry.key, { \\"eq\\": $entry.value }))
+        #end
+        $util.qr($authFilter.add($filterMap))
+      #end
+      $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #else
+      #if( $util.isNull($ctx.stash.authFilter) )
+        #set( $modelQueryExpression = $ctx.stash.modelQueryExpression )
+        #foreach( $entry in $primaryFieldMap.entrySet() )
+          #set( $modelQueryExpression.expression = \\"\${modelQueryExpression.expression} AND #\${entry.key} = :\${entry.key}\\" )
+          $util.qr($modelQueryExpression.expressionNames.put(\\"#\${entry.key}\\", $entry.key))
+          $util.qr($modelQueryExpression.expressionValues.put(\\":\${entry.key}\\", $util.dynamodb.toDynamoDB($entry.value)))
+        #end
+        $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
+        #set( $isAuthorized = true )
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
