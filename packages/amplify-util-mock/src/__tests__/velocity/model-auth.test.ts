@@ -539,37 +539,4 @@ describe('@model field auth', () => {
       expect(out.resolvers?.[`Student.${field}.req.vtl`]).not.toBeDefined();
     });
   });
-
-  test('handle existing expression in the modelQueryExpression', () => {
-    const validSchema = `
-      type User
-      @model
-      @auth(
-        rules: [
-          { allow: groups, groups: ["admin"] }
-          { allow: owner, ownerField: "id", operations: [read] }
-        ]
-      ) {
-      id: ID!
-      first_name: String
-      last_name: String
-      email: String!
-      isAdmin: Boolean
-    }`;
-
-    const out = transformer.transform(validSchema);
-    expect(out).toBeDefined();
-    // create context and request
-    const ownerContext: AppSyncVTLContext = {
-      stash: { modelQueryExpression: { expression: 'true == true' } },
-    };
-
-    const requestTemplate = out.resolvers['Query.listUsers.auth.1.req.vtl'];
-    const vtlRequest = vtlTemplate.render(requestTemplate, { context: ownerContext, requestParameters: ownerRequest });
-
-    expect(vtlRequest).toBeDefined();
-    expect(vtlRequest.stash.modelQueryExpression).toBeDefined();
-    expect(vtlRequest.stash.modelQueryExpression.expression).toBeDefined();
-    expect(vtlRequest.stash.modelQueryExpression.expression).toEqual('true == true AND #id = :user1');
-  });
 });
