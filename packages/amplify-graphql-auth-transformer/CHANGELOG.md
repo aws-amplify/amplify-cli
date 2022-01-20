@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.5.8...@aws-amplify/graphql-auth-transformer@0.5.9) (2022-01-20)
+
+
+### Bug Fixes
+
+* parse dynamic groups custom claim to list ([#9466](https://github.com/aws-amplify/amplify-cli/issues/9466)) ([80d692b](https://github.com/aws-amplify/amplify-cli/commit/80d692bfb38f0efde2d6d32b63b1c60ad4148849))
+
+
+
+
+
 ## [0.5.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.5.7...@aws-amplify/graphql-auth-transformer@0.5.8) (2022-01-13)
 
 
