@@ -108,14 +108,18 @@ describe('not', () => {
 
 describe('regexpValidator', () => {
   it('returns true for strings matching regexp', () => {
-    expect(matchRegex('regExp test', RegExp(/^[a-z0-9-]+$/))('test-logs-20220118')).toBe(true);
+    expect(matchRegex(/^[a-z0-9-]+$/, 'regExp test')('test-logs-20220118')).toBe(true);
   });
 
   it('returns default error message for strings not matching regexp', () => {
-    expect(matchRegex(undefined, RegExp(/^[a-z0-9-]+$/))('test_logs_*')).toMatchInlineSnapshot(`"Input must match regular expression"`);
+    expect(matchRegex(/^[a-z0-9-]+$/, undefined)('test_logs_*')).toMatchInlineSnapshot(
+      `"Input 'undefined' does not match the regular expression /^[a-z0-9-]+$/"`,
+    );
   });
 
   it('returns specified error message for strings not matching regexp', () => {
-    expect(matchRegex("Only alphanumeric chars and hyphen allowed in string", RegExp(/^[a-z0-9-]+$/))('test_logs_*')).toMatchInlineSnapshot(`"Only alphanumeric chars and hyphen allowed in string"`);
+    expect(matchRegex(/^[a-z0-9-]+$/, 'Only alphanumeric chars and hyphen allowed in string')('test_logs_*')).toMatchInlineSnapshot(
+      `"Only alphanumeric chars and hyphen allowed in string"`,
+    );
   });
 });
