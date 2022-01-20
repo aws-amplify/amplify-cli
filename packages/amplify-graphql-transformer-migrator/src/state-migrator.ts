@@ -1,23 +1,34 @@
-import { $TSAny, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
+import * as path from 'path';
+import * as fs from 'fs-extra';
 import _ from 'lodash';
+import { $TSAny, FeatureFlags, pathManager, stateManager, JSONUtilities } from 'amplify-cli-core';
+
+export const backupLocation = (resourceDir: string) => path.join(resourceDir, '.migration-config-backup');
 
 export const updateTransformerVersion = async (env?: string): Promise<void> => {
   const mutation = (cliJSON: $TSAny) => {
     _.set(cliJSON, ['features', 'graphqltransformer', 'useexperimentalpipelinedtransformer'], true);
     _.set(cliJSON, ['features', 'graphqltransformer', 'transformerversion'], 2);
     _.set(cliJSON, ['features', 'graphqltransformer', 'suppressschemamigrationprompt'], true);
+    _.set(cliJSON, ['features', 'codegen', 'useappsyncmodelgenplugin'], true);
   };
   await mutateCliJsonFile(mutation, env);
 };
 
-export const revertTransformerVersion = async (env?: string): Promise<void> => {
-  const mutation = (cliJSON: $TSAny) => {
-    _.set(cliJSON, ['features', 'graphqltransformer', 'useexperimentalpipelinedtransformer'], false);
-    _.set(cliJSON, ['features', 'graphqltransformer', 'transformerversion'], 1);
-    _.set(cliJSON, ['features', 'graphqltransformer', 'suppressschemamigrationprompt'], false);
-    _.set(cliJSON, ['features', 'codegen', 'useappsyncmodelgenplugin'], true);
-  };
+export const backupCliJson = async (resourceDir: string, env? :string): Promise<void> => {
+  let cliJson = getCliJsonFile(env);
+  let backupPath = path.join(backupLocation(resourceDir), 'cli.json');
+  JSONUtilities.writeJson(backupPath, cliJson);
+};
+
+export const revertTransformerVersion = async (resourceDir: string, env?: string): Promise<void> => {
+  let backupPath = path.join(backupLocation(resourceDir), 'cli.json');
+  let backupJson: $TSAny = JSONUtilities.readJson(backupPath);
+  const mutation = (cliJson: $TSAny) => {
+    _.set(cliJson, ['features'], backupJson['features']);
+  }
   await mutateCliJsonFile(mutation, env);
+  fs.removeSync(backupLocation(resourceDir));
 };
 
 const mutateCliJsonFile = async (mutation: (cliObj: $TSAny) => void, env?: string): Promise<void> => {
@@ -35,3 +46,15 @@ const mutateCliJsonFile = async (mutation: (cliObj: $TSAny) => void, env?: strin
   stateManager.setCLIJSON(projectPath, cliJSON, envCLI ? env : undefined);
   await FeatureFlags.reloadValues();
 };
+
+const getCliJsonFile = (env?: string): Promise<$TSAny> => {
+  const projectPath = pathManager.findProjectRoot() ?? process.cwd();
+  let cliJSON;
+  if (env) {
+    cliJSON = stateManager.getCLIJSON(projectPath, env, { throwIfNotExist: false });
+  }
+  if (!cliJSON) {
+    cliJSON = stateManager.getCLIJSON(projectPath);
+  }
+  return cliJSON;
+}
