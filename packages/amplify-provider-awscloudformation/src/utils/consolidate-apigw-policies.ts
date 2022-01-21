@@ -20,12 +20,14 @@ type ApiGatewayAuthStackProps = Readonly<{
   description: string;
   stackName: string;
   apiGateways: $TSAny[];
+  envName: string;
 }>;
 
 type ApiGatewayPolicyCreationState = {
   apiGateway: $TSAny;
   apiRef: cdk.CfnParameter;
   env: cdk.CfnParameter;
+  envName: string;
   path: $TSAny;
   methods: $TSAny;
   roleCount: number;
@@ -76,6 +78,7 @@ class ApiGatewayAuthStack extends cdk.Stack {
       const state: ApiGatewayPolicyCreationState = {
         apiGateway,
         apiRef,
+        envName: props.envName,
         env,
         path: null,
         methods: null,
@@ -121,25 +124,25 @@ class ApiGatewayAuthStack extends cdk.Stack {
   }
 
   private createPoliciesFromResources(options: ApiGatewayPolicyCreationState) {
-    const { apiGateway, apiRef, env, roleName, path, methods, namePrefix } = options;
-    const policyResourceName = String(path.name).replace(/{[a-zA-Z0-9\-]+}/g, '*');
+    const { apiRef, env, roleName, path, methods, namePrefix, envName } = options;
+    const apiPath = String(path.name).replace(/{[a-zA-Z0-9\-]+}/g, '*');
 
     methods.forEach(method => {
-      const policySizeIncrease = computePolicySizeIncrease(method.length, policyResourceName.length, apiGateway.resourceName.length);
+      const policySizeIncrease = computePolicySizeIncrease(envName.length, method.length, apiPath.length);
 
       options.policyDocSize += policySizeIncrease;
       // If a managed policy hasn't been created yet, or the maximum
       // managed policy size has been exceeded, then create a new policy.
       if (options.roleCount === 0 || options.policyDocSize > MAX_MANAGED_POLICY_SIZE) {
-        // Initial size of 100 for version, statement, etc.
-        options.policyDocSize = 100 + policySizeIncrease;
+        // Initial size of 104 for version, statement, etc.
+        options.policyDocSize = 104 + policySizeIncrease;
         ++options.roleCount;
         options.managedPolicy = createManagedPolicy(this, `${namePrefix}${options.roleCount}`, roleName as unknown as string);
       }
 
       options.managedPolicy.policyDocument.Statement[0].Resource.push(
-        createApiResource(this.region, this.account, apiRef, env, method, `${policyResourceName}/*`),
-        createApiResource(this.region, this.account, apiRef, env, method, policyResourceName),
+        createApiResource(this.region, this.account, apiRef, env, method, `${apiPath}/*`),
+        createApiResource(this.region, this.account, apiRef, env, method, apiPath),
       );
     });
   }
@@ -170,18 +173,25 @@ function createApiResource(region, account, api, env, method, resourceName) {
   ]);
 }
 
-function computePolicySizeIncrease(methodLength: number, pathLength: number, nameLength: number): number {
+function computePolicySizeIncrease(stageLength: number, methodLength: number, pathLength: number): number {
+  // example:
+  //          1         2         3         4         5         6         7         8
+  // 12345678901234567890123456789012345678901234567890123456789012345678901234567890
+  // "arn:aws:execute-api:us-west-1:032500605820:hjrmfzed5l/dev/PATCH/bbb-p03/*",
+  //
   // Each path + HTTP method increases the policy size by roughly:
-  // - 2 * ~190 for the resource boilerplate, etc. (Whitespace is not counted)
-  // - 2 * the length of the HTTP method (ie /POST)
-  // - 2 * the length of the policy resource name (ie /items)
-  // - 2 * the length of the API resourceName
-  return 380 + 2 * (methodLength + pathLength + nameLength);
+  // - 2 * 64 chars for arn, wildcards, path separators, quotes and comma (region is calculated with 16 max length)
+  // - 2 * the length of the stage length (amplify env name)
+  // - 2 * the length of the method length
+  // - 2 * the length of the path length
+
+  return 2 * (64 + stageLength + methodLength + pathLength);
 }
 
 export async function consolidateApiGatewayPolicies(context: $TSContext, stackName: string): Promise<$TSObject> {
   const apiGateways = [];
   const meta = stateManager.getMeta();
+  const envInfo = stateManager.getLocalEnvInfo();
   const apis: $TSObject = meta?.api ?? {};
 
   try {
@@ -202,7 +212,7 @@ export async function consolidateApiGatewayPolicies(context: $TSContext, stackNa
     return { APIGatewayAuthURL: undefined };
   }
 
-  return { APIGatewayAuthURL: createApiGatewayAuthResources(stackName, apiGateways) };
+  return { APIGatewayAuthURL: createApiGatewayAuthResources(stackName, apiGateways, envInfo.envName) };
 }
 
 enum CrudOperation {
@@ -222,11 +232,12 @@ function convertCrudOperationsToPermissions(crudOps: CrudOperation[]) {
   return crudOps.flatMap(op => opMap[op]);
 }
 
-function createApiGatewayAuthResources(stackName: string, apiGateways: $TSAny): string | undefined {
+function createApiGatewayAuthResources(stackName: string, apiGateways: $TSAny, envName: string): string | undefined {
   const stack = new ApiGatewayAuthStack(undefined, 'Amplify', {
     description: 'API Gateway policy stack created using Amplify CLI',
     stackName,
     apiGateways,
+    envName,
   });
   const cfn = stack.toCloudFormation();
   const { DeploymentBucketName } = stateManager.getMeta()?.providers?.[ProviderName] ?? {};
