@@ -1,5 +1,6 @@
 import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { TransformerResolverProvider, FieldMapEntry, ReadonlyArray } from '@aws-amplify/graphql-transformer-interfaces';
+import { LambdaDataSource } from '@aws-cdk/aws-appsync';
 import { compoundExpression, Expression, forEach, methodCall, print, qref, raw, ref, str, toJson } from 'graphql-mapping-template';
 
 /**
@@ -62,6 +63,37 @@ export const attachResponseMappingSlot = ({
       ),
       `${resolverTypeName}.${resolverFieldName}.{slotName}.{slotIndex}.res.vtl`,
     ),
+  );
+};
+
+type AttachFilterConditionInputMappingSlotParams = {
+  slotName: 'preUpdate' | 'preDataLoad';
+  resolver: TransformerResolverProvider; // The create or update resolver that needs a mapping added to it
+  resolverTypeName: string; // The resolver type name
+  resolverFieldName: string; // The create or update resolver name
+  fieldMap: ReadonlyArray<FieldMapEntry>; // A map of renamed fields
+  dataSource: LambdaDataSource;
+};
+
+export const attachFilterAndConditionInputMappingSlot = ({
+  slotName,
+  resolver,
+  resolverTypeName,
+  resolverFieldName,
+  fieldMap,
+  dataSource,
+}: AttachFilterConditionInputMappingSlotParams) => {
+  resolver.addToSlot(
+    slotName,
+    MappingTemplate.s3MappingTemplateFromString(
+      print(ref('test')), // TODO
+      `${resolverTypeName}.${resolverFieldName}.{slotName}.{slotIndex}.req.vtl`,
+    ),
+    MappingTemplate.s3MappingTemplateFromString(
+      print(ref('test')), // TODO
+      `${resolverTypeName}.${resolverFieldName}.{slotName}.{slotIndex}.res.vtl`,
+    ),
+    dataSource,
   );
 };
 

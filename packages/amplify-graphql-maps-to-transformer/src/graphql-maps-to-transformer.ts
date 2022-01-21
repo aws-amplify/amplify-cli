@@ -5,7 +5,8 @@ import {
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode, DirectiveNode, Kind, DefinitionNode } from 'graphql';
-import { attachInputMappingSlot, attachResponseMappingSlot } from './field-mapping-resolvers';
+import { createMappingLambda } from './field-mapping-lambda';
+import { attachFilterAndConditionInputMappingSlot, attachInputMappingSlot, attachResponseMappingSlot } from './field-mapping-resolvers';
 
 const directiveName = 'mapsTo';
 
@@ -53,6 +54,10 @@ export class MapsToTransformer extends TransformerPluginBase {
    * VTL to map the current field names to the original field names
    */
   generateResolvers = (context: TransformerContextProvider) => {
+    if (context.resourceHelper.getModelFieldMapKeys().length === 0) {
+      return;
+    }
+    const lambdaDataSource = createMappingLambda(context.api.host, context.stackManager);
     context.resourceHelper.getModelFieldMapKeys().forEach(modelName => {
       const modelFieldMap = context.resourceHelper.getModelFieldMap(modelName);
       if (!modelFieldMap.getMappedFields().length) {
@@ -70,6 +75,14 @@ export class MapsToTransformer extends TransformerPluginBase {
             resolverFieldName: fieldName,
             fieldMap: modelFieldMap.getMappedFields(),
           });
+          attachFilterAndConditionInputMappingSlot({
+            slotName: 'preUpdate',
+            resolver,
+            resolverTypeName: typeName,
+            resolverFieldName: fieldName,
+            fieldMap: modelFieldMap.getMappedFields(),
+            dataSource: lambdaDataSource,
+          });
           attachResponseMappingSlot({
             slotName: 'postUpdate',
             resolver,
@@ -80,6 +93,14 @@ export class MapsToTransformer extends TransformerPluginBase {
           });
         } else {
           // typeName is Query
+          attachFilterAndConditionInputMappingSlot({
+            slotName: 'preDataLoad',
+            resolver,
+            resolverTypeName: typeName,
+            resolverFieldName: fieldName,
+            fieldMap: modelFieldMap.getMappedFields(),
+            dataSource: lambdaDataSource,
+          });
           attachResponseMappingSlot({
             slotName: 'postDataLoad',
             resolver,
