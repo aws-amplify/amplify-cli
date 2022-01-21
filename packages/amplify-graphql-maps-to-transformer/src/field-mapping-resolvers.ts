@@ -1,7 +1,24 @@
 import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { TransformerResolverProvider, FieldMapEntry, ReadonlyArray } from '@aws-amplify/graphql-transformer-interfaces';
 import { LambdaDataSource } from '@aws-cdk/aws-appsync';
-import { compoundExpression, Expression, forEach, methodCall, print, qref, raw, ref, str, toJson } from 'graphql-mapping-template';
+import {
+  and,
+  compoundExpression,
+  Expression,
+  forEach,
+  iff,
+  methodCall,
+  obj,
+  or,
+  print,
+  qref,
+  raw,
+  ref,
+  ret,
+  set,
+  str,
+  toJson,
+} from 'graphql-mapping-template';
 
 /**
  * Contains functions that generate VTL to to map renamed fields of models to their original name
@@ -83,14 +100,45 @@ export const attachFilterAndConditionInputMappingSlot = ({
   fieldMap,
   dataSource,
 }: AttachFilterConditionInputMappingSlotParams) => {
+  const fieldMapVtl = fieldMap.reduce((acc, { originalFieldName, currentFieldName }) => {
+    acc[currentFieldName] = originalFieldName;
+    return acc;
+  }, {} as Record<string, string>);
+  const fieldMapRef = ref('fieldMap');
   resolver.addToSlot(
     slotName,
     MappingTemplate.s3MappingTemplateFromString(
-      print(ref('test')), // TODO
+      print(
+        compoundExpression([
+          set(fieldMapRef, raw(JSON.stringify(fieldMapVtl))),
+          iff(or([methodCall(ref('util.isNull'), fieldMapRef), raw('$fieldMap.keySet().size() <= 0')]), ret(ref('ctx.args'))),
+          iff(
+            and([methodCall(ref('util.isNull'), ref('ctx.args.filter')), methodCall(ref('util.isNull'), ref('ctx.args.condition'))]),
+            ret(ref('ctx.args')),
+          ),
+          set(
+            ref('invoke'),
+            obj({
+              operation: str('Invoke'),
+              payload: obj({
+                args: ref('ctx.args'),
+                fieldMap: fieldMapRef,
+              }),
+            }),
+          ),
+          toJson(ref('invoke')),
+        ]),
+      ),
       `${resolverTypeName}.${resolverFieldName}.{slotName}.{slotIndex}.req.vtl`,
     ),
     MappingTemplate.s3MappingTemplateFromString(
-      print(ref('test')), // TODO
+      print(
+        compoundExpression([
+          iff(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type'))),
+          set(ref('ctx.stash.mappedArgs'), ref('ctx.result')),
+          toJson(raw('{}')),
+        ]),
+      ),
       `${resolverTypeName}.${resolverFieldName}.{slotName}.{slotIndex}.res.vtl`,
     ),
     dataSource,

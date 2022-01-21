@@ -54,15 +54,12 @@ export class MapsToTransformer extends TransformerPluginBase {
    * VTL to map the current field names to the original field names
    */
   generateResolvers = (context: TransformerContextProvider) => {
-    if (context.resourceHelper.getModelFieldMapKeys().length === 0) {
-      return;
-    }
-    const lambdaDataSource = createMappingLambda(context.api.host, context.stackManager);
     context.resourceHelper.getModelFieldMapKeys().forEach(modelName => {
       const modelFieldMap = context.resourceHelper.getModelFieldMap(modelName);
       if (!modelFieldMap.getMappedFields().length) {
         return;
       }
+      const lambdaDataSource = createMappingLambda(context.api.host, context.stackManager);
       modelFieldMap.getResolverReferences().forEach(({ typeName, fieldName, isList }) => {
         const resolver = context.resolvers.getResolver(typeName, fieldName);
         if (!resolver) {

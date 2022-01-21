@@ -23,7 +23,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && cd resources/mapping-lambda-function && bestzip --force node ../../lib/assets/mapping-lambda.zip index.js",
     "watch": "tsc -w",
     "clean": "rimraf ./lib tsconfig.tsbuildinfo",
     "test": "jest"
@@ -32,8 +32,9 @@
     "@aws-amplify/graphql-transformer-core": "0.15.5",
     "@aws-amplify/graphql-transformer-interfaces": "1.12.6",
     "@aws-cdk/aws-appsync": "~1.124.0",
-    "@aws-cdk/iam": "~1.124.0",
     "@aws-cdk/aws-lambda": "~1.124.0",
+    "@aws-cdk/core": "~1.124.0",
+    "@aws-cdk/iam": "~1.124.0",
     "graphql-mapping-template": "4.20.3"
   },
   "devDependencies": {

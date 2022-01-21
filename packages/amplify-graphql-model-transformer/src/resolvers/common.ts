@@ -107,3 +107,6 @@ export const generateAuthExpressionForSandboxMode = (enabled: boolean): string =
     compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), exp), toJson(obj({}))]),
   );
 };
+
+export const mappedArgsPreamble = () =>
+  set(ref('args'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.mappedArgs'), ref('ctx.args')));
