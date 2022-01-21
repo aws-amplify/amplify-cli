@@ -25,6 +25,7 @@ Object {
             },
           },
         },
+        "region": "us-west-2",
         "searchIndices": Object {
           "default": "defaultIndex12345",
           "items": Array [

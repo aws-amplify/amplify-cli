@@ -229,7 +229,9 @@ function constructGeo(metadata, amplifyConfig) {
     amplifyConfig[categoryName] = {
       plugins: {}
     };
-    amplifyConfig[categoryName].plugins[pluginName] = {};
+    amplifyConfig[categoryName].plugins[pluginName] = {
+      region: metadata.providers.awscloudformation.Region
+    };
     if (Object.keys(mapConfig.items).length > 0) {
       amplifyConfig[categoryName].plugins[pluginName]['maps'] = mapConfig;
     }
