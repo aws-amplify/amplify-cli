@@ -14,10 +14,10 @@ const ROOT_CFN_DESCRIPTION = 'API Gateway Resource for AWS Amplify CLI';
 export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigwResourceTemplate {
   restApi: apigw.CfnRestApi;
   deploymentResource: apigw.CfnDeployment;
+  paths: $TSObject;
   policies: { [pathName: string]: ApigwPathPolicy };
   private _scope: cdk.Construct;
   private _props: ApigwInputs;
-  private _paths: $TSObject;
   private _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
   _cfnParameterValues: $TSObject;
   private _seenLogicalIds: Set<string>;
@@ -26,7 +26,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
     super(scope, id, undefined);
     this._scope = scope;
     this._props = props;
-    this._paths = {};
+    this.paths = {};
     this._seenLogicalIds = new Set();
     this._cfnParameterValues = {};
     this.policies = {};
@@ -183,7 +183,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
         host: cdk.Fn.join('', ['apigateway.', cdk.Fn.ref('AWS::Region'), '.amazonaws.com']),
         basePath: cdk.Fn.conditionIf('ShouldNotCreateEnvResources', '/Prod', cdk.Fn.join('', ['/', cdk.Fn.ref('env')])),
         schemes: ['https'],
-        paths: this._paths,
+        paths: this.paths,
         securityDefinitions: {
           Cognito: {
             type: 'apiKey',
@@ -239,7 +239,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
         host: cdk.Fn.join('', ['apigateway.', cdk.Fn.ref('AWS::Region'), '.amazonaws.com']),
         basePath: cdk.Fn.conditionIf('ShouldNotCreateEnvResources', '/Prod', cdk.Fn.join('', ['/', cdk.Fn.ref('env')])),
         schemes: ['https'],
-        paths: this._paths,
+        paths: this.paths,
         securityDefinitions: {
           sigv4: {
             type: 'apiKey',
@@ -291,11 +291,11 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
     for (const [pathName, path] of Object.entries(this._props.paths)) {
       let lambdaPermissionLogicalId: string;
       if (resourceName === ADMIN_QUERIES_NAME) {
-        this._paths[`/{proxy+}`] = getAdminQueriesPathObject(path.lambdaFunction);
+        this.paths[`/{proxy+}`] = getAdminQueriesPathObject(path.lambdaFunction);
         lambdaPermissionLogicalId = `${ADMIN_QUERIES_NAME}APIGWPolicyForLambda`;
       } else {
-        this._paths[pathName] = createPathObject(path);
-        this._paths[`${pathName}/{proxy+}`] = createPathObject(path);
+        this.paths[pathName] = createPathObject(path);
+        this.paths[`${pathName}/{proxy+}`] = createPathObject(path);
         lambdaPermissionLogicalId = `function${path.lambdaFunction}Permission${resourceName}`;
       }
 
