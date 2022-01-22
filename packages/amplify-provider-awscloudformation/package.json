@@ -118,7 +118,7 @@
     "lodash.throttle": "^4.1.1",
     "moment": "^2.24.0",
     "netmask": "^2.0.2",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^3.1.1",
     "ora": "^4.0.3",
     "promise-sequential": "^1.1.1",
     "proxy-agent": "^5.0.0",
