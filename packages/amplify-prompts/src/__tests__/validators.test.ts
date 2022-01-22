@@ -113,7 +113,7 @@ describe('regexpValidator', () => {
 
   it('returns default error message for strings not matching regexp', () => {
     expect(matchRegex(/^[a-z0-9-]+$/, undefined)('test_logs_*')).toMatchInlineSnapshot(
-      `"Input 'undefined' does not match the regular expression /^[a-z0-9-]+$/"`,
+      `"Input does not match the regular expression /^[a-z0-9-]+$/"`,
     );
   });
 

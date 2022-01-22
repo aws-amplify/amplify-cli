@@ -59,14 +59,6 @@ describe('amplify add/update storage(S3)', () => {
     await validate(projRoot);
   });
 
-  it('init a project and add S3 bucket with hyphenated-name and Auth only access', async () => {
-    const bucketParams = { bucketName : `test-hyphenated-bucketname-${getShortId()}`};
-    await initJSProjectWithProfile(projRoot, {});
-    await addS3AndAuthWithAuthOnlyAccess(projRoot, bucketParams);
-    await amplifyPushAuth(projRoot);
-    await validate(projRoot);
-  });
-
   it('init a javascript project and add S3 bucket with guest access', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot, {});
