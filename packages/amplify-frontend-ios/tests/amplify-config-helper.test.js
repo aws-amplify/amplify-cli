@@ -19,22 +19,24 @@ describe('generate maps and search configuration', () => {
         }
     };
 
-    function constructMapMeta(mapName, mapStyle, isDefault) {
+    function constructMapMeta(mapName, mapStyle, isDefault, region) {
         return {
             service: mapServiceName,
             output: {
                 Style: mapStyle,
-                Name: mapName
+                Name: mapName,
+                Region: region
             },
             isDefault: isDefault
         };
     }
 
-    function constructPlaceIndexMeta(indexName, isDefault) {
+    function constructPlaceIndexMeta(indexName, isDefault, region) {
         return {
             service: placeIndexServiceName,
             output: {
-                Name: indexName
+                Name: indexName,
+                Region: region
             },
             isDefault: isDefault
         };
@@ -50,7 +52,7 @@ describe('generate maps and search configuration', () => {
         mockContext.amplify.getProjectMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
     });
 
-    it('generates correct configuration for maps and search geo resources', () => {
+    it('generates correct configuration for maps and search geo resources without Region CFN output', () => {
         const generatedConfig = configHelper.generateConfig(mockContext, {});
         expect(generatedConfig).toMatchSnapshot();
     });
@@ -59,6 +61,28 @@ describe('generate maps and search configuration', () => {
         mockAmplifyMeta.geo = {};
         mockContext.amplify.getProjectMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
         const generatedConfig = configHelper.generateConfig(mockContext, {});
+        expect(generatedConfig).toMatchSnapshot();
+    });
+
+    it('generates correct configuration for maps and search geo resources with Region as CFN output', () => {
+        const resourceRegion = 'eu-west-1';
+        const projectRegion = 'eu-west-2';
+        const mockAmplifyMeta = {
+            providers: {
+                awscloudformation: {
+                    Region: projectRegion
+                }
+            },
+            geo: {
+                map12345: constructMapMeta('map12345', 'VectorEsriStreets', false, resourceRegion),
+                index12345: constructPlaceIndexMeta('index12345', false, resourceRegion),
+                defaultMap12345: constructMapMeta('defaultMap12345', 'VectorEsriStreets', true, resourceRegion),
+                defaultIndex12345: constructPlaceIndexMeta('defaultIndex12345', true, resourceRegion)
+            }
+        };
+        mockContext.amplify.getProjectMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
+        const generatedConfig = configHelper.generateConfig(mockContext, {});
+        expect(generatedConfig.geo.plugins.awsLocationGeoPlugin.region).toEqual(resourceRegion);
         expect(generatedConfig).toMatchSnapshot();
     });
 });

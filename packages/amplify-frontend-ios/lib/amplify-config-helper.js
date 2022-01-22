@@ -191,7 +191,10 @@ function constructStorage(metadata, amplifyConfig) {
 function constructGeo(metadata, amplifyConfig) {
   const categoryName = 'geo';
   const pluginName = 'awsLocationGeoPlugin';
+  const projectRegion = metadata.providers.awscloudformation.Region;
   if (metadata[categoryName] && Object.keys(metadata[categoryName]).length > 0) {
+    const geoResourceName = Object.keys(metadata[categoryName])[0];
+    const region = metadata[categoryName][geoResourceName].output.Region;
     let defaultMap = '';
     const mapConfig = {
       items: {}
@@ -230,7 +233,7 @@ function constructGeo(metadata, amplifyConfig) {
       plugins: {}
     };
     amplifyConfig[categoryName].plugins[pluginName] = {
-      region: metadata.providers.awscloudformation.Region
+      region: region || projectRegion
     };
     if (Object.keys(mapConfig.items).length > 0) {
       amplifyConfig[categoryName].plugins[pluginName]['maps'] = mapConfig;
