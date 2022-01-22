@@ -47,7 +47,7 @@
     "moment-jdateformatparser": "^1.2.1",
     "moment-timezone": "0.5.27",
     "mqtt-connection": "4.0.0",
-    "nanoid": "2.1.10",
+    "nanoid": "3.1.31",
     "pino": "^6.13.0",
     "portfinder": "^1.0.25",
     "promise-toolbox": "^0.20.0",
