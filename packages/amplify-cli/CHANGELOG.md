@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.6.12-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.11...@aws-amplify/cli@7.6.12-beta.1) (2022-01-23)
+
+
+### Bug Fixes
+
+* **amplify-app:** fix notify security enhancement check ([#9582](https://github.com/aws-amplify/amplify-cli/issues/9582)) ([2d830dc](https://github.com/aws-amplify/amplify-cli/commit/2d830dcad957b642bf4ac965bcbe932e27911e68))
+
+
+
+
+
 ## [7.6.12-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.11...@aws-amplify/cli@7.6.12-beta.0) (2022-01-23)
 
 
