@@ -134,8 +134,10 @@ async function notifySecurityEnhancement(context) {
       preserveComments: true,
     });
 
-    config.features.graphqltransformer.securityEnhancementNotification = false;
-    stateManager.setCLIJSON(projectPath, config);
-    await FeatureFlags.reloadValues();
+    if (config?.features?.graphqltransformer?.securityEnhancementNotification) {
+      config.features.graphqltransformer.securityEnhancementNotification = false;
+      stateManager.setCLIJSON(projectPath, config);
+      await FeatureFlags.reloadValues();
+    }
   }
 }
