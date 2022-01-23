@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.5.10...@aws-amplify/graphql-auth-transformer@0.5.11) (2022-01-23)
+
+
+### Bug Fixes
+
+* listX operations with no args where authField is used in primaryKey ([#9570](https://github.com/aws-amplify/amplify-cli/issues/9570)) ([1496724](https://github.com/aws-amplify/amplify-cli/commit/1496724495010f2daec8b160e35e613ca34eaa5e))
+
+
+
+
+
 ## [0.5.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.5.9...@aws-amplify/graphql-auth-transformer@0.5.10) (2022-01-20)
 
 

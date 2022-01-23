@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.29](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.28...amplify-util-mock@4.2.29) (2022-01-23)
+
+
+### Bug Fixes
+
+* listX operations with no args where authField is used in primaryKey ([#9570](https://github.com/aws-amplify/amplify-cli/issues/9570)) ([1496724](https://github.com/aws-amplify/amplify-cli/commit/1496724495010f2daec8b160e35e613ca34eaa5e))
+
+
+
+
+
 ## [4.2.28](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.27...amplify-util-mock@4.2.28) (2022-01-20)
 
 
