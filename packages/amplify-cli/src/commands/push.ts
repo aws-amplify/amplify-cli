@@ -93,13 +93,18 @@ async function notifySecurityEnhancement(context) {
       .filter(([_, apiResource]) => (apiResource as $TSAny).service === 'AppSync')
       .map(([name]) => name);
 
+    if (apiNames.length !== 1) {
+      await unsetSecurityNotificationFlag(projectPath);
+      return;
+    }
+
     const apiName = apiNames[0];
 
     const apiResourceDir = pathManager.getResourceDirectoryPath(projectPath, 'api', apiName);
     const project = await readProjectConfiguration(apiResourceDir);
 
     const directiveMap = collectDirectivesByTypeNames(project.schema);
-    const notifyAuthWithKey = Object.keys(directiveMap.types).filter(
+    const notifyAuthWithKey = Object.keys(directiveMap.types).some(
       type => directiveMap.types[type].includes('auth') && directiveMap.types[type].includes('primaryKey'),
     );
 
@@ -114,17 +119,23 @@ async function notifySecurityEnhancement(context) {
         exitOnNextTick(0);
       }
 
-      let config = stateManager.getCLIJSON(projectPath, undefined, {
-        throwIfNotExist: false,
-        preserveComments: true,
-      });
-
       const schemaPath = path.join(apiResourceDir, 'schema.graphql');
       fs.appendFile(schemaPath, ' ');
 
-      config.features.graphqltransformer.securityEnhancementNotification = false;
-      stateManager.setCLIJSON(projectPath, config);
-      await FeatureFlags.reloadValues();
+      await unsetSecurityNotificationFlag(projectPath);
+    } else {
+      await unsetSecurityNotificationFlag(projectPath);
     }
+  }
+
+  async function unsetSecurityNotificationFlag(projectPath: string) {
+    let config = stateManager.getCLIJSON(projectPath, undefined, {
+      throwIfNotExist: false,
+      preserveComments: true,
+    });
+
+    config.features.graphqltransformer.securityEnhancementNotification = false;
+    stateManager.setCLIJSON(projectPath, config);
+    await FeatureFlags.reloadValues();
   }
 }
