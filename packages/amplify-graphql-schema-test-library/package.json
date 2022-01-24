@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-schema-test-library",
-  "version": "1.0.0",
+  "version": "1.0.1-codegen-ui-q1-release.0",
   "description": "Library of valid and unsupported Amplify GraphQL Transformer schemas",
   "repository": {
     "type": "git",

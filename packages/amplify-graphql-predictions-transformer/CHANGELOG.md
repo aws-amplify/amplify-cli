@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.8-codegen-ui-q1-release.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-predictions-transformer@0.6.7...@aws-amplify/graphql-predictions-transformer@0.6.8-codegen-ui-q1-release.0) (2022-01-24)
+
+**Note:** Version bump only for package @aws-amplify/graphql-predictions-transformer
+
+
+
+
+
 ## [0.6.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-predictions-transformer@0.6.6...@aws-amplify/graphql-predictions-transformer@0.6.7) (2022-01-20)
 
 

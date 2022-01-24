@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.30-codegen-ui-q1-release.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.29...amplify-util-mock@4.2.30-codegen-ui-q1-release.0) (2022-01-24)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
 ## [4.2.29](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.28...amplify-util-mock@4.2.29) (2022-01-23)
 
 

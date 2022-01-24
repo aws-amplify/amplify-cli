@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.16-codegen-ui-q1-release.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@2.2.15...amplify-dotnet-function-template-provider@2.2.16-codegen-ui-q1-release.0) (2022-01-24)
+
+**Note:** Version bump only for package amplify-dotnet-function-template-provider
+
+
+
+
+
 ## [2.2.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@2.2.14...amplify-dotnet-function-template-provider@2.2.15) (2022-01-23)
 
 **Note:** Version bump only for package amplify-dotnet-function-template-provider

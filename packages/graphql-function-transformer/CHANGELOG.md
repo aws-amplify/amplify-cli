@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.7-codegen-ui-q1-release.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-function-transformer@3.3.6...graphql-function-transformer@3.3.7-codegen-ui-q1-release.0) (2022-01-24)
+
+**Note:** Version bump only for package graphql-function-transformer
+
+
+
+
+
 ## [3.3.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-function-transformer@3.3.5...graphql-function-transformer@3.3.6) (2022-01-23)
 
 **Note:** Version bump only for package graphql-function-transformer

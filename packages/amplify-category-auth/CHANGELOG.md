@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.11-codegen-ui-q1-release.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.10...@aws-amplify/amplify-category-auth@2.4.11-codegen-ui-q1-release.0) (2022-01-24)
+
+
+### Bug Fixes
+
+* handle auth and api dependency in state files correctly ([#9528](https://github.com/aws-amplify/amplify-cli/issues/9528)) ([edced3e](https://github.com/aws-amplify/amplify-cli/commit/edced3ef76da02bd269cf85c7287bfb74875d967)), closes [#9341](https://github.com/aws-amplify/amplify-cli/issues/9341)
+
+
+
+
+
 ## [2.4.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.9...@aws-amplify/amplify-category-auth@2.4.10) (2022-01-23)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-auth

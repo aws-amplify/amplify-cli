@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.8-codegen-ui-q1-release.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.8.7...@aws-amplify/graphql-index-transformer@0.8.8-codegen-ui-q1-release.0) (2022-01-24)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+
+
+
+
 ## [0.8.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.8.6...@aws-amplify/graphql-index-transformer@0.8.7) (2022-01-20)
 
 **Note:** Version bump only for package @aws-amplify/graphql-index-transformer

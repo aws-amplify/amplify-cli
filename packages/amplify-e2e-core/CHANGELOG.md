@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.3-codegen-ui-q1-release.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.6.2...amplify-e2e-core@2.6.3-codegen-ui-q1-release.0) (2022-01-24)
+
+**Note:** Version bump only for package amplify-e2e-core
+
+
+
+
+
 ## [2.6.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.6.1...amplify-e2e-core@2.6.2) (2022-01-23)
 
 **Note:** Version bump only for package amplify-e2e-core

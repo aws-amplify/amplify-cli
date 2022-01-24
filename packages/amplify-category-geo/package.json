@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-geo",
-  "version": "2.3.1",
+  "version": "2.3.2-codegen-ui-q1-release.0",
   "description": "Amplify CLI plugin to manage the Geo resources for the project",
   "repository": {
     "type": "git",
@@ -27,9 +27,9 @@
     "@aws-cdk/aws-location": "~1.124.0",
     "@aws-cdk/core": "~1.124.0",
     "@aws-cdk/custom-resources": "~1.124.0",
-    "amplify-cli-core": "2.4.8",
+    "amplify-cli-core": "2.4.9-codegen-ui-q1-release.0",
     "amplify-headless-interface": "1.14.0",
-    "amplify-prompts": "1.6.2",
+    "amplify-prompts": "1.6.3-codegen-ui-q1-release.0",
     "amplify-util-headless-input": "1.9.0",
     "folder-hash": "^4.0.1",
     "fs-extra": "^8.1.0",
