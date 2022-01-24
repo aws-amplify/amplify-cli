@@ -3,7 +3,6 @@ import {
   addAuthWithDefault,
   addAuthWithGroupsAndAdminAPI,
   addS3AndAuthWithAuthOnlyAccess,
-  addS3StorageWithSettings,
   addS3WithGroupAccess,
   addS3WithGuestAccess,
   addS3WithTrigger,
@@ -19,7 +18,6 @@ import {
 } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { getShortId } from '../import-helpers';
 
 function getServiceMeta(projectRoot: string, category: string, service: string): $TSAny {
   const meta = getProjectMeta(projectRoot);

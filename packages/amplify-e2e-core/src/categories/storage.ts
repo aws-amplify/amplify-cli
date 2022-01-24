@@ -410,7 +410,7 @@ export function addS3AndAuthWithAuthOnlyAccess(cwd: string, settings: any): Prom
       .wait('Provide a friendly name for your resource')
       .sendCarriageReturn() // Default name
       .wait('Provide bucket name')
-      .sendLine( settings?.bucketName || RETURN )
+      .sendCarriageReturn() // Default name
       .wait('Who should have access')
       .sendCarriageReturn() // Auth users only
       .wait('What kind of access do you want for Authenticated users?')
