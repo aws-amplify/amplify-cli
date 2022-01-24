@@ -4,6 +4,10 @@ import { createUiBuilderComponent, createUiBuilderTheme } from './createUiBuilde
 import { getUiBuilderComponentsPath } from './getUiBuilderComponentsPath';
 import { extractArgs } from './extractArgs';
 import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { Component, ListComponentsResponse } from 'aws-sdk/clients/amplifyuibuilder';
+import pLimit from 'p-limit'
+const limit = pLimit(5);
+
 export const getEnvName = (context: $TSContext, envName?: string) => {
   const args = extractArgs(context);
   return envName ? envName : args.environmentName ? args.environmentName : context.exeInfo.localEnvInfo.envName;
@@ -30,14 +34,34 @@ export async function listUiBuilderComponents(context: $TSContext, envName?: str
 
   try {
     const amplifyUIBuilder = await getAmplifyUIBuilderService(context, environmentName, appId);
-    const uiBuilderComponents = await amplifyUIBuilder
-      .exportComponents({
-        appId,
-        environmentName,
+    const uiBuilderComponents: Component[] = [];
+    let nextToken = undefined;
+    do {
+      const componentsBatch: ListComponentsResponse = await amplifyUIBuilder
+        .listComponents({
+          appId,
+          environmentName,
+          nextToken,
+        })
+        .promise();
+      const hydratedComponentPromises = componentsBatch.entities.map(async component => {
+        return limit(async () => await amplifyUIBuilder
+          .getComponent({
+            appId,
+            environmentName,
+            id: component.id,
+          })
+          .promise());
+      });
+      const components = await Promise.all(hydratedComponentPromises);
+      components.forEach(component => {
+        uiBuilderComponents.push(component.component!);
       })
-      .promise();
+      nextToken = componentsBatch.nextToken;
+    } while (nextToken);
+
     printer.debug(JSON.stringify(uiBuilderComponents, null, 2));
-    return uiBuilderComponents;
+    return { entities: uiBuilderComponents};
   } catch (e) {
     printer.debug(e);
     throw e;

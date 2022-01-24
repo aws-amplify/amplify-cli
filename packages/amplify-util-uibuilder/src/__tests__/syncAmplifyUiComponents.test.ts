@@ -44,7 +44,24 @@ describe('should sync amplify ui builder components', () => {
     };
 
     aws_mock.AmplifyUIBuilder = jest.fn(() => ({
-      exportComponents: jest.fn(() => ({
+      listComponents: jest.fn(() => ({
+        promise: jest.fn(() => ({
+          entities: [
+            {
+              appId: 'd37nrm8rzt3oek',
+              bindingProperties: {},
+              componentType: 'Box',
+              environmentName: 'staging',
+              id: 's-s4mU579Ycf6JGHwhqT',
+              name: 'aawwdd',
+              overrides: {},
+              properties: {},
+              variants: [],
+            },
+          ],
+        })),
+      })),
+      getComponent: jest.fn(() => ({
         promise: jest.fn(() => ({
           entities: [
             {
@@ -94,7 +111,8 @@ describe('should sync amplify ui builder components', () => {
     process.env.UI_BUILDER_ENDPOINT = 'https://mock-endpoint.com';
     process.env.UI_BUILDER_REGION = 'mock-region';
     const service = await getAmplifyUIBuilderService(context, 'testEnv', 'testAppId');
-    expect(Object.keys(service)).toContain('exportComponents');
+    expect(Object.keys(service)).toContain('listComponents');
+    expect(Object.keys(service)).toContain('getComponent');
     expect(Object.keys(service)).toContain('exportThemes');
   });
   it('can listUiBuilderThemes', async () => {
