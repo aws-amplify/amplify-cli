@@ -66,7 +66,7 @@ export class ApigwStackTransform {
   }
 
   generateCfnInputParameters() {
-    this.cfnInputParams = this.resourceTemplateObj._cfnParameterValues;
+    this.cfnInputParams = this.resourceTemplateObj.getCfnParameterValues();
   }
 
   generateStack(authResourceName?: string, pathsWithUserPoolGroups: [string, Path][] = []) {

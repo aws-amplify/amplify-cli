@@ -19,7 +19,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
   private _scope: cdk.Construct;
   private _props: ApigwInputs;
   private _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
-  _cfnParameterValues: $TSObject;
+  private _cfnParameterValues: $TSObject;
   private _seenLogicalIds: Set<string>;
 
   constructor(scope: cdk.Construct, id: string, props: ApigwInputs) {
@@ -40,11 +40,8 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
    * @param logicalId
    */
   addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void {
-    if (this._seenLogicalIds.has(logicalId)) {
-      throw new Error(`logical id "${logicalId}" already exists`);
-    }
+    this.validateLogicalId(logicalId);
     new cdk.CfnOutput(this, logicalId, props);
-    this._seenLogicalIds.add(logicalId);
   }
 
   /**
@@ -53,11 +50,8 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
    * @param logicalId
    */
   addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void {
-    if (this._seenLogicalIds.has(logicalId)) {
-      throw new Error(`logical id "${logicalId}" already exists`);
-    }
+    this.validateLogicalId(logicalId);
     new cdk.CfnMapping(this, logicalId, props);
-    this._seenLogicalIds.add(logicalId);
   }
 
   /**
@@ -66,11 +60,8 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
    * @param logicalId
    */
   addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void {
-    if (this._seenLogicalIds.has(logicalId)) {
-      throw new Error(`logical id "${logicalId}" already exists`);
-    }
+    this.validateLogicalId(logicalId);
     new cdk.CfnCondition(this, logicalId, props);
-    this._seenLogicalIds.add(logicalId);
   }
 
   /**
@@ -79,11 +70,8 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
    * @param logicalId
    */
   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void {
-    if (this._seenLogicalIds.has(logicalId)) {
-      throw new Error(`logical id "${logicalId}" already exists`);
-    }
+    this.validateLogicalId(logicalId);
     new cdk.CfnResource(this, logicalId, props);
-    this._seenLogicalIds.add(logicalId);
   }
 
   /**
@@ -92,11 +80,8 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
    * @param logicalId
    */
   addCfnLambdaPermissionResource(props: lambda.CfnPermissionProps, logicalId: string): void {
-    if (this._seenLogicalIds.has(logicalId)) {
-      throw new Error(`logical id "${logicalId}" already exists`);
-    }
+    this.validateLogicalId(logicalId);
     new lambda.CfnPermission(this, logicalId, props);
-    this._seenLogicalIds.add(logicalId);
   }
 
   /**
@@ -106,14 +91,22 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
    * @param value optional value which will be stored in parameters.json
    */
   addCfnParameter(props: cdk.CfnParameterProps, logicalId: string, value?: string | $TSObject): void {
-    if (this._cfnParameterMap.has(logicalId)) {
-      throw new Error(`logical id "${logicalId}" already exists`);
-    }
+    this.validateLogicalId(logicalId);
     this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
-    this._seenLogicalIds.add(logicalId);
     if (value !== undefined) {
       this._cfnParameterValues[logicalId] = value;
     }
+  }
+
+  getCfnParameterValues() {
+    return this._cfnParameterValues;
+  }
+
+  private validateLogicalId(logicalId: string): void {
+    if (this._seenLogicalIds.has(logicalId)) {
+      throw new Error(`logical id "${logicalId}" already exists`);
+    }
+    this._seenLogicalIds.add(logicalId);
   }
 
   private _craftPolicyDocument(apiResourceName: string, pathName: string, supportedOperations: string[]) {
