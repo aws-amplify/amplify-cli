@@ -229,6 +229,8 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       'parameters.json',
     );
 
+    const oldParameters = fs.existsSync(parametersJSONFilePath) ? fs.readJSONSync(parametersJSONFilePath) : false;
+
     const roles = {
       authRoleArn: {
         'Fn::GetAtt': ['AuthRole', 'Arn'],
@@ -268,9 +270,38 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     } else if (_.isEmpty(this._cognitoStackProps.triggers)) {
       parameters = Object.assign(parameters, { triggers: JSON.stringify(this._cognitoStackProps.triggers) });
     }
+
+    if (!this.validateCfnParameters(context, oldParameters, parameters)) {
+      process.exit(1);
+    }
+
     //save parameters
     JSONUtilities.writeJson(parametersJSONFilePath, parameters);
   };
+
+  public validateCfnParameters(context: $TSContext, oldParameters: $TSAny, parametersJson: $TSAny) {
+    // There was a bug between v7.3.0 and v7.6.9 where Cognito resources were being created with incorrect `requiredAttributes` parameter
+    // Since `requiredAttributes` is immutable, we must adjust this or CloudFormation step will fail
+    // More info: https://github.com/aws-amplify/amplify-cli/issues/9525
+    if (!oldParameters?.requiredAttributes?.length) {
+      return true;
+    }
+
+    const cliInputsFilePath = path.join(pathManager.getBackendDirPath(), this._category, this.resourceName, 'cli-inputs.json');
+    const containsAll = (arr1: string[], arr2: string[]) => arr2.every(arr2 => arr1.includes(arr2));
+    const sameMembers = (arr1: string[], arr2: string[]) => arr1.length === arr2.length && containsAll(arr2, arr1);
+    if (!sameMembers(oldParameters.requiredAttributes ?? [], parametersJson.requiredAttributes ?? [])) {
+      context.print.error(
+        `Cognito configuration in the cloud has drifted from local configuration. Present changes cannot be pushed until drift is fixed. \`requiredAttributes\` requested is ${JSON.stringify(
+          parametersJson.requiredAttributes,
+        )}, but ${JSON.stringify(
+          oldParameters.requiredAttributes,
+        )} is required by Cognito configuration. Update ${cliInputsFilePath} to continue.`,
+      );
+      return false;
+    }
+    return true;
+  }
 
   private generateCfnOutputs = (props: CognitoStackOptions) => {
     const configureSMS =

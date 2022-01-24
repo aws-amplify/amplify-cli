@@ -193,6 +193,9 @@ const context_stub = {
     dependsOnBlock: jest.fn(),
     updateamplifyMetaAfterResourceAdd: jest.fn(),
   },
+  print: {
+    error: jest.fn(),
+  },
 };
 
 const context_stub_typed = context_stub as unknown as $TSContext;
@@ -239,5 +242,26 @@ describe('Check Auth Template', () => {
     const authTransform2 = new AmplifyAuthTransform(resourceName);
     const mock_template2 = await authTransform2.transform(context_stub_typed);
     expect(mock_template2.Resources?.UserPool.Properties).not.toContain('UsernameConfiguration');
+  });
+
+  it('should validate cfn parameters if no original', () => {
+    const resourceName = 'mockResource';
+    const authTransform = new AmplifyAuthTransform(resourceName);
+    const isValid = authTransform.validateCfnParameters(context_stub_typed, false, { requiredAttributes: ['email'] });
+    expect(isValid).toBe(true);
+  });
+
+  it('should validate cfn parameters if match', () => {
+    const resourceName = 'mockResource';
+    const authTransform = new AmplifyAuthTransform(resourceName);
+    const isValid = authTransform.validateCfnParameters(context_stub_typed, { requiredAttributes: ['email'] }, { requiredAttributes: ['email'] });
+    expect(isValid).toBe(true);
+  });
+
+  it('should not validate cfn parameters if no match', () => {
+    const resourceName = 'mockResource';
+    const authTransform = new AmplifyAuthTransform(resourceName);
+    const isValid = authTransform.validateCfnParameters(context_stub_typed, { requiredAttributes: ['email'] }, { requiredAttributes: ['email', 'phone_number'] });
+    expect(isValid).toBe(false);
   });
 });
