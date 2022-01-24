@@ -125,20 +125,32 @@ const deleteResourceFiles = async (context: $TSContext, category: string, resour
   const amplifyMeta = stateManager.getMeta();
   if (!force) {
     const { allResources } = await context.amplify.getResourceStatus();
+    const dependencies: Array<{ service: string; resourceName: string }> = [];
     allResources.forEach(resourceItem => {
       if (resourceItem.dependsOn) {
         resourceItem.dependsOn.forEach(dependsOnItem => {
           if (dependsOnItem.category === category && dependsOnItem.resourceName === resourceName) {
-            printer.error('Resource cannot be removed because it has a dependency on another resource');
-            printer.error(`Dependency: ${resourceItem.service} - ${resourceItem.resourceName}`);
-            const error = new Error('Resource cannot be removed because it has a dependency on another resource');
-            error.stack = undefined;
-            throw error;
+            dependencies.push({ service: resourceItem.service, resourceName: resourceItem.resourceName });
           }
         });
       }
     });
+
+    if (dependencies.length > 0) {
+      printer.error('Resource cannot be removed because it has a dependency on another resource.');
+
+      printer.error(`Dependency:`);
+      dependencies.forEach(dependency => {
+        printer.error(`  - ${dependency.service} - ${dependency.resourceName}`);
+      });
+
+      const error = new Error('Resource cannot be removed because it has a dependency on another resource');
+      error.stack = undefined;
+
+      throw error;
+    }
   }
+
   const serviceName: string = amplifyMeta[category][resourceName].service;
   const resourceValues = {
     service: serviceName,
