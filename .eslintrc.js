@@ -327,8 +327,6 @@ module.exports = {
     '/packages/amplify-category-custom/lib',
     '/packages/amplify-category-custom/resources',
     '/packages/amplify-category-custom/src/utils/generate-cfn-from-cdk.ts',
-    '/packages/amplify-graphql-types-generator/lib',
-    '/packages/amplify-graphql-docs-generator/lib',
 
     // Ignore CHANGELOG.md files
     '/packages/*/CHANGELOG.md',
