@@ -1,5 +1,6 @@
 import { AmplifyAuthTransform } from '../../../../provider-utils/awscloudformation/auth-stack-builder';
 import { $TSContext } from 'amplify-cli-core';
+import process from 'process';
 
 jest.mock('amplify-cli-core', () => ({
   ...(jest.requireActual('amplify-cli-core') as {}),
@@ -259,9 +260,11 @@ describe('Check Auth Template', () => {
   });
 
   it('should not validate cfn parameters if no match', () => {
+    // @ts-ignore
+    process.exit = jest.fn();
     const resourceName = 'mockResource';
     const authTransform = new AmplifyAuthTransform(resourceName);
-    const isValid = authTransform.validateCfnParameters(context_stub_typed, { requiredAttributes: ['email'] }, { requiredAttributes: ['email', 'phone_number'] });
-    expect(isValid).toBe(false);
+    authTransform.validateCfnParameters(context_stub_typed, { requiredAttributes: ['email'] }, { requiredAttributes: ['email', 'phone_number'] });
+    expect(process.exit).toBeCalledTimes(1);
   });
 });

@@ -229,7 +229,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       'parameters.json',
     );
 
-    const oldParameters = fs.existsSync(parametersJSONFilePath) ? fs.readJSONSync(parametersJSONFilePath) : false;
+    const oldParameters = fs.readJSONSync(parametersJSONFilePath, { throws: false });
 
     const roles = {
       authRoleArn: {
@@ -271,9 +271,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       parameters = Object.assign(parameters, { triggers: JSON.stringify(this._cognitoStackProps.triggers) });
     }
 
-    if (!this.validateCfnParameters(context, oldParameters, parameters)) {
-      process.exit(1);
-    }
+    this.validateCfnParameters(context, oldParameters, parameters);
 
     //save parameters
     JSONUtilities.writeJson(parametersJSONFilePath, parameters);
@@ -288,7 +286,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     }
 
     const cliInputsFilePath = path.join(pathManager.getBackendDirPath(), this._category, this.resourceName, 'cli-inputs.json');
-    const containsAll = (arr1: string[], arr2: string[]) => arr2.every(arr2 => arr1.includes(arr2));
+    const containsAll = (arr1: string[], arr2: string[]) => arr2.every(arr2Item => arr1.includes(arr2Item));
     const sameMembers = (arr1: string[], arr2: string[]) => arr1.length === arr2.length && containsAll(arr2, arr1);
     if (!sameMembers(oldParameters.requiredAttributes ?? [], parametersJson.requiredAttributes ?? [])) {
       context.print.error(
@@ -298,7 +296,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
           oldParameters.requiredAttributes,
         )} is required by Cognito configuration. Update ${cliInputsFilePath} to continue.`,
       );
-      return false;
+      process.exit(1);
     }
     return true;
   }
