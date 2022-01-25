@@ -21,8 +21,7 @@ import {
   forEach,
   nul,
 } from 'graphql-mapping-template';
-import { ResourceConstants } from 'graphql-transformer-common';
-import { mappedArgsPreamble } from '.';
+import { ResourceConstants, setArgs } from 'graphql-transformer-common';
 const authFilter = ref('ctx.stash.authFilter');
 
 /**
@@ -102,7 +101,7 @@ export const generateListRequestTemplate = (): string => {
   const modelQueryObj = 'ctx.stash.modelQueryExpression';
   const indexNameVariable = 'ctx.stash.metadata.index';
   const expression = compoundExpression([
-    mappedArgsPreamble(),
+    setArgs,
     set(ref('limit'), methodCall(ref(`util.defaultIfNull`), ref('args.limit'), int(100))),
     set(
       ref(requestVariable),
@@ -164,7 +163,7 @@ export const generateListRequestTemplate = (): string => {
 export const generateSyncRequestTemplate = (): string => {
   return printBlock('Sync Request template')(
     compoundExpression([
-      mappedArgsPreamble(),
+      setArgs,
       ifElse(
         not(isNullOrEmpty(authFilter)),
         compoundExpression([

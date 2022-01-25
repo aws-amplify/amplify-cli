@@ -18,7 +18,7 @@ import {
   toJson,
   printBlock,
 } from 'graphql-mapping-template';
-import { mappedArgsPreamble } from '.';
+import { setArgs } from 'graphql-transformer-common';
 import { ModelDirectiveConfiguration } from '../graphql-model-transformer';
 import { generateConditionSlot } from './common';
 
@@ -35,7 +35,7 @@ export const generateUpdateRequestTemplate = (modelName: string, isSyncEnabled: 
     keyFields.push(str('_lastChangedAt'));
   }
   const statements: Expression[] = [
-    mappedArgsPreamble(),
+    setArgs,
     comment('Set the default values to put request'),
     set(ref('mergedValues'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),
     comment('copy the values from input'),
@@ -154,7 +154,7 @@ export const generateUpdateRequestTemplate = (modelName: string, isSyncEnabled: 
  */
 export const generateCreateRequestTemplate = (modelName: string): string => {
   const statements: Expression[] = [
-    mappedArgsPreamble(),
+    setArgs,
     // Generate conditions
     comment('Set the default values to put request'),
     set(ref('mergedValues'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),
@@ -248,7 +248,7 @@ export const generateCreateInitSlotTemplate = (name: string, modelConfig: ModelD
  */
 export const generateDeleteRequestTemplate = (isSyncEnabled: boolean): string => {
   const statements: Expression[] = [
-    mappedArgsPreamble(),
+    setArgs,
     set(
       ref('DeleteRequest'),
       obj({
