@@ -19,6 +19,7 @@ import {
   str,
   toJson,
 } from 'graphql-mapping-template';
+import { setTransformedArgs } from 'graphql-transformer-common';
 
 /**
  * Contains functions that generate VTL to to map renamed fields of models to their original name
@@ -135,7 +136,7 @@ export const attachFilterAndConditionInputMappingSlot = ({
       print(
         compoundExpression([
           iff(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type'))),
-          set(ref('ctx.stash.mappedArgs'), ref('ctx.result')),
+          setTransformedArgs(ref('ctx.result')),
           toJson(raw('{}')),
         ]),
       ),

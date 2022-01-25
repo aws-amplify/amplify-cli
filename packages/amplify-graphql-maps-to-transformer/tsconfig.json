@@ -10,5 +10,6 @@
     {"path": "../amplify-graphql-relational-transformer"},
     {"path": "../amplify-graphql-model-transformer"},
     {"path": "../amplify-graphql-searchable-transformer"},
+    {"path": "../graphql-transformer-common"},
   ]
 }
