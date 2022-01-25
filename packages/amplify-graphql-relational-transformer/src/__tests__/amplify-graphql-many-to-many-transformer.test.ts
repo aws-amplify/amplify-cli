@@ -3,7 +3,7 @@ import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-in
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import { parse } from 'graphql';
+import { DocumentNode, ObjectTypeDefinitionNode, parse } from 'graphql';
 import { HasOneTransformer, ManyToManyTransformer } from '..';
 
 test('fails if @manyToMany was used on an object that is not a model type', () => {
@@ -193,6 +193,7 @@ test('one of the models with sort key', () => {
   validateModelSchema(schema);
 
   expect(out.schema).toMatchSnapshot();
+  expectObjectAndFields(schema, "ModelAModelB", ["modelAID", "modelAsortId", "modelBID"]);
 });
 
 test('both models with sort key', () => {
@@ -215,6 +216,7 @@ test('both models with sort key', () => {
   validateModelSchema(schema);
 
   expect(out.schema).toMatchSnapshot();
+  expectObjectAndFields(schema, "ModelAModelB", ["modelAID", "modelAsortId", "modelBID", "modelBsortId"]);
   expect(out.resolvers).toMatchSnapshot();
 });
 
@@ -239,6 +241,7 @@ test('models with multiple sort keys', () => {
   validateModelSchema(schema);
 
   expect(out.schema).toMatchSnapshot();
+  expectObjectAndFields(schema, "ModelAModelB", ["modelAID", "modelAsortId", "modelAsecondSortId", "modelBID", "modelBsortId"]);
 });
 
 test('join table inherits auth from first table', () => {
@@ -448,4 +451,12 @@ function createTransformer(authConfig?: AppSyncAuthConfiguration) {
   });
 
   return transformer;
+}
+
+function expectObjectAndFields(schema: DocumentNode, type: String, fields: String[]) {
+  const relationModel = schema.definitions.find(def => def.kind === "ObjectTypeDefinition" && def.name.value === type) as ObjectTypeDefinitionNode;
+  expect(relationModel).toBeDefined();
+  fields.forEach(field => {
+    expect(relationModel.fields?.find(f => f.name.value === field)).toBeDefined();
+  });
 }
