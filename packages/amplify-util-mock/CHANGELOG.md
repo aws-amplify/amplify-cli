@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.29](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.28...amplify-util-mock@4.2.29) (2022-01-23)
+
+
+### Bug Fixes
+
+* listX operations with no args where authField is used in primaryKey ([#9570](https://github.com/aws-amplify/amplify-cli/issues/9570)) ([1496724](https://github.com/aws-amplify/amplify-cli/commit/1496724495010f2daec8b160e35e613ca34eaa5e))
+
+
+
+
+
+## [4.2.28](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.27...amplify-util-mock@4.2.28) (2022-01-20)
+
+
+
+## 7.6.11 (2022-01-20)
+
+
+### Reverts
+
+* Revert "fix(graphql-auth-transformer): fix key condition expression (#9264)" (#9566) ([1d15762](https://github.com/aws-amplify/amplify-cli/commit/1d1576228fd1ed131b8447f21a146b3ffeee1d2b)), closes [#9264](https://github.com/aws-amplify/amplify-cli/issues/9264) [#9566](https://github.com/aws-amplify/amplify-cli/issues/9566)
+
+
+
+
+
+## [4.2.27](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.26...amplify-util-mock@4.2.27) (2022-01-20)
+
+
+### Bug Fixes
+
+* remove functionName from transform-host lambdas ([#9491](https://github.com/aws-amplify/amplify-cli/issues/9491)) ([959d6d8](https://github.com/aws-amplify/amplify-cli/commit/959d6d85056c672b3281794163a7bc534340a513))
+
+
+### Reverts
+
+* Revert "chore: codegen version bump (#9512)" (#9524) ([b653441](https://github.com/aws-amplify/amplify-cli/commit/b65344134a20785afc96abf1798af89eec93fd84)), closes [#9512](https://github.com/aws-amplify/amplify-cli/issues/9512) [#9524](https://github.com/aws-amplify/amplify-cli/issues/9524)
+
+
+
+
+
 ## [4.2.26](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.25...amplify-util-mock@4.2.26) (2022-01-13)
 
 

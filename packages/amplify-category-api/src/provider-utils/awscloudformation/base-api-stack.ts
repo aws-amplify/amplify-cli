@@ -120,7 +120,7 @@ export abstract class ContainersStack extends cdk.Stack {
     const { pipelineWithAwaiter } = this.pipeline({
       skipWait,
       service,
-      containersInfo,
+      containersInfo: containersInfo.filter(container => container.repository),
       gitHubSourceActionInfo,
     });
 
@@ -349,7 +349,7 @@ export abstract class ContainersStack extends cdk.Stack {
 
         containerSecrets.forEach((s, i) => {
           if (secretsArns.has(s)) {
-            secrets[s] = ecs.Secret.fromSecretsManager(ssm.Secret.fromSecretCompleteArn(this, `${name}secret${i + 1}`, secretsArns.get(s)));
+            secrets[s] = ecs.Secret.fromSecretsManager(ssm.Secret.fromSecretPartialArn(this, `${name}secret${i + 1}`, secretsArns.get(s)));
           }
 
           delete environmentWithoutSecrets[s];
@@ -375,12 +375,10 @@ export abstract class ContainersStack extends cdk.Stack {
           secrets,
         });
 
-        if (build) {
-          containersInfo.push({
-            container,
-            repository,
-          });
-        }
+        containersInfo.push({
+          container,
+          repository,
+        });
 
         // TODO: should we use hostPort too? check network mode
         portMappings?.forEach(({ containerPort, protocol, hostPort }) => {
