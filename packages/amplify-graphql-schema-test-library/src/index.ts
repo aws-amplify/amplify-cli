@@ -1,5 +1,10 @@
 /* eslint-disable no-bitwise */
 
+import {
+  invalidSchema101Subscriptions,
+  validSchema100Subscriptions,
+} from "./schemas/v2/appsync-subscription-schemas";
+
 // The TransformerVersion and TransformerPlatform enums use bit flags to easily combine
 // values. For example, if a schema is only supported on JS and iOS, this can be represented
 // as (TransformerPlatform.js | TransformerPlatform.ios). Similarly, if a schema is supported
@@ -291,4 +296,9 @@ export const schemas: { [key: string]: TransformerSchema } = {
       }
     `,
   },
+};
+
+export const SchemaLibrary = {
+  validSchema100Subscriptions: validSchema100Subscriptions,
+  invalidSchema101Subscriptions: invalidSchema101Subscriptions,
 };

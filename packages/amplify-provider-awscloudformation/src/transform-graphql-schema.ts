@@ -21,6 +21,7 @@ import {
   AmplifyCategories,
   getGraphQLTransformerAuthDocLink,
   getGraphQLTransformerAuthSubscriptionsDocLink,
+  getGraphQLTransformerModelRenameSubscriptionsDocLink,
   getGraphQLTransformerOpenSearchDocLink,
   getGraphQLTransformerOpenSearchProductionDocLink,
   JSONUtilities,
@@ -55,7 +56,9 @@ import { exitOnNextTick, FeatureFlags } from 'amplify-cli-core';
 import {
   transformGraphQLSchema as transformGraphQLSchemaV6,
   getDirectiveDefinitions as getDirectiveDefinitionsV6,
+  appsyncSubscriptionCheck,
 } from './graphql-transformer/transform-graphql-schema';
+import { collectDirectives } from 'graphql-transformer-core/src/collectDirectives';
 
 const apiCategory = 'api';
 const storageCategory = 'storage';
@@ -502,8 +505,12 @@ export async function transformGraphQLSchema(context, options) {
 
   // Check for common errors
   const directiveMap = collectDirectivesByTypeNames(project.schema);
+  const directiveList = collectDirectives(project.schema);
   await warnOnAuth(context, directiveMap.types);
   await searchablePushChecks(context, directiveMap.types, parameters[ResourceConstants.PARAMETERS.AppSyncApiName]);
+
+  const modelSubscriptionsDocLink = getGraphQLTransformerModelRenameSubscriptionsDocLink(transformerVersion);
+  await appsyncSubscriptionCheck(directiveList, modelSubscriptionsDocLink)
 
   await transformerVersionCheck(context, resourceDir, previouslyDeployedBackendDir, resourcesToBeUpdated, directiveMap.directives);
 
