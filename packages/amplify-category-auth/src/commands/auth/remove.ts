@@ -12,11 +12,9 @@ export const run = async (context: $TSContext) => {
   const dependentResources = Object.keys(meta).some(e => {
     return ['analytics', 'api', 'storage', 'function'].includes(e) && Object.keys(meta[e]).length > 0;
   });
-
   if (dependentResources) {
     printer.info(messages.dependenciesExists);
   }
-
   const authResourceName = Object.keys(meta.auth).filter(resourceKey => {
     return meta.auth[resourceKey].service === AmplifySupportedService.COGNITO;
   });
