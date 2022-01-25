@@ -29,10 +29,10 @@ export function s3GetResourceName(): string | undefined {
  */
 export async function s3GetUserInput(context: $TSContext, s3ResourceName: string): Promise<S3UserInputs> {
   //migrate storage and fetch cliInputsState
-  if ( isMigrateStorageRequired(context, s3ResourceName) ){
+  if (isMigrateStorageRequired(context, s3ResourceName)) {
     await migrateStorageCategory(context, s3ResourceName);
   }
-  let cliInputsState = new S3InputState(s3ResourceName as string, undefined);
+  let cliInputsState = new S3InputState(context, s3ResourceName as string, undefined);
   return cliInputsState.getUserInput();
 }
 
@@ -41,9 +41,9 @@ export async function s3GetUserInput(context: $TSContext, s3ResourceName: string
  * @param context
  * @returns triggerFunction name or undefined
  */
-export async function s3GetAdminTriggerFunctionName(context: $TSContext) : Promise<string | undefined> {
-  const s3ResourceName : string|undefined = await s3GetResourceName();
-  const s3UserInput :S3UserInputs | undefined =  (s3ResourceName)?await s3GetUserInput(context , s3ResourceName ):undefined;
+export async function s3GetAdminTriggerFunctionName(context: $TSContext): Promise<string | undefined> {
+  const s3ResourceName: string | undefined = await s3GetResourceName();
+  const s3UserInput: S3UserInputs | undefined = s3ResourceName ? await s3GetUserInput(context, s3ResourceName) : undefined;
   return s3UserInput?.adminTriggerFunction?.triggerFunction;
 }
 
@@ -53,7 +53,7 @@ export async function s3GetAdminTriggerFunctionName(context: $TSContext) : Promi
  * @param s3ResourceName
  * @returns
  */
- export async function s3UpdateUserInput(context: $TSContext, storageInput: S3UserInputs): Promise<S3UserInputs> {
+export async function s3UpdateUserInput(context: $TSContext, storageInput: S3UserInputs): Promise<S3UserInputs> {
   await s3APIHelperTransformAndSaveState(context, storageInput, CLISubCommandType.UPDATE);
   return storageInput;
 }
@@ -71,18 +71,20 @@ export async function s3CreateStorageResource(context: $TSContext, storageInput:
     throw new Error('Add Storage Failed.. already exists');
   }
   //validate bucket Name
-  if( storageInput.bucketName ) {
-    s3ValidateBucketName( storageInput.bucketName );
+  if (storageInput.bucketName) {
+    s3ValidateBucketName(storageInput.bucketName);
   }
   await s3APIHelperTransformAndSaveState(context, storageInput, CLISubCommandType.ADD);
   return storageInput;
 }
 
-export function s3ValidateBucketName( bucketName:string ){
+export function s3ValidateBucketName(bucketName: string) {
   const regexp = '^[a-z0-9-]{3,47}$';
-  const isValidBucketName = new RegExp(regexp, 'g').test(bucketName)
-  if( !isValidBucketName ){
-    throw new Error('Bucket name can only use the following characters: a-z 0-9 - and should have minimum 3 character and max of 47 character')
+  const isValidBucketName = new RegExp(regexp, 'g').test(bucketName);
+  if (!isValidBucketName) {
+    throw new Error(
+      'Bucket name can only use the following characters: a-z 0-9 - and should have minimum 3 character and max of 47 character',
+    );
   }
   return true;
 }
@@ -100,7 +102,7 @@ export async function s3AddStorageLambdaTrigger(
   s3ResourceName: string,
   storageLambdaTrigger: S3UserInputTriggerFunctionParams,
 ) {
-  let cliInputsState = new S3InputState(s3ResourceName, undefined);
+  let cliInputsState = new S3InputState(context, s3ResourceName, undefined);
   //Check if migration is required
   if (!cliInputsState.cliInputFileExists()) {
     throw new Error(`Error Adding trigger function on storage resource ${s3ResourceName} : resource does not exist`);
@@ -122,7 +124,7 @@ export async function s3AddStorageLambdaTrigger(
  * @returns
  */
 export async function s3RemoveStorageLambdaTrigger(context: $TSContext, s3ResourceName: string) {
-  let cliInputsState = new S3InputState(s3ResourceName, undefined);
+  let cliInputsState = new S3InputState(context, s3ResourceName, undefined);
   //Check if migration is required
   if (!cliInputsState.cliInputFileExists()) {
     throw new Error(`Error Adding trigger function on storage resource ${s3ResourceName} : resource does not exist`);
@@ -148,12 +150,12 @@ export async function s3RemoveStorageLambdaTrigger(context: $TSContext, s3Resour
  * @param adminLambdaTrigger
  * @returns
  */
- export async function s3RegisterAdminTrigger(
+export async function s3RegisterAdminTrigger(
   context: $TSContext,
   s3ResourceName: string,
   adminLambdaTrigger: S3UserInputTriggerFunctionParams,
 ) {
-  let cliInputsState = new S3InputState(s3ResourceName, undefined);
+  let cliInputsState = new S3InputState(context, s3ResourceName, undefined);
   //Check if migration is required
   if (!cliInputsState.cliInputFileExists()) {
     throw new Error(`Error Registering existing trigger function on storage resource ${s3ResourceName} : resource does not exist`);
@@ -173,7 +175,7 @@ export async function s3RemoveStorageLambdaTrigger(context: $TSContext, s3Resour
  * @returns
  */
 export async function s3RemoveAdminLambdaTrigger(context: $TSContext, s3ResourceName: string) {
-  let cliInputsState = new S3InputState(s3ResourceName, undefined);
+  let cliInputsState = new S3InputState(context, s3ResourceName, undefined);
   if (!cliInputsState.cliInputFileExists()) {
     throw new Error(`Error Registering existing trigger function on storage resource ${s3ResourceName} : resource does not exist`);
   }
@@ -197,7 +199,7 @@ export async function addLambdaTrigger(
   s3ResourceName: string,
   triggerFunctionParams: S3UserInputTriggerFunctionParams,
 ): Promise<string | undefined> {
-  let cliInputsState = new S3InputState(s3ResourceName, undefined);
+  let cliInputsState = new S3InputState(context, s3ResourceName, undefined);
   //Check if migration is required
   if (!cliInputsState.cliInputFileExists()) {
     cliInputsState.addAdditionalLambdaTrigger(triggerFunctionParams);
@@ -212,17 +214,17 @@ export async function addLambdaTrigger(
 /** HELPERS */
 async function s3APIHelperTransformAndSaveState(context: $TSContext, storageInput: S3UserInputs, phase: CLISubCommandType) {
   //migrate storage and fetch cliInputsState
-  if ( phase != CLISubCommandType.ADD && isMigrateStorageRequired(context, storageInput.resourceName as string) ){
-      await migrateStorageCategory(context, storageInput.resourceName as string);
+  if (phase != CLISubCommandType.ADD && isMigrateStorageRequired(context, storageInput.resourceName as string)) {
+    await migrateStorageCategory(context, storageInput.resourceName as string);
   }
 
   //Save CLI Inputs payload
   let cliInputsState;
 
-  if ( phase === CLISubCommandType.ADD ){
-    cliInputsState = new S3InputState(storageInput.resourceName as string, storageInput);
+  if (phase === CLISubCommandType.ADD) {
+    cliInputsState = new S3InputState(context, storageInput.resourceName as string, storageInput);
   } else {
-    cliInputsState = new S3InputState(storageInput.resourceName as string, undefined );
+    cliInputsState = new S3InputState(context, storageInput.resourceName as string, undefined);
   }
   await cliInputsState.saveCliInputPayload(storageInput);
 
@@ -232,7 +234,7 @@ async function s3APIHelperTransformAndSaveState(context: $TSContext, storageInpu
   //sync amplify-meta
   const dependsOn = stackGenerator.getS3DependsOn();
   //sync amplify meta
-  if ( phase == CLISubCommandType.ADD ) {
+  if (phase == CLISubCommandType.ADD) {
     context.amplify.updateamplifyMetaAfterResourceAdd(AmplifyCategories.STORAGE, storageInput.resourceName as string, {
       service: AmplifySupportedService.S3,
       providerPlugin: 'awscloudformation',

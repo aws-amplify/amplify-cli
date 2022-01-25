@@ -50,7 +50,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
   public async transform(context: $TSContext): Promise<Template> {
     // parse Input data
     // validating cli-inputs
-    const cliState = new AuthInputState(this.resourceName);
+    const cliState = new AuthInputState(context, this.resourceName);
     this._cliInputs = cliState.getCLIInputPayload();
     this._cognitoStackProps = await this.generateStackProps(context);
 

@@ -161,7 +161,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
       AmplifyCategories.API,
       AmplifySupportedService.APPSYNC,
       'getAuthConfig',
-      [resources[0].resourceName],
+      [context, resources[0].resourceName],
     );
     // handle case where auth project is not migrated , if Auth not migrated above function will return empty Object
     if (_.isEmpty(authConfig)) {
@@ -259,7 +259,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
       AmplifyCategories.API,
       AmplifySupportedService.APPSYNC,
       'getResolverConfig',
-      [resources[0].resourceName],
+      [context, resources[0].resourceName],
     );
   }
 

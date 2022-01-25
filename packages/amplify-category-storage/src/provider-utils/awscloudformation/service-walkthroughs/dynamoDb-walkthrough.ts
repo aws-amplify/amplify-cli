@@ -55,10 +55,10 @@ export async function addWalkthrough(context: $TSContext, defaultValuesFilename:
 
   cliInputs.triggerFunctions = await askTriggersQuestion(context, cliInputs.resourceName);
 
-  const cliInputsState = new DynamoDBInputState(cliInputs.resourceName);
+  const cliInputsState = new DynamoDBInputState(context, cliInputs.resourceName);
   cliInputsState.saveCliInputPayload(cliInputs);
 
-  const stackGenerator = new DDBStackTransform(cliInputs.resourceName);
+  const stackGenerator = new DDBStackTransform(context, cliInputs.resourceName);
   stackGenerator.transform();
 
   return cliInputs.resourceName;
@@ -91,13 +91,13 @@ export async function updateWalkthrough(context: $TSContext) {
   const resourceName = await prompter.pick('Specify the resource that you would want to update', resources);
 
   // Check if we need to migrate to cli-inputs.json
-  const cliInputsState = new DynamoDBInputState(resourceName);
+  const cliInputsState = new DynamoDBInputState(context, resourceName);
 
   const headlessMigrate = context.input.options?.yes || context.input.options?.forcePush || context.input.options?.headless;
   if (!cliInputsState.cliInputFileExists()) {
     if (headlessMigrate || (await prompter.yesOrNo(getMigrateResourceMessageForOverride(AmplifyCategories.STORAGE, resourceName), true))) {
       cliInputsState.migrate();
-      const stackGenerator = new DDBStackTransform(resourceName);
+      const stackGenerator = new DDBStackTransform(context, resourceName);
       stackGenerator.transform();
     } else {
       return;
@@ -136,7 +136,7 @@ export async function updateWalkthrough(context: $TSContext) {
 
   cliInputsState.saveCliInputPayload(cliInputs);
 
-  const stackGenerator = new DDBStackTransform(cliInputs.resourceName);
+  const stackGenerator = new DDBStackTransform(context, cliInputs.resourceName);
   stackGenerator.transform();
 
   return cliInputs;
