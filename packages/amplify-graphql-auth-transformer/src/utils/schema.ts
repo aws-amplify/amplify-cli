@@ -153,6 +153,14 @@ export const getTable = (ctx: TransformerContextProvider, def: ObjectTypeDefinit
   }
 };
 
+/**
+ *
+ * given the keySchema from a DynamoDBDataSource it will return the parititonKey
+ */
+export const getPartitionKey = (ks: any): string => {
+  return ks.find((att: any) => att.keyType === 'HASH')!.attributeName;
+};
+
 export const extendTypeWithDirectives = (
   ctx: TransformerTransformSchemaStepContextProvider,
   typeName: string,

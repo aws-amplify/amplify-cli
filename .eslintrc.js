@@ -304,6 +304,7 @@ module.exports = {
     '/packages/amplify-cli-logger/lib',
     '/packages/amplify-e2e-core/lib',
     '/packages/amplify-function-plugin-interface/lib',
+    '/packages/amplify-graphql-schema-test-library/lib',
     '/packages/amplify-headless-interface/lib',
     '/packages/amplify-migration-tests/lib',
     '/packages/amplify-prompts/lib',
