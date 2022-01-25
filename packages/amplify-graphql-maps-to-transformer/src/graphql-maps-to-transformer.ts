@@ -53,7 +53,7 @@ export class MapsToTransformer extends TransformerPluginBase {
    * During the generateResolvers step, the mapsTo transformer reads all of the model field mappings from the resourceHelper and generates
    * VTL to map the current field names to the original field names
    */
-  generateResolvers = (context: TransformerContextProvider) => {
+  after = (context: TransformerContextProvider) => {
     context.resourceHelper.getModelFieldMapKeys().forEach(modelName => {
       const modelFieldMap = context.resourceHelper.getModelFieldMap(modelName);
       if (!modelFieldMap.getMappedFields().length) {
