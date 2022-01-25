@@ -4,7 +4,9 @@ import { $TSAny, $TSContext, $TSObject, stateManager, exitOnNextTick, Configurat
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 import { printer } from 'amplify-prompts';
 
+
 const spinner = ora('');
+const TROUBLESHOOTING_PROJECT_URL = "https://docs.amplify.aws/project/troubleshooting/";
 
 // The following code pulls the latest backend to #current-cloud-backend
 // so the amplify status is correctly shown to the user before the user confirms
@@ -66,6 +68,7 @@ export const run = async (context: $TSContext) => {
     const message = e.name === 'GraphQLError' ? e.toString() : e.message;
     printer.error(`An error occurred during the push operation: ${message}`);
     await context.usageData.emitError(e);
+    printer.warn(`Please refer to the Troubleshooting guide at : ${TROUBLESHOOTING_PROJECT_URL}`);
     exitOnNextTick(1);
   }
 };
