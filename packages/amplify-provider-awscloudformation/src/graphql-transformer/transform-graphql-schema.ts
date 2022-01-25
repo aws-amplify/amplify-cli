@@ -13,6 +13,7 @@ import {
 } from '@aws-amplify/graphql-relational-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import {
+  collectDirectives,
   collectDirectivesByTypeNames,
   getAppSyncServiceExtraDirectives,
   GraphQLTransform,
@@ -30,10 +31,12 @@ import {
   JSONUtilities,
   pathManager,
   stateManager,
+  getGraphQLTransformerOpenSearchProductionDocLink,
+  getGraphQLTransformerModelRenameSubscriptionsDocLink,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import fs from 'fs-extra';
-import { print } from 'graphql';
+import { GraphQLError, print } from 'graphql';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { getSanityCheckRules, loadProject } from 'graphql-transformer-core';
 import importFrom from 'import-from';
@@ -57,8 +60,59 @@ const SCHEMA_FILENAME = 'schema.graphql';
 const SCHEMA_DIR_NAME = 'schema';
 const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
 const S3_SERVICE_NAME = 'S3';
+const MAXIMUM_APPSYNC_SUBSCRIPTIONS = 100;
+const MODEL_SUBSCRIPTION_ARGUMENTS = ['onCreate', 'onUpdate', 'onDelete'];
 
 const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
+
+export async function appsyncSubscriptionCheck(directiveList, docLink): Promise<void> {
+  let subscriptionCount = 0;
+  directiveList.forEach(dir => {
+    if(dir?.name?.value === 'model') {
+      if(dir?.arguments?.length) {
+        let modSubscription = 3;
+        let argMap = new Map<string, string>();
+        dir.arguments.forEach(element => {
+          if(element?.name?.value === 'subscriptions') {
+            if(element?.value?.kind === 'NullValue') {
+              argMap.set('subscriptions', null);
+            }
+            else {
+              element?.value?.fields?.forEach(item => {
+                argMap.set(item?.name?.value, item?.value?.value);
+              });
+            }
+          }
+        });
+        if(argMap.has('subscriptions') && argMap.get('subscriptions') === null) {
+          return; // end for loop iteration on directive list
+        }
+        else {
+          MODEL_SUBSCRIPTION_ARGUMENTS.forEach(arg => {
+            if(argMap.has(arg) && (argMap.get(arg) === undefined || argMap.get(arg) === null)) {
+              modSubscription -= 1;
+            }
+          });
+          subscriptionCount += modSubscription;
+        }
+      }
+      else {
+        subscriptionCount += 3;
+      }
+    }
+  });
+
+  if(subscriptionCount > MAXIMUM_APPSYNC_SUBSCRIPTIONS) {
+    printer.error(`Your GraphQL schema contains too many AppSync subscriptions, it exceeds the ${MAXIMUM_APPSYNC_SUBSCRIPTIONS} subscription limit. Each '@model' creates 3 subscriptions by default.`);
+    printer.info('To resolve this issue, you may follow one of the following strategies:', 'yellow');
+    printer.info('\t- Set all subscriptions on some of your models to null for models that do not require subscriptions', 'yellow');
+    printer.info('\t- Set some subscriptions on some models to null, options `onCreate`, `onUpdate`, and `onDelete`', 'yellow');
+    printer.info('\t- Combine some models if possible to reduce subscription count. NOTE: If you have already published data to a model, deleting it to add fields to another model will result in data loss', 'yellow');
+    printer.blankLine();
+    printer.info(`Learn more about models and subscriptions here: ${docLink}`, 'yellow');
+    throw new Error(`Your GraphQL schema contains too many AppSync subscriptions, it exceeds the ${MAXIMUM_APPSYNC_SUBSCRIPTIONS} subscription limit`)
+  }
+}
 
 function warnOnAuth(map, docLink) {
   const a: boolean = true;
@@ -314,8 +368,10 @@ export async function transformGraphQLSchema(context, options) {
     : undefined;
   const transformerVersion = await getTransformerVersion(context);
   const docLink = getGraphQLTransformerAuthDocLink(transformerVersion);
+  const modelSubscriptionsDocLink = getGraphQLTransformerModelRenameSubscriptionsDocLink(transformerVersion);
   const sandboxModeEnabled = schemaHasSandboxModeEnabled(project.schema, docLink);
   const directiveMap = collectDirectivesByTypeNames(project.schema);
+  const directiveList = collectDirectives(project.schema);
   const hasApiKey =
     authConfig.defaultAuthentication.authenticationType === 'API_KEY' ||
     authConfig.additionalAuthenticationProviders.some(a => a.authenticationType === 'API_KEY');
@@ -328,6 +384,7 @@ export async function transformGraphQLSchema(context, options) {
   } else warnOnAuth(directiveMap.types, docLink);
 
   searchablePushChecks(context, directiveMap.types, parameters[ResourceConstants.PARAMETERS.AppSyncApiName]);
+  appsyncSubscriptionCheck(directiveList, modelSubscriptionsDocLink);
 
   const transformerListFactory = getTransformerFactory(context, resourceDir);
 

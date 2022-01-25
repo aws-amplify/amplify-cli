@@ -55,3 +55,14 @@ export function getGraphQLTransformerOpenSearchProductionDocLink(version: number
             return '';
     }
 }
+
+export function getGraphQLTransformerModelRenameSubscriptionsDocLink(version: number): string {
+    switch(version) {
+        case 1:
+            return 'https://docs.amplify.aws/cli-legacy/graphql-transformer/model/';
+        case 2:
+            return 'https://docs.amplify.aws/cli/graphql/data-modeling/#rename-generated-queries-mutations-and-subscriptions';
+        default:
+            return '';
+    }
+}
