@@ -1,6 +1,7 @@
 import { $TSContext, $TSObject } from 'amplify-cli-core';
-import { PlaceIndexParameters } from './placeIndexParams';
 import _ from 'lodash';
+import { App } from '@aws-cdk/core';
+import { PlaceIndexParameters } from './placeIndexParams';
 import { parametersFileName, provider, ServiceName } from './constants';
 import { category } from '../constants';
 import { PlaceIndexStack } from '../service-stacks/placeIndexStack';
@@ -14,12 +15,14 @@ import {
   ResourceDependsOn,
   getResourceDependencies,
   writeParamsToCLIInputs,
-  readParamsFromCLIInputs
+  readParamsFromCLIInputs,
 } from './resourceUtils';
-import { App } from '@aws-cdk/core';
 import { getTemplateMappings } from '../provider-controllers';
 import { DataProvider } from './resourceParams';
 
+/**
+ *
+ */
 export const createPlaceIndexResource = async (context: $TSContext, parameters: PlaceIndexParameters) => {
   // allow unauth access for identity pool if guest access is enabled
   await checkAuthConfig(context, parameters, ServiceName.PlaceIndex);
@@ -44,6 +47,9 @@ export const createPlaceIndexResource = async (context: $TSContext, parameters: 
   context.amplify.updateamplifyMetaAfterResourceAdd(category, parameters.name, placeIndexMetaParameters);
 };
 
+/**
+ *
+ */
 export const modifyPlaceIndexResource = async (context: $TSContext, parameters: PlaceIndexParameters) => {
   // allow unauth access for identity pool if guest access is enabled
   await checkAuthConfig(context, parameters, ServiceName.PlaceIndex);
@@ -66,6 +72,7 @@ export const modifyPlaceIndexResource = async (context: $TSContext, parameters: 
   const paramsToUpdate = ['accessType', 'dependsOn'] as const;
   paramsToUpdate.forEach(param => {
     context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.name, param, placeIndexMetaParameters[param]);
+    context.amplify.updateBackendConfigAfterResourceUpdate(category, parameters.name, param, placeIndexMetaParameters[param]);
   });
   // remove the pricingPlan if present on old resources
   context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.name, 'pricingPlan', undefined);
@@ -85,7 +92,7 @@ function saveCFNParameters(
     dataProvider: parameters.dataProvider === DataProvider.Esri ? 'Esri' : 'Here',
     dataSourceIntendedUse: parameters.dataSourceIntendedUse,
     isDefault: parameters.isDefault,
-    pricingPlan: undefined
+    pricingPlan: undefined,
   };
   updateParametersFile(params, parameters.name, parametersFileName);
 }
@@ -96,14 +103,14 @@ function saveCFNParameters(
 export const constructPlaceIndexMetaParameters = (params: PlaceIndexParameters, authResourceName: string): PlaceIndexMetaParameters => {
   const dependsOnResources = getResourceDependencies(params.groupPermissions, authResourceName);
 
-  let result: PlaceIndexMetaParameters = {
+  const result: PlaceIndexMetaParameters = {
     isDefault: params.isDefault,
     providerPlugin: provider,
     service: ServiceName.PlaceIndex,
     dataProvider: params.dataProvider,
     dataSourceIntendedUse: params.dataSourceIntendedUse,
     accessType: params.accessType,
-    dependsOn: dependsOnResources
+    dependsOn: dependsOnResources,
   };
   return result;
 };
@@ -120,6 +127,9 @@ export type PlaceIndexMetaParameters = Pick<
   dependsOn: ResourceDependsOn[];
 };
 
+/**
+ *
+ */
 export const getCurrentPlaceIndexParameters = async (indexName: string): Promise<Partial<PlaceIndexParameters>> => {
   const currentIndexMetaParameters = (await readResourceMetaParameters(ServiceName.PlaceIndex, indexName)) as PlaceIndexMetaParameters;
   const currentIndexParameters = (await readParamsFromCLIInputs())[indexName];
@@ -128,10 +138,13 @@ export const getCurrentPlaceIndexParameters = async (indexName: string): Promise
     dataSourceIntendedUse: currentIndexMetaParameters.dataSourceIntendedUse,
     accessType: currentIndexMetaParameters.accessType,
     isDefault: currentIndexMetaParameters.isDefault,
-    groupPermissions: currentIndexParameters?.groupPermissions || []
+    groupPermissions: currentIndexParameters?.groupPermissions || [],
   };
 };
 
+/**
+ *
+ */
 export const getPlaceIndexIamPolicies = (resourceName: string, crudOptions: string[]): { policy: $TSObject[]; attributes: string[] } => {
   const policy = [];
   const actions = new Set<string>();
@@ -155,7 +168,7 @@ export const getPlaceIndexIamPolicies = (resourceName: string, crudOptions: stri
     }
   });
 
-  let placeIndexPolicy = {
+  const placeIndexPolicy = {
     Effect: 'Allow',
     Action: Array.from(actions),
     Resource: [
