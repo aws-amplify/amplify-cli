@@ -26,13 +26,12 @@ import { AppSyncAuthConfiguration, TransformerPluginProvider } from '@aws-amplif
 import {
   $TSContext,
   AmplifyCategories,
-  getGraphQLTransformerAuthDocLink,
   AmplifySupportedService,
+  getGraphQLTransformerAuthDocLink,
   JSONUtilities,
   pathManager,
   stateManager,
 } from 'amplify-cli-core';
-import { getTransformerVersion, searchablePushChecks } from '../transform-graphql-schema';
 import { printer } from 'amplify-prompts';
 import fs from 'fs-extra';
 import { print } from 'graphql';
@@ -43,6 +42,7 @@ import importGlobal from 'import-global';
 import _ from 'lodash';
 import path from 'path';
 import { destructiveUpdatesFlag, ProviderName as providerName } from '../constants';
+import { getTransformerVersion, searchablePushChecks } from '../transform-graphql-schema';
 import { hashDirectory } from '../upload-appsync-files';
 import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
 import { isAuthModeUpdated } from '../utils/auth-mode-compare';

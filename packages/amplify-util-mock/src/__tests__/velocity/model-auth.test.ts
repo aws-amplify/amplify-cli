@@ -1,4 +1,5 @@
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
+import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
@@ -539,37 +540,119 @@ describe('@model field auth', () => {
       expect(out.resolvers?.[`Student.${field}.req.vtl`]).not.toBeDefined();
     });
   });
+});
 
-  test('handle existing expression in the modelQueryExpression', () => {
+describe('@model @primaryIndex @index auth', () => {
+  let vtlTemplate: VelocityTemplateSimulator;
+  let transformer: GraphQLTransform;
+
+  const ownerRequest: AppSyncGraphQLExecutionContext = {
+    requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS,
+    jwt: getJWTToken(USER_POOL_ID, 'user1', 'user1@test.com'),
+    headers: {},
+    sourceIp: '',
+  };
+
+  beforeEach(() => {
+    const authConfig: AppSyncAuthConfiguration = {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [],
+    };
+    transformer = new GraphQLTransform({
+      authConfig,
+      featureFlags: {
+        getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+          if (name === 'secondaryKeyAsGSI') {
+            return true;
+          }
+          return defaultValue;
+        }),
+        getNumber: jest.fn(),
+        getObject: jest.fn(),
+        getString: jest.fn(),
+      },
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()],
+    });
+    vtlTemplate = new VelocityTemplateSimulator({ authConfig });
+  });
+
+  test('listX operations', () => {
     const validSchema = `
-      type User
-      @model
-      @auth(
-        rules: [
-          { allow: groups, groups: ["admin"] }
-          { allow: owner, ownerField: "id", operations: [read] }
-        ]
-      ) {
-      id: ID!
-      first_name: String
-      last_name: String
-      email: String!
-      isAdmin: Boolean
+    type FamilyMember @model @auth(rules: [
+      { allow: owner, ownerField: "parent", operations: [read] },
+      { allow: owner, ownerField: "child", operations: [read] } 
+    ]){
+      parent: ID! @primaryKey(sortKeyFields: ["child"]) @index(name: "byParent", queryField: "byParent")
+      child: ID! @index(name: "byChild", queryField: "byChild")
+      createdAt: AWSDateTime
+      updatedAt: AWSDateTime
     }`;
 
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
-    // create context and request
-    const ownerContext: AppSyncVTLContext = {
-      stash: { modelQueryExpression: { expression: 'true == true' } },
-    };
 
-    const requestTemplate = out.resolvers['Query.listUsers.auth.1.req.vtl'];
-    const vtlRequest = vtlTemplate.render(requestTemplate, { context: ownerContext, requestParameters: ownerRequest });
+    // should expect no errors and there should be an authfilter
+    const listAuthRequestTemplate = out.resolvers['Query.listFamilyMembers.auth.1.req.vtl'];
+    expect(listAuthRequestTemplate).toBeDefined();
+    let listAuthVTLRequest = vtlTemplate.render(listAuthRequestTemplate, {
+      context: {},
+      requestParameters: ownerRequest,
+    });
+    expect(listAuthVTLRequest.hadException).toEqual(false);
+    expect(listAuthVTLRequest.stash.authFilter).toEqual(
+      expect.objectContaining({
+        or: expect.arrayContaining([
+          expect.objectContaining({ child: { eq: ownerRequest.jwt['cognito:username'] } }),
+          expect.objectContaining({ parent: { eq: ownerRequest.jwt['cognito:username'] } }),
+        ]),
+      }),
+    );
 
-    expect(vtlRequest).toBeDefined();
-    expect(vtlRequest.stash.modelQueryExpression).toBeDefined();
-    expect(vtlRequest.stash.modelQueryExpression.expression).toBeDefined();
-    expect(vtlRequest.stash.modelQueryExpression.expression).toEqual('true == true AND #id = :user1');
+    // should still change model query expression if the partition key is provided
+    // adding the modelQueryExpression and arg to simulate partitionkey being added
+    listAuthVTLRequest = vtlTemplate.render(listAuthRequestTemplate, {
+      context: {
+        arguments: {
+          parent: 'user10',
+        },
+        stash: {
+          modelQueryExpression: {
+            expression: '#parent = :parent',
+            expressionNames: {
+              '#parent': 'parent',
+            },
+            expressionValues: {
+              ':parent': {
+                S: '$ctx.args.parent',
+              },
+            },
+          },
+        },
+      },
+      requestParameters: ownerRequest,
+    });
+    expect(listAuthVTLRequest.hadException).toEqual(false);
+    expect(listAuthVTLRequest.stash.authFilter).not.toBeDefined();
+    // the $ctx.args.parent is not resolving in mock vtl engine
+    // not an issue in the service the index e2e tests this scenario
+    expect(listAuthVTLRequest.stash.modelQueryExpression).toMatchInlineSnapshot(`
+      Object {
+        "expression": "#parent = :parent AND #child = :child",
+        "expressionNames": Object {
+          "#child": "child",
+          "#parent": "parent",
+        },
+        "expressionValues": Object {
+          ":child": Object {
+            "S": "user1",
+          },
+          ":parent": Object {
+            "S": "$ctx.args.parent",
+          },
+        },
+      }
+    `);
   });
 });

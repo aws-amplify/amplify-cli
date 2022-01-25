@@ -54,6 +54,7 @@ import {
   NONE_DS,
   hasRelationalDirective,
   getTable,
+  getPartitionKey,
   getRelationalPrimaryMap,
   getReadRolesForField,
 } from './utils';
@@ -468,8 +469,17 @@ Static group authorization should perform as expected.`,
   ): void => {
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     const roleDefinitions = acm.getRolesPerOperation('read').map(r => this.roleMap.get(r)!);
-    const primaryFields = getTable(ctx, def).keySchema.map(att => att.attributeName);
-    const authExpression = generateAuthExpressionForQueries(this.configuredAuthProviders, roleDefinitions, def.fields ?? [], primaryFields);
+    const tableKeySchema = getTable(ctx, def).keySchema;
+    const primaryFields = tableKeySchema.map(att => att.attributeName);
+    const primaryKey = getPartitionKey(tableKeySchema);
+    const authExpression = generateAuthExpressionForQueries(
+      this.configuredAuthProviders,
+      roleDefinitions,
+      def.fields ?? [],
+      primaryFields,
+      false,
+      primaryKey,
+    );
     resolver.addToSlot(
       'auth',
       MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
@@ -486,6 +496,7 @@ Static group authorization should perform as expected.`,
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     const roleDefinitions = acm.getRolesPerOperation('read').map(r => this.roleMap.get(r)!);
     let primaryFields: Array<string>;
+    let partitionKey: string;
     const table = getTable(ctx, def);
     try {
       if (indexName) {
@@ -494,6 +505,7 @@ Static group authorization should perform as expected.`,
           .keySchema.map((att: any) => att.attributeName);
       } else {
         primaryFields = table.keySchema.map((att: any) => att.attributeName);
+        partitionKey = getPartitionKey(table.keySchema);
       }
     } catch (err) {
       throw new InvalidDirectiveError(`Could not fetch keySchema for ${def.name.value}.`);
@@ -504,6 +516,7 @@ Static group authorization should perform as expected.`,
       def.fields ?? [],
       primaryFields,
       !!indexName,
+      partitionKey,
     );
     resolver.addToSlot(
       'auth',

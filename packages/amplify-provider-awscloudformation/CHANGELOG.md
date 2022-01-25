@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.8.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.10...amplify-provider-awscloudformation@5.8.11) (2022-01-23)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [5.8.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.9...amplify-provider-awscloudformation@5.8.10) (2022-01-20)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [5.8.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.8...amplify-provider-awscloudformation@5.8.9) (2022-01-20)
+
+
+### Reverts
+
+* Revert "chore: codegen version bump (#9512)" (#9524) ([b653441](https://github.com/aws-amplify/amplify-cli/commit/b65344134a20785afc96abf1798af89eec93fd84)), closes [#9512](https://github.com/aws-amplify/amplify-cli/issues/9512) [#9524](https://github.com/aws-amplify/amplify-cli/issues/9524)
+
+
+
+
+
 ## [5.8.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.7...amplify-provider-awscloudformation@5.8.8) (2022-01-13)
 
 
