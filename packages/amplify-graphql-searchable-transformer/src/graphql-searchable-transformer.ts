@@ -381,7 +381,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       .map(makeSearchableScalarInputObject)
       .forEach((node: InputObjectTypeDefinitionNode) => ctx.output.addInput(node));
 
-    const searchableXQueryFilterInput = makeSearchableXFilterInputObject(definition, ctx.inputDocument, ctx.resourceHelper);
+    const searchableXQueryFilterInput = makeSearchableXFilterInputObject(definition, ctx.inputDocument);
     if (!ctx.output.hasType(searchableXQueryFilterInput.name.value)) {
       ctx.output.addInput(searchableXQueryFilterInput);
     }
