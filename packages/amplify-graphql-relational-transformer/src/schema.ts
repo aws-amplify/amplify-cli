@@ -435,7 +435,7 @@ export function getSortKeyFields(ctx: TransformerContextProvider, object: Object
   for (const field of outputObject.fields!) {
     for (const directive of field.directives!) {
       if (directive.name.value === 'primaryKey') {
-        let values: ListValueNode = directive.arguments?.find(arg => arg.name.value === 'sortKeyFields')?.value as ListValueNode;
+        const values: ListValueNode = directive.arguments?.find(arg => arg.name.value === 'sortKeyFields')?.value as ListValueNode;
         return values ? values.values.map(val => fieldMap.get((val as StringValueNode).value)!) : [];
       }
     }
