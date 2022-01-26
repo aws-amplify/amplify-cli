@@ -162,7 +162,7 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 
 exports[`join table inherits auth from both tables 11`] = `
 "## [Start] Delete Request template. **
-#set( $args = $util.defaultIfNull($ctx.stash.mappedArgs, $ctx.args) )
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"DeleteItem\\"
@@ -300,7 +300,7 @@ $util.toJson({})
 
 exports[`join table inherits auth from both tables 16`] = `
 "## [Start] Mutation Update resolver. **
-#set( $args = $util.defaultIfNull($ctx.stash.mappedArgs, $ctx.args) )
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -659,7 +659,7 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 
 exports[`join table inherits auth from tables with similar rules 11`] = `
 "## [Start] Delete Request template. **
-#set( $args = $util.defaultIfNull($ctx.stash.mappedArgs, $ctx.args) )
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"DeleteItem\\"
@@ -813,7 +813,7 @@ $util.toJson({})
 
 exports[`join table inherits auth from tables with similar rules 16`] = `
 "## [Start] Mutation Update resolver. **
-#set( $args = $util.defaultIfNull($ctx.stash.mappedArgs, $ctx.args) )
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -1534,7 +1534,7 @@ $util.toJson({
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.createBar.req.vtl": "## [Start] Create Request template. **
-#set( $args = $util.defaultIfNull($ctx.stash.mappedArgs, $ctx.args) )
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -1625,7 +1625,7 @@ $util.toJson({
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.createFoo.req.vtl": "## [Start] Create Request template. **
-#set( $args = $util.defaultIfNull($ctx.stash.mappedArgs, $ctx.args) )
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -1716,7 +1716,7 @@ $util.toJson({
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.createFooBar.req.vtl": "## [Start] Create Request template. **
-#set( $args = $util.defaultIfNull($ctx.stash.mappedArgs, $ctx.args) )
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -1796,7 +1796,7 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.deleteBar.req.vtl": "## [Start] Delete Request template. **
-#set( $args = $util.defaultIfNull($ctx.stash.mappedArgs, $ctx.args) )
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"DeleteItem\\"
@@ -1868,7 +1868,7 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.deleteFoo.req.vtl": "## [Start] Delete Request template. **
-#set( $args = $util.defaultIfNull($ctx.stash.mappedArgs, $ctx.args) )
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"DeleteItem\\"
@@ -1940,7 +1940,7 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.deleteFooBar.req.vtl": "## [Start] Delete Request template. **
-#set( $args = $util.defaultIfNull($ctx.stash.mappedArgs, $ctx.args) )
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"DeleteItem\\"
@@ -2021,7 +2021,7 @@ $util.toJson({
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.updateBar.req.vtl": "## [Start] Mutation Update resolver. **
-#set( $args = $util.defaultIfNull($ctx.stash.mappedArgs, $ctx.args) )
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -2174,7 +2174,7 @@ $util.toJson({
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.updateFoo.req.vtl": "## [Start] Mutation Update resolver. **
-#set( $args = $util.defaultIfNull($ctx.stash.mappedArgs, $ctx.args) )
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -2327,7 +2327,7 @@ $util.toJson({
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.updateFooBar.req.vtl": "## [Start] Mutation Update resolver. **
-#set( $args = $util.defaultIfNull($ctx.stash.mappedArgs, $ctx.args) )
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -2630,7 +2630,7 @@ $util.unauthorized()
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Query.listBars.req.vtl": "## [Start] List Request. **
-#set( $args = $util.defaultIfNull($ctx.stash.mappedArgs, $ctx.args) )
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $limit = $util.defaultIfNull($args.limit, 100) )
 #set( $ListRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -2690,7 +2690,7 @@ $util.toJson($ListRequest)
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Query.listFooBars.req.vtl": "## [Start] List Request. **
-#set( $args = $util.defaultIfNull($ctx.stash.mappedArgs, $ctx.args) )
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $limit = $util.defaultIfNull($args.limit, 100) )
 #set( $ListRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -2750,7 +2750,7 @@ $util.toJson($ListRequest)
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Query.listFoos.req.vtl": "## [Start] List Request. **
-#set( $args = $util.defaultIfNull($ctx.stash.mappedArgs, $ctx.args) )
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $limit = $util.defaultIfNull($args.limit, 100) )
 #set( $ListRequest = {
   \\"version\\": \\"2018-05-29\\",
