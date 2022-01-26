@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.9.0-mapsto3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.11...amplify-provider-awscloudformation@5.9.0-mapsto3.0) (2022-01-26)
+
+
+### Bug Fixes
+
+* address most PR comments ([8f432f3](https://github.com/aws-amplify/amplify-cli/commit/8f432f3e598ab665ae0590bd9888c13fcf1fcd62))
+* hopefully closer to having rename working with relations ([cbeaf07](https://github.com/aws-amplify/amplify-cli/commit/cbeaf074e442fc56ac39e595b347b5057fd328e4))
+* issue with transformer dependency chain ([8975b22](https://github.com/aws-amplify/amplify-cli/commit/8975b22be871edbea9d099bed453ae086e9a6748))
+* push failures for dependent functions ([184dcfa](https://github.com/aws-amplify/amplify-cli/commit/184dcfa05698f535b3ade5a062dd02d5619a4d91))
+* refactor to support multiple renamings per type ([46d4028](https://github.com/aws-amplify/amplify-cli/commit/46d40281431afff578fcb883b70600b77979b024))
+
+
+### Features
+
+* map table name in dependent functions ([df742e7](https://github.com/aws-amplify/amplify-cli/commit/df742e783da1ce31877c677af50b041244ff2c25))
+* retain original table on type rename ([43b1204](https://github.com/aws-amplify/amplify-cli/commit/43b12048f9ee65b5eeb758e32a715d25673d4fee))
+
+
+
+
+
 ## [5.8.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.10...amplify-provider-awscloudformation@5.8.11) (2022-01-23)
 
 **Note:** Version bump only for package amplify-provider-awscloudformation

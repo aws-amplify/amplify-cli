@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.5-mapsto3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-function-plugin-interface@1.9.4...amplify-function-plugin-interface@1.9.5-mapsto3.0) (2022-01-26)
+
+**Note:** Version bump only for package amplify-function-plugin-interface
+
+
+
+
+
 ## [1.9.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-function-plugin-interface@1.9.2...amplify-function-plugin-interface@1.9.4) (2022-01-10)
 
 

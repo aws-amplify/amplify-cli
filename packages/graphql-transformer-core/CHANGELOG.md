@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.4.0-mapsto3.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.3.6...graphql-transformer-core@7.4.0-mapsto3.0) (2022-01-26)
+
+
+### Bug Fixes
+
+* push failures for dependent functions ([184dcfa](https://github.com/aws-amplify/amplify-cli/commit/184dcfa05698f535b3ade5a062dd02d5619a4d91))
+
+
+### Features
+
+* map table name in dependent functions ([df742e7](https://github.com/aws-amplify/amplify-cli/commit/df742e783da1ce31877c677af50b041244ff2c25))
+* retain original table on type rename ([43b1204](https://github.com/aws-amplify/amplify-cli/commit/43b12048f9ee65b5eeb758e32a715d25673d4fee))
+
+
+
+
+
 ## [7.3.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.3.5...graphql-transformer-core@7.3.6) (2022-01-23)
 
 **Note:** Version bump only for package graphql-transformer-core

@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-analytics",
-  "version": "3.2.13",
+  "version": "3.2.14-mapsto3.0",
   "description": "amplify-cli analytics plugin",
   "repository": {
     "type": "git",
@@ -15,7 +15,7 @@
     "aws"
   ],
   "dependencies": {
-    "amplify-cli-core": "2.4.8",
+    "amplify-cli-core": "2.4.9-mapsto3.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",
     "uuid": "^8.3.2"

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-schema-test-library",
-  "version": "1.0.0",
+  "version": "1.0.1-mapsto3.0",
   "description": "Library of valid and unsupported Amplify GraphQL Transformer schemas",
   "repository": {
     "type": "git",
@@ -37,7 +37,7 @@
     "@aws-amplify/graphql-relational-transformer": "0.6.16",
     "@aws-amplify/graphql-searchable-transformer": "0.10.6",
     "@aws-amplify/graphql-transformer-core": "0.15.5",
-    "@aws-amplify/graphql-transformer-interfaces": "1.12.6"
+    "@aws-amplify/graphql-transformer-interfaces": "1.13.0-mapsto3.0"
   },
   "jest": {
     "transform": {

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.10-mapsto3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.1.9...@aws-amplify/amplify-category-storage@3.1.10-mapsto3.0) (2022-01-26)
+
+
+### Bug Fixes
+
+* validation for s3 bucketname in s3-cli walkthrough ([#9555](https://github.com/aws-amplify/amplify-cli/issues/9555)) ([1daf720](https://github.com/aws-amplify/amplify-cli/commit/1daf72029bda79645ee95997c40a887741499164))
+
+
+
+
+
 ## [3.1.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.1.8...@aws-amplify/amplify-category-storage@3.1.9) (2022-01-23)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-storage

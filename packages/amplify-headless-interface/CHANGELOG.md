@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.14.1-mapsto3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.14.0...amplify-headless-interface@1.14.1-mapsto3.0) (2022-01-26)
+
+**Note:** Version bump only for package amplify-headless-interface
+
+
+
+
+
 # [1.14.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.13.3...amplify-headless-interface@1.14.0) (2022-01-13)
 
 

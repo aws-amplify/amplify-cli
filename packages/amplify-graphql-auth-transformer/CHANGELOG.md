@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.12-mapsto3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.5.11...@aws-amplify/graphql-auth-transformer@0.5.12-mapsto3.0) (2022-01-26)
+
+
+### Bug Fixes
+
+* auth and searchable table translation ([add8731](https://github.com/aws-amplify/amplify-cli/commit/add873195e472cacb01da367b00e11a456932b86))
+* searchable bug ([85b9caf](https://github.com/aws-amplify/amplify-cli/commit/85b9cafc4b29d82faf57fdf97c30a51b4a1928f1))
+
+
+
+
+
 ## [0.5.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.5.10...@aws-amplify/graphql-auth-transformer@0.5.11) (2022-01-23)
 
 

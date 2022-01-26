@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.3.0-mapsto3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.29...amplify-util-mock@4.3.0-mapsto3.0) (2022-01-26)
+
+
+### Bug Fixes
+
+* more searchable issues and mock test ([4d58931](https://github.com/aws-amplify/amplify-cli/commit/4d58931fa9e3adfc0e4bb57eee9a155938523b70))
+
+
+### Features
+
+* support table renames in mock ([63d60e1](https://github.com/aws-amplify/amplify-cli/commit/63d60e15ae02986d7365c54e9f9983965dc9b622))
+
+
+
+
+
 ## [4.2.29](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.28...amplify-util-mock@4.2.29) (2022-01-23)
 
 

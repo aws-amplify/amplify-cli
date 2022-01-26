@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.4.0-mapsto3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.3.14...amplify-category-function@3.4.0-mapsto3.0) (2022-01-26)
+
+
+### Bug Fixes
+
+* address most PR comments ([8f432f3](https://github.com/aws-amplify/amplify-cli/commit/8f432f3e598ab665ae0590bd9888c13fcf1fcd62))
+
+
+### Features
+
+* map table name in dependent functions ([df742e7](https://github.com/aws-amplify/amplify-cli/commit/df742e783da1ce31877c677af50b041244ff2c25))
+
+
+
+
+
 ## [3.3.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.3.13...amplify-category-function@3.3.14) (2022-01-23)
 
 **Note:** Version bump only for package amplify-category-function
