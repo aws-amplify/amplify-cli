@@ -1,14 +1,19 @@
 import {
+  addAuthWithGroupsAndAdminAPI,
   addRestApi,
+  amplifyOverrideApi,
+  amplifyPushAuth,
+  buildOverrides,
   createNewProjectDir,
-  get,
-  initJSProjectWithProfile,
   deleteProject,
   deleteProjectDir,
+  get,
   getProjectMeta,
-  amplifyPushAuth,
-  addAuthWithGroupsAndAdminAPI,
+  initJSProjectWithProfile,
 } from 'amplify-e2e-core';
+import { JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import fetch from 'node-fetch';
 
@@ -28,16 +33,16 @@ describe('API Gateway e2e tests', () => {
   });
 
   it('adds multiple rest apis and pushes', async () => {
-    const firstRestApi = `firstE2eRestApi${shortId}`;
-    const secondRestApi = `secondE2eRestApi${shortId}`;
+    const firstRestApiName = `firstE2eRestApi${shortId}`;
+    const secondRestApiName = `secondE2eRestApi${shortId}`;
 
-    await addRestApi(projRoot, { apiName: firstRestApi });
+    await addRestApi(projRoot, { apiName: firstRestApiName });
     await amplifyPushAuth(projRoot);
     await addAuthWithGroupsAndAdminAPI(projRoot); // Groups: Admins, Users
     await amplifyPushAuth(projRoot);
     await addRestApi(projRoot, { isFirstRestApi: false, path: '/foo', projectContainsFunctions: true }); // Add a path
     await addRestApi(projRoot, {
-      apiName: secondRestApi,
+      apiName: secondRestApiName,
       isFirstRestApi: false,
       restrictAccess: true,
       allowGuestUsers: true,
@@ -50,11 +55,11 @@ describe('API Gateway e2e tests', () => {
     expect(projMeta).toBeDefined();
     expect(projMeta.api).toBeDefined();
     expect(projMeta.api.AdminQueries).toBeDefined();
-    expect(projMeta.api[firstRestApi]).toBeDefined();
-    expect(projMeta.api[secondRestApi]).toBeDefined();
+    expect(projMeta.api[firstRestApiName]).toBeDefined();
+    expect(projMeta.api[secondRestApiName]).toBeDefined();
 
-    const firstRootUrl = projMeta.api[firstRestApi].output?.RootUrl;
-    const secondRootUrl = projMeta.api[secondRestApi].output?.RootUrl;
+    const firstRootUrl = projMeta.api[firstRestApiName].output?.RootUrl;
+    const secondRootUrl = projMeta.api[secondRestApiName].output?.RootUrl;
     expect(firstRootUrl).toBeDefined();
     expect(secondRootUrl).toBeDefined();
 
@@ -88,5 +93,29 @@ describe('API Gateway e2e tests', () => {
     expect(res.headers.get('access-control-allow-methods')).toEqual('DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT');
     expect(res.headers.get('access-control-allow-origin')).toEqual('*');
     expect(res.headers.get('access-control-expose-headers')).toEqual('Date,X-Amzn-ErrorType');
+  });
+
+  it('adds and overrides a rest api, then pushes', async () => {
+    const restApiName = `e2eRestApi${shortId}`;
+
+    await addRestApi(projRoot, { apiName: restApiName });
+    await amplifyOverrideApi(projRoot, {});
+    const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-api-rest.ts');
+    const destOverrideTsFilePath = path.join(pathManager.getResourceDirectoryPath(projRoot, 'api', restApiName), 'override.ts');
+    fs.copyFileSync(srcOverrideFilePath, destOverrideTsFilePath);
+
+    await buildOverrides(projRoot, {});
+
+    const cfnPath = path.join(
+      pathManager.getResourceDirectoryPath(projRoot, 'api', restApiName),
+      'build',
+      `${restApiName}-cloudformation-template.json`,
+    );
+    const cfn = JSONUtilities.readJson<any>(cfnPath);
+    const parameters = stateManager.getResourceParametersJson(projRoot, 'api', restApiName);
+    expect(parameters.DESCRIPTION).toBeDefined();
+    expect(parameters.DESCRIPTION).toEqual({ 'Fn::Join': [' ', ['Description', 'override', 'successful']] });
+    expect(cfn?.Resources?.[restApiName]?.Properties?.Description).toEqual({ Ref: 'DESCRIPTION' });
+    await amplifyPushAuth(projRoot);
   });
 });
