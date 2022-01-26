@@ -409,19 +409,19 @@ export const cantHaveMoreThan500ResourcesRule = (diffs: Diff[], currentBuild: Di
 };
 
 export const cantRemoveTableAfterCreation = (_: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject): void => {
-  const getNestedStackLogicalIds = (proj: DiffableProject) =>
-    Object.entries(proj.root.Resources || [])
-      .filter(([_, meta]) => meta.Type === 'AWS::CloudFormation::Stack')
+  const getTableLogicalIds = (proj: DiffableProject) =>
+    Object.values(proj.stacks)
+      .flatMap(stack => Object.entries(stack.Resources))
+      .filter(([_, resource]) => resource.Type === 'AWS::DynamoDB::Table')
       .map(([name]) => name);
-  const currentModels = getNestedStackLogicalIds(currentBuild);
-  const nextModels = getNestedStackLogicalIds(nextBuild);
-  const removedModels = currentModels
-    .filter(currModel => !nextModels.includes(currModel))
-    .filter(stackLogicalId => stackLogicalId !== 'ConnectionStack');
-  if (removedModels.length > 0) {
+
+  const currentTables = getTableLogicalIds(currentBuild);
+  const nextTables = getTableLogicalIds(nextBuild);
+  const removedTables = currentTables.filter(currModel => !nextTables.includes(currModel));
+  if (removedTables.length > 0) {
     throw new DestructiveMigrationError(
       'Removing a model from the GraphQL schema will also remove the underlying DynamoDB table.',
-      removedModels,
+      removedTables,
       [],
     );
   }
