@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.3.16-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.3.15...graphql-transformers-e2e-tests@7.3.16-beta.0) (2022-01-26)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
 ## [7.3.15](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.3.14...graphql-transformers-e2e-tests@7.3.15) (2022-01-23)
 
 
