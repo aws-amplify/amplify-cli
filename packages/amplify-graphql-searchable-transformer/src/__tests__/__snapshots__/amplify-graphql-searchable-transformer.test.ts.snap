@@ -631,10 +631,11 @@ $util.toJson({
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.createPost.req.vtl": "## [Start] Create Request template. **
+#set( $args = $util.defaultIfNull($ctx.stash.mappedArgs, $ctx.args) )
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+$util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
 #set( $PutObject = {
@@ -643,8 +644,8 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
   \\"attributeValues\\":   $util.dynamodb.toMapValues($mergedValues),
   \\"condition\\": $condition
 } )
-#if( $context.args.condition )
-  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#if( $args.condition )
+  $util.qr($ctx.stash.conditions.add($args.condition))
 #end
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
@@ -710,6 +711,7 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.deletePost.req.vtl": "## [Start] Delete Request template. **
+#set( $args = $util.defaultIfNull($ctx.stash.mappedArgs, $ctx.args) )
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"DeleteItem\\"
@@ -718,7 +720,7 @@ $util.toJson({})
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $Key = {
-  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+  \\"id\\":   $util.dynamodb.toDynamoDB($args.input.id)
 } )
 #end
 $util.qr($DeleteRequest.put(\\"key\\", $Key))
@@ -741,8 +743,8 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 }))
 #end
 ## End - key condition **
-#if( $context.args.condition )
-  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#if( $args.condition )
+  $util.qr($ctx.stash.conditions.add($args.condition))
 #end
 ## Start condition block **
 #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
@@ -790,10 +792,11 @@ $util.toJson({
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.updatePost.req.vtl": "## [Start] Mutation Update resolver. **
+#set( $args = $util.defaultIfNull($ctx.stash.mappedArgs, $ctx.args) )
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+$util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 ## set the typename **
 ## Initialize the vars for creating ddb expression **
 #set( $expNames = {} )
@@ -805,7 +808,7 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $Key = {
-  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+  \\"id\\":   $util.dynamodb.toDynamoDB($args.input.id)
 } )
 #end
 ## Model key **
@@ -887,8 +890,8 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 }))
 #end
 ## End - key condition **
-#if( $context.args.condition )
-  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#if( $args.condition )
+  $util.qr($ctx.stash.conditions.add($args.condition))
 #end
 ## Start condition block **
 #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
@@ -986,24 +989,25 @@ $util.unauthorized()
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Query.listPosts.req.vtl": "## [Start] List Request. **
-#set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+#set( $args = $util.defaultIfNull($ctx.stash.mappedArgs, $ctx.args) )
+#set( $limit = $util.defaultIfNull($args.limit, 100) )
 #set( $ListRequest = {
   \\"version\\": \\"2018-05-29\\",
   \\"limit\\": $limit
 } )
-#if( $context.args.nextToken )
-  #set( $ListRequest.nextToken = $context.args.nextToken )
+#if( $args.nextToken )
+  #set( $ListRequest.nextToken = $args.nextToken )
 #end
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $filter = $ctx.stash.authFilter )
-  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+  #if( !$util.isNullOrEmpty($args.filter) )
     #set( $filter = {
-  \\"and\\":   [$filter, $ctx.args.filter]
+  \\"and\\":   [$filter, $args.filter]
 } )
   #end
 #else
-  #if( !$util.isNullOrEmpty($ctx.args.filter) )
-    #set( $filter = $ctx.args.filter )
+  #if( !$util.isNullOrEmpty($args.filter) )
+    #set( $filter = $args.filter )
   #end
 #end
 #if( !$util.isNullOrEmpty($filter) )
@@ -1018,7 +1022,7 @@ $util.toJson({})
 #if( !$util.isNull($ctx.stash.modelQueryExpression) && !$util.isNullOrEmpty($ctx.stash.modelQueryExpression.expression) )
   $util.qr($ListRequest.put(\\"operation\\", \\"Query\\"))
   $util.qr($ListRequest.put(\\"query\\", $ctx.stash.modelQueryExpression))
-  #if( !$util.isNull($ctx.args.sortDirection) && $ctx.args.sortDirection == \\"DESC\\" )
+  #if( !$util.isNull($args.sortDirection) && $args.sortDirection == \\"DESC\\" )
     #set( $ListRequest.scanIndexForward = false )
   #else
     #set( $ListRequest.scanIndexForward = true )
@@ -1044,7 +1048,8 @@ $util.toJson($ListRequest)
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
-  "Query.searchPosts.req.vtl": "#set( $indexPath = \\"/post/doc/_search\\" )
+  "Query.searchPosts.req.vtl": "#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+#set( $indexPath = \\"/post/doc/_search\\" )
 #set( $allowedAggFields = $util.defaultIfNull($ctx.stash.allowedAggFields, []) )
 #set( $aggFieldsFilterMap = $util.defaultIfNull($ctx.stash.aggFieldsFilterMap, {}) )
 #set( $nonKeywordFields = [] )
@@ -1053,8 +1058,8 @@ $util.toJson({})
 #set( $sortFields = [] )
 #set( $aggregateValues = {} )
 #set( $primaryKey = \\"id\\" )
-#if( !$util.isNullOrEmpty($context.args.sort) )
-  #foreach( $sortItem in $context.args.sort )
+#if( !$util.isNullOrEmpty($args.sort) )
+  #foreach( $sortItem in $args.sort )
     #if( $util.isNullOrEmpty($sortItem.field) )
       $util.qr($sortFields.add($primaryKey))
     #else
@@ -1092,7 +1097,7 @@ $util.toJson({})
     $util.qr($sortValues.add(\\"{$sortField: $sortDirection}\\"))
   #end
 #end
-#foreach( $aggItem in $context.args.aggregates )
+#foreach( $aggItem in $args.aggregates )
   #if( $allowedAggFields.contains($aggItem.field) )
     #set( $aggFilter = { \\"match_all\\": {} } )
   #elseif( $aggFieldsFilterMap.containsKey($aggItem.field) )
@@ -1108,16 +1113,16 @@ $util.toJson({})
 #end
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $filter = $ctx.stash.authFilter )
-  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+  #if( !$util.isNullOrEmpty($args.filter) )
     #set( $filter = {
   \\"bool\\": {
-      \\"must\\":     [$ctx.stash.authFilter, $util.parseJson($util.transform.toElasticsearchQueryDSL($ctx.args.filter))]
+      \\"must\\":     [$ctx.stash.authFilter, $util.parseJson($util.transform.toElasticsearchQueryDSL($args.filter))]
   }
 } )
   #end
 #else
-  #if( !$util.isNullOrEmpty($ctx.args.filter) )
-    #set( $filter = $util.parseJson($util.transform.toElasticsearchQueryDSL($ctx.args.filter)) )
+  #if( !$util.isNullOrEmpty($args.filter) )
+    #set( $filter = $util.parseJson($util.transform.toElasticsearchQueryDSL($args.filter)) )
   #end
 #end
 #if( $util.isNullOrEmpty($filter) )
@@ -1131,9 +1136,9 @@ $util.toJson({})
   \\"path\\": \\"$indexPath\\",
   \\"params\\": {
       \\"body\\":     {
-                #if( $context.args.nextToken )\\"search_after\\": $util.base64Decode($context.args.nextToken), #end
-                #if( $context.args.from )\\"from\\": $context.args.from, #end
-                \\"size\\": #if( $context.args.limit ) $context.args.limit #else 100 #end,
+                #if( $context.args.nextToken )\\"search_after\\": $util.base64Decode($args.nextToken), #end
+                #if( $context.args.from )\\"from\\": $args.from, #end
+                \\"size\\": #if( $args.limit ) $args.limit #else 100 #end,
                 \\"sort\\": $sortValues,
                 \\"version\\": false,
                 \\"query\\": $util.toJson($filter),

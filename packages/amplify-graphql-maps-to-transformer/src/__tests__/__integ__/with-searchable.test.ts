@@ -39,7 +39,7 @@ const transformSchema = (schema: string) => {
 describe('mapsTo with searchable', () => {
   it('generates searchable resolvers with original index name', () => {
     const out = transformSchema(mappedSearchableSchema);
-    expect(out.resolvers['Query.searchTodos.req.vtl'].startsWith('#set( $indexPath = "/task/doc/_search" )')).toBe(true);
+    expect(out.resolvers['Query.searchTodos.req.vtl'].split('\n')[1].startsWith('#set( $indexPath = "/task/doc/_search" )')).toBe(true);
   });
 
   it('references original table in sreaming function', () => {

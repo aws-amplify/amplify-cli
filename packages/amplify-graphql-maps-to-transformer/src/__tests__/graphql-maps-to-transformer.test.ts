@@ -6,12 +6,19 @@ import {
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { MapsToTransformer } from '../graphql-maps-to-transformer';
-import { attachInputMappingSlot, attachResponseMappingSlot } from '../field-mapping-resolvers';
+import { attachInputMappingSlot, attachResponseMappingSlot, attachFilterAndConditionInputMappingSlot } from '../field-mapping-resolvers';
+import { createMappingLambda } from '../field-mapping-lambda';
+import { LambdaDataSource } from '@aws-cdk/aws-appsync';
 
 jest.mock('../field-mapping-resolvers');
+jest.mock('../field-mapping-lambda');
 
 const attachInputMappingSlot_mock = attachInputMappingSlot as jest.MockedFunction<typeof attachInputMappingSlot>;
 const attachResponseMappingSlot_mock = attachResponseMappingSlot as jest.MockedFunction<typeof attachResponseMappingSlot>;
+const attachFilterAndConditionInputMappingSlot_mock = attachFilterAndConditionInputMappingSlot as jest.MockedFunction<
+  typeof attachFilterAndConditionInputMappingSlot
+>;
+const createMappingLambda_mock = createMappingLambda as jest.MockedFunction<typeof createMappingLambda>;
 
 type DeepWriteable<T> = { -readonly [P in keyof T]: DeepWriteable<T[P]> };
 
@@ -20,6 +27,8 @@ describe('@mapsTo directive', () => {
   const getResolver_mock = jest.fn();
   const getModelFieldMapKeys_mock = jest.fn();
   const getModelFieldMap_mock = jest.fn();
+
+  const host_stub = 'host_stub';
 
   const stubTransformerContextBase = {
     resolvers: {
@@ -30,7 +39,14 @@ describe('@mapsTo directive', () => {
       getModelFieldMapKeys: getModelFieldMapKeys_mock,
       getModelFieldMap: getModelFieldMap_mock,
     },
+    api: {
+      host: host_stub,
+    },
   };
+
+  const lambdaDataSource_stub = 'lambdaDataSource_stub' as unknown as LambdaDataSource;
+
+  createMappingLambda_mock.mockReturnValue(lambdaDataSource_stub);
 
   const mapsToTransformer = new MapsToTransformer();
 
@@ -122,7 +138,7 @@ describe('@mapsTo directive', () => {
     );
 
     // test
-    mapsToTransformer.generateResolvers(stubTransformerContextBase as unknown as TransformerContextProvider);
+    mapsToTransformer.after(stubTransformerContextBase as unknown as TransformerContextProvider);
 
     // assert
     expect(attachInputMappingSlot_mock).toBeCalledTimes(1);
@@ -141,9 +157,18 @@ describe('@mapsTo directive', () => {
       fieldMap: testFieldMap,
       isList: false,
     });
+    expect(attachFilterAndConditionInputMappingSlot_mock).toBeCalledTimes(1);
+    expect(attachFilterAndConditionInputMappingSlot_mock).toBeCalledWith({
+      slotName: 'preUpdate',
+      resolver: dummyResolver,
+      resolverTypeName: 'Mutation',
+      resolverFieldName: 'createTestType',
+      fieldMap: testFieldMap,
+      dataSource: lambdaDataSource_stub,
+    });
   });
 
-  it('only attaches response mapping templates for queries', () => {
+  it('attaches input and response mapping templates for queries', () => {
     // setup
     const testFieldMap = [
       {
@@ -169,7 +194,7 @@ describe('@mapsTo directive', () => {
     );
 
     // test
-    mapsToTransformer.generateResolvers(stubTransformerContextBase as unknown as TransformerContextProvider);
+    mapsToTransformer.after(stubTransformerContextBase as unknown as TransformerContextProvider);
 
     // assert
     expect(attachInputMappingSlot_mock).not.toBeCalled();
@@ -181,6 +206,15 @@ describe('@mapsTo directive', () => {
       resolverTypeName: 'Query',
       fieldMap: testFieldMap,
       isList: false,
+    });
+    expect(attachFilterAndConditionInputMappingSlot_mock).toBeCalledTimes(1);
+    expect(attachFilterAndConditionInputMappingSlot_mock).toBeCalledWith({
+      slotName: 'preDataLoad',
+      resolver: dummyResolver,
+      resolverTypeName: 'Query',
+      resolverFieldName: 'getTestType',
+      fieldMap: testFieldMap,
+      dataSource: lambdaDataSource_stub,
     });
   });
 
@@ -207,7 +241,7 @@ describe('@mapsTo directive', () => {
     stubTransformerContextBase.resolvers.getResolver.mockReturnValueOnce(undefined);
 
     // test
-    mapsToTransformer.generateResolvers(stubTransformerContextBase as unknown as TransformerContextProvider);
+    mapsToTransformer.after(stubTransformerContextBase as unknown as TransformerContextProvider);
 
     // assert
     expect(attachInputMappingSlot_mock).not.toBeCalled();
@@ -232,7 +266,7 @@ describe('@mapsTo directive', () => {
     stubTransformerContextBase.resolvers.getResolver.mockReturnValueOnce(undefined);
 
     // test
-    mapsToTransformer.generateResolvers(stubTransformerContextBase as unknown as TransformerContextProvider);
+    mapsToTransformer.after(stubTransformerContextBase as unknown as TransformerContextProvider);
 
     // assert
     expect(attachInputMappingSlot_mock).not.toBeCalled();
