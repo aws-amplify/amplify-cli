@@ -1,36 +1,152 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related type and maps related type in hasMany field resolver 1`] = `
-"$util.qr($ctx.prev.result.put(\\"employeeTasksId\\", $ctx.prev.result.personTasksId))
-$util.qr($ctx.prev.result.remove(\\"personTasksId\\"))
-$util.toJson($ctx.prev.result)"
+"$util.qr($ctx.args.input.put(\\"personTasksId\\", $ctx.args.input.employeeTasksId))
+$util.qr($ctx.args.input.remove(\\"employeeTasksId\\"))
+$util.toJson({})"
 `;
 
 exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related type and maps related type in hasMany field resolver 2`] = `
-"$util.qr($ctx.args.input.put(\\"personTasksId\\", $ctx.args.input.employeeTasksId))
-$util.qr($ctx.args.input.remove(\\"employeeTasksId\\"))
-$util.toJson({})"
+"#set( $fieldMap = {\\"employeeTasksId\\":\\"personTasksId\\"} )
+#if( $util.isNull($fieldMap) || $fieldMap.keySet().size() <= 0 )
+  #return($ctx.args)
+#end
+#if( $util.isNull($ctx.args.filter) && $util.isNull($ctx.args.condition) )
+  #return($ctx.args)
+#end
+#set( $invoke = {
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\": {
+      \\"args\\": $ctx.args,
+      \\"fieldMap\\": $fieldMap
+  }
+} )
+$util.toJson($invoke)"
 `;
 
 exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related type and maps related type in hasMany field resolver 3`] = `
+"#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+#set( $ctx.stash.transformedArgs = $ctx.result )
+$util.toJson({})"
+`;
+
+exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related type and maps related type in hasMany field resolver 4`] = `
 "$util.qr($ctx.prev.result.put(\\"employeeTasksId\\", $ctx.prev.result.personTasksId))
 $util.qr($ctx.prev.result.remove(\\"personTasksId\\"))
 $util.toJson($ctx.prev.result)"
 `;
 
-exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related type and maps related type in hasMany field resolver 4`] = `
+exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related type and maps related type in hasMany field resolver 5`] = `
 "$util.qr($ctx.args.input.put(\\"personTasksId\\", $ctx.args.input.employeeTasksId))
 $util.qr($ctx.args.input.remove(\\"employeeTasksId\\"))
 $util.toJson({})"
 `;
 
-exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related type and maps related type in hasMany field resolver 5`] = `
+exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related type and maps related type in hasMany field resolver 6`] = `
+"#set( $fieldMap = {\\"employeeTasksId\\":\\"personTasksId\\"} )
+#if( $util.isNull($fieldMap) || $fieldMap.keySet().size() <= 0 )
+  #return($ctx.args)
+#end
+#if( $util.isNull($ctx.args.filter) && $util.isNull($ctx.args.condition) )
+  #return($ctx.args)
+#end
+#set( $invoke = {
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\": {
+      \\"args\\": $ctx.args,
+      \\"fieldMap\\": $fieldMap
+  }
+} )
+$util.toJson($invoke)"
+`;
+
+exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related type and maps related type in hasMany field resolver 7`] = `
+"#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+#set( $ctx.stash.transformedArgs = $ctx.result )
+$util.toJson({})"
+`;
+
+exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related type and maps related type in hasMany field resolver 8`] = `
 "$util.qr($ctx.prev.result.put(\\"employeeTasksId\\", $ctx.prev.result.personTasksId))
 $util.qr($ctx.prev.result.remove(\\"personTasksId\\"))
 $util.toJson($ctx.prev.result)"
 `;
 
-exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related type and maps related type in hasMany field resolver 6`] = `
+exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related type and maps related type in hasMany field resolver 9`] = `
+"$util.qr($ctx.args.input.put(\\"personTasksId\\", $ctx.args.input.employeeTasksId))
+$util.qr($ctx.args.input.remove(\\"employeeTasksId\\"))
+$util.toJson({})"
+`;
+
+exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related type and maps related type in hasMany field resolver 10`] = `
+"#set( $fieldMap = {\\"employeeTasksId\\":\\"personTasksId\\"} )
+#if( $util.isNull($fieldMap) || $fieldMap.keySet().size() <= 0 )
+  #return($ctx.args)
+#end
+#if( $util.isNull($ctx.args.filter) && $util.isNull($ctx.args.condition) )
+  #return($ctx.args)
+#end
+#set( $invoke = {
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\": {
+      \\"args\\": $ctx.args,
+      \\"fieldMap\\": $fieldMap
+  }
+} )
+$util.toJson($invoke)"
+`;
+
+exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related type and maps related type in hasMany field resolver 11`] = `
+"#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+#set( $ctx.stash.transformedArgs = $ctx.result )
+$util.toJson({})"
+`;
+
+exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related type and maps related type in hasMany field resolver 12`] = `
+"$util.qr($ctx.prev.result.put(\\"employeeTasksId\\", $ctx.prev.result.personTasksId))
+$util.qr($ctx.prev.result.remove(\\"personTasksId\\"))
+$util.toJson($ctx.prev.result)"
+`;
+
+exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related type and maps related type in hasMany field resolver 13`] = `
+"$util.qr($ctx.prev.result.put(\\"employeeTasksId\\", $ctx.prev.result.personTasksId))
+$util.qr($ctx.prev.result.remove(\\"personTasksId\\"))
+$util.toJson($ctx.prev.result)"
+`;
+
+exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related type and maps related type in hasMany field resolver 14`] = `
+"#set( $fieldMap = {\\"employeeTasksId\\":\\"personTasksId\\"} )
+#if( $util.isNull($fieldMap) || $fieldMap.keySet().size() <= 0 )
+  #return($ctx.args)
+#end
+#if( $util.isNull($ctx.args.filter) && $util.isNull($ctx.args.condition) )
+  #return($ctx.args)
+#end
+#set( $invoke = {
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\": {
+      \\"args\\": $ctx.args,
+      \\"fieldMap\\": $fieldMap
+  }
+} )
+$util.toJson($invoke)"
+`;
+
+exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related type and maps related type in hasMany field resolver 15`] = `
+"#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+#set( $ctx.stash.transformedArgs = $ctx.result )
+$util.toJson({})"
+`;
+
+exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related type and maps related type in hasMany field resolver 16`] = `
 "#foreach( $item in $ctx.prev.result.items )
   $util.qr($item.put(\\"employeeTasksId\\", $item.personTasksId))
   $util.qr($item.remove(\\"personTasksId\\"))
@@ -38,7 +154,7 @@ exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related ty
 $util.toJson($ctx.prev.result)"
 `;
 
-exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related type and maps related type in hasMany field resolver 7`] = `
+exports[`@mapsTo with @hasMany adds CRUD input and output mappings on related type and maps related type in hasMany field resolver 17`] = `
 "#foreach( $item in $ctx.prev.result.items )
   $util.qr($item.put(\\"employeeTasksId\\", $item.personTasksId))
   $util.qr($item.remove(\\"personTasksId\\"))

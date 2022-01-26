@@ -89,15 +89,17 @@ export class MapsToTransformer extends TransformerPluginBase {
             isList: false,
           });
         } else {
-          // typeName is Query
-          attachFilterAndConditionInputMappingSlot({
-            slotName: 'preDataLoad',
-            resolver,
-            resolverTypeName: typeName,
-            resolverFieldName: fieldName,
-            fieldMap: modelFieldMap.getMappedFields(),
-            dataSource: lambdaDataSource,
-          });
+          if (typeName === 'Query') {
+            // Query operations are the only operations that have filter or condition inputs that need mapping
+            attachFilterAndConditionInputMappingSlot({
+              slotName: 'preDataLoad',
+              resolver,
+              resolverTypeName: typeName,
+              resolverFieldName: fieldName,
+              fieldMap: modelFieldMap.getMappedFields(),
+              dataSource: lambdaDataSource,
+            });
+          }
           attachResponseMappingSlot({
             slotName: 'postDataLoad',
             resolver,

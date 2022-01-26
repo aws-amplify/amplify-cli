@@ -2,6 +2,7 @@ import { ConflictHandlerType, GraphQLTransform } from '@aws-amplify/graphql-tran
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { MapsToTransformer } from '../../graphql-maps-to-transformer';
+import { expectedResolversForModelWithRenamedField } from './common';
 
 const originalSchema = /* GraphQL */ `
   type Checklist @model {
@@ -73,21 +74,12 @@ const transformSchema = (schema: string, enableDataStore = false) => {
   return transformer.transform(schema);
 };
 
-const crudResolvers = (modelName: string) => [
-  `Mutation.create${modelName}.postUpdate.1.res.vtl`,
-  `Mutation.create${modelName}.init.2.req.vtl`,
-  `Mutation.update${modelName}.postUpdate.1.res.vtl`,
-  `Mutation.update${modelName}.init.2.req.vtl`,
-  `Query.get${modelName}.postDataLoad.1.res.vtl`,
-  `Query.list${modelName}s.postDataLoad.1.res.vtl`,
-];
-
 test('@mapsTo with multiple foreign key field renames on single model', () => {
   const out = transformSchema(multipleForeignKeyRenames);
-  const expectedUndefinedResovlers = ['Location', 'Day', 'Agenda'].flatMap(crudResolvers);
+  const expectedUndefinedResovlers = ['Location', 'Day', 'Agenda'].flatMap(expectedResolversForModelWithRenamedField);
   expectedUndefinedResovlers.forEach(resolver => expect(out.resolvers[resolver]).toBeUndefined());
 
-  const expectedRemappingResolvers = ['Todo'].flatMap(crudResolvers);
+  const expectedRemappingResolvers = ['Todo'].flatMap(expectedResolversForModelWithRenamedField);
   expectedRemappingResolvers.forEach(resolver => {
     expect(out.resolvers[resolver]).toMatchSnapshot();
   });
@@ -95,12 +87,17 @@ test('@mapsTo with multiple foreign key field renames on single model', () => {
 
 test('maps-to-transformer does not apply any resolvers to non-mapped models', () => {
   const out = transformSchema(originalSchema);
-  const expectUndefinedResolversList = ['Checklist', 'Task', 'Location', 'Day'].flatMap(crudResolvers);
+  const expectUndefinedResolversList = ['Checklist', 'Task', 'Location', 'Day'].flatMap(expectedResolversForModelWithRenamedField);
   expectUndefinedResolversList.forEach(resolver => expect(out.resolvers[resolver]).toBeUndefined());
 });
 
 test('maps sync resolvers when DataStore is enabled', () => {
   const out = transformSchema(multipleForeignKeyRenames, true);
-  const expectedSyncResolvers = ['Todo'].map(type => `Query.sync${type}s.postDataLoad.1.res.vtl`);
+  const expectedSyncResolverNames = (modelName: string) => [
+    `Query.sync${modelName}s.preDataLoad.1.req.vtl`,
+    `Query.sync${modelName}s.preDataLoad.1.res.vtl`,
+    `Query.sync${modelName}s.postDataLoad.1.res.vtl`,
+  ];
+  const expectedSyncResolvers = ['Todo'].flatMap(expectedSyncResolverNames);
   expectedSyncResolvers.forEach(resolver => expect(out.resolvers[resolver]).toMatchSnapshot());
 });

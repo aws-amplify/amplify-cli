@@ -2,6 +2,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { BelongsToTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { MapsToTransformer } from '../../graphql-maps-to-transformer';
+import { expectedResolversForModelWithRenamedField } from './common';
 
 const mappedHasOne = /* GraphQL */ `
   type Employee @model @mapsTo(name: "Person") {
@@ -52,14 +53,7 @@ const transformSchema = (schema: string) => {
 describe('@mapsTo with @hasOne', () => {
   it('adds CRUD input and output mappings on hasOne type', () => {
     const out = transformSchema(mappedHasOne);
-    const expectedResolvers: string[] = [
-      'Mutation.createEmployee.postUpdate.1.res.vtl',
-      'Mutation.createEmployee.init.2.req.vtl',
-      'Mutation.updateEmployee.postUpdate.1.res.vtl',
-      'Mutation.updateEmployee.init.2.req.vtl',
-      'Query.getEmployee.postDataLoad.1.res.vtl',
-      'Query.listEmployees.postDataLoad.1.res.vtl',
-    ];
+    const expectedResolvers: string[] = expectedResolversForModelWithRenamedField('Employee');
     expectedResolvers.forEach(resolver => {
       expect(out.resolvers[resolver]).toMatchSnapshot();
     });

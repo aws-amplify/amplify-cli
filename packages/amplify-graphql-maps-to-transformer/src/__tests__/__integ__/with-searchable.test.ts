@@ -39,7 +39,9 @@ const transformSchema = (schema: string) => {
 describe('mapsTo with searchable', () => {
   it('generates searchable resolvers with original index name', () => {
     const out = transformSchema(mappedSearchableSchema);
-    expect(out.resolvers['Query.searchTodos.req.vtl'].split('\n')[1].startsWith('#set( $indexPath = "/task/doc/_search" )')).toBe(true);
+    const searchResolverLines = out.resolvers['Query.searchTodos.req.vtl'].split('\n');
+    expect(searchResolverLines[0]).toMatchInlineSnapshot(`"#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )"`);
+    expect(searchResolverLines[1].startsWith('#set( $indexPath = "/task/doc/_search" )')).toBe(true);
   });
 
   it('references original table in sreaming function', () => {
@@ -52,14 +54,14 @@ describe('mapsTo with searchable', () => {
     );
   });
 
-  it('adds postDataLoad mapping slot if searchable model has renamed field', () => {
+  it('adds mapping slots if searchable model has renamed field', () => {
     const out = transformSchema(mappedHasManyAndSearchableSchema);
-    expect(out.resolvers['Query.searchTodos.postDataLoad.1.res.vtl']).toMatchInlineSnapshot(`
-      "#foreach( $item in $ctx.prev.result.items )
-        $util.qr($item.put(\\"agendaTodosId\\", $item.checklistTodosId))
-        $util.qr($item.remove(\\"checklistTodosId\\"))
-      #end
-      $util.toJson($ctx.prev.result)"
-    `);
+    const expectedSearchResolverNames = (modelName: string) => [
+      `Query.search${modelName}s.preDataLoad.1.req.vtl`,
+      `Query.search${modelName}s.preDataLoad.1.res.vtl`,
+      `Query.search${modelName}s.postDataLoad.1.res.vtl`,
+    ];
+    const expectedSyncResolvers = ['Todo'].flatMap(expectedSearchResolverNames);
+    expectedSyncResolvers.forEach(resolver => expect(out.resolvers[resolver]).toMatchSnapshot());
   });
 });

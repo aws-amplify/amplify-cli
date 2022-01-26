@@ -1,36 +1,152 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 1`] = `
-"$util.qr($ctx.prev.result.put(\\"employeeTaskId\\", $ctx.prev.result.personTaskId))
-$util.qr($ctx.prev.result.remove(\\"personTaskId\\"))
-$util.toJson($ctx.prev.result)"
+"$util.qr($ctx.args.input.put(\\"personTaskId\\", $ctx.args.input.employeeTaskId))
+$util.qr($ctx.args.input.remove(\\"employeeTaskId\\"))
+$util.toJson({})"
 `;
 
 exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 2`] = `
-"$util.qr($ctx.args.input.put(\\"personTaskId\\", $ctx.args.input.employeeTaskId))
-$util.qr($ctx.args.input.remove(\\"employeeTaskId\\"))
-$util.toJson({})"
+"#set( $fieldMap = {\\"employeeTaskId\\":\\"personTaskId\\"} )
+#if( $util.isNull($fieldMap) || $fieldMap.keySet().size() <= 0 )
+  #return($ctx.args)
+#end
+#if( $util.isNull($ctx.args.filter) && $util.isNull($ctx.args.condition) )
+  #return($ctx.args)
+#end
+#set( $invoke = {
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\": {
+      \\"args\\": $ctx.args,
+      \\"fieldMap\\": $fieldMap
+  }
+} )
+$util.toJson($invoke)"
 `;
 
 exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 3`] = `
+"#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+#set( $ctx.stash.transformedArgs = $ctx.result )
+$util.toJson({})"
+`;
+
+exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 4`] = `
 "$util.qr($ctx.prev.result.put(\\"employeeTaskId\\", $ctx.prev.result.personTaskId))
 $util.qr($ctx.prev.result.remove(\\"personTaskId\\"))
 $util.toJson($ctx.prev.result)"
 `;
 
-exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 4`] = `
+exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 5`] = `
 "$util.qr($ctx.args.input.put(\\"personTaskId\\", $ctx.args.input.employeeTaskId))
 $util.qr($ctx.args.input.remove(\\"employeeTaskId\\"))
 $util.toJson({})"
 `;
 
-exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 5`] = `
+exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 6`] = `
+"#set( $fieldMap = {\\"employeeTaskId\\":\\"personTaskId\\"} )
+#if( $util.isNull($fieldMap) || $fieldMap.keySet().size() <= 0 )
+  #return($ctx.args)
+#end
+#if( $util.isNull($ctx.args.filter) && $util.isNull($ctx.args.condition) )
+  #return($ctx.args)
+#end
+#set( $invoke = {
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\": {
+      \\"args\\": $ctx.args,
+      \\"fieldMap\\": $fieldMap
+  }
+} )
+$util.toJson($invoke)"
+`;
+
+exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 7`] = `
+"#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+#set( $ctx.stash.transformedArgs = $ctx.result )
+$util.toJson({})"
+`;
+
+exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 8`] = `
 "$util.qr($ctx.prev.result.put(\\"employeeTaskId\\", $ctx.prev.result.personTaskId))
 $util.qr($ctx.prev.result.remove(\\"personTaskId\\"))
 $util.toJson($ctx.prev.result)"
 `;
 
-exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 6`] = `
+exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 9`] = `
+"$util.qr($ctx.args.input.put(\\"personTaskId\\", $ctx.args.input.employeeTaskId))
+$util.qr($ctx.args.input.remove(\\"employeeTaskId\\"))
+$util.toJson({})"
+`;
+
+exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 10`] = `
+"#set( $fieldMap = {\\"employeeTaskId\\":\\"personTaskId\\"} )
+#if( $util.isNull($fieldMap) || $fieldMap.keySet().size() <= 0 )
+  #return($ctx.args)
+#end
+#if( $util.isNull($ctx.args.filter) && $util.isNull($ctx.args.condition) )
+  #return($ctx.args)
+#end
+#set( $invoke = {
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\": {
+      \\"args\\": $ctx.args,
+      \\"fieldMap\\": $fieldMap
+  }
+} )
+$util.toJson($invoke)"
+`;
+
+exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 11`] = `
+"#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+#set( $ctx.stash.transformedArgs = $ctx.result )
+$util.toJson({})"
+`;
+
+exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 12`] = `
+"$util.qr($ctx.prev.result.put(\\"employeeTaskId\\", $ctx.prev.result.personTaskId))
+$util.qr($ctx.prev.result.remove(\\"personTaskId\\"))
+$util.toJson($ctx.prev.result)"
+`;
+
+exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 13`] = `
+"$util.qr($ctx.prev.result.put(\\"employeeTaskId\\", $ctx.prev.result.personTaskId))
+$util.qr($ctx.prev.result.remove(\\"personTaskId\\"))
+$util.toJson($ctx.prev.result)"
+`;
+
+exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 14`] = `
+"#set( $fieldMap = {\\"employeeTaskId\\":\\"personTaskId\\"} )
+#if( $util.isNull($fieldMap) || $fieldMap.keySet().size() <= 0 )
+  #return($ctx.args)
+#end
+#if( $util.isNull($ctx.args.filter) && $util.isNull($ctx.args.condition) )
+  #return($ctx.args)
+#end
+#set( $invoke = {
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\": {
+      \\"args\\": $ctx.args,
+      \\"fieldMap\\": $fieldMap
+  }
+} )
+$util.toJson($invoke)"
+`;
+
+exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 15`] = `
+"#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+#set( $ctx.stash.transformedArgs = $ctx.result )
+$util.toJson({})"
+`;
+
+exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 16`] = `
 "#foreach( $item in $ctx.prev.result.items )
   $util.qr($item.put(\\"employeeTaskId\\", $item.personTaskId))
   $util.qr($item.remove(\\"personTaskId\\"))
