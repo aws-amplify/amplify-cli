@@ -80,8 +80,6 @@ export const getSchemaDeployer = async (testId: string, transformerFactory: () =
       const apiKey = getApiKey(finishedStack.Outputs);
       expect(apiKey).toBeDefined();
       expect(endpoint).toBeDefined();
-      console.log(`endpoint is ${endpoint}`);
-      console.log(`api key is ${apiKey}`);
       initialDeployment = false;
       return new GraphQLClient(endpoint, { 'x-api-key': apiKey });
     },
