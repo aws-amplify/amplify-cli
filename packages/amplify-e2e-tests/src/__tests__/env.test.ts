@@ -12,10 +12,6 @@ import {
   deleteProjectDir,
   getProjectMeta,
   initJSProjectWithProfile,
-  amplifyPushWithoutCodegen,
-  generateRandomShortId,
-  addMapWithDefault,
-  addPlaceIndexWithDefault
 } from 'amplify-e2e-core';
 import {
   addEnvironment,
