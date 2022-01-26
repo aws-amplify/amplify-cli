@@ -128,6 +128,7 @@
     "xstate": "^4.14.0"
   },
   "devDependencies": {
+    "@aws-cdk/assertions": "~1.124.0",
     "@types/columnify": "^1.5.0",
     "@types/deep-diff": "^1.0.0",
     "@types/folder-hash": "^4.0.0",

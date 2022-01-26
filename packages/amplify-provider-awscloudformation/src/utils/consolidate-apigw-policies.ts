@@ -16,10 +16,30 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { ProviderName } from '../constants';
 
+// type information from input schema located at packages/amplify-category-api/resources/schemas/aPIGateway/APIGatewayCLIInputs.schema.json
+type APIGatewayPermissionSetting = 'open' | 'private' | 'protected';
+type APIGateway = {
+  resourceName: string;
+  params?: {
+    paths?: Record<
+      string,
+      {
+        name?: string;
+        lambdaFunction?: string;
+        permissions?: {
+          settings?: APIGatewayPermissionSetting;
+          auth?: CrudOperation[];
+          guest?: CrudOperation[];
+        };
+      }
+    >;
+  };
+};
+
 type ApiGatewayAuthStackProps = Readonly<{
   description: string;
   stackName: string;
-  apiGateways: $TSAny[];
+  apiGateways: APIGateway[];
   envName: string;
 }>;
 
@@ -44,7 +64,7 @@ const S3_UPLOAD_PATH = `${AmplifyCategories.API}/${APIGW_AUTH_STACK_LOGICAL_ID}.
 const AUTH_ROLE_NAME = 'authRoleName';
 const UNAUTH_ROLE_NAME = 'unauthRoleName';
 
-class ApiGatewayAuthStack extends cdk.Stack {
+export class ApiGatewayAuthStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props: ApiGatewayAuthStackProps) {
     super(scope, id, props);
     this.templateOptions.templateFormatVersion = CFN_TEMPLATE_FORMAT_VERSION;
@@ -215,7 +235,7 @@ export async function consolidateApiGatewayPolicies(context: $TSContext, stackNa
   return { APIGatewayAuthURL: createApiGatewayAuthResources(stackName, apiGateways, envInfo.envName) };
 }
 
-enum CrudOperation {
+export enum CrudOperation {
   CREATE = 'create',
   READ = 'read',
   UPDATE = 'update',
@@ -229,7 +249,9 @@ function convertCrudOperationsToPermissions(crudOps: CrudOperation[]) {
     [CrudOperation.UPDATE]: ['/PUT', '/PATCH'],
     [CrudOperation.DELETE]: ['/DELETE'],
   };
-  return crudOps.flatMap(op => opMap[op]);
+  const possibleMethods = Object.values(opMap).flat();
+  const methods = crudOps.flatMap(op => opMap[op]);
+  return possibleMethods.every(m => methods.includes(m)) ? ['/*'] : methods;
 }
 
 function createApiGatewayAuthResources(stackName: string, apiGateways: $TSAny, envName: string): string | undefined {
