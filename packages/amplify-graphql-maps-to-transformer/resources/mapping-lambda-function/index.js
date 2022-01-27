@@ -4,25 +4,18 @@
  * if args contains a filter or condition key, the object under those keys are traversed and any key matching a key in fieldMap is renamed to the corresponding value in fieldMap
  *
  * @example
- * given event: {
+ * given event:
+ * {
  *  args: {
  *    filter: {
- *      articleCommentsId: {
- *        eq: '90b5058a-c1fb-4682-901a-a5acc6d6ae08'
- *      },
- *      message: {
- *        beginsWith: 'hello'
- *      },
- *      or: {
- *        articleCommentsId: {
- *          beginsWith: 'aa'
- *        },
- *        and: {
- *          articleCommentsId: {
- *            lt: 'ZZ'
- *          }
- *        }
- *      }
+ *      or: [
+ *        { articleCommentsId: { eq: 'testtest' } },
+ *        { message: { beginsWith: 'hello' } },
+ *        { and: [
+ *          { articleCommentsId: {beginsWith: 'aa' } },
+ *          { createdAt: {lt: 'date' } }
+ *        ]}
+ *      ]
  *    }
  *  },
  *  fieldMap: {
@@ -33,27 +26,20 @@
  * the function will return
  * {
  *    filter: {
- *      postCommentsId: {
- *        eq: '90b5058a-c1fb-4682-901a-a5acc6d6ae08'
- *      },
- *      message: {
- *        beginsWith: 'hello'
- *      },
- *      or: {
- *        postCommentsId: {
- *          beginsWith: 'aa'
- *        },
- *        and: {
- *          postCommentsId: {
- *            lt: 'ZZ'
- *          }
- *        }
- *      }
+ *      or: [
+ *        { postCommentsId: { eq: 'testtest' } },
+ *        { message: { beginsWith: 'hello' } },
+ *        { and: [
+ *          { postCommentsId: {beginsWith: 'aa' } },
+ *          { createdAt: {lt: 'date' } }
+ *        ]}
+ *      ]
  *    }
- *  },
+ *  }
  */
+// TODO map enum values in sort and aggregates
 exports.handler = async event => {
-  console.log('Got event', event);
+  console.log('Processing input mapping event');
   const { args, fieldMap } = event;
   if (!args) {
     throw new Error('Event did not specify GraphQL input arguments');
@@ -81,6 +67,24 @@ exports.handler = async event => {
       }
     });
   }
-  console.log('Returning args:', args);
+
+  /**
+   * If the value of field is in the fieldMap, the value is replaced with the mapped value
+   * @param {field: string} entry a sort of aggregates entry
+   * @returns the entry with renamed fields
+   */
+  const mapEnumValue = entry => {
+    if (fieldMapKeySet.includes(entry.field)) {
+      entry.field = fieldMap[entry.field];
+    }
+  };
+
+  if (Array.isArray(args.sort)) {
+    args.sort.forEach(mapEnumValue);
+  }
+  if (args.aggregates) {
+    args.aggregates.forEach(mapEnumValue);
+  }
+  console.log('Successfully returning mapped args');
   return args;
 };

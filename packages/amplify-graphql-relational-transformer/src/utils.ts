@@ -1,6 +1,11 @@
 import assert from 'assert';
 import { getFieldNameFor, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
-import { TransformerContextProvider, TransformerResourceHelperProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  FieldMapEntry,
+  ResolverReferenceEntry,
+  TransformerContextProvider,
+  TransformerResourceHelperProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveNode, EnumTypeDefinitionNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode, StringValueNode } from 'graphql';
 import { getBaseType, isScalarOrEnum, toCamelCase } from 'graphql-transformer-common';
 import {
@@ -283,6 +288,31 @@ export function registerHasManyForeignKeyMappings({
     const opIsList = op === 'list' || op === 'sync';
 
     // registers field mappings for CRUD resolvers on related type
+    modelFieldMap.addResolverReference({ typeName: opTypeName, fieldName: opFieldName, isList: opIsList });
+  });
+}
+
+export type ManyToManyForeignKeyMappingParams = {
+  resourceHelper: TransformerResourceHelperProvider;
+  typeName: string;
+  referencedBy: ResolverReferenceEntry[];
+  fieldMap: FieldMapEntry[];
+};
+
+export function registerManyToManyForeignKeyMappings({
+  resourceHelper,
+  typeName,
+  referencedBy,
+  fieldMap,
+}: ManyToManyForeignKeyMappingParams) {
+  const modelFieldMap = resourceHelper.getModelFieldMap(typeName);
+  fieldMap.forEach(modelFieldMap.addMappedField);
+  referencedBy.forEach(modelFieldMap.addResolverReference);
+
+  (['create', 'update', 'delete', 'get', 'list', 'sync'] as const).forEach(op => {
+    const opFieldName = getFieldNameFor(op, typeName);
+    const opTypeName = op === 'create' || op === 'update' || op === 'delete' ? 'Mutation' : 'Query';
+    const opIsList = op === 'list' || op === 'sync';
     modelFieldMap.addResolverReference({ typeName: opTypeName, fieldName: opFieldName, isList: opIsList });
   });
 }

@@ -10,5 +10,6 @@
     {"path": "../graphql-mapping-template"},
     {"path": "../graphql-transformer-common"},
     {"path": "../amplify-graphql-maps-to-transformer"},
+    {"path": "../amplify-graphql-index-transformer"},
   ]
 }

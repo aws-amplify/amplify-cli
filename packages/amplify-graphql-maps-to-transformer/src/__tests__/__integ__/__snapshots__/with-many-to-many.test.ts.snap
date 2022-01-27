@@ -68,3 +68,173 @@ Array [
   },
 ]
 `;
+
+exports[`mapsTo with manyToMany creates resources with original GSIs and field names 2`] = `
+"$util.qr($ctx.args.input.put(\\"personID\\", $ctx.args.input.employeeID))
+$util.qr($ctx.args.input.remove(\\"employeeID\\"))
+$util.qr($ctx.args.input.put(\\"todoID\\", $ctx.args.input.taskID))
+$util.qr($ctx.args.input.remove(\\"taskID\\"))
+$util.toJson({})"
+`;
+
+exports[`mapsTo with manyToMany creates resources with original GSIs and field names 3`] = `
+"#set( $fieldMap = {\\"employeeID\\":\\"personID\\",\\"taskID\\":\\"todoID\\"} )
+#if( $util.isNull($fieldMap) || $fieldMap.keySet().size() <= 0 )
+  #return($ctx.args)
+#end
+#if( $util.isNull($ctx.args.filter) && $util.isNull($ctx.args.condition) )
+  #return($ctx.args)
+#end
+#set( $invoke = {
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\": {
+      \\"args\\": $ctx.args,
+      \\"fieldMap\\": $fieldMap
+  }
+} )
+$util.toJson($invoke)"
+`;
+
+exports[`mapsTo with manyToMany creates resources with original GSIs and field names 4`] = `
+"#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+#set( $ctx.stash.transformedArgs = $ctx.result )
+$util.toJson({})"
+`;
+
+exports[`mapsTo with manyToMany creates resources with original GSIs and field names 5`] = `
+"$util.qr($ctx.prev.result.put(\\"employeeID\\", $ctx.prev.result.personID))
+$util.qr($ctx.prev.result.remove(\\"personID\\"))
+$util.qr($ctx.prev.result.put(\\"taskID\\", $ctx.prev.result.todoID))
+$util.qr($ctx.prev.result.remove(\\"todoID\\"))
+$util.toJson($ctx.prev.result)"
+`;
+
+exports[`mapsTo with manyToMany creates resources with original GSIs and field names 6`] = `
+"$util.qr($ctx.args.input.put(\\"personID\\", $ctx.args.input.employeeID))
+$util.qr($ctx.args.input.remove(\\"employeeID\\"))
+$util.qr($ctx.args.input.put(\\"todoID\\", $ctx.args.input.taskID))
+$util.qr($ctx.args.input.remove(\\"taskID\\"))
+$util.toJson({})"
+`;
+
+exports[`mapsTo with manyToMany creates resources with original GSIs and field names 7`] = `
+"#set( $fieldMap = {\\"employeeID\\":\\"personID\\",\\"taskID\\":\\"todoID\\"} )
+#if( $util.isNull($fieldMap) || $fieldMap.keySet().size() <= 0 )
+  #return($ctx.args)
+#end
+#if( $util.isNull($ctx.args.filter) && $util.isNull($ctx.args.condition) )
+  #return($ctx.args)
+#end
+#set( $invoke = {
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\": {
+      \\"args\\": $ctx.args,
+      \\"fieldMap\\": $fieldMap
+  }
+} )
+$util.toJson($invoke)"
+`;
+
+exports[`mapsTo with manyToMany creates resources with original GSIs and field names 8`] = `
+"#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+#set( $ctx.stash.transformedArgs = $ctx.result )
+$util.toJson({})"
+`;
+
+exports[`mapsTo with manyToMany creates resources with original GSIs and field names 9`] = `
+"$util.qr($ctx.prev.result.put(\\"employeeID\\", $ctx.prev.result.personID))
+$util.qr($ctx.prev.result.remove(\\"personID\\"))
+$util.qr($ctx.prev.result.put(\\"taskID\\", $ctx.prev.result.todoID))
+$util.qr($ctx.prev.result.remove(\\"todoID\\"))
+$util.toJson($ctx.prev.result)"
+`;
+
+exports[`mapsTo with manyToMany creates resources with original GSIs and field names 10`] = `
+"$util.qr($ctx.args.input.put(\\"personID\\", $ctx.args.input.employeeID))
+$util.qr($ctx.args.input.remove(\\"employeeID\\"))
+$util.qr($ctx.args.input.put(\\"todoID\\", $ctx.args.input.taskID))
+$util.qr($ctx.args.input.remove(\\"taskID\\"))
+$util.toJson({})"
+`;
+
+exports[`mapsTo with manyToMany creates resources with original GSIs and field names 11`] = `
+"#set( $fieldMap = {\\"employeeID\\":\\"personID\\",\\"taskID\\":\\"todoID\\"} )
+#if( $util.isNull($fieldMap) || $fieldMap.keySet().size() <= 0 )
+  #return($ctx.args)
+#end
+#if( $util.isNull($ctx.args.filter) && $util.isNull($ctx.args.condition) )
+  #return($ctx.args)
+#end
+#set( $invoke = {
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\": {
+      \\"args\\": $ctx.args,
+      \\"fieldMap\\": $fieldMap
+  }
+} )
+$util.toJson($invoke)"
+`;
+
+exports[`mapsTo with manyToMany creates resources with original GSIs and field names 12`] = `
+"#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+#set( $ctx.stash.transformedArgs = $ctx.result )
+$util.toJson({})"
+`;
+
+exports[`mapsTo with manyToMany creates resources with original GSIs and field names 13`] = `
+"$util.qr($ctx.prev.result.put(\\"employeeID\\", $ctx.prev.result.personID))
+$util.qr($ctx.prev.result.remove(\\"personID\\"))
+$util.qr($ctx.prev.result.put(\\"taskID\\", $ctx.prev.result.todoID))
+$util.qr($ctx.prev.result.remove(\\"todoID\\"))
+$util.toJson($ctx.prev.result)"
+`;
+
+exports[`mapsTo with manyToMany creates resources with original GSIs and field names 14`] = `
+"$util.qr($ctx.prev.result.put(\\"employeeID\\", $ctx.prev.result.personID))
+$util.qr($ctx.prev.result.remove(\\"personID\\"))
+$util.qr($ctx.prev.result.put(\\"taskID\\", $ctx.prev.result.todoID))
+$util.qr($ctx.prev.result.remove(\\"todoID\\"))
+$util.toJson($ctx.prev.result)"
+`;
+
+exports[`mapsTo with manyToMany creates resources with original GSIs and field names 15`] = `
+"#set( $fieldMap = {\\"employeeID\\":\\"personID\\",\\"taskID\\":\\"todoID\\"} )
+#if( $util.isNull($fieldMap) || $fieldMap.keySet().size() <= 0 )
+  #return($ctx.args)
+#end
+#if( $util.isNull($ctx.args.filter) && $util.isNull($ctx.args.condition) )
+  #return($ctx.args)
+#end
+#set( $invoke = {
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\": {
+      \\"args\\": $ctx.args,
+      \\"fieldMap\\": $fieldMap
+  }
+} )
+$util.toJson($invoke)"
+`;
+
+exports[`mapsTo with manyToMany creates resources with original GSIs and field names 16`] = `
+"#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+#set( $ctx.stash.transformedArgs = $ctx.result )
+$util.toJson({})"
+`;
+
+exports[`mapsTo with manyToMany creates resources with original GSIs and field names 17`] = `
+"#foreach( $item in $ctx.prev.result.items )
+  $util.qr($item.put(\\"employeeID\\", $item.personID))
+  $util.qr($item.remove(\\"personID\\"))
+  $util.qr($item.put(\\"taskID\\", $item.todoID))
+  $util.qr($item.remove(\\"todoID\\"))
+#end
+$util.toJson($ctx.prev.result)"
+`;
