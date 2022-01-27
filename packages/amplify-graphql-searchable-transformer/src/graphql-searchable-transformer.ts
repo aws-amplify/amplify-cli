@@ -3,7 +3,6 @@ import {
   DataSourceProvider,
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
-  TransformerResourceHelperProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';

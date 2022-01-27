@@ -41,7 +41,6 @@ import {
   ResourceConstants,
   setArgs,
   toCamelCase,
-  transformedArgsRef,
 } from 'graphql-transformer-common';
 import { HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from './types';
 import { getConnectionAttributeName } from './utils';

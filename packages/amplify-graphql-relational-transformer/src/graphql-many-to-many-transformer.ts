@@ -122,7 +122,7 @@ export class ManyToManyTransformer extends TransformerPluginBase {
     }
 
     // variables with 'orig' in their name in this loop refer to their original value as specified by the @mapsTo directive
-    // this code desparately needs to be refactored to reduce the duplication
+    // this code desperately needs to be refactored to reduce the duplication
     this.relationMap.forEach(relation => {
       const { directive1, directive2, name } = relation;
       ctx.metadata.get<Array<string>>('joinTypeList')!.push(name);
@@ -191,7 +191,7 @@ export class ManyToManyTransformer extends TransformerPluginBase {
         this.authTransformer.object(joinType, joinTableAuthDirective, context);
       }
 
-      // becuase of @mapsTo, we need to create a joinType object that matches the original before calling the indexTransformer.
+      // because of @mapsTo, we need to create a joinType object that matches the original before calling the indexTransformer.
       // this ensures that the GSIs on the existing join table stay the same
       const d1IndexDirectiveOrig = makeDirective('index', [
         makeArgument('name', makeValueNode(d1IndexName)),

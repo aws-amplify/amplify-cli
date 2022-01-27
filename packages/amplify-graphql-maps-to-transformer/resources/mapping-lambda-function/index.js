@@ -37,7 +37,6 @@
  *    }
  *  }
  */
-// TODO map enum values in sort and aggregates
 exports.handler = async event => {
   console.log('Processing input mapping event');
   const { args, fieldMap } = event;
