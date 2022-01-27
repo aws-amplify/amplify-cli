@@ -114,7 +114,12 @@ export const attachFilterAndConditionInputMappingSlot = ({
           set(fieldMapRef, raw(JSON.stringify(fieldMapVtl))),
           iff(or([methodCall(ref('util.isNull'), fieldMapRef), raw('$fieldMap.keySet().size() <= 0')]), ret(ref('ctx.args'))),
           iff(
-            and([methodCall(ref('util.isNull'), ref('ctx.args.filter')), methodCall(ref('util.isNull'), ref('ctx.args.condition'))]),
+            and([
+              methodCall(ref('util.isNull'), ref('ctx.args.filter')),
+              methodCall(ref('util.isNull'), ref('ctx.args.condition')),
+              methodCall(ref('util.isNull'), ref('ctx.args.sort')),
+              methodCall(ref('util.isNull'), ref('ctx.args.aggregates')),
+            ]),
             ret(ref('ctx.args')),
           ),
           set(

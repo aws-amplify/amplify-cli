@@ -15,7 +15,7 @@ exports[`@mapsTo with multiple foreign key field renames on single model 2`] = `
 #if( $util.isNull($fieldMap) || $fieldMap.keySet().size() <= 0 )
   #return($ctx.args)
 #end
-#if( $util.isNull($ctx.args.filter) && $util.isNull($ctx.args.condition) )
+#if( $util.isNull($ctx.args.filter) && $util.isNull($ctx.args.condition) && $util.isNull($ctx.args.sort) && $util.isNull($ctx.args.aggregates) )
   #return($ctx.args)
 #end
 #set( $invoke = {
@@ -61,7 +61,7 @@ exports[`@mapsTo with multiple foreign key field renames on single model 6`] = `
 #if( $util.isNull($fieldMap) || $fieldMap.keySet().size() <= 0 )
   #return($ctx.args)
 #end
-#if( $util.isNull($ctx.args.filter) && $util.isNull($ctx.args.condition) )
+#if( $util.isNull($ctx.args.filter) && $util.isNull($ctx.args.condition) && $util.isNull($ctx.args.sort) && $util.isNull($ctx.args.aggregates) )
   #return($ctx.args)
 #end
 #set( $invoke = {
@@ -107,7 +107,7 @@ exports[`@mapsTo with multiple foreign key field renames on single model 10`] = 
 #if( $util.isNull($fieldMap) || $fieldMap.keySet().size() <= 0 )
   #return($ctx.args)
 #end
-#if( $util.isNull($ctx.args.filter) && $util.isNull($ctx.args.condition) )
+#if( $util.isNull($ctx.args.filter) && $util.isNull($ctx.args.condition) && $util.isNull($ctx.args.sort) && $util.isNull($ctx.args.aggregates) )
   #return($ctx.args)
 #end
 #set( $invoke = {
@@ -153,7 +153,7 @@ exports[`@mapsTo with multiple foreign key field renames on single model 14`] = 
 #if( $util.isNull($fieldMap) || $fieldMap.keySet().size() <= 0 )
   #return($ctx.args)
 #end
-#if( $util.isNull($ctx.args.filter) && $util.isNull($ctx.args.condition) )
+#if( $util.isNull($ctx.args.filter) && $util.isNull($ctx.args.condition) && $util.isNull($ctx.args.sort) && $util.isNull($ctx.args.aggregates) )
   #return($ctx.args)
 #end
 #set( $invoke = {
@@ -191,7 +191,7 @@ exports[`maps sync resolvers when DataStore is enabled 1`] = `
 #if( $util.isNull($fieldMap) || $fieldMap.keySet().size() <= 0 )
   #return($ctx.args)
 #end
-#if( $util.isNull($ctx.args.filter) && $util.isNull($ctx.args.condition) )
+#if( $util.isNull($ctx.args.filter) && $util.isNull($ctx.args.condition) && $util.isNull($ctx.args.sort) && $util.isNull($ctx.args.aggregates) )
   #return($ctx.args)
 #end
 #set( $invoke = {
