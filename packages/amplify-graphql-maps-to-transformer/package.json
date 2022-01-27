@@ -23,7 +23,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc && cd resources/mapping-lambda-function && bestzip --force node ../../lib/assets/mapping-lambda.zip index.js",
+    "build": "tsc && mkdir -p lib/assets && cd resources/mapping-lambda-function && bestzip --force node ../../lib/assets/mapping-lambda.zip index.js",
     "watch": "tsc -w",
     "clean": "rimraf ./lib tsconfig.tsbuildinfo",
     "test": "jest"
