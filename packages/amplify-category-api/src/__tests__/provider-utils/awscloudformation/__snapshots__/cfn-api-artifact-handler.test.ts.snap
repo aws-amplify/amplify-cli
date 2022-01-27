@@ -2,7 +2,7 @@
 
 exports[`create artifacts creates the transform.conf.json file 1`] = `
 Array [
-  "backendDirPath/api/testApiName",
+  "/mockProject/amplify/mockbackendDirPath/api/testApiName",
   Object {
     "ElasticsearchWarning": true,
     "Version": undefined,

@@ -103,6 +103,9 @@ function cleanUp(authresourcePath: string | undefined) {
 }
 
 const generateCliInputs = (parameters: ApiMetaData, apiResourceDir: string): AppSyncCLIInputs => {
+  const relativeApiResourceDir = path.isAbsolute(apiResourceDir)
+    ? path.relative(pathManager.findProjectRoot(), apiResourceDir)
+    : apiResourceDir;
   return {
     version: 1,
     serviceConfiguration: {
@@ -114,7 +117,7 @@ const generateCliInputs = (parameters: ApiMetaData, apiResourceDir: string): App
           : undefined,
       conflictResolution: resolverConfigToConflictResolution(parameters.resolverConfig),
       apiName: parameters.resourceName,
-      gqlSchemaPath: path.join(apiResourceDir, gqlSchemaFilename),
+      gqlSchemaPath: path.join(relativeApiResourceDir, gqlSchemaFilename),
     },
   };
 };

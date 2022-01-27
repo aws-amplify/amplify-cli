@@ -8,9 +8,9 @@ jest.mock('fs-extra');
 jest.mock('amplify-cli-core', () => ({
   ...(jest.requireActual('amplify-cli-core') as {}),
   pathManager: {
-    findProjectRoot: jest.fn().mockReturnValue('somePath'),
-    getBackendDirPath: jest.fn().mockReturnValue('mockProjectPath'),
-    getResourceDirectoryPath: jest.fn().mockReturnValue('mockProjectPath'),
+    findProjectRoot: jest.fn().mockReturnValue('/mockProjectPath'),
+    getBackendDirPath: jest.fn().mockReturnValue('/mockProjectPath/amplify/mockBackendPath'),
+    getResourceDirectoryPath: jest.fn().mockReturnValue('/mockProjectPath/amplify/mockBackendPath/api/mockResourcePath'),
   },
   stateManager: {
     getMeta: jest.fn().mockReturnValue({
@@ -52,7 +52,7 @@ jest.mock('amplify-cli-core', () => ({
 test('migrate resource', async () => {
   const resourceName = 'apiunittests';
   migrateResourceToSupportOverride(resourceName);
-  const expectedPath = path.join('mockProjectPath', 'cli-inputs.json');
+  const expectedPath = path.join('/', 'mockProjectPath', 'amplify', 'mockBackendPath', 'api', 'mockResourcePath', 'cli-inputs.json');
   const expectedPayload = {
     version: 1,
     serviceConfiguration: {
@@ -72,7 +72,7 @@ test('migrate resource', async () => {
         },
       },
       apiName: 'apiunittests',
-      gqlSchemaPath: 'mockProjectPath/schema.graphql',
+      gqlSchemaPath: 'amplify/mockBackendPath/api/mockResourcePath/schema.graphql',
     },
   };
   expect(JSONUtilities.writeJson).toBeCalledWith(expectedPath, expectedPayload);
