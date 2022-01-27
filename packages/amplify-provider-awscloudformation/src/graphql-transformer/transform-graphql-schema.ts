@@ -20,6 +20,7 @@ import {
   TransformerProjectConfig,
 } from '@aws-amplify/graphql-transformer-core';
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
+import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
 import { OverrideConfig } from '@aws-amplify/graphql-transformer-core/src/transformation/types';
 import { AppSyncAuthConfiguration, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
@@ -99,6 +100,7 @@ function getTransformerFactory(
       new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
       new DefaultValueTransformer(),
       authTransformer,
+      new MapsToTransformer(),
       // TODO: initialize transformer plugins
     ];
 

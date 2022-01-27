@@ -156,7 +156,6 @@ export function ensureHasOneConnectionField(
   if (conditionInput) {
     ctx.output.putType(updateFilterConnectionInputWithConnectionField(conditionInput, connectionAttributeName));
   }
-
   config.connectionFields.push(connectionAttributeName);
 }
 
