@@ -29,14 +29,14 @@ const multiTestFieldMap: FieldMapEntry[] = [
 beforeEach(jest.clearAllMocks);
 
 describe('attachInputMappingSlot', () => {
-  it('uses the init slot', () => {
+  it('uses the preUpdate slot', () => {
     attachInputMappingSlot({
       resolver: resolver_typed,
       resolverTypeName: 'Mutation',
       resolverFieldName: 'createTestType',
       fieldMap: singleTestFieldMap,
     });
-    expect(addToSlot_mock.mock.calls[0][0]).toBe('init');
+    expect(addToSlot_mock.mock.calls[0][0]).toBe('preUpdate');
   });
 
   it('maps a single field correctly', () => {

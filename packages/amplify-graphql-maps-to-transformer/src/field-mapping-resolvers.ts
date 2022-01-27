@@ -38,7 +38,7 @@ type AttachInputMappingSlotParams = {
  */
 export const attachInputMappingSlot = ({ resolver, resolverTypeName, resolverFieldName, fieldMap }: AttachInputMappingSlotParams): void => {
   resolver.addToSlot(
-    'init',
+    'preUpdate',
     MappingTemplate.s3MappingTemplateFromString(
       print(compoundExpression([createMultiRemapExpression('ctx.args.input', fieldMap, 'CURR_TO_ORIG'), toJson(raw('{}'))])),
       `${resolverTypeName}.${resolverFieldName}.{slotName}.{slotIndex}.req.vtl`,
