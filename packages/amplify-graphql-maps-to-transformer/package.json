@@ -29,7 +29,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-core": "0.15.6",
+    "@aws-amplify/graphql-transformer-core": "0.15.7",
     "@aws-amplify/graphql-transformer-interfaces": "1.12.6",
     "@aws-cdk/aws-appsync": "~1.124.0",
     "@aws-cdk/aws-iam": "~1.124.0",
@@ -39,9 +39,9 @@
     "graphql-transformer-common": "4.22.5"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-model-transformer": "0.10.7",
-    "@aws-amplify/graphql-relational-transformer": "0.6.19",
-    "@aws-amplify/graphql-searchable-transformer": "0.10.7",
+    "@aws-amplify/graphql-model-transformer": "0.10.8",
+    "@aws-amplify/graphql-relational-transformer": "0.6.20",
+    "@aws-amplify/graphql-searchable-transformer": "0.10.8",
     "graphql": "^14.5.8"
   },
   "jest": {

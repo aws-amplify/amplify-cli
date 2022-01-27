@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.8.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.11...amplify-provider-awscloudformation@5.8.12) (2022-01-27)
+
+
+### Bug Fixes
+
+* apply cfn pre-push transformer to nested api stacks ([#9595](https://github.com/aws-amplify/amplify-cli/issues/9595)) ([3f20329](https://github.com/aws-amplify/amplify-cli/commit/3f203299bfd6d06726892f759bc50da2069cadf1))
+* rest api override CloudFormation parameters ([#9325](https://github.com/aws-amplify/amplify-cli/issues/9325)) ([3338cfa](https://github.com/aws-amplify/amplify-cli/commit/3338cfaee199f83d2e270f12bb41983c067f42fe)), closes [#9221](https://github.com/aws-amplify/amplify-cli/issues/9221)
+
+
+
+
+
 ## [5.8.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.10...amplify-provider-awscloudformation@5.8.11) (2022-01-23)
 
 **Note:** Version bump only for package amplify-provider-awscloudformation
