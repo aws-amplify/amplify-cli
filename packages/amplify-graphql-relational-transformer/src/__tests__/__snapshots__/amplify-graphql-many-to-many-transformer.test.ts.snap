@@ -1275,16 +1275,17 @@ Object {
     $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.fooID.ge\\" }))
   #end
   ## [End] Applying Key Condition **
+  #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
     #set( $filter = $ctx.stash.authFilter )
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #if( !$util.isNullOrEmpty($args.filter) )
       #set( $filter = {
-  \\"and\\":   [$filter, $ctx.args.filter]
+  \\"and\\":   [$filter, $args.filter]
 } )
     #end
   #else
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
-      #set( $filter = $ctx.args.filter )
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = $args.filter )
     #end
   #end
   #if( !$util.isNullOrEmpty($filter) )
@@ -1388,16 +1389,17 @@ $util.error($ctx.error.message, $ctx.error.type)
     $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.barID.ge\\" }))
   #end
   ## [End] Applying Key Condition **
+  #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
     #set( $filter = $ctx.stash.authFilter )
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #if( !$util.isNullOrEmpty($args.filter) )
       #set( $filter = {
-  \\"and\\":   [$filter, $ctx.args.filter]
+  \\"and\\":   [$filter, $args.filter]
 } )
     #end
   #else
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
-      #set( $filter = $ctx.args.filter )
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = $args.filter )
     #end
   #end
   #if( !$util.isNullOrEmpty($filter) )

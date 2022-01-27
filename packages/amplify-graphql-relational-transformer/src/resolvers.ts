@@ -39,7 +39,9 @@ import {
   NONE_VALUE,
   ResolverResourceIDs,
   ResourceConstants,
+  setArgs,
   toCamelCase,
+  transformedArgsRef,
 } from 'graphql-transformer-common';
 import { HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from './types';
 import { getConnectionAttributeName } from './utils';
@@ -188,13 +190,14 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
   }
   // add setup filter to query
   setup.push(
+    setArgs,
     ifElse(
       not(isNullOrEmpty(authFilter)),
       compoundExpression([
         set(ref('filter'), authFilter),
-        iff(not(isNullOrEmpty(ref('ctx.args.filter'))), set(ref('filter'), obj({ and: list([ref('filter'), ref('ctx.args.filter')]) }))),
+        iff(not(isNullOrEmpty(ref('args.filter'))), set(ref('filter'), obj({ and: list([ref('filter'), ref('args.filter')]) }))),
       ]),
-      iff(not(isNullOrEmpty(ref('ctx.args.filter'))), set(ref('filter'), ref('ctx.args.filter'))),
+      iff(not(isNullOrEmpty(ref('args.filter'))), set(ref('filter'), ref('args.filter'))),
     ),
     iff(
       not(isNullOrEmpty(ref('filter'))),

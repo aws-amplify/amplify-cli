@@ -8042,16 +8042,17 @@ Object {
     $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.childName.ge\\" }))
   #end
   ## [End] Applying Key Condition **
+  #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
     #set( $filter = $ctx.stash.authFilter )
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #if( !$util.isNullOrEmpty($args.filter) )
       #set( $filter = {
-  \\"and\\":   [$filter, $ctx.args.filter]
+  \\"and\\":   [$filter, $args.filter]
 } )
     #end
   #else
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
-      #set( $filter = $ctx.args.filter )
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = $args.filter )
     #end
   #end
   #if( !$util.isNullOrEmpty($filter) )
@@ -8178,16 +8179,17 @@ $util.error($ctx.error.message, $ctx.error.type)
 
 
   ## [End] Applying Key Condition **
+  #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
     #set( $filter = $ctx.stash.authFilter )
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #if( !$util.isNullOrEmpty($args.filter) )
       #set( $filter = {
-  \\"and\\":   [$filter, $ctx.args.filter]
+  \\"and\\":   [$filter, $args.filter]
 } )
     #end
   #else
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
-      #set( $filter = $ctx.args.filter )
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = $args.filter )
     #end
   #end
   #if( !$util.isNullOrEmpty($filter) )
@@ -12446,16 +12448,17 @@ $util.unauthorized()
 
 
   ## [End] Applying Key Condition **
+  #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
     #set( $filter = $ctx.stash.authFilter )
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #if( !$util.isNullOrEmpty($args.filter) )
       #set( $filter = {
-  \\"and\\":   [$filter, $ctx.args.filter]
+  \\"and\\":   [$filter, $args.filter]
 } )
     #end
   #else
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
-      #set( $filter = $ctx.args.filter )
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = $args.filter )
     #end
   #end
   #if( !$util.isNullOrEmpty($filter) )
@@ -12520,16 +12523,17 @@ $util.error($ctx.error.message, $ctx.error.type)
       \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.id)
   }
 } )
+  #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
     #set( $filter = $ctx.stash.authFilter )
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #if( !$util.isNullOrEmpty($args.filter) )
       #set( $filter = {
-  \\"and\\":   [$filter, $ctx.args.filter]
+  \\"and\\":   [$filter, $args.filter]
 } )
     #end
   #else
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
-      #set( $filter = $ctx.args.filter )
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = $args.filter )
     #end
   #end
   #if( !$util.isNullOrEmpty($filter) )
@@ -12633,16 +12637,17 @@ $util.error($ctx.error.message, $ctx.error.type)
     $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.editorID.ge\\" }))
   #end
   ## [End] Applying Key Condition **
+  #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
     #set( $filter = $ctx.stash.authFilter )
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #if( !$util.isNullOrEmpty($args.filter) )
       #set( $filter = {
-  \\"and\\":   [$filter, $ctx.args.filter]
+  \\"and\\":   [$filter, $args.filter]
 } )
     #end
   #else
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
-      #set( $filter = $ctx.args.filter )
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = $args.filter )
     #end
   #end
   #if( !$util.isNullOrEmpty($filter) )
@@ -12818,16 +12823,17 @@ $util.unauthorized()
       \\":sortKey\\": $util.dynamodb.toDynamoDB(\\"\${context.source.authorName}#\${context.source.authorSurname}\\")
   }
 } )
+  #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
     #set( $filter = $ctx.stash.authFilter )
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #if( !$util.isNullOrEmpty($args.filter) )
       #set( $filter = {
-  \\"and\\":   [$filter, $ctx.args.filter]
+  \\"and\\":   [$filter, $args.filter]
 } )
     #end
   #else
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
-      #set( $filter = $ctx.args.filter )
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = $args.filter )
     #end
   #end
   #if( !$util.isNullOrEmpty($filter) )
@@ -15168,16 +15174,17 @@ $util.toJson(null)
 
 
   ## [End] Applying Key Condition **
+  #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
     #set( $filter = $ctx.stash.authFilter )
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #if( !$util.isNullOrEmpty($args.filter) )
       #set( $filter = {
-  \\"and\\":   [$filter, $ctx.args.filter]
+  \\"and\\":   [$filter, $args.filter]
 } )
     #end
   #else
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
-      #set( $filter = $ctx.args.filter )
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = $args.filter )
     #end
   #end
   #if( !$util.isNullOrEmpty($filter) )
@@ -15303,16 +15310,17 @@ $util.error($ctx.error.message, $ctx.error.type)
 
 
   ## [End] Applying Key Condition **
+  #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
     #set( $filter = $ctx.stash.authFilter )
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #if( !$util.isNullOrEmpty($args.filter) )
       #set( $filter = {
-  \\"and\\":   [$filter, $ctx.args.filter]
+  \\"and\\":   [$filter, $args.filter]
 } )
     #end
   #else
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
-      #set( $filter = $ctx.args.filter )
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = $args.filter )
     #end
   #end
   #if( !$util.isNullOrEmpty($filter) )
@@ -15416,16 +15424,17 @@ $util.error($ctx.error.message, $ctx.error.type)
     $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.friendID.ge\\" }))
   #end
   ## [End] Applying Key Condition **
+  #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
     #set( $filter = $ctx.stash.authFilter )
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #if( !$util.isNullOrEmpty($args.filter) )
       #set( $filter = {
-  \\"and\\":   [$filter, $ctx.args.filter]
+  \\"and\\":   [$filter, $args.filter]
 } )
     #end
   #else
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
-      #set( $filter = $ctx.args.filter )
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = $args.filter )
     #end
   #end
   #if( !$util.isNullOrEmpty($filter) )
@@ -15529,16 +15538,17 @@ $util.error($ctx.error.message, $ctx.error.type)
     $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.postID.ge\\" }))
   #end
   ## [End] Applying Key Condition **
+  #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
     #set( $filter = $ctx.stash.authFilter )
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #if( !$util.isNullOrEmpty($args.filter) )
       #set( $filter = {
-  \\"and\\":   [$filter, $ctx.args.filter]
+  \\"and\\":   [$filter, $args.filter]
 } )
     #end
   #else
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
-      #set( $filter = $ctx.args.filter )
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = $args.filter )
     #end
   #end
   #if( !$util.isNullOrEmpty($filter) )
@@ -15642,16 +15652,17 @@ $util.error($ctx.error.message, $ctx.error.type)
     $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.postID.ge\\" }))
   #end
   ## [End] Applying Key Condition **
+  #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
     #set( $filter = $ctx.stash.authFilter )
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #if( !$util.isNullOrEmpty($args.filter) )
       #set( $filter = {
-  \\"and\\":   [$filter, $ctx.args.filter]
+  \\"and\\":   [$filter, $args.filter]
 } )
     #end
   #else
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
-      #set( $filter = $ctx.args.filter )
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = $args.filter )
     #end
   #end
   #if( !$util.isNullOrEmpty($filter) )
