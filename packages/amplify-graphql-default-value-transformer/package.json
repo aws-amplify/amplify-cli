@@ -36,7 +36,7 @@
     "libphonenumber-js": "^1.7.31"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-model-transformer": "0.10.8"
+    "@aws-amplify/graphql-model-transformer": "0.12.0"
   },
   "jest": {
     "transform": {
