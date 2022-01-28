@@ -18,6 +18,7 @@ describe('graphql transformer utils', () => {
 
   beforeEach(() => {
     transformerOutput = {
+      userOverriddenSlots: [],
       resolvers: {
         'Query.listTodos.req.vtl': '## [Start] List Request. **\n' + '#set( $limit = $util.defaultIfNull($context.args.limit, 100) )\n',
       },
