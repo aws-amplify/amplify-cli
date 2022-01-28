@@ -23,7 +23,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc && cd resources/mapping-lambda-function && bestzip --force node ../../lib/assets/mapping-lambda.zip index.js",
+    "build": "tsc && mkdirp lib/assets && cd resources/mapping-lambda-function && bestzip --force node ../../lib/assets/mapping-lambda.zip index.js",
     "watch": "tsc -w",
     "clean": "rimraf ./lib tsconfig.tsbuildinfo",
     "test": "jest"
@@ -42,7 +42,8 @@
     "@aws-amplify/graphql-model-transformer": "0.10.8",
     "@aws-amplify/graphql-relational-transformer": "0.6.20",
     "@aws-amplify/graphql-searchable-transformer": "0.10.8",
-    "graphql": "^14.5.8"
+    "graphql": "^14.5.8",
+    "mkdirp": "^0.5.5"
   },
   "jest": {
     "transform": {
