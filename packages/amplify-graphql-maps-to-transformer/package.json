@@ -39,9 +39,9 @@
     "graphql-transformer-common": "4.22.5"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-model-transformer": "0.10.8",
+    "@aws-amplify/graphql-model-transformer": "0.12.0",
     "@aws-amplify/graphql-relational-transformer": "0.6.20",
-    "@aws-amplify/graphql-searchable-transformer": "0.10.8",
+    "@aws-amplify/graphql-searchable-transformer": "0.12.0",
     "graphql": "^14.5.8",
     "mkdirp": "^0.5.5"
   },
