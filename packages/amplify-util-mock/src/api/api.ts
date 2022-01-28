@@ -43,8 +43,9 @@ export class APITest {
       await checkJavaVersion(context);
       this.apiName = await this.getAppSyncAPI(context);
       this.ddbClient = await this.startDynamoDBLocalServer(context);
-      const resolverDirectory = await this.getResolverTemplateDirectory(context);
-      this.resolverOverrideManager = new ResolverOverrides(resolverDirectory);
+      const mockDirectory = await this.getMockResolverTemplateDirectory(context);
+      const customResolversDirectory = await this.getCustomResolverTemplateDirectory(context);
+      this.resolverOverrideManager = new ResolverOverrides(mockDirectory, customResolversDirectory);
       this.apiParameters = await this.loadAPIParameters(context);
       this.appSyncSimulator = new AmplifyAppSyncSimulator({
         port,
@@ -288,10 +289,15 @@ export class APITest {
     }
   }
 
-  private async getResolverTemplateDirectory(context) {
+  private async getMockResolverTemplateDirectory(context) {
     const apiDirectory = await this.getAPIBackendDirectory(context);
-    return apiDirectory;
+    return path.join(apiDirectory, 'mock');
   }
+
+  private async getCustomResolverTemplateDirectory(context) {
+    return await this.getAPIBackendDirectory(context);
+  }
+
   private async registerWatcher(context: any): Promise<chokidar.FSWatcher> {
     const watchDir = await this.getAPIBackendDirectory(context);
     return chokidar.watch(watchDir, {

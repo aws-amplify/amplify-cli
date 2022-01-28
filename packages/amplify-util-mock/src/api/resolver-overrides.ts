@@ -7,7 +7,8 @@ export class ResolverOverrides {
   private contentMap: Map<string, string>;
 
   constructor(
-    private _rootFolder: string,
+    private _mockFolder: string,
+    private _customFolder: string,
     private _foldersToWatch: string[] = ['resolvers', 'pipelineFunctions', 'functions'],
     private fileExtensions: string[] = ['.vtl'],
   ) {
@@ -18,14 +19,14 @@ export class ResolverOverrides {
 
   start() {
     this._foldersToWatch
-      .map(folder => path.join(this._rootFolder, folder))
+      .map(folder => path.join(this._customFolder, folder))
       .forEach(folder => {
         if (fs.existsSync(folder) && fs.lstatSync(folder).isDirectory()) {
           fs.readdirSync(folder)
             .map(f => path.join(folder, f))
             .filter(f => this.isTemplateFile(f))
             .forEach(f => {
-              this.updateContentMap(f);
+              this.updateContentMap(f, this.getCustomResolverRelativePath(f));
             });
         }
       });
@@ -35,51 +36,27 @@ export class ResolverOverrides {
     if (!this.isTemplateFile(filePath)) {
       return false;
     }
-    return this.updateContentMap(filePath);
+    return this.updateContentMap(filePath, this.getRelativePath(filePath));
   }
 
   sync(transformerResolvers: { path: string; content: string }[]) {
     const filesToWrite: Map<string, string> = new Map();
-    const filesToDelete: Set<string> = new Set();
     const result: {
       path: string;
       content: string;
     }[] = transformerResolvers.map(resolver => {
       const r = { ...resolver };
       const normalizedPath = path.normalize(resolver.path);
-      // Step 1: Check if the file is in the override map and if it really is
-      // different from transformer generated file or its here because it was not
-      // deleted from last execution
+      // Step 1: Check if the file is in the override map
       if (this.overrides.has(normalizedPath)) {
         const overriddenContent = this.contentMap.get(normalizedPath);
-        if (overriddenContent === resolver.content) {
-          this.overrides.delete(normalizedPath);
-        } else {
-          r.content = overriddenContent;
-        }
+        filesToWrite.set(normalizedPath, overriddenContent);
+        r.content = overriddenContent;
       } else {
-        // Step 2. The file is not in content map. Its a new created by transformer
-        if (this.contentMap.has(normalizedPath)) {
-          // existing file, not a newly created file
-          const diskFileContent = this.contentMap.get(normalizedPath);
-          if (diskFileContent !== resolver.content) {
-            filesToWrite.set(normalizedPath, resolver.content);
-          }
-        } else {
-          // new resolver created by transformer
-          filesToWrite.set(normalizedPath, resolver.content);
-        }
+        filesToWrite.set(normalizedPath, resolver.content);
         r.content = resolver.content;
       }
       return r;
-    });
-
-    // Populate the list of files that needs to be deleted
-    const generatedResolverPath = transformerResolvers.map(r => r.path);
-    this.contentMap.forEach((val, resolverPath) => {
-      if (!this.overrides.has(resolverPath) && !generatedResolverPath.includes(resolverPath)) {
-        filesToDelete.add(resolverPath);
-      }
     });
 
     // Files that are in the disk used by resolvers created by custom stack will exist in resolver folder
@@ -97,16 +74,11 @@ export class ResolverOverrides {
     filesToWrite.forEach((content, filePath) => {
       // Update the content in the map
       this.contentMap.set(filePath, content);
-      const abPath = this.getAbsPath(filePath);
+      const abPath = this.getMockResolverAbsolutePath(filePath);
       fs.ensureFileSync(abPath);
       fs.writeFileSync(abPath, content);
     });
 
-    // Delete the files that are no longer needed
-    filesToDelete.forEach(filePath => {
-      this.contentMap.delete(filePath);
-      fs.unlinkSync(this.getAbsPath(filePath));
-    });
     return result;
   }
   /**
@@ -114,10 +86,16 @@ export class ResolverOverrides {
    * the ones which are not overridden
    */
   stop() {
-    this.contentMap.forEach((val, filePath) => {
-      if (!this.overrides.has(filePath)) {
-        fs.unlinkSync(this.getAbsPath(filePath));
+    this.contentMap.forEach((content, filePath) => {
+      if (this.overrides.has(filePath)) {
+        const absolutePath = this.getCustomResolverAbsolutePath(filePath);
+        fs.ensureFileSync(absolutePath);
+        fs.writeFileSync(absolutePath, content);
       }
+    });
+
+    this.contentMap.forEach((_, filePath) => {
+      fs.unlinkSync(this.getMockResolverAbsolutePath(filePath));
     });
   }
 
@@ -126,11 +104,16 @@ export class ResolverOverrides {
       return false;
     }
     const isInWatchedDir = this._foldersToWatch.some(folder => {
-      const absFolder = path.join(this._rootFolder, folder);
+      const absFolder = path.join(this._mockFolder, folder);
       return filePath.includes(absFolder);
     });
 
-    if (!isInWatchedDir) {
+    const isCustomResolver = this._foldersToWatch.some(folder => {
+      const absFolder = path.join(this._customFolder, folder);
+      return filePath.includes(absFolder);
+    });
+
+    if (!isInWatchedDir && !isCustomResolver) {
       return false;
     }
 
@@ -145,8 +128,7 @@ export class ResolverOverrides {
     return false;
   }
 
-  private updateContentMap(filePath: string) {
-    const relativePath = this.getRelativePath(filePath);
+  private updateContentMap(filePath: string, relativePath: string) {
     const content = fs.readFileSync(filePath).toString();
     if (content.trim() !== '' && this.contentMap.get(relativePath) !== content) {
       this.contentMap.set(relativePath, content);
@@ -156,11 +138,20 @@ export class ResolverOverrides {
     return false;
   }
 
-  private getRelativePath(filePath: string) {
-    return path.relative(this.resolverTemplateRoot, filePath);
+  private getCustomResolverRelativePath(filePath: string) {
+    return path.relative(this.customResolverTemplateRoot, filePath);
   }
-  private getAbsPath(filename: string) {
-    return path.normalize(path.join(this.resolverTemplateRoot, filename));
+
+  private getRelativePath(filePath: string) {
+    return path.relative(this.mockResolverTemplateRoot, filePath);
+  }
+
+  private getMockResolverAbsolutePath(filename: string) {
+    return path.normalize(path.join(this.mockResolverTemplateRoot, filename));
+  }
+
+  private getCustomResolverAbsolutePath(filename: string) {
+    return path.normalize(path.join(this.customResolverTemplateRoot, filename));
   }
 
   onAdd(path: string): boolean {
@@ -179,7 +170,12 @@ export class ResolverOverrides {
     }
     return false;
   }
-  get resolverTemplateRoot() {
-    return this._rootFolder;
+
+  get mockResolverTemplateRoot() {
+    return this._mockFolder;
+  }
+
+  get customResolverTemplateRoot() {
+    return this._customFolder;
   }
 }
