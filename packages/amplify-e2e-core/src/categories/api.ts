@@ -427,7 +427,18 @@ export function updateAPIWithResolutionStrategyWithModels(cwd: string, settings:
   });
 }
 
-export function addRestApi(cwd: string, settings: any) {
+export type RestAPISettings = {
+  path?: string;
+  isFirstRestApi?: boolean;
+  existingLambda?: boolean;
+  restrictAccess?: boolean;
+  allowGuestUsers?: boolean;
+  projectContainsFunctions?: boolean;
+  apiName?: string;
+  hasUserPoolGroups?: boolean;
+  isCrud?: boolean;
+};
+export function addRestApi(cwd: string, settings: RestAPISettings) {
   const isFirstRestApi = settings.isFirstRestApi ?? true;
   let chain = spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
     .wait('Select from one of the below mentioned services')
@@ -459,14 +470,8 @@ export function addRestApi(cwd: string, settings: any) {
       } else {
         chooseLambdaFunctionForRestApi(chain, settings);
       }
-
-      chain
-        .wait('Restrict API access')
-        .sendNo() // Do not restrict access
-        .wait('Do you want to add another path')
-        .sendNo() // Do not add another path
-        .sendEof();
-
+      protectAPI(settings, chain);
+      chain.wait('Do you want to add another path').sendNo().sendEof();
       return chain.runAsync();
     } else {
       chain.sendNo();
@@ -490,6 +495,14 @@ export function addRestApi(cwd: string, settings: any) {
     chooseLambdaFunctionForRestApi(chain, settings);
   }
 
+  protectAPI(settings, chain);
+
+  chain.wait('Do you want to add another path').sendNo().sendEof();
+
+  return chain.runAsync();
+}
+
+function protectAPI(settings: RestAPISettings, chain: ExecutionContext) {
   chain.wait('Restrict API access');
   if (settings.restrictAccess) {
     chain.sendYes();
@@ -518,15 +531,11 @@ export function addRestApi(cwd: string, settings: any) {
         .sendCarriageReturn();
     }
   } else {
-    chain.sendNo(); // Do not restrict access
+    chain.sendNo();
   }
-
-  chain.wait('Do you want to add another path').sendNo().sendEof();
-
-  return chain.runAsync();
 }
 
-function chooseLambdaFunctionForRestApi(chain: ExecutionContext, settings: any) {
+function chooseLambdaFunctionForRestApi(chain: ExecutionContext, settings: { projectContainsFunctions?: boolean; isCrud?: boolean }) {
   if (settings.projectContainsFunctions) {
     chain.sendCarriageReturn(); // Create new Lambda function
   }

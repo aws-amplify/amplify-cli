@@ -127,6 +127,7 @@ describe('amplify add api (REST)', () => {
     // add more paths to and test policy slicing
     for (let i = 0; i < 15; i++) {
       await addRestApi(projRoot, {
+        path: `/items${i}`,
         isFirstRestApi: false,
         existingLambda: true,
         restrictAccess: true,
