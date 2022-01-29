@@ -1,3 +1,6 @@
+/**
+ * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
+ */
 exports.handler = async event => {
   // allowed domains
   const ald = process.env.DOMAINWHITELIST.split(',').map(d => d.trim());

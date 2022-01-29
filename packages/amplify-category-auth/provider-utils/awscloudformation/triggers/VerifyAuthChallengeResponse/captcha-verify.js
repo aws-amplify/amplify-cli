@@ -1,7 +1,8 @@
-/* eslint-disable */
 const axios = require('axios');
-/* eslint-enable */
 
+/**
+ * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
+ */
 exports.handler = async event => {
   const response = await axios.post(
     `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHASECRET}&response=${event.request.challengeAnswer}`,
@@ -13,7 +14,7 @@ exports.handler = async event => {
    *
    * If the challenge fails, throw an error.
    */
-  const challengeSucceeded = response && response.data && response.data.success;
+  const challengeSucceeded = response?.data?.success;
   event.response.answerCorrect = !!challengeSucceeded;
 
   if (!challengeSucceeded) {
