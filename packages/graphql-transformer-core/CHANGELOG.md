@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.4.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.3.7...graphql-transformer-core@7.4.0-beta.0) (2022-01-29)
+
+
+### Features
+
+* `[@maps](https://github.com/maps)To` directive to enable renaming models while retaining data ([#9340](https://github.com/aws-amplify/amplify-cli/issues/9340)) ([aedf45d](https://github.com/aws-amplify/amplify-cli/commit/aedf45d9237812d71bb8b56164efe0222ad3d534))
+
+
+
+
+
 ## [7.3.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.3.6...graphql-transformer-core@7.3.7) (2022-01-27)
 
 **Note:** Version bump only for package graphql-transformer-core
