@@ -15,6 +15,23 @@ let simulator;
 
 jest.setTimeout(2000000);
 
+const toBeS3Event = (eventName: string, bucket: string, key: string) =>
+  expect.objectContaining({
+    Records: expect.arrayContaining([
+      expect.objectContaining({
+        eventName: eventName,
+        s3: expect.objectContaining({
+          bucket: expect.objectContaining({
+            name: bucket,
+          }),
+          object: expect.objectContaining({
+            key: key,
+          }),
+        }),
+      }),
+    ]),
+  });
+
 beforeAll(async () => {
   AWS.config.update({
     accessKeyId: 'fakeaccesskeyidfortesting',
@@ -126,8 +143,11 @@ describe('Test delete api', () => {
     fs.copySync(__dirname + '/test-data/normal/', dirPathOne + '/');
   });
   test('test one delete ', async () => {
-    const data = await s3client.deleteObject({ Bucket: bucket, Key: 'deleteOne/2.png' }).promise();
+    const emitSpy = jest.spyOn(simulator.getServer, 'emit');
+    const key = 'deleteOne/2.png';
+    const data = await s3client.deleteObject({ Bucket: bucket, Key: key }).promise();
     expect(fs.rmdirSync(dirPathOne)).toBeUndefined;
+    expect(emitSpy).toHaveBeenCalledWith(expect.any(String), toBeS3Event('ObjectRemoved:Delete', bucket, key));
   });
 });
 
@@ -179,6 +199,7 @@ describe('Test put api', () => {
   };
 
   test('put text', async () => {
+    const emitSpy = jest.spyOn(simulator.getServer, 'emit');
     const params = {
       Bucket: bucket, // pass your bucket name
       Key: 'upload/abc.txt',
@@ -186,9 +207,12 @@ describe('Test put api', () => {
     };
     const data = await s3client.upload(params).promise();
     expect(data).toBeDefined();
+    expect(emitSpy).toHaveBeenCalledWith(expect.any(String), toBeS3Event('ObjectCreated:Put', params.Bucket, params.Key));
   });
 
   test('put JSON', async () => {
+    const emitSpy = jest.spyOn(simulator.getServer, 'emit');
+
     const params = {
       Bucket: bucket, // pass your bucket name
       Key: 'upload/abc.json',
@@ -201,12 +225,14 @@ describe('Test put api', () => {
     const obj = JSON.parse(contents.toString());
     expect(data).toBeDefined();
     expect(JSON.stringify(obj)).toBe(JSON.stringify(Jsonobj));
+    expect(emitSpy).toHaveBeenCalledWith(expect.any(String), toBeS3Event('ObjectCreated:Put', params.Bucket, params.Key));
   });
 
   const file1 = __dirname + '/test-data/Snake_River_(5mb).jpg';
   const buf2 = fs.readFileSync(file1);
 
   test(' multipart upload', async () => {
+    const emitSpy = jest.spyOn(simulator.getServer, 'emit');
     const params = {
       Bucket: bucket, // pass your bucket name
       Key: 'upload/long_image.jpg',
@@ -214,9 +240,14 @@ describe('Test put api', () => {
     };
     const data = await s3client.upload(params).promise();
     expect(data.Key).toBe('upload/long_image.jpg');
+    expect(emitSpy).toHaveBeenCalledWith(
+      expect.any(String),
+      toBeS3Event('ObjectCreated:CompleteMultipartUpload', params.Bucket, params.Key),
+    );
   });
 
   test(' async uploads', async () => {
+    const emitSpy = jest.spyOn(simulator.getServer, 'emit');
     const params1 = {
       Bucket: bucket, // pass your bucket name
       Key: 'upload/long_image1.jpg',
@@ -239,11 +270,24 @@ describe('Test put api', () => {
     const data3 = await s3client.upload(params3).promise();
 
     expect(data.Key).toBe('upload/long_image1.jpg');
+    expect(emitSpy).toHaveBeenCalledWith(
+      expect.any(String),
+      toBeS3Event('ObjectCreated:CompleteMultipartUpload', params1.Bucket, params1.Key),
+    );
     expect(data2.Key).toBe('upload/long_image2.jpg');
+    expect(emitSpy).toHaveBeenCalledWith(
+      expect.any(String),
+      toBeS3Event('ObjectCreated:CompleteMultipartUpload', params2.Bucket, params2.Key),
+    );
     expect(data3.Key).toBe('upload/long_image3.jpg');
+    expect(emitSpy).toHaveBeenCalledWith(
+      expect.any(String),
+      toBeS3Event('ObjectCreated:CompleteMultipartUpload', params3.Bucket, params3.Key),
+    );
   });
 
   test(' async uploads', async () => {
+    const emitSpy = jest.spyOn(simulator.getServer, 'emit');
     const params1 = {
       Bucket: bucket, // pass your bucket name
       Key: 'upload/long_image1.jpg',
@@ -269,5 +313,18 @@ describe('Test put api', () => {
     expect(uploadResults[0].Key).toBe('upload/long_image1.jpg');
     expect(uploadResults[1].Key).toBe('upload/long_image2.jpg');
     expect(uploadResults[2].Key).toBe('upload/long_image3.jpg');
+
+    expect(emitSpy).toHaveBeenCalledWith(
+      expect.any(String),
+      toBeS3Event('ObjectCreated:CompleteMultipartUpload', params1.Bucket, params1.Key),
+    );
+    expect(emitSpy).toHaveBeenCalledWith(
+      expect.any(String),
+      toBeS3Event('ObjectCreated:CompleteMultipartUpload', params2.Bucket, params2.Key),
+    );
+    expect(emitSpy).toHaveBeenCalledWith(
+      expect.any(String),
+      toBeS3Event('ObjectCreated:CompleteMultipartUpload', params3.Bucket, params3.Key),
+    );
   });
 });

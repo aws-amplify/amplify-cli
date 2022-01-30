@@ -101,7 +101,7 @@ export class StorageServer extends EventEmitter {
 
     if (request.method === 'DELETE') {
       // emit event for delete
-      let eventObj = this.createEvent(request);
+      let eventObj = this.createEvent(request, 'ObjectRemoved:Delete');
       this.emit('event', eventObj);
       this.handleRequestDelete(request, response);
     }
@@ -232,10 +232,14 @@ export class StorageServer extends EventEmitter {
     if (request.query.partNumber !== undefined) {
       this.upload_bufferMap[request.query.uploadId][request.query.partNumber] = request.body;
     } else {
-      fs.writeFileSync(directoryPath, new_data);
-      // event trigger  to differentitiate between multipart and normal put
-      let eventObj = this.createEvent(request);
-      this.emit('event', eventObj);
+      try {
+        fs.writeFileSync(directoryPath, new_data);
+        // event trigger  to differentitiate between multipart and normal put
+        let eventObj = this.createEvent(request, 'ObjectCreated:Put');
+        this.emit('event', eventObj);
+      } catch (err) {
+        console.warn('Failed to write file to mock storage', err);
+      }
     }
     response.set('Content-Type', 'text/xml');
     response.send(xml(convert.json2xml(JSON.stringify('upload success'))));
@@ -280,7 +284,7 @@ export class StorageServer extends EventEmitter {
       let buf = Buffer.concat(arr);
       fs.writeFileSync(directoryPath, buf);
       // event trigger for multipart post
-      let eventObj = this.createEvent(request);
+      let eventObj = this.createEvent(request, 'ObjectCreated:CompleteMultipartUpload');
       this.emit('event', eventObj);
     } else {
       const directoryPath = path.normalize(path.join(String(this.localDirectoryPath), String(request.params.path)));
@@ -288,7 +292,7 @@ export class StorageServer extends EventEmitter {
       var new_data = util.stripChunkSignature(request.body);
       fs.writeFileSync(directoryPath, new_data);
       // event trigger for normal post
-      let eventObj = this.createEvent(request);
+      let eventObj = this.createEvent(request, 'ObjectCreated:Post');
       this.emit('event', eventObj);
       response.set('Content-Type', 'text/xml');
       response.send(
@@ -305,7 +309,7 @@ export class StorageServer extends EventEmitter {
     }
   }
   // build eevent obj for s3 trigger
-  private createEvent(request) {
+  private createEvent(request, eventName) {
     const filePath = path.normalize(path.join(this.localDirectoryPath, request.params.path));
     let eventObj = {};
     eventObj[EVENT_RECORDS] = [];
@@ -315,7 +319,7 @@ export class StorageServer extends EventEmitter {
       eventSource: 'aws:s3',
       awsRegion: 'local',
       eventTime: new Date().toISOString(),
-      eventName: `ObjectCreated:${request.method}`,
+      eventName,
     };
 
     let s3 = {
@@ -336,7 +340,7 @@ export class StorageServer extends EventEmitter {
       },
     };
     eventObj[EVENT_RECORDS].push({
-      event,
+      ...event,
       s3,
     });
     return eventObj;

@@ -12,10 +12,10 @@ const port = 20005; // port for S3
 /**
  * @returns Name of S3 resource or undefined
  */
- async function invokeS3GetResourceName(context) {
-   const s3ResourceName = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3GetResourceName', [context]);
-   return s3ResourceName;
- }
+async function invokeS3GetResourceName(context) {
+  const s3ResourceName = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3GetResourceName', [context]);
+  return s3ResourceName;
+}
 
 /**
  * Return the cli-inputs.json
@@ -23,13 +23,10 @@ const port = 20005; // port for S3
  * @param s3ResourceName
  * @returns
  */
- async function invokeS3GetUserInputs(context, s3ResourceName) {
-   const s3UserInputs = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3GetUserInput', [
-     context,
-     s3ResourceName,
-   ]);
-   return s3UserInputs;
- }
+async function invokeS3GetUserInputs(context, s3ResourceName) {
+  const s3UserInputs = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3GetUserInput', [context, s3ResourceName]);
+  return s3UserInputs;
+}
 
 export class StorageTest {
   private storageName: string;
@@ -101,7 +98,7 @@ export class StorageTest {
       for (let obj of lambdaConfig) {
         let prefix_arr = obj.Filter;
         if (prefix_arr === undefined) {
-          let eventName = String(eventObj.Records[0].event.eventName).split(':')[0];
+          let eventName = String(eventObj.Records[0].eventName).split(':')[0];
           if (eventName === 'ObjectRemoved' || eventName === 'ObjectCreated') {
             triggerName = String(obj.Function.Ref).split('function')[1].split('Arn')[0];
             break;
