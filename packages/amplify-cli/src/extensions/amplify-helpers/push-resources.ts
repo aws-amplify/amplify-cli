@@ -12,7 +12,8 @@ import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { showResourceTable } from './resource-status';
 import { isValidGraphQLAuthError, handleValidGraphQLAuthError } from './apply-auth-mode';
 import { ManuallyTimedCodePath } from '../../domain/amplify-usageData/IUsageData';
-
+import { printer } from 'amplify-prompts';
+import { run as reportRunner } from '../../commands/report'
 /**
  * Entry point for pushing resources to the cloud
  */
@@ -120,6 +121,7 @@ export const pushResources = async (
           );
           printer.error(err.message);
         }
+        await reportRunner(context);
         throw err;
       }
     }
