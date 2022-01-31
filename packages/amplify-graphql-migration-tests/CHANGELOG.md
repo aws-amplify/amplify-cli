@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.23](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.2.22...amplify-graphql-migration-tests@2.2.23) (2022-01-31)
+
+
+
+## 7.6.14 (2022-01-28)
+
+**Note:** Version bump only for package amplify-graphql-migration-tests
+
+
+
+
+
 ## [2.2.22](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.2.21...amplify-graphql-migration-tests@2.2.22) (2022-01-27)
 
 **Note:** Version bump only for package amplify-graphql-migration-tests
