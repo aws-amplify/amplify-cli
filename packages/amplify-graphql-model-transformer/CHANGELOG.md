@@ -3,6 +3,87 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.13.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.10.8...@aws-amplify/graphql-model-transformer@0.13.0) (2022-01-31)
+
+
+
+## 7.6.14 (2022-01-28)
+
+
+### Features
+
+* `[@maps](https://github.com/maps)To` directive to enable renaming models while retaining data ([#9340](https://github.com/aws-amplify/amplify-cli/issues/9340)) ([aedf45d](https://github.com/aws-amplify/amplify-cli/commit/aedf45d9237812d71bb8b56164efe0222ad3d534))
+
+
+
+
+
+## [0.10.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.10.7...@aws-amplify/graphql-model-transformer@0.10.8) (2022-01-27)
+
+**Note:** Version bump only for package @aws-amplify/graphql-model-transformer
+
+
+
+
+
+## [0.10.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.10.6...@aws-amplify/graphql-model-transformer@0.10.7) (2022-01-20)
+
+**Note:** Version bump only for package @aws-amplify/graphql-model-transformer
+
+
+
+
+
+## [0.10.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.10.5...@aws-amplify/graphql-model-transformer@0.10.6) (2022-01-13)
+
+
+### Bug Fixes
+
+* clean up missing and unused GraphQL v2 dependencies ([#9486](https://github.com/aws-amplify/amplify-cli/issues/9486)) ([a6ca44e](https://github.com/aws-amplify/amplify-cli/commit/a6ca44e6ea0ec0a70b648e399fc3e849ccc2a7c9))
+* use StackMapping for V2 resolvers ([#9238](https://github.com/aws-amplify/amplify-cli/issues/9238)) ([d354e78](https://github.com/aws-amplify/amplify-cli/commit/d354e78dd1e253d9572da3b08a4d8883e2fe673e))
+
+
+
+
+
+## [0.10.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.10.3...@aws-amplify/graphql-model-transformer@0.10.5) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** add id field to update input objects ([#9276](https://github.com/aws-amplify/amplify-cli/issues/9276)) ([45cd973](https://github.com/aws-amplify/amplify-cli/commit/45cd9736b5fc09d78a3f445f62fc2a971c11fec7))
+* **graphql:** correct typo filterExpression on v2 resolvers ([#9412](https://github.com/aws-amplify/amplify-cli/issues/9412)) ([71bf468](https://github.com/aws-amplify/amplify-cli/commit/71bf4688952a5f43640297bf31ea9c59d1c679c9))
+* make update input id field required ([#9452](https://github.com/aws-amplify/amplify-cli/issues/9452)) ([345fe28](https://github.com/aws-amplify/amplify-cli/commit/345fe28a60bbf1de32496430e38e25463a77e96c))
+
+
+
+
+
+## [0.10.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.10.2...@aws-amplify/graphql-model-transformer@0.10.3) (2021-12-21)
+
+
+### Bug Fixes
+
+* generate list types will nullable elements ([#9310](https://github.com/aws-amplify/amplify-cli/issues/9310)) ([e972956](https://github.com/aws-amplify/amplify-cli/commit/e9729565fef2ac7df51f7fc7f345da536f385ac1))
+* **graphql-model-transformer:** [@aws](https://github.com/aws)_lambda GQL transformer pass through directive list ([#9231](https://github.com/aws-amplify/amplify-cli/issues/9231)) ([25f0c9d](https://github.com/aws-amplify/amplify-cli/commit/25f0c9d6d8735bd7f44a70de52b462826aabd8ed))
+* handle strings as custom subscription names ([#9210](https://github.com/aws-amplify/amplify-cli/issues/9210)) ([7b068c6](https://github.com/aws-amplify/amplify-cli/commit/7b068c6318b3f9934e5fc1d8e9a142dc31fb5fc1))
+
+
+
+
+
+## [0.10.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.10.1...@aws-amplify/graphql-model-transformer@0.10.2) (2021-12-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-model-transformer
+
+
+
+
+
 ## [0.10.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.10.0...@aws-amplify/graphql-model-transformer@0.10.1) (2021-12-03)
 
 **Note:** Version bump only for package @aws-amplify/graphql-model-transformer

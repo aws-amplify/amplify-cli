@@ -277,7 +277,7 @@ module.exports = {
     '__e2e__',
     'coverage',
 
-    '/packages/amplify-graphql-types-generator/test', // Not linting tests yet
+
     'amplify-e2e-tests', // Not linting test projects yet
     'graphql-transformers-e2e-tests', // Not linting test projects yet
     'amplify-velocity-template', // Exclude for now as this was existing code before
@@ -302,11 +302,9 @@ module.exports = {
     '/packages/amplify-cli-core/lib',
     '/packages/amplify-cli/lib',
     '/packages/amplify-cli-logger/lib',
-    '/packages/amplify-codegen-appsync-model-plugin/lib',
     '/packages/amplify-e2e-core/lib',
     '/packages/amplify-function-plugin-interface/lib',
-    '/packages/amplify-graphql-docs-generator/lib',
-    '/packages/amplify-graphql-types-generator/lib',
+    '/packages/amplify-graphql-schema-test-library/lib',
     '/packages/amplify-headless-interface/lib',
     '/packages/amplify-migration-tests/lib',
     '/packages/amplify-prompts/lib',
@@ -320,6 +318,7 @@ module.exports = {
     '/packages/graphql-transformer-*/lib',
     '/packages/amplify-headless-interface/lib',
     '/packages/amplify-util-headless-input/lib',
+    '/packages/amplify-util-uibuilder/lib',
     '/packages/amplify-graphql-*transformer*/lib',
     '/packages/amplify-provider-awscloudformation/lib',
     '/packages/amplify-console-integration-tests/lib',

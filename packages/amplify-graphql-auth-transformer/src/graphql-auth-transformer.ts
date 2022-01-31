@@ -54,6 +54,7 @@ import {
   NONE_DS,
   hasRelationalDirective,
   getTable,
+  getPartitionKey,
   getRelationalPrimaryMap,
   getReadRolesForField,
 } from './utils';
@@ -350,7 +351,7 @@ Static group authorization should perform as expected.`,
           this.protectFieldResolver(context, def, modelName, field.name.value, allowedRoles);
         }
       }
-      if (errorFields.length > 0 && modelNameConfig.subscriptions.level === SubscriptionLevel.on) {
+      if (errorFields.length > 0 && modelNameConfig.subscriptions?.level === SubscriptionLevel.on) {
         throw new InvalidDirectiveError(
           `Because "${def.name.value}" has a field-level authorization rule and subscriptions are enabled,` +
             ` you need to either apply field-level authorization rules to all required fields where all rules have read access ${JSON.stringify(
@@ -468,8 +469,17 @@ Static group authorization should perform as expected.`,
   ): void => {
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     const roleDefinitions = acm.getRolesPerOperation('read').map(r => this.roleMap.get(r)!);
-    const primaryFields = getTable(ctx, def).keySchema.map(att => att.attributeName);
-    const authExpression = generateAuthExpressionForQueries(this.configuredAuthProviders, roleDefinitions, def.fields ?? [], primaryFields);
+    const tableKeySchema = getTable(ctx, def).keySchema;
+    const primaryFields = tableKeySchema.map(att => att.attributeName);
+    const primaryKey = getPartitionKey(tableKeySchema);
+    const authExpression = generateAuthExpressionForQueries(
+      this.configuredAuthProviders,
+      roleDefinitions,
+      def.fields ?? [],
+      primaryFields,
+      false,
+      primaryKey,
+    );
     resolver.addToSlot(
       'auth',
       MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
@@ -486,6 +496,7 @@ Static group authorization should perform as expected.`,
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     const roleDefinitions = acm.getRolesPerOperation('read').map(r => this.roleMap.get(r)!);
     let primaryFields: Array<string>;
+    let partitionKey: string;
     const table = getTable(ctx, def);
     try {
       if (indexName) {
@@ -494,6 +505,7 @@ Static group authorization should perform as expected.`,
           .keySchema.map((att: any) => att.attributeName);
       } else {
         primaryFields = table.keySchema.map((att: any) => att.attributeName);
+        partitionKey = getPartitionKey(table.keySchema);
       }
     } catch (err) {
       throw new InvalidDirectiveError(`Could not fetch keySchema for ${def.name.value}.`);
@@ -504,6 +516,7 @@ Static group authorization should perform as expected.`,
       def.fields ?? [],
       primaryFields,
       !!indexName,
+      partitionKey,
     );
     resolver.addToSlot(
       'auth',
@@ -538,7 +551,7 @@ Static group authorization should perform as expected.`,
     // in the request we then add the rules of the related type
     if (fieldRoles) {
       const roleDefinitions = fieldRoles.map(r => this.roleMap.get(r)!);
-      const hasSubsEnabled = this.modelDirectiveConfig.get(typeName)!.subscriptions.level === 'on';
+      const hasSubsEnabled = this.modelDirectiveConfig.get(typeName)!.subscriptions?.level === 'on';
       relatedAuthExpression = setDeniedFieldFlag('Mutation', hasSubsEnabled) + '\n' + relatedAuthExpression;
       fieldAuthExpression = generateAuthExpressionForField(this.configuredAuthProviders, roleDefinitions, def.fields ?? []);
     }
@@ -600,11 +613,10 @@ Static group authorization should perform as expected.`,
   ): void => {
     const acmFields = acm.getResources();
     const modelFields = def.fields ?? [];
-    const name = acm.getName();
     // only add readonly fields if they exist
     const allowedAggFields = modelFields.map(f => f.name.value).filter(f => !acmFields.includes(f));
     let leastAllowedFields = acmFields;
-    const resolver = ctx.resolvers.getResolver('Search', toUpper(name)) as TransformerResolverProvider;
+    const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     // to protect search and aggregation queries we need to collect all the roles which can query
     // and the allowed fields to run field auth on aggregation queries
     const readRoleDefinitions = acm.getRolesPerOperation('read').map(role => {
@@ -655,7 +667,7 @@ Static group authorization should perform as expected.`,
     if (ctx.api.host.hasResolver(typeName, fieldName)) {
       // TODO: move pipeline resolvers created in the api host to the resolver manager
       const fieldResolver = ctx.api.host.getResolver(typeName, fieldName) as any;
-      const fieldAuthExpression = generateAuthExpressionForField(this.configuredAuthProviders, roleDefinitions, []);
+      const fieldAuthExpression = generateAuthExpressionForField(this.configuredAuthProviders, roleDefinitions, [], fieldName);
       if (!ctx.api.host.hasDataSource(NONE_DS)) {
         ctx.api.host.addNoneDataSource(NONE_DS);
       }
@@ -668,8 +680,13 @@ Static group authorization should perform as expected.`,
       );
       (fieldResolver.pipelineConfig.functions as string[]).unshift(authFunction.functionId);
     } else {
-      const fieldAuthExpression = generateAuthExpressionForField(this.configuredAuthProviders, roleDefinitions, def.fields ?? []);
-      const subsEnabled = hasModelDirective ? this.modelDirectiveConfig.get(typeName)!.subscriptions.level === 'on' : false;
+      const fieldAuthExpression = generateAuthExpressionForField(
+        this.configuredAuthProviders,
+        roleDefinitions,
+        def.fields ?? [],
+        fieldName,
+      );
+      const subsEnabled = hasModelDirective ? this.modelDirectiveConfig.get(typeName)!.subscriptions?.level === 'on' : false;
       const fieldResponse = generateFieldAuthResponse('Mutation', fieldName, subsEnabled);
       const resolver = ctx.resolvers.addResolver(
         typeName,

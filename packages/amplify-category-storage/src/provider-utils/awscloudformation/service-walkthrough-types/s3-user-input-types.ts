@@ -58,7 +58,7 @@ export interface S3UserInputTriggerFunctionParams{
     triggerFunction : string;
     permissions : S3PermissionType[];
     triggerEvents : S3TriggerEventType[];
-    triggerPrefix : S3TriggerPrefixType[];
+    triggerPrefix? : S3TriggerPrefixType[];
     //note:- this can be extended to add events/filters
 }
 

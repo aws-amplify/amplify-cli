@@ -3,6 +3,66 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.8.8...@aws-amplify/graphql-http-transformer@0.8.9) (2022-01-31)
+
+**Note:** Version bump only for package @aws-amplify/graphql-http-transformer
+
+
+
+
+
+## [0.8.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.8.7...@aws-amplify/graphql-http-transformer@0.8.8) (2022-01-27)
+
+**Note:** Version bump only for package @aws-amplify/graphql-http-transformer
+
+
+
+
+
+## [0.8.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.8.6...@aws-amplify/graphql-http-transformer@0.8.7) (2022-01-20)
+
+**Note:** Version bump only for package @aws-amplify/graphql-http-transformer
+
+
+
+
+
+## [0.8.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.8.5...@aws-amplify/graphql-http-transformer@0.8.6) (2022-01-13)
+
+**Note:** Version bump only for package @aws-amplify/graphql-http-transformer
+
+
+
+
+
+## [0.8.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.8.3...@aws-amplify/graphql-http-transformer@0.8.5) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+**Note:** Version bump only for package @aws-amplify/graphql-http-transformer
+
+
+
+
+
+## [0.8.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.8.2...@aws-amplify/graphql-http-transformer@0.8.3) (2021-12-21)
+
+**Note:** Version bump only for package @aws-amplify/graphql-http-transformer
+
+
+
+
+
+## [0.8.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.8.1...@aws-amplify/graphql-http-transformer@0.8.2) (2021-12-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-http-transformer
+
+
+
+
+
 ## [0.8.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.8.0...@aws-amplify/graphql-http-transformer@0.8.1) (2021-12-03)
 
 **Note:** Version bump only for package @aws-amplify/graphql-http-transformer

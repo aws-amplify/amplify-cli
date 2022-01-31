@@ -5,6 +5,24 @@ const fs = require('fs-extra');
 const graphQLConfig = require('graphql-config');
 const amplifyConfigHelper = require('./amplify-config-helper');
 
+const AMPLIFY_RESERVED_EXPORT_KEYS = [
+  // cognito
+  'Auth',
+  'CredentialsProvider',
+  'CognitoUserPool',
+  'GoogleSignIn',
+  'FacebookSignIn',
+  // s3
+  'S3TransferUtility',
+  // Analytics
+  'PinpointAnalytics',
+  'PinpointTargeting',
+  // Others
+  'DynamoDBObjectMapper',
+  'AppSync',
+  'Lex',
+  'Sumerian',
+];
 function deleteAmplifyConfig(context) {
   const srcDirPath = getSrcDir(context);
   // delete aws configuration and amplify configuration
@@ -142,11 +160,13 @@ function getCurrentAWSConfig(context) {
 
 function getCustomConfigs(cloudAWSConfig, currentAWSConfig) {
   const customConfigs = {};
-  Object.keys(currentAWSConfig).forEach(key => {
-    if (!cloudAWSConfig[key]) {
-      customConfigs[key] = currentAWSConfig[key];
-    }
-  });
+  Object.keys(currentAWSConfig)
+    .filter(k => !AMPLIFY_RESERVED_EXPORT_KEYS.includes(k))
+    .forEach(key => {
+      if (!cloudAWSConfig[key]) {
+        customConfigs[key] = currentAWSConfig[key];
+      }
+    });
   return customConfigs;
 }
 

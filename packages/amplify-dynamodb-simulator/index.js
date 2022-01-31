@@ -1,5 +1,5 @@
 const path = require('path');
-const e2p = require('event-to-promise');
+const { fromEvent } = require('promise-toolbox');
 const fs = require('fs-extra');
 const waitPort = require('wait-port');
 const detectPort = require('detect-port');
@@ -49,7 +49,7 @@ class Emulator {
       return this.proc.exitCode;
     }
     this.proc.kill();
-    return e2p(this.proc, 'exit');
+    return fromEvent(this.proc, 'exit');
   }
 }
 

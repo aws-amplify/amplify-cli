@@ -9,6 +9,7 @@ import {
   FieldWrapper,
   InputObjectDefinitionWrapper,
   ObjectDefinitionWrapper,
+  getFieldNameFor,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncDataSourceType,
@@ -48,7 +49,6 @@ import {
   makeNonNullType,
   makeValueNode,
   ModelResourceIDs,
-  plurality,
   ResolverResourceIDs,
   ResourceConstants,
   SyncResourceIDs,
@@ -227,26 +227,39 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const directiveWrapped: DirectiveWrapper = new DirectiveWrapper(directive);
     const options = directiveWrapped.getArguments({
       queries: {
-        get: toCamelCase(['get', typeName]),
-        list: toCamelCase(['list', plurality(typeName, true)]),
-        ...(ctx.isProjectUsingDataStore() ? { sync: toCamelCase(['sync', plurality(typeName, true)]) } : undefined),
+        get: getFieldNameFor('get', typeName),
+        list: getFieldNameFor('list', typeName),
+        ...(ctx.isProjectUsingDataStore() ? { sync: getFieldNameFor('sync', typeName) } : undefined),
       },
       mutations: {
-        create: toCamelCase(['create', typeName]),
-        update: toCamelCase(['update', typeName]),
-        delete: toCamelCase(['delete', typeName]),
+        create: getFieldNameFor('create', typeName),
+        update: getFieldNameFor('update', typeName),
+        delete: getFieldNameFor('delete', typeName),
       },
       subscriptions: {
         level: SubscriptionLevel.on,
-        onCreate: [this.ensureValidSubscriptionName(toCamelCase(['onCreate', typeName]))],
-        onDelete: [this.ensureValidSubscriptionName(toCamelCase(['onDelete', typeName]))],
-        onUpdate: [this.ensureValidSubscriptionName(toCamelCase(['onUpdate', typeName]))],
+        onCreate: [getFieldNameFor('onCreate', typeName)],
+        onDelete: [getFieldNameFor('onDelete', typeName)],
+        onUpdate: [getFieldNameFor('onUpdate', typeName)],
       },
       timestamps: {
         createdAt: 'createdAt',
         updatedAt: 'updatedAt',
       },
     });
+
+    if (options.subscriptions?.onCreate && !Array.isArray(options.subscriptions.onCreate)) {
+      options.subscriptions.onCreate = [options.subscriptions.onCreate];
+    }
+
+    if (options.subscriptions?.onDelete && !Array.isArray(options.subscriptions.onDelete)) {
+      options.subscriptions.onDelete = [options.subscriptions.onDelete];
+    }
+
+    if (options.subscriptions?.onUpdate && !Array.isArray(options.subscriptions.onUpdate)) {
+      options.subscriptions.onUpdate = [options.subscriptions.onUpdate];
+    }
+
     this.modelDirectiveConfig.set(typeName, options);
     this.typesWithModelDirective.add(typeName);
   };
@@ -311,8 +324,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     for (let type of this.typesWithModelDirective) {
       const def = context.output.getObject(type)!;
       // This name is used by the mock functionality. Changing this can break mock.
-      const tableLogicalName = `${def!.name.value}Table`;
-      const stack = context.stackManager.getStackFor(tableLogicalName, def!.name.value);
+      const tableBaseName = context.resourceHelper.getModelNameMapping(def!.name.value);
+      const tableLogicalName = ModelResourceIDs.ModelTableResourceID(tableBaseName);
+      const stack = context.stackManager.getStackFor(tableLogicalName, tableBaseName);
 
       this.createModelTable(stack, def!, context);
 
@@ -341,7 +355,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
             `${query.typeName}.${query.fieldName}.{slotName}.{slotIndex}.req.vtl`,
           ),
         );
-        resolver.mapToStack(stack);
+        resolver.mapToStack(context.stackManager.getStackFor(query.resolverLogicalId, def!.name.value));
         context.resolvers.addResolver(query.typeName, query.fieldName, resolver);
       }
 
@@ -368,7 +382,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
             `${mutation.typeName}.${mutation.fieldName}.{slotName}.{slotIndex}.req.vtl`,
           ),
         );
-        resolver.mapToStack(stack);
+        resolver.mapToStack(context.stackManager.getStackFor(mutation.resolverLogicalId, def!.name.value));
         context.resolvers.addResolver(mutation.typeName, mutation.fieldName, resolver);
       }
 
@@ -416,7 +430,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
               `${subscription.typeName}.${subscription.fieldName}.{slotName}.{slotIndex}.req.vtl`,
             ),
           );
-          resolver.mapToStack(stack);
+          resolver.mapToStack(context.stackManager.getStackFor(subscription.resolverLogicalId, def!.name.value));
           context.resolvers.addResolver(subscription.typeName, subscription.fieldName, resolver);
         }
       }
@@ -1136,8 +1150,8 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   };
 
   private createModelTable(stack: cdk.Stack, def: ObjectTypeDefinitionNode, context: TransformerContextProvider) {
-    const tableLogicalName = `${def!.name.value}Table`;
-    const tableName = context.resourceHelper.generateResourceName(def!.name.value);
+    const tableLogicalName = ModelResourceIDs.ModelTableResourceID(def!.name.value);
+    const tableName = context.resourceHelper.generateTableName(def!.name.value);
 
     // Add parameters.
     const env = context.stackManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
@@ -1244,7 +1258,8 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     });
 
     const role = this.createIAMRole(context, def, stack, tableName);
-    this.createModelTableDataSource(def, context, table, stack, role);
+    const tableDataSourceLogicalName = `${def!.name.value}Table`;
+    this.createModelTableDataSource(def, context, table, stack, role, tableDataSourceLogicalName);
   }
 
   private createModelTableDataSource(
@@ -1253,13 +1268,13 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     table: Table,
     stack: cdk.Stack,
     role: iam.Role,
+    dataSourceLogicalName: string,
   ) {
-    const tableLogicalName = `${def!.name.value}Table`;
     const datasourceRoleLogicalID = ModelResourceIDs.ModelTableDataSourceID(def!.name.value);
     const dataSource = context.api.host.addDynamoDbDataSource(
       datasourceRoleLogicalID,
       table,
-      { name: tableLogicalName, serviceRole: role },
+      { name: dataSourceLogicalName, serviceRole: role },
       stack,
     );
 
@@ -1269,7 +1284,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     if (context.isProjectUsingDataStore()) {
       const datasourceDynamoDb = cfnDataSource.dynamoDbConfig as any;
       datasourceDynamoDb.deltaSyncConfig = {
-        deltaSyncTableName: context.resourceHelper.generateResourceName(SyncResourceIDs.syncTableName),
+        deltaSyncTableName: context.resourceHelper.generateTableName(SyncResourceIDs.syncTableName),
         deltaSyncTableTtl: '30',
         baseTableTtl: '43200',
       };
@@ -1296,7 +1311,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
     });
 
-    const amplifyDataStoreTableName = context.resourceHelper.generateResourceName(SyncResourceIDs.syncTableName);
+    const amplifyDataStoreTableName = context.resourceHelper.generateTableName(SyncResourceIDs.syncTableName);
     role.attachInlinePolicy(
       new iam.Policy(stack, 'DynamoDBAccess', {
         statements: [

@@ -107,7 +107,7 @@ export const getRelationalPrimaryMap = (
         ? (getTable(ctx, relatedModel)
             .globalSecondaryIndexes.find((gsi: any) => gsi.indexName === args.indexName)
             .keySchema.map((att: any) => att.attributeName) as Array<string>)
-        : (getTable(ctx, relatedModel).keySchema.map((att: any) => att.attributeName) as Array<string>);
+        : getKeyFields(ctx, relatedModel);
       relatedTable.forEach((att, idx) => {
         primaryFieldMap.set(att, {
           claim: fields[idx] ? 'source' : 'args',
@@ -121,8 +121,7 @@ export const getRelationalPrimaryMap = (
     const args = directiveWrapped.getArguments({
       fields: [toCamelCase([def.name.value, field.name.value, 'id'])],
     });
-    // get related types keyschema
-    const relatedPrimaryFields = getTable(ctx, relatedModel).keySchema.map((att: any) => att.attributeName) as Array<string>;
+    const relatedPrimaryFields = getKeyFields(ctx, relatedModel);
     // the fields provided by the directive (implicit/explicit) need to match the total amount of fields used for the primary key in the related table
     // otherwise the get request is incomplete
     if (args.fields.length !== relatedPrimaryFields.length) {
@@ -152,6 +151,14 @@ export const getTable = (ctx: TransformerContextProvider, def: ObjectTypeDefinit
   } catch (err) {
     throw new TransformerContractError(`Could not load primary fields of @model: ${def.name.value}`);
   }
+};
+
+/**
+ *
+ * given the keySchema from a DynamoDBDataSource it will return the parititonKey
+ */
+export const getPartitionKey = (ks: any): string => {
+  return ks.find((att: any) => att.keyType === 'HASH')!.attributeName;
 };
 
 export const extendTypeWithDirectives = (
@@ -341,4 +348,15 @@ const ensureValidSubscriptionName = (name: string): string => {
   if (name.length <= 50) return name;
 
   return name.slice(0, 45) + md5(name).slice(0, 5);
+};
+
+const getKeyFields = (ctx: TransformerContextProvider, model: ObjectTypeDefinitionNode): Array<string> => {
+  const table = getTable(ctx, model);
+  const hashKeyField = table.keySchema.find(f => f.keyType === 'HASH').attributeName;
+  const sortKeyFields = table.keySchema.find(f => f.keyType === 'RANGE')?.attributeName.split('#');
+  const keyFields = [hashKeyField];
+  if (sortKeyFields) {
+    keyFields.push(...sortKeyFields);
+  }
+  return keyFields;
 };

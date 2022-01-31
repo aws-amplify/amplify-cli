@@ -239,8 +239,8 @@ export function updateMutationConditionInput(
 
 function createHashField(config: PrimaryKeyDirectiveConfiguration | IndexDirectiveConfiguration): InputValueDefinitionNode {
   const { field } = config;
-
-  return makeInputValueDefinition(field.name.value, makeNamedType(getBaseType(field.type)));
+  const type = "queryField" in config ? makeNonNullType(makeNamedType(getBaseType(field.type))) : makeNamedType(getBaseType(field.type));
+  return makeInputValueDefinition(field.name.value, type);
 }
 
 function createSimpleSortField(
@@ -368,7 +368,7 @@ function generateModelXConnectionType(config: IndexDirectiveConfiguration, ctx: 
   let connectionTypeExtension = blankObjectExtension(tableXConnectionName);
 
   connectionTypeExtension = extensionWithFields(connectionTypeExtension, [
-    makeField('items', [], makeNonNullType(makeListType(makeNonNullType(makeNamedType(object.name.value))))),
+    makeField('items', [], makeNonNullType(makeListType(makeNamedType(object.name.value)))),
   ]);
   connectionTypeExtension = extensionWithFields(connectionTypeExtension, [makeField('nextToken', [], makeNamedType('String'))]);
 

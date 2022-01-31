@@ -219,7 +219,7 @@ export async function getResourcesForCfn(context, resourceName, resourcePolicy, 
   if (resourceName.endsWith(appsyncTableSuffix)) {
     resourcePolicy.providerPlugin = 'awscloudformation';
     resourcePolicy.service = 'DynamoDB';
-    const dynamoDBTableARNComponents = constructCFModelTableArnComponent(appsyncResourceName, resourceName, appsyncTableSuffix);
+    const dynamoDBTableARNComponents = await constructCFModelTableArnComponent(appsyncResourceName, resourceName, appsyncTableSuffix);
 
     // have to override the policy resource as Fn::ImportValue is needed to extract DynamoDB table arn
     resourcePolicy.customPolicyResource = [
@@ -241,19 +241,29 @@ export async function getResourcesForCfn(context, resourceName, resourcePolicy, 
   );
 
   // replace resource attributes for @model-backed dynamoDB tables
-  const cfnResources = resourceAttributes.map(attributes =>
-    attributes.resourceName && attributes.resourceName.endsWith(appsyncTableSuffix)
-      ? {
-          resourceName: appsyncResourceName,
-          category: 'api',
-          attributes: ['GraphQLAPIIdOutput'],
-          needsAdditionalDynamoDBResourceProps: true,
-          // data to pass so we construct additional resourceProps for lambda envvar for @model back dynamoDB tables
-          _modelName: attributes.resourceName.replace(`:${appsyncTableSuffix}`, 'Table'),
-          _cfJoinComponentTableName: constructCFModelTableNameComponent(appsyncResourceName, attributes.resourceName, appsyncTableSuffix),
-          _cfJoinComponentTableArn: constructCFModelTableArnComponent(appsyncResourceName, attributes.resourceName, appsyncTableSuffix),
-        }
-      : attributes,
+  const cfnResources = await Promise.all<$TSAny>(
+    resourceAttributes.map(async attributes =>
+      attributes.resourceName?.endsWith(appsyncTableSuffix)
+        ? {
+            resourceName: appsyncResourceName,
+            category: 'api',
+            attributes: ['GraphQLAPIIdOutput'],
+            needsAdditionalDynamoDBResourceProps: true,
+            // data to pass so we construct additional resourceProps for lambda envvar for @model back dynamoDB tables
+            _modelName: attributes.resourceName.replace(`:${appsyncTableSuffix}`, 'Table'),
+            _cfJoinComponentTableName: await constructCFModelTableNameComponent(
+              appsyncResourceName,
+              attributes.resourceName,
+              appsyncTableSuffix,
+            ),
+            _cfJoinComponentTableArn: await constructCFModelTableArnComponent(
+              appsyncResourceName,
+              attributes.resourceName,
+              appsyncTableSuffix,
+            ),
+          }
+        : attributes,
+    ),
   );
   return { permissionPolicies, cfnResources };
 }

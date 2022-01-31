@@ -12,7 +12,7 @@ import { printer } from 'amplify-prompts';
 import { copySync, ensureDirSync, existsSync } from 'fs-extra';
 import { get } from 'lodash';
 import * as path from 'path';
-import uuid from 'uuid';
+import { v4 as uuid } from 'uuid';
 import { adminAuthAssetRoot, cfnTemplateRoot, privateKeys, triggerRoot } from '../constants';
 import { CognitoConfiguration } from '../service-walkthrough-types/awsCognito-user-input-types';
 import { AuthTriggerConfig, AuthTriggerConnection } from '../service-walkthrough-types/cognito-user-input-types';

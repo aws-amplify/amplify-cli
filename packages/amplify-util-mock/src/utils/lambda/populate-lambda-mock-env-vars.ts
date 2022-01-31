@@ -43,7 +43,7 @@ const getStaticDefaults = (): Record<string, string> => ({
   AWS_LAMBDA_FUNCTION_VERSION: '1',
   AWS_LAMBDA_INITIALIZATION_TYPE: 'on-demand',
   AWS_LAMBDA_LOG_GROUP_NAME: 'amplify-mock-aws-lambda-log-group-name',
-  AWS_LAMBDA_LOG_GROUP_STREAM_NAME: 'amplify-mock-aws-lambda-log-group-stream-name',
+  AWS_LAMBDA_LOG_STREAM_NAME: 'amplify-mock-aws-lambda-log-stream-name',
   TZ: 'UTC',
 });
 

@@ -3,6 +3,50 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@3.2.13...amplify-category-hosting@3.2.14) (2022-01-27)
+
+**Note:** Version bump only for package amplify-category-hosting
+
+
+
+
+
+## [3.2.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@3.2.12...amplify-category-hosting@3.2.13) (2022-01-23)
+
+**Note:** Version bump only for package amplify-category-hosting
+
+
+
+
+
+## [3.2.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@3.2.10...amplify-category-hosting@3.2.12) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+**Note:** Version bump only for package amplify-category-hosting
+
+
+
+
+
+## [3.2.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@3.2.9...amplify-category-hosting@3.2.10) (2021-12-21)
+
+**Note:** Version bump only for package amplify-category-hosting
+
+
+
+
+
+## [3.2.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@3.2.8...amplify-category-hosting@3.2.9) (2021-12-17)
+
+**Note:** Version bump only for package amplify-category-hosting
+
+
+
+
+
 ## [3.2.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@3.2.7...amplify-category-hosting@3.2.8) (2021-12-02)
 
 **Note:** Version bump only for package amplify-category-hosting

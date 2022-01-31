@@ -847,9 +847,18 @@ function replaceUpdateInput(
   input: InputObjectTypeDefinitionNode,
   keyFields: string[],
 ): InputObjectTypeDefinitionNode {
+  const schemaHasIdField = definition.fields!.some(f => f.name.value === 'id');
+  const inputFields = input.fields!.filter(f => {
+    if (!schemaHasIdField && f.name.value === 'id') {
+      return false;
+    }
+
+    return true;
+  });
+
   return {
     ...input,
-    fields: input.fields.map(f => {
+    fields: inputFields.map(f => {
       if (keyFields.find(k => k === f.name.value)) {
         return makeInputValueDefinition(f.name.value, wrapNonNull(withNamedNodeNamed(f.type, getBaseType(f.type))));
       }

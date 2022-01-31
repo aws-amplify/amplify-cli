@@ -1,6 +1,6 @@
 import { $TSContext, $TSObject, stateManager, pathManager, JSONUtilities } from 'amplify-cli-core';
 import { DataSourceIntendedUse, PlaceIndexParameters } from '../../service-utils/placeIndexParams';
-import { AccessType, DataProvider, PricingPlan } from '../../service-utils/resourceParams';
+import { AccessType, DataProvider } from '../../service-utils/resourceParams';
 import { provider, ServiceName } from '../../service-utils/constants';
 import { category } from '../../constants';
 import { printer, prompter } from 'amplify-prompts';
@@ -16,8 +16,7 @@ describe('Search walkthrough works as expected', () => {
     const secondaryPlaceIndexName = 'secondaryindex12345';
     const mockMapResource = {
         resourceName: 'map12345',
-        service: ServiceName.Map,
-        pricingPlan: PricingPlan.MobileAssetTracking
+        service: ServiceName.Map
     };
     const mockPlaceIndexResource = {
         resourceName: mockPlaceIndexName,
@@ -34,9 +33,8 @@ describe('Search walkthrough works as expected', () => {
             projectName: projectName
         },
         name: mockPlaceIndexName,
-        dataProvider: DataProvider.Esri,
+        dataProvider: DataProvider.Here,
         dataSourceIntendedUse: DataSourceIntendedUse.SingleUse,
-        pricingPlan: PricingPlan.MobileAssetTracking,
         accessType: AccessType.AuthorizedUsers,
         isDefault: false
     };
@@ -194,7 +192,7 @@ describe('Search walkthrough works as expected', () => {
 
         expect({ ...mockPlaceIndexParameters, isDefault: true }).toMatchObject(indexParams);
         // place index default setting question is skipped
-        expect(prompter.yesOrNo).toBeCalledTimes(2);
+        expect(prompter.yesOrNo).toBeCalledTimes(1);
         expect(prompter.yesOrNo).toBeCalledWith('Do you want to configure advanced settings?', false);
     });
 

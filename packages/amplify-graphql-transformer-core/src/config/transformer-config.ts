@@ -62,4 +62,7 @@ export interface TransformConfig {
       [option: string]: any;
     };
   };
+
+  // Custom transformer plugins
+  transformers?: string[];
 }

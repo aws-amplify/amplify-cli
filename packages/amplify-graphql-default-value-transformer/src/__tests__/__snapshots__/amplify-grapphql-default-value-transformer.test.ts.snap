@@ -101,7 +101,7 @@ enum ModelSortDirection {
 }
 
 type ModelTestConnection {
-  items: [Test!]!
+  items: [Test]!
   nextToken: String
 }
 
@@ -274,7 +274,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post!]!
+  items: [Post]!
   nextToken: String
 }
 

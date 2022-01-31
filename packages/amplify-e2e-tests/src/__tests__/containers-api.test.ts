@@ -32,9 +32,10 @@ describe('amplify api add', () => {
 
   it('init project, enable containers and add multicontainer api', async () => {
     const envName = 'devtest';
+    const apiName = 'containersimpletest';
     await initJSProjectWithProfile(projRoot, { name: 'multicontainer', envName });
     await setupAmplifyProject(projRoot);
-    await addRestContainerApi(projRoot);
+    await addRestContainerApi(projRoot, { apiName });
     await amplifyPushWithoutCodegen(projRoot);
     const awsExports: any = getAWSExports(projRoot).default;
     const {
@@ -49,13 +50,15 @@ describe('amplify api add', () => {
 
   it('init project, enable containers and add multicontainer api push, edit and push', async () => {
     const envName = 'devtest';
+    const apiName = 'containermodifyapi';
     await initJSProjectWithProfile(projRoot, { name: 'multicontainer', envName });
     await setupAmplifyProject(projRoot);
-    await addRestContainerApi(projRoot);
+    await addRestContainerApi(projRoot, { apiName });
     await amplifyPushWithoutCodegen(projRoot);
     const meta = await getProjectMeta(projRoot);
-    const apiName = Object.keys(meta['api'])[0];
-    modifyRestAPI(projRoot, apiName);
+    const api = Object.keys(meta['api'])[0];
+    modifyRestAPI(projRoot, api);
     await amplifyPushWithoutCodegen(projRoot);
   });
+
 });

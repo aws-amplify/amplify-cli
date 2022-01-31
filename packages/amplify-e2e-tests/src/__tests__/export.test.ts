@@ -52,10 +52,27 @@ describe('amplify export backend', () => {
 });
 
 function matchTemplates(template: any, exporttemplate: any) {
+  // matches count and parameters
   expect(Object.keys(template.Parameters)).toEqual(Object.keys(exporttemplate.Parameters))
-  expect(Object.keys(template.Resources)).toEqual(Object.keys(exporttemplate.Resources))
+
+  // matches the types and counts of resources since logical ids not idempotent
+  expect(getTypeCountMap(template.Resources)).toEqual(getTypeCountMap(exporttemplate.Resources));
+
+  // matches count and name of outputs
   expect(Object.keys(template.Outputs)).toEqual(Object.keys(exporttemplate.Outputs))
-  
+}
+
+function getTypeCountMap(resources: { [key: string] : any }) : Map<string, number> {
+  return Object.keys(resources).reduce((map, key) => {
+    const resourceType = resources[key].Type;
+    if(map.has(resourceType)){
+      map.set(resourceType, map.get(resourceType) + 1);
+    } else {
+      map.set(resourceType, 1);
+    }
+
+    return map;
+  }, new Map<string, number>());
 }
 
 function getTemplateForMapping(mapping:  { category: string; resourceName: string; service: string }, buildFolder: string) : any {

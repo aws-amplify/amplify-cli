@@ -1,8 +1,8 @@
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { ConflictHandlerType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { Kind, parse } from 'graphql';
-import { HasOneTransformer } from '..';
+import { HasManyTransformer, HasOneTransformer } from '..';
 
 test('fails if @hasOne was used on an object that is not a model type', () => {
   const inputSchema = `
@@ -349,4 +349,120 @@ test('creates has one relationship with composite sort key.', () => {
   expect(updateInput.fields.find((f: any) => f.name.value === 'id')).toBeDefined();
   expect(updateInput.fields.find((f: any) => f.name.value === 'email')).toBeDefined();
   expect(updateInput.fields.find((f: any) => f.name.value === 'name')).toBeDefined();
+});
+
+test('@hasOne and @hasMany can point at each other if DataStore is not enabled', () => {
+  const inputSchema = `
+    type Blog @model {
+      id: ID!
+      posts: [Post] @hasMany
+    }
+
+    type Post @model {
+      id: ID!
+      blog: Blog @hasOne
+    }`;
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new HasOneTransformer(), new HasManyTransformer()],
+  });
+
+  const out = transformer.transform(inputSchema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+});
+
+test('@hasOne and @hasOne can point at each other if DataStore is not enabled', () => {
+  const inputSchema = `
+    type Blog @model {
+      id: ID!
+      posts: Post @hasOne
+    }
+
+    type Post @model {
+      id: ID!
+      blog: Blog @hasOne
+    }`;
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new HasOneTransformer()],
+  });
+
+  const out = transformer.transform(inputSchema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+});
+
+test('@hasOne and @hasMany cannot point at each other if DataStore is enabled', () => {
+  const inputSchema = `
+    type Blog @model {
+      id: ID!
+      posts: [Post] @hasMany
+    }
+
+    type Post @model {
+      id: ID!
+      blog: Blog @hasOne
+    }`;
+  const transformer = new GraphQLTransform({
+    resolverConfig: {
+      project: {
+        ConflictDetection: 'VERSION',
+        ConflictHandler: ConflictHandlerType.AUTOMERGE,
+      },
+    },
+    transformers: [new ModelTransformer(), new HasOneTransformer(), new HasManyTransformer()],
+  });
+
+  expect(() => transformer.transform(inputSchema)).toThrowError(
+    `Post and Blog cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead.`,
+  );
+});
+
+test('@hasOne and @hasOne cannot point at each other if DataStore is enabled', () => {
+  const inputSchema = `
+    type Blog @model {
+      id: ID!
+      posts: Post @hasOne
+    }
+
+    type Post @model {
+      id: ID!
+      blog: Blog @hasOne
+    }`;
+  const transformer = new GraphQLTransform({
+    resolverConfig: {
+      project: {
+        ConflictDetection: 'VERSION',
+        ConflictHandler: ConflictHandlerType.AUTOMERGE,
+      },
+    },
+    transformers: [new ModelTransformer(), new HasOneTransformer()],
+  });
+
+  expect(() => transformer.transform(inputSchema)).toThrowError(
+    `Blog and Post cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead.`,
+  );
+});
+
+test('recursive @hasOne relationships are supported if DataStore is enabled', () => {
+  const inputSchema = `
+    type Blog @model {
+      id: ID!
+      posts: Blog @hasOne
+    }`;
+  const transformer = new GraphQLTransform({
+    resolverConfig: {
+      project: {
+        ConflictDetection: 'VERSION',
+        ConflictHandler: ConflictHandlerType.AUTOMERGE,
+      },
+    },
+    transformers: [new ModelTransformer(), new HasOneTransformer()],
+  });
+
+  const out = transformer.transform(inputSchema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
 });

@@ -3,6 +3,58 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.13](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.3.12...@aws-amplify/amplify-category-custom@2.3.13) (2022-01-27)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-custom
+
+
+
+
+
+## [2.3.12](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.3.11...@aws-amplify/amplify-category-custom@2.3.12) (2022-01-23)
+
+
+### Bug Fixes
+
+* populating custom resource stack with account and region placeholders ([#9361](https://github.com/aws-amplify/amplify-cli/issues/9361)) ([5ebb953](https://github.com/aws-amplify/amplify-cli/commit/5ebb953b9378ed2a11cdf04abc3ea8299c4411f5)), closes [#9360](https://github.com/aws-amplify/amplify-cli/issues/9360)
+
+
+### Reverts
+
+* Revert "fix: populating custom resource stack with account and region placeholders (#9361)" (#9501) ([af79a31](https://github.com/aws-amplify/amplify-cli/commit/af79a31facb887b61bfb52ec9265441ea7a4177c)), closes [#9361](https://github.com/aws-amplify/amplify-cli/issues/9361) [#9501](https://github.com/aws-amplify/amplify-cli/issues/9501)
+
+
+
+
+
+## [2.3.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.3.9...@aws-amplify/amplify-category-custom@2.3.11) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-custom
+
+
+
+
+
+## [2.3.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.3.8...@aws-amplify/amplify-category-custom@2.3.9) (2021-12-21)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-custom
+
+
+
+
+
+## [2.3.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.3.7...@aws-amplify/amplify-category-custom@2.3.8) (2021-12-17)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-custom
+
+
+
+
+
 ## [2.3.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.3.6...@aws-amplify/amplify-category-custom@2.3.7) (2021-12-02)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-custom

@@ -5,9 +5,9 @@ import { DataSourceIntendedUse, PlaceIndexParameters } from '../service-utils/pl
 import { apiDocs, ServiceName } from '../service-utils/constants';
 import { $TSContext } from 'amplify-cli-core';
 import { getCurrentPlaceIndexParameters } from '../service-utils/placeIndexUtils';
-import { getGeoServiceMeta, updateDefaultResource, geoServiceExists, getGeoPricingPlan, checkGeoResourceExists } from '../service-utils/resourceUtils';
-import { resourceAccessWalkthrough, pricingPlanWalkthrough, dataProviderWalkthrough, getServiceFriendlyName, defaultResourceQuestion } from './resourceWalkthrough';
-import { DataProvider, PricingPlan } from '../service-utils/resourceParams';
+import { getGeoServiceMeta, updateDefaultResource, checkGeoResourceExists } from '../service-utils/resourceUtils';
+import { resourceAccessWalkthrough, dataProviderWalkthrough, getServiceFriendlyName, defaultResourceQuestion } from './resourceWalkthrough';
+import { DataProvider } from '../service-utils/resourceParams';
 import { printer, formatter, prompter, alphanumeric } from 'amplify-prompts';
 
 const searchServiceFriendlyName = getServiceFriendlyName(ServiceName.PlaceIndex);
@@ -25,11 +25,6 @@ export const createPlaceIndexWalkthrough = async (
 
   // get the access
   parameters = merge(parameters, await resourceAccessWalkthrough(parameters, ServiceName.PlaceIndex));
-
-  // initiate pricing plan walkthrough if this is the first Map/Place Index added
-  if (!(await geoServiceExists(ServiceName.Map)) && !(await geoServiceExists(ServiceName.PlaceIndex))) {
-    parameters = merge(parameters, await pricingPlanWalkthrough(context, parameters));
-  }
 
   // optional advanced walkthrough
   parameters = merge(parameters, await placeIndexAdvancedWalkthrough(context, parameters));
@@ -66,14 +61,8 @@ export const placeIndexNameWalkthrough = async (context: any): Promise<Partial<P
 };
 
 export const placeIndexAdvancedWalkthrough = async (context: $TSContext, parameters: Partial<PlaceIndexParameters>): Promise<Partial<PlaceIndexParameters>> => {
-    // const includePricingPlan = await geoServiceExists(ServiceName.Map) || await geoServiceExists(ServiceName.PlaceIndex);
-    const includePricingPlan = false;
-    const currentPricingPlan = parameters.pricingPlan ? parameters.pricingPlan : await getGeoPricingPlan();
-    const advancedSettingOptions: string[] = ['Search data provider (default: Esri)'];
+    const advancedSettingOptions: string[] = ['Search data provider (default: HERE)'];
     advancedSettingOptions.push('Search result storage location (default: no result storage)');
-    if (includePricingPlan) {
-        advancedSettingOptions.push(`Search pricing plan (current: ${currentPricingPlan})`);
-    }
     printer.info('Available advanced settings:');
     formatter.list(advancedSettingOptions);
     printer.blankLine();
@@ -82,32 +71,18 @@ export const placeIndexAdvancedWalkthrough = async (context: $TSContext, paramet
         // get the place index data provider
         parameters = merge(parameters, await dataProviderWalkthrough(parameters, ServiceName.PlaceIndex));
 
-        if (includePricingPlan) {
-            // get the pricing plan
-            parameters = merge(parameters, await pricingPlanWalkthrough(context, parameters));
-        }
-        else {
-            parameters.pricingPlan = currentPricingPlan;
-        }
-
-        // get the place index data storage option if the pricing plan is RequestBasedUsage
-        if (parameters.pricingPlan === PricingPlan.RequestBasedUsage) {
-          parameters = merge(parameters, await placeIndexDataStorageWalkthrough(context, parameters));
-        }
-        else {
-          parameters.dataSourceIntendedUse = DataSourceIntendedUse.SingleUse;
-        }
+        // get the data storage setting
+        parameters = merge(parameters, await placeIndexDataStorageWalkthrough(parameters));
     }
     else {
-      parameters.dataProvider = DataProvider.Esri;
+      parameters.dataProvider = DataProvider.Here;
       parameters.dataSourceIntendedUse = DataSourceIntendedUse.SingleUse;
-      parameters.pricingPlan = currentPricingPlan;
     }
 
     return parameters;
 };
 
-export const placeIndexDataStorageWalkthrough = async (context:$TSContext, parameters: Partial<PlaceIndexParameters>): Promise<Partial<PlaceIndexParameters>> => {
+export const placeIndexDataStorageWalkthrough = async (parameters: Partial<PlaceIndexParameters>): Promise<Partial<PlaceIndexParameters>> => {
   const areResultsStored = await prompter.yesOrNo(
     `Do you want to cache or store the results of search operations? Refer ${apiDocs.dataSourceUsage}`,
     parameters.dataSourceIntendedUse === DataSourceIntendedUse.Storage

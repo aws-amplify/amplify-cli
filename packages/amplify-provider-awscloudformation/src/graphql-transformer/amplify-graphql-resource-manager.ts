@@ -109,7 +109,7 @@ export class GraphQLResourceManager {
     if (!this.rebuildAllTables) {
       this.gsiManagement(gqlDiff.diff, gqlDiff.current, gqlDiff.next);
     }
-    this.tableRecreationManagement(gqlDiff.current, gqlDiff.next);
+    this.tableRecreationManagement(gqlDiff.current);
     return await this.getDeploymentSteps();
   };
 
@@ -273,7 +273,7 @@ export class GraphQLResourceManager {
     }
   };
 
-  private tableRecreationManagement = (currentState: DiffableProject, nextState: DiffableProject) => {
+  private tableRecreationManagement = (currentState: DiffableProject) => {
     this.getTablesBeingReplaced().forEach(tableMeta => {
       const ddbStack = this.getStack(tableMeta.stackName, currentState);
       this.dropTemplateResources(ddbStack);
@@ -281,7 +281,6 @@ export class GraphQLResourceManager {
       // clear any other states created by GSI updates as dropping and recreating supercedes those changes
       this.clearTemplateState(tableMeta.stackName);
       this.templateState.add(tableMeta.stackName, JSONUtilities.stringify(ddbStack));
-      this.templateState.add(tableMeta.stackName, JSONUtilities.stringify(this.getStack(tableMeta.stackName, nextState)));
     });
   };
 

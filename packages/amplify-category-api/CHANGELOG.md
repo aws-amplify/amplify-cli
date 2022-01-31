@@ -3,6 +3,108 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.2.4...@aws-amplify/amplify-category-api@1.2.5) (2022-01-31)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+
+
+
+
+## [1.2.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.2.3...@aws-amplify/amplify-category-api@1.2.4) (2022-01-27)
+
+
+### Bug Fixes
+
+* handle auth and api dependency in state files correctly ([#9528](https://github.com/aws-amplify/amplify-cli/issues/9528)) ([edced3e](https://github.com/aws-amplify/amplify-cli/commit/edced3ef76da02bd269cf85c7287bfb74875d967)), closes [#9341](https://github.com/aws-amplify/amplify-cli/issues/9341)
+* rest api override CloudFormation parameters ([#9325](https://github.com/aws-amplify/amplify-cli/issues/9325)) ([3338cfa](https://github.com/aws-amplify/amplify-cli/commit/3338cfaee199f83d2e270f12bb41983c067f42fe)), closes [#9221](https://github.com/aws-amplify/amplify-cli/issues/9221)
+
+
+### Reverts
+
+* Revert "fix: handle auth and api dependency in state files correctly (#9528)" (#9602) ([b99b08e](https://github.com/aws-amplify/amplify-cli/commit/b99b08e187be8f2f77761ccdd1092a0cba86a051)), closes [#9528](https://github.com/aws-amplify/amplify-cli/issues/9528) [#9602](https://github.com/aws-amplify/amplify-cli/issues/9602)
+
+
+
+
+
+## [1.2.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.2.2...@aws-amplify/amplify-category-api@1.2.3) (2022-01-23)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+
+
+
+
+## [1.2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.2.1...@aws-amplify/amplify-category-api@1.2.2) (2022-01-20)
+
+
+### Bug Fixes
+
+* **api:** container rest api push treats incorrect initial push behavior ([#9556](https://github.com/aws-amplify/amplify-cli/issues/9556)) ([e1fadef](https://github.com/aws-amplify/amplify-cli/commit/e1fadef8152608fc1a9a088b065af95846fe0efc))
+
+
+
+
+
+## [1.2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.2.0...@aws-amplify/amplify-category-api@1.2.1) (2022-01-20)
+
+
+### Bug Fixes
+
+* **api:** container secrets pickup correct environment values ([#9513](https://github.com/aws-amplify/amplify-cli/issues/9513)) ([9986bd6](https://github.com/aws-amplify/amplify-cli/commit/9986bd6e0885609a04080f617db6c7331fb76f6a))
+
+
+
+
+
+# [1.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.1.10...@aws-amplify/amplify-category-api@1.2.0) (2022-01-13)
+
+
+### Features
+
+* **amplify-category-api:** enable default 4xx and 5xx api gateway cors response ([#9158](https://github.com/aws-amplify/amplify-cli/issues/9158)) ([b35cbda](https://github.com/aws-amplify/amplify-cli/commit/b35cbda1a567142b72dc068081abd8fb65860074)), closes [#5183](https://github.com/aws-amplify/amplify-cli/issues/5183)
+
+
+
+
+
+## [1.1.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.1.8...@aws-amplify/amplify-category-api@1.1.10) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* update dep and use node test environment ([#9434](https://github.com/aws-amplify/amplify-cli/issues/9434)) ([1691327](https://github.com/aws-amplify/amplify-cli/commit/1691327740ea40d0ebb974e6aeabc64c62b288ef))
+
+
+
+
+
+## [1.1.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.1.7...@aws-amplify/amplify-category-api@1.1.8) (2021-12-21)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+
+
+
+
+## [1.1.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.1.6...@aws-amplify/amplify-category-api@1.1.7) (2021-12-17)
+
+
+### Bug Fixes
+
+* add missing salt to deployment logicalId ([#9234](https://github.com/aws-amplify/amplify-cli/issues/9234)) ([d4109e2](https://github.com/aws-amplify/amplify-cli/commit/d4109e2e8a18e2e9b787a97b1508efb1bf97fac9))
+* add-graphql-datasource command ([#9288](https://github.com/aws-amplify/amplify-cli/issues/9288)) ([f4cb8cb](https://github.com/aws-amplify/amplify-cli/commit/f4cb8cb2acdbe3024ff26385395860127fa78b5c))
+* improve api migration logic, update migration prompt ([#9267](https://github.com/aws-amplify/amplify-cli/issues/9267)) ([beed4f9](https://github.com/aws-amplify/amplify-cli/commit/beed4f9aa77bfbbb92ff0cb504e8019ce01e48f6))
+
+
+
+
+
 ## [1.1.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.1.5...@aws-amplify/amplify-category-api@1.1.6) (2021-12-03)
 
 

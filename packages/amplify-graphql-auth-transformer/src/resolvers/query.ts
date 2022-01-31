@@ -114,6 +114,7 @@ const generateAuthOnModelQueryExpression = (
   roles: Array<RoleDefinition>,
   primaryFields: Array<string>,
   isIndexQuery = false,
+  primaryKey: string | undefined = undefined,
 ): Array<Expression> => {
   const modelQueryExpression = new Array<Expression>();
   const primaryRoles = roles.filter(r => primaryFields.includes(r.entity));
@@ -204,22 +205,42 @@ const generateAuthOnModelQueryExpression = (
         );
       }
       modelQueryExpression.push(
+        // if no args where provided to the listX operation
+        // @model will create a scan operation we add these primary fields in the auth filter
         iff(
-          and([
-            not(ref(IS_AUTHORIZED_FLAG)),
-            methodCall(ref('util.isNull'), ref('ctx.stash.authFilter')),
-            not(ref('primaryFieldMap.isEmpty()')),
-          ]),
-          compoundExpression([
-            set(ref('modelQueryExpression'), ref('ctx.stash.modelQueryExpression')),
-            forEach(ref('entry'), ref('primaryFieldMap.entrySet()'), [
-              set(ref('modelQueryExpression.expression'), str('${modelQueryExpression.expression} AND #${entry.key} = :${entry.value}')),
-              qref(ref('modelQueryExpression.expressionNames.put("#${entry.key}", $entry.key)')),
-              qref(ref('modelQueryExpression.expressionValues.put(":${entry.value}", $util.dynamodb.toDynamoDB($entry.value))')),
+          and([not(ref(IS_AUTHORIZED_FLAG)), not(ref('primaryFieldMap.isEmpty()'))]),
+          ifElse(
+            methodCall(ref('util.isNull'), ref(`ctx.args.${primaryKey}`)),
+            compoundExpression([
+              set(ref('authFilter'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.get("authFilter").get("or")'), list([]))),
+              forEach(ref('entry'), ref('primaryFieldMap.entrySet()'), [
+                // we are using the filter map so we can test this assignment in mock
+                set(ref('filterMap'), obj({})),
+                ifElse(
+                  methodCall(ref('util.isList'), ref('entry.value')),
+                  qref(methodCall(ref('filterMap.put'), ref('entry.key'), raw('{ "in": $entry.value }'))),
+                  qref(methodCall(ref('filterMap.put'), ref('entry.key'), raw('{ "eq": $entry.value }'))),
+                ),
+                qref(methodCall(ref('authFilter.add'), ref('filterMap'))),
+              ]),
+              qref(methodCall(ref('ctx.stash.put'), str('authFilter'), raw('{ "or": $authFilter }'))),
             ]),
-            qref(methodCall(ref('ctx.stash.put'), str('modelQueryExpression'), ref('modelQueryExpression'))),
-            set(ref(IS_AUTHORIZED_FLAG), bool(true)),
-          ]),
+            // if authfilter is null, the partitionkey is provided in the args, and there is still values in the fieldmap then we are dealing with sortKeys
+            // we need to append the sort keys to the model query expression
+            iff(
+              methodCall(ref('util.isNull'), ref('ctx.stash.authFilter')),
+              compoundExpression([
+                set(ref('modelQueryExpression'), ref('ctx.stash.modelQueryExpression')),
+                forEach(ref('entry'), ref('primaryFieldMap.entrySet()'), [
+                  set(ref('modelQueryExpression.expression'), str('${modelQueryExpression.expression} AND #${entry.key} = :${entry.key}')),
+                  qref(ref('modelQueryExpression.expressionNames.put("#${entry.key}", $entry.key)')),
+                  qref(ref('modelQueryExpression.expressionValues.put(":${entry.key}", $util.dynamodb.toDynamoDB($entry.value))')),
+                ]),
+                qref(methodCall(ref('ctx.stash.put'), str('modelQueryExpression'), ref('modelQueryExpression'))),
+                set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+              ]),
+            ),
+          ),
         ),
       );
     }
@@ -270,6 +291,14 @@ const generateAuthFilter = (roles: Array<RoleDefinition>, fields: ReadonlyArray<
           ...[
             set(ref(`role${idx}`), getIdentityClaimExp(str(role.claim!), list([]))),
             iff(
+              methodCall(ref(`util.isString`), ref(`role${idx}`)),
+              ifElse(
+                methodCall(ref(`util.isList`), methodCall(ref(`util.parseJson`), ref(`role${idx}`))),
+                set(ref(`role${idx}`), methodCall(ref(`util.parseJson`), ref(`role${idx}`))),
+                set(ref(`role${idx}`), list([ref(`role${idx}`)])),
+              ),
+            ),
+            iff(
               not(methodCall(ref(`role${idx}.isEmpty`))),
               qref(methodCall(ref('authFilter.add'), raw(`{ "${role.entity}": { "in": $role${idx} } }`))),
             ),
@@ -311,6 +340,7 @@ export const generateAuthExpressionForQueries = (
   fields: ReadonlyArray<FieldDefinitionNode>,
   primaryFields: Array<string>,
   isIndexQuery = false,
+  primaryKey: string | undefined = undefined,
 ): string => {
   const { cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles } =
     splitRoles(roles);
@@ -336,7 +366,7 @@ export const generateAuthExpressionForQueries = (
         compoundExpression([
           ...generateStaticRoleExpression(cognitoStaticRoles),
           ...generateAuthFilter(getNonPrimaryFieldRoles(cognitoDynamicRoles), fields),
-          ...generateAuthOnModelQueryExpression(cognitoDynamicRoles, primaryFields, isIndexQuery),
+          ...generateAuthOnModelQueryExpression(cognitoDynamicRoles, primaryFields, isIndexQuery, primaryKey),
         ]),
       ),
     );
@@ -348,7 +378,7 @@ export const generateAuthExpressionForQueries = (
         compoundExpression([
           ...generateStaticRoleExpression(oidcStaticRoles),
           ...generateAuthFilter(getNonPrimaryFieldRoles(oidcDynamicRoles), fields),
-          ...generateAuthOnModelQueryExpression(oidcDynamicRoles, primaryFields, isIndexQuery),
+          ...generateAuthOnModelQueryExpression(oidcDynamicRoles, primaryFields, isIndexQuery, primaryKey),
         ]),
       ),
     );

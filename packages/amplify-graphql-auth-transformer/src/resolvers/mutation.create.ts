@@ -17,6 +17,7 @@ import {
   equals,
   str,
   printBlock,
+  ifElse,
 } from 'graphql-mapping-template';
 import {
   getOwnerClaim,
@@ -193,6 +194,14 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>, fields: ReadonlyArr
               methodCall(ref('util.defaultIfNull'), ref(`ctx.args.input.${role.entity!}`), entityIsList ? list([]) : nul()),
             ),
             set(ref(`groupClaim${idx}`), getIdentityClaimExp(str(role.claim!), list([]))),
+            iff(
+              methodCall(ref(`util.isString`), ref(`groupClaim${idx}`)),
+              ifElse(
+                methodCall(ref(`util.isList`), methodCall(ref(`util.parseJson`), ref(`groupClaim${idx}`))),
+                set(ref(`groupClaim${idx}`), methodCall(ref(`util.parseJson`), ref(`groupClaim${idx}`))),
+                set(ref(`groupClaim${idx}`), list([ref(`groupClaim${idx}`)])),
+              ),
+            ),
             set(ref(`groupAllowedFields${idx}`), raw(JSON.stringify(role.allowedFields))),
             forEach(ref('userGroup'), ref(`groupClaim${idx}`), [
               iff(

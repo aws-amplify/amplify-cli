@@ -4,6 +4,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { $TSObject, JSONUtilities } from 'amplify-cli-core';
 import _ from 'lodash';
+import { v4 as uuid } from 'uuid';
 import { ADMIN_QUERIES_NAME } from '../../../category-constants';
 import { AmplifyApigwResourceTemplate, ApigwInputs, ApigwPathPolicy, Path, PermissionSetting } from './types';
 
@@ -11,20 +12,23 @@ const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'API Gateway Resource for AWS Amplify CLI';
 
 export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigwResourceTemplate {
-  _scope: cdk.Construct;
-  restApi!: apigw.CfnRestApi;
+  restApi: apigw.CfnRestApi;
   deploymentResource: apigw.CfnDeployment;
-  _lambdaPermission: lambda.CfnPermission;
-  _props: ApigwInputs;
   paths: $TSObject;
   policies: { [pathName: string]: ApigwPathPolicy };
-  _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
+  private _scope: cdk.Construct;
+  private _props: ApigwInputs;
+  private _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
+  private _cfnParameterValues: $TSObject;
+  private _seenLogicalIds: Set<string>;
 
   constructor(scope: cdk.Construct, id: string, props: ApigwInputs) {
     super(scope, id, undefined);
     this._scope = scope;
     this._props = props;
     this.paths = {};
+    this._seenLogicalIds = new Set();
+    this._cfnParameterValues = {};
     this.policies = {};
     this.templateOptions.templateFormatVersion = CFN_TEMPLATE_FORMAT_VERSION;
     this.templateOptions.description = ROOT_CFN_DESCRIPTION;
@@ -36,6 +40,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
    * @param logicalId
    */
   addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void {
+    this.validateLogicalId(logicalId);
     new cdk.CfnOutput(this, logicalId, props);
   }
 
@@ -45,6 +50,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
    * @param logicalId
    */
   addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void {
+    this.validateLogicalId(logicalId);
     new cdk.CfnMapping(this, logicalId, props);
   }
 
@@ -54,6 +60,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
    * @param logicalId
    */
   addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void {
+    this.validateLogicalId(logicalId);
     new cdk.CfnCondition(this, logicalId, props);
   }
 
@@ -63,6 +70,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
    * @param logicalId
    */
   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void {
+    this.validateLogicalId(logicalId);
     new cdk.CfnResource(this, logicalId, props);
   }
 
@@ -71,7 +79,8 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
    * @param props
    * @param logicalId
    */
-  addLambdaPermissionCfnResource(props: lambda.CfnPermissionProps, logicalId: string): void {
+  addCfnLambdaPermissionResource(props: lambda.CfnPermissionProps, logicalId: string): void {
+    this.validateLogicalId(logicalId);
     new lambda.CfnPermission(this, logicalId, props);
   }
 
@@ -79,12 +88,25 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
    *
    * @param props
    * @param logicalId
+   * @param value optional value which will be stored in parameters.json
    */
-  addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
-    if (this._cfnParameterMap.has(logicalId)) {
+  addCfnParameter(props: cdk.CfnParameterProps, logicalId: string, value?: string | $TSObject): void {
+    this.validateLogicalId(logicalId);
+    this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
+    if (value !== undefined) {
+      this._cfnParameterValues[logicalId] = value;
+    }
+  }
+
+  getCfnParameterValues() {
+    return this._cfnParameterValues;
+  }
+
+  private validateLogicalId(logicalId: string): void {
+    if (this._seenLogicalIds.has(logicalId)) {
       throw new Error(`logical id "${logicalId}" already exists`);
     }
-    this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
+    this._seenLogicalIds.add(logicalId);
   }
 
   private _craftPolicyDocument(apiResourceName: string, pathName: string, supportedOperations: string[]) {
@@ -243,6 +265,16 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
         },
       },
     });
+    new apigw.CfnGatewayResponse(this, `${resourceName}Default4XXResponse`, {
+      responseType: 'DEFAULT_4XX',
+      restApiId: cdk.Fn.ref(resourceName),
+      responseParameters: defaultCorsGatewayResponseParams,
+    });
+    new apigw.CfnGatewayResponse(this, `${resourceName}Default5XXResponse`, {
+      responseType: 'DEFAULT_5XX',
+      restApiId: cdk.Fn.ref(resourceName),
+      responseParameters: defaultCorsGatewayResponseParams,
+    });
 
     this._setDeploymentResource(resourceName);
   };
@@ -262,7 +294,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
 
       if (!addedFunctionPermissions.has(path.lambdaFunction)) {
         addedFunctionPermissions.add(path.lambdaFunction);
-        this.addLambdaPermissionCfnResource(
+        this.addCfnLambdaPermissionResource(
           {
             functionName: cdk.Fn.ref(`function${path.lambdaFunction}Name`),
             action: 'lambda:InvokeFunction',
@@ -284,7 +316,8 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
   }
 
   private _setDeploymentResource = (resourceName: string) => {
-    this.deploymentResource = new apigw.CfnDeployment(this, `DeploymentAPIGW${resourceName}`, {
+    const [shortId] = uuid().split('-');
+    this.deploymentResource = new apigw.CfnDeployment(this, `DeploymentAPIGW${resourceName}${shortId}`, {
       description: 'The Development stage deployment of your API.',
       stageName: cdk.Fn.conditionIf('ShouldNotCreateEnvResources', 'Prod', cdk.Fn.ref('env')).toString(),
       restApiId: cdk.Fn.ref(resourceName),
@@ -453,6 +486,13 @@ const defaultCorsResponseObject = {
       "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
     'method.response.header.Access-Control-Allow-Origin': "'*'",
   },
+};
+
+const defaultCorsGatewayResponseParams = {
+  'gatewayresponse.header.Access-Control-Allow-Origin': "'*'",
+  'gatewayresponse.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+  'gatewayresponse.header.Access-Control-Allow-Methods': "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+  'gatewayresponse.header.Access-Control-Expose-Headers': "'Date,X-Amzn-ErrorType'",
 };
 
 const response200 = {

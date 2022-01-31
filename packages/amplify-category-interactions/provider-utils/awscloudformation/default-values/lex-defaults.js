@@ -2,7 +2,7 @@ const uuid = require('uuid');
 
 const getAllDefaults = project => {
   const name = project.projectConfig.projectName.toLowerCase().replace('-', '_');
-  const [shortId] = uuid().split('-');
+  const [shortId] = uuid.v4().split('-');
   const botName = `${name}_bot`;
   const authRoleName = {
     Ref: 'AuthRoleName',

@@ -45,7 +45,7 @@ const constructCFModelTableArnComponent_mock = constructCFModelTableArnComponent
 const appsyncResourceName = 'mock_api';
 const resourceName = 'storage';
 
-constructCFModelTableNameComponent_mock.mockImplementation(() => {
+constructCFModelTableNameComponent_mock.mockImplementation(async () => {
   return {
     'Fn::ImportValue': {
       'Fn::Sub': `\${api${appsyncResourceName}GraphQLAPIIdOutput}:GetAtt:${resourceName.replace(`:${appsyncTableSuffix}`, 'Table')}:Name`,
@@ -53,14 +53,14 @@ constructCFModelTableNameComponent_mock.mockImplementation(() => {
   };
 });
 
-constructCFModelTableArnComponent_mock.mockImplementation(() => {
+constructCFModelTableArnComponent_mock.mockImplementation(async () => {
   return [
     'arn:aws:dynamodb:',
     { Ref: 'aws_region' },
     ':',
     { Ref: 'aws_accountId' },
     ':table/',
-    constructCFModelTableNameComponent(appsyncResourceName, resourceName, appsyncTableSuffix),
+    await constructCFModelTableNameComponent(appsyncResourceName, resourceName, appsyncTableSuffix),
   ];
 });
 

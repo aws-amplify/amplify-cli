@@ -1,6 +1,11 @@
 import assert from 'assert';
-import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
-import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { getFieldNameFor, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
+import {
+  FieldMapEntry,
+  ResolverReferenceEntry,
+  TransformerContextProvider,
+  TransformerResourceHelperProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveNode, EnumTypeDefinitionNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode, StringValueNode } from 'graphql';
 import { getBaseType, isScalarOrEnum, toCamelCase } from 'graphql-transformer-common';
 import {
@@ -170,4 +175,144 @@ function getIndexName(directive: DirectiveNode): string | undefined {
 
 export function getConnectionAttributeName(type: string, field: string) {
   return toCamelCase([type, field, 'id']);
+}
+
+export function getBackendConnectionAttributeName(resourceHelper: TransformerResourceHelperProvider, type: string, field: string) {
+  return getConnectionAttributeName(resourceHelper.getModelNameMapping(type), field);
+}
+
+export function validateDisallowedDataStoreRelationships(
+  config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+) {
+  // If DataStore is enabled, the following scenario is not supported:
+  // Model A includes a @hasOne or @hasMany relationship with Model B, while
+  // Model B includes a @hasOne or @hasMany relationship back to Model A.
+
+  if (!ctx.isProjectUsingDataStore()) {
+    return;
+  }
+
+  const modelType = config.object.name.value;
+  const relatedType = ctx.output.getType(config.relatedType.name.value) as ObjectTypeDefinitionNode;
+  assert(relatedType);
+
+  // Recursive relationships on the same type are allowed.
+  if (modelType === relatedType.name.value) {
+    return;
+  }
+
+  const hasUnsupportedConnectionFields = relatedType.fields!.some(field => {
+    // If the related field has the same data type as this model, and @hasOne or @hasMany
+    // is present, then the connection is unsupported.
+    return (
+      getBaseType(field.type) === modelType &&
+      field.directives!.some(directive => {
+        return directive.name.value === 'hasOne' || directive.name.value === 'hasMany';
+      })
+    );
+  });
+
+  if (hasUnsupportedConnectionFields) {
+    throw new InvalidDirectiveError(
+      `${modelType} and ${relatedType.name.value} cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead. See https://docs.amplify.aws/cli/graphql/data-modeling/#belongs-to-relationship`,
+    );
+  }
+}
+
+type RegisterForeignKeyMappingParams = {
+  resourceHelper: TransformerResourceHelperProvider; // resourceHelper from the transformer context object
+  thisTypeName: string; // the "source type" of the relation
+  thisFieldName: string; // the field with the relational directive
+  relatedTypeName: string; // the related type
+};
+
+/**
+ * If thisTypeName maps to a different value, it registers the auto-generated foreign key fields to map to their original name
+ */
+export function registerHasOneForeignKeyMappings({
+  resourceHelper,
+  thisTypeName,
+  thisFieldName,
+  relatedTypeName,
+}: RegisterForeignKeyMappingParams) {
+  if (resourceHelper.isModelRenamed(thisTypeName)) {
+    const currAttrName = getConnectionAttributeName(thisTypeName, thisFieldName);
+    const origAttrName = getBackendConnectionAttributeName(resourceHelper, thisTypeName, thisFieldName);
+
+    const modelFieldMap = resourceHelper.getModelFieldMap(thisTypeName);
+    modelFieldMap.addMappedField({ currentFieldName: currAttrName, originalFieldName: origAttrName });
+
+    (['create', 'update', 'delete', 'get', 'list', 'sync'] as const).forEach(op => {
+      const opFieldName = getFieldNameFor(op, thisTypeName);
+      const opTypeName = op === 'create' || op === 'update' || op === 'delete' ? 'Mutation' : 'Query';
+      const opIsList = op === 'list' || op === 'sync';
+      modelFieldMap.addResolverReference({ typeName: opTypeName, fieldName: opFieldName, isList: opIsList });
+    });
+  }
+
+  // register that the related type is referenced by this hasOne field
+  // this is necessary because even if this model is not renamed, the related one could be and the field mappings would need to be applied
+  // on this resolver
+  resourceHelper
+    .getModelFieldMap(relatedTypeName)
+    .addResolverReference({ typeName: thisTypeName, fieldName: thisFieldName, isList: false });
+}
+
+/**
+ * This function is similar to registerHasOneForeignKeyMappings but subtly different
+ * Because hasMany creates a foreign key field on the related type, this function registers the mapping on the related type.
+ * It attaches a resolver reference to the hasMany field so the renamed foreign key is mapped when fetching the related object through the hasMany field
+ */
+export function registerHasManyForeignKeyMappings({
+  resourceHelper,
+  thisTypeName,
+  thisFieldName,
+  relatedTypeName,
+}: RegisterForeignKeyMappingParams) {
+  if (!resourceHelper.isModelRenamed(thisTypeName)) {
+    return;
+  }
+
+  const currAttrName = getConnectionAttributeName(thisTypeName, thisFieldName);
+  const origAttrName = getBackendConnectionAttributeName(resourceHelper, thisTypeName, thisFieldName);
+
+  const modelFieldMap = resourceHelper.getModelFieldMap(relatedTypeName);
+  modelFieldMap
+    .addMappedField({ currentFieldName: currAttrName, originalFieldName: origAttrName })
+    .addResolverReference({ typeName: thisTypeName, fieldName: thisFieldName, isList: true });
+
+  (['create', 'update', 'delete', 'get', 'list', 'sync'] as const).forEach(op => {
+    const opFieldName = getFieldNameFor(op, relatedTypeName);
+    const opTypeName = op === 'create' || op === 'update' || op === 'delete' ? 'Mutation' : 'Query';
+    const opIsList = op === 'list' || op === 'sync';
+
+    // registers field mappings for CRUD resolvers on related type
+    modelFieldMap.addResolverReference({ typeName: opTypeName, fieldName: opFieldName, isList: opIsList });
+  });
+}
+
+export type ManyToManyForeignKeyMappingParams = {
+  resourceHelper: TransformerResourceHelperProvider;
+  typeName: string;
+  referencedBy: ResolverReferenceEntry[];
+  fieldMap: FieldMapEntry[];
+};
+
+export function registerManyToManyForeignKeyMappings({
+  resourceHelper,
+  typeName,
+  referencedBy,
+  fieldMap,
+}: ManyToManyForeignKeyMappingParams) {
+  const modelFieldMap = resourceHelper.getModelFieldMap(typeName);
+  fieldMap.forEach(modelFieldMap.addMappedField);
+  referencedBy.forEach(modelFieldMap.addResolverReference);
+
+  (['create', 'update', 'delete', 'get', 'list', 'sync'] as const).forEach(op => {
+    const opFieldName = getFieldNameFor(op, typeName);
+    const opTypeName = op === 'create' || op === 'update' || op === 'delete' ? 'Mutation' : 'Query';
+    const opIsList = op === 'list' || op === 'sync';
+    modelFieldMap.addResolverReference({ typeName: opTypeName, fieldName: opFieldName, isList: opIsList });
+  });
 }
