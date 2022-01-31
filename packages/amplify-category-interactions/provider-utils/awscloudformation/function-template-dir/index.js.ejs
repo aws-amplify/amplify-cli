@@ -5,6 +5,11 @@ const lambdaClient = new aws.Lambda({ apiVersion: '2017-04-19' });
 exports.handler = function(event, context) {
     const lex = new aws.LexModelBuildingService({ apiVersion: '2017-04-19', region: event.ResourceProperties.lexRegion });
     if (event.RequestType == 'Delete') {
+        let botName = "<%- props.botName %>";
+        if(process.env.ENV && process.env.ENV !== "NONE") {
+            botName = botName + '_' + process.env.ENV;
+        }
+        lex.deleteBot({name: botName}).promise();
         response.send(event, context, response.SUCCESS);
         return;
     }
@@ -31,24 +36,24 @@ exports.handler = function(event, context) {
             "name": "<%- props.intents[i].intentName%>" + "_" + process.env.ENV,
             <% if(props.intents[i].confirmationQuestion) { %>
             "confirmationPrompt": {
-                "maxAttempts": 2, 
+                "maxAttempts": 2,
                 "messages": [
                     {
-                        "content": "<%- props.intents[i].confirmationQuestion %>", 
+                        "content": "<%- props.intents[i].confirmationQuestion %>",
                         "contentType": "PlainText"
                     }
                 ]
-            }, 
+            },
             <% } %>
             <% if(props.intents[i].cancelMessage) { %>
             "rejectionStatement": {
                 "messages": [
                     {
-                    "content": "<%- props.intents[i].cancelMessage %>", 
+                    "content": "<%- props.intents[i].cancelMessage %>",
                     "contentType": "PlainText"
                     }
                 ]
-            }, 
+            },
         <% } %>
             "sampleUtterances": [
             <% for(var j = 0; j < props.intents[i].utterances.length; j++) { %>
@@ -68,7 +73,7 @@ exports.handler = function(event, context) {
                     "messageVersion": "1.0",
                     "uri": "<%- props.intents[i].lambda.lambdaArn %>"
                 }
-            }, 
+            },
         <% } else { %>
             "fulfillmentActivity": {
                 "type": "ReturnIntent"
@@ -117,28 +122,28 @@ exports.handler = function(event, context) {
         "abortStatement": {
             "messages": [
                 {
-                    "content": "I don't understand. Can you try again?", 
+                    "content": "I don't understand. Can you try again?",
                     "contentType": "PlainText"
-                }, 
+                },
                 {
-                    "content": "I'm sorry, I don't understand.", 
+                    "content": "I'm sorry, I don't understand.",
                     "contentType": "PlainText"
                 }
             ]
-        }, 
+        },
         "clarificationPrompt": {
-            "maxAttempts": 3, 
+            "maxAttempts": 3,
             "messages": [
                 {
-                    "content": "I'm sorry, I didn't hear that. Can you repeat what you just said?", 
+                    "content": "I'm sorry, I didn't hear that. Can you repeat what you just said?",
                     "contentType": "PlainText"
-                }, 
+                },
                 {
-                    "content": "Can you say that again?", 
+                    "content": "Can you say that again?",
                     "contentType": "PlainText"
                 }
             ]
-        }, 
+        },
         <% if(props.outputVoice) { %>
         "voiceId": "<%- props.outputVoice %>",
         <% } %>
@@ -146,7 +151,7 @@ exports.handler = function(event, context) {
         "idleSessionTTLInSeconds": "<%- props.sessionTimeout*60 %>"
         <% } %>
     };
-    
+
     checkAndCreateLexServiceRole()
     .then(()=>{ return getSlotTypes(newSlotTypeParams, lex);})
     .then(()=>{ return putSlotTypes(newSlotTypeParams, lex);})
@@ -165,7 +170,7 @@ exports.handler = function(event, context) {
 };
 
 function checkAndCreateLexServiceRole() {
-    
+
     return checkIfLexServiceRoleExists()
     .then((roleExists) => {
         if(!roleExists) {
@@ -175,24 +180,24 @@ function checkAndCreateLexServiceRole() {
 }
 
 function createNewLexServiceRole() {
- 
-    // Lex service automatically creates the needed polcies and truust relationships   
+
+    // Lex service automatically creates the needed polcies and truust relationships
     const params = {
       AWSServiceName: 'lex.amazonaws.com',
       Description: 'Allows Amazon Lex to create and manage voice enabled bots on your behalf'
     };
-    
+
     return iam.createServiceLinkedRole(params).promise();
-    
+
 }
 
 function checkIfLexServiceRoleExists() {
     let rolePresent;
-    
+
     const params = {
         RoleName: "AWSServiceRoleForLexBots"
     };
-    
+
     return iam.getRole(params).promise()
     .then((result) => {
         rolePresent = true;
@@ -205,7 +210,7 @@ function checkIfLexServiceRoleExists() {
 }
 
 function getSlotTypes(newSlotTypeParams, lex){
-    const tasks = []; 
+    const tasks = [];
     newSlotTypeParams.forEach( slotType => {
         const params = {
             'name': slotType.name,
@@ -218,13 +223,13 @@ function getSlotTypes(newSlotTypeParams, lex){
             })
             .catch((err)=>{
             })
-        ); 
-    }); 
+        );
+    });
     return Promise.all(tasks);
 }
 
 function putSlotTypes(newSlotTypeParams, lex){
-    const tasks = []; 
+    const tasks = [];
     newSlotTypeParams.forEach( slotType => {
         tasks.push(
             lex.putSlotType(slotType).promise()
@@ -232,16 +237,16 @@ function putSlotTypes(newSlotTypeParams, lex){
                 console.log(data);
             })
             .catch((err)=>{
-                console.log(err); 
-                throw err; 
+                console.log(err);
+                throw err;
             })
         );
-    }); 
+    });
     return Promise.all(tasks);
 }
 
 function getIntents(intentParams, lex){
-    const tasks = []; 
+    const tasks = [];
     intentParams.forEach( intent => {
         const params = {
             'version': '$LATEST',
@@ -254,13 +259,13 @@ function getIntents(intentParams, lex){
             })
             .catch((err)=>{
             })
-        ); 
+        );
     });
     return Promise.all(tasks);
 }
 
 function putIntents(intentParams, lex){
-    const tasks = []; 
+    const tasks = [];
     intentParams.forEach( intent => {
         tasks.push(
             ensureLambdaFunctionAccess(intent)
@@ -272,20 +277,20 @@ function putIntents(intentParams, lex){
                 console.log(data);
             })
             .catch((err)=>{
-                console.log(err); 
-                throw err; 
+                console.log(err);
+                throw err;
             })
         );
-    }); 
+    });
     return Promise.all(tasks);
 }
 
 function ensureLambdaFunctionAccess(intent){
     if(intent.fulfillmentLambda){
-        const { 
+        const {
             region,
             accountId,
-            lambdaArn, 
+            lambdaArn,
             lambdaName
         } = intent.fulfillmentLambda;
 
@@ -300,11 +305,11 @@ function ensureLambdaFunctionAccess(intent){
         return lambdaClient.addPermission(params).promise()
                 .then((data)=>{
                     console.log(data);
-                    return data; 
+                    return data;
                 })
                 .catch((err)=>{
-                    console.log(err); 
-                    throw err; 
+                    console.log(err);
+                    throw err;
                 });
     }else{
         return Promise.resolve(undefined);
@@ -315,7 +320,7 @@ function getBot(botParams, lex){
     params = {
         'name': botParams.name,
         'versionOrAlias': '$LATEST'
-    }; 
+    };
     return  lex.getBot(params).promise()
             .then((data)=>{
                 botParams['checksum'] = data.checksum;
@@ -328,10 +333,10 @@ function putBot(botParams, lex){
     return lex.putBot(botParams).promise()
             .then((data)=>{
                 console.log(data);
-                return data; 
+                return data;
             })
             .catch((err)=>{
-                console.log(err); 
-                throw err; 
+                console.log(err);
+                throw err;
             });
 }
