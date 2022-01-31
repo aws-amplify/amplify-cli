@@ -1,8 +1,22 @@
+import { $TSContext, AmplifyCategories } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-import { categoryName } from '../../constants';
+import * as path from 'path';
 
-export const name = 'console'; // subcommand
+const subcommand = 'console';
 
-export async function run() {
-  printer.info(`to be implemented: ${categoryName} ${name}`);
-}
+export const name = subcommand;
+
+export const run = async (context: $TSContext) => {
+  const servicesMetadata = (await import(path.join('..', '..', 'provider-utils', 'supported-services'))).supportedServices;
+  const result = await context.amplify.serviceSelectionPrompt(context, AmplifyCategories.STORAGE, servicesMetadata);
+  try {
+    const providerController = await import(path.join('..', '..', 'provider-utils', result.providerName, 'index'));
+    if (!providerController) {
+      throw new Error(`Provider "${result.providerName}" is not configured for this category`);
+    }
+    return providerController.console(context, result.service);
+  } catch (err) {
+    printer.error('Error opening console.');
+    throw err;
+  }
+};

@@ -10,6 +10,7 @@ import {
   getMigrateResourceMessageForOverride,
   pathManager,
   stateManager,
+  open,
 } from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
@@ -766,4 +767,35 @@ export function getIAMPolicies(resourceName: $TSAny, crudOptions: $TSAny) {
   const attributes = ['BucketName'];
 
   return { policy, attributes };
+}
+
+export const openConsole = async (context?: $TSContext) => {
+  const amplifyMeta = stateManager.getMeta();
+  const bucketName = getS3BucketNameFromAmplifyMeta(amplifyMeta);
+
+  if (bucketName) {
+    let url = `https://s3.console.aws.amazon.com/s3/buckets/${bucketName}`;
+    open(url, { wait: false });
+    printer.info('Amazon S3 Console:');
+    printer.info(url, 'green');
+  } else {
+    printer.error('There are no Amazon S3 storage resources pushed to the cloud');
+  }
+};
+
+function getS3BucketNameFromAmplifyMeta(amplifyMeta: $TSMeta): string | null {
+  const s3Resources: $TSObject | undefined = getS3ResourcesFromAmplifyMeta(amplifyMeta);
+  if (s3Resources && Object.keys(s3Resources).length > 0) {
+    const s3Resource = Object.entries(Object.values(s3Resources)[0]);
+    for (const [s3PropertyKey, s3PropertyValue] of s3Resource) {
+      if (s3PropertyKey === 'output') {
+        for (const [outkey, outvalue] of Object.entries(s3PropertyValue as object)) {
+          if (typeof outvalue === 'string' && outkey === 'BucketName') {
+            return outvalue;
+          }
+        }
+      }
+    }
+  }
+  return null;
 }

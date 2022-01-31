@@ -5,6 +5,7 @@ import {
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import _ from 'lodash';
+import * as path from 'path';
 import { importDynamoDB, importedDynamoDBEnvInit } from './import/import-dynamodb';
 import { importedS3EnvInit, importS3 } from './import/import-s3';
 
@@ -163,4 +164,20 @@ const getHeadlessParams = (context: $TSContext) => {
   } catch (err) {
     throw new Error(`Failed to parse storage headless parameters: ${err}`);
   }
+}
+
+export async function console(context: $TSContext, service: string): Promise<void> {
+  const serviceMetadata = ((await import('../supported-services')) as $TSAny).supportedServices[service];
+  const { serviceWalkthroughFilename } = serviceMetadata;
+  const serviceWalkthroughSrc = path.join(__dirname, 'service-walkthroughs', serviceWalkthroughFilename);
+  const { openConsole } = await import(serviceWalkthroughSrc);
+
+  if (!openConsole) {
+    const errMessage = 'Opening console functionality not available for this option';
+    printer.error(errMessage);
+    await context.usageData.emitError(new NotImplementedError(errMessage));
+    return;
+  }
+
+  return openConsole(context);
 }
