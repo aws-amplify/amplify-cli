@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { ViewResourceTableParams, CLIParams, $TSAny, $TSContext, pathManager, stateManager, ApiCategoryFacade } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-
+import { run as reportRun } from './report';
 export const run = async (context: $TSContext) => {
   const cliParams: CLIParams = {
     cliCommand: context?.input?.command,
@@ -10,6 +10,7 @@ export const run = async (context: $TSContext) => {
     cliOptions: context?.input?.options,
   };
 
+  await reportRun(context);
   const view = new ViewResourceTableParams(cliParams);
   if (context?.input?.subCommands?.includes('help')) {
     context.print.info(view.getStyledHelp());
