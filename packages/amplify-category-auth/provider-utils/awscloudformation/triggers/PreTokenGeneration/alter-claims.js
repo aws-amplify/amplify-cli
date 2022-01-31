@@ -1,5 +1,5 @@
 /**
- * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
+ * @type {import('@types/aws-lambda').PreTokenGenerationTriggerHandler}
  */
 exports.handler = async event => {
   event.response = {

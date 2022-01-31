@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 /**
- * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
+ * @type {import('@types/aws-lambda').VerifyAuthChallengeResponseTriggerHandler}
  */
 exports.handler = async event => {
   const response = await axios.post(

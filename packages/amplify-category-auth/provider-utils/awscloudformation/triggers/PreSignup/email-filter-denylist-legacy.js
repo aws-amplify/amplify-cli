@@ -1,5 +1,5 @@
 /**
- * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
+ * @type {import('@types/aws-lambda').PreSignUpTriggerHandler}
  */
 exports.handler = async event => {
   // disallowed domains

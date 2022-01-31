@@ -5,7 +5,7 @@ const cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider({
 });
 
 /**
- * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
+ * @type {import('@types/aws-lambda').PostConfirmationTriggerHandler}
  */
 exports.handler = async event => {
   const groupParams = {
