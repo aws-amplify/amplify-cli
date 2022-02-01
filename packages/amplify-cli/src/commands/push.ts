@@ -15,6 +15,7 @@ import { printer, prompter } from 'amplify-prompts';
 import { collectDirectivesByTypeNames, readProjectConfiguration } from 'graphql-transformer-core';
 import path from 'path';
 import fs from 'fs-extra';
+import { notifyFieldAuthSecurityChange } from '../extensions/amplify-helpers/auth-notifications';
 
 const spinner = ora('');
 
@@ -43,6 +44,7 @@ async function syncCurrentCloudBackend(context: $TSContext) {
     });
 
     await notifySecurityEnhancement(context);
+    await notifyFieldAuthSecurityChange(context);
 
     spinner.start(`Fetching updates to backend environment: ${currentEnv} from the cloud.`);
     await sequential(pullCurrentCloudTasks);
