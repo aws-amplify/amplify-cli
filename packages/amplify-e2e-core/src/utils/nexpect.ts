@@ -385,11 +385,20 @@ function chain(context: Context): ExecutionContext {
       }
       if (code !== 0) {
         if (code === EXIT_CODE_TIMEOUT) {
+          const recordings = context.process?.getRecordingFrames() || [];
+          const lastScreen = recordings.length
+            ? recordings
+                .filter(f => f[1] === 'o')
+                .map(f => f[2])
+                .slice(-10)
+                .join('\n')
+            : 'No output';
           const err = new Error(
             `Killed the process as no output receive for ${context.noOutputTimeout / 1000} Sec. The no output timeout is set to ${
               context.noOutputTimeout / 1000
-            }`,
+            } seconds.\n\nLast 10 lines:👇🏽👇🏽👇🏽👇🏽\n\n\n\n\n${lastScreen}\n\n\n👆🏼👆🏼👆🏼👆🏼`,
           );
+          err.stack = undefined;
           return onError(err, true);
         } else if (code === 127) {
           // XXX(sam) Not how node works (anymore?), 127 is what /bin/sh returns,
