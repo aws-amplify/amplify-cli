@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.3.15...amplify-category-function@3.4.0) (2022-01-31)
+
+
+### Features
+
+* `[@maps](https://github.com/maps)To` directive to enable renaming models while retaining data ([#9340](https://github.com/aws-amplify/amplify-cli/issues/9340)) ([aedf45d](https://github.com/aws-amplify/amplify-cli/commit/aedf45d9237812d71bb8b56164efe0222ad3d534))
+
+
+
+
+
+## [3.3.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.3.14...amplify-category-function@3.3.15) (2022-01-27)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
 ## [3.3.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.3.13...amplify-category-function@3.3.14) (2022-01-23)
 
 **Note:** Version bump only for package amplify-category-function

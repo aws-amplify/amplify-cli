@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.6.3...amplify-e2e-core@2.6.4) (2022-01-31)
+
+**Note:** Version bump only for package amplify-e2e-core
+
+
+
+
+
+## [2.6.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.6.2...amplify-e2e-core@2.6.3) (2022-01-27)
+
+
+### Bug Fixes
+
+* rest api override CloudFormation parameters ([#9325](https://github.com/aws-amplify/amplify-cli/issues/9325)) ([3338cfa](https://github.com/aws-amplify/amplify-cli/commit/3338cfaee199f83d2e270f12bb41983c067f42fe)), closes [#9221](https://github.com/aws-amplify/amplify-cli/issues/9221)
+
+
+
+
+
 ## [2.6.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.6.1...amplify-e2e-core@2.6.2) (2022-01-23)
 
 **Note:** Version bump only for package amplify-e2e-core

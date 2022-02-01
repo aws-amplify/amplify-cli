@@ -81,8 +81,8 @@ const environmentMap = {
 };
 const envVarStringList = '';
 
-getResourcesforCFN_mock.mockReturnValue(Promise.resolve({ permissionPolicies, cfnResources }));
-generateEnvVariablesforCFN_mock.mockReturnValue(Promise.resolve({ dependsOn, environmentMap, envVarStringList }));
+getResourcesforCFN_mock.mockResolvedValue({ permissionPolicies, cfnResources });
+generateEnvVariablesforCFN_mock.mockResolvedValue({ dependsOn, environmentMap, envVarStringList });
 
 test('update dependent functions', async () => {
   jest.clearAllMocks();
@@ -104,7 +104,7 @@ test('update dependent functions', async () => {
         },
       },
     });
-  await updateDependentFunctionsCfn((contextStub as unknown) as $TSContext, allResources, backendDir, modelsDeleted, apiResourceName);
+  await updateDependentFunctionsCfn(contextStub as unknown as $TSContext, allResources, backendDir, modelsDeleted, apiResourceName);
   expect(updateCFNFileForResourcePermissions_mock.mock.calls[0][1]).toMatchSnapshot();
 });
 
@@ -142,6 +142,6 @@ test('update dependent functions', async () => {
         },
       ],
     });
-  await updateDependentFunctionsCfn((contextStub as unknown) as $TSContext, allResources, backendDir, modelsDeleted, apiResourceName);
+  await updateDependentFunctionsCfn(contextStub as unknown as $TSContext, allResources, backendDir, modelsDeleted, apiResourceName);
   expect(updateCFNFileForResourcePermissions_mock.mock.calls[0][1]).toMatchSnapshot();
 });

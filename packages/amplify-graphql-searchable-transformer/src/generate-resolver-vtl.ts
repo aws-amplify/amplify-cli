@@ -22,16 +22,24 @@ import {
   notEquals,
   printBlock,
 } from 'graphql-mapping-template';
-import { ResourceConstants } from 'graphql-transformer-common';
+import { ResourceConstants, setArgs } from 'graphql-transformer-common';
 
 const authFilter = ref('ctx.stash.authFilter');
 const API_KEY = 'API Key Authorization';
 const allowedAggFieldsList = 'allowedAggFields';
 
-export function requestTemplate(primaryKey: string, nonKeywordFields: Expression[], includeVersion: boolean = false, type: string, keyFields: Expression[] = []): string {
+export function requestTemplate(
+  primaryKey: string,
+  nonKeywordFields: Expression[],
+  includeVersion: boolean = false,
+  indexName: string,
+  type: string,
+  keyFields: Expression[] = [],
+): string {
   return print(
     compoundExpression([
-      set(ref('indexPath'), str(`/${type.toLowerCase()}/doc/_search`)),
+      setArgs,
+      set(ref('indexPath'), str(`/${indexName.toLowerCase()}/doc/_search`)),
       set(ref('allowedAggFields'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.allowedAggFields'), list([]))),
       set(ref('aggFieldsFilterMap'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.aggFieldsFilterMap'), obj({}))),
       set(ref('nonKeywordFields'), list(nonKeywordFields)),
@@ -41,10 +49,10 @@ export function requestTemplate(primaryKey: string, nonKeywordFields: Expression
       set(ref('aggregateValues'), obj({})),
       set(ref('primaryKey'), str(primaryKey)),
       iff(
-        not(ref('util.isNullOrEmpty($context.args.sort)')),
+        not(ref('util.isNullOrEmpty($args.sort)')),
         compoundExpression([
           // Sort based on the config passed on the request
-          forEach(ref('sortItem'), ref('context.args.sort'), [
+          forEach(ref('sortItem'), ref('args.sort'), [
             ifElse(
               ref('util.isNullOrEmpty($sortItem.field)'),
               qref('$sortFields.add($primaryKey)'),
@@ -87,7 +95,7 @@ export function requestTemplate(primaryKey: string, nonKeywordFields: Expression
           ]),
         ),
       ]),
-      forEach(ref('aggItem'), ref('context.args.aggregates'), [
+      forEach(ref('aggItem'), ref('args.aggregates'), [
         raw(
           '#if( $allowedAggFields.contains($aggItem.field) )\n' +
             '    #set( $aggFilter = { "match_all": {} } )\n' +
@@ -112,31 +120,28 @@ export function requestTemplate(primaryKey: string, nonKeywordFields: Expression
         compoundExpression([
           set(ref('filter'), authFilter),
           iff(
-            not(isNullOrEmpty(ref('ctx.args.filter'))),
+            not(isNullOrEmpty(ref('args.filter'))),
             set(
               ref('filter'),
               obj({
                 bool: obj({
-                  must: list([
-                    ref('ctx.stash.authFilter'),
-                    ref('util.parseJson($util.transform.toElasticsearchQueryDSL($ctx.args.filter))'),
-                  ]),
+                  must: list([ref('ctx.stash.authFilter'), ref('util.parseJson($util.transform.toElasticsearchQueryDSL($args.filter))')]),
                 }),
               }),
             ),
           ),
         ]),
         iff(
-          not(isNullOrEmpty(ref('ctx.args.filter'))),
-          set(ref('filter'), ref('util.parseJson($util.transform.toElasticsearchQueryDSL($ctx.args.filter))')),
+          not(isNullOrEmpty(ref('args.filter'))),
+          set(ref('filter'), ref('util.parseJson($util.transform.toElasticsearchQueryDSL($args.filter))')),
         ),
       ),
       iff(isNullOrEmpty(ref('filter')), set(ref('filter'), obj({ match_all: obj({}) }))),
       SearchableMappingTemplate.searchTemplate({
         path: str('$indexPath'),
-        size: ifElse(ref('context.args.limit'), ref('context.args.limit'), int(ResourceConstants.DEFAULT_SEARCHABLE_PAGE_LIMIT), true),
-        search_after: ref('util.base64Decode($context.args.nextToken)'),
-        from: ref('context.args.from'),
+        size: ifElse(ref('args.limit'), ref('args.limit'), int(ResourceConstants.DEFAULT_SEARCHABLE_PAGE_LIMIT), true),
+        search_after: ref('util.base64Decode($args.nextToken)'),
+        from: ref('args.from'),
         version: bool(includeVersion),
         query: methodCall(ref('util.toJson'), ref('filter')),
         sort: ref('sortValues'),

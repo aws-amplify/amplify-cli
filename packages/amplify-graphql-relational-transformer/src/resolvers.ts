@@ -39,6 +39,7 @@ import {
   NONE_VALUE,
   ResolverResourceIDs,
   ResourceConstants,
+  setArgs,
   toCamelCase,
 } from 'graphql-transformer-common';
 import { HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from './types';
@@ -188,13 +189,14 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
   }
   // add setup filter to query
   setup.push(
+    setArgs,
     ifElse(
       not(isNullOrEmpty(authFilter)),
       compoundExpression([
         set(ref('filter'), authFilter),
-        iff(not(isNullOrEmpty(ref('ctx.args.filter'))), set(ref('filter'), obj({ and: list([ref('filter'), ref('ctx.args.filter')]) }))),
+        iff(not(isNullOrEmpty(ref('args.filter'))), set(ref('filter'), obj({ and: list([ref('filter'), ref('args.filter')]) }))),
       ]),
-      iff(not(isNullOrEmpty(ref('ctx.args.filter'))), set(ref('filter'), ref('ctx.args.filter'))),
+      iff(not(isNullOrEmpty(ref('args.filter'))), set(ref('filter'), ref('args.filter'))),
     ),
     iff(
       not(isNullOrEmpty(ref('filter'))),
@@ -339,11 +341,12 @@ export function updateTableForConnection(config: HasManyDirectiveConfiguration, 
   }
 
   const { field, object, relatedType } = config;
-  const connectionName = getConnectionAttributeName(object.name.value, field.name.value);
+  const mappedObjectName = ctx.resourceHelper.getModelNameMapping(object.name.value);
+  const connectionName = getConnectionAttributeName(mappedObjectName, field.name.value);
   const table = getTable(ctx, relatedType) as any;
   const gsis = table.globalSecondaryIndexes;
 
-  indexName = `gsi-${object.name.value}.${field.name.value}`;
+  indexName = `gsi-${mappedObjectName}.${field.name.value}`;
   config.indexName = indexName;
 
   // Check if the GSI already exists.
