@@ -1,23 +1,10 @@
-import sequential from 'promise-sequential';
+import { $TSAny, $TSContext, $TSObject, ConfigurationError, exitOnNextTick, stateManager } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 import ora from 'ora';
-import {
-  $TSAny,
-  $TSContext,
-  $TSObject,
-  stateManager,
-  exitOnNextTick,
-  ConfigurationError,
-  FeatureFlags,
-  pathManager,
-} from 'amplify-cli-core';
+import sequential from 'promise-sequential';
+import { notifyFieldAuthSecurityChange, notifySecurityEnhancement } from '../extensions/amplify-helpers/auth-notifications';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 import { showTroubleshootingURL } from './help';
-import { printer, prompter } from 'amplify-prompts';
-import { collectDirectivesByTypeNames, readProjectConfiguration } from 'graphql-transformer-core';
-import path from 'path';
-import fs from 'fs-extra';
-import { notifyFieldAuthSecurityChange } from '../extensions/amplify-helpers/auth-notifications';
-
 
 const spinner = ora('');
 
@@ -88,61 +75,3 @@ export const run = async (context: $TSContext) => {
     exitOnNextTick(1);
   }
 };
-
-async function notifySecurityEnhancement(context) {
-  if (FeatureFlags.getBoolean('graphqltransformer.securityEnhancementNotification')) {
-    const projectPath = pathManager.findProjectRoot() ?? process.cwd();
-    const meta = stateManager.getMeta();
-
-    const apiNames = Object.entries(meta?.api || {})
-      .filter(([_, apiResource]) => (apiResource as $TSAny).service === 'AppSync')
-      .map(([name]) => name);
-
-    if (apiNames.length !== 1) {
-      await unsetSecurityNotificationFlag(projectPath);
-      return;
-    }
-
-    const apiName = apiNames[0];
-
-    const apiResourceDir = pathManager.getResourceDirectoryPath(projectPath, 'api', apiName);
-    const project = await readProjectConfiguration(apiResourceDir);
-
-    const directiveMap = collectDirectivesByTypeNames(project.schema);
-    const notifyAuthWithKey = Object.keys(directiveMap.types).some(
-      type => directiveMap.types[type].includes('auth') && directiveMap.types[type].includes('primaryKey'),
-    );
-
-    if (meta?.auth && notifyAuthWithKey) {
-      printer.blankLine();
-      const shouldContinue = await prompter.yesOrNo(
-        `This version of Amplify CLI introduces additional security enhancements for your GraphQL API. @auth authorization rules applied on primary keys and indexes are scoped down further. The changes are applied automatically with this deployment. This change won't impact your client code. Continue`,
-      );
-
-      if (!shouldContinue) {
-        await context.usageData.emitSuccess();
-        exitOnNextTick(0);
-      }
-
-      const schemaPath = path.join(apiResourceDir, 'schema.graphql');
-      fs.appendFile(schemaPath, ' ');
-
-      await unsetSecurityNotificationFlag(projectPath);
-    } else {
-      await unsetSecurityNotificationFlag(projectPath);
-    }
-  }
-
-  async function unsetSecurityNotificationFlag(projectPath: string) {
-    let config = stateManager.getCLIJSON(projectPath, undefined, {
-      throwIfNotExist: false,
-      preserveComments: true,
-    });
-
-    if (config?.features?.graphqltransformer?.securityEnhancementNotification) {
-      config.features.graphqltransformer.securityEnhancementNotification = false;
-      stateManager.setCLIJSON(projectPath, config);
-      await FeatureFlags.reloadValues();
-    }
-  }
-}
