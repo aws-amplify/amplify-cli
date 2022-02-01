@@ -39,7 +39,7 @@ export function requestTemplate(
   return print(
     compoundExpression([
       setArgs,
-      set(ref('indexPath'), str(`/${type.toLowerCase()}/_search`)),
+      set(ref('indexPath'), str(`/${indexName.toLowerCase()}/_search`)),
       set(ref('allowedAggFields'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.allowedAggFields'), list([]))),
       set(ref('aggFieldsFilterMap'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.aggFieldsFilterMap'), obj({}))),
       set(ref('nonKeywordFields'), list(nonKeywordFields)),
