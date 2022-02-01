@@ -1,4 +1,4 @@
-import { stateManager, open, $TSContext } from 'amplify-cli-core';
+import { stateManager, open } from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
 import chalk from 'chalk';
 
