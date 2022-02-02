@@ -47,6 +47,7 @@
     "vm2": "^3.9.5"
   },
   "devDependencies": {
+    "cloudform-types": "^4.2.0",
     "rimraf": "^3.0.2"
   },
   "jest": {
