@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.10-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.4.9...amplify-cli-core@2.4.10-beta.0) (2022-02-02)
+
+
+### Bug Fixes
+
+* separate field level subscription errors and field level resolver generation ([#9671](https://github.com/aws-amplify/amplify-cli/issues/9671)) ([657c344](https://github.com/aws-amplify/amplify-cli/commit/657c344633d4a72d322008f23a29f78df5a8a55a))
+
+
+
+
+
 ## [2.4.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.4.8...amplify-cli-core@2.4.9) (2022-01-27)
 
 **Note:** Version bump only for package amplify-cli-core
