@@ -3,6 +3,8 @@ import _ from 'lodash';
 import { transformRootStack } from './override-manager';
 import { rootStackFileName } from './push-resources';
 import { getDefaultTemplateDescription } from './template-description-utils';
+import * as vm from 'vm2';
+import { printer, formatter } from 'amplify-prompts';
 
 const moment = require('moment');
 const path = require('path');
@@ -53,6 +55,40 @@ export async function run(context) {
     const authRoleName = `${stackName}-authRole`;
     const unauthRoleName = `${stackName}-unauthRole`;
 
+    const configuration = {
+      authRole: {
+        roleName: authRoleName
+      },
+      unauthRole: {
+        roleName: unauthRoleName
+      },
+    }
+
+    try {
+      const backendDir = pathManager.getBackendDirPath();
+      const overrideFilePath = path.join(backendDir, 'awscloudformation', 'build', 'override.js');
+      if (fs.existsSync(overrideFilePath)) {
+        const sandboxNode = new vm.NodeVM({
+          console: 'inherit',
+          timeout: 5000,
+          sandbox: {},
+          require: {
+            context: 'sandbox',
+            builtin: ['path'],
+            external: true,
+          },
+        });
+        const overrideCode: string = await fs.readFile(overrideFilePath, 'utf-8').catch(() => {
+          formatter.list(['No override File Found', `To override ${overrideFilePath} run amplify override auth`]);
+          return '';
+        });
+        sandboxNode.run(overrideCode).override(configuration);
+      }
+    }
+    catch (e) {
+      printer.debug('No overrides found...')
+    }
+
     const rootStack = JSONUtilities.readJson<Template>(initTemplateFilePath);
 
     await prePushCfnTemplateModifier(rootStack);
@@ -71,11 +107,11 @@ export async function run(context) {
         },
         {
           ParameterKey: 'AuthRoleName',
-          ParameterValue: authRoleName,
+          ParameterValue: configuration.authRole.roleName,
         },
         {
           ParameterKey: 'UnauthRoleName',
-          ParameterValue: unauthRoleName,
+          ParameterValue: configuration.unauthRole.roleName,
         },
       ],
       Tags,
