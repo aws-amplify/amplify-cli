@@ -71,6 +71,20 @@ beforeAll(async () => {
       createdAt: AWSDateTime
       orderId: String! @index(name: "GSI", queryField: "ordersByOrderId")
     }
+    type FamilyMember
+      @model
+      @auth(
+        rules: [
+          { allow: groups, groups: ["Admin"] }
+          { allow: owner, ownerField: "parent", operations: [read] }
+          { allow: owner, ownerField: "child", operations: [read] }
+        ]
+      ) {
+      parent: ID! @primaryKey(sortKeyFields: ["child"]) @index(name: "byParent", queryField: "byParent")
+      child: ID! @index(name: "byChild", queryField: "byChild")
+      createdAt: AWSDateTime
+      updatedAt: AWSDateTime
+    }
   `;
 
   try {
@@ -84,6 +98,17 @@ beforeAll(async () => {
   const userPoolClientId = userPoolClientResponse.UserPoolClient.ClientId;
 
   const transformer = new GraphQLTransform({
+    featureFlags: {
+      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+        if (name === 'secondaryKeyAsGSI') {
+          return true;
+        }
+        return defaultValue;
+      }),
+      getNumber: jest.fn(),
+      getObject: jest.fn(),
+      getString: jest.fn(),
+    },
     authConfig: {
       defaultAuthentication: {
         authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -214,12 +239,91 @@ test('Test query orders as non owner', async () => {
   expect(listResponse.data.ordersByOrderId.items).toHaveLength(0);
 });
 
+test('listX with primaryKey', async () => {
+  await createFamilyMember(GRAPHQL_CLIENT_1, USERNAME1, USERNAME2);
+  await createFamilyMember(GRAPHQL_CLIENT_1, USERNAME2, 'no_name_user@test.com');
+  let listResponse = await listFamilyMembers(GRAPHQL_CLIENT_2);
+  expect(listResponse.data.listFamilyMembers.items).toHaveLength(2);
+  listResponse = await listFamilyMembers(GRAPHQL_CLIENT_3);
+  expect(listResponse.data.listFamilyMembers.items).toHaveLength(0);
+
+  // should be able to see one record
+  listResponse = await listFamilyMembers(GRAPHQL_CLIENT_2, { parent: USERNAME1 });
+  const items = listResponse.data.listFamilyMembers.items;
+  expect(items).toHaveLength(1);
+  expect(items[0]).toEqual(
+    expect.objectContaining({
+      parent: USERNAME1,
+      child: USERNAME2,
+      createdAt: expect.any(String),
+      updatedAt: expect.any(String),
+    }),
+  );
+});
+
+test('listX expect error when primaryKey and sortKeyField does not match auth conditions', async () => {
+  await createFamilyMember(GRAPHQL_CLIENT_1, USERNAME1, USERNAME3);
+  const listResponse = await listFamilyMembers(GRAPHQL_CLIENT_2, { parent: USERNAME1, child: { eq: USERNAME3 } });
+  expect(listResponse.data.listFamilyMembers).toBeNull();
+  expect(listResponse.errors).toHaveLength(1);
+});
+
 // helper functions
 function outputValueSelector(key: string) {
   return (outputs: Output[]) => {
     const output = outputs.find((o: Output) => o.OutputKey === key);
     return output ? output.OutputValue : null;
   };
+}
+
+async function createFamilyMember(client: GraphQLClient, parent: string, child: string) {
+  const result = await client.query(
+    `mutation CreateFamilyMember(
+      $input: CreateFamilyMemberInput!
+      $condition: ModelFamilyMemberConditionInput
+    ) {
+      createFamilyMember(input: $input, condition: $condition) {
+        parent
+        child
+        createdAt
+        updatedAt
+      }
+    }`,
+    { input: { parent, child } },
+  );
+  return result;
+}
+
+async function listFamilyMembers(client: GraphQLClient, args?: Record<string, any>) {
+  const result = await client.query(
+    `query ListFamilyMembers(
+      $parent: ID
+      $child: ModelIDKeyConditionInput
+      $filter: ModelFamilyMemberFilterInput
+      $limit: Int
+      $nextToken: String
+      $sortDirection: ModelSortDirection
+    ) {
+      listFamilyMembers(
+        parent: $parent
+        child: $child
+        filter: $filter
+        limit: $limit
+        nextToken: $nextToken
+        sortDirection: $sortDirection
+      ) {
+        items {
+          parent
+          child
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+    }`,
+    args,
+  );
+  return result;
 }
 
 async function createOrder(client: GraphQLClient, customerEmail: string, orderId: string) {

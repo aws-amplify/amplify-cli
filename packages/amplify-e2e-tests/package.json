@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "3.7.0",
+  "version": "3.7.2",
   "description": "",
   "repository": {
     "type": "git",
@@ -23,9 +23,9 @@
     "clean-e2e-resources": "ts-node ./src/cleanup-e2e-resources.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-core": "0.15.5",
-    "amplify-cli-core": "2.4.7",
-    "amplify-e2e-core": "2.6.0",
+    "@aws-amplify/graphql-transformer-core": "0.15.6",
+    "amplify-cli-core": "2.4.8",
+    "amplify-e2e-core": "2.6.2",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-sdk": "^2.1042.0",
@@ -36,7 +36,7 @@
     "fs-extra": "^8.1.0",
     "graphql-schema-diff": "^2.2.0",
     "graphql-tag": "^2.10.1",
-    "graphql-transformer-core": "7.3.5",
+    "graphql-transformer-core": "7.3.6",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.1",
     "promise-sequential": "^1.1.1",

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-storage",
-  "version": "3.1.8",
+  "version": "3.1.9",
   "description": "amplify-cli storage plugin",
   "repository": {
     "type": "git",
@@ -26,14 +26,14 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/cli-extensibility-helper": "2.3.7",
+    "@aws-amplify/cli-extensibility-helper": "2.3.8",
     "@aws-cdk/aws-dynamodb": "~1.124.0",
     "@aws-cdk/aws-s3": "~1.124.0",
     "@aws-cdk/core": "~1.124.0",
-    "amplify-cli-core": "2.4.7",
+    "amplify-cli-core": "2.4.8",
     "amplify-headless-interface": "1.14.0",
     "amplify-prompts": "1.6.2",
-    "amplify-util-import": "2.2.12",
+    "amplify-util-import": "2.2.13",
     "chalk": "^4.1.1",
     "cloudform-types": "^4.2.0",
     "enquirer": "^2.3.6",
