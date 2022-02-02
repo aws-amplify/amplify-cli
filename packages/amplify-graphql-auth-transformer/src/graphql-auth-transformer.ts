@@ -345,7 +345,8 @@ Static group authorization should perform as expected.`,
         const needsFieldResolver = allowedRoles.length < fieldReadRoles.length;
         if (needsFieldResolver && field.type.kind === Kind.NON_NULL_TYPE) {
           errorFields.push(field.name.value);
-        } else if (hasRelationalDirective(field)) {
+        }
+        if (hasRelationalDirective(field)) {
           this.protectRelationalResolver(context, def, modelName, field, needsFieldResolver ? allowedRoles : null);
         } else if (needsFieldResolver) {
           this.protectFieldResolver(context, def, modelName, field.name.value, allowedRoles);
@@ -372,7 +373,7 @@ Static group authorization should perform as expected.`,
             this.protectDeleteResolver(context, def, mutation.typeName, mutation.fieldName, acm);
             break;
           default:
-            throw new TransformerContractError('Unkown Mutation field type');
+            throw new TransformerContractError('Unknown Mutation field type');
         }
       }
 

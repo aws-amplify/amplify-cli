@@ -142,3 +142,175 @@ test('generates field resolver for other provider rules even if private removes 
     expect(out.resolvers[`Student.${field}.res.vtl`]).toBeDefined();
   }
 });
+
+describe('subscription disabled and userPools configured', () => {
+  describe('with non-nullable (required) fields', () => {
+    describe('top level private and field level owner auth', () => {
+      test('generates field resolver for required field with expected owner claim', () => {
+        const validSchema = `
+          type Student
+            @model(subscriptions: { level: off })
+            @auth(rules: [
+              { allow: private }
+            ])
+          {
+            id: ID
+            name: String
+            ssn: String! @auth(rules: [{ allow: owner }])
+          }`;
+
+        const authConfig: AppSyncAuthConfiguration = {
+          defaultAuthentication: {
+            authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+          },
+          additionalAuthenticationProviders: [],
+        };
+        const transformer = new GraphQLTransform({
+          authConfig,
+          transformers: [new ModelTransformer(), new AuthTransformer()],
+        });
+        const out = transformer.transform(validSchema);
+        expect(out).toBeDefined();
+
+        expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
+        expect(out.resolvers['Student.ssn.req.vtl']).toContain(`#if( $util.authType() == "User Pool Authorization" )
+  #if( !$isAuthorized )
+    #set( $ownerEntity0 = $util.defaultIfNull($ctx.source.owner, null) )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), "___xamznone____")) )
+    #if( $ownerEntity0 == $ownerClaim0 )
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end`);
+      });
+    });
+
+    describe('top level private and field level group auth', () => {
+      test('generates field resolver for required field with expected group role', () => {
+        const validSchema = `
+          type Student
+            @model(subscriptions: { level: off })
+            @auth(rules: [
+              { allow: private }
+            ])
+          {
+            id: ID
+            name: String
+            ssn: String! @auth(rules: [{ allow: groups, groups: ["admin"] }])
+          }`;
+
+        const authConfig: AppSyncAuthConfiguration = {
+          defaultAuthentication: {
+            authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+          },
+          additionalAuthenticationProviders: [],
+        };
+        const transformer = new GraphQLTransform({
+          authConfig,
+          transformers: [new ModelTransformer(), new AuthTransformer()],
+        });
+        const out = transformer.transform(validSchema);
+        expect(out).toBeDefined();
+
+        expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
+        expect(out.resolvers['Student.ssn.req.vtl']).toContain(`#if( $util.authType() == "User Pool Authorization" )
+  #if( !$isAuthorized )
+    #set( $staticGroupRoles = [{"claim":"cognito:groups","entity":"admin"}] )
+    #foreach( $groupRole in $staticGroupRoles )
+      #set( $groupsInToken = $util.defaultIfNull($ctx.identity.claims.get($groupRole.claim), []) )
+      #if( $groupsInToken.contains($groupRole.entity) )
+        #set( $isAuthorized = true )
+        #break
+      #end
+    #end
+  #end
+#end`);
+      });
+    });
+  });
+
+  describe('with nullable fields', () => {
+    describe('top level private and field level owner auth', () => {
+      test('generates field resolver for field with expected owner claim', () => {
+        const validSchema = `
+          type Student
+            @model(subscriptions: { level: off })
+            @auth(rules: [
+              { allow: private }
+            ])
+          {
+            id: ID
+            name: String
+            ssn: String @auth(rules: [{ allow: owner }])
+          }`;
+
+        const authConfig: AppSyncAuthConfiguration = {
+          defaultAuthentication: {
+            authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+          },
+          additionalAuthenticationProviders: [],
+        };
+        const transformer = new GraphQLTransform({
+          authConfig,
+          transformers: [new ModelTransformer(), new AuthTransformer()],
+        });
+        const out = transformer.transform(validSchema);
+        expect(out).toBeDefined();
+
+        expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
+        expect(out.resolvers['Student.ssn.req.vtl']).toContain(`#if( $util.authType() == "User Pool Authorization" )
+  #if( !$isAuthorized )
+    #set( $ownerEntity0 = $util.defaultIfNull($ctx.source.owner, null) )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), "___xamznone____")) )
+    #if( $ownerEntity0 == $ownerClaim0 )
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end`);
+      });
+    });
+
+    describe('top level private and field level group auth', () => {
+      test('generates field resolver for field with expected group roles', () => {
+        const validSchema = `
+          type Student
+            @model(subscriptions: { level: off })
+            @auth(rules: [
+              { allow: private }
+            ])
+          {
+            id: ID
+            name: String
+            ssn: String @auth(rules: [{ allow: groups, groups: ["admin"] }])
+          }`;
+
+        const authConfig: AppSyncAuthConfiguration = {
+          defaultAuthentication: {
+            authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+          },
+          additionalAuthenticationProviders: [],
+        };
+        const transformer = new GraphQLTransform({
+          authConfig,
+          transformers: [new ModelTransformer(), new AuthTransformer()],
+        });
+        const out = transformer.transform(validSchema);
+        expect(out).toBeDefined();
+
+        expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
+        expect(out.resolvers['Student.ssn.req.vtl']).toContain(`#if( $util.authType() == "User Pool Authorization" )
+  #if( !$isAuthorized )
+    #set( $staticGroupRoles = [{"claim":"cognito:groups","entity":"admin"}] )
+    #foreach( $groupRole in $staticGroupRoles )
+      #set( $groupsInToken = $util.defaultIfNull($ctx.identity.claims.get($groupRole.claim), []) )
+      #if( $groupsInToken.contains($groupRole.entity) )
+        #set( $isAuthorized = true )
+        #break
+      #end
+    #end
+  #end
+#end`);
+      });
+    });
+  });
+});

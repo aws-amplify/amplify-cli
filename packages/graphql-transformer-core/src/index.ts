@@ -4,7 +4,7 @@ import { TransformerContext } from './TransformerContext';
 import { Transformer } from './Transformer';
 import { ITransformer } from './ITransformer';
 import { GraphQLTransform } from './GraphQLTransform';
-import { collectDirectiveNames, collectDirectivesByTypeNames } from './collectDirectives';
+import { collectDirectiveNames, collectDirectivesByType, collectDirectivesByTypeNames } from './collectDirectives';
 import { stripDirectives } from './stripDirectives';
 import { DeploymentResources } from './DeploymentResources';
 import {
@@ -50,6 +50,7 @@ export {
   Transformer,
   ITransformer,
   collectDirectiveNames,
+  collectDirectivesByType,
   collectDirectivesByTypeNames,
   stripDirectives,
   buildAPIProject,
