@@ -1,7 +1,6 @@
 import { printer } from 'amplify-prompts';
 import { showAllHelp } from '../extensions/amplify-helpers/show-all-help';
-
-const TROUBLESHOOTING_PROJECT_URL = "https://docs.amplify.aws/project/troubleshooting/";
+import { AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
 
 export const run = async context => {
   await showAllHelp(context);
@@ -13,5 +12,5 @@ export const run = async context => {
  * provide a more streamlined dx.
  */
 export const showTroubleshootingURL = ()=>{
-  printer.warn(`Please refer to the Troubleshooting guide at : ${TROUBLESHOOTING_PROJECT_URL}`);
+  printer.warn(`Please refer ${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.name} at : ${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`);
 }
