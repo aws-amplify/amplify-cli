@@ -19,6 +19,11 @@ import {
   getEnvVars,
   getProjectMeta,
 } from 'amplify-e2e-core';
+
+import {
+  addEnvironment,
+} from '../environment/env';
+
 import { JSONUtilities } from 'amplify-cli-core';
 import { SandboxApp } from '../types/SandboxApp';
 
@@ -157,7 +162,7 @@ describe('amplify init', () => {
     fs.writeFileSync(localEnvPath, JSON.stringify(localEnvData, null, 2));
   });
 
-  it('should init the project and override root and push', async () => {
+  it.only('should init the project and override root and push', async () => {
     await initJSProjectWithProfile(projRoot, {});
     const meta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(meta.Region).toBeDefined();
@@ -174,6 +179,11 @@ describe('amplify init', () => {
     fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
     await amplifyPushOverride(projRoot);
     const newEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
-    expect(newEnvMeta.AuthRoleName).toEqual('mockRole');
+    expect(newEnvMeta.AuthRoleName).toContain('mockRole');
+
+    // create a new env, and the override should remain in place
+    await addEnvironment(projRoot, { envName: 'envb' });
+    const newestEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
+    expect(newestEnvMeta.AuthRoleName).toContain('mockRole');
   });
 });
