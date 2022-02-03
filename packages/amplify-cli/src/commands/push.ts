@@ -11,11 +11,13 @@ import {
   pathManager,
 } from 'amplify-cli-core';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
+import { showTroubleshootingURL } from './help';
 import { printer, prompter } from 'amplify-prompts';
 import { collectDirectivesByTypeNames, readProjectConfiguration } from 'graphql-transformer-core';
 import path from 'path';
 import fs from 'fs-extra';
 import { notifyFieldAuthSecurityChange } from '../extensions/amplify-helpers/auth-notifications';
+
 
 const spinner = ora('');
 
@@ -82,6 +84,7 @@ export const run = async (context: $TSContext) => {
     const message = e.name === 'GraphQLError' ? e.toString() : e.message;
     printer.error(`An error occurred during the push operation: ${message}`);
     await context.usageData.emitError(e);
+    showTroubleshootingURL();
     exitOnNextTick(1);
   }
 };
