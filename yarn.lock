@@ -16466,9 +16466,9 @@ json-buffer@3.0.0:
   integrity sha1-Wx85evx11ne96Lz8Dkfh+aPZqJg=
 
 json-diff@^0.5.4:
-  version "0.5.4"
-  resolved "https://registry.npmjs.org/json-diff/-/json-diff-0.5.4.tgz#7bc8198c441756632aab66c7d9189d365a7a035a"
-  integrity sha512-q5Xmx9QXNOzOzIlMoYtLrLiu4Jl/Ce2bn0CNcv54PhyH89CI4GWlGVDye8ei2Ijt9R3U+vsWPsXpLUNob8bs8Q==
+  version "0.5.5"
+  resolved "https://registry.npmjs.org/json-diff/-/json-diff-0.5.5.tgz#24658ad200dbdd64ae8a56baf4d87b2b33d7196e"
+  integrity sha512-B2RSfPv8Y5iqm6/9aKC3cOhXPzjYupKDpGuqT5py9NRulL8J0UoB/zKXUo70xBsuxPcIFgtsGgEdXLrNp0GL7w==
   dependencies:
     cli-color "~0.1.6"
     difflib "~0.2.1"
@@ -22982,10 +22982,21 @@ sync-fetch@^0.3.1:
     buffer "^5.7.0"
     node-fetch "^2.6.1"
 
-table@^6.0.9, table@^6.7.1:
+table@^6.0.9:
   version "6.7.5"
   resolved "https://registry.npmjs.org/table/-/table-6.7.5.tgz#f04478c351ef3d8c7904f0e8be90a1b62417d238"
   integrity sha512-LFNeryOqiQHqCVKzhkymKwt6ozeRhlm8IL1mE8rNUurkir4heF6PzMyRgaTa4tlyPTGGgXuvVOF/OLWiH09Lqw==
+  dependencies:
+    ajv "^8.0.1"
+    lodash.truncate "^4.4.2"
+    slice-ansi "^4.0.0"
+    string-width "^4.2.3"
+    strip-ansi "^6.0.1"
+
+table@^6.7.1:
+  version "6.8.0"
+  resolved "https://registry.npmjs.org/table/-/table-6.8.0.tgz#87e28f14fa4321c3377ba286f07b79b281a3b3ca"
+  integrity sha512-s/fitrbVeEyHKFa7mFdkuQMWlH1Wgw/yEXMt5xACT4ZpzWFluehAxRtUUQKPuWhaLAWhFcVx6w3oC8VKaUfPGA==
   dependencies:
     ajv "^8.0.1"
     lodash.truncate "^4.4.2"

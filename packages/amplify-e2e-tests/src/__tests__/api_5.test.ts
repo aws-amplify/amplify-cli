@@ -123,6 +123,17 @@ describe('amplify add api (REST)', () => {
       restrictAccess: true,
       allowGuestUsers: false,
     });
+
+    // add more paths to and test policy slicing
+    for (let i = 0; i < 15; i++) {
+      await addRestApi(projRoot, {
+        path: `/items${i}`,
+        isFirstRestApi: false,
+        existingLambda: true,
+        restrictAccess: true,
+        allowGuestUsers: true,
+      });
+    }
     await addRestApi(projRoot, { isFirstRestApi: false, existingLambda: true });
     await updateAuthAddAdminQueries(projRoot, undefined, {});
     await amplifyPushUpdate(projRoot);
