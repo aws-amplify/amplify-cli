@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.7.5-init-w-override.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.4...amplify-e2e-tests@3.7.5-init-w-override.0) (2022-02-03)
+
+
+### Bug Fixes
+
+* allow init with auth role name overrides ([bff1913](https://github.com/aws-amplify/amplify-cli/commit/bff191312a8e989e3fd4b9e437726a5efebc3bac))
+
+
+
+
+
 ## [3.7.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.3...amplify-e2e-tests@3.7.4) (2022-01-31)
 
 **Note:** Version bump only for package amplify-e2e-tests

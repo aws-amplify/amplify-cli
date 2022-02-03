@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.9.1-init-w-override.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.0...amplify-provider-awscloudformation@5.9.1-init-w-override.0) (2022-02-03)
+
+
+### Bug Fixes
+
+* allow init with auth role name overrides ([bff1913](https://github.com/aws-amplify/amplify-cli/commit/bff191312a8e989e3fd4b9e437726a5efebc3bac))
+
+
+
+
+
 # [5.9.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.12...amplify-provider-awscloudformation@5.9.0) (2022-01-31)
 
 

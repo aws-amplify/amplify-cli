@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.6.15-init-w-override.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.14...@aws-amplify/cli@7.6.15-init-w-override.0) (2022-02-03)
+
+
+### Bug Fixes
+
+* separate field level subscription errors and field level resolver generation ([#9671](https://github.com/aws-amplify/amplify-cli/issues/9671)) ([657c344](https://github.com/aws-amplify/amplify-cli/commit/657c344633d4a72d322008f23a29f78df5a8a55a))
+
+
+
+
+
 ## [7.6.14](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.13...@aws-amplify/cli@7.6.14) (2022-01-31)
 
 **Note:** Version bump only for package @aws-amplify/cli
