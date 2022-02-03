@@ -71,14 +71,12 @@ async function modifyGraphQLSchema(apiResourceDir: string): Promise<void> {
   if (schemaFileExists) {
     fs.appendFile(schemaFilePath, ' ');
   } else if (schemaDirectoryExists) {
-    await modifyGraphQLSchemaDirectory(schemaDirectoryPath, false);
+    await modifyGraphQLSchemaDirectory(schemaDirectoryPath);
   }
 }
 
-async function modifyGraphQLSchemaDirectory(schemaDirectoryPath: string, modified: boolean): Promise<void> {
+async function modifyGraphQLSchemaDirectory(schemaDirectoryPath: string): Promise<boolean> {
   const files = await fs.readdir(schemaDirectoryPath);
-
-  if (modified) return;
 
   for (const fileName of files) {
     const isHiddenFile = fileName.indexOf('.') === 0;
@@ -90,17 +88,20 @@ async function modifyGraphQLSchemaDirectory(schemaDirectoryPath: string, modifie
     const fullPath = path.join(schemaDirectoryPath, fileName);
     const stats = await fs.lstat(fullPath);
 
-    if (stats.isDirectory()) {
-      await modifyGraphQLSchemaDirectory(fullPath, modified);
-    } else if (stats.isFile() && !modified) {
+    if (stats.isDirectory() && (await modifyGraphQLSchemaDirectory(fullPath))) {
+      return true;
+    } else if (stats.isFile()) {
       fs.appendFile(fullPath, ' ');
-      break;
+      return true;
     }
   }
+
+  return false;
 }
 
 export function displayAuthNotification(directiveMap: any, fieldDirectives: Set<string>): boolean {
-  return Object.keys(directiveMap).some((typeName: string) => {
+  const usesTransformerV2 = FeatureFlags.getNumber('graphqltransformer.transformerversion') === 2;
+  const schemaHasValues = Object.keys(directiveMap).some((typeName: string) => {
     const typeObj = directiveMap[typeName];
     const modelDirective = typeObj.find((dir: DirectiveNode) => dir.name.value === 'model');
 
@@ -117,6 +118,8 @@ export function displayAuthNotification(directiveMap: any, fieldDirectives: Set<
 
     return subscriptionOff && fieldDirectives.has(typeName);
   });
+
+  return schemaHasValues && usesTransformerV2;
 }
 
 export function hasFieldAuthDirectives(doc: DocumentNode): Set<string> {

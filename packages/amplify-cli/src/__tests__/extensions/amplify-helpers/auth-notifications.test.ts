@@ -1,6 +1,12 @@
 import { collectDirectivesByType } from 'graphql-transformer-core';
 import { displayAuthNotification, hasFieldAuthDirectives } from '../../../extensions/amplify-helpers/auth-notifications';
 import { parse } from 'graphql';
+import { FeatureFlags } from 'amplify-cli-core';
+
+jest.mock('amplify-cli-core');
+
+const FeatureFlags_mock = FeatureFlags as jest.Mocked<typeof FeatureFlags>;
+FeatureFlags_mock.getNumber.mockReturnValue(2);
 
 describe('displayAuthNotification', () => {
   it('level "off" returns true', () => {
