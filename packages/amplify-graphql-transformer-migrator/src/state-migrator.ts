@@ -16,14 +16,14 @@ export const updateTransformerVersion = async (env?: string): Promise<void> => {
 };
 
 export const backupCliJson = async (resourceDir: string, env? :string): Promise<void> => {
-  let cliJson = getCliJsonFile(env);
-  let backupPath = path.join(backupLocation(resourceDir), 'cli.json');
+  const cliJson = getCliJsonFile(env);
+  const backupPath = path.join(backupLocation(resourceDir), 'cli.json');
   JSONUtilities.writeJson(backupPath, cliJson);
 };
 
 export const revertTransformerVersion = async (resourceDir: string, env?: string): Promise<void> => {
-  let backupPath = path.join(backupLocation(resourceDir), 'cli.json');
-  let backupJson: $TSAny = JSONUtilities.readJson(backupPath);
+  const backupPath = path.join(backupLocation(resourceDir), 'cli.json');
+  const backupJson: $TSAny = JSONUtilities.readJson(backupPath);
   const mutation = (cliJson: $TSAny) => {
     _.set(cliJson, ['features'], backupJson['features']);
   }
@@ -53,8 +53,5 @@ const getCliJsonFile = (env?: string): Promise<$TSAny> => {
   if (env) {
     cliJSON = stateManager.getCLIJSON(projectPath, env, { throwIfNotExist: false });
   }
-  if (!cliJSON) {
-    cliJSON = stateManager.getCLIJSON(projectPath);
-  }
-  return cliJSON;
+  return cliJSON ?? stateManager.getCLIJSON(projectPath);
 }
