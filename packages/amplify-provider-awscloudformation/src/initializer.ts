@@ -57,17 +57,22 @@ export async function run(context) {
 
     const configuration = {
       authRole: {
-        roleName: authRoleName
+        roleName: authRoleName,
       },
       unauthRole: {
-        roleName: unauthRoleName
+        roleName: unauthRoleName,
       },
-    }
+    };
 
+    const noOverrideMsg = 'No override file found. To override, run amplify override auth';
     try {
       const backendDir = pathManager.getBackendDirPath();
       const overrideFilePath = path.join(backendDir, 'awscloudformation', 'build', 'override.js');
-      if (fs.existsSync(overrideFilePath)) {
+      const overrideCode: string = await fs.readFile(overrideFilePath, 'utf-8').catch(() => {
+        printer.debug(noOverrideMsg);
+        return '';
+      });
+      if (overrideCode) {
         const sandboxNode = new vm.NodeVM({
           console: 'inherit',
           timeout: 5000,
@@ -78,15 +83,10 @@ export async function run(context) {
             external: true,
           },
         });
-        const overrideCode: string = await fs.readFile(overrideFilePath, 'utf-8').catch(() => {
-          formatter.list(['No override File Found', `To override ${overrideFilePath} run amplify override auth`]);
-          return '';
-        });
         sandboxNode.run(overrideCode).override(configuration);
       }
-    }
-    catch (e) {
-      printer.debug('No overrides found...')
+    } catch (e) {
+      printer.debug(noOverrideMsg);
     }
 
     const rootStack = JSONUtilities.readJson<Template>(initTemplateFilePath);
