@@ -20,9 +20,7 @@ import {
   getProjectMeta,
 } from 'amplify-e2e-core';
 
-import {
-  addEnvironment,
-} from '../environment/env';
+import { addEnvironment } from '../environment/env';
 
 import { JSONUtilities } from 'amplify-cli-core';
 import { SandboxApp } from '../types/SandboxApp';
@@ -173,7 +171,7 @@ describe('amplify init', () => {
     expect(DeploymentBucketName).toBeAS3Bucket(DeploymentBucketName);
 
     // override new env
-    await amplifyOverrideRoot(projRoot, { testingWithLatestCodebase: true});
+    await amplifyOverrideRoot(projRoot, { testingWithLatestCodebase: true });
     const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-root.ts');
     const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'awscloudformation', 'override.ts');
     fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
