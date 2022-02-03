@@ -25,6 +25,8 @@ body:
           required: true
         - label: I have done my best to include a minimal, self-contained set of instructions for consistently reproducing the issue.
           required: true
+        - label: I have removed any sensitive information from my code snippets and submission.
+          required: true
   - type: markdown
     attributes:
       value: |
@@ -133,7 +135,7 @@ body:
     attributes:
       label: GraphQL schema(s)
       description: |
-        If applicable, please include your GraphQL schema(s). 
+        If applicable, please include your GraphQL schema(s).
 
         **Be sure to remove any sensitive data.**
       value: |
