@@ -243,6 +243,7 @@ test('Test simple model with private IAM auth rule, few operations, and amplify 
   expect(out.schema).toContain('listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection @aws_iam');
 
   expect(out.resolvers['Mutation.updatePost.auth.1.res.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.updatePost.auth.1.res.vtl']).toContain(`#if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == "testIdentityPoolId" && $ctx.identity.cognitoIdentityAuthType == "authenticated") )`);
 });
 
 test('Test simple model with AdminUI enabled should add IAM policy only for fields that have explicit IAM auth', () => {
