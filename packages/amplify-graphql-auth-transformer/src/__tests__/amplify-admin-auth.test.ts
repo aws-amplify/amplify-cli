@@ -205,7 +205,7 @@ test('Test simple model with private auth rule, few operations, and amplify admi
 
 test('Test simple model with private IAM auth rule, few operations, and amplify admin app is not enabled', () => {
   const validSchema = `
-      type Post @model @auth(rules: [{allow: private, provider: iam, operations: [read]}]) {
+      type Post @model @auth(rules: [{allow: private, provider: iam, operations: [read, update]}]) {
           id: ID!
           title: String!
           createdAt: String
@@ -223,7 +223,12 @@ test('Test simple model with private IAM auth rule, few operations, and amplify 
         },
       ],
     },
-    transformers: [new ModelTransformer(), new AuthTransformer()],
+    transformers: [
+      new ModelTransformer(), 
+      new AuthTransformer( {
+        identityPoolId: 'testIdentityPoolId',
+      })
+    ],
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -236,6 +241,9 @@ test('Test simple model with private IAM auth rule, few operations, and amplify 
 
   expect(out.schema).toContain('getPost(id: ID!): Post @aws_iam');
   expect(out.schema).toContain('listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection @aws_iam');
+
+  expect(out.resolvers['Mutation.updatePost.auth.1.res.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.updatePost.auth.1.res.vtl']).toContain(`#if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == "testIdentityPoolId" && $ctx.identity.cognitoIdentityAuthType == "authenticated") )`);
 });
 
 test('Test simple model with AdminUI enabled should add IAM policy only for fields that have explicit IAM auth', () => {
