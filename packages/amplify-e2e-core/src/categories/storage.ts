@@ -594,10 +594,9 @@ export function updateS3AddTriggerNewFunctionWithFunctionExisting(cwd: string, s
       .sendCarriageReturn() // Individual groups
       .wait('Select groups')
       .sendCarriageReturn()
-      .wait('What kind of access do you want') // for <UserGroup1> users?
-      .delay(100)
+      .wait(`What kind of access do you want for ${settings.userGroup1}`) // for <UserGroup1> users?
       .sendCarriageReturn()
-      .wait('What kind of access do you want') // for <UserGroup2> users?
+      .wait(`What kind of access do you want for ${settings.userGroup2}`) // for <UserGroup2> users?
       .sendCarriageReturn()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
       .sendConfirmYes()
