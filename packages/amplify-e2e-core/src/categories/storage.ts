@@ -595,6 +595,7 @@ export function updateS3AddTriggerNewFunctionWithFunctionExisting(cwd: string, s
       .wait('Select groups')
       .sendCarriageReturn()
       .wait('What kind of access do you want') // for <UserGroup1> users?
+      .delay(100)
       .sendCarriageReturn()
       .wait('What kind of access do you want') // for <UserGroup2> users?
       .sendCarriageReturn()
