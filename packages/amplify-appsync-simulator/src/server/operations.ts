@@ -1,7 +1,6 @@
 import cors from 'cors';
 import express from 'express';
 import { ExecutionResult, parse } from 'graphql';
-import { Server } from 'http';
 import { join } from 'path';
 import { AmplifyAppSyncSimulator, AmplifyAppSyncSimulatorAuthenticationType } from '..';
 import { AppSyncSimulatorServerConfig } from '../type-definition';
@@ -9,9 +8,7 @@ import { extractHeader, extractJwtToken, getAuthorizationMode } from '../utils/a
 import { AppSyncGraphQLExecutionContext } from '../utils/graphql-runner';
 import { getOperationType } from '../utils/graphql-runner/helpers';
 import { runQueryOrMutation } from '../utils/graphql-runner/query-and-mutation';
-import { runSubscription, SubscriptionResult } from '../utils/graphql-runner/subscriptions';
-import { AppSyncSimulatorSubscriptionServer } from './websocket-subscription';
-import { SubscriptionServer } from './subscription';
+import { runSubscription } from '../utils/graphql-runner/subscriptions';
 import { extractIamToken } from '../utils/auth-helpers/helpers';
 
 const MAX_BODY_SIZE = '10mb';
@@ -20,11 +17,7 @@ const STATIC_ROOT = join(__dirname, '..', '..', 'public');
 export class OperationServer {
   private _app: express.Application;
 
-  constructor(
-    private config: AppSyncSimulatorServerConfig,
-    private simulatorContext: AmplifyAppSyncSimulator,
-    private subscriptionServer: SubscriptionServer,
-  ) {
+  constructor(private config: AppSyncSimulatorServerConfig, private simulatorContext: AmplifyAppSyncSimulator) {
     this._app = express();
     this._app.use(express.json({ limit: MAX_BODY_SIZE }));
     this._app.use(cors());
@@ -87,16 +80,7 @@ export class OperationServer {
           if ((subscriptionResult as ExecutionResult).errors) {
             return response.send(subscriptionResult);
           }
-          const subscription = await this.subscriptionServer.register(
-            doc,
-            variables,
-            { ...context, request },
-            (subscriptionResult as SubscriptionResult).asyncIterator,
-          );
-          return response.send({
-            ...subscription,
-            ...subscriptionResult,
-          });
+          throw new Error('Subscription request is only supported in realtime url. Send requests to /graphql/realtime');
           break;
 
         default:
