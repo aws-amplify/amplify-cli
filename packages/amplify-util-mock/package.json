@@ -22,6 +22,7 @@
     "test": "jest src/__tests__/**/*.test.ts",
     "test-watch": "jest --watch",
     "build": "tsc",
+    "build-tests": "tsc --build tsconfig.tests.json",
     "watch": "tsc -w",
     "clean": "rimraf lib tsconfig.tsbuildinfo"
   },

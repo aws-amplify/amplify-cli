@@ -22,7 +22,7 @@ export class AppSyncSimulatorServer {
     this._subscriptionServer = new SubscriptionServer(config, simulatorContext);
     this._operationServer = new OperationServer(config, simulatorContext, this._subscriptionServer);
     this._httpServer = createServer(this._operationServer.app);
-    this._realTimeSubscriptionServer = new AppSyncSimulatorSubscriptionServer(simulatorContext, this._httpServer, '/graphql');
+    this._realTimeSubscriptionServer = new AppSyncSimulatorSubscriptionServer(simulatorContext, this._httpServer, '/graphql/realtime');
   }
 
   async start(): Promise<void> {

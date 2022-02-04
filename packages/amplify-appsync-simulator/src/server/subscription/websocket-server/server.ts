@@ -67,7 +67,13 @@ export class WebsocketSubscriptionServer {
   }
 
   attachWebServer(serverOptions: ServerOptions): void {
-    this.webSocketServer = new WebSocketServer(serverOptions || {});
+    if (serverOptions.path !== '/graphql') {
+      this.webSocketServer = new WebSocketServer(serverOptions || {});
+    }
+
+    // Todo: remove once the libraries add support for /graphql/realtime support
+    // https://github.com/aws-amplify/amplify-js/issues/9547
+    this.webSocketServer = new WebSocketServer({ ...serverOptions, path: '/graphql' });
   }
 
   start() {
