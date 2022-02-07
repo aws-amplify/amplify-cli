@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { makeModelSortDirectionEnumObject } from '@aws-amplify/graphql-model-transformer';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { DirectiveNode, FieldDefinitionNode, InputObjectTypeDefinitionNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
+import { DirectiveNode, FieldDefinitionNode, InputObjectTypeDefinitionNode, Kind, ListValueNode, ObjectTypeDefinitionNode, StringValueNode } from 'graphql';
 import {
   blankObject,
   blankObjectExtension,
@@ -421,4 +421,25 @@ export function getPartitionKeyField(ctx: TransformerContextProvider, object: Ob
   }
 
   return fieldMap.get(name) ?? makeField('id', [], wrapNonNull(makeNamedType('ID')));
+}
+
+export function getSortKeyFields(ctx: TransformerContextProvider, object: ObjectTypeDefinitionNode): FieldDefinitionNode[] {
+  const outputObject = ctx.output.getType(object.name.value) as ObjectTypeDefinitionNode;
+  assert(outputObject);
+  const fieldMap = new Map<string, FieldDefinitionNode>();
+
+  for (const field of outputObject.fields!) {
+    fieldMap.set(field.name.value, field);
+  }
+
+  for (const field of outputObject.fields!) {
+    for (const directive of field.directives!) {
+      if (directive.name.value === 'primaryKey') {
+        let values: ListValueNode = directive.arguments?.find(arg => arg.name.value === 'sortKeyFields')?.value as ListValueNode;
+        return values ? values.values.map(val => fieldMap.get((val as StringValueNode).value)!) : [];
+      }
+    }
+  }
+
+  return [];
 }

@@ -1,5 +1,5 @@
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
-import { IndexTransformer } from '@aws-amplify/graphql-index-transformer';
+import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
@@ -172,6 +172,73 @@ test('valid schema', () => {
 
   expect(out.schema).toMatchSnapshot();
   expect(out.resolvers).toMatchSnapshot();
+});
+
+test('one of the models with sort key', () => {
+  const inputSchema = `
+    type ModelA @model {
+      id: ID! @primaryKey(sortKeyFields: ["sortId"])
+      sortId: ID!
+      models: [ModelB] @manyToMany(relationName: "ModelAModelB")
+    }
+
+    type ModelB @model {
+      id: ID!
+      models: [ModelA] @manyToMany(relationName: "ModelAModelB")
+    }`;
+  const transformer = createTransformer();
+  const out = transformer.transform(inputSchema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+
+  expect(out.schema).toMatchSnapshot();
+});
+
+test('both models with sort key', () => {
+  const inputSchema = `
+    type ModelA @model {
+      id: ID! @primaryKey(sortKeyFields: ["sortId"])
+      sortId: ID!
+      models: [ModelB] @manyToMany(relationName: "ModelAModelB")
+    }
+
+    type ModelB @model {
+      id: ID! @primaryKey(sortKeyFields: ["sortId"])
+      sortId: ID!
+      models: [ModelA] @manyToMany(relationName: "ModelAModelB")
+    }`;
+  const transformer = createTransformer();
+  const out = transformer.transform(inputSchema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+
+  expect(out.schema).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
+});
+
+test('models with multiple sort keys', () => {
+  const inputSchema = `
+    type ModelA @model {
+      id: ID! @primaryKey(sortKeyFields: ["sortId", "secondSortId"])
+      sortId: ID!
+      secondSortId: ID!
+      models: [ModelB] @manyToMany(relationName: "ModelAModelB")
+    }
+
+    type ModelB @model {
+      id: ID! @primaryKey(sortKeyFields: ["sortId"])
+      sortId: ID!
+      models: [ModelA] @manyToMany(relationName: "ModelAModelB")
+    }`;
+  const transformer = createTransformer();
+  const out = transformer.transform(inputSchema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+
+  expect(out.schema).toMatchSnapshot();
 });
 
 test('join table inherits auth from first table', () => {
@@ -367,10 +434,12 @@ function createTransformer(authConfig?: AppSyncAuthConfiguration) {
   const modelTransformer = new ModelTransformer();
   const indexTransformer = new IndexTransformer();
   const hasOneTransformer = new HasOneTransformer();
+  const primaryKeyTransformer = new PrimaryKeyTransformer();
   const transformer = new GraphQLTransform({
     authConfig: transformerAuthConfig,
     transformers: [
       modelTransformer,
+      primaryKeyTransformer,
       indexTransformer,
       hasOneTransformer,
       new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
