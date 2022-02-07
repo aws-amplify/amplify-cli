@@ -156,7 +156,10 @@ export class SearchableModelTransformer extends TransformerPluginBase {
           ),
           `${typeName}.${def.fieldName}.req.vtl`,
         ),
-        MappingTemplate.s3MappingTemplateFromString(responseTemplate(false), `${typeName}.${def.fieldName}.res.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(
+          responseTemplate(context.isProjectUsingDataStore()),
+          `${typeName}.${def.fieldName}.res.vtl`
+        ),
       );
       resolver.addToSlot(
         'postAuth',

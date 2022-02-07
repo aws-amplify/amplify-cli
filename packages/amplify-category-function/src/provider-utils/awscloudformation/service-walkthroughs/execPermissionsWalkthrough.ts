@@ -202,7 +202,6 @@ const selectCategories = (choices: DistinctChoice<any>[], currentPermissionMap: 
   name: 'categories',
   message: 'Select the categories you want this function to have access to.',
   choices,
-  validate: answers => (_.isEmpty(answers) ? 'You must select at least one category' : true),
   default: fetchPermissionCategories(currentPermissionMap),
 });
 

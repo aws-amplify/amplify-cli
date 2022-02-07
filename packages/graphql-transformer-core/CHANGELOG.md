@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.4.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.4.0...graphql-transformer-core@7.4.1) (2022-02-03)
+
+
+### Bug Fixes
+
+* separate field level subscription errors and field level resolver generation ([#9671](https://github.com/aws-amplify/amplify-cli/issues/9671)) ([657c344](https://github.com/aws-amplify/amplify-cli/commit/657c344633d4a72d322008f23a29f78df5a8a55a))
+
+
+
+
+
 # [7.4.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.3.7...graphql-transformer-core@7.4.0) (2022-01-31)
 
 

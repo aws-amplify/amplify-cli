@@ -1,7 +1,10 @@
 // This is sample code. Please update this to suite your schema
 
+/**
+ * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
+ */
 exports.handler = async (event) => {
-  console.log(`event >`, JSON.stringify(event, null, 2));
+  console.log(`EVENT: ${JSON.stringify(event)}`);
   const {
     authorizationToken,
     requestContext: { apiId, accountId },

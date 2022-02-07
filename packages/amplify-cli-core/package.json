@@ -1,6 +1,6 @@
 {
   "name": "amplify-cli-core",
-  "version": "2.4.9",
+  "version": "2.4.10",
   "description": "Amplify CLI Core",
   "repository": {
     "type": "git",
@@ -41,7 +41,7 @@
     "open": "^7.3.1",
     "proxy-agent": "^5.0.0",
     "semver": "^7.3.5",
-    "typescript-json-schema": "^0.51.0",
+    "typescript-json-schema": "~0.52.0",
     "which": "^2.0.2"
   },
   "devDependencies": {

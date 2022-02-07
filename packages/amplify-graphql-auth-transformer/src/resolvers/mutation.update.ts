@@ -114,7 +114,7 @@ const iamExpression = (
           ),
         );
       } else {
-        expression.push(iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true))));
+        expression.push(iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)), identityPoolId));
       }
     }
   } else {

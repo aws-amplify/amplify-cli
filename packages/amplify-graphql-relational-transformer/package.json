@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-relational-transformer",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Amplify GraphQL relational modeling transformers",
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@aws-amplify/graphql-auth-transformer": "0.7.0",
+    "@aws-amplify/graphql-auth-transformer": "0.7.1",
     "@aws-amplify/graphql-index-transformer": "0.11.0",
     "@aws-amplify/graphql-model-transformer": "0.13.0",
     "@aws-amplify/graphql-transformer-core": "0.16.0",
