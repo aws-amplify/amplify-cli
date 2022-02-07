@@ -208,11 +208,11 @@ export class ManyToManyTransformer extends TransformerPluginBase {
       // this ensures that the GSIs on the existing join table stay the same
       const d1IndexDirectiveOrig = makeDirective('index', [
         makeArgument('name', makeValueNode(d1IndexName)),
-        makeArgument('sortKeyFields', makeValueNode([d2FieldNameIdOrig])),
+        makeArgument('sortKeyFields', makeValueNode([...d1SortFieldNames])),
       ]);
       const d2IndexDirectiveOrig = makeDirective('index', [
         makeArgument('name', makeValueNode(d2IndexName)),
-        makeArgument('sortKeyFields', makeValueNode([d1FieldNameIdOrig])),
+        makeArgument('sortKeyFields', makeValueNode([...d2SortFieldNames])),
       ]);
 
       const d1RelatedFieldOrig = makeField(d1FieldNameIdOrig, [], wrapNonNull(makeNamedType(getBaseType(d1PartitionKey.type))), [
@@ -223,7 +223,7 @@ export class ManyToManyTransformer extends TransformerPluginBase {
       ]);
       const joinTypeOrig = {
         ...blankObject(name),
-        fields: [makeField('id', [], wrapNonNull(makeNamedType('ID'))), d1RelatedFieldOrig, d2RelatedFieldOrig],
+        fields: [makeField('id', [], wrapNonNull(makeNamedType('ID'))), d1RelatedFieldOrig, ...d1RelatedSortKeyFields, d2RelatedFieldOrig, ...d2RelatedSortKeyFields, d1Field, d2Field],
         directives: joinTableDirectives,
       };
       this.indexTransformer.field(joinTypeOrig, d1RelatedFieldOrig, d1IndexDirectiveOrig, context);
