@@ -1,7 +1,5 @@
 import { getKeySchema, getTable, MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { DynamoDbDataSource } from '@aws-cdk/aws-appsync';
-import { Table } from '@aws-cdk/aws-dynamodb';
 import * as cdk from '@aws-cdk/core';
 import assert from 'assert';
 import { ObjectTypeDefinitionNode } from 'graphql';

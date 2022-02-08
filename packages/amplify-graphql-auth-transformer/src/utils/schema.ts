@@ -1,18 +1,11 @@
 import { ModelDirectiveConfiguration, SubscriptionLevel } from '@aws-amplify/graphql-model-transformer';
-import {
-  DirectiveWrapper,
-  getKeySchema,
-  getTable,
-  InvalidDirectiveError,
-  TransformerContractError,
-} from '@aws-amplify/graphql-transformer-core';
+import { DirectiveWrapper, getKeySchema, getTable, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import {
   QueryFieldType,
   MutationFieldType,
   TransformerTransformSchemaStepContextProvider,
   TransformerContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { DynamoDbDataSource } from '@aws-cdk/aws-appsync';
 import { ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode, NamedTypeNode } from 'graphql';
 import {
   blankObjectExtension,
@@ -22,7 +15,6 @@ import {
   isListType,
   makeInputValueDefinition,
   makeNamedType,
-  ModelResourceIDs,
   plurality,
   toCamelCase,
   toUpper,
