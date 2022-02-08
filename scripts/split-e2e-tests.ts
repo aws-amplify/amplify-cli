@@ -12,7 +12,7 @@ const CONCURRENCY = 25;
 // For now, this list is being used to skip creation of circleci jobs for these tasks
 
 // Todo: update the split test strategy to use parallelization so circleci results dont go over the limits of github payload size
-const WINDOWS_TEST_ALLOWLIST = [
+const WINDOWS_TEST_ALLOWLIST: string[] = [
   // 'schema-function-1_pkg',
   // 'tags_pkg',
   // 'hosting_pkg',
@@ -313,7 +313,7 @@ function splitTests(
 
     if (workflowJob) {
       Object.values(jobByRegion).forEach(regionJobs => {
-        const newJobNames = Object.keys(regionJobs);
+        const newJobNames = Object.keys(regionJobs as object);
         const jobs = newJobNames.map((newJobName, index) => {
           const requires = getRequiredJob(newJobNames, index, concurrency);
           if (typeof workflowJob === 'string') {
@@ -336,7 +336,7 @@ function splitTests(
       });
 
       const lastJobBatch = Object.values(jobByRegion)
-        .map(regionJobs => getLastBatchJobs(Object.keys(regionJobs), concurrency))
+        .map(regionJobs => getLastBatchJobs(Object.keys(regionJobs as Object), concurrency))
         .reduce((acc, val) => acc.concat(val), []);
       const filteredJobs = replaceWorkflowDependency(removeWorkflowJob(workflow.jobs, jobName), jobName, lastJobBatch);
       workflow.jobs = filteredJobs;
