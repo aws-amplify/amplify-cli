@@ -11,6 +11,8 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx --quiet",
     "lint-fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "clean": "lerna run clean && lerna exec yarn rimraf tsconfig.tsbuildinfo && lerna clean --yes && yarn rimraf node_modules",
+    "check-version-conflicts:beta": "yarn ts-node ./scripts/check-version.ts beta",
+    "check-version-conflicts:release":"yarn ts-node ./scripts/check-version.ts",
     "build": "lerna run build",
     "build-tests": "lerna run build-tests",
     "production-build": "yarn --frozen-lockfile --cache-folder ~/.cache/yarn && lerna run build --concurrency 3 --stream",
