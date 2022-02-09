@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-category-api": "1.2.9",
-    "@aws-amplify/amplify-category-auth": "2.4.15",
+    "@aws-amplify/amplify-category-auth": "2.6.0",
     "@aws-amplify/amplify-category-custom": "2.3.17",
     "@aws-amplify/amplify-category-storage": "3.1.14",
     "@aws-amplify/amplify-util-uibuilder": "1.2.10",
@@ -46,7 +46,7 @@
     "amplify-category-geo": "2.3.8",
     "amplify-category-hosting": "3.2.18",
     "amplify-category-interactions": "3.2.18",
-    "amplify-category-notifications": "2.19.4",
+    "amplify-category-notifications": "2.19.6",
     "amplify-category-predictions": "3.2.18",
     "amplify-category-xr": "3.2.18",
     "amplify-cli-core": "2.4.13",
