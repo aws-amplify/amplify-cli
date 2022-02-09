@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.2.18...amplify-nodejs-function-template-provider@2.3.0-beta.0) (2022-02-09)
+
+
+### Features
+
+* improve function templates; consolidate console.log, add jsdoc, add lambda types ([#9649](https://github.com/aws-amplify/amplify-cli/issues/9649)) ([5b24455](https://github.com/aws-amplify/amplify-cli/commit/5b244554bd503d076f94fa94c96bc50d65cf48bc))
+
+
+
+
+
 ## [2.2.18](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.2.17...amplify-nodejs-function-template-provider@2.2.18) (2022-02-03)
 
 **Note:** Version bump only for package amplify-nodejs-function-template-provider

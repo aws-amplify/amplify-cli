@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.19.7-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.19.4...amplify-category-notifications@2.19.7-beta.0) (2022-02-09)
+
+
+### Bug Fixes
+
+* allow pinpoint category removal after manual deletion ([#9691](https://github.com/aws-amplify/amplify-cli/issues/9691)) ([dc218d4](https://github.com/aws-amplify/amplify-cli/commit/dc218d42c68d129dc9c76c191a31868a9f36d6e4))
+
+
+
+
+
 ## [2.19.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.19.3...amplify-category-notifications@2.19.4) (2021-07-16)
 
 
