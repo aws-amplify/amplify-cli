@@ -2,6 +2,7 @@ import { DocumentNode, parse } from 'graphql';
 import { ExecutionResult, ExecutionResultDataDefault } from 'graphql/execution/execute';
 import { IncomingMessage } from 'http';
 import * as WebSocket from 'ws';
+import { URL } from 'url';
 import { Server as WebSocketServer, ServerOptions } from 'ws';
 import {
   GQLMessageConnectionAck,
@@ -57,6 +58,7 @@ export class WebsocketSubscriptionServer {
   private options: WebsocketSubscriptionServerOptions;
   private connections: Set<ConnectionContext>;
   private webSocketServer: WebSocketServer;
+  private webSocketServerLegacyEndpoint: WebSocketServer;
 
   constructor(options: WebsocketSubscriptionServerOptions, server?: ServerOptions) {
     this.connections = new Set();
@@ -68,29 +70,46 @@ export class WebsocketSubscriptionServer {
 
   attachWebServer(serverOptions: ServerOptions): void {
     if (serverOptions.path !== '/graphql') {
-      this.webSocketServer = new WebSocketServer(serverOptions || {});
+      this.webSocketServer = new WebSocketServer({noServer: true});
+      this.webSocketServerLegacyEndpoint = new WebSocketServer({noServer: true});
+
+      serverOptions.server?.on('upgrade', (request, socket, head) => {
+          const { pathname } = new URL(request.url);
+        if (pathname === serverOptions.path) {
+          this.webSocketServer?.handleUpgrade(request, socket, head, ws => {
+            this.webSocketServer?.emit('connection', ws, request);
+          });
+        } else if (pathname === '/graphql') {
+          this.webSocketServerLegacyEndpoint?.handleUpgrade(request, socket, head, ws => {
+            this.webSocketServerLegacyEndpoint?.emit('connection', ws, request);
+          });
+        }
+      });
+    } else {
+      // Todo: remove once the libraries add support for /graphql/realtime support
+      // https://github.com/aws-amplify/amplify-js/issues/9547
+      this.webSocketServerLegacyEndpoint = new WebSocketServer({ ...serverOptions, path: '/graphql' });
     }
 
-    // Todo: remove once the libraries add support for /graphql/realtime support
-    // https://github.com/aws-amplify/amplify-js/issues/9547
-    this.webSocketServer = new WebSocketServer({ ...serverOptions, path: '/graphql' });
+
   }
 
   start() {
-    if (!this.webSocketServer) {
+    if (!this.webSocketServer && !this.webSocketServerLegacyEndpoint) {
       throw new Error('No server is attached');
     }
-    this.webSocketServer.on('connection', this.onSocketConnection);
+    this.webSocketServer?.on('connection', this.onSocketConnection);
+    this.webSocketServerLegacyEndpoint?.on('connection', this.onSocketConnection);
   }
 
   stop() {
-    if (this.webSocketServer) {
-      this.webSocketServer.off('connection', this.onSocketConnection);
-      this.connections.forEach(connection => {
-        this.onClose(connection);
-      });
-      this.webSocketServer.close();
-    }
+    this.webSocketServer?.off('connection', this.onSocketConnection);
+    this.webSocketServerLegacyEndpoint?.off('connection', this.onSocketConnection);
+    this.connections.forEach(connection => {
+      this.onClose(connection);
+    });
+    this.webSocketServer?.close();
+    this.webSocketServerLegacyEndpoint?.close();
   }
 
   private onClose = (connectionContext: ConnectionContext): void => {
