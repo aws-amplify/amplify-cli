@@ -24,6 +24,8 @@ const main = async () => {
   if (errors.length) {
     console.log(errors.join('\n'));
     process.exit(1);
+  } else {
+    console.log('No conflicts detected. Safe to proceed with publishing');
   }
 };
 
@@ -35,7 +37,6 @@ const bumpVersions = async (preid?: string, distTag?: string): Promise<Map<strin
       conventionalCommits: true,
       exact: true,
       composed: 'publish',
-      lernaVersion: '4.0.0',
       amend: false,
       push: false,
       yes: true,
@@ -55,11 +56,11 @@ const bumpVersions = async (preid?: string, distTag?: string): Promise<Map<strin
     versionChanges = versionCommand(config);
   });
 
-  await stashChanges();
+  await resetChanges();
   return versionChanges.updatesVersions;
 };
 
-const stashChanges = () => {
+const resetChanges = () => {
   execa.sync('git', ['reset', '--hard', 'HEAD'], {
     cwd: path.resolve(__dirname, '../'),
   });
