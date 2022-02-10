@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.7.1...@aws-amplify/graphql-auth-transformer@0.7.5) (2022-02-10)
+
+
+
+## 7.6.19 (2022-02-08)
+
+
+### Bug Fixes
+
+* **graphql:** allow iam private rule to access update mutation when authenticated by cognito ([#9682](https://github.com/aws-amplify/amplify-cli/issues/9682)) ([acd995f](https://github.com/aws-amplify/amplify-cli/commit/acd995f12c67e625997794d5bb5d394e227f83c7))
+
+
+
+
+
 ## [0.7.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.7.0...@aws-amplify/graphql-auth-transformer@0.7.1) (2022-02-03)
 
 

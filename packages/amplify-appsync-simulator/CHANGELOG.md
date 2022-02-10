@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.6...amplify-appsync-simulator@2.3.7) (2022-02-10)
+
+
+
+## 7.6.19 (2022-02-08)
+
+
+### Bug Fixes
+
+* **cli:** fix security enhancement notification for projects with schema dir ([#9670](https://github.com/aws-amplify/amplify-cli/issues/9670)) ([bc57ed2](https://github.com/aws-amplify/amplify-cli/commit/bc57ed2c6e6e45136473b3ae065ea971d7867e65))
+
+
+
+
+
 ## [2.3.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.5...amplify-appsync-simulator@2.3.6) (2022-01-20)
 
 **Note:** Version bump only for package amplify-appsync-simulator

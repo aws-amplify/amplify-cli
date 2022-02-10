@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.6.19](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.15...@aws-amplify/cli@7.6.19) (2022-02-10)
+
+
+
+## 7.6.19 (2022-02-08)
+
+
+### Bug Fixes
+
+* **cli:** fix security enhancement notification for projects with schema dir ([#9670](https://github.com/aws-amplify/amplify-cli/issues/9670)) ([bc57ed2](https://github.com/aws-amplify/amplify-cli/commit/bc57ed2c6e6e45136473b3ae065ea971d7867e65))
+* fix modify gql schema base case; scope auth notif to v2 ([#9689](https://github.com/aws-amplify/amplify-cli/issues/9689)) ([14c56da](https://github.com/aws-amplify/amplify-cli/commit/14c56da8b7466f8245bf2897212387a36091e2d6))
+
+
+
+
+
 ## [7.6.15](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.14...@aws-amplify/cli@7.6.15) (2022-02-03)
 
 

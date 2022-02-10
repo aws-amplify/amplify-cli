@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.4.1...amplify-category-function@3.5.0) (2022-02-10)
+
+
+
+## 7.6.19 (2022-02-08)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** allow user to update function for 0 category access ([#8052](https://github.com/aws-amplify/amplify-cli/issues/8052)) ([4d3af32](https://github.com/aws-amplify/amplify-cli/commit/4d3af3265d0c334ed5b46dca55f75b1c2aac2da1))
+
+
+### Features
+
+* improve function templates; consolidate console.log, add jsdoc, add lambda types ([#9649](https://github.com/aws-amplify/amplify-cli/issues/9649)) ([5b24455](https://github.com/aws-amplify/amplify-cli/commit/5b244554bd503d076f94fa94c96bc50d65cf48bc))
+
+
+
+
+
 ## [3.4.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.4.0...amplify-category-function@3.4.1) (2022-02-03)
 
 **Note:** Version bump only for package amplify-category-function
