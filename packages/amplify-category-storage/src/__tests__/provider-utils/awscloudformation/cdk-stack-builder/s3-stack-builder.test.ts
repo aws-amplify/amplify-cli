@@ -3,7 +3,7 @@
 
 /* These tests test the AmplifyS3ResourceStackTransform and run the cdk builder tool which is used within this file */
 import * as uuid from 'uuid';
-import { $TSContext, CLISubCommandType, CLIInputSchemaValidator } from 'amplify-cli-core';
+import { $TSContext, CLISubCommandType, CLIInputSchemaValidator, AmplifySupportedService } from 'amplify-cli-core';
 import { AmplifyS3ResourceStackTransform } from '../../../../provider-utils/awscloudformation/cdk-stack-builder/s3-stack-transform';
 import {
     S3AccessType,
@@ -11,7 +11,6 @@ import {
     S3UserInputs
 } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/s3-user-input-types';
 import { S3InputState } from '../../../../provider-utils/awscloudformation/service-walkthroughs/s3-user-input-state';
-import { S3MockDataBuilder } from '../service-walkthroughs/s3-walkthrough.test';
 import { AmplifyS3ResourceCfnStack } from '../../../../provider-utils/awscloudformation/cdk-stack-builder/s3-stack-builder';
 import _ from 'lodash';
 
@@ -145,3 +144,60 @@ describe('Test S3 transform generates correct CFN template', () => {
 
   });
 });
+
+export class S3MockDataBuilder {
+  static mockBucketName = 'mock-stack-builder-bucket-name-99'; //s3 bucket naming rules allows alphanumeric and hyphens
+  static mockResourceName = 'mockResourceName';
+  static mockPolicyUUID = 'cafe2021';
+  static mockPolicyUUID2 = 'cafe2022';
+  static mockFunctionName = `S3Trigger${S3MockDataBuilder.mockPolicyUUID}`;
+  static mockFunctioName2 = `S3Trigger${S3MockDataBuilder.mockPolicyUUID2}`;
+  static mockExistingFunctionName1 = 'triggerHandlerFunction1';
+  static mockExistingFunctionName2 = 'triggerHandlerFunction2';
+  static mockFilePath = '';
+  static mockAuthMeta = {
+    service: 'Cognito',
+    providerPlugin: 'awscloudformation',
+    dependsOn: [],
+    customAuth: false,
+    frontendAuthConfig: {
+      loginMechanisms: ['PREFERRED_USERNAME'],
+      signupAttributes: ['EMAIL'],
+      passwordProtectionSettings: {
+        passwordPolicyMinLength: 8,
+        passwordPolicyCharacters: [],
+      },
+      mfaConfiguration: 'OFF',
+      mfaTypes: ['SMS'],
+      verificationMechanisms: ['EMAIL'],
+    },
+  };
+ 
+  mockGroupAccess = {
+    mockAdminGroup: [S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ, S3PermissionType.DELETE],
+    mockGuestGroup: [S3PermissionType.READ],
+  };
+  defaultAuthPerms = [S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ, S3PermissionType.DELETE];
+  defaultGuestPerms = [S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ];
+
+  simpleAuth: S3UserInputs = {
+    resourceName: S3MockDataBuilder.mockResourceName,
+    bucketName: S3MockDataBuilder.mockBucketName,
+    policyUUID: S3MockDataBuilder.mockPolicyUUID,
+    storageAccess: S3AccessType.AUTH_ONLY,
+    guestAccess: [],
+    authAccess: this.defaultAuthPerms,
+    groupAccess: {},
+    triggerFunction: 'NONE',
+  };
+ 
+
+  constructor(startCliInputState: S3UserInputs | undefined) {
+  }
+
+ 
+  static getMockGetAllResourcesNoExistingLambdas() {
+    return [{ service: 'Cognito', serviceType: 'managed' }];
+  }
+
+}
