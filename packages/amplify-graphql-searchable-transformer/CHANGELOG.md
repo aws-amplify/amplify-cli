@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.13.0...@aws-amplify/graphql-searchable-transformer@0.13.1) (2022-02-10)
+
+
+### Bug Fixes
+
+* **searchable:** unwrap _version field correctly when datastore is enabled ([#9694](https://github.com/aws-amplify/amplify-cli/issues/9694)) ([0ce0646](https://github.com/aws-amplify/amplify-cli/commit/0ce0646b111004f8c2b09fe5debf996df1a43b6e))
+
+
+
+
+
 # [0.13.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.10.8...@aws-amplify/graphql-searchable-transformer@0.13.0) (2022-01-31)
 
 
