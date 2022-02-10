@@ -1,0 +1,15 @@
+name: Add new issues to project board
+on:
+  issues:
+    types:
+      - opened
+jobs:
+  add-to-project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add Issue to Project
+        uses: josefaidt/add-issue-to-projects-beta@v1
+        with:
+          github-token: ${{ secrets.TOKEN }}
+          project-number: 78
+          project-owner: 'aws-amplify'
