@@ -8,7 +8,7 @@ import { ConnectionContext, WebsocketSubscriptionServer } from './subscription/w
 
 export class AppSyncSimulatorSubscriptionServer {
   private realtimeServer: WebsocketSubscriptionServer;
-  constructor(private simulatorContext: AmplifyAppSyncSimulator, private server: Server, private subscriptionPath: string = '/graphql') {
+  constructor(private simulatorContext: AmplifyAppSyncSimulator, private server: Server, private subscriptionPath: string = '/graphql/realtime') {
     this.onSubscribe = this.onSubscribe.bind(this);
     this.onConnect = this.onConnect.bind(this);
     this.realtimeServer = new WebsocketSubscriptionServer(

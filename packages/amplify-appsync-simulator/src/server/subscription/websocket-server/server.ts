@@ -91,7 +91,6 @@ export class WebsocketSubscriptionServer {
       this.webSocketServerLegacyEndpoint = new WebSocketServer({ ...serverOptions, path: '/graphql' });
     }
 
-
   }
 
   start() {
