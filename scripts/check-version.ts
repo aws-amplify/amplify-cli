@@ -84,7 +84,7 @@ const checkIfTagExists = async (tag: string): Promise<boolean> => {
 const doesVersionExist = async (packageName: string, version: string): Promise<boolean> => {
   try {
     const result = await execa.sync('npm', ['view', `${packageName}@${version}`, '--json']);
-    const json = JSON.parse(result.stdout);
+    JSON.parse(result.stdout);
     return true;
   } catch (e) {
     return false;
