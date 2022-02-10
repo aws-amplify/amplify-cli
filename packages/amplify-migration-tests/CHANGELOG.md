@@ -3,6 +3,399 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.20](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.16...amplify-migration-tests@4.4.20) (2022-02-10)
+
+
+
+## 7.6.19 (2022-02-08)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.15...amplify-migration-tests@4.4.16) (2022-02-03)
+
+
+
+## 7.6.15 (2022-02-02)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.14...amplify-migration-tests@4.4.15) (2022-01-31)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.13...amplify-migration-tests@4.4.14) (2022-01-27)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.12...amplify-migration-tests@4.4.13) (2022-01-23)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.11...amplify-migration-tests@4.4.12) (2022-01-20)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.10...amplify-migration-tests@4.4.11) (2022-01-13)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.9...amplify-migration-tests@4.4.10) (2022-01-11)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.7...amplify-migration-tests@4.4.9) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.6...amplify-migration-tests@4.4.7) (2021-12-21)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.5...amplify-migration-tests@4.4.6) (2021-12-17)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.4...amplify-migration-tests@4.4.5) (2021-12-03)
+
+
+### Bug Fixes
+
+* incorrect function parameters in invokePluginMethod call ([#9182](https://github.com/aws-amplify/amplify-cli/issues/9182)) ([1be5b27](https://github.com/aws-amplify/amplify-cli/commit/1be5b2735fe009de2631194b07dbda8acd062387))
+
+
+
+
+
+## [4.4.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.3...amplify-migration-tests@4.4.4) (2021-12-02)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.2...amplify-migration-tests@4.4.3) (2021-12-02)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.1...amplify-migration-tests@4.4.2) (2021-12-01)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.0...amplify-migration-tests@4.4.1) (2021-11-26)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+# [4.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.3.4...amplify-migration-tests@4.4.0) (2021-11-23)
+
+
+### Features
+
+* override support for api category ([#9013](https://github.com/aws-amplify/amplify-cli/issues/9013)) ([ae7b001](https://github.com/aws-amplify/amplify-cli/commit/ae7b001f274f327a29c99c67fe851272c6208e84)), closes [#9001](https://github.com/aws-amplify/amplify-cli/issues/9001) [#8954](https://github.com/aws-amplify/amplify-cli/issues/8954) [#8958](https://github.com/aws-amplify/amplify-cli/issues/8958) [#8960](https://github.com/aws-amplify/amplify-cli/issues/8960) [#8967](https://github.com/aws-amplify/amplify-cli/issues/8967) [#8971](https://github.com/aws-amplify/amplify-cli/issues/8971) [#8976](https://github.com/aws-amplify/amplify-cli/issues/8976) [#8975](https://github.com/aws-amplify/amplify-cli/issues/8975) [#8981](https://github.com/aws-amplify/amplify-cli/issues/8981) [#8983](https://github.com/aws-amplify/amplify-cli/issues/8983) [#8992](https://github.com/aws-amplify/amplify-cli/issues/8992) [#9000](https://github.com/aws-amplify/amplify-cli/issues/9000) [#9002](https://github.com/aws-amplify/amplify-cli/issues/9002) [#9005](https://github.com/aws-amplify/amplify-cli/issues/9005) [#9006](https://github.com/aws-amplify/amplify-cli/issues/9006) [#9007](https://github.com/aws-amplify/amplify-cli/issues/9007) [#9008](https://github.com/aws-amplify/amplify-cli/issues/9008) [#9010](https://github.com/aws-amplify/amplify-cli/issues/9010) [#9011](https://github.com/aws-amplify/amplify-cli/issues/9011) [#9012](https://github.com/aws-amplify/amplify-cli/issues/9012) [#9014](https://github.com/aws-amplify/amplify-cli/issues/9014) [#9015](https://github.com/aws-amplify/amplify-cli/issues/9015) [#9017](https://github.com/aws-amplify/amplify-cli/issues/9017) [#9020](https://github.com/aws-amplify/amplify-cli/issues/9020) [#9024](https://github.com/aws-amplify/amplify-cli/issues/9024) [#9027](https://github.com/aws-amplify/amplify-cli/issues/9027) [#9028](https://github.com/aws-amplify/amplify-cli/issues/9028) [#9029](https://github.com/aws-amplify/amplify-cli/issues/9029) [#9032](https://github.com/aws-amplify/amplify-cli/issues/9032) [#9031](https://github.com/aws-amplify/amplify-cli/issues/9031) [#9035](https://github.com/aws-amplify/amplify-cli/issues/9035) [#9038](https://github.com/aws-amplify/amplify-cli/issues/9038) [#9039](https://github.com/aws-amplify/amplify-cli/issues/9039)
+
+
+
+
+
+## [4.3.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.3.3...amplify-migration-tests@4.3.4) (2021-11-21)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.3.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.3.2...amplify-migration-tests@4.3.3) (2021-11-20)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.3.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.3.1...amplify-migration-tests@4.3.2) (2021-11-17)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.3.0...amplify-migration-tests@4.3.1) (2021-11-17)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+# [4.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.15...amplify-migration-tests@4.3.0) (2021-11-15)
+
+
+### Bug Fixes
+
+* Auth update migration e2e fix ([#8811](https://github.com/aws-amplify/amplify-cli/issues/8811)) ([f38a366](https://github.com/aws-amplify/amplify-cli/commit/f38a366180e53a5d8a538ff71f6ec4762f42d533))
+* ci fix ([#8814](https://github.com/aws-amplify/amplify-cli/issues/8814)) ([0f6c6af](https://github.com/aws-amplify/amplify-cli/commit/0f6c6af0088188dc290b0443f6401b0645d37e49))
+* ensure FF on stack transform, revert revert ([#8810](https://github.com/aws-amplify/amplify-cli/issues/8810)) ([868952f](https://github.com/aws-amplify/amplify-cli/commit/868952f9552f09aeb2b0b8e036c59954ee3391e0)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+* fixes auth migration e2e ([#8756](https://github.com/aws-amplify/amplify-cli/issues/8756)) ([f537d7c](https://github.com/aws-amplify/amplify-cli/commit/f537d7c3a1efa2fa67fc28a6f1d27d9889bbfe72))
+* fixes dependsOn parameter and auth migration test ([#8480](https://github.com/aws-amplify/amplify-cli/issues/8480)) ([640b79e](https://github.com/aws-amplify/amplify-cli/commit/640b79ed0e40171271fa5ad9f4524f2c01d04722))
+* migration test fixes ([#8742](https://github.com/aws-amplify/amplify-cli/issues/8742)) ([193635f](https://github.com/aws-amplify/amplify-cli/commit/193635f8355c1a18a061f6eb939eabbada07fcf9))
+* tsc global install error ([7d1cca8](https://github.com/aws-amplify/amplify-cli/commit/7d1cca890f138f32bac51fca085098a777aea1ae))
+* update migration msg, ddb import e2e, lgtm errors ([#8796](https://github.com/aws-amplify/amplify-cli/issues/8796)) ([a2d87ec](https://github.com/aws-amplify/amplify-cli/commit/a2d87eca889ed8b23cfe3cf145c0372b655d4ed9))
+
+
+### Features
+
+* Auth refactor to  use cdk, eliminate EJS, overrides functionality ([#8355](https://github.com/aws-amplify/amplify-cli/issues/8355)) ([66d885f](https://github.com/aws-amplify/amplify-cli/commit/66d885f8125f11c0ea3c23f67fec51b553445d42))
+* root stack override ([#8276](https://github.com/aws-amplify/amplify-cli/issues/8276)) ([887f617](https://github.com/aws-amplify/amplify-cli/commit/887f617a83d99da1cf93850dc96ff0eebda0fe5a))
+
+
+### Reverts
+
+* Revert "fix: update migration msg, ddb import e2e, lgtm errors (#8796)" (#8799) ([394a32f](https://github.com/aws-amplify/amplify-cli/commit/394a32f7a801bcf845a180bfdaa7d1d95c5962e7)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+
+
+
+
+
+# [4.0.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.15...amplify-migration-tests@4.0.0) (2021-11-13)
+
+
+### Bug Fixes
+
+* Auth update migration e2e fix ([#8811](https://github.com/aws-amplify/amplify-cli/issues/8811)) ([f38a366](https://github.com/aws-amplify/amplify-cli/commit/f38a366180e53a5d8a538ff71f6ec4762f42d533))
+* ci fix ([#8814](https://github.com/aws-amplify/amplify-cli/issues/8814)) ([0f6c6af](https://github.com/aws-amplify/amplify-cli/commit/0f6c6af0088188dc290b0443f6401b0645d37e49))
+* ensure FF on stack transform, revert revert ([#8810](https://github.com/aws-amplify/amplify-cli/issues/8810)) ([868952f](https://github.com/aws-amplify/amplify-cli/commit/868952f9552f09aeb2b0b8e036c59954ee3391e0)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+* fixes auth migration e2e ([#8756](https://github.com/aws-amplify/amplify-cli/issues/8756)) ([f537d7c](https://github.com/aws-amplify/amplify-cli/commit/f537d7c3a1efa2fa67fc28a6f1d27d9889bbfe72))
+* fixes dependsOn parameter and auth migration test ([#8480](https://github.com/aws-amplify/amplify-cli/issues/8480)) ([640b79e](https://github.com/aws-amplify/amplify-cli/commit/640b79ed0e40171271fa5ad9f4524f2c01d04722))
+* migration test fixes ([#8742](https://github.com/aws-amplify/amplify-cli/issues/8742)) ([193635f](https://github.com/aws-amplify/amplify-cli/commit/193635f8355c1a18a061f6eb939eabbada07fcf9))
+* tsc global install error ([7d1cca8](https://github.com/aws-amplify/amplify-cli/commit/7d1cca890f138f32bac51fca085098a777aea1ae))
+* update migration msg, ddb import e2e, lgtm errors ([#8796](https://github.com/aws-amplify/amplify-cli/issues/8796)) ([a2d87ec](https://github.com/aws-amplify/amplify-cli/commit/a2d87eca889ed8b23cfe3cf145c0372b655d4ed9))
+
+
+### Features
+
+* Auth refactor to  use cdk, eliminate EJS, overrides functionality ([#8355](https://github.com/aws-amplify/amplify-cli/issues/8355)) ([66d885f](https://github.com/aws-amplify/amplify-cli/commit/66d885f8125f11c0ea3c23f67fec51b553445d42))
+* root stack override ([#8276](https://github.com/aws-amplify/amplify-cli/issues/8276)) ([887f617](https://github.com/aws-amplify/amplify-cli/commit/887f617a83d99da1cf93850dc96ff0eebda0fe5a))
+
+
+### Reverts
+
+* Revert "fix: update migration msg, ddb import e2e, lgtm errors (#8796)" (#8799) ([394a32f](https://github.com/aws-amplify/amplify-cli/commit/394a32f7a801bcf845a180bfdaa7d1d95c5962e7)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+
+
+
+
+
+## [3.1.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.14...amplify-migration-tests@3.1.15) (2021-11-11)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [3.1.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.13...amplify-migration-tests@3.1.14) (2021-10-13)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [3.1.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.12...amplify-migration-tests@3.1.13) (2021-10-10)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [3.1.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.11...amplify-migration-tests@3.1.12) (2021-10-06)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [3.1.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.10...amplify-migration-tests@3.1.11) (2021-10-01)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [3.1.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.9...amplify-migration-tests@3.1.10) (2021-09-27)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [3.1.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.8...amplify-migration-tests@3.1.9) (2021-09-18)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [3.1.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.7...amplify-migration-tests@3.1.8) (2021-09-14)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [3.1.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.6...amplify-migration-tests@3.1.7) (2021-09-09)
+
+
+### Reverts
+
+* Revert "ci: add windows e2e test coverage" ([0560b0f](https://github.com/aws-amplify/amplify-cli/commit/0560b0f4a16ce8ce0b7efebb2494c7e2eb8601c8))
+
+
+
+
+
+## [3.1.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.5...amplify-migration-tests@3.1.6) (2021-09-02)
+
+
+
+# 5.4.0 (2021-09-02)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [3.1.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.4...amplify-migration-tests@3.1.5) (2021-08-24)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [3.1.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.3...amplify-migration-tests@3.1.4) (2021-08-06)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [3.1.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.2...amplify-migration-tests@3.1.3) (2021-07-30)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [3.1.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.1...amplify-migration-tests@3.1.2) (2021-07-27)
+
+
+
+# 5.2.0 (2021-07-26)
+
+
+### Reverts
+
+* Revert "Revert "ci: add support for e2e token rotation (#7665)" (#7759)" (#7762) ([9ea4c8e](https://github.com/aws-amplify/amplify-cli/commit/9ea4c8e115ae62d7c348c3f0d82c89d795eebf46)), closes [#7665](https://github.com/aws-amplify/amplify-cli/issues/7665) [#7759](https://github.com/aws-amplify/amplify-cli/issues/7759) [#7762](https://github.com/aws-amplify/amplify-cli/issues/7762)
+* Revert "ci: add support for e2e token rotation (#7665)" (#7759) ([aadc915](https://github.com/aws-amplify/amplify-cli/commit/aadc9155f5c25478c7f317aec77f51290c6b9cfe)), closes [#7665](https://github.com/aws-amplify/amplify-cli/issues/7665) [#7759](https://github.com/aws-amplify/amplify-cli/issues/7759)
+
+
+
+
+
+## [3.1.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.0...amplify-migration-tests@3.1.1) (2021-07-16)
+
+
+### Bug Fixes
+
+* add/update function when some LL are not yet migrated ([#7674](https://github.com/aws-amplify/amplify-cli/issues/7674)) ([9688681](https://github.com/aws-amplify/amplify-cli/commit/968868103744edcfbed6b082b3d9a92867180f73))
+
+
+
+
+
+# [3.1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.0.2...amplify-migration-tests@3.1.0) (2021-07-12)
+
+
+### Features
+
+* support for sign in with apple ([#7413](https://github.com/aws-amplify/amplify-cli/issues/7413)) ([00d6676](https://github.com/aws-amplify/amplify-cli/commit/00d6676b4c1d6995cac01956078f7b6ee6186814))
+
+
+
+
+
 ## [3.0.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.0.1...amplify-migration-tests@3.0.2) (2021-06-30)
 
 

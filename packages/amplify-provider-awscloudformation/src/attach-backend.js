@@ -5,7 +5,7 @@ const glob = require('glob');
 const extract = require('extract-zip');
 const inquirer = require('inquirer');
 const _ = require('lodash');
-const { pathManager, PathConstants } = require('amplify-cli-core');
+const { exitOnNextTick, pathManager, PathConstants } = require('amplify-cli-core');
 const configurationManager = require('./configuration-manager');
 const { getConfiguredAmplifyClient } = require('./aws-utils/aws-amplify');
 const { checkAmplifyServiceIAMPermission } = require('./amplify-service-permission-check');
@@ -15,10 +15,11 @@ const { resolveAppId } = require('./utils/resolve-appId');
 const { adminLoginFlow } = require('./admin-login');
 const { fileLogger } = require('./utils/aws-logger');
 const logger = fileLogger('attach-backend');
+const { downloadHooks } = require('./utils/hooks-manager');
 
 async function run(context) {
   let appId;
-  let awsConfig;
+  let awsConfigInfo;
   let isAdminApp = false;
   try {
     appId = resolveAppId(context);
@@ -44,20 +45,20 @@ async function run(context) {
   }
 
   if (isAdminApp) {
-    context.exeInfo.awsConfig = {
+    context.exeInfo.awsConfigInfo = {
       configLevel: 'amplifyAdmin',
       config: {},
     };
-    awsConfig = await configurationManager.loadConfigurationForEnv(context, envName, appId);
+    awsConfigInfo = await configurationManager.loadConfigurationForEnv(context, envName, appId);
   } else {
     await configurationManager.init(context);
-    awsConfig = await configurationManager.getAwsConfig(context);
+    awsConfigInfo = await configurationManager.getAwsConfig(context);
   }
 
-  const amplifyClient = await getConfiguredAmplifyClient(context, awsConfig);
+  const amplifyClient = await getConfiguredAmplifyClient(context, awsConfigInfo);
   if (!amplifyClient) {
     // This happens when the Amplify service is not available in the region
-    const region = awsConfig && awsConfig.region ? awsConfig.region : '<unknown>';
+    const region = awsConfigInfo && awsConfigInfo.region ? awsConfigInfo.region : '<unknown>';
     const message = `Amplify service is not available in the region ${region}`;
     context.print.error(message);
     throw new Error(message);
@@ -74,15 +75,16 @@ async function run(context) {
 
   const backendEnv = await getBackendEnv(context, amplifyClient, amplifyApp);
 
-  await downloadBackend(context, backendEnv, awsConfig);
-  const currentAmplifyMeta = await ensureAmplifyMeta(context, amplifyApp, awsConfig);
+  await downloadBackend(context, backendEnv, awsConfigInfo);
+  await downloadHooks(context, backendEnv, awsConfigInfo);
+  const currentAmplifyMeta = await ensureAmplifyMeta(context, amplifyApp, awsConfigInfo);
 
   context.exeInfo.projectConfig.projectName = amplifyApp.name;
   context.exeInfo.localEnvInfo.envName = backendEnv.environmentName;
   context.exeInfo.teamProviderInfo[backendEnv.environmentName] = currentAmplifyMeta.providers;
 }
 
-async function ensureAmplifyMeta(context, amplifyApp, awsConfig) {
+async function ensureAmplifyMeta(context, amplifyApp, awsConfigInfo) {
   // check if appId is present in the provider section of the metadata
   // if not, it's a migration case and we need to
   // 1. insert the appId
@@ -99,15 +101,15 @@ async function ensureAmplifyMeta(context, amplifyApp, awsConfig) {
     fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
 
     const { DeploymentBucketName } = currentAmplifyMeta.providers[constants.ProviderName];
-    await storeArtifactsForAmplifyService(context, awsConfig, DeploymentBucketName);
+    await storeArtifactsForAmplifyService(context, awsConfigInfo, DeploymentBucketName);
   }
 
   return currentAmplifyMeta;
 }
 
-async function storeArtifactsForAmplifyService(context, awsConfig, deploymentBucketName) {
+async function storeArtifactsForAmplifyService(context, awsConfigInfo, deploymentBucketName) {
   const projectPath = process.cwd();
-  const s3Client = new aws.S3(awsConfig);
+  const s3Client = new aws.S3(awsConfigInfo);
   const amplifyMetaFilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath(projectPath);
   const backendConfigFilePath = context.amplify.pathManager.getCurrentBackendConfigFilePath(projectPath);
   await uploadFile(s3Client, deploymentBucketName, amplifyMetaFilePath);
@@ -297,7 +299,7 @@ async function getBackendEnv(context, amplifyClient, amplifyApp) {
   throw ex;
 }
 
-async function downloadBackend(context, backendEnv, awsConfig) {
+async function downloadBackend(context, backendEnv, awsConfigInfo) {
   if (!backendEnv) {
     return;
   }
@@ -308,7 +310,7 @@ async function downloadBackend(context, backendEnv, awsConfig) {
   const backendDir = context.amplify.pathManager.getBackendDirPath(projectPath);
   const zipFileName = constants.S3BackendZipFileName;
 
-  const s3Client = new aws.S3(awsConfig);
+  const s3Client = new aws.S3(awsConfigInfo);
   const deploymentBucketName = backendEnv.deploymentArtifacts;
 
   const params = {
@@ -321,9 +323,14 @@ async function downloadBackend(context, backendEnv, awsConfig) {
   try {
     log();
     zipObject = await s3Client.getObject(params).promise();
-  } catch (ex) {
-    log(ex);
+  } catch (err) {
+    log(err);
+    context.print.error(`Error downloading ${zipFileName} from deployment bucket: ${deploymentBucketName}, the error is: ${err.message}`);
+    await context.usageData.emitError(err);
+    exitOnNextTick(1);
+    return;
   }
+
   const buff = Buffer.from(zipObject.Body);
 
   fs.ensureDirSync(tempDirPath);

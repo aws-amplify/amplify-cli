@@ -51,7 +51,7 @@ async function enable(context, successMessage) {
         default: channelOutput.ApiKey,
       },
     ];
-    answers = await inquirer.prompt(questions);
+    answers = trimAnswers(await inquirer.prompt(questions));
   }
 
   const params = {
@@ -104,7 +104,7 @@ async function disable(context) {
         default: channelOutput.ApiKey,
       },
     ];
-    answers = await inquirer.prompt(questions);
+    answers = trimAnswers(await inquirer.prompt(questions));
   }
 
   const params = {
@@ -152,6 +152,15 @@ function pull(context, pinpointApp) {
       spinner.stop();
       throw err;
     });
+}
+
+function trimAnswers(answers) {
+  for (const [key, value] of Object.entries(answers)) {
+    if (typeof answers[key] === 'string') {
+      answers[key] = value.trim();
+    }
+  }
+  return answers;
 }
 
 module.exports = {

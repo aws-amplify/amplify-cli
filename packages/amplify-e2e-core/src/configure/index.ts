@@ -1,4 +1,5 @@
 import { nspawn as spawn, getCLIPath, singleSelect } from '..';
+import { EOL } from 'os';
 
 type AmplifyConfiguration = {
   accessKeyId: string;
@@ -10,15 +11,18 @@ type AmplifyConfiguration = {
 const defaultSettings = {
   profileName: 'amplify-integ-test-user',
   region: 'us-east-2',
-  userName: '\r',
+  userName: EOL,
 };
 
 export const amplifyRegions = [
   'us-east-1',
   'us-east-2',
+  'us-west-1',
   'us-west-2',
+  'eu-north-1',
   'eu-west-1',
   'eu-west-2',
+  'eu-west-3',
   'eu-central-1',
   'ap-northeast-1',
   'ap-northeast-2',
@@ -26,6 +30,8 @@ export const amplifyRegions = [
   'ap-southeast-2',
   'ap-south-1',
   'ca-central-1',
+  'me-south-1',
+  'sa-east-1',
 ];
 
 const configurationOptions = ['Project information', 'AWS Profile setting', 'Advanced: Container-based deployments'];
@@ -42,7 +48,7 @@ export function amplifyConfigure(settings: AmplifyConfiguration): Promise<void> 
   }
 
   return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['configure'], { stripColors: true })
+    const chain = spawn(getCLIPath(process.platform !== 'win32'), ['configure'], { stripColors: true })
       .wait('Sign in to your AWS administrator account:')
       .wait('Press Enter to continue')
       .sendCarriageReturn()

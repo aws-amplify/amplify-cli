@@ -3,6 +3,130 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.23.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.22.5...graphql-transformer-common@4.23.0) (2022-01-31)
+
+
+### Features
+
+* `[@maps](https://github.com/maps)To` directive to enable renaming models while retaining data ([#9340](https://github.com/aws-amplify/amplify-cli/issues/9340)) ([aedf45d](https://github.com/aws-amplify/amplify-cli/commit/aedf45d9237812d71bb8b56164efe0222ad3d534))
+
+
+
+
+
+## [4.22.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.22.4...graphql-transformer-common@4.22.5) (2022-01-13)
+
+
+### Bug Fixes
+
+* clean up missing and unused GraphQL v1 dependencies ([#9496](https://github.com/aws-amplify/amplify-cli/issues/9496)) ([fe8201b](https://github.com/aws-amplify/amplify-cli/commit/fe8201be17f42db233fce0bb366ff4d0c8358ec0))
+
+
+
+
+
+## [4.22.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.22.2...graphql-transformer-common@4.22.4) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+**Note:** Version bump only for package graphql-transformer-common
+
+
+
+
+
+## [4.22.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.22.1...graphql-transformer-common@4.22.2) (2021-11-17)
+
+
+### Bug Fixes
+
+* append apiKey if global auth is enabled and its not default auth ([#8843](https://github.com/aws-amplify/amplify-cli/issues/8843)) ([3aadcde](https://github.com/aws-amplify/amplify-cli/commit/3aadcde2225f0ede5c5d94c2a4cd9d1afece5288))
+
+
+
+
+
+## [4.22.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.20.0...graphql-transformer-common@4.22.1) (2021-11-15)
+
+**Note:** Version bump only for package graphql-transformer-common
+
+
+
+
+
+# [4.20.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.19.10...graphql-transformer-common@4.20.0) (2021-11-11)
+
+
+### Bug Fixes
+
+* [@function](https://github.com/function) vNext payload, remove unused code, and update common mapping tempalte function ([#8462](https://github.com/aws-amplify/amplify-cli/issues/8462)) ([24d0de9](https://github.com/aws-amplify/amplify-cli/commit/24d0de97a1bfacc3983e5b11a7582c9500759adc))
+* auth on getting related model name and searchablevNext e2e ([#8455](https://github.com/aws-amplify/amplify-cli/issues/8455)) ([8536dd3](https://github.com/aws-amplify/amplify-cli/commit/8536dd3eb4cffc14602d80eea82b8b62b8227485))
+
+
+### Features
+
+* generate list types as non-null ([#8166](https://github.com/aws-amplify/amplify-cli/issues/8166)) ([93786c1](https://github.com/aws-amplify/amplify-cli/commit/93786c13ef04c72748ca32a1ef7878c0e6b5b129))
+
+
+
+
+
+## [4.19.10](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.19.9...graphql-transformer-common@4.19.10) (2021-09-27)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** iam role name does not exceed 64 characters ([#8244](https://github.com/aws-amplify/amplify-cli/issues/8244)) ([812a671](https://github.com/aws-amplify/amplify-cli/commit/812a67163d6dd33160bf7ace9afd538c83a7af1a))
+
+
+
+
+
+## [4.19.9](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.19.8...graphql-transformer-common@4.19.9) (2021-09-02)
+
+**Note:** Version bump only for package graphql-transformer-common
+
+
+
+
+
+## [4.19.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.19.7...graphql-transformer-common@4.19.8) (2021-08-24)
+
+**Note:** Version bump only for package graphql-transformer-common
+
+
+
+
+
+## [4.19.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.19.6...graphql-transformer-common@4.19.7) (2021-08-06)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** model input fields transform ([#7857](https://github.com/aws-amplify/amplify-cli/issues/7857)) ([12ff663](https://github.com/aws-amplify/amplify-cli/commit/12ff663a94a4896bd9eacef3847be15b7631d8df))
+
+
+
+
+
+## [4.19.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.19.5...graphql-transformer-common@4.19.6) (2021-07-27)
+
+**Note:** Version bump only for package graphql-transformer-common
+
+
+
+
+
+## [4.19.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.19.4...graphql-transformer-common@4.19.5) (2021-07-16)
+
+**Note:** Version bump only for package graphql-transformer-common
+
+
+
+
+
 ## [4.19.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.19.3...graphql-transformer-common@4.19.4) (2021-06-30)
 
 

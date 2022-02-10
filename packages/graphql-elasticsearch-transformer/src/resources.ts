@@ -98,6 +98,27 @@ export class ResourceFactory {
           'i3.4xlarge.elasticsearch',
           'i3.8xlarge.elasticsearch',
           'i3.16xlarge.elasticsearch',
+          'r6gd.12xlarge.elasticsearch',
+          'ultrawarm1.xlarge.elasticsearch',
+          'm5.4xlarge.elasticsearch',
+          't3.xlarge.elasticsearch',
+          'm6g.xlarge.elasticsearch',
+          'm6g.12xlarge.elasticsearch',
+          't2.micro.elasticsearch',
+          'r6gd.16xlarge.elasticsearch',
+          'd2.2xlarge.elasticsearch',
+          't3.micro.elasticsearch',
+          'm5.large.elasticsearch',
+          'd2.4xlarge.elasticsearch',
+          't3.small.elasticsearch',
+          'c5.2xlarge.elasticsearch',
+          'c6g.2xlarge.elasticsearch',
+          'd2.8xlarge.elasticsearch',
+          'c5.4xlarge.elasticsearch',
+          't4g.medium.elasticsearch',
+          'c6g.4xlarge.elasticsearch',
+          'c6g.xlarge.elasticsearch',
+          'c6g.12xlarge.elasticsearch',
         ],
       }),
       [ResourceConstants.PARAMETERS.ElasticsearchEBSVolumeGB]: new NumberParameter({
@@ -118,9 +139,8 @@ export class ResourceFactory {
         [ResourceConstants.RESOURCES.ElasticsearchDataSourceLogicalID]: this.makeElasticsearchDataSource(),
         [ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID]: this.makeElasticsearchDomain(),
         [ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaIAMRoleLogicalID]: this.makeStreamingLambdaIAMRole(),
-        [ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID]: this.makeDynamoDBStreamingFunction(
-          isProjectUsingDataStore,
-        ),
+        [ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID]:
+          this.makeDynamoDBStreamingFunction(isProjectUsingDataStore),
       },
       Mappings: this.getLayerMapping(),
       Outputs: {
@@ -218,6 +238,9 @@ export class ResourceFactory {
         },
         'us-gov-east-1': {
           layerRegion: 'arn:aws-us-gov:lambda:us-gov-east-1:138526772879:layer:AWSLambda-Python-AWS-SDK:1',
+        },
+        'me-south-1': {
+          layerRegion: 'arn:aws:lambda:me-south-1:507411403535:layer:AWSLambda-Python-AWS-SDK:1',
         },
       },
     };

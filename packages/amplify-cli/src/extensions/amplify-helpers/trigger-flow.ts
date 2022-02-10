@@ -1,10 +1,10 @@
-import * as inquirer from 'inquirer';
+import { $TSAny, $TSContext, $TSObject, exitOnNextTick, JSONUtilities } from 'amplify-cli-core';
 import chalk from 'chalk';
 import * as fs from 'fs-extra';
-import * as path from 'path';
-import _ from 'lodash';
-import { JSONUtilities, $TSAny } from 'amplify-cli-core';
+import * as inquirer from 'inquirer';
 import Separator from 'inquirer/lib/objects/separator';
+import _ from 'lodash';
+import * as path from 'path';
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaFunction = 'Lambda';
@@ -45,6 +45,49 @@ export const addTrigger = async triggerOptions => {
     triggerEventPath,
     skipEdit,
   } = triggerOptions;
+  /**
+   * The function template dir for this trigger, i.e.
+   * PostConfirmation/function-template-dir.
+   */
+  const sourceRoot = path.join(triggerDir, 'function-template-dir');
+  /**
+   * The function template dir for the default trigger template.
+   */
+  const defaultRoot = path.resolve(triggerDir, '..', 'function-template-dir');
+  /**
+   * A key-value map of input filenames and output filepaths.
+   */
+  const templateMap = {
+    'trigger-index.js': path.join('src', 'index.js'),
+    'package.json.ejs': path.join('src', 'package.json'),
+    'event.json': path.join('src', 'event.json'),
+  };
+  /**
+   * Hold a key-value map of input filepaths and output filenames.
+   */
+  const destMap = {};
+  /**
+   * For each templateFile (i.e. trigger-index.js), use
+   * {triggerDir}/../{templateFile} if {triggerDir}/{templateFile}
+   * override does not exist.
+   */
+  const templateFiles = Object.keys(templateMap);
+  const sourceFiles = templateFiles.map(file => {
+    const defaultTemplate = path.resolve(defaultRoot, file);
+    const overrideTemplate = path.resolve(sourceRoot, file);
+    const templateToUse = fs.existsSync(overrideTemplate) ? overrideTemplate : defaultTemplate;
+    return path.relative(sourceRoot, templateToUse);
+  });
+  /**
+   * Map relative template pathnames to their new filenames.
+   */
+  for (const sourceFile of sourceFiles) {
+    /**
+     * /path/to/file.js -> file.js
+     */
+    const fileName = path.basename(sourceFile);
+    destMap[sourceFile] = templateMap[fileName];
+  }
 
   await context.amplify.invokePluginMethod(context, 'function', undefined, 'add', [
     context,
@@ -54,13 +97,9 @@ export const addTrigger = async triggerOptions => {
       trigger: true,
       cloudResourceTemplatePath: path.join(triggerDir, 'cloudformation-templates', triggerTemplate),
       functionTemplate: {
-        sourceRoot: path.join(triggerDir, 'function-template-dir'),
-        sourceFiles: ['trigger-index.js', 'package.json.ejs', 'event.json'],
-        destMap: {
-          'trigger-index.js': path.join('src', 'index.js'),
-          'package.json.ejs': path.join('src', 'package.json'),
-          'event.json': path.join('src', 'event.json'),
-        },
+        sourceRoot,
+        sourceFiles,
+        destMap,
       },
       modules: values,
       parentResource,
@@ -95,7 +134,7 @@ export const addTrigger = async triggerOptions => {
  * {
  *  key: "PostConfirmation",
  *  values: ["add-to-group"]
- *  category: "amplify-category-auth",
+ *  category: "@aws-amplify/amplify-category-auth",
  *  context: <cli-contex-object>,
  *  functionName:"parentAuthResourcePostConfirmation",
  *  parentResource:"parentAuthResource",
@@ -154,10 +193,12 @@ export const updateTrigger = async triggerOptions => {
 
       await cleanFunctions(key, values, category, context, targetPath);
     }
-    context.print.success('Successfully updated the Lambda function locally');
+    context.print.success('Successfully updated the Cognito trigger locally');
     return null;
-  } catch (e) {
-    throw new Error('Unable to update lambda function');
+  } catch (err: $TSAny) {
+    context.print.error(`Error updating the Cognito trigger: ${err.message}`);
+    await context.usageData.emitError(err);
+    exitOnNextTick(1);
   }
 };
 
@@ -170,7 +211,7 @@ export const deleteDeselectedTriggers = async (currentTriggers, previousTriggers
   }
 };
 
-export const deleteTrigger = async (context, name, dir) => {
+export const deleteTrigger = async (context: $TSContext, name: string, dir: string) => {
   try {
     await context.amplify.forceRemoveResource(context, 'function', name, dir);
   } catch (e) {
@@ -178,7 +219,7 @@ export const deleteTrigger = async (context, name, dir) => {
   }
 };
 
-export const deleteAllTriggers = async (triggers, functionName, dir, context) => {
+export const deleteAllTriggers = async (triggers: $TSObject, functionName: string, dir: string, context: $TSContext) => {
   const previousKeys = Object.keys(triggers);
   for (let y = 0; y < previousKeys.length; y += 1) {
     const targetPath = `${dir}/function/${functionName}`;
@@ -190,7 +231,7 @@ export const deleteAllTriggers = async (triggers, functionName, dir, context) =>
  * @function triggerFlow
  * @param {object} context CLI context
  * @param {string} resource The provider (i.e. cognito)
- * @param {string} category The CLI category (i.e. amplify-category-auth)
+ * @param {string} category The CLI category (i.e. @aws-amplify/amplify-category-auth)
  * @param {object} previousTriggers Object representing already configured triggers
  *  @example {"PostConfirmation":["add-to-group"]}
  * @returns {object} Object with current key/value pairs for triggers and templates
@@ -281,7 +322,7 @@ export const triggerFlow = async (context, resource, category, previousTriggers 
  * @function getTriggerPermissions
  * @param {object} context CLI context
  * @param {string} triggers Serialized trigger object
- * @param {string} category The CLI category (i.e. amplify-category-auth)
+ * @param {string} category The CLI category (i.e. @aws-amplify/amplify-category-auth)
  * @returns {array} Array of serialized permissions objects
  * @example ["{
  *    "policyName": "AddToGroup",

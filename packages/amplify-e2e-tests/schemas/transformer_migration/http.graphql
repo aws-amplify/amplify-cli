@@ -1,0 +1,15 @@
+type Comment @model {
+  id: ID!
+  title: String
+  simpleGet: CompObj @http(method: GET, url: "https://amazon.com/posts/1")
+  simpleGet2: CompObj @http(url: "https://amazon.com/posts/2")
+  complexPost(id: Int, title: String!, body: String, userId: Int): CompObj @http(method: POST, url: "https://amazon.com/posts")
+  complexPut(id: Int!, title: String, body: String, userId: Int): CompObj @http(method: PUT, url: "https://amazon.com/posts/${env}")
+  deleter: String @http(method: DELETE, url: "https://amazon.com/posts/4")
+}
+type CompObj {
+  userId: Int
+  id: Int
+  title: String
+  body: String
+}

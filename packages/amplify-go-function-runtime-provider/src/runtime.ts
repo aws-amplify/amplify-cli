@@ -94,6 +94,8 @@ export const buildResource = async ({ buildType, srcRoot, lastBuildTimeStamp }: 
       envVars.CGO_ENABLED = 0;
     }
 
+    // for go@1.16, dependencies must be manually installed
+    executeCommand(['mod', 'tidy', '-v'], true, envVars, srcDir);
     // Execute the build command, cwd must be the source file directory (Windows requires it)
     executeCommand(['build', '-o', executablePath, '.'], true, envVars, srcDir);
 

@@ -3,8 +3,8 @@ import { CloudFormationClient } from './CloudFormationClient';
 import * as fs from 'fs';
 import * as path from 'path';
 import { DeploymentResources } from 'graphql-transformer-core/lib/DeploymentResources';
-import { deleteUserPool } from './cognitoUtils';
-import CognitoIdentityServiceProvider from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { deleteUserPool, deleteIdentityPool } from './cognitoUtils';
+import { CognitoIdentityServiceProvider, CognitoIdentity } from 'aws-sdk';
 import emptyBucket from './emptyBucket';
 
 function deleteDirectory(directory: string) {
@@ -134,6 +134,7 @@ export async function deploy(
   bucketName: string,
   rootKey: string,
   buildTimeStamp: string,
+  initialDeployment: boolean = true,
 ) {
   try {
     if (!fs.existsSync(buildPath)) {
@@ -162,7 +163,8 @@ export async function deploy(
   }
 
   try {
-    await cf.createStack(deploymentResources.rootStack, stackName, {
+    const operation = initialDeployment ? 'createStack' : 'updateStack';
+    await cf[operation](deploymentResources.rootStack, stackName, {
       ...params,
       S3DeploymentBucket: bucketName,
       S3DeploymentRootKey: s3RootKey,
@@ -178,7 +180,7 @@ export async function deploy(
 }
 
 function addAPIKeys(stack: DeploymentResources) {
-  if (!stack.rootStack.Resources.GraphQLAPIKey) {
+  if (stack.rootStack.Parameters.CreateAPIKey && !stack.rootStack.Resources.GraphQLAPIKey) {
     stack.rootStack.Resources.GraphQLAPIKey = {
       Type: 'AWS::AppSync::ApiKey',
       Properties: {
@@ -189,7 +191,7 @@ function addAPIKeys(stack: DeploymentResources) {
     };
   }
 
-  if (!stack.rootStack.Outputs.GraphQLAPIKeyOutput) {
+  if (stack.rootStack.Parameters.CreateAPIKey && !stack.rootStack.Outputs.GraphQLAPIKeyOutput) {
     stack.rootStack.Outputs.GraphQLAPIKeyOutput = {
       Value: {
         'Fn::GetAtt': ['GraphQLAPIKey', 'ApiKey'],
@@ -200,18 +202,27 @@ function addAPIKeys(stack: DeploymentResources) {
 
 export const cleanupStackAfterTest = async (
   bucketName: string,
-  stackName: string,
+  stackName: string | undefined,
   cf: CloudFormationClient,
   cognitoParams?: { cognitoClient: CognitoIdentityServiceProvider; userPoolId: string },
+  identityParams?: { identityClient: CognitoIdentity; identityPoolId: string },
 ) => {
   try {
-    await cf.deleteStack(stackName);
+    if (stackName) {
+      await cf.deleteStack(stackName);
+    }
+
+    if (identityParams) {
+      await deleteIdentityPool(identityParams.identityClient, identityParams.identityPoolId);
+    }
 
     if (cognitoParams) {
       await deleteUserPool(cognitoParams.cognitoClient, cognitoParams.userPoolId);
     }
 
-    await cf.waitForStack(stackName);
+    if (stackName) {
+      await cf.waitForStack(stackName);
+    }
   } catch (e) {
     if (!(e.code === 'ValidationError' && e.message === `Stack with id ${stackName} does not exist`)) {
       throw e;

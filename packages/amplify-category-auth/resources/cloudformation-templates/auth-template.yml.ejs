@@ -1,3 +1,5 @@
+<% var autoVerifiedAttributes = props.autoVerifiedAttributes ? props.autoVerifiedAttributes.concat(props.aliasAttributes ? props.aliasAttributes : []).filter((attr, i, aliasAttributeArray) => ['email', 'phone_number'].includes(attr) && aliasAttributeArray.indexOf(attr) === i) : [] %>
+<% var configureSMS = ((props.autoVerifiedAttributes && props.autoVerifiedAttributes.includes('phone_number')) || (props.mfaConfiguration != 'OFF' && props.mfaTypes && props.mfaTypes.includes('SMS Text Message')) || (props.requiredAttributes && props.requiredAttributes.includes('phone_number'))) %> 
 AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
@@ -77,6 +79,7 @@ Resources:
             MaxAge: 3000
   <% } %>
   <%if (props.authSelections !== 'identityPoolOnly') { %>
+  <% if(!props.useEnabledMfas || configureSMS) { %>
   # BEGIN SNS ROLE RESOURCE
   SNSRole:
   # Created to allow the UserPool SMS Config to publish via the Simple Notification Service during MFA Process
@@ -106,6 +109,7 @@ Resources:
                 Action:
                   - "sns:Publish"
                 Resource: "*"
+  <% } %> 
   # BEGIN USER POOL RESOURCES
   UserPool:
   # Created upon user selection
@@ -157,10 +161,13 @@ Resources:
           VerifyAuthChallengeResponse: !Ref function<%=props.resourceName%>VerifyAuthChallengeResponseArn
         <% } %>
       <% } %>
-      <%if (props.autoVerifiedAttributes && props.autoVerifiedAttributes.length > 0) { %>
-      AutoVerifiedAttributes: !Ref autoVerifiedAttributes
+      <%if (autoVerifiedAttributes && autoVerifiedAttributes.length > 0) { %>
+      AutoVerifiedAttributes:
+      <% for(let x = 0; x < autoVerifiedAttributes.length; x++) { %>
+        - <%= autoVerifiedAttributes[x] %>
       <% } %>
-      <%if (props.autoVerifiedAttributes.includes('email')) { %>
+      <% } %>
+      <%if (autoVerifiedAttributes && autoVerifiedAttributes.includes('email')) { %>
       EmailVerificationMessage: !Ref emailVerificationMessage
       EmailVerificationSubject: !Ref emailVerificationSubject
       <% } %>
@@ -174,13 +181,27 @@ Resources:
       <% if (props.usernameAttributes && props.usernameAttributes !== 'username') { %>
       UsernameAttributes: !Ref usernameAttributes
       <% } %>
+      <% if (props.aliasAttributes && props.aliasAttributes.length > 0) { %>
+      AliasAttributes: !Ref aliasAttributes
+      <% } %>
       MfaConfiguration: !Ref mfaConfiguration
+      <% if(props.useEnabledMfas && props.mfaConfiguration != 'OFF') {%>
+      EnabledMfas:
+        <% if(configureSMS) {%> 
+        - SMS_MFA
+        <% } %>
+        <% if(props.mfaTypes.includes('TOTP')) {%>
+        - SOFTWARE_TOKEN_MFA
+        <% } %>
+      <% } %>  
+      <% if(!props.useEnabledMfas || configureSMS) {%> 
       SmsVerificationMessage: !Ref smsVerificationMessage
       SmsAuthenticationMessage: !Ref smsAuthenticationMessage
       SmsConfiguration:
         SnsCallerArn: !GetAtt SNSRole.Arn
         ExternalId: <%=`${props.resourceNameTruncated}_role_external_id`%>
-    <%if (props.mfaConfiguration != 'OFF') { %>
+      <% } %>
+    <%if (configureSMS) { %>
     DependsOn: SNSRole
     <% } %>
   <%if (!props.breakCircularDependency && props.triggers && props.dependsOn) { %>
@@ -382,7 +403,7 @@ Resources:
             - '};'
       Handler: index.handler
       Runtime: nodejs12.x
-      Timeout: '300'
+      Timeout: 300
       Role: !GetAtt
         - UserPoolClientRole
         - Arn
@@ -508,7 +529,7 @@ Resources:
 
       Handler: index.handler
       Runtime: nodejs12.x
-      Timeout: '300'
+      Timeout: 300
       Role: !GetAtt
         - UserPoolClientRole
         - Arn
@@ -589,15 +610,25 @@ Resources:
             - '   let providerCredsIndex = hostedUIProviderCreds.findIndex((provider) => provider.ProviderName === providerName);'
             - '   let providerCreds = hostedUIProviderCreds[providerCredsIndex];'
             - '   let requestParams = {'
-            - '    ProviderDetails: {'
-            - '     ''client_id'': providerCreds.client_id,'
-            - '     ''client_secret'': providerCreds.client_secret,'
-            - '     ''authorize_scopes'': providerMeta.authorize_scopes'
-            - '    },'
             - '    ProviderName: providerMeta.ProviderName,'
             - '    UserPoolId: userPoolId,'
-            - '    AttributeMapping: providerMeta.AttributeMapping'
+            - '    AttributeMapping: providerMeta.AttributeMapping,'
             - '   };'
+            - '   if (providerMeta.ProviderName === ''SignInWithApple'') {'
+            - '    requestParams.ProviderDetails = {'
+            - '     ''client_id'': providerCreds.client_id,'
+            - '     ''team_id'': providerCreds.team_id,'
+            - '     ''key_id'': providerCreds.key_id,'
+            - '     ''private_key'': providerCreds.private_key ? providerCreds.private_key : null,'
+            - '     ''authorize_scopes'': providerMeta.authorize_scopes,'
+            - '    };'
+            - '   } else {'
+            - '    requestParams.ProviderDetails = {'
+            - '     ''client_id'': providerCreds.client_id,'
+            - '     ''client_secret'': providerCreds.client_secret,'
+            - '     ''authorize_scopes'': providerMeta.authorize_scopes,'
+            - '    };'
+            - '   }'
             - '   return requestParams;'
             - '  };'
             - '  let createIdentityProvider = (providerName) => {'
@@ -640,7 +671,7 @@ Resources:
 
       Handler: index.handler
       Runtime: nodejs12.x
-      Timeout: '300'
+      Timeout: 300
       Role: !GetAtt
         - UserPoolClientRole
         - Arn
@@ -739,7 +770,7 @@ Resources:
 
       Handler: index.handler
       Runtime: nodejs12.x
-      Timeout: '300'
+      Timeout: 300
       Role: !GetAtt
         - UserPoolClientRole
         - Arn
@@ -791,7 +822,7 @@ Resources:
     DependsOn: OAuthCustomResourceLogPolicy
   <% } %>
 
-  <%if (props.mfaConfiguration != 'OFF') { %>
+  <%if (!props.useEnabledMfas && props.mfaConfiguration != 'OFF') { %>
   # BEGIN MFA LAMBDA RESOURCES
   MFALambdaRole:
   # Created to execute Lambda which sets MFA config values
@@ -816,6 +847,15 @@ Resources:
               Action:
                 - 'iam:PassRole'
               Resource: !If [ShouldNotCreateEnvResources, '<%= `arn:aws:iam:::role/${props.resourceNameTruncated}_totp_lambda_role`%>', !Join ['',['<%= `arn:aws:iam:::role/${props.resourceNameTruncated}_totp_lambda_role` %>', '-', !Ref env]]]
+      - PolicyName: <%=`${props.resourceNameTruncated}_sns_pass_role_policy`%>
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - 'iam:PassRole'
+              Resource: !GetAtt SNSRole.Arn
+    DependsOn: SNSRole
   MFALambda:
   # Lambda which sets MFA config values
   # Depends on MFALambdaRole for role ARN
@@ -860,7 +900,7 @@ Resources:
             - '};'
       Handler: index.handler
       Runtime: nodejs12.x
-      Timeout: '300'
+      Timeout: 300
       Role: !GetAtt
         - MFALambdaRole
         - Arn
@@ -1020,7 +1060,7 @@ Resources:
             - '};'
       Handler: index.handler
       Runtime: nodejs12.x
-      Timeout: '300'
+      Timeout: 300
       Role: !GetAtt
         - OpenIdLambdaRole
         - Arn
@@ -1112,6 +1152,9 @@ Resources:
         <%if (props.authProviders.indexOf('www.amazon.com') !== -1) { %>
         www.amazon.com: !Ref amazonAppId
         <% } %>
+        <%if (props.authProviders.indexOf('appleid.apple.com') !== -1) { %>
+        appleid.apple.com: !Ref appleAppId
+        <% } %>
       <% } %>
       AllowUnauthenticatedIdentities: !Ref allowUnauthenticatedIdentities
       <%if (props.audiences && props.audiences.length > 0) { %>
@@ -1169,7 +1212,7 @@ Outputs :
   AppClientSecret:
     Value: !GetAtt UserPoolClientInputs.appSecret
     Condition: ShouldOutputAppClientSecrets
-  <%if (props.mfaConfiguration != 'OFF') { %>
+  <%if (!props.useEnabledMfas || configureSMS) { %>
   CreatedSNSRole:
     Value: !GetAtt SNSRole.Arn
     Description: role arn
@@ -1193,5 +1236,9 @@ Outputs :
   <%if (props.amazonAppId) { %>
   AmazonWebClient:
     Value: !Ref amazonAppId
+  <% } %>
+  <%if (props.appleAppId) { %>
+  AppleWebClient:
+    Value: !Ref appleAppId
   <% } %>
   <% } %>

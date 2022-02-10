@@ -1,22 +1,26 @@
 // @ts-check
 const chalk = require('chalk');
-const { BannerMessage } = require('amplify-cli-core');
+const { BannerMessage, stateManager, FeatureFlags } = require('amplify-cli-core');
 const { fileLogger } = require('./utils/aws-logger');
 const { SNS } = require('./aws-utils/aws-sns');
+const { getTransformerVersion } = require('./transform-graphql-schema');
+const { printer } = require('amplify-prompts');
 
 const logger = fileLogger('display-helpful-urls');
 
 async function displayHelpfulURLs(context, resourcesToBeCreated) {
-  context.print.info('');
+  printer.blankLine();
   showPinpointURL(context, resourcesToBeCreated);
   showGraphQLURL(context, resourcesToBeCreated);
+  await showGraphQLTransformerVersion(context);
   showRestAPIURL(context, resourcesToBeCreated);
   showHostingURL(context, resourcesToBeCreated);
   showContainerHostingInfo(context, resourcesToBeCreated);
   showHostedUIURLs(context, resourcesToBeCreated);
   await showRekognitionURLS(context, resourcesToBeCreated);
   await showCognitoSandBoxMessage(context, resourcesToBeCreated);
-  context.print.info('');
+  showGraphQLTransformerMigrationMessage();
+  printer.blankLine();
 }
 
 function showPinpointURL(context, resourcesToBeCreated) {
@@ -259,7 +263,41 @@ async function showSMSSandboxWarning(context) {
   }
 }
 
+function showGraphQLTransformerMigrationMessage() {
+  const hasGraphqlApi = !!Object.entries(stateManager.getMeta().api || {})
+    .filter(([_, apiResource]) => apiResource.service === 'AppSync')
+    .map(([name]) => name).length;
+  const suppressMessage = FeatureFlags.getBoolean('graphqltransformer.suppressschemamigrationprompt');
+  const usingV2 = FeatureFlags.getNumber('graphqltransformer.transformerversion') === 2;
+  if (!hasGraphqlApi || suppressMessage || usingV2) {
+    return;
+  }
+  printer.blankLine();
+  printer.warn(
+    'Amplify CLI has made improvements to GraphQL APIs. Improvements include pipeline resolvers support, deny-by-default authorization, and improved search and result aggregations.',
+  );
+  printer.info('For more information, see https://docs.amplify.aws/cli/migration/transformer-migration/');
+  printer.info(`To get started, run 'amplify migrate api'`);
+}
+
+async function showGraphQLTransformerVersion(context) {
+  const meta = stateManager.getMeta();
+  const apiObject = (meta && meta.api) || {};
+  const hasGraphqlApi = !!Object.entries(apiObject)
+    .filter(([_, apiResource]) => apiResource.service === 'AppSync')
+    .map(([name]) => name).length;
+
+  if (!hasGraphqlApi) {
+    return;
+  }
+
+  const transformerVersion = await getTransformerVersion(context);
+
+  context.print.info(chalk`GraphQL transformer version: ${transformerVersion}`);
+}
+
 module.exports = {
   displayHelpfulURLs,
   showSMSSandboxWarning,
+  showGraphQLTransformerVersion,
 };

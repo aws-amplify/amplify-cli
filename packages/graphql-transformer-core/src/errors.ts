@@ -1,5 +1,7 @@
-import { GraphQLError } from 'graphql';
+import { GraphQLError, printError } from 'graphql';
+import * as os from 'os';
 
+const GRAPHQL_TRANSFORMER_V2_DIRECTIVES = ['hasOne', 'index', 'primaryKey', 'belongsTo', 'manyToMany', 'hasMany', 'default'];
 export class InvalidTransformerError extends Error {
   constructor(message: string) {
     super(message);
@@ -13,7 +15,36 @@ export class InvalidTransformerError extends Error {
 
 export class SchemaValidationError extends Error {
   constructor(errors: Readonly<GraphQLError[]>) {
-    super(`Schema Errors:\n\n${errors.join('\n')}`);
+    const v2DirectivesInUse = new Set<string>();
+    const newErrors = errors.filter(error => {
+      if (!error.message.startsWith('Unknown directive')) {
+        return true;
+      }
+      const dir = GRAPHQL_TRANSFORMER_V2_DIRECTIVES.find(d => error.message.endsWith(`"${d}".`));
+      if (!dir) {
+        return true;
+      }
+      v2DirectivesInUse.add(dir);
+      return false;
+    });
+
+    if (v2DirectivesInUse.size > 0) {
+      const v2DirectiveErrorMessage = `Your GraphQL Schema is using ${Array.from(v2DirectivesInUse.values())
+        .map(d => `"@${d}"`)
+        .join(', ')} ${
+        v2DirectivesInUse.size > 1 ? 'directives' : 'directive'
+      } from the newer version of the GraphQL Transformer. Visit https://docs.amplify.aws/cli/migration/transformer-migration/ to learn how to migrate your GraphQL schema.`;
+      if (newErrors.length === 0) {
+        super(v2DirectiveErrorMessage);
+      } else {
+        super(
+          v2DirectiveErrorMessage +
+            ` There are additional validation errors listed below: \n\n ${newErrors.map(error => printError(error)).join('\n\n')}`,
+        );
+      }
+    } else {
+      super(`Schema validation failed.\n\n${newErrors.map(error => printError(error)).join('\n\n')} `);
+    }
     Object.setPrototypeOf(this, SchemaValidationError.prototype);
     this.name = 'SchemaValidationError';
     if ((Error as any).captureStackTrace) {
@@ -21,7 +52,6 @@ export class SchemaValidationError extends Error {
     }
   }
 }
-
 /**
  * Thrown by transformers when a user provided schema breaks some contract expected by the transformer.
  *
@@ -41,23 +71,37 @@ export class TransformerContractError extends Error {
   }
 }
 
+export class DestructiveMigrationError extends Error {
+  constructor(message: string, private removedModels: string[], private replacedModels: string[]) {
+    super(message);
+    Object.setPrototypeOf(this, new.target.prototype);
+    this.name = 'DestructiveMigrationError';
+    const prependSpace = (str: string) => ` ${str}`;
+    const removedModelsList = this.removedModels.map(prependSpace).toString().trim();
+    const replacedModelsList = this.replacedModels.map(prependSpace).toString().trim();
+    if (removedModelsList && replacedModelsList) {
+      this.message = `${this.message}${os.EOL}This update will remove table(s) [${removedModelsList}] and will replace table(s) [${replacedModelsList}]`;
+    } else if (removedModelsList) {
+      this.message = `${this.message}${os.EOL}This update will remove table(s) [${removedModelsList}]`;
+    } else if (replacedModelsList) {
+      this.message = `${this.message}${os.EOL}This update will replace table(s) [${replacedModelsList}]`;
+    }
+    this.message = `${this.message}${os.EOL}ALL EXISTING DATA IN THESE TABLES WILL BE LOST!${os.EOL}If this is intended, rerun the command with '--allow-destructive-graphql-schema-updates'.`;
+  }
+  toString = () => this.message;
+}
+
 /**
  * Thrown by the sanity checker when a user is trying to make a migration that is known to not work.
  */
 export class InvalidMigrationError extends Error {
-  fix: string;
-  cause: string;
-  constructor(message: string, cause: string, fix: string) {
+  constructor(message: string, public cause: string, public fix: string) {
     super(message);
-    Object.setPrototypeOf(this, InvalidMigrationError.prototype);
+    Object.setPrototypeOf(this, new.target.prototype);
     this.name = 'InvalidMigrationError';
-    this.fix = fix;
-    this.cause = cause;
   }
+  toString = () => `${this.message}\nCause: ${this.cause}\nHow to fix: ${this.fix}`;
 }
-InvalidMigrationError.prototype.toString = function() {
-  return `${this.message}\nCause: ${this.cause}\nHow to fix: ${this.fix}`;
-};
 
 export class InvalidGSIMigrationError extends InvalidMigrationError {
   fix: string;

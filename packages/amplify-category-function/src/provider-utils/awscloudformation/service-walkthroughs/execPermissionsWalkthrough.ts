@@ -1,4 +1,4 @@
-import { $TSContext, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
 import { FunctionDependency, FunctionParameters } from 'amplify-function-plugin-interface';
 import * as TransformPackage from 'graphql-transformer-core';
 import inquirer, { CheckboxQuestion, DistinctChoice } from 'inquirer';
@@ -80,12 +80,14 @@ export const askExecRolePermissionsQuestions = async (
       // A Lambda function cannot depend on itself
       // Lambda layer dependencies are handled seperately, also apply the filter if the selected resource is within the function category
       // but serviceName argument was no passed in
-      const selectedResource = _.get(amplifyMeta, [categoryName, resourceNameToUpdate]);
-
       if (serviceName === ServiceName.LambdaFunction || selectedCategory === categoryName) {
+        const selectedResource = _.get(amplifyMeta, [categoryName, resourceNameToUpdate]);
+        // A new function resource does not exist in amplifyMeta yet
+        const isNewFunctionResource = !selectedResource;
         resourcesList = resourcesList.filter(
           resourceName =>
-            resourceName !== resourceNameToUpdate && amplifyMeta[selectedCategory][resourceName].service === selectedResource.service,
+            resourceName !== resourceNameToUpdate &&
+            (isNewFunctionResource || amplifyMeta[selectedCategory][resourceName].service === selectedResource.service),
         );
       } else {
         resourcesList = resourcesList.filter(
@@ -200,7 +202,6 @@ const selectCategories = (choices: DistinctChoice<any>[], currentPermissionMap: 
   name: 'categories',
   message: 'Select the categories you want this function to have access to.',
   choices,
-  validate: answers => (_.isEmpty(answers) ? 'You must select at least one category' : true),
   default: fetchPermissionCategories(currentPermissionMap),
 });
 
@@ -217,7 +218,7 @@ export async function getResourcesForCfn(context, resourceName, resourcePolicy, 
   if (resourceName.endsWith(appsyncTableSuffix)) {
     resourcePolicy.providerPlugin = 'awscloudformation';
     resourcePolicy.service = 'DynamoDB';
-    const dynamoDBTableARNComponents = constructCFModelTableArnComponent(appsyncResourceName, resourceName, appsyncTableSuffix);
+    const dynamoDBTableARNComponents = await constructCFModelTableArnComponent(appsyncResourceName, resourceName, appsyncTableSuffix);
 
     // have to override the policy resource as Fn::ImportValue is needed to extract DynamoDB table arn
     resourcePolicy.customPolicyResource = [
@@ -239,24 +240,34 @@ export async function getResourcesForCfn(context, resourceName, resourcePolicy, 
   );
 
   // replace resource attributes for @model-backed dynamoDB tables
-  const cfnResources = resourceAttributes.map(attributes =>
-    attributes.resourceName && attributes.resourceName.endsWith(appsyncTableSuffix)
-      ? {
-          resourceName: appsyncResourceName,
-          category: 'api',
-          attributes: ['GraphQLAPIIdOutput'],
-          needsAdditionalDynamoDBResourceProps: true,
-          // data to pass so we construct additional resourceProps for lambda envvar for @model back dynamoDB tables
-          _modelName: attributes.resourceName.replace(`:${appsyncTableSuffix}`, 'Table'),
-          _cfJoinComponentTableName: constructCFModelTableNameComponent(appsyncResourceName, attributes.resourceName, appsyncTableSuffix),
-          _cfJoinComponentTableArn: constructCFModelTableArnComponent(appsyncResourceName, attributes.resourceName, appsyncTableSuffix),
-        }
-      : attributes,
+  const cfnResources = await Promise.all<$TSAny>(
+    resourceAttributes.map(async attributes =>
+      attributes.resourceName?.endsWith(appsyncTableSuffix)
+        ? {
+            resourceName: appsyncResourceName,
+            category: 'api',
+            attributes: ['GraphQLAPIIdOutput'],
+            needsAdditionalDynamoDBResourceProps: true,
+            // data to pass so we construct additional resourceProps for lambda envvar for @model back dynamoDB tables
+            _modelName: attributes.resourceName.replace(`:${appsyncTableSuffix}`, 'Table'),
+            _cfJoinComponentTableName: await constructCFModelTableNameComponent(
+              appsyncResourceName,
+              attributes.resourceName,
+              appsyncTableSuffix,
+            ),
+            _cfJoinComponentTableArn: await constructCFModelTableArnComponent(
+              appsyncResourceName,
+              attributes.resourceName,
+              appsyncTableSuffix,
+            ),
+          }
+        : attributes,
+    ),
   );
   return { permissionPolicies, cfnResources };
 }
 
-export async function generateEnvVariablesForCfn(context, resources, currentEnvMap) {
+export async function generateEnvVariablesForCfn(context: $TSContext, resources: $TSAny[], currentEnvMap: $TSAny) {
   const environmentMap = {};
   const envVars = new Set<string>();
   const dependsOn: FunctionDependency[] = [];

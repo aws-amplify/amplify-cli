@@ -6,7 +6,7 @@ import { adminLoginFlow } from '../admin-login';
 import { AdminAuthConfig, AwsSdkConfig, CognitoAccessToken, CognitoIdToken } from './auth-types';
 
 export const adminVerifyUrl = (appId: string, envName: string, region: string): string => {
-  const baseUrl = adminBackendMap[region].amplifyAdminUrl;
+  const baseUrl = process.env.AMPLIFY_CLI_ADMINUI_BASE_URL ?? adminBackendMap[region]?.amplifyAdminUrl;
   return `${baseUrl}/admin/${appId}/${envName}/verify/`;
 };
 
@@ -17,15 +17,16 @@ export function doAdminTokensExist(appId: string): boolean {
   return !!stateManager.getAmplifyAdminConfigEntry(appId);
 }
 
-export async function isAmplifyAdminApp(appId: string): Promise<{ isAdminApp: boolean; region: string }> {
+export async function isAmplifyAdminApp(appId: string): Promise<{ isAdminApp: boolean; region: string; userPoolID: string }> {
   if (!appId) {
-    throw `Failed to check if Admin UI is enabled: appId is undefined`;
+    throw `Failed to check if Amplify Studio is enabled: appId is undefined`;
   }
   let appState = await getAdminAppState(appId, 'us-east-1');
   if (appState.appId && appState.region && appState.region !== 'us-east-1') {
     appState = await getAdminAppState(appId, appState.region);
   }
-  return { isAdminApp: !!appState.appId, region: appState.region };
+  const userPoolID = appState.loginAuthConfig ? JSON.parse(appState.loginAuthConfig).aws_user_pools_id : '';
+  return { isAdminApp: !!appState.appId, region: appState.region, userPoolID };
 }
 
 export async function getTempCredsWithAdminTokens(context: $TSContext, appId: string): Promise<AwsSdkConfig> {
@@ -35,15 +36,19 @@ export async function getTempCredsWithAdminTokens(context: $TSContext, appId: st
   const authConfig = await getRefreshedTokens(context, appId);
   const { idToken, IdentityId, region } = authConfig;
   // use tokens to get creds and assign to config
-  const awsConfig = await getAdminCognitoCredentials(idToken, IdentityId, region);
-  aws.config.update(awsConfig);
+  const awsConfigInfo = await getAdminCognitoCredentials(idToken, IdentityId, region);
+
+  aws.config.update(awsConfigInfo);
+
   // need to use Cognito creds to get STS creds - otherwise
   // users will not be able to provision Cognito resources
   return await getAdminStsCredentials(idToken, region);
 }
 
 async function getAdminAppState(appId: string, region: string) {
-  const res = await fetch(`${adminBackendMap[region].appStateUrl}/AppState/?appId=${appId}`);
+  // environment variable AMPLIFY_CLI_APPSTATE_BASE_URL useful for development against beta/gamma appstate endpoints
+  const appStateBaseUrl = process.env.AMPLIFY_CLI_APPSTATE_BASE_URL ?? adminBackendMap[region].appStateUrl;
+  const res = await fetch(`${appStateBaseUrl}/AppState/?appId=${appId}`);
   return res.json();
 }
 
@@ -131,50 +136,70 @@ export const adminBackendMap: {
 } = {
   'ap-northeast-1': {
     amplifyAdminUrl: 'https://ap-northeast-1.admin.amplifyapp.com',
-    appStateUrl: 'https://9ug6dmgf8k.execute-api.ap-northeast-1.amazonaws.com/wave4Prod',
+    appStateUrl: 'https://prod.ap-northeast-1.appstate.amplifyapp.com',
   },
   'ap-northeast-2': {
     amplifyAdminUrl: 'https://ap-northeast-2.admin.amplifyapp.com',
-    appStateUrl: 'https://ljnzstyu75.execute-api.ap-northeast-2.amazonaws.com/wave4Prod',
+    appStateUrl: 'https://prod.ap-northeast-2.appstate.amplifyapp.com',
   },
   'ap-south-1': {
     amplifyAdminUrl: 'https://ap-south-1.admin.amplifyapp.com',
-    appStateUrl: 'https://pnxd1wa44e.execute-api.ap-south-1.amazonaws.com/wave4Prod',
+    appStateUrl: 'https://prod.ap-south-1.appstate.amplifyapp.com',
   },
   'ap-southeast-1': {
     amplifyAdminUrl: 'https://ap-southeast-1.admin.amplifyapp.com',
-    appStateUrl: 'https://l5fi62t6yf.execute-api.ap-southeast-1.amazonaws.com/wave3Prod',
+    appStateUrl: 'https://prod.ap-southeast-1.appstate.amplifyapp.com',
   },
   'ap-southeast-2': {
     amplifyAdminUrl: 'https://ap-southeast-2.admin.amplifyapp.com',
-    appStateUrl: 'https://wv7blgges9.execute-api.ap-southeast-2.amazonaws.com/wave4Prod',
+    appStateUrl: 'https://prod.ap-southeast-2.appstate.amplifyapp.com',
   },
   'ca-central-1': {
     amplifyAdminUrl: 'https://ca-central-1.admin.amplifyapp.com',
-    appStateUrl: 'https://vnh7syjssb.execute-api.ca-central-1.amazonaws.com/wave5Prod',
+    appStateUrl: 'https://prod.ca-central-1.appstate.amplifyapp.com',
   },
   'eu-central-1': {
     amplifyAdminUrl: 'https://eu-central-1.admin.amplifyapp.com',
-    appStateUrl: 'https://atz311uyx5.execute-api.eu-central-1.amazonaws.com/wave4Prod',
+    appStateUrl: 'https://prod.eu-central-1.appstate.amplifyapp.com',
+  },
+  'eu-north-1': {
+    amplifyAdminUrl: 'https://eu-north-1.admin.amplifyapp.com',
+    appStateUrl: 'https://prod.eu-north-1.appstate.amplifyapp.com',
   },
   'eu-west-1': {
     amplifyAdminUrl: 'https://eu-west-1.admin.amplifyapp.com',
-    appStateUrl: 'https://8dbn4hxfme.execute-api.eu-west-1.amazonaws.com/wave3Prod',
+    appStateUrl: 'https://prod.eu-west-1.appstate.amplifyapp.com',
   },
   'eu-west-2': {
     amplifyAdminUrl: 'https://eu-west-2.admin.amplifyapp.com',
-    appStateUrl: 'https://apafhnmqme.execute-api.eu-west-2.amazonaws.com/wave1Prod',
+    appStateUrl: 'https://prod.eu-west-2.appstate.amplifyapp.com',
+  },
+  'eu-west-3': {
+    amplifyAdminUrl: 'https://eu-west-3.admin.amplifyapp.com',
+    appStateUrl: 'https://prod.eu-west-3.appstate.amplifyapp.com',
+  },
+  'me-south-1': {
+    amplifyAdminUrl: 'https://me-south-1.admin.amplifyapp.com',
+    appStateUrl: 'https://prod.me-south-1.appstate.amplifyapp.com',
+  },
+  'sa-east-1': {
+    amplifyAdminUrl: 'https://sa-east-1.admin.amplifyapp.com',
+    appStateUrl: 'https://prod.sa-east-1.appstate.amplifyapp.com',
   },
   'us-east-1': {
     amplifyAdminUrl: 'https://us-east-1.admin.amplifyapp.com',
-    appStateUrl: 'https://e7auv6no3g.execute-api.us-east-1.amazonaws.com/wave3Prod',
+    appStateUrl: 'https://prod.us-east-1.appstate.amplifyapp.com',
   },
   'us-east-2': {
     amplifyAdminUrl: 'https://us-east-2.admin.amplifyapp.com',
-    appStateUrl: 'https://x1wkkmql32.execute-api.us-east-2.amazonaws.com/wave2Prod',
+    appStateUrl: 'https://prod.us-east-2.appstate.amplifyapp.com',
+  },
+  'us-west-1': {
+    amplifyAdminUrl: 'https://us-west-1.admin.amplifyapp.com',
+    appStateUrl: 'https://prod.us-west-1.appstate.amplifyapp.com',
   },
   'us-west-2': {
     amplifyAdminUrl: 'https://us-west-2.admin.amplifyapp.com',
-    appStateUrl: 'https://3ne6skqg0g.execute-api.us-west-2.amazonaws.com/wave4Prod',
+    appStateUrl: 'https://prod.us-west-2.appstate.amplifyapp.com',
   },
 };

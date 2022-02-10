@@ -45,12 +45,20 @@ export interface AppSyncSimulatorUnitResolver extends AppSyncSimulatorUnitResolv
 export interface AppSyncSimulatorPipelineResolver extends AppSyncSimulatorUnitResolverConfig {
   functions: string[];
 }
+
+export const enum AppSyncSimulatorDataSourceType {
+  DynamoDB = 'AMAZON_DYNAMODB',
+  Lambda = 'AWS_LAMBDA',
+  OpenSearch = 'AMAZON_ELASTICSEARCH',
+  None = 'NONE',
+}
+
 export interface AppSyncSimulatorDataSourceBaseConfig {
   name: string;
-  type: string;
+  type: AppSyncSimulatorDataSourceType | `${AppSyncSimulatorDataSourceType}`;
 }
 export interface AppSyncSimulatorDataSourceDDBConfig extends AppSyncSimulatorDataSourceBaseConfig {
-  type: 'AMAZON_DYNAMODB';
+  type: AppSyncSimulatorDataSourceType.DynamoDB | `${AppSyncSimulatorDataSourceType.DynamoDB}`;
   config: {
     endpoint: string;
     region?: string;
@@ -60,10 +68,10 @@ export interface AppSyncSimulatorDataSourceDDBConfig extends AppSyncSimulatorDat
   };
 }
 export interface AppSyncSimulatorDataSourceNoneConfig extends AppSyncSimulatorDataSourceBaseConfig {
-  type: 'None';
+  type: AppSyncSimulatorDataSourceType.None | `${AppSyncSimulatorDataSourceType.None}`;
 }
 export interface AppSyncSimulatorDataSourceLambdaConfig extends AppSyncSimulatorDataSourceBaseConfig {
-  type: 'AWS_LAMBDA';
+  type: AppSyncSimulatorDataSourceType.Lambda | `${AppSyncSimulatorDataSourceType.Lambda}`;
   invoke: Function;
 }
 export type AppSyncSimulatorDataSourceConfig =
@@ -78,6 +86,7 @@ export enum AmplifyAppSyncSimulatorAuthenticationType {
   AWS_IAM = 'AWS_IAM',
   AMAZON_COGNITO_USER_POOLS = 'AMAZON_COGNITO_USER_POOLS',
   OPENID_CONNECT = 'OPENID_CONNECT',
+  AWS_LAMBDA = 'AWS_LAMBDA',
 }
 
 export type AmplifyAppSyncAuthenticationProviderAPIConfig = {
@@ -103,15 +112,28 @@ export type AmplifyAppSyncAuthenticationProviderOIDCConfig = {
   };
 };
 
+export type AmplifyAppSyncAuthenticationProviderLambdaConfig = {
+  authenticationType: AmplifyAppSyncSimulatorAuthenticationType.AWS_LAMBDA;
+  lambdaAuthorizerConfig: {
+    AuthorizerUri: string;
+    AuthorizerResultTtlInSeconds?: number;
+  };
+};
+
 export type AmplifyAppSyncAuthenticationProviderConfig =
   | AmplifyAppSyncAuthenticationProviderAPIConfig
   | AmplifyAppSyncAuthenticationProviderIAMConfig
   | AmplifyAppSyncAuthenticationProviderCognitoConfig
-  | AmplifyAppSyncAuthenticationProviderOIDCConfig;
+  | AmplifyAppSyncAuthenticationProviderOIDCConfig
+  | AmplifyAppSyncAuthenticationProviderLambdaConfig;
 
 export type AmplifyAppSyncAPIConfig = {
   name: string;
   defaultAuthenticationType: AmplifyAppSyncAuthenticationProviderConfig;
+  authRoleName?: string; // assumed-role/authRole/CognitoIdentityCredentials
+  unAuthRoleName?: string; // assumed-role/unAuthRole/CognitoIdentityCredentials
+  authAccessKeyId?: string; // when accessKeyId matches assume the authRole. Otherwise, use unAuthRole
+  accountId?: string;
   apiKey?: string;
   additionalAuthenticationProviders: AmplifyAppSyncAuthenticationProviderConfig[];
 };

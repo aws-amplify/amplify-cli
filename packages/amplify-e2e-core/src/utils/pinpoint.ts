@@ -1,19 +1,21 @@
 import { Pinpoint } from 'aws-sdk';
 import { getCLIPath, nspawn as spawn, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW } from '..';
 import _ from 'lodash';
+import { EOL } from 'os';
 
 const settings = {
-  name: '\r',
+  name: EOL,
   envName: 'test',
-  editor: '\r',
-  appType: '\r',
-  framework: '\r',
-  srcDir: '\r',
-  distDir: '\r',
-  buildCmd: '\r',
-  startCmd: '\r',
+  editor: EOL,
+  appType: EOL,
+  framework: EOL,
+  srcDir: EOL,
+  distDir: EOL,
+  buildCmd: EOL,
+  startCmd: EOL,
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  sessionToken: process.env.AWS_SESSION_TOKEN,
   region: process.env.CLI_REGION,
   pinpointResourceName: 'testpinpoint',
 };
@@ -23,21 +25,23 @@ const serviceRegionMap = {
   'us-east-1': 'us-east-1',
   'us-east-2': 'us-east-1',
   'sa-east-1': 'us-east-1',
-  'ca-central-1': 'us-east-1',
+  'ca-central-1': 'ca-central-1',
   'us-west-1': 'us-west-2',
   'us-west-2': 'us-west-2',
   'cn-north-1': 'us-west-2',
   'cn-northwest-1': 'us-west-2',
-  'ap-south-1': 'us-west-2',
+  'ap-south-1': 'ap-south-1',
   'ap-northeast-3': 'us-west-2',
-  'ap-northeast-2': 'us-west-2',
-  'ap-southeast-1': 'us-west-2',
-  'ap-southeast-2': 'us-west-2',
-  'ap-northeast-1': 'us-west-2',
+  'ap-northeast-2': 'ap-northeast-2',
+  'ap-southeast-1': 'ap-southeast-1',
+  'ap-southeast-2': 'ap-southeast-2',
+  'ap-northeast-1': 'ap-northeast-1',
   'eu-central-1': 'eu-central-1',
+  'eu-north-1': 'eu-central-1',
   'eu-west-1': 'eu-west-1',
-  'eu-west-2': 'eu-west-1',
+  'eu-west-2': 'eu-west-2',
   'eu-west-3': 'eu-west-1',
+  'me-south-1': 'ap-south-1',
 };
 
 export async function pinpointAppExist(pinpointProjectId: string): Promise<boolean> {
@@ -46,6 +50,7 @@ export async function pinpointAppExist(pinpointProjectId: string): Promise<boole
   const pinpointClient = new Pinpoint({
     accessKeyId: settings.accessKeyId,
     secretAccessKey: settings.secretAccessKey,
+    sessionToken: settings.sessionToken,
     region: _.get(serviceRegionMap, settings.region, defaultPinpointRegion),
   });
 
@@ -83,7 +88,7 @@ export function initProjectForPinpoint(cwd: string): Promise<void> {
       .wait('Enter a name for the project')
       .sendLine(settings.name)
       .wait('Initialize the project with the above configuration?')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Enter a name for the environment')
       .sendLine(settings.envName)
       .wait('Choose your default editor:')
@@ -114,7 +119,7 @@ export function initProjectForPinpoint(cwd: string): Promise<void> {
 
     singleSelect(chain, settings.region, amplifyRegions);
 
-    chain.wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything').run((err: Error) => {
+    chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
       if (!err) {
         resolve();
       } else {
@@ -132,7 +137,7 @@ export function addPinpointAnalytics(cwd: string): Promise<string> {
       .wait('Provide your pinpoint resource name:')
       .sendLine(settings.pinpointResourceName)
       .wait('Apps need authorization to send analytics events. Do you want to allow guests')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait(`Successfully added resource ${settings.pinpointResourceName} locally`)
       .sendEof()
       .run((err: Error) => {
@@ -166,7 +171,7 @@ export function amplifyDelete(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['delete'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue?')
-      .sendLine('Y')
+      .sendConfirmYes()
       .wait('Project deleted in the cloud')
       .wait('Project deleted locally.')
       .run((err: Error) => {

@@ -4,10 +4,70 @@ const fs = require('fs-extra');
 const graphQLConfig = require('graphql-config');
 const { isPackaged } = require('amplify-cli-core');
 
-const CUSTOM_CONFIG_DENY_LIST = [
+const MOCK_RESERVED_EXPORT_KEYS = [
   'aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing',
   'aws_appsync_dangerously_connect_to_http_endpoint_for_testing',
 ];
+
+// These are the set of keys that are reserved for amplify and customers are not allowed to override
+const AMPLIFY_RESERVED_EXPORT_KEYS = [
+  // General
+  'aws_project_region',
+  // cognito
+  'aws_cognito_identity_pool_id',
+  'aws_cognito_region',
+  'aws_user_pools_id',
+  'aws_user_pools_web_client_id',
+  'oauth',
+  'federationTarget',
+  'aws_cognito_username_attributes',
+  'aws_cognito_social_providers',
+  'aws_cognito_signup_attributes',
+  'aws_cognito_mfa_configuration',
+  'aws_cognito_mfa_types',
+  'aws_cognito_password_protection_settings',
+  'aws_cognito_verification_mechanisms',
+
+  // S3
+  'aws_user_files_s3_bucket',
+  'aws_user_files_s3_bucket_region',
+
+  // AppSync
+  'aws_appsync_graphqlEndpoint',
+  'aws_appsync_region',
+  'aws_appsync_authenticationType',
+  'aws_appsync_apiKey',
+  // API Gateway
+  'aws_cloud_logic_custom',
+
+  // Pinpoint
+  'aws_mobile_analytics_app_id',
+  'aws_mobile_analytics_app_region',
+
+  // DynamoDB
+  'aws_dynamodb_all_tables_region',
+  'aws_dynamodb_table_schemas',
+
+  // S3AndCloudFront
+  'aws_content_delivery_bucket',
+  'aws_content_delivery_bucket_region',
+  'aws_content_delivery_url',
+
+  // lex
+  'aws_bots',
+  'aws_bots_config',
+
+  // Sumerian
+  'XR',
+
+  // Predictions
+  'predictions',
+
+  // Geo
+  'geo',
+];
+
+const CUSTOM_CONFIG_DENY_LIST = [...MOCK_RESERVED_EXPORT_KEYS, ...AMPLIFY_RESERVED_EXPORT_KEYS];
 
 const FILE_EXTENSION_MAP = {
   javascript: 'js',
@@ -76,6 +136,12 @@ function createAmplifyConfig(context, amplifyResources) {
 }
 
 async function createAWSExports(context, amplifyResources, cloudAmplifyResources) {
+  const newAWSExports = await getAWSExports(context, amplifyResources, cloudAmplifyResources);
+  generateAWSExportsFile(context, newAWSExports);
+  return context;
+}
+
+async function getAWSExports(context, amplifyResources, cloudAmplifyResources) {
   const newAWSExports = getAWSExportsObject(amplifyResources);
   const cloudAWSExports = getAWSExportsObject(cloudAmplifyResources);
   const currentAWSExports = await getCurrentAWSExports(context);
@@ -83,8 +149,7 @@ async function createAWSExports(context, amplifyResources, cloudAmplifyResources
   const customConfigs = getCustomConfigs(cloudAWSExports, currentAWSExports);
 
   Object.assign(newAWSExports, customConfigs);
-  generateAWSExportsFile(context, newAWSExports);
-  return context;
+  return newAWSExports;
 }
 
 function getCustomConfigs(cloudAWSExports, currentAWSExports) {
@@ -105,6 +170,7 @@ function getAWSExportsObject(resources) {
   const { serviceResourceMapping } = resources;
   const configOutput = {};
   const predictionsConfig = {};
+  const geoConfig = {};
 
   const projectRegion = resources.metadata.Region;
   configOutput.aws_project_region = projectRegion;
@@ -167,6 +233,14 @@ function getAWSExportsObject(resources) {
           ...getInferConfig(serviceResourceMapping[service]),
         };
         break;
+      case 'Map':
+        geoConfig.region = serviceResourceMapping[service][0].output.Region || projectRegion;
+        geoConfig.maps = getMapConfig(serviceResourceMapping[service]);
+        break;
+      case 'PlaceIndex':
+        geoConfig.region = serviceResourceMapping[service][0].output.Region || projectRegion;
+        geoConfig.search_indices = getPlaceIndexConfig(serviceResourceMapping[service]);
+        break;
       default:
         break;
     }
@@ -175,6 +249,15 @@ function getAWSExportsObject(resources) {
   // add predictions config if predictions resources exist
   if (Object.entries(predictionsConfig).length > 0) {
     Object.assign(configOutput, { predictions: predictionsConfig });
+  }
+
+  // add geo config if geo resources exist
+  if (Object.entries(geoConfig).length > 0) {
+    Object.assign(configOutput, {
+      geo: {
+        amazon_location_service: geoConfig,
+      },
+    });
   }
 
   return configOutput;
@@ -209,7 +292,6 @@ async function getCurrentAWSExports(context) {
 
 async function generateAWSExportsFile(context, configOutput) {
   const { amplify } = context;
-  const pluginDir = __dirname;
   const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
   const projectConfig = context.exeInfo ? context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
   const frontendConfig = projectConfig.config;
@@ -218,6 +300,12 @@ async function generateAWSExportsFile(context, configOutput) {
   fs.ensureDirSync(srcDirPath);
 
   const targetFilePath = path.join(srcDirPath, constants.exportsFilename);
+  await generateAwsExportsAtPath(context, targetFilePath, configOutput);
+}
+
+async function generateAwsExportsAtPath(context, targetFilePath, configOutput) {
+  const pluginDir = __dirname;
+  const { amplify } = context;
   const options = {
     configOutput,
   };
@@ -270,7 +358,12 @@ function getCognitoConfig(cognitoResources, projectRegion) {
     responseType,
   };
 
-  if (cognitoResource.output.GoogleWebClient || cognitoResource.output.FacebookWebClient || cognitoResource.output.AmazonWebClient) {
+  if (
+    cognitoResource.output.GoogleWebClient ||
+    cognitoResource.output.FacebookWebClient ||
+    cognitoResource.output.AmazonWebClient ||
+    cognitoResource.output.AppleWebClient
+  ) {
     idpFederation = true;
   }
 
@@ -284,6 +377,17 @@ function getCognitoConfig(cognitoResources, projectRegion) {
     federationTarget = 'COGNITO_IDENTITY_POOLS';
   }
 
+  const frontendAuthConfig = {};
+  if (cognitoResource.frontendAuthConfig) {
+    frontendAuthConfig.aws_cognito_username_attributes = cognitoResource.frontendAuthConfig.usernameAttributes;
+    frontendAuthConfig.aws_cognito_social_providers = cognitoResource.frontendAuthConfig.socialProviders;
+    frontendAuthConfig.aws_cognito_signup_attributes = cognitoResource.frontendAuthConfig.signupAttributes;
+    frontendAuthConfig.aws_cognito_mfa_configuration = cognitoResource.frontendAuthConfig.mfaConfiguration;
+    frontendAuthConfig.aws_cognito_mfa_types = cognitoResource.frontendAuthConfig.mfaTypes;
+    frontendAuthConfig.aws_cognito_password_protection_settings = cognitoResource.frontendAuthConfig.passwordProtectionSettings;
+    frontendAuthConfig.aws_cognito_verification_mechanisms = cognitoResource.frontendAuthConfig.verificationMechanisms;
+  }
+
   return {
     aws_cognito_identity_pool_id: cognitoResource.output.IdentityPoolId,
     aws_cognito_region: projectRegion,
@@ -291,6 +395,7 @@ function getCognitoConfig(cognitoResources, projectRegion) {
     aws_user_pools_web_client_id: cognitoResource.output.AppClientIDWeb,
     oauth,
     federationTarget,
+    ...frontendAuthConfig,
   };
 }
 
@@ -524,4 +629,38 @@ function getSumerianConfig(sumerianResources) {
   };
 }
 
-module.exports = { createAWSExports, createAmplifyConfig, deleteAmplifyConfig };
+function getMapConfig(mapResources) {
+  let defaultMap = '';
+  const mapConfig = {
+    items: {},
+  };
+  mapResources.forEach(mapResource => {
+    const mapName = mapResource.output.Name;
+    mapConfig.items[mapName] = {
+      style: mapResource.output.Style,
+    };
+    if (mapResource.isDefault) {
+      defaultMap = mapName;
+    }
+  });
+  mapConfig.default = defaultMap;
+  return mapConfig;
+}
+
+function getPlaceIndexConfig(placeIndexResources) {
+  let defaultPlaceIndex = '';
+  const placeIndexConfig = {
+    items: [],
+  };
+  placeIndexResources.forEach(placeIndexResource => {
+    const placeIndexName = placeIndexResource.output.Name;
+    placeIndexConfig.items.push(placeIndexName);
+    if (placeIndexResource.isDefault) {
+      defaultPlaceIndex = placeIndexName;
+    }
+  });
+  placeIndexConfig.default = defaultPlaceIndex;
+  return placeIndexConfig;
+}
+
+module.exports = { createAWSExports, getAWSExports, createAmplifyConfig, deleteAmplifyConfig, generateAwsExportsAtPath };

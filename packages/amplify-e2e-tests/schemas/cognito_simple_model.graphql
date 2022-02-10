@@ -1,0 +1,4 @@
+type Todo @model @auth(rules: [ { allow: owner, provider: userPools }]) {
+  id: ID!
+  content: String
+}

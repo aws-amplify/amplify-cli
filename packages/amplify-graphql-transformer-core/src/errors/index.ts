@@ -1,5 +1,6 @@
-import { GraphQLError } from 'graphql';
+import { GraphQLError, printError } from 'graphql';
 
+const GRAPHQL_TRANSFORMER_V1_DIRECTIVES = ['connection', 'key', 'versioned'];
 export class InvalidTransformerError extends Error {
   constructor(message: string) {
     super(message);
@@ -13,7 +14,36 @@ export class InvalidTransformerError extends Error {
 
 export class SchemaValidationError extends Error {
   constructor(errors: Readonly<GraphQLError[]>) {
-    super(`Schema Errors:\n\n${errors.join('\n')}`);
+    const v1DirectivesInUse = new Set<string>();
+    const newErrors = errors.filter(error => {
+      if (!error.message.startsWith('Unknown directive')) {
+        return true;
+      }
+      const dir = GRAPHQL_TRANSFORMER_V1_DIRECTIVES.find(d => error.message.endsWith(`"${d}".`));
+      if (!dir) {
+        return true;
+      }
+      v1DirectivesInUse.add(dir);
+      return false;
+    });
+    if (v1DirectivesInUse.size > 0) {
+      const baseErrorMessage = `Your GraphQL Schema is using ${Array.from(v1DirectivesInUse.values())
+        .map(d => `"@${d}"`)
+        .join(', ')} ${
+        v1DirectivesInUse.size > 1 ? 'directives' : 'directive'
+      } from an older version of the GraphQL Transformer. Visit https://docs.amplify.aws/cli/migration/transformer-migration/ to learn how to migrate your GraphQL schema.`;
+
+      if (newErrors.length === 0) {
+        super(baseErrorMessage);
+      } else {
+        super(
+          baseErrorMessage +
+            ` There are additional validation errors listed below \n\n ${newErrors.map(error => printError(error)).join('\n\n')}`,
+        );
+      }
+    } else {
+      super(`Schema validation failed.\n\n${newErrors.map(error => printError(error)).join('\n\n')} `);
+    }
     Object.setPrototypeOf(this, SchemaValidationError.prototype);
     this.name = 'SchemaValidationError';
     if ((Error as any).captureStackTrace) {
@@ -55,7 +85,7 @@ export class InvalidMigrationError extends Error {
     this.cause = cause;
   }
 }
-InvalidMigrationError.prototype.toString = function() {
+InvalidMigrationError.prototype.toString = function () {
   return `${this.message}\nCause: ${this.cause}\nHow to fix: ${this.fix}`;
 };
 

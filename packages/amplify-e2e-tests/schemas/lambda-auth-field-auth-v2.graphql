@@ -1,0 +1,4 @@
+type Note @model @auth(rules: [{ allow: custom }]) {
+  noteId: String! @primaryKey
+  note: String
+}

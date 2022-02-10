@@ -1,0 +1,63 @@
+{
+  "name": "@aws-amplify/graphql-maps-to-transformer",
+  "version": "1.1.5",
+  "description": "Amplify GraphQL @mapsTo transformer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-graphql-maps-to-transformer"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "keywords": [
+    "amplify",
+    "graphql",
+    "cloudformation",
+    "aws",
+    "mapsto",
+    "transformer"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc && mkdirp lib/assets && cd resources/mapping-lambda-function && bestzip --force node ../../lib/assets/mapping-lambda.zip index.js",
+    "watch": "tsc -w",
+    "clean": "rimraf ./lib tsconfig.tsbuildinfo",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@aws-amplify/graphql-transformer-core": "0.16.0",
+    "@aws-amplify/graphql-transformer-interfaces": "1.13.0",
+    "@aws-cdk/aws-appsync": "~1.124.0",
+    "@aws-cdk/aws-iam": "~1.124.0",
+    "@aws-cdk/aws-lambda": "~1.124.0",
+    "@aws-cdk/core": "~1.124.0",
+    "graphql-mapping-template": "4.20.3",
+    "graphql-transformer-common": "4.23.0"
+  },
+  "devDependencies": {
+    "@aws-amplify/graphql-model-transformer": "0.13.0",
+    "@aws-amplify/graphql-relational-transformer": "0.7.5",
+    "@aws-amplify/graphql-searchable-transformer": "0.13.1",
+    "graphql": "^14.5.8",
+    "mkdirp": "^0.5.5"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(src/__tests__/.*\\.(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "collectCoverage": true
+  }
+}

@@ -1,7 +1,10 @@
-import sequential from 'promise-sequential';
+import { $TSAny, $TSContext, $TSObject, ConfigurationError, exitOnNextTick, stateManager } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 import ora from 'ora';
-import { $TSAny, $TSContext, $TSObject, stateManager, exitOnNextTick } from 'amplify-cli-core';
+import sequential from 'promise-sequential';
+import { notifyFieldAuthSecurityChange, notifySecurityEnhancement } from '../extensions/amplify-helpers/auth-notifications';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
+import { showTroubleshootingURL } from './help';
 
 const spinner = ora('');
 
@@ -29,6 +32,9 @@ async function syncCurrentCloudBackend(context: $TSContext) {
       pullCurrentCloudTasks.push(() => providerModule.initEnv(context, amplifyMeta.providers[provider]));
     });
 
+    await notifySecurityEnhancement(context);
+    await notifyFieldAuthSecurityChange(context);
+
     spinner.start(`Fetching updates to backend environment: ${currentEnv} from the cloud.`);
     await sequential(pullCurrentCloudTasks);
     spinner.succeed(`Successfully pulled backend environment ${currentEnv} from the cloud.`);
@@ -38,20 +44,34 @@ async function syncCurrentCloudBackend(context: $TSContext) {
   }
 }
 
+async function pushHooks(context: $TSContext) {
+  context.exeInfo.pushHooks = true;
+  const providerPlugins = getProviderPlugins(context);
+  const pushHooksTasks: (() => Promise<$TSAny>)[] = [];
+  context.exeInfo.projectConfig.providers.forEach(provider => {
+    const providerModule = require(providerPlugins[provider]);
+    pushHooksTasks.push(() => providerModule.uploadHooksDirectory(context));
+  });
+  await sequential(pushHooksTasks);
+}
+
 export const run = async (context: $TSContext) => {
   try {
     context.amplify.constructExeInfo(context);
+    if (context.exeInfo.localEnvInfo.noUpdateBackend) {
+      throw new ConfigurationError('The local environment configuration does not allow backend updates.');
+    }
     if (context.parameters.options.force) {
       context.exeInfo.forcePush = true;
     }
+    await pushHooks(context);
     await syncCurrentCloudBackend(context);
     return await context.amplify.pushResources(context);
   } catch (e) {
-    if (e.name !== 'InvalidDirectiveError') {
-      const message = e.name === 'GraphQLError' ? e.toString() : e.message;
-      context.print.error(`An error occurred during the push operation: ${message}`);
-    }
+    const message = e.name === 'GraphQLError' ? e.toString() : e.message;
+    printer.error(`An error occurred during the push operation: ${message}`);
     await context.usageData.emitError(e);
+    showTroubleshootingURL();
     exitOnNextTick(1);
   }
 };

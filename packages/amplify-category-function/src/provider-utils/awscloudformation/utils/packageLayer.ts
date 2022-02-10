@@ -1,30 +1,28 @@
-import { $TSAny, $TSContext, pathManager } from 'amplify-cli-core';
-import { ZipEntry } from 'amplify-function-plugin-interface';
-import * as path from 'path';
+import { $TSAny, $TSContext, convertNumBytes, getFolderSize, pathManager } from 'amplify-cli-core';
+import { FunctionRuntimeLifecycleManager, ZipEntry } from 'amplify-function-plugin-interface';
+import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
-import chalk from 'chalk';
 import { EOL } from 'os';
-import { Packager } from '../types/packaging-types';
-import { loadLayerConfigurationFile } from './layerConfiguration';
-import { FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
-import { ServiceName, versionHash } from './constants';
-import { LayerCloudState } from './layerCloudState';
-import { loadPreviousLayerHash, ensureLayerVersion, validFilesize, loadStoredLayerParameters, getChangedResources } from './layerHelpers';
-import { defaultLayerPermission } from './layerParams';
-import { zipPackage } from './zipResource';
-import { accessPermissions, description } from './constants';
-import { updateLayerArtifacts } from './storeResources';
+import * as path from 'path';
 import { lambdaLayerNewVersionWalkthrough } from '../service-walkthroughs/lambdaLayerWalkthrough';
+import { Packager } from '../types/packaging-types';
+import { accessPermissions, description, lambdaPackageLimitInMB, ServiceName, versionHash } from './constants';
+import { LayerCloudState } from './layerCloudState';
+import { loadLayerConfigurationFile } from './layerConfiguration';
+import { ensureLayerVersion, getChangedResources, loadPreviousLayerHash, loadStoredLayerParameters } from './layerHelpers';
+import { defaultLayerPermission } from './layerParams';
+import { updateLayerArtifacts } from './storeResources';
+import { zipPackage } from './zipResource';
 
 /**
  * Packages lambda layer code and artifacts into a lambda-compatible .zip file
  */
-export const packageLayer: Packager = async (context, resource) => {
+export const packageLayer: Packager = async (context, resource, isExport) => {
   const previousHash = loadPreviousLayerHash(resource.resourceName);
   const currentHash = await ensureLayerVersion(context, resource.resourceName, previousHash);
 
-  if (previousHash === currentHash) {
+  if (!isExport && previousHash === currentHash) {
     // This happens when a Lambda layer's permissions have been updated, but no new layer version needs to be pushed
     return { newPackageCreated: false, zipFilename: undefined, zipFilePath: undefined };
   }
@@ -35,6 +33,18 @@ export const packageLayer: Packager = async (context, resource) => {
   const distDir = path.join(resourcePath, 'dist');
   fs.ensureDirSync(distDir);
   const destination = path.join(distDir, 'latest-build.zip');
+
+  // check total layer size is less than 250MB
+  let layerSizeInBytes = 0;
+  // Add up all the lib/opt folders
+  layerSizeInBytes += await getFolderSize([path.join(resourcePath, 'lib'), path.join(resourcePath, 'opt')]);
+
+  if (layerSizeInBytes > lambdaPackageLimitInMB * 1024 ** 2) {
+    throw new Error(
+      `Lambda layer ${resource.resourceName} is too large: ${convertNumBytes(layerSizeInBytes).toMB()}/${lambdaPackageLimitInMB} MB`,
+    );
+  }
+
   let zipEntries: ZipEntry[] = [{ sourceFolder: path.join(resourcePath, 'opt') }];
 
   for (const runtime of runtimes) {
@@ -64,6 +74,7 @@ export const packageLayer: Packager = async (context, resource) => {
       zipEntries = [...zipEntries, ...packageResult.zipEntries];
     }
   }
+
   await zipPackage(zipEntries, destination);
 
   const layerCloudState = LayerCloudState.getInstance(resource.resourceName);
@@ -73,11 +84,9 @@ export const packageLayer: Packager = async (context, resource) => {
   }
 
   const zipFilename = createLayerZipFilename(resource.resourceName, layerCloudState.latestVersionLogicalId);
-  // check zip size is less than 250MB
-  if (validFilesize(context, destination)) {
+  if (!isExport) {
+    // don't  apply an update to Amplify meta on export
     context.amplify.updateAmplifyMetaAfterPackage(resource, zipFilename, { resourceKey: versionHash, hashValue: currentHash });
-  } else {
-    throw new Error('File size greater than 250MB');
   }
   return { newPackageCreated: true, zipFilename, zipFilePath: destination };
 };

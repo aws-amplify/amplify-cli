@@ -12,8 +12,13 @@ import {
   amplifyInitSandbox,
   getProjectSchema,
   amplifyPush,
+  amplifyOverrideRoot,
+  amplifyPushOverride,
+  createNewProjectDir,
+  deleteProjectDir,
+  getEnvVars,
+  getProjectMeta,
 } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir, getEnvVars, getProjectMeta } from 'amplify-e2e-core';
 import { JSONUtilities } from 'amplify-cli-core';
 import { SandboxApp } from '../types/SandboxApp';
 
@@ -83,13 +88,13 @@ describe('amplify init', () => {
   });
 
   it('should init project without profile', async () => {
-    const { ACCESS_KEY_ID, SECRET_ACCESS_KEY } = getEnvVars();
-    if (!ACCESS_KEY_ID || !SECRET_ACCESS_KEY) {
-      throw new Error('Set ACCESS_KEY_ID and SECRET_ACCESS_KEY either in .env file or as Environment variable');
+    const { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY } = getEnvVars();
+    if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY) {
+      throw new Error('Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY either in .env file or as Environment variable');
     }
     await initProjectWithAccessKey(projRoot, {
-      accessKeyId: ACCESS_KEY_ID,
-      secretAccessKey: SECRET_ACCESS_KEY,
+      accessKeyId: AWS_ACCESS_KEY_ID,
+      secretAccessKey: AWS_SECRET_ACCESS_KEY,
     });
 
     const meta = getProjectMeta(projRoot).providers.awscloudformation;
@@ -103,8 +108,8 @@ describe('amplify init', () => {
     // init new env
     await initNewEnvWithAccessKey(projRoot, {
       envName: 'foo',
-      accessKeyId: ACCESS_KEY_ID,
-      secretAccessKey: SECRET_ACCESS_KEY,
+      accessKeyId: AWS_ACCESS_KEY_ID,
+      secretAccessKey: AWS_SECRET_ACCESS_KEY,
     });
     const newEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
 
@@ -150,5 +155,25 @@ describe('amplify init', () => {
     localEnvData.projectPath = originalPath;
 
     fs.writeFileSync(localEnvPath, JSON.stringify(localEnvData, null, 2));
+  });
+
+  it('should init the project and override root and push', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    const meta = getProjectMeta(projRoot).providers.awscloudformation;
+    expect(meta.Region).toBeDefined();
+    const { AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName } = meta;
+
+    expect(UnauthRoleName).toBeIAMRoleWithArn(UnauthRoleArn);
+    expect(AuthRoleName).toBeIAMRoleWithArn(AuthRoleArn);
+    expect(DeploymentBucketName).toBeAS3Bucket(DeploymentBucketName);
+
+    // override new env
+    await amplifyOverrideRoot(projRoot, { testingWithLatestCodebase: true});
+    const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-root.ts');
+    const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'awscloudformation', 'override.ts');
+    fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
+    await amplifyPushOverride(projRoot);
+    const newEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
+    expect(newEnvMeta.AuthRoleName).toEqual('mockRole');
   });
 });

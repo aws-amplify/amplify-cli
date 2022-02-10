@@ -1,8 +1,63 @@
-import { NoneDataSource, HttpDataSource, DynamoDbDataSource, LambdaDataSource, BaseDataSource, CfnResolver } from '@aws-cdk/aws-appsync';
-import { IFunction, ILayerVersion, Runtime } from '@aws-cdk/aws-lambda';
-import { ITable } from '@aws-cdk/aws-dynamodb';
-import { CfnResource, Construct, IAsset, IConstruct, Stack } from '@aws-cdk/core';
+import { CfnResource, Construct, IAsset, IConstruct } from '@aws-cdk/core';
 import { Grant, IGrantable, IRole } from '@aws-cdk/aws-iam';
+import { TransformHostProvider } from './transform-host-provider';
+
+// Auth Config
+export type AppSyncAuthMode = 'API_KEY' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_IAM' | 'OPENID_CONNECT' | 'AWS_LAMBDA';
+export type AppSyncAuthConfiguration = {
+  defaultAuthentication: AppSyncAuthConfigurationEntry;
+  additionalAuthenticationProviders: Array<AppSyncAuthConfigurationEntry>;
+};
+
+export type AppSyncAuthConfigurationEntry =
+  | AppSyncAuthConfigurationUserPoolEntry
+  | AppSyncAuthConfigurationAPIKeyEntry
+  | AppSyncAuthConfigurationIAMEntry
+  | AppSyncAuthConfigurationOIDCEntry
+  | AppSyncAuthConfigurationLambdaEntry;
+
+export type AppSyncAuthConfigurationAPIKeyEntry = {
+  authenticationType: 'API_KEY';
+  apiKeyConfig?: ApiKeyConfig;
+};
+export type AppSyncAuthConfigurationUserPoolEntry = {
+  authenticationType: 'AMAZON_COGNITO_USER_POOLS';
+  userPoolConfig?: UserPoolConfig;
+};
+export type AppSyncAuthConfigurationIAMEntry = {
+  authenticationType: 'AWS_IAM';
+};
+
+export type AppSyncAuthConfigurationOIDCEntry = {
+  authenticationType: 'OPENID_CONNECT';
+  openIDConnectConfig?: OpenIDConnectConfig;
+};
+
+export type AppSyncAuthConfigurationLambdaEntry = {
+  authenticationType: 'AWS_LAMBDA';
+  lambdaAuthorizerConfig?: LambdaConfig;
+};
+
+export interface ApiKeyConfig {
+  description?: string;
+  apiKeyExpirationDays: number;
+  apiKeyExpirationDate?: Date;
+}
+export interface UserPoolConfig {
+  userPoolId: string;
+}
+export interface OpenIDConnectConfig {
+  name: string;
+  issuerUrl: string;
+  clientId?: string;
+  iatTTL?: number;
+  authTTL?: number;
+}
+
+export interface LambdaConfig {
+  lambdaFunction: string;
+  ttlSeconds?: number;
+}
 
 export interface AppSyncFunctionConfigurationProvider extends IConstruct {
   readonly arn: string;
@@ -23,9 +78,9 @@ export interface DataSourceOptions {
   readonly description?: string;
 }
 
-export interface ElasticSearchDataSourceOptions extends DataSourceOptions {
+export interface SearchableDataSourceOptions extends DataSourceOptions {
   /**
-   * ServiceRole for the Amazon Elasticsearch
+   * ServiceRole for the Amazon OpenSearch
    */
   readonly serviceRole: IRole;
 }
@@ -52,49 +107,8 @@ export type MappingTemplateProvider = InlineMappingTemplateProvider | S3MappingT
 
 export interface GraphQLAPIProvider {
   readonly apiId: string;
-  addHttpDataSource(name: string, endpoint: string, options?: DataSourceOptions, stack?: Stack): HttpDataSource;
-  addDynamoDbDataSource(name: string, table: ITable, options?: DataSourceOptions, stack?: Stack): DynamoDbDataSource;
-  addNoneDataSource(name: string, options?: DataSourceOptions, stack?: Stack): NoneDataSource;
-  addLambdaDataSource(name: string, lambdaFunction: IFunction, options?: DataSourceOptions, stack?: Stack): LambdaDataSource;
-  addElasticSearchDataSource(
-    name: string,
-    endpoint: string,
-    region: string,
-    options?: ElasticSearchDataSourceOptions,
-    stack?: Stack,
-  ): BaseDataSource;
-  addAppSyncFunction: (
-    name: string,
-    requestMappingTemplate: MappingTemplateProvider,
-    responseMappingTemplate: MappingTemplateProvider,
-    dataSourceName: string,
-    stack?: Stack,
-  ) => AppSyncFunctionConfigurationProvider;
+  readonly host: TransformHostProvider;
 
-  addResolver: (
-    typeName: string,
-    fieldName: string,
-    requestMappingTemplate: MappingTemplateProvider,
-    responseMappingTemplate: MappingTemplateProvider,
-    dataSourceName?: string,
-    pipelineConfig?: string[],
-    stack?: Stack,
-  ) => CfnResolver;
-
-  addLambdaFunction: (
-    functionName: string,
-    functionKey: string,
-    handlerName: string,
-    filePath: string,
-    runtime: Runtime,
-    layers?: ILayerVersion[],
-    role?: IRole,
-    environment?: { [key: string]: string },
-    stack?: Stack,
-  ) => IFunction;
-
-  getDataSource: (name: string) => BaseDataSource | void;
-  hasDataSource: (name: string) => boolean;
   // getDefaultAuthorization(): Readonly<AuthorizationMode>;
   // getAdditionalAuthorizationModes(): Readonly<AuthorizationMode[]>;
   addToSchema(addition: string): void;

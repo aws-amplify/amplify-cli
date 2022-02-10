@@ -32,6 +32,7 @@ import {
   makeValueNode,
   withNamedNodeNamed,
   isListType,
+  makeNonNullType,
 } from 'graphql-transformer-common';
 import { TransformerContext } from 'graphql-transformer-core';
 import { getCreatedAtFieldName, getUpdatedAtFieldName } from './ModelDirectiveArgs';
@@ -226,6 +227,7 @@ export function makeUpdateInputObject(
   isSync: boolean = false,
 ): InputObjectTypeDefinitionNode {
   const name = ModelResourceIDs.ModelUpdateInputObjectName(obj.name.value);
+  const hasIdField = obj.fields.find(f => f.name.value === 'id');
   const fields: InputValueDefinitionNode[] = obj.fields
     .filter(f => {
       const fieldType = ctx.getType(getBaseType(f.type));
@@ -271,7 +273,11 @@ export function makeUpdateInputObject(
       kind: 'Name',
       value: name,
     },
-    fields,
+    fields: [
+      // add default id field and expose that
+      ...(hasIdField ? [] : [makeInputValueDefinition('id', makeNonNullType(makeNamedType('ID')))]),
+      ...fields,
+    ],
     directives: [],
   };
 }
@@ -737,7 +743,9 @@ export function makeAttributeTypeEnum(): EnumTypeDefinitionNode {
 export function makeModelConnectionType(typeName: string, isSync: Boolean = false): ObjectTypeExtensionNode {
   const connectionName = ModelResourceIDs.ModelConnectionTypeName(typeName);
   let connectionTypeExtension = blankObjectExtension(connectionName);
-  connectionTypeExtension = extensionWithFields(connectionTypeExtension, [makeField('items', [], makeListType(makeNamedType(typeName)))]);
+  connectionTypeExtension = extensionWithFields(connectionTypeExtension, [
+    makeField('items', [], makeNonNullType(makeListType(makeNamedType(typeName)))),
+  ]);
   connectionTypeExtension = extensionWithFields(connectionTypeExtension, [makeField('nextToken', [], makeNamedType('String'))]);
   if (isSync) {
     connectionTypeExtension = extensionWithFields(connectionTypeExtension, [makeField('startedAt', [], makeNamedType('AWSTimestamp'))]);

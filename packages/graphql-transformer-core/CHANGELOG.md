@@ -3,6 +3,302 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.4.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.4.1...graphql-transformer-core@7.4.5) (2022-02-10)
+
+
+
+## 7.6.19 (2022-02-08)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+## [7.4.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.4.0...graphql-transformer-core@7.4.1) (2022-02-03)
+
+
+### Bug Fixes
+
+* separate field level subscription errors and field level resolver generation ([#9671](https://github.com/aws-amplify/amplify-cli/issues/9671)) ([657c344](https://github.com/aws-amplify/amplify-cli/commit/657c344633d4a72d322008f23a29f78df5a8a55a))
+
+
+
+
+
+# [7.4.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.3.7...graphql-transformer-core@7.4.0) (2022-01-31)
+
+
+### Features
+
+* `[@maps](https://github.com/maps)To` directive to enable renaming models while retaining data ([#9340](https://github.com/aws-amplify/amplify-cli/issues/9340)) ([aedf45d](https://github.com/aws-amplify/amplify-cli/commit/aedf45d9237812d71bb8b56164efe0222ad3d534))
+
+
+
+
+
+## [7.3.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.3.6...graphql-transformer-core@7.3.7) (2022-01-27)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+## [7.3.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.3.5...graphql-transformer-core@7.3.6) (2022-01-23)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+## [7.3.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.3.4...graphql-transformer-core@7.3.5) (2022-01-13)
+
+
+### Bug Fixes
+
+* clean up missing and unused GraphQL v1 dependencies ([#9496](https://github.com/aws-amplify/amplify-cli/issues/9496)) ([fe8201b](https://github.com/aws-amplify/amplify-cli/commit/fe8201be17f42db233fce0bb366ff4d0c8358ec0))
+
+
+
+
+
+## [7.3.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.3.2...graphql-transformer-core@7.3.4) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+## [7.3.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.3.1...graphql-transformer-core@7.3.2) (2021-12-21)
+
+
+### Bug Fixes
+
+* **amplify-util-mock:** fix cleanup V2 resolvers on mock exit ([#9319](https://github.com/aws-amplify/amplify-cli/issues/9319)) ([5b0bcac](https://github.com/aws-amplify/amplify-cli/commit/5b0bcacbefeabaf57113e242b3f32cff74422dc5))
+
+
+
+
+
+## [7.3.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.3.0...graphql-transformer-core@7.3.1) (2021-12-17)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+# [7.3.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.2.8...graphql-transformer-core@7.3.0) (2021-12-03)
+
+
+### Features
+
+* provide helpful error message when GQL schema validation fails ([#9159](https://github.com/aws-amplify/amplify-cli/issues/9159)) ([308706c](https://github.com/aws-amplify/amplify-cli/commit/308706c8a67712d7625f11a625e258101790d4c7))
+
+
+
+
+
+## [7.2.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.2.7...graphql-transformer-core@7.2.8) (2021-12-02)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+## [7.2.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.2.6...graphql-transformer-core@7.2.7) (2021-12-01)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+## [7.2.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.2.5...graphql-transformer-core@7.2.6) (2021-11-26)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+## [7.2.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.2.4...graphql-transformer-core@7.2.5) (2021-11-23)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+## [7.2.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.2.3...graphql-transformer-core@7.2.4) (2021-11-21)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+## [7.2.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.2.2...graphql-transformer-core@7.2.3) (2021-11-20)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+## [7.2.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.2.1...graphql-transformer-core@7.2.2) (2021-11-17)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+## [7.2.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.31.0...graphql-transformer-core@7.2.1) (2021-11-15)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+# [7.0.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.30.2...graphql-transformer-core@7.0.0) (2021-11-13)
+
+
+### Features
+
+* flag to allow destructive schema changes ([#8273](https://github.com/aws-amplify/amplify-cli/issues/8273)) ([18de856](https://github.com/aws-amplify/amplify-cli/commit/18de856fb61bf2df8f73375e4e55a58c6159a232))
+
+
+
+
+
+# [6.31.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.30.2...graphql-transformer-core@6.31.0) (2021-11-11)
+
+
+### Features
+
+* flag to allow destructive schema changes ([#8273](https://github.com/aws-amplify/amplify-cli/issues/8273)) ([18de856](https://github.com/aws-amplify/amplify-cli/commit/18de856fb61bf2df8f73375e4e55a58c6159a232))
+
+
+
+
+
+## [6.30.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.30.1...graphql-transformer-core@6.30.2) (2021-10-10)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+## [6.30.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.30.0...graphql-transformer-core@6.30.1) (2021-10-06)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+# [6.30.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.29.7...graphql-transformer-core@6.30.0) (2021-09-27)
+
+
+### Features
+
+* Flag to allow schema changes that require table replacement ([#8144](https://github.com/aws-amplify/amplify-cli/issues/8144)) ([2d4e65a](https://github.com/aws-amplify/amplify-cli/commit/2d4e65acfd034d33c6fa8ac1f5f8582e7e3bc399))
+
+
+### Reverts
+
+* Revert "feat: Flag to allow schema changes that require table replacement (#8144)" (#8268) ([422dd04](https://github.com/aws-amplify/amplify-cli/commit/422dd04425c72aa7276e086d38ce4d5f4681f9f3)), closes [#8144](https://github.com/aws-amplify/amplify-cli/issues/8144) [#8268](https://github.com/aws-amplify/amplify-cli/issues/8268)
+
+
+
+
+
+## [6.29.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.29.6...graphql-transformer-core@6.29.7) (2021-09-18)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+## [6.29.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.29.5...graphql-transformer-core@6.29.6) (2021-09-14)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+## [6.29.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.29.4...graphql-transformer-core@6.29.5) (2021-09-09)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+## [6.29.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.29.3...graphql-transformer-core@6.29.4) (2021-09-02)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+## [6.29.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.29.2...graphql-transformer-core@6.29.3) (2021-08-24)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+## [6.29.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.29.1...graphql-transformer-core@6.29.2) (2021-08-06)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+## [6.29.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.29.0...graphql-transformer-core@6.29.1) (2021-07-30)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+# [6.29.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.28.13...graphql-transformer-core@6.29.0) (2021-07-27)
+
+
+### Features
+
+* add [@aws](https://github.com/aws)_lambda to GQL transformer pass through directive list ([#7757](https://github.com/aws-amplify/amplify-cli/issues/7757)) ([509dfd1](https://github.com/aws-amplify/amplify-cli/commit/509dfd17deea5eba28efb76deed5b416333dd32e))
+
+
+
+
+
+## [6.28.13](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.28.12...graphql-transformer-core@6.28.13) (2021-07-16)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
 ## [6.28.12](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.28.11...graphql-transformer-core@6.28.12) (2021-06-30)
 
 **Note:** Version bump only for package graphql-transformer-core

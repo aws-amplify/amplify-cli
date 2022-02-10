@@ -94,6 +94,28 @@ export class FeatureFlags {
     }
   };
 
+  /**
+   * If feature flag exists do nothing, otherwise initalize the given feature flag with the default value.
+   * If the configuration file does not exist it will be created with the default features.
+   */
+  public static ensureFeatureFlag = async (featureFlagSection: string, featureFlagName: string): Promise<void> => {
+    FeatureFlags.ensureInitialized();
+
+    let config = stateManager.getCLIJSON(FeatureFlags.instance.projectPath, undefined, {
+      throwIfNotExist: false,
+      preserveComments: true,
+    });
+
+    if (!config?.features) {
+      FeatureFlags.ensureDefaultFeatureFlags(false);
+    } else if (config.features?.[featureFlagSection]?.[featureFlagName] === undefined) {
+      const features = FeatureFlags.getExistingProjectDefaults();
+      _.set(config, ['features', featureFlagSection, featureFlagName], features[featureFlagSection][featureFlagName]);
+
+      stateManager.setCLIJSON(FeatureFlags.instance.projectPath, config);
+    }
+  };
+
   public static getBoolean = (flagName: string): boolean => {
     FeatureFlags.ensureInitialized();
 
@@ -519,7 +541,7 @@ export class FeatureFlags {
         name: 'improvePluralization',
         type: 'boolean',
         defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: true,
+        defaultValueForNewProjects: false,
       },
       {
         name: 'validateTypeNameReservedWords',
@@ -531,7 +553,7 @@ export class FeatureFlags {
         name: 'useExperimentalPipelinedTransformer',
         type: 'boolean',
         defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: false,
+        defaultValueForNewProjects: true,
       },
       {
         name: 'enableIterativeGSIUpdates',
@@ -550,6 +572,30 @@ export class FeatureFlags {
         type: 'boolean',
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: true,
+      },
+      {
+        name: 'transformerVersion',
+        type: 'number',
+        defaultValueForExistingProjects: 1,
+        defaultValueForNewProjects: 2,
+      },
+      {
+        name: 'suppressSchemaMigrationPrompt',
+        type: 'boolean',
+        defaultValueForExistingProjects: true,
+        defaultValueForNewProjects: true,
+      },
+      {
+        name: 'securityEnhancementNotification',
+        type: 'boolean',
+        defaultValueForExistingProjects: true,
+        defaultValueForNewProjects: false,
+      },
+      {
+        name: 'showFieldAuthNotification',
+        type: 'boolean',
+        defaultValueForExistingProjects: true,
+        defaultValueForNewProjects: false,
       },
     ]);
 
@@ -577,6 +623,18 @@ export class FeatureFlags {
       },
       {
         name: 'breakCircularDependency',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: true,
+      },
+      {
+        name: 'forceAliasAttributes',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: false,
+      },
+      {
+        name: 'useEnabledMfas',
         type: 'boolean',
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: true,
@@ -642,8 +700,8 @@ export class FeatureFlags {
         name: 'enableDartNullSafety',
         type: 'boolean',
         defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: true
-      }
+        defaultValueForNewProjects: true,
+      },
     ]);
 
     this.registerFlag('appSync', [
@@ -651,6 +709,54 @@ export class FeatureFlags {
         name: 'generateGraphQLPermissions',
         type: 'boolean',
         defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: true,
+      },
+    ]);
+
+    this.registerFlag('latestRegionSupport', [
+      {
+        name: 'pinpoint',
+        type: 'number',
+        defaultValueForExistingProjects: 0,
+        defaultValueForNewProjects: 1,
+      },
+      {
+        name: 'translate',
+        type: 'number',
+        defaultValueForExistingProjects: 0,
+        defaultValueForNewProjects: 1,
+      },
+      {
+        name: 'transcribe',
+        type: 'number',
+        defaultValueForExistingProjects: 0,
+        defaultValueForNewProjects: 1,
+      },
+      {
+        name: 'rekognition',
+        type: 'number',
+        defaultValueForExistingProjects: 0,
+        defaultValueForNewProjects: 1,
+      },
+      {
+        name: 'textract',
+        type: 'number',
+        defaultValueForExistingProjects: 0,
+        defaultValueForNewProjects: 1,
+      },
+      {
+        name: 'comprehend',
+        type: 'number',
+        defaultValueForExistingProjects: 0,
+        defaultValueForNewProjects: 1,
+      },
+    ]);
+
+    this.registerFlag('project', [
+      {
+        name: 'overrides',
+        type: 'boolean',
+        defaultValueForExistingProjects: true,
         defaultValueForNewProjects: true,
       },
     ]);

@@ -17,6 +17,7 @@ import {
   makeListType,
   makeInputValueDefinition,
   STANDARD_SCALARS,
+  makeNonNullType,
 } from 'graphql-transformer-common';
 import { Expression, str } from 'graphql-mapping-template';
 import { ResolverResourceIDs, SearchableResourceIDs, ModelResourceIDs, getBaseType, ResourceConstants } from 'graphql-transformer-common';
@@ -162,7 +163,7 @@ export class SearchableModelTransformer extends Transformer {
     // Create TableXConnection type with items and nextToken
     let connectionTypeExtension = blankObjectExtension(searchableXConnectionName);
     connectionTypeExtension = extensionWithFields(connectionTypeExtension, [
-      makeField('items', [], makeListType(makeNamedType(def.name.value))),
+      makeField('items', [], makeNonNullType(makeListType(makeNamedType(def.name.value)))),
     ]);
     connectionTypeExtension = extensionWithFields(connectionTypeExtension, [
       makeField('nextToken', [], makeNamedType('String')),

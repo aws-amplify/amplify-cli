@@ -14,7 +14,7 @@ const imageKey = 'public/myimage.jpg';
 export async function runTest(projectDir: string, testModule: any) {
   await addAuthWithDefault(projectDir);
   await addS3Storage(projectDir);
-  await addApi(projectDir);
+  await addApi(projectDir, { transformerVersion: 1 });
   updateSchemaInTestProject(projectDir, testModule.schema);
 
   await amplifyPush(projectDir);
@@ -45,6 +45,7 @@ async function uploadImageFile(projectDir: string) {
   const s3Client = new aws.S3({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    sessionToken: process.env.AWS_SESSION_TOKEN,
     region: process.env.AWS_DEFAULT_REGION,
   });
 

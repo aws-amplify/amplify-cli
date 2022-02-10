@@ -3,6 +3,121 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.21.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.21.3...graphql-relational-schema-transformer@2.21.4) (2022-01-31)
+
+**Note:** Version bump only for package graphql-relational-schema-transformer
+
+
+
+
+
+## [2.21.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.21.2...graphql-relational-schema-transformer@2.21.3) (2022-01-13)
+
+**Note:** Version bump only for package graphql-relational-schema-transformer
+
+
+
+
+
+## [2.21.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.21.0...graphql-relational-schema-transformer@2.21.2) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+**Note:** Version bump only for package graphql-relational-schema-transformer
+
+
+
+
+
+# [2.21.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.20.2...graphql-relational-schema-transformer@2.21.0) (2021-11-23)
+
+
+### Features
+
+* override support for api category ([#9013](https://github.com/aws-amplify/amplify-cli/issues/9013)) ([ae7b001](https://github.com/aws-amplify/amplify-cli/commit/ae7b001f274f327a29c99c67fe851272c6208e84)), closes [#9001](https://github.com/aws-amplify/amplify-cli/issues/9001) [#8954](https://github.com/aws-amplify/amplify-cli/issues/8954) [#8958](https://github.com/aws-amplify/amplify-cli/issues/8958) [#8960](https://github.com/aws-amplify/amplify-cli/issues/8960) [#8967](https://github.com/aws-amplify/amplify-cli/issues/8967) [#8971](https://github.com/aws-amplify/amplify-cli/issues/8971) [#8976](https://github.com/aws-amplify/amplify-cli/issues/8976) [#8975](https://github.com/aws-amplify/amplify-cli/issues/8975) [#8981](https://github.com/aws-amplify/amplify-cli/issues/8981) [#8983](https://github.com/aws-amplify/amplify-cli/issues/8983) [#8992](https://github.com/aws-amplify/amplify-cli/issues/8992) [#9000](https://github.com/aws-amplify/amplify-cli/issues/9000) [#9002](https://github.com/aws-amplify/amplify-cli/issues/9002) [#9005](https://github.com/aws-amplify/amplify-cli/issues/9005) [#9006](https://github.com/aws-amplify/amplify-cli/issues/9006) [#9007](https://github.com/aws-amplify/amplify-cli/issues/9007) [#9008](https://github.com/aws-amplify/amplify-cli/issues/9008) [#9010](https://github.com/aws-amplify/amplify-cli/issues/9010) [#9011](https://github.com/aws-amplify/amplify-cli/issues/9011) [#9012](https://github.com/aws-amplify/amplify-cli/issues/9012) [#9014](https://github.com/aws-amplify/amplify-cli/issues/9014) [#9015](https://github.com/aws-amplify/amplify-cli/issues/9015) [#9017](https://github.com/aws-amplify/amplify-cli/issues/9017) [#9020](https://github.com/aws-amplify/amplify-cli/issues/9020) [#9024](https://github.com/aws-amplify/amplify-cli/issues/9024) [#9027](https://github.com/aws-amplify/amplify-cli/issues/9027) [#9028](https://github.com/aws-amplify/amplify-cli/issues/9028) [#9029](https://github.com/aws-amplify/amplify-cli/issues/9029) [#9032](https://github.com/aws-amplify/amplify-cli/issues/9032) [#9031](https://github.com/aws-amplify/amplify-cli/issues/9031) [#9035](https://github.com/aws-amplify/amplify-cli/issues/9035) [#9038](https://github.com/aws-amplify/amplify-cli/issues/9038) [#9039](https://github.com/aws-amplify/amplify-cli/issues/9039)
+
+
+
+
+
+## [2.20.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.20.1...graphql-relational-schema-transformer@2.20.2) (2021-11-17)
+
+**Note:** Version bump only for package graphql-relational-schema-transformer
+
+
+
+
+
+## [2.20.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.18.8...graphql-relational-schema-transformer@2.20.1) (2021-11-15)
+
+**Note:** Version bump only for package graphql-relational-schema-transformer
+
+
+
+
+
+## [2.18.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.18.7...graphql-relational-schema-transformer@2.18.8) (2021-11-11)
+
+**Note:** Version bump only for package graphql-relational-schema-transformer
+
+
+
+
+
+## [2.18.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.18.6...graphql-relational-schema-transformer@2.18.7) (2021-09-27)
+
+
+### Bug Fixes
+
+* [#8223](https://github.com/aws-amplify/amplify-cli/issues/8223), conversion to typescript ([#8245](https://github.com/aws-amplify/amplify-cli/issues/8245)) ([096e6ca](https://github.com/aws-amplify/amplify-cli/commit/096e6ca19b94aa40ef249ea98d008380395afa16))
+* **graphql-relational-transformer:** fixes broken list and update resolvers ([#8101](https://github.com/aws-amplify/amplify-cli/issues/8101)) ([e61b362](https://github.com/aws-amplify/amplify-cli/commit/e61b362b75e6dfce6406e35e5ab52ffbaf718483)), closes [#8008](https://github.com/aws-amplify/amplify-cli/issues/8008)
+
+
+
+
+
+## [2.18.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.18.5...graphql-relational-schema-transformer@2.18.6) (2021-09-02)
+
+**Note:** Version bump only for package graphql-relational-schema-transformer
+
+
+
+
+
+## [2.18.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.18.4...graphql-relational-schema-transformer@2.18.5) (2021-08-24)
+
+**Note:** Version bump only for package graphql-relational-schema-transformer
+
+
+
+
+
+## [2.18.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.18.3...graphql-relational-schema-transformer@2.18.4) (2021-08-06)
+
+**Note:** Version bump only for package graphql-relational-schema-transformer
+
+
+
+
+
+## [2.18.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.18.2...graphql-relational-schema-transformer@2.18.3) (2021-07-27)
+
+**Note:** Version bump only for package graphql-relational-schema-transformer
+
+
+
+
+
+## [2.18.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.18.1...graphql-relational-schema-transformer@2.18.2) (2021-07-16)
+
+**Note:** Version bump only for package graphql-relational-schema-transformer
+
+
+
+
+
 ## [2.18.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.18.0...graphql-relational-schema-transformer@2.18.1) (2021-06-30)
 
 

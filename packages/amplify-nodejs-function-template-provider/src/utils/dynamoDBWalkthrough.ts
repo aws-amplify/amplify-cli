@@ -1,8 +1,9 @@
+import { $TSContext, AmplifyCategories, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import inquirer from 'inquirer';
 import path from 'path';
 const TransformPackage = require('graphql-transformer-core');
 const { ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
-export async function askDynamoDBQuestions(context: any, currentProjectOnly = false): Promise<{ resourceName: string }> {
+export async function askDynamoDBQuestions(context: $TSContext, currentProjectOnly = false): Promise<{ resourceName: string }> {
   const dynamoDbTypeQuestion = {
     type: 'list',
     name: 'dynamoDbType',
@@ -50,7 +51,7 @@ export async function askDynamoDBQuestions(context: any, currentProjectOnly = fa
         return { resourceName: dynamoResourceAnswer.dynamoDbResources as string };
       }
       case 'newResource': {
-        const resourceName = await context.amplify.invokePluginMethod(context, 'storage', undefined, 'add', [
+        const resourceName = await context.amplify.invokePluginMethod<string>(context, 'storage', undefined, 'add', [
           context,
           'awscloudformation',
           'DynamoDB',
@@ -67,7 +68,7 @@ export async function askDynamoDBQuestions(context: any, currentProjectOnly = fa
   throw new Error('Invalid option selected');
 }
 
-export async function getTableParameters(context: any, dynamoAnswers: any): Promise<any> {
+export async function getTableParameters(dynamoAnswers: any): Promise<TableParams | {}> {
   if (dynamoAnswers.Arn) {
     // Looking for table parameters on DynamoDB public API
     const hashKey = dynamoAnswers.KeySchema.find((attr: any) => attr.KeyType === 'HASH') || {};
@@ -81,19 +82,32 @@ export async function getTableParameters(context: any, dynamoAnswers: any): Prom
       sortKeyName: rangeKey.AttributeName,
       sortKeyType: rangeType.AttributeType,
     };
-  } // Looking for table parameters on local configuration
-  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-  const resourceDirPath = path.join(projectBackendDirPath, 'storage', dynamoAnswers.resourceName);
-  const parametersFilePath = path.join(resourceDirPath, 'parameters.json');
-  let parameters;
-  try {
-    parameters = context.amplify.readJsonFile(parametersFilePath);
-  } catch (e) {
-    parameters = {};
   }
-
-  return parameters;
+  // Look for table config in parameters.json, then build/parameters.json, then fallback to {}
+  const parametersJson: TableParams = stateManager.getResourceParametersJson(
+    undefined,
+    AmplifyCategories.STORAGE,
+    dynamoAnswers.resourceName,
+    { throwIfNotExist: false },
+  );
+  const buildParamsJson = JSONUtilities.readJson<TableParams>(
+    path.join(
+      pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.STORAGE, dynamoAnswers.resourceName),
+      'build',
+      'parameters.json',
+    ),
+    { throwIfNotExist: false },
+  );
+  return parametersJson ?? buildParamsJson ?? {};
 }
+
+type TableParams = {
+  tableName: string;
+  partitionKeyName: string;
+  partitionKeyType: string;
+  sortKeyName?: string;
+  sortKeyType?: string;
+};
 
 export async function askAPICategoryDynamoDBQuestions(context: any) {
   const { allResources } = await context.amplify.getResourceStatus();
@@ -164,7 +178,7 @@ export async function askAPICategoryDynamoDBQuestions(context: any) {
       batchSize: 100,
       startingPosition: 'LATEST',
       eventSourceArn: streamArnParamRef,
-      functionTemplateName: 'trigger-dynamodb.js',
+      functionTemplateName: 'trigger-dynamodb.js.ejs',
       triggerPolicies: [
         {
           Effect: 'Allow',

@@ -10,9 +10,10 @@ const { S3 } = require('./aws-s3');
 const providerName = require('../constants').ProviderName;
 const { formUserAgentParam } = require('./user-agent');
 const configurationManager = require('../configuration-manager');
-const { stateManager } = require('amplify-cli-core');
+const { stateManager, pathManager } = require('amplify-cli-core');
 const { fileLogger } = require('../utils/aws-logger');
 const logger = fileLogger('aws-cfn');
+const { pagedAWSCall } = require('./paged-call');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
 const CFN_POLL_TIME = 5 * 1000; // 5 secs wait to check if  new stacks are created by root stack
@@ -311,15 +312,36 @@ class CloudFormation {
       });
   }
 
+  async listStacks(nextToken = null, stackStatusFilter) {
+    return await this.cfn
+      .listStacks({
+        NextToken: nextToken,
+        StackStatusFilter: stackStatusFilter,
+      })
+      .promise();
+  }
+
   async updateamplifyMetaFileWithStackOutputs(parentStackName) {
     const cfnParentStackParams = {
       StackName: parentStackName,
     };
     const projectDetails = this.context.amplify.getProjectDetails();
     const { amplifyMeta } = projectDetails;
-    logger('updateamplifyMetaFileWithStackOutputs.cfn.describeStackResources', [cfnParentStackParams])();
-    const result = await this.cfn.describeStackResources(cfnParentStackParams).promise();
-    const resources = result.StackResources.filter(
+
+    logger('updateamplifyMetaFileWithStackOutputs.cfn.listStackResources', [cfnParentStackParams])();
+
+    const stackSummaries = await pagedAWSCall(
+      async (params, nextToken) => {
+        return await this.cfn.listStackResources({ ...params, NextToken: nextToken }).promise();
+      },
+      {
+        StackName: parentStackName,
+      },
+      response => response.StackResourceSummaries,
+      async response => response.NextToken,
+    );
+
+    const resources = stackSummaries.filter(
       resource =>
         ![
           'DeploymentBucket',
@@ -328,8 +350,39 @@ class CloudFormation {
           'UpdateRolesWithIDPFunction',
           'UpdateRolesWithIDPFunctionOutputs',
           'UpdateRolesWithIDPFunctionRole',
-        ].includes(resource.LogicalResourceId),
+        ].includes(resource.LogicalResourceId) && resource.ResourceType === 'AWS::CloudFormation::Stack',
     );
+    /**
+     * Update root stack overrides
+     */
+    const rootStackResources = stackSummaries.filter(
+      resource =>
+        !['UpdateRolesWithIDPFunction', 'UpdateRolesWithIDPFunctionOutputs', 'UpdateRolesWithIDPFunctionRole'].includes(
+          resource.LogicalResourceId,
+        ),
+    );
+    if (rootStackResources.length > 0) {
+      const rootStackResult = await this.describeStack(cfnParentStackParams);
+      Object.keys(amplifyMeta)
+        .filter(k => k === 'providers')
+        .forEach(category => {
+          Object.keys(amplifyMeta[category]).forEach(key => {
+            const formattedOutputs = formatOutputs(rootStackResult.Stacks[0].Outputs);
+            this.context.amplify.updateProvideramplifyMeta('awscloudformation', formattedOutputs);
+            /**
+             * Write the new env specific datasource information into
+             * the team-provider-info file
+             */
+            const { envName } = this.context.amplify.getEnvInfo();
+            const projectPath = pathManager.findProjectRoot();
+            const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
+            const tpiResourceParams = _.get(teamProviderInfo, [envName, 'awscloudformation'], {});
+            _.assign(tpiResourceParams, stateManager.getMeta().providers.awscloudformation);
+            _.set(teamProviderInfo, [envName, 'awscloudformation'], tpiResourceParams);
+            stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
+          });
+        });
+    }
 
     if (resources.length > 0) {
       const promises = [];

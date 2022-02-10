@@ -7,5 +7,5 @@ export const generateSubscriptionRequestTemplate = (): string => {
 
 export const generateSubscriptionResponseTemplate = (): string => {
   const statements: Expression[] = [toJson(nul())];
-  return printBlock('Subscription Resonse template')(compoundExpression(statements));
+  return printBlock('Subscription Response template')(compoundExpression(statements));
 };

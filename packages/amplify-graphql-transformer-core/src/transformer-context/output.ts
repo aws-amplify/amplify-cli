@@ -27,6 +27,8 @@ import { DEFAULT_SCHEMA_DEFINITION } from '../utils/defaultSchema';
 import { TransformerContextOutputProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import assert from 'assert';
 
+const AMPLIFY = 'AMPLIFY';
+
 export function blankObject(name: string): ObjectTypeDefinitionNode {
   return {
     kind: 'ObjectTypeDefinition',
@@ -73,6 +75,7 @@ export class TransformerOutput implements TransformerContextOutputProvider {
         case Kind.ENUM_TYPE_DEFINITION:
         case Kind.UNION_TYPE_DEFINITION:
           const typeDef = inputDef as TypeDefinitionNode;
+          if (this.isAmplifyInput(typeDef.name.value)) break;
           if (!this.getType(typeDef.name.value)) {
             this.addType(typeDef);
           }
@@ -234,6 +237,18 @@ export class TransformerOutput implements TransformerContextOutputProvider {
         return node as ObjectTypeDefinitionNode;
       }
     }
+  }
+
+  /**
+   * Add an union type definition node to the context. If the type already
+   * exists an error will be thrown.
+   * @param obj The union type definition node to add.
+   */
+  public addUnion(obj: UnionTypeDefinitionNode) {
+    if (this.nodeMap[obj.name.value]) {
+      throw new Error(`Conflicting union '${obj.name.value}' found.`);
+    }
+    this.nodeMap[obj.name.value] = obj;
   }
 
   /**
@@ -574,7 +589,7 @@ export class TransformerOutput implements TransformerContextOutputProvider {
         kind: 'Document',
         definitions: Object.values(this.nodeMap),
       },
-      ['aws_subscribe', 'aws_auth', 'aws_api_key', 'aws_iam', 'aws_oidc', 'aws_cognito_user_pools', 'deprecated'],
+      ['aws_subscribe', 'aws_auth', 'aws_api_key', 'aws_iam', 'aws_oidc', 'aws_cognito_user_pools', 'aws_lambda', 'deprecated'],
     );
     const SDL = print(astSansDirectives);
     return SDL;
@@ -599,5 +614,9 @@ export class TransformerOutput implements TransformerContextOutputProvider {
       operationTypes,
       directives: [],
     };
+  }
+
+  private isAmplifyInput(inputName: string): boolean {
+    return inputName === AMPLIFY;
   }
 }

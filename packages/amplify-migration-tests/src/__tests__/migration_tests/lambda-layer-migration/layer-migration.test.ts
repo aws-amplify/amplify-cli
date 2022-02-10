@@ -1,4 +1,5 @@
 import {
+  addFunction,
   amplifyPushAuth,
   amplifyPushLayer,
   amplifyStatus,
@@ -10,6 +11,7 @@ import {
   LayerRuntime,
   LayerPermissionChoice,
   removeLayerVersion,
+  updateFunction,
   updateLayer,
 } from 'amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
@@ -44,7 +46,7 @@ describe('test lambda layer migration flow introduced in v5.0.0', () => {
   });
 
   afterEach(async () => {
-    await deleteProject(projRoot);
+    await deleteProject(projRoot, undefined, true);
     deleteProjectDir(projRoot);
   });
 
@@ -99,13 +101,11 @@ describe('test lambda layer migration flow introduced in v5.0.0', () => {
   });
 
   it('migrate layer in Update state with "amplify push"', async () => {
-    const { projectName: projName } = getProjectConfig(projRoot);
     const [shortId] = uuid().split('-');
     const layerName = `test${shortId}`;
     const layerRuntime: LayerRuntime = 'nodejs';
     const layerSettings = {
       layerName,
-      projName,
       runtimes: [layerRuntime],
     };
 
@@ -118,13 +118,11 @@ describe('test lambda layer migration flow introduced in v5.0.0', () => {
   });
 
   it('migrate layer in No Change state with "amplify update function" by updating permissions', async () => {
-    const { projectName: projName } = getProjectConfig(projRoot);
     const [shortId] = uuid().split('-');
     const layerName = `test${shortId}`;
     const layerRuntime: LayerRuntime = 'nodejs';
     const layerSettings = {
       layerName,
-      projName,
       runtimes: [layerRuntime],
     };
 
@@ -147,12 +145,10 @@ describe('test lambda layer migration flow introduced in v5.0.0', () => {
   });
 
   it('migrates a layer with no runtime', async () => {
-    const { projectName: projName } = getProjectConfig(projRoot);
     const [shortId] = uuid().split('-');
     const layerName = `test${shortId}`;
     const layerSettings = {
       layerName,
-      projName,
       runtimes: [],
     };
 
@@ -165,5 +161,23 @@ describe('test lambda layer migration flow introduced in v5.0.0', () => {
     await amplifyPushLayer(projRoot, {}, true);
 
     expect(validateLayerConfigFilesMigrated(projRoot, layerName)).toBe(true);
+  });
+
+  it('handle add and update function when legacy layer is present', async () => {
+    const [shortId] = uuid().split('-');
+    const layerName = `test${shortId}`;
+    const layerRuntime: LayerRuntime = 'nodejs';
+    const functionSettings = {
+      testingWithLatestCodebase: true,
+      layerOptions: {
+        select: [],
+        expectedListOptions: [layerName],
+        layerAndFunctionExist: true,
+      },
+    };
+
+    await legacyAddLayer(projRoot, { layerName: layerName, runtimes: [layerRuntime] });
+    await addFunction(projRoot, { ...functionSettings, functionTemplate: 'Hello World' }, layerRuntime);
+    await updateFunction(projRoot, functionSettings, layerRuntime);
   });
 });

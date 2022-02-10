@@ -19,10 +19,11 @@ import { IAM as cfnIAM, Cognito as cfnCognito } from 'cloudform-types';
 import {
   createUserPool,
   createUserPoolClient,
-  signupAndAuthenticateUser,
   createGroup,
   addUserToGroup,
   configureAmplify,
+  signupUser,
+  authenticateUser,
 } from '../cognitoUtils';
 import 'isomorphic-fetch';
 import { API } from 'aws-amplify';
@@ -48,6 +49,7 @@ const featureFlags = {
   getObject: jest.fn(),
   getString: jest.fn(),
 };
+
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
 // to deal with subscriptions in node env
@@ -398,7 +400,7 @@ beforeAll(async () => {
     });
 
     const identityPoolRoleMap = new cfnCognito.IdentityPoolRoleAttachment({
-      IdentityPoolId: ({ Ref: 'IdentityPool' } as unknown) as string,
+      IdentityPoolId: { Ref: 'IdentityPool' } as unknown as string,
       Roles: {
         unauthenticated: { 'Fn::GetAtt': ['UnauthRole', 'Arn'] },
         authenticated: { 'Fn::GetAtt': ['AuthRole', 'Arn'] },
@@ -532,8 +534,9 @@ beforeAll(async () => {
     // Configure Amplify, create users, and sign in.
     configureAmplify(USER_POOL_ID, userPoolClientId, identityPoolId);
 
-    await signupAndAuthenticateUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
-    await signupAndAuthenticateUser(USER_POOL_ID, USERNAME2, TMP_PASSWORD, REAL_PASSWORD);
+    await signupUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD);
+    await signupUser(USER_POOL_ID, USERNAME2, TMP_PASSWORD);
+    await signupUser(USER_POOL_ID, USERNAME3, TMP_PASSWORD);
     await createGroup(USER_POOL_ID, INSTRUCTOR_GROUP_NAME);
     await createGroup(USER_POOL_ID, MEMBER_GROUP_NAME);
     await createGroup(USER_POOL_ID, ADMIN_GROUP_NAME);
@@ -542,7 +545,7 @@ beforeAll(async () => {
     await addUserToGroup(INSTRUCTOR_GROUP_NAME, USERNAME1, USER_POOL_ID);
     await addUserToGroup(INSTRUCTOR_GROUP_NAME, USERNAME2, USER_POOL_ID);
 
-    const authResAfterGroup: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
+    const authResAfterGroup: any = await authenticateUser(USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
     const idToken = authResAfterGroup.getIdToken().getJwtToken();
     GRAPHQL_CLIENT_1 = new AWSAppSyncClient({
       url: GRAPHQL_ENDPOINT,
@@ -557,7 +560,7 @@ beforeAll(async () => {
       },
     });
 
-    const authRes2AfterGroup: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME2, TMP_PASSWORD, REAL_PASSWORD);
+    const authRes2AfterGroup: any = await authenticateUser(USERNAME2, TMP_PASSWORD, REAL_PASSWORD);
     const idToken2 = authRes2AfterGroup.getIdToken().getJwtToken();
     GRAPHQL_CLIENT_2 = new AWSAppSyncClient({
       url: GRAPHQL_ENDPOINT,
@@ -572,7 +575,7 @@ beforeAll(async () => {
       },
     });
 
-    const authRes3: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME3, TMP_PASSWORD, REAL_PASSWORD);
+    const authRes3: any = await authenticateUser(USERNAME3, TMP_PASSWORD, REAL_PASSWORD);
     const idToken3 = authRes3.getIdToken().getJwtToken();
     GRAPHQL_CLIENT_3 = new AWSAppSyncClient({
       url: GRAPHQL_ENDPOINT,
@@ -624,6 +627,8 @@ beforeAll(async () => {
     // "The security token included in the request is invalid" errors
     await new Promise(res => setTimeout(res, PROPAGATION_DELAY));
   } catch (e) {
+    console.log(e);
+
     expect(true).toEqual(false);
   }
 });
@@ -642,6 +647,7 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const observer = API.graphql({
+    // @ts-ignore
     query: gql`
       subscription OnCreateStudent {
         onCreateStudent {
@@ -654,7 +660,7 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
       }
     `,
     authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-  }) as Observable<any>;
+  }) as unknown as Observable<any>;
   let subscription: ZenObservable.Subscription;
   const subscriptionPromise = new Promise((resolve, _) => {
     subscription = observer.subscribe((event: any) => {
@@ -686,6 +692,7 @@ test('Test that an user not in the group is not allowed to view the subscription
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME3, REAL_PASSWORD);
   const observer = API.graphql({
+    // @ts-ignore
     query: gql`
       subscription OnCreateStudent {
         onCreateStudent {
@@ -698,7 +705,7 @@ test('Test that an user not in the group is not allowed to view the subscription
       }
     `,
     authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-  }) as Observable<any>;
+  }) as unknown as Observable<any>;
   let subscription: ZenObservable.Subscription;
   const subscriptionPromise = new Promise((resolve, _) => {
     subscription = observer.subscribe({
@@ -729,6 +736,7 @@ test('Test a subscription on update', async () => {
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME2, REAL_PASSWORD);
   const observer = API.graphql({
+    // @ts-ignore
     query: gql`
       subscription OnUpdateStudent {
         onUpdateStudent {
@@ -741,7 +749,7 @@ test('Test a subscription on update', async () => {
       }
     `,
     authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-  }) as Observable<any>;
+  }) as unknown as Observable<any>;
   let subscription: ZenObservable.Subscription;
   const subscriptionPromise = new Promise((resolve, _) => {
     subscription = observer.subscribe((event: any) => {
@@ -782,6 +790,7 @@ test('Test a subscription on delete', async () => {
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME2, REAL_PASSWORD);
   const observer = API.graphql({
+    // @ts-ignore
     query: gql`
       subscription OnDeleteStudent {
         onDeleteStudent {
@@ -794,7 +803,7 @@ test('Test a subscription on delete', async () => {
       }
     `,
     authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-  }) as Observable<any>;
+  }) as unknown as Observable<any>;
   let subscription: ZenObservable.Subscription;
   const subscriptionPromise = new Promise((resolve, reject) => {
     subscription = observer.subscribe({
@@ -846,6 +855,7 @@ test('test that group is only allowed to listen to subscriptions and listen to o
 
   // though they should see when a new member is created
   const observer = API.graphql({
+    // @ts-ignore
     query: gql`
       subscription OnCreateMember {
         onCreateMember {
@@ -857,7 +867,7 @@ test('test that group is only allowed to listen to subscriptions and listen to o
       }
     `,
     authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-  }) as Observable<any>;
+  }) as unknown as Observable<any>;
   let subscription: ZenObservable.Subscription;
   const subscriptionPromise = new Promise((resolve, _) => {
     subscription = observer.subscribe((event: any) => {
@@ -888,6 +898,7 @@ test('authorized group is allowed to listen to onUpdate', async () => {
   await Auth.signIn(USERNAME2, REAL_PASSWORD);
 
   const observer = API.graphql({
+    // @ts-ignore
     query: gql`
       subscription OnUpdateMember {
         onUpdateMember {
@@ -899,7 +910,7 @@ test('authorized group is allowed to listen to onUpdate', async () => {
       }
     `,
     authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-  }) as Observable<any>;
+  }) as unknown as Observable<any>;
   let subscription: ZenObservable.Subscription;
 
   const subscriptionPromise = new Promise((resolve, reject) => {
@@ -938,6 +949,7 @@ test('authorized group is allowed to listen to onDelete', async () => {
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME2, REAL_PASSWORD);
   const observer = API.graphql({
+    // @ts-ignore
     query: gql`
       subscription OnDeleteMember {
         onDeleteMember {
@@ -949,7 +961,7 @@ test('authorized group is allowed to listen to onDelete', async () => {
       }
     `,
     authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-  }) as Observable<any>;
+  }) as unknown as Observable<any>;
   let subscription: ZenObservable.Subscription;
 
   const subscriptionPromise = new Promise((resolve, reject) => {
@@ -987,6 +999,7 @@ test('Test subscription onCreatePost with ownerField', async () => {
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const observer = API.graphql({
+    // @ts-ignore
     query: gql`
     subscription OnCreatePost {
         onCreatePost(postOwner: "${USERNAME1}") {
@@ -996,7 +1009,7 @@ test('Test subscription onCreatePost with ownerField', async () => {
         }
     }`,
     authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-  }) as Observable<any>;
+  }) as unknown as Observable<any>;
   let subscription: ZenObservable.Subscription;
   const subscriptionPromise = new Promise((resolve, _) => {
     subscription = observer.subscribe((event: any) => {
@@ -1025,6 +1038,7 @@ test('Test onCreatePost with optional argument', async () => {
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const failedObserver = API.graphql({
+    // @ts-ignore
     query: gql`
       subscription OnCreatePost {
         onCreatePost {
@@ -1035,7 +1049,7 @@ test('Test onCreatePost with optional argument', async () => {
       }
     `,
     authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-  }) as Observable<any>;
+  }) as unknown as Observable<any>;
   let subscription: ZenObservable.Subscription;
   const subscriptionPromise = new Promise((resolve, _) => {
     subscription = failedObserver.subscribe(
@@ -1062,6 +1076,7 @@ test('Test that IAM can listen and read to onCreatePost', async () => {
   reconfigureAmplifyAPI('AWS_IAM');
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const observer = API.graphql({
+    // @ts-ignore
     query: gql`
       subscription OnCreatePost {
         onCreatePost {
@@ -1072,7 +1087,7 @@ test('Test that IAM can listen and read to onCreatePost', async () => {
       }
     `,
     authMode: GRAPHQL_AUTH_MODE.AWS_IAM,
-  }) as Observable<any>;
+  }) as unknown as Observable<any>;
   let subscription: ZenObservable.Subscription;
 
   const subscriptionPromise = new Promise((resolve, reject) => {
@@ -1105,6 +1120,7 @@ test('test that subcsription with apiKey', async () => {
   reconfigureAmplifyAPI('API_KEY', API_KEY);
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const observer = API.graphql({
+    // @ts-ignore
     query: gql`
       subscription OnCreateTodo {
         onCreateTodo {
@@ -1115,7 +1131,7 @@ test('test that subcsription with apiKey', async () => {
       }
     `,
     authMode: GRAPHQL_AUTH_MODE.API_KEY,
-  }) as Observable<any>;
+  }) as unknown as Observable<any>;
   let subscription: ZenObservable.Subscription;
 
   const subscriptionPromise = new Promise((resolve, _) => {
@@ -1146,6 +1162,7 @@ test('test that subscription with apiKey onUpdate', async () => {
   reconfigureAmplifyAPI('API_KEY', API_KEY);
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const observer = API.graphql({
+    // @ts-ignore
     query: gql`
       subscription OnUpdateTodo {
         onUpdateTodo {
@@ -1156,7 +1173,7 @@ test('test that subscription with apiKey onUpdate', async () => {
       }
     `,
     authMode: GRAPHQL_AUTH_MODE.API_KEY,
-  }) as Observable<any>;
+  }) as unknown as Observable<any>;
   let subscription: ZenObservable.Subscription;
   const subscriptionPromise = new Promise((resolve, reject) => {
     subscription = observer.subscribe(
@@ -1201,6 +1218,7 @@ test('test that subscription with apiKey onDelete', async () => {
   reconfigureAmplifyAPI('API_KEY', API_KEY);
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const observer = API.graphql({
+    // @ts-ignore
     query: gql`
       subscription OnDeleteTodo {
         onDeleteTodo {
@@ -1211,7 +1229,7 @@ test('test that subscription with apiKey onDelete', async () => {
       }
     `,
     authMode: GRAPHQL_AUTH_MODE.API_KEY,
-  }) as Observable<any>;
+  }) as unknown as Observable<any>;
   let subscription: ZenObservable.Subscription;
   const subscriptionPromise = new Promise((resolve, _) => {
     subscription = observer.subscribe((event: any) => {

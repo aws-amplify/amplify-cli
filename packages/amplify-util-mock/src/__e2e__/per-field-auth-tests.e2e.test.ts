@@ -5,9 +5,7 @@ import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core'
 import { GraphQLClient } from './utils/graphql-client';
 import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
 import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
-
-// to deal with bug in cognito-identity-js
-(global as any).fetch = require('node-fetch');
+import 'isomorphic-fetch';
 
 jest.setTimeout(2000000);
 

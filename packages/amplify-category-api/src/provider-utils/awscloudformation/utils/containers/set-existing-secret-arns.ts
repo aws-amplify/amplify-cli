@@ -1,5 +1,7 @@
 import { $TSAny } from 'amplify-cli-core';
 import _ from 'lodash';
+import * as cdk from '@aws-cdk/core';
+
 /**
  * Check if the template contains existing secret configuration and if so, add it to the secretsMap
  * The secrets configuration is stored in the template in the following format
@@ -38,5 +40,16 @@ export const setExistingSecretArns = (secretsMap: Map<string, string>, cfnObj: $
     .flat(1) // merge nested secrets array into one array
     .filter(secretDef => !!secretDef?.Name) // make sure the name is defined
     .filter(secretDef => !!secretDef.ValueFrom) // make sure the arn is defined
-    .forEach(secretDef => secretsMap.set(secretDef.Name, secretDef.ValueFrom)); // add it to the secretsMap map
+    .forEach(secretDef => {
+      if (typeof secretDef.ValueFrom === 'object' && secretDef.ValueFrom['Fn::Join']) {
+        const [delimiter, values] = secretDef.ValueFrom['Fn::Join'];
+        secretsMap.set(
+          secretDef.Name,
+          cdk.Fn.join(delimiter, values.map(val => val.Ref ? cdk.Fn.ref(val.Ref) : val)),
+        );
+      }
+      else {
+        secretsMap.set(secretDef.Name, secretDef.ValueFrom);
+      }
+    }); // add it to the secretsMap map
 };

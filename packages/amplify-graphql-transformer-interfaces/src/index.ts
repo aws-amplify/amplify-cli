@@ -1,28 +1,12 @@
-export {
-  TransformerContextOutputProvider,
-  TransformerContextProvider,
-  TransformerProviderRegistry,
-  TransformerDataSourceManagerProvider,
-  TransformerResolverProvider,
-  AppSyncDataSourceType,
-  DataSourceProvider,
-  StackManagerProvider,
-  TransformerResolversManagerProvider,
-  DataSourceInstance,
-  TransformerTransformSchemaStepContextProvider,
-  TransformerBeforeStepContextProvider,
-  TransformerPrepareStepContextProvider,
-  TransformerSchemaVisitStepContextProvider,
-  TransformerValidationStepContextProvider,
-  TransformerResourceHelperProvider,
-} from './transformer-context';
+export * from './transformer-context';
 export { TransformerPluginProvider, TransformerPluginType } from './transformer-plugin-provider';
 export {
   MutationFieldType,
   QueryFieldType,
   SubscriptionFieldType,
-  TransformerModelEnhancementProvider,
   TransformerModelProvider,
+  TransformerModelEnhancementProvider,
+  TransformerAuthProvider,
 } from './transformer-model-provider';
 export { FeatureFlagProvider } from './feature-flag-provider';
 
@@ -36,4 +20,15 @@ export {
   InlineMappingTemplateProvider,
   APIIAMResourceProvider,
   TemplateType as MappingTemplateType,
+  AppSyncAuthConfiguration,
+  AppSyncAuthConfigurationAPIKeyEntry,
+  AppSyncAuthConfigurationEntry,
+  AppSyncAuthConfigurationIAMEntry,
+  ApiKeyConfig,
+  AppSyncAuthConfigurationOIDCEntry,
+  AppSyncAuthConfigurationUserPoolEntry,
+  AppSyncAuthMode,
+  UserPoolConfig,
 } from './graphql-api-provider';
+
+export { TransformHostProvider, DynamoDbDataSourceOptions } from './transform-host-provider';

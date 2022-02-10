@@ -37,7 +37,7 @@ export async function askAnalyticsCategoryKinesisQuestions(context: any) {
         batchSize: 100,
         startingPosition: 'LATEST',
         eventSourceArn: streamArnParamRef,
-        functionTemplateName: 'trigger-kinesis.js',
+        functionTemplateName: 'trigger-kinesis.js.ejs',
         triggerPolicies: [
           {
             Effect: 'Allow',

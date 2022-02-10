@@ -3,6 +3,53 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.20.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.20.1...graphql-mapping-template@4.20.3) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+**Note:** Version bump only for package graphql-mapping-template
+
+
+
+
+
+## [4.20.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.18.4...graphql-mapping-template@4.20.1) (2021-11-15)
+
+**Note:** Version bump only for package graphql-mapping-template
+
+
+
+
+
+## [4.18.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.18.3...graphql-mapping-template@4.18.4) (2021-11-11)
+
+**Note:** Version bump only for package graphql-mapping-template
+
+
+
+
+
+## [4.18.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.18.2...graphql-mapping-template@4.18.3) (2021-08-24)
+
+**Note:** Version bump only for package graphql-mapping-template
+
+
+
+
+
+## [4.18.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.18.1...graphql-mapping-template@4.18.2) (2021-08-06)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** model input fields transform ([#7857](https://github.com/aws-amplify/amplify-cli/issues/7857)) ([12ff663](https://github.com/aws-amplify/amplify-cli/commit/12ff663a94a4896bd9eacef3847be15b7631d8df))
+
+
+
+
+
 ## [4.18.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.17.0...graphql-mapping-template@4.18.1) (2020-11-22)
 
 **Note:** Version bump only for package graphql-mapping-template

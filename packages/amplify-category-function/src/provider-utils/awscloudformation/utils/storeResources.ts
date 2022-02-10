@@ -86,7 +86,7 @@ export const updateLayerArtifacts = async (
 
 export function removeLayerArtifacts(context: $TSContext, layerName: string) {
   if (isMultiEnvLayer(layerName)) {
-    removeLayerFromTeamProviderInfo(context.amplify.getEnvInfo().envName, layerName);
+    removeLayerFromTeamProviderInfo(undefined, context.amplify.getEnvInfo().envName, layerName);
   }
 }
 
@@ -103,7 +103,7 @@ export async function saveMutableState(
     | FunctionTriggerParameters,
 ) {
   createParametersFile(buildParametersFileObj(parameters), parameters.resourceName || parameters.functionName, functionParametersFileName);
-  saveEnvironmentVariables(context, parameters.resourceName, parameters.environmentVariables);
+  saveEnvironmentVariables(parameters.resourceName, parameters.environmentVariables);
   await syncSecrets(context, parameters);
 }
 

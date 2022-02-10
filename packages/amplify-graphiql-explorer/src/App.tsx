@@ -26,6 +26,7 @@ type AmplifyAppSyncSimulatorApiInfo = {
   defaultAuthenticationType: AmplifyAppSyncSimulatorAuthInfo;
   apiKey: string;
   additionalAuthenticationProviders: AmplifyAppSyncSimulatorAuthInfo[];
+  authAccessKeyId?: string;
 };
 const DEFAULT_API_INFO: AmplifyAppSyncSimulatorApiInfo = {
   name: 'AppSyncTransformer',
@@ -41,6 +42,7 @@ const LOCAL_STORAGE_KEY_NAMES = {
   oidcToken: 'AMPLIFY_GRPAHIQL_EXPLORER_OIDC_JWT_TOKEN',
   apiKey: 'AMPLIFY_GRPAHIQL_EXPLORER_API_KEY',
   iam: 'AMPLIFY_GRPAHIQL_EXPLORER_AWS_IAM',
+  iamRole: 'AMPLIFY_GRPAHIQL_EXPLORER_AWS_IAM_ROLE',
 };
 
 function getAPIInfo() {
@@ -87,7 +89,7 @@ type State = {
     apiKey?: string;
     cognitoJWTToken?: string;
     oidcJWTToken?: string;
-    iam?: string;
+    iamRole?: 'Auth' | 'UnAuth';
   };
 };
 
@@ -104,7 +106,7 @@ class App extends Component<{}, State> {
       apiKey: '',
       cognitoJWTToken: '',
       oidcJWTToken: '',
-      iam: '',
+      iamRole: 'UnAuth',
     },
   };
 
@@ -201,16 +203,16 @@ class App extends Component<{}, State> {
     } else if (this.state.currentAuthMode === AUTH_MODE.OPENID_CONNECT) {
       headers['Authorization'] = this.state.credentials.oidcJWTToken;
     } else if (this.state.currentAuthMode === AUTH_MODE.AWS_IAM) {
-      headers['Authorization'] = this.state.credentials.iam;
+      const { iamRole } = this.state.credentials;
+      const iamAccessKeyId = iamRole === 'Auth' ? this.state.apiInfo.authAccessKeyId || 'ASIAVJKIAM-AuthRole' : 'ASIAVJKI-UnAuthRole';
+
+      headers['Authorization'] = `AWS4-HMAC-SHA256 Credential=${iamAccessKeyId}/${new Date().toISOString()}/aws-fake/service`;
     }
     return fetcher(params, headers);
   }
 
   storeCredentials(credentials) {
-    const apiInfo = this.state.apiInfo;
-    const newState = {
-      apiInfo: { ...apiInfo, authenticationType: credentials.authMode },
-    };
+    const newState = {};
     if (credentials.authMode === 'API_KEY') {
       newState['apiKey'] = credentials.apiKey;
       window.localStorage.setItem(LOCAL_STORAGE_KEY_NAMES.apiKey, credentials.apiKey);
@@ -221,10 +223,12 @@ class App extends Component<{}, State> {
       newState['oidcJWTToken'] = credentials.OIDCToken;
       window.localStorage.setItem(LOCAL_STORAGE_KEY_NAMES.oidcToken, credentials.OIDCToken);
     } else if (credentials.authMode === AUTH_MODE.AWS_IAM) {
-      newState['oidcJWTToken'] = credentials.IAM;
-      window.localStorage.setItem(LOCAL_STORAGE_KEY_NAMES.iam, credentials.iam);
+      newState['iamRole'] = credentials.iamRole;
+      window.localStorage.setItem(LOCAL_STORAGE_KEY_NAMES.iamRole, credentials.iamRole);
     }
+
     this.setState(prevState => ({
+      ...prevState,
       credentials: {
         ...prevState.credentials,
         ...newState,
@@ -265,7 +269,7 @@ class App extends Component<{}, State> {
     }
 
     if (possibleAuth.includes('AWS_IAM')) {
-      credentials['iam'] = 'AWS4-HMAC-SHA256 IAMAuthorized';
+      credentials['iamRole'] = window.localStorage.getItem(LOCAL_STORAGE_KEY_NAMES.iamRole) || 'auth';
     }
 
     this.setState(() => ({
@@ -287,6 +291,7 @@ class App extends Component<{}, State> {
         currentOIDCToken={this.state.credentials.oidcJWTToken}
         currentCognitoToken={this.state.credentials.cognitoJWTToken}
         apiKey={this.state.credentials.apiKey}
+        iamRole={this.state.credentials.iamRole}
         authModes={authModes}
         onClose={credentials => {
           this.storeCredentials(credentials);
@@ -323,7 +328,9 @@ class App extends Component<{}, State> {
               <GraphiQL.Button onClick={this._handleToggleExplorer} label='Explorer' title='Toggle Explorer' />
               <GraphiQL.Button onClick={this.toggleAuthModal} label='Update Auth' title='Auth Setting' />
               <GraphiQL.Menu
-                label={`Auth - ${AUTH_TYPE_TO_NAME[this.state.currentAuthMode]} `}
+                label={`Auth - ${AUTH_TYPE_TO_NAME[this.state.currentAuthMode]}${
+                  this.state.currentAuthMode === 'AWS_IAM' ? `(${this.state.credentials.iamRole} Role)` : ''
+                }`}
                 title={AUTH_TYPE_TO_NAME[this.state.currentAuthMode]}
               >
                 {authModes.map(mode => (

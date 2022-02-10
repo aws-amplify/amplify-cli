@@ -8,7 +8,9 @@ const { downloadZip, extractZip } = require('./zip-util');
 const { S3BackendZipFileName } = require('./constants');
 const { fileLogger } = require('./utils/aws-logger');
 const logger = fileLogger('initialize-env');
-import { JSONUtilities, PathConstants, stateManager, $TSMeta, $TSContext } from 'amplify-cli-core';
+import { JSONUtilities, PathConstants, stateManager, $TSMeta, $TSContext, IAmplifyResource } from 'amplify-cli-core';
+import { pullHooks } from './utils/hooks-manager';
+import { buildOverridesEnabledResources } from './build-override-enabled-resources';
 
 export async function run(context: $TSContext, providerMetadata: $TSMeta) {
   if (context.exeInfo && context.exeInfo.isNewEnv) {
@@ -55,6 +57,11 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
   }
 
   fs.removeSync(tempDir);
+
+  // pull hooks directory
+  if (!context.exeInfo.pushHooks) {
+    await pullHooks(context);
+  }
 
   logger('run.cfn.updateamplifyMetaFileWithStackOutputs', [{ StackName: providerMetadata.StackName }])();
   await cfnItem.updateamplifyMetaFileWithStackOutputs(providerMetadata.StackName);
@@ -108,4 +115,6 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
   if (hasMigratedResources) {
     stateManager.setCurrentMeta(undefined, amplifyMeta);
   }
+
+  await buildOverridesEnabledResources(context);
 }

@@ -70,8 +70,8 @@ type ReportEntry = {
 /**
  * Configure the AWS SDK with credentials and retry
  */
-const configureAws = (): void => {
-  if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
+const configureAws = (accessKeyId, secretAccessKey, sessionToken = null): void => {
+  if (!accessKeyId || !secretAccessKey) {
     throw new Error('AWS credentials are not configured. Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables');
   }
 
@@ -79,6 +79,7 @@ const configureAws = (): void => {
     credentials: {
       accessKeyId: process.env.AWS_ACCESS_KEY_ID,
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      sessionToken: process.env.AWS_SESSION_TOKEN,
       ...(process.env.AWS_SESSION_TOKEN ? { sessionToken: process.env.AWS_SESSION_TOKEN } : {}),
     },
     maxRetries: 10,
@@ -209,7 +210,7 @@ export const getJobCircleCIDetails = async (jobId: number): Promise<CircleCIJobD
   const client = getCircleCIClient();
   const result = await client.build(jobId);
 
-  const r = (_.pick(result, [
+  const r = _.pick(result, [
     'build_url',
     'branch',
     'build_num',
@@ -220,7 +221,7 @@ export const getJobCircleCIDetails = async (jobId: number): Promise<CircleCIJobD
     'committer_name',
     'workflows.workflow_id',
     'lifecycle',
-  ]) as any) as CircleCIJobDetails;
+  ]) as any as CircleCIJobDetails;
   return r;
 };
 
@@ -435,7 +436,6 @@ export const cleanup = async () => {
     })
     .help().argv;
   config();
-  configureAws();
 
   let filterPredicate;
   if (args._.length === 0) {
@@ -452,19 +452,72 @@ export const cleanup = async () => {
   }
   const amplifyApps: AmplifyAppInfo[] = [];
   const stacks: StackInfo[] = [];
+  const stsRes = new aws.STS({
+    apiVersion: '2011-06-15',
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    sessionToken: process.env.AWS_SESSION_TOKEN,
+  });
+  const parentAccountIdentity = await stsRes.getCallerIdentity().promise();
+  const orgApi = new aws.Organizations({
+    apiVersion: '2016-11-28',
+    // the region where the organization exists
+    region: 'us-east-1',
+  });
+  let accs;
+  try {
+    accs = await orgApi.listAccounts().promise();
+    accs = accs.Accounts.map(async account => {
+      if (account.Id === parentAccountIdentity.Account) {
+        return {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+          sessionToken: process.env.AWS_SESSION_TOKEN,
+        };
+      }
 
-  for (const region of AWS_REGIONS_TO_RUN_TESTS) {
-    amplifyApps.push(...(await getAmplifyApps(region)));
-    stacks.push(...(await getStacks(region)));
+      const randomNumber = Math.floor(Math.random() * 100000);
+      const assumeRoleRes = await stsRes
+        .assumeRole({
+          RoleArn: `arn:aws:iam::${account.Id}:role/OrganizationAccountAccessRole`,
+          RoleSessionName: `testSession${randomNumber}`,
+          // One hour
+          DurationSeconds: 1 * 60 * 60,
+        })
+        .promise();
+      return {
+        accessKeyId: assumeRoleRes.Credentials.AccessKeyId,
+        secretAccessKey: assumeRoleRes.Credentials.SecretAccessKey,
+        sessionToken: assumeRoleRes.Credentials.SessionToken,
+      };
+    });
+    accs = await Promise.all(accs);
+  } catch (e) {
+    console.error(e);
+    console.log('Error assuming child account role. This could be because the script is already running from within a child account. Running on current AWS account only.');
+    accs = [
+      {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        sessionToken: process.env.AWS_SESSION_TOKEN,
+      },
+    ];
   }
 
-  const buckets = await getS3Buckets();
-  const allResources = mergeResourcesByCCIJob(amplifyApps, stacks, buckets);
-  const staleResources = _.pickBy(allResources, filterPredicate);
-  generateReport(staleResources);
-  await deleteResources(staleResources);
+  for (const account of accs) {
+    configureAws(account.accessKeyId, account.secretAccessKey, account.sessionToken);
+    for (const region of AWS_REGIONS_TO_RUN_TESTS) {
+      amplifyApps.push(...(await getAmplifyApps(region)));
+      stacks.push(...(await getStacks(region)));
+    }
 
-  console.log('Cleanup done!');
+    const buckets = await getS3Buckets();
+    const allResources = mergeResourcesByCCIJob(amplifyApps, stacks, buckets);
+    const staleResources = _.pickBy(allResources, filterPredicate);
+    generateReport(staleResources);
+    await deleteResources(staleResources);
+    console.log('Cleanup done!');
+  }
 };
 
 cleanup();

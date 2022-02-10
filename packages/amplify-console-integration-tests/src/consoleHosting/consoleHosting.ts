@@ -1,19 +1,20 @@
 import { addCircleCITags, nspawn as spawn } from 'amplify-e2e-core';
 import { getCLIPath } from '../util';
 import { HOSTING_NOT_ENABLED, HOSTING_ENABLED_IN_CONSOLE, ORIGINAL_ENV } from './constants';
+import { EOL } from 'os';
 
 const defaultSettings = {
-  name: '\r',
+  name: EOL,
   envName: ORIGINAL_ENV,
-  editor: '\r',
-  appType: '\r',
-  framework: '\r',
-  srcDir: '\r',
-  distDir: '\r',
-  buildCmd: '\r',
-  startCmd: '\r',
-  useProfile: '\r',
-  profileName: '\r',
+  editor: EOL,
+  appType: EOL,
+  framework: EOL,
+  srcDir: EOL,
+  distDir: EOL,
+  buildCmd: EOL,
+  startCmd: EOL,
+  useProfile: EOL,
+  profileName: EOL,
 };
 
 export function deleteProject(cwd: string, deleteDeploymentBucket: Boolean = true): Promise<void> {
@@ -21,7 +22,7 @@ export function deleteProject(cwd: string, deleteDeploymentBucket: Boolean = tru
     const noOutputTimeout = 10 * 60 * 1000; // 10 minutes
     spawn(getCLIPath(), ['delete'], { cwd, stripColors: true, noOutputTimeout })
       .wait('Are you sure you want to continue?')
-      .sendLine('y')
+      .sendConfirmYes()
       .sendCarriageReturn()
       .wait('Project deleted locally.')
       .run((err: Error) => {
@@ -37,11 +38,9 @@ export function deleteProject(cwd: string, deleteDeploymentBucket: Boolean = tru
 export function addEnvironment(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'add', '--providers', JSON.stringify(settings.providersParam)], { cwd, stripColors: true })
-      .wait('Do you want to use an existing environment?')
-      .sendLine('n')
       .wait('Enter a name for the environment')
       .sendLine(settings.envName)
-      .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
+      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -56,9 +55,9 @@ export function addManualHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
       .wait(/.*Hosting with Amplify Console*/)
-      .sendLine('\r')
+      .sendCarriageReturn()
       .wait('Manual deployment')
-      .sendLine('\r')
+      .sendCarriageReturn()
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -73,13 +72,13 @@ export function addCICDHostingWithoutFrontend(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
       .wait(/.*Hosting with Amplify Console*/)
-      .sendLine('\r')
+      .sendCarriageReturn()
       .wait('Continuous deployment (Git-based deployments)')
       //move up
       .send('k')
-      .sendLine('\r')
+      .sendCarriageReturn()
       .wait(/.*Continuous deployment is configured in the Amplify Console.*/)
-      .sendLine('\r')
+      .sendCarriageReturn()
       .wait("No hosting URL found. Run 'amplify add hosting' again to set up hosting with Amplify Console.")
       .run((err: Error) => {
         if (!err) {
@@ -95,7 +94,7 @@ export function amplifyPublish(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['publish'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue?')
-      .sendLine('\r')
+      .sendCarriageReturn()
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -110,7 +109,7 @@ export function amplifyConfigure(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['hosting', 'configure'], { cwd, stripColors: true })
       .wait(/.*We recommends you open AWS Amplify Console*/)
-      .sendLine('\r')
+      .sendCarriageReturn()
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -125,7 +124,7 @@ export function amplifyServe(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['hosting', 'configure'], { cwd, stripColors: true })
       .wait(/.*You have set up Manual deployment*/)
-      .sendLine('\r')
+      .sendCarriageReturn()
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -141,7 +140,7 @@ export function amplifyStatus(cwd: string, expectedStatus: string): Promise<void
     let regex = new RegExp(`.*${expectedStatus}*`);
     spawn(getCLIPath(), ['status'], { cwd, stripColors: true })
       .wait(regex)
-      .sendLine('\r')
+      .sendCarriageReturn()
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -156,7 +155,7 @@ export function amplifyPush(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue?')
-      .sendLine('\r')
+      .sendCarriageReturn()
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -171,7 +170,7 @@ export function removeHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['remove', 'hosting'], { cwd, stripColors: true })
       .wait(/.*Are you sure you want to delete the resource*/)
-      .sendLine('\r')
+      .sendCarriageReturn()
       .wait('Successfully removed resource')
       .run((err: Error) => {
         if (!err) {

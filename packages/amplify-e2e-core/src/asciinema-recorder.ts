@@ -58,6 +58,9 @@ export class Recorder {
       cols: this.cols,
       rows: this.rows,
       cwd: this.cwd,
+      shell: true,
+      // Do not set useConpty. node-pty is smart enough to set it to true only on versions of Windows that support it.
+      // useConpty: true,
       ...this.options,
     });
     this.addFrame(this.renderPrompt(this.cwd, this.cmd, this.args));
@@ -91,6 +94,10 @@ export class Recorder {
 
   getRecording(): string {
     return [JSON.stringify(this.recording.header), ...this.recording.frames.map(frame => JSON.stringify(frame))].join('\n');
+  }
+
+  getRecordingFrames(): Readonly<RecordingFrame[]> {
+    return [...this.recording.frames];
   }
 
   pauseRecording(): void {

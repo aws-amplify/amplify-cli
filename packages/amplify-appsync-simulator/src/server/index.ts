@@ -4,7 +4,7 @@ import { AmplifyAppSyncSimulator } from '..';
 import { AppSyncSimulatorServerConfig } from '../type-definition';
 import { Server, createServer } from 'http';
 import portFinder from 'portfinder';
-import e2p from 'event-to-promise';
+import { fromEvent } from 'promise-toolbox';
 import { address as getLocalIpAddress } from 'ip';
 import { AppSyncSimulatorSubscriptionServer } from './websocket-subscription';
 
@@ -50,7 +50,7 @@ export class AppSyncSimulatorServer {
     }
 
     this._httpServer.listen(port);
-    await e2p(this._httpServer, 'listening').then(() => {
+    await fromEvent(this._httpServer, 'listening').then(() => {
       this._url = `http://${getLocalIpAddress()}:${port}`;
     });
   }

@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, $TSMeta, getPackageManager, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSMeta, $TSObject, getPackageManager, pathManager, stateManager } from 'amplify-cli-core';
 import crypto from 'crypto';
 import { hashElement, HashElementOptions } from 'folder-hash';
 import * as fs from 'fs-extra';
@@ -6,7 +6,7 @@ import globby from 'globby';
 import { CheckboxQuestion, InputQuestion, ListQuestion, prompt } from 'inquirer';
 import _ from 'lodash';
 import * as path from 'path';
-import uuid from 'uuid';
+import { v4 as uuid } from 'uuid';
 import { categoryName } from '../../../constants';
 import { cfnTemplateSuffix, LegacyFilename, parametersFileName, provider, ServiceName, versionHash } from './constants';
 import { getLayerConfiguration, LayerConfiguration, loadLayerConfigurationFile } from './layerConfiguration';
@@ -241,6 +241,14 @@ export function getLayerName(context: $TSContext, layerName: string): string {
   return isMultiEnvLayer(layerName) ? `${layerName}-${envName}` : layerName;
 }
 
+export function getLambdaFunctionsDependentOnLayerFromMeta(layerName: string, meta: $TSMeta) {
+  return Object.entries(meta[categoryName]).filter(
+    ([_, lambdaFunction]: [string, $TSObject]) =>
+      lambdaFunction.service === ServiceName.LambdaFunction &&
+      lambdaFunction?.dependsOn?.filter(dependency => dependency.resourceName === layerName).length > 0,
+  );
+}
+
 // Check hash results for content changes, bump version if so
 export async function ensureLayerVersion(context: $TSContext, layerName: string, previousHash?: string) {
   const currentHash = await hashLayerVersion(pathManager.getResourceDirectoryPath(undefined, categoryName, layerName), layerName);
@@ -261,17 +269,6 @@ export function loadPreviousLayerHash(layerName: string): string | undefined {
   const previousHash = _.get(meta, [categoryName, layerName, versionHash], undefined);
 
   return previousHash;
-}
-
-export function validFilesize(context: $TSContext, zipPath: string, maxSize = 250) {
-  try {
-    const { size } = fs.statSync(zipPath);
-    const fileSize = Math.round(size / 1024 ** 2);
-    return fileSize < maxSize;
-  } catch (error) {
-    context.print.error(error);
-    return new Error(`Calculating file size failed: ${zipPath}`);
-  }
 }
 
 // hashes all of the layer contents as well as the files in the layer path (CFN, parameters, etc)

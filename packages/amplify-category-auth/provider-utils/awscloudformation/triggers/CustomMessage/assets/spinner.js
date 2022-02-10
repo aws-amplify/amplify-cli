@@ -1,10 +1,10 @@
 /* eslint-disable */
 var __assign =
   (this && this.__assign) ||
-  function() {
+  function () {
     __assign =
       Object.assign ||
-      function(t) {
+      function (t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
           s = arguments[i];
           for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
@@ -33,7 +33,7 @@ var defaults = {
   shadow: '0 0 1px transparent',
   position: 'absolute',
 };
-var Spinner = /** @class */ (function() {
+var Spinner = /** @class */ (function () {
   function Spinner(opts) {
     if (opts === void 0) {
       opts = {};
@@ -45,7 +45,7 @@ var Spinner = /** @class */ (function() {
    * spinning, it is automatically removed from its previous target by calling
    * stop() internally.
    */
-  Spinner.prototype.spin = function(target) {
+  Spinner.prototype.spin = function (target) {
     this.stop();
     this.el = document.createElement('div');
     this.el.className = this.opts.className;
@@ -68,7 +68,7 @@ var Spinner = /** @class */ (function() {
    * Stops and removes the Spinner.
    * Stopped spinners may be reused by calling spin() again.
    */
-  Spinner.prototype.stop = function() {
+  Spinner.prototype.stop = function () {
     if (this.el) {
       if (typeof requestAnimationFrame !== 'undefined') {
         cancelAnimationFrame(this.animateId);

@@ -34,19 +34,27 @@ export async function deleteProject(context) {
           context.print.warning('Amplify App cannot be deleted, other environments still linked to Application');
         }
       }
-    } catch (ex) {
-      spinner.fail('Project delete failed');
-      throw ex;
+      spinner.succeed('Project deleted in the cloud.');
+    } catch (ex: any) {
+      if (ex.code === 'NotFoundException') {
+        spinner.succeed('Project already deleted in the cloud.');
+      } else {
+        spinner.fail('Project delete failed.');
+        throw ex;
+      }
     }
-    spinner.succeed('Project deleted in the cloud');
-    // Remove amplify dir
-    const { frontend } = context.amplify.getProjectConfig();
-    const frontendPlugins = getFrontendPlugins(context);
-    const frontendPluginModule = require(frontendPlugins[frontend]);
-    frontendPluginModule.deleteConfig(context);
-    context.filesystem.remove(getAmplifyDirPath());
-    context.print.success('Project deleted locally.');
+    removeLocalAmplifyDir(context);
   }
+}
+
+function removeLocalAmplifyDir(context) {
+  const { frontend } = context.amplify.getProjectConfig();
+  const frontendPlugins = getFrontendPlugins(context);
+  const frontendPluginModule = require(frontendPlugins[frontend]);
+
+  frontendPluginModule.deleteConfig(context);
+  context.filesystem.remove(getAmplifyDirPath());
+  context.print.success('Project deleted locally.');
 }
 
 async function amplifyBackendEnvironments(client, appId) {

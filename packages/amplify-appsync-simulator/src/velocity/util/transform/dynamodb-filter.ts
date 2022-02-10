@@ -12,6 +12,7 @@ const OPERATOR_MAP = {
   le: '<=',
   gt: '>',
   ge: '>=',
+  in: 'contains',
 };
 
 const FUNCTION_MAP = {
@@ -40,7 +41,7 @@ export function generateFilterExpression(filter: any, prefix = null, parent = nu
               value.reduce((expr, subFilter, idx) => {
                 const newExpr = generateFilterExpression(subFilter, [prefix, name, idx].filter(i => i !== null).join('_'));
                 return merge(expr, newExpr, JOINER);
-              }, subExpr)
+              }, subExpr),
             );
           } else {
             subExpr = generateFilterExpression(value, [prefix, name].filter(val => val !== null).join('_'));
@@ -78,6 +79,14 @@ export function generateFilterExpression(filter: any, prefix = null, parent = nu
             expressionValues: createExpressionValue(parent, name, value, prefix),
           };
           break;
+        case 'attributeExists':
+          const existsName = value === true ? 'attribute_exists' : 'attribute_not_exists';
+          subExpr = {
+            expressions: [`${existsName}(${fieldName})`],
+            expressionNames: createExpressionName(parent),
+            expressionValues: createExpressionValue(parent, name, value, prefix),
+          };
+          break;
         case 'contains':
         case 'notContains':
         case 'beginsWith':
@@ -88,6 +97,14 @@ export function generateFilterExpression(filter: any, prefix = null, parent = nu
             expressionValues: createExpressionValue(parent, name, value, prefix),
           };
           break;
+        case 'in':
+            const operatorName = OPERATOR_MAP[name];
+            subExpr = {
+              expressions: [`${operatorName}(${filedValueName}, ${fieldName})`],
+              expressionNames: createExpressionName(parent),
+              expressionValues: createExpressionValue(parent, name, value, prefix),
+            };
+            break;
         default:
           subExpr = scopeExpression(generateFilterExpression(value, prefix, name));
       }
@@ -97,7 +114,7 @@ export function generateFilterExpression(filter: any, prefix = null, parent = nu
       expressions: [],
       expressionNames: {},
       expressionValues: {},
-    }
+    },
   );
 
   return expr;

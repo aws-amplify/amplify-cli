@@ -3,7 +3,7 @@ export const supportedServices = {
     inputs: [
       {
         key: 'resourceName',
-        question: 'Please provide a friendly name for your resource that will be used to label this category in the project:',
+        question: 'Provide a friendly name for your resource that will be used to label this category in the project:',
         validation: {
           operator: 'regex',
           value: '^[a-zA-Z0-9]+$',
@@ -13,7 +13,7 @@ export const supportedServices = {
       },
       {
         key: 'bucketName',
-        question: 'Please provide bucket name:',
+        question: 'Provide bucket name:',
         validation: {
           operator: 'regex',
           value: '^[a-z0-9-]{3,47}$',
@@ -34,7 +34,7 @@ export const supportedServices = {
       {
         key: 'resourceName',
         type: 'input',
-        question: 'Please provide a friendly name for your resource that will be used to label this category in the project:',
+        question: 'Provide a friendly name for your resource that will be used to label this category in the project:',
         validation: {
           operator: 'regex',
           value: '^[a-zA-Z0-9]+$',

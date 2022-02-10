@@ -27,7 +27,8 @@ export { lambdasWithApiDependency } from './provider-utils/awscloudformation/uti
 export { hashLayerResource } from './provider-utils/awscloudformation/utils/layerHelpers';
 export { migrateLegacyLayer } from './provider-utils/awscloudformation/utils/layerMigrationUtils';
 export { packageResource } from './provider-utils/awscloudformation/utils/package';
-export { updateDependentFunctionsCfn } from './provider-utils/awscloudformation/utils/updateDependentFunctionCfn';
+export { updateDependentFunctionsCfn, addAppSyncInvokeMethodPermission } from './provider-utils/awscloudformation/utils/updateDependentFunctionCfn';
+export { loadFunctionParameters } from './provider-utils/awscloudformation/utils/loadFunctionParameters';
 
 export async function add(context, providerName, service, parameters) {
   const options = {
@@ -200,9 +201,12 @@ export async function getInvoker(
 }
 
 export function getBuilder(context: $TSContext, resourceName: string, buildType: BuildType): () => Promise<void> {
-  const lastBuildTimestamp = _.get(stateManager.getMeta(), [categoryName, resourceName, buildTypeKeyMap[buildType]]);
+  const meta = stateManager.getMeta();
+  const lastBuildTimestamp = _.get(meta, [categoryName, resourceName, buildTypeKeyMap[buildType]]);
+  const lastBuildType = _.get(meta, [categoryName, resourceName, 'lastBuildType']);
+
   return async () => {
-    await buildFunction(context, { resourceName, buildType, lastBuildTimestamp });
+    await buildFunction(context, { resourceName, buildType, lastBuildTimestamp, lastBuildType });
   };
 }
 

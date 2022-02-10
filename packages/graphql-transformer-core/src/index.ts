@@ -4,7 +4,7 @@ import { TransformerContext } from './TransformerContext';
 import { Transformer } from './Transformer';
 import { ITransformer } from './ITransformer';
 import { GraphQLTransform } from './GraphQLTransform';
-import { collectDirectiveNames, collectDirectivesByTypeNames } from './collectDirectives';
+import { collectDirectiveNames, collectDirectivesByType, collectDirectivesByTypeNames } from './collectDirectives';
 import { stripDirectives } from './stripDirectives';
 import { DeploymentResources } from './DeploymentResources';
 import {
@@ -33,6 +33,7 @@ import {
 import { EXTRA_DIRECTIVES_DOCUMENT } from './validation';
 export * from './errors';
 export * from './util';
+export { getTableNameForModel } from './tableNameMap';
 
 /**
  * Returns the extra set of directives that are supported by AppSync service
@@ -49,6 +50,7 @@ export {
   Transformer,
   ITransformer,
   collectDirectiveNames,
+  collectDirectivesByType,
   collectDirectivesByTypeNames,
   stripDirectives,
   buildAPIProject,

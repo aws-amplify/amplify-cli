@@ -1,4 +1,4 @@
-import { amplifyConfigure as configure, isCI } from 'amplify-e2e-core';
+import { amplifyConfigure as configure, injectSessionToken, isCI } from 'amplify-e2e-core';
 
 async function setupAmplify() {
   if (isCI()) {
@@ -14,6 +14,9 @@ async function setupAmplify() {
       profileName: 'amplify-integ-test-user',
       region: REGION,
     });
+    if (process.env.AWS_SESSION_TOKEN) {
+      injectSessionToken('amplify-integ-test-user');
+    }
   } else {
     console.log('AWS Profile is already configured');
   }
@@ -26,4 +29,5 @@ process.nextTick(async () => {
     console.log(e.stack);
     process.exit(1);
   }
+  process.exit();
 });

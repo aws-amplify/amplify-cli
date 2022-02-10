@@ -9,12 +9,12 @@ See the License for the specific language governing permissions and limitations 
 
 <%= props.topLevelComment %>
 
-var express = require('express')
-var bodyParser = require('body-parser')
-var awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
+const express = require('express')
+const bodyParser = require('body-parser')
+const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
 
 // declare a new express app
-var app = express()
+const app = express()
 app.use(bodyParser.json())
 app.use(awsServerlessExpressMiddleware.eventContext())
 

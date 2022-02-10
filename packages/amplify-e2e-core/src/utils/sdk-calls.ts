@@ -14,6 +14,7 @@ import {
   AmplifyBackend,
   IAM,
   SSM,
+  Location,
 } from 'aws-sdk';
 import * as path from 'path';
 import _ from 'lodash';
@@ -57,6 +58,17 @@ export const getBucketEncryption = async (bucket: string) => {
     return result.ServerSideEncryptionConfiguration;
   } catch (err) {
     throw new Error(`Error fetching SSE info for bucket ${bucket}. Underlying error was [${err.message}]`);
+  }
+};
+
+export const getBucketKeys = async (params: S3.ListObjectsRequest) => {
+  const s3 = new S3();
+
+  try {
+    const result = await s3.listObjects(params).promise();
+    return result.Contents.map(contentObj => contentObj.Key);
+  } catch (err) {
+    throw new Error(`Error fetching keys for bucket ${params.Bucket}. Underlying error was [${err.message}]`);
   }
 };
 
@@ -114,6 +126,14 @@ export const getUserPool = async (userpoolId, region) => {
     console.log(e);
   }
   return res;
+};
+
+export const getMFAConfiguration = async (
+  userPoolId: string,
+  region: string,
+): Promise<CognitoIdentityServiceProvider.GetUserPoolMfaConfigResponse> => {
+  config.update({ region });
+  return await new CognitoIdentityServiceProvider().getUserPoolMfaConfig({ UserPoolId: userPoolId }).promise();
 };
 
 export const getLambdaFunction = async (functionName: string, region: string) => {
@@ -187,6 +207,16 @@ export const getEventSourceMappings = async (functionName: string, region: strin
 export const deleteTable = async (tableName: string, region: string) => {
   const service = new DynamoDB({ region });
   return await service.deleteTable({ TableName: tableName }).promise();
+};
+
+export const putItemInTable = async (tableName: string, region: string, item: unknown) => {
+  const ddb = new DynamoDB.DocumentClient({ region });
+  return await ddb.put({ TableName: tableName, Item: item }).promise();
+};
+
+export const scanTable = async (tableName: string, region: string) => {
+  const ddb = new DynamoDB.DocumentClient({ region });
+  return await ddb.scan({ TableName: tableName }).promise();
 };
 
 export const getAppSyncApi = async (appSyncApiId: string, region: string) => {
@@ -328,3 +358,17 @@ export const getSSMParameters = async (region: string, appId: string, envName: s
     })
     .promise();
 };
+//Amazon location service calls
+export const getMap = async (mapName: string, region: string) => {
+  const service = new Location({region});
+  return await service.describeMap({
+    MapName: mapName
+  }).promise()
+}
+
+export const getPlaceIndex = async (placeIndexName: string, region: string) => {
+  const service = new Location({region});
+  return await service.describePlaceIndex({
+    IndexName: placeIndexName
+  }).promise()
+}

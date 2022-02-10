@@ -10,6 +10,25 @@ const FILE_EXTENSION_MAP = {
 
 const fileNames = ['queries', 'mutations', 'subscriptions'];
 
+const AMPLIFY_RESERVED_EXPORT_KEYS = [
+  // cognito
+  'Auth',
+  'CredentialsProvider',
+  'CognitoUserPool',
+  'GoogleSignIn',
+  'FacebookSignIn',
+  // s3
+  'S3TransferUtility',
+  // Analytics
+  'PinpointAnalytics',
+  'PinpointTargeting',
+  // Others
+  'DynamoDBObjectMapper',
+  'AppSync',
+  'Lex',
+  'Sumerian',
+];
+
 function deleteAmplifyConfig(context) {
   const { srcDirPath, projectPath } = getSrcDir(context);
   // delete amplify configuration
@@ -45,15 +64,15 @@ function getSrcDir(context) {
 }
 
 function createAmplifyConfig(context, amplifyResources, cloudAmplifyResources) {
-  const { amplify } = context;
-  const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
-  const projectConfig = context.exeInfo ? context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
-  const frontendConfig = projectConfig.config;
-  const srcDirPath = path.join(projectPath, frontendConfig.ResDir);
-
-  fs.ensureDirSync(srcDirPath);
+  const srcDirPath = getSrcDir(context).srcDirPath;
 
   const targetFilePath = path.join(srcDirPath, constants.amplifyConfigFilename);
+  let amplifyConfig = getAmplifyConfig(context, amplifyResources, cloudAmplifyResources, targetFilePath);
+
+  writeToFile(srcDirPath, constants.amplifyConfigFilename, amplifyConfig);
+}
+
+function getAmplifyConfig(context, amplifyResources, cloudAmplifyResources, targetFilePath) {
   let amplifyConfig;
   if (fs.existsSync(targetFilePath)) {
     amplifyConfig = readJsonFromDart(targetFilePath);
@@ -62,9 +81,13 @@ function createAmplifyConfig(context, amplifyResources, cloudAmplifyResources) {
   // Native GA release requires entire awsconfiguration inside amplifyconfiguration auth plugin
   const newAWSConfig = getNewAWSConfigObject(context, amplifyResources, cloudAmplifyResources);
   amplifyConfig = amplifyConfigHelper.generateConfig(context, amplifyConfig, newAWSConfig);
+  return amplifyConfig;
+}
 
-  const jsonString = JSON.stringify(amplifyConfig, null, 4);
-  // fs.writeFileSync(targetFilePath, jsonString, 'utf8');
+function writeToFile(filePath, fileName, configObject) {
+  fs.ensureDirSync(filePath);
+  const targetFilePath = path.join(filePath, fileName);
+  const jsonString = JSON.stringify(configObject, null, 4);
   writeJsonToDart(targetFilePath, jsonString, null);
 }
 
@@ -131,25 +154,30 @@ function getCurrentAWSConfig(context) {
   const { amplify } = context;
   const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
   const projectConfig = context.exeInfo ? context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
-  const frontendConfig = projectConfig.config;
-  const srcDirPath = path.join(projectPath, frontendConfig.ResDir);
-
-  const targetFilePath = path.join(srcDirPath, constants.awsConfigFilename);
   let awsConfig = {};
 
-  if (fs.existsSync(targetFilePath)) {
-    awsConfig = amplify.readJsonFile(targetFilePath);
+  if (projectConfig) {
+    const frontendConfig = projectConfig.config;
+    const srcDirPath = path.join(projectPath, frontendConfig.ResDir);
+
+    const targetFilePath = path.join(srcDirPath, constants.awsConfigFilename);
+
+    if (fs.existsSync(targetFilePath)) {
+      awsConfig = amplify.readJsonFile(targetFilePath);
+    }
   }
   return awsConfig;
 }
 
 function getCustomConfigs(cloudAWSConfig, currentAWSConfig) {
   const customConfigs = {};
-  Object.keys(currentAWSConfig).forEach(key => {
-    if (!cloudAWSConfig[key]) {
-      customConfigs[key] = currentAWSConfig[key];
-    }
-  });
+  Object.keys(currentAWSConfig)
+    .filter(k => !AMPLIFY_RESERVED_EXPORT_KEYS.includes(k))
+    .forEach(key => {
+      if (!cloudAWSConfig[key]) {
+        customConfigs[key] = currentAWSConfig[key];
+      }
+    });
   return customConfigs;
 }
 
@@ -240,6 +268,8 @@ function getCognitoConfig(cognitoResources, projectRegion) {
       },
     };
   }
+
+  Object.assign(cognitoConfig.Auth.Default, cognitoResource.frontendAuthConfig);
 
   return cognitoConfig;
 }
@@ -366,4 +396,4 @@ function getSumerianConfig(sumerianResources) {
   };
 }
 
-module.exports = { createAWSConfig, createAmplifyConfig, deleteAmplifyConfig };
+module.exports = { createAWSConfig, createAmplifyConfig, getAmplifyConfig, deleteAmplifyConfig, writeToFile };

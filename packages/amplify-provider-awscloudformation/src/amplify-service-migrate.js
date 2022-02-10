@@ -11,7 +11,7 @@ async function run(context) {
   let projectDetails;
   let currentAmplifyMetaFilePath;
   let currentAmplifyMeta;
-  let awsConfig;
+  let awsConfigInfo;
 
   let isProjectFullySetUp = false;
 
@@ -19,7 +19,7 @@ async function run(context) {
     projectDetails = context.amplify.getProjectDetails();
     currentAmplifyMetaFilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath();
     currentAmplifyMeta = context.amplify.readJsonFile(currentAmplifyMetaFilePath);
-    awsConfig = await configurationManager.getAwsConfig(context);
+    awsConfigInfo = await configurationManager.getAwsConfig(context);
     isProjectFullySetUp = true;
   } catch (e) {
     isProjectFullySetUp = false;
@@ -38,10 +38,10 @@ async function run(context) {
     return;
   }
 
-  const amplifyClient = await getConfiguredAmplifyClient(context, awsConfig);
+  const amplifyClient = await getConfiguredAmplifyClient(context, awsConfigInfo);
   if (!amplifyClient) {
     // This happens when the Amplify service is not available in the region
-    const message = `Amplify service is not available in the region ${awsConfig.region ? awsConfig.region : ''}`;
+    const message = `Amplify service is not available in the region ${awsConfigInfo.region ? awsConfigInfo.region : ''}`;
     context.print.error(message);
     throw new Error(message);
   }
@@ -99,7 +99,7 @@ async function run(context) {
 
     const { StackName, DeploymentBucketName } = projectDetails.teamProviderInfo[envName][constants.ProviderName];
     if (!backendEnvs.includes(envName)) {
-      context.print.info(`Adding backend environment ${envName} to AWS Amplify Console app: ${amplifyAppId}`);
+      context.print.info(`Adding backend environment ${envName} to AWS Amplify app: ${amplifyAppId}`);
       const createEnvParams = {
         appId: amplifyAppId,
         environmentName: envName,
