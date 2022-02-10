@@ -44,11 +44,6 @@ export function addMapWithDefault(cwd: string, settings: GeoConfig = {}): Promis
       .wait('Who can access this Map?')
       .sendCarriageReturn();
 
-    if (config.isFirstGeoResource === true) {
-      chain.wait('Are you tracking commercial assets for your business in your app?').sendCarriageReturn();
-      chain.wait('Successfully set RequestBasedUsage pricing plan for your Geo resources.');
-    }
-
     chain.wait('Do you want to configure advanced settings?').sendConfirmNo();
 
     if (config.isAdditional === true) {
@@ -85,11 +80,6 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
       .wait('Who can access this Search Index?')
       .sendCarriageReturn();
 
-    if (config.isFirstGeoResource === true) {
-      chain.wait('Are you tracking commercial assets for your business in your app?').sendConfirmNo();
-      chain.wait('Successfully set RequestBasedUsage pricing plan for your Geo resources.');
-    }
-
     chain.wait('Do you want to configure advanced settings?').sendConfirmNo();
     if (config.isAdditional === true) {
       chain.wait(defaultSearchIndexQuestion);
@@ -113,7 +103,7 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
  * Add geofence collection with default values. Assume auth and cognito group are configured
  * @param cwd command directory
  */
- export function addGeofenceCollectionWithDefault(cwd: string, settings: GeoConfig = {}): Promise<void> {
+ export function addGeofenceCollectionWithDefault(cwd: string, groupName: string, settings: GeoConfig = {}): Promise<void> {
   const config = { ...defaultGeoConfig, ...settings };
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['geo', 'add'], { cwd, stripColors: true })
@@ -122,11 +112,11 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
       .sendCarriageReturn()
       .wait('Provide a name for the Geofence Collection:')
       .sendLine(config.resourceName)
-      .wait('What kind of access do you want')
+      .wait('Select one or more cognito groups to give access:')
+      .sendCarriageReturn()
+      .wait(`What kind of access do you want for ${groupName} users? Select ALL that apply:`)
       .sendCtrlA()
       .sendCarriageReturn()
-      .wait('Are you tracking or directing commercial assets for your business in your app?')
-      .sendCarriageReturn();
 
     if (config.isAdditional === true) {
       chain.wait(defaultGeofenceCollectionQuestion);
@@ -283,6 +273,63 @@ export function updateSecondPlaceIndexAsDefault(cwd: string): Promise<void> {
 }
 
 /**
+ * Update an existing geofence collection with given settings. Assume auth is already configured
+ * @param cwd command directory
+ */
+ export function updateGeofenceCollectionWithDefault(cwd: string, groupName: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['geo', 'update'], { cwd, stripColors: true })
+      .wait('Select which capability you want to update:')
+      .sendKeyDown(2)
+      .sendCarriageReturn()
+      .wait('Select the geofence collection you want to update')
+      .sendCarriageReturn()
+      .wait('Select one or more cognito groups to give access:')
+      .sendCarriageReturn()
+      .wait(`What kind of access do you want for ${groupName} users? Select ALL that apply:`)
+      .sendCarriageReturn()
+      .wait(defaultGeofenceCollectionQuestion)
+      .sendConfirmYes()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject();
+        }
+      });
+  });
+}
+
+/**
+ * Update the second geofence collection as default. Assume auth is already configured and two geofence collections added with first default
+ * @param cwd command directory
+ */
+export function updateSecondGeofenceCollectionAsDefault(cwd: string, groupName: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['geo', 'update'], { cwd, stripColors: true })
+      .wait('Select which capability you want to update:')
+      .sendKeyDown(2)
+      .sendCarriageReturn()
+      .wait('Select the geofence collection you want to update')
+      .sendKeyDown()
+      .sendCarriageReturn()
+      .wait('Select one or more cognito groups to give access:')
+      .sendCarriageReturn()
+      .wait(`What kind of access do you want for ${groupName} users? Select ALL that apply:`)
+      .sendCarriageReturn()
+      .wait(defaultGeofenceCollectionQuestion)
+      .sendConfirmYes()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject();
+        }
+      });
+  });
+}
+
+/**
  * Remove an existing map. Assume auth is already configured
  * @param cwd command directory
  */
@@ -379,6 +426,57 @@ export function removeFirstDefaultPlaceIndex(cwd: string): Promise<void> {
       });
   });
 }
+
+/**
+ * Remove an existing geofence collection. Assume auth is already configured
+ * @param cwd command directory
+ */
+ export function removeGeofenceCollection(cwd: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['geo', 'remove'], { cwd, stripColors: true })
+      .wait('Select which capability you want to remove:')
+      .sendKeyDown(2)
+      .sendCarriageReturn()
+      .wait('Select the geofence collection you want to remove')
+      .sendCarriageReturn()
+      .wait('Are you sure you want to delete the resource?')
+      .sendConfirmYes()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject();
+        }
+      });
+  });
+}
+
+/**
+ * Remove an existing default geofence collection. Assume auth is already configured and two geofence collections added with first default
+ * @param cwd command directory
+ */
+export function removeFirstDefaultGeofenceCollection(cwd: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['geo', 'remove'], { cwd, stripColors: true })
+      .wait('Select which capability you want to remove:')
+      .sendKeyDown(2)
+      .sendCarriageReturn()
+      .wait('Select the geofence collection you want to remove')
+      .sendCarriageReturn()
+      .wait('Are you sure you want to delete the resource?')
+      .sendConfirmYes()
+      .wait('Select the geofence collection you want to set as default:')
+      .sendCarriageReturn()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject();
+        }
+      });
+  });
+}
+
 
 /**
  * Get Geo configuration from aws-exports
