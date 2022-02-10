@@ -529,7 +529,7 @@ async function createStudent(client: AWSAppSyncClient<any>, input: CreateStudent
       }
     }
   `;
-  return await client.mutate({ mutation: request, variables: { input } });
+  return await client.mutate<any>({ mutation: request, variables: { input } });
 }
 
 async function createMember(client: AWSAppSyncClient<any>, input: MemberInput) {
@@ -557,7 +557,7 @@ async function updateMember(client: AWSAppSyncClient<any>, input: MemberInput) {
       }
     }
   `;
-  return await client.mutate({ mutation: request, variables: { input } });
+  return await client.mutate<any>({ mutation: request, variables: { input } });
 }
 
 async function deleteMember(client: AWSAppSyncClient<any>, input: MemberInput) {
@@ -571,7 +571,7 @@ async function deleteMember(client: AWSAppSyncClient<any>, input: MemberInput) {
       }
     }
   `;
-  return await client.mutate({ mutation: request, variables: { input } });
+  return await client.mutate<any>({ mutation: request, variables: { input } });
 }
 
 async function updateStudent(client: AWSAppSyncClient<any>, input: UpdateStudentInput) {
@@ -586,7 +586,7 @@ async function updateStudent(client: AWSAppSyncClient<any>, input: UpdateStudent
       }
     }
   `;
-  return await client.mutate({ mutation: request, variables: { input } });
+  return await client.mutate<any>({ mutation: request, variables: { input } });
 }
 
 async function deleteStudent(client: AWSAppSyncClient<any>, input: DeleteTypeInput) {
@@ -601,7 +601,7 @@ async function deleteStudent(client: AWSAppSyncClient<any>, input: DeleteTypeInp
       }
     }
   `;
-  return await client.mutate({ mutation: request, variables: { input } });
+  return await client.mutate<any>({ mutation: request, variables: { input } });
 }
 
 async function createPost(client: AWSAppSyncClient<any>, input: CreatePostInput) {
@@ -614,5 +614,5 @@ async function createPost(client: AWSAppSyncClient<any>, input: CreatePostInput)
       }
     }
   `;
-  return await client.mutate({ mutation: request, variables: { input } });
+  return await client.mutate<any>({ mutation: request, variables: { input } });
 }
