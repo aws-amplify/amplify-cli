@@ -835,3 +835,18 @@ export function modifyRestAPI(projectDir: string, apiName: string) {
   const indexFilePath = path.join(projectDir, 'amplify', 'backend', 'api', apiName, 'src', 'express', 'index.js');
   fs.writeFileSync(indexFilePath, modifiedApi);
 }
+
+export function cancelAmplifyMockApi(cwd: string, settings: any = {}): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    spawn(getCLIPath(), ['mock', 'api'], { cwd, stripColors: true })
+      .wait('AppSync Mock endpoint is running')
+      .sendCtrlC()
+      .run((err: Error) => {
+        if (err && !/Killed the process as no output receive for/.test(err.message)) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+  });
+}
