@@ -292,6 +292,7 @@ function send(event, context, status, data) {
               "Action": Array [
                 "geo:SearchPlaceIndexForPosition",
                 "geo:SearchPlaceIndexForText",
+                "geo:SearchPlaceIndexForSuggestions",
               ],
               "Effect": "Allow",
               "Resource": Object {
@@ -632,6 +633,7 @@ function send(event, context, status, data) {
               "Action": Array [
                 "geo:SearchPlaceIndexForPosition",
                 "geo:SearchPlaceIndexForText",
+                "geo:SearchPlaceIndexForSuggestions",
               ],
               "Effect": "Allow",
               "Resource": Object {
