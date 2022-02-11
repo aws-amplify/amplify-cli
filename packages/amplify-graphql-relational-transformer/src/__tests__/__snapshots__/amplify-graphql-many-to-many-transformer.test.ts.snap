@@ -302,44 +302,6 @@ Object {
       \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.id)
   }
 } )
-  ## [Start] Applying Key Condition **
-  #if( !$util.isNull($ctx.args.fooID) && !$util.isNull($ctx.args.fooID.beginsWith) )
-    #set( $query.expression = \\"$query.expression AND begins_with(#sortKey, :sortKey)\\" )
-    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"fooID\\"))
-    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.fooID.beginsWith\\" }))
-  #end
-  #if( !$util.isNull($ctx.args.fooID) && !$util.isNull($ctx.args.fooID.between) )
-    #set( $query.expression = \\"$query.expression AND #sortKey BETWEEN :sortKey0 AND :sortKey1\\" )
-    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"fooID\\"))
-    $util.qr($query.expressionValues.put(\\":sortKey0\\", { \\"S\\": \\"$ctx.args.fooID.between[0]\\" }))
-    $util.qr($query.expressionValues.put(\\":sortKey1\\", { \\"S\\": \\"$ctx.args.fooID.between[1]\\" }))
-  #end
-  #if( !$util.isNull($ctx.args.fooID) && !$util.isNull($ctx.args.fooID.eq) )
-    #set( $query.expression = \\"$query.expression AND #sortKey = :sortKey\\" )
-    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"fooID\\"))
-    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.fooID.eq\\" }))
-  #end
-  #if( !$util.isNull($ctx.args.fooID) && !$util.isNull($ctx.args.fooID.lt) )
-    #set( $query.expression = \\"$query.expression AND #sortKey < :sortKey\\" )
-    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"fooID\\"))
-    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.fooID.lt\\" }))
-  #end
-  #if( !$util.isNull($ctx.args.fooID) && !$util.isNull($ctx.args.fooID.le) )
-    #set( $query.expression = \\"$query.expression AND #sortKey <= :sortKey\\" )
-    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"fooID\\"))
-    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.fooID.le\\" }))
-  #end
-  #if( !$util.isNull($ctx.args.fooID) && !$util.isNull($ctx.args.fooID.gt) )
-    #set( $query.expression = \\"$query.expression AND #sortKey > :sortKey\\" )
-    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"fooID\\"))
-    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.fooID.gt\\" }))
-  #end
-  #if( !$util.isNull($ctx.args.fooID) && !$util.isNull($ctx.args.fooID.ge) )
-    #set( $query.expression = \\"$query.expression AND #sortKey >= :sortKey\\" )
-    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"fooID\\"))
-    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.fooID.ge\\" }))
-  #end
-  ## [End] Applying Key Condition **
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
     #set( $filter = $ctx.stash.authFilter )
@@ -416,44 +378,6 @@ $util.error($ctx.error.message, $ctx.error.type)
       \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.id)
   }
 } )
-  ## [Start] Applying Key Condition **
-  #if( !$util.isNull($ctx.args.barID) && !$util.isNull($ctx.args.barID.beginsWith) )
-    #set( $query.expression = \\"$query.expression AND begins_with(#sortKey, :sortKey)\\" )
-    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"barID\\"))
-    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.barID.beginsWith\\" }))
-  #end
-  #if( !$util.isNull($ctx.args.barID) && !$util.isNull($ctx.args.barID.between) )
-    #set( $query.expression = \\"$query.expression AND #sortKey BETWEEN :sortKey0 AND :sortKey1\\" )
-    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"barID\\"))
-    $util.qr($query.expressionValues.put(\\":sortKey0\\", { \\"S\\": \\"$ctx.args.barID.between[0]\\" }))
-    $util.qr($query.expressionValues.put(\\":sortKey1\\", { \\"S\\": \\"$ctx.args.barID.between[1]\\" }))
-  #end
-  #if( !$util.isNull($ctx.args.barID) && !$util.isNull($ctx.args.barID.eq) )
-    #set( $query.expression = \\"$query.expression AND #sortKey = :sortKey\\" )
-    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"barID\\"))
-    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.barID.eq\\" }))
-  #end
-  #if( !$util.isNull($ctx.args.barID) && !$util.isNull($ctx.args.barID.lt) )
-    #set( $query.expression = \\"$query.expression AND #sortKey < :sortKey\\" )
-    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"barID\\"))
-    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.barID.lt\\" }))
-  #end
-  #if( !$util.isNull($ctx.args.barID) && !$util.isNull($ctx.args.barID.le) )
-    #set( $query.expression = \\"$query.expression AND #sortKey <= :sortKey\\" )
-    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"barID\\"))
-    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.barID.le\\" }))
-  #end
-  #if( !$util.isNull($ctx.args.barID) && !$util.isNull($ctx.args.barID.gt) )
-    #set( $query.expression = \\"$query.expression AND #sortKey > :sortKey\\" )
-    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"barID\\"))
-    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.barID.gt\\" }))
-  #end
-  #if( !$util.isNull($ctx.args.barID) && !$util.isNull($ctx.args.barID.ge) )
-    #set( $query.expression = \\"$query.expression AND #sortKey >= :sortKey\\" )
-    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"barID\\"))
-    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.barID.ge\\" }))
-  #end
-  ## [End] Applying Key Condition **
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
     #set( $filter = $ctx.stash.authFilter )
@@ -597,7 +521,7 @@ $util.unauthorized()
   \\"expression\\": \\"#partitionKey = :partitionKey AND #sortKey = :sortKey\\",
   \\"expressionNames\\": {
       \\"#partitionKey\\": \\"modelAID\\",
-      \\"#sortKey\\": \\"modelBID\\"
+      \\"#sortKey\\": \\"modelAsortId\\"
   },
   \\"expressionValues\\": {
       \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.id),
@@ -751,7 +675,7 @@ $util.unauthorized()
   \\"expression\\": \\"#partitionKey = :partitionKey AND #sortKey = :sortKey\\",
   \\"expressionNames\\": {
       \\"#partitionKey\\": \\"modelBID\\",
-      \\"#sortKey\\": \\"modelAID\\"
+      \\"#sortKey\\": \\"modelBsortId\\"
   },
   \\"expressionValues\\": {
       \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.id),
@@ -5130,6 +5054,21 @@ input ModelIDKeyConditionInput {
   beginsWith: ID
 }
 
+input ModelModelAModelBByModelACompositeKeyConditionInput {
+  eq: ModelModelAModelBByModelACompositeKeyInput
+  le: ModelModelAModelBByModelACompositeKeyInput
+  lt: ModelModelAModelBByModelACompositeKeyInput
+  ge: ModelModelAModelBByModelACompositeKeyInput
+  gt: ModelModelAModelBByModelACompositeKeyInput
+  between: [ModelModelAModelBByModelACompositeKeyInput]
+  beginsWith: ModelModelAModelBByModelACompositeKeyInput
+}
+
+input ModelModelAModelBByModelACompositeKeyInput {
+  modelAsortId: ID
+  modelAsecondSortId: ID
+}
+
 "
 `;
 
@@ -5652,16 +5591,6 @@ input DeleteFooBarInput {
   id: ID!
 }
 
-input ModelIDKeyConditionInput {
-  eq: ID
-  le: ID
-  lt: ID
-  ge: ID
-  gt: ID
-  between: [ID]
-  beginsWith: ID
-}
-
 "
 `;
 
@@ -5686,44 +5615,6 @@ Object {
       \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.id)
   }
 } )
-  ## [Start] Applying Key Condition **
-  #if( !$util.isNull($ctx.args.fooID) && !$util.isNull($ctx.args.fooID.beginsWith) )
-    #set( $query.expression = \\"$query.expression AND begins_with(#sortKey, :sortKey)\\" )
-    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"fooID\\"))
-    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.fooID.beginsWith\\" }))
-  #end
-  #if( !$util.isNull($ctx.args.fooID) && !$util.isNull($ctx.args.fooID.between) )
-    #set( $query.expression = \\"$query.expression AND #sortKey BETWEEN :sortKey0 AND :sortKey1\\" )
-    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"fooID\\"))
-    $util.qr($query.expressionValues.put(\\":sortKey0\\", { \\"S\\": \\"$ctx.args.fooID.between[0]\\" }))
-    $util.qr($query.expressionValues.put(\\":sortKey1\\", { \\"S\\": \\"$ctx.args.fooID.between[1]\\" }))
-  #end
-  #if( !$util.isNull($ctx.args.fooID) && !$util.isNull($ctx.args.fooID.eq) )
-    #set( $query.expression = \\"$query.expression AND #sortKey = :sortKey\\" )
-    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"fooID\\"))
-    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.fooID.eq\\" }))
-  #end
-  #if( !$util.isNull($ctx.args.fooID) && !$util.isNull($ctx.args.fooID.lt) )
-    #set( $query.expression = \\"$query.expression AND #sortKey < :sortKey\\" )
-    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"fooID\\"))
-    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.fooID.lt\\" }))
-  #end
-  #if( !$util.isNull($ctx.args.fooID) && !$util.isNull($ctx.args.fooID.le) )
-    #set( $query.expression = \\"$query.expression AND #sortKey <= :sortKey\\" )
-    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"fooID\\"))
-    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.fooID.le\\" }))
-  #end
-  #if( !$util.isNull($ctx.args.fooID) && !$util.isNull($ctx.args.fooID.gt) )
-    #set( $query.expression = \\"$query.expression AND #sortKey > :sortKey\\" )
-    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"fooID\\"))
-    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.fooID.gt\\" }))
-  #end
-  #if( !$util.isNull($ctx.args.fooID) && !$util.isNull($ctx.args.fooID.ge) )
-    #set( $query.expression = \\"$query.expression AND #sortKey >= :sortKey\\" )
-    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"fooID\\"))
-    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.fooID.ge\\" }))
-  #end
-  ## [End] Applying Key Condition **
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
     #set( $filter = $ctx.stash.authFilter )
@@ -5800,44 +5691,6 @@ $util.error($ctx.error.message, $ctx.error.type)
       \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.id)
   }
 } )
-  ## [Start] Applying Key Condition **
-  #if( !$util.isNull($ctx.args.barID) && !$util.isNull($ctx.args.barID.beginsWith) )
-    #set( $query.expression = \\"$query.expression AND begins_with(#sortKey, :sortKey)\\" )
-    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"barID\\"))
-    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.barID.beginsWith\\" }))
-  #end
-  #if( !$util.isNull($ctx.args.barID) && !$util.isNull($ctx.args.barID.between) )
-    #set( $query.expression = \\"$query.expression AND #sortKey BETWEEN :sortKey0 AND :sortKey1\\" )
-    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"barID\\"))
-    $util.qr($query.expressionValues.put(\\":sortKey0\\", { \\"S\\": \\"$ctx.args.barID.between[0]\\" }))
-    $util.qr($query.expressionValues.put(\\":sortKey1\\", { \\"S\\": \\"$ctx.args.barID.between[1]\\" }))
-  #end
-  #if( !$util.isNull($ctx.args.barID) && !$util.isNull($ctx.args.barID.eq) )
-    #set( $query.expression = \\"$query.expression AND #sortKey = :sortKey\\" )
-    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"barID\\"))
-    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.barID.eq\\" }))
-  #end
-  #if( !$util.isNull($ctx.args.barID) && !$util.isNull($ctx.args.barID.lt) )
-    #set( $query.expression = \\"$query.expression AND #sortKey < :sortKey\\" )
-    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"barID\\"))
-    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.barID.lt\\" }))
-  #end
-  #if( !$util.isNull($ctx.args.barID) && !$util.isNull($ctx.args.barID.le) )
-    #set( $query.expression = \\"$query.expression AND #sortKey <= :sortKey\\" )
-    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"barID\\"))
-    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.barID.le\\" }))
-  #end
-  #if( !$util.isNull($ctx.args.barID) && !$util.isNull($ctx.args.barID.gt) )
-    #set( $query.expression = \\"$query.expression AND #sortKey > :sortKey\\" )
-    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"barID\\"))
-    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.barID.gt\\" }))
-  #end
-  #if( !$util.isNull($ctx.args.barID) && !$util.isNull($ctx.args.barID.ge) )
-    #set( $query.expression = \\"$query.expression AND #sortKey >= :sortKey\\" )
-    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"barID\\"))
-    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.barID.ge\\" }))
-  #end
-  ## [End] Applying Key Condition **
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
     #set( $filter = $ctx.stash.authFilter )
