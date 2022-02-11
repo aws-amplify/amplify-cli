@@ -8,7 +8,7 @@ test('access control on object and field', () => {
   @model
   @auth(rules: [
   { allow: groups, groups: ["admin"] }
-  { allow: groups, groups: ["student"], operations: [read] }
+  { allow: groups, groups: ["student"], operations: [get list search sync listen] }
   ]) {
   studentID: ID
   name: String
@@ -19,7 +19,7 @@ test('access control on object and field', () => {
   ])
   # only allowed to student and admin
   ssn: String @auth(rules: [
-    { allow: owner, ownerField: "studentID", operations: [read] }
+    { allow: owner, ownerField: "studentID", operations: [get list search sync listen] }
     { allow: groups, groups: ["admin"] }
   ])
   }
@@ -40,20 +40,28 @@ test('access control on object and field', () => {
     role: adminRole,
     operations: MODEL_OPERATIONS,
   });
-  // add the student static group rule which only has read access
+  // add the student static group rule which only has [get list search sync listen] access
   acm.setRole({
     role: studentGroupRole,
-    operations: ['read'],
+    operations: ['get', 'list', 'search', 'sync', 'listen'],
   });
 
   studentTypeFields.forEach(field => {
     // check that admin has CRUD access on all fields
     expect(acm.isAllowed(adminRole, field, 'create')).toBe(true);
-    expect(acm.isAllowed(adminRole, field, 'read')).toBe(true);
+    expect(acm.isAllowed(adminRole, field, 'search')).toBe(true);
+    expect(acm.isAllowed(adminRole, field, 'sync')).toBe(true);
+    expect(acm.isAllowed(adminRole, field, 'listen')).toBe(true);
+    expect(acm.isAllowed(adminRole, field, 'list')).toBe(true);
+    expect(acm.isAllowed(adminRole, field, 'get')).toBe(true);
     expect(acm.isAllowed(adminRole, field, 'update')).toBe(true);
     expect(acm.isAllowed(adminRole, field, 'delete')).toBe(true);
     // check that studentGroupRole has access to read only
-    expect(acm.isAllowed(studentGroupRole, field, 'read')).toBe(true);
+    expect(acm.isAllowed(studentGroupRole, field, 'search')).toBe(true);
+    expect(acm.isAllowed(studentGroupRole, field, 'sync')).toBe(true);
+    expect(acm.isAllowed(studentGroupRole, field, 'listen')).toBe(true);
+    expect(acm.isAllowed(studentGroupRole, field, 'list')).toBe(true);
+    expect(acm.isAllowed(studentGroupRole, field, 'get')).toBe(true);
     expect(acm.isAllowed(studentGroupRole, field, 'create')).toBe(false);
     expect(acm.isAllowed(studentGroupRole, field, 'update')).toBe(false);
     expect(acm.isAllowed(studentGroupRole, field, 'delete')).toBe(false);
@@ -61,7 +69,8 @@ test('access control on object and field', () => {
   // when adding a field rule on email we need to overwrite it
   acm.resetAccessForResource('email');
 
-  expect(acm.isAllowed(studentGroupRole, 'email', 'read')).toBe(false);
+  expect(acm.isAllowed(studentGroupRole, 'email', 'list')).toBe(false);
+  expect(acm.isAllowed(studentGroupRole, 'email', 'get')).toBe(false);
   acm.setRole({
     role: studentOwnerRole,
     operations: ['update'],
@@ -71,7 +80,7 @@ test('access control on object and field', () => {
   expect(acm.isAllowed(studentOwnerRole, 'email', 'update')).toBe(true);
 });
 
-test('test access control only on field', () => {
+test('access control only on field', () => {
   /*
   given the following schema
   type Student
@@ -96,19 +105,27 @@ test('test access control only on field', () => {
     operations: MODEL_OPERATIONS,
   });
   // set role for email field
-  acm.setRole({ role: studentOwnerRole, operations: ['read', 'update'], resource: 'email' });
+  acm.setRole({ role: studentOwnerRole, operations: ['get', 'list', 'search', 'listen', 'sync', 'update'], resource: 'email' });
   // set role for ssn field
-  acm.setRole({ role: studentOwnerRole, operations: ['read'], resource: 'ssn' });
+  acm.setRole({ role: studentOwnerRole, operations: ['get', 'list'], resource: 'ssn' });
 
   // expect the correct permissions are assigned for email field
   expect(acm.isAllowed(studentOwnerRole, 'email', 'update')).toBe(true);
-  expect(acm.isAllowed(studentOwnerRole, 'email', 'read')).toBe(true);
+  expect(acm.isAllowed(studentOwnerRole, 'email', 'search')).toBe(true);
+  expect(acm.isAllowed(studentOwnerRole, 'email', 'sync')).toBe(true);
+  expect(acm.isAllowed(studentOwnerRole, 'email', 'listen')).toBe(true);
+  expect(acm.isAllowed(studentOwnerRole, 'email', 'list')).toBe(true);
+  expect(acm.isAllowed(studentOwnerRole, 'email', 'get')).toBe(true);
   expect(acm.isAllowed(studentOwnerRole, 'email', 'delete')).toBe(false);
   expect(acm.isAllowed(studentOwnerRole, 'email', 'create')).toBe(false);
 
   // expect the correct permissions are assigned for ssn field
   expect(acm.isAllowed(studentOwnerRole, 'ssn', 'create')).toBe(false);
-  expect(acm.isAllowed(studentOwnerRole, 'ssn', 'read')).toBe(true);
+  expect(acm.isAllowed(studentOwnerRole, 'ssn', 'search')).toBe(false);
+  expect(acm.isAllowed(studentOwnerRole, 'ssn', 'sync')).toBe(false);
+  expect(acm.isAllowed(studentOwnerRole, 'ssn', 'listen')).toBe(false);
+  expect(acm.isAllowed(studentOwnerRole, 'ssn', 'list')).toBe(true);
+  expect(acm.isAllowed(studentOwnerRole, 'ssn', 'get')).toBe(true);
   expect(acm.isAllowed(studentOwnerRole, 'ssn', 'update')).toBe(false);
   expect(acm.isAllowed(studentOwnerRole, 'ssn', 'delete')).toBe(false);
 });
@@ -122,17 +139,22 @@ test('that adding a role again without a resource is not allowed', () => {
     operations: MODEL_OPERATIONS,
   });
   acm.setRole({ role: blogOwnerRole, operations: MODEL_OPERATIONS });
-  for (let field of blogFields) {
+  blogFields.forEach(field => {
     expect(acm.isAllowed(blogOwnerRole, field, 'create')).toBe(true);
-    expect(acm.isAllowed(blogOwnerRole, field, 'read')).toBe(true);
+    expect(acm.isAllowed(blogOwnerRole, field, 'search')).toBe(true);
+    expect(acm.isAllowed(blogOwnerRole, field, 'sync')).toBe(true);
+    expect(acm.isAllowed(blogOwnerRole, field, 'listen')).toBe(true);
+    expect(acm.isAllowed(blogOwnerRole, field, 'list')).toBe(true);
+    expect(acm.isAllowed(blogOwnerRole, field, 'get')).toBe(true);
     expect(acm.isAllowed(blogOwnerRole, field, 'update')).toBe(true);
     expect(acm.isAllowed(blogOwnerRole, field, 'delete')).toBe(true);
-  }
-  expect(() => acm.setRole({ role: blogOwnerRole, operations: ['read'] })).toThrow(`@auth ${blogOwnerRole} already exists for Blog`);
+  });
+  expect(() => acm.setRole({ role: blogOwnerRole, operations: ['get', 'list'] })).toThrow(`@auth ${blogOwnerRole} already exists for Blog`);
   // field overwrites should still be allowed
-  acm.setRole({ role: blogOwnerRole, operations: ['read'], resource: 'name' });
-  acm.setRole({ role: blogOwnerRole, operations: ['read'], resource: 'id' });
-  expect(acm.isAllowed(blogOwnerRole, 'id', 'read')).toBe(true);
+  acm.setRole({ role: blogOwnerRole, operations: ['list', 'get'], resource: 'name' });
+  acm.setRole({ role: blogOwnerRole, operations: ['list', 'get'], resource: 'id' });
+  expect(acm.isAllowed(blogOwnerRole, 'id', 'get')).toBe(true);
+  expect(acm.isAllowed(blogOwnerRole, 'id', 'list')).toBe(true);
 });
 
 test('that adding a role again without a resource is allowed with overwrite flag enabled', () => {
@@ -144,17 +166,25 @@ test('that adding a role again without a resource is allowed with overwrite flag
     operations: MODEL_OPERATIONS,
   });
   acm.setRole({ role: blogOwnerRole, operations: MODEL_OPERATIONS });
-  for (let field of blogFields) {
+  blogFields.forEach(field => {
     expect(acm.isAllowed(blogOwnerRole, field, 'create')).toBe(true);
-    expect(acm.isAllowed(blogOwnerRole, field, 'read')).toBe(true);
+    expect(acm.isAllowed(blogOwnerRole, field, 'search')).toBe(true);
+    expect(acm.isAllowed(blogOwnerRole, field, 'sync')).toBe(true);
+    expect(acm.isAllowed(blogOwnerRole, field, 'listen')).toBe(true);
+    expect(acm.isAllowed(blogOwnerRole, field, 'list')).toBe(true);
+    expect(acm.isAllowed(blogOwnerRole, field, 'get')).toBe(true);
     expect(acm.isAllowed(blogOwnerRole, field, 'update')).toBe(true);
     expect(acm.isAllowed(blogOwnerRole, field, 'delete')).toBe(true);
-  }
-  acm.setRole({ role: blogOwnerRole, operations: ['read'], allowRoleOverwrite: true });
-  for (let field of blogFields) {
+  });
+  acm.setRole({ role: blogOwnerRole, operations: ['list', 'get'], allowRoleOverwrite: true });
+  blogFields.forEach(field => {
     expect(acm.isAllowed(blogOwnerRole, field, 'create')).toBe(false);
-    expect(acm.isAllowed(blogOwnerRole, field, 'read')).toBe(true);
+    expect(acm.isAllowed(blogOwnerRole, field, 'search')).toBe(false);
+    expect(acm.isAllowed(blogOwnerRole, field, 'sync')).toBe(false);
+    expect(acm.isAllowed(blogOwnerRole, field, 'listen')).toBe(false);
+    expect(acm.isAllowed(blogOwnerRole, field, 'list')).toBe(true);
+    expect(acm.isAllowed(blogOwnerRole, field, 'get')).toBe(true);
     expect(acm.isAllowed(blogOwnerRole, field, 'update')).toBe(false);
     expect(acm.isAllowed(blogOwnerRole, field, 'delete')).toBe(false);
-  }
+  });
 });

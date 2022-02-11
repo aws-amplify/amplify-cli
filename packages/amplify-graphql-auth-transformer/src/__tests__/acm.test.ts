@@ -2,7 +2,7 @@ import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-in
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AuthTransformer } from '..';
-import { ACMTest, acmTests } from './acm-test-library';
+import { AcmTest, acmTests } from './acm-test-library';
 import { featureFlags } from './test-helpers';
 
 jest.mock('amplify-prompts');
@@ -15,7 +15,7 @@ describe('acm tests', () => {
   });
 });
 
-const testSchemaACM = (test: ACMTest): void => {
+const testSchemaACM = (test: AcmTest): void => {
   const authTransformer = new AuthTransformer();
   const transformer = new GraphQLTransform({
     authConfig: test.authConfig,
@@ -32,7 +32,7 @@ const testSchemaACM = (test: ACMTest): void => {
 
     model.validations.forEach(validation => {
       Object.entries(validation.operations).forEach(([operation, fields]) => {
-        const role = acm.getRolesPerOperation(operation).find(it => it === validation.roleType);
+        const role = acm.getRolesPerOperation(operation).find((it: string) => it === validation.roleType);
         expect(role || (!role && fields.length === 0)).toBeTruthy();
 
         if (role) {

@@ -11,7 +11,7 @@ export const ON_CREATE_FIELD = 'onCreate';
 export const ON_UPDATE_FIELD = 'onUpdate';
 export const ON_DELETE_FIELD = 'onDelete';
 export const AUTH_NON_MODEL_TYPES = 'authNonModelTypes';
-export const MODEL_OPERATIONS: ModelOperation[] = ['create', 'read', 'update', 'delete'];
+export const MODEL_OPERATIONS: ModelOperation[] = ['create', 'update', 'delete', 'get', 'list', 'search', 'listen', 'sync'];
 export const AUTH_PROVIDER_DIRECTIVE_MAP = new Map<AuthProvider, string>([
   ['apiKey', 'aws_api_key'],
   ['iam', 'aws_iam'],

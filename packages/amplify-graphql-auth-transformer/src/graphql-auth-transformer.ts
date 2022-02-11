@@ -57,8 +57,8 @@ import {
   generateAuthExpressionForSubscriptions,
   setDeniedFieldFlag,
   generateAuthExpressionForRelationQuery,
-  generateSandboxExpressionForField,
 } from './resolvers';
+import { generateSandboxExpressionForField } from './resolvers/field';
 import { AccessControlMatrix } from './accesscontrol';
 import {
   AUTH_PROVIDER_DIRECTIVE_MAP,
@@ -95,7 +95,7 @@ import {
   hasRelationalDirective,
   getPartitionKey,
   getRelationalPrimaryMap,
-  getReadRolesForField,
+  getListenRolesForField,
   getAuthDirectiveRules,
 } from './utils';
 
@@ -163,7 +163,6 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       isJoinType = context.metadata.get<Array<string>>('joinTypeList')!.includes(typeName);
     }
     const rules: AuthRule[] = getAuthDirectiveRules(new DirectiveWrapper(directive));
-
     // validate rules
     validateRules(rules, this.configuredAuthProviders, def.name.value);
     // create access control for object
@@ -246,10 +245,10 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       const typeFieldName = `${typeName}:${fieldName}`;
       const acm = new AccessControlMatrix({
         name: typeFieldName,
-        operations: ['read'],
+        operations: ['list', 'get', 'search', 'listen', 'sync'],
         resources: [typeFieldName],
       });
-      this.convertRulesToRoles(acm, staticRules, false, typeFieldName, ['read']);
+      this.convertRulesToRoles(acm, staticRules, false, typeFieldName, ['list', 'get', 'search', 'listen', 'sync']);
       this.authNonModelConfig.set(typeFieldName, acm);
     }
   };
@@ -335,15 +334,15 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         this.protectSearchResolver(context, def, context.output.getQueryTypeName()!, config.queries.search, acm);
       }
       // get fields specified in the schema
-      // if there is a role that does not have read access on the field then we create a field resolver
+      // if there is a role that does not have listen access on the field then we create a field resolver
       // or there is a relational directive on the field then we should protect that as well
-      const readRoles = acm.getRolesPerOperation('read');
+      const listenRoles = acm.getRolesPerOperation('listen');
       const modelFields = def.fields?.filter(f => acm.hasResource(f.name.value)) ?? [];
       const errorFields = new Array<string>();
       modelFields.forEach(field => {
-        const fieldReadRoles = getReadRolesForField(acm, readRoles, field.name.value);
-        const allowedRoles = fieldReadRoles.filter(r => acm.isAllowed(r, field.name.value, 'read'));
-        const needsFieldResolver = allowedRoles.length < fieldReadRoles.length;
+        const fieldListenRoles = getListenRolesForField(acm, listenRoles, field.name.value);
+        const allowedRoles = fieldListenRoles.filter(r => acm.isAllowed(r, field.name.value, 'listen'));
+        const needsFieldResolver = allowedRoles.length < fieldListenRoles.length;
         if (needsFieldResolver && field.type.kind === Kind.NON_NULL_TYPE) {
           errorFields.push(field.name.value);
         }
@@ -380,7 +379,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
 
       const subscriptionFieldNames = getSubscriptionFieldNames(this.modelDirectiveConfig.get(modelName)!);
       const subscriptionRoles = acm
-        .getRolesPerOperation('read')
+        .getRolesPerOperation('listen')
         .map(role => this.roleMap.get(role)!)
         // for subscriptions we only use static rules or owner rule where the field is not a list
         .filter(roleDef => (roleDef.strategy === 'owner' && !fieldIsList(def.fields ?? [], roleDef.entity!)) || roleDef.static);
@@ -417,45 +416,46 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       }
     };
     // default model operations
-    addServiceDirective(ctx.output.getQueryTypeName()!, 'read', modelConfig?.queries?.get);
-    addServiceDirective(ctx.output.getQueryTypeName()!, 'read', modelConfig?.queries?.list);
-    addServiceDirective(ctx.output.getQueryTypeName()!, 'read', modelConfig?.queries?.sync);
+    addServiceDirective(ctx.output.getQueryTypeName()!, 'get', modelConfig?.queries?.get);
+    addServiceDirective(ctx.output.getQueryTypeName()!, 'list', modelConfig?.queries?.list);
+    addServiceDirective(ctx.output.getQueryTypeName()!, 'sync', modelConfig?.queries?.sync);
     addServiceDirective(ctx.output.getMutationTypeName()!, 'create', modelConfig?.mutations?.create);
     addServiceDirective(ctx.output.getMutationTypeName()!, 'update', modelConfig?.mutations?.update);
     addServiceDirective(ctx.output.getMutationTypeName()!, 'delete', modelConfig?.mutations?.delete);
     // @index queries
     if (ctx.metadata.has(indexKeyName)) {
       ctx.metadata.get<Set<string>>(indexKeyName)!.forEach(index => {
-        addServiceDirective(ctx.output.getQueryTypeName(), 'read', index.split(':')[1]);
+        addServiceDirective(ctx.output.getQueryTypeName(), 'list', index.split(':')[1]);
+        addServiceDirective(ctx.output.getQueryTypeName(), 'get', index.split(':')[1]);
       });
     }
     // @searchable
     if (searchableDirective) {
       const config = getSearchableConfig(searchableDirective, def.name.value);
-      addServiceDirective(ctx.output.getQueryTypeName(), 'read', config.queries.search);
+      addServiceDirective(ctx.output.getQueryTypeName(), 'search', config.queries.search);
     }
 
     const subscriptions = modelConfig?.subscriptions;
     if (subscriptions?.level === SubscriptionLevel.on) {
       const subscriptionArguments = acm
-        .getRolesPerOperation('read')
+        .getRolesPerOperation('listen')
         .map(role => this.roleMap.get(role)!)
         .filter(roleDef => roleDef.strategy === 'owner' && !fieldIsList(def.fields ?? [], roleDef.entity!));
       if (subscriptions.onCreate && modelConfig?.mutations?.create) {
         subscriptions.onCreate.forEach(onCreateSub => {
-          addServiceDirective(ctx.output.getSubscriptionTypeName()!, 'read', onCreateSub);
+          addServiceDirective(ctx.output.getSubscriptionTypeName()!, 'listen', onCreateSub);
           addSubscriptionArguments(ctx, onCreateSub, subscriptionArguments);
         });
       }
       if (subscriptions.onUpdate && modelConfig?.mutations?.update) {
         subscriptions.onUpdate.forEach(onUpdateSub => {
-          addServiceDirective(ctx.output.getSubscriptionTypeName()!, 'read', onUpdateSub);
+          addServiceDirective(ctx.output.getSubscriptionTypeName()!, 'listen', onUpdateSub);
           addSubscriptionArguments(ctx, onUpdateSub, subscriptionArguments);
         });
       }
       if (subscriptions.onDelete && modelConfig?.mutations?.delete) {
         subscriptions.onDelete.forEach(onDeleteSub => {
-          addServiceDirective(ctx.output.getSubscriptionTypeName()!, 'read', onDeleteSub);
+          addServiceDirective(ctx.output.getSubscriptionTypeName()!, 'listen', onDeleteSub);
           addSubscriptionArguments(ctx, onDeleteSub, subscriptionArguments);
         });
       }
@@ -470,7 +470,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     acm: AccessControlMatrix,
   ): void => {
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
-    const roleDefinitions = acm.getRolesPerOperation('read').map(r => this.roleMap.get(r)!);
+    const roleDefinitions = acm.getRolesPerOperation('get').map(r => this.roleMap.get(r)!);
     const tableKeySchema = getTable(ctx, def).keySchema;
     const primaryFields = tableKeySchema.map(att => att.attributeName);
     const primaryKey = getPartitionKey(tableKeySchema);
@@ -497,7 +497,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     indexName?: string,
   ): void => {
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
-    const roleDefinitions = acm.getRolesPerOperation('read').map(r => this.roleMap.get(r)!);
+    const roleDefinitions = acm.getRolesPerOperation('list').map(r => this.roleMap.get(r)!);
     let primaryFields: Array<string>;
     let partitionKey: string;
     const table = getTable(ctx, def);
@@ -541,7 +541,13 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     const relatedModelObject = AuthTransformer.getRelatedModelObject(ctx, getBaseType(field.type));
     if (this.authModelConfig.has(relatedModelObject.name.value)) {
       const acm = this.authModelConfig.get(relatedModelObject.name.value);
-      const roleDefinitions = acm.getRolesPerOperation('read').map(r => this.roleMap.get(r)!);
+      const roleDefinitions = [...new Set([
+        ...acm.getRolesPerOperation('get'),
+        ...acm.getRolesPerOperation('list'),
+        ...acm.getRolesPerOperation('sync'),
+        ...acm.getRolesPerOperation('search'),
+        ...acm.getRolesPerOperation('listen'),
+      ])].map(r => this.roleMap.get(r)!);
       const relationalPrimaryMap = getRelationalPrimaryMap(ctx, def, field, relatedModelObject);
       relatedAuthExpression = generateAuthExpressionForRelationQuery(
         this.configuredAuthProviders,
@@ -591,7 +597,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   ): void => {
     if (ctx.isProjectUsingDataStore()) {
       const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
-      const roleDefinitions = acm.getRolesPerOperation('read').map(r => this.roleMap.get(r)!);
+      const roleDefinitions = acm.getRolesPerOperation('sync').map(r => this.roleMap.get(r)!);
       const primaryFields = getTable(ctx, def).keySchema.map(att => att.attributeName);
       const authExpression = generateAuthExpressionForQueries(
         this.configuredAuthProviders,
@@ -627,8 +633,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     // to protect search and aggregation queries we need to collect all the roles which can query
     // and the allowed fields to run field auth on aggregation queries
-    const readRoleDefinitions = acm.getRolesPerOperation('read').map(role => {
-      const allowedFields = acmFields.filter(resource => acm.isAllowed(role, resource, 'read'));
+    const readRoleDefinitions = acm.getRolesPerOperation('search').map(role => {
+      const allowedFields = acmFields.filter(resource => acm.isAllowed(role, resource, 'search'));
       const roleDefinition = this.roleMap.get(role)!;
       // we add the allowed fields if the role does not have full access
       // or if the rule is a dynamic rule (ex. ownerField, groupField)

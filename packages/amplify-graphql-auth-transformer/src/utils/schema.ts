@@ -141,7 +141,7 @@ export const hasRelationalDirective = (field: FieldDefinitionNode): boolean => {
 
 /**
  *
- * given the keySchema from a DynamoDBDataSource it will return the parititonKey
+ * given the keySchema from a DynamoDBDataSource it will return the partitionKey
  */
 export const getPartitionKey = (ks: any): string => {
   return ks.find((att: any) => att.keyType === 'HASH')!.attributeName;
@@ -186,12 +186,12 @@ export const addSubscriptionArguments = (
 ) => {
   let subscription = ctx.output.getSubscription()!;
   let createField: FieldDefinitionNode = subscription!.fields!.find(field => field.name.value === operationName) as FieldDefinitionNode;
-  const subcriptionArgumentList = subscriptionRoles.map(role => {
+  const subscriptionArgumentList = subscriptionRoles.map(role => {
     return makeInputValueDefinition(role.entity!, makeNamedType('String'));
   });
   createField = {
     ...createField,
-    arguments: subcriptionArgumentList,
+    arguments: subscriptionArgumentList,
   };
   subscription = {
     ...subscription,

@@ -1,26 +1,50 @@
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-export type AuthStrategy = 'owner' | 'groups' | 'public' | 'private' | 'custom';
-export type AuthProvider = 'apiKey' | 'iam' | 'oidc' | 'userPools' | 'function';
-export type ModelQuery = 'get' | 'list';
-export type ModelMutation = 'create' | 'update' | 'delete';
-export type ModelOperation = 'create' | 'update' | 'delete' | 'read';
 
+/**
+ * AuthStrategy
+ */
+export type AuthStrategy = 'owner' | 'groups' | 'public' | 'private' | 'custom';
+/**
+ * AuthProvider
+ */
+export type AuthProvider = 'apiKey' | 'iam' | 'oidc' | 'userPools' | 'function';
+/**
+ * ModelMutation
+ */
+export type ModelMutation = 'create' | 'update' | 'delete';
+/**
+ * ModelOperation
+ */
+export type ModelOperation = 'create' | 'update' | 'delete' | 'get' | 'list' | 'sync' | 'search' | 'listen';
+
+/**
+ * RelationalPrimaryMapConfig
+ */
 export type RelationalPrimaryMapConfig = Map<string, { claim: string; field: string }>;
+/**
+ * SearchableConfig
+ */
 export interface SearchableConfig {
   queries: {
     search: string;
   };
 }
 
+/**
+ * AuthTransformerConfig
+ */
 export interface AuthTransformerConfig {
   /** used mainly in the before step to pass the authConfig from the transformer core down to the directive */
   authConfig?: AppSyncAuthConfiguration;
-  /** using the iam provider the resolvers checks will lets the roles in this list passthrough the acm */
+  /** using the iam provider the resolvers checks will lets the roles in this list pass through the acm */
   adminRoles?: Array<string>;
   /** when authorizing private/public @auth can also check authenticated/unauthenticated status for a given identityPoolId */
   identityPoolId?: string;
 }
 
+/**
+ * RolesByProvider
+ */
 export interface RolesByProvider {
   cognitoStaticRoles: Array<RoleDefinition>;
   cognitoDynamicRoles: Array<RoleDefinition>;
@@ -31,6 +55,9 @@ export interface RolesByProvider {
   lambdaRoles: Array<RoleDefinition>;
 }
 
+/**
+ * AuthRule
+ */
 export interface AuthRule {
   allow: AuthStrategy;
   provider?: AuthProvider;
@@ -44,6 +71,9 @@ export interface AuthRule {
   generateIAMPolicy?: boolean;
 }
 
+/**
+ * RoleDefinition
+ */
 export interface RoleDefinition {
   provider: AuthProvider;
   strategy: AuthStrategy;
@@ -57,10 +87,16 @@ export interface RoleDefinition {
   areAllFieldsNullAllowed?: boolean;
 }
 
+/**
+ * AuthDirective
+ */
 export interface AuthDirective {
   rules: AuthRule[];
 }
 
+/**
+ * ConfiguredAuthProviders
+ */
 export interface ConfiguredAuthProviders {
   default: AuthProvider;
   onlyDefaultAuthProviderConfigured: boolean;
@@ -105,5 +141,10 @@ export const authDirectiveDefinition = `
     update
     delete
     read
+    list
+    get
+    sync
+    listen
+    search
   }
 `;
