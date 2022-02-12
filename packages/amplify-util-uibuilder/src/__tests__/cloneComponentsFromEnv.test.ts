@@ -3,13 +3,11 @@ import * as listUiBuilderComponentsDependency from '../commands/utils/syncAmplif
 import { run } from '../commands/cloneComponentsFromEnv';
 const extractArgsDependency_mock = extractArgsDependency as any;
 const listUiBuilderComponentsDependency_mock = listUiBuilderComponentsDependency as any;
-jest.mock('aws-sdk', () => {
+jest.mock('@aws-sdk/client-amplifyuibuilder', () => {
   return {
     AmplifyUIBuilder: jest.fn(() => {
       return {
-        createComponent: () => ({
-          promise: () => true,
-        }),
+        createComponent: () => true,
       };
     }),
   };

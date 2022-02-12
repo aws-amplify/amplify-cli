@@ -13,12 +13,12 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/codegen-ui": "1.2.0",
-    "@aws-amplify/codegen-ui-react": "1.2.0",
+    "@aws-amplify/codegen-ui": "q1-release",
+    "@aws-amplify/codegen-ui-react": "q1-release",
     "amplify-cli-core": "2.4.14",
     "amplify-prompts": "1.6.3",
     "amplify-provider-awscloudformation": "5.9.5",
-    "aws-sdk": "^2.1042.0"
+    "@aws-sdk/client-amplifyuibuilder": "^3.51.0"
   },
   "jest": {
     "testRunner": "jest-circus/runner",

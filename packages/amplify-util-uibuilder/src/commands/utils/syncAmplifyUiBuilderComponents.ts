@@ -1,9 +1,9 @@
-import aws from 'aws-sdk';
 import { printer } from 'amplify-prompts';
+import { getAmplifyUIBuilderService, Component, Theme } from './uibuilder-client';
 import { createUiBuilderComponent, createUiBuilderTheme } from './createUiBuilderComponent';
 import { getUiBuilderComponentsPath } from './getUiBuilderComponentsPath';
 import { extractArgs } from './extractArgs';
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSContext } from 'amplify-cli-core';
 export const getEnvName = (context: $TSContext, envName?: string) => {
   const args = extractArgs(context);
   return envName ? envName : args.environmentName ? args.environmentName : context.exeInfo.localEnvInfo.envName;
@@ -24,40 +24,36 @@ export const getAppId = async (context: $TSContext) => {
   return appId;
 };
 
-export async function listUiBuilderComponents(context: $TSContext, envName?: string) {
+export async function listUiBuilderComponents(context: $TSContext, envName?: string): Promise<{ entities: Component[] }> {
   const environmentName = getEnvName(context, envName);
   const appId = await getAppId(context);
 
   try {
     const amplifyUIBuilder = await getAmplifyUIBuilderService(context, environmentName, appId);
-    const uiBuilderComponents = await amplifyUIBuilder
-      .exportComponents({
-        appId,
-        environmentName,
-      })
-      .promise();
+    const uiBuilderComponents = await amplifyUIBuilder.exportComponents({
+      appId,
+      environmentName,
+    });
     printer.debug(JSON.stringify(uiBuilderComponents, null, 2));
-    return uiBuilderComponents;
+    return { entities: uiBuilderComponents.entities ?? [] };
   } catch (e) {
     printer.debug(e);
     throw e;
   }
 }
 
-export async function listUiBuilderThemes(context: $TSContext, envName?: string) {
+export async function listUiBuilderThemes(context: $TSContext, envName?: string): Promise<{ entities: Theme[] }> {
   const environmentName = getEnvName(context, envName);
   const appId = await getAppId(context);
 
   try {
     const amplifyUIBuilder = await getAmplifyUIBuilderService(context, environmentName, appId);
-    const uiBuilderThemes = await amplifyUIBuilder
-      .exportThemes({
-        appId,
-        environmentName,
-      })
-      .promise();
+    const uiBuilderThemes = await amplifyUIBuilder.exportThemes({
+      appId,
+      environmentName,
+    });
     printer.debug(JSON.stringify(uiBuilderThemes, null, 2));
-    return uiBuilderThemes;
+    return { entities: uiBuilderThemes.entities ?? [] };
   } catch (e) {
     printer.debug(e);
     throw e;
@@ -101,21 +97,3 @@ export function generateUiBuilderThemes(context: $TSContext, themeSchemas: any[]
   );
   return themeResults;
 }
-
-export const getAmplifyUIBuilderService = async (context: $TSContext, environmentName: string, appId: string) => {
-  const awsConfigInfo = (await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'loadConfigurationForEnv', [
-    context,
-    environmentName,
-    appId,
-  ])) as $TSAny;
-
-  if (process.env.UI_BUILDER_ENDPOINT) {
-    awsConfigInfo.endpoint = process.env.UI_BUILDER_ENDPOINT;
-  }
-
-  if (process.env.UI_BUILDER_REGION) {
-    awsConfigInfo.region = process.env.UI_BUILDER_REGION;
-  }
-
-  return new aws.AmplifyUIBuilder(awsConfigInfo);
-};

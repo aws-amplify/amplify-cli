@@ -5,14 +5,39 @@ import {
   getAppId,
   listUiBuilderComponents,
   listUiBuilderThemes,
-  getAmplifyUIBuilderService,
   resolveAppId,
   generateUiBuilderThemes,
 } from '../commands/utils/syncAmplifyUiBuilderComponents';
-import aws from 'aws-sdk';
+import { getAmplifyUIBuilderService } from '../commands/utils/uibuilder-client';
 import * as CLICore from 'amplify-cli-core';
 import * as createUiBuilderComponentDependency from '../commands/utils/createUiBuilderComponent';
-const aws_mock = aws as any;
+jest.mock('@aws-sdk/client-amplifyuibuilder', () => {
+  return {
+    AmplifyUIBuilder: jest.fn(() => {
+      return {
+        exportComponents: jest.fn(() => ({
+          entities: [
+            {
+              appId: 'd37nrm8rzt3oek',
+              bindingProperties: {},
+              componentType: 'Box',
+              environmentName: 'staging',
+              id: 's-s4mU579Ycf6JGHwhqT',
+              name: 'aawwdd',
+              overrides: {},
+              properties: {},
+              variants: [],
+            },
+          ],
+        })),
+        exportThemes: jest.fn(() => ({
+          entities: [{}],
+        })),
+      };
+    }),
+  };
+});
+
 const createUiBuilderComponentDependency_mock = createUiBuilderComponentDependency as any;
 describe('should sync amplify ui builder components', () => {
   let context: $TSContext | any;
@@ -42,32 +67,6 @@ describe('should sync amplify ui builder components', () => {
         },
       },
     };
-
-    aws_mock.AmplifyUIBuilder = jest.fn(() => ({
-      exportComponents: jest.fn(() => ({
-        promise: jest.fn(() => ({
-          entities: [
-            {
-              appId: 'd37nrm8rzt3oek',
-              bindingProperties: {},
-              componentType: 'Box',
-              environmentName: 'staging',
-              id: 's-s4mU579Ycf6JGHwhqT',
-              name: 'aawwdd',
-              overrides: {},
-              properties: {},
-              variants: [],
-            },
-          ],
-        })),
-      })),
-      exportThemes: jest.fn(() => ({
-        promise: jest.fn(() => ({
-          entities: [{}],
-        })),
-      })),
-    }));
-
     createUiBuilderComponentDependency_mock.createUiBuilderComponent = jest.fn();
     createUiBuilderComponentDependency_mock.createUiBuilderTheme = jest.fn();
   });
