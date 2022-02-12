@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.4.6-codegen-ui-q1-release.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.4.5...graphql-transformers-e2e-tests@7.4.6-codegen-ui-q1-release.0) (2022-02-12)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
 ## [7.4.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.4.1...graphql-transformers-e2e-tests@7.4.5) (2022-02-10)
 
 

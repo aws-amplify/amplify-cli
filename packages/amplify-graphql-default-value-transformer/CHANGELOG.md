@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.16-codegen-ui-q1-release.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-default-value-transformer@0.5.15...@aws-amplify/graphql-default-value-transformer@0.5.16-codegen-ui-q1-release.0) (2022-02-12)
+
+**Note:** Version bump only for package @aws-amplify/graphql-default-value-transformer
+
+
+
+
+
 ## [0.5.15](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-default-value-transformer@0.5.14...@aws-amplify/graphql-default-value-transformer@0.5.15) (2022-02-10)
 
 

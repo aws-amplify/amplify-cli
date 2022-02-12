@@ -1,6 +1,6 @@
 {
   "name": "amplify-nodejs-function-template-provider",
-  "version": "2.3.0",
+  "version": "2.3.1-codegen-ui-q1-release.0",
   "description": "Node JS templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
@@ -21,9 +21,9 @@
     "clean": "rimraf lib tsconfig.tsbuildinfo"
   },
   "dependencies": {
-    "amplify-cli-core": "2.4.14",
+    "amplify-cli-core": "2.4.15-codegen-ui-q1-release.0",
     "amplify-function-plugin-interface": "1.9.4",
-    "graphql-transformer-core": "7.4.5",
+    "graphql-transformer-core": "7.4.6-codegen-ui-q1-release.0",
     "lodash": "^4.17.21"
   },
   "devDependencies": {

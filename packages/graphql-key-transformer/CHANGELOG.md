@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.23-codegen-ui-q1-release.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@3.2.22...graphql-key-transformer@3.2.23-codegen-ui-q1-release.0) (2022-02-12)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
 ## [3.2.22](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@3.2.18...graphql-key-transformer@3.2.22) (2022-02-10)
 
 

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.15-codegen-ui-q1-release.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.3.14...@aws-amplify/cli-extensibility-helper@2.3.15-codegen-ui-q1-release.0) (2022-02-12)
+
+**Note:** Version bump only for package @aws-amplify/cli-extensibility-helper
+
+
+
+
+
 ## [2.3.14](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.3.10...@aws-amplify/cli-extensibility-helper@2.3.14) (2022-02-10)
 
 

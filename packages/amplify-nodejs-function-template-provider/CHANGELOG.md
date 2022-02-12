@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.1-codegen-ui-q1-release.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.3.0...amplify-nodejs-function-template-provider@2.3.1-codegen-ui-q1-release.0) (2022-02-12)
+
+**Note:** Version bump only for package amplify-nodejs-function-template-provider
+
+
+
+
+
 # [2.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.2.18...amplify-nodejs-function-template-provider@2.3.0) (2022-02-10)
 
 

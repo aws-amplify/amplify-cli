@@ -1,6 +1,6 @@
 {
   "name": "graphql-auth-transformer",
-  "version": "7.2.22",
+  "version": "7.2.23-codegen-ui-q1-release.0",
   "description": "Implements the @auth directive for the appsync model transform.",
   "repository": {
     "type": "git",
@@ -24,16 +24,16 @@
   },
   "dependencies": {
     "graphql": "^14.5.8",
-    "graphql-connection-transformer": "5.2.22",
+    "graphql-connection-transformer": "5.2.23-codegen-ui-q1-release.0",
     "graphql-mapping-template": "4.20.3",
     "graphql-transformer-common": "4.23.0",
-    "graphql-transformer-core": "7.4.5"
+    "graphql-transformer-core": "7.4.6-codegen-ui-q1-release.0"
   },
   "devDependencies": {
     "cloudform-types": "^4.2.0",
-    "graphql-dynamodb-transformer": "7.2.22",
-    "graphql-elasticsearch-transformer": "5.2.22",
-    "graphql-function-transformer": "3.3.13",
+    "graphql-dynamodb-transformer": "7.2.23-codegen-ui-q1-release.0",
+    "graphql-elasticsearch-transformer": "5.2.23-codegen-ui-q1-release.0",
+    "graphql-function-transformer": "3.3.14-codegen-ui-q1-release.0",
     "lodash": "^4.17.21",
     "rimraf": "^3.0.0"
   },
