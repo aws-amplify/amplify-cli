@@ -34,6 +34,10 @@ module.exports = {
         name: 'build',
         description: 'Builds all the functions in the project (does an npm install on the functions src directory)',
       },
+      {
+        name: 'watch',
+        description: 'Watch amplify/backend/function/* and update the function code (for development, not production)',
+      },
     ];
 
     context.amplify.showHelp(header, commands);
