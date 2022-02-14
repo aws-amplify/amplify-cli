@@ -1,6 +1,6 @@
 {
   "name": "amplify-nodejs-function-template-provider",
-  "version": "2.3.0",
+  "version": "2.3.3",
   "description": "Node JS templates supplied by the Amplify Team",
   "repository": {
     "type": "git",

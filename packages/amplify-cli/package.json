@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-category-api": "1.2.10",
-    "@aws-amplify/amplify-category-auth": "2.5.0",
+    "@aws-amplify/amplify-category-auth": "2.7.1",
     "@aws-amplify/amplify-category-custom": "2.3.18",
     "@aws-amplify/amplify-category-storage": "3.1.15",
     "@aws-amplify/amplify-util-uibuilder": "1.2.11",
@@ -65,7 +65,7 @@
     "amplify-java-function-runtime-provider": "2.2.19",
     "amplify-java-function-template-provider": "1.5.12",
     "amplify-nodejs-function-runtime-provider": "2.2.19",
-    "amplify-nodejs-function-template-provider": "2.3.0",
+    "amplify-nodejs-function-template-provider": "2.3.3",
     "amplify-prompts": "1.6.3",
     "amplify-provider-awscloudformation": "5.9.5",
     "amplify-python-function-runtime-provider": "2.2.19",
