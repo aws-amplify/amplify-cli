@@ -49,6 +49,7 @@ const bumpVersions = async (preid?: string, distTag?: string): Promise<Map<strin
       private: false,
     };
     if (preid !== undefined) {
+      config.conventionalPrerelease = true;
       config.preid = preid;
       config.distTag = distTag;
     }
