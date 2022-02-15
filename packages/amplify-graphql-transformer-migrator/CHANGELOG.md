@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.27-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-migrator@1.2.26...@aws-amplify/graphql-transformer-migrator@1.2.27-beta.0) (2022-02-15)
+
+
+### Bug Fixes
+
+* graphql-transformer-migrator add modelgen flag after v2 migrate ([#9565](https://github.com/aws-amplify/amplify-cli/issues/9565)) ([9bff4ae](https://github.com/aws-amplify/amplify-cli/commit/9bff4ae13b44f2649b4f66df4485ca768416d707))
+
+
+
+
+
 ## [1.2.26](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-migrator@1.2.22...@aws-amplify/graphql-transformer-migrator@1.2.26) (2022-02-10)
 
 
