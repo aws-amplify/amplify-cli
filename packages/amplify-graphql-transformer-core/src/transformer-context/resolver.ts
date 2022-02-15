@@ -266,7 +266,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     if (authModes.includes(AuthorizationType.IAM)) {
       const authRoleParameter = (context.stackManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as CfnParameter).valueAsString;
       const unauthRoleParameter = (context.stackManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as CfnParameter).valueAsString;
-      initResolver += dedent`\n
+      initResolver += dedent`
       $util.qr($ctx.stash.put("authRole", "arn:aws:sts::${
         Stack.of(context.stackManager.rootStack).account
       }:assumed-role/${authRoleParameter}/CognitoIdentityCredentials"))
