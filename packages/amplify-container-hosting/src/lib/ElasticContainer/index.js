@@ -28,7 +28,6 @@ async function enable(context) {
     validate: CheckIsValidDomain,
   });
 
-  /** @type {AWS.Route53.HostedZone} */
   const domainZone = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'isDomainInZones', {
     domain,
   });
@@ -78,13 +77,13 @@ async function enable(context) {
         'No web application has been detected in your src directory. A sample web application with Dockerfile has been placed in the src directory for your convenience.',
       );
 
-      fs.copySync(path.join(__dirname, '../../resources/express-template'), projectSrcDirPath, { recursive: true });
+      fs.copySync(path.join(__dirname, '../../../resources/express-template'), projectSrcDirPath, { recursive: true });
     } else {
       context.print.info(
         'Amplify detected existing web application files in your src directory. A sample Dockerfile has been placed in the src directory for you to use as a starting point when deploying to the cloud.',
       );
 
-      fs.copySync(path.join(__dirname, '../../resources/simple-template'), projectSrcDirPath, { recursive: true });
+      fs.copySync(path.join(__dirname, '../../../resources/simple-template'), projectSrcDirPath, { recursive: true });
     }
   }
 
@@ -258,7 +257,6 @@ export async function generateHostingResources(
 
   resource.exposedContainer = exposedContainer;
 
-  /** @type {AWS.ECR.RepositoryList} */
   const repositories = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'describeEcrRepositories');
 
   const existingEcrRepositories = new Set(
@@ -287,6 +285,7 @@ export async function generateHostingResources(
     gitHubSourceActionInfo: undefined,
     taskEnvironmentVariables: {}, // TODO
     existingEcrRepositories,
+    currentStackName: resourceName,
   });
 
   const domainConfig = {
@@ -355,7 +354,6 @@ async function configure(context) {
     default: currentDomain,
   });
 
-  /** @type {AWS.Route53.HostedZone} */
   const domainZone = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'isDomainInZones', {
     domain,
   });

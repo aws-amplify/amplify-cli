@@ -1,0 +1,20 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "lib",
+    "rootDir": "src",
+    "allowJs": true,
+    "strictPropertyInitialization": false,
+    "inlineSources": true
+  },
+  "exclude": [
+    "coverage",
+    "lib",
+    "resources",
+    "scripts",
+    "src/__tests__"
+  ],
+  "references": [
+    { "path": "../amplify-cli-core" }
+  ]
+}

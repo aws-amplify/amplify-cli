@@ -76,6 +76,8 @@ test.out.log
 packages/amplify-graphiql-explorer/.eslintcache
 packages/amplify-cli-extensibility-helper/lib
 packages/amplify-cli-overrides-helper/lib
+packages/amplify-console-hosting/lib/
+packages/amplify-container-hosting/lib/
+packages/amplify-category-predictions/lib
+packages/amplify-category-analytics/lib
 !packages/amplify-graphql-model-transformer/src/__tests__/overrides/build/override.js
-
-

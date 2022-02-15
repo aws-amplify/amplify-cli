@@ -1,4 +1,4 @@
 module.exports = {
   CategoryName: 'hosting',
-  providerName: 'awscloudformation'
+  providerName: 'awscloudformation',
 };

@@ -2,7 +2,8 @@
   "name": "amplify-console-hosting",
   "version": "2.2.21",
   "description": "cli plugin for AWS Amplify Console hosting",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
@@ -17,5 +18,10 @@
     "inquirer": "^7.3.3",
     "node-fetch": "^2.6.7",
     "ora": "^4.0.3"
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf lib tsconfig.tsbuildinfo",
+    "watch": "tsc --watch"
   }
 }
