@@ -3,7 +3,11 @@ import * as path from 'path';
 import { loadFunctionParameters } from './loadFunctionParameters';
 import { ServiceName } from './constants';
 import { categoryName } from '../../../constants';
+import { ParseOptions } from 'graphql';
 
+/**
+ * @deprecated in favor of lambdasWithMissingApiDependency, using a list of existing models rather than deleted ones
+ */
 export async function lambdasWithApiDependency(
   context: $TSContext,
   allResources: $TSObject[],
@@ -30,6 +34,41 @@ export async function lambdasWithApiDependency(
     if (typeof selectedCategories === 'object' && selectedCategories !== null) {
       for (const selectedResources of Object.values(selectedCategories)) {
         deletedModelFound = Object.keys(selectedResources).some(r => modelsDeleted.includes(r));
+        if (deletedModelFound) {
+          dependentFunctions.push(lambda);
+        }
+      }
+    }
+  }
+  return dependentFunctions;
+}
+
+export async function lambdasWithMissingApiDependency(
+  context: $TSContext,
+  allResources: $TSObject[],
+  backendDir: string,
+  existingModels: string[],
+) {
+  //get the List of functions dependent on deleted models
+  let dependentFunctions = [];
+  const lambdaFuncResources = allResources.filter(
+    resource =>
+      resource.service === ServiceName.LambdaFunction &&
+      resource.mobileHubMigrated !== true &&
+      resource.dependsOn !== undefined &&
+      resource.dependsOn.find(val => val.category === 'api'),
+  );
+
+  // initialize function parameters for update
+  for (const lambda of lambdaFuncResources) {
+    const resourceDirPath = path.join(backendDir, categoryName, lambda.resourceName);
+    const currentParameters = loadFunctionParameters(resourceDirPath);
+    const selectedCategories = currentParameters.permissions;
+    let deletedModelFound: boolean;
+
+    if (typeof selectedCategories === 'object' && selectedCategories !== null) {
+      for (const selectedResources of Object.values(selectedCategories)) {
+        deletedModelFound = !Object.keys(selectedResources).some(r => existingModels.includes(r));
         if (deletedModelFound) {
           dependentFunctions.push(lambda);
         }

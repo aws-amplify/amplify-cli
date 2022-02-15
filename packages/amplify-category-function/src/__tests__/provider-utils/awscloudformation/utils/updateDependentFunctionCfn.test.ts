@@ -1,4 +1,7 @@
-import { updateDependentFunctionsCfn } from '../../../../provider-utils/awscloudformation/utils/updateDependentFunctionCfn';
+import {
+  updateDependentFunctionsCfn,
+  updateMissingDependencyFunctionsCfn,
+} from '../../../../provider-utils/awscloudformation/utils/updateDependentFunctionCfn';
 import { loadFunctionParameters } from '../../../../provider-utils/awscloudformation/utils/loadFunctionParameters';
 import {
   getResourcesForCfn,
@@ -143,5 +146,67 @@ test('update dependent functions', async () => {
       ],
     });
   await updateDependentFunctionsCfn(contextStub as unknown as $TSContext, allResources, backendDir, modelsDeleted, apiResourceName);
+  expect(updateCFNFileForResourcePermissions_mock.mock.calls[0][1]).toMatchSnapshot();
+});
+
+test('update dependent functions', async () => {
+  jest.clearAllMocks();
+  const existingModels = ['model1', 'model2'];
+  loadResourceParameters_mock
+    .mockReturnValueOnce({
+      permissions: {
+        storage: {
+          model1: ['create'],
+          model2: ['create'],
+          model3: ['create'],
+        },
+      },
+    })
+    .mockReturnValueOnce({
+      permissions: {
+        storage: {
+          model3: ['create'],
+        },
+      },
+    });
+  await updateMissingDependencyFunctionsCfn(contextStub as unknown as $TSContext, allResources, backendDir, existingModels, apiResourceName);
+  expect(updateCFNFileForResourcePermissions_mock.mock.calls[0][1]).toMatchSnapshot();
+});
+
+test('update dependent functions', async () => {
+  jest.clearAllMocks();
+  const existingModels = ['model3'];
+  loadResourceParameters_mock
+    .mockReturnValueOnce({
+      permissions: {
+        storage: {
+          model1: ['create'],
+          model2: ['create'],
+          model3: ['create'],
+        },
+      },
+      lambdaLayers: [
+        {
+          type: 'ProjectLayer',
+          resourceName: 'mocklayer',
+          version: 1,
+        },
+      ],
+    })
+    .mockReturnValueOnce({
+      permissions: {
+        storage: {
+          model3: ['create'],
+        },
+      },
+      lambdaLayers: [
+        {
+          type: 'ProjectLayer',
+          resourceName: 'mocklayer',
+          version: 1,
+        },
+      ],
+    });
+  await updateMissingDependencyFunctionsCfn(contextStub as unknown as $TSContext, allResources, backendDir, existingModels, apiResourceName);
   expect(updateCFNFileForResourcePermissions_mock.mock.calls[0][1]).toMatchSnapshot();
 });

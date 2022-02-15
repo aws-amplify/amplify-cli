@@ -23,11 +23,11 @@ export { askExecRolePermissionsQuestions } from './provider-utils/awscloudformat
 export { buildResource } from './provider-utils/awscloudformation/utils/build';
 export { buildTypeKeyMap } from './provider-utils/awscloudformation/utils/buildFunction';
 export { ServiceName } from './provider-utils/awscloudformation/utils/constants';
-export { lambdasWithApiDependency } from './provider-utils/awscloudformation/utils/getDependentFunction';
+export { lambdasWithApiDependency, lambdasWithMissingApiDependency } from './provider-utils/awscloudformation/utils/getDependentFunction';
 export { hashLayerResource } from './provider-utils/awscloudformation/utils/layerHelpers';
 export { migrateLegacyLayer } from './provider-utils/awscloudformation/utils/layerMigrationUtils';
 export { packageResource } from './provider-utils/awscloudformation/utils/package';
-export { updateDependentFunctionsCfn, addAppSyncInvokeMethodPermission } from './provider-utils/awscloudformation/utils/updateDependentFunctionCfn';
+export { updateDependentFunctionsCfn, updateMissingDependencyFunctionsCfn, addAppSyncInvokeMethodPermission } from './provider-utils/awscloudformation/utils/updateDependentFunctionCfn';
 export { loadFunctionParameters } from './provider-utils/awscloudformation/utils/loadFunctionParameters';
 
 export async function add(context, providerName, service, parameters) {
