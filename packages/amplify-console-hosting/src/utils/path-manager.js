@@ -10,18 +10,11 @@ function getHostingDirPath(context) {
 }
 
 function getAmplifyHostingDirPath(context) {
-  return path.join(
-    getBackendDirPath(context),
-    constants.CATEGORY,
-    constants.CONSOLE_RESOURCE_NAME,
-  );
+  return path.join(getBackendDirPath(context), constants.CATEGORY, constants.CONSOLE_RESOURCE_NAME);
 }
 
 function getTemplatePath(context) {
-  return path.join(
-    getAmplifyHostingDirPath(context),
-    constants.TEMPLATE_FILE_NAME,
-  );
+  return path.join(getAmplifyHostingDirPath(context), constants.TEMPLATE_FILE_NAME);
 }
 
 function getProviderInfoFilePath(context) {
@@ -53,10 +46,7 @@ function getCurrBackendConfigFilePath(context) {
 }
 
 function getCurrCloudBackendAmplifyHostingDirPath(context) {
-  return path.join(
-    getCurrCloudBackendHostingDirPath(context),
-    constants.CONSOLE_RESOURCE_NAME,
-  );
+  return path.join(getCurrCloudBackendHostingDirPath(context), constants.CONSOLE_RESOURCE_NAME);
 }
 
 module.exports = {

@@ -1,11 +1,12 @@
+// @ts-check
 const inquirer = require('inquirer');
 const sequential = require('promise-sequential');
 const path = require('path');
 const categoryManager = require('./lib/category-manager');
-const pluginManifest = require('./amplify-plugin.json');
+import { JSONUtilities } from 'amplify-cli-core';
 
 const category = 'hosting';
-const { generateHostingResources } = require('./lib/ElasticContainer/index')
+const { generateHostingResources } = require('./lib/ElasticContainer/index');
 
 async function add(context) {
   const { availableServices } = categoryManager.getCategoryStatus(context);
@@ -14,9 +15,13 @@ async function add(context) {
   }
 }
 
+function readPluginManifest() {
+  return JSONUtilities.readJson(path.join(__dirname, '..', 'amplify-plugin.json'), { throwIfNotExist: true });
+}
+
 async function configure(context) {
   const { availableServices, enabledServices } = categoryManager.getCategoryStatus(context);
-
+  const pluginManifest = readPluginManifest();
   if (availableServices.length > 0) {
     if (enabledServices.length > 1) {
       const answers = await inquirer.prompt({
@@ -41,6 +46,7 @@ async function configure(context) {
 }
 
 function publish(context, service, args) {
+  const pluginManifest = readPluginManifest();
   const { enabledServices } = categoryManager.getCategoryStatus(context);
 
   if (enabledServices.length > 0) {
@@ -55,7 +61,7 @@ function publish(context, service, args) {
 
 async function console(context) {
   const { availableServices, enabledServices } = categoryManager.getCategoryStatus(context);
-
+  const pluginManifest = readPluginManifest();
   if (availableServices.length > 0) {
     if (enabledServices.length > 1) {
       const answer = await inquirer.prompt({
@@ -103,6 +109,7 @@ async function executeAmplifyCommand(context) {
 }
 
 async function handleAmplifyEvent(context, args) {
+  const pluginManifest = readPluginManifest();
   context.print.info(`${pluginManifest.displayName} hosting handleAmplifyEvent to be implemented`);
   context.print.info(`Received event args ${args}`);
 }
@@ -116,5 +123,5 @@ module.exports = {
   getPermissionPolicies,
   executeAmplifyCommand,
   handleAmplifyEvent,
-  generateHostingResources
+  generateHostingResources,
 };

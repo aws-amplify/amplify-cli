@@ -9,11 +9,16 @@
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
-  "main": "index.js",
+  "main": "lib/index.js",
   "keywords": [
     "amplify",
     "aws"
   ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf lib tsconfig.tsbuildinfo",
+    "watch": "tsc --watch"
+  },
   "dependencies": {
     "amplify-cli-core": "2.4.15",
     "fs-extra": "^8.1.0",

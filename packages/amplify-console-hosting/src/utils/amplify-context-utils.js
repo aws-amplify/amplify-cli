@@ -29,8 +29,7 @@ function getMetaInfo(context) {
 function getBackendInfoConfig(context) {
   const { amplify } = context;
   const backendConfigFilePath = pathManager.getBackendConfigPath(context);
-  const backendConfig = fs.existsSync(backendConfigFilePath)
-    ? amplify.readJsonFile(backendConfigFilePath) : undefined;
+  const backendConfig = fs.existsSync(backendConfigFilePath) ? amplify.readJsonFile(backendConfigFilePath) : undefined;
   return backendConfig;
 }
 
@@ -56,4 +55,3 @@ module.exports = {
   getRegionForCurrEnv,
   getMetaInfo,
 };
-
