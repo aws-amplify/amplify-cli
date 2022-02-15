@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.3.9...amplify-category-geo@2.4.0) (2022-02-15)
+
+
+### Features
+
+* **amplify-category-geo:** add permissions for suggestions ([#9743](https://github.com/aws-amplify/amplify-cli/issues/9743)) ([943c7ed](https://github.com/aws-amplify/amplify-cli/commit/943c7edd0f21ddeb9dac30322d2dd686baa3dcf4))
+
+
+
+
+
 ## [2.3.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.3.5...amplify-category-geo@2.3.9) (2022-02-10)
 
 
