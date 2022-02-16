@@ -330,6 +330,7 @@ module.exports = {
     '/packages/amplify-container-hosting/lib/',
     '/packages/amplify-category-predictions/lib',
     '/packages/amplify-category-analytics/lib',
+    '/amplify-category-interactions/lib',
     '/packages/amplify-category-custom/src/utils/generate-cfn-from-cdk.ts',
 
     // Ignore CHANGELOG.md files

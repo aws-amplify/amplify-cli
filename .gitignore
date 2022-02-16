@@ -80,4 +80,5 @@ packages/amplify-console-hosting/lib/
 packages/amplify-container-hosting/lib/
 packages/amplify-category-predictions/lib
 packages/amplify-category-analytics/lib
+packages/amplify-category-interactions/lib/
 !packages/amplify-graphql-model-transformer/src/__tests__/overrides/build/override.js
