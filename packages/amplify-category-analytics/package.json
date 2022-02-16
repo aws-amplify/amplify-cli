@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-analytics",
-  "version": "3.2.20",
+  "version": "3.2.21-faster.0",
   "description": "amplify-cli analytics plugin",
   "repository": {
     "type": "git",

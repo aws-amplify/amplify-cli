@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.21-faster.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.3.20...amplify-frontend-javascript@3.3.21-faster.0) (2022-02-16)
+
+
+### Performance Improvements
+
+* remove ESM loader to speed up CLI execution ([a152006](https://github.com/aws-amplify/amplify-cli/commit/a152006ebaa0cf0b9761a5d882fecf4b07430cfd))
+
+
+
+
+
 ## [3.3.20](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.3.19...amplify-frontend-javascript@3.3.20) (2022-02-15)
 
 **Note:** Version bump only for package amplify-frontend-javascript

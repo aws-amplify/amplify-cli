@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.23-faster.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.4.22...amplify-container-hosting@2.4.23-faster.0) (2022-02-16)
+
+
+### Performance Improvements
+
+* remove ESM loader to speed up CLI execution ([a152006](https://github.com/aws-amplify/amplify-cli/commit/a152006ebaa0cf0b9761a5d882fecf4b07430cfd))
+
+
+
+
+
 ## [2.4.22](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.4.21...amplify-container-hosting@2.4.22) (2022-02-15)
 
 **Note:** Version bump only for package amplify-container-hosting
