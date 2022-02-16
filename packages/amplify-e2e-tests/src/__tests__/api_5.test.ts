@@ -3,7 +3,6 @@ import {
   addRestApi,
   addSimpleDDB,
   amplifyPushUpdate,
-  checkIfBucketExists,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -12,12 +11,8 @@ import {
   listAttachedRolePolicies,
   listRolePolicies,
   updateAuthAddAdminQueries,
+  validateRestApiMeta,
 } from 'amplify-e2e-core';
-
-// to deal with bug in cognito-identity-js
-(global as any).fetch = require('node-fetch');
-// to deal with subscriptions in node env
-(global as any).WebSocket = require('ws');
 
 describe('amplify add api (REST)', () => {
   let projRoot: string;
@@ -29,40 +24,6 @@ describe('amplify add api (REST)', () => {
     await deleteProject(projRoot);
     deleteProjectDir(projRoot);
   });
-
-  const validateMeta = async (meta?) => {
-    meta = meta ?? getProjectMeta(projRoot);
-    expect(meta.providers.awscloudformation).toBeDefined();
-    const {
-      AuthRoleArn: authRoleArn,
-      UnauthRoleArn: unauthRoleArn,
-      DeploymentBucketName: bucketName,
-      Region: region,
-      StackId: stackId,
-    } = meta.providers.awscloudformation;
-    expect(authRoleArn).toBeDefined();
-    expect(unauthRoleArn).toBeDefined();
-    expect(region).toBeDefined();
-    expect(stackId).toBeDefined();
-    const bucketExists = await checkIfBucketExists(bucketName, region);
-    expect(bucketExists).toMatchObject({});
-
-    expect(meta.function).toBeDefined();
-    let seenAtLeastOneFunc = false;
-    for (let key of Object.keys(meta.function)) {
-      const { service, build, lastBuildTimeStamp, lastPackageTimeStamp, distZipFilename, lastPushTimeStamp, lastPushDirHash } =
-        meta.function[key];
-      expect(service).toBe('Lambda');
-      expect(build).toBeTruthy();
-      expect(lastBuildTimeStamp).toBeDefined();
-      expect(lastPackageTimeStamp).toBeDefined();
-      expect(distZipFilename).toBeDefined();
-      expect(lastPushTimeStamp).toBeDefined();
-      expect(lastPushDirHash).toBeDefined();
-      seenAtLeastOneFunc = true;
-    }
-    expect(seenAtLeastOneFunc).toBe(true);
-  };
 
   it('init a project, add a DDB, then add a crud rest api', async () => {
     const randomId = await global.getRandomId();
@@ -78,14 +39,14 @@ describe('amplify add api (REST)', () => {
     expect(service).toBe('DynamoDB');
     expect(lastPushTimeStamp).toBeDefined();
     expect(lastPushDirHash).toBeDefined();
-    validateMeta(meta);
+    validateRestApiMeta(projRoot, meta);
   });
 
   it('init a project, then add a serverless rest api', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addRestApi(projRoot, { isCrud: false });
     await amplifyPushUpdate(projRoot);
-    validateMeta();
+    validateRestApiMeta(projRoot);
   });
 
   it('init a project, create lambda and attach it to an api', async () => {
@@ -93,7 +54,7 @@ describe('amplify add api (REST)', () => {
     await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
     await addRestApi(projRoot, { existingLambda: true });
     await amplifyPushUpdate(projRoot);
-    validateMeta();
+    validateRestApiMeta(projRoot);
   });
 
   it('init a project, create lambda and attach multiple rest apis', async () => {
@@ -152,7 +113,7 @@ describe('amplify add api (REST)', () => {
       expect(PolicyName).toMatch(/PolicyAPIGWUnauth\d/);
     }
 
-    validateMeta(amplifyMeta);
+    validateRestApiMeta(projRoot, amplifyMeta);
   });
 
 });

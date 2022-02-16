@@ -5,7 +5,6 @@ import {
   addRestApi,
   amplifyPushGraphQlWithCognitoPrompt,
   amplifyPushUpdate,
-  checkIfBucketExists,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -13,16 +12,12 @@ import {
   getProjectMeta,
   initJSProjectWithProfile,
   updateApiSchema,
+  validateRestApiMeta,
 } from 'amplify-e2e-core';
 import { readdirSync, readFileSync } from 'fs';
 import * as path from 'path';
 
-// to deal with bug in cognito-identity-js
-(global as any).fetch = require('node-fetch');
-// to deal with subscriptions in node env
-(global as any).WebSocket = require('ws');
-
-describe('amplify add api (REST)', () => {
+describe('amplify add api (REST and GRAPHQL)', () => {
   let projRoot: string;
   beforeEach(async () => {
     projRoot = await createNewProjectDir('rest-api');
@@ -33,53 +28,13 @@ describe('amplify add api (REST)', () => {
     deleteProjectDir(projRoot);
   });
 
-  const validateMeta = async (meta?) => {
-    meta = meta ?? getProjectMeta(projRoot);
-    expect(meta.providers.awscloudformation).toBeDefined();
-    const {
-      AuthRoleArn: authRoleArn,
-      UnauthRoleArn: unauthRoleArn,
-      DeploymentBucketName: bucketName,
-      Region: region,
-      StackId: stackId,
-    } = meta.providers.awscloudformation;
-    expect(authRoleArn).toBeDefined();
-    expect(unauthRoleArn).toBeDefined();
-    expect(region).toBeDefined();
-    expect(stackId).toBeDefined();
-    const bucketExists = await checkIfBucketExists(bucketName, region);
-    expect(bucketExists).toMatchObject({});
-
-    expect(meta.function).toBeDefined();
-    let seenAtLeastOneFunc = false;
-    for (let key of Object.keys(meta.function)) {
-      const { service, build, lastBuildTimeStamp, lastPackageTimeStamp, distZipFilename, lastPushTimeStamp, lastPushDirHash } =
-        meta.function[key];
-      expect(service).toBe('Lambda');
-      expect(build).toBeTruthy();
-      expect(lastBuildTimeStamp).toBeDefined();
-      expect(lastPackageTimeStamp).toBeDefined();
-      expect(distZipFilename).toBeDefined();
-      expect(lastPushTimeStamp).toBeDefined();
-      expect(lastPushDirHash).toBeDefined();
-      seenAtLeastOneFunc = true;
-    }
-    expect(seenAtLeastOneFunc).toBe(true);
-  };
-
   it('adds a rest api and then adds a path to the existing api', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
     await addRestApi(projRoot, { existingLambda: true });
     await addRestApi(projRoot, { isFirstRestApi: false, existingLambda: true, path: '/newpath' });
     await amplifyPushUpdate(projRoot);
-    validateMeta();
-  });
-
-  it('migrates malformed project files during push', async () => {
-    await initJSProjectWithProfile(projRoot, {});
-    await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
-    await addRestApi(projRoot, { existingLambda: true, restrictAccess: true });
+    validateRestApiMeta(projRoot);
 
     const apisDirectory = path.join(projRoot, 'amplify', 'backend', 'api');
     const apis = readdirSync(apisDirectory);
@@ -87,12 +42,8 @@ describe('amplify add api (REST)', () => {
     const apiDirectory = path.join(apisDirectory, apiName);
     const cfnTemplateFile = path.join(apiDirectory, 'build', `${apiName}-cloudformation-template.json`);
     const cfnTemplate = JSON.parse(readFileSync(cfnTemplateFile, 'utf8'));
-
     // The ApiId output is required
     expect(cfnTemplate.Outputs.ApiId).toBeDefined();
-
-    await amplifyPushUpdate(projRoot);
-    validateMeta();
   });
 
   it('amplify push prompt for cognito configuration if auth mode is missing', async () => {
@@ -118,6 +69,6 @@ describe('amplify add api (REST)', () => {
 
     expect(graphqlApi).toBeDefined();
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
-    validateMeta(meta);
+    validateRestApiMeta(projRoot, meta);
   });
 });
