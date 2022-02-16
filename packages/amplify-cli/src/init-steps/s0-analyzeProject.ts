@@ -104,6 +104,10 @@ export async function analyzeProject(context: $TSContext): Promise<$TSContext> {
     defaultEditor = await getEditor(context);
   }
 
+  if (!defaultEditor) {
+    defaultEditor = context.exeInfo.localEnvInfo.defaultEditor;
+  }
+
   context.exeInfo.isNewEnv = isNewEnv(envName);
   context.exeInfo.forcePush = !!context?.parameters?.options?.forcePush;
 
