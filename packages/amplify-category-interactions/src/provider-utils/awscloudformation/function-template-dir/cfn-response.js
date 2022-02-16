@@ -8,7 +8,7 @@ See the License for the specific language governing permissions and limitations 
 exports.SUCCESS = 'SUCCESS';
 exports.FAILED = 'FAILED';
 
-exports.send = function(event, context, responseStatus, responseData, physicalResourceId, noEcho) {
+exports.send = function (event, context, responseStatus, responseData, physicalResourceId, noEcho) {
   const responseBody = JSON.stringify({
     Status: responseStatus,
     Reason: `See the details in CloudWatch Log Stream: ${context.logStreamName}`,

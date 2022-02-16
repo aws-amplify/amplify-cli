@@ -9,11 +9,17 @@
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
-  "main": "index.js",
+  "main": "lib/index.js",
   "keywords": [
     "amplify",
     "aws"
   ],
+  "scripts": {
+    "build": "tsc && yarn copy-templates",
+    "clean": "rimraf lib tsconfig.tsbuildinfo",
+    "watch": "tsc --watch",
+    "copy-templates": "copyfiles -u 4 src/provider-utils/awscloudformation/cloudformation-templates/* lib/provider-utils/awscloudformation/cloudformation-templates/ && yarn copyfiles -u 4 src/provider-utils/awscloudformation/function-template-dir/*.ejs lib/provider-utils/awscloudformation/function-template-dir/"
+  },
   "dependencies": {
     "amplify-cli-core": "2.4.15",
     "fs-extra": "^8.1.0",

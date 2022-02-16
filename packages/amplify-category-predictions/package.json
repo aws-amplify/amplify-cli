@@ -15,9 +15,10 @@
     "aws"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && yarn copy-templates",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "copy-templates": "copyfiles -u 4 src/provider-utils/awscloudformation/cloudformation-templates/* lib/provider-utils/awscloudformation/cloudformation-templates/"
   },
   "dependencies": {
     "amplify-cli-core": "2.4.15",
