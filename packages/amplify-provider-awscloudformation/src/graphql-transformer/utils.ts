@@ -44,8 +44,16 @@ export const getIdentityPoolId = async (ctx: $TSContext): Promise<string | undef
 };
 
 export const getAdminRoles = async (ctx: $TSContext, apiResourceName: string | undefined): Promise<Array<string>> => {
-  const currentEnv = ctx.amplify.getEnvInfo().envName;
+  let currentEnv;
   const adminRoles = new Array<string>();
+
+  try {
+    currentEnv = ctx.amplify.getEnvInfo().envName;
+  } catch (err) {
+    // When there is no environment info, return [] - This is required for sandbox pull
+    return [];
+  }
+
   //admin ui roles
   try {
     const amplifyMeta = stateManager.getMeta();
