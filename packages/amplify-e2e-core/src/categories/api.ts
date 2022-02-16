@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
-import { addFeatureFlag, ExecutionContext, getCLIPath, nspawn as spawn, setTransformerVersionFlag, updateSchema } from '..';
+import { addFeatureFlag, checkIfBucketExists, ExecutionContext, getCLIPath, getProjectMeta, nspawn as spawn, setTransformerVersionFlag, updateSchema } from '..';
 import { multiSelect, singleSelect } from '../utils/selectors';
 import { selectRuntime, selectTemplate } from './lambda-function';
 import { modifiedApi } from './resources/modified-api-index';
@@ -850,3 +850,37 @@ export function cancelAmplifyMockApi(cwd: string, settings: any = {}): Promise<v
       });
   });
 }
+
+export async function validateRestApiMeta(projRoot: string, meta?: any) {
+  meta = meta ?? getProjectMeta(projRoot);
+  expect(meta.providers.awscloudformation).toBeDefined();
+  const {
+    AuthRoleArn: authRoleArn,
+    UnauthRoleArn: unauthRoleArn,
+    DeploymentBucketName: bucketName,
+    Region: region,
+    StackId: stackId,
+  } = meta.providers.awscloudformation;
+  expect(authRoleArn).toBeDefined();
+  expect(unauthRoleArn).toBeDefined();
+  expect(region).toBeDefined();
+  expect(stackId).toBeDefined();
+  const bucketExists = await checkIfBucketExists(bucketName, region);
+  expect(bucketExists).toMatchObject({});
+
+  expect(meta.function).toBeDefined();
+  let seenAtLeastOneFunc = false;
+  for (let key of Object.keys(meta.function)) {
+    const { service, build, lastBuildTimeStamp, lastPackageTimeStamp, distZipFilename, lastPushTimeStamp, lastPushDirHash } =
+      meta.function[key];
+    expect(service).toBe('Lambda');
+    expect(build).toBeTruthy();
+    expect(lastBuildTimeStamp).toBeDefined();
+    expect(lastPackageTimeStamp).toBeDefined();
+    expect(distZipFilename).toBeDefined();
+    expect(lastPushTimeStamp).toBeDefined();
+    expect(lastPushDirHash).toBeDefined();
+    seenAtLeastOneFunc = true;
+  }
+  expect(seenAtLeastOneFunc).toBe(true);
+};
