@@ -39,6 +39,12 @@ export async function notifyFieldAuthSecurityChange(context: $TSContext): Promis
 
   const apiName = apiNames[0];
   const apiResourceDir = pathManager.getResourceDirectoryPath(projectPath, 'api', apiName);
+
+  if (!fs.existsSync(apiResourceDir)) {
+    await setNotificationFlag(projectPath, flagName, false);
+    return;
+  }
+
   const project = await readProjectConfiguration(apiResourceDir);
   const directiveMap = collectDirectivesByType(project.schema);
   const doc: DocumentNode = parse(project.schema);
@@ -157,6 +163,12 @@ export async function notifySecurityEnhancement(context) {
     const apiName = apiNames[0];
 
     const apiResourceDir = pathManager.getResourceDirectoryPath(projectPath, 'api', apiName);
+
+    if (!fs.existsSync(apiResourceDir)) {
+      await setNotificationFlag(projectPath, 'securityEnhancementNotification', false);
+      return;
+    }
+
     const project = await readProjectConfiguration(apiResourceDir);
 
     const directiveMap = collectDirectivesByTypeNames(project.schema);
