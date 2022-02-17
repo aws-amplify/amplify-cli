@@ -130,7 +130,7 @@ function removeDeletedApiDynamoEventSourcesFromCfn(
       if(!sanitizedExistingModels.includes(tableName)) {
         const triggerPolicyStatement: $TSAny = functionCfn?.Resources?.[triggerPolicy]?.Properties?.PolicyDocument?.
           Statement;
-        for(let statement of triggerPolicyStatement ?? []) {
+        for(const statement of triggerPolicyStatement ?? []) {
           const apiIDCheckString: string = statement?.Resource?.['Fn::ImportValue']?.['Fn::Sub'];
           if(apiIDCheckString && apiIDCheckString.includes('GraphQLAPIId')) {
             tableDeletions.push(tableName);

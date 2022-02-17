@@ -43,7 +43,7 @@ export async function lambdasWithMissingApiDependency(
       const lambdaStackJson = loadFunctionStackAsJSON(resourceDirPath, lambda.resourceName);
       if(lambdaStackJson?.Resources) {
         const triggerPolicyTables = Object.keys(lambdaStackJson.Resources).filter(key => key.startsWith("LambdaTriggerPolicy"));
-        for(let triggerPolicy of triggerPolicyTables) {
+        for(const triggerPolicy of triggerPolicyTables) {
           const tableName = triggerPolicy.match(/(?<=LambdaTriggerPolicy)(.*)/g)?.[0];
           if(!existingModels.includes(tableName)) {
             dependentFunctions.push(lambda);
