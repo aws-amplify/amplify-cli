@@ -1,7 +1,7 @@
 import { $TSAny, JSONUtilities } from 'amplify-cli-core';
 import _ from 'lodash';
 import * as path from 'path';
-import { functionParametersFileName, cfnTemplateSuffix } from './constants';
+import { functionParametersFileName } from './constants';
 
 export const loadFunctionParameters = (resourcePath: string) => {
   const funcParams = JSONUtilities.readJson<$TSAny>(path.join(resourcePath, functionParametersFileName), { throwIfNotExist: false }) || {};
