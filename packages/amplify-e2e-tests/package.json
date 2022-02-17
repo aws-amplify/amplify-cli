@@ -78,6 +78,12 @@
           "filename": "index.html",
           "expand": true
         }
+      ],
+      [
+        "amplify-e2e-core/failed-test-reporter",
+        {
+          "reportPath": "./amplify-e2e-reports/amplify-e2e-failed-test.txt"
+        }
       ]
     ],
     "moduleFileExtensions": [
