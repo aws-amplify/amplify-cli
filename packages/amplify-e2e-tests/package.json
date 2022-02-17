@@ -38,7 +38,7 @@
     "graphql-tag": "^2.10.1",
     "graphql-transformer-core": "7.4.6",
     "lodash": "^4.17.21",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "promise-sequential": "^1.1.1",
     "rimraf": "^3.0.0",
     "uuid": "^8.3.2",
