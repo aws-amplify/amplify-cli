@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-api",
-  "version": "1.2.11",
+  "version": "1.2.12-beta.0",
   "description": "amplify-cli api plugin",
   "repository": {
     "type": "git",
@@ -71,7 +71,7 @@
     "amplify-cli-core": "2.4.15",
     "amplify-headless-interface": "1.14.1",
     "amplify-prompts": "1.6.3",
-    "amplify-provider-awscloudformation": "5.9.6",
+    "amplify-provider-awscloudformation": "5.9.7-beta.0",
     "amplify-util-headless-input": "1.9.1",
     "chalk": "^4.1.1",
     "constructs": "^3.3.125",
