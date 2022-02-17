@@ -1,5 +1,4 @@
 import {
-  lambdasWithApiDependency,
   lambdasWithMissingApiDependency,
 } from '../../../../provider-utils/awscloudformation/utils/getDependentFunction';
 import { loadFunctionParameters } from '../../../../provider-utils/awscloudformation/utils/loadFunctionParameters';
@@ -70,32 +69,7 @@ const backendDir = 'randomPath';
 const loadResourceParameters_mock = loadFunctionParameters as jest.MockedFunction<typeof loadFunctionParameters>;
 
 describe('get dependent functions', () => {
-  it('using deprecated lambda api dependency', async () => {
-    jest.clearAllMocks();
-    const deletedModels = ['model2', 'model3'];
-    const FunctionMetaExpected = ['fn2', 'fn3'];
-    loadResourceParameters_mock
-      .mockReturnValueOnce({
-        permissions: {
-          storage: {
-            model1: ['create'],
-            model2: ['create'],
-            model3: ['create'],
-          },
-        },
-      })
-      .mockReturnValueOnce({
-        permissions: {
-          storage: {
-            model3: ['create'],
-          },
-        },
-      });
-    const fnMetaToBeUpdated = await lambdasWithApiDependency((contextStub as unknown) as $TSContext, allResources, backendDir, deletedModels);
-    expect(fnMetaToBeUpdated.map(resource => resource.resourceName).toString()).toBe(FunctionMetaExpected.toString());
-  });
-
-  it('using lambda missing api dependency', async () => {
+  it('using one out of three models', async () => {
     jest.clearAllMocks();
     const existingModels = ['model1'];
     const FunctionMetaExpected = ['fn2', 'fn3'];
@@ -122,26 +96,7 @@ describe('get dependent functions', () => {
 });
 
 describe('get dependent functions with empty permissions', () => {
-  it('using deprecated lambda api dependency', async () => {
-    jest.clearAllMocks();
-    const deletedModels = ['model3'];
-    const FunctionMetaExpected = ['fn2'];
-    loadResourceParameters_mock
-      .mockReturnValueOnce({
-        permissions: {
-          storage: {
-            model1: ['create'],
-            model2: ['create'],
-            model3: ['create'],
-          },
-        },
-      })
-      .mockReturnValueOnce({});
-    const fnMetaToBeUpdated = await lambdasWithApiDependency((contextStub as unknown) as $TSContext, allResources, backendDir, deletedModels);
-    expect(fnMetaToBeUpdated.map(resource => resource.resourceName).toString()).toBe(FunctionMetaExpected.toString());
-  });
-
-  it('using lambda missing api dependency', async () => {
+  it('using two out of three models', async () => {
     jest.clearAllMocks();
     const existingModels = ['model1', 'model2'];
     const FunctionMetaExpected = ['fn2'];
