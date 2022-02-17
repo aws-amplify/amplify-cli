@@ -1,7 +1,7 @@
 import { $TSAny, JSONUtilities } from 'amplify-cli-core';
 import _ from 'lodash';
 import * as path from 'path';
-import { functionParametersFileName } from './constants';
+import { functionParametersFileName, cfnTemplateSuffix } from './constants';
 
 export const loadFunctionParameters = (resourcePath: string) => {
   const funcParams = JSONUtilities.readJson<$TSAny>(path.join(resourcePath, functionParametersFileName), { throwIfNotExist: false }) || {};
@@ -14,3 +14,8 @@ export const loadFunctionParameters = (resourcePath: string) => {
   }
   return funcParams;
 };
+
+export const loadFunctionStackAsJSON = (resourcePath: string, functionName: string) => {
+  const stackJSON = JSONUtilities.readJson<$TSAny>(path.join(resourcePath,`${functionName}-cloudformation-template.json`));
+  return stackJSON;
+}

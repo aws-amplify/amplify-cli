@@ -122,26 +122,28 @@ export async function updateMissingDependencyFunctionsCfn(
       },
     };
 
-    for (const selectedCategory of Object.keys(selectedCategories)) {
-      // update function parameters resouce parameters with deleted models data
-      // remove the deleted @model
-      const selectedResources = selectedCategories[selectedCategory];
-      for (const resourceName of Object.keys(selectedResources)) {
-        if (existingModels.includes(resourceName)) {
-          const resourcePolicy = selectedResources[resourceName];
-          const { permissionPolicies, cfnResources } = await getResourcesForCfn(
-            context,
-            resourceName,
-            resourcePolicy,
-            apiResource,
-            selectedCategory,
-          );
-          categoryPolicies = categoryPolicies.concat(permissionPolicies);
-          if (!permissions[selectedCategory]) {
-            permissions[selectedCategory] = {};
+    if(selectedCategories) {
+      for (const selectedCategory of Object.keys(selectedCategories)) {
+        // update function parameters resouce parameters with deleted models data
+        // remove the deleted @model
+        const selectedResources = selectedCategories[selectedCategory];
+        for (const resourceName of Object.keys(selectedResources)) {
+          if (existingModels.includes(resourceName)) {
+            const resourcePolicy = selectedResources[resourceName];
+            const { permissionPolicies, cfnResources } = await getResourcesForCfn(
+              context,
+              resourceName,
+              resourcePolicy,
+              apiResource,
+              selectedCategory,
+            );
+            categoryPolicies = categoryPolicies.concat(permissionPolicies);
+            if (!permissions[selectedCategory]) {
+              permissions[selectedCategory] = {};
+            }
+            permissions[selectedCategory][resourceName] = resourcePolicy;
+            resources = resources.concat(cfnResources);
           }
-          permissions[selectedCategory][resourceName] = resourcePolicy;
-          resources = resources.concat(cfnResources);
         }
       }
     }
@@ -152,6 +154,8 @@ export async function updateMissingDependencyFunctionsCfn(
     functionParameters.dependsOn = dependsOn;
     functionParameters.lambdaLayers = currentParameters.lambdaLayers;
     updateCFNFileForResourcePermissions(resourceDirPath, functionParameters, currentParameters, apiResource);
+    // In some cases, we need to ensure that API Dynamo event sources are removed when the model doesn't exist
+    removeDeletedApiDynamoEventSourcesFromCfn(resourceDirPath, lambda.resourceName, existingModels);
     // assign new permissions to current permissions to update function-parameters file
     currentParameters.permissions = permissions;
     // update function-parameters file
@@ -185,4 +189,40 @@ export function addAppSyncInvokeMethodPermission(
     };
   }
   JSONUtilities.writeJson(cfnFilePath, cfnContent);
+}
+
+function removeDeletedApiDynamoEventSourcesFromCfn(
+  resourceDirPath: string,
+  resourceName: string,
+  existingModels: string[],
+) {
+  const sanitizedExistingModels = existingModels.map(value => {
+    return value.slice(0, value.indexOf(':'));
+  });
+  const cfnFilePath = path.join(resourceDirPath, `${resourceName}-cloudformation-template.json`);
+  const functionCfn = JSONUtilities.readJson<$TSAny>(cfnFilePath);
+  let tableDeletions: string[] = [];
+  if(functionCfn?.Resources) {
+    const triggerPolicyTables = Object.keys(functionCfn.Resources).filter(key => key.startsWith('LambdaTriggerPolicy'));
+    for(let triggerPolicy of triggerPolicyTables) {
+      const tableName = triggerPolicy.match(/(?<=LambdaTriggerPolicy)(.*)/g)?.[0];
+      if(!sanitizedExistingModels.includes(tableName)) {
+        const triggerPolicyStatement: $TSAny = functionCfn?.Resources?.[triggerPolicy]?.Properties?.PolicyDocument?.
+          Statement;
+        for(let statement of triggerPolicyStatement ?? []) {
+          const apiIDCheckString: string = statement?.Resource?.['Fn::ImportValue']?.['Fn::Sub'];
+          if(apiIDCheckString && apiIDCheckString.includes('GraphQLAPIId')) {
+            tableDeletions.push(tableName);
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  for(let tableName of tableDeletions) {
+    delete functionCfn?.Resources?.[`LambdaTriggerPolicy${tableName}`];
+    delete functionCfn?.Resources?.[`LambdaEventSourceMapping${tableName}`];
+  }
+  JSONUtilities.writeJson(cfnFilePath, functionCfn);
 }
