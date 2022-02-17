@@ -160,7 +160,7 @@ describe('amplify init', () => {
     fs.writeFileSync(localEnvPath, JSON.stringify(localEnvData, null, 2));
   });
 
-  it.only('should init the project and override root and push', async () => {
+  it('should init the project and override root and push', async () => {
     await initJSProjectWithProfile(projRoot, {});
     const meta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(meta.Region).toBeDefined();

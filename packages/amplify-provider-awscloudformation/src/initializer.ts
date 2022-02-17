@@ -64,14 +64,11 @@ export async function run(context) {
       },
     };
 
-    const noOverrideMsg = 'No override file found. To override, run amplify override auth';
+    const noOverrideMsg = '';
     try {
       const backendDir = pathManager.getBackendDirPath();
       const overrideFilePath = path.join(backendDir, 'awscloudformation', 'build', 'override.js');
-      const overrideCode: string = await fs.readFile(overrideFilePath, 'utf-8').catch(() => {
-        printer.debug(noOverrideMsg);
-        return '';
-      });
+      const overrideCode: string = await fs.readFile(overrideFilePath, 'utf-8');
       if (overrideCode) {
         const sandboxNode = new vm.NodeVM({
           console: 'inherit',
@@ -86,7 +83,7 @@ export async function run(context) {
         sandboxNode.run(overrideCode).override(configuration);
       }
     } catch (e) {
-      printer.debug(noOverrideMsg);
+      printer.debug(`Unable to apply auth role overrides: ${e.message}`);
     }
 
     const rootStack = JSONUtilities.readJson<Template>(initTemplateFilePath);
