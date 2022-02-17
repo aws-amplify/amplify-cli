@@ -1,3 +1,4 @@
+import { JavaInteger } from './integer';
 import { toJSON } from './to-json';
 
 export class JavaArray extends Array<any> {
@@ -59,7 +60,7 @@ export class JavaArray extends Array<any> {
   }
 
   size() {
-    return this.length;
+    return new JavaInteger(this.length);
   }
 
   toJSON() {
