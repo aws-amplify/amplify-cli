@@ -5,7 +5,7 @@
         "version": {
             "type": "number",
             "enum": [
-                1
+                2
             ]
         },
         "serviceModification": {
@@ -48,10 +48,10 @@
                     ]
                 },
                 "userPoolModification": {
-                    "description": "A subset of properties from CognitoUserPoolConfiguration that can be modified.\n\nEach field will overwrite the entire previous configuration of that field, but omitted fields will not be removed.\nFor example, adding auth with\n\n{\n   readAttributes: ['EMAIL', 'NAME', 'PHONE_NUMBER'],\n   passwordPolicy: {\n     minimumLength: 10,\n     additionalConstraints: [\n       REQUIRE_LOWERCASE, REQUIRE_UPPERCASE\n     ]\n   }\n}\n\nand then updating auth with\n\n{\n   passwordPolicy: {\n     minimumLength: 8\n   }\n}\n\nwill overwrite the entire passwordPolicy (removing the lowercase and uppercase constraints)\nbut will leave the readAttributes unaffected.\n\nHowever, the oAuth field is treated slightly differently:\n   Omitting the oAuth field entirely will leave oAuth configuration unchanged.\n   Setting oAuth to {} (an empty object) will remove oAuth from the auth resource.\n   Including a non-empty oAuth configuration will overwrite the previous oAuth configuration.",
+                    "description": "A subset of properties from CognitoUserPoolConfiguration that can be modified.\n\nEach field will overwrite the entire previous configuration of that field, but omitted fields will not be removed.\nFor example, adding auth with\n\n{\n  readAttributes: ['EMAIL', 'NAME', 'PHONE_NUMBER'],\n  passwordPolicy: {\n    minimumLength: 10,\n    additionalConstraints: [\n      REQUIRE_LOWERCASE, REQUIRE_UPPERCASE\n    ]\n  }\n}\n\nand then updating auth with\n\n{\n  passwordPolicy: {\n    minimumLength: 8\n  }\n}\n\nwill overwrite the entire passwordPolicy (removing the lowercase and uppercase constraints)\nbut will leave the readAttributes unaffected.\n\nHowever, the oAuth field is treated slightly differently:\n  Omitting the oAuth field entirely will leave oAuth configuration unchanged.\n  Setting oAuth to {} (an empty object) will remove oAuth from the auth resource.\n  Including a non-empty oAuth configuration will overwrite the previous oAuth configuration.",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/Pick<CognitoUserPoolConfiguration,\"userPoolGroups\"|\"adminQueries\"|\"mfa\"|\"passwordPolicy\"|\"passwordRecovery\"|\"refreshTokenPeriod\"|\"readAttributes\"|\"writeAttributes\">"
+                            "$ref": "#/definitions/Pick<CognitoUserPoolConfiguration,\"userPoolGroups\"|\"adminQueries\"|\"mfa\"|\"passwordPolicy\"|\"refreshTokenPeriod\"|\"readAttributes\"|\"writeAttributes\"|\"autoVerifiedAttributes\">"
                         },
                         {
                             "type": "object",
@@ -69,7 +69,7 @@
                 "userPoolModification"
             ]
         },
-        "Pick<CognitoUserPoolConfiguration,\"userPoolGroups\"|\"adminQueries\"|\"mfa\"|\"passwordPolicy\"|\"passwordRecovery\"|\"refreshTokenPeriod\"|\"readAttributes\"|\"writeAttributes\">": {
+        "Pick<CognitoUserPoolConfiguration,\"userPoolGroups\"|\"adminQueries\"|\"mfa\"|\"passwordPolicy\"|\"refreshTokenPeriod\"|\"readAttributes\"|\"writeAttributes\"|\"autoVerifiedAttributes\">": {
             "type": "object",
             "properties": {
                 "userPoolGroups": {
@@ -97,17 +97,6 @@
                 "passwordPolicy": {
                     "$ref": "#/definitions/CognitoPasswordPolicy",
                     "description": "If defined, specifies password constraint configuration. Default is minimum length of 8 characters."
-                },
-                "passwordRecovery": {
-                    "description": "DEPRECATED. Use autoVerifiedAttributes in headless schema version 2 intead. If defined, specifies password recovery configiuration. Default is email recovery.",
-                    "anyOf": [
-                        {
-                            "$ref": "#/definitions/CognitoEmailPasswordRecoveryConfiguration"
-                        },
-                        {
-                            "$ref": "#/definitions/CognitoSMSPasswordRecoveryConfiguration"
-                        }
-                    ]
                 },
                 "refreshTokenPeriod": {
                     "description": "Defines how long refresh tokens are valid in days. Default is 30 days.",
@@ -165,6 +154,20 @@
                             "ZONE_INFO"
                         ],
                         "type": "string"
+                    }
+                },
+                "autoVerifiedAttributes": {
+                    "description": "Defines user attributes that will be automatically verified upon account creation.",
+                    "type": "array",
+                    "items": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/definitions/CognitoAutoVerifyPhoneNumberConfiguration"
+                            },
+                            {
+                                "$ref": "#/definitions/CognitoAutoVerifyEmailConfiguration"
+                            }
+                        ]
                     }
                 }
             }
@@ -280,50 +283,44 @@
                 }
             }
         },
-        "CognitoEmailPasswordRecoveryConfiguration": {
-            "description": "Defines the email that will be sent to users to recover their password.",
+        "CognitoAutoVerifyPhoneNumberConfiguration": {
             "type": "object",
             "properties": {
-                "deliveryMethod": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "PHONE_NUMBER"
+                    ]
+                },
+                "verificationMessage": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "type"
+            ]
+        },
+        "CognitoAutoVerifyEmailConfiguration": {
+            "type": "object",
+            "properties": {
+                "type": {
                     "type": "string",
                     "enum": [
                         "EMAIL"
                     ]
                 },
-                "emailMessage": {
+                "verificationMessage": {
                     "type": "string"
                 },
-                "emailSubject": {
+                "verifiectionSubject": {
                     "type": "string"
                 }
             },
             "required": [
-                "deliveryMethod",
-                "emailMessage",
-                "emailSubject"
-            ]
-        },
-        "CognitoSMSPasswordRecoveryConfiguration": {
-            "description": "Defines the SMS message that will be send to users to recover their password",
-            "type": "object",
-            "properties": {
-                "deliveryMethod": {
-                    "type": "string",
-                    "enum": [
-                        "SMS"
-                    ]
-                },
-                "smsMessage": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "deliveryMethod",
-                "smsMessage"
+                "type"
             ]
         },
         "Partial<CognitoOAuthConfiguration>": {
-            "description": "Make all properties in T optional",
             "type": "object",
             "properties": {
                 "domainPrefix": {
@@ -370,6 +367,7 @@
                     "description": "If defined, users will be able to login with the specified social providers.",
                     "type": "array",
                     "items": {
+                        "description": "Defines a Cognito oAuth social provider",
                         "anyOf": [
                             {
                                 "$ref": "#/definitions/SocialProviderConfig"
@@ -470,7 +468,7 @@
                     ]
                 },
                 "identityPoolModification": {
-                    "$ref": "#/definitions/Pick<CognitoIdentityPoolConfiguration,\"unauthenticatedLogin\"|\"identitySocialFederation\">"
+                    "$ref": "#/definitions/CognitoIdentityPoolModification"
                 }
             },
             "required": [
@@ -478,7 +476,7 @@
                 "includeIdentityPool"
             ]
         },
-        "Pick<CognitoIdentityPoolConfiguration,\"unauthenticatedLogin\"|\"identitySocialFederation\">": {
+        "CognitoIdentityPoolModification": {
             "type": "object",
             "properties": {
                 "unauthenticatedLogin": {

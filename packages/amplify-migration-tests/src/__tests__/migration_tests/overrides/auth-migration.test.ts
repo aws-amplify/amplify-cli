@@ -156,7 +156,7 @@ describe('amplify auth migration', () => {
 
   it('updates existing auth resource', async () => {
     const updateAuthRequest: UpdateAuthRequest = {
-      version: 1,
+      version: 2,
       serviceModification: {
         serviceName: 'Cognito',
         userPoolModification: {
