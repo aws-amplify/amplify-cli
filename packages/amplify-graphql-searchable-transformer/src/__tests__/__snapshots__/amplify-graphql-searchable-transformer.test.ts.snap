@@ -1228,7 +1228,7 @@ $util.toJson(null)
 
 exports[`Test SearchableModelTransformer with datastore enabled vtl 1`] = `
 "#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
-#set( $indexPath = \\"/post/doc/_search\\" )
+#set( $indexPath = \\"/post/_search\\" )
 #set( $allowedAggFields = $util.defaultIfNull($ctx.stash.allowedAggFields, []) )
 #set( $aggFieldsFilterMap = $util.defaultIfNull($ctx.stash.aggFieldsFilterMap, {}) )
 #set( $nonKeywordFields = [] )
