@@ -152,6 +152,8 @@ const generateStaticRoleExpression = (roles: Array<RoleDefinition>) => {
                   entity: r.entity,
                   allowedFields: r.allowedFields,
                   nullAllowedFields: r.nullAllowedFields,
+                  areAllFieldsAllowed: r.areAllFieldsAllowed,
+                  areAllFieldsNullAllowed: r.areAllFieldsNullAllowed,
                 })),
               ),
             ),
@@ -164,12 +166,12 @@ const generateStaticRoleExpression = (roles: Array<RoleDefinition>) => {
                 // if we find that it's not fully allowed on update (update/delete) we add the field conditions
                 // otherwise we set to true and break
                 ifElse(
-                  or([not(ref(`groupRole.allowedFields.isEmpty()`)), not(ref('groupRole.nullAllowedFields.isEmpty()'))]),
+                  and([ref(`groupRole.areAllFieldsAllowed`), ref('groupRole.areAllFieldsNullAllowed')]),
+                  compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')]),
                   compoundExpression([
                     qref(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), ref('groupRole.allowedFields'))),
                     qref(methodCall(ref(`${NULL_ALLOWED_FIELDS}.addAll`), ref('groupRole.nullAllowedFields'))),
                   ]),
-                  compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')]),
                 ),
               ]),
             ),
@@ -202,28 +204,30 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
                   forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
                     iff(
                       equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
-                      ifElse(
-                        or([not(ref(`ownerAllowedFields${idx}.isEmpty()`)), not(ref(`ownerNullAllowedFields${idx}.isEmpty()`))]),
-                        compoundExpression([
-                          qref(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), ref(`ownerAllowedFields${idx}`))),
-                          qref(methodCall(ref(`${NULL_ALLOWED_FIELDS}.addAll`), ref(`ownerNullAllowedFields${idx}`))),
-                        ]),
-                        compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')]),
-                      ),
+                      role.areAllFieldsAllowed && role.areAllFieldsNullAllowed
+                        ? compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')])
+                        : iff(
+                            or([not(ref(`ownerAllowedFields${idx}.isEmpty()`)), not(ref(`ownerNullAllowedFields${idx}.isEmpty()`))]),
+                            compoundExpression([
+                              qref(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), ref(`ownerAllowedFields${idx}`))),
+                              qref(methodCall(ref(`${NULL_ALLOWED_FIELDS}.addAll`), ref(`ownerNullAllowedFields${idx}`))),
+                            ]),
+                          ),
                     ),
                   ]),
                 ]
               : [
                   iff(
                     equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
-                    ifElse(
-                      or([not(ref(`ownerAllowedFields${idx}.isEmpty()`)), not(ref(`ownerNullAllowedFields${idx}.isEmpty()`))]),
-                      compoundExpression([
-                        qref(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), ref(`ownerAllowedFields${idx}`))),
-                        qref(methodCall(ref(`${NULL_ALLOWED_FIELDS}.addAll`), ref(`ownerNullAllowedFields${idx}`))),
-                      ]),
-                      compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true))]),
-                    ),
+                    role.areAllFieldsAllowed && role.areAllFieldsNullAllowed
+                      ? compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true))])
+                      : iff(
+                          or([not(ref(`ownerAllowedFields${idx}.isEmpty()`)), not(ref(`ownerNullAllowedFields${idx}.isEmpty()`))]),
+                          compoundExpression([
+                            qref(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), ref(`ownerAllowedFields${idx}`))),
+                            qref(methodCall(ref(`${NULL_ALLOWED_FIELDS}.addAll`), ref(`ownerNullAllowedFields${idx}`))),
+                          ]),
+                        ),
                   ),
                 ]),
           ]),
@@ -255,14 +259,16 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
                 entityIsList
                   ? methodCall(ref(`groupEntity${idx}.contains`), ref('userGroup'))
                   : equals(ref(`groupEntity${idx}`), ref('userGroup')),
-                ifElse(
-                  or([not(ref(`groupAllowedFields${idx}.isEmpty()`)), not(ref(`groupNullAllowedFields${idx}.isEmpty()`))]),
-                  compoundExpression([
-                    qref(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), ref(`groupAllowedFields${idx}`))),
-                    qref(methodCall(ref(`${NULL_ALLOWED_FIELDS}.addAll`), ref(`groupNullAllowedFields${idx}`))),
-                  ]),
-                  compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')]),
-                ),
+
+                role.areAllFieldsAllowed && role.areAllFieldsNullAllowed
+                  ? compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')])
+                  : iff(
+                      or([not(ref(`groupAllowedFields${idx}.isEmpty()`)), not(ref(`groupNullAllowedFields${idx}.isEmpty()`))]),
+                      compoundExpression([
+                        qref(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), ref(`groupAllowedFields${idx}`))),
+                        qref(methodCall(ref(`${NULL_ALLOWED_FIELDS}.addAll`), ref(`groupNullAllowedFields${idx}`))),
+                      ]),
+                    ),
               ),
             ]),
           ]),

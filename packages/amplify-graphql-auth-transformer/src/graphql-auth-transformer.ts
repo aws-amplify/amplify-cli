@@ -744,6 +744,8 @@ Static group authorization should perform as expected.`,
       const roleDefinition = this.roleMap.get(role)!;
       roleDefinition.allowedFields = allowedFields.length === fields.length ? [] : [...allowedFields, ...dataStoreFields];
       roleDefinition.nullAllowedFields = nullAllowedFields.length === fields.length ? [] : nullAllowedFields;
+      roleDefinition.areAllFieldsAllowed = allowedFields.length === fields.length;
+      roleDefinition.areAllFieldsNullAllowed = nullAllowedFields.length === fields.length;
       return roleDefinition;
     });
     const datasource = ctx.api.host.getDataSource(`${def.name.value}Table`) as DataSourceProvider;
