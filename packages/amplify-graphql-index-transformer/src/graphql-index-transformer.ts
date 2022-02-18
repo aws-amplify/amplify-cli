@@ -13,7 +13,7 @@ import {
   Kind,
   ObjectTypeDefinitionNode,
 } from 'graphql';
-import { isScalarOrEnum } from 'graphql-transformer-common';
+import { isListType, isScalarOrEnum } from 'graphql-transformer-common';
 import { appendSecondaryIndex, constructSyncVTL, updateResolversForIndex } from './resolvers';
 import { addKeyConditionInputs, ensureQueryField, updateMutationConditionInput } from './schema';
 import { IndexDirectiveConfiguration } from './types';
@@ -139,7 +139,7 @@ function validate(config: IndexDirectiveConfiguration, ctx: TransformerContextPr
 
   const enums = ctx.output.getTypeDefinitionsOfKind(Kind.ENUM_TYPE_DEFINITION) as EnumTypeDefinitionNode[];
 
-  if (!isScalarOrEnum(field.type, enums)) {
+  if (!isScalarOrEnum(field.type, enums) || isListType(field.type)) {
     throw new InvalidDirectiveError(`Index '${name}' on type '${object.name.value}.${field.name.value}' cannot be a non-scalar.`);
   }
 
@@ -152,7 +152,7 @@ function validate(config: IndexDirectiveConfiguration, ctx: TransformerContextPr
       );
     }
 
-    if (!isScalarOrEnum(sortField.type, enums)) {
+    if (!isScalarOrEnum(sortField.type, enums) || isListType(sortField.type)) {
       throw new InvalidDirectiveError(
         `The sort key of index '${name}' on type '${object.name.value}.${sortField.name.value}' cannot be a non-scalar.`,
       );
