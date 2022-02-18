@@ -31,7 +31,7 @@
     "amplify-headless-interface": "1.14.1",
     "amplify-prompts": "1.6.3",
     "amplify-util-headless-input": "1.9.1",
-    "folder-hash": "^4.0.1",
+    "folder-hash": "^4.0.2",
     "fs-extra": "^8.1.0",
     "globby": "^11.0.3",
     "jstreemap": "^1.28.2",

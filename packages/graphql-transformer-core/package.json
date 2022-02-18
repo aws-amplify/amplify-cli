@@ -27,7 +27,7 @@
     "cloudform-types": "^4.2.0",
     "deep-diff": "^1.0.2",
     "fs-extra": "^8.1.0",
-    "glob": "^7.1.6",
+    "glob": "^7.2.0",
     "graphql": "^14.5.8",
     "graphql-transformer-common": "4.23.0",
     "lodash": "^4.17.21"
