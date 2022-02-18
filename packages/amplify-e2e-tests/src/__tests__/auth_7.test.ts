@@ -1,5 +1,11 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, headlessAuthImport } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
+import {
+  initJSProjectWithProfile,
+  deleteProject,
+  amplifyPushAuth,
+  headlessAuthImport,
+  createNewProjectDir,
+  deleteProjectDir
+} from 'amplify-e2e-core';
 import { ImportAuthRequest } from 'amplify-headless-interface';
 import _ from 'lodash';
 import {
