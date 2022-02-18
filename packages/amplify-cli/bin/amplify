@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 if (process.pkg) {
   require('../lib/utils/copy-override').copyOverride();
-} else {
-  // eslint-disable-next-line no-global-assign
 }
 require('../lib/index').run();

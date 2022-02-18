@@ -1,8 +1,0 @@
-#!/usr/bin/env node
-if (process.pkg) {
-  require('../lib/utils/copy-override').copyOverride();
-} else {
-  // eslint-disable-next-line no-global-assign
-  require = require('esm')(module, { cache: false });
-}
-require('../lib/index').run();
