@@ -1049,7 +1049,7 @@ $util.toJson($ListRequest)
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Query.searchPosts.req.vtl": "#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
-#set( $indexPath = \\"/post/doc/_search\\" )
+#set( $indexPath = \\"/post/_search\\" )
 #set( $allowedAggFields = $util.defaultIfNull($ctx.stash.allowedAggFields, []) )
 #set( $aggFieldsFilterMap = $util.defaultIfNull($ctx.stash.aggFieldsFilterMap, {}) )
 #set( $nonKeywordFields = [] )
