@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.7.11-pwreco.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.10...amplify-e2e-tests@3.7.11-pwreco.0) (2022-02-18)
+
+
+### Bug Fixes
+
+* map headless auth pw recovery to auto-verified attrs ([d264b0e](https://github.com/aws-amplify/amplify-cli/commit/d264b0ed6b8a783297a97d3826e0d3d8dca4892b))
+
+
+
+
+
 ## [3.7.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.9...amplify-e2e-tests@3.7.10) (2022-02-15)
 
 **Note:** Version bump only for package amplify-e2e-tests

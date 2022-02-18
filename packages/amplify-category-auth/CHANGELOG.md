@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.3-pwreco.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.2...@aws-amplify/amplify-category-auth@2.7.3-pwreco.0) (2022-02-18)
+
+
+### Bug Fixes
+
+* map headless auth pw recovery to auto-verified attrs ([d264b0e](https://github.com/aws-amplify/amplify-cli/commit/d264b0ed6b8a783297a97d3826e0d3d8dca4892b))
+
+
+
+
+
 ## [2.7.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.5.0...@aws-amplify/amplify-category-auth@2.7.2) (2022-02-15)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-auth

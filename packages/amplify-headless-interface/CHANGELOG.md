@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.14.2-pwreco.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.14.1...amplify-headless-interface@1.14.2-pwreco.0) (2022-02-18)
+
+
+### Bug Fixes
+
+* map headless auth pw recovery to auto-verified attrs ([d264b0e](https://github.com/aws-amplify/amplify-cli/commit/d264b0ed6b8a783297a97d3826e0d3d8dca4892b))
+
+
+
+
+
 ## [1.14.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.14.0...amplify-headless-interface@1.14.1) (2022-02-10)
 
 **Note:** Version bump only for package amplify-headless-interface

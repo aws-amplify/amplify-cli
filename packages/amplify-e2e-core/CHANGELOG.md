@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.11-pwreco.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.6.10...amplify-e2e-core@2.6.11-pwreco.0) (2022-02-18)
+
+**Note:** Version bump only for package amplify-e2e-core
+
+
+
+
+
 ## [2.6.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.6.9...amplify-e2e-core@2.6.10) (2022-02-15)
 
 **Note:** Version bump only for package amplify-e2e-core

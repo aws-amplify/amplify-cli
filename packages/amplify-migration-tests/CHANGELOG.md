@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.22-pwreco.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.21...amplify-migration-tests@4.4.22-pwreco.0) (2022-02-18)
+
+
+### Bug Fixes
+
+* map headless auth pw recovery to auto-verified attrs ([d264b0e](https://github.com/aws-amplify/amplify-cli/commit/d264b0ed6b8a783297a97d3826e0d3d8dca4892b))
+
+
+
+
+
 ## [4.4.21](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.20...amplify-migration-tests@4.4.21) (2022-02-15)
 
 **Note:** Version bump only for package amplify-migration-tests
