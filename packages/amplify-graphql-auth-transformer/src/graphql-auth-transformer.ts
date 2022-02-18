@@ -7,6 +7,8 @@ import {
   IAM_AUTH_ROLE_PARAMETER,
   IAM_UNAUTH_ROLE_PARAMETER,
   TransformerResolver,
+  getTable,
+  getKeySchema,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider,
@@ -53,7 +55,6 @@ import {
   getStackForField,
   NONE_DS,
   hasRelationalDirective,
-  getTable,
   getPartitionKey,
   getRelationalPrimaryMap,
   getReadRolesForField,
@@ -501,9 +502,7 @@ Static group authorization should perform as expected.`,
     const table = getTable(ctx, def);
     try {
       if (indexName) {
-        primaryFields = table.globalSecondaryIndexes
-          .find((gsi: any) => gsi.indexName === indexName)
-          .keySchema.map((att: any) => att.attributeName);
+        primaryFields = getKeySchema(table, indexName).map((att: any) => att.attributeName);
       } else {
         primaryFields = table.keySchema.map((att: any) => att.attributeName);
         partitionKey = getPartitionKey(table.keySchema);

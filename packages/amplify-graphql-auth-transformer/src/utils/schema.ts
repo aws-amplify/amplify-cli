@@ -1,12 +1,11 @@
 import { ModelDirectiveConfiguration, SubscriptionLevel } from '@aws-amplify/graphql-model-transformer';
-import { DirectiveWrapper, InvalidDirectiveError, TransformerContractError } from '@aws-amplify/graphql-transformer-core';
+import { DirectiveWrapper, getKeySchema, getTable, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import {
   QueryFieldType,
   MutationFieldType,
   TransformerTransformSchemaStepContextProvider,
   TransformerContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { DynamoDbDataSource } from '@aws-cdk/aws-appsync';
 import { ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode, NamedTypeNode } from 'graphql';
 import {
   blankObjectExtension,
@@ -16,7 +15,6 @@ import {
   isListType,
   makeInputValueDefinition,
   makeNamedType,
-  ModelResourceIDs,
   plurality,
   toCamelCase,
   toUpper,
@@ -104,9 +102,7 @@ export const getRelationalPrimaryMap = (
       // get related types keyschema
       const fields = args.fields ? args.fields : [getTable(ctx, def).keySchema.find((att: any) => att.keyType === 'HASH').attributeName];
       const relatedTable = args.indexName
-        ? (getTable(ctx, relatedModel)
-            .globalSecondaryIndexes.find((gsi: any) => gsi.indexName === args.indexName)
-            .keySchema.map((att: any) => att.attributeName) as Array<string>)
+        ? (getKeySchema(getTable(ctx, relatedModel), args.indexName).map((att: any) => att.attributeName) as Array<string>)
         : getKeyFields(ctx, relatedModel);
       relatedTable.forEach((att, idx) => {
         primaryFieldMap.set(att, {
@@ -141,16 +137,6 @@ export const getRelationalPrimaryMap = (
 
 export const hasRelationalDirective = (field: FieldDefinitionNode): boolean => {
   return field.directives && field.directives.some(dir => RELATIONAL_DIRECTIVES.includes(dir.name.value));
-};
-
-export const getTable = (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode): any => {
-  try {
-    const dbSource = ctx.dataSources.get(def) as DynamoDbDataSource;
-    const tableName = ModelResourceIDs.ModelTableResourceID(def.name.value);
-    return dbSource.ds.stack.node.findChild(tableName) as any;
-  } catch (err) {
-    throw new TransformerContractError(`Could not load primary fields of @model: ${def.name.value}`);
-  }
 };
 
 /**

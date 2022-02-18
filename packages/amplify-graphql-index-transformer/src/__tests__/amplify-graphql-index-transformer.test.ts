@@ -1,7 +1,7 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ConflictHandlerType, GraphQLTransform, SyncConfig, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { expect as cdkExpect, haveResourceLike } from '@aws-cdk/assert';
-import { Kind, parse } from 'graphql';
+import { parse } from 'graphql';
 import { IndexTransformer, PrimaryKeyTransformer } from '..';
 
 test('throws if @index is used in a non-@model type', () => {
