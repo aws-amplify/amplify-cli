@@ -103,15 +103,7 @@ function retry {
     do
         echo "Attempting $@ with max retries $MAX_ATTEMPTS"
         setAwsAccountCredentials
-        if [ -f  $FAILED_TEST_REGEX_FILE ]; then
-            # read the content of failed tests
-            faileTests=$(<$FAILED_TEST_REGEX_FILE)
-            cmd="$@ -t \"$faileTests\""
-            eval ${cmd} && break
-        else
-            # is it is not exist then it will be printed
-            "$@" && break
-        fi
+        "$@" && break
         n=$[$n+1]
         FIRST_RUN=false
         echo "Attempt $n completed."
