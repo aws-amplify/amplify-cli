@@ -22,7 +22,7 @@
     "build-tests": "yarn tsc --build tsconfig.tests.json"
   },
   "dependencies": {
-    "axios": "^0.21.4",
+    "axios": "^0.26.0",
     "cloudform-types": "^4.2.0",
     "graphql": "^14.5.8",
     "graphql-transformer-common": "4.23.0",
@@ -56,8 +56,8 @@
     "graphql-versioned-transformer": "5.2.23",
     "isomorphic-fetch": "^3.0.0",
     "jest-junit": "^12.0.0",
-    "node-fetch": "^2.6.1",
-    "ws": "^7.4.6"
+    "node-fetch": "^2.6.7",
+    "ws": "^7.5.7"
   },
   "jest": {
     "transform": {

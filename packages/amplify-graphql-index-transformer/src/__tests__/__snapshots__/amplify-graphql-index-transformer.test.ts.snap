@@ -27,10 +27,10 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $hasSeenSomeKeyArg = false )
 #set( $keyFieldNames = [\\"kind\\", \\"date\\"] )
 #foreach( $keyFieldName in $keyFieldNames )
-#if( $ctx.args.input.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
+#if( $mergedValues.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
 #end
 #foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$ctx.args.input.containsKey(\\"$keyFieldName\\") )
+  #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey(\\"$keyFieldName\\") )
     $util.error(\\"When creating any part of the composite sort key for @index 'GSI', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
   #end
 #end
@@ -228,10 +228,10 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $hasSeenSomeKeyArg = false )
 #set( $keyFieldNames = [\\"kind\\", \\"date\\"] )
 #foreach( $keyFieldName in $keyFieldNames )
-#if( $ctx.args.input.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
+#if( $mergedValues.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
 #end
 #foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$ctx.args.input.containsKey(\\"$keyFieldName\\") )
+  #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey(\\"$keyFieldName\\") )
     $util.error(\\"When updating any part of the composite sort key for @index 'GSI', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
   #end
 #end
@@ -827,10 +827,10 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $hasSeenSomeKeyArg = false )
 #set( $keyFieldNames = [\\"kind\\", \\"date\\"] )
 #foreach( $keyFieldName in $keyFieldNames )
-#if( $ctx.args.input.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
+#if( $mergedValues.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
 #end
 #foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$ctx.args.input.containsKey(\\"$keyFieldName\\") )
+  #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey(\\"$keyFieldName\\") )
     $util.error(\\"When creating any part of the composite sort key for @index 'GSI', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
   #end
 #end
@@ -1028,10 +1028,10 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $hasSeenSomeKeyArg = false )
 #set( $keyFieldNames = [\\"kind\\", \\"date\\"] )
 #foreach( $keyFieldName in $keyFieldNames )
-#if( $ctx.args.input.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
+#if( $mergedValues.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
 #end
 #foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$ctx.args.input.containsKey(\\"$keyFieldName\\") )
+  #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey(\\"$keyFieldName\\") )
     $util.error(\\"When updating any part of the composite sort key for @index 'GSI', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
   #end
 #end
@@ -1523,10 +1523,10 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $hasSeenSomeKeyArg = false )
 #set( $keyFieldNames = [\\"kind\\", \\"date\\"] )
 #foreach( $keyFieldName in $keyFieldNames )
-#if( $ctx.args.input.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
+#if( $mergedValues.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
 #end
 #foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$ctx.args.input.containsKey(\\"$keyFieldName\\") )
+  #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey(\\"$keyFieldName\\") )
     $util.error(\\"When creating any part of the composite sort key for @index 'GSI', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
   #end
 #end
@@ -1724,10 +1724,10 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $hasSeenSomeKeyArg = false )
 #set( $keyFieldNames = [\\"kind\\", \\"date\\"] )
 #foreach( $keyFieldName in $keyFieldNames )
-#if( $ctx.args.input.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
+#if( $mergedValues.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
 #end
 #foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$ctx.args.input.containsKey(\\"$keyFieldName\\") )
+  #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey(\\"$keyFieldName\\") )
     $util.error(\\"When updating any part of the composite sort key for @index 'GSI', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
   #end
 #end
@@ -3490,10 +3490,10 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $hasSeenSomeKeyArg = false )
 #set( $keyFieldNames = [\\"type\\", \\"language\\", \\"datetime\\"] )
 #foreach( $keyFieldName in $keyFieldNames )
-#if( $ctx.args.input.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
+#if( $mergedValues.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
 #end
 #foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$ctx.args.input.containsKey(\\"$keyFieldName\\") )
+  #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey(\\"$keyFieldName\\") )
     $util.error(\\"When creating any part of the composite sort key for @index 'ContentByCategory', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
   #end
 #end
@@ -3931,10 +3931,10 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $hasSeenSomeKeyArg = false )
 #set( $keyFieldNames = [\\"age\\", \\"birthDate\\"] )
 #foreach( $keyFieldName in $keyFieldNames )
-#if( $ctx.args.input.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
+#if( $mergedValues.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
 #end
 #foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$ctx.args.input.containsKey(\\"$keyFieldName\\") )
+  #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey(\\"$keyFieldName\\") )
     $util.error(\\"When creating any part of the composite sort key for @index 'byNameAndAge', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
   #end
 #end
@@ -3958,10 +3958,10 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $hasSeenSomeKeyArg = false )
 #set( $keyFieldNames = [\\"lastName\\", \\"nickname\\"] )
 #foreach( $keyFieldName in $keyFieldNames )
-#if( $ctx.args.input.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
+#if( $mergedValues.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
 #end
 #foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$ctx.args.input.containsKey(\\"$keyFieldName\\") )
+  #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey(\\"$keyFieldName\\") )
     $util.error(\\"When creating any part of the composite sort key for @index 'byNameAndNickname', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
   #end
 #end
@@ -4088,10 +4088,10 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $hasSeenSomeKeyArg = false )
 #set( $keyFieldNames = [\\"status\\", \\"createdAt\\"] )
 #foreach( $keyFieldName in $keyFieldNames )
-#if( $ctx.args.input.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
+#if( $mergedValues.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
 #end
 #foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$ctx.args.input.containsKey(\\"$keyFieldName\\") )
+  #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey(\\"$keyFieldName\\") )
     $util.error(\\"When creating any part of the composite sort key for @index 'byStatus', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
   #end
 #end
@@ -5675,10 +5675,10 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $hasSeenSomeKeyArg = false )
 #set( $keyFieldNames = [\\"age\\", \\"birthDate\\"] )
 #foreach( $keyFieldName in $keyFieldNames )
-#if( $ctx.args.input.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
+#if( $mergedValues.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
 #end
 #foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$ctx.args.input.containsKey(\\"$keyFieldName\\") )
+  #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey(\\"$keyFieldName\\") )
     $util.error(\\"When updating any part of the composite sort key for @index 'byNameAndAge', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
   #end
 #end
@@ -5702,10 +5702,10 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $hasSeenSomeKeyArg = false )
 #set( $keyFieldNames = [\\"lastName\\", \\"nickname\\"] )
 #foreach( $keyFieldName in $keyFieldNames )
-#if( $ctx.args.input.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
+#if( $mergedValues.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
 #end
 #foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$ctx.args.input.containsKey(\\"$keyFieldName\\") )
+  #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey(\\"$keyFieldName\\") )
     $util.error(\\"When updating any part of the composite sort key for @index 'byNameAndNickname', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
   #end
 #end
@@ -5894,10 +5894,10 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $hasSeenSomeKeyArg = false )
 #set( $keyFieldNames = [\\"status\\", \\"createdAt\\"] )
 #foreach( $keyFieldName in $keyFieldNames )
-#if( $ctx.args.input.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
+#if( $mergedValues.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
 #end
 #foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$ctx.args.input.containsKey(\\"$keyFieldName\\") )
+  #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey(\\"$keyFieldName\\") )
     $util.error(\\"When updating any part of the composite sort key for @index 'byStatus', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
   #end
 #end
@@ -9507,10 +9507,10 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $hasSeenSomeKeyArg = false )
 #set( $keyFieldNames = [\\"type\\", \\"language\\", \\"datetime\\"] )
 #foreach( $keyFieldName in $keyFieldNames )
-#if( $ctx.args.input.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
+#if( $mergedValues.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
 #end
 #foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$ctx.args.input.containsKey(\\"$keyFieldName\\") )
+  #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey(\\"$keyFieldName\\") )
     $util.error(\\"When creating any part of the composite sort key for @index 'ContentByCategory', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
   #end
 #end

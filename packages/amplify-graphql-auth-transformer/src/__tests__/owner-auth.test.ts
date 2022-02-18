@@ -2,10 +2,11 @@ import { parse } from 'graphql';
 import { AuthTransformer } from '../graphql-auth-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { PrimaryKeyTransformer, IndexTransformer } from '@aws-amplify/graphql-index-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { getField, getObjectType } from './test-helpers';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
+import { HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 
 test('auth transformer validation happy case', () => {
   const authConfig: AppSyncAuthConfiguration = {
@@ -235,7 +236,7 @@ test('test owner fields on primaryKey create authfilter for scan operation', () 
   const validSchema = `
   type FamilyMember @model @auth(rules: [
     {allow: owner, ownerField: "parent", identityClaim: "sub", operations: [read] },
-    {allow: owner, ownerField: "child", identityClaim: "sub", operations: [read] } 
+    {allow: owner, ownerField: "child", identityClaim: "sub", operations: [read] }
   ]){
     parent: ID! @primaryKey(sortKeyFields: ["child"]) @index(name: "byParent", queryField: "byParent")
     child: ID! @index(name: "byChild", queryField: "byChild")
@@ -279,4 +280,109 @@ test('test owner fields on primaryKey create authfilter for scan operation', () 
   expect((childOwnerField as any).type.type.name.value).toEqual('ID');
 
   expect(out.resolvers['Query.listFamilyMembers.auth.1.req.vtl']).toMatchSnapshot();
+});
+
+test('test @auth on relational schema with LSI and GSI', () => {
+  const inputSchema = `
+    type User @model
+      @auth(rules: [
+        {allow: owner, ownerField: "sub", identityClaim: "sub"}
+      ]) {
+        sub: String! @primaryKey
+        following: [Follow]! @hasMany(indexName: "byFollower", fields: ["sub"])
+        followers: [Follow]! @hasMany(indexName: "byFollowed", fields: ["sub"])
+    }
+
+    type Follow
+      @model
+      @auth(rules: [
+        {allow: owner, ownerField: "ownerSub", identityClaim: "sub"}
+      ]) {
+      ownerSub: String!
+        @primaryKey(sortKeyFields: ["followed_sub"])
+        @index(name: "byFollower", sortKeyFields: ["createdAt"])
+
+      followed_sub: String! @index(name: "byFollowed", sortKeyFields: ["createdAt"])
+      createdAt: AWSDateTime!
+    }
+  `;
+
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    },
+    additionalAuthenticationProviders: [],
+  };
+
+  const transformer = new GraphQLTransform({
+    authConfig,
+    featureFlags: {
+      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+        if (name === 'secondaryKeyAsGSI') {
+          return false;
+        }
+        return defaultValue;
+      }),
+      getNumber: jest.fn(),
+      getObject: jest.fn(),
+      getString: jest.fn(),
+    },
+    transformers: [
+      new ModelTransformer(),
+      new HasManyTransformer(),
+      new IndexTransformer(),
+      new PrimaryKeyTransformer(),
+      new AuthTransformer(),
+    ],
+  });
+
+  const out = transformer.transform(inputSchema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+});
+
+test('test @auth on schema with LSI and GSI', () => {
+  const inputSchema = `
+    type Model @model @auth(rules: [{allow: public, provider: apiKey}]) {
+      user: String! @primaryKey(sortKeyFields: ["channel", "token", "secret"]) @index(name: "byUser", queryField: "listModelsByUser", sortKeyFields: ["channel"])
+      channel: String! @index(name: "byChannel", queryField: "listModelsByChannel", sortKeyFields: ["user"])
+      token: String!
+      secret: String!
+    }
+  `;
+
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'API_KEY',
+    },
+    additionalAuthenticationProviders: [],
+  };
+
+  const transformer = new GraphQLTransform({
+    authConfig,
+    featureFlags: {
+      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+        if (name === 'secondaryKeyAsGSI') {
+          return false;
+        }
+        return defaultValue;
+      }),
+      getNumber: jest.fn(),
+      getObject: jest.fn(),
+      getString: jest.fn(),
+    },
+    transformers: [
+      new ModelTransformer(),
+      new HasManyTransformer(),
+      new IndexTransformer(),
+      new PrimaryKeyTransformer(),
+      new AuthTransformer(),
+    ],
+  });
+
+  const out = transformer.transform(inputSchema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
 });
