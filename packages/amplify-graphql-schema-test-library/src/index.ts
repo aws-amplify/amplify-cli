@@ -25,6 +25,7 @@ export const enum TransformerPlatform {
   androidDataStore = 1 << 7,
   flutter = 1 << 8,
   flutterDataStore = 1 << 9,
+  studio = 1 << 10,
   all = ~0,
 }
 
@@ -181,6 +182,25 @@ export const schemas: { [key: string]: TransformerSchema } = {
       }
     `,
   },
+  '@hasOne-implicit-and-explicit-fields': {
+    description: '@hasOne with both implicit and explicit fields',
+    transformerVersion: TransformerVersion.v2,
+    supportedPlatforms: TransformerPlatform.all,
+    sdl: `
+      type HasOneParent @model {
+        id: ID!
+        name: String
+        implicitChild: HasOneChild @hasOne
+        explicitChildID: ID
+        explicitChild: HasOneChild @hasOne(fields: ["explicitChildID"])
+      }
+      
+      type HasOneChild @model {
+        id: ID!
+        name: String
+      }
+    `,
+  },
   '@hasMany-implicit-parameters': {
     description: '@hasMany with implicit parameters',
     transformerVersion: TransformerVersion.v2,
@@ -213,6 +233,30 @@ export const schemas: { [key: string]: TransformerSchema } = {
         id: ID!
         postID: ID! @index(name: "byPost", sortKeyFields: ["content"])
         content: String!
+      }
+    `,
+  },
+  '@hasMany-implicit-and-explicit-parameters': {
+    description: '@hasMany with both implicit and explicit parameters',
+    transformerVersion: TransformerVersion.v2,
+    supportedPlatforms: TransformerPlatform.all,
+    sdl: `
+      type HasManyParent @model {
+        id: ID!
+        name: String
+        implicitChildren: [HasManyChildImplicit] @hasMany
+        explicitChildren: [HasManyChildExplicit] @hasMany(indexName: "byHasManyParent", fields: ["id"])
+      }
+      
+      type HasManyChildImplicit @model {
+        id: ID!
+        name: String
+      }
+      
+      type HasManyChildExplicit @model {
+        id: ID!
+        name: String
+        hasManyParentID: ID! @index(name: "byHasManyParent", sortKeyFields: ["name"])
       }
     `,
   },
@@ -288,6 +332,139 @@ export const schemas: { [key: string]: TransformerSchema } = {
         postID: ID! @index(name: "byPost", sortKeyFields: ["content"])
         content: String!
         post: Post @belongsTo(fields: ["postID"])
+      }
+    `,
+  },
+  '@hasMany-with-implicit-parameters-with-@belongsTo-with-implicit-parameters': {
+    description: '@belongsTo with implicit parameters referencing @hasMany with implicit parameters',
+    transformerVersion: TransformerVersion.v2,
+    supportedPlatforms: TransformerPlatform.all & ~TransformerPlatform.studio,
+    sdl: `
+      type Post @model {
+        id: ID!
+        title: String!
+        comments: [Comment] @hasMany
+      }
+
+      type Comment @model {
+        id: ID!
+        content: String!
+        post: Post @belongsTo
+      }
+    `,
+  },
+  '@manyToMany': {
+    description: 'basic @manyToMany usage',
+    transformerVersion: TransformerVersion.v2,
+    supportedPlatforms: TransformerPlatform.all,
+    sdl: `
+      type Post5V2 @model {
+        id: ID!
+        title: String!
+        editors: [User5V2] @manyToMany(relationName: "PostEditor5V2")
+      }
+      
+      type User5V2 @model {
+        id: ID!
+        username: String!
+        posts: [Post5V2] @manyToMany(relationName: "PostEditor5V2")
+      }
+    `,
+  },
+  'multiple-@belongsTo-on-same-type': {
+    description: 'multiple @belongsTo directives on same model',
+    transformerVersion: TransformerVersion.v2,
+    supportedPlatforms: TransformerPlatform.all,
+    sdl: `
+      type Meeting8V2 @model {
+        id: ID!
+        title: String!
+        attendees: [Registration8V2] @hasMany(indexName: "byMeeting", fields: ["id"])
+      }
+      
+      type Attendee8V2 @model {
+        id: ID!
+        meetings: [Registration8V2] @hasMany(indexName: "byAttendee", fields: ["id"])
+      }
+      
+      type Registration8V2 @model {
+        id: ID!
+        meetingId: ID @index(name: "byMeeting", sortKeyFields: ["attendeeId"])
+        meeting: Meeting8V2! @belongsTo(fields: ["meetingId"])
+        attendeeId: ID @index(name: "byAttendee", sortKeyFields: ["meetingId"])
+        attendee: Attendee8V2! @belongsTo(fields: ["attendeeId"])
+      }
+    `,
+  },
+  'custom-@primaryKey-with-sort-fields': {
+    description: 'custom @primaryKey with sortKeyFields',
+    transformerVersion: TransformerVersion.v2,
+    supportedPlatforms: TransformerPlatform.all,
+    sdl: `
+      type CustomerWithMultipleFieldsinPK @model {
+        id: ID! @primaryKey(sortKeyFields: ["dob", "date", "time", "phoneNumber", "height"])
+        dob: AWSDateTime!
+        date: AWSDate!
+        time: AWSTime!
+        phoneNumber: Int!
+        height: Float!
+        firstName: String
+        lastName: String
+      }
+    `,
+  },
+  '@model-with-appsync-scalars': {
+    description: '@model using AppSync scalar types',
+    transformerVersion: TransformerVersion.v2,
+    supportedPlatforms: TransformerPlatform.all,
+    sdl: `
+      type ModelWithAppsyncScalarTypes @model {
+        id: ID!
+        stringValue: String
+        altStringValue: String
+        listOfStringValue: [String]
+        intValue: Int
+        altIntValue: Int
+        listOfIntValue: [Int]
+        floatValue: Float
+        listOfFloatValue: [Float]
+        booleanValue: Boolean
+        listOfBooleanValue: [Boolean]
+        awsDateValue: AWSDate
+        listOfAWSDataValue: [AWSDate]
+        awsTimeValue: AWSTime
+        listOfAWSTimeValue: [AWSTime]
+        awsDateTimeValue: AWSDateTime
+        listOfAWSDateTimeValue: [AWSDateTime]
+        awsTimestampValue: AWSTimestamp
+        listOfAWSTimestampValue: [AWSTimestamp]
+        awsEmailValue: AWSEmail
+        listOfAWSEmailValue: [AWSEmail]
+        awsJsonValue: AWSJSON
+        listOfAWSJsonValue: [AWSJSON]
+        awsPhoneValue: AWSPhone
+        listOfAWSPhoneValue: [AWSPhone]
+        awsURLValue: AWSURL
+        listOfAWSURLValue: [AWSURL]
+        awsIPAddressValue: AWSIPAddress
+        listOfAWSIPAddressValue: [AWSIPAddress]
+      }
+    `,
+  },
+  '@model-with-enums': {
+    description: '@model using enums',
+    transformerVersion: TransformerVersion.v2,
+    supportedPlatforms: TransformerPlatform.all,
+    sdl: `
+      type ModelWithEnum @model {
+        id: ID!
+        enumField: EnumField
+        listOfEnumField: [EnumField]
+      }
+      
+      enum EnumField {
+        yes
+        no
       }
     `,
   },
