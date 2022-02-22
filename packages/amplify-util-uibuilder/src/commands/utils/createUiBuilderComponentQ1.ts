@@ -1,4 +1,4 @@
-import { StudioTemplateRendererManager, StudioTemplateRendererFactory, StudioComponent } from '@aws-amplify/codegen-ui';
+import { StudioTemplateRendererManager, StudioTemplateRendererFactory, StudioComponent } from '@aws-amplify/codegen-ui-q1-release';
 import {
   AmplifyRenderer,
   ReactThemeStudioTemplateRenderer,
@@ -6,11 +6,10 @@ import {
   ModuleKind,
   ScriptTarget,
   ScriptKind,
-} from '@aws-amplify/codegen-ui-react';
+} from '@aws-amplify/codegen-ui-react-q1-release';
 import { getUiBuilderComponentsPath } from './getUiBuilderComponentsPath';
 import { printer } from 'amplify-prompts';
 import { $TSContext } from 'amplify-cli-core';
-import { createUiBuilderComponent as createUiBuilderComponentQ1, createUiBuilderTheme as createUiBuilderThemeQ1, generateAmplifyUiBuilderIndexFile as generateAmplifyUiBuilderIndexFileQ1} from './createUiBuilderComponentQ1';
 const config = {
   module: ModuleKind.ES2020,
   target: ScriptTarget.ES2020,
@@ -18,20 +17,9 @@ const config = {
   renderTypeDeclarations: true,
 };
 
-const shouldUseQ1Release = (schemas: any[]) => {
-  console.log('LOL', false);
-  return false;
-}
-
 export const createUiBuilderComponent = (context: $TSContext, schema: any) => {
-  console.log('JCJC are you home?')
-  if (shouldUseQ1Release([schema])) {
-    console.log('using createUiBuilderComponentQ1')
-    return createUiBuilderComponentQ1(context, schema);
-  }
-  console.log('using NORMAL createUiBuilderComponent')
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
-  const rendererFactory = new StudioTemplateRendererFactory((component: StudioComponent) => new AmplifyRenderer(component, config));
+  const rendererFactory = new StudioTemplateRendererFactory((component: any) => new AmplifyRenderer(component, config) as any);
 
   const outputPathDir = uiBuilderComponentsPath;
   const outputConfig = {
@@ -45,11 +33,8 @@ export const createUiBuilderComponent = (context: $TSContext, schema: any) => {
 };
 
 export const createUiBuilderTheme = (context: $TSContext, schema: any) => {
-  if (shouldUseQ1Release([schema])) {
-    return createUiBuilderThemeQ1(context, schema);
-  }
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
-  const rendererFactory = new StudioTemplateRendererFactory((component: any) => new ReactThemeStudioTemplateRenderer(component, config));
+  const rendererFactory = new StudioTemplateRendererFactory((component: any) => new ReactThemeStudioTemplateRenderer(component, config) as any);
 
   const outputPathDir = uiBuilderComponentsPath;
   const outputConfig = {
@@ -70,11 +55,8 @@ export const createUiBuilderTheme = (context: $TSContext, schema: any) => {
 };
 
 export const generateAmplifyUiBuilderIndexFile = (context: $TSContext, schemas: any[]) => {
-  if (shouldUseQ1Release(schemas)) {
-    return generateAmplifyUiBuilderIndexFileQ1(context, schemas);
-  }
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
-  const rendererFactory = new StudioTemplateRendererFactory((component: any) => new ReactIndexStudioTemplateRenderer(component, config));
+  const rendererFactory = new StudioTemplateRendererFactory((component: any) => new ReactIndexStudioTemplateRenderer(component, config) as any);
 
   const outputPathDir = uiBuilderComponentsPath;
   const outputConfig = {
