@@ -31,7 +31,7 @@ export async function lambdasWithMissingApiDependency(
 
     if (typeof selectedCategories === 'object' && selectedCategories !== null) {
       for (const selectedResources of Object.values(selectedCategories)) {
-        deletedModelFound = Object.keys(selectedResources).some(r => !(existingModels.includes(r)));
+        deletedModelFound = Object.keys(selectedResources).some(r => !existingModels.includes(r));
         if (deletedModelFound) {
           dependentFunctions.push(lambda);
         }
@@ -45,7 +45,7 @@ export async function lambdasWithMissingApiDependency(
         const triggerPolicyTables = Object.keys(lambdaStackJson.Resources).filter(key => key.startsWith("LambdaTriggerPolicy"));
         for(const triggerPolicy of triggerPolicyTables) {
           const tableName = triggerPolicy.match(/(?<=LambdaTriggerPolicy)(.*)/g)?.[0];
-          if(!existingModels.includes(tableName)) {
+          if(tableName && !existingModels.includes(tableName)) {
             dependentFunctions.push(lambda);
           }
         }

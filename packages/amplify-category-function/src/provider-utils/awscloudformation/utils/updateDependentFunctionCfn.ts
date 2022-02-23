@@ -127,7 +127,7 @@ function removeDeletedApiDynamoEventSourcesFromCfn(
     const triggerPolicyTables = Object.keys(functionCfn.Resources).filter(key => key.startsWith('LambdaTriggerPolicy'));
     for(let triggerPolicy of triggerPolicyTables) {
       const tableName = triggerPolicy.match(/(?<=LambdaTriggerPolicy)(.*)/g)?.[0];
-      if(!sanitizedExistingModels.includes(tableName)) {
+      if(tableName && !sanitizedExistingModels.includes(tableName)) {
         const triggerPolicyStatement: $TSAny = functionCfn?.Resources?.[triggerPolicy]?.Properties?.PolicyDocument?.
           Statement;
         for(const statement of triggerPolicyStatement ?? []) {
