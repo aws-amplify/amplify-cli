@@ -70,8 +70,8 @@ export function convertDeperecatedRestApiPaths(
   return paths;
 }
 
-function _convertDeprecatedPermissionStringToCRUD(deprecatedPrivacy: string) {
-  let privacyList: string[];
+function _convertDeprecatedPermissionStringToCRUD(deprecatedPrivacy: string): CrudOperation[] {
+  let privacyList: CrudOperation[];
   if (deprecatedPrivacy === 'r') {
     privacyList = [CrudOperation.READ];
   } else if (deprecatedPrivacy === 'rw') {
