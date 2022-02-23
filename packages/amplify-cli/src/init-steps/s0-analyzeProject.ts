@@ -192,7 +192,7 @@ async function getEditor(context: $TSContext) {
   }
 
   if (!editor) {
-    editor = context.exeInfo.localEnvInfo.defaultEditor;
+    editor = context.exeInfo.localEnvInfo?.defaultEditor;
   }
 
   return editor;
