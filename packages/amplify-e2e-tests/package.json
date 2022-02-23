@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "3.7.10",
+  "version": "3.7.11",
   "description": "",
   "repository": {
     "type": "git",
@@ -25,7 +25,7 @@
   "dependencies": {
     "@aws-amplify/graphql-transformer-core": "0.16.1",
     "amplify-cli-core": "2.4.15",
-    "amplify-e2e-core": "2.6.10",
+    "amplify-e2e-core": "2.6.11",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-sdk": "^2.1042.0",
@@ -38,7 +38,7 @@
     "graphql-tag": "^2.10.1",
     "graphql-transformer-core": "7.4.6",
     "lodash": "^4.17.21",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "promise-sequential": "^1.1.1",
     "rimraf": "^3.0.0",
     "uuid": "^8.3.2",
@@ -77,6 +77,12 @@
           "publicPath": "./amplify-e2e-reports",
           "filename": "index.html",
           "expand": true
+        }
+      ],
+      [
+        "amplify-e2e-core/failed-test-reporter",
+        {
+          "reportPath": "./amplify-e2e-reports/amplify-e2e-failed-test.txt"
         }
       ]
     ],

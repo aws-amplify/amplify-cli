@@ -715,3 +715,29 @@ test('recursive @hasMany relationships are supported if DataStore is enabled', (
   const schema = parse(out.schema);
   validateModelSchema(schema);
 });
+
+test('has many with queries null generate correct filter input objects for scalar list type', () => {
+  const inputSchema = `
+    type Foo @model {
+      bars: [Bar] @hasMany
+    }
+    
+    type Bar @model(queries: null) {
+      strings: [String]
+    }`;
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
+  });
+
+  const out = transformer.transform(inputSchema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+
+  const barFilterInput = schema.definitions.find((def: any) => def.name && def.name.value === 'ModelBarFilterInput') as any;
+  expect(barFilterInput).toBeDefined();
+  
+  const stringField = barFilterInput.fields.find((f: any) => f.name.value === 'strings');
+  expect(stringField).toBeDefined();
+  expect(stringField.type.name.value).toMatch('ModelStringInput');
+});
