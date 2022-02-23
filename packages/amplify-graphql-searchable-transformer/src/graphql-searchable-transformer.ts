@@ -91,7 +91,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     stack.templateOptions.description = 'An auto-generated nested stack for searchable.';
     stack.templateOptions.templateFormatVersion = '2010-09-09';
 
-    const parameterMap = createParametersInStack(stack);
+    const parameterMap = createParametersInStack(context.stackManager.rootStack);
 
     const domain = createSearchableDomain(stack, parameterMap, context.api.apiId);
 
