@@ -18,12 +18,12 @@ const config = {
   renderTypeDeclarations: true,
 };
 
-const shouldUseQ1Release = (schemas: any[]) => {
-  return false;
+const shouldUseQ1Release = (schema: any) => {
+  return schema.schemaVersion && schema.schemaVersion == '1.0'
 }
 
 export const createUiBuilderComponent = (context: $TSContext, schema: any) => {
-  if (shouldUseQ1Release([schema])) {
+  if (shouldUseQ1Release(schema)) {
     console.log('using createUiBuilderComponentQ1')
     return createUiBuilderComponentQ1(context, schema);
   }
@@ -43,7 +43,7 @@ export const createUiBuilderComponent = (context: $TSContext, schema: any) => {
 };
 
 export const createUiBuilderTheme = (context: $TSContext, schema: any) => {
-  if (shouldUseQ1Release([schema])) {
+  if (shouldUseQ1Release(schema)) {
     return createUiBuilderThemeQ1(context, schema);
   }
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
@@ -68,24 +68,5 @@ export const createUiBuilderTheme = (context: $TSContext, schema: any) => {
 };
 
 export const generateAmplifyUiBuilderIndexFile = (context: $TSContext, schemas: any[]) => {
-  if (shouldUseQ1Release(schemas)) {
     return generateAmplifyUiBuilderIndexFileQ1(context, schemas);
-  }
-  const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
-  const rendererFactory = new StudioTemplateRendererFactory((component: any) => new ReactIndexStudioTemplateRenderer(component, config));
-
-  const outputPathDir = uiBuilderComponentsPath;
-  const outputConfig = {
-    outputPathDir,
-  };
-
-  const rendererManager = new StudioTemplateRendererManager(rendererFactory, outputConfig);
-
-  try {
-    return rendererManager.renderSchemaToTemplate(schemas);
-  } catch (e) {
-    printer.debug(e);
-    printer.debug('Failed to generate component index file');
-    throw e;
-  }
 };
