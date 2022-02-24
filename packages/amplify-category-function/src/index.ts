@@ -9,6 +9,8 @@ import { postPushHandler } from './events/postPushHandler';
 import { prePushHandler } from './events/prePushHandler';
 import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
 import { cloneSecretsOnEnvInitHandler } from './provider-utils/awscloudformation/secrets/cloneSecretsOnEnvInitHandler';
+import { getLocalFunctionSecretNames } from './provider-utils/awscloudformation/secrets/functionSecretsStateManager';
+import { getAppId, secretsPathAmplifyAppIdKey } from './provider-utils/awscloudformation/secrets/secretName';
 import { buildFunction, buildTypeKeyMap } from './provider-utils/awscloudformation/utils/buildFunction';
 import { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 import { askEnvironmentVariableCarryOut } from './provider-utils/awscloudformation/utils/environmentVariablesHelper';
@@ -27,7 +29,10 @@ export { lambdasWithApiDependency } from './provider-utils/awscloudformation/uti
 export { hashLayerResource } from './provider-utils/awscloudformation/utils/layerHelpers';
 export { migrateLegacyLayer } from './provider-utils/awscloudformation/utils/layerMigrationUtils';
 export { packageResource } from './provider-utils/awscloudformation/utils/package';
-export { updateDependentFunctionsCfn, addAppSyncInvokeMethodPermission } from './provider-utils/awscloudformation/utils/updateDependentFunctionCfn';
+export {
+  updateDependentFunctionsCfn,
+  addAppSyncInvokeMethodPermission,
+} from './provider-utils/awscloudformation/utils/updateDependentFunctionCfn';
 export { loadFunctionParameters } from './provider-utils/awscloudformation/utils/loadFunctionParameters';
 
 export async function add(context, providerName, service, parameters) {
@@ -155,6 +160,11 @@ export async function initEnv(context) {
         _.assign(tpiResourceParams, s3Bucket);
         _.set(teamProviderInfo, [envName, 'categories', categoryName, resourceName], tpiResourceParams);
         _.set(amplifyMeta, [categoryName, resourceName, 's3Bucket'], s3Bucket);
+      }
+
+      // if the function has secrets, set the appId key in team-provider-info
+      if (!!getLocalFunctionSecretNames(resourceName, { fromCurrentCloudBackend: true }).length) {
+        _.set(teamProviderInfo, [envName, 'categories', categoryName, resourceName, secretsPathAmplifyAppIdKey], getAppId());
       }
     });
   resourcesToBeCreated.forEach(resource => {
