@@ -163,7 +163,7 @@ export async function initEnv(context) {
       }
 
       // if the function has secrets, set the appId key in team-provider-info
-      if (!!getLocalFunctionSecretNames(resourceName, { fromCurrentCloudBackend: true }).length) {
+      if (getLocalFunctionSecretNames(resourceName, { fromCurrentCloudBackend: true }).length > 0) {
         _.set(teamProviderInfo, [envName, 'categories', categoryName, resourceName, secretsPathAmplifyAppIdKey], getAppId());
       }
     });
