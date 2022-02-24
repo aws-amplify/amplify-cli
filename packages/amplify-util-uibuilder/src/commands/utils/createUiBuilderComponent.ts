@@ -19,12 +19,10 @@ const config = {
 };
 
 const shouldUseQ1Release = (schemas: any[]) => {
-  console.log('LOL', false);
   return false;
 }
 
 export const createUiBuilderComponent = (context: $TSContext, schema: any) => {
-  console.log('JCJC are you home?')
   if (shouldUseQ1Release([schema])) {
     console.log('using createUiBuilderComponentQ1')
     return createUiBuilderComponentQ1(context, schema);
