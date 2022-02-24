@@ -44,8 +44,8 @@ describe('amplify api add', () => {
     } = awsExports;
     expect(name).toBeDefined();
     expect(endpoint).toBeDefined();
-
-    const result = await (await fetch(`${endpoint}/password`)).text();
+    const response = await fetch(`${endpoint}/password`);
+    const result = await response.text();
     expect(result).toEqual('CONTAINER_SECRETS_PASSWORD');
   });
 

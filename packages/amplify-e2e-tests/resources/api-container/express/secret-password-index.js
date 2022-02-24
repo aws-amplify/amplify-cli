@@ -10,6 +10,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*")
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+    res.setTimeout(500000, function(){         
+        console.log('Request has timed out.');
+            res.send(408);
+        });
     next()
 });
 
