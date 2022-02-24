@@ -43,7 +43,7 @@ export async function updateMissingDependencyFunctionsCfn(
       },
     };
 
-    if(selectedCategories) {
+    if (selectedCategories) {
       for (const selectedCategory of Object.keys(selectedCategories)) {
         // update function parameters resouce parameters with deleted models data
         // remove the deleted @model
@@ -123,16 +123,16 @@ function removeDeletedApiDynamoEventSourcesFromCfn(
   const cfnFilePath = path.join(resourceDirPath, `${resourceName}-cloudformation-template.json`);
   const functionCfn = JSONUtilities.readJson<$TSAny>(cfnFilePath);
   let tableDeletions: string[] = [];
-  if(functionCfn?.Resources) {
+  if (functionCfn?.Resources) {
     const triggerPolicyTables = Object.keys(functionCfn.Resources).filter(key => key.startsWith('LambdaTriggerPolicy'));
-    for(let triggerPolicy of triggerPolicyTables) {
+    for (let triggerPolicy of triggerPolicyTables) {
       const tableName = triggerPolicy.match(/(?<=LambdaTriggerPolicy)(.*)/g)?.[0];
-      if(tableName && !sanitizedExistingModels.includes(tableName)) {
+      if (tableName && !sanitizedExistingModels.includes(tableName)) {
         const triggerPolicyStatement: $TSAny = functionCfn?.Resources?.[triggerPolicy]?.Properties?.PolicyDocument?.
           Statement;
-        for(const statement of triggerPolicyStatement ?? []) {
+        for (const statement of triggerPolicyStatement ?? []) {
           const apiIDCheckString: string = statement?.Resource?.['Fn::ImportValue']?.['Fn::Sub'];
-          if(apiIDCheckString && apiIDCheckString.includes('GraphQLAPIId')) {
+          if (apiIDCheckString && apiIDCheckString.includes('GraphQLAPIId')) {
             tableDeletions.push(tableName);
             break;
           }
@@ -141,7 +141,7 @@ function removeDeletedApiDynamoEventSourcesFromCfn(
     }
   }
 
-  for(let tableName of tableDeletions) {
+  for (let tableName of tableDeletions) {
     delete functionCfn?.Resources?.[`LambdaTriggerPolicy${tableName}`];
     delete functionCfn?.Resources?.[`LambdaEventSourceMapping${tableName}`];
   }

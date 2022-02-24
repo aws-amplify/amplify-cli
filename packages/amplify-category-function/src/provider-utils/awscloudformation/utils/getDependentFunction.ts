@@ -41,11 +41,11 @@ export async function lambdasWithMissingApiDependency(
       // In the case that the function-parameters.json does not have info on dependencies, we check the CFN stack.
       // If the dependency is only a dynamo stream trigger, we don't have info in function-parameters.json to work with
       const lambdaStackJson = loadFunctionStackAsJSON(resourceDirPath, lambda.resourceName);
-      if(lambdaStackJson?.Resources) {
+      if (lambdaStackJson?.Resources) {
         const triggerPolicyTables = Object.keys(lambdaStackJson.Resources).filter(key => key.startsWith("LambdaTriggerPolicy"));
-        for(const triggerPolicy of triggerPolicyTables) {
+        for (const triggerPolicy of triggerPolicyTables) {
           const tableName = triggerPolicy.match(/(?<=LambdaTriggerPolicy)(.*)/g)?.[0];
-          if(tableName && !existingModels.includes(tableName)) {
+          if (tableName && !existingModels.includes(tableName)) {
             dependentFunctions.push(lambda);
           }
         }
