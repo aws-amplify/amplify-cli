@@ -2,7 +2,6 @@ import { StudioTemplateRendererManager, StudioTemplateRendererFactory, StudioCom
 import {
   AmplifyRenderer,
   ReactThemeStudioTemplateRenderer,
-  ReactIndexStudioTemplateRenderer,
   ModuleKind,
   ScriptTarget,
   ScriptKind,
@@ -24,10 +23,8 @@ const shouldUseQ1Release = (schema: any) => {
 
 export const createUiBuilderComponent = (context: $TSContext, schema: any) => {
   if (shouldUseQ1Release(schema)) {
-    console.log('using createUiBuilderComponentQ1')
     return createUiBuilderComponentQ1(context, schema);
   }
-  console.log('using NORMAL createUiBuilderComponent')
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
   const rendererFactory = new StudioTemplateRendererFactory((component: StudioComponent) => new AmplifyRenderer(component, config));
 
