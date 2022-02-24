@@ -43,10 +43,13 @@ export async function run(context: $TSContext) {
     } else {
       spinner.succeed('Synced UI components.');
     }
+
+    notifyMissingPackages(context, [
+      ...generatedComponentResults.filter(({ resultType }) => resultType === 'SUCCESS').map(({ component }) => component),
+      ...generatedThemeResults.filter(({ resultType }) => resultType === 'SUCCESS').map(({ theme }) => theme),
+    ]);
   } catch (e) {
     printer.debug(e);
     spinner.fail('Failed to sync UI components');
   }
-
-  notifyMissingPackages(context);
 }
