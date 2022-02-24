@@ -24,6 +24,7 @@ export * from './sleep';
 export * from './transformConfig';
 export * from './admin-ui';
 export * from './hooks';
+export * from './transformCurrentProjectToGitPulledProject';
 
 // run dotenv config to update env variable
 config();
