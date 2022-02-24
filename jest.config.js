@@ -42,6 +42,7 @@ module.exports = {
     '<rootDir>/packages/amplify-frontend-ios',
     '<rootDir>/packages/amplify-frontend-javascript',
     // '<rootDir>/packages/amplify-graphiql-explorer',
+    '<rootDir>/packages/amplify-graphql-auth-transformer',
     '<rootDir>/packages/amplify-graphql-function-transformer',
     '<rootDir>/packages/amplify-graphql-http-transformer',
     '<rootDir>/packages/amplify-graphql-index-transformer',
