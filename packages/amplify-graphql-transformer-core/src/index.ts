@@ -15,6 +15,8 @@ export {
   TransformerProjectConfig,
 } from './config/index';
 export {
+  getTable,
+  getKeySchema,
   collectDirectives,
   collectDirectivesByTypeNames,
   DirectiveWrapper,

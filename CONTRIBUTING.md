@@ -250,7 +250,7 @@ You could also contribute by reporting bugs, reproduction of bugs with sample co
 
 ## Community
 
-Join the [Discord Server](https://discord.com/invite/amplify). If it's your first time contributing, checkout the `#first-time-contributor` channel.
+Join the [Discord Server](https://discord.com/invite/amplify). If it's your first time contributing, checkout the [`#contributing`](https://discord.com/channels/705853757799399426/882526909374808084) channel.
 
 ## Code of Conduct
 

@@ -34,6 +34,42 @@ Object {
 }
 `;
 
+exports[`get add auth request adaptor translates request with autoVerifiedAttributes 1`] = `
+Object {
+  "adminQueries": false,
+  "adminQueryGroup": undefined,
+  "aliasAttributes": Array [],
+  "authProviders": Array [],
+  "authSelections": "userPoolOnly",
+  "autoVerifiedAttributes": Array [
+    "email",
+    "phone_number",
+  ],
+  "emailVerificationMessage": "test email verificaiton message {####}",
+  "emailVerificationSubject": "test email verification subject",
+  "identityPoolName": undefined,
+  "mfaConfiguration": "OFF",
+  "requiredAttributes": Array [
+    "email",
+  ],
+  "resourceName": "myTestAuth",
+  "serviceName": "Cognito",
+  "smsVerificationMessage": "test sms verification message {####}",
+  "thirdPartyAuth": false,
+  "updateFlow": "manual",
+  "useDefault": "manual",
+  "userPoolGroupList": Array [],
+  "userPoolGroups": false,
+  "userPoolName": undefined,
+  "usernameAttributes": Array [
+    "email",
+  ],
+  "userpoolClientReadAttributes": Array [],
+  "userpoolClientRefreshTokenValidity": undefined,
+  "userpoolClientWriteAttributes": Array [],
+}
+`;
+
 exports[`get add auth request adaptor translates request without aliasAttributes 1`] = `
 Object {
   "adminQueries": false,

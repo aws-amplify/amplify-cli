@@ -782,12 +782,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $ownerAllowedFields0 = [] )
     #set( $ownerNullAllowedFields0 = [] )
     #if( $ownerEntity0 == $ownerClaim0 )
-      #if( !$ownerAllowedFields0.isEmpty() || !$ownerNullAllowedFields0.isEmpty() )
-        $util.qr($allowedFields.addAll($ownerAllowedFields0))
-        $util.qr($nullAllowedFields.addAll($ownerNullAllowedFields0))
-      #else
-        #set( $isAuthorized = true )
-      #end
+      #set( $isAuthorized = true )
     #end
   #end
 #end

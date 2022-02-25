@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-notifications",
-  "version": "2.19.5",
+  "version": "2.19.6",
   "description": "amplify-cli notifications plugin",
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",
     "lodash": "^4.17.21",
-    "open": "^7.0.0",
+    "open": "^8.4.0",
     "ora": "^4.0.3",
     "promise-sequential": "^1.1.1"
   },

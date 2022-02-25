@@ -3,7 +3,7 @@ import ws from 'ws';
 import steed from 'steed';
 import pino from 'pino';
 import { defaultsDeep } from 'lodash';
-import nanoid from 'nanoid';
+import { nanoid } from 'nanoid';
 import { TrieListener } from './trie-listener';
 import { Client } from './client';
 import { EventEmitter } from 'events';
@@ -109,7 +109,7 @@ export class MQTTServer extends EventEmitter {
 
     new Promise(resolve => {
       const listener = new TrieListener(this.options.backend);
-      listener.once('ready', function() {
+      listener.once('ready', function () {
         resolve(listener);
       });
     })
