@@ -11,6 +11,8 @@ export const run = async context => {
  * This will eventually evolve to print the URL given the error-type/error-string to
  * provide a more streamlined dx.
  */
-export const showTroubleshootingURL = ()=>{
-  printer.warn(`Please refer ${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.name} at : ${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`);
-}
+export const showTroubleshootingURL = () => {
+  printer.warn(
+    `Review the Amplify CLI troubleshooting guide for potential next steps: ${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+  );
+};
