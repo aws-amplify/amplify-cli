@@ -391,8 +391,7 @@ export class RelationalDBResolverGenerator {
    * @returns string with the sql statement
    */
   private generateSelectStatement(type: string): string {
-    const tableName = this.getTableName(type);
-    return `SELECT * FROM ${tableName}`;
+    return `SELECT * FROM ${type}`;
   }
 
   /**
@@ -408,9 +407,9 @@ export class RelationalDBResolverGenerator {
     const hasToAppendOperationInput = ![GRAPHQL_RESOLVER_OPERATION.Get, GRAPHQL_RESOLVER_OPERATION.Delete].includes(operationType);
     const operationInput = hasToAppendOperationInput ? `${operationType}${tableName}Input.` : '';
     if (this.isPrimaryKeyAStringType(type)) {
-      return `SELECT * FROM ${tableName} WHERE ${primaryKey}=\'$ctx.args.${operationInput}${primaryKey}\'`;
+      return `SELECT * FROM ${type} WHERE ${primaryKey}=\'$ctx.args.${operationInput}${primaryKey}\'`;
     }
-    return `SELECT * FROM ${tableName} WHERE ${primaryKey}=$ctx.args.${operationInput}${primaryKey}`;
+    return `SELECT * FROM ${type} WHERE ${primaryKey}=$ctx.args.${operationInput}${primaryKey}`;
   }
 
   /**
@@ -420,8 +419,7 @@ export class RelationalDBResolverGenerator {
    * @returns string with the sql statement
    */
   private generateInsertStatement(type: string): string {
-    const tableName = this.getTableName(type);
-    return `INSERT INTO ${tableName} $colStr VALUES $valStr`;
+    return `INSERT INTO ${type} $colStr VALUES $valStr`;
   }
 
   /**
