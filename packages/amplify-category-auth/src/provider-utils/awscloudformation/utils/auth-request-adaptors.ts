@@ -4,7 +4,6 @@ import {
   CognitoUserPoolSigninMethod,
   CognitoAdminQueries,
   CognitoMFAConfiguration,
-  CognitoPasswordRecoveryConfiguration,
   CognitoPasswordPolicy,
   CognitoPasswordConstraint,
   CognitoIdentityPoolConfiguration,
@@ -14,6 +13,7 @@ import {
   CognitoUserPoolConfiguration,
   CognitoUserPoolModification,
   CognitoIdentityPoolModification,
+  CognitoAutoVerifiedAttributesConfiguration,
 } from 'amplify-headless-interface';
 import { identityPoolProviders, userPoolProviders } from '../service-walkthroughs/auth-questions';
 import { isEmpty, merge } from 'lodash';
@@ -26,11 +26,11 @@ import {
   AdminQueriesResult,
   MfaResult,
   PasswordPolicy,
-  PasswordRecoveryResult,
   UsernameAttributes,
   AliasAttributes,
   AttributeType,
   ServiceQuestionHeadlessResult,
+  AutoVerifiedAttributesResult,
 } from '../service-walkthrough-types/cognito-user-input-types';
 import { pascalCase } from 'change-case';
 import { FeatureFlags } from 'amplify-cli-core';
@@ -103,7 +103,7 @@ const mutableAttributeAdaptor = (
     userpoolClientWriteAttributes: (userPoolConfig.writeAttributes || []).map(att => att.toLowerCase()),
     ...adminQueriesMap(userPoolConfig.adminQueries),
     ...mfaMap(userPoolConfig.mfa),
-    ...passwordRecoveryMap(userPoolConfig.passwordRecovery),
+    ...autoVerifiedAttributesMap(userPoolConfig.autoVerifiedAttributes),
     ...passwordPolicyMap(userPoolConfig.passwordPolicy),
     ...mutableIdentityPoolMap(projectType, identityPoolConfig),
     ...oauthMap(userPoolConfig.oAuth, requiredAttributes),
@@ -234,25 +234,27 @@ const mfaMap = (mfaConfig: CognitoMFAConfiguration = { mode: 'OFF' }): MfaResult
   };
 };
 
-// converts password recovery config to existing format
-const passwordRecoveryMap = (pwRecoveryConfig?: CognitoPasswordRecoveryConfiguration): PasswordRecoveryResult => {
-  switch (pwRecoveryConfig?.deliveryMethod) {
-    case 'SMS':
-      return {
-        smsVerificationMessage: pwRecoveryConfig?.smsMessage,
-        autoVerifiedAttributes: ['phone_number'],
-      };
-    case 'EMAIL':
-      return {
-        emailVerificationMessage: pwRecoveryConfig?.emailMessage,
-        emailVerificationSubject: pwRecoveryConfig?.emailSubject,
-        autoVerifiedAttributes: ['email'],
-      };
-    default:
-      return {
-        autoVerifiedAttributes: [],
-      };
+const autoVerifiedAttributesMap = (autoVerifiedAttrConfig?: CognitoAutoVerifiedAttributesConfiguration): AutoVerifiedAttributesResult => {
+  const result: AutoVerifiedAttributesResult = {
+    autoVerifiedAttributes: [],
+  };
+  if (!Array.isArray(autoVerifiedAttrConfig)) {
+    return result;
   }
+
+  return autoVerifiedAttrConfig.reduce((result, config) => {
+    switch (config.type) {
+      case 'EMAIL':
+        result.autoVerifiedAttributes.push('email');
+        result.emailVerificationMessage = config.verificationMessage;
+        result.emailVerificationSubject = config.verificationSubject;
+        break;
+      case 'PHONE_NUMBER':
+        result.autoVerifiedAttributes.push('phone_number');
+        result.smsVerificationMessage = config.verificationMessage;
+    }
+    return result;
+  }, result);
 };
 
 const passwordConstraintMap: Record<CognitoPasswordConstraint, PasswordPolicy> = {

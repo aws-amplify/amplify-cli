@@ -1,19 +1,25 @@
 {
-    "description": "Defines the payload expected by `amplify update auth --headless`",
+    "description": "Defines acceptable payloads to amplify add auth --headless.",
     "type": "object",
     "properties": {
         "version": {
+            "description": "The schema version.",
             "type": "number",
             "enum": [
-                1
+                2
             ]
         },
-        "serviceModification": {
+        "resourceName": {
+            "description": "A name for the auth resource.",
+            "type": "string"
+        },
+        "serviceConfiguration": {
+            "description": "The configuration that defines the auth resource.",
             "anyOf": [
                 {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/BaseCognitoServiceModification"
+                            "$ref": "#/definitions/BaseCognitoServiceConfiguration"
                         },
                         {
                             "$ref": "#/definitions/NoCognitoIdentityPool"
@@ -23,10 +29,10 @@
                 {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/BaseCognitoServiceModification"
+                            "$ref": "#/definitions/BaseCognitoServiceConfiguration"
                         },
                         {
-                            "$ref": "#/definitions/ModifyCognitoIdentityPool"
+                            "$ref": "#/definitions/CognitoIdentityPool"
                         }
                     ]
                 }
@@ -34,44 +40,82 @@
         }
     },
     "required": [
-        "serviceModification",
+        "resourceName",
+        "serviceConfiguration",
         "version"
     ],
     "definitions": {
-        "BaseCognitoServiceModification": {
+        "BaseCognitoServiceConfiguration": {
+            "description": "Configuration that applies to all Cognito configuration.",
             "type": "object",
             "properties": {
                 "serviceName": {
+                    "description": "The name of the service providing the resource.",
                     "type": "string",
                     "enum": [
                         "Cognito"
                     ]
                 },
-                "userPoolModification": {
-                    "description": "A subset of properties from CognitoUserPoolConfiguration that can be modified.\n\nEach field will overwrite the entire previous configuration of that field, but omitted fields will not be removed.\nFor example, adding auth with\n\n{\n   readAttributes: ['EMAIL', 'NAME', 'PHONE_NUMBER'],\n   passwordPolicy: {\n     minimumLength: 10,\n     additionalConstraints: [\n       REQUIRE_LOWERCASE, REQUIRE_UPPERCASE\n     ]\n   }\n}\n\nand then updating auth with\n\n{\n   passwordPolicy: {\n     minimumLength: 8\n   }\n}\n\nwill overwrite the entire passwordPolicy (removing the lowercase and uppercase constraints)\nbut will leave the readAttributes unaffected.\n\nHowever, the oAuth field is treated slightly differently:\n   Omitting the oAuth field entirely will leave oAuth configuration unchanged.\n   Setting oAuth to {} (an empty object) will remove oAuth from the auth resource.\n   Including a non-empty oAuth configuration will overwrite the previous oAuth configuration.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/Pick<CognitoUserPoolConfiguration,\"userPoolGroups\"|\"adminQueries\"|\"mfa\"|\"passwordPolicy\"|\"passwordRecovery\"|\"refreshTokenPeriod\"|\"readAttributes\"|\"writeAttributes\">"
-                        },
-                        {
-                            "type": "object",
-                            "properties": {
-                                "oAuth": {
-                                    "$ref": "#/definitions/Partial<CognitoOAuthConfiguration>"
-                                }
-                            }
-                        }
-                    ]
+                "userPoolConfiguration": {
+                    "$ref": "#/definitions/CognitoUserPoolConfiguration",
+                    "description": "The Cognito user pool configuration."
                 }
             },
             "required": [
                 "serviceName",
-                "userPoolModification"
+                "userPoolConfiguration"
             ]
         },
-        "Pick<CognitoUserPoolConfiguration,\"userPoolGroups\"|\"adminQueries\"|\"mfa\"|\"passwordPolicy\"|\"passwordRecovery\"|\"refreshTokenPeriod\"|\"readAttributes\"|\"writeAttributes\">": {
+        "CognitoUserPoolConfiguration": {
+            "description": "Cognito configuration exposed by Amplify.",
             "type": "object",
             "properties": {
+                "signinMethod": {
+                    "$ref": "#/definitions/CognitoUserPoolSigninMethod",
+                    "description": "How users will signin to their account."
+                },
+                "requiredSignupAttributes": {
+                    "description": "Account attributes that must be specified to sign up.",
+                    "type": "array",
+                    "items": {
+                        "enum": [
+                            "ADDRESS",
+                            "BIRTHDATE",
+                            "EMAIL",
+                            "FAMILY_NAME",
+                            "GENDER",
+                            "GIVEN_NAME",
+                            "LOCALE",
+                            "MIDDLE_NAME",
+                            "NAME",
+                            "NICKNAME",
+                            "PHONE_NUMBER",
+                            "PICTURE",
+                            "PREFERRED_USERNAME",
+                            "PROFILE",
+                            "UPDATED_AT",
+                            "WEBSITE",
+                            "ZONE_INFO"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "aliasAttributes": {
+                    "description": "Alias attributes that can be used for sign-up/sign-in",
+                    "type": "array",
+                    "items": {
+                        "enum": [
+                            "EMAIL",
+                            "PHONE_NUMBER",
+                            "PREFERRED_USERNAME"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "userPoolName": {
+                    "description": "The name of the user pool. If not specified, a unique string will be generated.",
+                    "type": "string"
+                },
                 "userPoolGroups": {
                     "description": "User pool groups to create within the user pool. If not specified, no groups are created.",
                     "type": "array",
@@ -97,17 +141,6 @@
                 "passwordPolicy": {
                     "$ref": "#/definitions/CognitoPasswordPolicy",
                     "description": "If defined, specifies password constraint configuration. Default is minimum length of 8 characters."
-                },
-                "passwordRecovery": {
-                    "description": "DEPRECATED. Use autoVerifiedAttributes in headless schema version 2 instead. If defined, specifies password recovery configuration. Default is email recovery.",
-                    "anyOf": [
-                        {
-                            "$ref": "#/definitions/CognitoEmailPasswordRecoveryConfiguration"
-                        },
-                        {
-                            "$ref": "#/definitions/CognitoSMSPasswordRecoveryConfiguration"
-                        }
-                    ]
                 },
                 "refreshTokenPeriod": {
                     "description": "Defines how long refresh tokens are valid in days. Default is 30 days.",
@@ -166,8 +199,39 @@
                         ],
                         "type": "string"
                     }
+                },
+                "oAuth": {
+                    "$ref": "#/definitions/CognitoOAuthConfiguration",
+                    "description": "If defined, specified oAuth configuration will be applied to the user pool."
+                },
+                "autoVerifiedAttributes": {
+                    "description": "Defines user attributes that will be automatically verified upon account creation.",
+                    "type": "array",
+                    "items": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/definitions/CognitoAutoVerifyPhoneNumberConfiguration"
+                            },
+                            {
+                                "$ref": "#/definitions/CognitoAutoVerifyEmailConfiguration"
+                            }
+                        ]
+                    }
                 }
-            }
+            },
+            "required": [
+                "requiredSignupAttributes",
+                "signinMethod"
+            ]
+        },
+        "CognitoUserPoolSigninMethod": {
+            "enum": [
+                "EMAIL",
+                "EMAIL_AND_PHONE_NUMBER",
+                "PHONE_NUMBER",
+                "USERNAME"
+            ],
+            "type": "string"
         },
         "CognitoUserPoolGroup": {
             "description": "Defines a Cognito user pool group.",
@@ -280,50 +344,8 @@
                 }
             }
         },
-        "CognitoEmailPasswordRecoveryConfiguration": {
-            "description": "Defines the email that will be sent to users to recover their password.",
-            "type": "object",
-            "properties": {
-                "deliveryMethod": {
-                    "type": "string",
-                    "enum": [
-                        "EMAIL"
-                    ]
-                },
-                "emailMessage": {
-                    "type": "string"
-                },
-                "emailSubject": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "deliveryMethod",
-                "emailMessage",
-                "emailSubject"
-            ]
-        },
-        "CognitoSMSPasswordRecoveryConfiguration": {
-            "description": "Defines the SMS message that will be send to users to recover their password",
-            "type": "object",
-            "properties": {
-                "deliveryMethod": {
-                    "type": "string",
-                    "enum": [
-                        "SMS"
-                    ]
-                },
-                "smsMessage": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "deliveryMethod",
-                "smsMessage"
-            ]
-        },
-        "Partial<CognitoOAuthConfiguration>": {
-            "description": "Make all properties in T optional",
+        "CognitoOAuthConfiguration": {
+            "description": "Cognito OAuth configuration exposed by Amplify",
             "type": "object",
             "properties": {
                 "domainPrefix": {
@@ -370,6 +392,7 @@
                     "description": "If defined, users will be able to login with the specified social providers.",
                     "type": "array",
                     "items": {
+                        "description": "Defines a Cognito oAuth social provider",
                         "anyOf": [
                             {
                                 "$ref": "#/definitions/SocialProviderConfig"
@@ -380,7 +403,13 @@
                         ]
                     }
                 }
-            }
+            },
+            "required": [
+                "oAuthGrantType",
+                "oAuthScopes",
+                "redirectSigninURIs",
+                "redirectSignoutURIs"
+            ]
         },
         "SocialProviderConfig": {
             "description": "Defines a Cognito oAuth social provider",
@@ -444,6 +473,43 @@
                 "teamId"
             ]
         },
+        "CognitoAutoVerifyPhoneNumberConfiguration": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "PHONE_NUMBER"
+                    ]
+                },
+                "verificationMessage": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "type"
+            ]
+        },
+        "CognitoAutoVerifyEmailConfiguration": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "EMAIL"
+                    ]
+                },
+                "verificationMessage": {
+                    "type": "string"
+                },
+                "verifiectionSubject": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "type"
+            ]
+        },
         "NoCognitoIdentityPool": {
             "description": "Specifies that the Cognito configuration should not include an identity pool.",
             "type": "object",
@@ -460,27 +526,33 @@
                 "includeIdentityPool"
             ]
         },
-        "ModifyCognitoIdentityPool": {
+        "CognitoIdentityPool": {
+            "description": "Specifies that the Cognito configuration includes an identity pool configuration.",
             "type": "object",
             "properties": {
                 "includeIdentityPool": {
+                    "description": "Indicates an identity pool should be configured.",
                     "type": "boolean",
                     "enum": [
                         true
                     ]
                 },
-                "identityPoolModification": {
-                    "$ref": "#/definitions/Pick<CognitoIdentityPoolConfiguration,\"unauthenticatedLogin\"|\"identitySocialFederation\">"
+                "identityPoolConfiguration": {
+                    "$ref": "#/definitions/CognitoIdentityPoolConfiguration",
+                    "description": "The identity pool configuration. If not specified, defaults are applied."
                 }
             },
             "required": [
-                "identityPoolModification",
                 "includeIdentityPool"
             ]
         },
-        "Pick<CognitoIdentityPoolConfiguration,\"unauthenticatedLogin\"|\"identitySocialFederation\">": {
+        "CognitoIdentityPoolConfiguration": {
             "type": "object",
             "properties": {
+                "identityPoolName": {
+                    "description": "If not specified, a random string is generated.",
+                    "type": "string"
+                },
                 "unauthenticatedLogin": {
                     "description": "Allow guest login or not. Default is false.",
                     "type": "boolean"
