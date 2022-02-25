@@ -35,7 +35,7 @@ describe('amplify init', () => {
     expect(DeploymentBucketName).toBeAS3Bucket(DeploymentBucketName);
   });
 
-  it.only('test init on a git pulled project', async () => {
+  it('test init on a git pulled project', async () => {
     const envName = 'dev';
     const resourceName = 'authConsoleTest';
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false, name: resourceName, envName });
