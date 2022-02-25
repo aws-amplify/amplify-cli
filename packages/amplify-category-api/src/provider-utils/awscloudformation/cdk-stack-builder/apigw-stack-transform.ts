@@ -186,23 +186,26 @@ export class ApigwStackTransform {
     const overrideFilePath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.API, this.resourceName);
     const overrideJSFilePath = path.join(overrideFilePath, 'build', 'override.js');
 
-    const isBuild = await buildOverrideDir(backendDir, overrideFilePath).catch(error => {
-      printer.debug(`Build error : ${error.message}`);
-      return false;
-    });
+    const isBuild = await buildOverrideDir(backendDir, overrideFilePath);
 
     // skip if packageManager or override.ts not found
     if (isBuild) {
-      const { override } = await import(overrideJSFilePath).catch(error => {
+      let override;
+      try {
+        ({ override } = await import(overrideJSFilePath));
+      } catch {
         formatter.list(['No override file found', `To override ${this.resourceName} run "amplify override api"`]);
-        return undefined;
-      });
+        override = undefined;
+      }
 
       if (override && typeof override === 'function') {
-        const overrideCode: string = await fs.readFile(overrideJSFilePath, 'utf-8').catch(() => {
-          formatter.list(['No override File Found', `To override ${this.resourceName} run amplify override auth`]);
-          return '';
-        });
+        let overrideCode: string;
+        try {
+          overrideCode = await fs.readFile(overrideJSFilePath, 'utf-8');
+        } catch (error) {
+          formatter.list(['No override file found', `To override ${this.resourceName} run amplify override auth`]);
+          return;
+        }
 
         const sandboxNode = new vm.NodeVM({
           console: 'inherit',
