@@ -110,7 +110,8 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $deniedFields = {} )
 #if( $util.authType() == \\"IAM Authorization\\" )
   #if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == \\"testIdentityPoolId\\" && $ctx.identity.cognitoIdentityAuthType == \\"authenticated\\") )
-    #set( $isAuthorized = true )
+    #set( $allowedFields = [\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"] )
+    #set( $nullAllowedFields = [] )
   #end
 #end
 #if( $util.authType() == \\"User Pool Authorization\\" )
@@ -181,15 +182,15 @@ $util.unauthorized()
 #end
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #if( !$isAuthorized )
-    #set( $staticGroupRoles = [{\\"claim\\":\\"cognito:groups\\",\\"entity\\":\\"staff\\",\\"allowedFields\\":[\\"id\\",\\"name\\",\\"description\\"]}] )
+    #set( $staticGroupRoles = [{\\"claim\\":\\"cognito:groups\\",\\"entity\\":\\"staff\\",\\"allowedFields\\":[\\"id\\",\\"name\\",\\"description\\"],\\"isAuthorizedOnAllFields\\":false}] )
     #foreach( $groupRole in $staticGroupRoles )
       #set( $groupsInToken = $util.defaultIfNull($ctx.identity.claims.get($groupRole.claim), []) )
       #if( $groupsInToken.contains($groupRole.entity) )
-        #if( !$groupRole.allowedFields.isEmpty() )
-          $util.qr($allowedFields.addAll($groupRole.allowedFields))
-        #else
+        #if( $groupRole.isAuthorizedOnAllFields )
           #set( $isAuthorized = true )
           #break
+        #else
+          $util.qr($allowedFields.addAll($groupRole.allowedFields))
         #end
       #end
     #end
@@ -197,20 +198,21 @@ $util.unauthorized()
   #if( !$isAuthorized )
     #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.owner, null) )
     #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-    #set( $ownerAllowedFields0 = [] )
+    #set( $ownerAllowedFields0 = [\\"id\\",\\"name\\",\\"description\\",\\"secretValue\\"] )
+    #set( $isAuthorizedOnAllFields0 = true )
     #if( $ownerClaim0 == $ownerEntity0 )
-      #if( !$ownerAllowedFields0.isEmpty() )
-        $util.qr($allowedFields.addAll($ownerAllowedFields0))
-      #else
+      #if( $isAuthorizedOnAllFields0 )
         #set( $isAuthorized = true )
+      #else
+        $util.qr($allowedFields.addAll($ownerAllowedFields0))
       #end
     #end
     #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
       $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
-      #if( !$ownerAllowedFields0.isEmpty() )
-        $util.qr($allowedFields.addAll($ownerAllowedFields0))
-      #else
+      #if( $isAuthorizedOnAllFields0 )
         #set( $isAuthorized = true )
+      #else
+        $util.qr($allowedFields.addAll($ownerAllowedFields0))
       #end
     #end
   #end

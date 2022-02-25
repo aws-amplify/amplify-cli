@@ -108,11 +108,7 @@ function ensureModelSortDirectionEnum(ctx: TransformerContextProvider): void {
   }
 }
 
-export function ensureHasOneConnectionField(
-  config: HasOneDirectiveConfiguration,
-  ctx: TransformerContextProvider,
-  connectionAttributeName?: string,
-) {
+export function ensureHasOneConnectionField(config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider) {
   const { field, fieldNodes, object } = config;
 
   // If fields were explicitly provided to the directive, there is nothing else to do here.
@@ -120,10 +116,7 @@ export function ensureHasOneConnectionField(
     return;
   }
 
-  // Update the create and update input objects for this type.
-  if (!connectionAttributeName) {
-    connectionAttributeName = getConnectionAttributeName(object.name.value, field.name.value);
-  }
+  const connectionAttributeName = getConnectionAttributeName(object.name.value, field.name.value);
 
   const typeObject = ctx.output.getType(object.name.value) as ObjectTypeDefinitionNode;
   if (typeObject) {

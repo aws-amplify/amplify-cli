@@ -23,7 +23,6 @@ import {
   getOwnerClaim,
   getIdentityClaimExp,
   getInputFields,
-  addAllowedFieldsIfElse,
   emptyPayload,
   setHasAuthExpression,
   iamCheck,
@@ -54,10 +53,10 @@ const apiKeyExpression = (roles: Array<RoleDefinition>) => {
   if (roles.length === 0) {
     return iff(equals(ref('util.authType()'), str(API_KEY_AUTH_TYPE)), ref('util.unauthorized()'));
   }
-  if (roles[0].allowedFields!.length > 0) {
-    expression.push(set(ref(`${ALLOWED_FIELDS}`), raw(JSON.stringify(roles[0].allowedFields))));
-  } else {
+  if (roles[0].areAllFieldsAllowed) {
     expression.push(set(ref(IS_AUTHORIZED_FLAG), bool(true)));
+  } else {
+    expression.push(set(ref(`${ALLOWED_FIELDS}`), raw(JSON.stringify(roles[0].allowedFields))));
   }
   return iff(equals(ref('util.authType()'), str(API_KEY_AUTH_TYPE)), compoundExpression(expression));
 };
@@ -80,12 +79,12 @@ const iamExpression = (
   }
   if (roles.length > 0) {
     for (let role of roles) {
-      if (role.allowedFields!.length > 0) {
+      if (role.areAllFieldsAllowed) {
+        expression.push(iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)), identityPoolId));
+      } else {
         expression.push(
           iamCheck(role.claim!, compoundExpression([set(ref(`${ALLOWED_FIELDS}`), raw(JSON.stringify(role.allowedFields)))])),
         );
-      } else {
-        expression.push(iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)), identityPoolId));
       }
     }
   } else {
@@ -104,10 +103,11 @@ const lambdaExpression = (roles: Array<RoleDefinition>) => {
   if (roles.length === 0) {
     return iff(equals(ref('util.authType()'), str(LAMBDA_AUTH_TYPE)), ref('util.unauthorized()'));
   }
-  if (roles[0].allowedFields!.length > 0) {
-    expression.push(set(ref(`${ALLOWED_FIELDS}`), raw(JSON.stringify(roles[0].allowedFields))));
-  } else {
+
+  if (roles[0].areAllFieldsAllowed) {
     expression.push(set(ref(IS_AUTHORIZED_FLAG), bool(true)));
+  } else {
+    expression.push(set(ref(`${ALLOWED_FIELDS}`), raw(JSON.stringify(roles[0].allowedFields))));
   }
   return iff(equals(ref('util.authType()'), str(LAMBDA_AUTH_TYPE)), compoundExpression(expression));
 };
@@ -117,10 +117,10 @@ const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expre
   const privateRoleIdx = roles.findIndex(r => r.strategy === 'private');
   if (privateRoleIdx > -1) {
     const privateRole = roles[privateRoleIdx];
-    if (privateRole.allowedFields!.length > 0) {
-      staticRoleExpression.push(qref(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), raw(JSON.stringify(privateRole.allowedFields)))));
-    } else {
+    if (privateRole.areAllFieldsAllowed) {
       staticRoleExpression.push(set(ref(IS_AUTHORIZED_FLAG), bool(true)));
+    } else {
+      staticRoleExpression.push(qref(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), raw(JSON.stringify(privateRole.allowedFields)))));
     }
     roles.splice(privateRoleIdx, 1);
   }
@@ -131,13 +131,22 @@ const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expre
         compoundExpression([
           set(
             ref('staticGroupRoles'),
-            raw(JSON.stringify(roles.map(r => ({ claim: r.claim, entity: r.entity, allowedFields: r.allowedFields ?? [] })))),
+            raw(
+              JSON.stringify(
+                roles.map(r => ({
+                  claim: r.claim,
+                  entity: r.entity,
+                  allowedFields: r.allowedFields ?? [],
+                  isAuthorizedOnAllFields: r.areAllFieldsAllowed,
+                })),
+              ),
+            ),
           ),
           forEach(/** for */ ref('groupRole'), /** in */ ref('staticGroupRoles'), [
             set(ref('groupsInToken'), getIdentityClaimExp(ref('groupRole.claim'), list([]))),
             iff(
               methodCall(ref('groupsInToken.contains'), ref('groupRole.entity')),
-              addAllowedFieldsIfElse('groupRole.allowedFields', true),
+              addAllowedFieldsIfElse('groupRole.allowedFields', 'groupRole.isAuthorizedOnAllFields', true),
             ),
           ]),
         ]),
@@ -160,13 +169,22 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>, fields: ReadonlyArr
             set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.args.input.${role.entity!}`), nul())),
             set(ref(`ownerClaim${idx}`), getOwnerClaim(role.claim!)),
             set(ref(`ownerAllowedFields${idx}`), raw(JSON.stringify(role.allowedFields))),
+            set(ref(`isAuthorizedOnAllFields${idx}`), bool(role.areAllFieldsAllowed)),
             ...(entityIsList
               ? [
                   forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
-                    iff(equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)), addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, true)),
+                    iff(
+                      equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
+                      addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`, true),
+                    ),
                   ]),
                 ]
-              : [iff(equals(ref(`ownerClaim${idx}`), ref(`ownerEntity${idx}`)), addAllowedFieldsIfElse(`ownerAllowedFields${idx}`))]),
+              : [
+                  iff(
+                    equals(ref(`ownerClaim${idx}`), ref(`ownerEntity${idx}`)),
+                    addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`),
+                  ),
+                ]),
             iff(
               and([ref(`util.isNull($ownerEntity${idx})`), not(methodCall(ref('ctx.args.input.containsKey'), str(role.entity!)))]),
               compoundExpression([
@@ -177,7 +195,7 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>, fields: ReadonlyArr
                     entityIsList ? list([ref(`ownerClaim${idx}`)]) : ref(`ownerClaim${idx}`),
                   ),
                 ),
-                addAllowedFieldsIfElse(`ownerAllowedFields${idx}`),
+                addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`),
               ]),
             ),
           ]),
@@ -203,12 +221,13 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>, fields: ReadonlyArr
               ),
             ),
             set(ref(`groupAllowedFields${idx}`), raw(JSON.stringify(role.allowedFields))),
+            set(ref(`isAuthorizedOnAllFields${idx}`), bool(role.areAllFieldsAllowed)),
             forEach(ref('userGroup'), ref(`groupClaim${idx}`), [
               iff(
                 entityIsList
                   ? methodCall(ref(`groupEntity${idx}.contains`), ref('userGroup'))
                   : equals(ref(`groupEntity${idx}`), ref('userGroup')),
-                addAllowedFieldsIfElse(`groupAllowedFields${idx}`, true),
+                addAllowedFieldsIfElse(`groupAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`, true),
               ),
             ]),
           ]),
@@ -281,4 +300,12 @@ export const generateAuthExpressionForCreate = (
     ),
   );
   return printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
+};
+
+const addAllowedFieldsIfElse = (allowedFieldsKey: string, condition: string, breakLoop: boolean = false): Expression => {
+  return ifElse(
+    ref(condition),
+    compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), ...(breakLoop ? [raw('#break')] : [])]),
+    qref(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), ref(allowedFieldsKey))),
+  );
 };
