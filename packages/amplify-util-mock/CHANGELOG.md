@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.7...amplify-util-mock@4.3.8) (2022-02-25)
+
+
+
+## 7.6.22 (2022-02-24)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** update resolver should allow if update operation is set ([#9808](https://github.com/aws-amplify/amplify-cli/issues/9808)) ([44a9bea](https://github.com/aws-amplify/amplify-cli/commit/44a9bea139a9a1483cfbc7db29b84938510ffdca))
+
+
+
+
+
 ## [4.3.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.6...amplify-util-mock@4.3.7) (2022-02-18)
 
 **Note:** Version bump only for package amplify-util-mock

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.16.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.16.1...@aws-amplify/graphql-transformer-core@0.16.2) (2022-02-25)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** fix relational map key schema lookup when using LSI ([#9722](https://github.com/aws-amplify/amplify-cli/issues/9722)) ([1794cda](https://github.com/aws-amplify/amplify-cli/commit/1794cda7658d9d7596b372c2a78b3f753d7d6aaf))
+
+
+
+
+
 ## [0.16.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.16.0...@aws-amplify/graphql-transformer-core@0.16.1) (2022-02-15)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-core

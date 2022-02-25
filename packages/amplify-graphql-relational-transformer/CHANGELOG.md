@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.7.6...@aws-amplify/graphql-relational-transformer@0.7.7) (2022-02-25)
+
+
+
+## 7.6.22 (2022-02-24)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** fix relational map key schema lookup when using LSI ([#9722](https://github.com/aws-amplify/amplify-cli/issues/9722)) ([1794cda](https://github.com/aws-amplify/amplify-cli/commit/1794cda7658d9d7596b372c2a78b3f753d7d6aaf))
+* **graphql-auth-transformer:** update resolver should allow if update operation is set ([#9808](https://github.com/aws-amplify/amplify-cli/issues/9808)) ([44a9bea](https://github.com/aws-amplify/amplify-cli/commit/44a9bea139a9a1483cfbc7db29b84938510ffdca))
+* **graphql:** hasMany on model with (queries: null) generate correct scalar filter type ([#9742](https://github.com/aws-amplify/amplify-cli/issues/9742)) ([d75546c](https://github.com/aws-amplify/amplify-cli/commit/d75546cbc308e2c6f3a676ccbe8632fe9711ae0f))
+* include default values in index arg validation ([#9759](https://github.com/aws-amplify/amplify-cli/issues/9759)) ([e135e42](https://github.com/aws-amplify/amplify-cli/commit/e135e42ece439dd9925edd8488dbc6a129d92aa8))
+
+
+
+
+
 ## [0.7.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.7.5...@aws-amplify/graphql-relational-transformer@0.7.6) (2022-02-15)
 
 **Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
