@@ -1,6 +1,6 @@
 {
   "name": "amplify-appsync-simulator",
-  "version": "2.3.7",
+  "version": "2.3.8-beta.0",
   "description": "An AppSync Simulator to test AppSync API.",
   "repository": {
     "type": "git",
@@ -65,7 +65,7 @@
     "@types/node": "^12.12.6",
     "@types/pino": "^6.3.11",
     "@types/ws": "^7.4.4",
-    "amplify-graphiql-explorer": "2.4.4"
+    "amplify-graphiql-explorer": "2.4.5-beta.0"
   },
   "jest": {
     "testRunner": "jest-circus/runner",

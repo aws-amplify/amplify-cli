@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.4.7-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.4.6...graphql-transformers-e2e-tests@7.4.7-beta.0) (2022-02-25)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** update resolver should allow if update operation is set ([#9808](https://github.com/aws-amplify/amplify-cli/issues/9808)) ([44a9bea](https://github.com/aws-amplify/amplify-cli/commit/44a9bea139a9a1483cfbc7db29b84938510ffdca))
+* **graphql:** hasMany on model with (queries: null) generate correct scalar filter type ([#9742](https://github.com/aws-amplify/amplify-cli/issues/9742)) ([d75546c](https://github.com/aws-amplify/amplify-cli/commit/d75546cbc308e2c6f3a676ccbe8632fe9711ae0f))
+
+
+
+
+
 ## [7.4.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.4.5...graphql-transformers-e2e-tests@7.4.6) (2022-02-15)
 
 **Note:** Version bump only for package graphql-transformers-e2e-tests
