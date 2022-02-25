@@ -1,6 +1,6 @@
 {
   "name": "amplify-util-headless-input",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "description": "Logic for validating objects against JSON-schema specs and performing version upgrades when necessary / possible",
   "main": "lib/index.js",
   "scripts": {
@@ -15,7 +15,7 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "ajv": "^6.12.2",
+    "ajv": "^6.12.6",
     "amplify-headless-interface": "1.14.1"
   },
   "devDependencies": {

@@ -41,7 +41,7 @@ describe('mapsTo with searchable', () => {
     const out = transformSchema(mappedSearchableSchema);
     const searchResolverLines = out.resolvers['Query.searchTodos.req.vtl'].split('\n');
     expect(searchResolverLines[0]).toMatchInlineSnapshot(`"#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )"`);
-    expect(searchResolverLines[1].startsWith('#set( $indexPath = "/task/doc/_search" )')).toBe(true);
+    expect(searchResolverLines[1].startsWith('#set( $indexPath = "/task/_search" )')).toBe(true);
   });
 
   it('references original table in sreaming function', () => {

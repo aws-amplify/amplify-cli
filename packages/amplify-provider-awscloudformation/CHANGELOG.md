@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.9.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.7...amplify-provider-awscloudformation@5.9.8) (2022-02-25)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [5.9.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.6...amplify-provider-awscloudformation@5.9.7) (2022-02-18)
+
+
+### Bug Fixes
+
+* **graphql:** handle sandbox pull with no environment info ([#9776](https://github.com/aws-amplify/amplify-cli/issues/9776)) ([0c6508b](https://github.com/aws-amplify/amplify-cli/commit/0c6508b1ce1f25218d8ce99cf59142b207774fa1))
+
+
+
+
+
+## [5.9.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.5...amplify-provider-awscloudformation@5.9.6) (2022-02-15)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
 ## [5.9.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.1...amplify-provider-awscloudformation@5.9.5) (2022-02-10)
 
 
