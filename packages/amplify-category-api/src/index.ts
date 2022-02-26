@@ -240,10 +240,7 @@ export const executeAmplifyHeadlessCommand = async (context: $TSContext, headles
       break;
     case 'update':
       const resourceName = await getAppSyncApiResourceName(context);
-      if (!(await checkAppsyncApiResourceMigration(context, resourceName, true))) {
-        printer.error('Update operations only work on migrated projects. Run "amplify update api" and opt for migration.');
-        exitOnNextTick(0);
-      }
+      await checkAppsyncApiResourceMigration(context, resourceName, true);
       await getCfnApiArtifactHandler(context).updateArtifacts(await validateUpdateApiRequest(headlessPayload));
       break;
     default:
