@@ -294,9 +294,14 @@ export function updateApiWithMultiAuth(cwd: string, settings?: { testingWithLate
     const testingWithLatestCodebase = settings?.testingWithLatestCodebase ?? false;
     const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true });
     chain.wait('Select from one of the below mentioned services:').sendCarriageReturn();
-    const doMigrate = settings?.doMigrate || testingWithLatestCodebase;
-    if (doMigrate) {
-      chain.wait('Do you want to migrate api resource').sendConfirmYes();
+    const doMigrate = settings?.doMigrate ?? testingWithLatestCodebase;
+    if (testingWithLatestCodebase) {
+      chain.wait('Do you want to migrate api resource');
+      if (doMigrate) {
+        chain.sendConfirmYes();
+      } else {
+        chain.sendConfirmNo();
+      }
     }
     chain
       .wait(/.*Select a setting to edit.*/)

@@ -2,6 +2,7 @@ import {
   addHeadlessApi,
   amplifyPush,
   amplifyPushUpdate,
+  cliInputsExists,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -95,8 +96,8 @@ describe('api migration update test', () => {
     await amplifyPush(projRoot);
     // update and push with codebase
     await updateApiWithMultiAuth(projRoot, { testingWithLatestCodebase: true, doMigrate: false });
-    // cli-inputs should exist
-    expect(getCLIInputs(projRoot, 'api', 'simplemodelmultiauth')).toBeDefined();
+    // cli-inputs should not exist
+    expect(cliInputsExists(projRoot, 'api', 'simplemodelmultiauth')).toBe(false);
     await amplifyPushUpdate(projRoot, undefined, true, true);
 
     const meta = getProjectMeta(projRoot);
