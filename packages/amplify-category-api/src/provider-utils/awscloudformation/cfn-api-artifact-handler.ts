@@ -300,7 +300,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
 
   /**
    * If the resource is migrated, updates cli-inputs.json with the specified updates
-   * If not migrated, this method is a noop (but still retusn the schema path)
+   * If not migrated, this method is a noop (but still returns the schema path)
    * @param updates The updates to apply
    * @param apiName The api name
    * @returns The gqlSchemaPath
