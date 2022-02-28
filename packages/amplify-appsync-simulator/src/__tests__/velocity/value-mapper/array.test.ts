@@ -16,7 +16,7 @@ describe(' Velocity ValueMapper JavaArray', () => {
   it('size', () => {
     const JS_ARRAY = [1, 2, 3];
     const arr = new JavaArray(JS_ARRAY, identityMapper);
-    expect(arr.size()).toEqual(JS_ARRAY.length);
+    expect(arr.size().valueOf()).toEqual(JS_ARRAY.length);
   });
 
   it('isEmpty', () => {
@@ -27,7 +27,7 @@ describe(' Velocity ValueMapper JavaArray', () => {
   it('add', () => {
     const arr = new JavaArray([], identityMapper);
     arr.add(1);
-    expect(arr.size()).toEqual(1);
+    expect(arr.size().valueOf()).toEqual(1);
     expect(arr.toJSON()).toEqual([1]);
   });
 
@@ -36,14 +36,14 @@ describe(' Velocity ValueMapper JavaArray', () => {
     const arr = new JavaArray([], identityMapper);
     arr.addAll(NEW_ARR);
     expect(identityMapper).toBeCalledTimes(NEW_ARR.length);
-    expect(arr.size()).toEqual(NEW_ARR.length);
+    expect(arr.size().valueOf()).toEqual(NEW_ARR.length);
     expect(arr.toJSON()).toEqual(NEW_ARR);
   });
 
   it('clear', () => {
     const NEW_ARR = [1, 2, 3];
     const arr = new JavaArray(NEW_ARR, identityMapper);
-    expect(arr.size()).toEqual(NEW_ARR.length);
+    expect(arr.size().valueOf()).toEqual(NEW_ARR.length);
     arr.clear();
     expect(arr.toJSON()).toEqual([]);
   });

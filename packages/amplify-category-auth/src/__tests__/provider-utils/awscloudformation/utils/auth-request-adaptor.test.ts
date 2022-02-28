@@ -18,7 +18,7 @@ describe('get add auth request adaptor', () => {
   describe('valid translations', () => {
     it('translates request with minimal user pool config only', () => {
       const addAuthRequest: AddAuthRequest = {
-        version: 1,
+        version: 2,
         resourceName: 'myTestAuth',
         serviceConfiguration: {
           serviceName: 'Cognito',
@@ -36,7 +36,7 @@ describe('get add auth request adaptor', () => {
   it('translates request with aliasAttributes', () => {
     FeatureFlags.getBoolean = () => true;
     const addAuthRequest: AddAuthRequest = {
-      version: 1,
+      version: 2,
       resourceName: 'myTestAuth',
       serviceConfiguration: {
         serviceName: 'Cognito',
@@ -58,7 +58,7 @@ describe('get add auth request adaptor', () => {
   it('translates request without aliasAttributes', () => {
     FeatureFlags.getBoolean = () => true;
     const addAuthRequest: AddAuthRequest = {
-      version: 1,
+      version: 2,
       resourceName: 'myTestAuth',
       serviceConfiguration: {
         serviceName: 'Cognito',
@@ -77,13 +77,42 @@ describe('get add auth request adaptor', () => {
 
     expect(getAddAuthRequestAdaptor('javascript')(addAuthRequest)).toMatchSnapshot();
   });
+
+  it('translates request with autoVerifiedAttributes', () => {
+    FeatureFlags.getBoolean = () => true;
+    const addAuthRequest: AddAuthRequest = {
+      version: 2,
+      resourceName: 'myTestAuth',
+      serviceConfiguration: {
+        serviceName: 'Cognito',
+        includeIdentityPool: false,
+        userPoolConfiguration: {
+          signinMethod: CognitoUserPoolSigninMethod.EMAIL,
+          requiredSignupAttributes: [CognitoUserProperty.EMAIL],
+          autoVerifiedAttributes: [
+            {
+              type: 'EMAIL',
+              verificationMessage: 'test email verificaiton message {####}',
+              verificationSubject: 'test email verification subject',
+            },
+            {
+              type: 'PHONE_NUMBER',
+              verificationMessage: 'test sms verification message {####}',
+            },
+          ],
+        },
+      },
+    };
+
+    expect(getAddAuthRequestAdaptor('javascript')(addAuthRequest)).toMatchSnapshot();
+  });
 });
 
 describe('get update auth request adaptor', () => {
   describe('valid translations', () => {
     it('translates empty oAuth config into hostedUI: false', () => {
       const updateAuthRequest: UpdateAuthRequest = {
-        version: 1,
+        version: 2,
         serviceModification: {
           serviceName: 'Cognito',
           userPoolModification: {

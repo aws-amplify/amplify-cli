@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-analytics",
-  "version": "3.2.20",
+  "version": "3.2.21",
   "description": "amplify-cli analytics plugin",
   "repository": {
     "type": "git",
@@ -20,7 +20,7 @@
     "watch": "tsc --watch"
   },
   "dependencies": {
-    "amplify-cli-core": "2.4.15",
+    "amplify-cli-core": "2.4.16",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",
     "uuid": "^8.3.2"

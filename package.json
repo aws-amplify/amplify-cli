@@ -26,6 +26,7 @@
     "link-aa-win": "node ./scripts/link-bin.js packages/amplify-app/bin/amplify-app amplify-app-dev",
     "setup-dev-win": "yarn dev-build && yarn link-win && yarn link-aa-win",
     "split-e2e-tests": "yarn ts-node ./scripts/split-e2e-tests.ts && git add .circleci/config.yml",
+    "verify-commit": "yarn ts-node ./scripts/verify-commit.ts",
     "pkg-clean": "rimraf build out pkg/node_modules pkg/yarn.lock",
     "pkg-all": "source .circleci/local_publish_helpers.sh && generatePkgCli",
     "pkg-all-local": "yarn verdaccio-start && yarn verdaccio-connect && yarn publish-to-verdaccio && yarn pkg-all && yarn verdaccio-disconnect",
@@ -59,7 +60,7 @@
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
       "pre-push": "yarn build-tests && yarn run lint && yarn run test-changed",
-      "pre-commit": "yarn split-e2e-tests && pretty-quick --staged"
+      "pre-commit": "yarn verify-commit && yarn split-e2e-tests && pretty-quick --staged"
     }
   },
   "author": "Amazon Web Services",

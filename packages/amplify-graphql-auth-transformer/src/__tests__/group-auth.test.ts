@@ -230,9 +230,6 @@ test('dynamic group auth generates authorized fields list correctly', () => {
             #if( !$groupAllowedFields0.isEmpty() || !$groupNullAllowedFields0.isEmpty() )
               $util.qr($allowedFields.addAll($groupAllowedFields0))
               $util.qr($nullAllowedFields.addAll($groupNullAllowedFields0))
-            #else
-              #set( $isAuthorized = true )
-              #break
             #end
           #end
         #end

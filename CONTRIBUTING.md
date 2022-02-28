@@ -117,7 +117,6 @@ When filing a bug, please try to be as detailed as possible. In addition to the 
 - Any modifications you've made relevant to the bug
 - Anything unusual about your environment or deployment
 
-
 Guidelines for bug reports:
 
 - Check to see if a [duplicate or closed issue](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+) already exists!
@@ -126,9 +125,7 @@ Guidelines for bug reports:
 - Format any code snippets using [Markdown](https://docs.github.com/en/github/writing-on-github/creating-and-highlighting-code-blocks) syntax
 - If you're not using the latest version of the CLI, see if the issue still persists after upgrading - this helps to isolate regressions!
 
-
 Finally, thank you for taking the time to read this, and taking the time to write a good bug report.
-
 
 ## Commits
 
@@ -250,7 +247,7 @@ You could also contribute by reporting bugs, reproduction of bugs with sample co
 
 ## Community
 
-Join the [Discord Server](https://discord.com/invite/amplify). If it's your first time contributing, checkout the `#first-time-contributor` channel.
+Join the [Discord Server](https://discord.com/invite/amplify). If it's your first time contributing, checkout the [`#contributing`](https://discord.com/channels/705853757799399426/882526909374808084) channel.
 
 ## Code of Conduct
 

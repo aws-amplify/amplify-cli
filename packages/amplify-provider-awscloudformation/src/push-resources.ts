@@ -114,11 +114,14 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
     await createEnvLevelConstructs(context);
 
     // removing dependent functions if @model{Table} is deleted
-    const apiResourceTobeUpdated = resourcesToBeUpdated.filter(resource => resource.service === 'AppSync');
-    if (apiResourceTobeUpdated.length) {
+    const apiResourceTobeChanged = resourcesToBeUpdated
+      .concat(resourcesToBeDeleted)
+      .concat(resourcesToBeCreated)
+      .filter(resource => resource.service === 'AppSync');
+    if (apiResourceTobeChanged.length) {
       const functionResourceToBeUpdated = await ensureValidFunctionModelDependencies(
         context,
-        apiResourceTobeUpdated,
+        apiResourceTobeChanged,
         allResources as $TSObject[],
       );
       // filter updated function to replace with existing updated ones(in case of duplicates)
@@ -869,7 +872,7 @@ export async function formNestedStack(
   resourceName?: string,
   serviceName?: string,
   skipEnv?: boolean,
-  useExistingMeta?: boolean
+  useExistingMeta?: boolean,
 ) {
   let rootStack;
   // CFN transform for Root stack
