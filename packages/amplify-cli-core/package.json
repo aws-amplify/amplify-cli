@@ -39,6 +39,7 @@
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
     "open": "^8.4.0",
+    "ora": "^4.0.3",
     "proxy-agent": "^5.0.0",
     "semver": "^7.3.5",
     "typescript-json-schema": "~0.52.0",
