@@ -224,6 +224,9 @@ export async function executeAmplifyCommand(context: $TSContext) {
   } catch (error) {
     if (error) {
       printer.error(error.message || error);
+      if(error.stack) {
+        printer.debug(error.stack);
+      }
       await context.usageData.emitError(error);
     }
     process.exitCode = 1;
