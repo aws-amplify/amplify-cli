@@ -2,7 +2,7 @@ import { pathManager, JSONUtilities, $TSContext, $TSAny } from 'amplify-cli-core
 import { printer } from 'amplify-prompts';
 import fs from 'fs-extra';
 import path from 'path';
-import semver from 'semver';
+import rangeSubset from 'semver/ranges/subset';
 import { extractArgs } from './extractArgs';
 import { ReactRequiredDependencyProvider } from '@aws-amplify/codegen-ui-react';
 import { ReactRequiredDependencyProvider as ReactRequiredDependencyProviderQ1 } from '@aws-amplify/codegen-ui-react-q1-release';
@@ -38,7 +38,7 @@ export const notifyMissingPackages = (context: $TSContext, schemas: any[]) => {
       printer.warn(
         `UIBuilder components required "${dependency.dependencyName}" that is not in your package.json. Run \`npm install ${dependency.dependencyName}@${dependency.supportedSemVerPattern}\`. ${dependency.reason}`,
       );
-    } else if (!semver.satisfies(packageJson.dependencies[dependency.dependencyName], dependency.supportedSemVerPattern)) {
+    } else if (!rangeSubset(packageJson.dependencies[dependency.dependencyName], dependency.supportedSemVerPattern)) {
       printer.warn(
         `UIBuilder components requires version "${dependency.supportedSemVerPattern}" of "${
           dependency.dependencyName
