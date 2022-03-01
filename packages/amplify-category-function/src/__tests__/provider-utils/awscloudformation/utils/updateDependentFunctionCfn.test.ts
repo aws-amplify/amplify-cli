@@ -1,6 +1,4 @@
-import {
-  updateMissingDependencyFunctionsCfn,
-} from '../../../../provider-utils/awscloudformation/utils/updateDependentFunctionCfn';
+import { updateDependentFunctionsCfn } from '../../../../provider-utils/awscloudformation/utils/updateDependentFunctionCfn';
 import { loadFunctionParameters } from '../../../../provider-utils/awscloudformation/utils/loadFunctionParameters';
 import {
   getResourcesForCfn,
@@ -88,7 +86,7 @@ generateEnvVariablesforCFN_mock.mockResolvedValue({ dependsOn, environmentMap, e
 
 test('update dependent functions', async () => {
   jest.clearAllMocks();
-  const existingModels = ['model1', 'model2'];
+  const modelsDeleted = ['model3'];
   loadResourceParameters_mock
     .mockReturnValueOnce({
       permissions: {
@@ -106,13 +104,13 @@ test('update dependent functions', async () => {
         },
       },
     });
-  await updateMissingDependencyFunctionsCfn(contextStub as unknown as $TSContext, allResources, backendDir, existingModels, apiResourceName);
+  await updateDependentFunctionsCfn(contextStub as unknown as $TSContext, allResources, backendDir, modelsDeleted, apiResourceName);
   expect(updateCFNFileForResourcePermissions_mock.mock.calls[0][1]).toMatchSnapshot();
 });
 
 test('update dependent functions', async () => {
   jest.clearAllMocks();
-  const existingModels = ['model3'];
+  const modelsDeleted = ['model1', 'model2'];
   loadResourceParameters_mock
     .mockReturnValueOnce({
       permissions: {
@@ -144,6 +142,6 @@ test('update dependent functions', async () => {
         },
       ],
     });
-  await updateMissingDependencyFunctionsCfn(contextStub as unknown as $TSContext, allResources, backendDir, existingModels, apiResourceName);
+  await updateDependentFunctionsCfn(contextStub as unknown as $TSContext, allResources, backendDir, modelsDeleted, apiResourceName);
   expect(updateCFNFileForResourcePermissions_mock.mock.calls[0][1]).toMatchSnapshot();
 });
