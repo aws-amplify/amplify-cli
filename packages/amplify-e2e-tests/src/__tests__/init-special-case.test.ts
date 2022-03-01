@@ -9,8 +9,8 @@ import {
   getParameters,
   getTeamProviderInfo,
   initJSProjectWithProfile,
-  initNewEnvWithProfile,
   transformCurrentProjectToGitPulledProject,
+  updatedInitNewEnvWithProfile,
 } from 'amplify-e2e-core';
 import * as specialCaseInit from '../init-special-cases';
 
@@ -21,8 +21,8 @@ describe('amplify init', () => {
   });
 
   afterEach(async () => {
-    await deleteProject(projRoot);
-    deleteProjectDir(projRoot);
+    // await deleteProject(projRoot);
+    // deleteProjectDir(projRoot);
   });
 
   it('init without credential files and no new user set up', async () => {
@@ -35,7 +35,7 @@ describe('amplify init', () => {
     expect(DeploymentBucketName).toBeAS3Bucket(DeploymentBucketName);
   });
 
-  it('test init on a git pulled project', async () => {
+  it.only('test init on a git pulled project', async () => {
     const envName = 'dev';
     const resourceName = 'authConsoleTest';
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false, name: resourceName, envName });
@@ -54,7 +54,7 @@ describe('amplify init', () => {
     transformCurrentProjectToGitPulledProject(projRoot);
 
     // to not crash
-    expect(await initNewEnvWithProfile(projRoot, { envName })).not.toThrow();
+    expect(await updatedInitNewEnvWithProfile(projRoot, { envName })).not.toThrow();
 
     // check parameters.json exists
     expect(getParameters(projRoot, category, resourceName)).not.toThrow();
