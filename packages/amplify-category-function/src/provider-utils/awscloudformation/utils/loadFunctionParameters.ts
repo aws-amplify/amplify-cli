@@ -14,8 +14,3 @@ export const loadFunctionParameters = (resourcePath: string) => {
   }
   return funcParams;
 };
-
-export const loadFunctionStackAsJSON = (resourcePath: string, functionName: string) => {
-  const stackJSON = JSONUtilities.readJson<$TSAny>(path.join(resourcePath,`${functionName}-cloudformation-template.json`));
-  return stackJSON;
-}
