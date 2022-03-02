@@ -15,7 +15,7 @@ import {
   $TSAny,
 } from 'amplify-cli-core';
 import { AmplifyAuthCognitoStack } from './auth-cognito-stack-builder';
-import { AuthStackSythesizer } from './stack-synthesizer';
+import { AuthStackSynthesizer } from './stack-synthesizer';
 import * as cdk from '@aws-cdk/core';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
 import { CognitoStackOptions, AuthTriggerConnection, AuthTriggerPermissions } from '../service-walkthrough-types/cognito-user-input-types';
@@ -34,13 +34,13 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
   private _category: string;
   private _service: string;
   private _authTemplateObj: AmplifyAuthCognitoStack; // Props to modify Root stack data
-  private _synthesizer: AuthStackSythesizer;
+  private _synthesizer: AuthStackSynthesizer;
   private _cliInputs: CognitoCLIInputs;
   private _cognitoStackProps: CognitoStackOptions;
 
   constructor(resourceName: string) {
     super(resourceName);
-    this._synthesizer = new AuthStackSythesizer();
+    this._synthesizer = new AuthStackSynthesizer();
     this._app = new cdk.App();
     this._category = AmplifyCategories.AUTH;
     this._service = AmplifySupportedService.COGNITO;

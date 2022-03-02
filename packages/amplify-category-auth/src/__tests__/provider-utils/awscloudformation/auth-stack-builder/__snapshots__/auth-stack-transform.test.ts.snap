@@ -1545,6 +1545,7 @@ exports.handler = (event, context, callback) => {
     "OAuthCustomResource": Object {
       "DependsOn": Array [
         "HostedUICustomResourceInputs",
+        "HostedUIProvidersCustomResourceInputs",
       ],
       "Properties": Object {
         "Code": Object {
