@@ -57,6 +57,11 @@ const typeDefs: TypeDef[] = [
     typeName: 'UpdateGeoRequest',
     category: 'geo',
     relativeSourcePaths: ['add.ts', 'update.ts'].map(file => path.join('geo', file)),
+  },
+  {
+    typeName: 'RemoveGeoRequest',
+    category: 'geo',
+    relativeSourcePaths: [path.join('geo', 'remove.ts')],
   }
 ];
 

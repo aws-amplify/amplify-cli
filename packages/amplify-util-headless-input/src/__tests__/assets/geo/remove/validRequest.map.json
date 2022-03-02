@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "serviceRemoval":{
+    "serviceName": "Map",
+    "name": "mymapname",
+    "newDefaultResourceName": "mynewdefaultmap"
+  }
+}

@@ -1,0 +1,69 @@
+{
+    "description": "Defines the json object expected by `amplify remove geo --headless`",
+    "type": "object",
+    "properties": {
+        "version": {
+            "description": "The schema version.",
+            "type": "number",
+            "enum": [
+                1
+            ]
+        },
+        "serviceRemoval": {
+            "description": "The service configuration that will be interpreted by Amplify.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/BaseGeoServiceRemoval"
+                },
+                {
+                    "$ref": "#/definitions/MapRemoval"
+                }
+            ]
+        }
+    },
+    "required": [
+        "serviceRemoval",
+        "version"
+    ],
+    "definitions": {
+        "BaseGeoServiceRemoval": {
+            "description": "Configuration that applies to all geo service removal.",
+            "type": "object",
+            "properties": {
+                "serviceName": {
+                    "description": "The service name of the resource provider.",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "The name of the map that will be removed.",
+                    "type": "string"
+                },
+                "newDefaultResourceName": {
+                    "description": "Optional param. The name of new default resource when the removed one is default",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name",
+                "serviceName"
+            ]
+        },
+        "MapRemoval": {
+            "description": "Specifies configuration for map.",
+            "type": "object",
+            "properties": {
+                "serviceName": {
+                    "description": "The service name of the resource provider.",
+                    "type": "string",
+                    "enum": [
+                        "Map"
+                    ]
+                }
+            },
+            "required": [
+                "serviceName"
+            ]
+        }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#"
+}

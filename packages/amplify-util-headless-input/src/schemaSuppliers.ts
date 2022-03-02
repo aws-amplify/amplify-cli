@@ -44,6 +44,10 @@ export const updateGeoRequestSchemaSupplier: VersionedSchemaSupplier = version =
   return getSchema('UpdateGeoRequest', 'geo', version);
 }
 
+export const removeGeoRequestSchemaSupplier: VersionedSchemaSupplier = version => {
+  return getSchema('RemoveGeoRequest', 'geo', version);
+}
+
 const getSchema = async (type: string, category: string, version: number) => {
   try {
     return {

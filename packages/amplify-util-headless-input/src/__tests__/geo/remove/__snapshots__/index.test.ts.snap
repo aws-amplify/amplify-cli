@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`validate remove geo request returns valid payload for map 1`] = `
+Object {
+  "serviceRemoval": Object {
+    "name": "mymapname",
+    "newDefaultResourceName": "mynewdefaultmap",
+    "serviceName": "Map",
+  },
+  "version": 1,
+}
+`;

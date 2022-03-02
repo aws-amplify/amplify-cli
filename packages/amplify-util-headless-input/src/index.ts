@@ -10,6 +10,7 @@ import {
   UpdateStorageRequest,
   AddGeoRequest,
   UpdateGeoRequest,
+  RemoveGeoRequest
 } from 'amplify-headless-interface';
 import { HeadlessInputValidator } from './HeadlessInputValidator';
 import {
@@ -24,6 +25,7 @@ import {
   updateStorageRequestSchemaSupplier,
   addGeoRequestSchemaSupplier,
   updateGeoRequestSchemaSupplier,
+  removeGeoRequestSchemaSupplier
 } from './schemaSuppliers';
 import { authUpgradePipeline, noopUpgradePipeline } from './upgradePipelines';
 
@@ -73,4 +75,8 @@ export const validateAddGeoRequest = (raw: string) => {
 
 export const validateUpdateGeoRequest = (raw: string) => {
   return new HeadlessInputValidator(updateGeoRequestSchemaSupplier, noopUpgradePipeline).validate<UpdateGeoRequest>(raw);
+};
+
+export const validateRemoveGeoRequest = (raw: string) => {
+  return new HeadlessInputValidator(removeGeoRequestSchemaSupplier, noopUpgradePipeline).validate<RemoveGeoRequest>(raw);
 };

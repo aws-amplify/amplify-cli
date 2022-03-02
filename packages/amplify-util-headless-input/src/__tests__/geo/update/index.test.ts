@@ -1,6 +1,6 @@
 import fs from 'fs-extra';
 import path from 'path';
-import { validateAddGeoRequest, validateUpdateGeoRequest } from '../../../index';
+import { validateUpdateGeoRequest } from '../../../index';
 
 const assetRoot = path.resolve(path.join(__dirname, '..', '..', 'assets'));
 
