@@ -13,14 +13,14 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/codegen-ui-orig": "npm:@aws-amplify/codegen-ui@1.2.0",
-    "@aws-amplify/codegen-ui-react-orig": "npm:@aws-amplify/codegen-ui-react@1.2.0",
-    "@aws-amplify/codegen-ui-q1-release": "npm:@aws-amplify/codegen-ui@q1-release",
-    "@aws-amplify/codegen-ui-react-q1-release": "npm:@aws-amplify/codegen-ui-react@q1-release",
+    "@aws-amplify/codegen-ui-old": "npm:@aws-amplify/codegen-ui@1.2.0",
+    "@aws-amplify/codegen-ui-react-old": "npm:@aws-amplify/codegen-ui-react@1.2.0",
+    "@aws-amplify/codegen-ui-new": "npm:@aws-amplify/codegen-ui@2.1.0",
+    "@aws-amplify/codegen-ui-react-new": "npm:@aws-amplify/codegen-ui-react@2.1.0",
     "amplify-cli-core": "2.4.15",
     "amplify-prompts": "1.6.3",
     "amplify-provider-awscloudformation": "5.9.6",
-    "aws-sdk": "file:./aws-sdk.tgz"
+    "aws-sdk": "2.1084.0"
   },
   "jest": {
     "testRunner": "jest-circus/runner",

@@ -4,16 +4,16 @@ import fs from 'fs-extra';
 import path from 'path';
 import rangeSubset from 'semver/ranges/subset';
 import { extractArgs } from './extractArgs';
-import { ReactRequiredDependencyProvider } from '@aws-amplify/codegen-ui-react';
-import { ReactRequiredDependencyProvider as ReactRequiredDependencyProviderQ1 } from '@aws-amplify/codegen-ui-react-q1-release';
+import { ReactRequiredDependencyProvider } from '@aws-amplify/codegen-ui-react-old';
+import { ReactRequiredDependencyProvider as ReactRequiredDependencyProviderNew } from '@aws-amplify/codegen-ui-react-new';
 
-const shouldUseQ1Release = (schemas: any[]) => {
+const isUpdatedSchema = (schemas: any[]) => {
   return schemas.some(schema => schema.schemaVersion && schema.schemaVersion == '1.0');
 };
 
 const getRequiredDependencies = (schemas: any[]) => {
-  if (shouldUseQ1Release(schemas)) {
-    return new ReactRequiredDependencyProviderQ1().getRequiredDependencies();
+  if (isUpdatedSchema(schemas)) {
+    return new ReactRequiredDependencyProviderNew().getRequiredDependencies();
   }
   return new ReactRequiredDependencyProvider().getRequiredDependencies();
 };
@@ -32,19 +32,19 @@ export const notifyMissingPackages = (context: $TSContext, schemas: any[]) => {
     return;
   }
   const packageJson = JSONUtilities.readJson(packageJsonPath) as { dependencies: { [key: string]: string } };
-  getRequiredDependencies(schemas).forEach(dependency => {
+  getRequiredDependencies(schemas).forEach((dependency: any) => {
     const packageIsInstalled = Object.keys(packageJson.dependencies).includes(dependency.dependencyName);
     if (!packageIsInstalled) {
       printer.warn(
-        `UIBuilder components required "${dependency.dependencyName}" that is not in your package.json. Run \`npm install ${dependency.dependencyName}@${dependency.supportedSemVerPattern}\`. ${dependency.reason}`,
+        `UIBuilder components required "${dependency.dependencyName}" that is not in your package.json. Run \`npm install "${dependency.dependencyName}@${dependency.supportedSemVerPattern}"\`. ${dependency.reason}`,
       );
     } else if (!rangeSubset(packageJson.dependencies[dependency.dependencyName], dependency.supportedSemVerPattern)) {
       printer.warn(
         `UIBuilder components requires version "${dependency.supportedSemVerPattern}" of "${
           dependency.dependencyName
-        }". You currently are on version "${packageJson.dependencies[dependency.dependencyName]}". Run \`npm install ${
+        }". You currently are on version "${packageJson.dependencies[dependency.dependencyName]}". Run \`npm install "${
           dependency.dependencyName
-        }@${dependency.supportedSemVerPattern}\`. ${dependency.reason}`,
+        }@${dependency.supportedSemVerPattern}"\`. ${dependency.reason}`,
       );
     }
   });
