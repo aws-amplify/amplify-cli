@@ -100,7 +100,33 @@
   dependencies:
     "@aws-amplify/core" "4.3.11"
 
-"@aws-amplify/codegen-ui-react@1.2.0":
+"@aws-amplify/codegen-ui-new@npm:@aws-amplify/codegen-ui@2.1.0", "@aws-amplify/codegen-ui@2.1.0":
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui/-/codegen-ui-2.1.0.tgz#a75eaee407965ea34443e7a00c19115cba263d6a"
+  integrity sha512-tWdYt4Vn8Y9CcYQ3eCGWQlPehna5SZATU9dus+t6cEcBQv+sFvBlM59N68B3SxOYAplPltSqdAJphHM+DFWIUQ==
+  dependencies:
+    yup "^0.32.11"
+
+"@aws-amplify/codegen-ui-old@npm:@aws-amplify/codegen-ui@1.2.0", "@aws-amplify/codegen-ui@1.2.0":
+  name "@aws-amplify/codegen-ui-orig"
+  version "1.2.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui/-/codegen-ui-1.2.0.tgz#30b865eef7451d7cc8d1ae648f7d95638d9209f4"
+  integrity sha512-UKULRKpQG8ABLNjEiLyGoR01PeDli90AbiX/z9RoyVntoyAqWIorYsZcvDh5kb5xhQySU/Rp9cKmZxbJqoxtcQ==
+  dependencies:
+    yup "^0.32.11"
+
+"@aws-amplify/codegen-ui-react-new@npm:@aws-amplify/codegen-ui-react@2.1.0":
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui-react/-/codegen-ui-react-2.1.0.tgz#a9012e293130632e50276039fd610d464ca66de9"
+  integrity sha512-S0eCxR6PHch+bT62LeAbqwlze4bzXpji8vxaRVaB8zPgkmfdODcdjIVFp6wLCSbsEqTSEpyLmYE1L8f4mkwZ6A==
+  dependencies:
+    "@aws-amplify/codegen-ui" "2.1.0"
+    "@typescript/vfs" "~1.3.5"
+    typescript "~4.4.4"
+  optionalDependencies:
+    prettier "2.3.2"
+
+"@aws-amplify/codegen-ui-react-old@npm:@aws-amplify/codegen-ui-react@1.2.0":
   version "1.2.0"
   resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui-react/-/codegen-ui-react-1.2.0.tgz#e78aaa0dc947d719b286efb0ea5e9fa22a3bb4dc"
   integrity sha512-KFBQQTtzTu4m29KpRtGj07MbxW19OR+wSZonv0bUVuX2W8EctUQzfBYROH+4RvzuPKHBYr8U6XxNdZ/6f19L8w==
@@ -109,13 +135,6 @@
     "@typescript/vfs" "~1.3.5"
     prettier "2.3.2"
     typescript "~4.4.4"
-
-"@aws-amplify/codegen-ui@1.2.0":
-  version "1.2.0"
-  resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui/-/codegen-ui-1.2.0.tgz#30b865eef7451d7cc8d1ae648f7d95638d9209f4"
-  integrity sha512-UKULRKpQG8ABLNjEiLyGoR01PeDli90AbiX/z9RoyVntoyAqWIorYsZcvDh5kb5xhQySU/Rp9cKmZxbJqoxtcQ==
-  dependencies:
-    yup "^0.32.11"
 
 "@aws-amplify/core@4.3.11":
   version "4.3.11"
@@ -8871,6 +8890,21 @@ aws-sdk-mock@^5.6.2:
     sinon "^11.1.1"
     traverse "^0.6.6"
 
+aws-sdk@2.1084.0:
+  version "2.1084.0"
+  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1084.0.tgz#cfc0c87ed87989a75a6ef25db814cc529fde09ac"
+  integrity sha512-fhMjPRrrln8LhMZw17IyrzkVXCG6okFMrZzgIZN1h63WWGot65qcIvYfUn7YyHpYWMLBeND8MRfW6x6PIqJBdA==
+  dependencies:
+    buffer "4.9.2"
+    events "1.1.1"
+    ieee754 "1.1.13"
+    jmespath "0.16.0"
+    querystring "0.2.0"
+    sax "1.2.1"
+    url "0.10.3"
+    uuid "3.3.2"
+    xml2js "0.4.19"
+
 aws-sdk@2.518.0:
   version "2.518.0"
   resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.518.0.tgz#a0412cfcb41fd02e18d9e8b20c1dce356160fcc2"
@@ -16474,6 +16508,11 @@ jmespath@0.15.0:
   version "0.15.0"
   resolved "https://registry.npmjs.org/jmespath/-/jmespath-0.15.0.tgz#a3f222a9aae9f966f5d27c796510e28091764217"
   integrity sha1-o/Iiqarp+Wb10nx5ZRDigJF2Qhc=
+
+jmespath@0.16.0:
+  version "0.16.0"
+  resolved "https://registry.npmjs.org/jmespath/-/jmespath-0.16.0.tgz#b15b0a85dfd4d930d43e69ed605943c802785076"
+  integrity sha512-9FzQjJ7MATs1tSpnco1K6ayiYE3figslrXA72G2HQ/n76RzvYlofyi5QM+iX4YRs/pu3yzxlVQSST23+dMDknw==
 
 jose@^4.3.7:
   version "4.3.7"

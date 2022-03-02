@@ -1,15 +1,15 @@
-import { StudioTemplateRendererManager, StudioTemplateRendererFactory, StudioComponent } from '@aws-amplify/codegen-ui-orig';
+import { StudioTemplateRendererManager, StudioTemplateRendererFactory, StudioComponent } from '@aws-amplify/codegen-ui-old';
 import {
   AmplifyRenderer,
   ReactThemeStudioTemplateRenderer,
   ModuleKind,
   ScriptTarget,
   ScriptKind,
-} from '@aws-amplify/codegen-ui-react-orig';
+} from '@aws-amplify/codegen-ui-react-old';
 import { getUiBuilderComponentsPath } from './getUiBuilderComponentsPath';
 import { printer } from 'amplify-prompts';
 import { $TSContext } from 'amplify-cli-core';
-import { createUiBuilderComponent as createUiBuilderComponentQ1, createUiBuilderTheme as createUiBuilderThemeQ1, generateAmplifyUiBuilderIndexFile as generateAmplifyUiBuilderIndexFileQ1} from './createUiBuilderComponentQ1';
+import { createUiBuilderComponent as createUiBuilderComponentNew, createUiBuilderTheme as createUiBuilderThemeNew, generateAmplifyUiBuilderIndexFile as generateAmplifyUiBuilderIndexFileNew} from './createUiBuilderComponentNew';
 const config = {
   module: ModuleKind.ES2020,
   target: ScriptTarget.ES2020,
@@ -17,16 +17,16 @@ const config = {
   renderTypeDeclarations: true,
 };
 
-const shouldUseQ1Release = (schema: any) => {
+const isUpdatedSchema = (schema: any) => {
   return schema.schemaVersion && schema.schemaVersion == '1.0'
 }
 
 export const createUiBuilderComponent = (context: $TSContext, schema: any) => {
-  if (shouldUseQ1Release(schema)) {
-    return createUiBuilderComponentQ1(context, schema);
+  if (isUpdatedSchema(schema)) {
+    return createUiBuilderComponentNew(context, schema);
   }
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
-  const rendererFactory = new StudioTemplateRendererFactory((component: StudioComponent) => new AmplifyRenderer(component, config));
+  const rendererFactory = new StudioTemplateRendererFactory((component: StudioComponent) => new AmplifyRenderer(component as any, config) as any);
 
   const outputPathDir = uiBuilderComponentsPath;
   const outputConfig = {
@@ -40,11 +40,11 @@ export const createUiBuilderComponent = (context: $TSContext, schema: any) => {
 };
 
 export const createUiBuilderTheme = (context: $TSContext, schema: any) => {
-  if (shouldUseQ1Release(schema)) {
-    return createUiBuilderThemeQ1(context, schema);
+  if (isUpdatedSchema(schema)) {
+    return createUiBuilderThemeNew(context, schema);
   }
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
-  const rendererFactory = new StudioTemplateRendererFactory((component: any) => new ReactThemeStudioTemplateRenderer(component, config));
+  const rendererFactory = new StudioTemplateRendererFactory((component: any) => new ReactThemeStudioTemplateRenderer(component, config) as any);
 
   const outputPathDir = uiBuilderComponentsPath;
   const outputConfig = {
@@ -65,5 +65,5 @@ export const createUiBuilderTheme = (context: $TSContext, schema: any) => {
 };
 
 export const generateAmplifyUiBuilderIndexFile = (context: $TSContext, schemas: any[]) => {
-    return generateAmplifyUiBuilderIndexFileQ1(context, schemas);
+    return generateAmplifyUiBuilderIndexFileNew(context, schemas);
 };

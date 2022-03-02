@@ -23,7 +23,7 @@ describe('should notify when packages are missing', () => {
         },
       },
     };
-    notifyMissingPackages(context as any);
+    notifyMissingPackages(context as any, []);
     expect(printerDependency.printer.debug).toBeCalledTimes(1);
   });
 
@@ -39,7 +39,7 @@ describe('should notify when packages are missing', () => {
         },
       },
     };
-    notifyMissingPackages(context as any);
+    notifyMissingPackages(context as any, []);
     expect(printerDependency.printer.debug).toBeCalledTimes(1);
   });
 
@@ -51,8 +51,8 @@ describe('should notify when packages are missing', () => {
         },
       },
     };
-    notifyMissingPackages(context as any);
-    expect(printerDependency.printer.warn).toBeCalledTimes(2);
+    notifyMissingPackages(context as any, []);
+    expect(printerDependency.printer.warn).toBeCalledTimes(1);
   });
 
   it('notifies for partial missing dependencies', async () => {
@@ -67,7 +67,7 @@ describe('should notify when packages are missing', () => {
         },
       },
     };
-    notifyMissingPackages(context as any);
+    notifyMissingPackages(context as any, []);
     expect(printerDependency.printer.warn).toBeCalledTimes(1);
   });
 });

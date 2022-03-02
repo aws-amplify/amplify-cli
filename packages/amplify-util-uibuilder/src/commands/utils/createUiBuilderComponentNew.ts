@@ -1,4 +1,4 @@
-import { StudioTemplateRendererManager, StudioTemplateRendererFactory, StudioComponent } from '@aws-amplify/codegen-ui-q1-release';
+import { StudioTemplateRendererManager, StudioTemplateRendererFactory, StudioComponent } from '@aws-amplify/codegen-ui-new';
 import {
   AmplifyRenderer,
   ReactThemeStudioTemplateRenderer,
@@ -6,7 +6,7 @@ import {
   ModuleKind,
   ScriptTarget,
   ScriptKind,
-} from '@aws-amplify/codegen-ui-react-q1-release';
+} from '@aws-amplify/codegen-ui-react-new';
 import { getUiBuilderComponentsPath } from './getUiBuilderComponentsPath';
 import { printer } from 'amplify-prompts';
 import { $TSContext } from 'amplify-cli-core';
