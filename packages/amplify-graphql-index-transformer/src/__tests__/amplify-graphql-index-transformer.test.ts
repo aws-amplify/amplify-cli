@@ -52,6 +52,47 @@ test('throws if an invalid LSI is created', () => {
   );
 });
 
+test('throws if an LSI is missing sort fields', () => {
+  const schema = `
+    type Test @model {
+      id: ID! @primaryKey(sortKeyFields: ["foo"]) @index(name: "index1")
+      foo: ID!
+    }`;
+
+  const schemaInverted = `
+    type Test @model {
+      id: ID! @index(name: "index1") @primaryKey(sortKeyFields: ["foo"]) 
+      foo: ID!
+    }`;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
+    featureFlags: {
+      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+        if (name === 'secondaryKeyAsGSI') {
+          return false;
+        }
+        return defaultValue;
+      }),
+      getNumber: jest.fn(),
+      getObject: jest.fn(),
+      getString: jest.fn(),
+    },
+  });
+
+  expect(() => {
+    transformer.transform(schema);
+  }).toThrow(
+    `Invalid @index 'index1'. You may not create an index where the partition key is the same as that of the primary key unless the index has a sort field. You cannot have a local secondary index without a sort key in the index.`,
+  );
+
+  expect(() => {
+    transformer.transform(schemaInverted);
+  }).toThrow(
+    `Invalid @index 'index1'. You may not create an index where the partition key is the same as that of the primary key unless the index has a sort field. You cannot have a local secondary index without a sort key in the index.`,
+  );
+});
+
 test('throws if @index is used on a non-scalar field', () => {
   const schema = `
     type NonScalar {

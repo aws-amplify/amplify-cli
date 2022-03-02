@@ -88,6 +88,7 @@ export class IndexTransformer extends TransformerPluginBase {
 
 function validate(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void {
   const { name, object, field, sortKeyFields } = config;
+  const defaultGSI = ctx.featureFlags.getBoolean('secondaryKeyAsGSI', true);
 
   validateNotSelfReferencing(config);
 
@@ -112,12 +113,10 @@ function validate(config: IndexDirectiveConfiguration, ctx: TransformerContextPr
       }
 
       if (peerDirective.name.value === 'primaryKey') {
+        const hasSortFields = peerDirective.arguments!.some((arg: any) => arg.name.value === 'sortKeyFields');
         config.primaryKeyField = objectField;
 
-        if (
-          objectField.name.value === field.name.value &&
-          !peerDirective.arguments!.some((arg: any) => arg.name.value === 'sortKeyFields')
-        ) {
+        if (!hasSortFields && objectField.name.value === field.name.value) {
           throw new InvalidDirectiveError(
             `Invalid @index '${name}'. You may not create an index where the partition key ` +
               'is the same as that of the primary key unless the primary key has a sort field. ' +
@@ -132,6 +131,18 @@ function validate(config: IndexDirectiveConfiguration, ctx: TransformerContextPr
       ) {
         throw new InvalidDirectiveError(
           `You may only supply one @${directiveName} with the name '${name}' on type '${object.name.value}'.`,
+        );
+      }
+    }
+
+    for (const peerDirective of objectField.directives!) {
+      const hasSortFields = peerDirective.arguments!.some((arg: any) => arg.name.value === 'sortKeyFields');
+
+      if (!defaultGSI && !hasSortFields && objectField == config.primaryKeyField) {
+        throw new InvalidDirectiveError(
+          `Invalid @index '${name}'. You may not create an index where the partition key ` +
+            'is the same as that of the primary key unless the index has a sort field. ' +
+            'You cannot have a local secondary index without a sort key in the index.',
         );
       }
     }
