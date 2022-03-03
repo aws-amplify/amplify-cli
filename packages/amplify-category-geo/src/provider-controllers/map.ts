@@ -41,10 +41,7 @@ export const removeMapResource = async (
 ): Promise<string | undefined> => {
   const mapToRemove = await removeWalkthrough(context, ServiceName.Map);
   if (!mapToRemove) return;
-
-  await removeMapResourceWithParams(context, mapToRemove);
-
-  return mapToRemove
+  return await removeMapResourceWithParams(context, mapToRemove);
 };
 
 export const addMapResourceHeadless = async (
@@ -121,14 +118,22 @@ export const removeMapResourceWithParams = async (
     .then(async (resource: { service: string; resourceName: string } | undefined) => {
       // choose another default if removing a default map
       if (resource?.service === ServiceName.Map && mapParams.isDefault) {
+        // select new default map in headless mode
         if (isHeadlessCommand) {
+          const remainingMaps = ((await context.amplify.getResourceStatus()).allResources as any[])
+            .filter(resource => resource.service === ServiceName.Map)
+            .map(resource => resource.resourceName);
           // directly update the new default map when provided
           if (newDefaultMap && checkGeoResourceExists(newDefaultMap)) {
             await updateDefaultResource(context, ServiceName.Map, newDefaultMap);
           }
+          // otherwise select first available map as default
+          else if (remainingMaps.length > 0) {
+            await updateDefaultResource(context, ServiceName.Map, remainingMaps[0]);
+          }
         }
 
-        // pop up walkthrough question for new default map
+        // pop up walkthrough question for new default map in non headless scenario
         else {
           await updateDefaultMapWalkthrough(context, resource.resourceName);
         }
