@@ -6,11 +6,13 @@ import {
   ScriptTarget,
   ScriptKind,
 } from '@aws-amplify/codegen-ui-react-old';
+
 import {StudioComponent as StudioComponentNew, StudioTheme} from '@aws-amplify/codegen-ui-new';
 import { getUiBuilderComponentsPath } from './getUiBuilderComponentsPath';
 import { printer } from 'amplify-prompts';
 import { $TSContext } from 'amplify-cli-core';
 import { createUiBuilderComponent as createUiBuilderComponentNew } from './createUiBuilderComponentNew';
+import { ReactIndexStudioTemplateRenderer } from '@aws-amplify/codegen-ui-react-new';
 const config = {
   module: ModuleKind.ES2020,
   target: ScriptTarget.ES2020,

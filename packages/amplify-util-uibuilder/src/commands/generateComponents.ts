@@ -6,6 +6,7 @@ import {
   generateUiBuilderComponents,
   generateUiBuilderThemes,
 } from './utils/syncAmplifyUiBuilderComponents';
+import { StudioComponent as StudioComponentNew } from '@aws-amplify/codegen-ui-new';
 import { generateAmplifyUiBuilderIndexFile } from './utils/createUiBuilderComponent';
 import { printer } from 'amplify-prompts';
 import ora from 'ora';
@@ -31,7 +32,7 @@ export async function run(context: $TSContext) {
     generateAmplifyUiBuilderIndexFile(context, [
       ...generatedComponentResults.filter(({ resultType }) => resultType === 'SUCCESS').map(({ component }) => component),
       ...generatedThemeResults.filter(({ resultType }) => resultType === 'SUCCESS').map(({ theme }) => theme),
-    ]);
+    ] as StudioComponentNew[]);
 
     const failedSchemas = [
       ...generatedComponentResults.filter(({ resultType }) => resultType === 'FAILURE').map(({ schemaName }) => schemaName),
@@ -47,7 +48,7 @@ export async function run(context: $TSContext) {
     notifyMissingPackages(context, [
       ...generatedComponentResults.filter(({ resultType }) => resultType === 'SUCCESS').map(({ component }) => component),
       ...generatedThemeResults.filter(({ resultType }) => resultType === 'SUCCESS').map(({ theme }) => theme),
-    ]);
+    ] as StudioComponentNew[]);
   } catch (e) {
     printer.debug(e);
     spinner.fail('Failed to sync UI components');
