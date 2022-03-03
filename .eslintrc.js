@@ -61,7 +61,7 @@ module.exports = {
     // Typescript rules
     // Extends recommended rules here: https://www.npmjs.com/package/@typescript-eslint/eslint-plugin
     '@typescript-eslint/naming-convention': [
-      'warn',
+      'error',
       // Add to this block to enforce naming conventions on different identifiers
       // Docs here: https://github.com/typescript-eslint/typescript-eslint/blob/HEAD/packages/eslint-plugin/docs/rules/naming-convention.md
       {
@@ -84,7 +84,8 @@ module.exports = {
     ],
     '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],
     '@typescript-eslint/no-explicit-any': 'error',
-    '@typescript-eslint/no-unused-vars': 'warn',
+    '@typescript-eslint/no-unused-vars': 'error',
+    '@typescript-eslint/no-useless-constructor': 'error',
 
     // Import Rules
     // Extends recommended rules here: https://github.com/import-js/eslint-plugin-import/blob/6c957e7df178d1b81d01cf219d62ba91b4e6d9e8/config/recommended.js
@@ -100,6 +101,8 @@ module.exports = {
     // ESLint Rules
     // These rules override the AirBnb rules here: https://github.com/airbnb/javascript
     // as well as the recommended ESLint rules here: https://eslint.org/docs/rules/
+
+    // this is the same as the AirBnb rule, but with length of 140 instead of 100
     'max-len': ['error', 140, 2, {
       ignoreUrls: true,
       ignoreComments: false,
@@ -122,6 +125,8 @@ module.exports = {
     'strict': 'error',
     'spaced-comment': ['error', 'always'],
     'no-new': 'error',
+    'no-unused-vars': ['error', { vars: 'all', args: 'all' }],
+    'no-useless-constructor': 'off',
   },
   overrides: [
     {
