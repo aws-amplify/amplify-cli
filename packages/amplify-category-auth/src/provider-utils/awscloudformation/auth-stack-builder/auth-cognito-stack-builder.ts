@@ -28,7 +28,7 @@ const LambdaTriggersKeys = [
   'PostAuthentication',
   'PostConfirmation',
   'PreAuthentication',
-  'PreSignUp',
+  'PreSignup',
   'PreTokenGeneration',
   'VerifyAuthChallengeResponse',
 ];
@@ -349,10 +349,10 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
               preAuthentication: cdk.Fn.ref(`function${props.resourceName}${'PreAuthentication'}Arn`),
             };
           }
-          if (trigger.resourceName.includes('PreSignUp')) {
+          if (trigger.resourceName.includes('PreSignup')) {
             this.userPool!.lambdaConfig = {
               ...this.userPool!.lambdaConfig,
-              preSignUp: cdk.Fn.ref(`function${props.resourceName}${'PreSignUp'}Arn`),
+              preSignUp: cdk.Fn.ref(`function${props.resourceName}${'PreSignup'}Arn`),
             };
           }
           if (trigger.resourceName.includes('PreTokenGeneration')) {
