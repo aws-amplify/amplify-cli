@@ -6,19 +6,20 @@ import rangeSubset from 'semver/ranges/subset';
 import { extractArgs } from './extractArgs';
 import { ReactRequiredDependencyProvider } from '@aws-amplify/codegen-ui-react-old';
 import { ReactRequiredDependencyProvider as ReactRequiredDependencyProviderNew } from '@aws-amplify/codegen-ui-react-new';
+import { StudioComponent } from '@aws-amplify/codegen-ui-new';
 
-const isUpdatedSchema = (schemas: any[]) => {
+const isUpdatedSchema = (schemas: StudioComponent[]) => {
   return schemas.some(schema => schema.schemaVersion && schema.schemaVersion == '1.0');
 };
 
-const getRequiredDependencies = (schemas: any[]) => {
+const getRequiredDependencies = (schemas: StudioComponent[]) => {
   if (isUpdatedSchema(schemas)) {
     return new ReactRequiredDependencyProviderNew().getRequiredDependencies();
   }
   return new ReactRequiredDependencyProvider().getRequiredDependencies();
 };
 
-export const notifyMissingPackages = (context: $TSContext, schemas: any[]) => {
+export const notifyMissingPackages = (context: $TSContext, schemas: StudioComponent[]) => {
   const args = extractArgs(context);
   const localEnvFilePath = args.localEnvFilePath ?? pathManager.getLocalEnvFilePath();
   if (!fs.existsSync(localEnvFilePath)) {
@@ -32,7 +33,7 @@ export const notifyMissingPackages = (context: $TSContext, schemas: any[]) => {
     return;
   }
   const packageJson = JSONUtilities.readJson(packageJsonPath) as { dependencies: { [key: string]: string } };
-  getRequiredDependencies(schemas).forEach((dependency: any) => {
+  getRequiredDependencies(schemas).forEach((dependency: $TSAny) => {
     const packageIsInstalled = Object.keys(packageJson.dependencies).includes(dependency.dependencyName);
     if (!packageIsInstalled) {
       printer.warn(

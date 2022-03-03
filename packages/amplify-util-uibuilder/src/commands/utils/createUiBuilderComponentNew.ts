@@ -1,4 +1,4 @@
-import { StudioTemplateRendererManager, StudioTemplateRendererFactory, StudioComponent } from '@aws-amplify/codegen-ui-new';
+import { StudioTemplateRendererManager, StudioTemplateRendererFactory, StudioComponent, StudioTheme, StudioTemplateRenderer, FrameworkOutputManager, RenderTextComponentResponse } from '@aws-amplify/codegen-ui-new';
 import {
   AmplifyRenderer,
   ReactThemeStudioTemplateRenderer,
@@ -17,9 +17,9 @@ const config = {
   renderTypeDeclarations: true,
 };
 
-export const createUiBuilderComponent = (context: $TSContext, schema: any) => {
+export const createUiBuilderComponent = (context: $TSContext, schema: StudioComponent) => {
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
-  const rendererFactory = new StudioTemplateRendererFactory((component: any) => new AmplifyRenderer(component, config) as any);
+  const rendererFactory = new StudioTemplateRendererFactory((component: StudioComponent) => new AmplifyRenderer(component, config) as unknown as StudioTemplateRenderer<unknown, StudioComponent, FrameworkOutputManager<unknown>, RenderTextComponentResponse>);
 
   const outputPathDir = uiBuilderComponentsPath;
   const outputConfig = {
@@ -32,9 +32,9 @@ export const createUiBuilderComponent = (context: $TSContext, schema: any) => {
   return schema;
 };
 
-export const createUiBuilderTheme = (context: $TSContext, schema: any) => {
+export const createUiBuilderTheme = (context: $TSContext, schema: StudioTheme) => {
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
-  const rendererFactory = new StudioTemplateRendererFactory((component: any) => new ReactThemeStudioTemplateRenderer(component, config) as any);
+  const rendererFactory = new StudioTemplateRendererFactory((component: StudioTheme) => new ReactThemeStudioTemplateRenderer(component, config) as unknown as StudioTemplateRenderer<unknown, StudioTheme, FrameworkOutputManager<unknown>, RenderTextComponentResponse>);
 
   const outputPathDir = uiBuilderComponentsPath;
   const outputConfig = {
@@ -54,9 +54,9 @@ export const createUiBuilderTheme = (context: $TSContext, schema: any) => {
   }
 };
 
-export const generateAmplifyUiBuilderIndexFile = (context: $TSContext, schemas: any[]) => {
+export const generateAmplifyUiBuilderIndexFile = (context: $TSContext, schemas: StudioComponent[]) => {
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
-  const rendererFactory = new StudioTemplateRendererFactory((component: any) => new ReactIndexStudioTemplateRenderer(component, config) as any);
+  const rendererFactory = new StudioTemplateRendererFactory((component: StudioComponent[]) => new ReactIndexStudioTemplateRenderer(component, config) as unknown as StudioTemplateRenderer<unknown, StudioComponent[], FrameworkOutputManager<unknown>, RenderTextComponentResponse>);
 
   const outputPathDir = uiBuilderComponentsPath;
   const outputConfig = {
