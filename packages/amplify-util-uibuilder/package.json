@@ -22,6 +22,9 @@
     "amplify-provider-awscloudformation": "5.9.8",
     "aws-sdk": "2.1084.0"
   },
+  "devDependencies": {
+    "@aws-amplify/codegen-ui": "*"
+  },
   "jest": {
     "testRunner": "jest-circus/runner",
     "preset": "ts-jest",
