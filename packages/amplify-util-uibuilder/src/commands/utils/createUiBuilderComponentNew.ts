@@ -51,22 +51,3 @@ export const createUiBuilderTheme = (context: $TSContext, schema: StudioTheme) =
     throw e;
   }
 };
-
-export const generateAmplifyUiBuilderIndexFile = (context: $TSContext, schemas: StudioComponent[]) => {
-  const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
-  const rendererFactory = new StudioTemplateRendererFactory((component: StudioComponent[]) => new ReactIndexStudioTemplateRenderer(component, config) as unknown as StudioTemplateRenderer<unknown, StudioComponent[], FrameworkOutputManager<unknown>, RenderTextComponentResponse>);
-
-  const outputPathDir = uiBuilderComponentsPath;
-
-  const rendererManager = new StudioTemplateRendererManager(rendererFactory, {
-    outputPathDir,
-  });
-
-  try {
-    return rendererManager.renderSchemaToTemplate(schemas);
-  } catch (e) {
-    printer.debug(e);
-    printer.debug('Failed to generate component index file');
-    throw e;
-  }
-};

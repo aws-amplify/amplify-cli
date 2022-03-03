@@ -10,7 +10,7 @@ import {StudioComponent as StudioComponentNew, StudioTheme} from '@aws-amplify/c
 import { getUiBuilderComponentsPath } from './getUiBuilderComponentsPath';
 import { printer } from 'amplify-prompts';
 import { $TSContext } from 'amplify-cli-core';
-import { createUiBuilderComponent as createUiBuilderComponentNew, generateAmplifyUiBuilderIndexFile as generateAmplifyUiBuilderIndexFileNew} from './createUiBuilderComponentNew';
+import { createUiBuilderComponent as createUiBuilderComponentNew } from './createUiBuilderComponentNew';
 const config = {
   module: ModuleKind.ES2020,
   target: ScriptTarget.ES2020,
@@ -61,5 +61,19 @@ export const createUiBuilderTheme = (context: $TSContext, schema: StudioTheme) =
 };
 
 export const generateAmplifyUiBuilderIndexFile = (context: $TSContext, schemas: StudioComponentNew[]) => {
-    return generateAmplifyUiBuilderIndexFileNew(context, schemas);
-};
+  const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
+  const rendererFactory = new StudioTemplateRendererFactory((component: StudioComponentNew[]) => new ReactIndexStudioTemplateRenderer(component, config) as unknown as StudioTemplateRenderer<unknown, StudioComponentNew[], FrameworkOutputManager<unknown>, RenderTextComponentResponse>);
+
+  const outputPathDir = uiBuilderComponentsPath;
+
+  const rendererManager = new StudioTemplateRendererManager(rendererFactory, {
+    outputPathDir,
+  });
+
+  try {
+    return rendererManager.renderSchemaToTemplate(schemas);
+  } catch (e) {
+    printer.debug(e);
+    printer.debug('Failed to generate component index file');
+    throw e;
+  }};
