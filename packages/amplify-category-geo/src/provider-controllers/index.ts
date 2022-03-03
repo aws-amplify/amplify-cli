@@ -3,11 +3,11 @@ import { ServiceName, provider } from '../service-utils/constants';
 import { $TSObject, open, stateManager } from 'amplify-cli-core';
 import { $TSContext } from 'amplify-cli-core';
 import { addPlaceIndexResource, updatePlaceIndexResource, removePlaceIndexResource } from './placeIndex';
-import { addMapResource, updateMapResource, removeMapResource, addMapResourceHeadless, updateMapResourceHeadless } from './map';
+import { addMapResource, updateMapResource, removeMapResource, addMapResourceHeadless, updateMapResourceHeadless, removeMapResourceHeadless } from './map';
 import { printer, prompter } from 'amplify-prompts';
 import { getServiceFriendlyName } from '../service-walkthroughs/resourceWalkthrough';
 import { TemplateMappings } from '../service-stacks/baseStack';
-import { validateAddGeoRequest, validateUpdateGeoRequest } from 'amplify-util-headless-input';
+import { validateAddGeoRequest, validateUpdateGeoRequest, validateRemoveGeoRequest } from 'amplify-util-headless-input';
 import { checkGeoResourceExists } from '../service-utils/resourceUtils';
 
 /**
@@ -163,6 +163,26 @@ export const updateResourceHeadless = async (
   switch (serviceName) {
     case ServiceName.Map:
       return updateMapResourceHeadless(context, serviceModification);
+    default:
+      throw badHeadlessServiceError(serviceName);
+  }
+};
+
+/**
+ * Entry point for headless command of removing an existing Geo resource
+ */
+ export const removeResourceHeadless = async (
+  context: $TSContext,
+  headlessPayload: string
+): Promise<string | undefined> => {
+  const { serviceRemoval } = await validateRemoveGeoRequest(headlessPayload);
+  const { serviceName, name } = serviceRemoval;
+  if (!await checkGeoResourceExists(name)) {
+    throw new Error(`Geo resource with name '${name}' does not exist.`)
+  }
+  switch (serviceName) {
+    case ServiceName.Map:
+      return removeMapResourceHeadless(context, serviceRemoval);
     default:
       throw badHeadlessServiceError(serviceName);
   }

@@ -8,8 +8,9 @@ import { printNextStepsSuccessMessage, setProviderContext } from './index';
 import { ServiceName } from '../service-utils/constants';
 import { printer } from 'amplify-prompts';
 import { getMapStyleComponents } from '../service-utils/mapParams';
-import { GeoServiceConfiguration, GeoServiceModification } from 'amplify-headless-interface';
+import { GeoServiceConfiguration, GeoServiceModification, GeoServiceRemoval } from 'amplify-headless-interface';
 import { merge } from '../service-utils/resourceUtils';
+import { checkGeoResourceExists, updateDefaultResource } from '../service-utils/resourceUtils';
 
 export const addMapResource = async (
   context: $TSContext
@@ -38,33 +39,12 @@ export const updateMapResource = async (
 export const removeMapResource = async (
   context: any
 ): Promise<string | undefined> => {
-  const { amplify } = context;
-  const resourceToRemove = await removeWalkthrough(context, ServiceName.Map);
-  if (!resourceToRemove) return;
+  const mapToRemove = await removeWalkthrough(context, ServiceName.Map);
+  if (!mapToRemove) return;
 
-  const resourceParameters = await getCurrentMapParameters(resourceToRemove);
+  await removeMapResourceWithParams(context, mapToRemove);
 
-  try {
-    await amplify.removeResource(context, category, resourceToRemove)
-    .then(async (resource: { service: string; resourceName: string }) => {
-      if (resource?.service === ServiceName.Map && resourceParameters.isDefault) {
-        // choose another default if removing a default map
-        await updateDefaultMapWalkthrough(context, resource.resourceName);
-      }
-    });
-  } catch (err: $TSAny) {
-    if (err.stack) {
-      printer.error(err.stack);
-      printer.error(err.message);
-      printer.error(`An error occurred when removing the geo resource ${resourceToRemove}`);
-    }
-
-    context.usageData.emitError(err);
-    process.exitCode = 1;
-  }
-
-  printNextStepsSuccessMessage(context);
-  return resourceToRemove;
+  return mapToRemove
 };
 
 export const addMapResourceHeadless = async (
@@ -98,6 +78,13 @@ export const updateMapResourceHeadless = async (
   return await updateMapResourceWithParams(context, mapParams);
 }
 
+export const removeMapResourceHeadless = async (
+  context: $TSContext,
+  config: GeoServiceRemoval
+): Promise<string> => {
+  return await removeMapResourceWithParams(context, config.name, true, config.newDefaultResourceName);
+}
+
 export const addMapResourceWithParams = async (
   context: $TSContext,
   mapParams: Partial<MapParameters>
@@ -119,4 +106,44 @@ export const updateMapResourceWithParams = async (
   printer.success(`Successfully updated resource ${mapParams.name} locally.`);
   printNextStepsSuccessMessage(context);
   return completeParameters.name;
+}
+
+export const removeMapResourceWithParams = async (
+  context: $TSContext,
+  mapToRemove: string,
+  isHeadlessCommand: boolean = false,
+  newDefaultMap?: string
+): Promise<string> => {
+  const { amplify } = context;
+  const mapParams = await getCurrentMapParameters(mapToRemove);
+  try {
+    await amplify.removeResource(context, category, mapToRemove)
+    .then(async (resource: { service: string; resourceName: string } | undefined) => {
+      // choose another default if removing a default map
+      if (resource?.service === ServiceName.Map && mapParams.isDefault) {
+        if (isHeadlessCommand) {
+          // directly update the new default map when provided
+          if (newDefaultMap && checkGeoResourceExists(newDefaultMap)) {
+            await updateDefaultResource(context, ServiceName.Map, newDefaultMap);
+          }
+        }
+
+        // pop up walkthrough question for new default map
+        else {
+          await updateDefaultMapWalkthrough(context, resource.resourceName);
+        }
+      }
+    });
+  } catch (err: $TSAny) {
+    if (err.stack) {
+      printer.error(err.stack);
+      printer.error(err.message);
+      printer.error(`An error occurred when removing the geo resource ${mapToRemove}`);
+    }
+
+    context.usageData.emitError(err);
+    process.exitCode = 1;
+  }
+  printNextStepsSuccessMessage(context);
+  return mapToRemove;
 }
