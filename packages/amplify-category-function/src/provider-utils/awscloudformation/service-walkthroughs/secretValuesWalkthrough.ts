@@ -176,7 +176,7 @@ const enterSecretName = async (invalidNames: string[]) =>
 
 const secretValueDefaultMessage = (secretName: string) => `Enter the value for ${secretName}:`;
 
-export const secretValueValidator = () => (input?: string) => {
+export const secretValueValidator = (input?: string) => {
   if (typeof input !== 'string' || input.length === 0 || input.length > 2048) {
     return 'Secret value must be between 1 and 2048 characters long';
   }
@@ -189,7 +189,7 @@ const enterSecretValue = async (message: string) =>
       type: 'password',
       name: 'secretValue',
       message,
-      validate: secretValueValidator(),
+      validate: secretValueValidator,
     })
   ).secretValue;
 
