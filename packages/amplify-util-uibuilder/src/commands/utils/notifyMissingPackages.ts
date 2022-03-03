@@ -9,7 +9,7 @@ import { ReactRequiredDependencyProvider as ReactRequiredDependencyProviderNew }
 import { StudioComponent } from '@aws-amplify/codegen-ui-new';
 
 const isUpdatedSchema = (schemas: StudioComponent[]) => {
-  return schemas.some(schema => schema.schemaVersion && schema.schemaVersion == '1.0');
+  return schemas.some(schema => schema.schemaVersion && schema.schemaVersion === '1.0');
 };
 
 const getRequiredDependencies = (schemas: StudioComponent[]) => {

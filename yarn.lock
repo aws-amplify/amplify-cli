@@ -8928,7 +8928,22 @@ aws-sdk@2.518.0:
     uuid "3.3.2"
     xml2js "0.4.19"
 
-aws-sdk@^2.1042.0, aws-sdk@^2.518.0, aws-sdk@^2.848.0, aws-sdk@^2.928.0, aws-sdk@^2.963.0, aws-sdk@^2.979.0:
+aws-sdk@^2.1084.0:
+  version "2.1086.0"
+  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1086.0.tgz#49e782f8017d1962651061606b6ac0f901af8fe6"
+  integrity sha512-iQb9UpvaJphZSJrNccN8xA3rQBG7mg29Qvgt2VG4XnUM4cwD/i4+gJ3V/rSmM4rzAWZMbTk04lal+KBn7ByNyw==
+  dependencies:
+    buffer "4.9.2"
+    events "1.1.1"
+    ieee754 "1.1.13"
+    jmespath "0.16.0"
+    querystring "0.2.0"
+    sax "1.2.1"
+    url "0.10.3"
+    uuid "3.3.2"
+    xml2js "0.4.19"
+
+aws-sdk@^2.518.0, aws-sdk@^2.848.0, aws-sdk@^2.928.0, aws-sdk@^2.979.0:
   version "2.1046.0"
   resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1046.0.tgz#9147b0fa1c86acbebd1a061e951ab5012f4499d7"
   integrity sha512-ocwHclMXdIA+NWocUyvp9Ild3/zy2vr5mHp3mTyodf0WU5lzBE8PocCVLSWhMAXLxyia83xv2y5f5AzAcetbqA==

@@ -22,11 +22,10 @@ export const createUiBuilderComponent = (context: $TSContext, schema: StudioComp
   const rendererFactory = new StudioTemplateRendererFactory((component: StudioComponent) => new AmplifyRenderer(component, config) as unknown as StudioTemplateRenderer<unknown, StudioComponent, FrameworkOutputManager<unknown>, RenderTextComponentResponse>);
 
   const outputPathDir = uiBuilderComponentsPath;
-  const outputConfig = {
-    outputPathDir,
-  };
 
-  const rendererManager = new StudioTemplateRendererManager(rendererFactory, outputConfig);
+  const rendererManager = new StudioTemplateRendererManager(rendererFactory, {
+    outputPathDir,
+  });
 
   rendererManager.renderSchemaToTemplate(schema);
   return schema;
@@ -37,11 +36,10 @@ export const createUiBuilderTheme = (context: $TSContext, schema: StudioTheme) =
   const rendererFactory = new StudioTemplateRendererFactory((component: StudioTheme) => new ReactThemeStudioTemplateRenderer(component, config) as unknown as StudioTemplateRenderer<unknown, StudioTheme, FrameworkOutputManager<unknown>, RenderTextComponentResponse>);
 
   const outputPathDir = uiBuilderComponentsPath;
-  const outputConfig = {
-    outputPathDir,
-  };
 
-  const rendererManager = new StudioTemplateRendererManager(rendererFactory, outputConfig);
+  const rendererManager = new StudioTemplateRendererManager(rendererFactory, {
+    outputPathDir,
+  });
 
   try {
     rendererManager.renderSchemaToTemplate(schema);
@@ -59,11 +57,10 @@ export const generateAmplifyUiBuilderIndexFile = (context: $TSContext, schemas: 
   const rendererFactory = new StudioTemplateRendererFactory((component: StudioComponent[]) => new ReactIndexStudioTemplateRenderer(component, config) as unknown as StudioTemplateRenderer<unknown, StudioComponent[], FrameworkOutputManager<unknown>, RenderTextComponentResponse>);
 
   const outputPathDir = uiBuilderComponentsPath;
-  const outputConfig = {
-    outputPathDir,
-  };
 
-  const rendererManager = new StudioTemplateRendererManager(rendererFactory, outputConfig);
+  const rendererManager = new StudioTemplateRendererManager(rendererFactory, {
+    outputPathDir,
+  });
 
   try {
     return rendererManager.renderSchemaToTemplate(schemas);

@@ -19,7 +19,7 @@ const config = {
 };
 
 const isUpdatedSchema = (schema: StudioComponentNew) => {
-  return schema.schemaVersion && schema.schemaVersion == '1.0'
+  return schema.schemaVersion && schema.schemaVersion === '1.0'
 }
 
 export const createUiBuilderComponent = (context: $TSContext, schema: StudioComponentNew) => {
@@ -30,11 +30,10 @@ export const createUiBuilderComponent = (context: $TSContext, schema: StudioComp
   const rendererFactory = new StudioTemplateRendererFactory((component: StudioComponentNew) => new AmplifyRenderer(component, config) as unknown as StudioTemplateRenderer<unknown, StudioComponentNew, FrameworkOutputManager<unknown>, RenderTextComponentResponse>);
 
   const outputPathDir = uiBuilderComponentsPath;
-  const outputConfig = {
-    outputPathDir,
-  };
 
-  const rendererManager = new StudioTemplateRendererManager(rendererFactory, outputConfig);
+  const rendererManager = new StudioTemplateRendererManager(rendererFactory, {
+    outputPathDir,
+  });
 
   rendererManager.renderSchemaToTemplate(schema);
   return schema;
@@ -45,11 +44,10 @@ export const createUiBuilderTheme = (context: $TSContext, schema: StudioTheme) =
   const rendererFactory = new StudioTemplateRendererFactory((component: StudioTheme) => new ReactThemeStudioTemplateRenderer(component, config) as unknown as StudioTemplateRenderer<unknown, StudioTheme, FrameworkOutputManager<unknown>, RenderTextComponentResponse>);
 
   const outputPathDir = uiBuilderComponentsPath;
-  const outputConfig = {
-    outputPathDir,
-  };
 
-  const rendererManager = new StudioTemplateRendererManager(rendererFactory, outputConfig);
+  const rendererManager = new StudioTemplateRendererManager(rendererFactory, {
+    outputPathDir,
+  });
 
   try {
     rendererManager.renderSchemaToTemplate(schema);

@@ -65,7 +65,7 @@
     "amplify-function-plugin-interface": "1.9.4",
     "amplify-nodejs-function-runtime-provider": "2.2.21",
     "aws-appsync": "^2.0.2",
-    "aws-sdk": "^2.963.0",
+    "aws-sdk": "^2.1084.0",
     "aws-sdk-mock": "^5.6.2",
     "axios": "^0.26.0",
     "graphql-auth-transformer": "7.2.24",

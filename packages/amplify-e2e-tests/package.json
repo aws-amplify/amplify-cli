@@ -28,7 +28,7 @@
     "amplify-e2e-core": "2.6.12",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
-    "aws-sdk": "^2.1042.0",
+    "aws-sdk": "^2.1084.0",
     "circleci-api": "^4.1.4",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",

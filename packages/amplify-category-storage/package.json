@@ -44,7 +44,7 @@
     "vm2": "^3.9.8"
   },
   "devDependencies": {
-    "aws-sdk": "^2.963.0",
+    "aws-sdk": "^2.1084.0",
     "cloudform-types": "^4.2.0",
     "rimraf": "^3.0.2"
   },
