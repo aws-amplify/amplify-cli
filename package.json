@@ -13,7 +13,8 @@
     "check-version-conflicts:beta": "yarn ts-node ./scripts/check-version.ts beta",
     "check-version-conflicts:release": "yarn ts-node ./scripts/check-version.ts",
     "build": "lerna run build",
-    "build-tests": "lerna run build-tests --since master",
+    "build-tests-changed": "lerna run build-tests --since master",
+    "build-tests": "lerna run build-tests",
     "production-build": "yarn --frozen-lockfile --cache-folder ~/.cache/yarn && lerna run build --concurrency 3 --stream",
     "dev-build": "yarn --cache-folder ~/.cache/yarn && lerna run build",
     "link-aa-dev": "cd packages/amplify-app && ln -s \"$(pwd)/bin/amplify-app\" \"$(yarn global bin)/amplify-app-dev\" && cd -",
@@ -58,7 +59,7 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-push": "yarn build-tests && yarn split-e2e-tests && yarn run test-changed",
+      "pre-push": "yarn build-tests-changed && yarn split-e2e-tests && yarn run test-changed",
       "pre-commit": "yarn verify-commit && yarn lint-fix"
     }
   },

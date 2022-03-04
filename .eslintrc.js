@@ -132,7 +132,6 @@ module.exports = {
     'no-unneeded-ternary': 'error',
     'no-use-before-define': 'off',
     'consistent-return': 'error',
-    'no-console': 'warn',
     'no-bitwise': 'error',
     'yoda': 'error',
     'no-var': 'error',

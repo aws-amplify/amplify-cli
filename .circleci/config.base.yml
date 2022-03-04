@@ -111,9 +111,12 @@ jobs:
           command: yarn coverage
   
   lint:
-    <<: *linux-e2e-executor
+        <<: *linux-e2e-executor
     steps:
-      - checkout
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
       - run: chmod +x .circleci/lint_pr.sh && ./.circleci/lint_pr.sh
 
   mock_e2e_tests:
