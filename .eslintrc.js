@@ -1,7 +1,10 @@
-const { dictionary } = require('./dictionary');
+const { dictionary } = require('./.eslint-dictionary');
 /**
  * IF YOU ARE TRYING TO EDIT LINT RULES: You probably want to start by looking through the "rules" block below.
- * Docs for each lint plugin we are using are linked there
+ * IF YOU ARE TRYING TO ADD A WORD TO SPELLCHECK: add it to .eslint-dictionary.js
+ * 
+ * Docs for each lint plugin we are using are linked in the rules block
+ * At the bottom of the file you can find rules for ignoring linting in certain files
  */
 module.exports = {
   root: true,
@@ -9,7 +12,7 @@ module.exports = {
     'airbnb',
     'eslint:recommended',
     'plugin:import/recommended',
-    'plugin:@typescript-eslint/recommended', // Uses the recommended rules from the @typescript-eslint/eslint-plugin
+    'plugin:@typescript-eslint/recommended',
   ],
   parser: '@typescript-eslint/parser', // Specifies the ESLint parser
   env: {
@@ -27,7 +30,7 @@ module.exports = {
       module: true,
     },
   },
-  plugins: ['@typescript-eslint', 'spellcheck', 'import'],
+  plugins: ['@typescript-eslint', 'spellcheck', 'import', 'jsdoc'],
   settings: {
     'import/parsers': {
       '@typescript-eslint/parser': ['.ts', '.tsx'],
@@ -36,32 +39,24 @@ module.exports = {
       typescript: {},
     },
   },
-  /**
-   * 
-   */
   rules: {
+    // NOTE: This config should only specify rules as "errors" or "off". Over time "warnings" invariably become the same as "off".
+
     // Spellcheck rules
     // Docs: https://www.npmjs.com/package/eslint-plugin-spellcheck
-    'spellcheck/spell-checker': [
-      1,
-      {
-        comments: false,
-        strings: true,
-        identifiers: false,
-        lang: 'en_US',
-        skipWords: dictionary,
-        skipIfMatch: [
-          'http://[^s]*',
-          '^[-\\w]+/[-\\w\\.]+$', //For MIME Types
-        ],
-        minLength: 4,
-      },
-    ],
+    'spellcheck/spell-checker': ['error', {
+      lang: 'en_US',
+      skipWords: dictionary,
+      skipIfMatch: [
+        'http://[^s]*',
+        '^[-\\w]+/[-\\w\\.]+$', //For MIME Types
+      ],
+      minLength: 4,
+    }],
 
     // Typescript rules
     // Extends recommended rules here: https://www.npmjs.com/package/@typescript-eslint/eslint-plugin
-    '@typescript-eslint/naming-convention': [
-      'error',
+    '@typescript-eslint/naming-convention': [ 'error',
       // Add to this block to enforce naming conventions on different identifiers
       // Docs here: https://github.com/typescript-eslint/typescript-eslint/blob/HEAD/packages/eslint-plugin/docs/rules/naming-convention.md
       {
@@ -97,6 +92,25 @@ module.exports = {
     'import/no-extraneous-dependencies': 'error',
     'import/no-useless-path-segments': 'error',
     'import/extensions': 'off',
+    'import/prefer-default-export': 'off',
+
+    // JSDoc Rules
+    // Docs here: https://www.npmjs.com/package/eslint-plugin-jsdoc
+    'jsdoc/require-jsdoc': ['error', {
+      publicOnly: true,
+      require: {
+        ClassDeclaration: true,
+        MethodDefinition: true
+      },
+      checkConstructors: false
+    }],
+    'jsdoc/require-description': ['error', { contexts: ['any'] }
+    ],
+    'jsdoc/require-param': 'off',
+    'jsdoc/require-param-description': 'error',
+    'jsdoc/require-returns': 'off',
+    'jsdoc/require-returns-description': 'error',
+    'jsdoc/check-param-names': 'error',
 
     // ESLint Rules
     // These rules override the AirBnb rules here: https://github.com/airbnb/javascript
@@ -137,6 +151,8 @@ module.exports = {
       },
     },
   ],
+  // Riles / paths / globs that shouldn't be linted at all
+  // (note that only .js, .jsx, .ts, and .tsx files are linted in the first place)
   ignorePatterns: [
     '.eslintrc.js',
     'scripts/',

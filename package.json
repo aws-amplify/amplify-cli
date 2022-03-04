@@ -101,6 +101,7 @@
     "eslint-config-airbnb": "^18.0.1",
     "eslint-import-resolver-typescript": "^2.0.0",
     "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsdoc": "^37.9.6",
     "eslint-plugin-spellcheck": "^0.0.17",
     "execa": "^5.1.1",
     "glob": "^7.2.0",
