@@ -326,6 +326,11 @@ module.exports = {
     '/packages/amplify-category-auth/resources/auth-custom-resource',
     '/packages/amplify-category-custom/lib',
     '/packages/amplify-category-custom/resources',
+    '/packages/amplify-console-hosting/lib/',
+    '/packages/amplify-container-hosting/lib/',
+    '/packages/amplify-category-predictions/lib',
+    '/packages/amplify-category-analytics/lib',
+    '/amplify-category-interactions/lib',
     '/packages/amplify-category-custom/src/utils/generate-cfn-from-cdk.ts',
 
     // Ignore CHANGELOG.md files
