@@ -114,7 +114,7 @@ jobs:
     <<: *linux-e2e-executor
     steps:
       - checkout
-      - run: yarn lint-pr
+      - run: chmod +x .circleci/lint_pr.sh && ./.circleci/lint_pr.sh
 
   mock_e2e_tests:
     <<: *linux-e2e-executor
