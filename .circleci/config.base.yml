@@ -111,7 +111,7 @@ jobs:
           command: yarn coverage
   
   lint:
-        <<: *linux-e2e-executor
+    <<: *linux-e2e-executor
     steps:
       - attach_workspace:
           at: ./
