@@ -109,6 +109,12 @@ jobs:
       - run:
           name: Collect code coverage
           command: yarn coverage
+  
+  lint:
+    <<: *linux-e2e-executor
+    steps:
+      - checkout
+      - run: yarn lint-pr
 
   mock_e2e_tests:
     <<: *linux-e2e-executor
@@ -681,6 +687,11 @@ workflows:
               os:
                 - l
                 - w
+      - lint:
+          filters:
+            branches:
+              only:
+                - master
       - test:
           requires:
             - build

@@ -1,13 +1,13 @@
 import { migrate } from './index';
 
 /**
- *
+ * description
  */
 export class TestClass {
   constructor(private readonly prop: string) { }
 
   /**
-   *
+   * a description
    */
   method(): string {
     return this.prop;
@@ -20,11 +20,11 @@ export class TestClass {
 }
 
 /**
- *
+ * description
  */
 export function myFunc(param: string): string {
   console.log(param);
   return param;
 }
 
-export const myVar = 'string';
+export const MY_VAR = 'string';
