@@ -1,9 +1,8 @@
 const { dictionary } = require('./.eslint-dictionary');
 /**
- * IF YOU ARE TRYING TO EDIT LINT RULES: You probably want to start by looking through the "rules" block below.
+ * IF YOU ARE TRYING TO EDIT LINT RULES: See the docs for each of the lint plugins we are using in the "rules" section.
  * IF YOU ARE TRYING TO ADD A WORD TO SPELLCHECK: add it to .eslint-dictionary.js
  * 
- * Docs for each lint plugin we are using are linked in the rules block
  * At the bottom of the file you can find rules for ignoring linting in certain files
  */
 module.exports = {
@@ -150,7 +149,7 @@ module.exports = {
       },
     },
   ],
-  // Riles / paths / globs that shouldn't be linted at all
+  // Files / paths / globs that shouldn't be linted at all
   // (note that only .js, .jsx, .ts, and .tsx files are linted in the first place)
   ignorePatterns: [
     '.eslintrc.js',
