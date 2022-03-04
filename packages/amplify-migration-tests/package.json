@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "amplify-e2e-core": "2.6.12",
-    "aws-sdk": "^2.963.0",
+    "aws-sdk": "^2.1084.0",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "fs-extra": "^8.1.0",

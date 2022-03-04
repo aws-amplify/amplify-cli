@@ -82,7 +82,7 @@
     "amplify-codegen": "2.28.0",
     "amplify-util-import": "2.2.21",
     "archiver": "^5.3.0",
-    "aws-sdk": "^2.963.0",
+    "aws-sdk": "^2.1084.0",
     "bottleneck": "2.19.5",
     "cfn-lint": "^1.9.7",
     "chalk": "^4.1.1",
