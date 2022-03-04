@@ -688,10 +688,8 @@ workflows:
                 - l
                 - w
       - lint:
-          filters:
-            branches:
-              only:
-                - master
+          requires:
+            - build
       - test:
           requires:
             - build
