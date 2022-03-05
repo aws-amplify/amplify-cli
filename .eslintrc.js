@@ -28,8 +28,9 @@ module.exports = {
       modules: true,
       module: true,
     },
+    project: ['./tsconfig.base.json'],
   },
-  plugins: ['@typescript-eslint', 'spellcheck', 'import', 'jsdoc'],
+  plugins: ['@typescript-eslint', 'spellcheck', 'import', 'jsdoc', 'prefer-arrow'],
   settings: {
     'import/parsers': {
       '@typescript-eslint/parser': ['.ts', '.tsx'],
@@ -61,6 +62,7 @@ module.exports = {
       {
         selector: ['variable'],
         modifiers: ['const', 'exported'],
+        types: ['boolean', 'string', 'number', 'array'],
         format: ['UPPER_CASE']
       },
       {
@@ -69,7 +71,7 @@ module.exports = {
       },
       {
         selector: ['typeLike'],
-        format: ['PascalCase'],
+        format: ['StrictPascalCase'],
       },
       {
         selector: 'default',
@@ -80,6 +82,7 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'error',
     '@typescript-eslint/no-unused-vars': 'error',
     '@typescript-eslint/no-useless-constructor': 'error',
+    '@typescript-eslint/method-signature-style': ['error', 'property'],
 
     // Import Rules
     // Extends recommended rules here: https://github.com/import-js/eslint-plugin-import/blob/6c957e7df178d1b81d01cf219d62ba91b4e6d9e8/config/recommended.js
@@ -99,7 +102,8 @@ module.exports = {
       publicOnly: true,
       require: {
         ClassDeclaration: true,
-        MethodDefinition: true
+        MethodDefinition: true,
+        ArrowFunctionExpression: true,
       },
       checkConstructors: false
     }],
@@ -139,6 +143,11 @@ module.exports = {
     'no-new': 'error',
     'no-unused-vars': ['error', { vars: 'all', args: 'all' }],
     'no-useless-constructor': 'off',
+    'func-style': ['error', 'expression'],
+    'prefer-arrow/prefer-arrow-functions': ['error', {
+      disallowPrototype: true,
+      classPropertiesAllowed: false,
+    }]
   },
   overrides: [
     {
