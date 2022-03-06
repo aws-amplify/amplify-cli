@@ -101,6 +101,7 @@
     "@aws-amplify/core" "4.3.11"
 
 "@aws-amplify/codegen-ui-new@npm:@aws-amplify/codegen-ui@2.1.0", "@aws-amplify/codegen-ui@2.1.0":
+  name "@aws-amplify/codegen-ui"
   version "2.1.0"
   resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui/-/codegen-ui-2.1.0.tgz#a75eaee407965ea34443e7a00c19115cba263d6a"
   integrity sha512-tWdYt4Vn8Y9CcYQ3eCGWQlPehna5SZATU9dus+t6cEcBQv+sFvBlM59N68B3SxOYAplPltSqdAJphHM+DFWIUQ==
@@ -135,13 +136,6 @@
     "@typescript/vfs" "~1.3.5"
     prettier "2.3.2"
     typescript "~4.4.4"
-
-"@aws-amplify/codegen-ui@*":
-  version "2.1.2"
-  resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui/-/codegen-ui-2.1.2.tgz#2a278d4f0fc79a2328505b912aa3cf10d466507d"
-  integrity sha512-YdFS6McPyBBpBPDwPvcW1sww8rS0I6+djkCYkd9aorYXp/w5EWttJE/RFGDjsfTVK8Tfdts+o1JBH8rgNRrUiQ==
-  dependencies:
-    yup "^0.32.11"
 
 "@aws-amplify/core@4.3.11":
   version "4.3.11"
