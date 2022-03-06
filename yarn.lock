@@ -101,7 +101,6 @@
     "@aws-amplify/core" "4.3.11"
 
 "@aws-amplify/codegen-ui-new@npm:@aws-amplify/codegen-ui@2.1.0", "@aws-amplify/codegen-ui@2.1.0":
-  name "@aws-amplify/codegen-ui-new"
   version "2.1.0"
   resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui/-/codegen-ui-2.1.0.tgz#a75eaee407965ea34443e7a00c19115cba263d6a"
   integrity sha512-tWdYt4Vn8Y9CcYQ3eCGWQlPehna5SZATU9dus+t6cEcBQv+sFvBlM59N68B3SxOYAplPltSqdAJphHM+DFWIUQ==
@@ -109,7 +108,7 @@
     yup "^0.32.11"
 
 "@aws-amplify/codegen-ui-old@npm:@aws-amplify/codegen-ui@1.2.0", "@aws-amplify/codegen-ui@1.2.0":
-  name "@aws-amplify/codegen-ui-orig"
+  name "@aws-amplify/codegen-ui"
   version "1.2.0"
   resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui/-/codegen-ui-1.2.0.tgz#30b865eef7451d7cc8d1ae648f7d95638d9209f4"
   integrity sha512-UKULRKpQG8ABLNjEiLyGoR01PeDli90AbiX/z9RoyVntoyAqWIorYsZcvDh5kb5xhQySU/Rp9cKmZxbJqoxtcQ==
