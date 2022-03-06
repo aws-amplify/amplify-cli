@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.22-uibuilder-wip.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-xr@3.2.21...amplify-category-xr@3.2.22-uibuilder-wip.0) (2022-03-06)
+
+**Note:** Version bump only for package amplify-category-xr
+
+
+
+
+
 ## [3.2.21](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-xr@3.2.20...amplify-category-xr@3.2.21) (2022-02-25)
 
 **Note:** Version bump only for package amplify-category-xr

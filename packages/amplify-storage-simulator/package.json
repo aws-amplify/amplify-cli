@@ -1,6 +1,6 @@
 {
   "name": "amplify-storage-simulator",
-  "version": "1.6.5",
+  "version": "1.6.6-uibuilder-wip.0",
   "description": "An S3 simulator to test S3 APIs",
   "repository": {
     "type": "git",

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.31-uibuilder-wip.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.2.30...amplify-graphql-migration-tests@2.2.31-uibuilder-wip.0) (2022-03-06)
+
+**Note:** Version bump only for package amplify-graphql-migration-tests
+
+
+
+
+
 ## [2.2.30](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.2.29...amplify-graphql-migration-tests@2.2.30) (2022-02-25)
 
 **Note:** Version bump only for package amplify-graphql-migration-tests
