@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.21.5-uibuilder-wip-2.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.21.4...graphql-relational-schema-transformer@2.21.5-uibuilder-wip-2.0) (2022-03-06)
+
+**Note:** Version bump only for package graphql-relational-schema-transformer
+
+
+
+
+
 ## [2.21.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.21.3...graphql-relational-schema-transformer@2.21.4) (2022-01-31)
 
 **Note:** Version bump only for package graphql-relational-schema-transformer

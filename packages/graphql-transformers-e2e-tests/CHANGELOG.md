@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.4.8-uibuilder-wip-2.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.4.7...graphql-transformers-e2e-tests@7.4.8-uibuilder-wip-2.0) (2022-03-06)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
 ## [7.4.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.4.6...graphql-transformers-e2e-tests@7.4.7) (2022-02-25)
 
 

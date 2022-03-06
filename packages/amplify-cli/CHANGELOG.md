@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.6.23-uibuilder-wip-2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.22...@aws-amplify/cli@7.6.23-uibuilder-wip-2.0) (2022-03-06)
+
+
+### Bug Fixes
+
+* **cli:** fix notification logic when API resource directory doesn't exist ([#9796](https://github.com/aws-amplify/amplify-cli/issues/9796)) ([5238264](https://github.com/aws-amplify/amplify-cli/commit/52382644a7fb3d242c9498785f3aa3293d19daf4)), closes [#9721](https://github.com/aws-amplify/amplify-cli/issues/9721)
+* get the defaultEditor value from the localEnvInfo context variable ([#9783](https://github.com/aws-amplify/amplify-cli/issues/9783)) ([cdb5aec](https://github.com/aws-amplify/amplify-cli/commit/cdb5aec151060280e50ce755cd45bcc2fad84479)), closes [#8356](https://github.com/aws-amplify/amplify-cli/issues/8356)
+
+
+### Performance Improvements
+
+* remove ESM loader to speed up CLI execution ([#9873](https://github.com/aws-amplify/amplify-cli/issues/9873)) ([46ada02](https://github.com/aws-amplify/amplify-cli/commit/46ada029a7914b75c356c3ae9dcd782ffa324b2a))
+
+
+
+
+
 ## [7.6.22](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.21...@aws-amplify/cli@7.6.22) (2022-02-25)
 
 **Note:** Version bump only for package @aws-amplify/cli

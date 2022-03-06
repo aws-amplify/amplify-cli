@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.9.9-uibuilder-wip-2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.8...amplify-provider-awscloudformation@5.9.9-uibuilder-wip-2.0) (2022-03-06)
+
+
+### Bug Fixes
+
+* use existing rather than deleted models ([#9769](https://github.com/aws-amplify/amplify-cli/issues/9769)) ([c4b7487](https://github.com/aws-amplify/amplify-cli/commit/c4b74879feda53bd73746158f4285d3b683981d2))
+
+
+### Reverts
+
+* Revert "fix: use existing rather than deleted models (#9769)" (#9884) ([94547e0](https://github.com/aws-amplify/amplify-cli/commit/94547e0c2efca702b53929d852274aa07c663206)), closes [#9769](https://github.com/aws-amplify/amplify-cli/issues/9769) [#9884](https://github.com/aws-amplify/amplify-cli/issues/9884)
+
+
+
+
+
 ## [5.9.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.7...amplify-provider-awscloudformation@5.9.8) (2022-02-25)
 
 **Note:** Version bump only for package amplify-provider-awscloudformation

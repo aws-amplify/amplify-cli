@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.13-uibuilder-wip-2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.6.12...amplify-e2e-core@2.6.13-uibuilder-wip-2.0) (2022-03-06)
+
+**Note:** Version bump only for package amplify-e2e-core
+
+
+
+
+
 ## [2.6.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.6.11...amplify-e2e-core@2.6.12) (2022-02-25)
 
 **Note:** Version bump only for package amplify-e2e-core
