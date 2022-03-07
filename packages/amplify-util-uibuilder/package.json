@@ -23,7 +23,7 @@
     "aws-sdk": "2.1084.0"
   },
   "devDependencies": {
-    "@aws-amplify/codegen-ui": "*"
+    "@aws-amplify/codegen-ui": "2.1.0"
   },
   "jest": {
     "testRunner": "jest-circus/runner",
