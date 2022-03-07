@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.5.2...amplify-category-function@3.5.3-beta.0) (2022-03-07)
+
+
+### Bug Fixes
+
+* set secretsPathAmplfiyAppId on initEnv when function has secrets ([#9853](https://github.com/aws-amplify/amplify-cli/issues/9853)) ([735854f](https://github.com/aws-amplify/amplify-cli/commit/735854fedaced25ddb473d19d3bb686e57b0a80a))
+* use existing rather than deleted models ([#9769](https://github.com/aws-amplify/amplify-cli/issues/9769)) ([c4b7487](https://github.com/aws-amplify/amplify-cli/commit/c4b74879feda53bd73746158f4285d3b683981d2))
+
+
+### Reverts
+
+* Revert "fix: use existing rather than deleted models (#9769)" (#9884) ([94547e0](https://github.com/aws-amplify/amplify-cli/commit/94547e0c2efca702b53929d852274aa07c663206)), closes [#9769](https://github.com/aws-amplify/amplify-cli/issues/9769) [#9884](https://github.com/aws-amplify/amplify-cli/issues/9884)
+
+
+
+
+
 ## [3.5.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.5.1...amplify-category-function@3.5.2) (2022-02-25)
 
 **Note:** Version bump only for package amplify-category-function

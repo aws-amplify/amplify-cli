@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.22-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@2.2.21...amplify-console-hosting@2.2.22-beta.0) (2022-03-07)
+
+
+### Bug Fixes
+
+* uibuilder e2e tests ([#9922](https://github.com/aws-amplify/amplify-cli/issues/9922)) ([11d172b](https://github.com/aws-amplify/amplify-cli/commit/11d172bf7c9acca5c6a20cdfd49818aadfc13f04))
+
+
+### Performance Improvements
+
+* remove ESM loader to speed up CLI execution ([#9873](https://github.com/aws-amplify/amplify-cli/issues/9873)) ([46ada02](https://github.com/aws-amplify/amplify-cli/commit/46ada029a7914b75c356c3ae9dcd782ffa324b2a))
+
+
+
+
+
 ## [2.2.21](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@2.2.20...amplify-console-hosting@2.2.21) (2022-02-25)
 
 **Note:** Version bump only for package amplify-console-hosting
