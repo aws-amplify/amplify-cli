@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, IAmplifyResource } from 'amplify-cli-core';
+import { $TSAny, $TSContext, IAmplifyResource, pathManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as path from 'path';
 import { buildCustomResources } from './utils/build-custom-resources';
@@ -17,6 +17,8 @@ export async function executeAmplifyCommand(context: $TSContext) {
   }
 
   const commandModule = await import(commandPath);
+
+  pathManager.getAmplifyMetaFilePath();
 
   await commandModule.run(context);
 }
