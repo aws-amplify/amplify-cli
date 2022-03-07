@@ -84,6 +84,16 @@ Amplify CLI is a monorepo built with [Yarn Workspaces](https://yarnpkg.com/featu
 - Test in sample app using [amplify-dev](#tests)
 - Submit a PR
 
+#### What's with all the lint errors?
+For a long time, the codebase had relatively lax lint checking. We have now added more strict rules but decided that it wasn't feasible to
+update all the code to adhere to the new rules at once. Instead we have opted for an iterative approach where lint errors are fixed as
+files are touched. If you are the first person to touch a file since the rules have been inforced we ask that you try your best to address
+the lint errors in that file. If addressing an error would significantly increase the scope of the change, it is okay to add a lint disable
+comment and a justification in the PR description.
+
+To get lint warnings as you type, configure the ESLint VSCode plugin. Alternatively, run `yarn lint-fix` to auto-fix errors where possible
+and print out errors that need manual attention.
+
 ## Pull Requests
 
 Pull requests are welcome!
