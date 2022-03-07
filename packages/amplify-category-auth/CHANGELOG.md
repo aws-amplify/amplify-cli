@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.3...@aws-amplify/amplify-category-auth@2.7.4) (2022-03-07)
+
+
+### Bug Fixes
+
+* add HostedUIProvider dependency to OAuth Custom Lambda ([#9878](https://github.com/aws-amplify/amplify-cli/issues/9878)) ([a385de9](https://github.com/aws-amplify/amplify-cli/commit/a385de92c59cc0c48793f34b82ec6eac62100a7a))
+* map headless auth pw recovery to auto-verified attrs ([#9786](https://github.com/aws-amplify/amplify-cli/issues/9786)) ([f8c9100](https://github.com/aws-amplify/amplify-cli/commit/f8c9100d0ea0dfe87233624883ff8ae8c9bf48a7))
+
+
+
+
+
 ## [2.7.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.2...@aws-amplify/amplify-category-auth@2.7.3) (2022-02-25)
 
 

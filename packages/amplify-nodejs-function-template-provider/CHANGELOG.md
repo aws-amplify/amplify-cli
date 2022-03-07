@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.3.5...amplify-nodejs-function-template-provider@2.3.6) (2022-03-07)
+
+
+### Bug Fixes
+
+* move aws-sdk to dev dependency for node crud template, bump versions ([#9774](https://github.com/aws-amplify/amplify-cli/issues/9774)) ([2d6209d](https://github.com/aws-amplify/amplify-cli/commit/2d6209d6c44bf47c822ab45ab0118190014cb2af))
+
+
+
+
+
 ## [2.3.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.3.4...amplify-nodejs-function-template-provider@2.3.5) (2022-02-25)
 
 **Note:** Version bump only for package amplify-nodejs-function-template-provider
