@@ -1,9 +1,11 @@
 const { dictionary } = require('./.eslint-dictionary');
 /**
- * IF YOU ARE TRYING TO EDIT LINT RULES: See the docs for each of the lint plugins we are using in the "rules" section.
- * IF YOU ARE TRYING TO ADD A WORD TO SPELLCHECK: add it to .eslint-dictionary.js
- * 
- * At the bottom of the file you can find rules for ignoring linting in certain files
+ * README if you have come here because you are sick and tired of some rule being on your case all the time:
+ * If you are trying to modify a rule for normal code, see the docs for each of the lint plugins we are using in the "rules" section.
+ * If you are trying to add a word to spellcheck: add it to .eslint-dictionary.js
+ * If you are trying to ignore certain files from spellchecking, see the "overrides" section
+ * If you are trying to modify rules that run in test files, see the "overrides" section
+ * If you are trying to ignore certain files from linting, see "ignorePatterns" at the bottom of the file
  */
 module.exports = {
   root: true,
@@ -83,6 +85,9 @@ module.exports = {
     '@typescript-eslint/no-unused-vars': 'error',
     '@typescript-eslint/no-useless-constructor': 'error',
     '@typescript-eslint/method-signature-style': ['error', 'property'],
+    // ESLint rule conflicts with the corresponding typescript rule
+    'no-invalid-this': 'off',
+    '@typescript-eslint/no-invalid-this': 'error',
 
     // Import Rules
     // Extends recommended rules here: https://github.com/import-js/eslint-plugin-import/blob/6c957e7df178d1b81d01cf219d62ba91b4e6d9e8/config/recommended.js
@@ -127,8 +132,7 @@ module.exports = {
       ignoreStrings: true,
       ignoreTemplateLiterals: true,
     }],
-    'arrow-parens': ['error', 'as-needed'],
-    'lines-between-class-members': ['error', 'always', {exceptAfterSingleLine: true}],
+    'lines-between-class-members': ['error', 'always', { exceptAfterSingleLine: true }],
     'max-classes-per-file': 'error',
     'no-lonely-if': 'error',
     'no-shadow': 'error',
@@ -143,11 +147,11 @@ module.exports = {
     'no-new': 'error',
     'no-unused-vars': ['error', { vars: 'all', args: 'all' }],
     'no-useless-constructor': 'off',
+
+    // function style
+    'arrow-parens': ['error', 'as-needed'],
     'func-style': ['error', 'expression'],
-    'prefer-arrow/prefer-arrow-functions': ['error', {
-      disallowPrototype: true,
-      classPropertiesAllowed: false,
-    }]
+    'prefer-arrow/prefer-arrow-functions': ['error', { disallowPrototype: true }],
   },
   overrides: [
     {
@@ -157,6 +161,16 @@ module.exports = {
         'spellcheck/spell-checker': 'off',
       },
     },
+    {
+      // edit rules here to modify test linting
+      files: ['__tests__/**', '*.test.ts'],
+      plugins: ['jest'],
+      extends: ['plugin:jest/recommended'],
+      rules: {
+        '@typescript-eslint/unbound-method': 'off',
+        'jest/unbound-method': 'error',
+      }
+    }
   ],
   // Files / paths / globs that shouldn't be linted at all
   // (note that only .js, .jsx, .ts, and .tsx files are linted in the first place)
