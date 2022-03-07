@@ -20,7 +20,7 @@
     "ora": "^4.0.3"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && copyfiles -u 1 \"./src/hosting/templates/*.json\" \"./lib\"",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
     "watch": "tsc --watch"
   }
