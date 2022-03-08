@@ -10,7 +10,7 @@ import { printer } from 'amplify-prompts';
 import { getMapStyleComponents } from '../service-utils/mapParams';
 import { GeoServiceConfiguration, GeoServiceModification, GeoServiceRemoval } from 'amplify-headless-interface';
 import { merge } from '../service-utils/resourceUtils';
-import { checkGeoResourceExists, updateDefaultResource } from '../service-utils/resourceUtils';
+import { updateDefaultResource } from '../service-utils/resourceUtils';
 
 export const addMapResource = async (
   context: $TSContext
