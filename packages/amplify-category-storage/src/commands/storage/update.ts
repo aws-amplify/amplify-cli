@@ -27,7 +27,7 @@ export async function run(context: $TSContext) {
       }
     })
     .catch(async err => {
-      if (err.stack){
+      if (err.stack) {
         printer.info(err.stack);
       }
       printer.error('An error occurred when updating the storage resource');
