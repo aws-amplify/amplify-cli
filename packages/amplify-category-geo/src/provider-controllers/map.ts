@@ -114,7 +114,7 @@ export const removeMapResourceWithParams = async (
   const { amplify } = context;
   const mapParams = await getCurrentMapParameters(mapToRemove);
   try {
-    await amplify.removeResource(context, category, mapToRemove)
+    await amplify.removeResource(context, category, mapToRemove, { headless: isHeadlessCommand })
     .then(async (resource: { service: string; resourceName: string } | undefined) => {
       // choose another default if removing a default map
       if (resource?.service === ServiceName.Map && mapParams.isDefault) {
@@ -123,16 +123,22 @@ export const removeMapResourceWithParams = async (
           const remainingMaps = ((await context.amplify.getResourceStatus()).allResources as any[])
             .filter(resource => resource.service === ServiceName.Map)
             .map(resource => resource.resourceName);
-          // directly update the new default map when provided
-          if (newDefaultMap && checkGeoResourceExists(newDefaultMap)) {
-            await updateDefaultResource(context, ServiceName.Map, newDefaultMap);
-          }
-          // otherwise select first available map as default
-          else if (remainingMaps.length > 0) {
-            await updateDefaultResource(context, ServiceName.Map, remainingMaps[0]);
+          if (remainingMaps.length > 0) {
+            // directly update the new default map when provided
+            if (newDefaultMap && remainingMaps.includes(newDefaultMap)) {
+              await updateDefaultResource(context, ServiceName.Map, newDefaultMap);
+            }
+            // otherwise select first available map as default
+            else {
+              if (!newDefaultMap){
+                printer.info(`New default map is not defined. Set ${remainingMaps[0]} as default map.`)
+              } else if (!remainingMaps.includes(newDefaultMap)) {
+                printer.info(`Map ${newDefaultMap} does not exist. Set ${remainingMaps[0]} as default map.`)
+              }
+              await updateDefaultResource(context, ServiceName.Map, remainingMaps[0]);
+            }
           }
         }
-
         // pop up walkthrough question for new default map in non headless scenario
         else {
           await updateDefaultMapWalkthrough(context, resource.resourceName);
