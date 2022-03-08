@@ -1,7 +1,7 @@
 import { existsSync } from "fs-extra";
 import path from "path";
-import { addAuthWithDefault, addHeadlessGeo, amplifyPushAuth, createNewProjectDir, deleteProject, deleteProjectDir, getMap, getProjectMeta, initJSProjectWithProfile, updateHeadlessGeo } from "amplify-e2e-core";
-import { AccessType, AddGeoRequest, MapStyle, UpdateGeoRequest } from "amplify-headless-interface";
+import { addAuthWithDefault, addHeadlessGeo, amplifyPushAuth, createNewProjectDir, deleteProject, deleteProjectDir, getMap, getProjectMeta, initJSProjectWithProfile, updateHeadlessGeo, removeHeadlessGeo } from "amplify-e2e-core";
+import { AccessType, AddGeoRequest, MapStyle, UpdateGeoRequest, RemoveGeoRequest } from "amplify-headless-interface";
 import { v4 as uuid } from 'uuid';
 
 describe('Geo headless tests', () => {
@@ -40,21 +40,34 @@ describe('Geo headless tests', () => {
           setAsDefault: true
         }
       };
+      const removeGeoRequest: RemoveGeoRequest = {
+        version: 1,
+        serviceRemoval: {
+          serviceName: "Map",
+          name: mapId
+        }
+      };
       await initJSProjectWithProfile(projRoot, {});
       await addAuthWithDefault(projRoot);
+      //add map
       await addHeadlessGeo(projRoot, addGeoRequest);
       await amplifyPushAuth(projRoot);
-
-      const meta = getProjectMeta(projRoot);
+      let meta = getProjectMeta(projRoot);
       const { Name: name, Region: region } = Object.keys(meta.geo).map(key => meta.geo[key])[0].output;
       expect(name).toBeDefined();
       expect(region).toBeDefined();
       const { MapName: mapName } = await getMap(name, region);
       expect(mapName).toBeDefined();
+      //update map
       await updateHeadlessGeo(projRoot, updateGeoRequest);
       await amplifyPushAuth(projRoot);
-      const newMeta = getProjectMeta(projRoot);
-      expect(newMeta.geo[mapId].accessType).toBe('AuthorizedAndGuestUsers');
+      meta = getProjectMeta(projRoot);
+      expect(meta.geo[mapId].accessType).toBe('AuthorizedAndGuestUsers');
+      //remove map
+      await removeHeadlessGeo(projRoot, removeGeoRequest);
+      await amplifyPushAuth(projRoot);
+      meta = getProjectMeta(projRoot);
+      expect(meta.geo[mapId]).toBeUndefined();
     });
   })
 });

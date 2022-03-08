@@ -9,7 +9,8 @@ import {
   UpdateApiRequest,
   UpdateAuthRequest,
   UpdateStorageRequest,
-  UpdateGeoRequest
+  UpdateGeoRequest,
+  RemoveGeoRequest
 } from 'amplify-headless-interface';
 import execa, { ExecaChildProcess } from 'execa';
 import { getCLIPath } from '..';
@@ -78,6 +79,10 @@ export const updateHeadlessGeo = async (cwd: string, request: UpdateGeoRequest):
   return await executeHeadlessCommand(cwd, 'geo', 'update', request);
 }
 
+export const removeHeadlessGeo = async (cwd: string, request: RemoveGeoRequest): Promise<ExecaChildProcess<String>> => {
+  return await executeHeadlessCommand(cwd, 'geo', 'remove', request);
+}
+
 const headlessRemoveResource = async (cwd: string, category: string, resourceName: string): Promise<ExecaChildProcess<String>> => {
   return await execa(getCLIPath(), ['remove', category, resourceName, '--yes'], { cwd });
 };
@@ -110,4 +115,5 @@ type AnyHeadlessRequest =
   | RemoveStorageRequest
   | UpdateStorageRequest
   | AddGeoRequest
-  | UpdateGeoRequest;
+  | UpdateGeoRequest
+  | RemoveGeoRequest;
