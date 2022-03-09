@@ -57,6 +57,10 @@ export class AmplifyS3ResourceStackTransform {
     return this.cfn;
   }
 
+  getCFNInputParams():AmplifyS3ResourceInputParameters {
+    return this.cfnInputParams;
+  }
+
   async transform(commandType: CLISubCommandType) {
     this.generateCfnInputParameters();
     // Generate cloudformation stack from cli-inputs.json
@@ -211,7 +215,6 @@ export class AmplifyS3ResourceStackTransform {
       // Render CFN Template string and store as member in this.cfn
       this.cfn = this.resourceTemplateObj.renderCloudFormationTemplate();
     }
-
     //Store cloudformation-template.json, Parameters.json and Update BackendConfig
     this._saveFilesToLocalFileSystem('cloudformation-template.json', this.cfn);
     this._saveFilesToLocalFileSystem('parameters.json', this.cfnInputParams);
