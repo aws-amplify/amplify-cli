@@ -226,7 +226,7 @@ export async function executeAmplifyCommand(context: $TSContext) {
     if (error) {
       printer.error(error.message || error);
       if (error.stack) {
-        printer.info(error.stack);
+        printer.debug(error.stack);
       }
       await context.usageData.emitError(error);
     }
