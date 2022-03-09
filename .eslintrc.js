@@ -140,8 +140,9 @@ module.exports = {
     'strict': 'error',
     'spaced-comment': ['error', 'always'],
     'no-new': 'error',
-    'no-unused-vars': ['error', { vars: 'all', args: 'all' }],
     'no-useless-constructor': 'off',
+    'no-underscore-dangle': 'off',
+    'no-template-curly-in-string': 'off',
 
     // function style
     'arrow-parens': ['error', 'as-needed'],
