@@ -24,6 +24,7 @@ import { getAppSyncApiResourceName } from './provider-utils/awscloudformation/ut
 export { NETWORK_STACK_LOGICAL_ID } from './category-constants';
 export { addAdminQueriesApi, updateAdminQueriesApi } from './provider-utils/awscloudformation/';
 export { DEPLOYMENT_MECHANISM } from './provider-utils/awscloudformation/base-api-stack';
+export { convertDeperecatedRestApiPaths } from './provider-utils/awscloudformation/convert-deprecated-apigw-paths';
 export { getContainers } from './provider-utils/awscloudformation/docker-compose';
 export { EcsAlbStack } from './provider-utils/awscloudformation/ecs-alb-stack';
 export { EcsStack } from './provider-utils/awscloudformation/ecs-apigw-stack';
