@@ -1,10 +1,9 @@
-import { $TSAny, $TSContext, JSONUtilities, PathConstants, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, JSONUtilities, PathConstants, stateManager, spinner } from 'amplify-cli-core';
 import { ResourceExport } from './resource-package/resource-export';
 import { ResourceDefinition, StackIncludeDetails, StackParameters } from './resource-package/types';
 import * as path from 'path';
 import { printer, prompter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
-import Ora from 'ora';
 const backup = 'backup';
 import _ from 'lodash';
 import rimraf from 'rimraf';
@@ -31,7 +30,6 @@ export async function run(context: $TSContext, resourceDefinition: $TSAny[], exp
     return;
   }
 
-  const spinner = Ora('Exporting...');
   spinner.start();
   try {
     const resourceExport = new ResourceExport(context, amplifyExportFolder);
