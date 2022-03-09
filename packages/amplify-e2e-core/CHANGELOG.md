@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.14-pin-codegen-dependency.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.6.13...amplify-e2e-core@2.6.14-pin-codegen-dependency.0) (2022-03-09)
+
+
+### Bug Fixes
+
+* allow api updates without migration ([#9864](https://github.com/aws-amplify/amplify-cli/issues/9864)) ([389f551](https://github.com/aws-amplify/amplify-cli/commit/389f551ea800afc9563b6e546f3ea0073bc13c68))
+
+
+
+
+
 ## [2.6.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.6.12...amplify-e2e-core@2.6.13) (2022-03-07)
 
 **Note:** Version bump only for package amplify-e2e-core

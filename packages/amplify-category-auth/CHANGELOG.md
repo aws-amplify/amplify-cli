@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.5-pin-codegen-dependency.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.4...@aws-amplify/amplify-category-auth@2.7.5-pin-codegen-dependency.0) (2022-03-09)
+
+
+### Bug Fixes
+
+* fixes preSignup trigger naming ([#9901](https://github.com/aws-amplify/amplify-cli/issues/9901)) ([9f3aa23](https://github.com/aws-amplify/amplify-cli/commit/9f3aa2368a311398b6d3b934360fce6adb6738f2))
+
+
+
+
+
 ## [2.7.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.3...@aws-amplify/amplify-category-auth@2.7.4) (2022-03-07)
 
 

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.24-pin-codegen-dependency.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.2.23...amplify-app@4.2.24-pin-codegen-dependency.0) (2022-03-09)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
 ## [4.2.23](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.2.22...amplify-app@4.2.23) (2022-03-07)
 
 **Note:** Version bump only for package amplify-app

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.18-pin-codegen-dependency.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.4.17...amplify-cli-core@2.4.18-pin-codegen-dependency.0) (2022-03-09)
+
+
+### Bug Fixes
+
+* improve error message on custom policies validation failure ([#9862](https://github.com/aws-amplify/amplify-cli/issues/9862)) ([60e05f7](https://github.com/aws-amplify/amplify-cli/commit/60e05f7a5b77d32b539ab09d7106faea75736eee))
+
+
+
+
+
 ## [2.4.17](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.4.16...amplify-cli-core@2.4.17) (2022-03-07)
 
 **Note:** Version bump only for package amplify-cli-core

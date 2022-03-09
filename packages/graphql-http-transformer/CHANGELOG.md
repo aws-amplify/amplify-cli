@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.26-pin-codegen-dependency.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@5.2.25...graphql-http-transformer@5.2.26-pin-codegen-dependency.0) (2022-03-09)
+
+**Note:** Version bump only for package graphql-http-transformer
+
+
+
+
+
 ## [5.2.25](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@5.2.24...graphql-http-transformer@5.2.25) (2022-03-07)
 
 **Note:** Version bump only for package graphql-http-transformer

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.23-pin-codegen-dependency.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-xr@3.2.22...amplify-category-xr@3.2.23-pin-codegen-dependency.0) (2022-03-09)
+
+**Note:** Version bump only for package amplify-category-xr
+
+
+
+
+
 ## [3.2.22](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-xr@3.2.21...amplify-category-xr@3.2.22) (2022-03-07)
 
 **Note:** Version bump only for package amplify-category-xr

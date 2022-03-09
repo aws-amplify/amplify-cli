@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli-extensibility-helper",
-  "version": "2.3.17",
+  "version": "2.3.18-pin-codegen-dependency.0",
   "description": "Amplify CLI Extensibility Helper utility package",
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
     "clean": "rimraf ./lib"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-custom": "2.3.21",
+    "@aws-amplify/amplify-category-custom": "2.3.22-pin-codegen-dependency.0",
     "@aws-cdk/aws-apigateway": "~1.124.0",
     "@aws-cdk/aws-appsync": "~1.124.0",
     "@aws-cdk/aws-cognito": "~1.124.0",
@@ -37,7 +37,7 @@
     "@aws-cdk/aws-lambda": "~1.124.0",
     "@aws-cdk/aws-s3": "~1.124.0",
     "@aws-cdk/core": "~1.124.0",
-    "amplify-cli-core": "2.4.17",
+    "amplify-cli-core": "2.4.18-pin-codegen-dependency.0",
     "amplify-prompts": "1.6.3"
   },
   "jest": {

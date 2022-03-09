@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.26-pin-codegen-dependency.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.4.25...amplify-container-hosting@2.4.26-pin-codegen-dependency.0) (2022-03-09)
+
+**Note:** Version bump only for package amplify-container-hosting
+
+
+
+
+
 ## [2.4.25](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.4.24...amplify-container-hosting@2.4.25) (2022-03-07)
 
 

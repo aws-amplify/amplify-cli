@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.25-pin-codegen-dependency.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.24...amplify-migration-tests@4.4.25-pin-codegen-dependency.0) (2022-03-09)
+
+
+### Bug Fixes
+
+* allow api updates without migration ([#9864](https://github.com/aws-amplify/amplify-cli/issues/9864)) ([389f551](https://github.com/aws-amplify/amplify-cli/commit/389f551ea800afc9563b6e546f3ea0073bc13c68))
+
+
+
+
+
 ## [4.4.24](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.23...amplify-migration-tests@4.4.24) (2022-03-07)
 
 
