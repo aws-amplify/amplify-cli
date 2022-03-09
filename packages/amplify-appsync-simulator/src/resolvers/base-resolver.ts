@@ -7,13 +7,13 @@ export abstract class AppSyncBaseResolver {
     try {
       this.getResponseMappingTemplate();
     } catch (e) {
-      throw new Error(`Missing request mapping template`);
+      throw new Error(`Missing response mapping template ${e.message}`);
     }
 
     try {
-      this.getResponseMappingTemplate();
+      this.getRequestMappingTemplate();
     } catch (e) {
-      throw new Error(`Missing request mapping template`);
+      throw new Error(`Missing request mapping template ${e.message}`);
     }
   }
   // abstract async resolve(source, args, context, info): Promise<any>;
