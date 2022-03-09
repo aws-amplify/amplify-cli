@@ -9,8 +9,8 @@ import glob from 'glob';
  */
 export const transformCurrentProjectToGitPulledProject = (projRoot: string) => {
   const gitIgnoreFilePath = pathManager.getGitIgnoreFilePath(projRoot);
-  const regexrArray = fs.readFileSync(gitIgnoreFilePath, 'utf-8').split('\n');
-  regexrArray.forEach(str => {
+  const regexArray = fs.readFileSync(gitIgnoreFilePath, 'utf-8').split('\n');
+  regexArray.forEach(str => {
     const dirPath = glob.sync(str, {
       cwd: projRoot,
       absolute: true,
