@@ -77,7 +77,7 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'error',
     // ESLint rule conflicts with the corresponding typescript rule
     'no-unused-vars': 'off',
-    '@typescript-eslint/no-unused-vars': 'error',
+    '@typescript-eslint/no-unused-vars': ['error', { vars: 'all', args: 'all' }],
     '@typescript-eslint/no-useless-constructor': 'error',
     '@typescript-eslint/method-signature-style': ['error', 'property'],
     // ESLint rule conflicts with the corresponding typescript rule
