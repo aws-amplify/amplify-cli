@@ -30,7 +30,6 @@ module.exports = {
       modules: true,
       module: true,
     },
-    project: ['./tsconfig.base.json'],
   },
   plugins: ['@typescript-eslint', 'spellcheck', 'import', 'jsdoc', 'prefer-arrow'],
   settings: {
@@ -62,12 +61,6 @@ module.exports = {
       // Add to this block to enforce naming conventions on different identifiers
       // Docs here: https://github.com/typescript-eslint/typescript-eslint/blob/HEAD/packages/eslint-plugin/docs/rules/naming-convention.md
       {
-        selector: ['variable'],
-        modifiers: ['const', 'exported'],
-        types: ['boolean', 'string', 'number', 'array'],
-        format: ['UPPER_CASE']
-      },
-      {
         selector: ['enumMember'],
         format: ['UPPER_CASE'],
       },
@@ -77,11 +70,13 @@ module.exports = {
       },
       {
         selector: 'default',
-        format: ['strictCamelCase'],
+        format: null,
       },
     ],
     '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],
     '@typescript-eslint/no-explicit-any': 'error',
+    // ESLint rule conflicts with the corresponding typescript rule
+    'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': 'error',
     '@typescript-eslint/no-useless-constructor': 'error',
     '@typescript-eslint/method-signature-style': ['error', 'property'],
