@@ -7,7 +7,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as ini from 'ini';
 import * as inquirer from 'inquirer';
-import * as proxyAgent from 'proxy-agent';
+import proxyAgent from 'proxy-agent';
 import * as constants from './constants';
 import { fileLogger } from './utils/aws-logger';
 
@@ -118,7 +118,7 @@ const makeFileOwnerReadWrite = (filePath: string): void => {
   fs.chmodSync(filePath, '600');
 };
 
-const getRoleCredentials = async (context: $TSContext, profileName: string, profileConfig: $TSAny): $TSAny => {
+const getRoleCredentials = async (context: $TSContext, profileName: string, profileConfig: $TSAny): Promise<$TSAny> => {
   const roleSessionName = profileConfig.role_session_name || 'amplify';
   let roleCredentials = getCachedRoleCredentials(profileConfig.role_arn, roleSessionName);
 
@@ -186,7 +186,7 @@ const getMfaTokenCode = async (context): Promise<string> => {
       return true;
     },
   };
-  const answer = await inquirer.prompt(inputMfaTokenCode);
+  const answer: { tokenCode: string } = await inquirer.prompt(inputMfaTokenCode as $TSAny);
   if (spinner) spinner.start();
   return answer.tokenCode;
 };
