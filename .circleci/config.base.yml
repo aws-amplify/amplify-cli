@@ -20,7 +20,7 @@ executors:
     docker:
       - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
-    resource_class: medium
+    resource_class: large
     environment:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
@@ -429,7 +429,7 @@ jobs:
 
   integration_test:
     working_directory: ~/repo
-    resource_class: medium
+    resource_class: large
     docker:
       - image: cypress/base:14.17.0
         environment:
