@@ -1,14 +1,15 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from 'amplify-cli-core';
 import aws from 'aws-sdk';
 import ora from 'ora';
 
 /**
  * Wrapper around SSM SDK calls
  */
+// eslint-disable-next-line
 export class SSMClientWrapper {
   private static instance: SSMClientWrapper;
 
-  static getInstance = async (context: $TSContext) => {
+  static getInstance = async (context: $TSContext): Promise<SSMClientWrapper> => {
     if (!SSMClientWrapper.instance) {
       SSMClientWrapper.instance = new SSMClientWrapper(await getSSMClient(context));
     }
@@ -20,7 +21,7 @@ export class SSMClientWrapper {
   /**
    * Returns a list of secret name value pairs
    */
-  getSecrets = async (secretNames: string[]) => {
+  getSecrets = async (secretNames: string[]): Promise<$TSAny> => {
     if (!secretNames || secretNames.length === 0) {
       return [];
     }
@@ -37,10 +38,11 @@ export class SSMClientWrapper {
   /**
    * Returns all secret names under a path. Does NOT decrypt any secrets
    */
-  getSecretNamesByPath = async (secretPath: string) => {
+  getSecretNamesByPath = async (secretPath: string): Promise<string[]> => {
     let NextToken;
     const accumulator: string[] = [];
     do {
+      // eslint-disable-next-line
       const result = await this.ssmClient
         .getParametersByPath({
           Path: secretPath,
@@ -64,7 +66,7 @@ export class SSMClientWrapper {
   /**
    * Sets the given secretName to the secretValue. If secretName is already present, it is overwritten.
    */
-  setSecret = async (secretName: string, secretValue: string) => {
+  setSecret = async (secretName: string, secretValue: string): Promise<void> => {
     await this.ssmClient
       .putParameter({
         Name: secretName,
@@ -78,7 +80,7 @@ export class SSMClientWrapper {
   /**
    * Deletes secretName. If it already doesn't exist, this is treated as success. All other errors will throw.
    */
-  deleteSecret = async (secretName: string) => {
+  deleteSecret = async (secretName: string): Promise<void> => {
     await this.ssmClient
       .deleteParameter({
         Name: secretName,
@@ -95,7 +97,7 @@ export class SSMClientWrapper {
   /**
    * Deletes all secrets in secretNames
    */
-  deleteSecrets = async (secretNames: string[]) => {
+  deleteSecrets = async (secretNames: string[]): Promise<void> => {
     try {
       await this.ssmClient.deleteParameters({ Names: secretNames }).promise();
     } catch (err) {
@@ -107,8 +109,9 @@ export class SSMClientWrapper {
   };
 }
 
-const getSSMClient = async (context: $TSContext) => {
+const getSSMClient = async (context: $TSContext): Promise<aws.SSM> => {
   const spinner = ora('Initializing SSM Client');
+  context.exeInfo.spinner = spinner;
   try {
     spinner.start();
 

@@ -1,4 +1,6 @@
-import { $TSAny, $TSContext, $TSObject, ConfigurationError, exitOnNextTick, stateManager } from 'amplify-cli-core';
+import {
+  $TSAny, $TSContext, $TSObject, ConfigurationError, exitOnNextTick, stateManager,
+} from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import ora from 'ora';
 import sequential from 'promise-sequential';
@@ -11,8 +13,9 @@ const spinner = ora('');
 // The following code pulls the latest backend to #current-cloud-backend
 // so the amplify status is correctly shown to the user before the user confirms
 // to push his local developments
-async function syncCurrentCloudBackend(context: $TSContext) {
+const syncCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
   context.exeInfo.restoreBackend = false;
+  context.exeInfo.spinner = spinner;
 
   const currentEnv = context.exeInfo.localEnvInfo.envName;
 
@@ -28,6 +31,7 @@ async function syncCurrentCloudBackend(context: $TSContext) {
     const pullCurrentCloudTasks: (() => Promise<$TSAny>)[] = [];
 
     context.exeInfo.projectConfig.providers.forEach(provider => {
+      // eslint-disable-next-line
       const providerModule = require(providerPlugins[provider]);
       pullCurrentCloudTasks.push(() => providerModule.initEnv(context, amplifyMeta.providers[provider]));
     });
@@ -42,20 +46,24 @@ async function syncCurrentCloudBackend(context: $TSContext) {
     spinner.fail(`There was an error pulling the backend environment ${currentEnv}.`);
     throw e;
   }
-}
+};
 
-async function pushHooks(context: $TSContext) {
+const pushHooks = async (context: $TSContext): Promise<void> => {
   context.exeInfo.pushHooks = true;
   const providerPlugins = getProviderPlugins(context);
   const pushHooksTasks: (() => Promise<$TSAny>)[] = [];
   context.exeInfo.projectConfig.providers.forEach(provider => {
+    // eslint-disable-next-line
     const providerModule = require(providerPlugins[provider]);
     pushHooksTasks.push(() => providerModule.uploadHooksDirectory(context));
   });
   await sequential(pushHooksTasks);
-}
+};
 
-export const run = async (context: $TSContext) => {
+/**
+ * Runs push command
+ */
+export const run = async (context: $TSContext): Promise<$TSAny|void> => {
   try {
     context.amplify.constructExeInfo(context);
     if (context.exeInfo.localEnvInfo.noUpdateBackend) {
@@ -73,5 +81,6 @@ export const run = async (context: $TSContext) => {
     await context.usageData.emitError(e);
     showTroubleshootingURL();
     exitOnNextTick(1);
+    return undefined;
   }
 };
