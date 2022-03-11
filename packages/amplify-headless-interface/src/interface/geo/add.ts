@@ -70,4 +70,5 @@ export enum AccessType {
   VectorEsriDarkGrayCanvas = "VectorEsriDarkGrayCanvas",
   VectorEsriLightGrayCanvas = "VectorEsriLightGrayCanvas",
   VectorHereBerlin = "VectorHereBerlin",
+  RasterEsriImagery = "RasterEsriImagery"
 }
