@@ -174,12 +174,10 @@ describe('subscription disabled and userPools configured', () => {
 
         expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
         expect(out.resolvers['Student.ssn.req.vtl']).toContain(`#if( $util.authType() == "User Pool Authorization" )
-  #if( !$isAuthorized )
-    #set( $ownerEntity0 = $util.defaultIfNull($ctx.source.owner, null) )
-    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), "___xamznone____")) )
-    #if( $ownerEntity0 == $ownerClaim0 )
-      #set( $isAuthorized = true )
-    #end
+  #set( $ownerEntity0 = $util.defaultIfNull($ctx.source.owner, null) )
+  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), "___xamznone____")) )
+  #if( $ownerEntity0 == $ownerClaim0 )
+    #set( $isAuthorized = true )
   #end
 #end`);
       });
@@ -259,12 +257,10 @@ describe('subscription disabled and userPools configured', () => {
 
         expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
         expect(out.resolvers['Student.ssn.req.vtl']).toContain(`#if( $util.authType() == "User Pool Authorization" )
-  #if( !$isAuthorized )
-    #set( $ownerEntity0 = $util.defaultIfNull($ctx.source.owner, null) )
-    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), "___xamznone____")) )
-    #if( $ownerEntity0 == $ownerClaim0 )
-      #set( $isAuthorized = true )
-    #end
+  #set( $ownerEntity0 = $util.defaultIfNull($ctx.source.owner, null) )
+  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), "___xamznone____")) )
+  #if( $ownerEntity0 == $ownerClaim0 )
+    #set( $isAuthorized = true )
   #end
 #end`);
       });

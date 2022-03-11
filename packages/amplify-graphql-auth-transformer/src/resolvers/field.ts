@@ -50,23 +50,20 @@ const generateDynamicAuthReadExpression = (roles: Array<RoleDefinition>, fields:
     const entityIsList = fieldIsList(fields, role.entity!);
     if (role.strategy === 'owner') {
       ownerExpressions.push(
-        iff(
-          not(ref(IS_AUTHORIZED_FLAG)),
-          compoundExpression([
-            set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.source.${role.entity!}`), nul())),
-            set(ref(`ownerClaim${idx}`), getOwnerClaim(role.claim!)),
-            ...(entityIsList
-              ? [
-                  forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
-                    iff(
-                      equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
-                      compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')]),
-                    ),
-                  ]),
-                ]
-              : [iff(equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true)))]),
-          ]),
-        ),
+        compoundExpression([
+          set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.source.${role.entity!}`), nul())),
+          set(ref(`ownerClaim${idx}`), getOwnerClaim(role.claim!)),
+          ...(entityIsList
+            ? [
+                forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
+                  iff(
+                    equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
+                    compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')]),
+                  ),
+                ]),
+              ]
+            : [iff(equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true)))]),
+        ]),
       );
     }
     if (role.strategy === 'groups') {

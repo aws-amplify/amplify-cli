@@ -29,14 +29,11 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> 
   roles.forEach((role, idx) => {
     if (role.strategy === 'owner') {
       ownerExpression.push(
-        iff(
-          not(ref(IS_AUTHORIZED_FLAG)),
-          compoundExpression([
-            set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.args.${role.entity!}`), nul())),
-            set(ref(`ownerClaim${idx}`), getOwnerClaim(role.claim!)),
-            iff(equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true))),
-          ]),
-        ),
+        compoundExpression([
+          set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.args.${role.entity!}`), nul())),
+          set(ref(`ownerClaim${idx}`), getOwnerClaim(role.claim!)),
+          iff(equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true))),
+        ]),
       );
     }
   });

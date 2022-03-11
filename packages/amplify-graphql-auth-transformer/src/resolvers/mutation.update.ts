@@ -177,39 +177,36 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
     const entityIsList = fieldIsList(fields, role.entity!);
     if (role.strategy === 'owner') {
       ownerExpression.push(
-        iff(
-          not(ref(IS_AUTHORIZED_FLAG)),
-          compoundExpression([
-            set(
-              ref(`ownerEntity${idx}`),
-              methodCall(ref('util.defaultIfNull'), ref(`ctx.result.${role.entity!}`), entityIsList ? list([]) : nul()),
-            ),
-            set(ref(`ownerClaim${idx}`), getOwnerClaim(role.claim!)),
-            set(ref(`ownerAllowedFields${idx}`), raw(JSON.stringify(role.allowedFields))),
-            set(ref(`ownerNullAllowedFields${idx}`), raw(JSON.stringify(role.nullAllowedFields))),
-            set(ref(`isAuthorizedOnAllFields${idx}`), bool(role.areAllFieldsAllowed && role.areAllFieldsNullAllowed)),
-            ...(entityIsList
-              ? [
-                  forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
-                    iff(
-                      equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
-                      addAllowedFieldsIfElse(
-                        `ownerAllowedFields${idx}`,
-                        `ownerNullAllowedFields${idx}`,
-                        `isAuthorizedOnAllFields${idx}`,
-                        true,
-                      ),
-                    ),
-                  ]),
-                ]
-              : [
+        compoundExpression([
+          set(
+            ref(`ownerEntity${idx}`),
+            methodCall(ref('util.defaultIfNull'), ref(`ctx.result.${role.entity!}`), entityIsList ? list([]) : nul()),
+          ),
+          set(ref(`ownerClaim${idx}`), getOwnerClaim(role.claim!)),
+          set(ref(`ownerAllowedFields${idx}`), raw(JSON.stringify(role.allowedFields))),
+          set(ref(`ownerNullAllowedFields${idx}`), raw(JSON.stringify(role.nullAllowedFields))),
+          set(ref(`isAuthorizedOnAllFields${idx}`), bool(role.areAllFieldsAllowed && role.areAllFieldsNullAllowed)),
+          ...(entityIsList
+            ? [
+                forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
                   iff(
-                    equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
-                    addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `ownerNullAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`),
+                    equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
+                    addAllowedFieldsIfElse(
+                      `ownerAllowedFields${idx}`,
+                      `ownerNullAllowedFields${idx}`,
+                      `isAuthorizedOnAllFields${idx}`,
+                      true,
+                    ),
                   ),
                 ]),
-          ]),
-        ),
+              ]
+            : [
+                iff(
+                  equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
+                  addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `ownerNullAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`),
+                ),
+              ]),
+        ]),
       );
     }
     if (role.strategy === 'groups') {

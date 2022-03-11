@@ -141,7 +141,7 @@ beforeAll(async () => {
     downs: Int
     percentageUp: Float
     isPublished: Boolean
-    createdAt: AWSDateTime 
+    createdAt: AWSDateTime
     updatedAt: AWSDateTime
     owner: String
     groupsField: String
@@ -368,9 +368,7 @@ test('test Comments as user in writer group', async () => {
   });
   expect(writerResponse.data.searchComments).toBeDefined();
   expect(writerResponse.data.searchComments.items.length).toEqual(4);
-  // only ownerContent should have the owner name
-  // because the group permission was met we did not populate an owner field
-  // therefore there is no owner
+
   expect(writerResponse.data.searchComments.items).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
@@ -381,17 +379,17 @@ test('test Comments as user in writer group', async () => {
       expect.objectContaining({
         id: expect.any(String),
         content: 'content1',
-        owner: null,
+        owner: USERNAME2,
       }),
       expect.objectContaining({
         id: expect.any(String),
-        content: 'content1',
-        owner: null,
+        content: 'content2',
+        owner: USERNAME2,
       }),
       expect.objectContaining({
         id: expect.any(String),
         content: 'content3',
-        owner: null,
+        owner: USERNAME2,
       }),
     ]),
   );

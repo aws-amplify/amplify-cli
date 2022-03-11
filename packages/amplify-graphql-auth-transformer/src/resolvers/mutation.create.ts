@@ -163,43 +163,40 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>, fields: ReadonlyArr
     const entityIsList = fieldIsList(fields, role.entity!);
     if (role.strategy === 'owner') {
       ownerExpression.push(
-        iff(
-          not(ref(IS_AUTHORIZED_FLAG)),
-          compoundExpression([
-            set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.args.input.${role.entity!}`), nul())),
-            set(ref(`ownerClaim${idx}`), getOwnerClaim(role.claim!)),
-            set(ref(`ownerAllowedFields${idx}`), raw(JSON.stringify(role.allowedFields))),
-            set(ref(`isAuthorizedOnAllFields${idx}`), bool(role.areAllFieldsAllowed)),
-            ...(entityIsList
-              ? [
-                  forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
-                    iff(
-                      equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
-                      addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`, true),
-                    ),
-                  ]),
-                ]
-              : [
+        compoundExpression([
+          set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.args.input.${role.entity!}`), nul())),
+          set(ref(`ownerClaim${idx}`), getOwnerClaim(role.claim!)),
+          set(ref(`ownerAllowedFields${idx}`), raw(JSON.stringify(role.allowedFields))),
+          set(ref(`isAuthorizedOnAllFields${idx}`), bool(role.areAllFieldsAllowed)),
+          ...(entityIsList
+            ? [
+                forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
                   iff(
-                    equals(ref(`ownerClaim${idx}`), ref(`ownerEntity${idx}`)),
-                    addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`),
+                    equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
+                    addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`, true),
                   ),
                 ]),
-            iff(
-              and([ref(`util.isNull($ownerEntity${idx})`), not(methodCall(ref('ctx.args.input.containsKey'), str(role.entity!)))]),
-              compoundExpression([
-                qref(
-                  methodCall(
-                    ref('ctx.args.input.put'),
-                    str(role.entity!),
-                    entityIsList ? list([ref(`ownerClaim${idx}`)]) : ref(`ownerClaim${idx}`),
-                  ),
+              ]
+            : [
+                iff(
+                  equals(ref(`ownerClaim${idx}`), ref(`ownerEntity${idx}`)),
+                  addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`),
                 ),
-                addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`),
               ]),
-            ),
-          ]),
-        ),
+          iff(
+            and([ref(`util.isNull($ownerEntity${idx})`), not(methodCall(ref('ctx.args.input.containsKey'), str(role.entity!)))]),
+            compoundExpression([
+              qref(
+                methodCall(
+                  ref('ctx.args.input.put'),
+                  str(role.entity!),
+                  entityIsList ? list([ref(`ownerClaim${idx}`)]) : ref(`ownerClaim${idx}`),
+                ),
+              ),
+              addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`),
+            ]),
+          ),
+        ]),
       );
     }
     if (role.strategy === 'groups') {

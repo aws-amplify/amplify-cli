@@ -150,12 +150,10 @@ exports[`admin roles should be return the field name inside field resolvers 1`] 
 $util.unauthorized()
 #end
 #if( $util.authType() == \\"User Pool Authorization\\" )
-  #if( !$isAuthorized )
-    #set( $ownerEntity0 = $util.defaultIfNull($ctx.source.owner, null) )
-    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-    #if( $ownerEntity0 == $ownerClaim0 )
-      #set( $isAuthorized = true )
-    #end
+  #set( $ownerEntity0 = $util.defaultIfNull($ctx.source.owner, null) )
+  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+  #if( $ownerEntity0 == $ownerClaim0 )
+    #set( $isAuthorized = true )
   #end
 #end
 #if( !$isAuthorized )
@@ -195,25 +193,23 @@ $util.unauthorized()
       #end
     #end
   #end
-  #if( !$isAuthorized )
-    #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.owner, null) )
-    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-    #set( $ownerAllowedFields0 = [\\"id\\",\\"name\\",\\"description\\",\\"secretValue\\"] )
-    #set( $isAuthorizedOnAllFields0 = true )
-    #if( $ownerClaim0 == $ownerEntity0 )
-      #if( $isAuthorizedOnAllFields0 )
-        #set( $isAuthorized = true )
-      #else
-        $util.qr($allowedFields.addAll($ownerAllowedFields0))
-      #end
+  #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.owner, null) )
+  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+  #set( $ownerAllowedFields0 = [\\"id\\",\\"name\\",\\"description\\",\\"secretValue\\"] )
+  #set( $isAuthorizedOnAllFields0 = true )
+  #if( $ownerClaim0 == $ownerEntity0 )
+    #if( $isAuthorizedOnAllFields0 )
+      #set( $isAuthorized = true )
+    #else
+      $util.qr($allowedFields.addAll($ownerAllowedFields0))
     #end
-    #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
-      $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
-      #if( $isAuthorizedOnAllFields0 )
-        #set( $isAuthorized = true )
-      #else
-        $util.qr($allowedFields.addAll($ownerAllowedFields0))
-      #end
+  #end
+  #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+    $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+    #if( $isAuthorizedOnAllFields0 )
+      #set( $isAuthorized = true )
+    #else
+      $util.qr($allowedFields.addAll($ownerAllowedFields0))
     #end
   #end
 #end

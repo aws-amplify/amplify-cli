@@ -120,20 +120,17 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
     const entityIsList = fieldIsList(fields, role.entity!);
     if (role.strategy === 'owner') {
       ownerExpression.push(
-        iff(
-          not(ref(IS_AUTHORIZED_FLAG)),
-          compoundExpression([
-            set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.result.${role.entity!}`), nul())),
-            set(ref(`ownerClaim${idx}`), getOwnerClaim(role.claim!)),
-            ...(entityIsList
-              ? [
-                  forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
-                    iff(equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true))),
-                  ]),
-                ]
-              : [iff(equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true)))]),
-          ]),
-        ),
+        compoundExpression([
+          set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.result.${role.entity!}`), nul())),
+          set(ref(`ownerClaim${idx}`), getOwnerClaim(role.claim!)),
+          ...(entityIsList
+            ? [
+                forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
+                  iff(equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true))),
+                ]),
+              ]
+            : [iff(equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true)))]),
+        ]),
       );
     }
     if (role.strategy === 'groups') {
