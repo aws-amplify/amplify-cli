@@ -20,8 +20,11 @@ export class FileAsset extends cdk.Construct implements cdk.IAsset {
     const rootStack = findRootStack(scope);
     const sythesizer = rootStack.synthesizer;
 
-    if (sythesizer instanceof TransformerStackSythesizer) {
-      sythesizer.setMappingTemplates(props.fileName, props.fileContent);
+    // Check the constructor name instead of using 'instanceof' because the latter does not work
+    // with copies of the class, which happens with custom transformers.
+    // See: https://github.com/aws-amplify/amplify-cli/issues/9362
+    if (sythesizer.constructor.name === TransformerStackSythesizer.name) {
+        (sythesizer as TransformerStackSythesizer).setMappingTemplates(props.fileName, props.fileContent);
       this.assetHash = crypto
         .createHash('sha256')
         .update(props.fileContent)
