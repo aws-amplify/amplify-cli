@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.14-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.6.13...amplify-e2e-core@2.6.14-beta.0) (2022-03-11)
+
+
+### Bug Fixes
+
+* allow api updates without migration ([#9864](https://github.com/aws-amplify/amplify-cli/issues/9864)) ([389f551](https://github.com/aws-amplify/amplify-cli/commit/389f551ea800afc9563b6e546f3ea0073bc13c68))
+* build resource when adding new env ([#9847](https://github.com/aws-amplify/amplify-cli/issues/9847)) ([7264e27](https://github.com/aws-amplify/amplify-cli/commit/7264e275306500f9b0e203dcaab3432db06d3cd4))
+
+
+### Reverts
+
+* Revert "fix: build resource when adding new env (#9847)" (#9957) ([3df3af0](https://github.com/aws-amplify/amplify-cli/commit/3df3af0729a05b60d805dc5311d1626d643d06a5)), closes [#9847](https://github.com/aws-amplify/amplify-cli/issues/9847) [#9957](https://github.com/aws-amplify/amplify-cli/issues/9957)
+
+
+
+
+
 ## [2.6.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.6.12...amplify-e2e-core@2.6.13) (2022-03-07)
 
 **Note:** Version bump only for package amplify-e2e-core

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.19-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.1.18...@aws-amplify/amplify-category-storage@3.1.19-beta.0) (2022-03-11)
+
+
+### Bug Fixes
+
+* remove stray `undefined` message on `ctrl+c` ([#9927](https://github.com/aws-amplify/amplify-cli/issues/9927)) ([8483c79](https://github.com/aws-amplify/amplify-cli/commit/8483c7922c94d820e8a6c2d61465712a6b34c8fb)), closes [#9829](https://github.com/aws-amplify/amplify-cli/issues/9829)
+
+
+
+
+
 ## [3.1.18](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.1.17...@aws-amplify/amplify-category-storage@3.1.18) (2022-03-07)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-storage

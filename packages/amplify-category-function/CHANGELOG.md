@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.5.3...amplify-category-function@3.5.4-beta.0) (2022-03-11)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** add length validation for secret value ([#9812](https://github.com/aws-amplify/amplify-cli/issues/9812)) ([1779fa0](https://github.com/aws-amplify/amplify-cli/commit/1779fa0bbe59cd1276332f02e43deaa8d6c3b356))
+* **amplify-category-function:** show `console` in subcommand list ([#9887](https://github.com/aws-amplify/amplify-cli/issues/9887)) ([3d933ba](https://github.com/aws-amplify/amplify-cli/commit/3d933ba0a194c02d96eb0b340fec77ed2972f983))
+
+
+
+
+
 ## [3.5.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.5.2...amplify-category-function@3.5.3) (2022-03-07)
 
 
