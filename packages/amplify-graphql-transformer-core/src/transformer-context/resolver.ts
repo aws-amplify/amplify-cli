@@ -162,13 +162,59 @@ export class TransformerResolver implements TransformerResolverProvider {
       slotEntry = [];
     }
 
-    slotEntry.push({
-      requestMappingTemplate,
-      responseMappingTemplate,
-      dataSource,
-    });
+    if (!this.slotAlreadyExists(slotName, requestMappingTemplate, responseMappingTemplate)) {
+      slotEntry.push({
+        requestMappingTemplate,
+        responseMappingTemplate,
+        dataSource,
+      });
+    }
     this.slotMap.set(slotName, slotEntry);
   };
+
+  slotAlreadyExists = (
+    slotName: string,
+    requestMappingTemplate?: MappingTemplateProvider,
+    responseMappingTemplate?: MappingTemplateProvider,
+  ): boolean => {
+    const slotEntires = this.slotMap.get(slotName)!;
+    let slotIndex = 1;
+
+    if (!slotEntires) {
+      return false;
+    }
+
+    for (let slotItem of slotEntires) {
+      const [slotItemRequestMappingTemplate, slotItemResponseMappingTemplate] =
+        [
+          (slotItem.requestMappingTemplate as any)?.name ?? '',
+          (slotItem.responseMappingTemplate as any)?.name ?? '',
+        ]
+        .map(name => name.replace('{slotName}', slotName).replace('{slotIndex}', slotIndex));
+
+      // If both request and response mapping templates are inline, return false
+      if (slotItemRequestMappingTemplate === '' && slotItemResponseMappingTemplate === '') {
+        return false;
+      }
+
+      // If name matches, then it is an overridden resolver
+      if (
+        slotItemRequestMappingTemplate === ((requestMappingTemplate as any)?.name ?? '') ||
+        slotItemResponseMappingTemplate === ((responseMappingTemplate as any)?.name ?? '')
+      ) {
+        slotItem.requestMappingTemplate = (requestMappingTemplate as any)?.name
+          ? requestMappingTemplate
+          : slotItem.requestMappingTemplate;
+        slotItem.responseMappingTemplate = (responseMappingTemplate as any)?.name
+          ? responseMappingTemplate
+          : slotItem.responseMappingTemplate;
+        return true;
+      }
+      slotIndex++;
+    }
+
+    return false;
+  }
 
   synthesize = (context: TransformerContextProvider, api: GraphQLAPIProvider): void => {
     const stack = this.stack || (context.stackManager as StackManager).rootStack;
