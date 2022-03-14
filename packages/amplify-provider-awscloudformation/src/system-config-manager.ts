@@ -167,7 +167,7 @@ const getRoleCredentials = async (context: $TSContext, profileName: string, prof
 
 const getMfaTokenCode = async (context): Promise<string> => {
   let spinner;
-  if (context.exeInfo.spinner && context.exeInfo.spinner.isSpinning) {
+  if (context.exeInfo && context.exeInfo.spinner && context.exeInfo.spinner.isSpinning) {
     spinner = context.exeInfo.spinner.stopAndPersist();
   }
   const inputMfaTokenCode = {
