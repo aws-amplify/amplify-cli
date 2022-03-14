@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.15](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.2.14...@aws-amplify/amplify-category-api@1.2.15) (2022-03-14)
+
+
+### Bug Fixes
+
+* allow api updates without migration ([#9864](https://github.com/aws-amplify/amplify-cli/issues/9864)) ([389f551](https://github.com/aws-amplify/amplify-cli/commit/389f551ea800afc9563b6e546f3ea0073bc13c68))
+* **amplify-category-api:** remove stack trace from printout for api ([#9877](https://github.com/aws-amplify/amplify-cli/issues/9877)) ([55be9c3](https://github.com/aws-amplify/amplify-cli/commit/55be9c3bac002fb1cc2cc4c1eae3df1b6972c4cb))
+* split policies for both legacy and migrated REST APIs ([#9572](https://github.com/aws-amplify/amplify-cli/issues/9572)) ([436d53f](https://github.com/aws-amplify/amplify-cli/commit/436d53f348954dab02364d1bed528c3b4121ede3))
+
+
+
+
+
 ## [1.2.14](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.2.13...@aws-amplify/amplify-category-api@1.2.14) (2022-03-07)
 
 

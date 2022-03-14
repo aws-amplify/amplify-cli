@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.25](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.24...amplify-migration-tests@4.4.25) (2022-03-14)
+
+
+### Bug Fixes
+
+* allow api updates without migration ([#9864](https://github.com/aws-amplify/amplify-cli/issues/9864)) ([389f551](https://github.com/aws-amplify/amplify-cli/commit/389f551ea800afc9563b6e546f3ea0073bc13c68))
+* split policies for both legacy and migrated REST APIs ([#9572](https://github.com/aws-amplify/amplify-cli/issues/9572)) ([436d53f](https://github.com/aws-amplify/amplify-cli/commit/436d53f348954dab02364d1bed528c3b4121ede3))
+
+
+
+
+
 ## [4.4.24](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.23...amplify-migration-tests@4.4.24) (2022-03-07)
 
 
