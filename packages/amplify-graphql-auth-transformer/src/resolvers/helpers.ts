@@ -27,7 +27,6 @@ import {
   DEFAULT_COGNITO_IDENTITY_CLAIM,
   RoleDefinition,
   IS_AUTHORIZED_FLAG,
-  ALLOWED_FIELDS,
   API_KEY_AUTH_TYPE,
   LAMBDA_AUTH_TYPE,
   IAM_AUTH_TYPE,
@@ -43,15 +42,6 @@ export const getInputFields = (): Expression => {
 
 export const getIdentityClaimExp = (value: Expression, defaultValueExp: Expression): Expression => {
   return methodCall(ref('util.defaultIfNull'), methodCall(ref('ctx.identity.claims.get'), value), defaultValueExp);
-};
-
-// for create mutations and subscriptions
-export const addAllowedFieldsIfElse = (fieldKey: string, breakLoop: boolean = false): Expression => {
-  return ifElse(
-    not(ref(`${fieldKey}.isEmpty()`)),
-    qref(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), ref(fieldKey))),
-    compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), ...(breakLoop ? [raw('#break')] : [])]),
-  );
 };
 
 // iam check

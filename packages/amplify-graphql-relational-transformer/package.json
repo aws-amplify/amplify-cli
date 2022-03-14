@@ -27,7 +27,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "@aws-amplify/graphql-auth-transformer": "0.7.8",
     "@aws-amplify/graphql-index-transformer": "0.11.2",
     "@aws-amplify/graphql-model-transformer": "0.13.2",
     "@aws-amplify/graphql-transformer-core": "0.16.2",

@@ -1,8 +1,9 @@
+import { DirectiveWrapper } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Stack } from '@aws-cdk/core';
 import { ObjectTypeDefinitionNode } from 'graphql';
-import { AccessControlMatrix } from '..';
+import { AccessControlMatrix, MODEL_OPERATIONS } from '..';
 import { AuthProvider, AuthRule, AuthTransformerConfig, ConfiguredAuthProviders, RoleDefinition, RolesByProvider } from './definitions';
 
 export * from './constants';
@@ -21,39 +22,6 @@ export const splitRoles = (roles: Array<RoleDefinition>): RolesByProvider => {
     apiKeyRoles: roles.filter(r => r.provider === 'apiKey'),
     lambdaRoles: roles.filter(r => r.provider === 'function'),
   };
-};
-/**
- * Ensure the following defaults
- * - provider
- * - iam policy generation
- */
-export const ensureAuthRuleDefaults = (rules: AuthRule[]) => {
-  // We assign the default provider if an override is not present make further handling easier.
-  for (const rule of rules) {
-    if (!rule.provider) {
-      switch (rule.allow) {
-        case 'owner':
-        case 'groups':
-          rule.provider = 'userPools';
-          break;
-        case 'private':
-          rule.provider = 'userPools';
-          break;
-        case 'public':
-          rule.provider = 'apiKey';
-          break;
-        case 'custom':
-          rule.provider = 'function';
-          break;
-        default:
-          throw new Error(`Need to specify an allow to assigned a provider: ${rule}`);
-      }
-    }
-    // by default we generate an IAM policy for every rule
-    if (rule.provider === 'iam' && !rule.generateIAMPolicy) {
-      rule.generateIAMPolicy = true;
-    }
-  }
 };
 
 /**
@@ -130,4 +98,36 @@ export const getReadRolesForField = (acm: AccessControlMatrix, readRoles: Array<
     allowedRoles = allowedRoles.filter(r => !(r.startsWith('oidc:') && r !== 'oidc:private'));
   }
   return allowedRoles;
+};
+
+export const getAuthDirectiveRules = (authDir: DirectiveWrapper): AuthRule[] => {
+  const rules = authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] }).rules;
+  for (const rule of rules) {
+    rule.operations = rule.operations ?? MODEL_OPERATIONS;
+
+    if (!rule.provider) {
+      switch (rule.allow) {
+        case 'owner':
+        case 'groups':
+          rule.provider = 'userPools';
+          break;
+        case 'private':
+          rule.provider = 'userPools';
+          break;
+        case 'public':
+          rule.provider = 'apiKey';
+          break;
+        case 'custom':
+          rule.provider = 'function';
+          break;
+        default:
+          throw new Error(`Need to specify an allow to assigned a provider: ${rule}`);
+      }
+    }
+
+    if (rule.provider === 'iam') {
+      rule.generateIAMPolicy = true;
+    }
+  }
+  return rules;
 };

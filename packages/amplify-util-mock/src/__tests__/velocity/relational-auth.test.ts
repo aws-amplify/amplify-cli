@@ -66,7 +66,7 @@ describe('relational tests', () => {
       type Blog @model @auth(rules: [{ allow: private, operations: [read], provider: userPools }]) {
         id: ID!
         name: String
-        title: String        
+        title: String
         editor: Editor @hasOne(fields: ["id", "name"])
       }
 
@@ -114,7 +114,7 @@ describe('relational tests', () => {
       author: User @belongsTo(fields: ["owner"])
       owner: ID! @index(name: "byOwner", sortKeyFields: ["id"])
     }
-    
+
     type User @model @auth(rules: [{ allow: owner }]) {
       id: ID!
       name: String
@@ -147,7 +147,7 @@ describe('relational tests', () => {
     expect(adminWithNoFilterResponse.hadException).toEqual(false);
     expect(adminWithNoFilterResponse.stash.authFilter).toBeNull();
 
-    // request as a user that is niether the owner nor has any valid groups
+    // request as a user that is neither the owner nor has any valid groups
     // therefore the request is changed to include the current user to ensure they are only seeing their correct records
     // NOTE: will only really happen in the group claim rule is different than that of the related type therefore the owner rule should still be enforced
     const ownerWithNoFilter = vtlTemplate.render(userPostTemplate, {
@@ -158,5 +158,170 @@ describe('relational tests', () => {
     });
     expect(ownerWithNoFilter.hadException).toEqual(false);
     expect(ownerWithNoFilter.stash.authFilter).not.toBeDefined();
+  });
+
+  test('has one and partial type access', () => {
+    const validSchema = `
+      type ModelA @model @auth(rules: [{ allow: owner }]) {
+        id: ID!
+        name: String
+        description: String @auth(rules: [{ allow: owner, operations: [read] }])
+        child: ModelB @hasOne
+      }
+
+      type ModelB @model @auth(rules: [{ allow: owner }]) {
+        id: ID!
+        name: String
+      }
+    `;
+
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    // load vtl templates
+    const createModelATemplate = out.resolvers['Mutation.createModelA.auth.1.req.vtl'];
+    const createModelBTemplate = out.resolvers['Mutation.createModelB.auth.1.req.vtl'];
+
+    const createModelBContext = {
+      arguments: {
+        input: {
+          id: '001',
+          name: 'sample',
+        },
+      },
+    };
+    const createModelBRequest = vtlTemplate.render(createModelBTemplate, {
+      context: createModelBContext,
+      requestParameters: ownerRequest,
+    });
+    expect(createModelBRequest.hadException).toEqual(false);
+
+    const createModelAContext = {
+      arguments: {
+        input: {
+          id: '001',
+          name: 'sample',
+          modelAChildId: '001',
+        },
+      },
+    };
+    const createModelARequest = vtlTemplate.render(createModelATemplate, {
+      context: createModelAContext,
+      requestParameters: ownerRequest,
+    });
+    expect(createModelARequest.hadException).toEqual(false);
+  });
+
+  test('should allow update with has one with multiple fields and multiple sort key fields', () => {
+    const validSchema = `
+      type Post @model @auth(rules: [{ allow: owner, operations: [create, read, update] }]) {
+        id: ID!
+        name: String
+        comment: Comment @hasOne(fields: ["partOneId", "partTwoId", "partThreeId"])
+        partOneId: ID!
+        partTwoId: ID!
+        partThreeId: ID!
+      }
+
+      type Comment @model @auth(rules: [{ allow: owner, operations: [create, read, update] }]) {
+        id: ID! @primaryKey(sortKeyFields: ["partTwoId", "partThreeId"])
+        partTwoId: ID!
+        partThreeId: ID!
+        name: String
+      }
+    `;
+
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    // load vtl templates
+    const createPostTemplate = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
+    const createCommentTemplate = out.resolvers['Mutation.createComment.auth.1.req.vtl'];
+
+    const createCommentContext = {
+      arguments: {
+        input: {
+          id: '001',
+          name: 'sample',
+        },
+      },
+    };
+    const createCommentRequest = vtlTemplate.render(createCommentTemplate, {
+      context: createCommentContext,
+      requestParameters: ownerRequest,
+    });
+    expect(createCommentRequest.hadException).toEqual(false);
+
+    const createPostContext = {
+      arguments: {
+        input: {
+          id: '001',
+          name: 'sample',
+          partOneId: '001',
+          partTwoId: '001',
+        },
+      },
+    };
+    const createPostRequest = vtlTemplate.render(createPostTemplate, {
+      context: createPostContext,
+      requestParameters: ownerRequest,
+    });
+    expect(createPostRequest.hadException).toEqual(false);
+
+    const updatePostTemplate = out.resolvers['Mutation.updatePost.auth.1.res.vtl'];
+    const updateCommentTemplate = out.resolvers['Mutation.updateComment.auth.1.res.vtl'];
+
+    const updateCommentContext = {
+      result: {
+        id: '001',
+        name: 'updated',
+        owner: 'user1',
+      },
+    };
+    const updateCommentRequest = vtlTemplate.render(updateCommentTemplate, {
+      context: updateCommentContext,
+      requestParameters: ownerRequest,
+    });
+    expect(updateCommentRequest.hadException).toEqual(false);
+
+    const updatePostContext = {
+      result: {
+        id: '001',
+        name: 'updated',
+        owner: 'user1',
+      },
+    };
+    const updatePostRequest = vtlTemplate.render(updatePostTemplate, {
+      context: updatePostContext,
+      requestParameters: ownerRequest,
+    });
+    expect(updatePostRequest.hadException).toEqual(false);
+
+    const deletePostTemplate = out.resolvers['Mutation.deletePost.auth.1.res.vtl'];
+    const deleteCommentTemplate = out.resolvers['Mutation.deleteComment.auth.1.res.vtl'];
+
+    const deleteCommentContext = {
+      result: {
+        id: '001',
+        owner: 'user1',
+      },
+    };
+    const deleteCommentRequest = vtlTemplate.render(deleteCommentTemplate, {
+      context: deleteCommentContext,
+      requestParameters: ownerRequest,
+    });
+    expect(deleteCommentRequest.hadException).toEqual(true);
+
+    const deletePostContext = {
+      result: {
+        id: '001',
+        owner: 'user1',
+      },
+    };
+    const deletePostRequest = vtlTemplate.render(deletePostTemplate, {
+      context: deletePostContext,
+      requestParameters: ownerRequest,
+    });
+    expect(deletePostRequest.hadException).toEqual(true);
   });
 });

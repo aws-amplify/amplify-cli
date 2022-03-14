@@ -195,7 +195,9 @@ test('join table inherits auth from first table', () => {
   expect(out.resolvers['Query.getFooBar.res.vtl']).toEqual(out.resolvers['Query.getFoo.res.vtl']);
   expect(out.resolvers['Query.listFooBars.auth.1.req.vtl']).toEqual(out.resolvers['Query.listFoos.auth.1.req.vtl']);
   expect(out.resolvers['Query.listFooBars.postAuth.1.req.vtl']).toEqual(out.resolvers['Query.listFoos.postAuth.1.req.vtl']);
-  expect(out.resolvers['Mutation.createFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.createFoo.auth.1.req.vtl']);
+  expect(
+    out.resolvers['Mutation.createFooBar.auth.1.req.vtl'].replace('#set( $allowedFields = ["id","fooID","barID","foo","bar"] )', ''),
+  ).toEqual(out.resolvers['Mutation.createFoo.auth.1.req.vtl'].replace('#set( $allowedFields = ["id","bars"] )', ''));
   expect(out.resolvers['Mutation.createFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.createFoo.postAuth.1.req.vtl']);
   expect(out.resolvers['Mutation.deleteFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.deleteFoo.auth.1.req.vtl']);
   expect(out.resolvers['Mutation.deleteFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.deleteFoo.postAuth.1.req.vtl']);
@@ -204,7 +206,15 @@ test('join table inherits auth from first table', () => {
   expect(out.resolvers['Mutation.deleteFooBar.res.vtl']).toEqual(out.resolvers['Mutation.deleteFoo.res.vtl']);
   expect(out.resolvers['Mutation.updateFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.updateFoo.auth.1.req.vtl']);
   expect(out.resolvers['Mutation.updateFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.updateFoo.postAuth.1.req.vtl']);
-  expect(out.resolvers['Mutation.updateFooBar.auth.1.res.vtl']).toEqual(out.resolvers['Mutation.updateFoo.auth.1.res.vtl']);
+  expect(
+    out.resolvers['Mutation.updateFooBar.auth.1.res.vtl']
+      .replace('#set( $allowedFields = ["id","fooID","barID","foo","bar"] )', '')
+      .replace('#set( $nullAllowedFields = ["id","fooID","barID","foo","bar"] )', ''),
+  ).toEqual(
+    out.resolvers['Mutation.updateFoo.auth.1.res.vtl']
+      .replace('#set( $allowedFields = ["id","bars"] )', '')
+      .replace('#set( $nullAllowedFields = ["id","bars"] )', ''),
+  );
   expect(out.resolvers['Mutation.updateFooBar.req.vtl']).toEqual(out.resolvers['Mutation.updateFoo.req.vtl']);
   expect(out.resolvers['Mutation.updateFooBar.res.vtl']).toEqual(out.resolvers['Mutation.updateFoo.res.vtl']);
 });
@@ -230,7 +240,9 @@ test('join table inherits auth from second table', () => {
   expect(out.resolvers['Query.getFooBar.res.vtl']).toEqual(out.resolvers['Query.getBar.res.vtl']);
   expect(out.resolvers['Query.listFooBars.auth.1.req.vtl']).toEqual(out.resolvers['Query.listBars.auth.1.req.vtl']);
   expect(out.resolvers['Query.listFooBars.postAuth.1.req.vtl']).toEqual(out.resolvers['Query.listBars.postAuth.1.req.vtl']);
-  expect(out.resolvers['Mutation.createFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.createBar.auth.1.req.vtl']);
+  expect(
+    out.resolvers['Mutation.createFooBar.auth.1.req.vtl'].replace('#set( $allowedFields = ["id","fooID","barID","foo","bar"] )', ''),
+  ).toEqual(out.resolvers['Mutation.createBar.auth.1.req.vtl'].replace('#set( $allowedFields = ["id","foos"] )', ''));
   expect(out.resolvers['Mutation.createFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.createBar.postAuth.1.req.vtl']);
   expect(out.resolvers['Mutation.deleteFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.deleteBar.auth.1.req.vtl']);
   expect(out.resolvers['Mutation.deleteFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.deleteBar.postAuth.1.req.vtl']);
@@ -239,7 +251,15 @@ test('join table inherits auth from second table', () => {
   expect(out.resolvers['Mutation.deleteFooBar.res.vtl']).toEqual(out.resolvers['Mutation.deleteBar.res.vtl']);
   expect(out.resolvers['Mutation.updateFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.updateBar.auth.1.req.vtl']);
   expect(out.resolvers['Mutation.updateFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.updateBar.postAuth.1.req.vtl']);
-  expect(out.resolvers['Mutation.updateFooBar.auth.1.res.vtl']).toEqual(out.resolvers['Mutation.updateBar.auth.1.res.vtl']);
+  expect(
+    out.resolvers['Mutation.updateFooBar.auth.1.res.vtl']
+      .replace('#set( $allowedFields = ["id","fooID","barID","foo","bar"] )', '')
+      .replace('#set( $nullAllowedFields = ["id","fooID","barID","foo","bar"] )', ''),
+  ).toEqual(
+    out.resolvers['Mutation.updateBar.auth.1.res.vtl']
+      .replace('#set( $allowedFields = ["id","foos"] )', '')
+      .replace('#set( $nullAllowedFields = ["id","foos"] )', ''),
+  );
   expect(out.resolvers['Mutation.updateFooBar.req.vtl']).toEqual(out.resolvers['Mutation.updateBar.req.vtl']);
   expect(out.resolvers['Mutation.updateFooBar.res.vtl']).toEqual(out.resolvers['Mutation.updateBar.res.vtl']);
 });

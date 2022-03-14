@@ -10,23 +10,24 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #if( !$isAuthorized )
     #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.editors, null) )
     #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-    #set( $ownerAllowedFields0 = [] )
+    #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"editors\\",\\"createdAt\\",\\"updatedAt\\"] )
+    #set( $isAuthorizedOnAllFields0 = true )
     #foreach( $allowedOwner in $ownerEntity0 )
       #if( $allowedOwner == $ownerClaim0 )
-        #if( !$ownerAllowedFields0.isEmpty() )
-          $util.qr($allowedFields.addAll($ownerAllowedFields0))
-        #else
+        #if( $isAuthorizedOnAllFields0 )
           #set( $isAuthorized = true )
           #break
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
         #end
       #end
     #end
     #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"editors\\") )
       $util.qr($ctx.args.input.put(\\"editors\\", [$ownerClaim0]))
-      #if( !$ownerAllowedFields0.isEmpty() )
-        $util.qr($allowedFields.addAll($ownerAllowedFields0))
-      #else
+      #if( $isAuthorizedOnAllFields0 )
         #set( $isAuthorized = true )
+      #else
+        $util.qr($allowedFields.addAll($ownerAllowedFields0))
       #end
     #end
   #end

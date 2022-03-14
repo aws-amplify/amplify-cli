@@ -170,7 +170,7 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
   return [...(ownerExpression.length > 0 ? ownerExpression : []), ...(dynamicGroupExpression.length > 0 ? dynamicGroupExpression : [])];
 };
 
-export const geneateAuthExpressionForDelete = (
+export const generateAuthExpressionForDelete = (
   providers: ConfiguredAuthProviders,
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
