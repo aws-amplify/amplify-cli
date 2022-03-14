@@ -3,13 +3,13 @@ import {
   deleteProject,
   createNewProjectDir,
   deleteProjectDir,
-  addFeatureFlag,
   addApiWithoutSchema,
   addCustomResolver,
   apiGqlCompile,
   updateApiSchema,
   writeToCustomResourcesJson,
   amplifyPush,
+  amplifyPushGraphQlWithCognitoPrompt,
   generateModels,
   amplifyPushUpdate,
 } from 'amplify-e2e-core';
@@ -18,7 +18,7 @@ import * as fs from 'fs-extra';
 
 describe('user created resolvers', () => {
   let projectDir: string;
-  let apiName = 'simpleapi';
+  const apiName = 'simpleapi';
 
   beforeEach(async () => {
     projectDir = await createNewProjectDir('overrideresolvers');
@@ -46,6 +46,30 @@ describe('user created resolvers', () => {
       await apiGqlCompile(projectDir, true);
 
       expect(fs.readFileSync(generatedResolverPath).toString()).toEqual(resolver);
+    });
+
+    it('overriding a resolver should not create duplicate function', async () => {
+      const slotName = 'Query.listTodos.auth.1.req.vtl';
+      const slot = '$util.unauthorized()';
+      const generatedResolverPath = join(projectDir, 'amplify', 'backend', 'api', apiName, 'build', 'resolvers', slotName);
+
+      await addApiWithoutSchema(projectDir, { apiName });
+      updateApiSchema(projectDir, apiName, 'cognito_simple_model.graphql');
+      await amplifyPushGraphQlWithCognitoPrompt(projectDir);
+
+      expect(fs.existsSync(generatedResolverPath)).toEqual(true);
+
+      addCustomResolver(projectDir, apiName, slotName, slot);
+      await generateModels(projectDir);
+      await amplifyPushUpdate(projectDir);
+
+      const todoJsonPath = join(projectDir, 'amplify', 'backend', 'api', apiName, 'build', 'stacks', 'Todo.json');
+      const todoJson = JSON.parse(fs.readFileSync(todoJsonPath).toString());
+
+      expect(fs.readFileSync(generatedResolverPath).toString()).toEqual(slot);
+      expect(todoJson.Resources.GetTodoResolver.Properties.PipelineConfig.Functions).toHaveLength(3);
+      // The function count should be 3 even after overriding the auth resolver
+      expect(todoJson.Resources.ListTodoResolver.Properties.PipelineConfig.Functions).toHaveLength(3);
     });
   });
 
