@@ -129,6 +129,7 @@ export const getPlaceIndexIamPolicies = (resourceName: string, crudOptions: stri
         actions.add('geo:DescribePlaceIndex');
         actions.add('geo:SearchPlaceIndexForPosition');
         actions.add('geo:SearchPlaceIndexForText');
+        actions.add('geo:SearchPlaceIndexForSuggestions');
         break;
       case 'delete':
         actions.add('geo:DeletePlaceIndex');

@@ -118,6 +118,14 @@ type Course @model {
   title: String!
   students: [Student] @manyToMany(relationName: "Enrollment")
 }
+
+type Foo @model {
+  bars: [Bar] @hasMany
+}
+
+type Bar @model(queries: null) {
+  strings: [String]
+}
 `;
   let out;
   try {

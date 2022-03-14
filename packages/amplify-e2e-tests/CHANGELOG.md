@@ -3,6 +3,77 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.7.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.12...amplify-e2e-tests@3.7.13) (2022-03-07)
+
+
+### Bug Fixes
+
+* map headless auth pw recovery to auto-verified attrs ([#9786](https://github.com/aws-amplify/amplify-cli/issues/9786)) ([f8c9100](https://github.com/aws-amplify/amplify-cli/commit/f8c9100d0ea0dfe87233624883ff8ae8c9bf48a7))
+
+
+
+
+
+## [3.7.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.11...amplify-e2e-tests@3.7.12) (2022-02-25)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [3.7.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.10...amplify-e2e-tests@3.7.11) (2022-02-18)
+
+
+
+## 7.6.21 (2022-02-16)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [3.7.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.9...amplify-e2e-tests@3.7.10) (2022-02-15)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [3.7.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.5...amplify-e2e-tests@3.7.9) (2022-02-10)
+
+
+
+## 7.6.19 (2022-02-08)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** allow user to update function for 0 category access ([#8052](https://github.com/aws-amplify/amplify-cli/issues/8052)) ([4d3af32](https://github.com/aws-amplify/amplify-cli/commit/4d3af3265d0c334ed5b46dca55f75b1c2aac2da1))
+* do not update idp if credentials not present ([#9454](https://github.com/aws-amplify/amplify-cli/issues/9454)) ([5b2d8c8](https://github.com/aws-amplify/amplify-cli/commit/5b2d8c869328bbf114c49e4203a922b067d0d3b0))
+
+
+
+
+
+## [3.7.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.4...amplify-e2e-tests@3.7.5) (2022-02-03)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [3.7.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.3...amplify-e2e-tests@3.7.4) (2022-01-31)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
 ## [3.7.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.2...amplify-e2e-tests@3.7.3) (2022-01-27)
 
 

@@ -260,6 +260,7 @@ describe('update artifacts', () => {
   it('updates correct cli-inputs', async () => {
     updateRequestStub.serviceModification.additionalAuthTypes = [{ mode: 'AWS_IAM' }, { mode: 'API_KEY' }];
     jest.spyOn(AppsyncApiInputState.prototype, 'saveCLIInputPayload');
+    jest.spyOn(AppsyncApiInputState.prototype, 'cliInputFileExists').mockReturnValueOnce(true);
     jest.spyOn(AppsyncApiInputState.prototype, 'getCLIInputPayload').mockReturnValue({
       serviceConfiguration: {
         apiName: 'testApiName',

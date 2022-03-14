@@ -3,6 +3,53 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.4.1...amplify-category-geo@2.4.2) (2022-03-07)
+
+**Note:** Version bump only for package amplify-category-geo
+
+
+
+
+
+## [2.4.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.4.0...amplify-category-geo@2.4.1) (2022-02-25)
+
+**Note:** Version bump only for package amplify-category-geo
+
+
+
+
+
+# [2.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.3.9...amplify-category-geo@2.4.0) (2022-02-15)
+
+
+### Features
+
+* **amplify-category-geo:** add permissions for suggestions ([#9743](https://github.com/aws-amplify/amplify-cli/issues/9743)) ([943c7ed](https://github.com/aws-amplify/amplify-cli/commit/943c7edd0f21ddeb9dac30322d2dd686baa3dcf4))
+
+
+
+
+
+## [2.3.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.3.5...amplify-category-geo@2.3.9) (2022-02-10)
+
+
+
+## 7.6.19 (2022-02-08)
+
+**Note:** Version bump only for package amplify-category-geo
+
+
+
+
+
+## [2.3.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.3.4...amplify-category-geo@2.3.5) (2022-02-03)
+
+**Note:** Version bump only for package amplify-category-geo
+
+
+
+
+
 ## [2.3.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.3.1...amplify-category-geo@2.3.4) (2022-01-27)
 
 

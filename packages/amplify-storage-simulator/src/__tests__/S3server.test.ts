@@ -1,8 +1,6 @@
 import { AmplifyStorageSimulator } from '..';
 import * as AWS from 'aws-sdk';
-import * as path from 'path';
 import * as fs from 'fs-extra';
-import * as request from 'request';
 
 let port = 20005; // for testing
 let route = '/mock-testing';

@@ -591,6 +591,12 @@ export class FeatureFlags {
         defaultValueForExistingProjects: true,
         defaultValueForNewProjects: false,
       },
+      {
+        name: 'showFieldAuthNotification',
+        type: 'boolean',
+        defaultValueForExistingProjects: true,
+        defaultValueForNewProjects: false,
+      },
     ]);
 
     this.registerFlag('frontend-ios', [

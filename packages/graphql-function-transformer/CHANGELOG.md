@@ -3,6 +3,58 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.16](https://github.com/aws-amplify/amplify-cli/compare/graphql-function-transformer@3.3.15...graphql-function-transformer@3.3.16) (2022-03-07)
+
+**Note:** Version bump only for package graphql-function-transformer
+
+
+
+
+
+## [3.3.15](https://github.com/aws-amplify/amplify-cli/compare/graphql-function-transformer@3.3.14...graphql-function-transformer@3.3.15) (2022-02-25)
+
+**Note:** Version bump only for package graphql-function-transformer
+
+
+
+
+
+## [3.3.14](https://github.com/aws-amplify/amplify-cli/compare/graphql-function-transformer@3.3.13...graphql-function-transformer@3.3.14) (2022-02-15)
+
+**Note:** Version bump only for package graphql-function-transformer
+
+
+
+
+
+## [3.3.13](https://github.com/aws-amplify/amplify-cli/compare/graphql-function-transformer@3.3.9...graphql-function-transformer@3.3.13) (2022-02-10)
+
+
+
+## 7.6.19 (2022-02-08)
+
+**Note:** Version bump only for package graphql-function-transformer
+
+
+
+
+
+## [3.3.9](https://github.com/aws-amplify/amplify-cli/compare/graphql-function-transformer@3.3.8...graphql-function-transformer@3.3.9) (2022-02-03)
+
+**Note:** Version bump only for package graphql-function-transformer
+
+
+
+
+
+## [3.3.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-function-transformer@3.3.7...graphql-function-transformer@3.3.8) (2022-01-31)
+
+**Note:** Version bump only for package graphql-function-transformer
+
+
+
+
+
 ## [3.3.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-function-transformer@3.3.6...graphql-function-transformer@3.3.7) (2022-01-27)
 
 **Note:** Version bump only for package graphql-function-transformer

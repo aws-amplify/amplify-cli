@@ -162,6 +162,7 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 
 exports[`join table inherits auth from both tables 11`] = `
 "## [Start] Delete Request template. **
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"DeleteItem\\"
@@ -170,7 +171,7 @@ exports[`join table inherits auth from both tables 11`] = `
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $Key = {
-  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+  \\"id\\":   $util.dynamodb.toDynamoDB($args.input.id)
 } )
 #end
 $util.qr($DeleteRequest.put(\\"key\\", $Key))
@@ -193,8 +194,8 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 }))
 #end
 ## End - key condition **
-#if( $context.args.condition )
-  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#if( $args.condition )
+  $util.qr($ctx.stash.conditions.add($args.condition))
 #end
 ## Start condition block **
 #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
@@ -299,10 +300,11 @@ $util.toJson({})
 
 exports[`join table inherits auth from both tables 16`] = `
 "## [Start] Mutation Update resolver. **
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+$util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 ## set the typename **
 ## Initialize the vars for creating ddb expression **
 #set( $expNames = {} )
@@ -314,7 +316,7 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $Key = {
-  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+  \\"id\\":   $util.dynamodb.toDynamoDB($args.input.id)
 } )
 #end
 ## Model key **
@@ -396,8 +398,8 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 }))
 #end
 ## End - key condition **
-#if( $context.args.condition )
-  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#if( $args.condition )
+  $util.qr($ctx.stash.conditions.add($args.condition))
 #end
 ## Start condition block **
 #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
@@ -657,6 +659,7 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 
 exports[`join table inherits auth from tables with similar rules 11`] = `
 "## [Start] Delete Request template. **
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"DeleteItem\\"
@@ -665,7 +668,7 @@ exports[`join table inherits auth from tables with similar rules 11`] = `
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $Key = {
-  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+  \\"id\\":   $util.dynamodb.toDynamoDB($args.input.id)
 } )
 #end
 $util.qr($DeleteRequest.put(\\"key\\", $Key))
@@ -688,8 +691,8 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 }))
 #end
 ## End - key condition **
-#if( $context.args.condition )
-  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#if( $args.condition )
+  $util.qr($ctx.stash.conditions.add($args.condition))
 #end
 ## Start condition block **
 #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
@@ -779,12 +782,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $ownerAllowedFields0 = [] )
     #set( $ownerNullAllowedFields0 = [] )
     #if( $ownerEntity0 == $ownerClaim0 )
-      #if( !$ownerAllowedFields0.isEmpty() || !$ownerNullAllowedFields0.isEmpty() )
-        $util.qr($allowedFields.addAll($ownerAllowedFields0))
-        $util.qr($nullAllowedFields.addAll($ownerNullAllowedFields0))
-      #else
-        #set( $isAuthorized = true )
-      #end
+      #set( $isAuthorized = true )
     #end
   #end
 #end
@@ -810,10 +808,11 @@ $util.toJson({})
 
 exports[`join table inherits auth from tables with similar rules 16`] = `
 "## [Start] Mutation Update resolver. **
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+$util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 ## set the typename **
 ## Initialize the vars for creating ddb expression **
 #set( $expNames = {} )
@@ -825,7 +824,7 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $Key = {
-  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+  \\"id\\":   $util.dynamodb.toDynamoDB($args.input.id)
 } )
 #end
 ## Model key **
@@ -907,8 +906,8 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 }))
 #end
 ## End - key condition **
-#if( $context.args.condition )
-  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#if( $args.condition )
+  $util.qr($ctx.stash.conditions.add($args.condition))
 #end
 ## Start condition block **
 #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
@@ -1271,16 +1270,17 @@ Object {
     $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.fooID.ge\\" }))
   #end
   ## [End] Applying Key Condition **
+  #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
     #set( $filter = $ctx.stash.authFilter )
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #if( !$util.isNullOrEmpty($args.filter) )
       #set( $filter = {
-  \\"and\\":   [$filter, $ctx.args.filter]
+  \\"and\\":   [$filter, $args.filter]
 } )
     #end
   #else
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
-      #set( $filter = $ctx.args.filter )
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = $args.filter )
     #end
   #end
   #if( !$util.isNullOrEmpty($filter) )
@@ -1384,16 +1384,17 @@ $util.error($ctx.error.message, $ctx.error.type)
     $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.barID.ge\\" }))
   #end
   ## [End] Applying Key Condition **
+  #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
     #set( $filter = $ctx.stash.authFilter )
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #if( !$util.isNullOrEmpty($args.filter) )
       #set( $filter = {
-  \\"and\\":   [$filter, $ctx.args.filter]
+  \\"and\\":   [$filter, $args.filter]
 } )
     #end
   #else
-    #if( !$util.isNullOrEmpty($ctx.args.filter) )
-      #set( $filter = $ctx.args.filter )
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = $args.filter )
     #end
   #end
   #if( !$util.isNullOrEmpty($filter) )
@@ -1530,10 +1531,11 @@ $util.toJson({
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.createBar.req.vtl": "## [Start] Create Request template. **
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+$util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"Bar\\"))
 #set( $PutObject = {
@@ -1542,8 +1544,8 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Bar\\"))
   \\"attributeValues\\":   $util.dynamodb.toMapValues($mergedValues),
   \\"condition\\": $condition
 } )
-#if( $context.args.condition )
-  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#if( $args.condition )
+  $util.qr($ctx.stash.conditions.add($args.condition))
 #end
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
@@ -1620,10 +1622,11 @@ $util.toJson({
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.createFoo.req.vtl": "## [Start] Create Request template. **
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+$util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"Foo\\"))
 #set( $PutObject = {
@@ -1632,8 +1635,8 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Foo\\"))
   \\"attributeValues\\":   $util.dynamodb.toMapValues($mergedValues),
   \\"condition\\": $condition
 } )
-#if( $context.args.condition )
-  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#if( $args.condition )
+  $util.qr($ctx.stash.conditions.add($args.condition))
 #end
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
@@ -1710,10 +1713,11 @@ $util.toJson({
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.createFooBar.req.vtl": "## [Start] Create Request template. **
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+$util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"FooBar\\"))
 #set( $PutObject = {
@@ -1722,8 +1726,8 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"FooBar\\"))
   \\"attributeValues\\":   $util.dynamodb.toMapValues($mergedValues),
   \\"condition\\": $condition
 } )
-#if( $context.args.condition )
-  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#if( $args.condition )
+  $util.qr($ctx.stash.conditions.add($args.condition))
 #end
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
@@ -1789,6 +1793,7 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.deleteBar.req.vtl": "## [Start] Delete Request template. **
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"DeleteItem\\"
@@ -1797,7 +1802,7 @@ $util.toJson({})
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $Key = {
-  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+  \\"id\\":   $util.dynamodb.toDynamoDB($args.input.id)
 } )
 #end
 $util.qr($DeleteRequest.put(\\"key\\", $Key))
@@ -1820,8 +1825,8 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 }))
 #end
 ## End - key condition **
-#if( $context.args.condition )
-  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#if( $args.condition )
+  $util.qr($ctx.stash.conditions.add($args.condition))
 #end
 ## Start condition block **
 #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
@@ -1860,6 +1865,7 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.deleteFoo.req.vtl": "## [Start] Delete Request template. **
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"DeleteItem\\"
@@ -1868,7 +1874,7 @@ $util.toJson({})
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $Key = {
-  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+  \\"id\\":   $util.dynamodb.toDynamoDB($args.input.id)
 } )
 #end
 $util.qr($DeleteRequest.put(\\"key\\", $Key))
@@ -1891,8 +1897,8 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 }))
 #end
 ## End - key condition **
-#if( $context.args.condition )
-  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#if( $args.condition )
+  $util.qr($ctx.stash.conditions.add($args.condition))
 #end
 ## Start condition block **
 #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
@@ -1931,6 +1937,7 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.deleteFooBar.req.vtl": "## [Start] Delete Request template. **
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"DeleteItem\\"
@@ -1939,7 +1946,7 @@ $util.toJson({})
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $Key = {
-  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+  \\"id\\":   $util.dynamodb.toDynamoDB($args.input.id)
 } )
 #end
 $util.qr($DeleteRequest.put(\\"key\\", $Key))
@@ -1962,8 +1969,8 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 }))
 #end
 ## End - key condition **
-#if( $context.args.condition )
-  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#if( $args.condition )
+  $util.qr($ctx.stash.conditions.add($args.condition))
 #end
 ## Start condition block **
 #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
@@ -2011,10 +2018,11 @@ $util.toJson({
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.updateBar.req.vtl": "## [Start] Mutation Update resolver. **
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+$util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 ## set the typename **
 ## Initialize the vars for creating ddb expression **
 #set( $expNames = {} )
@@ -2026,7 +2034,7 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $Key = {
-  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+  \\"id\\":   $util.dynamodb.toDynamoDB($args.input.id)
 } )
 #end
 ## Model key **
@@ -2108,8 +2116,8 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 }))
 #end
 ## End - key condition **
-#if( $context.args.condition )
-  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#if( $args.condition )
+  $util.qr($ctx.stash.conditions.add($args.condition))
 #end
 ## Start condition block **
 #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
@@ -2163,10 +2171,11 @@ $util.toJson({
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.updateFoo.req.vtl": "## [Start] Mutation Update resolver. **
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+$util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 ## set the typename **
 ## Initialize the vars for creating ddb expression **
 #set( $expNames = {} )
@@ -2178,7 +2187,7 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $Key = {
-  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+  \\"id\\":   $util.dynamodb.toDynamoDB($args.input.id)
 } )
 #end
 ## Model key **
@@ -2260,8 +2269,8 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 }))
 #end
 ## End - key condition **
-#if( $context.args.condition )
-  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#if( $args.condition )
+  $util.qr($ctx.stash.conditions.add($args.condition))
 #end
 ## Start condition block **
 #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
@@ -2315,10 +2324,11 @@ $util.toJson({
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.updateFooBar.req.vtl": "## [Start] Mutation Update resolver. **
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+$util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 ## set the typename **
 ## Initialize the vars for creating ddb expression **
 #set( $expNames = {} )
@@ -2330,7 +2340,7 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $Key = {
-  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+  \\"id\\":   $util.dynamodb.toDynamoDB($args.input.id)
 } )
 #end
 ## Model key **
@@ -2412,8 +2422,8 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 }))
 #end
 ## End - key condition **
-#if( $context.args.condition )
-  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#if( $args.condition )
+  $util.qr($ctx.stash.conditions.add($args.condition))
 #end
 ## Start condition block **
 #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
@@ -2617,24 +2627,25 @@ $util.unauthorized()
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Query.listBars.req.vtl": "## [Start] List Request. **
-#set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+#set( $limit = $util.defaultIfNull($args.limit, 100) )
 #set( $ListRequest = {
   \\"version\\": \\"2018-05-29\\",
   \\"limit\\": $limit
 } )
-#if( $context.args.nextToken )
-  #set( $ListRequest.nextToken = $context.args.nextToken )
+#if( $args.nextToken )
+  #set( $ListRequest.nextToken = $args.nextToken )
 #end
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $filter = $ctx.stash.authFilter )
-  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+  #if( !$util.isNullOrEmpty($args.filter) )
     #set( $filter = {
-  \\"and\\":   [$filter, $ctx.args.filter]
+  \\"and\\":   [$filter, $args.filter]
 } )
   #end
 #else
-  #if( !$util.isNullOrEmpty($ctx.args.filter) )
-    #set( $filter = $ctx.args.filter )
+  #if( !$util.isNullOrEmpty($args.filter) )
+    #set( $filter = $args.filter )
   #end
 #end
 #if( !$util.isNullOrEmpty($filter) )
@@ -2649,7 +2660,7 @@ $util.toJson({})
 #if( !$util.isNull($ctx.stash.modelQueryExpression) && !$util.isNullOrEmpty($ctx.stash.modelQueryExpression.expression) )
   $util.qr($ListRequest.put(\\"operation\\", \\"Query\\"))
   $util.qr($ListRequest.put(\\"query\\", $ctx.stash.modelQueryExpression))
-  #if( !$util.isNull($ctx.args.sortDirection) && $ctx.args.sortDirection == \\"DESC\\" )
+  #if( !$util.isNull($args.sortDirection) && $args.sortDirection == \\"DESC\\" )
     #set( $ListRequest.scanIndexForward = false )
   #else
     #set( $ListRequest.scanIndexForward = true )
@@ -2676,24 +2687,25 @@ $util.toJson($ListRequest)
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Query.listFooBars.req.vtl": "## [Start] List Request. **
-#set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+#set( $limit = $util.defaultIfNull($args.limit, 100) )
 #set( $ListRequest = {
   \\"version\\": \\"2018-05-29\\",
   \\"limit\\": $limit
 } )
-#if( $context.args.nextToken )
-  #set( $ListRequest.nextToken = $context.args.nextToken )
+#if( $args.nextToken )
+  #set( $ListRequest.nextToken = $args.nextToken )
 #end
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $filter = $ctx.stash.authFilter )
-  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+  #if( !$util.isNullOrEmpty($args.filter) )
     #set( $filter = {
-  \\"and\\":   [$filter, $ctx.args.filter]
+  \\"and\\":   [$filter, $args.filter]
 } )
   #end
 #else
-  #if( !$util.isNullOrEmpty($ctx.args.filter) )
-    #set( $filter = $ctx.args.filter )
+  #if( !$util.isNullOrEmpty($args.filter) )
+    #set( $filter = $args.filter )
   #end
 #end
 #if( !$util.isNullOrEmpty($filter) )
@@ -2708,7 +2720,7 @@ $util.toJson({})
 #if( !$util.isNull($ctx.stash.modelQueryExpression) && !$util.isNullOrEmpty($ctx.stash.modelQueryExpression.expression) )
   $util.qr($ListRequest.put(\\"operation\\", \\"Query\\"))
   $util.qr($ListRequest.put(\\"query\\", $ctx.stash.modelQueryExpression))
-  #if( !$util.isNull($ctx.args.sortDirection) && $ctx.args.sortDirection == \\"DESC\\" )
+  #if( !$util.isNull($args.sortDirection) && $args.sortDirection == \\"DESC\\" )
     #set( $ListRequest.scanIndexForward = false )
   #else
     #set( $ListRequest.scanIndexForward = true )
@@ -2735,24 +2747,25 @@ $util.toJson($ListRequest)
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Query.listFoos.req.vtl": "## [Start] List Request. **
-#set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+#set( $limit = $util.defaultIfNull($args.limit, 100) )
 #set( $ListRequest = {
   \\"version\\": \\"2018-05-29\\",
   \\"limit\\": $limit
 } )
-#if( $context.args.nextToken )
-  #set( $ListRequest.nextToken = $context.args.nextToken )
+#if( $args.nextToken )
+  #set( $ListRequest.nextToken = $args.nextToken )
 #end
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $filter = $ctx.stash.authFilter )
-  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+  #if( !$util.isNullOrEmpty($args.filter) )
     #set( $filter = {
-  \\"and\\":   [$filter, $ctx.args.filter]
+  \\"and\\":   [$filter, $args.filter]
 } )
   #end
 #else
-  #if( !$util.isNullOrEmpty($ctx.args.filter) )
-    #set( $filter = $ctx.args.filter )
+  #if( !$util.isNullOrEmpty($args.filter) )
+    #set( $filter = $args.filter )
   #end
 #end
 #if( !$util.isNullOrEmpty($filter) )
@@ -2767,7 +2780,7 @@ $util.toJson({})
 #if( !$util.isNull($ctx.stash.modelQueryExpression) && !$util.isNullOrEmpty($ctx.stash.modelQueryExpression.expression) )
   $util.qr($ListRequest.put(\\"operation\\", \\"Query\\"))
   $util.qr($ListRequest.put(\\"query\\", $ctx.stash.modelQueryExpression))
-  #if( !$util.isNull($ctx.args.sortDirection) && $ctx.args.sortDirection == \\"DESC\\" )
+  #if( !$util.isNull($args.sortDirection) && $args.sortDirection == \\"DESC\\" )
     #set( $ListRequest.scanIndexForward = false )
   #else
     #set( $ListRequest.scanIndexForward = true )

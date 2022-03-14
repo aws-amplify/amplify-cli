@@ -3,6 +3,66 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.3...@aws-amplify/amplify-category-auth@2.7.4) (2022-03-07)
+
+
+### Bug Fixes
+
+* add HostedUIProvider dependency to OAuth Custom Lambda ([#9878](https://github.com/aws-amplify/amplify-cli/issues/9878)) ([a385de9](https://github.com/aws-amplify/amplify-cli/commit/a385de92c59cc0c48793f34b82ec6eac62100a7a))
+* map headless auth pw recovery to auto-verified attrs ([#9786](https://github.com/aws-amplify/amplify-cli/issues/9786)) ([f8c9100](https://github.com/aws-amplify/amplify-cli/commit/f8c9100d0ea0dfe87233624883ff8ae8c9bf48a7))
+
+
+
+
+
+## [2.7.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.2...@aws-amplify/amplify-category-auth@2.7.3) (2022-02-25)
+
+
+### Bug Fixes
+
+* add `context` to custom function handler entrypoint, ref [#9563](https://github.com/aws-amplify/amplify-cli/issues/9563) ([#9741](https://github.com/aws-amplify/amplify-cli/issues/9741)) ([c061288](https://github.com/aws-amplify/amplify-cli/commit/c06128854a5ea6181a49d6b8c5839290610674bb))
+
+
+
+
+
+## [2.7.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.5.0...@aws-amplify/amplify-category-auth@2.7.2) (2022-02-15)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
+# [2.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.12...@aws-amplify/amplify-category-auth@2.5.0) (2022-02-10)
+
+
+
+## 7.6.19 (2022-02-08)
+
+
+### Bug Fixes
+
+* do not update idp if credentials not present ([#9454](https://github.com/aws-amplify/amplify-cli/issues/9454)) ([5b2d8c8](https://github.com/aws-amplify/amplify-cli/commit/5b2d8c869328bbf114c49e4203a922b067d0d3b0))
+
+
+### Features
+
+* improve function templates; consolidate console.log, add jsdoc, add lambda types ([#9649](https://github.com/aws-amplify/amplify-cli/issues/9649)) ([5b24455](https://github.com/aws-amplify/amplify-cli/commit/5b244554bd503d076f94fa94c96bc50d65cf48bc))
+* update admin queries package dependencies, scripts ([#9669](https://github.com/aws-amplify/amplify-cli/issues/9669)) ([c78d8c0](https://github.com/aws-amplify/amplify-cli/commit/c78d8c0e1ca5bc4d9a6af84d158c88ea0af88c8b))
+
+
+
+
+
+## [2.4.12](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.11...@aws-amplify/amplify-category-auth@2.4.12) (2022-02-03)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
 ## [2.4.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.10...@aws-amplify/amplify-category-auth@2.4.11) (2022-01-27)
 
 

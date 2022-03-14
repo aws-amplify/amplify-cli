@@ -1,3 +1,6 @@
+/**
+ * @type {import('@types/aws-lambda').CustomMessageTriggerHandler}
+ */
 exports.handler = async event => {
   // Define the URL that you want the user to be directed to after verification is complete
   if (event.triggerSource === 'CustomMessage_SignUp') {

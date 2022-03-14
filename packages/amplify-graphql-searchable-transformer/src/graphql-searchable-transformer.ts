@@ -2,6 +2,7 @@ import { TransformerPluginBase, InvalidDirectiveError, MappingTemplate, Directiv
 import {
   DataSourceProvider,
   TransformerContextProvider,
+  TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
@@ -90,7 +91,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     stack.templateOptions.description = 'An auto-generated nested stack for searchable.';
     stack.templateOptions.templateFormatVersion = '2010-09-09';
 
-    const parameterMap = createParametersInStack(stack);
+    const parameterMap = createParametersInStack(context.stackManager.rootStack);
 
     const domain = createSearchableDomain(stack, parameterMap, context.api.apiId);
 
@@ -123,6 +124,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
     for (const def of this.searchableObjectTypeDefinitions) {
       const type = def.node.name.value;
+      const openSearchIndexName = context.resourceHelper.getModelNameMapping(type);
       const fields = def.node.fields?.map(f => f.name.value) ?? [];
       const typeName = context.output.getQueryTypeName();
       const table = getTable(context, def.node);
@@ -132,7 +134,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       ddbTable.grantStreamRead(lambdaRole);
 
       // creates event source mapping from ddb to lambda
-      createEventSourceMapping(stack, type, lambda, parameterMap, ddbTable.tableStreamArn);
+      createEventSourceMapping(stack, openSearchIndexName, lambda, parameterMap, ddbTable.tableStreamArn);
 
       const { attributeName } = (table as any).keySchema.find((att: any) => att.keyType === 'HASH');
       const keyFields = getKeyFields(attributeName, table);
@@ -144,10 +146,20 @@ export class SearchableModelTransformer extends TransformerPluginBase {
         ResolverResourceIDs.ElasticsearchSearchResolverResourceID(type),
         datasource as DataSourceProvider,
         MappingTemplate.s3MappingTemplateFromString(
-          requestTemplate(attributeName, getNonKeywordFields(def.node), context.isProjectUsingDataStore(), type, keyFields),
+          requestTemplate(
+            attributeName,
+            getNonKeywordFields(def.node),
+            context.isProjectUsingDataStore(),
+            openSearchIndexName,
+            type,
+            keyFields,
+          ),
           `${typeName}.${def.fieldName}.req.vtl`,
         ),
-        MappingTemplate.s3MappingTemplateFromString(responseTemplate(false), `${typeName}.${def.fieldName}.res.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(
+          responseTemplate(context.isProjectUsingDataStore()),
+          `${typeName}.${def.fieldName}.res.vtl`
+        ),
       );
       resolver.addToSlot(
         'postAuth',
@@ -156,8 +168,9 @@ export class SearchableModelTransformer extends TransformerPluginBase {
           `${typeName}.${def.fieldName}.{slotName}.{slotIndex}.res.vtl`,
         ),
       );
+
       resolver.mapToStack(stack);
-      context.resolvers.addResolver('Search', toUpper(type), resolver);
+      context.resolvers.addResolver(typeName, def.fieldName, resolver);
     }
 
     createStackOutputs(stack, domain.domainEndpoint, context.api.apiId, domain.domainArn);
@@ -212,6 +225,16 @@ export class SearchableModelTransformer extends TransformerPluginBase {
         directives,
       );
       ctx.output.addQueryFields([queryField]);
+    }
+  };
+
+  prepare = (ctx: TransformerPrepareStepContextProvider) => {
+    // register search query resolvers in field mapping
+    // if no mappings are registered elsewhere, this won't do anything
+    // but if mappings are defined this will ensure the mapping is also applied to the search results
+    for (const def of this.searchableObjectTypeDefinitions) {
+      const modelName = def.node.name.value;
+      ctx.resourceHelper.getModelFieldMap(modelName).addResolverReference({ typeName: 'Query', fieldName: def.fieldName, isList: true });
     }
   };
 

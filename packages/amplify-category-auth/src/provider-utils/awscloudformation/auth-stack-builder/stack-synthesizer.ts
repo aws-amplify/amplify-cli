@@ -3,7 +3,7 @@ import { Template } from 'cloudform-types';
 import { AmplifyAuthCognitoStack } from './auth-cognito-stack-builder';
 import { AmplifyUserPoolGroupStack, AmplifyUserPoolGroupStackOutputs } from './auth-user-pool-group-stack-builder';
 
-export class AuthStackSythesizer extends LegacyStackSynthesizer {
+export class AuthStackSynthesizer extends LegacyStackSynthesizer {
   private readonly stacks: Map<string, Stack> = new Map();
   private static readonly stackAssets: Map<string, Template> = new Map();
 
@@ -25,11 +25,11 @@ export class AuthStackSythesizer extends LegacyStackSynthesizer {
   }
 
   setStackAsset(templateName: string, template: string): void {
-    AuthStackSythesizer.stackAssets.set(templateName, JSON.parse(template));
+    AuthStackSynthesizer.stackAssets.set(templateName, JSON.parse(template));
   }
 
   collectStacks(): Map<string, Template> {
-    return new Map(AuthStackSythesizer.stackAssets.entries());
+    return new Map(AuthStackSynthesizer.stackAssets.entries());
   }
 
   addStack(stack: Stack) {

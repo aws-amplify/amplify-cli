@@ -3,6 +3,73 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.24](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.23...amplify-migration-tests@4.4.24) (2022-03-07)
+
+
+### Bug Fixes
+
+* map headless auth pw recovery to auto-verified attrs ([#9786](https://github.com/aws-amplify/amplify-cli/issues/9786)) ([f8c9100](https://github.com/aws-amplify/amplify-cli/commit/f8c9100d0ea0dfe87233624883ff8ae8c9bf48a7))
+
+
+
+
+
+## [4.4.23](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.22...amplify-migration-tests@4.4.23) (2022-02-25)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.22](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.21...amplify-migration-tests@4.4.22) (2022-02-18)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.21](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.20...amplify-migration-tests@4.4.21) (2022-02-15)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.20](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.16...amplify-migration-tests@4.4.20) (2022-02-10)
+
+
+
+## 7.6.19 (2022-02-08)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.15...amplify-migration-tests@4.4.16) (2022-02-03)
+
+
+
+## 7.6.15 (2022-02-02)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.14...amplify-migration-tests@4.4.15) (2022-01-31)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
 ## [4.4.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.13...amplify-migration-tests@4.4.14) (2022-01-27)
 
 **Note:** Version bump only for package amplify-migration-tests

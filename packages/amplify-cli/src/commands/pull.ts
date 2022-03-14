@@ -5,6 +5,7 @@ import { constructInputParams } from '../amplify-service-helper';
 import { run as envCheckout } from './env/checkout';
 import { $TSContext, stateManager, EnvironmentDoesNotExistError, AppIdMismatchError } from 'amplify-cli-core';
 import _ from 'lodash';
+import { showTroubleshootingURL } from './help';
 
 export const run = async (context: $TSContext) => {
   const inputParams = constructInputParams(context);
@@ -15,6 +16,7 @@ export const run = async (context: $TSContext) => {
       await preDeployPullBackend(context, inputParams.sandboxId);
     } catch (e) {
       context.print.error(`Failed to pull sandbox app: ${e.message || 'An unknown error occurred.'}`);
+      showTroubleshootingURL();
     }
     return;
   }
@@ -32,12 +34,14 @@ export const run = async (context: $TSContext) => {
       context.print.error('Amplify appId mismatch.');
       context.print.info(`You are currently working in the amplify project with Id ${appId}`);
       await context.usageData.emitError(new AppIdMismatchError());
+      showTroubleshootingURL();
       process.exit(1);
     } else if (!appId) {
       context.print.error(`Environment '${envName}' not found.`);
       context.print.info(`Try running "amplify env add" to add a new environment.`);
       context.print.info(`If this backend already exists, try restoring its definition in your team-provider-info.json file.`);
       await context.usageData.emitError(new EnvironmentDoesNotExistError());
+      showTroubleshootingURL();
       process.exit(1);
     }
 

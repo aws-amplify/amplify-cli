@@ -3,6 +3,79 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.7.7...@aws-amplify/graphql-auth-transformer@0.7.8) (2022-03-07)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+
+
+
+
+## [0.7.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.7.6...@aws-amplify/graphql-auth-transformer@0.7.7) (2022-02-25)
+
+
+
+## 7.6.22 (2022-02-24)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** fix relational map key schema lookup when using LSI ([#9722](https://github.com/aws-amplify/amplify-cli/issues/9722)) ([1794cda](https://github.com/aws-amplify/amplify-cli/commit/1794cda7658d9d7596b372c2a78b3f753d7d6aaf))
+* **graphql-auth-transformer:** update resolver should allow if update operation is set ([#9808](https://github.com/aws-amplify/amplify-cli/issues/9808)) ([44a9bea](https://github.com/aws-amplify/amplify-cli/commit/44a9bea139a9a1483cfbc7db29b84938510ffdca))
+
+
+
+
+
+## [0.7.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.7.5...@aws-amplify/graphql-auth-transformer@0.7.6) (2022-02-15)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+
+
+
+
+## [0.7.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.7.1...@aws-amplify/graphql-auth-transformer@0.7.5) (2022-02-10)
+
+
+
+## 7.6.19 (2022-02-08)
+
+
+### Bug Fixes
+
+* **graphql:** allow iam private rule to access update mutation when authenticated by cognito ([#9682](https://github.com/aws-amplify/amplify-cli/issues/9682)) ([acd995f](https://github.com/aws-amplify/amplify-cli/commit/acd995f12c67e625997794d5bb5d394e227f83c7))
+
+
+
+
+
+## [0.7.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.7.0...@aws-amplify/graphql-auth-transformer@0.7.1) (2022-02-03)
+
+
+### Bug Fixes
+
+* separate field level subscription errors and field level resolver generation ([#9671](https://github.com/aws-amplify/amplify-cli/issues/9671)) ([657c344](https://github.com/aws-amplify/amplify-cli/commit/657c344633d4a72d322008f23a29f78df5a8a55a))
+
+
+
+
+
+# [0.7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.5.12...@aws-amplify/graphql-auth-transformer@0.7.0) (2022-01-31)
+
+
+
+## 7.6.14 (2022-01-28)
+
+
+### Features
+
+* `[@maps](https://github.com/maps)To` directive to enable renaming models while retaining data ([#9340](https://github.com/aws-amplify/amplify-cli/issues/9340)) ([aedf45d](https://github.com/aws-amplify/amplify-cli/commit/aedf45d9237812d71bb8b56164efe0222ad3d534))
+
+
+
+
+
 ## [0.5.12](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.5.11...@aws-amplify/graphql-auth-transformer@0.5.12) (2022-01-27)
 
 **Note:** Version bump only for package @aws-amplify/graphql-auth-transformer

@@ -3,6 +3,84 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.9.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.8...amplify-provider-awscloudformation@5.9.9) (2022-03-07)
+
+
+### Bug Fixes
+
+* use existing rather than deleted models ([#9769](https://github.com/aws-amplify/amplify-cli/issues/9769)) ([c4b7487](https://github.com/aws-amplify/amplify-cli/commit/c4b74879feda53bd73746158f4285d3b683981d2))
+
+
+### Reverts
+
+* Revert "fix: use existing rather than deleted models (#9769)" (#9884) ([94547e0](https://github.com/aws-amplify/amplify-cli/commit/94547e0c2efca702b53929d852274aa07c663206)), closes [#9769](https://github.com/aws-amplify/amplify-cli/issues/9769) [#9884](https://github.com/aws-amplify/amplify-cli/issues/9884)
+
+
+
+
+
+## [5.9.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.7...amplify-provider-awscloudformation@5.9.8) (2022-02-25)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [5.9.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.6...amplify-provider-awscloudformation@5.9.7) (2022-02-18)
+
+
+### Bug Fixes
+
+* **graphql:** handle sandbox pull with no environment info ([#9776](https://github.com/aws-amplify/amplify-cli/issues/9776)) ([0c6508b](https://github.com/aws-amplify/amplify-cli/commit/0c6508b1ce1f25218d8ce99cf59142b207774fa1))
+
+
+
+
+
+## [5.9.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.5...amplify-provider-awscloudformation@5.9.6) (2022-02-15)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [5.9.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.1...amplify-provider-awscloudformation@5.9.5) (2022-02-10)
+
+
+
+## 7.6.19 (2022-02-08)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [5.9.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.0...amplify-provider-awscloudformation@5.9.1) (2022-02-03)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+# [5.9.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.12...amplify-provider-awscloudformation@5.9.0) (2022-01-31)
+
+
+
+## 7.6.14 (2022-01-28)
+
+
+### Features
+
+* `[@maps](https://github.com/maps)To` directive to enable renaming models while retaining data ([#9340](https://github.com/aws-amplify/amplify-cli/issues/9340)) ([aedf45d](https://github.com/aws-amplify/amplify-cli/commit/aedf45d9237812d71bb8b56164efe0222ad3d534))
+
+
+
+
+
 ## [5.8.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.11...amplify-provider-awscloudformation@5.8.12) (2022-01-27)
 
 

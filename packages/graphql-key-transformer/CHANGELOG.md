@@ -3,6 +3,58 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.25](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@3.2.24...graphql-key-transformer@3.2.25) (2022-03-07)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+## [3.2.24](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@3.2.23...graphql-key-transformer@3.2.24) (2022-02-25)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+## [3.2.23](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@3.2.22...graphql-key-transformer@3.2.23) (2022-02-15)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+## [3.2.22](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@3.2.18...graphql-key-transformer@3.2.22) (2022-02-10)
+
+
+
+## 7.6.19 (2022-02-08)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+## [3.2.18](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@3.2.17...graphql-key-transformer@3.2.18) (2022-02-03)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+## [3.2.17](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@3.2.16...graphql-key-transformer@3.2.17) (2022-01-31)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
 ## [3.2.16](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@3.2.15...graphql-key-transformer@3.2.16) (2022-01-27)
 
 **Note:** Version bump only for package graphql-key-transformer

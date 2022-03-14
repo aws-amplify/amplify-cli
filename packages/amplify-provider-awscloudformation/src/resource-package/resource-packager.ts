@@ -7,6 +7,7 @@ import {
   readCFNTemplate,
   stateManager,
   writeCFNTemplate,
+  spinner,
 } from 'amplify-cli-core';
 import _ from 'lodash';
 import { legacyLayerMigration, prePushLambdaLayerPrompt } from '../lambdaLayerInvocations';
@@ -106,7 +107,9 @@ export abstract class ResourcePackager {
     )) {
       await legacyLayerMigration(this.context, lambdaLayerResource.resourceName);
     }
+    spinner.stop();
     await prePushLambdaLayerPrompt(this.context, resources);
+    spinner.start();
     return resources;
   }
 

@@ -7,6 +7,8 @@ import {
   IAM_AUTH_ROLE_PARAMETER,
   IAM_UNAUTH_ROLE_PARAMETER,
   TransformerResolver,
+  getTable,
+  getKeySchema,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider,
@@ -53,7 +55,6 @@ import {
   getStackForField,
   NONE_DS,
   hasRelationalDirective,
-  getTable,
   getPartitionKey,
   getRelationalPrimaryMap,
   getReadRolesForField,
@@ -345,7 +346,8 @@ Static group authorization should perform as expected.`,
         const needsFieldResolver = allowedRoles.length < fieldReadRoles.length;
         if (needsFieldResolver && field.type.kind === Kind.NON_NULL_TYPE) {
           errorFields.push(field.name.value);
-        } else if (hasRelationalDirective(field)) {
+        }
+        if (hasRelationalDirective(field)) {
           this.protectRelationalResolver(context, def, modelName, field, needsFieldResolver ? allowedRoles : null);
         } else if (needsFieldResolver) {
           this.protectFieldResolver(context, def, modelName, field.name.value, allowedRoles);
@@ -372,7 +374,7 @@ Static group authorization should perform as expected.`,
             this.protectDeleteResolver(context, def, mutation.typeName, mutation.fieldName, acm);
             break;
           default:
-            throw new TransformerContractError('Unkown Mutation field type');
+            throw new TransformerContractError('Unknown Mutation field type');
         }
       }
 
@@ -500,9 +502,7 @@ Static group authorization should perform as expected.`,
     const table = getTable(ctx, def);
     try {
       if (indexName) {
-        primaryFields = table.globalSecondaryIndexes
-          .find((gsi: any) => gsi.indexName === indexName)
-          .keySchema.map((att: any) => att.attributeName);
+        primaryFields = getKeySchema(table, indexName).map((att: any) => att.attributeName);
       } else {
         primaryFields = table.keySchema.map((att: any) => att.attributeName);
         partitionKey = getPartitionKey(table.keySchema);
@@ -613,11 +613,10 @@ Static group authorization should perform as expected.`,
   ): void => {
     const acmFields = acm.getResources();
     const modelFields = def.fields ?? [];
-    const name = acm.getName();
     // only add readonly fields if they exist
     const allowedAggFields = modelFields.map(f => f.name.value).filter(f => !acmFields.includes(f));
     let leastAllowedFields = acmFields;
-    const resolver = ctx.resolvers.getResolver('Search', toUpper(name)) as TransformerResolverProvider;
+    const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     // to protect search and aggregation queries we need to collect all the roles which can query
     // and the allowed fields to run field auth on aggregation queries
     const readRoleDefinitions = acm.getRolesPerOperation('read').map(role => {
@@ -745,6 +744,8 @@ Static group authorization should perform as expected.`,
       const roleDefinition = this.roleMap.get(role)!;
       roleDefinition.allowedFields = allowedFields.length === fields.length ? [] : [...allowedFields, ...dataStoreFields];
       roleDefinition.nullAllowedFields = nullAllowedFields.length === fields.length ? [] : nullAllowedFields;
+      roleDefinition.areAllFieldsAllowed = allowedFields.length === fields.length;
+      roleDefinition.areAllFieldsNullAllowed = nullAllowedFields.length === fields.length;
       return roleDefinition;
     });
     const datasource = ctx.api.host.getDataSource(`${def.name.value}Table`) as DataSourceProvider;

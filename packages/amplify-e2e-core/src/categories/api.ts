@@ -1,7 +1,16 @@
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
-import { addFeatureFlag, ExecutionContext, getCLIPath, nspawn as spawn, setTransformerVersionFlag, updateSchema } from '..';
+import {
+  addFeatureFlag,
+  checkIfBucketExists,
+  ExecutionContext,
+  getCLIPath,
+  getProjectMeta,
+  nspawn as spawn,
+  setTransformerVersionFlag,
+  updateSchema,
+} from '..';
 import { multiSelect, singleSelect } from '../utils/selectors';
 import { selectRuntime, selectTemplate } from './lambda-function';
 import { modifiedApi } from './resources/modified-api-index';
@@ -280,13 +289,19 @@ export function updateApiSchema(cwd: string, projectName: string, schemaName: st
   updateSchema(cwd, projectName, schemaText);
 }
 
-export function updateApiWithMultiAuth(cwd: string, settings: any) {
+export function updateApiWithMultiAuth(cwd: string, settings?: { testingWithLatestCodebase?: boolean; doMigrate?: boolean }) {
   return new Promise<void>((resolve, reject) => {
     const testingWithLatestCodebase = settings?.testingWithLatestCodebase ?? false;
     const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true });
     chain.wait('Select from one of the below mentioned services:').sendCarriageReturn();
-    if (testingWithLatestCodebase === true) {
-      chain.wait('Do you want to migrate api resource').sendConfirmYes();
+    const doMigrate = settings?.doMigrate ?? testingWithLatestCodebase;
+    if (testingWithLatestCodebase) {
+      chain.wait('Do you want to migrate api resource');
+      if (doMigrate) {
+        chain.sendConfirmYes();
+      } else {
+        chain.sendConfirmNo();
+      }
     }
     chain
       .wait(/.*Select a setting to edit.*/)
@@ -427,7 +442,18 @@ export function updateAPIWithResolutionStrategyWithModels(cwd: string, settings:
   });
 }
 
-export function addRestApi(cwd: string, settings: any) {
+export type RestAPISettings = {
+  path?: string;
+  isFirstRestApi?: boolean;
+  existingLambda?: boolean;
+  restrictAccess?: boolean;
+  allowGuestUsers?: boolean;
+  projectContainsFunctions?: boolean;
+  apiName?: string;
+  hasUserPoolGroups?: boolean;
+  isCrud?: boolean;
+};
+export function addRestApi(cwd: string, settings: RestAPISettings) {
   const isFirstRestApi = settings.isFirstRestApi ?? true;
   let chain = spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
     .wait('Select from one of the below mentioned services')
@@ -459,14 +485,8 @@ export function addRestApi(cwd: string, settings: any) {
       } else {
         chooseLambdaFunctionForRestApi(chain, settings);
       }
-
-      chain
-        .wait('Restrict API access')
-        .sendNo() // Do not restrict access
-        .wait('Do you want to add another path')
-        .sendNo() // Do not add another path
-        .sendEof();
-
+      protectAPI(settings, chain);
+      chain.wait('Do you want to add another path').sendNo().sendEof();
       return chain.runAsync();
     } else {
       chain.sendNo();
@@ -490,6 +510,14 @@ export function addRestApi(cwd: string, settings: any) {
     chooseLambdaFunctionForRestApi(chain, settings);
   }
 
+  protectAPI(settings, chain);
+
+  chain.wait('Do you want to add another path').sendNo().sendEof();
+
+  return chain.runAsync();
+}
+
+function protectAPI(settings: RestAPISettings, chain: ExecutionContext) {
   chain.wait('Restrict API access');
   if (settings.restrictAccess) {
     chain.sendYes();
@@ -518,15 +546,11 @@ export function addRestApi(cwd: string, settings: any) {
         .sendCarriageReturn();
     }
   } else {
-    chain.sendNo(); // Do not restrict access
+    chain.sendNo();
   }
-
-  chain.wait('Do you want to add another path').sendNo().sendEof();
-
-  return chain.runAsync();
 }
 
-function chooseLambdaFunctionForRestApi(chain: ExecutionContext, settings: any) {
+function chooseLambdaFunctionForRestApi(chain: ExecutionContext, settings: { projectContainsFunctions?: boolean; isCrud?: boolean }) {
   if (settings.projectContainsFunctions) {
     chain.sendCarriageReturn(); // Create new Lambda function
   }
@@ -825,4 +849,53 @@ export function addRestContainerApiForCustomPolicies(projectDir: string, setting
 export function modifyRestAPI(projectDir: string, apiName: string) {
   const indexFilePath = path.join(projectDir, 'amplify', 'backend', 'api', apiName, 'src', 'express', 'index.js');
   fs.writeFileSync(indexFilePath, modifiedApi);
+}
+
+export function cancelAmplifyMockApi(cwd: string, settings: any = {}): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    spawn(getCLIPath(), ['mock', 'api'], { cwd, stripColors: true })
+      .wait('AppSync Mock endpoint is running')
+      .sendCtrlC()
+      .run((err: Error) => {
+        if (err && !/Killed the process as no output receive for/.test(err.message)) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+  });
+}
+
+export async function validateRestApiMeta(projRoot: string, meta?: any) {
+  meta = meta ?? getProjectMeta(projRoot);
+  expect(meta.providers.awscloudformation).toBeDefined();
+  const {
+    AuthRoleArn: authRoleArn,
+    UnauthRoleArn: unauthRoleArn,
+    DeploymentBucketName: bucketName,
+    Region: region,
+    StackId: stackId,
+  } = meta.providers.awscloudformation;
+  expect(authRoleArn).toBeDefined();
+  expect(unauthRoleArn).toBeDefined();
+  expect(region).toBeDefined();
+  expect(stackId).toBeDefined();
+  const bucketExists = await checkIfBucketExists(bucketName, region);
+  expect(bucketExists).toMatchObject({});
+
+  expect(meta.function).toBeDefined();
+  let seenAtLeastOneFunc = false;
+  for (let key of Object.keys(meta.function)) {
+    const { service, build, lastBuildTimeStamp, lastPackageTimeStamp, distZipFilename, lastPushTimeStamp, lastPushDirHash } =
+      meta.function[key];
+    expect(service).toBe('Lambda');
+    expect(build).toBeTruthy();
+    expect(lastBuildTimeStamp).toBeDefined();
+    expect(lastPackageTimeStamp).toBeDefined();
+    expect(distZipFilename).toBeDefined();
+    expect(lastPushTimeStamp).toBeDefined();
+    expect(lastPushDirHash).toBeDefined();
+    seenAtLeastOneFunc = true;
+  }
+  expect(seenAtLeastOneFunc).toBe(true);
 }

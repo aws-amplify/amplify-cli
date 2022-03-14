@@ -4,6 +4,6 @@
   "version": "1.0.0",
   "dependencies": {
     "aws-serverless-express": "^3.3.8",
-    "json-server": "^0.16.1"
+    "json-server": "^0.17.0"
   }
 }

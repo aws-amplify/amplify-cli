@@ -1,8 +1,10 @@
 <%= props.topLevelComment %>
 
+/**
+ * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
+ */
 exports.handler = event => {
-  //eslint-disable-line
-  console.log(JSON.stringify(event, null, 2));
+  console.log(`EVENT: ${JSON.stringify(event)}`);
   event.Records.forEach(record => {
     console.log(record.eventID);
     console.log(record.eventName);

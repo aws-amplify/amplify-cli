@@ -3,6 +3,73 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.4.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.4.7...graphql-transformers-e2e-tests@7.4.8) (2022-03-07)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+## [7.4.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.4.6...graphql-transformers-e2e-tests@7.4.7) (2022-02-25)
+
+
+
+## 7.6.22 (2022-02-24)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** update resolver should allow if update operation is set ([#9808](https://github.com/aws-amplify/amplify-cli/issues/9808)) ([44a9bea](https://github.com/aws-amplify/amplify-cli/commit/44a9bea139a9a1483cfbc7db29b84938510ffdca))
+* **graphql:** hasMany on model with (queries: null) generate correct scalar filter type ([#9742](https://github.com/aws-amplify/amplify-cli/issues/9742)) ([d75546c](https://github.com/aws-amplify/amplify-cli/commit/d75546cbc308e2c6f3a676ccbe8632fe9711ae0f))
+
+
+
+
+
+## [7.4.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.4.5...graphql-transformers-e2e-tests@7.4.6) (2022-02-15)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+## [7.4.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.4.1...graphql-transformers-e2e-tests@7.4.5) (2022-02-10)
+
+
+
+## 7.6.19 (2022-02-08)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+## [7.4.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.4.0...graphql-transformers-e2e-tests@7.4.1) (2022-02-03)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+# [7.4.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.3.16...graphql-transformers-e2e-tests@7.4.0) (2022-01-31)
+
+
+
+## 7.6.14 (2022-01-28)
+
+
+### Features
+
+* `[@maps](https://github.com/maps)To` directive to enable renaming models while retaining data ([#9340](https://github.com/aws-amplify/amplify-cli/issues/9340)) ([aedf45d](https://github.com/aws-amplify/amplify-cli/commit/aedf45d9237812d71bb8b56164efe0222ad3d534))
+
+
+
+
+
 ## [7.3.16](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.3.15...graphql-transformers-e2e-tests@7.3.16) (2022-01-27)
 
 **Note:** Version bump only for package graphql-transformers-e2e-tests
