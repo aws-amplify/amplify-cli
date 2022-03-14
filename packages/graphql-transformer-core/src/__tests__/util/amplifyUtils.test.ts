@@ -1,22 +1,26 @@
 import { getSanityCheckRules, SanityCheckRules } from '../../util/amplifyUtils';
-import { AmplifyCLIFeatureFlagAdapter } from '../../../../amplify-provider-awscloudformation/src/utils/amplify-cli-feature-flag-adapter';
 import { FeatureFlags } from 'amplify-cli-core';
 
 jest.mock('amplify-cli-core');
 
+const buildMockedFeatureFlags = (flagValue: boolean) => {
+  return {
+    getBoolean: jest.fn(() => flagValue),
+    getString: jest.fn(),
+    getNumber: jest.fn(),
+    getObject: jest.fn(),
+  };
+};
+
 describe('get sanity check rules', () => {
   test('empty list when api is in create status', () => {
-    const ff_mock = new AmplifyCLIFeatureFlagAdapter();
-    (<any>FeatureFlags.getBoolean).mockReturnValue(true);
-    const sanityCheckRules: SanityCheckRules = getSanityCheckRules(true, ff_mock);
+    const sanityCheckRules: SanityCheckRules = getSanityCheckRules(true, buildMockedFeatureFlags(true));
     expect(sanityCheckRules.diffRules.length).toBe(0);
     expect(sanityCheckRules.projectRules.length).toBe(0);
   });
 
   test('sanitycheck rule list when api is in update status and ff enabled', () => {
-    const ff_mock = new AmplifyCLIFeatureFlagAdapter();
-    (<any>FeatureFlags.getBoolean).mockReturnValue(true);
-    const sanityCheckRules: SanityCheckRules = getSanityCheckRules(false, ff_mock);
+    const sanityCheckRules: SanityCheckRules = getSanityCheckRules(false, buildMockedFeatureFlags(true));
     const diffRulesFn = sanityCheckRules.diffRules.map(func => func.name);
     const projectRulesFn = sanityCheckRules.projectRules.map(func => func.name);
     expect(diffRulesFn).toMatchSnapshot();
@@ -24,9 +28,7 @@ describe('get sanity check rules', () => {
   });
 
   test('sanitycheck rule list when api is in update status and no ff enabled', () => {
-    const ff_mock = new AmplifyCLIFeatureFlagAdapter();
-    (<any>FeatureFlags.getBoolean).mockReturnValue(false);
-    const sanityCheckRules: SanityCheckRules = getSanityCheckRules(false, ff_mock);
+    const sanityCheckRules: SanityCheckRules = getSanityCheckRules(false, buildMockedFeatureFlags(false));
     const diffRulesFn = sanityCheckRules.diffRules.map(func => func.name);
     const projectRulesFn = sanityCheckRules.projectRules.map(func => func.name);
     expect(diffRulesFn).toMatchSnapshot();
@@ -34,9 +36,7 @@ describe('get sanity check rules', () => {
   });
 
   test('sanity check rule list when destructive changes flag is present and ff enabled', () => {
-    const ff_mock = new AmplifyCLIFeatureFlagAdapter();
-    (<any>FeatureFlags.getBoolean).mockReturnValue(true);
-    const sanityCheckRules: SanityCheckRules = getSanityCheckRules(false, ff_mock, true);
+    const sanityCheckRules: SanityCheckRules = getSanityCheckRules(false, buildMockedFeatureFlags(true), true);
     const diffRulesFn = sanityCheckRules.diffRules.map(func => func.name);
     const projectRulesFn = sanityCheckRules.projectRules.map(func => func.name);
     expect(diffRulesFn).toMatchSnapshot();
@@ -44,9 +44,7 @@ describe('get sanity check rules', () => {
   });
 
   test('sanity check rule list when destructive changes flag is present but ff not enabled', () => {
-    const ff_mock = new AmplifyCLIFeatureFlagAdapter();
-    (<any>FeatureFlags.getBoolean).mockReturnValue(false);
-    const sanityCheckRules: SanityCheckRules = getSanityCheckRules(false, ff_mock, true);
+    const sanityCheckRules: SanityCheckRules = getSanityCheckRules(false, buildMockedFeatureFlags(false), true);
     const diffRulesFn = sanityCheckRules.diffRules.map(func => func.name);
     const projectRulesFn = sanityCheckRules.projectRules.map(func => func.name);
     expect(diffRulesFn).toMatchSnapshot();
