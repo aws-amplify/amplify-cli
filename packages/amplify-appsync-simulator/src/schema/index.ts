@@ -104,7 +104,8 @@ function generateDefaultSubscriptions(
         .reduce((acc, sub) => {
           const resolver = {
             resolve: data => data,
-            subscribe: () => simulatorContext.asyncIterator(sub),
+            subscribe: (rootValue?: any, args?: any, context?: any, info?: any) =>
+              simulatorContext.asyncIterator(sub, rootValue, args, context, info),
           };
           return { ...acc, [sub]: resolver };
         }, {});

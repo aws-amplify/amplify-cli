@@ -161,10 +161,11 @@ export class AmplifyAppSyncSimulator {
   get pubsub(): PubSub {
     return this._pubsub;
   }
-  asyncIterator(trigger: string): AsyncIterator<any> {
-    return withFilter(() => this._pubsub.asyncIterator(trigger), filterSubscriptions)();
+  
+  asyncIterator(trigger: string, rootValue?: any, args?: any, context?: any, info?: any): AsyncIterator<any> {
+    return withFilter(() => this._pubsub.asyncIterator(trigger), filterSubscriptions)(rootValue, args, context, info);
   }
-
+  
   get url(): string {
     return this._server.url.graphql;
   }
