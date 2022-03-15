@@ -82,7 +82,7 @@ module.exports = {
     'no-invalid-this': 'off',
     '@typescript-eslint/no-invalid-this': 'error',
     'no-unused-vars': 'off',
-    '@typescript-eslint/no-unused-vars': ['error', { vars: 'all', args: 'all' }],
+    '@typescript-eslint/no-unused-vars': ['error', { vars: 'all', args: 'all', argsIgnorePattern: '^_$' }],
     'no-shadow': 'off',
     '@typescript-eslint/no-shadow': 'error',
 
@@ -108,7 +108,7 @@ module.exports = {
       },
       contexts: [
         'MethodDefinition:not([accessibility=/(private|protected)/]) > FunctionExpression', // Require JSDoc on public methods
-        'TSInterfaceDeclarationn',
+        'TSInterfaceDeclaration',
         'TSTypeAliasDeclaration',
         'TSEnumDeclaration',
       ],
