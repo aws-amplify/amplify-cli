@@ -1,5 +1,7 @@
 {
-  "editor.rulers": [140],
+  "editor.rulers": [
+    140
+  ],
   "files.exclude": {
     "**/.git": true,
     "**/node_modules": true,
@@ -7,7 +9,12 @@
     "**/coverage": true
   },
   "editor.formatOnSave": true,
-  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
   "eslint.alwaysShowStatus": true,
   "eslint.format.enable": true,
   "eslint.lintTask.enable": true,
