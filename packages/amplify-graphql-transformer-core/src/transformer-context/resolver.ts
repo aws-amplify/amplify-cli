@@ -26,6 +26,9 @@ type Slot = {
 // Name of the None Data source used for pipeline resolver
 const NONE_DATA_SOURCE_NAME = 'NONE_DS';
 
+/**
+ * ResolverManager
+ */
 export class ResolverManager implements TransformerResolversManagerProvider {
   private resolvers: Map<string, TransformerResolverProvider> = new Map();
 
@@ -36,18 +39,16 @@ export class ResolverManager implements TransformerResolversManagerProvider {
     dataSource: DataSourceProvider,
     requestMappingTemplate: MappingTemplateProvider,
     responseMappingTemplate: MappingTemplateProvider,
-  ): TransformerResolver => {
-    return new TransformerResolver(
-      typeName,
-      fieldName,
-      resolverLogicalId,
-      requestMappingTemplate,
-      responseMappingTemplate,
-      ['init', 'preAuth', 'auth', 'postAuth', 'preDataLoad'],
-      ['postDataLoad', 'finish'],
-      dataSource,
-    );
-  };
+  ): TransformerResolver => new TransformerResolver(
+    typeName,
+    fieldName,
+    resolverLogicalId,
+    requestMappingTemplate,
+    responseMappingTemplate,
+    ['init', 'preAuth', 'auth', 'postAuth', 'preDataLoad'],
+    ['postDataLoad', 'finish'],
+    dataSource,
+  );
 
   generateMutationResolver = (
     typeName: string,
@@ -56,18 +57,16 @@ export class ResolverManager implements TransformerResolversManagerProvider {
     dataSource: DataSourceProvider,
     requestMappingTemplate: MappingTemplateProvider,
     responseMappingTemplate: MappingTemplateProvider,
-  ): TransformerResolver => {
-    return new TransformerResolver(
-      typeName,
-      fieldName,
-      resolverLogicalId,
-      requestMappingTemplate,
-      responseMappingTemplate,
-      ['init', 'preAuth', 'auth', 'postAuth', 'preUpdate'],
-      ['postUpdate', 'finish'],
-      dataSource,
-    );
-  };
+  ): TransformerResolver => new TransformerResolver(
+    typeName,
+    fieldName,
+    resolverLogicalId,
+    requestMappingTemplate,
+    responseMappingTemplate,
+    ['init', 'preAuth', 'auth', 'postAuth', 'preUpdate'],
+    ['postUpdate', 'finish'],
+    dataSource,
+  );
 
   generateSubscriptionResolver = (
     typeName: string,
@@ -75,17 +74,16 @@ export class ResolverManager implements TransformerResolversManagerProvider {
     resolverLogicalId: string,
     requestMappingTemplate: MappingTemplateProvider,
     responseMappingTemplate: MappingTemplateProvider,
-  ): TransformerResolver => {
-    return new TransformerResolver(
-      typeName,
-      fieldName,
-      resolverLogicalId,
-      requestMappingTemplate,
-      responseMappingTemplate,
-      ['init', 'preAuth', 'auth', 'postAuth', 'preSubscribe'],
-      [],
-    );
-  };
+  ): TransformerResolver => new TransformerResolver(
+    typeName,
+    fieldName,
+    resolverLogicalId,
+    requestMappingTemplate,
+    responseMappingTemplate,
+    ['init', 'preAuth', 'auth', 'postAuth', 'preSubscribe'],
+    [],
+  );
+
   addResolver = (typeName: string, fieldName: string, resolver: TransformerResolverProvider): TransformerResolverProvider => {
     const key = `${typeName}.${fieldName}`;
     if (this.resolvers.has(key)) {
@@ -117,10 +115,11 @@ export class ResolverManager implements TransformerResolversManagerProvider {
     throw new Error(`Resolver for typeName ${typeName} fieldName: ${fieldName} does not exists`);
   };
 
-  collectResolvers = (): Map<string, TransformerResolverProvider> => {
-    return new Map(this.resolvers.entries());
-  };
+  collectResolvers = (): Map<string, TransformerResolverProvider> => new Map(this.resolvers.entries());
 }
+/**
+ * TransformerResolver
+ */
 export class TransformerResolver implements TransformerResolverProvider {
   private readonly slotMap: Map<string, Slot[]> = new Map();
   private readonly slotNames: Set<string>;
@@ -146,6 +145,7 @@ export class TransformerResolver implements TransformerResolverProvider {
   mapToStack = (stack: Stack) => {
     this.stack = stack;
   };
+
   addToSlot = (
     slotName: string,
     requestMappingTemplate?: MappingTemplateProvider,
@@ -184,12 +184,11 @@ export class TransformerResolver implements TransformerResolverProvider {
       return false;
     }
 
-    for (let slotItem of slotEntires) {
-      const [slotItemRequestMappingTemplate, slotItemResponseMappingTemplate] =
-        [
-          (slotItem.requestMappingTemplate as any)?.name ?? '',
-          (slotItem.responseMappingTemplate as any)?.name ?? '',
-        ]
+    for (const slotItem of slotEntires) {
+      const [slotItemRequestMappingTemplate, slotItemResponseMappingTemplate] = [
+        (slotItem.requestMappingTemplate as any)?.name ?? '',
+        (slotItem.responseMappingTemplate as any)?.name ?? '',
+      ]
         .map(name => name.replace('{slotName}', slotName).replace('{slotIndex}', slotIndex));
 
       // If both request and response mapping templates are inline, return false
@@ -199,8 +198,8 @@ export class TransformerResolver implements TransformerResolverProvider {
 
       // If name matches, then it is an overridden resolver
       if (
-        slotItemRequestMappingTemplate === ((requestMappingTemplate as any)?.name ?? '') ||
-        slotItemResponseMappingTemplate === ((responseMappingTemplate as any)?.name ?? '')
+        slotItemRequestMappingTemplate === ((requestMappingTemplate as any)?.name ?? '')
+        || slotItemResponseMappingTemplate === ((responseMappingTemplate as any)?.name ?? '')
       ) {
         slotItem.requestMappingTemplate = (requestMappingTemplate as any)?.name
           ? requestMappingTemplate
@@ -255,10 +254,10 @@ export class TransformerResolver implements TransformerResolverProvider {
                 conflictHandler: syncConfig.ConflictHandler,
                 ...(SyncUtils.isLambdaSyncConfig(syncConfig)
                   ? {
-                      lambdaConflictHandlerConfig: {
-                        lambdaConflictHandlerArn: syncConfig.LambdaConflictHandler.lambdaArn,
-                      },
-                    }
+                    lambdaConflictHandlerConfig: {
+                      lambdaConflictHandlerArn: syncConfig.LambdaConflictHandler.lambdaArn,
+                    },
+                  }
                   : {}),
               };
             }
@@ -285,9 +284,9 @@ export class TransformerResolver implements TransformerResolverProvider {
           break;
         case 'RELATIONAL_DATABASE':
           if (
-            this.datasource.ds.relationalDatabaseConfig &&
-            !isResolvableObject(this.datasource.ds.relationalDatabaseConfig) &&
-            !isResolvableObject(this.datasource.ds.relationalDatabaseConfig?.rdsHttpEndpointConfig)
+            this.datasource.ds.relationalDatabaseConfig
+            && !isResolvableObject(this.datasource.ds.relationalDatabaseConfig)
+            && !isResolvableObject(this.datasource.ds.relationalDatabaseConfig?.rdsHttpEndpointConfig)
           ) {
             const databaseName = this.datasource.ds.relationalDatabaseConfig?.rdsHttpEndpointConfig!.databaseName;
             dataSource = `$util.qr($ctx.stash.metadata.put("databaseName", "${databaseName}"))`;
@@ -337,12 +336,12 @@ export class TransformerResolver implements TransformerResolverProvider {
   synthesizeResolvers = (stack: Stack, api: GraphQLAPIProvider, slotsNames: string[]): AppSyncFunctionConfigurationProvider[] => {
     const appSyncFunctions: AppSyncFunctionConfigurationProvider[] = [];
 
-    for (let slotName of slotsNames) {
+    for (const slotName of slotsNames) {
       if (this.slotMap.has(slotName)) {
         const slotEntries = this.slotMap.get(slotName);
         // Create individual functions
         let index = 0;
-        for (let slotItem of slotEntries!) {
+        for (const slotItem of slotEntries!) {
           const name = `${this.typeName}${this.fieldName}${slotName}${index++}Function`;
           const { requestMappingTemplate, responseMappingTemplate, dataSource } = slotItem;
           // eslint-disable-next-line no-unused-expressions
@@ -363,12 +362,20 @@ export class TransformerResolver implements TransformerResolverProvider {
     return appSyncFunctions;
   };
 
+  /**
+   * substitueSlotInfo
+   */
   private substitueSlotInfo(template: MappingTemplateProvider, slotName: string, index: number) {
     if (template instanceof S3MappingTemplate) {
-      template.substitueValues({ slotName, slotIndex: index, typeName: this.typeName, fieldName: this.fieldName });
+      template.substitueValues({
+        slotName, slotIndex: index, typeName: this.typeName, fieldName: this.fieldName,
+      });
     }
   }
 
+  /**
+   * ensureNoneDataSource
+   */
   private ensureNoneDataSource(api: GraphQLAPIProvider) {
     if (!api.host.hasDataSource(NONE_DATA_SOURCE_NAME)) {
       api.host.addNoneDataSource(NONE_DATA_SOURCE_NAME, {
