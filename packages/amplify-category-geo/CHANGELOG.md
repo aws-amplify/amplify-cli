@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0-geo.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.3.0-geo.5...amplify-category-geo@2.3.0-geo.6) (2022-03-15)
+
+
+### Bug Fixes
+
+* **amplify-category-geo:** trigger update auth flow to add cognito user group, add e2e tests ([#9594](https://github.com/aws-amplify/amplify-cli/issues/9594)) ([#9993](https://github.com/aws-amplify/amplify-cli/issues/9993)) ([9cbcad9](https://github.com/aws-amplify/amplify-cli/commit/9cbcad90d8078560570283a3a6d0dd95385b591f))
+
+
+
+
+
 # [2.3.0-geo.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.2.13...amplify-category-geo@2.3.0-geo.5) (2022-01-11)
 
 

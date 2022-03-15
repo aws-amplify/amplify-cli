@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli",
-  "version": "7.6.8-geo.0",
+  "version": "7.6.8-geo.1",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
@@ -43,7 +43,7 @@
     "amplify-app": "4.2.13-geo.0",
     "amplify-category-analytics": "3.2.13-geo.0",
     "amplify-category-function": "3.3.13-geo.0",
-    "amplify-category-geo": "2.3.0-geo.5",
+    "amplify-category-geo": "2.3.0-geo.6",
     "amplify-category-hosting": "3.2.13-geo.0",
     "amplify-category-interactions": "3.2.13-geo.0",
     "amplify-category-notifications": "2.19.4",

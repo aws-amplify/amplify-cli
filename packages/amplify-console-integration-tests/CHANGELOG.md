@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.16-geo.1](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@2.2.16-geo.0...amplify-console-integration-tests@2.2.16-geo.1) (2022-03-15)
+
+**Note:** Version bump only for package amplify-console-integration-tests
+
+
+
+
+
 ## [2.2.16-geo.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@2.2.15...amplify-console-integration-tests@2.2.16-geo.0) (2022-01-11)
 
 **Note:** Version bump only for package amplify-console-integration-tests
