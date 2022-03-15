@@ -45,6 +45,7 @@
     "yargs": "^15.1.0"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.149",
     "ts-node": "^8.10.2"
   },
   "jest": {
