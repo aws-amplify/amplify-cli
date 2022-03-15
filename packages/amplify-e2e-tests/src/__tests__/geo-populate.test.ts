@@ -22,7 +22,7 @@ describe('amplify geo populate', () => {
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
     await updateAuthAddUserGroups(projRoot, ['admin']);
-    await addGeofenceCollectionWithDefault(projRoot);
+    await addGeofenceCollectionWithDefault(projRoot, 'admin');
   });
 
   afterAll(async () => {
