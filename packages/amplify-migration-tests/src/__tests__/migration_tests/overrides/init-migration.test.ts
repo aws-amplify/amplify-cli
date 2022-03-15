@@ -49,6 +49,6 @@ describe('amplify init', () => {
     fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
     await amplifyPushOverride(projRoot, true);
     const newEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
-    expect(newEnvMeta.AuthRoleName).toEqual('mockRole');
+    expect(newEnvMeta.AuthRoleName).toContain('mockRole');
   });
 });
