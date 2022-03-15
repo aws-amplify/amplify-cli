@@ -24,7 +24,7 @@ import {
   methodCall,
 } from 'graphql-mapping-template';
 import { toUpper, plurality, graphqlName, ResourceConstants, ModelResourceIDs } from 'graphql-transformer-common';
-import { MappingParameters } from 'graphql-transformer-core/src/TransformerContext';
+import { MappingParameters } from 'graphql-transformer-core/lib/TransformerContext';
 
 export class ResourceFactory {
   public makeParams() {
