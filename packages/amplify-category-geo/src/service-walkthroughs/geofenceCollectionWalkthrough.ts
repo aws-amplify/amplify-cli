@@ -62,16 +62,29 @@ export const geofenceCollectionAccessWalkthrough = async (
     parameters: Partial<GeofenceCollectionParameters>
 ): Promise<Partial<GeofenceCollectionParameters>> => {
     parameters.accessType = AccessType.CognitoGroups;
-    const userPoolGroupList = context.amplify.getUserPoolGroupList();
+    let userPoolGroupList = context.amplify.getUserPoolGroupList();
+
     if (userPoolGroupList.length <= 0) {
-        printer.error('No Cognito groups exist in the project. Please add a Cognito group using "amplify update auth" and selecting "Create or update Cognito user pool groups"');
-        throw new Error('Failed to setup a Geofence Collection. Requires a Cognito group for Admin only access control settings');
+        if (await prompter.yesOrNo('Geofencing requires a Cognito user group for Admin only access control settings. Do you want to add it now?')) {
+            printer.info('Select "Create or update Cognito user pool groups" to add a Cognito user group');
+            context.input['command'] = 'update';
+            await context.amplify.invokePluginMethod(context, 'auth', undefined, 'executeAmplifyCommand', [context]);
+            userPoolGroupList = context.amplify.getUserPoolGroupList();
+        } else {
+            printer.error('No Cognito groups exist in the project. Please add a Cognito group using "amplify update auth" and selecting "Create or update Cognito user pool groups"');
+            throw new Error('Failed to setup a Geofence Collection. Requires a Cognito group for Admin only access control settings');
+        }
     }
 
     let defaultSelectedGroups: string[] = [];
 
     if (parameters.groupPermissions) {
       defaultSelectedGroups = Object.keys(parameters.groupPermissions);
+    }
+
+    // If there is only one user pool group, select it by default
+    if (defaultSelectedGroups.length === 0 && userPoolGroupList.length === 1) {
+        defaultSelectedGroups.push(userPoolGroupList[0]);
     }
 
     const selectedUserPoolGroups = await prompter.pick<'many', string>(
