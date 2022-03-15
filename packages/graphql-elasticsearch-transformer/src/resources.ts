@@ -1,8 +1,11 @@
+/* eslint-disable max-lines-per-function, class-methods-use-this */
 import Output from 'cloudform-types/types/output';
 import AppSync from 'cloudform-types/types/appSync';
 import IAM from 'cloudform-types/types/iam';
 import Template from 'cloudform-types/types/template';
-import { Fn, StringParameter, NumberParameter, Lambda, Elasticsearch, Refs } from 'cloudform-types';
+import {
+  Fn, StringParameter, NumberParameter, Lambda, Elasticsearch, Refs, ConditionIntrinsicFunction, IntrinsicFunction,
+} from 'cloudform-types';
 import {
   ElasticsearchMappingTemplate,
   print,
@@ -22,12 +25,22 @@ import {
   Expression,
   bool,
   methodCall,
+  SetNode,
+  QuietReferenceNode,
 } from 'graphql-mapping-template';
-import { toUpper, plurality, graphqlName, ResourceConstants, ModelResourceIDs } from 'graphql-transformer-common';
+import {
+  toUpper, plurality, graphqlName, ResourceConstants, ModelResourceIDs,
+} from 'graphql-transformer-common';
 import { MappingParameters } from 'graphql-transformer-core/lib/TransformerContext';
 
+/**
+ * ResourceFactory class
+ */
 export class ResourceFactory {
-  public makeParams() {
+  /**
+   * returns resource parameters
+   */
+  public makeParams(): {[key: string]: StringParameter|NumberParameter} {
     return {
       [ResourceConstants.PARAMETERS.ElasticsearchAccessIAMRoleName]: new StringParameter({
         Description: 'The name of the IAM role assumed by AppSync for Elasticsearch.',
@@ -38,8 +51,9 @@ export class ResourceFactory {
         Default: 'python_streaming_function.lambda_handler',
       }),
       [ResourceConstants.PARAMETERS.ElasticsearchStreamingLambdaRuntime]: new StringParameter({
-        Description: `The lambda runtime \
-                (https://docs.aws.amazon.com/lambda/latest/dg/API_CreateFunction.html#SSS-CreateFunction-request-Runtime)`,
+        /* eslint-disable no-multi-str */
+        Description: 'The lambda runtime \
+                (https://docs.aws.amazon.com/lambda/latest/dg/API_CreateFunction.html#SSS-CreateFunction-request-Runtime)',
         Default: 'python3.6',
       }),
       [ResourceConstants.PARAMETERS.ElasticsearchStreamingFunctionName]: new StringParameter({
@@ -117,7 +131,6 @@ export class ResourceFactory {
           'c5.4xlarge.elasticsearch',
           't4g.medium.elasticsearch',
           'c6g.4xlarge.elasticsearch',
-          'c6g.xlarge.elasticsearch',
           'c6g.12xlarge.elasticsearch',
           't3.small.search',
           't3.medium.search',
@@ -141,7 +154,6 @@ export class ResourceFactory {
           'm4.4xlarge.search',
           'm4.10xlarge.search',
           'c6g.large.search',
-          'c6g.xlarge.search',
           'c6g.2xlarge.search',
           'c6g.4xlarge.search',
           'c6g.8xlarge.search',
@@ -208,9 +220,9 @@ export class ResourceFactory {
   }
 
   /**
-   * Creates the barebones template for an application.
+   * Creates the bare bones template for an application.
    */
-  public initTemplate(isProjectUsingDataStore: boolean = false): Template {
+  public initTemplate(isProjectUsingDataStore = false): Template {
     return {
       Parameters: this.makeParams(),
       Resources: {
@@ -232,10 +244,8 @@ export class ResourceFactory {
   /**
    * Given the name of a data source and optional logical id return a CF
    * spec for a data source pointing to the elasticsearch domain.
-   * @param name The name for the data source. If a logicalId is not provided the name is used.
-   * @param logicalId The logicalId of the domain if it is different than the name of the data source.
    */
-  public makeElasticsearchDataSource() {
+  public makeElasticsearchDataSource(): AppSync.DataSource {
     const logicalName = ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID;
     return new AppSync.DataSource({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
@@ -249,6 +259,9 @@ export class ResourceFactory {
     }).dependsOn(ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID);
   }
 
+  /**
+   * returns mapping parameters for each region
+   */
   public getLayerMapping(): MappingParameters {
     return {
       LayerResourceMapping: {
@@ -329,7 +342,7 @@ export class ResourceFactory {
    * Deploy a lambda function that will stream data from our DynamoDB table
    * to our elasticsearch index.
    */
-  public makeDynamoDBStreamingFunction(isProjectUsingDataStore: boolean = false) {
+  public makeDynamoDBStreamingFunction(isProjectUsingDataStore = false): Lambda.Function {
     return new Lambda.Function({
       Code: {
         S3Bucket: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
@@ -361,7 +374,10 @@ export class ResourceFactory {
     ]);
   }
 
-  public makeDynamoDBStreamEventSourceMapping(typeName: string) {
+  /**
+   * returns lambda event source mapping
+   */
+  public makeDynamoDBStreamEventSourceMapping(typeName: string): Lambda.EventSourceMapping {
     return new Lambda.EventSourceMapping({
       BatchSize: 1,
       Enabled: true,
@@ -371,7 +387,7 @@ export class ResourceFactory {
     }).dependsOn([ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID]);
   }
 
-  private joinWithEnv(separator: string, listToJoin: any[]) {
+  private joinWithEnv(separator: string, listToJoin: IntrinsicFunction[]): ConditionIntrinsicFunction {
     return Fn.If(
       ResourceConstants.CONDITIONS.HasEnvironmentParameter,
       Fn.Join(separator, [...listToJoin, Fn.Ref(ResourceConstants.PARAMETERS.Env)]),
@@ -382,9 +398,8 @@ export class ResourceFactory {
   /**
    * Create a single role that has access to all the resources created by the
    * transform.
-   * @param name  The name of the IAM role to create.
    */
-  public makeElasticsearchAccessIAMRole() {
+  public makeElasticsearchAccessIAMRole(): IAM.Role {
     return new IAM.Role({
       RoleName: this.joinWithEnv('-', [
         Fn.Ref(ResourceConstants.PARAMETERS.ElasticsearchAccessIAMRoleName),
@@ -423,9 +438,8 @@ export class ResourceFactory {
   /**
    * Create a single role that has access to all the resources created by the
    * transform.
-   * @param name  The name of the IAM role to create.
    */
-  public makeStreamingLambdaIAMRole() {
+  public makeStreamingLambdaIAMRole(): IAM.Role {
     return new IAM.Role({
       RoleName: this.joinWithEnv('-', [
         Fn.Ref(ResourceConstants.PARAMETERS.ElasticsearchStreamingIAMRoleName),
@@ -499,7 +513,7 @@ export class ResourceFactory {
    * If there is an env, allow ES to create the domain name so we don't go
    * over 28 characters. If there is no env, fallback to original behavior.
    */
-  private domainName() {
+  private domainName(): ConditionIntrinsicFunction {
     return Fn.If(
       ResourceConstants.CONDITIONS.HasEnvironmentParameter,
       Refs.NoValue,
@@ -507,14 +521,14 @@ export class ResourceFactory {
     );
   }
 
-  private domainArn() {
+  private domainArn(): IntrinsicFunction {
     return Fn.GetAtt(ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID, 'DomainArn');
   }
 
   /**
    * Create the elasticsearch domain.
    */
-  public makeElasticsearchDomain() {
+  public makeElasticsearchDomain(): Elasticsearch.Domain {
     return new Elasticsearch.Domain({
       DomainName: this.domainName(),
       ElasticsearchVersion: '6.2',
@@ -541,9 +555,9 @@ export class ResourceFactory {
     queryTypeName: string,
     improvePluralization: boolean,
     nameOverride?: string,
-    includeVersion: boolean = false,
-  ) {
-    const fieldName = nameOverride ? nameOverride : graphqlName('search' + plurality(toUpper(type), improvePluralization));
+    includeVersion = false,
+  ): AppSync.Resolver {
+    const fieldName = nameOverride || graphqlName(`search${plurality(toUpper(type), improvePluralization)}`);
     return new AppSync.Resolver({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
       DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticsearchDataSourceLogicalID, 'Name'),
@@ -602,7 +616,7 @@ export class ResourceFactory {
     }).dependsOn([ResourceConstants.RESOURCES.ElasticsearchDataSourceLogicalID]);
   }
 
-  private getSourceMapper = (includeVersion: boolean) => {
+  private getSourceMapper = (includeVersion: boolean): (SetNode|QuietReferenceNode)[] => {
     if (includeVersion) {
       return [
         set(ref('row'), methodCall(ref('entry.get'), str('_source'))),
@@ -629,6 +643,7 @@ export class ResourceFactory {
       },
     };
   }
+
   /**
    * Create output to export the Elasticsearch DomainEndpoint
    * @returns Output
