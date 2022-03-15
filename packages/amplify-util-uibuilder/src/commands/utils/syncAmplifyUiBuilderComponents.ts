@@ -6,7 +6,8 @@ import { extractArgs } from './extractArgs';
 import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { Component, ListComponentsResponse } from 'aws-sdk/clients/amplifyuibuilder';
 import pLimit from 'p-limit'
-const limit = pLimit(5);
+const CONCURRENT_STUDIO_REQUESTS_LIMIT = 5;
+const limit = pLimit(CONCURRENT_STUDIO_REQUESTS_LIMIT);
 
 export const getEnvName = (context: $TSContext, envName?: string) => {
   const args = extractArgs(context);
@@ -61,7 +62,7 @@ export async function listUiBuilderComponents(context: $TSContext, envName?: str
     } while (nextToken);
 
     printer.debug(JSON.stringify(uiBuilderComponents, null, 2));
-    return { entities: uiBuilderComponents};
+    return { entities: uiBuilderComponents };
   } catch (e) {
     printer.debug(e);
     throw e;
