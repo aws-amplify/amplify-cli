@@ -203,7 +203,7 @@ export class ApigwStackTransform {
         try {
           overrideCode = await fs.readFile(overrideJSFilePath, 'utf-8');
         } catch (error) {
-          formatter.list(['No override file found', `To override ${this.resourceName} run amplify override auth`]);
+          formatter.list(['No override file found', `To override ${this.resourceName} run amplify override api`]);
           return;
         }
 

@@ -11,10 +11,11 @@ import {
   pathManager,
   stateManager,
 } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+import { prompter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import { join } from 'path';
 import { ApigwInputs, ApigwStackTransform, CrudOperation, Path, PermissionSetting } from './cdk-stack-builder';
+import { convertDeperecatedRestApiPaths } from './convert-deprecated-apigw-paths';
 import { ApigwWalkthroughReturnPromise } from './service-walkthrough-types/apigw-types';
 
 export class ApigwInputState {
@@ -49,7 +50,7 @@ export class ApigwInputState {
       dependsOn: adminQueriesProps.dependsOn,
     };
 
-    await this.context.amplify.updateamplifyMetaAfterResourceAdd(AmplifyCategories.API, adminQueriesProps.apiName, backendConfigs);
+    this.context.amplify.updateamplifyMetaAfterResourceAdd(AmplifyCategories.API, adminQueriesProps.apiName, backendConfigs);
   };
 
   public updateAdminQueriesResource = async (adminQueriesProps: AdminQueriesProps) => {
@@ -66,7 +67,7 @@ export class ApigwInputState {
 
     await this.createApigwArtifacts();
 
-    await this.context.amplify.updateamplifyMetaAfterResourceUpdate(
+    this.context.amplify.updateamplifyMetaAfterResourceUpdate(
       AmplifyCategories.API,
       adminQueriesProps.apiName,
       'dependsOn',
@@ -122,86 +123,7 @@ export class ApigwInputState {
     const deprecatedParametersFileName = 'api-params.json';
     const resourceDirPath = pathManager.getResourceDirectoryPath(this.projectRootPath, AmplifyCategories.API, this.resourceName);
     const deprecatedParametersFilePath = join(resourceDirPath, deprecatedParametersFileName);
-    let deprecatedParameters: $TSObject;
-    try {
-      deprecatedParameters = JSONUtilities.readJson<$TSObject>(deprecatedParametersFilePath);
-    } catch (e) {
-      printer.error(`Error reading ${deprecatedParametersFileName} file for ${this.resourceName} resource`);
-      throw e;
-    }
-
-    this.paths = {};
-
-    function _convertDeprecatedPermissionStringToCRUD(deprecatedPrivacy: string) {
-      let privacyList: string[];
-      if (deprecatedPrivacy === 'r') {
-        privacyList = [CrudOperation.READ];
-      } else if (deprecatedPrivacy === 'rw') {
-        privacyList = [CrudOperation.CREATE, CrudOperation.READ, CrudOperation.UPDATE, CrudOperation.DELETE];
-      }
-      return privacyList;
-    }
-
-    function _convertDeprecatedPermissionArrayToCRUD(deprecatedPrivacyArray: string[]): CrudOperation[] {
-      const opMap: Record<string, CrudOperation> = {
-        '/POST': CrudOperation.CREATE,
-        '/GET': CrudOperation.READ,
-        '/PUT': CrudOperation.UPDATE,
-        '/PATCH': CrudOperation.UPDATE,
-        '/DELETE': CrudOperation.DELETE,
-      };
-      return Array.from(new Set(deprecatedPrivacyArray.map(op => opMap[op])));
-    }
-
-    if (!Array.isArray(deprecatedParameters.paths) || deprecatedParameters.paths.length < 1) {
-      throw new Error(`Expected paths to be defined in "${deprecatedParametersFilePath}", but none found.`);
-    }
-
-    deprecatedParameters.paths.forEach((path: $TSObject) => {
-      let pathPermissionSetting =
-        path.privacy?.open === true
-          ? PermissionSetting.OPEN
-          : path.privacy?.private === true
-          ? PermissionSetting.PRIVATE
-          : PermissionSetting.PROTECTED;
-
-      let auth;
-      let guest;
-      let groups;
-      // convert deprecated permissions to CRUD structure
-      if (typeof path.privacy?.auth === 'string' && ['r', 'rw'].includes(path.privacy.auth)) {
-        auth = _convertDeprecatedPermissionStringToCRUD(path.privacy.auth);
-      } else if (Array.isArray(path.privacy?.auth)) {
-        auth = _convertDeprecatedPermissionArrayToCRUD(path.privacy.auth);
-      }
-
-      if (typeof path.privacy?.unauth === 'string' && ['r', 'rw'].includes(path.privacy.unauth)) {
-        guest = _convertDeprecatedPermissionStringToCRUD(path.privacy.unauth);
-      } else if (Array.isArray(path.privacy?.unauth)) {
-        guest = _convertDeprecatedPermissionArrayToCRUD(path.privacy.unauth);
-      }
-
-      if (path.privacy?.userPoolGroups) {
-        groups = {};
-        for (const [userPoolGroupName, crudOperations] of Object.entries(path.privacy.userPoolGroups)) {
-          if (typeof crudOperations === 'string' && ['r', 'rw'].includes(crudOperations)) {
-            groups[userPoolGroupName] = _convertDeprecatedPermissionStringToCRUD(crudOperations);
-          } else if (Array.isArray(crudOperations)) {
-            groups[userPoolGroupName] = _convertDeprecatedPermissionArrayToCRUD(crudOperations);
-          }
-        }
-      }
-
-      this.paths[path.name] = {
-        permissions: {
-          setting: pathPermissionSetting,
-          auth,
-          guest,
-          groups,
-        },
-        lambdaFunction: path.lambdaFunction,
-      };
-    });
+    this.paths = convertDeperecatedRestApiPaths(deprecatedParametersFileName, deprecatedParametersFilePath, this.resourceName);
 
     fs.removeSync(deprecatedParametersFilePath);
     fs.removeSync(join(resourceDirPath, PathConstants.ParametersJsonFileName));

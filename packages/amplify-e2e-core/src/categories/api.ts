@@ -1,7 +1,16 @@
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
-import { addFeatureFlag, checkIfBucketExists, ExecutionContext, getCLIPath, getProjectMeta, nspawn as spawn, setTransformerVersionFlag, updateSchema } from '..';
+import {
+  addFeatureFlag,
+  checkIfBucketExists,
+  ExecutionContext,
+  getCLIPath,
+  getProjectMeta,
+  nspawn as spawn,
+  setTransformerVersionFlag,
+  updateSchema,
+} from '..';
 import { multiSelect, singleSelect } from '../utils/selectors';
 import { selectRuntime, selectTemplate } from './lambda-function';
 import { modifiedApi } from './resources/modified-api-index';
@@ -280,13 +289,19 @@ export function updateApiSchema(cwd: string, projectName: string, schemaName: st
   updateSchema(cwd, projectName, schemaText);
 }
 
-export function updateApiWithMultiAuth(cwd: string, settings: any) {
+export function updateApiWithMultiAuth(cwd: string, settings?: { testingWithLatestCodebase?: boolean; doMigrate?: boolean }) {
   return new Promise<void>((resolve, reject) => {
     const testingWithLatestCodebase = settings?.testingWithLatestCodebase ?? false;
     const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true });
     chain.wait('Select from one of the below mentioned services:').sendCarriageReturn();
-    if (testingWithLatestCodebase === true) {
-      chain.wait('Do you want to migrate api resource').sendConfirmYes();
+    const doMigrate = settings?.doMigrate ?? testingWithLatestCodebase;
+    if (testingWithLatestCodebase) {
+      chain.wait('Do you want to migrate api resource');
+      if (doMigrate) {
+        chain.sendConfirmYes();
+      } else {
+        chain.sendConfirmNo();
+      }
     }
     chain
       .wait(/.*Select a setting to edit.*/)
@@ -883,4 +898,4 @@ export async function validateRestApiMeta(projRoot: string, meta?: any) {
     seenAtLeastOneFunc = true;
   }
   expect(seenAtLeastOneFunc).toBe(true);
-};
+}

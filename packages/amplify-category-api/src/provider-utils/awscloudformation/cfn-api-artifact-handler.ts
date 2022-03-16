@@ -110,12 +110,12 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     }
     const resourceDir = this.getResourceDir(apiName);
     // update appsync cli-inputs
-    const appsyncCLIInputs = await this.updateAppsyncCLIInputs(updates, apiName);
+    const gqlSchemaPath = await this.updateAppsyncCLIInputs(updates, apiName);
     if (updates.transformSchema) {
-      this.writeSchema(appsyncCLIInputs.serviceConfiguration.gqlSchemaPath, updates.transformSchema);
+      this.writeSchema(gqlSchemaPath, updates.transformSchema);
     }
     if (updates.conflictResolution) {
-      updates.conflictResolution = await this.createResolverResources(appsyncCLIInputs.serviceConfiguration.conflictResolution);
+      updates.conflictResolution = await this.createResolverResources(updates.conflictResolution);
       await writeResolverConfig(updates.conflictResolution, resourceDir);
     }
 
@@ -298,13 +298,24 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     return appsyncCLIInputs;
   };
 
-  private updateAppsyncCLIInputs = async (updates: AppSyncServiceModification, apiName: string) => {
+  /**
+   * If the resource is migrated, updates cli-inputs.json with the specified updates
+   * If not migrated, this method is a noop (but still returns the schema path)
+   * @param updates The updates to apply
+   * @param apiName The api name
+   * @returns The gqlSchemaPath
+   */
+  private updateAppsyncCLIInputs = async (updates: AppSyncServiceModification, apiName: string): Promise<string> => {
     const cliState = new AppsyncApiInputState(apiName);
+    const gqlSchemaPath = path.join(this.getResourceDir(apiName), gqlSchemaFilename);
+    if (!cliState.cliInputFileExists()) {
+      return gqlSchemaPath;
+    }
     const prevAppsyncInputs = cliState.getCLIInputPayload();
 
     const appsyncInputs: AppSyncCLIInputs = prevAppsyncInputs;
     if (!_.isEmpty(appsyncInputs.serviceConfiguration)) {
-      appsyncInputs.serviceConfiguration.gqlSchemaPath = path.join(this.getResourceDir(apiName), gqlSchemaFilename);
+      appsyncInputs.serviceConfiguration.gqlSchemaPath = gqlSchemaPath;
     }
     if (updates.conflictResolution) {
       appsyncInputs.serviceConfiguration.conflictResolution = updates.conflictResolution;
@@ -316,7 +327,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
       appsyncInputs.serviceConfiguration.additionalAuthTypes = updates.additionalAuthTypes;
     }
     await cliState.saveCLIInputPayload(appsyncInputs);
-    return appsyncInputs;
+    return gqlSchemaPath;
   };
 }
 

@@ -20,7 +20,7 @@ executors:
     docker:
       - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
-    resource_class: medium
+    resource_class: large
     environment:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
@@ -101,14 +101,20 @@ jobs:
           name: Install Java
           command: sudo apt-get update && sudo apt-get install default-jdk
       - run:
-          name: Lint
-          command: yarn lint
-      - run:
           name: Run tests
           command: yarn test-ci
       - run:
           name: Collect code coverage
           command: yarn coverage
+  
+  lint:
+    <<: *linux-e2e-executor
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+      - run: chmod +x .circleci/lint_pr.sh && ./.circleci/lint_pr.sh
 
   mock_e2e_tests:
     <<: *linux-e2e-executor
@@ -423,7 +429,7 @@ jobs:
 
   integration_test:
     working_directory: ~/repo
-    resource_class: medium
+    resource_class: large
     docker:
       - image: cypress/base:14.17.0
         environment:
@@ -681,6 +687,9 @@ workflows:
               os:
                 - l
                 - w
+      - lint:
+          requires:
+            - build
       - test:
           requires:
             - build
