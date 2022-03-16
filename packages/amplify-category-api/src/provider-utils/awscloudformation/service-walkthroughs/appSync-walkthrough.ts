@@ -463,10 +463,7 @@ export const updateWalkthrough = async (context: $TSContext): Promise<UpdateApiR
   }
 
   // migrate API project
-  if (!(await checkAppsyncApiResourceMigration(context, resourceName, true))) {
-    printer.error('Update operations only work on migrated projects. Run "amplify update api" and opt for migration.');
-    exitOnNextTick(0);
-  }
+  await checkAppsyncApiResourceMigration(context, resourceName, true);
 
   // Get models
   const project = await readProjectConfiguration(resourceDir);

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.14](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.2.13...@aws-amplify/amplify-category-api@1.2.14) (2022-03-07)
+
+
+### Bug Fixes
+
+* **amplify-category-api:** surface override build errors for REST APIs ([#9804](https://github.com/aws-amplify/amplify-cli/issues/9804)) ([b22b67d](https://github.com/aws-amplify/amplify-cli/commit/b22b67de1cdcafbb9475374e7fdf989431b5ce9c))
+
+
+
+
+
 ## [1.2.13](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.2.12...@aws-amplify/amplify-category-api@1.2.13) (2022-02-25)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api

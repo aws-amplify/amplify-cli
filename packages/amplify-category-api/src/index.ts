@@ -24,6 +24,7 @@ import { getAppSyncApiResourceName } from './provider-utils/awscloudformation/ut
 export { NETWORK_STACK_LOGICAL_ID } from './category-constants';
 export { addAdminQueriesApi, updateAdminQueriesApi } from './provider-utils/awscloudformation/';
 export { DEPLOYMENT_MECHANISM } from './provider-utils/awscloudformation/base-api-stack';
+export { convertDeperecatedRestApiPaths } from './provider-utils/awscloudformation/convert-deprecated-apigw-paths';
 export { getContainers } from './provider-utils/awscloudformation/docker-compose';
 export { EcsAlbStack } from './provider-utils/awscloudformation/ecs-alb-stack';
 export { EcsStack } from './provider-utils/awscloudformation/ecs-apigw-stack';
@@ -225,7 +226,7 @@ export async function executeAmplifyCommand(context: $TSContext) {
     if (error) {
       printer.error(error.message || error);
       if (error.stack) {
-        printer.info(error.stack);
+        printer.debug(error.stack);
       }
       await context.usageData.emitError(error);
     }
@@ -240,10 +241,7 @@ export const executeAmplifyHeadlessCommand = async (context: $TSContext, headles
       break;
     case 'update':
       const resourceName = await getAppSyncApiResourceName(context);
-      if (!(await checkAppsyncApiResourceMigration(context, resourceName, true))) {
-        printer.error('Update operations only work on migrated projects. Run "amplify update api" and opt for migration.');
-        exitOnNextTick(0);
-      }
+      await checkAppsyncApiResourceMigration(context, resourceName, true);
       await getCfnApiArtifactHandler(context).updateArtifacts(await validateUpdateApiRequest(headlessPayload));
       break;
     default:

@@ -607,6 +607,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
   createS3AuthPublicPolicy() {
     let policyDefinition: IAmplifyPolicyDefinition = {
       logicalId: 'S3AuthPublicPolicy',
+      isPolicyNameAbsolute : false,
       policyNameRef: 's3PublicPolicy',
       roleRefs: ['authRoleName'],
       condition: this.conditions.CreateAuthPublic,
@@ -628,6 +629,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
   createS3AuthProtectedPolicy() {
     let policyDefinition: IAmplifyPolicyDefinition = {
       logicalId: 'S3AuthProtectedPolicy',
+      isPolicyNameAbsolute : false,
       policyNameRef: 's3ProtectedPolicy',
       roleRefs: ['authRoleName'],
       condition: this.conditions.CreateAuthProtected,
@@ -649,6 +651,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
   createS3AuthPrivatePolicy() {
     let policyDefinition: IAmplifyPolicyDefinition = {
       logicalId: 'S3AuthPrivatePolicy',
+      isPolicyNameAbsolute : false,
       policyNameRef: 's3PrivatePolicy',
       roleRefs: ['authRoleName'],
       condition: this.conditions.CreateAuthPrivate,
@@ -670,6 +673,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
   createS3AuthUploadPolicy() {
     let policyDefinition: IAmplifyPolicyDefinition = {
       logicalId: 'S3AuthUploadPolicy',
+      isPolicyNameAbsolute : false,
       policyNameRef: 's3UploadsPolicy',
       roleRefs: ['authRoleName'],
       condition: this.conditions.CreateAuthUploads,
@@ -691,6 +695,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
   createS3GuestPublicPolicy() {
     let policyDefinition: IAmplifyPolicyDefinition = {
       logicalId: 'S3GuestPublicPolicy',
+      isPolicyNameAbsolute : false,
       policyNameRef: 's3PublicPolicy',
       roleRefs: ['unauthRoleName'],
       condition: this.conditions.CreateGuestPublic,
@@ -712,6 +717,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
   createGuestUploadsPolicy() {
     let policyDefinition: IAmplifyPolicyDefinition = {
       logicalId: 'S3GuestUploadPolicy',
+      isPolicyNameAbsolute : false,
       policyNameRef: 's3UploadsPolicy',
       roleRefs: ['unauthRoleName'],
       condition: this.conditions.CreateGuestUploads,
@@ -733,6 +739,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
   createS3AuthReadPolicy() {
     let policyDefinition: IAmplifyPolicyDefinition = {
       logicalId: 'S3AuthReadPolicy',
+      isPolicyNameAbsolute : false,
       policyNameRef: 's3ReadPolicy',
       roleRefs: ['authRoleName'],
       condition: this.conditions.CreateAuthReadAndList,
@@ -772,6 +779,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
   createS3GuestReadPolicy(): iamCdk.CfnPolicy {
     let policyDefinition: IAmplifyPolicyDefinition = {
       logicalId: 'S3GuestReadPolicy',
+      isPolicyNameAbsolute : false,
       policyNameRef: 's3ReadPolicy',
       roleRefs: ['unauthRoleName'],
       condition: this.conditions.CreateGuestReadAndList,
@@ -814,6 +822,13 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
       statements: [
         {
           refStr: 'S3Bucket',
+          pathStr: '',
+          isActionAbsolute: true, //actions are not refs
+          actions: ['s3:ListBucket'],
+          effect: iamCdk.Effect.ALLOW,
+        },
+        {
+          refStr: 'S3Bucket',
           pathStr: '/*',
           isActionAbsolute: true, //actions are not refs
           actions: ['s3:PutObject', 's3:GetObject', 's3:ListBucket', 's3:DeleteObject'],
@@ -840,27 +855,42 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     return policy;
   }
 
-  //S3TriggerBucketPolicy - Policy to control trigger function access to S3 bucket
-  createTriggerPolicy(logicalId: string, triggerFunctionName: string): iamCdk.CfnPolicy {
-    let policyDefinition: IAmplifyPolicyDefinition = {
-      logicalId,
-      isPolicyNameAbsolute: true, // set if policyName is not a reference
-      policyNameRef: 'amplify-lambda-execution-policy-storage',
-      roleRefs: [`function${triggerFunctionName}LambdaExecutionRole`],
-      statements: [
-        {
-          refStr: 'S3Bucket',
-          pathStr: '/*',
-          isActionAbsolute: true, //actions are not refs
-          actions: ['s3:PutObject', 's3:GetObject', 's3:ListBucket', 's3:DeleteObject'],
-          effect: iamCdk.Effect.ALLOW,
-        },
+  //helper: builder for policy statement resource
+ buildResourceFromPolicyDefinition(policyDefinitionStatement : IAmplifyIamPolicyStatementParams ){
+    let resourceStrArr = ['arn:aws:s3:::', { Ref: policyDefinitionStatement.refStr, } ];
+    if ( policyDefinitionStatement.pathStr && policyDefinitionStatement.pathStr.length > 0 ){
+      resourceStrArr.push( policyDefinitionStatement.pathStr );
+    }
+    return {
+      'Fn::Join': [
+        '',
+        resourceStrArr
       ],
-      dependsOn: [this.s3Bucket],
-    };
-    const policy: iamCdk.CfnPolicy = this.createIAMPolicy(policyDefinition, false /*action is array*/);
-    return policy;
+    }
   }
+
+  buildActionFromPolicyDefinition( policyDefinitionStatement : IAmplifyIamPolicyStatementParams, actionRef : boolean ){
+    if (!policyDefinitionStatement.actions) {
+      return [];
+    }
+    if (!policyDefinitionStatement.isActionAbsolute && actionRef == true ) {
+        //actionRef is true, when : The action provided is a Ref to concatenated string of command separated permissions
+        const actionRef = policyDefinitionStatement.actions[0];
+        const actions = {
+          'Fn::Split': [
+            ',',
+            {
+              Ref: actionRef,
+            },
+          ],
+        };
+        return actions;
+    } else {
+        //isActionAbsolute is true or actionRef is false, when : The action provided is an array of action strings. e.g Triggers
+        return policyDefinitionStatement.actions;
+    }
+  }
+
 
   //Helper:: function to create single statement IAM policy & bind to the App's stack
   createIAMPolicy(policyDefinition: IAmplifyPolicyDefinition, actionRef: boolean): iamCdk.CfnPolicy {
@@ -882,47 +912,26 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     //3. Property: PolicyDocument
     policyL1.Properties.policyDocument = {
       Version: '2012-10-17',
-      Statement: {},
+      Statement: [],
     };
-    //3.1.1 Property: PolicyDocument.Statement.Action
-    if (policyDefinition.statements[0].actions) {
-      policyL1.Properties.policyDocument.Statement.Effect = policyDefinition.statements[0].effect;
-      if (policyDefinition.statements[0].isActionAbsolute) {
-        policyL1.Properties.policyDocument.Statement.Action = policyDefinition.statements[0].actions;
-      } else {
-        //actionRef is true, when : The action provided is a Ref to concatenated string of command separated permissions
-        if (actionRef == true) {
-          const actionRef = policyDefinition.statements[0].actions[0];
-          policyL1.Properties.policyDocument.Statement.Action = {
-            'Fn::Split': [
-              ',',
-              {
-                Ref: actionRef,
-              },
-            ],
-          };
-        } else {
-          //actionRef is false, when : The action provided is an array of action strings. e.g Triggers
-          policyL1.Properties.policyDocument.Statement.Action = policyDefinition.statements[0].actions;
-        }
-      }
-    }
-    //3.1.2 Property: PolicyDocument.Statement.Resource
-    policyL1.Properties.policyDocument.Statement.Resource = [
-      {
-        'Fn::Join': [
-          '',
-          [
-            'arn:aws:s3:::',
-            {
-              Ref: policyDefinition.statements[0].refStr,
-            },
-            policyDefinition.statements[0].pathStr,
-          ],
-        ],
-      },
-    ];
 
+    const policyStatements = []; //Build each statement from the policyDefinitionStatement
+    for( const policyDefinitionStatement of policyDefinition.statements) {
+      let policyStatement:any = {};
+      //3.1.0 Property: PolicyDocument.Statement.Effect
+      policyStatement.Effect = policyDefinitionStatement.effect;
+
+      //3.1.1 Property: PolicyDocument.Statement.Action
+      if (policyDefinitionStatement.actions) {
+        policyStatement.Action = this.buildActionFromPolicyDefinition(policyDefinitionStatement, actionRef );
+      }
+      //3.1.2 Property: PolicyDocument.Statement.Resource
+      policyStatement.Resource = [ this.buildResourceFromPolicyDefinition(policyDefinitionStatement) ]
+      policyStatements.push(policyStatement);
+
+    } /** end build policyStatements */
+
+    policyL1.Properties.policyDocument.Statement = policyStatements;
     const policy = new iamCdk.CfnPolicy(this, policyDefinition.logicalId, policyL1['Properties']);
     if (policyDefinition.dependsOn) {
       policyDefinition.dependsOn.map(dependency => policy.addDependsOn(dependency));
@@ -930,7 +939,6 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     if (policyDefinition.condition) {
       policy.cfnOptions.condition = policyDefinition.condition;
     }
-
     return policy;
   }
 
@@ -1084,7 +1092,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const S3_ROOT_CFN_DESCRIPTION = 'S3 Resource for AWS Amplify CLI';
 
-interface IAmplifyIamPolicyStatementParams {
+export interface IAmplifyIamPolicyStatementParams {
   refStr: string;
   conditions?: $TSObject;
   pathStr?: string;
