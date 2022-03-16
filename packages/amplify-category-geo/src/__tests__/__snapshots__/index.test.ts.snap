@@ -41,6 +41,7 @@ Array [
       "geo:DescribePlaceIndex",
       "geo:SearchPlaceIndexForPosition",
       "geo:SearchPlaceIndexForText",
+      "geo:SearchPlaceIndexForSuggestions",
       "geo:DeletePlaceIndex",
     ],
     "Effect": "Allow",
@@ -386,6 +387,7 @@ Array [
       "geo:DescribePlaceIndex",
       "geo:SearchPlaceIndexForPosition",
       "geo:SearchPlaceIndexForText",
+      "geo:SearchPlaceIndexForSuggestions",
     ],
     "Effect": "Allow",
     "Resource": Array [

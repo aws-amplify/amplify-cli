@@ -23,7 +23,11 @@ export class CloudFormationClient {
     this.client = new CloudFormation({ apiVersion: '2010-05-15', region: this.region });
   }
 
-  async createStack(template: any, name: string, defParams: any = {}, addAppSyncApiName: boolean = true) {
+  async updateStack(template: any, name: string, defParams: any = {}, addAppSyncApiName: boolean = true) {
+    return this.createStack(template, name, defParams, addAppSyncApiName, true);
+  }
+
+  async createStack(template: any, name: string, defParams: any = {}, addAppSyncApiName: boolean = true, isUpdate: boolean = false) {
     const params = [];
 
     if (addAppSyncApiName === true) {
@@ -48,7 +52,7 @@ export class CloudFormationClient {
     };
 
     return await promisify<CloudFormation.Types.CreateStackInput, CloudFormation.Types.CreateStackOutput>(
-      this.client.createStack,
+      isUpdate ? this.client.updateStack : this.client.createStack,
       {
         StackName: name,
         Capabilities: ['CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],

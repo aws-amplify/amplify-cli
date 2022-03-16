@@ -1,0 +1,20 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "lib",
+    "rootDir": "./src",
+    "strict": false, // TODO enable
+    "allowJs": true,
+    "checkJs": false, // TODO enable till we move everything to TS
+    "lib": ["ESNext", "dom"]
+  },
+  "exclude": [
+    "lib",
+    "coverage",
+    "src/__tests__",
+    "resources"
+  ],
+  "references": [
+    { "path": "../amplify-category-api" }
+  ]
+}

@@ -23,7 +23,7 @@ describe('should notify when packages are missing', () => {
         },
       },
     };
-    notifyMissingPackages(context as any);
+    notifyMissingPackages(context as JSONUtilitiesDependency.$TSContext, []);
     expect(printerDependency.printer.debug).toBeCalledTimes(1);
   });
 
@@ -39,7 +39,7 @@ describe('should notify when packages are missing', () => {
         },
       },
     };
-    notifyMissingPackages(context as any);
+    notifyMissingPackages(context as JSONUtilitiesDependency.$TSContext, []);
     expect(printerDependency.printer.debug).toBeCalledTimes(1);
   });
 
@@ -51,23 +51,7 @@ describe('should notify when packages are missing', () => {
         },
       },
     };
-    notifyMissingPackages(context as any);
-    expect(printerDependency.printer.warn).toBeCalledTimes(2);
-  });
-
-  it('notifies for incorrect dependency version', async () => {
-    JSONUtilitiesDependency.JSONUtilities.readJson = jest.fn().mockImplementation(() => ({
-      projectPath: __dirname,
-      dependencies: { '@aws-amplify/ui-react': '1.0.0', 'aws-amplify': '1.0.0' },
-    }));
-    const context = {
-      input: {
-        options: {
-          localEnvFilePath: __dirname + '/mock.json',
-        },
-      },
-    };
-    notifyMissingPackages(context as any);
+    notifyMissingPackages(context as JSONUtilitiesDependency.$TSContext, []);
     expect(printerDependency.printer.warn).toBeCalledTimes(1);
   });
 
@@ -83,7 +67,7 @@ describe('should notify when packages are missing', () => {
         },
       },
     };
-    notifyMissingPackages(context as any);
+    notifyMissingPackages(context as JSONUtilitiesDependency.$TSContext, []);
     expect(printerDependency.printer.warn).toBeCalledTimes(1);
   });
 });

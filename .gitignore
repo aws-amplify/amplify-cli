@@ -32,7 +32,6 @@ packages/amplify-cli-core/lib
 packages/amplify-cli-logger/lib
 packages/amplify-mqtt-server/lib
 packages/amplify-appsync-simulator/lib
-packages/amplify-codegen-appsync-model-plugin/lib
 packages/amplify-e2e-core/lib
 packagea/amplify-graphiql-explorer/build
 packages/amplify-graphql*/lib
@@ -77,6 +76,9 @@ test.out.log
 packages/amplify-graphiql-explorer/.eslintcache
 packages/amplify-cli-extensibility-helper/lib
 packages/amplify-cli-overrides-helper/lib
+packages/amplify-console-hosting/lib/
+packages/amplify-container-hosting/lib/
+packages/amplify-category-predictions/lib
+packages/amplify-category-analytics/lib
+packages/amplify-category-interactions/lib/
 !packages/amplify-graphql-model-transformer/src/__tests__/overrides/build/override.js
-
-

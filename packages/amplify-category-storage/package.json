@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-storage",
-  "version": "3.1.7",
+  "version": "3.1.19",
   "description": "amplify-cli storage plugin",
   "repository": {
     "type": "git",
@@ -26,26 +26,26 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/cli-extensibility-helper": "2.3.7",
+    "@aws-amplify/cli-extensibility-helper": "2.3.18",
     "@aws-cdk/aws-dynamodb": "~1.124.0",
     "@aws-cdk/aws-s3": "~1.124.0",
     "@aws-cdk/core": "~1.124.0",
-    "amplify-cli-core": "2.4.7",
-    "amplify-headless-interface": "1.13.3",
-    "amplify-prompts": "1.6.2",
-    "amplify-util-import": "2.2.12",
+    "amplify-cli-core": "2.4.18",
+    "amplify-headless-interface": "1.14.2",
+    "amplify-prompts": "1.6.3",
+    "amplify-util-import": "2.2.23",
     "chalk": "^4.1.1",
-    "cloudform-types": "^4.2.0",
     "enquirer": "^2.3.6",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",
     "lodash": "^4.17.21",
     "promise-sequential": "^1.1.1",
     "uuid": "^8.3.2",
-    "vm2": "^3.9.5"
+    "vm2": "^3.9.8"
   },
   "devDependencies": {
-    "aws-sdk": "^2.963.0",
+    "aws-sdk": "^2.1084.0",
+    "cloudform-types": "^4.2.0",
     "rimraf": "^3.0.2"
   },
   "jest": {

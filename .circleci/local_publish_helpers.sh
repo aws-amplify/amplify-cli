@@ -20,7 +20,7 @@ function generatePkgCli {
   yarn --production
 
   # Optimize package size
-  rm -rf **/*.d.ts **/*.js.map **/*.d.ts.map **/README.md **/readme.md **/Readme.md **/CHANGELOG.md **/changelog.md **/Changelog.md **/HISTORY.md **/history.md **/History.md
+  yarn rimraf **/*.d.ts **/*.js.map **/*.d.ts.map **/README.md **/readme.md **/Readme.md **/CHANGELOG.md **/changelog.md **/Changelog.md **/HISTORY.md **/history.md **/History.md
 
   # Restore .d.ts files required by @aws-amplify/codegen-ui at runtime
   cp ../node_modules/typescript/lib/*.d.ts node_modules/typescript/lib/
@@ -30,7 +30,7 @@ function generatePkgCli {
 
   # Build pkg cli
   cp package.json ../build/node_modules/package.json
-  npx pkg -t node12-macos-x64,node12-linux-x64,node12-win-x64 ../build/node_modules --out-path out
+  npx pkg -t node12-macos-x64,node12-linux-x64,node12-win-x64 ../build/node_modules --out-path ../out
 }
 
 function loginToLocalRegistry {
@@ -97,6 +97,8 @@ function retry {
     SLEEP_DURATION=5
     FIRST_RUN=true
     n=0
+    FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
+    rm -f $FAILED_TEST_REGEX_FILE
     until [ $n -ge $MAX_ATTEMPTS ]
     do
         echo "Attempting $@ with max retries $MAX_ATTEMPTS"
@@ -155,8 +157,10 @@ function setAwsAccountCredentials {
 }
 
 function runE2eTest {
+    FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
+
     if [[ "$OSTYPE" == "linux-gnu" ]]; then
-        sudo apt-get install -y libatk-bridge2.0-0 libgtk-3.0 libasound2
+        sudo apt-get install -y libatk-bridge2.0-0 libgtk-3.0 libasound2 lsof
     fi
     if [ -z "$FIRST_RUN" ] || [ "$FIRST_RUN" == "true" ]; then
         startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -168,5 +172,13 @@ function runE2eTest {
         amplify-app --version
         cd $(pwd)/packages/amplify-e2e-tests
     fi
-    yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
+
+    if [ -f  $FAILED_TEST_REGEX_FILE ]; then
+        # read the content of failed tests
+        failedTests=$(<$FAILED_TEST_REGEX_FILE)
+        yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE -t "$failedTests"
+    else
+        yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
+    fi
+    
 }

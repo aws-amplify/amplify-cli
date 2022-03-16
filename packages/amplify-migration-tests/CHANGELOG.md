@@ -3,6 +3,125 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.25](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.24...amplify-migration-tests@4.4.25) (2022-03-14)
+
+
+### Bug Fixes
+
+* allow api updates without migration ([#9864](https://github.com/aws-amplify/amplify-cli/issues/9864)) ([389f551](https://github.com/aws-amplify/amplify-cli/commit/389f551ea800afc9563b6e546f3ea0073bc13c68))
+* split policies for both legacy and migrated REST APIs ([#9572](https://github.com/aws-amplify/amplify-cli/issues/9572)) ([436d53f](https://github.com/aws-amplify/amplify-cli/commit/436d53f348954dab02364d1bed528c3b4121ede3))
+
+
+
+
+
+## [4.4.24](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.23...amplify-migration-tests@4.4.24) (2022-03-07)
+
+
+### Bug Fixes
+
+* map headless auth pw recovery to auto-verified attrs ([#9786](https://github.com/aws-amplify/amplify-cli/issues/9786)) ([f8c9100](https://github.com/aws-amplify/amplify-cli/commit/f8c9100d0ea0dfe87233624883ff8ae8c9bf48a7))
+
+
+
+
+
+## [4.4.23](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.22...amplify-migration-tests@4.4.23) (2022-02-25)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.22](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.21...amplify-migration-tests@4.4.22) (2022-02-18)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.21](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.20...amplify-migration-tests@4.4.21) (2022-02-15)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.20](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.16...amplify-migration-tests@4.4.20) (2022-02-10)
+
+
+
+## 7.6.19 (2022-02-08)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.15...amplify-migration-tests@4.4.16) (2022-02-03)
+
+
+
+## 7.6.15 (2022-02-02)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.14...amplify-migration-tests@4.4.15) (2022-01-31)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.13...amplify-migration-tests@4.4.14) (2022-01-27)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.12...amplify-migration-tests@4.4.13) (2022-01-23)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.11...amplify-migration-tests@4.4.12) (2022-01-20)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.10...amplify-migration-tests@4.4.11) (2022-01-13)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.9...amplify-migration-tests@4.4.10) (2022-01-11)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
 ## [4.4.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.7...amplify-migration-tests@4.4.9) (2022-01-10)
 
 

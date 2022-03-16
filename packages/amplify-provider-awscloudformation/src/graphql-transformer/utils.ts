@@ -10,6 +10,7 @@ import { ResourceConstants } from 'graphql-transformer-common';
 import { pullAllBy, find } from 'lodash';
 import { isAmplifyAdminApp } from '../utils/admin-helpers';
 import { printer } from 'amplify-prompts';
+import { prePushCfnTemplateModifier } from '../pre-push-cfn-processor/pre-push-cfn-modifier';
 
 const ROOT_STACK_FILE_NAME = 'cloudformation-template.json';
 const PARAMETERS_FILE_NAME = 'parameters.json';
@@ -43,8 +44,16 @@ export const getIdentityPoolId = async (ctx: $TSContext): Promise<string | undef
 };
 
 export const getAdminRoles = async (ctx: $TSContext, apiResourceName: string | undefined): Promise<Array<string>> => {
-  const currentEnv = ctx.amplify.getEnvInfo().envName;
+  let currentEnv;
   const adminRoles = new Array<string>();
+
+  try {
+    currentEnv = ctx.amplify.getEnvInfo().envName;
+  } catch (err) {
+    // When there is no environment info, return [] - This is required for sandbox pull
+    return [];
+  }
+
   //admin ui roles
   try {
     const amplifyMeta = stateManager.getMeta();
@@ -306,12 +315,12 @@ export async function writeDeploymentToDisk(
     const fullFileName = fileNameParts.join('.');
     throwIfNotJSONExt(fullFileName);
     const fullStackPath = path.normalize(stackRootPath + '/' + fullFileName);
-    let stackString: any = deployment.stacks[stackFileName];
-    stackString =
-      typeof stackString === 'string'
-        ? deployment.stacks[stackFileName]
-        : JSONUtilities.stringify(deployment.stacks[stackFileName], { minify });
-    fs.writeFileSync(fullStackPath, stackString);
+    let stackContent = deployment.stacks[stackFileName];
+    if (typeof stackContent === 'string') {
+      stackContent = JSON.parse(stackContent);
+    }
+    await prePushCfnTemplateModifier(stackContent);
+    fs.writeFileSync(fullStackPath, JSONUtilities.stringify(stackContent, { minify }));
   }
 
   // Write any functions to disk

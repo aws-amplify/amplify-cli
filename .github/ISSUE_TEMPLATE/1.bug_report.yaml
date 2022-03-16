@@ -25,6 +25,8 @@ body:
           required: true
         - label: I have done my best to include a minimal, self-contained set of instructions for consistently reproducing the issue.
           required: true
+        - label: I have removed any sensitive information from my code snippets and submission.
+          required: true
   - type: markdown
     attributes:
       value: |
@@ -62,6 +64,7 @@ body:
       multiple: true
       options:
         - auth
+        - custom
         - storage
         - function
         - api
@@ -92,6 +95,7 @@ body:
         - env
         - export
         - init
+        - override
         - publish
         - pull
         - push
@@ -131,7 +135,7 @@ body:
     attributes:
       label: GraphQL schema(s)
       description: |
-        If applicable, please include your GraphQL schema(s). 
+        If applicable, please include your GraphQL schema(s).
 
         **Be sure to remove any sensitive data.**
       value: |

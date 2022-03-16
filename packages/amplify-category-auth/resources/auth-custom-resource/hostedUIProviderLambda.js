@@ -36,11 +36,15 @@ exports.handler = (event, context, callback) => {
             requestParams = null;
           }
         } else {
-          requestParams.ProviderDetails = {
-            client_id: providerCreds.client_id,
-            client_secret: providerCreds.client_secret,
-            authorize_scopes: providerMeta.authorize_scopes,
-          };
+          if (providerCreds.client_id && providerCreds.client_secret) {
+            requestParams.ProviderDetails = {
+              client_id: providerCreds.client_id,
+              client_secret: providerCreds.client_secret,
+              authorize_scopes: providerMeta.authorize_scopes,
+            };
+          } else {
+            requestParams = null;
+          }
         }
         return requestParams;
       };

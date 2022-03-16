@@ -1,3 +1,6 @@
+/**
+ * @type {import('@types/aws-lambda').DefineAuthChallengeTriggerHandler}
+ */
 exports.handler = async event => {
   if (event.request.session.length === 1 && event.request.session[0].challengeName === 'SRP_A') {
     event.response.issueTokens = false;

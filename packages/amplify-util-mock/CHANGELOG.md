@@ -3,6 +3,153 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.9...amplify-util-mock@4.3.10) (2022-03-14)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.3.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.8...amplify-util-mock@4.3.9) (2022-03-07)
+
+
+### Bug Fixes
+
+* support Java numbers in appsync simulator ([#9810](https://github.com/aws-amplify/amplify-cli/issues/9810)) ([84b61f8](https://github.com/aws-amplify/amplify-cli/commit/84b61f8c598b473d2de5922417612ed3b3da4620))
+
+
+
+
+
+## [4.3.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.7...amplify-util-mock@4.3.8) (2022-02-25)
+
+
+
+## 7.6.22 (2022-02-24)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** update resolver should allow if update operation is set ([#9808](https://github.com/aws-amplify/amplify-cli/issues/9808)) ([44a9bea](https://github.com/aws-amplify/amplify-cli/commit/44a9bea139a9a1483cfbc7db29b84938510ffdca))
+
+
+
+
+
+## [4.3.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.6...amplify-util-mock@4.3.7) (2022-02-18)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.3.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.5...amplify-util-mock@4.3.6) (2022-02-15)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.3.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.1...amplify-util-mock@4.3.5) (2022-02-10)
+
+
+
+## 7.6.19 (2022-02-08)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.0...amplify-util-mock@4.3.1) (2022-02-03)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+# [4.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.30...amplify-util-mock@4.3.0) (2022-01-31)
+
+
+
+## 7.6.14 (2022-01-28)
+
+
+### Features
+
+* `[@maps](https://github.com/maps)To` directive to enable renaming models while retaining data ([#9340](https://github.com/aws-amplify/amplify-cli/issues/9340)) ([aedf45d](https://github.com/aws-amplify/amplify-cli/commit/aedf45d9237812d71bb8b56164efe0222ad3d534))
+
+
+
+
+
+## [4.2.30](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.29...amplify-util-mock@4.2.30) (2022-01-27)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.2.29](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.28...amplify-util-mock@4.2.29) (2022-01-23)
+
+
+### Bug Fixes
+
+* listX operations with no args where authField is used in primaryKey ([#9570](https://github.com/aws-amplify/amplify-cli/issues/9570)) ([1496724](https://github.com/aws-amplify/amplify-cli/commit/1496724495010f2daec8b160e35e613ca34eaa5e))
+
+
+
+
+
+## [4.2.28](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.27...amplify-util-mock@4.2.28) (2022-01-20)
+
+
+
+## 7.6.11 (2022-01-20)
+
+
+### Reverts
+
+* Revert "fix(graphql-auth-transformer): fix key condition expression (#9264)" (#9566) ([1d15762](https://github.com/aws-amplify/amplify-cli/commit/1d1576228fd1ed131b8447f21a146b3ffeee1d2b)), closes [#9264](https://github.com/aws-amplify/amplify-cli/issues/9264) [#9566](https://github.com/aws-amplify/amplify-cli/issues/9566)
+
+
+
+
+
+## [4.2.27](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.26...amplify-util-mock@4.2.27) (2022-01-20)
+
+
+### Bug Fixes
+
+* remove functionName from transform-host lambdas ([#9491](https://github.com/aws-amplify/amplify-cli/issues/9491)) ([959d6d8](https://github.com/aws-amplify/amplify-cli/commit/959d6d85056c672b3281794163a7bc534340a513))
+
+
+### Reverts
+
+* Revert "chore: codegen version bump (#9512)" (#9524) ([b653441](https://github.com/aws-amplify/amplify-cli/commit/b65344134a20785afc96abf1798af89eec93fd84)), closes [#9512](https://github.com/aws-amplify/amplify-cli/issues/9512) [#9524](https://github.com/aws-amplify/amplify-cli/issues/9524)
+
+
+
+
+
+## [4.2.26](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.25...amplify-util-mock@4.2.26) (2022-01-13)
+
+
+### Bug Fixes
+
+* **amplify-util-mock:** correct mock env variable name to match name used at runtime ([#9272](https://github.com/aws-amplify/amplify-cli/issues/9272)) ([0be3ace](https://github.com/aws-amplify/amplify-cli/commit/0be3acea6026bbf7d52109b5a327966344dc9d47))
+* GraphQL V2 fix for codegen ([#9489](https://github.com/aws-amplify/amplify-cli/issues/9489)) ([d8b82b9](https://github.com/aws-amplify/amplify-cli/commit/d8b82b9bf3182efef3c57f02f76b6963bd4d2839))
+
+
+
+
+
 ## [4.2.25](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.23...amplify-util-mock@4.2.25) (2022-01-10)
 
 

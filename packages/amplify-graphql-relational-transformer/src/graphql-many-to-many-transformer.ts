@@ -1,5 +1,7 @@
 import { DirectiveWrapper, InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import {
+  FieldMapEntry,
+  TransformerAuthProvider,
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
@@ -21,10 +23,9 @@ import {
   wrapNonNull,
 } from 'graphql-transformer-common';
 import { ManyToManyDirectiveConfiguration, ManyToManyRelation } from './types';
-import { validateModelDirective } from './utils';
+import { registerManyToManyForeignKeyMappings, validateModelDirective } from './utils';
 import { makeQueryConnectionWithKeyResolver, updateTableForConnection } from './resolvers';
 import { ensureHasManyConnectionField, extendTypeWithConnection, getPartitionKeyField } from './schema';
-import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { IndexTransformer } from '@aws-amplify/graphql-index-transformer';
 import { HasOneTransformer } from './graphql-has-one-transformer';
@@ -41,19 +42,19 @@ export class ManyToManyTransformer extends TransformerPluginBase {
   private modelTransformer: ModelTransformer;
   private indexTransformer: IndexTransformer;
   private hasOneTransformer: HasOneTransformer;
-  private authTransformer: AuthTransformer;
+  private authProvider: TransformerAuthProvider;
 
   constructor(
     modelTransformer: ModelTransformer,
     indexTransformer: IndexTransformer,
     hasOneTransformer: HasOneTransformer,
-    authTransformer: AuthTransformer,
+    authProvider: TransformerAuthProvider,
   ) {
     super('amplify-many-to-many-transformer', directiveDefinition);
     this.modelTransformer = modelTransformer;
     this.indexTransformer = indexTransformer;
     this.hasOneTransformer = hasOneTransformer;
-    this.authTransformer = authTransformer;
+    this.authProvider = authProvider;
   }
 
   field = (
@@ -120,19 +121,27 @@ export class ManyToManyTransformer extends TransformerPluginBase {
       ctx.metadata.set('joinTypeList', []);
     }
 
+    // variables with 'orig' in their name in this loop refer to their original value as specified by the @mapsTo directive
+    // this code desperately needs to be refactored to reduce the duplication
     this.relationMap.forEach(relation => {
       const { directive1, directive2, name } = relation;
       ctx.metadata.get<Array<string>>('joinTypeList')!.push(name);
+      const d1origTypeName = ctx.resourceHelper.getModelNameMapping(directive1.object.name.value);
+      const d2origTypeName = ctx.resourceHelper.getModelNameMapping(directive2.object.name.value);
       const d1TypeName = directive1.object.name.value;
       const d2TypeName = directive2.object.name.value;
       const d1FieldName = d1TypeName.charAt(0).toLowerCase() + d1TypeName.slice(1);
       const d2FieldName = d2TypeName.charAt(0).toLowerCase() + d2TypeName.slice(1);
+      const d1FieldNameOrig = d1origTypeName.charAt(0).toLowerCase() + d1origTypeName.slice(1);
+      const d2FieldNameOrig = d2origTypeName.charAt(0).toLowerCase() + d2origTypeName.slice(1);
       const d1PartitionKey = getPartitionKeyField(context, directive1.object);
       const d2PartitionKey = getPartitionKeyField(context, directive2.object);
-      const d1IndexName = `by${d1TypeName}`;
-      const d2IndexName = `by${d2TypeName}`;
+      const d1IndexName = `by${d1origTypeName}`;
+      const d2IndexName = `by${d2origTypeName}`;
       const d1FieldNameId = `${d1FieldName}ID`;
       const d2FieldNameId = `${d2FieldName}ID`;
+      const d1FieldNameIdOrig = `${d1FieldNameOrig}ID`;
+      const d2FieldNameIdOrig = `${d2FieldNameOrig}ID`;
       const joinModelDirective = makeDirective('model', []);
       const d1IndexDirective = makeDirective('index', [
         makeArgument('name', makeValueNode(d1IndexName)),
@@ -175,13 +184,57 @@ export class ManyToManyTransformer extends TransformerPluginBase {
       directive2.relatedTypeIndex = [d2RelatedField];
 
       this.modelTransformer.object(joinType, joinModelDirective, context);
-      this.indexTransformer.field(joinType, d1RelatedField, d1IndexDirective, context);
-      this.indexTransformer.field(joinType, d2RelatedField, d2IndexDirective, context);
       this.hasOneTransformer.field(joinType, d1Field, d1HasOneDirective, context);
       this.hasOneTransformer.field(joinType, d2Field, d2HasOneDirective, context);
 
       if (joinTableAuthDirective) {
-        this.authTransformer.object(joinType, joinTableAuthDirective, context);
+        this.authProvider.object!(joinType, joinTableAuthDirective, context);
+      }
+
+      // because of @mapsTo, we need to create a joinType object that matches the original before calling the indexTransformer.
+      // this ensures that the GSIs on the existing join table stay the same
+      const d1IndexDirectiveOrig = makeDirective('index', [
+        makeArgument('name', makeValueNode(d1IndexName)),
+        makeArgument('sortKeyFields', makeValueNode([d2FieldNameIdOrig])),
+      ]);
+      const d2IndexDirectiveOrig = makeDirective('index', [
+        makeArgument('name', makeValueNode(d2IndexName)),
+        makeArgument('sortKeyFields', makeValueNode([d1FieldNameIdOrig])),
+      ]);
+
+      const d1RelatedFieldOrig = makeField(d1FieldNameIdOrig, [], wrapNonNull(makeNamedType(getBaseType(d1PartitionKey.type))), [
+        d1IndexDirectiveOrig,
+      ]);
+      const d2RelatedFieldOrig = makeField(d2FieldNameIdOrig, [], wrapNonNull(makeNamedType(getBaseType(d2PartitionKey.type))), [
+        d2IndexDirectiveOrig,
+      ]);
+      const joinTypeOrig = {
+        ...blankObject(name),
+        fields: [makeField('id', [], wrapNonNull(makeNamedType('ID'))), d1RelatedFieldOrig, d2RelatedFieldOrig],
+        directives: joinTableDirectives,
+      };
+      this.indexTransformer.field(joinTypeOrig, d1RelatedFieldOrig, d1IndexDirectiveOrig, context);
+      this.indexTransformer.field(joinTypeOrig, d2RelatedFieldOrig, d2IndexDirectiveOrig, context);
+
+      // if either side of the many-to-many connection is renamed, the foreign key fields of the join table need to be remapped
+      const renamedFields: FieldMapEntry[] = [];
+      if (ctx.resourceHelper.isModelRenamed(directive1.object.name.value)) {
+        renamedFields.push({ originalFieldName: d1FieldNameIdOrig, currentFieldName: d1FieldNameId });
+      }
+      if (ctx.resourceHelper.isModelRenamed(directive2.object.name.value)) {
+        renamedFields.push({ originalFieldName: d2FieldNameIdOrig, currentFieldName: d2FieldNameId });
+      }
+
+      if (!!renamedFields.length) {
+        registerManyToManyForeignKeyMappings({
+          resourceHelper: ctx.resourceHelper,
+          typeName: name,
+          referencedBy: [
+            { typeName: directive1.object.name.value, fieldName: directive1.field.name.value, isList: true },
+            { typeName: directive2.object.name.value, fieldName: directive2.field.name.value, isList: true },
+          ],
+          fieldMap: renamedFields,
+        });
       }
 
       context.providerRegistry.registerDataSourceProvider(joinType, this.modelTransformer);

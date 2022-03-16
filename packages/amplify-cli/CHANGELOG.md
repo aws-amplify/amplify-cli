@@ -3,6 +3,168 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.6.24](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.23...@aws-amplify/cli@7.6.24) (2022-03-14)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [7.6.23](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.22...@aws-amplify/cli@7.6.23) (2022-03-07)
+
+
+### Bug Fixes
+
+* **cli:** fix notification logic when API resource directory doesn't exist ([#9796](https://github.com/aws-amplify/amplify-cli/issues/9796)) ([5238264](https://github.com/aws-amplify/amplify-cli/commit/52382644a7fb3d242c9498785f3aa3293d19daf4)), closes [#9721](https://github.com/aws-amplify/amplify-cli/issues/9721)
+* get the defaultEditor value from the localEnvInfo context variable ([#9783](https://github.com/aws-amplify/amplify-cli/issues/9783)) ([cdb5aec](https://github.com/aws-amplify/amplify-cli/commit/cdb5aec151060280e50ce755cd45bcc2fad84479)), closes [#8356](https://github.com/aws-amplify/amplify-cli/issues/8356)
+
+
+### Performance Improvements
+
+* remove ESM loader to speed up CLI execution ([#9873](https://github.com/aws-amplify/amplify-cli/issues/9873)) ([46ada02](https://github.com/aws-amplify/amplify-cli/commit/46ada029a7914b75c356c3ae9dcd782ffa324b2a))
+
+
+
+
+
+## [7.6.22](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.21...@aws-amplify/cli@7.6.22) (2022-02-25)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [7.6.21](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.20...@aws-amplify/cli@7.6.21) (2022-02-18)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [7.6.20](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.19...@aws-amplify/cli@7.6.20) (2022-02-15)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [7.6.19](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.15...@aws-amplify/cli@7.6.19) (2022-02-10)
+
+
+
+## 7.6.19 (2022-02-08)
+
+
+### Bug Fixes
+
+* **cli:** fix security enhancement notification for projects with schema dir ([#9670](https://github.com/aws-amplify/amplify-cli/issues/9670)) ([bc57ed2](https://github.com/aws-amplify/amplify-cli/commit/bc57ed2c6e6e45136473b3ae065ea971d7867e65))
+* fix modify gql schema base case; scope auth notif to v2 ([#9689](https://github.com/aws-amplify/amplify-cli/issues/9689)) ([14c56da](https://github.com/aws-amplify/amplify-cli/commit/14c56da8b7466f8245bf2897212387a36091e2d6))
+
+
+
+
+
+## [7.6.15](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.14...@aws-amplify/cli@7.6.15) (2022-02-03)
+
+
+### Bug Fixes
+
+* separate field level subscription errors and field level resolver generation ([#9671](https://github.com/aws-amplify/amplify-cli/issues/9671)) ([657c344](https://github.com/aws-amplify/amplify-cli/commit/657c344633d4a72d322008f23a29f78df5a8a55a))
+
+
+
+
+
+## [7.6.14](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.13...@aws-amplify/cli@7.6.14) (2022-01-31)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [7.6.13](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.12...@aws-amplify/cli@7.6.13) (2022-01-27)
+
+
+
+## 7.6.13 (2022-01-26)
+
+
+### Bug Fixes
+
+* handle auth and api dependency in state files correctly ([#9528](https://github.com/aws-amplify/amplify-cli/issues/9528)) ([edced3e](https://github.com/aws-amplify/amplify-cli/commit/edced3ef76da02bd269cf85c7287bfb74875d967)), closes [#9341](https://github.com/aws-amplify/amplify-cli/issues/9341)
+
+
+### Reverts
+
+* Revert "fix: handle auth and api dependency in state files correctly (#9528)" (#9602) ([b99b08e](https://github.com/aws-amplify/amplify-cli/commit/b99b08e187be8f2f77761ccdd1092a0cba86a051)), closes [#9528](https://github.com/aws-amplify/amplify-cli/issues/9528) [#9602](https://github.com/aws-amplify/amplify-cli/issues/9602)
+
+
+
+
+
+## [7.6.12](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.11...@aws-amplify/cli@7.6.12) (2022-01-23)
+
+
+
+## 7.6.12 (2022-01-23)
+
+
+### Bug Fixes
+
+* **amplify-app:** fix notify security enhancement check ([#9582](https://github.com/aws-amplify/amplify-cli/issues/9582)) ([2d830dc](https://github.com/aws-amplify/amplify-cli/commit/2d830dcad957b642bf4ac965bcbe932e27911e68))
+
+
+
+
+
+## [7.6.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.10...@aws-amplify/cli@7.6.11) (2022-01-20)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [7.6.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.9...@aws-amplify/cli@7.6.10) (2022-01-20)
+
+
+### Bug Fixes
+
+* fix amplify pull and init to regenerated frontend configuration  ([#9499](https://github.com/aws-amplify/amplify-cli/issues/9499)) ([e3e9c2d](https://github.com/aws-amplify/amplify-cli/commit/e3e9c2dc8be90432d95751db09c706eb9ace2863))
+
+
+### Reverts
+
+* Revert "chore: codegen version bump (#9512)" (#9524) ([b653441](https://github.com/aws-amplify/amplify-cli/commit/b65344134a20785afc96abf1798af89eec93fd84)), closes [#9512](https://github.com/aws-amplify/amplify-cli/issues/9512) [#9524](https://github.com/aws-amplify/amplify-cli/issues/9524)
+
+
+
+
+
+## [7.6.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.8...@aws-amplify/cli@7.6.9) (2022-01-13)
+
+
+### Bug Fixes
+
+* GraphQL V2 fix for codegen ([#9489](https://github.com/aws-amplify/amplify-cli/issues/9489)) ([d8b82b9](https://github.com/aws-amplify/amplify-cli/commit/d8b82b9bf3182efef3c57f02f76b6963bd4d2839))
+
+
+
+
+
+## [7.6.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.7...@aws-amplify/cli@7.6.8) (2022-01-11)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
 ## [7.6.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.5...@aws-amplify/cli@7.6.7) (2022-01-10)
 
 

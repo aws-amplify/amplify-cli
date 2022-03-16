@@ -3,6 +3,114 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.5.3...amplify-category-function@3.5.4) (2022-03-14)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** add length validation for secret value ([#9812](https://github.com/aws-amplify/amplify-cli/issues/9812)) ([1779fa0](https://github.com/aws-amplify/amplify-cli/commit/1779fa0bbe59cd1276332f02e43deaa8d6c3b356))
+* **amplify-category-function:** show `console` in subcommand list ([#9887](https://github.com/aws-amplify/amplify-cli/issues/9887)) ([3d933ba](https://github.com/aws-amplify/amplify-cli/commit/3d933ba0a194c02d96eb0b340fec77ed2972f983))
+
+
+
+
+
+## [3.5.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.5.2...amplify-category-function@3.5.3) (2022-03-07)
+
+
+### Bug Fixes
+
+* set secretsPathAmplfiyAppId on initEnv when function has secrets ([#9853](https://github.com/aws-amplify/amplify-cli/issues/9853)) ([735854f](https://github.com/aws-amplify/amplify-cli/commit/735854fedaced25ddb473d19d3bb686e57b0a80a))
+* use existing rather than deleted models ([#9769](https://github.com/aws-amplify/amplify-cli/issues/9769)) ([c4b7487](https://github.com/aws-amplify/amplify-cli/commit/c4b74879feda53bd73746158f4285d3b683981d2))
+
+
+### Reverts
+
+* Revert "fix: use existing rather than deleted models (#9769)" (#9884) ([94547e0](https://github.com/aws-amplify/amplify-cli/commit/94547e0c2efca702b53929d852274aa07c663206)), closes [#9769](https://github.com/aws-amplify/amplify-cli/issues/9769) [#9884](https://github.com/aws-amplify/amplify-cli/issues/9884)
+
+
+
+
+
+## [3.5.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.5.1...amplify-category-function@3.5.2) (2022-02-25)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+## [3.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.5.0...amplify-category-function@3.5.1) (2022-02-15)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+# [3.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.4.1...amplify-category-function@3.5.0) (2022-02-10)
+
+
+
+## 7.6.19 (2022-02-08)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** allow user to update function for 0 category access ([#8052](https://github.com/aws-amplify/amplify-cli/issues/8052)) ([4d3af32](https://github.com/aws-amplify/amplify-cli/commit/4d3af3265d0c334ed5b46dca55f75b1c2aac2da1))
+
+
+### Features
+
+* improve function templates; consolidate console.log, add jsdoc, add lambda types ([#9649](https://github.com/aws-amplify/amplify-cli/issues/9649)) ([5b24455](https://github.com/aws-amplify/amplify-cli/commit/5b244554bd503d076f94fa94c96bc50d65cf48bc))
+
+
+
+
+
+## [3.4.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.4.0...amplify-category-function@3.4.1) (2022-02-03)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+# [3.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.3.15...amplify-category-function@3.4.0) (2022-01-31)
+
+
+### Features
+
+* `[@maps](https://github.com/maps)To` directive to enable renaming models while retaining data ([#9340](https://github.com/aws-amplify/amplify-cli/issues/9340)) ([aedf45d](https://github.com/aws-amplify/amplify-cli/commit/aedf45d9237812d71bb8b56164efe0222ad3d534))
+
+
+
+
+
+## [3.3.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.3.14...amplify-category-function@3.3.15) (2022-01-27)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+## [3.3.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.3.13...amplify-category-function@3.3.14) (2022-01-23)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+## [3.3.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.3.12...amplify-category-function@3.3.13) (2022-01-13)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
 ## [3.3.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.3.10...amplify-category-function@3.3.12) (2022-01-10)
 
 

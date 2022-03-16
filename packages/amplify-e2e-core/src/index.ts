@@ -84,7 +84,7 @@ export function npmInstall(cwd: string) {
 }
 
 export async function installAmplifyCLI(version: string = 'latest') {
-  spawnSync('npm', ['install', '-g', 'colors@1.4.0', `@aws-amplify/cli@${version}`], {
+  spawnSync('npm', ['install', '-g', `@aws-amplify/cli@${version}`], {
     cwd: process.cwd(),
     env: process.env,
     stdio: 'inherit',

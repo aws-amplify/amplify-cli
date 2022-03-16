@@ -97,6 +97,46 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **"
 `;
 
+exports[`Test simple model with private IAM auth rule, few operations, and amplify admin app is not enabled 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#set( $nullAllowedFields = [] )
+#set( $deniedFields = {} )
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == \\"testIdentityPoolId\\" && $ctx.identity.cognitoIdentityAuthType == \\"authenticated\\") )
+    #set( $allowedFields = [\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"] )
+    #set( $nullAllowedFields = [] )
+  #end
+#end
+#if( $util.authType() == \\"User Pool Authorization\\" )
+
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() && $nullAllowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #foreach( $entry in $util.map.copyAndRetainAllKeys($ctx.args.input, $inputFields).entrySet() )
+    #if( $util.isNull($entry.value) && !$nullAllowedFields.contains($entry.key) )
+      $util.qr($deniedFields.put($entry.key, \\"\\"))
+    #end
+  #end
+  #foreach( $deniedField in $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+    $util.qr($deniedFields.put($deniedField, \\"\\"))
+  #end
+#end
+#if( $deniedFields.keySet().size() > 0 )
+  $util.error(\\"Unauthorized on \${deniedFields.keySet()}\\", \\"Unauthorized\\")
+#end
+$util.toJson({})
+## [End] Authorization Steps. **"
+`;
+
 exports[`admin roles should be return the field name inside field resolvers 1`] = `
 "## [Start] Field Authorization Steps. **
 #set( $isAuthorized = false )
@@ -142,15 +182,15 @@ $util.unauthorized()
 #end
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #if( !$isAuthorized )
-    #set( $staticGroupRoles = [{\\"claim\\":\\"cognito:groups\\",\\"entity\\":\\"staff\\",\\"allowedFields\\":[\\"id\\",\\"name\\",\\"description\\"]}] )
+    #set( $staticGroupRoles = [{\\"claim\\":\\"cognito:groups\\",\\"entity\\":\\"staff\\",\\"allowedFields\\":[\\"id\\",\\"name\\",\\"description\\"],\\"isAuthorizedOnAllFields\\":false}] )
     #foreach( $groupRole in $staticGroupRoles )
       #set( $groupsInToken = $util.defaultIfNull($ctx.identity.claims.get($groupRole.claim), []) )
       #if( $groupsInToken.contains($groupRole.entity) )
-        #if( !$groupRole.allowedFields.isEmpty() )
-          $util.qr($allowedFields.addAll($groupRole.allowedFields))
-        #else
+        #if( $groupRole.isAuthorizedOnAllFields )
           #set( $isAuthorized = true )
           #break
+        #else
+          $util.qr($allowedFields.addAll($groupRole.allowedFields))
         #end
       #end
     #end
@@ -158,20 +198,21 @@ $util.unauthorized()
   #if( !$isAuthorized )
     #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.owner, null) )
     #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-    #set( $ownerAllowedFields0 = [] )
+    #set( $ownerAllowedFields0 = [\\"id\\",\\"name\\",\\"description\\",\\"secretValue\\"] )
+    #set( $isAuthorizedOnAllFields0 = true )
     #if( $ownerClaim0 == $ownerEntity0 )
-      #if( !$ownerAllowedFields0.isEmpty() )
-        $util.qr($allowedFields.addAll($ownerAllowedFields0))
-      #else
+      #if( $isAuthorizedOnAllFields0 )
         #set( $isAuthorized = true )
+      #else
+        $util.qr($allowedFields.addAll($ownerAllowedFields0))
       #end
     #end
     #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
       $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
-      #if( !$ownerAllowedFields0.isEmpty() )
-        $util.qr($allowedFields.addAll($ownerAllowedFields0))
-      #else
+      #if( $isAuthorizedOnAllFields0 )
         #set( $isAuthorized = true )
+      #else
+        $util.qr($allowedFields.addAll($ownerAllowedFields0))
       #end
     #end
   #end

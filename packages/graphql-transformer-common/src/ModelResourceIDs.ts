@@ -1,9 +1,19 @@
-import { graphqlName, toUpper, toCamelCase, simplifyName } from './util';
+import { graphqlName, toUpper, toCamelCase } from './util';
 import { DEFAULT_SCALARS } from './definition';
 
 export class ModelResourceIDs {
+  static #modelNameMap: Map<string, string>;
+
+  /**
+   * Used to inject a table name mapping that will be used for generated table resource IDs
+   */
+  static setModelNameMap = (modelToTableNameMap: Map<string, string>) => {
+    ModelResourceIDs.#modelNameMap = modelToTableNameMap;
+  };
+
   static ModelTableResourceID(typeName: string): string {
-    return `${typeName}Table`;
+    const tableName = this.#modelNameMap?.get(typeName) ?? typeName;
+    return `${tableName}Table`;
   }
   static ModelTableStreamArn(typeName: string): string {
     return `${typeName}TableStreamArn`;

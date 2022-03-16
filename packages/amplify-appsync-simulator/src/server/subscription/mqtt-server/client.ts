@@ -1,4 +1,4 @@
-import v4 from 'uuid';
+import { v4 } from 'uuid';
 import retimer from 'retimer';
 import Connection from 'mqtt-connection';
 import steed from 'steed';
@@ -394,7 +394,7 @@ export class Client {
       this.logger.info('closed');
       this.connection.removeAllListeners();
       // ignore all errors after disconnection
-      this.connection.on('error', function() {});
+      this.connection.on('error', function () {});
       this.server.emit('clientDisconnected', this, reason);
 
       callback();
@@ -421,7 +421,7 @@ export class Client {
     });
   }
   static calculateGranted(client, packet) {
-    return packet.subscriptions.map(function(e) {
+    return packet.subscriptions.map(function (e) {
       if (e.qos === 2) {
         e.qos = 1;
       }

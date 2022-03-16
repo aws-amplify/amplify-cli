@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.23.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.22.5...graphql-transformer-common@4.23.0) (2022-01-31)
+
+
+### Features
+
+* `[@maps](https://github.com/maps)To` directive to enable renaming models while retaining data ([#9340](https://github.com/aws-amplify/amplify-cli/issues/9340)) ([aedf45d](https://github.com/aws-amplify/amplify-cli/commit/aedf45d9237812d71bb8b56164efe0222ad3d534))
+
+
+
+
+
+## [4.22.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.22.4...graphql-transformer-common@4.22.5) (2022-01-13)
+
+
+### Bug Fixes
+
+* clean up missing and unused GraphQL v1 dependencies ([#9496](https://github.com/aws-amplify/amplify-cli/issues/9496)) ([fe8201b](https://github.com/aws-amplify/amplify-cli/commit/fe8201be17f42db233fce0bb366ff4d0c8358ec0))
+
+
+
+
+
 ## [4.22.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.22.2...graphql-transformer-common@4.22.4) (2022-01-10)
 
 

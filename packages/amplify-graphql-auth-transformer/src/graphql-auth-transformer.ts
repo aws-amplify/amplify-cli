@@ -7,6 +7,8 @@ import {
   IAM_AUTH_ROLE_PARAMETER,
   IAM_UNAUTH_ROLE_PARAMETER,
   TransformerResolver,
+  getTable,
+  getKeySchema,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider,
@@ -34,7 +36,6 @@ import {
   AuthTransformerConfig,
   collectFieldNames,
   ModelOperation,
-  ensureAuthRuleDefaults,
   getModelConfig,
   validateFieldRules,
   validateRules,
@@ -53,9 +54,10 @@ import {
   getStackForField,
   NONE_DS,
   hasRelationalDirective,
-  getTable,
+  getPartitionKey,
   getRelationalPrimaryMap,
   getReadRolesForField,
+  getAuthDirectiveRules,
 } from './utils';
 import {
   DirectiveNode,
@@ -64,6 +66,8 @@ import {
   InterfaceTypeDefinitionNode,
   Kind,
   TypeDefinitionNode,
+  ListValueNode,
+  StringValueNode,
 } from 'graphql';
 import { SubscriptionLevel, ModelDirectiveConfiguration } from '@aws-amplify/graphql-model-transformer';
 import { AccessControlMatrix } from './accesscontrol';
@@ -82,7 +86,7 @@ import {
   generateAuthExpressionForCreate,
   generateAuthExpressionForUpdate,
   generateAuthRequestExpression,
-  geneateAuthExpressionForDelete,
+  generateAuthExpressionForDelete,
   generateAuthExpressionForField,
   generateFieldAuthResponse,
   generateAuthExpressionForQueries,
@@ -93,6 +97,7 @@ import {
 } from './resolvers';
 import { toUpper } from 'graphql-transformer-common';
 import { generateSandboxExpressionForField } from './resolvers/field';
+import { getConnectionAttributeName } from '@aws-amplify/graphql-relational-transformer';
 
 // @ auth
 // changing the schema
@@ -155,9 +160,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     if (context.metadata.has('joinTypeList')) {
       isJoinType = context.metadata.get<Array<string>>('joinTypeList')!.includes(typeName);
     }
-    const authDir = new DirectiveWrapper(directive);
-    const rules: AuthRule[] = authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] }).rules;
-    ensureAuthRuleDefaults(rules);
+    const rules: AuthRule[] = getAuthDirectiveRules(new DirectiveWrapper(directive));
+
     // validate rules
     validateRules(rules, this.configuredAuthProviders, def.name.value);
     // create access control for object
@@ -207,10 +211,9 @@ Static group authorization should perform as expected.`,
     const modelDirective = parent.directives?.find(dir => dir.name.value === 'model');
     const typeName = parent.name.value;
     const fieldName = field.name.value;
-    const authDir = new DirectiveWrapper(directive);
-    const rules: AuthRule[] = authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] }).rules;
-    ensureAuthRuleDefaults(rules);
-    validateFieldRules(rules, isParentTypeBuiltinType, modelDirective !== undefined, this.configuredAuthProviders, field.name.value);
+    const rules: AuthRule[] = getAuthDirectiveRules(new DirectiveWrapper(directive));
+    validateFieldRules(new DirectiveWrapper(directive), isParentTypeBuiltinType, modelDirective !== undefined, field.name.value);
+    validateRules(rules, this.configuredAuthProviders, field.name.value);
 
     // regardless if a model directive is used we generate the policy for iam auth
     this.setAuthPolicyFlag(rules);
@@ -344,13 +347,14 @@ Static group authorization should perform as expected.`,
         const needsFieldResolver = allowedRoles.length < fieldReadRoles.length;
         if (needsFieldResolver && field.type.kind === Kind.NON_NULL_TYPE) {
           errorFields.push(field.name.value);
-        } else if (hasRelationalDirective(field)) {
+        }
+        if (hasRelationalDirective(field)) {
           this.protectRelationalResolver(context, def, modelName, field, needsFieldResolver ? allowedRoles : null);
         } else if (needsFieldResolver) {
           this.protectFieldResolver(context, def, modelName, field.name.value, allowedRoles);
         }
       }
-      if (errorFields.length > 0 && modelNameConfig.subscriptions.level === SubscriptionLevel.on) {
+      if (errorFields.length > 0 && modelNameConfig.subscriptions?.level === SubscriptionLevel.on) {
         throw new InvalidDirectiveError(
           `Because "${def.name.value}" has a field-level authorization rule and subscriptions are enabled,` +
             ` you need to either apply field-level authorization rules to all required fields where all rules have read access ${JSON.stringify(
@@ -371,7 +375,7 @@ Static group authorization should perform as expected.`,
             this.protectDeleteResolver(context, def, mutation.typeName, mutation.fieldName, acm);
             break;
           default:
-            throw new TransformerContractError('Unkown Mutation field type');
+            throw new TransformerContractError('Unknown Mutation field type');
         }
       }
 
@@ -468,8 +472,17 @@ Static group authorization should perform as expected.`,
   ): void => {
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     const roleDefinitions = acm.getRolesPerOperation('read').map(r => this.roleMap.get(r)!);
-    const primaryFields = getTable(ctx, def).keySchema.map(att => att.attributeName);
-    const authExpression = generateAuthExpressionForQueries(this.configuredAuthProviders, roleDefinitions, def.fields ?? [], primaryFields);
+    const tableKeySchema = getTable(ctx, def).keySchema;
+    const primaryFields = tableKeySchema.map(att => att.attributeName);
+    const primaryKey = getPartitionKey(tableKeySchema);
+    const authExpression = generateAuthExpressionForQueries(
+      this.configuredAuthProviders,
+      roleDefinitions,
+      def.fields ?? [],
+      primaryFields,
+      false,
+      primaryKey,
+    );
     resolver.addToSlot(
       'auth',
       MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
@@ -486,14 +499,14 @@ Static group authorization should perform as expected.`,
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     const roleDefinitions = acm.getRolesPerOperation('read').map(r => this.roleMap.get(r)!);
     let primaryFields: Array<string>;
+    let partitionKey: string;
     const table = getTable(ctx, def);
     try {
       if (indexName) {
-        primaryFields = table.globalSecondaryIndexes
-          .find((gsi: any) => gsi.indexName === indexName)
-          .keySchema.map((att: any) => att.attributeName);
+        primaryFields = getKeySchema(table, indexName).map((att: any) => att.attributeName);
       } else {
         primaryFields = table.keySchema.map((att: any) => att.attributeName);
+        partitionKey = getPartitionKey(table.keySchema);
       }
     } catch (err) {
       throw new InvalidDirectiveError(`Could not fetch keySchema for ${def.name.value}.`);
@@ -504,6 +517,7 @@ Static group authorization should perform as expected.`,
       def.fields ?? [],
       primaryFields,
       !!indexName,
+      partitionKey,
     );
     resolver.addToSlot(
       'auth',
@@ -538,7 +552,7 @@ Static group authorization should perform as expected.`,
     // in the request we then add the rules of the related type
     if (fieldRoles) {
       const roleDefinitions = fieldRoles.map(r => this.roleMap.get(r)!);
-      const hasSubsEnabled = this.modelDirectiveConfig.get(typeName)!.subscriptions.level === 'on';
+      const hasSubsEnabled = this.modelDirectiveConfig.get(typeName)!.subscriptions?.level === 'on';
       relatedAuthExpression = setDeniedFieldFlag('Mutation', hasSubsEnabled) + '\n' + relatedAuthExpression;
       fieldAuthExpression = generateAuthExpressionForField(this.configuredAuthProviders, roleDefinitions, def.fields ?? []);
     }
@@ -600,11 +614,10 @@ Static group authorization should perform as expected.`,
   ): void => {
     const acmFields = acm.getResources();
     const modelFields = def.fields ?? [];
-    const name = acm.getName();
     // only add readonly fields if they exist
     const allowedAggFields = modelFields.map(f => f.name.value).filter(f => !acmFields.includes(f));
     let leastAllowedFields = acmFields;
-    const resolver = ctx.resolvers.getResolver('Search', toUpper(name)) as TransformerResolverProvider;
+    const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     // to protect search and aggregation queries we need to collect all the roles which can query
     // and the allowed fields to run field auth on aggregation queries
     const readRoleDefinitions = acm.getRolesPerOperation('read').map(role => {
@@ -674,7 +687,7 @@ Static group authorization should perform as expected.`,
         def.fields ?? [],
         fieldName,
       );
-      const subsEnabled = hasModelDirective ? this.modelDirectiveConfig.get(typeName)!.subscriptions.level === 'on' : false;
+      const subsEnabled = hasModelDirective ? this.modelDirectiveConfig.get(typeName)!.subscriptions?.level === 'on' : false;
       const fieldResponse = generateFieldAuthResponse('Mutation', fieldName, subsEnabled);
       const resolver = ctx.resolvers.addResolver(
         typeName,
@@ -702,10 +715,10 @@ Static group authorization should perform as expected.`,
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     const fields = acm.getResources();
     const createRoles = acm.getRolesPerOperation('create').map(role => {
-      const dataStoreFields = ctx.isProjectUsingDataStore() ? ['_version', '_deleted', '_lastChangedAt'] : [];
-      const allowedFields = fields.filter(resource => acm.isAllowed(role, resource, 'create'));
       const roleDefinition = this.roleMap.get(role)!;
-      roleDefinition.allowedFields = allowedFields.length === fields.length ? [] : [...allowedFields, ...dataStoreFields];
+      const allowedFields = fields.filter(resource => acm.isAllowed(role, resource, 'create'));
+      roleDefinition.areAllFieldsAllowed = allowedFields.length === fields.length;
+      roleDefinition.allowedFields = this.addAutoGeneratedFields(ctx, def, allowedFields, fields);
       return roleDefinition;
     });
     const authExpression = generateAuthExpressionForCreate(this.configuredAuthProviders, createRoles, def.fields ?? []);
@@ -726,12 +739,14 @@ Static group authorization should perform as expected.`,
     const updateDeleteRoles = [...new Set([...acm.getRolesPerOperation('update'), ...acm.getRolesPerOperation('delete')])];
     // protect fields to be updated and fields that can't be set to null (partial delete on fields)
     const totalRoles = updateDeleteRoles.map(role => {
-      const dataStoreFields = ctx.isProjectUsingDataStore() ? ['_version', '_deleted', '_lastChangedAt'] : [];
       const allowedFields = fields.filter(resource => acm.isAllowed(role, resource, 'update'));
       const nullAllowedFields = fields.filter(resource => acm.isAllowed(role, resource, 'delete'));
       const roleDefinition = this.roleMap.get(role)!;
-      roleDefinition.allowedFields = allowedFields.length === fields.length ? [] : [...allowedFields, ...dataStoreFields];
-      roleDefinition.nullAllowedFields = nullAllowedFields.length === fields.length ? [] : nullAllowedFields;
+      roleDefinition.areAllFieldsAllowed = allowedFields.length === fields.length;
+      roleDefinition.areAllFieldsNullAllowed = nullAllowedFields.length === fields.length;
+      roleDefinition.allowedFields = this.addAutoGeneratedFields(ctx, def, allowedFields, fields);
+      roleDefinition.nullAllowedFields = nullAllowedFields;
+
       return roleDefinition;
     });
     const datasource = ctx.api.host.getDataSource(`${def.name.value}Table`) as DataSourceProvider;
@@ -757,7 +772,7 @@ Static group authorization should perform as expected.`,
     const deleteRoles = acm.getRolesPerOperation('delete', true).map(role => this.roleMap.get(role)!);
     const datasource = ctx.api.host.getDataSource(`${def.name.value}Table`) as DataSourceProvider;
     const requestExpression = generateAuthRequestExpression();
-    const authExpression = geneateAuthExpressionForDelete(this.configuredAuthProviders, deleteRoles, def.fields ?? []);
+    const authExpression = generateAuthExpressionForDelete(this.configuredAuthProviders, deleteRoles, def.fields ?? []);
     resolver.addToSlot(
       'auth',
       MappingTemplate.s3MappingTemplateFromString(requestExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
@@ -788,10 +803,10 @@ Static group authorization should perform as expected.`,
     authRules: AuthRule[],
     allowRoleOverwrite: boolean,
     field?: string,
-    overideOperations?: ModelOperation[],
+    overrideOperations?: ModelOperation[],
   ) {
     for (let rule of authRules) {
-      let operations: ModelOperation[] = overideOperations ? overideOperations : rule.operations || MODEL_OPERATIONS;
+      let operations: ModelOperation[] = overrideOperations ? overrideOperations : rule.operations || MODEL_OPERATIONS;
       if (rule.groups && !rule.groupsField) {
         rule.groups.forEach(group => {
           const groupClaim = rule.groupClaim || DEFAULT_GROUP_CLAIM;
@@ -1131,4 +1146,105 @@ Static group authorization should perform as expected.`,
       this.authPolicyResources.add(`${typeName}/${fieldName}`);
     }
   }
+
+  /*
+  Resolver Helpers
+  */
+  addAutoGeneratedFields = (
+    ctx: TransformerContextProvider,
+    def: ObjectTypeDefinitionNode,
+    allowedFields: string[],
+    fields: readonly string[],
+  ): string[] => {
+    const allowedFieldsSet = new Set(allowedFields);
+
+    this.addAutoGeneratedRelationalFields(ctx, def, allowedFieldsSet, fields);
+    this.addAutoGeneratedIndexFields(def, allowedFieldsSet);
+    this.addAutoGeneratedDataStoreFields(ctx, allowedFieldsSet);
+
+    return Array.from(allowedFieldsSet);
+  };
+
+  addAutoGeneratedRelationalFields = (
+    ctx: TransformerContextProvider,
+    def: ObjectTypeDefinitionNode,
+    allowedFields: Set<string>,
+    fields: readonly string[],
+  ) => {
+    const typeDefs = ctx.inputDocument.definitions.filter(it => it.kind === 'ObjectTypeDefinition') as ObjectTypeDefinitionNode[];
+
+    this.addAutoGeneratedHasManyFields(typeDefs, def, allowedFields);
+    this.addAutoGeneratedHasOneFields(typeDefs, fields, def, allowedFields);
+  };
+
+  addAutoGeneratedIndexFields = (def: ObjectTypeDefinitionNode, allowedFields: Set<string>) => {
+    const sortKeyFieldValues: ListValueNode[] = def.fields
+      ?.map(it => it.directives)
+      .flat()
+      .filter(it => it.name.value === 'primaryKey' || it.name.value === 'index')
+      .map(it => it.arguments)
+      .flat()
+      .filter(it => it.name.value === 'sortKeyFields' && it.value.kind === 'ListValue' && it.value.values.length > 1)
+      .map(it => it.value)
+      .flat() as ListValueNode[];
+
+    for (const sortKeyFieldValue of sortKeyFieldValues) {
+      const accessOnAllKeys = !sortKeyFieldValue.values.some(it => it.kind !== 'StringValue' || !allowedFields.has(it.value));
+      if (accessOnAllKeys) {
+        const keyName = sortKeyFieldValue.values
+          .map(it => (it as StringValueNode).value)
+          .join(ModelResourceIDs.ModelCompositeKeySeparator());
+        allowedFields.add(keyName);
+      }
+    }
+  };
+
+  addAutoGeneratedHasManyFields = (typeDefs: ObjectTypeDefinitionNode[], def: ObjectTypeDefinitionNode, allowedFields: Set<string>) => {
+    const hasManyRelatedFields = typeDefs
+      .map(it =>
+        it.fields.map(field => {
+          return { ...field, relatedType: it.name.value };
+        }),
+      )
+      .flat()
+      .filter(it => getBaseType(it.type) === def.name.value && it.directives?.some(d => d.name.value === 'hasMany'));
+
+    for (const relatedField of hasManyRelatedFields) {
+      allowedFields.add(getConnectionAttributeName(relatedField.relatedType, relatedField.name.value));
+    }
+  };
+
+  private addAutoGeneratedHasOneFields(
+    typeDefs: ObjectTypeDefinitionNode[],
+    fields: readonly string[],
+    def: ObjectTypeDefinitionNode,
+    allowedFields: Set<string>,
+  ) {
+    for (const field of fields) {
+      const modelField = def.fields.find(it => it.name.value === field);
+
+      const directives = modelField.directives?.filter(
+        dir => !dir.arguments?.some(it => it.name.value === 'fields') && (dir.name.value === 'hasOne' || dir.name.value === 'belongsTo'),
+      );
+      for (const dir of directives) {
+        if (dir.name.value === 'hasOne') {
+          allowedFields.add(getConnectionAttributeName(def.name.value, field));
+        } else if (dir.name.value === 'belongsTo') {
+          const relatedType = typeDefs.find(
+            it =>
+              it.name.value === getBaseType(modelField.type) &&
+              it.fields?.some(f => getBaseType(f.type) === def.name.value && f.directives?.some(d => d.name.value === 'hasOne')),
+          );
+          if (relatedType) {
+            allowedFields.add(getConnectionAttributeName(def.name.value, field));
+          }
+        }
+      }
+    }
+  }
+
+  addAutoGeneratedDataStoreFields = (ctx: TransformerContextProvider, allowedFields: Set<string>) => {
+    const dataStoreFields = ctx.isProjectUsingDataStore() ? ['_version', '_deleted', '_lastChangedAt'] : [];
+    dataStoreFields.forEach(item => allowedFields.add(item));
+  };
 }

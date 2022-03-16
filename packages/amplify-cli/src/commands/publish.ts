@@ -1,5 +1,6 @@
 import { run as push } from './push';
 import { FrontendBuildError } from 'amplify-cli-core';
+import { showTroubleshootingURL } from './help';
 
 export const run = async context => {
   context.amplify.constructExeInfo(context);
@@ -44,6 +45,7 @@ export const run = async context => {
   } catch (e) {
     context.print.error(`An error occurred during the publish operation: ${e.message || 'Unknown error occurred.'}`);
     await context.usageData.emitError(new FrontendBuildError(e.message));
+    showTroubleshootingURL();
     process.exit(1);
   }
 };

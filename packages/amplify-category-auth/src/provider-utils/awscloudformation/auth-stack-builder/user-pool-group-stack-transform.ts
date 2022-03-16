@@ -12,7 +12,7 @@ import {
   AmplifyCategoryTransform,
   $TSAny,
 } from 'amplify-cli-core';
-import { AuthStackSythesizer } from './stack-synthesizer';
+import { AuthStackSynthesizer } from './stack-synthesizer';
 import * as cdk from '@aws-cdk/core';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
 import * as path from 'path';
@@ -39,8 +39,8 @@ export type AmplifyUserPoolGroupStackOptions = {
 export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
   private _app: cdk.App;
   private _userPoolGroupTemplateObj: AmplifyUserPoolGroupStack; // Props to modify Root stack data
-  private _synthesizer: AuthStackSythesizer;
-  private _synthesizerOutputs: AuthStackSythesizer;
+  private _synthesizer: AuthStackSynthesizer;
+  private _synthesizerOutputs: AuthStackSynthesizer;
   private __userPoolGroupTemplateObjOutputs: AmplifyUserPoolGroupStackOutputs;
   private _authResourceName: string;
   private _category: string;
@@ -52,8 +52,8 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
     super(resourceName);
     this._authResourceName = resourceName;
     this._resourceName = 'userPoolGroups';
-    this._synthesizer = new AuthStackSythesizer();
-    this._synthesizerOutputs = new AuthStackSythesizer();
+    this._synthesizer = new AuthStackSynthesizer();
+    this._synthesizerOutputs = new AuthStackSynthesizer();
     this._app = new cdk.App();
     this._category = AmplifyCategories.AUTH;
     this._service = AmplifySupportedService.COGNITOUSERPOOLGROUPS;

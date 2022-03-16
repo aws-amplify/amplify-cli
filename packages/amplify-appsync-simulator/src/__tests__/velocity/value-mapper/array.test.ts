@@ -1,4 +1,5 @@
 import { JavaArray } from '../../../velocity/value-mapper/array';
+import { JavaString } from '../../../velocity/value-mapper/string';
 
 const identityMapper = jest.fn(v => v);
 
@@ -15,7 +16,7 @@ describe(' Velocity ValueMapper JavaArray', () => {
   it('size', () => {
     const JS_ARRAY = [1, 2, 3];
     const arr = new JavaArray(JS_ARRAY, identityMapper);
-    expect(arr.size()).toEqual(JS_ARRAY.length);
+    expect(arr.size().valueOf()).toEqual(JS_ARRAY.length);
   });
 
   it('isEmpty', () => {
@@ -26,7 +27,7 @@ describe(' Velocity ValueMapper JavaArray', () => {
   it('add', () => {
     const arr = new JavaArray([], identityMapper);
     arr.add(1);
-    expect(arr.size()).toEqual(1);
+    expect(arr.size().valueOf()).toEqual(1);
     expect(arr.toJSON()).toEqual([1]);
   });
 
@@ -35,14 +36,14 @@ describe(' Velocity ValueMapper JavaArray', () => {
     const arr = new JavaArray([], identityMapper);
     arr.addAll(NEW_ARR);
     expect(identityMapper).toBeCalledTimes(NEW_ARR.length);
-    expect(arr.size()).toEqual(NEW_ARR.length);
+    expect(arr.size().valueOf()).toEqual(NEW_ARR.length);
     expect(arr.toJSON()).toEqual(NEW_ARR);
   });
 
   it('clear', () => {
     const NEW_ARR = [1, 2, 3];
     const arr = new JavaArray(NEW_ARR, identityMapper);
-    expect(arr.size()).toEqual(NEW_ARR.length);
+    expect(arr.size().valueOf()).toEqual(NEW_ARR.length);
     arr.clear();
     expect(arr.toJSON()).toEqual([]);
   });
@@ -74,6 +75,19 @@ describe(' Velocity ValueMapper JavaArray', () => {
     const arr = new JavaArray(NEW_ARR, identityMapper);
     arr.removeAll([3, 2]);
     expect(arr.toJSON()).toEqual([1]);
+  });
+
+  it('indexOf', () => {
+    const obj = { prop: 1 };
+    const NEW_ARR = [1, 2, 3, 'someStr', true, obj];
+    const arr = new JavaArray(NEW_ARR, identityMapper);
+    expect(arr.indexOf(3)).toEqual(2);
+    expect(arr.indexOf(122)).toEqual(-1);
+    expect(arr.indexOf('someStr')).toEqual(3);
+    expect(arr.indexOf(new JavaString('someStr'))).toEqual(3);
+    expect(arr.indexOf(true)).toEqual(4);
+    expect(arr.indexOf(obj)).toEqual(5);
+    expect(arr.indexOf({ prop: 1 })).toEqual(-1);
   });
 
   // it('retainAll', () => {

@@ -268,7 +268,15 @@ describe('@model with @auth', () => {
         ) {
         id: ID!
         name: String!
-      }`;
+      }
+      type OwnerUpdateDenied
+        @model
+        @auth(rules: [{ allow: owner, operations: [create, read, delete] }]) {
+        id: ID!
+        description: String!
+        owner: String!
+      }
+      `;
     try {
       await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
     } catch (e) {
@@ -3991,6 +3999,40 @@ describe('@model with @auth', () => {
         expect(deleteRes2.data.deleteOwnerCreateDeleteProtected.id).toBeDefined();
         expect(deleteRes2.data.deleteOwnerCreateDeleteProtected.content).toEqual('Hello, World!');
         expect(deleteRes2.data.deleteOwnerCreateDeleteProtected.owner).toEqual(USERNAME1);
+      });
+
+      test("default owner with no 'update' operations", async () => {
+        const createRes = await GRAPHQL_CLIENT_1.query(
+          `mutation {
+            createOwnerUpdateDenied(input: { description: "Hello, World!", owner: "${USERNAME1}" }) {
+              id
+              description
+              owner
+            }
+          }`,
+          {},
+        );
+
+        expect(createRes.data.createOwnerUpdateDenied.id).toBeDefined();
+        expect(createRes.data.createOwnerUpdateDenied.description).toEqual('Hello, World!');
+        expect(createRes.data.createOwnerUpdateDenied.owner).toEqual(USERNAME1);
+
+        const updateRes = await GRAPHQL_CLIENT_1.query(
+          `mutation {
+            updateOwnerUpdateDenied(input: {
+              id: "${createRes.data.createOwnerUpdateDenied.id}",
+              description: "Hello, World! Updated"
+            }) {
+              id
+              description
+              owner
+            }
+          }`,
+          {},
+        );
+
+        expect(updateRes.data.updateOwnerUpdateDenied).toBeNull();
+        expect((updateRes.errors[0] as any).errorType).toEqual('Unauthorized');
       });
 
       test("default owner with implicit operations, and custom owner with 'read' operation", async () => {

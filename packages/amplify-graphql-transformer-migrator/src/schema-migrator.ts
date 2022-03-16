@@ -18,7 +18,7 @@ import {
   isTransformerV2Enabled,
 } from './schema-inspector';
 import { validateModelSchema, SchemaValidationError } from '@aws-amplify/graphql-transformer-core';
-import { revertTransformerVersion, updateTransformerVersion } from './state-migrator';
+import { backupCliJson, revertTransformerVersion, updateTransformerVersion } from './state-migrator';
 import { GRAPHQL_DIRECTIVES_SCHEMA } from './constants/graphql-directives';
 import * as os from 'os';
 import { backupLocation, backupSchemas, doesBackupExist, restoreSchemas } from './schema-backup';
@@ -60,6 +60,7 @@ export async function attemptV2TransformerMigration(resourceDir: string, apiName
 
   try {
     await backupSchemas(resourceDir);
+    await backupCliJson(resourceDir, envName);
     await runMigration(schemaDocs, authMode);
     await updateTransformerVersion(envName);
   } catch (error) {
@@ -131,7 +132,7 @@ export function migrateGraphQLSchema(schema: string, authMode: string, massSchem
 
 async function runRevert(resourceDir: string, envName?: string) {
   await restoreSchemas(resourceDir);
-  await revertTransformerVersion(envName);
+  await revertTransformerVersion(resourceDir, envName);
 }
 
 function doSchemaValidation(schema: string) {

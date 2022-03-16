@@ -1,5 +1,6 @@
 import { AmplifyAuthTransform } from '../../../../provider-utils/awscloudformation/auth-stack-builder';
 import { $TSContext } from 'amplify-cli-core';
+import process from 'process';
 
 jest.mock('amplify-cli-core', () => ({
   ...(jest.requireActual('amplify-cli-core') as {}),
@@ -41,7 +42,25 @@ const inputPayload1 = {
     defaultPasswordPolicy: true,
     passwordPolicyMinLength: 8,
     passwordPolicyCharacters: ['Requires Lowercase', 'Requires Uppercase', 'Requires Numbers', 'Requires Symbols'],
-    requiredAttributes: ['email'],
+    requiredAttributes: [
+      'address',
+      'birthdate',
+      'email',
+      'family_name',
+      'middle_name',
+      'gender',
+      'locale',
+      'given_name',
+      'name',
+      'nickname',
+      'phone_number',
+      'preferred_username',
+      'picture',
+      'profile',
+      'updated_at',
+      'website',
+      'zoneinfo',
+    ],
     userpoolClientGenerateSecret: false,
     userpoolClientRefreshTokenValidity: 30,
     userpoolClientWriteAttributes: ['address', 'email'],
@@ -175,6 +194,9 @@ const context_stub = {
     dependsOnBlock: jest.fn(),
     updateamplifyMetaAfterResourceAdd: jest.fn(),
   },
+  print: {
+    error: jest.fn(),
+  },
 };
 
 const context_stub_typed = context_stub as unknown as $TSContext;
@@ -221,5 +243,28 @@ describe('Check Auth Template', () => {
     const authTransform2 = new AmplifyAuthTransform(resourceName);
     const mock_template2 = await authTransform2.transform(context_stub_typed);
     expect(mock_template2.Resources?.UserPool.Properties).not.toContain('UsernameConfiguration');
+  });
+
+  it('should validate cfn parameters if no original', () => {
+    const resourceName = 'mockResource';
+    const authTransform = new AmplifyAuthTransform(resourceName);
+    const isValid = authTransform.validateCfnParameters(context_stub_typed, false, { requiredAttributes: ['email'] });
+    expect(isValid).toBe(true);
+  });
+
+  it('should validate cfn parameters if match', () => {
+    const resourceName = 'mockResource';
+    const authTransform = new AmplifyAuthTransform(resourceName);
+    const isValid = authTransform.validateCfnParameters(context_stub_typed, { requiredAttributes: ['email'] }, { requiredAttributes: ['email'] });
+    expect(isValid).toBe(true);
+  });
+
+  it('should not validate cfn parameters if no match', () => {
+    // @ts-ignore
+    process.exit = jest.fn();
+    const resourceName = 'mockResource';
+    const authTransform = new AmplifyAuthTransform(resourceName);
+    authTransform.validateCfnParameters(context_stub_typed, { requiredAttributes: ['email'] }, { requiredAttributes: ['email', 'phone_number'] });
+    expect(process.exit).toBeCalledTimes(1);
   });
 });

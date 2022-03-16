@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-auth-transformer",
-  "version": "0.5.7",
+  "version": "0.7.8",
   "description": "Amplify GraphQL @auth Transformer",
   "repository": {
     "type": "git",
@@ -27,9 +27,10 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@aws-amplify/graphql-model-transformer": "0.10.5",
-    "@aws-amplify/graphql-transformer-core": "0.15.4",
-    "@aws-amplify/graphql-transformer-interfaces": "1.12.5",
+    "@aws-amplify/graphql-relational-transformer": "0.7.8",
+    "@aws-amplify/graphql-model-transformer": "0.13.2",
+    "@aws-amplify/graphql-transformer-core": "0.16.2",
+    "@aws-amplify/graphql-transformer-interfaces": "1.13.0",
     "@aws-cdk/aws-appsync": "~1.124.0",
     "@aws-cdk/aws-dynamodb": "~1.124.0",
     "@aws-cdk/aws-iam": "~1.124.0",
@@ -37,14 +38,13 @@
     "constructs": "^3.3.125",
     "graphql": "^14.5.8",
     "graphql-mapping-template": "4.20.3",
-    "graphql-transformer-common": "4.22.4",
-    "lodash": "^4.17.21"
+    "graphql-transformer-common": "4.23.0",
+    "lodash": "^4.17.21",
+    "md5": "^2.3.0"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-index-transformer": "0.8.5",
-    "@aws-amplify/graphql-searchable-transformer": "0.10.5",
-    "@aws-cdk/assert": "~1.124.0",
-    "@types/fs-extra": "^8.0.1",
+    "@aws-amplify/graphql-index-transformer": "0.11.2",
+    "@aws-amplify/graphql-searchable-transformer": "0.13.4",
     "@types/node": "^12.12.6"
   },
   "jest": {

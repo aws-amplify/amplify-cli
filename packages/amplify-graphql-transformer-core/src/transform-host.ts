@@ -205,7 +205,6 @@ export class DefaultTransformHost implements TransformHostProvider {
     const dummycode = `if __name__ == "__main__":`; // assing dummy code so as to be overriden later
     const fn = new Function(stack || this.api, functionName, {
       code: Code.fromInline(dummycode),
-      functionName,
       handler: handlerName,
       runtime,
       role,

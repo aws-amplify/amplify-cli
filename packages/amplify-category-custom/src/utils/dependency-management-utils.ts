@@ -10,7 +10,7 @@ import { categoryName, customResourceCFNFilenameSuffix } from '../utils/constant
 const AUTH_TRIGGER_TEMPLATE = 'auth-trigger-cloudformation-template.json';
 
 const cfnTemplateGlobPattern = '*template*.+(yaml|yml|json)';
-interface AmplifyDependentResourceDefinition {
+export interface AmplifyDependentResourceDefinition {
   resourceName: string;
   category: string;
   attributes?: [string?];

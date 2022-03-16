@@ -6,28 +6,11 @@ import {
   updateHeadlessAuth,
   removeHeadlessAuth,
   getCloudBackendConfig,
-  headlessAuthImport,
 } from 'amplify-e2e-core';
 import { addAuthWithDefault, getBackendAmplifyMeta } from 'amplify-e2e-core';
 import { createNewProjectDir, deleteProjectDir, getProjectMeta, getUserPool, getMFAConfiguration } from 'amplify-e2e-core';
-import {
-  AddAuthRequest,
-  CognitoUserPoolSigninMethod,
-  CognitoPasswordRecoveryConfiguration,
-  CognitoUserProperty,
-  ImportAuthRequest,
-  UpdateAuthRequest,
-} from 'amplify-headless-interface';
+import { AddAuthRequest, CognitoUserPoolSigninMethod, CognitoUserProperty, UpdateAuthRequest } from 'amplify-headless-interface';
 import _ from 'lodash';
-import {
-  expectAuthProjectDetailsMatch,
-  expectLocalAndCloudMetaFilesMatching,
-  expectLocalTeamInfoHasNoCategories,
-  expectNoAuthInMeta,
-  getAuthProjectDetails,
-  removeImportedAuthWithDefault,
-  setupOgProjectWithAuth,
-} from '../import-helpers';
 
 const PROJECT_NAME = 'authTest';
 const defaultsSettings = {
@@ -46,7 +29,7 @@ describe('headless auth', () => {
   });
   it('adds auth resource', async () => {
     const addAuthRequest: AddAuthRequest = {
-      version: 1,
+      version: 2,
       resourceName: 'myAuthResource',
       serviceConfiguration: {
         serviceName: 'Cognito',
@@ -68,7 +51,7 @@ describe('headless auth', () => {
   });
   it('adds auth resource with TOTP only', async () => {
     const addAuthRequest: AddAuthRequest = {
-      version: 1,
+      version: 2,
       resourceName: 'myAuthResource',
       serviceConfiguration: {
         serviceName: 'Cognito',
@@ -105,7 +88,7 @@ describe('headless auth', () => {
 
   it('adds auth resource with TOTP only but enable SMS through signUp Attributes', async () => {
     const addAuthRequest: AddAuthRequest = {
-      version: 1,
+      version: 2,
       resourceName: 'myAuthResource',
       serviceConfiguration: {
         serviceName: 'Cognito',
@@ -136,7 +119,8 @@ describe('headless auth', () => {
   });
 
   it('adds auth resource with TOTP only but enables SMS through password recovery', async () => {
-    const addAuthRequest: AddAuthRequest = {
+    // AddAuthRequest v1
+    const addAuthRequest: any = {
       version: 1,
       resourceName: 'myAuthResource',
       serviceConfiguration: {
@@ -173,7 +157,7 @@ describe('headless auth', () => {
 
   it('updates existing auth resource', async () => {
     const updateAuthRequest: UpdateAuthRequest = {
-      version: 1,
+      version: 2,
       serviceModification: {
         serviceName: 'Cognito',
         userPoolModification: {

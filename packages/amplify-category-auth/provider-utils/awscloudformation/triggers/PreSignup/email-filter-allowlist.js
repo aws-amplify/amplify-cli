@@ -1,3 +1,6 @@
+/**
+ * @type {import('@types/aws-lambda').PreSignUpTriggerHandler}
+ */
 exports.handler = async event => {
   // allowed domains
   const ald = process.env.DOMAINALLOWLIST.split(',').map(d => d.trim());

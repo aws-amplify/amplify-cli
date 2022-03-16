@@ -1,4 +1,5 @@
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
+import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
@@ -425,6 +426,95 @@ describe('@model operations', () => {
     });
     expect(deleteResponseAsEditor.hadException).toEqual(false);
   });
+
+  test('explicit operations where update restricted', () => {
+    const validSchema = `
+      type Post @model @auth(rules: [
+        { allow: owner, operations: [create, read, delete] },
+        ]) {
+        id: ID
+        name: String
+        owner: String
+      }`;
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+    // load vtl templates
+    const createRequestTemplate = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
+    const readRequestTemplate = out.resolvers['Query.listPosts.auth.1.req.vtl'];
+    const updateResponseTemplate = out.resolvers['Mutation.updatePost.auth.1.res.vtl'];
+    const deleteResponseTemplate = out.resolvers['Mutation.deletePost.auth.1.res.vtl'];
+
+    // run the create request as owner should fail if the input is different the signed in owner
+    const createRequestAsNonOwner = vtlTemplate.render(createRequestTemplate, {
+      context: createPostInput('user2'),
+      requestParameters: ownerRequest,
+    });
+    expect(createRequestAsNonOwner.hadException).toEqual(true);
+
+    const createRequestAsOwner = vtlTemplate.render(createRequestTemplate, {
+      context: createPostInput('user1'),
+      requestParameters: ownerRequest,
+    });
+    expect(createRequestAsOwner.hadException).toEqual(false);
+
+    // read should have filter
+    const readRequestAsOwner = vtlTemplate.render(readRequestTemplate, { context: {}, requestParameters: ownerRequest });
+    expect(readRequestAsOwner.stash.hasAuth).toEqual(true);
+    expect(readRequestAsOwner.stash.authFilter).toEqual(
+      expect.objectContaining({
+        or: [{ owner: { eq: 'user1' } }],
+      }),
+    );
+
+    // read should have filter
+    const readRequestAsNonOwner = vtlTemplate.render(readRequestTemplate, { context: {}, requestParameters: adminGroupRequest });
+    expect(readRequestAsNonOwner.stash.authFilter).toEqual(
+      expect.objectContaining({
+        or: [{ owner: { eq: 'user2' } }],
+      }),
+    );
+
+    // update should fail for owner
+    const ddbUpdateResult: AppSyncVTLContext = {
+      result: { id: '001', name: 'sample', owner: 'user1' },
+      arguments: {
+        input: {
+          id: '001',
+          name: 'sample',
+        },
+      },
+    };
+    const updateResponseAsOwner = vtlTemplate.render(updateResponseTemplate, {
+      context: ddbUpdateResult,
+      requestParameters: ownerRequest,
+    });
+    expect(updateResponseAsOwner.hadException).toEqual(true);
+
+    // update should fail for NON owner
+    const updateResponseAsNonOwner = vtlTemplate.render(updateResponseTemplate, {
+      context: ddbUpdateResult,
+      requestParameters: adminGroupRequest,
+    });
+    expect(updateResponseAsNonOwner.hadException).toEqual(true);
+
+    // delete should fail for non owner
+    const ddbDeleteResult: AppSyncVTLContext = {
+      result: { id: '001', name: 'sample', owner: 'user1' },
+    };
+    const deleteResponseAsNonOwner = vtlTemplate.render(deleteResponseTemplate, {
+      context: ddbDeleteResult,
+      requestParameters: adminGroupRequest,
+    });
+    expect(deleteResponseAsNonOwner.hadException).toEqual(true);
+
+    // delete should pass for owner
+    const deleteResponseAsOwner = vtlTemplate.render(deleteResponseTemplate, {
+      context: ddbDeleteResult,
+      requestParameters: ownerRequest,
+    });
+    expect(deleteResponseAsOwner.hadException).toEqual(false);
+    expect(deleteResponseAsOwner.stash.hasAuth).toEqual(true);
+  });
 });
 
 describe('@model field auth', () => {
@@ -540,36 +630,204 @@ describe('@model field auth', () => {
     });
   });
 
-  test('handle existing expression in the modelQueryExpression', () => {
+  test('should allow setting name to null field', () => {
     const validSchema = `
-      type User
-      @model
-      @auth(
-        rules: [
-          { allow: groups, groups: ["admin"] }
-          { allow: owner, ownerField: "id", operations: [read] }
-        ]
-      ) {
+      type Post @model @auth(rules: [{ allow: owner, operations: [create, read] }]) {
+        id: ID @auth(rules: [{ allow: owner, operations: [create, read, update, delete] }])
+        name: String @auth(rules: [{ allow: owner, operations: [create, read, delete] }])
+      }
+    `;
+
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    // load vtl templates
+    const createPostTemplate = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
+    const updatePostTemplate = out.resolvers['Mutation.updatePost.auth.1.res.vtl'];
+
+    const createPostContext = {
+      arguments: {
+        input: {
+          id: '001',
+          name: 'sample',
+        },
+      },
+    };
+    const createPostRequest = vtlTemplate.render(createPostTemplate, {
+      context: createPostContext,
+      requestParameters: ownerRequest,
+    });
+    expect(createPostRequest.hadException).toEqual(false);
+
+    const updatePostContext = {
+      result: {
+        id: '001',
+        name: null,
+        owner: 'user1',
+      },
+    };
+    const updatePostRequest = vtlTemplate.render(updatePostTemplate, {
+      context: updatePostContext,
+      requestParameters: ownerRequest,
+    });
+    expect(updatePostRequest.hadException).toEqual(false);
+  });
+
+  test('should allow owner to update', () => {
+    const validSchema = `
+    type Post @model @auth(rules: [{ allow: owner, operations: [create, update, read] }]) {
       id: ID!
-      first_name: String
-      last_name: String
-      email: String!
-      isAdmin: Boolean
+      name: String!
+    }
+    `;
+
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    // load vtl templates
+    const createPostTemplate = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
+    const updatePostTemplate = out.resolvers['Mutation.updatePost.auth.1.res.vtl'];
+
+    const createPostContext = {
+      arguments: {
+        input: {
+          id: '001',
+          name: 'sample',
+        },
+      },
+    };
+    const createPostRequest = vtlTemplate.render(createPostTemplate, {
+      context: createPostContext,
+      requestParameters: ownerRequest,
+    });
+    expect(createPostRequest.hadException).toEqual(false);
+
+    const updatePostContext = {
+      result: {
+        id: '001',
+        name: 'updated',
+        owner: 'user1',
+      },
+    };
+    const updatePostRequest = vtlTemplate.render(updatePostTemplate, {
+      context: updatePostContext,
+      requestParameters: ownerRequest,
+    });
+    expect(updatePostRequest.hadException).toEqual(false);
+  });
+});
+
+describe('@model @primaryIndex @index auth', () => {
+  let vtlTemplate: VelocityTemplateSimulator;
+  let transformer: GraphQLTransform;
+
+  const ownerRequest: AppSyncGraphQLExecutionContext = {
+    requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS,
+    jwt: getJWTToken(USER_POOL_ID, 'user1', 'user1@test.com'),
+    headers: {},
+    sourceIp: '',
+  };
+
+  beforeEach(() => {
+    const authConfig: AppSyncAuthConfiguration = {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [],
+    };
+    transformer = new GraphQLTransform({
+      authConfig,
+      featureFlags: {
+        getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+          if (name === 'secondaryKeyAsGSI') {
+            return true;
+          }
+          return defaultValue;
+        }),
+        getNumber: jest.fn(),
+        getObject: jest.fn(),
+        getString: jest.fn(),
+      },
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()],
+    });
+    vtlTemplate = new VelocityTemplateSimulator({ authConfig });
+  });
+
+  test('listX operations', () => {
+    const validSchema = `
+    type FamilyMember @model @auth(rules: [
+      { allow: owner, ownerField: "parent", operations: [read] },
+      { allow: owner, ownerField: "child", operations: [read] }
+    ]){
+      parent: ID! @primaryKey(sortKeyFields: ["child"]) @index(name: "byParent", queryField: "byParent")
+      child: ID! @index(name: "byChild", queryField: "byChild")
+      createdAt: AWSDateTime
+      updatedAt: AWSDateTime
     }`;
 
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
-    // create context and request
-    const ownerContext: AppSyncVTLContext = {
-      stash: { modelQueryExpression: { expression: 'true == true' } },
-    };
 
-    const requestTemplate = out.resolvers['Query.listUsers.auth.1.req.vtl'];
-    const vtlRequest = vtlTemplate.render(requestTemplate, { context: ownerContext, requestParameters: ownerRequest });
+    // should expect no errors and there should be an authfilter
+    const listAuthRequestTemplate = out.resolvers['Query.listFamilyMembers.auth.1.req.vtl'];
+    expect(listAuthRequestTemplate).toBeDefined();
+    let listAuthVTLRequest = vtlTemplate.render(listAuthRequestTemplate, {
+      context: {},
+      requestParameters: ownerRequest,
+    });
+    expect(listAuthVTLRequest.hadException).toEqual(false);
+    expect(listAuthVTLRequest.stash.authFilter).toEqual(
+      expect.objectContaining({
+        or: expect.arrayContaining([
+          expect.objectContaining({ child: { eq: ownerRequest.jwt['cognito:username'] } }),
+          expect.objectContaining({ parent: { eq: ownerRequest.jwt['cognito:username'] } }),
+        ]),
+      }),
+    );
 
-    expect(vtlRequest).toBeDefined();
-    expect(vtlRequest.stash.modelQueryExpression).toBeDefined();
-    expect(vtlRequest.stash.modelQueryExpression.expression).toBeDefined();
-    expect(vtlRequest.stash.modelQueryExpression.expression).toEqual('true == true AND #id = :user1');
+    // should still change model query expression if the partition key is provided
+    // adding the modelQueryExpression and arg to simulate partitionkey being added
+    listAuthVTLRequest = vtlTemplate.render(listAuthRequestTemplate, {
+      context: {
+        arguments: {
+          parent: 'user10',
+        },
+        stash: {
+          modelQueryExpression: {
+            expression: '#parent = :parent',
+            expressionNames: {
+              '#parent': 'parent',
+            },
+            expressionValues: {
+              ':parent': {
+                S: '$ctx.args.parent',
+              },
+            },
+          },
+        },
+      },
+      requestParameters: ownerRequest,
+    });
+    expect(listAuthVTLRequest.hadException).toEqual(false);
+    expect(listAuthVTLRequest.stash.authFilter).not.toBeDefined();
+    // the $ctx.args.parent is not resolving in mock vtl engine
+    // not an issue in the service the index e2e tests this scenario
+    expect(listAuthVTLRequest.stash.modelQueryExpression).toMatchInlineSnapshot(`
+      Object {
+        "expression": "#parent = :parent AND #child = :child",
+        "expressionNames": Object {
+          "#child": "child",
+          "#parent": "parent",
+        },
+        "expressionValues": Object {
+          ":child": Object {
+            "S": "user1",
+          },
+          ":parent": Object {
+            "S": "$ctx.args.parent",
+          },
+        },
+      }
+    `);
   });
 });

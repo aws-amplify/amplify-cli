@@ -15,6 +15,7 @@ import {
   list,
   not,
   nul,
+  ifElse,
 } from 'graphql-mapping-template';
 import { emptyPayload, getIdentityClaimExp, getOwnerClaim, iamAdminRoleCheckExpression, iamCheck, setHasAuthExpression } from './helpers';
 import {
@@ -145,6 +146,14 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
               methodCall(ref('util.defaultIfNull'), ref(`ctx.result.${role.entity}`), entityIsList ? list([]) : nul()),
             ),
             set(ref(`groupClaim${idx}`), getIdentityClaimExp(str(role.claim!), list([]))),
+            iff(
+              methodCall(ref(`util.isString`), ref(`groupClaim${idx}`)),
+              ifElse(
+                methodCall(ref(`util.isList`), methodCall(ref(`util.parseJson`), ref(`groupClaim${idx}`))),
+                set(ref(`groupClaim${idx}`), methodCall(ref(`util.parseJson`), ref(`groupClaim${idx}`))),
+                set(ref(`groupClaim${idx}`), list([ref(`groupClaim${idx}`)])),
+              ),
+            ),
             forEach(ref('userGroup'), ref(`groupClaim${idx}`), [
               iff(
                 entityIsList
@@ -161,7 +170,7 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
   return [...(ownerExpression.length > 0 ? ownerExpression : []), ...(dynamicGroupExpression.length > 0 ? dynamicGroupExpression : [])];
 };
 
-export const geneateAuthExpressionForDelete = (
+export const generateAuthExpressionForDelete = (
   providers: ConfiguredAuthProviders,
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,

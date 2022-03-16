@@ -5,7 +5,7 @@ import { DocumentNode } from 'graphql';
 import { TransformerContextOutputProvider } from './transformer-context-output-provider';
 import { StackManagerProvider } from './stack-manager-provider';
 import { AppSyncAuthConfiguration, GraphQLAPIProvider } from '../graphql-api-provider';
-import { TransformerResourceProvider } from './resource-resource-provider';
+import { TransformerResourceHelperProvider } from './resource-resource-provider';
 import { FeatureFlagProvider } from '../feature-flag-provider';
 
 export interface TransformerContextMetadataProvider {
@@ -24,7 +24,7 @@ export interface TransformerContextProvider {
   output: TransformerContextOutputProvider;
   stackManager: StackManagerProvider;
   api: GraphQLAPIProvider;
-  resourceHelper: TransformerResourceProvider;
+  resourceHelper: TransformerResourceHelperProvider;
   featureFlags: FeatureFlagProvider;
   authConfig: AppSyncAuthConfiguration;
   sandboxModeEnabled: boolean;
@@ -47,6 +47,7 @@ export type TransformerSchemaVisitStepContextProvider = Pick<
   | 'getResolverConfig'
   | 'metadata'
   | 'authConfig'
+  | 'resourceHelper'
   | 'sandboxModeEnabled'
 >;
 export type TransformerValidationStepContextProvider = Pick<
@@ -61,6 +62,8 @@ export type TransformerValidationStepContextProvider = Pick<
   | 'metadata'
   | 'authConfig'
   | 'sandboxModeEnabled'
+  | 'resourceHelper'
+  | 'resolvers'
 >;
 export type TransformerPrepareStepContextProvider = TransformerValidationStepContextProvider;
 export type TransformerTransformSchemaStepContextProvider = TransformerValidationStepContextProvider;
