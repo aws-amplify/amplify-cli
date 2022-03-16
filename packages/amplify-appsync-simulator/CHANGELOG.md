@@ -3,6 +3,64 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.7...amplify-appsync-simulator@2.3.8) (2022-02-25)
+
+**Note:** Version bump only for package amplify-appsync-simulator
+
+
+
+
+
+## [2.3.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.6...amplify-appsync-simulator@2.3.7) (2022-02-10)
+
+
+
+## 7.6.19 (2022-02-08)
+
+
+### Bug Fixes
+
+* **cli:** fix security enhancement notification for projects with schema dir ([#9670](https://github.com/aws-amplify/amplify-cli/issues/9670)) ([bc57ed2](https://github.com/aws-amplify/amplify-cli/commit/bc57ed2c6e6e45136473b3ae065ea971d7867e65))
+
+
+
+
+
+## [2.3.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.5...amplify-appsync-simulator@2.3.6) (2022-01-20)
+
+**Note:** Version bump only for package amplify-appsync-simulator
+
+
+
+
+
+## [2.3.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.4...amplify-appsync-simulator@2.3.5) (2022-01-13)
+
+
+### Bug Fixes
+
+* velocity list.indexOf method ([#9422](https://github.com/aws-amplify/amplify-cli/issues/9422)) ([97aad82](https://github.com/aws-amplify/amplify-cli/commit/97aad8241344601dd5bf35dcbfdd978d9eee1840)), closes [#8830](https://github.com/aws-amplify/amplify-cli/issues/8830)
+
+
+
+
+
+## [2.3.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.2...amplify-appsync-simulator@2.3.4) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** none data source type definition and add test ([#8277](https://github.com/aws-amplify/amplify-cli/issues/8277)) ([9e5e50f](https://github.com/aws-amplify/amplify-cli/commit/9e5e50f3bfec3f42061bd0c52b8e7b39089b024b))
+* **graphql:** add *in* expression handler to appsync simulator ([#9324](https://github.com/aws-amplify/amplify-cli/issues/9324)) ([d5093d3](https://github.com/aws-amplify/amplify-cli/commit/d5093d375c1b4504005d019fd0af872c3b90bf02))
+
+
+
+
+
 ## [2.3.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.1...amplify-appsync-simulator@2.3.2) (2021-12-09)
 
 

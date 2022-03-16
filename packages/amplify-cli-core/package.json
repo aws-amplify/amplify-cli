@@ -1,6 +1,6 @@
 {
   "name": "amplify-cli-core",
-  "version": "2.4.5",
+  "version": "2.4.16",
   "description": "Amplify CLI Core",
   "repository": {
     "type": "git",
@@ -24,9 +24,9 @@
     "clean": "rimraf lib tsconfig.tsbuildinfo"
   },
   "dependencies": {
-    "ajv": "^6.12.3",
+    "ajv": "^6.12.6",
     "amplify-cli-logger": "1.1.0",
-    "amplify-prompts": "1.6.0",
+    "amplify-prompts": "1.6.3",
     "chalk": "^4.1.1",
     "ci-info": "^2.0.0",
     "cloudform-types": "^4.2.0",
@@ -37,11 +37,11 @@
     "hjson": "^3.2.1",
     "js-yaml": "^4.0.0",
     "lodash": "^4.17.21",
-    "node-fetch": "^2.6.1",
-    "open": "^7.3.1",
+    "node-fetch": "^2.6.7",
+    "open": "^8.4.0",
     "proxy-agent": "^5.0.0",
     "semver": "^7.3.5",
-    "typescript-json-schema": "^0.51.0",
+    "typescript-json-schema": "~0.52.0",
     "which": "^2.0.2"
   },
   "devDependencies": {
@@ -52,7 +52,7 @@
     "@types/node": "^12.12.6",
     "@types/rimraf": "^3.0.0",
     "@types/uuid": "^8.0.0",
-    "amplify-function-plugin-interface": "1.9.2",
+    "amplify-function-plugin-interface": "1.9.4",
     "nock": "^13.0.11",
     "rimraf": "^3.0.0",
     "strip-ansi": "^6.0.0",

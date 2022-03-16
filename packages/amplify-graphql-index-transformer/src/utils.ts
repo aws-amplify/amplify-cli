@@ -1,6 +1,6 @@
 import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { plurality } from 'graphql-transformer-common';
+import { plurality, toUpper } from 'graphql-transformer-common';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from './types';
 
 export function lookupResolverName(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider, op: string): string | null {
@@ -28,10 +28,12 @@ export function lookupResolverName(config: PrimaryKeyDirectiveConfiguration, ctx
   }
 
   if (!resolverName) {
+    const capitalizedName = toUpper(object.name.value);
+
     if (op === 'list' || op === 'sync') {
-      resolverName = `${op}${plurality(object.name.value, true)}`;
+      resolverName = `${op}${plurality(capitalizedName, true)}`;
     } else {
-      resolverName = `${op}${object.name.value}`;
+      resolverName = `${op}${capitalizedName}`;
     }
   }
 

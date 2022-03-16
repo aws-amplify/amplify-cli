@@ -3,6 +3,140 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.7.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.11...amplify-e2e-tests@3.7.12) (2022-02-25)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [3.7.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.10...amplify-e2e-tests@3.7.11) (2022-02-18)
+
+
+
+## 7.6.21 (2022-02-16)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [3.7.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.9...amplify-e2e-tests@3.7.10) (2022-02-15)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [3.7.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.5...amplify-e2e-tests@3.7.9) (2022-02-10)
+
+
+
+## 7.6.19 (2022-02-08)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** allow user to update function for 0 category access ([#8052](https://github.com/aws-amplify/amplify-cli/issues/8052)) ([4d3af32](https://github.com/aws-amplify/amplify-cli/commit/4d3af3265d0c334ed5b46dca55f75b1c2aac2da1))
+* do not update idp if credentials not present ([#9454](https://github.com/aws-amplify/amplify-cli/issues/9454)) ([5b2d8c8](https://github.com/aws-amplify/amplify-cli/commit/5b2d8c869328bbf114c49e4203a922b067d0d3b0))
+
+
+
+
+
+## [3.7.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.4...amplify-e2e-tests@3.7.5) (2022-02-03)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [3.7.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.3...amplify-e2e-tests@3.7.4) (2022-01-31)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [3.7.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.2...amplify-e2e-tests@3.7.3) (2022-01-27)
+
+
+### Bug Fixes
+
+* rest api override CloudFormation parameters ([#9325](https://github.com/aws-amplify/amplify-cli/issues/9325)) ([3338cfa](https://github.com/aws-amplify/amplify-cli/commit/3338cfaee199f83d2e270f12bb41983c067f42fe)), closes [#9221](https://github.com/aws-amplify/amplify-cli/issues/9221)
+
+
+
+
+
+## [3.7.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.1...amplify-e2e-tests@3.7.2) (2022-01-23)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [3.7.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.0...amplify-e2e-tests@3.7.1) (2022-01-20)
+
+
+
+## 7.6.10 (2022-01-19)
+
+
+### Bug Fixes
+
+* **api:** container secrets pickup correct environment values ([#9513](https://github.com/aws-amplify/amplify-cli/issues/9513)) ([9986bd6](https://github.com/aws-amplify/amplify-cli/commit/9986bd6e0885609a04080f617db6c7331fb76f6a))
+
+
+
+
+
+# [3.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.6.0...amplify-e2e-tests@3.7.0) (2022-01-13)
+
+
+### Features
+
+* **amplify-category-api:** enable default 4xx and 5xx api gateway cors response ([#9158](https://github.com/aws-amplify/amplify-cli/issues/9158)) ([b35cbda](https://github.com/aws-amplify/amplify-cli/commit/b35cbda1a567142b72dc068081abd8fb65860074)), closes [#5183](https://github.com/aws-amplify/amplify-cli/issues/5183)
+* **amplify-category-geo:** remove pricing plan walkthrough for Maps and Search ([#9479](https://github.com/aws-amplify/amplify-cli/issues/9479)) ([7b0079d](https://github.com/aws-amplify/amplify-cli/commit/7b0079dff4fdf13df5bd8f90213d4b91ccd2287b))
+
+
+
+
+
+# [3.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.5.10...amplify-e2e-tests@3.6.0) (2022-01-11)
+
+
+### Features
+
+* add uibuilder improvements including ts generation for components ([#9287](https://github.com/aws-amplify/amplify-cli/issues/9287)) ([4531d0a](https://github.com/aws-amplify/amplify-cli/commit/4531d0aaf293ded66abda32d8b4db7c2137daa27))
+
+
+
+
+
+## [3.5.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.5.8...amplify-e2e-tests@3.5.10) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* add e2e test for geo headless and update schema ([#8636](https://github.com/aws-amplify/amplify-cli/issues/8636)) ([1e76668](https://github.com/aws-amplify/amplify-cli/commit/1e76668ae92cb120ebe53a8bf93fa42bee9560fb))
+* remove next template from destructive iterative update ([#9198](https://github.com/aws-amplify/amplify-cli/issues/9198)) ([16bc38a](https://github.com/aws-amplify/amplify-cli/commit/16bc38a43df7e2850cb182cc3947c190f498f042))
+* update uuid imports ([#9448](https://github.com/aws-amplify/amplify-cli/issues/9448)) ([e1af620](https://github.com/aws-amplify/amplify-cli/commit/e1af6209fcc6943ad26a25df4741ea4567a2d22a))
+
+
+
+
+
 ## [3.5.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.5.7...amplify-e2e-tests@3.5.8) (2021-12-21)
 
 

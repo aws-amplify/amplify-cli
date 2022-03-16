@@ -227,6 +227,7 @@ export function makeUpdateInputObject(
   isSync: boolean = false,
 ): InputObjectTypeDefinitionNode {
   const name = ModelResourceIDs.ModelUpdateInputObjectName(obj.name.value);
+  const hasIdField = obj.fields.find(f => f.name.value === 'id');
   const fields: InputValueDefinitionNode[] = obj.fields
     .filter(f => {
       const fieldType = ctx.getType(getBaseType(f.type));
@@ -272,7 +273,11 @@ export function makeUpdateInputObject(
       kind: 'Name',
       value: name,
     },
-    fields,
+    fields: [
+      // add default id field and expose that
+      ...(hasIdField ? [] : [makeInputValueDefinition('id', makeNonNullType(makeNamedType('ID')))]),
+      ...fields,
+    ],
     directives: [],
   };
 }

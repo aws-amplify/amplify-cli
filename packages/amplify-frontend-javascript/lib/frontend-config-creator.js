@@ -2,12 +2,71 @@ const constants = require('./constants');
 const path = require('path');
 const fs = require('fs-extra');
 const graphQLConfig = require('graphql-config');
-const { isPackaged } = require('amplify-cli-core');
 
-const CUSTOM_CONFIG_DENY_LIST = [
+const MOCK_RESERVED_EXPORT_KEYS = [
   'aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing',
   'aws_appsync_dangerously_connect_to_http_endpoint_for_testing',
 ];
+
+// These are the set of keys that are reserved for amplify and customers are not allowed to override
+const AMPLIFY_RESERVED_EXPORT_KEYS = [
+  // General
+  'aws_project_region',
+  // cognito
+  'aws_cognito_identity_pool_id',
+  'aws_cognito_region',
+  'aws_user_pools_id',
+  'aws_user_pools_web_client_id',
+  'oauth',
+  'federationTarget',
+  'aws_cognito_username_attributes',
+  'aws_cognito_social_providers',
+  'aws_cognito_signup_attributes',
+  'aws_cognito_mfa_configuration',
+  'aws_cognito_mfa_types',
+  'aws_cognito_password_protection_settings',
+  'aws_cognito_verification_mechanisms',
+
+  // S3
+  'aws_user_files_s3_bucket',
+  'aws_user_files_s3_bucket_region',
+
+  // AppSync
+  'aws_appsync_graphqlEndpoint',
+  'aws_appsync_region',
+  'aws_appsync_authenticationType',
+  'aws_appsync_apiKey',
+  // API Gateway
+  'aws_cloud_logic_custom',
+
+  // Pinpoint
+  'aws_mobile_analytics_app_id',
+  'aws_mobile_analytics_app_region',
+
+  // DynamoDB
+  'aws_dynamodb_all_tables_region',
+  'aws_dynamodb_table_schemas',
+
+  // S3AndCloudFront
+  'aws_content_delivery_bucket',
+  'aws_content_delivery_bucket_region',
+  'aws_content_delivery_url',
+
+  // lex
+  'aws_bots',
+  'aws_bots_config',
+
+  // Sumerian
+  'XR',
+
+  // Predictions
+  'predictions',
+
+  // Geo
+  'geo',
+];
+
+const CUSTOM_CONFIG_DENY_LIST = [...MOCK_RESERVED_EXPORT_KEYS, ...AMPLIFY_RESERVED_EXPORT_KEYS];
 
 const FILE_EXTENSION_MAP = {
   javascript: 'js',
@@ -214,17 +273,13 @@ async function getCurrentAWSExports(context) {
   let awsExports = {};
 
   if (fs.existsSync(targetFilePath)) {
-    if (isPackaged) {
-      // if packaged, we can't load an ES6 module because pkg doesn't support it yet
-      const es5export = 'module.exports = {default: awsmobile};\n';
-      const es6export = 'export default awsmobile;\n';
-      const fileContents = fs.readFileSync(targetFilePath, 'utf-8');
-      fs.writeFileSync(targetFilePath, fileContents.replace(es6export, es5export));
-      awsExports = require(targetFilePath).default;
-      fs.writeFileSync(targetFilePath, fileContents);
-    } else {
-      awsExports = require(targetFilePath).default;
-    }
+    // if packaged, we can't load an ES6 module because pkg doesn't support it yet
+    const es5export = 'module.exports = {default: awsmobile};\n';
+    const es6export = 'export default awsmobile;\n';
+    const fileContents = fs.readFileSync(targetFilePath, 'utf-8');
+    fs.writeFileSync(targetFilePath, fileContents.replace(es6export, es5export));
+    awsExports = require(targetFilePath).default;
+    fs.writeFileSync(targetFilePath, fileContents);
   }
 
   return awsExports;

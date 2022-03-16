@@ -12,7 +12,7 @@ import {
 } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import uuid from 'uuid';
+import { v4 as uuid } from 'uuid';
 
 describe('adding custom resources test', () => {
   let projRoot: string;
@@ -26,8 +26,8 @@ describe('adding custom resources test', () => {
   });
 
   it('add/update CDK and CFN custom resources', async () => {
-    const cdkResourceName = `custom${uuid.v4().split('-')[0]}`;
-    const cfnResourceName = `custom${uuid.v4().split('-')[0]}`;
+    const cdkResourceName = `custom${uuid().split('-')[0]}`;
+    const cfnResourceName = `custom${uuid().split('-')[0]}`;
 
     await initJSProjectWithProfile(projRoot, {});
     await addCDKCustomResource(projRoot, { name: cdkResourceName });

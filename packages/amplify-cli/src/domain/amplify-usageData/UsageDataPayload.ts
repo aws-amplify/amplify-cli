@@ -1,7 +1,7 @@
 import * as os from 'os';
 import { Input } from '../input';
 import { getLatestPayloadVersion } from './VersionManager';
-import ci from 'ci-info';
+import { isCI } from 'amplify-cli-core';
 export class UsageDataPayload {
   sessionUuid: string;
   installationUuid: string;
@@ -42,7 +42,7 @@ export class UsageDataPayload {
     this.state = state;
     this.payloadVersion = getLatestPayloadVersion();
     this.accountId = accountId;
-    this.isCi = ci.isCI;
+    this.isCi = isCI();
     this.projectSetting = project;
     this.inputOptions = inputOptions;
     this.record = record;

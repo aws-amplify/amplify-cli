@@ -430,7 +430,22 @@ export class GraphQLTransform {
       }
     }
     const schema = fileAssets.get('schema.graphql') || '';
+
+    const resolverEntries = context.resolvers.collectResolvers();
+    const userOverriddenSlots: string[] = [];
+    for (const [resolverName] of resolverEntries) {
+      const userSlots = this.userDefinedSlots[resolverName] || [];
+
+      userSlots.forEach(slot => {
+        const fileName = slot.requestResolver?.fileName;
+        if (fileName && fileName in resolvers) {
+          userOverriddenSlots.push(fileName);
+        }
+      });
+    }
+
     return {
+      userOverriddenSlots,
       functions,
       pipelineFunctions,
       stackMapping: {},

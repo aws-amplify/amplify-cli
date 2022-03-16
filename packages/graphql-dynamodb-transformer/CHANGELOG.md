@@ -3,6 +3,93 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.2.24](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@7.2.23...graphql-dynamodb-transformer@7.2.24) (2022-02-25)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
+## [7.2.23](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@7.2.22...graphql-dynamodb-transformer@7.2.23) (2022-02-15)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
+## [7.2.22](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@7.2.18...graphql-dynamodb-transformer@7.2.22) (2022-02-10)
+
+
+
+## 7.6.19 (2022-02-08)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
+## [7.2.18](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@7.2.17...graphql-dynamodb-transformer@7.2.18) (2022-02-03)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
+## [7.2.17](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@7.2.16...graphql-dynamodb-transformer@7.2.17) (2022-01-31)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
+## [7.2.16](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@7.2.15...graphql-dynamodb-transformer@7.2.16) (2022-01-27)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
+## [7.2.15](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@7.2.14...graphql-dynamodb-transformer@7.2.15) (2022-01-23)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
+## [7.2.14](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@7.2.13...graphql-dynamodb-transformer@7.2.14) (2022-01-13)
+
+
+### Bug Fixes
+
+* clean up missing and unused GraphQL v1 dependencies ([#9496](https://github.com/aws-amplify/amplify-cli/issues/9496)) ([fe8201b](https://github.com/aws-amplify/amplify-cli/commit/fe8201be17f42db233fce0bb366ff4d0c8358ec0))
+
+
+
+
+
+## [7.2.13](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@7.2.11...graphql-dynamodb-transformer@7.2.13) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** add id field to update input objects ([#9276](https://github.com/aws-amplify/amplify-cli/issues/9276)) ([45cd973](https://github.com/aws-amplify/amplify-cli/commit/45cd9736b5fc09d78a3f445f62fc2a971c11fec7))
+* make update input id field required ([#9452](https://github.com/aws-amplify/amplify-cli/issues/9452)) ([345fe28](https://github.com/aws-amplify/amplify-cli/commit/345fe28a60bbf1de32496430e38e25463a77e96c))
+
+
+
+
+
 ## [7.2.11](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@7.2.10...graphql-dynamodb-transformer@7.2.11) (2021-12-21)
 
 

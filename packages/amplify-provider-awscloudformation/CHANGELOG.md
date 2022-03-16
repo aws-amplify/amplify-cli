@@ -3,6 +3,136 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.9.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.7...amplify-provider-awscloudformation@5.9.8) (2022-02-25)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [5.9.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.6...amplify-provider-awscloudformation@5.9.7) (2022-02-18)
+
+
+### Bug Fixes
+
+* **graphql:** handle sandbox pull with no environment info ([#9776](https://github.com/aws-amplify/amplify-cli/issues/9776)) ([0c6508b](https://github.com/aws-amplify/amplify-cli/commit/0c6508b1ce1f25218d8ce99cf59142b207774fa1))
+
+
+
+
+
+## [5.9.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.5...amplify-provider-awscloudformation@5.9.6) (2022-02-15)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [5.9.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.1...amplify-provider-awscloudformation@5.9.5) (2022-02-10)
+
+
+
+## 7.6.19 (2022-02-08)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [5.9.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.0...amplify-provider-awscloudformation@5.9.1) (2022-02-03)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+# [5.9.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.12...amplify-provider-awscloudformation@5.9.0) (2022-01-31)
+
+
+
+## 7.6.14 (2022-01-28)
+
+
+### Features
+
+* `[@maps](https://github.com/maps)To` directive to enable renaming models while retaining data ([#9340](https://github.com/aws-amplify/amplify-cli/issues/9340)) ([aedf45d](https://github.com/aws-amplify/amplify-cli/commit/aedf45d9237812d71bb8b56164efe0222ad3d534))
+
+
+
+
+
+## [5.8.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.11...amplify-provider-awscloudformation@5.8.12) (2022-01-27)
+
+
+### Bug Fixes
+
+* apply cfn pre-push transformer to nested api stacks ([#9595](https://github.com/aws-amplify/amplify-cli/issues/9595)) ([3f20329](https://github.com/aws-amplify/amplify-cli/commit/3f203299bfd6d06726892f759bc50da2069cadf1))
+* rest api override CloudFormation parameters ([#9325](https://github.com/aws-amplify/amplify-cli/issues/9325)) ([3338cfa](https://github.com/aws-amplify/amplify-cli/commit/3338cfaee199f83d2e270f12bb41983c067f42fe)), closes [#9221](https://github.com/aws-amplify/amplify-cli/issues/9221)
+
+
+
+
+
+## [5.8.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.10...amplify-provider-awscloudformation@5.8.11) (2022-01-23)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [5.8.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.9...amplify-provider-awscloudformation@5.8.10) (2022-01-20)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [5.8.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.8...amplify-provider-awscloudformation@5.8.9) (2022-01-20)
+
+
+### Reverts
+
+* Revert "chore: codegen version bump (#9512)" (#9524) ([b653441](https://github.com/aws-amplify/amplify-cli/commit/b65344134a20785afc96abf1798af89eec93fd84)), closes [#9512](https://github.com/aws-amplify/amplify-cli/issues/9512) [#9524](https://github.com/aws-amplify/amplify-cli/issues/9524)
+
+
+
+
+
+## [5.8.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.7...amplify-provider-awscloudformation@5.8.8) (2022-01-13)
+
+
+### Bug Fixes
+
+* GraphQL V2 fix for codegen ([#9489](https://github.com/aws-amplify/amplify-cli/issues/9489)) ([d8b82b9](https://github.com/aws-amplify/amplify-cli/commit/d8b82b9bf3182efef3c57f02f76b6963bd4d2839))
+* update amplify configure to use AdministratorAccess-Amplify ([#9355](https://github.com/aws-amplify/amplify-cli/issues/9355)) ([2d2a8aa](https://github.com/aws-amplify/amplify-cli/commit/2d2a8aaec1a47297126b4bc680625a932c6edcc6))
+
+
+
+
+
+## [5.8.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.5...amplify-provider-awscloudformation@5.8.7) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* add gql transformer version to status output ([#9202](https://github.com/aws-amplify/amplify-cli/issues/9202)) ([f6e0eb0](https://github.com/aws-amplify/amplify-cli/commit/f6e0eb044a3c24ec4e82df506864b4c0de3e5f52))
+* remove next template from destructive iterative update ([#9198](https://github.com/aws-amplify/amplify-cli/issues/9198)) ([16bc38a](https://github.com/aws-amplify/amplify-cli/commit/16bc38a43df7e2850cb182cc3947c190f498f042))
+* update dep and use node test environment ([#9434](https://github.com/aws-amplify/amplify-cli/issues/9434)) ([1691327](https://github.com/aws-amplify/amplify-cli/commit/1691327740ea40d0ebb974e6aeabc64c62b288ef))
+
+
+
+
+
 ## [5.8.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.4...amplify-provider-awscloudformation@5.8.5) (2021-12-21)
 
 

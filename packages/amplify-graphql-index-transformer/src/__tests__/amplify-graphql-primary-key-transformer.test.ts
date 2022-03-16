@@ -140,6 +140,39 @@ test('throws if @primaryKey refers to itself', () => {
   }).toThrow(`@primaryKey field 'id' cannot reference itself.`);
 });
 
+test('throws if @primaryKey is specified on a list', () => {
+  const schema = `
+    type Test @model {
+      strings: [String]! @primaryKey
+      email: String
+    }`;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+  });
+
+  expect(() => {
+    transformer.transform(schema);
+  }).toThrow(`The primary key on type 'Test.strings' cannot be a non-scalar.`);
+});
+
+test('throws if @primaryKey sort key fields are a list', () => {
+  const schema = `
+    type Test @model {
+      id: ID! @primaryKey(sortKeyFields: ["strings"])
+      strings: [String]!
+      email: String
+    }`;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+  });
+
+  expect(() => {
+    transformer.transform(schema);
+  }).toThrow(`The primary key's sort key on type 'Test.strings' cannot be a non-scalar.`);
+});
+
 test('handles sortKeyFields being a string instead of an array', () => {
   const schema = `
     type NonScalar {
@@ -678,4 +711,39 @@ test('list queries use correct pluralization', () => {
 
   expect(out.resolvers['Query.listBosses.req.vtl']).toBeDefined();
   expect(out.resolvers['Query.listBosses.res.vtl']).toBeDefined();
+});
+
+test('lowercase model names generate the correct get/list query arguments', () => {
+  const inputSchema = `
+    type test @model {
+      email: String! @primaryKey(sortKeyFields: ["lastName"])
+      lastName: String!
+      firstName: String
+    }`;
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+  });
+
+  const out = transformer.transform(inputSchema);
+  const schema = parse(out.schema);
+
+  validateModelSchema(schema);
+
+  const query: any = schema.definitions.find((d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === 'Query');
+  const getQuery = query.fields.find((f: any) => f.name.value === 'getTest');
+  const listQuery = query.fields.find((f: any) => f.name.value === 'listTests');
+
+  expect(getQuery).toBeDefined();
+  expect(getQuery.arguments.length).toEqual(2);
+  expect(getQuery.arguments[0].name.value).toEqual('email');
+  expect(getQuery.arguments[1].name.value).toEqual('lastName');
+
+  expect(listQuery).toBeDefined();
+  expect(listQuery.arguments.length).toEqual(6);
+  expect(listQuery.arguments[0].name.value).toEqual('email');
+  expect(listQuery.arguments[1].name.value).toEqual('lastName');
+  expect(listQuery.arguments[2].name.value).toEqual('filter');
+  expect(listQuery.arguments[3].name.value).toEqual('limit');
+  expect(listQuery.arguments[4].name.value).toEqual('nextToken');
+  expect(listQuery.arguments[5].name.value).toEqual('sortDirection');
 });

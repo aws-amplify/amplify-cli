@@ -191,6 +191,10 @@ async function getEditor(context: $TSContext) {
     editor = await editorSelection(editor);
   }
 
+  if (!editor) {
+    editor = context.exeInfo.localEnvInfo?.defaultEditor;
+  }
+
   return editor;
 }
 /* End getEditor */

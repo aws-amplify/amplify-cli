@@ -15,6 +15,7 @@ export * from './tags';
 export * from './errors';
 export * from './exitOnNextTick';
 export * from './isPackaged';
+export * from './isCI';
 export * from './cliConstants';
 export * from './deploymentSecretsHelper';
 export * from './deploymentState';

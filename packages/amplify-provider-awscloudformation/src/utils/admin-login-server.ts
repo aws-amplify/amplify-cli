@@ -4,9 +4,9 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
 import http from 'http';
-import { JWK, JWKS, JWT } from 'jose';
+import * as jose from 'jose';
 import _ from 'lodash';
-import fetch from 'node-fetch';
+import * as assert from 'assert';
 
 import { AdminAuthPayload, CognitoIdToken, CognitoAccessToken } from './auth-types';
 
@@ -92,33 +92,36 @@ export class AdminLoginServer {
     });
   }
 
-  private validateTokens(
+  private async validateTokens(
     tokens: {
       accessToken: CognitoAccessToken;
       idToken: CognitoIdToken;
     },
-    keyStore: JWKS.KeyStore,
   ) {
     const issuer: string = tokens.idToken.payload.iss;
     const audience: string = tokens.idToken.payload.aud;
-    const decodedJwtId = JWT.IdToken.verify(tokens.idToken.jwtToken, keyStore, { issuer, audience });
-    const decodedJwtAccess = JWT.verify(tokens.accessToken.jwtToken, keyStore);
+
+    const N_JWKS = jose.createRemoteJWKSet(new URL(`${issuer}/.well-known/jwks.json`));
+
+    const { payload: decodedJwtId } = await jose.jwtVerify(tokens.idToken.jwtToken, N_JWKS, { issuer, audience })
+    if (Array.isArray(decodedJwtId.aud) && decodedJwtId.aud.length > 1) {
+      assert.strictEqual(decodedJwtId.azp, audience); // checking mandatory presence as per the ID Token profile
+    }
+    assert.ok(typeof decodedJwtId.sub === 'string' && decodedJwtId.sub);
+    assert.ok('iat' in decodedJwtId); // checking mandatory presence
+    assert.ok('exp' in decodedJwtId); // checking mandatory presence, when present it was already validated
+
+    const { payload: decodedJwtAccess } = await jose.jwtVerify(tokens.accessToken.jwtToken, N_JWKS)
 
     return _.isEqual(decodedJwtId, tokens.idToken.payload) && _.isEqual(decodedJwtAccess, tokens.accessToken.payload);
   }
 
   private async storeTokens(payload: AdminAuthPayload, appId: string) {
-    const issuer: string = payload.idToken.payload.iss;
-    const res = await fetch(`${issuer}/.well-known/jwks.json`);
-    const { keys } = await res.json();
-
-    const keyStore = new JWKS.KeyStore(keys.map(key => JWK.asKey(key)));
-    const areTokensValid = this.validateTokens(
+    const areTokensValid = await this.validateTokens(
       {
         idToken: payload.idToken,
         accessToken: payload.accessToken,
-      },
-      keyStore,
+      }
     );
     if (areTokensValid) {
       const IdentityId = await this.getIdentityId(payload.idToken, payload.IdentityPoolId, payload.region);

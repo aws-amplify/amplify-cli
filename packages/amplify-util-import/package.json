@@ -1,6 +1,6 @@
 {
   "name": "amplify-util-import",
-  "version": "2.2.10",
+  "version": "2.2.21",
   "description": "Resource import support package",
   "main": "lib/index.js",
   "scripts": {
@@ -16,8 +16,8 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "amplify-cli-core": "2.4.5",
-    "aws-sdk": "^2.963.0"
+    "amplify-cli-core": "2.4.16",
+    "aws-sdk": "^2.1084.0"
   },
   "devDependencies": {
     "@types/node": "^12.12.6"

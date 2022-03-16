@@ -205,7 +205,7 @@ test('Test simple model with private auth rule, few operations, and amplify admi
 
 test('Test simple model with private IAM auth rule, few operations, and amplify admin app is not enabled', () => {
   const validSchema = `
-      type Post @model @auth(rules: [{allow: private, provider: iam, operations: [read]}]) {
+      type Post @model @auth(rules: [{allow: private, provider: iam, operations: [read, update]}]) {
           id: ID!
           title: String!
           createdAt: String
@@ -223,7 +223,12 @@ test('Test simple model with private IAM auth rule, few operations, and amplify 
         },
       ],
     },
-    transformers: [new ModelTransformer(), new AuthTransformer()],
+    transformers: [
+      new ModelTransformer(), 
+      new AuthTransformer( {
+        identityPoolId: 'testIdentityPoolId',
+      })
+    ],
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -236,6 +241,9 @@ test('Test simple model with private IAM auth rule, few operations, and amplify 
 
   expect(out.schema).toContain('getPost(id: ID!): Post @aws_iam');
   expect(out.schema).toContain('listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection @aws_iam');
+
+  expect(out.resolvers['Mutation.updatePost.auth.1.res.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.updatePost.auth.1.res.vtl']).toContain(`#if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == "testIdentityPoolId" && $ctx.identity.cognitoIdentityAuthType == "authenticated") )`);
 });
 
 test('Test simple model with AdminUI enabled should add IAM policy only for fields that have explicit IAM auth', () => {
@@ -299,4 +307,37 @@ test('Test simple model with AdminUI enabled should add IAM policy only for fiel
   ['Mutation.createPost.auth.1.req.vtl', 'Mutation.updatePost.auth.1.res.vtl', 'Mutation.deletePost.auth.1.res.vtl'].forEach(r => {
     expect(out.resolvers[r]).toMatchSnapshot();
   });
+});
+
+test('admin roles should be return the field name inside field resolvers', () => {
+  const validSchema = `
+    type Student @model @auth(rules: [{ allow: groups, groups: ["staff"] }, { allow: owner }]) {
+      id: ID!
+      name: String
+      description: String
+      secretValue: String @auth(rules: [{ allow: owner }])
+    }`;
+  const transformer = new GraphQLTransform({
+    authConfig: {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [
+        {
+          authenticationType: 'AWS_IAM',
+        },
+      ],
+    },
+    transformers: [
+      new ModelTransformer(),
+      new AuthTransformer({
+        adminRoles: ADMIN_UI_ROLES,
+      }),
+    ],
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+
+  expect(out.resolvers['Student.secretValue.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.createStudent.auth.1.req.vtl']).toMatchSnapshot();
 });

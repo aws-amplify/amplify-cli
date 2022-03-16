@@ -18,6 +18,7 @@ import {
   toJson,
   printBlock,
 } from 'graphql-mapping-template';
+import { setArgs } from 'graphql-transformer-common';
 import { ModelDirectiveConfiguration } from '../graphql-model-transformer';
 import { generateConditionSlot } from './common';
 
@@ -34,10 +35,11 @@ export const generateUpdateRequestTemplate = (modelName: string, isSyncEnabled: 
     keyFields.push(str('_lastChangedAt'));
   }
   const statements: Expression[] = [
+    setArgs,
     comment('Set the default values to put request'),
     set(ref('mergedValues'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),
     comment('copy the values from input'),
-    qref(methodCall(ref('mergedValues.putAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.args.input'), obj({})))),
+    qref(methodCall(ref('mergedValues.putAll'), methodCall(ref('util.defaultIfNull'), ref('args.input'), obj({})))),
     comment('set the typename'),
     // Initialize object as placeholder for expressions
     comment('Initialize the vars for creating ddb expression'),
@@ -50,7 +52,7 @@ export const generateUpdateRequestTemplate = (modelName: string, isSyncEnabled: 
     ifElse(
       ref(objectKeyVariable),
       set(ref('Key'), ref(objectKeyVariable)),
-      set(ref('Key'), obj({ id: methodCall(ref('util.dynamodb.toDynamoDB'), ref('ctx.args.input.id')) })),
+      set(ref('Key'), obj({ id: methodCall(ref('util.dynamodb.toDynamoDB'), ref('args.input.id')) })),
     ),
     comment('Model key'),
     ifElse(
@@ -121,7 +123,7 @@ export const generateUpdateRequestTemplate = (modelName: string, isSyncEnabled: 
     // add conditions
     // set key the condition
     ...generateKeyConditionTemplate(true),
-    iff(ref('context.args.condition'), qref(methodCall(ref('ctx.stash.conditions.add'), ref('context.args.condition')))),
+    iff(ref('args.condition'), qref(methodCall(ref('ctx.stash.conditions.add'), ref('args.condition')))),
     // Generate conditions
     generateConditionSlot('ctx.stash.conditions', 'Conditions'),
     set(
@@ -131,7 +133,7 @@ export const generateUpdateRequestTemplate = (modelName: string, isSyncEnabled: 
         operation: str('UpdateItem'),
         key: ref('Key'),
         update: ref('update'),
-        ...(isSyncEnabled && { _version: ref('util.defaultIfNull($ctx.args.input["_version"], "0")') }),
+        ...(isSyncEnabled && { _version: ref('util.defaultIfNull($args.input["_version"], 0)') }),
       }),
     ),
     iff(
@@ -152,11 +154,12 @@ export const generateUpdateRequestTemplate = (modelName: string, isSyncEnabled: 
  */
 export const generateCreateRequestTemplate = (modelName: string): string => {
   const statements: Expression[] = [
+    setArgs,
     // Generate conditions
     comment('Set the default values to put request'),
     set(ref('mergedValues'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),
     comment('copy the values from input'),
-    qref(methodCall(ref('mergedValues.putAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.args.input'), obj({})))),
+    qref(methodCall(ref('mergedValues.putAll'), methodCall(ref('util.defaultIfNull'), ref('args.input'), obj({})))),
     comment('set the typename'),
     qref(methodCall(ref('mergedValues.put'), str('__typename'), str(modelName))),
 
@@ -172,7 +175,7 @@ export const generateCreateRequestTemplate = (modelName: string): string => {
     ),
 
     // add conditions
-    iff(ref('context.args.condition'), qref(methodCall(ref('ctx.stash.conditions.add'), ref('context.args.condition')))),
+    iff(ref('args.condition'), qref(methodCall(ref('ctx.stash.conditions.add'), ref('args.condition')))),
     // key conditions
     ...generateKeyConditionTemplate(false),
     // Generate conditions
@@ -245,6 +248,7 @@ export const generateCreateInitSlotTemplate = (name: string, modelConfig: ModelD
  */
 export const generateDeleteRequestTemplate = (isSyncEnabled: boolean): string => {
   const statements: Expression[] = [
+    setArgs,
     set(
       ref('DeleteRequest'),
       obj({
@@ -255,11 +259,11 @@ export const generateDeleteRequestTemplate = (isSyncEnabled: boolean): string =>
     ifElse(
       ref('ctx.stash.metadata.modelObjectKey'),
       set(ref('Key'), ref('ctx.stash.metadata.modelObjectKey')),
-      set(ref('Key'), obj({ id: methodCall(ref('util.dynamodb.toDynamoDB'), ref('ctx.args.input.id')) })),
+      set(ref('Key'), obj({ id: methodCall(ref('util.dynamodb.toDynamoDB'), ref('args.input.id')) })),
     ),
     qref(methodCall(ref('DeleteRequest.put'), str('key'), ref('Key'))),
     ...generateKeyConditionTemplate(true),
-    iff(ref('context.args.condition'), qref(methodCall(ref('ctx.stash.conditions.add'), ref('context.args.condition')))),
+    iff(ref('args.condition'), qref(methodCall(ref('ctx.stash.conditions.add'), ref('args.condition')))),
     // Generate conditions
     generateConditionSlot('ctx.stash.conditions', 'Conditions'),
     iff(
@@ -271,9 +275,7 @@ export const generateDeleteRequestTemplate = (isSyncEnabled: boolean): string =>
     ),
   ];
   if (isSyncEnabled) {
-    statements.push(
-      qref(methodCall(ref('DeleteRequest.put'), str('_version'), ref('util.defaultIfNull($ctx.args.input["_version"], "0")'))),
-    );
+    statements.push(qref(methodCall(ref('DeleteRequest.put'), str('_version'), ref('util.defaultIfNull($args.input["_version"], 0)'))));
   }
 
   statements.push(toJson(ref('DeleteRequest')));

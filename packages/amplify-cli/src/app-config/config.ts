@@ -1,5 +1,5 @@
 import * as fs from 'fs-extra';
-import uuid from 'uuid';
+import { v4 as uuid } from 'uuid';
 import _ from 'lodash';
 import { JSONUtilities } from 'amplify-cli-core';
 
@@ -58,7 +58,7 @@ class UsageDataConfig {
   isUsageTrackingEnabled: boolean;
 
   constructor() {
-    this.installationUuid = uuid.v4();
+    this.installationUuid = uuid();
     this.isUsageTrackingEnabled = true;
   }
 }

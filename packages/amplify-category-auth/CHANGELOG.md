@@ -3,6 +3,106 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.2...@aws-amplify/amplify-category-auth@2.7.3) (2022-02-25)
+
+
+### Bug Fixes
+
+* add `context` to custom function handler entrypoint, ref [#9563](https://github.com/aws-amplify/amplify-cli/issues/9563) ([#9741](https://github.com/aws-amplify/amplify-cli/issues/9741)) ([c061288](https://github.com/aws-amplify/amplify-cli/commit/c06128854a5ea6181a49d6b8c5839290610674bb))
+
+
+
+
+
+## [2.7.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.5.0...@aws-amplify/amplify-category-auth@2.7.2) (2022-02-15)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
+# [2.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.12...@aws-amplify/amplify-category-auth@2.5.0) (2022-02-10)
+
+
+
+## 7.6.19 (2022-02-08)
+
+
+### Bug Fixes
+
+* do not update idp if credentials not present ([#9454](https://github.com/aws-amplify/amplify-cli/issues/9454)) ([5b2d8c8](https://github.com/aws-amplify/amplify-cli/commit/5b2d8c869328bbf114c49e4203a922b067d0d3b0))
+
+
+### Features
+
+* improve function templates; consolidate console.log, add jsdoc, add lambda types ([#9649](https://github.com/aws-amplify/amplify-cli/issues/9649)) ([5b24455](https://github.com/aws-amplify/amplify-cli/commit/5b244554bd503d076f94fa94c96bc50d65cf48bc))
+* update admin queries package dependencies, scripts ([#9669](https://github.com/aws-amplify/amplify-cli/issues/9669)) ([c78d8c0](https://github.com/aws-amplify/amplify-cli/commit/c78d8c0e1ca5bc4d9a6af84d158c88ea0af88c8b))
+
+
+
+
+
+## [2.4.12](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.11...@aws-amplify/amplify-category-auth@2.4.12) (2022-02-03)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
+## [2.4.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.10...@aws-amplify/amplify-category-auth@2.4.11) (2022-01-27)
+
+
+### Bug Fixes
+
+* handle auth and api dependency in state files correctly ([#9528](https://github.com/aws-amplify/amplify-cli/issues/9528)) ([edced3e](https://github.com/aws-amplify/amplify-cli/commit/edced3ef76da02bd269cf85c7287bfb74875d967)), closes [#9341](https://github.com/aws-amplify/amplify-cli/issues/9341)
+* handle failed pushes from cognito drift ([#9590](https://github.com/aws-amplify/amplify-cli/issues/9590)) ([2b555b6](https://github.com/aws-amplify/amplify-cli/commit/2b555b6a6fc918e0e5430fd2a827e89754b2caea))
+
+
+### Reverts
+
+* Revert "fix: handle auth and api dependency in state files correctly (#9528)" (#9602) ([b99b08e](https://github.com/aws-amplify/amplify-cli/commit/b99b08e187be8f2f77761ccdd1092a0cba86a051)), closes [#9528](https://github.com/aws-amplify/amplify-cli/issues/9528) [#9602](https://github.com/aws-amplify/amplify-cli/issues/9602)
+
+
+
+
+
+## [2.4.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.9...@aws-amplify/amplify-category-auth@2.4.10) (2022-01-23)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
+## [2.4.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.8...@aws-amplify/amplify-category-auth@2.4.9) (2022-01-13)
+
+
+### Bug Fixes
+
+* userpool signup attributes ([#9251](https://github.com/aws-amplify/amplify-cli/issues/9251)) ([b31d6b2](https://github.com/aws-amplify/amplify-cli/commit/b31d6b22724f5a4ad3f953d42e211387603d4d2b))
+
+
+
+
+
+## [2.4.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.6...@aws-amplify/amplify-category-auth@2.4.8) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* [#9070](https://github.com/aws-amplify/amplify-cli/issues/9070) TOTP only auth configs are failing ([#9214](https://github.com/aws-amplify/amplify-cli/issues/9214)) ([412ebb7](https://github.com/aws-amplify/amplify-cli/commit/412ebb7520df440ba831ee91901421918d626df2))
+* update cognito stack builder to set case sensitivity based on aliasAttribute ([#9339](https://github.com/aws-amplify/amplify-cli/issues/9339)) ([40311ba](https://github.com/aws-amplify/amplify-cli/commit/40311bac8e5d4073ac48e7b67b2295e81d57f17a)), closes [#8895](https://github.com/aws-amplify/amplify-cli/issues/8895)
+
+
+
+
+
 ## [2.4.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.5...@aws-amplify/amplify-category-auth@2.4.6) (2021-12-21)
 
 

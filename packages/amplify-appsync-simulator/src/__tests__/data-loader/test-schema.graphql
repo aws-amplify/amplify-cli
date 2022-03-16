@@ -1,0 +1,26 @@
+# based on https://docs.aws.amazon.com/appsync/latest/devguide/tutorial-local-resolvers.html
+
+schema {
+  query: Query
+  mutation: Mutation
+  subscription: Subscription
+}
+
+type Subscription {
+  inbox(to: String!): Page @aws_subscribe(mutations: ["page"])
+}
+
+type Mutation {
+  page(body: String!, to: String!): Page! @aws_cognito_user_pools(cognito_groups: ["testGroup"])
+}
+
+type Page @aws_cognito_user_pools(cognito_groups: ["testGroup"]) {
+  from: String!
+  to: String!
+  body: String!
+  sentAt: AWSDateTime!
+}
+
+type Query {
+  me: String
+}

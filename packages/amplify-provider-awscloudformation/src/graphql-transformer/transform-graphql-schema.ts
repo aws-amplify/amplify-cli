@@ -20,18 +20,18 @@ import {
   TransformerProjectConfig,
 } from '@aws-amplify/graphql-transformer-core';
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
+import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
 import { OverrideConfig } from '@aws-amplify/graphql-transformer-core/src/transformation/types';
 import { AppSyncAuthConfiguration, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   $TSContext,
   AmplifyCategories,
-  getGraphQLTransformerAuthDocLink,
   AmplifySupportedService,
+  getGraphQLTransformerAuthDocLink,
   JSONUtilities,
   pathManager,
   stateManager,
 } from 'amplify-cli-core';
-import { getTransformerVersion, searchablePushChecks } from '../transform-graphql-schema';
 import { printer } from 'amplify-prompts';
 import fs from 'fs-extra';
 import { print } from 'graphql';
@@ -42,12 +42,12 @@ import importGlobal from 'import-global';
 import _ from 'lodash';
 import path from 'path';
 import { destructiveUpdatesFlag, ProviderName as providerName } from '../constants';
+import { getTransformerVersion, searchablePushChecks } from '../transform-graphql-schema';
 import { hashDirectory } from '../upload-appsync-files';
 import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
 import { isAuthModeUpdated } from '../utils/auth-mode-compare';
 import { schemaHasSandboxModeEnabled, showGlobalSandboxModeWarning, showSandboxModePrompts } from '../utils/sandbox-mode-helpers';
 import { GraphQLSanityCheck, SanityCheckRules } from './sanity-check';
-import { loadProject as readTransformerConfiguration } from './transform-config';
 import { parseUserDefinedSlots } from './user-defined-slots';
 import { getAdminRoles, getIdentityPoolId, mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
 
@@ -100,6 +100,7 @@ function getTransformerFactory(
       new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
       new DefaultValueTransformer(),
       authTransformer,
+      new MapsToTransformer(),
       // TODO: initialize transformer plugins
     ];
 
@@ -107,7 +108,7 @@ function getTransformerFactory(
       transformerList.push(new SearchableModelTransformer());
     }
 
-    const customTransformersConfig = await readTransformerConfiguration(resourceDir);
+    const customTransformersConfig = await loadProject(resourceDir);
     const customTransformerList = customTransformersConfig?.config?.transformers;
     const customTransformers = (Array.isArray(customTransformerList) ? customTransformerList : [])
       .map(transformer => {

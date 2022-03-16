@@ -53,6 +53,8 @@ export interface RoleDefinition {
   // specific to mutations
   allowedFields?: Array<string>;
   nullAllowedFields?: Array<string>;
+  areAllFieldsAllowed?: boolean;
+  areAllFieldsNullAllowed?: boolean;
 }
 
 export interface AuthDirective {

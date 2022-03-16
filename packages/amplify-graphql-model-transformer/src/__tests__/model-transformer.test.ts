@@ -1262,6 +1262,29 @@ describe('ModelTransformer: ', () => {
     }
   });
 
+  it('maps model resolvers to specified stack', () => {
+    const inputSchema = /* GraphQL */ `
+      type Blog @model {
+        id: ID!
+        name: String!
+      }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      stackMapping: {
+        CreateBlogResolver: 'myCustomStack1',
+        UpdateBlogResolver: 'myCustomStack2',
+      },
+    });
+
+    const result = transformer.transform(inputSchema);
+    expect(Object.keys(result.stacks.myCustomStack1.Resources!).includes('CreateBlogResolver')).toBe(true);
+    expect(Object.keys(result.stacks.myCustomStack2.Resources!).includes('UpdateBlogResolver')).toBe(true);
+
+    expect(Object.keys(result.stacks.Blog.Resources!).includes('CreateBlogResolver')).toBe(false);
+    expect(Object.keys(result.stacks.Blog.Resources!).includes('UpdateBlogResolver')).toBe(false);
+  });
+  
   it('allow aws_lambda to pass through', () => {
     const validSchema = `
     type Todo @aws_lambda {
@@ -1311,5 +1334,33 @@ describe('ModelTransformer: ', () => {
     expect(subscriptionType).toBeDefined();
     expect(subscriptionType!.fields!.length).toEqual(3);
     expectFields(subscriptionType!, ['onFeedCreated', 'onFeedUpdated', 'onFeedDeleted']);
+  });
+
+  it('should generate id for the update input object', async () => {
+    const validSchema = `
+      type Todo @model {
+        uid: String!
+        username: String
+      }
+    `;
+
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+
+    const parsed = parse(definition);
+    validateModelSchema(parsed);
+
+    const updateTodoInput = getInputType(parsed, 'UpdateTodoInput');
+    expect(updateTodoInput).toBeDefined();
+
+    expectFieldsOnInputType(updateTodoInput!, ['id']);
+    const updateTodoIdField = getFieldOnInputType(updateTodoInput!, 'id');
+    expect(updateTodoIdField.type.kind).toBe('NonNullType');
   });
 });

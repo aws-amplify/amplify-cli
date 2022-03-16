@@ -1,7 +1,7 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ConflictHandlerType, GraphQLTransform, SyncConfig, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { expect as cdkExpect, haveResourceLike } from '@aws-cdk/assert';
-import { Kind, parse } from 'graphql';
+import { parse } from 'graphql';
 import { IndexTransformer, PrimaryKeyTransformer } from '..';
 
 test('throws if @index is used in a non-@model type', () => {
@@ -124,6 +124,39 @@ test('throws if @index refers to itself', () => {
   }).toThrow(`@index field 'id' cannot reference itself.`);
 });
 
+test('throws if @index is specified on a list', () => {
+  const schema = `
+    type Test @model {
+      strings: [String]! @index(name: "GSI")
+      email: String
+    }`;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new IndexTransformer()],
+  });
+
+  expect(() => {
+    transformer.transform(schema);
+  }).toThrow(`Index 'GSI' on type 'Test.strings' cannot be a non-scalar.`);
+});
+
+test('throws if @index sort key fields are a list', () => {
+  const schema = `
+    type Test @model {
+      id: ID! @index(name: "GSI", sortKeyFields: ["strings"])
+      strings: [String]!
+      email: String
+    }`;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new IndexTransformer()],
+  });
+
+  expect(() => {
+    transformer.transform(schema);
+  }).toThrow(`The sort key of index 'GSI' on type 'Test.strings' cannot be a non-scalar.`);
+});
+
 test('@index with multiple sort keys adds a query field and GSI correctly', () => {
   const inputSchema = `
     type Test @model {
@@ -198,6 +231,8 @@ test('@index with multiple sort keys adds a query field and GSI correctly', () =
   expect(queryField).toBeDefined();
   expect(queryField.arguments).toHaveLength(6);
   expect(queryField.arguments[0].name.value).toEqual('email');
+  expect(queryField.arguments[0].type.kind).toEqual('NonNullType');
+  expect(queryField.arguments[0].type.type.name.value).toEqual('String');
   expect(queryField.arguments[1].name.value).toEqual('kindDate');
   expect(queryField.arguments[2].name.value).toEqual('sortDirection');
   expect(queryField.arguments[2].type.name.value).toEqual('ModelSortDirection');

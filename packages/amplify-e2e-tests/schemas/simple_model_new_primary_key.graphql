@@ -1,4 +1,4 @@
-type Todo @model @key(fields: ["content"]) {
+type Todo @model {
   id: ID!
-  content: String!
+  content: String! @primaryKey
 }

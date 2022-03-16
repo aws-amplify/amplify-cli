@@ -12,7 +12,7 @@ import {
   parse,
   Kind,
 } from 'graphql';
-
+import { printer } from 'amplify-prompts';
 export function collectDirectiveNames(sdl: string): string[] {
   const dirs = collectDirectives(sdl);
   return dirs.map(d => d.name.value);
@@ -65,7 +65,15 @@ export function collectDirectivesByType(sdl: string): Object {
   if (!sdl) {
     return {};
   }
-  const doc = parse(sdl);
+  let doc;
+  try {
+    doc = parse(sdl);
+  } catch (e) {
+    if (e.message?.includes('Syntax Error')) {
+      printer.error('Your GraphQL schema is invalid. Update the schema to use proper syntax and try again.');
+    }
+    throw e;
+  }
   // defined types with directives list
   let types = {};
   for (const def of doc.definitions) {
