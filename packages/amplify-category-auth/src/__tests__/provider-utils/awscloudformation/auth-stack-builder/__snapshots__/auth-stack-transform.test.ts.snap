@@ -1234,11 +1234,15 @@ exports.handler = (event, context, callback) => {
             requestParams = null;
           }
         } else {
-          requestParams.ProviderDetails = {
-            client_id: providerCreds.client_id,
-            client_secret: providerCreds.client_secret,
-            authorize_scopes: providerMeta.authorize_scopes,
-          };
+          if (providerCreds.client_id && providerCreds.client_secret) {
+            requestParams.ProviderDetails = {
+              client_id: providerCreds.client_id,
+              client_secret: providerCreds.client_secret,
+              authorize_scopes: providerMeta.authorize_scopes,
+            };
+          } else {
+            requestParams = null;
+          }
         }
         return requestParams;
       };
@@ -1541,6 +1545,7 @@ exports.handler = (event, context, callback) => {
     "OAuthCustomResource": Object {
       "DependsOn": Array [
         "HostedUICustomResourceInputs",
+        "HostedUIProvidersCustomResourceInputs",
       ],
       "Properties": Object {
         "Code": Object {
@@ -1836,7 +1841,87 @@ exports.handler = (event, context, callback) => {
         "Schema": Array [
           Object {
             "Mutable": true,
+            "Name": "address",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "birthdate",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
             "Name": "email",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "family_name",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "middle_name",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "gender",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "locale",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "given_name",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "name",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "nickname",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "phone_number",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "preferred_username",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "picture",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "profile",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "updated_at",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "website",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "zoneinfo",
             "Required": true,
           },
         ],

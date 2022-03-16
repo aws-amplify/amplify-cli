@@ -8,6 +8,8 @@
     {"path": "../amplify-graphql-transformer-core"},
     {"path": "../amplify-graphql-transformer-interfaces"},
     {"path": "../graphql-mapping-template"},
-    {"path": "../graphql-transformer-common"}
+    {"path": "../graphql-transformer-common"},
+    {"path": "../amplify-graphql-maps-to-transformer"},
+    {"path": "../amplify-graphql-index-transformer"},
   ]
 }

@@ -811,7 +811,7 @@ function getMigrationMockParametersJSON(): $TSAny {
 
 //Helper class to start with Simple Auth and mutate the CLI Inputs based on Test-Case
 class S3MockDataBuilder {
-  static mockBucketName = 'mockBucketName';
+  static mockBucketName = 'mock-bucket-name-99'; //s3 bucket naming rules allows alphanumeric and hyphens
   static mockResourceName = 'mockResourceName';
   static mockPolicyUUID = 'cafe2021';
   static mockPolicyUUID2 = 'cafe2022';

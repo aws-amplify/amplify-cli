@@ -139,6 +139,10 @@ function setParameters(projRoot: string, category: string, resourceName: string,
   JSONUtilities.writeJson(parametersPath, parameters);
 }
 
+export function cliInputsExists(projRoot: string, category: string, resourceName: string): boolean {
+  return fs.existsSync(getCLIInputsPath(projRoot, category, resourceName));
+}
+
 export function getCLIInputs(projRoot: string, category: string, resourceName: string): any {
   const parametersPath = getCLIInputsPath(projRoot, category, resourceName);
   return JSONUtilities.parse(fs.readFileSync(parametersPath, 'utf8'));

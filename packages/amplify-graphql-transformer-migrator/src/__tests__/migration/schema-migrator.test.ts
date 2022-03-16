@@ -52,6 +52,7 @@ describe('attemptV2TransformerMigration', () => {
     expect(cliJsonFile.features.graphqltransformer.useexperimentalpipelinedtransformer).toBe(true);
     expect(cliJsonFile.features.graphqltransformer.transformerversion).toBe(2);
     expect(cliJsonFile.features.graphqltransformer.suppressschemamigrationprompt).toBe(true);
+    expect(cliJsonFile.features.codegen.useappsyncmodelgenplugin).toBe(true);
   });
 
   it('leaves project unchanged when migrating and rolling back', async () => {
@@ -86,6 +87,7 @@ describe('attemptV2TransformerMigration', () => {
     expect(cliJsonFile.features.graphqltransformer.useexperimentalpipelinedtransformer).toBe(true);
     expect(cliJsonFile.features.graphqltransformer.transformerversion).toBe(2);
     expect(cliJsonFile.features.graphqltransformer.suppressschemamigrationprompt).toBe(true);
+    expect(cliJsonFile.features.codegen.useappsyncmodelgenplugin).toBe(true);
   });
 
   it('succeeds but warns when custom roots/resolvers are detected', async () => {
@@ -102,6 +104,7 @@ describe('attemptV2TransformerMigration', () => {
     expect(cliJsonFile.features.graphqltransformer.useexperimentalpipelinedtransformer).toBe(true);
     expect(cliJsonFile.features.graphqltransformer.transformerversion).toBe(2);
     expect(cliJsonFile.features.graphqltransformer.suppressschemamigrationprompt).toBe(true);
+    expect(cliJsonFile.features.codegen.useappsyncmodelgenplugin).toBe(true);
   });
 
   it('succeeds but warns when improvePluralization FF is false', async () => {
@@ -118,6 +121,7 @@ describe('attemptV2TransformerMigration', () => {
     expect(cliJsonFile.features.graphqltransformer.useexperimentalpipelinedtransformer).toBe(true);
     expect(cliJsonFile.features.graphqltransformer.transformerversion).toBe(2);
     expect(cliJsonFile.features.graphqltransformer.suppressschemamigrationprompt).toBe(true);
+    expect(cliJsonFile.features.codegen.useappsyncmodelgenplugin).toBe(true);
   });
 
   it('fails if GQL API is configured to use SQL', async () => {
@@ -158,5 +162,30 @@ describe('attemptV2TransformerMigration', () => {
     expect(cliJsonFile.features.graphqltransformer.useexperimentalpipelinedtransformer).toBe(false);
     expect(cliJsonFile.features.graphqltransformer.transformerversion).toBe(1);
     expect(cliJsonFile.features.graphqltransformer.suppressschemamigrationprompt).toBe(false);
+  });
+
+  it('Correctly returns the codegen useappsyncmodelgenplugin flag to empty state after @auth queries failure', async () => {
+    const apiResourceDir = resourceDir(tempProjectDir);
+    const schemaPath = path.join(apiResourceDir, 'schema', 'schema.graphql');
+
+    fs.writeFileSync(
+      schemaPath,
+      `
+      type Post @model @auth(rules: [{allow: groups, groups: ["Admin", "Dev"], queries: [get, list], operations: [create, update, delete]}]) {
+        id: ID!
+        title: String!
+        createdAt: String
+        updatedAt: String
+      }
+    `,
+    );
+    await attemptV2TransformerMigration(apiResourceDir, apiName, envName);
+    expect(printer.info).toHaveBeenCalledWith(expect.stringMatching('You are using queries or mutations in at least one @auth rule.'));
+
+    const cliJsonFile = await fs.readJSON(cliJsonPath(tempProjectDir), { encoding: 'utf8' });
+    expect(cliJsonFile.features.graphqltransformer.useexperimentalpipelinedtransformer).toBe(false);
+    expect(cliJsonFile.features.graphqltransformer.transformerversion).toBe(1);
+    expect(cliJsonFile.features.graphqltransformer.suppressschemamigrationprompt).toBe(false);
+    expect(cliJsonFile.features?.codegen?.useappsyncmodelgenplugin).toBeUndefined();
   });
 });

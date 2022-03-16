@@ -1,6 +1,5 @@
 import * as cdk from '@aws-cdk/core';
 import {
-  $TSAny,
   $TSContext,
   $TSObject,
   AmplifyCategories,
@@ -21,13 +20,13 @@ import { AmplifyApigwResourceStack, ApigwInputs, CrudOperation, Path } from '.';
 import { ApigwInputState } from '../apigw-input-state';
 import { ADMIN_QUERIES_NAME } from '../../../category-constants';
 export class ApigwStackTransform {
-  _app: cdk.App;
   cliInputs: ApigwInputs;
   resourceTemplateObj: AmplifyApigwResourceStack | undefined;
   cliInputsState: ApigwInputState;
-  cfn!: Template;
-  cfnInputParams!: $TSObject;
+  cfn: Template;
+  cfnInputParams: $TSObject;
   resourceName: string;
+  private _app: cdk.App;
 
   constructor(context: $TSContext, resourceName: string, cliInputState?: ApigwInputState) {
     this._app = new cdk.App();
@@ -51,18 +50,23 @@ export class ApigwStackTransform {
     // Generate cloudformation stack from cli-inputs.json
     this.generateStack(authResourceName, pathsWithUserPoolGroups);
 
+    try {
+      // Modify cloudformation files based on overrides
+      await this.applyOverrides();
+    } catch (error) {
+      printer.error(`Failed to override ${this.resourceName} due to: ${error}.`);
+      return;
+    }
+
     // Generate cloudformation stack input params from cli-inputs.json
     this.generateCfnInputParameters();
-
-    // Modify cloudformation files based on overrides
-    await this.applyOverrides();
 
     // Save generated cloudformation.json and parameters.json files
     await this.saveBuildFiles();
   }
 
   generateCfnInputParameters() {
-    this.cfnInputParams = {};
+    this.cfnInputParams = this.resourceTemplateObj.getCfnParameterValues();
   }
 
   generateStack(authResourceName?: string, pathsWithUserPoolGroups: [string, Path][] = []) {
@@ -182,23 +186,26 @@ export class ApigwStackTransform {
     const overrideFilePath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.API, this.resourceName);
     const overrideJSFilePath = path.join(overrideFilePath, 'build', 'override.js');
 
-    const isBuild = await buildOverrideDir(backendDir, overrideFilePath).catch(error => {
-      printer.debug(`Build error : ${error.message}`);
-      return false;
-    });
+    const isBuild = await buildOverrideDir(backendDir, overrideFilePath);
 
     // skip if packageManager or override.ts not found
     if (isBuild) {
-      const { override } = await import(overrideJSFilePath).catch(error => {
+      let override;
+      try {
+        ({ override } = await import(overrideJSFilePath));
+      } catch {
         formatter.list(['No override file found', `To override ${this.resourceName} run "amplify override api"`]);
-        return undefined;
-      });
+        override = undefined;
+      }
 
       if (override && typeof override === 'function') {
-        const overrideCode: string = await fs.readFile(overrideJSFilePath, 'utf-8').catch(() => {
-          formatter.list(['No override File Found', `To override ${this.resourceName} run amplify override auth`]);
-          return '';
-        });
+        let overrideCode: string;
+        try {
+          overrideCode = await fs.readFile(overrideJSFilePath, 'utf-8');
+        } catch (error) {
+          formatter.list(['No override file found', `To override ${this.resourceName} run amplify override api`]);
+          return;
+        }
 
         const sandboxNode = new vm.NodeVM({
           console: 'inherit',
@@ -211,13 +218,7 @@ export class ApigwStackTransform {
           },
         });
 
-        try {
-          await sandboxNode.run(overrideCode, overrideJSFilePath).override(this.resourceTemplateObj as AmplifyApigwResourceStack);
-        } catch (err: $TSAny) {
-          const error = new Error(`Skipping override due to ${err}.`);
-          printer.error(`${error}`);
-          throw error;
-        }
+        await sandboxNode.run(overrideCode, overrideJSFilePath).override(this.resourceTemplateObj as AmplifyApigwResourceStack);
       }
     }
   }

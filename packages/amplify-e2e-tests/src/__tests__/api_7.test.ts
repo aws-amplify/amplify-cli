@@ -65,8 +65,8 @@ describe('amplify add api (GraphQL)', () => {
     expect(error).toBeDefined();
     expect(error.message).toContain(`${tableName} not found`);
 
-    await amplifyOverrideApi(projRoot, { isMigratedProject: true });
-    const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-api.ts');
+    await amplifyOverrideApi(projRoot, {});
+    const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-api-gql.ts');
     const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'api', `${projName}`, 'override.ts');
     fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
     await amplifyPushOverride(projRoot);

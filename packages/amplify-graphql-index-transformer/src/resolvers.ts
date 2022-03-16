@@ -489,8 +489,8 @@ function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Transformer
                 not(methodCall(ref('util.isNullOrBlank'), ref('filterExpression.expression'))),
                 compoundExpression([
                   iff(
-                    equals(methodCall(ref('filterEpression.expressionValues.size')), int(0)),
-                    qref(methodCall(ref('filterEpression.remove'), str('expressionValues'))),
+                    equals(methodCall(ref('filterExpression.expressionValues.size')), int(0)),
+                    qref(methodCall(ref('filterExpression.remove'), str('expressionValues'))),
                   ),
                   set(ref(`${requestVariable}.filter`), ref(`filterExpression`)),
                 ]),
@@ -540,11 +540,11 @@ function validateIndexArgumentSnippet(config: IndexDirectiveConfiguration, keyOp
       set(ref(ResourceConstants.SNIPPETS.HasSeenSomeKeyArg), bool(false)),
       set(ref('keyFieldNames'), list(sortKeyFields.map(f => str(f)))),
       forEach(ref('keyFieldName'), ref('keyFieldNames'), [
-        iff(raw(`$ctx.args.input.containsKey("$keyFieldName")`), set(ref(ResourceConstants.SNIPPETS.HasSeenSomeKeyArg), bool(true)), true),
+        iff(raw(`$mergedValues.containsKey("$keyFieldName")`), set(ref(ResourceConstants.SNIPPETS.HasSeenSomeKeyArg), bool(true)), true),
       ]),
       forEach(ref('keyFieldName'), ref('keyFieldNames'), [
         iff(
-          raw(`$${ResourceConstants.SNIPPETS.HasSeenSomeKeyArg} && !$ctx.args.input.containsKey("$keyFieldName")`),
+          raw(`$${ResourceConstants.SNIPPETS.HasSeenSomeKeyArg} && !$mergedValues.containsKey("$keyFieldName")`),
           raw(
             `$util.error("When ${keyOperation.replace(/.$/, 'ing')} any part of the composite sort key for @index '${name}',` +
               ` you must provide all fields for the key. Missing key: '$keyFieldName'.")`,

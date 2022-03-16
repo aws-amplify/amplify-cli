@@ -3,6 +3,102 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.13.3...@aws-amplify/graphql-searchable-transformer@0.13.4) (2022-03-07)
+
+
+### Bug Fixes
+
+* **graphql:** add new open search instance types to the allowed list ([#9834](https://github.com/aws-amplify/amplify-cli/issues/9834)) ([39014c3](https://github.com/aws-amplify/amplify-cli/commit/39014c3a7ea4eb6ab9644a1ef6653fa287917937))
+* move searchable parameters to api stack V2 ([#9840](https://github.com/aws-amplify/amplify-cli/issues/9840)) ([ee32733](https://github.com/aws-amplify/amplify-cli/commit/ee32733cb2674c364568522a729e0840798488dc))
+
+
+
+
+
+## [0.13.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.13.2...@aws-amplify/graphql-searchable-transformer@0.13.3) (2022-02-25)
+
+**Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer
+
+
+
+
+
+## [0.13.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.13.1...@aws-amplify/graphql-searchable-transformer@0.13.2) (2022-02-15)
+
+**Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer
+
+
+
+
+
+## [0.13.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.13.0...@aws-amplify/graphql-searchable-transformer@0.13.1) (2022-02-10)
+
+
+### Bug Fixes
+
+* **searchable:** unwrap _version field correctly when datastore is enabled ([#9694](https://github.com/aws-amplify/amplify-cli/issues/9694)) ([0ce0646](https://github.com/aws-amplify/amplify-cli/commit/0ce0646b111004f8c2b09fe5debf996df1a43b6e))
+
+
+
+
+
+# [0.13.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.10.8...@aws-amplify/graphql-searchable-transformer@0.13.0) (2022-01-31)
+
+
+
+## 7.6.14 (2022-01-28)
+
+
+### Features
+
+* `[@maps](https://github.com/maps)To` directive to enable renaming models while retaining data ([#9340](https://github.com/aws-amplify/amplify-cli/issues/9340)) ([aedf45d](https://github.com/aws-amplify/amplify-cli/commit/aedf45d9237812d71bb8b56164efe0222ad3d534))
+
+
+
+
+
+## [0.10.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.10.7...@aws-amplify/graphql-searchable-transformer@0.10.8) (2022-01-27)
+
+**Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer
+
+
+
+
+
+## [0.10.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.10.6...@aws-amplify/graphql-searchable-transformer@0.10.7) (2022-01-20)
+
+**Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer
+
+
+
+
+
+## [0.10.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.10.5...@aws-amplify/graphql-searchable-transformer@0.10.6) (2022-01-13)
+
+
+### Bug Fixes
+
+* clean up missing and unused GraphQL v2 dependencies ([#9486](https://github.com/aws-amplify/amplify-cli/issues/9486)) ([a6ca44e](https://github.com/aws-amplify/amplify-cli/commit/a6ca44e6ea0ec0a70b648e399fc3e849ccc2a7c9))
+
+
+
+
+
+## [0.10.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.10.3...@aws-amplify/graphql-searchable-transformer@0.10.5) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* **graphql:** correct typo filterExpression on v2 resolvers ([#9412](https://github.com/aws-amplify/amplify-cli/issues/9412)) ([71bf468](https://github.com/aws-amplify/amplify-cli/commit/71bf4688952a5f43640297bf31ea9c59d1c679c9))
+
+
+
+
+
 ## [0.10.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.10.2...@aws-amplify/graphql-searchable-transformer@0.10.3) (2021-12-21)
 
 

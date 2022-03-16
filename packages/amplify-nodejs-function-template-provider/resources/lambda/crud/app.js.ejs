@@ -9,16 +9,16 @@ See the License for the specific language governing permissions and limitations 
 <%= props.topLevelComment %>
 
 const AWS = require('aws-sdk')
-var awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
-var bodyParser = require('body-parser')
-var express = require('express')
+const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
+const bodyParser = require('body-parser')
+const express = require('express')
 
 AWS.config.update({ region: process.env.TABLE_REGION });
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 let tableName = "<%= props.functionTemplate.parameters.database.tableDefinition.tableName %>";
-if(process.env.ENV && process.env.ENV !== "NONE") {
+if (process.env.ENV && process.env.ENV !== "NONE") {
   tableName = tableName + '-' + process.env.ENV;
 }
 
@@ -32,8 +32,9 @@ const path = "<%= props.functionTemplate.parameters.expressPath %>";
 const UNAUTH = 'UNAUTH';
 const hashKeyPath = '/:' + partitionKeyName;
 const sortKeyPath = hasSortKey ? '/:' + sortKeyName : '';
+
 // declare a new express app
-var app = express()
+const app = express()
 app.use(bodyParser.json())
 app.use(awsServerlessExpressMiddleware.eventContext())
 
@@ -59,7 +60,7 @@ const convertUrlType = (param, type) => {
  ********************************/
 
 app.get(path + hashKeyPath, function(req, res) {
-  var condition = {}
+  const condition = {}
   condition[partitionKeyName] = {
     ComparisonOperator: 'EQ'
   }
@@ -95,7 +96,7 @@ app.get(path + hashKeyPath, function(req, res) {
  *****************************************/
 
 app.get(path + '/object' + hashKeyPath + sortKeyPath, function(req, res) {
-  var params = {};
+  const params = {};
   if (userIdPresent && req.apiGateway) {
     params[partitionKeyName] = req.apiGateway.event.requestContext.identity.cognitoIdentityId || UNAUTH;
   } else {
@@ -151,11 +152,11 @@ app.put(path, function(req, res) {
     Item: req.body
   }
   dynamodb.put(putItemParams, (err, data) => {
-    if(err) {
+    if (err) {
       res.statusCode = 500;
-      res.json({error: err, url: req.url, body: req.body});
+      res.json({ error: err, url: req.url, body: req.body });
     } else{
-      res.json({success: 'put call succeed!', url: req.url, data: data})
+      res.json({ success: 'put call succeed!', url: req.url, data: data })
     }
   });
 });
@@ -175,10 +176,10 @@ app.post(path, function(req, res) {
     Item: req.body
   }
   dynamodb.put(putItemParams, (err, data) => {
-    if(err) {
+    if (err) {
       res.statusCode = 500;
       res.json({error: err, url: req.url, body: req.body});
-    } else{
+    } else {
       res.json({success: 'post call succeed!', url: req.url, data: data})
     }
   });
@@ -189,7 +190,7 @@ app.post(path, function(req, res) {
 ***************************************/
 
 app.delete(path + '/object' + hashKeyPath + sortKeyPath, function(req, res) {
-  var params = {};
+  const params = {};
   if (userIdPresent && req.apiGateway) {
     params[partitionKeyName] = req.apiGateway.event.requestContext.identity.cognitoIdentityId || UNAUTH;
   } else {
@@ -215,7 +216,7 @@ app.delete(path + '/object' + hashKeyPath + sortKeyPath, function(req, res) {
     Key: params
   }
   dynamodb.delete(removeItemParams, (err, data)=> {
-    if(err) {
+    if (err) {
       res.statusCode = 500;
       res.json({error: err, url: req.url});
     } else {
@@ -223,8 +224,9 @@ app.delete(path + '/object' + hashKeyPath + sortKeyPath, function(req, res) {
     }
   });
 });
+
 app.listen(3000, function() {
-    console.log("App started")
+  console.log("App started")
 });
 
 // Export the app object. When executing the application local this does nothing. However,

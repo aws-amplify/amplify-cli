@@ -23,10 +23,15 @@ export async function onSuccess(context: $TSContext) {
   const backendDirPath = pathManager.getBackendDirPath(projectPath);
   const currentBackendDirPath = pathManager.getCurrentCloudBackendDirPath(projectPath);
 
-  fs.ensureDirSync(amplifyDirPath);
-  fs.ensureDirSync(dotConfigDirPath);
-  fs.ensureDirSync(backendDirPath);
-  fs.ensureDirSync(currentBackendDirPath);
+  if (context.exeInfo.isNewProject) {
+    fs.ensureDirSync(amplifyDirPath);
+    fs.ensureDirSync(dotConfigDirPath);
+    fs.ensureDirSync(backendDirPath);
+    fs.ensureDirSync(currentBackendDirPath);
+  } else {
+    // new env init. cleanup currentCloudBackend dir
+    fs.emptyDirSync(currentBackendDirPath);
+  }
 
   const providerPlugins = getProviderPlugins(context);
   const providerOnSuccessTasks: (() => Promise<any>)[] = [];
@@ -200,6 +205,6 @@ function printWelcomeMessage(context: $TSContext) {
   );
   context.print.info('');
   context.print.success('Pro tip:');
-  context.print.info('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything');
+  context.print.info('Try "amplify add api" to create a backend API and then "amplify push" to deploy everything');
   context.print.info('');
 }

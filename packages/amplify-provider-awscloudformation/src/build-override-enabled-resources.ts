@@ -1,9 +1,8 @@
-// Build all the cfn files for categories  that support overrides
-
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
-import { IAmplifyResource } from 'amplify-cli-core';
+import { $TSContext, IAmplifyResource } from 'amplify-cli-core';
 
-export async function buildOverridesEnabledResources(context) {
+// Build all the cfn files for categories  that support overrides
+export async function buildOverridesEnabledResources(context: $TSContext) {
   const resourcesToBuild: IAmplifyResource[] = [];
   const { allResources } = await context.amplify.getResourceStatus();
 

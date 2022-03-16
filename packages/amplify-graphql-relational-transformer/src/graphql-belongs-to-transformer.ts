@@ -1,6 +1,7 @@
 import { DirectiveWrapper, InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
+  TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
@@ -14,6 +15,7 @@ import {
   getFieldsNodes,
   getRelatedType,
   getRelatedTypeIndex,
+  registerHasOneForeignKeyMappings,
   validateModelDirective,
   validateRelatedModelDirective,
 } from './utils';
@@ -46,6 +48,23 @@ export class BelongsToTransformer extends TransformerPluginBase {
 
     validate(args, context as TransformerContextProvider);
     this.directiveList.push(args);
+  };
+
+  /**
+   * During the prepare step, register any foreign keys that are renamed due to a model rename
+   */
+  prepare = (context: TransformerPrepareStepContextProvider) => {
+    this.directiveList
+      .filter(config => config.relationType === 'hasOne')
+      .forEach(config => {
+        // a belongsTo with hasOne behaves the same as hasOne
+        registerHasOneForeignKeyMappings({
+          resourceHelper: context.resourceHelper,
+          thisTypeName: config.object.name.value,
+          thisFieldName: config.field.name.value,
+          relatedTypeName: config.relatedType.name.value,
+        });
+      });
   };
 
   transformSchema = (ctx: TransformerTransformSchemaStepContextProvider): void => {

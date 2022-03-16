@@ -3,6 +3,56 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.9.2...amplify-util-headless-input@1.9.3) (2022-03-07)
+
+
+### Bug Fixes
+
+* map headless auth pw recovery to auto-verified attrs ([#9786](https://github.com/aws-amplify/amplify-cli/issues/9786)) ([f8c9100](https://github.com/aws-amplify/amplify-cli/commit/f8c9100d0ea0dfe87233624883ff8ae8c9bf48a7))
+
+
+
+
+
+## [1.9.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.9.1...amplify-util-headless-input@1.9.2) (2022-02-25)
+
+**Note:** Version bump only for package amplify-util-headless-input
+
+
+
+
+
+## [1.9.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.9.0...amplify-util-headless-input@1.9.1) (2022-02-10)
+
+**Note:** Version bump only for package amplify-util-headless-input
+
+
+
+
+
+# [1.9.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.8.3...amplify-util-headless-input@1.9.0) (2022-01-13)
+
+
+### Features
+
+* **amplify-category-geo:** remove pricing plan walkthrough for Maps and Search ([#9479](https://github.com/aws-amplify/amplify-cli/issues/9479)) ([7b0079d](https://github.com/aws-amplify/amplify-cli/commit/7b0079dff4fdf13df5bd8f90213d4b91ccd2287b))
+
+
+
+
+
+## [1.8.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.8.1...amplify-util-headless-input@1.8.3) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+**Note:** Version bump only for package amplify-util-headless-input
+
+
+
+
+
 ## [1.8.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.6.0...amplify-util-headless-input@1.8.1) (2021-11-15)
 
 **Note:** Version bump only for package amplify-util-headless-input

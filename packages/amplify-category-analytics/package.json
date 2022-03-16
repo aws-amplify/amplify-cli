@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-analytics",
-  "version": "3.2.10",
+  "version": "3.2.22",
   "description": "amplify-cli analytics plugin",
   "repository": {
     "type": "git",
@@ -9,15 +9,20 @@
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
-  "main": "index.js",
+  "main": "lib/index.js",
   "keywords": [
     "amplify",
     "aws"
   ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf lib tsconfig.tsbuildinfo",
+    "watch": "tsc --watch"
+  },
   "dependencies": {
-    "amplify-cli-core": "2.4.5",
+    "amplify-cli-core": "2.4.17",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",
-    "uuid": "^3.4.0"
+    "uuid": "^8.3.2"
   }
 }

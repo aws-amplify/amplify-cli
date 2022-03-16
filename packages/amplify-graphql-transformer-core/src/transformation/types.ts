@@ -36,6 +36,8 @@ export interface ResolversFunctionsAndSchema {
   functions: Record<string, string>;
   // The full GraphQL schema.
   schema: string;
+  // List of the user overridden slots
+  userOverriddenSlots: string[];
 }
 export interface StackMapping {
   [resourceId: string]: string;

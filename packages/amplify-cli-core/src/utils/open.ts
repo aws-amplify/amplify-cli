@@ -1,5 +1,5 @@
 import opn from 'open';
-import ciInfo from 'ci-info';
+import { isCI } from '..';
 import { ChildProcess } from 'child_process';
 
 /**
@@ -9,7 +9,7 @@ import { ChildProcess } from 'child_process';
  * @param options
  */
 export const open = (target: string, options: opn.Options): Promise<ChildProcess | void> => {
-  if (ciInfo.isCI) {
+  if (isCI()) {
     return Promise.resolve();
   }
   return opn(target, options);

@@ -41,9 +41,7 @@ export async function generateFiles(context: $TSContext) {
     default: {},
   });
 
-  if (!context.exeInfo.existingLocalEnvInfo?.noUpdateBackend) {
-    await context.amplify.onCategoryOutputsChange(context, currentAmplifyMeta);
-  }
+  await context.amplify.onCategoryOutputsChange(context, currentAmplifyMeta);
 
   return context;
 }

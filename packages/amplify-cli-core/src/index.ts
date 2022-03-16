@@ -15,6 +15,7 @@ export * from './tags';
 export * from './errors';
 export * from './exitOnNextTick';
 export * from './isPackaged';
+export * from './isCI';
 export * from './cliConstants';
 export * from './deploymentSecretsHelper';
 export * from './deploymentState';
@@ -30,6 +31,7 @@ export * from './category-interfaces';
 export * from './customPoliciesUtils';
 export * from './utils/doc-links';
 export * from './utils/gql-transformer-version';
+export * from './spinner';
 
 // Temporary types until we can finish full type definition across the whole CLI
 

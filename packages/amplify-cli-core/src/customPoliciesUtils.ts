@@ -3,7 +3,7 @@ import { pathManager, stateManager } from './state-manager';
 import Ajv from 'ajv';
 import { EOL } from 'os';
 import * as _ from 'lodash';
-import { printer } from 'amplify-prompts';
+import { formatter, printer } from 'amplify-prompts';
 import { JSONUtilities } from './jsonUtilities';
 import { CustomPoliciesFormatError } from './errors';
 
@@ -103,14 +103,13 @@ function validateCustomPolicies(data: CustomIAMPolicies, categoryName: string, r
   const validatePolicy = ajv.compile(CustomIAMPoliciesSchema);
   const valid = validatePolicy(data);
   if (!valid) {
-    let errorMessage = `Invalid custom IAM policies in the ${resourceName} ${categoryName}.\n
-    Edit <project-dir>/amplify/backend/function/${resourceName}/custom-policies.json to fix
-    Learn more about custom IAM policies for ${categoryName}: https://docs.amplify.aws/function/custom-policies\n`;
-    if (validatePolicy && validatePolicy.errors) {
-      errorMessage += validatePolicy.errors?.map((error: Ajv.ErrorObject) => error.message).join(EOL);
-    }
-
-    throw new CustomPoliciesFormatError(errorMessage);
+    printer.error(`${resourceName} ${categoryName} custom-policies.json failed validation:`);
+    formatter.list((validatePolicy?.errors || []).map(err => `${err.dataPath} ${err.message}`));
+    throw new CustomPoliciesFormatError(`
+      Invalid custom IAM policies for ${resourceName} ${categoryName}.
+      See details above and fix errors in <project-dir>/amplify/backend/${categoryName}/${resourceName}/custom-policies.json.
+      Learn more about custom IAM policies: https://docs.amplify.aws/cli/function/#access-existing-aws-resource-from-lambda-function
+    `);
   }
 
   for (const customPolicy of data) {
