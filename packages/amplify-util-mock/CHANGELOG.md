@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.11-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.10...amplify-util-mock@4.3.11-beta.0) (2022-03-16)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** expand [@auth](https://github.com/auth) directive to explicit set of allowed operations ([#9859](https://github.com/aws-amplify/amplify-cli/issues/9859)) ([e44ed18](https://github.com/aws-amplify/amplify-cli/commit/e44ed189b2c94230cbd5674606ffa488cb6c7bfe))
+
+
+
+
+
 ## [4.3.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.9...amplify-util-mock@4.3.10) (2022-03-14)
 
 **Note:** Version bump only for package amplify-util-mock

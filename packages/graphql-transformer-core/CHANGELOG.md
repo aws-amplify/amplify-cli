@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.4.10-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.4.9...graphql-transformer-core@7.4.10-beta.0) (2022-03-16)
+
+
+### Bug Fixes
+
+* remove undeclared reference on a type from amplify-provider-awscloudformation from test ([#9979](https://github.com/aws-amplify/amplify-cli/issues/9979)) ([96dd9cc](https://github.com/aws-amplify/amplify-cli/commit/96dd9cca6962dd053f98ac586cce5a707da6d19e))
+
+
+
+
+
 ## [7.4.9](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.4.8...graphql-transformer-core@7.4.9) (2022-03-14)
 
 **Note:** Version bump only for package graphql-transformer-core

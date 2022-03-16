@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.26-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.25...amplify-migration-tests@4.4.26-beta.0) (2022-03-16)
+
+
+### Bug Fixes
+
+* allow init with auth role name overrides (ref [#9643](https://github.com/aws-amplify/amplify-cli/issues/9643)) ([#9688](https://github.com/aws-amplify/amplify-cli/issues/9688))  ([dbf9cf5](https://github.com/aws-amplify/amplify-cli/commit/dbf9cf52f19c824d868b30ff50b4c309be58ff86))
+
+
+
+
+
 ## [4.4.25](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.24...amplify-migration-tests@4.4.25) (2022-03-14)
 
 
