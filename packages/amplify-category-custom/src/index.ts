@@ -31,12 +31,11 @@ export async function transformCategoryStack(context: $TSContext, resource: IAmp
 }
 
 export async function getPermissionPolicies(context: $TSContext, resourceOpsMapping: $TSAny) {
-
   const permissionPolicies: any[] = [];
   const resourceAttributes: any[] = [];
 
   Object.keys(resourceOpsMapping).forEach(resourceName => {
-    const customResourceFilePath = path.join(context.amplify.pathManager.getBackendDirPath(), categoryName, resourceName, "resources.json");
+    const customResourceFilePath = path.join(context.amplify.pathManager.getBackendDirPath(), categoryName, resourceName, 'resources.json');
     let customResource = context.amplify.readJsonFile(customResourceFilePath);
 
     let customResourceJSON = JSON.stringify(customResource);
@@ -46,26 +45,31 @@ export async function getPermissionPolicies(context: $TSContext, resourceOpsMapp
 
     customResource = JSON.parse(customResourceJSON);
 
-    const actions: string[] = [];
-
     const crudOptions = resourceOpsMapping[resourceName];
 
-    crudOptions.forEach((crudOption: string) => {
-      actions.push(
-        ...customResource.policy.actions[crudOption]
-      );
-    });
+    if (customResource.policies) {
+      crudOptions.forEach((crudOption: string) => {
+        const policies = customResource.policies[crudOption].map((policy: any) => {
+          if (!policy.Effect) {
+            return {
+              Effect: "Allow",
+              Action: policy.Action,
+              Resource: policy.Resource
+            }
+          }
+          return policy;
+        });
 
-    const policy = {
-      Effect: 'Allow',
-      Action: actions,
-      Resource: [
-        ...customResource.policy.resources
-      ],
-    }
+        for (const policy of policies) {
+          if (!policy.Action || !policy.Resource) {
+            printer.error(`Invalid policy in resources.json for ${categoryName}/${resourceName}.`);
+          }
 
-    if (actions.length > 0) {
-      permissionPolicies.push(policy);
+          permissionPolicies.push(policy);
+        }
+      });
+    } else {
+      printer.info(`No policies found for ${categoryName}/${resourceName}.`);
     }
 
     const attributes = customResource.attributes;
@@ -74,8 +78,8 @@ export async function getPermissionPolicies(context: $TSContext, resourceOpsMapp
       resourceAttributes.push({
         resourceName,
         attributes,
-        category: categoryName
-      })
+        category: categoryName,
+      });
     }
   });
 
