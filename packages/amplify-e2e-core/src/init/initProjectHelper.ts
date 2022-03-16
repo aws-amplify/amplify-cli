@@ -355,9 +355,6 @@ export function updatedInitNewEnvWithProfile(cwd: string, s: { envName: string }
     spawn(getCLIPath(), ['init'], {
       cwd,
       stripColors: true,
-      env: {
-        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-      },
     })
       .wait('Do you want to use an existing environment?')
       .sendConfirmNo()

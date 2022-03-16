@@ -21,10 +21,12 @@ export const transformCurrentProjectToGitPulledProject = (projRoot: string) => {
     });
     dirPath.forEach(file => {
       try {
-        if (fs.existsSync(file) && fs.lstatSync(file).isDirectory()) {
-          fs.removeSync(file);
-        } else {
-          fs.unlinkSync(file);
+        if (fs.existsSync(file)) {
+          if (fs.lstatSync(file).isDirectory()) {
+            fs.removeSync(file);
+          } else {
+            fs.unlinkSync(file);
+          }
         }
       } catch (err) {}
     });
