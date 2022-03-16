@@ -20,7 +20,7 @@
     "jsx": "react-jsx",
     "noImplicitAny": false,
     "noFallthroughCasesInSwitch": true,
-    "useUnknownInCatchVariables":false,
+    "useUnknownInCatchVariables": false,
   },
   "include": [
     "src"

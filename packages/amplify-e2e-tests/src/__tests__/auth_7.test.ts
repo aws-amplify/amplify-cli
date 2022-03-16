@@ -2,21 +2,11 @@ import {
   initJSProjectWithProfile,
   deleteProject,
   amplifyPushAuth,
-  addHeadlessAuth,
-  updateHeadlessAuth,
-  removeHeadlessAuth,
-  getCloudBackendConfig,
   headlessAuthImport,
+  createNewProjectDir,
+  deleteProjectDir
 } from 'amplify-e2e-core';
-import { addAuthWithDefault, getBackendAmplifyMeta } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getUserPool } from 'amplify-e2e-core';
-import {
-  AddAuthRequest,
-  CognitoUserPoolSigninMethod,
-  CognitoUserProperty,
-  ImportAuthRequest,
-  UpdateAuthRequest,
-} from 'amplify-headless-interface';
+import { ImportAuthRequest } from 'amplify-headless-interface';
 import _ from 'lodash';
 import {
   expectAuthProjectDetailsMatch,
@@ -45,7 +35,7 @@ describe('headless auth', () => {
   });
 
   describe(' import', () => {
-    let ogProjectSettings: {name: string};
+    let ogProjectSettings: { name: string };
     let ogProjectRoot: string;
 
     beforeEach(async () => {

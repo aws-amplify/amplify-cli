@@ -13,6 +13,7 @@ import { $TSAny, $TSContext, JSONUtilities, pathManager, readCFNTemplate } from 
 import { DEPLOYMENT_MECHANISM } from '../base-api-stack';
 import { setExistingSecretArns } from './containers/set-existing-secret-arns';
 import { category } from '../../../category-constants';
+import * as cdk from '@aws-cdk/core';
 
 export const cfnFileName = (resourceName: string) => `${resourceName}-cloudformation-template.json`;
 
@@ -290,7 +291,17 @@ export async function processDockerConfig(
         version: uuid(),
       });
 
-      secretsArns.set(secretName, secretArn);
+      const [prefix,] = secretArn.toString().split(ssmSecretName);
+      const secretArnRef = cdk.Fn.join('', [
+        prefix,
+        cdk.Fn.ref('rootStackName'),
+        '-',
+        resourceName,
+        '-',
+        secretName,
+      ]);
+
+      secretsArns.set(secretName, secretArnRef);
     }
   } else {
     const { cfnTemplate } = readCFNTemplate(path.join(pathManager.getBackendDirPath(), category, resourceName, cfnFileName(resourceName)));

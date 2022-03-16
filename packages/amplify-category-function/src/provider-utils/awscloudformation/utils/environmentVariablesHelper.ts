@@ -1,10 +1,11 @@
 import path from 'path';
 import _ from 'lodash';
-import uuid from 'uuid';
+import * as uuid from 'uuid';
 import inquirer from 'inquirer';
 import { $TSContext, stateManager, pathManager, JSONUtilities, exitOnNextTick } from 'amplify-cli-core';
 import { functionParametersFileName } from './constants';
 import { categoryName } from '../../../constants';
+import { formatter, maxLength, printer, prompter } from 'amplify-prompts';
 
 export const validKey = new RegExp(/^[a-zA-Z0-9_]+$/);
 
@@ -34,13 +35,13 @@ export const getStoredEnvironmentVariables = (resourceName: string, currentEnvNa
   return environmentVariables;
 };
 
-export const saveEnvironmentVariables = (context: $TSContext, resourceName: string, newEnvironmentVariables: Record<string, string>) => {
+export const saveEnvironmentVariables = (resourceName: string, newEnvironmentVariables: Record<string, string>) => {
   const currentEnvironmentVariables = getStoredEnvironmentVariables(resourceName);
   _.each(currentEnvironmentVariables, (_, key) => {
     deleteEnvironmentVariable(resourceName, key);
   });
   _.each(newEnvironmentVariables, (value, key) => {
-    setEnvironmentVariable(context, resourceName, key, value);
+    setEnvironmentVariable(resourceName, key, value);
   });
 };
 
@@ -170,55 +171,53 @@ export const ensureEnvironmentVariableValues = async (context: $TSContext) => {
   if (functionNames.length === 0) {
     return;
   }
-  let printedMessage = false;
 
-  for (const functionName of functionNames) {
-    const storedList = getStoredList(functionName);
-    const storedKeyValue = getStoredKeyValue(functionName);
-    for (const item of storedList) {
-      const envName = item.environmentVariableName;
-      const keyName = item.cloudFormationParameterName;
-      if (storedKeyValue.hasOwnProperty(keyName)) continue;
-      if (!printedMessage) {
-        if (yesFlagSet) {
-          const errMessage = `An error occurred pushing an env "${currentEnvName}" due to missing environment variable values`;
-          context.print.error(errMessage);
-          await context.usageData.emitError(new Error(errMessage));
-          exitOnNextTick(1);
-        } else {
-          context.print.info('');
-          context.print.info('Some Lambda function environment variables are defined but missing values.');
-          context.print.info('');
-        }
-        printedMessage = true;
-      }
-
-      const newValueQuestion: inquirer.InputQuestion = {
-        type: 'input',
-        name: 'newValue',
-        message: `Enter the missing environment variable value of ${envName} in ${functionName}:`,
-        validate: input => {
-          if (input.length >= 2048) {
-            return 'The value must be 2048 characters or less';
-          }
-          return true;
-        },
+  const functionConfigMissingEnvVars = functionNames
+    .map(funcName => {
+      const storedList = getStoredList(funcName);
+      const keyValues = getStoredKeyValue(funcName);
+      return {
+        funcName,
+        existingKeyValues: keyValues,
+        missingEnvVars: storedList.filter(({ cloudFormationParameterName: keyName }) => !keyValues.hasOwnProperty(keyName)),
       };
-      const { newValue } = await inquirer.prompt(newValueQuestion);
-      setStoredKeyValue(functionName, {
-        ...storedKeyValue,
-        [keyName]: newValue,
+    })
+    .filter(envVars => envVars.missingEnvVars.length);
+
+  if (_.isEmpty(functionConfigMissingEnvVars)) {
+    return;
+  }
+
+  // there are some missing env vars
+
+  if (yesFlagSet) {
+    // in this case, we can't prompt for missing values, so fail gracefully
+    const errMessage = `Cannot push Amplify environment "${currentEnvName}" due to missing Lambda function environment variable values. Rerun 'amplify push' without '--yes' to fix.`;
+    printer.error(errMessage);
+    const missingEnvVarsMessage = functionConfigMissingEnvVars.map(({ missingEnvVars, funcName }) => {
+      const missingEnvVarsString = missingEnvVars.map(missing => missing.environmentVariableName).join(', ');
+      return `Function ${funcName} is missing values for environment variables: ${missingEnvVarsString}`;
+    });
+    formatter.list(missingEnvVarsMessage);
+    await context.usageData.emitError(new Error(errMessage));
+    exitOnNextTick(1);
+  }
+
+  printer.info('Some Lambda function environment variables are missing values in this Amplify environment.');
+
+  // prompt for the missing env vars
+  for (const { funcName, existingKeyValues: keyValues, missingEnvVars } of functionConfigMissingEnvVars) {
+    for (const { cloudFormationParameterName: cfnName, environmentVariableName: envVarName } of missingEnvVars) {
+      const newValue = await prompter.input(`Enter the missing environment variable value of ${envVarName} in ${funcName}:`, {
+        validate: maxLength(2048),
       });
+      keyValues[cfnName] = newValue;
     }
+    setStoredKeyValue(funcName, keyValues);
   }
 };
 
-const setEnvironmentVariable = (
-  context: $TSContext,
-  resourceName: string,
-  newEnvironmentVariableKey: string,
-  newEnvironmentVariableValue: string,
-): void => {
+const setEnvironmentVariable = (resourceName: string, newEnvironmentVariableKey: string, newEnvironmentVariableValue: string): void => {
   const newList = getStoredList(resourceName);
   const newReferences = getStoredReferences(resourceName);
   const newParameters = getStoredParameters(resourceName);

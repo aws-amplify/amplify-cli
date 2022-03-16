@@ -4,12 +4,12 @@ import { category } from '../constants';
 import { updateDefaultMapWalkthrough, createMapWalkthrough, updateMapWalkthrough } from '../service-walkthroughs/mapWalkthrough';
 import { convertToCompleteMapParams, MapParameters } from '../service-utils/mapParams';
 import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { printNextStepsSuccessMessage, setProviderContext, insufficientInfoForUpdateError } from './index';
+import { printNextStepsSuccessMessage, setProviderContext } from './index';
 import { ServiceName } from '../service-utils/constants';
 import { printer } from 'amplify-prompts';
 import { getMapStyleComponents } from '../service-utils/mapParams';
-import { MapConfiguration, MapModification } from 'amplify-headless-interface';
-import { checkAnyGeoResourceExists, checkGeoResourceExists } from '../service-utils/resourceUtils';
+import { GeoServiceConfiguration, GeoServiceModification } from 'amplify-headless-interface';
+import { merge } from '../service-utils/resourceUtils';
 
 export const addMapResource = async (
   context: $TSContext
@@ -69,14 +69,13 @@ export const removeMapResource = async (
 
 export const addMapResourceHeadless = async (
   context: $TSContext,
-  config: MapConfiguration
+  config: GeoServiceConfiguration
 ): Promise<string> => {
   // initialize the Map parameters
   let mapParams: Partial<MapParameters> = {
     providerContext: setProviderContext(context, ServiceName.Map),
     name: config.name,
     accessType: config.accessType,
-    pricingPlan: config.pricingPlan,
     isDefault: config.setAsDefault,
     ...getMapStyleComponents(config.mapStyle)
   };
@@ -86,15 +85,16 @@ export const addMapResourceHeadless = async (
 
 export const updateMapResourceHeadless = async (
   context: $TSContext,
-  config: MapModification
+  config: GeoServiceModification
 ): Promise<string> => {
   // initialize the Map parameters
   let mapParams: Partial<MapParameters> = {
     providerContext: setProviderContext(context, ServiceName.Map),
     name: config.name,
     accessType: config.accessType,
-    isDefault: config.setAsDefault,
+    isDefault: config.setAsDefault
   };
+  mapParams = merge(mapParams, await getCurrentMapParameters(config.name));
   return await updateMapResourceWithParams(context, mapParams);
 }
 
@@ -113,16 +113,10 @@ export const updateMapResourceWithParams = async (
   context: $TSContext,
   mapParams: Partial<MapParameters>
 ): Promise<string> => {
-  if (mapParams.name && mapParams.isDefault !== undefined && mapParams.accessType) {
-    modifyMapResource(context, {
-      accessType: mapParams.accessType,
-      name: mapParams.name,
-      isDefault: mapParams.isDefault
-    });
-  } else {
-    throw insufficientInfoForUpdateError(ServiceName.Map);
-  }
+  const completeParameters: MapParameters = convertToCompleteMapParams(mapParams);
+  await modifyMapResource(context, completeParameters);
+
   printer.success(`Successfully updated resource ${mapParams.name} locally.`);
   printNextStepsSuccessMessage(context);
-  return mapParams.name;
+  return completeParameters.name;
 }

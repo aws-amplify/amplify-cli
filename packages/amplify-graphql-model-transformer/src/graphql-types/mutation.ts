@@ -44,8 +44,10 @@ export const makeUpdateInputField = (
   // make all the fields optional
   input.fields.forEach(f => f.makeNullable());
 
-  // Add id field and make it optional
-  if (hasIdField) {
+  if (!hasIdField) {
+    // Add id field and make it optional
+    input.addField(InputFieldWrapper.create('id', 'ID', false));
+  } else {
     const idField = input.fields.find(f => f.name === 'id');
     if (idField) {
       idField.makeNonNullable();

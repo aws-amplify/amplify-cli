@@ -1,4 +1,4 @@
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { ConflictHandlerType, GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { SearchableModelTransformer } from '../';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { anything, countResources, expect as cdkExpect, haveResource } from '@aws-cdk/assert';
@@ -51,6 +51,33 @@ test('Test SearchableModelTransformer vtl', () => {
   const out = transformer.transform(validSchema);
   expect(parse(out.schema)).toBeDefined();
   expect(out.resolvers).toMatchSnapshot();
+});
+
+test('Test SearchableModelTransformer with datastore enabled vtl', () => {
+  const validSchema = `
+    type Post @model @searchable {
+        id: ID!
+        title: String!
+        createdAt: String
+        updatedAt: String
+    }
+    `;
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+    featureFlags,
+    resolverConfig: {
+      project: {
+        ConflictHandler: ConflictHandlerType.AUTOMERGE,
+        ConflictDetection: 'VERSION',
+      }
+    }
+  });
+
+  const out = transformer.transform(validSchema);
+  expect(parse(out.schema)).toBeDefined();
+  expect(out.resolvers['Query.searchPosts.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Query.searchPosts.res.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Query.searchPosts.res.vtl']).toContain(`$util.qr($row.put("_version", $entry.get("_version")))`);
 });
 
 test('Test SearchableModelTransformer with query overrides', () => {

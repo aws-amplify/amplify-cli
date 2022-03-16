@@ -5,11 +5,11 @@ import * as fs from 'fs-extra';
 import xml from 'xml';
 import * as bodyParser from 'body-parser';
 import * as convert from 'xml-js';
-import e2p from 'event-to-promise';
+import { fromEvent } from 'promise-toolbox';
 import serveStatic from 'serve-static';
 import * as glob from 'glob';
 import o2x from 'object-to-xml';
-import uuid from 'uuid';
+import { v4 as uuid } from 'uuid';
 import etag from 'etag';
 import { EventEmitter } from 'events';
 
@@ -60,7 +60,7 @@ export class StorageServer extends EventEmitter {
 
     this.server = this.app.listen(this.config.port);
 
-    return e2p(this.server, 'listening').then(() => {
+    return fromEvent(this.server, 'listening').then(() => {
       this.connection = this.server.address();
       this.url = `http://localhost:${this.connection.port}`;
       return this.server;

@@ -91,10 +91,14 @@ describe('amplify add/update storage(S3)', () => {
   });
 
   it('init a project and add S3 bucket with user pool groups and then update S3 bucket to add trigger', async () => {
+    const settings = {
+      userGroup1: 'Admins',
+      userGroup2: 'Users',
+    };
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithGroupsAndAdminAPI(projRoot, {});
-    await addS3WithGroupAccess(projRoot, {});
-    await updateS3AddTriggerNewFunctionWithFunctionExisting(projRoot, {});
+    await addS3WithGroupAccess(projRoot, settings);
+    await updateS3AddTriggerNewFunctionWithFunctionExisting(projRoot, settings);
     await amplifyPushAuth(projRoot);
     await validate(projRoot);
   });

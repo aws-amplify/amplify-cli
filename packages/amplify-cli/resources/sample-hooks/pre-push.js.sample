@@ -7,7 +7,7 @@
  */
 
 /**
- * @param data { { amplify: { environment: string, command: string, subCommand: string, argv: string[] } } }
+ * @param data { { amplify: { environment: { envName: string, projectPath: string, defaultEditor: string }, command: string, subCommand: string, argv: string[] } } }
  * @param error { { message: string, stack: string } }
  */
 const hookHandler = async (data, error) => {

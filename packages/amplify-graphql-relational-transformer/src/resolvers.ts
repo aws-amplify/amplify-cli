@@ -1,7 +1,5 @@
-import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
+import { getKeySchema, getTable, MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { DynamoDbDataSource } from '@aws-cdk/aws-appsync';
-import { Table } from '@aws-cdk/aws-dynamodb';
 import * as cdk from '@aws-cdk/core';
 import assert from 'assert';
 import { ObjectTypeDefinitionNode } from 'graphql';
@@ -39,6 +37,7 @@ import {
   NONE_VALUE,
   ResolverResourceIDs,
   ResourceConstants,
+  setArgs,
   toCamelCase,
 } from 'graphql-transformer-common';
 import { HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from './types';
@@ -95,10 +94,11 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
     totalExpressionValues[':sortKeyName'] = buildKeyValueExpression(localFields[1], object);
   }
 
+  const resolverResourceId = ResolverResourceIDs.ResolverResourceID(object.name.value, field.name.value);
   const resolver = ctx.resolvers.generateQueryResolver(
     object.name.value,
     field.name.value,
-    ResolverResourceIDs.ResolverResourceID(object.name.value, field.name.value),
+    resolverResourceId,
     dataSource as any,
     MappingTemplate.s3MappingTemplateFromString(
       print(
@@ -155,7 +155,7 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
     ),
   );
 
-  resolver.mapToStack(getConnectionStack(ctx));
+  resolver.mapToStack(ctx.stackManager.getStackFor(resolverResourceId, CONNECTION_STACK));
   ctx.resolvers.addResolver(object.name.value, field.name.value, resolver);
 }
 
@@ -187,13 +187,14 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
   }
   // add setup filter to query
   setup.push(
+    setArgs,
     ifElse(
       not(isNullOrEmpty(authFilter)),
       compoundExpression([
         set(ref('filter'), authFilter),
-        iff(not(isNullOrEmpty(ref('ctx.args.filter'))), set(ref('filter'), obj({ and: list([ref('filter'), ref('ctx.args.filter')]) }))),
+        iff(not(isNullOrEmpty(ref('args.filter'))), set(ref('filter'), obj({ and: list([ref('filter'), ref('args.filter')]) }))),
       ]),
-      iff(not(isNullOrEmpty(ref('ctx.args.filter'))), set(ref('filter'), ref('ctx.args.filter'))),
+      iff(not(isNullOrEmpty(ref('args.filter'))), set(ref('filter'), ref('args.filter'))),
     ),
     iff(
       not(isNullOrEmpty(ref('filter'))),
@@ -206,8 +207,8 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
           not(methodCall(ref('util.isNullOrBlank'), ref('filterExpression.expression'))),
           compoundExpression([
             iff(
-              equals(methodCall(ref('filterEpression.expressionValues.size')), int(0)),
-              qref(methodCall(ref('filterEpression.remove'), str('expressionValues'))),
+              equals(methodCall(ref('filterExpression.expressionValues.size')), int(0)),
+              qref(methodCall(ref('filterExpression.remove'), str('expressionValues'))),
             ),
             set(ref('filter'), ref('filterExpression')),
           ]),
@@ -233,10 +234,11 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
   }
 
   const queryObj = DynamoDBMappingTemplate.query(queryArguments);
+  const resolverResourceId = ResolverResourceIDs.ResolverResourceID(object.name.value, field.name.value);
   const resolver = ctx.resolvers.generateQueryResolver(
     object.name.value,
     field.name.value,
-    ResolverResourceIDs.ResolverResourceID(object.name.value, field.name.value),
+    resolverResourceId,
     dataSource as any,
     MappingTemplate.s3MappingTemplateFromString(
       print(
@@ -262,7 +264,7 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
     ),
   );
 
-  resolver.mapToStack(getConnectionStack(ctx));
+  resolver.mapToStack(ctx.stackManager.getStackFor(resolverResourceId, CONNECTION_STACK));
   ctx.resolvers.addResolver(object.name.value, field.name.value, resolver);
 }
 
@@ -306,24 +308,6 @@ function makeExpression(keySchema: any[], connectionAttributes: string[]): Objec
   });
 }
 
-function getTable(ctx: TransformerContextProvider, object: ObjectTypeDefinitionNode): Table {
-  const ddbDataSource = ctx.dataSources.get(object) as DynamoDbDataSource;
-  const tableName = ModelResourceIDs.ModelTableResourceID(object.name.value);
-  const table = ddbDataSource.ds.stack.node.findChild(tableName) as Table;
-
-  assert(table);
-  return table;
-}
-
-function getKeySchema(table: any, indexName?: string): any {
-  return (
-    (
-      table.globalSecondaryIndexes.find((gsi: any) => gsi.indexName === indexName) ??
-      table.localSecondaryIndexes.find((gsi: any) => gsi.indexName === indexName)
-    )?.keySchema ?? table.keySchema
-  );
-}
-
 function condenseRangeKey(fields: string[]): string {
   return fields.join(ModelResourceIDs.ModelCompositeKeySeparator());
 }
@@ -337,11 +321,12 @@ export function updateTableForConnection(config: HasManyDirectiveConfiguration, 
   }
 
   const { field, object, relatedType } = config;
-  const connectionName = getConnectionAttributeName(object.name.value, field.name.value);
+  const mappedObjectName = ctx.resourceHelper.getModelNameMapping(object.name.value);
+  const connectionName = getConnectionAttributeName(mappedObjectName, field.name.value);
   const table = getTable(ctx, relatedType) as any;
   const gsis = table.globalSecondaryIndexes;
 
-  indexName = `gsi-${object.name.value}.${field.name.value}`;
+  indexName = `gsi-${mappedObjectName}.${field.name.value}`;
   config.indexName = indexName;
 
   // Check if the GSI already exists.
@@ -384,12 +369,4 @@ function appendIndex(list: any, newIndex: any): any[] {
   }
 
   return [newIndex];
-}
-
-function getConnectionStack(ctx: TransformerContextProvider): cdk.Stack {
-  if (ctx.stackManager.hasStack(CONNECTION_STACK)) {
-    return ctx.stackManager.getStack(CONNECTION_STACK);
-  }
-
-  return ctx.stackManager.createStack(CONNECTION_STACK);
 }

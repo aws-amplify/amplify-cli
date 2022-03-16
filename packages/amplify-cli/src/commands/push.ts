@@ -1,8 +1,10 @@
-import sequential from 'promise-sequential';
-import ora from 'ora';
-import { $TSAny, $TSContext, $TSObject, stateManager, exitOnNextTick, ConfigurationError } from 'amplify-cli-core';
-import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
+import { $TSAny, $TSContext, $TSObject, ConfigurationError, exitOnNextTick, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
+import ora from 'ora';
+import sequential from 'promise-sequential';
+import { notifyFieldAuthSecurityChange, notifySecurityEnhancement } from '../extensions/amplify-helpers/auth-notifications';
+import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
+import { showTroubleshootingURL } from './help';
 
 const spinner = ora('');
 
@@ -29,6 +31,9 @@ async function syncCurrentCloudBackend(context: $TSContext) {
       const providerModule = require(providerPlugins[provider]);
       pullCurrentCloudTasks.push(() => providerModule.initEnv(context, amplifyMeta.providers[provider]));
     });
+
+    await notifySecurityEnhancement(context);
+    await notifyFieldAuthSecurityChange(context);
 
     spinner.start(`Fetching updates to backend environment: ${currentEnv} from the cloud.`);
     await sequential(pullCurrentCloudTasks);
@@ -66,6 +71,7 @@ export const run = async (context: $TSContext) => {
     const message = e.name === 'GraphQLError' ? e.toString() : e.message;
     printer.error(`An error occurred during the push operation: ${message}`);
     await context.usageData.emitError(e);
+    showTroubleshootingURL();
     exitOnNextTick(1);
   }
 };

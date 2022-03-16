@@ -13,6 +13,25 @@ const FILE_EXTENSION_MAP = {
   angular: 'graphql',
 };
 
+const AMPLIFY_RESERVED_EXPORT_KEYS = [
+  // cognito
+  'Auth',
+  'CredentialsProvider',
+  'CognitoUserPool',
+  'GoogleSignIn',
+  'FacebookSignIn',
+  // s3
+  'S3TransferUtility',
+  // Analytics
+  'PinpointAnalytics',
+  'PinpointTargeting',
+  // Others
+  'DynamoDBObjectMapper',
+  'AppSync',
+  'Lex',
+  'Sumerian',
+];
+
 const fileNames = ['queries', 'mutations', 'subscriptions'];
 
 function deleteAmplifyConfig(context) {
@@ -158,11 +177,13 @@ function getCurrentAWSConfig(context) {
 
 function getCustomConfigs(cloudAWSConfig, currentAWSConfig) {
   const customConfigs = {};
-  Object.keys(currentAWSConfig).forEach(key => {
-    if (!cloudAWSConfig[key]) {
-      customConfigs[key] = currentAWSConfig[key];
-    }
-  });
+  Object.keys(currentAWSConfig)
+    .filter(k => !AMPLIFY_RESERVED_EXPORT_KEYS.includes(k))
+    .forEach(key => {
+      if (!cloudAWSConfig[key]) {
+        customConfigs[key] = currentAWSConfig[key];
+      }
+    });
   return customConfigs;
 }
 

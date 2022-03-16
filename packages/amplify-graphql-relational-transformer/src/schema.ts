@@ -156,7 +156,6 @@ export function ensureHasOneConnectionField(
   if (conditionInput) {
     ctx.output.putType(updateFilterConnectionInputWithConnectionField(conditionInput, connectionAttributeName));
   }
-
   config.connectionFields.push(connectionAttributeName);
 }
 
@@ -356,10 +355,10 @@ function makeModelXFilterInputObject(
       const isList = isListType(field.type);
       let filterTypeName = baseType;
 
-      if (isScalar(field.type) || isList) {
-        filterTypeName = isList
-          ? ModelResourceIDs.ModelFilterListInputTypeName(baseType, true)
-          : ModelResourceIDs.ModelScalarFilterInputTypeName(baseType, false);
+      if (isScalar(field.type)) {
+        filterTypeName = ModelResourceIDs.ModelScalarFilterInputTypeName(baseType, false);
+      } else if (isList) {
+        filterTypeName = ModelResourceIDs.ModelFilterListInputTypeName(baseType, true);
       }
 
       return {

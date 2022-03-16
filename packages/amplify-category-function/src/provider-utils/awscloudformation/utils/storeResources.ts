@@ -103,7 +103,7 @@ export async function saveMutableState(
     | FunctionTriggerParameters,
 ) {
   createParametersFile(buildParametersFileObj(parameters), parameters.resourceName || parameters.functionName, functionParametersFileName);
-  saveEnvironmentVariables(context, parameters.resourceName, parameters.environmentVariables);
+  saveEnvironmentVariables(parameters.resourceName, parameters.environmentVariables);
   await syncSecrets(context, parameters);
 }
 

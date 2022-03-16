@@ -13,7 +13,7 @@ import {
   Kind,
   ObjectTypeDefinitionNode,
 } from 'graphql';
-import { isNonNullType, isScalarOrEnum } from 'graphql-transformer-common';
+import { isListType, isNonNullType, isScalarOrEnum } from 'graphql-transformer-common';
 import { constructSyncVTL, replaceDdbPrimaryKey, updateResolvers } from './resolvers';
 import {
   addKeyConditionInputs,
@@ -133,7 +133,7 @@ function validate(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerCont
 
   const enums = ctx.output.getTypeDefinitionsOfKind(Kind.ENUM_TYPE_DEFINITION) as EnumTypeDefinitionNode[];
 
-  if (!isScalarOrEnum(field.type, enums)) {
+  if (!isScalarOrEnum(field.type, enums) || isListType(field.type)) {
     throw new InvalidDirectiveError(`The primary key on type '${object.name.value}.${field.name.value}' cannot be a non-scalar.`);
   }
 
@@ -146,7 +146,7 @@ function validate(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerCont
       );
     }
 
-    if (!isScalarOrEnum(sortField.type, enums)) {
+    if (!isScalarOrEnum(sortField.type, enums) || isListType(sortField.type)) {
       throw new InvalidDirectiveError(
         `The primary key's sort key on type '${object.name.value}.${sortField.name.value}' cannot be a non-scalar.`,
       );

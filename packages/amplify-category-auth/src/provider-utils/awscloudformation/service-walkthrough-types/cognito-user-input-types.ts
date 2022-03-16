@@ -32,7 +32,7 @@ export type ServiceQuestionHeadlessResult = ServiceQuestionsBaseResult &
   SocialProviderResult &
   IdentityPoolResult &
   PasswordPolicyResult &
-  PasswordRecoveryResult &
+  AutoVerifiedAttributesResult &
   MfaResult &
   AdminQueriesResult &
   Triggers;
@@ -102,7 +102,7 @@ export interface IdentityPoolResult {
   audiences?: string[];
 }
 
-export interface PasswordRecoveryResult {
+export interface AutoVerifiedAttributesResult {
   emailVerificationMessage?: string;
   emailVerificationSubject?: string;
   smsVerificationMessage?: string;

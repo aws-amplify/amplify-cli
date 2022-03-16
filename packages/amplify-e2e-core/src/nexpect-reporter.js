@@ -1,6 +1,6 @@
 const fs = require('fs-extra');
 const path = require('path');
-const uuid = require('uuid');
+const { v4: uuid } = require('uuid');
 const localTemplatePath = path.resolve(__dirname, '../dist/index.html');
 
 function imgToBase64(imgPath) {
@@ -72,7 +72,7 @@ class AmplifyCLIExecutionReporter {
           const recordings = mergeCliLog(r, result.CLITestRunner.logs.children, r.ancestorTitles);
 
           const recordingWithPath = recordings.map(r => {
-            const castFile = `${uuid.v4()}.cast`;
+            const castFile = `${uuid()}.cast`;
             const castFilePath = path.join(publicPath, castFile);
             fs.writeFileSync(castFilePath, r.recording);
             const rCopy = { ...r };

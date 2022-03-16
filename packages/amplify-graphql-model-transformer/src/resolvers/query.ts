@@ -21,7 +21,7 @@ import {
   forEach,
   nul,
 } from 'graphql-mapping-template';
-import { ResourceConstants } from 'graphql-transformer-common';
+import { ResourceConstants, setArgs } from 'graphql-transformer-common';
 const authFilter = ref('ctx.stash.authFilter');
 
 /**
@@ -101,7 +101,8 @@ export const generateListRequestTemplate = (): string => {
   const modelQueryObj = 'ctx.stash.modelQueryExpression';
   const indexNameVariable = 'ctx.stash.metadata.index';
   const expression = compoundExpression([
-    set(ref('limit'), methodCall(ref(`util.defaultIfNull`), ref('context.args.limit'), int(100))),
+    setArgs,
+    set(ref('limit'), methodCall(ref(`util.defaultIfNull`), ref('args.limit'), int(100))),
     set(
       ref(requestVariable),
       obj({
@@ -109,14 +110,14 @@ export const generateListRequestTemplate = (): string => {
         limit: ref('limit'),
       }),
     ),
-    iff(ref('context.args.nextToken'), set(ref(`${requestVariable}.nextToken`), ref('context.args.nextToken'))),
+    iff(ref('args.nextToken'), set(ref(`${requestVariable}.nextToken`), ref('args.nextToken'))),
     ifElse(
       not(isNullOrEmpty(authFilter)),
       compoundExpression([
         set(ref('filter'), authFilter),
-        iff(not(isNullOrEmpty(ref('ctx.args.filter'))), set(ref('filter'), obj({ and: list([ref('filter'), ref('ctx.args.filter')]) }))),
+        iff(not(isNullOrEmpty(ref('args.filter'))), set(ref('filter'), obj({ and: list([ref('filter'), ref('args.filter')]) }))),
       ]),
-      iff(not(isNullOrEmpty(ref('ctx.args.filter'))), set(ref('filter'), ref('ctx.args.filter'))),
+      iff(not(isNullOrEmpty(ref('args.filter'))), set(ref('filter'), ref('args.filter'))),
     ),
     iff(
       not(isNullOrEmpty(ref('filter'))),
@@ -129,8 +130,8 @@ export const generateListRequestTemplate = (): string => {
           not(methodCall(ref('util.isNullOrBlank'), ref('filterExpression.expression'))),
           compoundExpression([
             iff(
-              equals(methodCall(ref('filterEpression.expressionValues.size')), int(0)),
-              qref(methodCall(ref('filterEpression.remove'), str('expressionValues'))),
+              equals(methodCall(ref('filterExpression.expressionValues.size')), int(0)),
+              qref(methodCall(ref('filterExpression.remove'), str('expressionValues'))),
             ),
             set(ref(`${requestVariable}.filter`), ref(`filterExpression`)),
           ]),
@@ -146,7 +147,7 @@ export const generateListRequestTemplate = (): string => {
         qref(methodCall(ref(`${requestVariable}.put`), str('operation'), str('Query'))),
         qref(methodCall(ref(`${requestVariable}.put`), str('query'), ref(modelQueryObj))),
         ifElse(
-          and([not(methodCall(ref('util.isNull'), ref('ctx.args.sortDirection'))), equals(ref('ctx.args.sortDirection'), str('DESC'))]),
+          and([not(methodCall(ref('util.isNull'), ref('args.sortDirection'))), equals(ref('args.sortDirection'), str('DESC'))]),
           set(ref(`${requestVariable}.scanIndexForward`), bool(false)),
           set(ref(`${requestVariable}.scanIndexForward`), bool(true)),
         ),
@@ -162,13 +163,14 @@ export const generateListRequestTemplate = (): string => {
 export const generateSyncRequestTemplate = (): string => {
   return printBlock('Sync Request template')(
     compoundExpression([
+      setArgs,
       ifElse(
         not(isNullOrEmpty(authFilter)),
         compoundExpression([
           set(ref('filter'), authFilter),
-          iff(not(isNullOrEmpty(ref('ctx.args.filter'))), set(ref('filter'), obj({ and: list([ref('filter'), ref('ctx.args.filter')]) }))),
+          iff(not(isNullOrEmpty(ref('args.filter'))), set(ref('filter'), obj({ and: list([ref('filter'), ref('args.filter')]) }))),
         ]),
-        iff(not(isNullOrEmpty(ref('ctx.args.filter'))), set(ref('filter'), ref('ctx.args.filter'))),
+        iff(not(isNullOrEmpty(ref('args.filter'))), set(ref('filter'), ref('args.filter'))),
       ),
       iff(
         not(isNullOrEmpty(ref('filter'))),
@@ -181,8 +183,8 @@ export const generateSyncRequestTemplate = (): string => {
             not(methodCall(ref('util.isNullOrBlank'), ref('filterExpression.expression'))),
             compoundExpression([
               iff(
-                equals(methodCall(ref('filterEpression.expressionValues.size')), int(0)),
-                qref(methodCall(ref('filterEpression.remove'), str('expressionValues'))),
+                equals(methodCall(ref('filterExpression.expressionValues.size')), int(0)),
+                qref(methodCall(ref('filterExpression.remove'), str('expressionValues'))),
               ),
               set(ref('filter'), ref('filterExpression')),
             ]),
@@ -193,9 +195,9 @@ export const generateSyncRequestTemplate = (): string => {
         version: str('2018-05-29'),
         operation: str('Sync'),
         filter: ifElse(ref('filter'), ref('util.toJson($filter)'), nul()),
-        limit: ref(`util.defaultIfNull($ctx.args.limit, ${ResourceConstants.DEFAULT_SYNC_QUERY_PAGE_LIMIT})`),
-        lastSync: ref('util.toJson($util.defaultIfNull($ctx.args.lastSync, null))'),
-        nextToken: ref('util.toJson($util.defaultIfNull($ctx.args.nextToken, null))'),
+        limit: ref(`util.defaultIfNull($args.limit, ${ResourceConstants.DEFAULT_SYNC_QUERY_PAGE_LIMIT})`),
+        lastSync: ref('util.toJson($util.defaultIfNull($args.lastSync, null))'),
+        nextToken: ref('util.toJson($util.defaultIfNull($args.nextToken, null))'),
       }),
     ]),
   );
