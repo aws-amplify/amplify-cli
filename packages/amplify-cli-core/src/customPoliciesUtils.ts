@@ -132,7 +132,7 @@ function validateCustomPolicies(data: CustomIAMPolicies, categoryName: string, r
     let errorMessage = '';
 
     for (const resource of resources) {
-      if (typeof resource === 'object') {
+      if (typeof resource !== 'string') {
         continue;
       }
 
