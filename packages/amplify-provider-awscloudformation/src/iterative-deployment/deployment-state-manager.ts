@@ -11,11 +11,15 @@ import {
 import { S3 } from '../aws-utils/aws-s3';
 import { ProviderName } from '../constants';
 
+/**
+ * Deployment state machine implementation
+ *
+ */
 export class DeploymentStateManager implements IDeploymentStateManager {
-  private static stateFileName: string = 'deployment-state.json';
+  private static stateFileName = 'deployment-state.json';
 
   // The direction of advance step, in case of rollback it is reversed.
-  private direction: number = 1;
+  private direction = 1;
   private currentState: DeploymentState;
 
   public static createDeploymentStateManager = async (context: $TSContext): Promise<IDeploymentStateManager> => {
@@ -63,8 +67,8 @@ export class DeploymentStateManager implements IDeploymentStateManager {
     this.currentState.currentStepIndex = 0;
     this.currentState.status = DeploymentStatus.DEPLOYING;
     this.currentState.steps = steps;
-
     this.currentState.steps.forEach(s => {
+      // eslint-disable-next-line no-param-reassign
       s.status = DeploymentStepStatus.WAITING_FOR_DEPLOYMENT;
     });
 
@@ -77,7 +81,6 @@ export class DeploymentStateManager implements IDeploymentStateManager {
     if (this.currentState.status !== DeploymentStatus.ROLLED_BACK && this.currentState.status !== DeploymentStatus.DEPLOYED) {
       this.currentState.finishedAt = new Date().toISOString();
       this.currentState.status = DeploymentStatus.FAILED;
-
       await this.saveState();
     }
   };
@@ -112,7 +115,7 @@ export class DeploymentStateManager implements IDeploymentStateManager {
 
   public advanceStep = async (): Promise<void> => {
     if (!this.isDeploymentInProgress()) {
-      throw new Error(`Cannot advance a deployment when it was not started.`);
+      throw new Error('Cannot advance a deployment when it was not started.');
     }
 
     if (this.direction === 1 && this.getCurrentStep().status !== DeploymentStepStatus.DEPLOYING) {
@@ -162,7 +165,7 @@ export class DeploymentStateManager implements IDeploymentStateManager {
 
     this.direction = -1;
 
-    for (let i = 0; i <= this.currentState.currentStepIndex; i++) {
+    for (let i = 0; i <= this.currentState.currentStepIndex; i += 1) {
       this.currentState.steps[i].status = DeploymentStepStatus.WAITING_FOR_ROLLBACK;
     }
 
@@ -171,14 +174,12 @@ export class DeploymentStateManager implements IDeploymentStateManager {
     await this.saveState();
   };
 
-  public isDeploymentInProgress = (): boolean =>
-    this.currentState.status === DeploymentStatus.DEPLOYING || this.currentState.status === DeploymentStatus.ROLLING_BACK;
+  public isDeploymentInProgress = (): boolean => this.currentState.status === DeploymentStatus.DEPLOYING
+                                                 || this.currentState.status === DeploymentStatus.ROLLING_BACK;
 
   public isDeploymentFinished = (): boolean => this.currentState.finishedAt !== undefined;
 
-  public getStatus = (): DeploymentState | undefined => {
-    return this.currentState;
-  };
+  public getStatus = (): DeploymentState | undefined => this.currentState;
 
   private loadOrCreateState = async (): Promise<void> => {
     const persistedState = await this.loadState();
@@ -214,6 +215,10 @@ export class DeploymentStateManager implements IDeploymentStateManager {
       },
       false,
     );
+  };
+
+  public deleteDeploymentStateFile = async (): Promise<void> => {
+    await this.s3.deleteObject(this.deploymentBucketName, DeploymentStateManager.stateFileName);
   };
 
   private getCurrentStep = (): DeploymentStepState => this.currentState.steps[this.currentState.currentStepIndex];

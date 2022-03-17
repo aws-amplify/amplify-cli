@@ -1,8 +1,29 @@
+/* eslint-disable spellcheck/spell-checker */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-expressions */
+/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable no-param-reassign */
+/* eslint-disable no-prototype-builtins */
+/* eslint-disable consistent-return */
+/* eslint-disable jsdoc/require-description */
+/* eslint-disable no-else-return */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable spellcheck/spell-checker */
+/* eslint-disable no-return-await */
+/* eslint-disable arrow-parens */
+/* eslint-disable no-confusing-arrow */
+/* eslint-disable implicit-arrow-linebreak */
+/* eslint-disable no-await-in-loop */
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable import/order */
+/* eslint-disable import/first */
 import { $TSAny, $TSContext } from 'amplify-cli-core';
 
 import aws from './aws.js';
 import _ from 'lodash';
+
 const providerName = require('../constants').ProviderName;
+
 import { loadConfiguration } from '../configuration-manager';
 import fs from 'fs-extra';
 import ora from 'ora';
@@ -11,11 +32,15 @@ import { ListObjectVersionsOutput, ListObjectVersionsRequest, ObjectIdentifier }
 
 const minChunkSize = 5 * 1024 * 1024; // 5 MB https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3/ManagedUpload.html#minPartSize-property
 const { fileLogger } = require('../utils/aws-logger');
+
 const logger = fileLogger('aws-s3');
 
 // https://stackoverflow.com/questions/52703321/make-some-properties-optional-in-a-typescript-type
 type OptionalExceptFor<T, TRequired extends keyof T> = Partial<T> & Pick<T, TRequired>;
 
+/**
+ *
+ */
 export class S3 {
   private static instance: S3;
   private readonly context: $TSContext;
@@ -27,6 +52,9 @@ export class S3 {
     };
   };
 
+  /**
+   *
+   */
   static async getInstance(context: $TSContext, options = {}): Promise<S3> {
     if (!S3.instance) {
       let cred = {};
@@ -46,6 +74,9 @@ export class S3 {
     this.s3 = new aws.S3({ ...cred, ...options });
   }
 
+  /**
+   *
+   */
   private populateUploadState(): void {
     const projectDetails = this.context.amplify.getProjectDetails();
     const { envName } = this.context.amplify.getEnvInfo();
@@ -61,7 +92,10 @@ export class S3 {
     };
   }
 
-  private attatchBucketToParams(s3Params: $TSAny, envName?: string) {
+  /**
+   *
+   */
+  private attachBucketToParams(s3Params: $TSAny, envName?: string) {
     if (!s3Params.hasOwnProperty('Bucket')) {
       const projectDetails = this.context.amplify.getProjectDetails();
       if (!envName) envName = this.context.amplify.getEnvInfo().envName;
@@ -71,13 +105,16 @@ export class S3 {
     return s3Params;
   }
 
-  async uploadFile(s3Params: $TSAny, showSpinner: boolean = true) {
+  /**
+   *
+   */
+  async uploadFile(s3Params: $TSAny, showSpinner = true) {
     // envName and bucket does not change during execution, cache them into a class level
     // field.
     if (this.uploadState === undefined) {
       this.populateUploadState();
     }
-    let spinner = showSpinner ? ora('Uploading files...') : undefined;
+    const spinner = showSpinner ? ora('Uploading files...') : undefined;
 
     const augmentedS3Params = {
       ...s3Params,
@@ -88,8 +125,8 @@ export class S3 {
     try {
       showSpinner && spinner.start('Uploading files...');
       if (
-        (s3Params.Body instanceof fs.ReadStream && fs.statSync(s3Params.Body.path).size > minChunkSize) ||
-        (Buffer.isBuffer(s3Params.Body) && s3Params.Body.length > minChunkSize)
+        (s3Params.Body instanceof fs.ReadStream && fs.statSync(s3Params.Body.path).size > minChunkSize)
+        || (Buffer.isBuffer(s3Params.Body) && s3Params.Body.length > minChunkSize)
       ) {
         logger('uploadFile.s3.upload', [others])();
         uploadTask = this.s3.upload(augmentedS3Params);
@@ -110,8 +147,11 @@ export class S3 {
     }
   }
 
+  /**
+   *
+   */
   async getFile(s3Params: $TSAny, envName?: string) {
-    s3Params = this.attatchBucketToParams(s3Params, envName);
+    s3Params = this.attachBucketToParams(s3Params, envName);
     const log = logger('s3.getFile', [s3Params]);
     try {
       log();
@@ -123,7 +163,10 @@ export class S3 {
     }
   }
 
-  async createBucket(bucketName: string, throwIfExists: boolean = false): Promise<string | void> {
+  /**
+   *
+   */
+  async createBucket(bucketName: string, throwIfExists = false): Promise<string | void> {
     // Check if bucket exists;
     const params = {
       Bucket: bucketName,
@@ -145,6 +188,12 @@ export class S3 {
     }
   }
 
+  /**
+   * Get all the object versions of all objects in the S3 bucket
+   * @param bucketName - name of s3 bucekt
+   * @param options - list object versions output
+   * @returns Object list
+   */
   async getAllObjectVersions(
     bucketName: string,
     options: OptionalExceptFor<ListObjectVersionsOutput, 'KeyMarker' | 'VersionIdMarker'> = null,
@@ -168,12 +217,15 @@ export class S3 {
     return result;
   }
 
+  /**
+   *
+   */
   public async deleteDirectory(bucketName: string, dirPath: string): Promise<void> {
     logger('deleteDirectory.s3.getAllObjectVersions', [{ BucketName: bucketName }])();
     const allObjects = await this.getAllObjectVersions(bucketName, { Prefix: dirPath });
     const chunkedResult = _.chunk(allObjects, 1000);
     const chunkedResultLength = chunkedResult.length;
-    for (let idx = 0; idx < chunkedResultLength; idx++) {
+    for (let idx = 0; idx < chunkedResultLength; idx += 1) {
       logger(`deleteAllObjects.s3.deleteObjects (${idx} of ${chunkedResultLength})`, [{ Bucket: bucketName }])();
       await this.s3
         .deleteObjects({
@@ -186,12 +238,28 @@ export class S3 {
     }
   }
 
+  /**
+   * Delete the file provided as input
+   * @param bucketName S3 bucket name
+   * @param filePath Path to the file to be deleted
+   */
+  public async deleteObject(bucketName: string, filePath: string): Promise<void> {
+    logger('deleteObject.s3', [{ BucketName: bucketName, FilePath: filePath }])();
+    await this.s3.deleteObject({
+      Bucket: bucketName,
+      Key: filePath,
+    }).promise();
+  }
+
+  /**
+   *
+   */
   public async deleteAllObjects(bucketName: string): Promise<void> {
     logger('deleteAllObjects.s3.getAllObjectVersions', [{ BucketName: bucketName }])();
     const allObjects = await this.getAllObjectVersions(bucketName);
     const chunkedResult = _.chunk(allObjects, 1000);
     const chunkedResultLength = chunkedResult.length;
-    for (let idx = 0; idx < chunkedResultLength; idx++) {
+    for (let idx = 0; idx < chunkedResultLength; idx += 1) {
       logger(`deleteAllObjects.s3.deleteObjects (${idx} of ${chunkedResultLength})`, [{ Bucket: bucketName }])();
       await this.s3
         .deleteObjects({
@@ -204,6 +272,9 @@ export class S3 {
     }
   }
 
+  /**
+   *
+   */
   public async deleteS3Bucket(bucketName: string) {
     logger('deleteS3Bucket.s3.ifBucketExists', [{ BucketName: bucketName }])();
     if (await this.ifBucketExists(bucketName)) {
@@ -214,12 +285,18 @@ export class S3 {
     }
   }
 
+  /**
+   *
+   */
   public async emptyS3Bucket(bucketName: string) {
     if (await this.ifBucketExists(bucketName)) {
       await this.deleteAllObjects(bucketName);
     }
   }
 
+  /**
+   *
+   */
   public async ifBucketExists(bucketName: string) {
     try {
       logger('ifBucketExists.s3.headBucket', [{ BucketName: bucketName }])();
