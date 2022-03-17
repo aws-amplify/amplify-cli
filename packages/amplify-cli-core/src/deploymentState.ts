@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 export type DeploymentState = {
   version: '1';
   startedAt?: string;
@@ -34,15 +35,16 @@ export enum DeploymentStepStatus {
 }
 
 export interface IDeploymentStateManager {
-  startDeployment(steps: DeploymentStepState[]): Promise<boolean>;
-  failDeployment(): Promise<void>;
-  updateStatus(status: DeploymentStatus): Promise<void>;
-  updateCurrentStepStatus(status: DeploymentStepStatus): Promise<void>;
-  startCurrentStep(parameters?: StepStatusParameters): Promise<void>;
-  advanceStep(): Promise<void>;
-  startRollback(): Promise<void>;
+  startDeployment: (steps: DeploymentStepState[]) => Promise<boolean>;
+  failDeployment: () => Promise<void>;
+  updateStatus: (status: DeploymentStatus) => Promise<void>;
+  updateCurrentStepStatus: (status: DeploymentStepStatus) => Promise<void>;
+  startCurrentStep: (parameters?: StepStatusParameters) => Promise<void>;
+  advanceStep: () => Promise<void>;
+  startRollback: () => Promise<void>;
+  deleteDeploymentStateFile: () => Promise<void>;
 
-  isDeploymentInProgress(): boolean;
-  isDeploymentFinished(): boolean;
-  getStatus(): DeploymentState | undefined;
+  isDeploymentInProgress: () => boolean;
+  isDeploymentFinished: () => boolean;
+  getStatus: () => DeploymentState | undefined;
 }
