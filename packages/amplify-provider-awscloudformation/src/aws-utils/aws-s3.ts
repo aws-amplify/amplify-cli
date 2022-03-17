@@ -1,34 +1,23 @@
 /* eslint-disable spellcheck/spell-checker */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable no-param-reassign */
-/* eslint-disable no-prototype-builtins */
-/* eslint-disable consistent-return */
-/* eslint-disable jsdoc/require-description */
-/* eslint-disable no-else-return */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable spellcheck/spell-checker */
-/* eslint-disable no-return-await */
 /* eslint-disable arrow-parens */
-/* eslint-disable no-confusing-arrow */
-/* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable import/order */
-/* eslint-disable import/first */
+
 import { $TSAny, $TSContext } from 'amplify-cli-core';
 
-import aws from './aws.js';
 import _ from 'lodash';
 
-const providerName = require('../constants').ProviderName;
-
-import { loadConfiguration } from '../configuration-manager';
 import fs from 'fs-extra';
 import ora from 'ora';
-import { pagedAWSCall } from './paged-call';
 import { ListObjectVersionsOutput, ListObjectVersionsRequest, ObjectIdentifier } from 'aws-sdk/clients/s3';
+import { pagedAWSCall } from './paged-call';
+import { loadConfiguration } from '../configuration-manager';
+import aws from './aws.js';
+
+const providerName = require('../constants').ProviderName;
 
 const minChunkSize = 5 * 1024 * 1024; // 5 MB https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3/ManagedUpload.html#minPartSize-property
 const { fileLogger } = require('../utils/aws-logger');
@@ -39,7 +28,7 @@ const logger = fileLogger('aws-s3');
 type OptionalExceptFor<T, TRequired extends keyof T> = Partial<T> & Pick<T, TRequired>;
 
 /**
- *
+ * Wrapper class around S3 bucket client API with helper functions to perform CRUD operations.
  */
 export class S3 {
   private static instance: S3;
@@ -53,7 +42,10 @@ export class S3 {
   };
 
   /**
-   *
+   * Static method to create/return the singleton object
+   * @param context - Amplify CLI context
+   * @param options - S3 bucket client options
+   * @returns Promise<S3>  Returns the singleton object of the  S3 client wrapper class.
    */
   static async getInstance(context: $TSContext, options = {}): Promise<S3> {
     if (!S3.instance) {
@@ -75,7 +67,7 @@ export class S3 {
   }
 
   /**
-   *
+   * Populate the uploadState member with the Amplify deployment bucket name
    */
   private populateUploadState(): void {
     const projectDetails = this.context.amplify.getProjectDetails();
@@ -93,9 +85,13 @@ export class S3 {
   }
 
   /**
-   *
+   * Helper function to update S3Params with the deployment bucket name
+   * @param s3Params - S3 params to be updated.
+   * @param envName - Environment for which we need to fetch the S3 bucket.
+   * @returns Updated S3 Params
    */
-  private attachBucketToParams(s3Params: $TSAny, envName?: string) {
+  private attachBucketToParams(s3Params: $TSAny, envName?: string):$TSAny {
+    // eslint-disable-next-line no-prototype-builtins
     if (!s3Params.hasOwnProperty('Bucket')) {
       const projectDetails = this.context.amplify.getProjectDetails();
       if (!envName) envName = this.context.amplify.getEnvInfo().envName;
@@ -106,9 +102,12 @@ export class S3 {
   }
 
   /**
-   *
+   * Upload the given object from local path to the Amplify deployment bucket.
+   * @param s3Params S3 PutObjectCommandInputType
+   * @param showSpinner Flag, if true displays the spinner on the terminal. Must be set to false on headless.
+   * @returns Promise<void>
    */
-  async uploadFile(s3Params: $TSAny, showSpinner = true) {
+  async uploadFile(s3Params: $TSAny, showSpinner = true):Promise<void|string> {
     // envName and bucket does not change during execution, cache them into a class level
     // field.
     if (this.uploadState === undefined) {
@@ -120,9 +119,11 @@ export class S3 {
       ...s3Params,
       ...this.uploadState.s3Params,
     };
-    const { Body, ...others } = augmentedS3Params;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { _Body, ...others } = augmentedS3Params;
     let uploadTask;
     try {
+      // eslint-disable-next-line no-unused-expressions
       showSpinner && spinner.start('Uploading files...');
       if (
         (s3Params.Body instanceof fs.ReadStream && fs.statSync(s3Params.Body.path).size > minChunkSize)
@@ -143,12 +144,16 @@ export class S3 {
       logger('uploadFile.s3', [others])(ex);
       throw ex;
     } finally {
+      // eslint-disable-next-line no-unused-expressions
       showSpinner && spinner.stop();
     }
   }
 
   /**
-   *
+   * Get the specified object from the Amplify deployment bucket.
+   * @param s3Params - input parameters of GetObjectCommandInput type.
+   * @param envName - environment name to be attached to the input-params
+   * @returns Promise<S3.GetObjectOutput> The object read from the S3 bucket.
    */
   async getFile(s3Params: $TSAny, envName?: string) {
     s3Params = this.attachBucketToParams(s3Params, envName);
@@ -164,7 +169,10 @@ export class S3 {
   }
 
   /**
-   *
+   * Create the S3 bucket
+   * @param bucketName - Name of the bucket to be created.( This needs to be globally unique )
+   * @param throwIfExists - If set to true, this function will thrown an exception if the bucket already exists.
+   * @returns Promise<bucketName> of the created bucket.
    */
   async createBucket(bucketName: string, throwIfExists = false): Promise<string | void> {
     // Check if bucket exists;
@@ -182,10 +190,10 @@ export class S3 {
       logger('createBucket.s3.waitFor', ['bucketExists', params])();
       await this.s3.waitFor('bucketExists', params).promise();
       this.context.print.success('S3 bucket successfully created');
-      return bucketName;
     } else if (throwIfExists) {
       throw new Error(`Bucket ${bucketName} already exists`);
     }
+    return bucketName;
   }
 
   /**
@@ -202,24 +210,26 @@ export class S3 {
       async (param, nextToken?) => {
         const parmaWithNextToken = nextToken ? { ...param, ...nextToken } : param;
         logger('getAllObjectKey.s3.listObjectVersions', [parmaWithNextToken])();
-        return await this.s3.listObjectVersions(parmaWithNextToken).promise();
+        const objVersionList = await this.s3.listObjectVersions(parmaWithNextToken).promise();
+        return objVersionList;
       },
       {
         Bucket: bucketName,
         ...options,
       },
       (response?) => response.Versions?.map(({ Key, VersionId }) => ({ Key, VersionId })),
-      async (response?) =>
-        response?.IsTruncated
-          ? { KeyMarker: response.NextKeyMarker, VersionIdMarker: response.NextVersionIdMarker, Prefix: response.Prefix }
-          : undefined,
+      async (response?) => (response?.IsTruncated
+        ? { KeyMarker: response.NextKeyMarker, VersionIdMarker: response.NextVersionIdMarker, Prefix: response.Prefix }
+        : undefined),
     );
     return result;
   }
 
   /**
-   *
-   */
+  * Delete a directory in the S3 bucket
+  * @param bucketName Name of the S3 bucket
+  * @param dirPath Path to the directory to be recursively deleted
+  */
   public async deleteDirectory(bucketName: string, dirPath: string): Promise<void> {
     logger('deleteDirectory.s3.getAllObjectVersions', [{ BucketName: bucketName }])();
     const allObjects = await this.getAllObjectVersions(bucketName, { Prefix: dirPath });
@@ -252,8 +262,9 @@ export class S3 {
   }
 
   /**
-   *
-   */
+  * Delete all objects in the given S3 bucket
+  * @param bucketName - Name of the S3 bucket
+  */
   public async deleteAllObjects(bucketName: string): Promise<void> {
     logger('deleteAllObjects.s3.getAllObjectVersions', [{ BucketName: bucketName }])();
     const allObjects = await this.getAllObjectVersions(bucketName);
@@ -273,7 +284,8 @@ export class S3 {
   }
 
   /**
-   *
+   * Delete the given S3 bucket
+   * @param bucketName - Name of the bucket to be deleted
    */
   public async deleteS3Bucket(bucketName: string) {
     logger('deleteS3Bucket.s3.ifBucketExists', [{ BucketName: bucketName }])();
@@ -286,7 +298,8 @@ export class S3 {
   }
 
   /**
-   *
+   * Delete all objects from the given S3bucket
+   * @param bucketName - Name of the bucket to be emptied.
    */
   public async emptyS3Bucket(bucketName: string) {
     if (await this.ifBucketExists(bucketName)) {
@@ -295,9 +308,11 @@ export class S3 {
   }
 
   /**
-   *
+   * Check if the given S3 bucket exists.
+   * @param bucketName - Name of the bucket to check for existance
+   * @returns Promise<boolean> true if bucket exists
    */
-  public async ifBucketExists(bucketName: string) {
+  public async ifBucketExists(bucketName: string): Promise<boolean> {
     try {
       logger('ifBucketExists.s3.headBucket', [{ BucketName: bucketName }])();
       await this.s3
@@ -315,6 +330,12 @@ export class S3 {
     }
   }
 
+  /**
+   * Get the string version of an object from the s3 bucket
+   * @param bucketName - name of the s3 bucket to get the object from.
+   * @param objectKey - Name of the object to be read from the S3 bucket.
+   * @returns Promise<string> string representation of the object being read.
+   */
   public getStringObjectFromBucket = async (bucketName: string, objectKey: string): Promise<string | undefined> => {
     try {
       const result = await this.s3
