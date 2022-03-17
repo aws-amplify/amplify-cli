@@ -6,7 +6,7 @@ import { Context } from '../../domain/context';
 /**
  * get project tags for the current environment
  */
-export function getTags(context: Context): Tag[] {
+export const getTags = (context: Context): Tag[] => {
   let tags: Tag[];
   let envInfo: $TSObject;
   let projectConfig: $TSObject;
@@ -26,7 +26,7 @@ export function getTags(context: Context): Tag[] {
   const { envName } = envInfo;
   const { projectName } = projectConfig;
   return HydrateTags(tags, { envName, projectName });
-}
+};
 
 const initialTags: Tag[] = [
   {
