@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-util-uibuilder",
-  "version": "1.2.16",
+  "version": "1.2.17",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -19,7 +19,7 @@
     "@aws-amplify/codegen-ui-react-old": "npm:@aws-amplify/codegen-ui-react@1.2.0",
     "amplify-cli-core": "2.4.18",
     "amplify-prompts": "1.6.3",
-    "amplify-provider-awscloudformation": "5.9.10",
+    "amplify-provider-awscloudformation": "5.9.11",
     "aws-sdk": "2.1084.0"
   },
   "devDependencies": {

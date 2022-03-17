@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.7.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.14...amplify-e2e-tests@3.7.15) (2022-03-17)
+
+
+### Bug Fixes
+
+* allow init with auth role name overrides (ref [#9643](https://github.com/aws-amplify/amplify-cli/issues/9643)) ([#9688](https://github.com/aws-amplify/amplify-cli/issues/9688))  ([dbf9cf5](https://github.com/aws-amplify/amplify-cli/commit/dbf9cf52f19c824d868b30ff50b4c309be58ff86))
+* **amplify-category-auth:** expand [@auth](https://github.com/auth) directive to explicit set of allowed operations ([#9859](https://github.com/aws-amplify/amplify-cli/issues/9859)) ([e44ed18](https://github.com/aws-amplify/amplify-cli/commit/e44ed189b2c94230cbd5674606ffa488cb6c7bfe))
+
+
+
+
+
 ## [3.7.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.13...amplify-e2e-tests@3.7.14) (2022-03-14)
 
 

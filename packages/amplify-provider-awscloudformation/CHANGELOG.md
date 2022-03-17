@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.9.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.10...amplify-provider-awscloudformation@5.9.11) (2022-03-17)
+
+
+
+## 7.6.25 (2022-03-16)
+
+
+### Bug Fixes
+
+* allow init with auth role name overrides (ref [#9643](https://github.com/aws-amplify/amplify-cli/issues/9643)) ([#9688](https://github.com/aws-amplify/amplify-cli/issues/9688))  ([dbf9cf5](https://github.com/aws-amplify/amplify-cli/commit/dbf9cf52f19c824d868b30ff50b4c309be58ff86))
+* use lib paths instead of src to reference submodule imports across data-cli split ([#9984](https://github.com/aws-amplify/amplify-cli/issues/9984)) ([7130212](https://github.com/aws-amplify/amplify-cli/commit/7130212c8342d8ecb6b35bc2072ec5034780343f))
+
+
+
+
+
 ## [5.9.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.9...amplify-provider-awscloudformation@5.9.10) (2022-03-14)
 
 

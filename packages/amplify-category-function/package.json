@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-function",
-  "version": "3.5.4",
+  "version": "3.5.5",
   "description": "amplify-cli function plugin",
   "repository": {
     "type": "git",
@@ -32,7 +32,7 @@
     "folder-hash": "^4.0.2",
     "fs-extra": "^8.1.0",
     "globby": "^11.0.3",
-    "graphql-transformer-core": "7.4.9",
+    "graphql-transformer-core": "7.4.10",
     "inquirer": "^7.3.3",
     "inquirer-datepicker": "^2.0.0",
     "jstreemap": "^1.28.2",
