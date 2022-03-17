@@ -213,6 +213,7 @@ module.exports = {
     '/packages/amplify-category-function/lib',
     '/packages/amplify-category-geo/lib',
     '/packages/amplify-category-storage/lib',
+    '/packages/amplify-cli-builder/lib',
     '/packages/amplify-cli-core/lib',
     '/packages/amplify-cli/lib',
     '/packages/amplify-cli-logger/lib',
