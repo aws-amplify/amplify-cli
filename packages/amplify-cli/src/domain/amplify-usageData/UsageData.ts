@@ -5,9 +5,11 @@ import { JSONUtilities } from 'amplify-cli-core';
 import { pick } from 'lodash';
 import { Input } from '../input';
 import redactInput from './identifiable-input-regex';
-import { ProjectSettings, UsageDataPayload, InputOptions } from './UsageDataPayload';
+import { UsageDataPayload, InputOptions } from './UsageDataPayload';
 import { getUrl } from './getUsageDataUrl';
-import { IUsageData, TimedCodePath } from './IUsageData';
+import {
+  IUsageData, TimedCodePath, ProjectSettings, StartableTimedCodePath, StoppableTimedCodePath, FromStartupTimedCodePaths,
+} from './IUsageData';
 import { Timer } from './Timer';
 
 /**
@@ -23,8 +25,8 @@ export class UsageData implements IUsageData {
   url: UrlWithStringQuery;
   inputOptions: InputOptions;
   requestTimeout = 100;
-  codePathTimers: Partial<Record<TimedCodePath, Timer>> = {};
-  codePathDurations: Partial<Record<TimedCodePath, number>> = {};
+  codePathTimers = new Map<TimedCodePath, Timer>();
+  codePathDurations = new Map<TimedCodePath, number>();
 
   private static instance: UsageData;
 
@@ -39,13 +41,22 @@ export class UsageData implements IUsageData {
   /**
    * Initialize the usage data object
    */
-  init(installationUuid: string, version: string, input: Input, accountId: string, projectSettings: ProjectSettings): void {
+  init(
+    installationUuid: string,
+    version: string,
+    input: Input,
+    accountId: string,
+    projectSettings: ProjectSettings,
+    processStartTimeStamp: number,
+  ): void {
     this.installationUuid = installationUuid;
     this.accountId = accountId;
     this.projectSettings = projectSettings;
     this.version = version;
     this.inputOptions = input.options ? pick(input.options as InputOptions, ['sandboxId']) : {};
     this.input = redactInput(input, true);
+    this.codePathTimers.set(FromStartupTimedCodePaths.PLATFORM_STARTUP, Timer.start(processStartTimeStamp));
+    this.codePathTimers.set(FromStartupTimedCodePaths.TOTAL_DURATION, Timer.start(processStartTimeStamp));
   }
 
   /**
@@ -66,8 +77,11 @@ export class UsageData implements IUsageData {
   /**
    * Emit usage data at start of command execution
    */
+  // eslint-disable-next-line class-methods-use-this
   emitInvoke(): Promise<void> {
-    return this.emit(null, WorkflowState.INVOKE);
+    // now that we are recording total duration in a timer, this is not needed
+    // return this.emit(null, WorkflowState.INVOKE);
+    return Promise.resolve();
   }
 
   /**
@@ -87,25 +101,33 @@ export class UsageData implements IUsageData {
   /**
    * Starts a timer for the specified code path
    */
-  startCodePathTimer(codePath: TimedCodePath): void {
-    const timer = new Timer();
-    timer.start();
-    this.codePathTimers[codePath] = timer;
+  startCodePathTimer(codePath: StartableTimedCodePath): void {
+    if (this.codePathTimers.has(codePath)) {
+      throw new Error(`${codePath} already has a running timer`);
+    }
+    this.codePathTimers.set(codePath, Timer.start());
   }
 
   /**
    * Stops and records the specified code path timer
    */
-  stopCodePathTimer(codePath: TimedCodePath): void {
-    const timer = this.codePathTimers[codePath];
+  stopCodePathTimer(codePath: StoppableTimedCodePath): void {
+    this.internalStopCodePathTimer(codePath);
+  }
+
+  private internalStopCodePathTimer = (codePath: TimedCodePath): void => {
+    const timer = this.codePathTimers.get(codePath);
     if (!timer) {
-      throw new Error(`Timer for ${codePath} not found`);
+      return;
     }
-    this.codePathDurations[codePath] = timer.stop();
-    this.codePathTimers[codePath] = undefined;
+    this.codePathDurations.set(codePath, timer.stop());
+    this.codePathTimers.delete(codePath);
   }
 
   private async emit(error: Error | null, state: string): Promise<void> {
+    // stop all currently running timers
+    Array.from(this.codePathTimers.keys()).forEach(this.internalStopCodePathTimer);
+
     const payload = new UsageDataPayload(
       this.sessionUuid,
       this.installationUuid,
@@ -116,8 +138,9 @@ export class UsageData implements IUsageData {
       this.accountId,
       this.projectSettings,
       this.inputOptions,
-      this.codePathDurations,
+      Object.fromEntries(this.codePathDurations),
     );
+    console.log(`sending usage data payload: ${JSON.stringify(payload, undefined, 2)}`);
     return this.send(payload);
   }
 

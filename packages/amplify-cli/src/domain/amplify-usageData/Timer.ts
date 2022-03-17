@@ -2,24 +2,22 @@
  * Used to record the amount of time a code path took
  */
 export class Timer {
-  private startTime: number | undefined;
+  private startTime: number
+  private constructor(readonly initialTime?: number) {
+    this.startTime = initialTime ?? Date.now();
+  }
+
   /**
-   * Start the timer
+   * Start a new timer instance
    */
-  start(): void {
-    if (this.startTime) {
-      throw new Error('Timer has already been started and cannot be restarted');
-    }
-    this.startTime = Date.now();
+  static start(startTime?: number): Timer {
+    return new Timer(startTime);
   }
 
   /**
    * Stop the timer
    */
   stop(): number {
-    if (!this.startTime) {
-      throw new Error('Timer is not running');
-    }
     return Date.now() - this.startTime;
   }
 }

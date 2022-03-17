@@ -17,8 +17,8 @@ import { isCI } from 'ci-info';
 import { EventEmitter } from 'events';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { formatter, printer } from 'amplify-prompts';
 import { logInput } from './conditional-local-logging-init';
-import { print } from './context-extensions';
 import { attachUsageData, constructContext } from './context-manager';
 import { displayBannerMessages } from './display-banner-messages';
 import { constants } from './domain/constants';
@@ -42,9 +42,9 @@ EventEmitter.defaultMaxListeners = 1000;
 // Change stacktrace limit to max value to capture more details if needed
 Error.stackTraceLimit = Number.MAX_SAFE_INTEGER;
 
-let errorHandler = (e: Error) => {};
+let errorHandler: (e: Error) => void = (): void => { /* noop */ };
 
-process.on('uncaughtException', function (error) {
+process.on('uncaughtException', error => {
   // Invoke the configured error handler if it is already configured
   if (errorHandler) {
     errorHandler(error);
@@ -62,57 +62,59 @@ process.on('uncaughtException', function (error) {
   }
 });
 
-// In this handler we have to rethrow the error otherwise the process stucks there.
-process.on('unhandledRejection', function (error) {
+// In this handler we have to re-throw the error otherwise the process hangs there.
+process.on('unhandledRejection', error => {
   throw error;
 });
 
-function convertKeysToLowerCase(obj: object) {
-  let newObj = {};
-  for (let key of Object.keys(obj)) {
-    newObj[key.toLowerCase()] = obj[key];
-  }
+const convertKeysToLowerCase = <T>(obj: Record<string, T>): Record<string, T> => {
+  const newObj = {};
+  Object.entries(obj).forEach(([key, value]) => { newObj[key.toLowerCase()] = value; });
   return newObj;
-}
+};
 
-function normalizeStatusCommandOptions(input: Input) {
-  let options = input.options ? input.options : {};
+const normalizeStatusCommandOptions = (input: Input): Input => {
+  const options = input.options ? input.options : {};
   const allowedVerboseIndicators = [constants.VERBOSE, 'v'];
-  //Normalize 'amplify status -v' to verbose, since -v is interpreted as 'version'
-  for (let verboseFlag of allowedVerboseIndicators) {
-    if (options.hasOwnProperty(verboseFlag)) {
+  // Normalize 'amplify status -v' to verbose, since -v is interpreted as 'version'
+  allowedVerboseIndicators.forEach(verboseFlag => {
+    if (options.verboseFlag !== undefined) {
       if (typeof options[verboseFlag] === 'string') {
         const pluginName = (options[verboseFlag] as string).toLowerCase();
         options[pluginName] = true;
       }
       delete options[verboseFlag];
-      options['verbose'] = true;
+      options.verbose = true;
     }
+  });
+
+  // Merge plugins and sub-commands as options (except help/verbose)
+  const returnInput = input;
+  if (returnInput.plugin) {
+    options[returnInput.plugin] = true;
+    delete returnInput.plugin;
   }
-  //Merge plugins and subcommands as options (except help/verbose)
-  if (input.plugin) {
-    options[input.plugin] = true;
-    delete input.plugin;
-  }
-  if (input.subCommands) {
-    const allowedSubCommands = [constants.HELP, constants.VERBOSE]; //list of subcommands supported in Status
-    let inputSubCommands: string[] = [];
-    input.subCommands.map(subCommand => {
-      //plugins are inferred as subcommands when positionally supplied
+  if (returnInput.subCommands) {
+    const allowedSubCommands = [constants.HELP, constants.VERBOSE]; // list of sub-commands supported in Status
+    const inputSubCommands: string[] = [];
+    returnInput.subCommands.forEach(subCommand => {
+      // plugins are inferred as sub-commands when positionally supplied
       if (!allowedSubCommands.includes(subCommand)) {
         options[subCommand.toLowerCase()] = true;
       } else {
         inputSubCommands.push(subCommand);
       }
     });
-    input.subCommands = inputSubCommands;
+    returnInput.subCommands = inputSubCommands;
   }
-  input.options = convertKeysToLowerCase(options); //normalize keys to lower case
+  returnInput.options = convertKeysToLowerCase(options); // normalize keys to lower case
   return input;
-}
+};
 
-// entry from commandline
-export async function run() {
+/**
+ * Command line entry point
+ */
+export const run = async (startTime: number): Promise<number | undefined> => {
   try {
     deleteOldVersion();
 
@@ -125,8 +127,8 @@ export async function run() {
       notify({ defer: false, isGlobal: true });
     }
 
-    //Normalize status command options
-    if (input.command == 'status') {
+    // Normalize status command options
+    if (input.command === 'status') {
       input = normalizeStatusCommandOptions(input);
     }
 
@@ -143,7 +145,7 @@ export async function run() {
     // scan and try again
     if (!verificationResult.verified) {
       if (verificationResult.message) {
-        print.warning(verificationResult.message);
+        printer.warn(verificationResult.message);
       }
       pluginPlatform = await scan();
       input = getCommandLineInput(pluginPlatform);
@@ -173,7 +175,7 @@ export async function run() {
 
     await FeatureFlags.initialize(contextEnvironmentProvider, useNewDefaults);
 
-    await attachUsageData(context);
+    await attachUsageData(context, startTime);
 
     if (!(await migrateTeamProviderInfo(context))) {
       context.usageData.emitError(new TeamProviderInfoMigrateError());
@@ -225,52 +227,44 @@ export async function run() {
       const jsonError = <JSONValidationError>error;
       let printSummary = false;
 
-      print.error(error.message);
+      printer.error(error.message);
 
       if (jsonError.unknownFlags?.length > 0) {
-        print.error('');
-        print.error(
-          `These feature flags are defined in the "amplify/cli.json" configuration file and are unknown to the currently running Amplify CLI:`,
+        printer.blankLine();
+        printer.error(
+          'These feature flags are defined in the "amplify/cli.json" configuration file and are unknown to the currently running Amplify CLI:',
         );
-
-        for (const unknownFlag of jsonError.unknownFlags) {
-          print.error(`  - ${unknownFlag}`);
-        }
-
+        formatter.list(jsonError.unknownFlags);
         printSummary = true;
       }
 
       if (jsonError.otherErrors?.length > 0) {
-        print.error('');
-        print.error(`The following feature flags have validation errors:`);
-
-        for (const otherError of jsonError.otherErrors) {
-          print.error(`  - ${otherError}`);
-        }
-
+        printer.blankLine();
+        printer.error('The following feature flags have validation errors:');
+        formatter.list(jsonError.otherErrors);
         printSummary = true;
       }
 
       if (printSummary) {
-        print.error('');
-        print.error(
-          `This issue likely happens when the project has been pushed with a newer version of Amplify CLI, try updating to a newer version.`,
+        printer.blankLine();
+        printer.error(
+          'This issue likely happens when the project has been pushed with a newer version of Amplify CLI, try updating to a newer version.',
         );
 
         if (isCI) {
-          print.error('');
-          print.error(`Ensure that the CI/CD pipeline is not using an older or pinned down version of Amplify CLI.`);
+          printer.blankLine();
+          printer.error('Ensure that the CI/CD pipeline is not using an older or pinned down version of Amplify CLI.');
         }
 
-        print.error('');
-        print.error(`Learn more about feature flags: https://docs.amplify.aws/cli/reference/feature-flags`);
+        printer.blankLine();
+        printer.error('Learn more about feature flags: https://docs.amplify.aws/cli/reference/feature-flags');
       }
     } else {
       if (error.message) {
-        print.error(error.message);
+        printer.error(error.message);
       }
       if (error.stack) {
-        print.info(error.stack);
+        printer.info(error.stack);
       }
     }
     await executeHooks(
@@ -280,21 +274,26 @@ export async function run() {
       }),
     );
     exitOnNextTick(1);
+    return 1;
   }
-}
+};
 
-function ensureFilePermissions(filePath: string) {
+const ensureFilePermissions = (filePath: string): void => {
   // eslint-disable-next-line no-bitwise
   if (fs.existsSync(filePath) && (fs.statSync(filePath).mode & 0o777) === 0o644) {
     fs.chmodSync(filePath, '600');
   }
-}
+};
 
-function boundErrorHandler(this: Context, e: Error) {
+// This function cannot be converted to an arrow function because it uses 'this' binding
+// eslint-disable-next-line func-style
+function boundErrorHandler(this: Context, e: Error): void {
   this.usageData.emitError(e);
 }
 
-async function sigIntHandler(this: Context, e: $TSAny) {
+// This function cannot be converted to an arrow function because it uses 'this' binding
+// eslint-disable-next-line func-style
+async function sigIntHandler(this: Context): Promise<void> {
   this.usageData.emitAbort();
 
   try {
@@ -307,16 +306,18 @@ async function sigIntHandler(this: Context, e: $TSAny) {
   exitOnNextTick(2);
 }
 
-// entry from library call
-export async function execute(input: Input): Promise<number> {
-  let errorHandler = (e: Error) => {};
+/**
+ * entry from library call
+ */
+export const execute = async (input: Input): Promise<number> => {
+  let localErrorHandler: (e: Error) => void = (): void => { /* noop */ };
   try {
     let pluginPlatform = await getPluginPlatform();
     let verificationResult = verifyInput(pluginPlatform, input);
 
     if (!verificationResult.verified) {
       if (verificationResult.message) {
-        print.warning(verificationResult.message);
+        printer.warn(verificationResult.message);
       }
       pluginPlatform = await scan();
       verificationResult = verifyInput(pluginPlatform, input);
@@ -324,6 +325,7 @@ export async function execute(input: Input): Promise<number> {
 
     if (!verificationResult.verified) {
       if (verificationResult.helpCommandAvailable) {
+        // eslint-disable-next-line no-param-reassign
         input.command = constants.HELP;
       } else {
         throw new Error(verificationResult.message);
@@ -332,9 +334,10 @@ export async function execute(input: Input): Promise<number> {
 
     const context = constructContext(pluginPlatform, input);
 
-    await attachUsageData(context);
+    // AFAICT this execute function is never used. But if it is, in this case we initialize usage data with a starting timestamp of now
+    await attachUsageData(context, Date.now());
 
-    errorHandler = boundErrorHandler.bind(context);
+    localErrorHandler = boundErrorHandler.bind(context);
 
     process.on('SIGINT', sigIntHandler.bind(context));
 
@@ -350,26 +353,28 @@ export async function execute(input: Input): Promise<number> {
 
     return exitCode;
   } catch (e) {
-    // ToDo: add logging to the core, and log execution errors using the unified core logging.
-    errorHandler(e);
+    localErrorHandler(e);
 
     if (e.message) {
-      print.error(e.message);
+      printer.error(e.message);
     }
 
     if (e.stack) {
-      print.info(e.stack);
+      printer.info(e.stack);
     }
 
     return 1;
   }
-}
+};
 
-export async function executeAmplifyCommand(context: Context) {
+/**
+ * Entry point for executing plugins provided by the core
+ */
+export const executeAmplifyCommand = async (context: Context): Promise<void> => {
   if (context.input.command) {
     const commandPath = path.normalize(path.join(__dirname, 'commands', context.input.command));
     const commandModule = await import(commandPath);
 
     await commandModule.run(context);
   }
-}
+};

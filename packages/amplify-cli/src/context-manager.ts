@@ -1,27 +1,27 @@
 import { stateManager } from 'amplify-cli-core';
 import * as _ from 'lodash';
 import { init } from './app-config';
-import { attachExtentions } from './context-extensions';
+// eslint-disable-next-line spellcheck/spell-checker
+import { attachExtentions as attachExtensions } from './context-extensions';
 import { NoUsageData, UsageData } from './domain/amplify-usageData';
-import { ProjectSettings } from './domain/amplify-usageData/UsageDataPayload';
+import { ProjectSettings } from './domain/amplify-usageData/IUsageData';
 import { Context } from './domain/context';
 import { Input } from './domain/input';
 import { PluginPlatform } from './domain/plugin-platform';
-import { TimedCodePath } from './domain/amplify-usageData/IUsageData';
 
 /**
  * Initialize the context object
  */
 export const constructContext = (pluginPlatform: PluginPlatform, input: Input): Context => {
   const context = new Context(pluginPlatform, input);
-  attachExtentions(context);
+  attachExtensions(context);
   return context;
 };
 
 /**
  * Initialize and attach the usageData object to context
  */
-export const attachUsageData = async (context: Context): Promise<void> => {
+export const attachUsageData = async (context: Context, processStartTimeStamp: number): Promise<void> => {
   const { AMPLIFY_CLI_ENABLE_USAGE_DATA } = process.env;
   const config = init(context);
   const usageTrackingEnabled = AMPLIFY_CLI_ENABLE_USAGE_DATA
@@ -33,8 +33,14 @@ export const attachUsageData = async (context: Context): Promise<void> => {
     context.usageData = NoUsageData.Instance;
   }
   const accountId = getSafeAccountId();
-  context.usageData.init(config.usageDataConfig.installationUuid, getVersion(context), context.input, accountId, getProjectSettings());
-  context.usageData.startCodePathTimer(TimedCodePath.START_TO_PLUGIN_DISPATCH);
+  context.usageData.init(
+    config.usageDataConfig.installationUuid,
+    getVersion(context),
+    context.input,
+    accountId,
+    getProjectSettings(),
+    processStartTimeStamp,
+  );
 };
 
 const getSafeAccountId = (): string => {

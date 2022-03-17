@@ -25,7 +25,9 @@ import {
   AmplifyPostEnvAddEventData,
 } from './domain/amplify-event';
 import { isHeadlessCommand, readHeadlessPayload } from './utils/headless-input-utils';
-import { TimedCodePath } from './domain/amplify-usageData/IUsageData';
+import {
+  FromStartupTimedCodePaths, ManuallyTimedCodePath, UntilExitTimedCodePath,
+} from './domain/amplify-usageData/IUsageData';
 
 /**
  * Execute a CLI command
@@ -161,8 +163,11 @@ const executePluginModuleCommand = async (context: Context, plugin: PluginInfo):
   const handler = await getHandler(plugin, context);
   attachContextExtensions(context, plugin);
   await raisePreEvent(context);
-  context.usageData.stopCodePathTimer(TimedCodePath.START_TO_PLUGIN_DISPATCH);
+  context.usageData.stopCodePathTimer(FromStartupTimedCodePaths.PLATFORM_STARTUP);
+  context.usageData.startCodePathTimer(ManuallyTimedCodePath.PLUGIN_TIME);
   await handler();
+  context.usageData.stopCodePathTimer(ManuallyTimedCodePath.PLUGIN_TIME);
+  context.usageData.startCodePathTimer(UntilExitTimedCodePath.POST_PROCESS);
   await raisePostEvent(context);
 };
 
