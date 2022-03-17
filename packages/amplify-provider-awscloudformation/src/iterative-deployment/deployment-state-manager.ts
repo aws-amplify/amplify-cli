@@ -217,6 +217,9 @@ export class DeploymentStateManager implements IDeploymentStateManager {
     );
   };
 
+  /**
+ * Delete the deployment state file if it exists
+ */
   public deleteDeploymentStateFile = async (): Promise<void> => {
     await this.s3.deleteObject(this.deploymentBucketName, DeploymentStateManager.stateFileName);
   };

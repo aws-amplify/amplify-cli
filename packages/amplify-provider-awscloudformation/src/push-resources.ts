@@ -1,3 +1,5 @@
+/* eslint-disable max-depth */
+/* eslint-disable max-lines-per-function */
 /* eslint-disable prefer-const */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-return-await */
@@ -164,7 +166,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
           'It may take a few moments for this to appear. If you have trouble with first time deployments, please try refreshing this page after a few moments and watch the CodeBuild Details for debugging information.',
         );
 
-        if (resourcesToBeUpdated.find((res: { resourceName: any; }) => res.resourceName === resource.resourceName)) {
+        if (resourcesToBeUpdated.find((res: { resourceName: string; }) => res.resourceName === resource.resourceName)) {
           resource.lastPackageTimeStamp = undefined;
           await context.amplify.updateamplifyMetaAfterResourceUpdate('api', resource.resourceName, 'lastPackageTimeStamp', undefined);
         }

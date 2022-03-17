@@ -15,7 +15,7 @@ import ora from 'ora';
 import { ListObjectVersionsOutput, ListObjectVersionsRequest, ObjectIdentifier } from 'aws-sdk/clients/s3';
 import { pagedAWSCall } from './paged-call';
 import { loadConfiguration } from '../configuration-manager';
-import aws from './aws.js';
+import aws from './aws';
 
 const providerName = require('../constants').ProviderName;
 
@@ -249,16 +249,39 @@ export class S3 {
   }
 
   /**
-   * Delete the file provided as input
+   * Check if the given object exists in the given bucket
+   * @param bucketName - Name of the bucket to check if the object exists
+   * @param filePath - Object key ( path to the file key )
+   * @returns Promise<boolean> true if exists
+   */
+  public async checkExistObject(bucketName: string, filePath: string) : Promise<boolean> {
+    logger('checkExistObject.s3', [{ BucketName: bucketName, FilePath: filePath }])();
+    try {
+      await this.s3.headObject({
+        Bucket: bucketName,
+        Key: filePath,
+      }).promise();
+      return true;
+    } catch (error) {
+      logger('checkExistObject.s3', [{ BucketName: bucketName, FilePath: filePath, Error: error.name }])();
+      return false;
+    }
+  }
+
+  /**
+   * Delete the file provided as input, if it exists. Noop if the file doesnt exist.
    * @param bucketName S3 bucket name
    * @param filePath Path to the file to be deleted
    */
   public async deleteObject(bucketName: string, filePath: string): Promise<void> {
     logger('deleteObject.s3', [{ BucketName: bucketName, FilePath: filePath }])();
-    await this.s3.deleteObject({
-      Bucket: bucketName,
-      Key: filePath,
-    }).promise();
+    const objExists = await this.checkExistObject(bucketName, filePath);
+    if (objExists) {
+      await this.s3.deleteObject({
+        Bucket: bucketName,
+        Key: filePath,
+      }).promise();
+    }
   }
 
   /**
