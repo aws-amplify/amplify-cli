@@ -6,12 +6,13 @@ import * as _ from 'lodash';
 import { formatter, printer } from 'amplify-prompts';
 import { JSONUtilities } from './jsonUtilities';
 import { CustomPoliciesFormatError } from './errors';
+import { $TSObject } from './index';
 
 export type CustomIAMPolicies = CustomIAMPolicy[];
 export type CustomIAMPolicy = {
   Action: string[];
   Effect?: string;
-  Resource: (string | object)[];
+  Resource: (string | $TSObject)[];
 };
 
 export const CustomIAMPoliciesSchema = {
