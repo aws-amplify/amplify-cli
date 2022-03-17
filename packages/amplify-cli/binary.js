@@ -50,7 +50,11 @@ const getBinary = () => {
   const platformMetadata = getPlatformMetadata();
   let url = `${binaryLocation}/${version}/${platformMetadata.BINARY_NAME}`;
   if (ci.isCI) {
-    url += `-${getCommitHash()}`;
+    if (url.includes('.exe')) {
+      url = url.replace('.exe', `-${getCommitHash()}.exe`);
+    } else {
+      url += `-${getCommitHash()}`;
+    }
   }
   return new Binary(platformMetadata.BINARY_NAME, url);
 };

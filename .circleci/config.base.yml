@@ -201,6 +201,16 @@ jobs:
             export hash=$(git rev-parse HEAD | cut -c 1-12)
             cd out/
             export version=$(./amplify-pkg-linux --version)
+
+            apt-get update
+            apt-get install -y sudo
+            sudo apt-get install -y tcl
+            sudo apt-get install -y expect
+            sudo apt-get install -y zip
+            sudo apt-get install -y lsof
+            sudo apt-get install -y python python-pip libpython-dev
+            sudo apt-get install -y jq
+            pip install awscli
             aws s3 cp amplify-pkg-win.exe s3://amplify-pkg-cli-ci/$(echo $version)/amplify-pkg-win-$(echo $hash).exe && aws s3 cp amplify-pkg-macos s3://amplify-pkg-cli-ci/$(echo $version)/amplify-pkg-macos-$(echo $hash) && aws s3 cp amplify-pkg-linux s3://amplify-pkg-cli-ci/$(echo $version)/amplify-pkg-linux-$(echo $hash)
       - save_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
@@ -716,6 +726,7 @@ workflows:
           context: amplify-ecr-image-pull
           requires:
             - publish_to_local_registry
+            - build_pkg_binaries
           filters:
             branches:
               only:
