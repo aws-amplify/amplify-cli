@@ -1,7 +1,16 @@
-import { $TSContext, FeatureFlags } from 'amplify-cli-core';
+import { $TSContext, FeatureFlags, stateManager } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as add from '../../commands/auth/enable';
 import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
+import { printer } from 'amplify-prompts';
+
+const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
+stateManager_mock.getMeta = jest.fn();
+
+const printer_mock = printer as jest.Mocked<typeof printer>;
+printer_mock.info = jest.fn();
+printer_mock.warn = jest.fn();
+printer_mock.error = jest.fn();
 
 FeatureFlags.getBoolean = () => false;
 
@@ -21,13 +30,11 @@ describe('auth enable: ', () => {
       serviceSelectionPrompt: mockSelectionPrompt,
       readJsonFile: jest.fn(path => JSON.parse(fs.readFileSync(path, 'utf-8'))),
     },
-    print: {
-      warning: jest.fn(),
-      info: jest.fn(),
-      error: jest.fn(),
-    },
     usageData: {
       emitError: jest.fn(),
+    },
+    input: {
+      command: 'add',
     },
   } as unknown as $TSContext;
 
@@ -41,16 +48,17 @@ describe('auth enable: ', () => {
         projectConfig: {
           projectPath: mockProjectPath,
         },
-        amplifyMeta: {
-          auth: {
-            foo: 'bar',
-          },
+      });
+      stateManager_mock.getMeta = jest.fn().mockReturnValueOnce({
+        auth: {
+          foo: 'bar',
         },
       });
     });
+
     it('enable method should detect existing auth metadata and return after printing warning text', async () => {
       await add.run(mockContext);
-      expect(mockContext.print.warning).toBeCalledWith(messages.authExists);
+      expect(printer_mock.warn).toBeCalledWith(messages.authExists);
       expect(mockContext.amplify.serviceSelectionPrompt).not.toBeCalled();
     });
   });
@@ -61,9 +69,10 @@ describe('auth enable: ', () => {
         projectConfig: {
           projectPath: mockProjectPath,
         },
-        amplifyMeta: {},
       });
+      stateManager_mock.getMeta = jest.fn().mockReturnValueOnce({});
     });
+
     it('service selection prompt should be called', async () => {
       await add.run(mockContext);
       expect(mockContext.amplify.serviceSelectionPrompt).toBeCalled();

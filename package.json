@@ -89,6 +89,7 @@
     "@commitlint/config-lerna-scopes": "^15.0.0",
     "@commitlint/cz-commitlint": "^15.0.0",
     "@commitlint/prompt": "^15.0.0",
+    "@types/glob": "^7.1.1",
     "@types/jest": "^26.0.20",
     "@types/js-yaml": "^4.0.0",
     "@typescript-eslint/eslint-plugin": "^4.14.2",

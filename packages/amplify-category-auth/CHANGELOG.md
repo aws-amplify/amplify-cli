@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.5...@aws-amplify/amplify-category-auth@2.7.6) (2022-03-17)
+
+
+### Bug Fixes
+
+* error message when auth is already imported ([#9865](https://github.com/aws-amplify/amplify-cli/issues/9865)) ([15f5e55](https://github.com/aws-amplify/amplify-cli/commit/15f5e55e179c20f7099b9cce51dbfd1d8cb09bc4))
+
+
+
+
+
 ## [2.7.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.4...@aws-amplify/amplify-category-auth@2.7.5) (2022-03-14)
 
 

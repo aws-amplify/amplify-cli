@@ -21,7 +21,7 @@ import {
 } from '@aws-amplify/graphql-transformer-core';
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
 import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
-import { OverrideConfig } from '@aws-amplify/graphql-transformer-core/src/transformation/types';
+import { OverrideConfig } from '@aws-amplify/graphql-transformer-core/lib/transformation/types';
 import { AppSyncAuthConfiguration, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   $TSContext,

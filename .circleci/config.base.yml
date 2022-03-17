@@ -43,6 +43,7 @@ clean_e2e_resources: &clean_e2e_resources
 
 scan_e2e_test_artifacts: &scan_e2e_test_artifacts
   name: Scan And Cleanup E2E Test Artifacts
+  no_output_timeout: 90m
   command: |
     if ! yarn ts-node .circleci/scan_artifacts.ts; then
       echo "Cleaning the repository"
@@ -106,7 +107,7 @@ jobs:
       - run:
           name: Collect code coverage
           command: yarn coverage
-  
+
   lint:
     <<: *linux-e2e-executor
     steps:
