@@ -1,10 +1,11 @@
 {
   "name": "amplify-pkg",
   "version": "1.0.0",
-  "bin": "@aws-amplify/cli/bin/amplify",
+  "bin": "@aws-amplify/cli-builder/bin/amplify",
   "author": "Amazon Web Services",
   "license": "MIT",
   "dependencies": {
+    "@aws-amplify/cli-builder": "latest",
     "@aws-amplify/cli": "latest"
   },
   "pkg": {

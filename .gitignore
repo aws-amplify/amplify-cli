@@ -18,7 +18,7 @@ coverage
 .env
 UNIFIED_CHANGELOG.md
 package-lock.json
-packages/amplify-cli/amplify/.config/
+packages/amplify-cli-builder/amplify/.config/
 packages/amplify-appsync-simulator/public
 packages/amplify-dynamodb-simulator/emulator
 packages/amplify-dynamodb-simulator/__test__/dynamodb-data
@@ -27,7 +27,7 @@ packages/amplify-dynamodb-simulator/__test__/dynamodb-data
 !.vscode/extensions.json
 packages/graphql*/lib
 packages/amplify-graphql-transformer-*/lib
-packages/amplify-cli/lib
+packages/amplify-cli-builder/lib
 packages/amplify-cli-core/lib
 packages/amplify-cli-logger/lib
 packages/amplify-mqtt-server/lib

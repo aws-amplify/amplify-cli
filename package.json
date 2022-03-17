@@ -75,7 +75,7 @@
       "packages/*"
     ],
     "nohoist": [
-      "@aws-amplify/cli/amplify-codegen"
+      "@aws-amplify/cli-builder/amplify-codegen"
     ]
   },
   "devDependencies": {

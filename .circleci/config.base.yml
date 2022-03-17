@@ -198,6 +198,10 @@ jobs:
             yarn yarn-use-bash
             yarn pkg-all
             unsetNpmRegistryUrl
+            export hash=$(git rev-parse HEAD | cut -c 1-12)
+            cd out/
+            export version=$(./amplify-pkg-linux --version)
+            aws s3 cp amplify-pkg-win.exe s3://amplify-pkg-cli-ci/$(echo $version)/amplify-pkg-win-$(echo $hash).exe && aws s3 cp amplify-pkg-macos s3://amplify-pkg-cli-ci/$(echo $version)/amplify-pkg-macos-$(echo $hash) && aws s3 cp amplify-pkg-linux s3://amplify-pkg-cli-ci/$(echo $version)/amplify-pkg-linux-$(echo $hash)
       - save_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
           paths:
@@ -268,39 +272,6 @@ jobs:
       - store_artifacts:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
 
-  amplify_e2e_tests_pkg:
-    parameters:
-      os:
-        type: executor
-        default: l
-    executor: << parameters.os >>
-    working_directory: ~/repo
-    steps:
-      - attach_workspace:
-          at: ./
-      - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
-      - restore_cache:
-          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
-      - restore_cache:
-          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
-      - restore_cache:
-          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
-      - install_yarn:
-          os: << parameters.os >>
-      - install_packaged_cli:
-          os: << parameters.os >>
-      - run_e2e_tests:
-          os: << parameters.os >>
-      - scan_e2e_test_artifacts:
-          os: << parameters.os >>
-      - store_test_results:
-          path: packages/amplify-e2e-tests/
-      - store_artifacts:
-          path: packages/amplify-e2e-tests/amplify-e2e-reports
-      # - clean_e2e_resources:
-      #     os: << parameters.os >>
-
   amplify_migration_tests_v5:
     <<: *defaults
     steps:
@@ -327,7 +298,7 @@ jobs:
 
   amplify_migration_tests_v6:
     environment:
-      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
+      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli-builder/bin/amplify
     <<: *defaults
     steps:
       - attach_workspace:
@@ -354,7 +325,7 @@ jobs:
   amplify_migration_tests_non_multi_env_layers:
     <<: *defaults
     environment:
-      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
+      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli-builder/bin/amplify
     steps:
       - attach_workspace:
           at: ./
@@ -380,7 +351,7 @@ jobs:
   amplify_migration_tests_multi_env_layers:
     <<: *defaults
     environment:
-      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
+      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli-builder/bin/amplify
     steps:
       - attach_workspace:
           at: ./
@@ -654,6 +625,9 @@ workflows:
       - publish_to_local_registry:
           requires:
             - build
+      - build_pkg_binaries:
+          requires:
+            - publish_to_local_registry
       - amplify_console_integration_tests:
           context:
             - amplify-ecr-image-pull
@@ -663,6 +637,8 @@ workflows:
           requires:
             - build
             - publish_to_local_registry
+            - build_pkg_binaries
+
   e2e_resource_cleanup:
     triggers:
       - schedule:
@@ -687,7 +663,6 @@ workflows:
             parameters:
               os:
                 - l
-                - w
       - lint:
           requires:
             - build
@@ -709,6 +684,7 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
+            - build_pkg_binaries
       - integration_test:
           context:
             - amplify-ecr-image-pull
@@ -762,20 +738,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - publish_to_local_registry
-      - amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - cleanup-resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/.*/
-          requires:
-            - build_pkg_binaries
       - amplify_migration_tests_v6:
           context:
             - amplify-ecr-image-pull
@@ -790,6 +752,7 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
+            - build_pkg_binaries
           # post-steps:
           #   - run: *clean_e2e_resources
       - amplify_migration_tests_v5:
@@ -806,6 +769,8 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
+            - build_pkg_binaries
+
           # post-steps:
           #   - run: *clean_e2e_resources
       - amplify_migration_tests_non_multi_env_layers:
@@ -822,6 +787,8 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
+            - build_pkg_binaries
+
           # post-steps:
           #   - run: *clean_e2e_resources
       - amplify_migration_tests_multi_env_layers:
@@ -838,6 +805,7 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
+            - build_pkg_binaries
           # post-steps:
           #   - run: *clean_e2e_resources
       - amplify_console_integration_tests:
@@ -856,6 +824,7 @@ workflows:
           requires:
             - build
             - publish_to_local_registry
+            - build_pkg_binaries
       - github_prerelease:
           context: github-publish
           requires:
@@ -877,7 +846,6 @@ workflows:
             - e2e-test-context
           requires:
             - amplify_e2e_tests
-            - amplify_e2e_tests_pkg
             - amplify_migration_tests_v6
             - amplify_migration_tests_v5
 
@@ -891,7 +859,6 @@ workflows:
             - graphql_e2e_tests
             - integration_test
             - amplify_e2e_tests
-            - amplify_e2e_tests_pkg
             - amplify_sudo_install_test
             - amplify_console_integration_tests
             - amplify_migration_tests_v6
