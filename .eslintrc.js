@@ -66,7 +66,7 @@ module.exports = {
       },
       {
         selector: ['typeLike'],
-        format: ['StrictPascalCase'],
+        format: ['PascalCase'],
       },
       {
         selector: 'default',
@@ -77,7 +77,7 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'error',
     '@typescript-eslint/no-useless-constructor': 'error',
     '@typescript-eslint/method-signature-style': ['error', 'property'],
-    
+
     // Some ESLint rules conflict with the corresponding TS rule. These ESLint rules are turned off in favor of the corresponding TS rules
     'no-invalid-this': 'off',
     '@typescript-eslint/no-invalid-this': 'error',
