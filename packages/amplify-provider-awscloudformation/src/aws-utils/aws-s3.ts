@@ -107,7 +107,7 @@ export class S3 {
    * @param showSpinner Flag, if true displays the spinner on the terminal. Must be set to false on headless.
    * @returns Promise<void>
    */
-  async uploadFile(s3Params: $TSAny, showSpinner = true):Promise<void|string> {
+  async uploadFile(s3Params: $TSAny, showSpinner = true):Promise<string> {
     // envName and bucket does not change during execution, cache them into a class level
     // field.
     if (this.uploadState === undefined) {
