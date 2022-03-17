@@ -1,8 +1,8 @@
-const { dictionary } = require('./.eslint-dictionary');
+const dictionary = require('./.eslint-dictionary.json');
 /**
  * README if you have come here because you are sick and tired of some rule being on your case all the time:
  * If you are trying to modify a rule for normal code, see the docs for each of the lint plugins we are using in the "rules" section.
- * If you are trying to add a word to spellcheck: add it to .eslint-dictionary.js
+ * If you are trying to add a word to spellcheck: run `yarn addwords <word1> <word2> ...`
  * If you are trying to ignore certain files from spellchecking, see the "overrides" section
  * If you are trying to modify rules that run in test files, see the "overrides" section
  * If you are trying to ignore certain files from linting, see "ignorePatterns" at the bottom of the file
@@ -154,12 +154,14 @@ module.exports = {
     'arrow-parens': ['error', 'as-needed'],
     'func-style': ['error', 'expression'],
     'prefer-arrow/prefer-arrow-functions': ['error', { disallowPrototype: true }],
-    'max-lines-per-function': ['error', {
+    // yes I know these are all supposed to be errors, but this one requires too much functional refactoring at the moment
+    // we should still aim to keep funcitons small moving forward
+    'max-lines-per-function': ['warn', {
       max: 50,
       skipBlankLines: true,
       skipComments: true,
     }],
-    'max-depth': ['error', 2],
+    'max-depth': ['error', 4],
   },
   overrides: [
     {
