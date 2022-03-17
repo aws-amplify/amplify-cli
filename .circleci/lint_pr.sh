@@ -1,4 +1,4 @@
-set -x
+set -xeo pipefail
 # try to determine the branch that the PR is diffed off of, defaulting to master
 if [ -z "$CIRCLE_PR_NUMBER" ]; then
   echo "No CIRCLE_PR_NUMBER found. Cannot determine fork point for linting. Skipping linting"
