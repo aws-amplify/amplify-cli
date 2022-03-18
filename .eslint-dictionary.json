@@ -30,10 +30,12 @@
   "lockfile",
   "lstat",
   "minify",
+  "nock",
   "oidc",
   "openid",
   "positionally",
   "readdir",
+  "reqheaders",
   "serializable",
   "serverless",
   "startable",
@@ -43,5 +45,6 @@
   "unauth",
   "userpool",
   "utils",
+  "vscode",
   "yaml"
 ]

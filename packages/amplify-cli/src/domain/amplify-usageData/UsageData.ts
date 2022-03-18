@@ -70,22 +70,22 @@ export class UsageData implements IUsageData {
   /**
    * Emit usage data on error
    */
-  emitError(error: Error | null): Promise<void> {
-    return this.emit(error, WorkflowState.FAILED);
+  async emitError(error: Error | null): Promise<void> {
+    await this.emit(error, WorkflowState.FAILED);
   }
 
   /**
    * Emit usage data when command aborted (ctrl c)
    */
-  emitAbort(): Promise<void> {
-    return this.emit(null, WorkflowState.ABORTED);
+  async emitAbort(): Promise<void> {
+    await this.emit(null, WorkflowState.ABORTED);
   }
 
   /**
    * Emit usage data on successful completion of command
    */
-  emitSuccess(): Promise<void> {
-    return this.emit(null, WorkflowState.SUCCESSFUL);
+  async emitSuccess(): Promise<void> {
+    await this.emit(null, WorkflowState.SUCCESSFUL);
   }
 
   /**
@@ -114,7 +114,7 @@ export class UsageData implements IUsageData {
     this.codePathTimers.delete(codePath);
   }
 
-  private async emit(error: Error | null, state: string): Promise<void> {
+  private async emit(error: Error | null, state: string): Promise<UsageDataPayload> {
     // stop all currently running timers
     Array.from(this.codePathTimers.keys()).forEach(this.internalStopCodePathTimer);
 
@@ -130,8 +130,8 @@ export class UsageData implements IUsageData {
       this.inputOptions,
       Object.fromEntries(this.codePathDurations),
     );
-    console.log(`sending usage data payload: ${JSON.stringify(payload, undefined, 2)}`);
-    return this.send(payload);
+    await this.send(payload);
+    return payload;
   }
 
   private async send(payload: UsageDataPayload): Promise<void> {

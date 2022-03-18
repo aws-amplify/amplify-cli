@@ -70,7 +70,7 @@ const selectPluginForExecution = async (context: Context, pluginCandidates: Plug
   if (promptForSelection) {
     // only use the manifest's displayName if there are no duplicates
     const displayNames = pluginCandidates.map(candidate => candidate?.manifest?.displayName);
-    const noDuplicateDisplayNames = new Set(displayNames).size === displayNames.length;
+    const noDuplicateDisplayNames = (new Set(displayNames)).size === displayNames.length;
 
     // special handling for hosting plugins
     const consoleHostingPlugins = pluginCandidates.filter(pluginInfo => pluginInfo.packageName === 'amplify-console-hosting');
