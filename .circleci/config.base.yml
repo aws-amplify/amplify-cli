@@ -210,8 +210,8 @@ jobs:
             sudo apt-get install -y lsof
             sudo apt-get install -y python python-pip libpython-dev
             sudo apt-get install -y jq
-            pip install awscli
-            aws s3 cp amplify-pkg-win.exe s3://amplify-pkg-cli-ci/$(echo $version)/amplify-pkg-win-$(echo $hash).exe && aws s3 cp amplify-pkg-macos s3://amplify-pkg-cli-ci/$(echo $version)/amplify-pkg-macos-$(echo $hash) && aws s3 cp amplify-pkg-linux s3://amplify-pkg-cli-ci/$(echo $version)/amplify-pkg-linux-$(echo $hash)
+            sudo pip install awscli
+            sudo aws s3 cp amplify-pkg-win.exe s3://amplify-pkg-cli-ci/$(echo $version)/amplify-pkg-win-$(echo $hash).exe && sudo aws s3 cp amplify-pkg-macos s3://amplify-pkg-cli-ci/$(echo $version)/amplify-pkg-macos-$(echo $hash) && sudo aws s3 cp amplify-pkg-linux s3://amplify-pkg-cli-ci/$(echo $version)/amplify-pkg-linux-$(echo $hash)
       - save_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
           paths:
@@ -749,6 +749,7 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - publish_to_local_registry
+            - build_pkg_binaries
       - amplify_migration_tests_v6:
           context:
             - amplify-ecr-image-pull

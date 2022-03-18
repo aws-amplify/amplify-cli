@@ -1,8 +1,8 @@
-const { Binary } = require('./index');
 const os = require('os');
 const cTable = require('console.table');
 const { execSync } = require('child_process');
 const ci = require('ci-info');
+const { Binary } = require('./index');
 
 const error = msg => {
   console.error(msg);
@@ -33,7 +33,7 @@ const getPlatformMetadata = () => {
   const type = os.type();
   const architecture = os.arch();
 
-  for (let index in supportedPlatforms) {
+  for (const index in supportedPlatforms) {
     if (type === supportedPlatforms[index].TYPE && architecture === supportedPlatforms[index].ARCHITECTURE) {
       return supportedPlatforms[index];
     }
@@ -67,11 +67,17 @@ function getCommitHash() {
   return hash.substr(0, 12);
 }
 
+/**
+ *
+ */
 const run = () => {
   const binary = getBinary();
   binary.run();
 };
 
+/**
+ *
+ */
 const install = () => {
   const binary = getBinary();
   binary.install();
