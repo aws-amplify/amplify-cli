@@ -722,6 +722,9 @@ workflows:
           requires:
             - build
       - build_pkg_binaries:
+          context:
+            - e2e-auth-credentials
+            - e2e-test-context
           requires:
             - publish_to_local_registry
       - amplify_sudo_install_test:
