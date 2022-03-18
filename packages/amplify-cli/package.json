@@ -28,7 +28,7 @@
     "fmt": "prettier --write **/*a.js",
     "fmt:check": "prettier --check **/*.js"
   },
-  "binaryLocation": "https://d1afzxol7kz8pc.cloudfront.net",
+  "binaryLocation": "https://d380lpju5pcsmv.cloudfront.net",
   "engines": {
     "node": ">=12.0.0"
   },
