@@ -1,4 +1,5 @@
 const os = require('os');
+const fs = require('fs');
 const cTable = require('console.table');
 const { execSync } = require('child_process');
 const ci = require('ci-info');
@@ -72,6 +73,9 @@ function getCommitHash() {
  */
 const run = () => {
   const binary = getBinary();
+  if (!fs.existsSync(binary.binaryPath)) {
+    binary.install();
+  }
   binary.run();
 };
 
