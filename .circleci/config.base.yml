@@ -201,7 +201,6 @@ jobs:
             export hash=$(git rev-parse HEAD | cut -c 1-12)
             cd out/
             export version=$(./amplify-pkg-linux --version)
-
             sudo apt-get update
             sudo apt-get install -y sudo
             sudo apt-get install -y tcl
@@ -636,6 +635,9 @@ workflows:
           requires:
             - build
       - build_pkg_binaries:
+          context:
+            - e2e-auth-credentials
+            - e2e-test-context
           requires:
             - publish_to_local_registry
       - amplify_console_integration_tests:
