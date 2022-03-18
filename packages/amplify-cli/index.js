@@ -4,7 +4,7 @@ const { spawnSync } = require('child_process');
 const util = require('util');
 const stream = require('stream');
 const pipeline = util.promisify(stream.pipeline);
-
+const os = require('os');
 const axios = require('axios');
 const tar = require('tar');
 const rimraf = require('rimraf');
@@ -43,7 +43,7 @@ class Binary {
     }
     this.url = url;
     this.name = name;
-    this.installDirectory = join(__dirname, 'bin');
+    this.installDirectory = join(os.homedir(), '.amplify', 'bin');
 
     if (!existsSync(this.installDirectory)) {
       mkdirSync(this.installDirectory, { recursive: true });

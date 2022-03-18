@@ -71,10 +71,10 @@ function getCommitHash() {
 /**
  *
  */
-const run = () => {
+const run = async () => {
   const binary = getBinary();
   if (!fs.existsSync(binary.binaryPath)) {
-    binary.install();
+    await binary.install();
   }
   binary.run();
 };
