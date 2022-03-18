@@ -210,6 +210,9 @@ module.exports = {
     'function-template-dir',
     '/packages/graphql-predictions-transformer/lambdaFunction',
 
+    // Ignore override resource test files
+    '/packages/amplify-e2e-tests/overrides',
+
     // Ignore lib directory of typescript packages until all packages are migrated to typescript
     '/packages/amplify-*-function-*/lib',
     '/packages/amplify-appsync-simulator/lib',
