@@ -13,13 +13,6 @@ export class NoUsageData implements IUsageData {
   }
 
   /**
-   * Noop implementation of emitInvoke
-   */
-  emitInvoke(): Promise<void> {
-    return Promise.resolve();
-  }
-
-  /**
    * Noop implementation of emitAbort
    */
   emitAbort(): Promise<void> {

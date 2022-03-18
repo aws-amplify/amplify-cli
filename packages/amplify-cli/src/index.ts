@@ -193,8 +193,6 @@ export const run = async (startTime: number): Promise<number | undefined> => {
       await checkProjectConfigVersion(context);
     }
 
-    context.usageData.emitInvoke();
-
     // For mobile hub migrated project validate project and command to be executed
     if (!ensureMobileHubCommandCompatibility(context as unknown as $TSContext)) {
       // Double casting until we have properly typed context
@@ -340,8 +338,6 @@ export const execute = async (input: Input): Promise<number> => {
     localErrorHandler = boundErrorHandler.bind(context);
 
     process.on('SIGINT', sigIntHandler.bind(context));
-
-    context.usageData.emitInvoke();
 
     await executeCommand(context);
 

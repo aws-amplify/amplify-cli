@@ -75,16 +75,6 @@ export class UsageData implements IUsageData {
   }
 
   /**
-   * Emit usage data at start of command execution
-   */
-  // eslint-disable-next-line class-methods-use-this
-  emitInvoke(): Promise<void> {
-    // now that we are recording total duration in a timer, this is not needed
-    // return this.emit(null, WorkflowState.INVOKE);
-    return Promise.resolve();
-  }
-
-  /**
    * Emit usage data when command aborted (ctrl c)
    */
   emitAbort(): Promise<void> {
@@ -173,7 +163,6 @@ export class UsageData implements IUsageData {
 
 enum WorkflowState {
   SUCCESSFUL = 'SUCCEEDED',
-  INVOKE = 'INVOKED',
   ABORTED = 'ABORTED',
   FAILED = 'FAILED',
 }
