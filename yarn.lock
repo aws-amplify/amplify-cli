@@ -67,7 +67,7 @@
 
 "@aws-amplify/appsync-modelgen-plugin@1.32.0":
   version "1.32.0"
-  resolved "http://localhost:4873/@aws-amplify%2fappsync-modelgen-plugin/-/appsync-modelgen-plugin-1.32.0.tgz#1a3eb30723ad5b154d53fba4b061d289332628e7"
+  resolved "https://registry.npmjs.org/@aws-amplify%2fappsync-modelgen-plugin/-/appsync-modelgen-plugin-1.32.0.tgz#1a3eb30723ad5b154d53fba4b061d289332628e7"
   integrity sha512-5y++WEe6H4VHH8mFzTPUYVl2xugjL7f/YQBD9Thu6nlTpmZRciFTEzHtonRpBPeOGwRxVnM/aeSFXlUQ2P0/Fg==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^1.12.2"
@@ -8089,7 +8089,7 @@ amplify-codegen-appsync-model-plugin@^1.22.3:
 
 amplify-codegen@2.28.1:
   version "2.28.1"
-  resolved "http://localhost:4873/amplify-codegen/-/amplify-codegen-2.28.1.tgz#72198e1d9b7dbe4a15cca07aada503a65b6fb635"
+  resolved "https://registry.npmjs.org/amplify-codegen/-/amplify-codegen-2.28.1.tgz#72198e1d9b7dbe4a15cca07aada503a65b6fb635"
   integrity sha512-Ok2dcyKUs1WRgmlPAWucyG+DyJlgm7FSfeUpz9rxECL+b1WBUiM7xt0dASDvqJN3Z+oxKn+BkB1Jz0hoi5/2vA==
   dependencies:
     "@aws-amplify/appsync-modelgen-plugin" "1.32.0"
