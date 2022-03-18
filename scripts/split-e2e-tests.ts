@@ -468,8 +468,15 @@ function main(): void {
     join(repoRoot, 'packages', 'amplify-e2e-tests'),
     CONCURRENCY,
   );
-  const splitGqlTests = splitTests(
+  const splitPkgTests = splitTests(
     splitNodeTests,
+    'amplify_e2e_tests_pkg',
+    'build_test_deploy',
+    join(repoRoot, 'packages', 'amplify-e2e-tests'),
+    CONCURRENCY,
+  );
+  const splitGqlTests = splitTests(
+    splitPkgTests,
     'graphql_e2e_tests',
     'build_test_deploy',
     join(repoRoot, 'packages', 'graphql-transformers-e2e-tests'),
