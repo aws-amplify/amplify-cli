@@ -6,12 +6,13 @@ import * as _ from 'lodash';
 import { formatter, printer } from 'amplify-prompts';
 import { JSONUtilities } from './jsonUtilities';
 import { CustomPoliciesFormatError } from './errors';
+import { $TSObject } from './index';
 
 export type CustomIAMPolicies = CustomIAMPolicy[];
 export type CustomIAMPolicy = {
   Action: string[];
   Effect?: string;
-  Resource: string[];
+  Resource: (string | $TSObject)[];
 };
 
 export const CustomIAMPoliciesSchema = {
@@ -21,7 +22,15 @@ export const CustomIAMPoliciesSchema = {
     type: 'object',
     properties: {
       Action: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: false },
-      Resource: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: false },
+      Resource: {
+        type: 'array',
+        anyOf: [
+          { contains: { type: 'string' } },
+          { contains: { type: 'object', additionalProperties: true } }
+        ],
+        minItems: 1,
+        nullable: false,
+      },
     },
     optionalProperties: {
       Effect: { type: 'string', enum: ['Allow', 'Deny'], default: 'Allow' },
@@ -91,7 +100,7 @@ function generateCustomPolicyStatements(customPolicies: CustomIAMPolicies): Cust
 
 function replaceEnvWithRef(policy: CustomIAMPolicy): CustomIAMPolicy {
   const resource = policy.Resource.map(resource =>
-    resource.includes('${env}') ? Fn.Sub(resource, { env: Fn.Ref('env') }) : resource,
+    typeof resource === 'string' && resource.includes('${env}') ? Fn.Sub(resource, { env: Fn.Ref('env') }) : resource,
   ) as any[];
   policy.Resource = resource;
   return policy;
@@ -124,6 +133,10 @@ function validateCustomPolicies(data: CustomIAMPolicies, categoryName: string, r
     let errorMessage = '';
 
     for (const resource of resources) {
+      if (typeof resource !== 'string') {
+        continue;
+      }
+
       if (!(resourceRegex.test(resource) || resource === '*')) {
         wrongResourcesRegex.push(resource);
       }
