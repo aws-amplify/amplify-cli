@@ -334,7 +334,7 @@ jobs:
 
   amplify_migration_tests_v6:
     environment:
-      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli-builder/bin/amplify
+      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
     <<: *defaults
     steps:
       - attach_workspace:
@@ -361,7 +361,7 @@ jobs:
   amplify_migration_tests_non_multi_env_layers:
     <<: *defaults
     environment:
-      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli-builder/bin/amplify
+      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
     steps:
       - attach_workspace:
           at: ./
@@ -387,7 +387,7 @@ jobs:
   amplify_migration_tests_multi_env_layers:
     <<: *defaults
     environment:
-      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli-builder/bin/amplify
+      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
     steps:
       - attach_workspace:
           at: ./
