@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli-builder",
-  "version": "7.6.22",
+  "version": "7.6.25",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
