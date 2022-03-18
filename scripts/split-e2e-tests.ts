@@ -283,7 +283,7 @@ function splitTests(
         ...newJob.environment,
         ...(isMigration
           ? {
-              AMPLIFY_PATH: '/home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli-builder/bin/amplify',
+              AMPLIFY_PATH: '/home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify',
             }
           : {
               AMPLIFY_DIR: '/home/circleci/repo/packages/amplify-cli/bin',
