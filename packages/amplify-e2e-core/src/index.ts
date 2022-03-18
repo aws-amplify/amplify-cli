@@ -35,7 +35,7 @@ export function getCLIPath(testingWithLatestCodebase = false) {
     return process.platform === 'win32' ? 'amplify.exe' : 'amplify';
   }
 
-  const amplifyScriptPath = path.join(__dirname, '..', '..', 'amplify-cli', 'bin', 'amplify');
+  const amplifyScriptPath = path.join(__dirname, '..', '..', 'amplify-cli-builder', 'bin', 'amplify');
   return amplifyScriptPath;
 }
 

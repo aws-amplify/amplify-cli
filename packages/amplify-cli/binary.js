@@ -49,7 +49,7 @@ const getPlatformMetadata = () => {
 const getBinary = () => {
   const platformMetadata = getPlatformMetadata();
   let url = `${binaryLocation}/${version}/${platformMetadata.BINARY_NAME}`;
-  if (ci.isCI) {
+  if (ci.isCI || process.env.SUDO_USER === 'circleci') {
     if (url.includes('.exe')) {
       url = url.replace('.exe', `-${getCommitHash()}.exe`);
     } else {

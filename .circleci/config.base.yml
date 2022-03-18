@@ -202,14 +202,7 @@ jobs:
             cd out/
             export version=$(./amplify-pkg-linux --version)
             sudo apt-get update
-            sudo apt-get install -y sudo
-            sudo apt-get install -y tcl
-            sudo apt-get install -y expect
-            sudo apt-get install -y zip
-            sudo apt-get install -y lsof
-            sudo apt-get install -y python python-pip libpython-dev
-            sudo apt-get install -y jq
-            sudo apt-get install -y -qq groff
+            sudo apt-get install -y sudo tcl expect zip lsof jq groff python python-pip libpython-dev
             sudo pip install awscli
             aws s3 cp amplify-pkg-win.exe s3://pkg-cli-ci-do-not-delete/$(echo $version)/amplify-pkg-win-$(echo $hash).exe && aws s3 cp amplify-pkg-macos s3://pkg-cli-ci-do-not-delete/$(echo $version)/amplify-pkg-macos-$(echo $hash) && aws s3 cp amplify-pkg-linux s3://pkg-cli-ci-do-not-delete/$(echo $version)/amplify-pkg-linux-$(echo $hash)
       - save_cache:
@@ -281,6 +274,39 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
+
+  amplify_e2e_tests_pkg:
+    parameters:
+      os:
+        type: executor
+        default: l
+    executor: << parameters.os >>
+    working_directory: ~/repo
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+      - restore_cache:
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+      - install_yarn:
+          os: << parameters.os >>
+      - install_packaged_cli:
+          os: << parameters.os >>
+      - run_e2e_tests:
+          os: << parameters.os >>
+      - scan_e2e_test_artifacts:
+          os: << parameters.os >>
+      - store_test_results:
+          path: packages/amplify-e2e-tests/
+      - store_artifacts:
+          path: packages/amplify-e2e-tests/amplify-e2e-reports
+      # - clean_e2e_resources:
+      #     os: << parameters.os >>
 
   amplify_migration_tests_v5:
     <<: *defaults
@@ -756,6 +782,21 @@ workflows:
           requires:
             - publish_to_local_registry
             - build_pkg_binaries
+      - amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - cleanup-resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/.*/
+          requires:
+            - build_pkg_binaries
+
       - amplify_migration_tests_v6:
           context:
             - amplify-ecr-image-pull
@@ -864,6 +905,7 @@ workflows:
             - e2e-test-context
           requires:
             - amplify_e2e_tests
+            - amplify_e2e_tests_pkg
             - amplify_migration_tests_v6
             - amplify_migration_tests_v5
 
@@ -877,6 +919,7 @@ workflows:
             - graphql_e2e_tests
             - integration_test
             - amplify_e2e_tests
+            - amplify_e2e_tests_pkg
             - amplify_sudo_install_test
             - amplify_console_integration_tests
             - amplify_migration_tests_v6
