@@ -162,7 +162,7 @@ export class TransformerResolver implements TransformerResolverProvider {
       slotEntry = [];
     }
 
-    if (!this.slotAlreadyExists(slotName, requestMappingTemplate, responseMappingTemplate)) {
+    if (!this.updateSlotIfExists(slotName, requestMappingTemplate, responseMappingTemplate)) {
       slotEntry.push({
         requestMappingTemplate,
         responseMappingTemplate,
@@ -172,7 +172,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     this.slotMap.set(slotName, slotEntry);
   };
 
-  slotAlreadyExists = (
+  updateSlotIfExists = (
     slotName: string,
     requestMappingTemplate?: MappingTemplateProvider,
     responseMappingTemplate?: MappingTemplateProvider,
