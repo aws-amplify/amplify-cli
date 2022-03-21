@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.9.12-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.11...amplify-provider-awscloudformation@5.9.12-beta.0) (2022-03-21)
+
+
+### Bug Fixes
+
+* build resource when adding new env ([#10003](https://github.com/aws-amplify/amplify-cli/issues/10003)) ([f53596d](https://github.com/aws-amplify/amplify-cli/commit/f53596d3346a015708610c3af686d887ac978df7))
+* make amplify prompts dependency explicit, lint errors ([#10007](https://github.com/aws-amplify/amplify-cli/issues/10007)) ([66cdc06](https://github.com/aws-amplify/amplify-cli/commit/66cdc06df5f4cba106345af6f6e196b3c3e39445))
+
+
+
+
+
 ## [5.9.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.10...amplify-provider-awscloudformation@5.9.11) (2022-03-17)
 
 
