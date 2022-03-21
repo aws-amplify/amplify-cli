@@ -884,7 +884,7 @@ test('GSI composite sort keys are wrapped in conditional to check presence in mu
 
 it('should support index/primary key with sync resolvers', () => {
   const validSchema = `
-    type ItemX @model {
+    type Item @model {
       orderId: ID! @primaryKey(sortKeyFields: ["status", "createdAt"])
       status: Status! @index(name: "ByStatus", sortKeyFields: ["createdAt"], queryField: "itemsByStatus")
       createdAt: AWSDateTime! @index(name: "ByCreatedAt", sortKeyFields: ["status"], queryField: "itemsByCreatedAt")
