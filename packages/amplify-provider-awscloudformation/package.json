@@ -24,6 +24,7 @@
     "watch": "tsc --watch"
   },
   "dependencies": {
+    "@aws-amplify/amplify-category-custom": "^2.3.22",
     "@aws-amplify/cli-extensibility-helper": "2.3.20",
     "@aws-amplify/graphql-auth-transformer": "0.7.10",
     "@aws-amplify/graphql-default-value-transformer": "0.5.18",

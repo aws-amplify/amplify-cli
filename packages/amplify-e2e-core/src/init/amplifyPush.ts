@@ -2,6 +2,9 @@ import { getCLIPath, nspawn as spawn } from '..';
 
 const pushTimeoutMS = 1000 * 60 * 20; // 20 minutes;
 
+/**
+ *
+ */
 export type LayerPushSettings = {
   acceptSuggestedLayerVersionConfigurations?: boolean;
   layerDescription?: string;
@@ -9,9 +12,12 @@ export type LayerPushSettings = {
   usePreviousPermissions?: boolean;
 };
 
-export function amplifyPush(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
+/**
+ *
+ */
+export function amplifyPush(cwd: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
-    //Test detailed status
+    // Test detailed status
     spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait(/.*/)
       .run((err: Error) => {
@@ -19,7 +25,7 @@ export function amplifyPush(cwd: string, testingWithLatestCodebase: boolean = fa
           reject(err);
         }
       });
-    //Test amplify push
+    // Test amplify push
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
@@ -36,9 +42,12 @@ export function amplifyPush(cwd: string, testingWithLatestCodebase: boolean = fa
   });
 }
 
-export function amplifyPushGraphQlWithCognitoPrompt(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
+/**
+ *
+ */
+export function amplifyPushGraphQlWithCognitoPrompt(cwd: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
-    //Test detailed status
+    // Test detailed status
     spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait(/.*/)
       .run((err: Error) => {
@@ -46,7 +55,7 @@ export function amplifyPushGraphQlWithCognitoPrompt(cwd: string, testingWithLate
           reject(err);
         }
       });
-    //Test amplify push
+    // Test amplify push
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
@@ -69,7 +78,10 @@ export function amplifyPushGraphQlWithCognitoPrompt(cwd: string, testingWithLate
   });
 }
 
-export function amplifyPushForce(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
+/**
+ *
+ */
+export function amplifyPushForce(cwd: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['push', '--force'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
@@ -85,7 +97,10 @@ export function amplifyPushForce(cwd: string, testingWithLatestCodebase: boolean
   });
 }
 
-export function amplifyPushForceWithYesFlag(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
+/**
+ *
+ */
+export function amplifyPushForceWithYesFlag(cwd: string, testingWithLatestCodebase = false): Promise<void> {
   return spawn(getCLIPath(testingWithLatestCodebase), ['push', '--force', '--yes'], {
     cwd,
     stripColors: true,
@@ -105,7 +120,7 @@ export function amplifyPushForceWithYesFlag(cwd: string, testingWithLatestCodeba
 export function cancelIterativeAmplifyPush(
   cwd: string,
   idx: { current: number; max: number },
-  testingWithLatestCodebase: boolean = false,
+  testingWithLatestCodebase = false,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
@@ -124,10 +139,13 @@ export function cancelIterativeAmplifyPush(
   });
 }
 
+/**
+ *
+ */
 export function amplifyPushWithoutCodegen(
   cwd: string,
-  testingWithLatestCodebase: boolean = false,
-  allowDestructiveUpdates: boolean = false,
+  testingWithLatestCodebase = false,
+  allowDestructiveUpdates = false,
 ): Promise<void> {
   const args = ['push'];
   if (allowDestructiveUpdates) {
@@ -147,9 +165,12 @@ export function amplifyPushWithoutCodegen(
   });
 }
 
+/**
+ *
+ */
 export function amplifyPushSecretsWithoutCodegen(
   cwd: string,
-  testingWithLatestCodebase: boolean = false,
+  testingWithLatestCodebase = false,
 ): Promise<void> {
   const args = ['push'];
   return new Promise((resolve, reject) => {
@@ -168,11 +189,14 @@ export function amplifyPushSecretsWithoutCodegen(
   });
 }
 
+/**
+ *
+ */
 export function amplifyPushUpdate(
   cwd: string,
   waitForText?: RegExp,
-  testingWithLatestCodebase: boolean = false,
-  allowDestructiveUpdates: boolean = false,
+  testingWithLatestCodebase = false,
+  allowDestructiveUpdates = false,
 ): Promise<void> {
   const args = ['push'];
   if (allowDestructiveUpdates) {
@@ -193,7 +217,10 @@ export function amplifyPushUpdate(
   });
 }
 
-export function amplifyPushAuth(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
+/**
+ *
+ */
+export function amplifyPushAuth(cwd: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
@@ -209,10 +236,26 @@ export function amplifyPushAuth(cwd: string, testingWithLatestCodebase: boolean 
   });
 }
 
+/**
+ * amplify push command for pushing functions
+ * @param cwd : current working directory
+ * @param testingWithLatestCode : boolean flag
+ * @returns void
+ */
+export const amplifyPushFunction = async (cwd: string, testingWithLatestCode = false): Promise<void> => {
+  const chain = spawn(getCLIPath(testingWithLatestCode), ['push', 'function'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    .wait('Are you sure you want to continue?')
+    .sendCarriageReturn();
+  return chain.runAsync();
+};
+
+/**
+ *
+ */
 export function amplifyPushUpdateForDependentModel(
   cwd: string,
-  testingWithLatestCodebase: boolean = false,
-  allowDestructiveUpdates: boolean = false,
+  testingWithLatestCodebase = false,
+  allowDestructiveUpdates = false,
 ): Promise<void> {
   const args = ['push'];
   if (allowDestructiveUpdates) {
@@ -237,7 +280,10 @@ export function amplifyPushUpdateForDependentModel(
 }
 
 // this function expects a single layer's content to be modified
-export function amplifyPushLayer(cwd: string, settings: LayerPushSettings, testingWithLatestCodebase: boolean = false): Promise<void> {
+/**
+ *
+ */
+export function amplifyPushLayer(cwd: string, settings: LayerPushSettings, testingWithLatestCodebase = false): Promise<void> {
   const defaultSettings: LayerPushSettings = {
     acceptSuggestedLayerVersionConfigurations: true,
     migrateLegacyLayer: false,
@@ -297,7 +343,10 @@ export function amplifyPushLayer(cwd: string, settings: LayerPushSettings, testi
   });
 }
 
-export function amplifyPushIterativeRollback(cwd: string, testingWithLatestCodebase: boolean = false) {
+/**
+ *
+ */
+export function amplifyPushIterativeRollback(cwd: string, testingWithLatestCodebase = false) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['push', '--iterative-rollback'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue?')
@@ -312,6 +361,9 @@ export function amplifyPushIterativeRollback(cwd: string, testingWithLatestCodeb
   });
 }
 
+/**
+ *
+ */
 export function amplifyPushMissingEnvVar(cwd: string, newEnvVarValue: string) {
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
@@ -323,6 +375,9 @@ export function amplifyPushMissingEnvVar(cwd: string, newEnvVarValue: string) {
   });
 }
 
+/**
+ *
+ */
 export function amplifyPushMissingFuncSecret(cwd: string, newSecretValue: string) {
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
@@ -334,7 +389,10 @@ export function amplifyPushMissingFuncSecret(cwd: string, newSecretValue: string
   });
 }
 
-export function amplifyPushWithNoChanges(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
+/**
+ *
+ */
+export function amplifyPushWithNoChanges(cwd: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('No changes detected')
@@ -342,6 +400,9 @@ export function amplifyPushWithNoChanges(cwd: string, testingWithLatestCodebase:
   });
 }
 
+/**
+ *
+ */
 export function amplifyPushDestructiveApiUpdate(cwd: string, includeForce: boolean) {
   return new Promise<void>((resolve, reject) => {
     const args = ['push', '--yes'];
@@ -357,9 +418,12 @@ export function amplifyPushDestructiveApiUpdate(cwd: string, includeForce: boole
   });
 }
 
-export function amplifyPushOverride(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
+/**
+ *
+ */
+export function amplifyPushOverride(cwd: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
-    //Test detailed status
+    // Test detailed status
     spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait(/.*/)
       .run((err: Error) => {
@@ -367,7 +431,7 @@ export function amplifyPushOverride(cwd: string, testingWithLatestCodebase: bool
           reject(err);
         }
       });
-    //Test amplify push
+    // Test amplify push
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()

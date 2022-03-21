@@ -192,7 +192,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
 
     await prePushLambdaLayerPrompt(context, resources);
     await prepareBuildableResources(context, resources);
-    await buildOverridesEnabledResources(context);
+    await buildOverridesEnabledResources(context, resources);
 
     // Removed api transformation to generate resources befoe starting deploy/
 
@@ -985,7 +985,7 @@ export async function formNestedStack(
   }
 
   if (AuthTriggerTemplateURL) {
-    const stack = {
+    const stack : $TSAny = {
       Type: 'AWS::CloudFormation::Stack',
       Properties: {
         TemplateURL: AuthTriggerTemplateURL,
