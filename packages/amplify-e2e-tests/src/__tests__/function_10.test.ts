@@ -17,7 +17,7 @@ describe('test function deploy when other resources are present', () => {
     deleteProjectDir(projectRoot);
   });
 
-  it('init a project with api and function and update the @model and add function access to @model', async () => {
+  it('testing amplify push function command', async () => {
     const projectName = 'demoApi';
     await initJSProjectWithProfile(projectRoot, {
       name: projectName,
