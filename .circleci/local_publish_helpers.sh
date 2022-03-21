@@ -2,7 +2,6 @@
 
 custom_registry_url=http://localhost:4873
 default_verdaccio_package=verdaccio@5.1.2
-export hash=$((git rev-parse HEAD | cut -c 1-12) || false)
 
 function startLocalRegistry {
     # Start local registry
@@ -36,7 +35,7 @@ function generatePkgCli {
 
 function loginToLocalRegistry {
     # Login so we can publish packages
-    (cd && npx npm-auth-to-token@1.0.0 -u johnpo -p password -e user@example.com -r "$custom_registry_url")
+    (cd && npx npm-auth-to-token@1.0.0 -u user -p password -e user@example.com -r "$custom_registry_url")
 }
 
 function unsetNpmRegistryUrl {
@@ -181,5 +180,4 @@ function runE2eTest {
     else
         yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
     fi
-
 }

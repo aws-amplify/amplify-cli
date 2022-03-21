@@ -677,7 +677,6 @@ workflows:
             - build
             - publish_to_local_registry
             - build_pkg_binaries
-
   e2e_resource_cleanup:
     triggers:
       - schedule:
@@ -702,6 +701,7 @@ workflows:
             parameters:
               os:
                 - l
+                - w
       - lint:
           requires:
             - build
@@ -796,7 +796,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build_pkg_binaries
-
       - amplify_migration_tests_v6:
           context:
             - amplify-ecr-image-pull
@@ -829,7 +828,6 @@ workflows:
           requires:
             - build
             - build_pkg_binaries
-
           # post-steps:
           #   - run: *clean_e2e_resources
       - amplify_migration_tests_non_multi_env_layers:
@@ -847,7 +845,6 @@ workflows:
           requires:
             - build
             - build_pkg_binaries
-
           # post-steps:
           #   - run: *clean_e2e_resources
       - amplify_migration_tests_multi_env_layers:

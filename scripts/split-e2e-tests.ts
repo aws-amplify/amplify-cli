@@ -94,8 +94,6 @@ const USE_PARENT_ACCOUNT = [
   'storage',
 ];
 
-const TEMP_ONLY_E2E_TESTS = ['pull', 'SubscriptionsWithAuthV2', 'api_migration_update_v5'];
-
 // This array needs to be update periodically when new tests suites get added
 // or when a test suite changes drastically
 
@@ -275,9 +273,6 @@ function splitTests(
       },
     };
     const isPkg = newJobName.endsWith('_pkg');
-    if (!TEMP_ONLY_E2E_TESTS.some(allowedName => newJobName.includes(allowedName))) {
-      return acc;
-    }
     if (!isPkg) {
       (newJob.environment as any) = {
         ...newJob.environment,
