@@ -13,24 +13,19 @@ import { FunctionTransformer } from 'graphql-function-transformer';
 import { HttpTransformer } from 'graphql-http-transformer';
 import { PredictionsTransformer } from 'graphql-predictions-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
-import { destructiveUpdatesFlag, ProviderName as providerName } from './constants';
-import { AmplifyCLIFeatureFlagAdapter } from './utils/amplify-cli-feature-flag-adapter';
-import { isAmplifyAdminApp } from './utils/admin-helpers';
 import {
   $TSContext,
   AmplifyCategories,
   getGraphQLTransformerAuthDocLink,
   getGraphQLTransformerAuthSubscriptionsDocLink,
-  getGraphQLTransformerOpenSearchDocLink,
   getGraphQLTransformerOpenSearchProductionDocLink,
   JSONUtilities,
   pathManager,
   stateManager,
+  exitOnNextTick,
+  $TSAny,
 } from 'amplify-cli-core';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { printer } from 'amplify-prompts';
-import _ from 'lodash';
-import { isAuthModeUpdated } from './utils/auth-mode-compare';
 
 import {
   collectDirectivesByTypeNames,
@@ -47,45 +42,30 @@ import {
   buildAPIProject,
   TransformConfig,
   getSanityCheckRules,
+  DeploymentResources,
 } from 'graphql-transformer-core';
 
 import { print } from 'graphql';
+import { DeploymentResources as DeploymentResourcesV6 } from '@aws-amplify/graphql-transformer-core';
+import { isAuthModeUpdated } from './utils/auth-mode-compare';
 import { hashDirectory } from './upload-appsync-files';
-import { exitOnNextTick, FeatureFlags } from 'amplify-cli-core';
+import { isAmplifyAdminApp } from './utils/admin-helpers';
+import { AmplifyCLIFeatureFlagAdapter } from './utils/amplify-cli-feature-flag-adapter';
+import { destructiveUpdatesFlag, ProviderName as providerName } from './constants';
 import {
   transformGraphQLSchema as transformGraphQLSchemaV6,
   getDirectiveDefinitions as getDirectiveDefinitionsV6,
+  searchablePushChecks,
+  getTransformerVersion,
 } from './graphql-transformer/transform-graphql-schema';
 
 const apiCategory = 'api';
-const storageCategory = 'storage';
 const parametersFileName = 'parameters.json';
 const schemaFileName = 'schema.graphql';
 const schemaDirName = 'schema';
 const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
-const s3ServiceName = 'S3';
 
-export async function searchablePushChecks(context, map, apiName): Promise<void> {
-  const searchableModelTypes = Object.keys(map).filter(type => map[type].includes('searchable') && map[type].includes('model'));
-  if (searchableModelTypes.length) {
-    const currEnv = context.amplify.getEnvInfo().envName;
-    const teamProviderInfo = stateManager.getTeamProviderInfo();
-    const instanceType = _.get(
-      teamProviderInfo,
-      [currEnv, 'categories', 'api', apiName, ResourceConstants.PARAMETERS.ElasticsearchInstanceType],
-      't2.small.elasticsearch',
-    );
-    if (instanceType === 't2.small.elasticsearch' || instanceType === 't3.small.elasticsearch') {
-      const version = await getTransformerVersion(context);
-      const docLink = getGraphQLTransformerOpenSearchProductionDocLink(version);
-      printer.warn(
-        `Your instance type for OpenSearch is ${instanceType}, you may experience performance issues or data loss. Consider reconfiguring with the instructions here ${docLink}`,
-      );
-    }
-  }
-}
-
-async function warnOnAuth(context, map) {
+const warnOnAuth = async (context, map): Promise<void> => {
   const unAuthModelTypes = Object.keys(map).filter(type => !map[type].includes('auth') && map[type].includes('model'));
   if (unAuthModelTypes.length) {
     const transformerVersion = await getTransformerVersion(context);
@@ -94,118 +74,117 @@ async function warnOnAuth(context, map) {
     context.print.warning(unAuthModelTypes.map(type => `\t - ${type}`).join('\n'));
     context.print.info(`Learn more about @auth here: ${docLink}\n`);
   }
-}
+};
 
-function getTransformerFactory(context, resourceDir, authConfig?) {
-  return async (addSearchableTransformer, storageConfig?) => {
-    const transformerList: ITransformer[] = [
-      // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
-      new DynamoDBModelTransformer(),
-      new VersionedModelTransformer(),
-      new FunctionTransformer(),
-      new HttpTransformer(),
-      new KeyTransformer(),
-      new ModelConnectionTransformer(),
-      new PredictionsTransformer(storageConfig),
-    ];
+const getTransformerFactory = (context, resourceDir, authConfig?) => async (addSearchableTransformer, storageConfig?) => {
+  const transformerList: ITransformer[] = [
+    // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
+    new DynamoDBModelTransformer(),
+    new VersionedModelTransformer(),
+    new FunctionTransformer(),
+    new HttpTransformer(),
+    new KeyTransformer(),
+    new ModelConnectionTransformer(),
+    new PredictionsTransformer(storageConfig),
+  ];
 
-    if (addSearchableTransformer) {
-      transformerList.push(new SearchableModelTransformer());
-    }
+  if (addSearchableTransformer) {
+    transformerList.push(new SearchableModelTransformer());
+  }
 
-    const customTransformersConfig: TransformConfig = await readTransformerConfiguration(resourceDir);
-    const customTransformers = (
-      customTransformersConfig && customTransformersConfig.transformers ? customTransformersConfig.transformers : []
-    )
-      .map(transformer => {
-        const fileUrlMatch = /^file:\/\/(.*)\s*$/m.exec(transformer);
-        const modulePath = fileUrlMatch ? fileUrlMatch[1] : transformer;
+  const customTransformersConfig: TransformConfig = await readTransformerConfiguration(resourceDir);
+  const customTransformers = (
+    customTransformersConfig && customTransformersConfig.transformers ? customTransformersConfig.transformers : []
+  )
+    .map(transformer => {
+      const fileUrlMatch = /^file:\/\/(.*)\s*$/m.exec(transformer);
+      const modulePath = fileUrlMatch ? fileUrlMatch[1] : transformer;
 
-        if (!modulePath) {
-          throw new Error(`Invalid value specified for transformer: '${transformer}'`);
-        }
+      if (!modulePath) {
+        throw new Error(`Invalid value specified for transformer: '${transformer}'`);
+      }
 
-        // The loading of transformer can happen multiple ways in the following order:
-        // - modulePath is an absolute path to an NPM package
-        // - modulePath is a package name, then it will be loaded from the project's root's node_modules with createRequireFromPath.
-        // - modulePath is a name of a globally installed package
-        let importedModule;
-        const tempModulePath = modulePath.toString();
+      // The loading of transformer can happen multiple ways in the following order:
+      // - modulePath is an absolute path to an NPM package
+      // - modulePath is a package name, then it will be loaded from the project's root's node_modules with createRequireFromPath.
+      // - modulePath is a name of a globally installed package
+      let importedModule;
+      const tempModulePath = modulePath.toString();
 
-        try {
-          if (path.isAbsolute(tempModulePath)) {
-            // Load it by absolute path
-            importedModule = require(modulePath);
-          } else {
-            const projectRootPath = context.amplify.pathManager.searchProjectRootPath();
-            const projectNodeModules = path.join(projectRootPath, 'node_modules');
+      try {
+        if (path.isAbsolute(tempModulePath)) {
+          // Load it by absolute path
+          // eslint-disable-next-line global-require, import/no-dynamic-require
+          importedModule = require(modulePath);
+        } else {
+          const projectRootPath = context.amplify.pathManager.searchProjectRootPath();
+          const projectNodeModules = path.join(projectRootPath, 'node_modules');
 
-            try {
-              importedModule = importFrom(projectNodeModules, modulePath);
-            } catch (_) {
-              // Intentionally left blank to try global
-            }
-
-            // Try global package install
-            if (!importedModule) {
-              importedModule = importGlobal(modulePath);
-            }
+          try {
+            importedModule = importFrom(projectNodeModules, modulePath);
+          } catch (ignore) {
+            // Intentionally left blank to try global
           }
 
-          // At this point we've to have an imported module, otherwise module loader, threw an error.
-          return importedModule;
-        } catch (error) {
-          context.print.error(`Unable to import custom transformer module(${modulePath}).`);
-          context.print.error(`You may fix this error by editing transformers at ${path.join(resourceDir, TRANSFORM_CONFIG_FILE_NAME)}`);
-          throw error;
-        }
-      })
-      .map(imported => {
-        const CustomTransformer = imported.default;
-
-        if (typeof CustomTransformer === 'function') {
-          return new CustomTransformer();
-        } else if (typeof CustomTransformer === 'object') {
-          return CustomTransformer;
+          // Try global package install
+          if (!importedModule) {
+            importedModule = importGlobal(modulePath);
+          }
         }
 
-        throw new Error("Custom Transformers' default export must be a function or an object");
-      })
-      .filter(customTransformer => customTransformer);
+        // At this point we've to have an imported module, otherwise module loader, threw an error.
+        return importedModule;
+      } catch (error) {
+        context.print.error(`Unable to import custom transformer module(${modulePath}).`);
+        context.print.error(`You may fix this error by editing transformers at ${path.join(resourceDir, TRANSFORM_CONFIG_FILE_NAME)}`);
+        throw error;
+      }
+    })
+    .map(imported => {
+      const CustomTransformer = imported.default;
 
-    if (customTransformers.length > 0) {
-      transformerList.push(...customTransformers);
-    }
+      if (typeof CustomTransformer === 'function') {
+        return new CustomTransformer();
+      } if (typeof CustomTransformer === 'object') {
+        return CustomTransformer;
+      }
 
-    // TODO: Build dependency mechanism into transformers. Auth runs last
-    // so any resolvers that need to be protected will already be created.
+      throw new Error("Custom Transformers' default export must be a function or an object");
+    })
+    .filter(customTransformer => customTransformer);
 
-    let amplifyAdminEnabled: boolean = false;
+  if (customTransformers.length > 0) {
+    transformerList.push(...customTransformers);
+  }
 
-    try {
-      const amplifyMeta = stateManager.getMeta();
-      const appId = amplifyMeta?.providers?.[providerName]?.AmplifyAppId;
-      const res = await isAmplifyAdminApp(appId);
-      amplifyAdminEnabled = res.isAdminApp;
-    } catch (err) {
-      // if it is not an AmplifyAdmin app, do nothing
-    }
+  // TODO: Build dependency mechanism into transformers. Auth runs last
+  // so any resolvers that need to be protected will already be created.
 
-    transformerList.push(new ModelAuthTransformer({ authConfig, addAwsIamAuthInOutputSchema: amplifyAdminEnabled }));
-    return transformerList;
-  };
-}
+  let amplifyAdminEnabled = false;
+
+  try {
+    const amplifyMeta = stateManager.getMeta();
+    const appId = amplifyMeta?.providers?.[providerName]?.AmplifyAppId;
+    const res = await isAmplifyAdminApp(appId);
+    amplifyAdminEnabled = res.isAdminApp;
+  } catch (err) {
+    // if it is not an AmplifyAdmin app, do nothing
+  }
+
+  transformerList.push(new ModelAuthTransformer({ authConfig, addAwsIamAuthInOutputSchema: amplifyAdminEnabled }));
+  return transformerList;
+};
 /**
- * @TODO Include a map of versions to keep track
+ * TODO Include a map of versions to keep track
  */
-async function transformerVersionCheck(context, resourceDir, cloudBackendDirectory, updatedResources, usedDirectives) {
+const transformerVersionCheck = async (context, resourceDir, cloudBackendDirectory, updatedResources, usedDirectives): Promise<void> => {
   const transformerVersion = await getTransformerVersion(context);
   const authDocLink = getGraphQLTransformerAuthSubscriptionsDocLink(transformerVersion);
   const searchable = getGraphQLTransformerOpenSearchProductionDocLink(transformerVersion);
   const versionChangeMessage = `The default behavior for @auth has changed in the latest version of Amplify\nRead here for details: ${authDocLink}`;
   const warningESMessage = `The behavior for @searchable has changed after version 4.14.1.\nRead here for details: ${searchable}`;
-  const checkVersionExist = config => config && config.Version;
-  const checkESWarningExists = config => config && config.ElasticsearchWarning;
+  const checkVersionExist = (config): $TSAny => config && config.Version;
+  const checkESWarningExists = (config): $TSAny => config && config.ElasticsearchWarning;
   let writeToConfig = false;
 
   // this is where we check if there is a prev version of the transformer being used
@@ -251,17 +230,17 @@ async function transformerVersionCheck(context, resourceDir, cloudBackendDirecto
   if (writeToConfig) {
     await writeTransformerConfiguration(resourceDir, localTransformerConfig);
   }
-}
+};
 
-async function warningMessage(context, warningMessage) {
+const warningMessage = async (context, message): Promise<void> => {
   if (context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
-    context.print.warning(`\n${warningMessage}\n`);
+    context.print.warning(`\n${message}\n`);
   } else {
-    context.print.warning(`\n${warningMessage}\n`);
+    context.print.warning(`\n${message}\n`);
     const response = await inquirer.prompt({
       name: 'transformerConfig',
       type: 'confirm',
-      message: `Do you wish to continue?`,
+      message: 'Do you wish to continue?',
       default: false,
     });
     if (!response.transformerConfig) {
@@ -269,15 +248,15 @@ async function warningMessage(context, warningMessage) {
       exitOnNextTick(0);
     }
   }
-}
+};
 
-function apiProjectIsFromOldVersion(pathToProject, resourcesToBeCreated) {
+const apiProjectIsFromOldVersion = (pathToProject, resourcesToBeCreated): boolean => {
   const resources = resourcesToBeCreated.filter(resource => resource.service === 'AppSync');
   if (!pathToProject || resources.length > 0) {
     return false;
   }
   return fs.existsSync(`${pathToProject}/${CLOUDFORMATION_FILE_NAME}`) && !fs.existsSync(`${pathToProject}/${TRANSFORM_CONFIG_FILE_NAME}`);
-}
+};
 
 /**
  * API migration happens in a few steps. First we calculate which resources need
@@ -286,10 +265,10 @@ function apiProjectIsFromOldVersion(pathToProject, resourcesToBeCreated) {
  * that only the resources that need to be in the root stack remain there
  * (this deletes resolvers from the schema). We then compile the project with
  * the new implementation and call update stack again.
- * @param {*} context
- * @param {*} resourceDir
+ * @param {*} context context
+ * @param {*} options options
  */
-async function migrateProject(context, options) {
+const migrateProject = async (context, options): Promise<void> => {
   const { resourceDir, isCLIMigration, cloudBackendDirectory } = options;
   const updateAndWaitForStack = options.handleMigration || (() => Promise.resolve('Skipping update'));
   let oldProjectConfig;
@@ -310,6 +289,7 @@ async function migrateProject(context, options) {
   try {
     // After the intermediate update, we need the transform function
     // to look at this directory since we did not overwrite the currentCloudBackend with the build
+    // eslint-disable-next-line no-param-reassign
     options.cloudBackendDirectory = resourceDir;
     await transformGraphQLSchema(context, options);
     const result = await updateAndWaitForStack({ isCLIMigration });
@@ -320,16 +300,19 @@ async function migrateProject(context, options) {
     await revertAPIMigration(resourceDir, oldCloudBackend);
     try {
       await updateAndWaitForStack({ isReverting: true, isCLIMigration });
-    } catch (e) {
+    } catch (ee) {
       context.print.error('Error reverting intermediate migration stack.');
     }
     await revertAPIMigration(resourceDir, oldProjectConfig);
     context.print.error('API successfully reverted.');
     throw e;
   }
-}
+};
 
-export async function transformGraphQLSchema(context, options) {
+/**
+ * transformGraphQLSchema
+ */
+export const transformGraphQLSchema = async (context, options): Promise<DeploymentResources | DeploymentResourcesV6 | void | undefined> => {
   const transformerVersion = await getTransformerVersion(context);
   if (transformerVersion === 2) {
     return transformGraphQLSchemaV6(context, options);
@@ -337,6 +320,7 @@ export async function transformGraphQLSchema(context, options) {
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const flags = context.parameters.options;
   if (flags['no-gql-override']) {
+    // eslint-disable-next-line consistent-return
     return;
   }
 
@@ -364,19 +348,21 @@ export async function transformGraphQLSchema(context, options) {
   }
   resources = resources.filter(resource => resource.service === 'AppSync');
   // check if api is in update status or create status
-  const isNewAppSyncAPI: boolean = resourcesToBeCreated.filter(resource => resource.service === 'AppSync').length === 0 ? false : true;
+  const isNewAppSyncAPI: boolean = resourcesToBeCreated.filter(resource => resource.service === 'AppSync').length !== 0;
 
   if (!resourceDir) {
     // There can only be one appsync resource
     if (resources.length > 0) {
       const resource = resources[0];
       if (resource.providerPlugin !== providerName) {
+        // eslint-disable-next-line consistent-return
         return;
       }
       const { category, resourceName } = resource;
       resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
     } else {
       // No appsync resource to update/add
+      // eslint-disable-next-line consistent-return
       return;
     }
   }
@@ -386,6 +372,7 @@ export async function transformGraphQLSchema(context, options) {
     if (resources.length > 0) {
       const resource = resources[0];
       if (resource.providerPlugin !== providerName) {
+        // eslint-disable-next-line consistent-return
         return;
       }
       const { category, resourceName } = resource;
@@ -416,25 +403,24 @@ export async function transformGraphQLSchema(context, options) {
     cloudBackendDirectory: previouslyDeployedBackendDir,
   };
   if (isCLIMigration && isOldApiVersion) {
-    return await migrateProject(context, migrateOptions);
-  } else if (isOldApiVersion) {
+    return migrateProject(context, migrateOptions);
+  } if (isOldApiVersion) {
     let IsOldApiProject;
 
     if (context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
       IsOldApiProject = context.exeInfo.inputParams.yes;
     } else {
-      const migrateMessage =
-        `${chalk.bold('The CLI is going to take the following actions during the migration step:')}\n` +
-        '\n1. If you have a GraphQL API, we will update the corresponding Cloudformation stack to support larger annotated schemas and custom resolvers.\n' +
-        'In this process, we will be making Cloudformation API calls to update your GraphQL API Cloudformation stack. This operation will result in deletion of your AppSync resolvers and then the creation of new ones and for a brief while your AppSync API will be unavailable until the migration finishes\n' +
-        '\n2. We will be updating your local Cloudformation files present inside the ‘amplify/‘ directory of your app project, for the GraphQL API service\n' +
-        '\n3. If for any reason the migration fails, the CLI will rollback your cloud and local changes and you can take a look at https://aws-amplify.github.io/docs/cli/migrate?sdk=js for manually migrating your project so that it’s compatible with the latest version of the CLI\n' +
-        '\n4. ALL THE ABOVE MENTIONED OPERATIONS WILL NOT DELETE ANY DATA FROM ANY OF YOUR DATA STORES\n' +
-        `\n${chalk.bold('Before the migration, please be aware of the following things:')}\n` +
-        '\n1. Make sure to have an internet connection through the migration process\n' +
-        '\n2. Make sure to not exit/terminate the migration process (by interrupting it explicitly in the middle of migration), as this will lead to inconsistency within your project\n' +
-        '\n3. Make sure to take a backup of your entire project (including the amplify related config files)\n' +
-        '\nDo you want to continue?\n';
+      const migrateMessage = `${chalk.bold('The CLI is going to take the following actions during the migration step:')}\n`
+        + '\n1. If you have a GraphQL API, we will update the corresponding Cloudformation stack to support larger annotated schemas and custom resolvers.\n'
+        + 'In this process, we will be making Cloudformation API calls to update your GraphQL API Cloudformation stack. This operation will result in deletion of your AppSync resolvers and then the creation of new ones and for a brief while your AppSync API will be unavailable until the migration finishes\n'
+        + '\n2. We will be updating your local Cloudformation files present inside the ‘amplify/‘ directory of your app project, for the GraphQL API service\n'
+        + '\n3. If for any reason the migration fails, the CLI will rollback your cloud and local changes and you can take a look at https://aws-amplify.github.io/docs/cli/migrate?sdk=js for manually migrating your project so that it’s compatible with the latest version of the CLI\n'
+        + '\n4. ALL THE ABOVE MENTIONED OPERATIONS WILL NOT DELETE ANY DATA FROM ANY OF YOUR DATA STORES\n'
+        + `\n${chalk.bold('Before the migration, please be aware of the following things:')}\n`
+        + '\n1. Make sure to have an internet connection through the migration process\n'
+        + '\n2. Make sure to not exit/terminate the migration process (by interrupting it explicitly in the middle of migration), as this will lead to inconsistency within your project\n'
+        + '\n3. Make sure to take a backup of your entire project (including the amplify related config files)\n'
+        + '\nDo you want to continue?\n';
       ({ IsOldApiProject } = await inquirer.prompt({
         name: 'IsOldApiProject',
         type: 'confirm',
@@ -443,9 +429,9 @@ export async function transformGraphQLSchema(context, options) {
       }));
     }
     if (!IsOldApiProject) {
-      throw new Error('Migration cancelled. Please downgrade to a older version of the Amplify CLI or migrate your API project.');
+      throw new Error('Migration canceled. Please downgrade to a older version of the Amplify CLI or migrate your API project.');
     }
-    return await migrateProject(context, migrateOptions);
+    return migrateProject(context, migrateOptions);
   }
 
   let { authConfig } = options;
@@ -543,16 +529,17 @@ place .graphql files in a directory at ${schemaDirPath}`);
     JSONUtilities.writeJson(parametersFilePath, parameters);
   }
 
+  // eslint-disable-next-line consistent-return
   return transformerOutput;
-}
+};
 
-function getProjectBucket(context) {
+const getProjectBucket = (context): $TSAny => {
   const projectDetails = context.amplify.getProjectDetails();
   const projectBucket = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName : '';
   return projectBucket;
-}
+};
 
-async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {
+const getPreviousDeploymentRootKey = async (previouslyDeployedBackendDir): Promise<$TSAny> => {
   // this is the function
   let parameters;
   try {
@@ -566,7 +553,7 @@ async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {
   } catch (err) {
     return undefined;
   }
-}
+};
 
 // TODO: Remove until further discussion
 // function getTransformerOptions(project, transformerName) {
@@ -581,7 +568,10 @@ async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {
 //   return undefined;
 // }
 
-export async function getDirectiveDefinitions(context, resourceDir) {
+/**
+ * getDirectiveDefinitions
+ */
+export const getDirectiveDefinitions = async (context, resourceDir): Promise<string> => {
   const transformerVersion = await getTransformerVersion(context);
   if (transformerVersion === 2) {
     return getDirectiveDefinitionsV6(context, resourceDir);
@@ -594,51 +584,18 @@ export async function getDirectiveDefinitions(context, resourceDir) {
     .join('\n');
 
   return [appSynDirectives, transformDirectives].join('\n');
-}
-/**
- * Check if storage exists in the project if not return undefined
- */
-function s3ResourceAlreadyExists(context) {
-  const { amplify } = context;
-  try {
-    let resourceName;
-    const { amplifyMeta } = amplify.getProjectDetails();
-    if (amplifyMeta[storageCategory]) {
-      const categoryResources = amplifyMeta[storageCategory];
-      Object.keys(categoryResources).forEach(resource => {
-        if (categoryResources[resource].service === s3ServiceName) {
-          resourceName = resource;
-        }
-      });
-    }
-    return resourceName;
-  } catch (error) {
-    if (error.name === 'UndeterminedEnvironmentError') {
-      return undefined;
-    }
-    throw error;
-  }
-}
-
-/**
- *  S3API
- *  TBD: Remove this once all invoke functions are moved to a library shared across amplify
- * */
-async function invokeS3GetUserInputs(context, s3ResourceName) {
-  const s3UserInputs = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3GetUserInput', [context, s3ResourceName]);
-  return s3UserInputs;
-}
+};
 
 /**
  * S3API
  * TBD: Remove this once all invoke functions are moved to a library shared across amplify
  * */
-async function invokeS3GetResourceName(context) {
+const invokeS3GetResourceName = async (context): Promise<$TSAny> => {
   const s3ResourceName = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3GetResourceName', [context]);
   return s3ResourceName;
-}
+};
 
-async function getBucketName(context: $TSContext, s3ResourceName: string) {
+const getBucketName = async (context: $TSContext, s3ResourceName: string): Promise<string> => {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
   const stackName = amplifyMeta.providers.awscloudformation.StackName;
@@ -656,42 +613,9 @@ async function getBucketName(context: $TSContext, s3ResourceName: string) {
     ? `${bucketParameters.bucketName}\${hash}-\${env}`
     : `${bucketParameters.bucketName}${s3ResourceName}-\${env}`;
   return bucketName;
-}
+};
 
-export async function getTransformerVersion(context) {
-  const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
-  let transformerVersion;
-  if (useExperimentalPipelineTransformer === false) {
-    transformerVersion = 1;
-  } else {
-    await migrateToTransformerVersionFeatureFlag(context);
-
-    transformerVersion = FeatureFlags.getNumber('graphQLTransformer.transformerVersion');
-    if (transformerVersion !== 1 && transformerVersion !== 2) {
-      throw new Error(`Invalid value specified for transformerVersion: '${transformerVersion}'`);
-    }
-  }
-
-  return transformerVersion;
-}
-
-async function migrateToTransformerVersionFeatureFlag(context) {
-  const projectPath = pathManager.findProjectRoot() ?? process.cwd();
-
-  let config = stateManager.getCLIJSON(projectPath, undefined, {
-    throwIfNotExist: false,
-    preserveComments: true,
-  });
-
-  const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
-  const transformerVersion = FeatureFlags.getNumber('graphQLTransformer.transformerVersion');
-
-  if (useExperimentalPipelineTransformer && transformerVersion === 1) {
-    config.features.graphqltransformer.transformerversion = 2;
-    stateManager.setCLIJSON(projectPath, config);
-    await FeatureFlags.reloadValues();
-    context.print.warning(
-      `\nThe project is configured with 'transformerVersion': ${transformerVersion}, but 'useExperimentalPipelinedTransformer': ${useExperimentalPipelineTransformer}. Setting the 'transformerVersion': ${config.features.graphqltransformer.transformerversion}. 'useExperimentalPipelinedTransformer' is deprecated.`,
-    );
-  }
-}
+export {
+  getTransformerVersion,
+  searchablePushChecks,
+} from './graphql-transformer/transform-graphql-schema';

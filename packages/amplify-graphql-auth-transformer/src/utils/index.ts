@@ -2,11 +2,10 @@ import { DirectiveWrapper } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthMode, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Stack } from '@aws-cdk/core';
 import { ObjectTypeDefinitionNode } from 'graphql';
-import { AccessControlMatrix } from '../accesscontrol';
+import { MODEL_OPERATIONS } from './constants';
 import {
   AuthProvider, AuthRule, AuthTransformerConfig, ConfiguredAuthProviders, RoleDefinition, RolesByProvider,
 } from './definitions';
-import { MODEL_OPERATIONS } from './constants';
 
 export * from './constants';
 export * from './definitions';
@@ -56,6 +55,7 @@ export const getConfiguredAuthProviders = (config: AuthTransformerConfig): Confi
     config.authConfig.defaultAuthentication.authenticationType,
     ...config.authConfig.additionalAuthenticationProviders.map(p => p.authenticationType),
   ];
+
   const getAuthProvider = (authType: AppSyncAuthMode): AuthProvider => {
     switch (authType) {
       case 'AMAZON_COGNITO_USER_POOLS':
@@ -72,6 +72,7 @@ export const getConfiguredAuthProviders = (config: AuthTransformerConfig): Confi
         return 'apiKey';
     }
   };
+
   const hasIAM = providers.some(p => p === 'AWS_IAM');
   const configuredProviders: ConfiguredAuthProviders = {
     default: getAuthProvider(config.authConfig.defaultAuthentication.authenticationType),
@@ -89,25 +90,6 @@ export const getConfiguredAuthProviders = (config: AuthTransformerConfig): Confi
 };
 
 /**
- * util to get allowed roles for field
- * if we have a rule like cognito private we can remove all other related roles from the field since it has top level
- * access by the provider
- */
-export const getReadRolesForField = (acm: AccessControlMatrix, readRoles: Array<string>, fieldName: string): Array<string> => {
-  const hasCognitoPrivateRole = readRoles.some(r => r === 'userPools:private') && acm.isAllowed('userPools:private', fieldName, 'read');
-  const hasOIDCPrivateRole = readRoles.some(r => r === 'oidc:private') && acm.isAllowed('oidc:private', fieldName, 'read');
-  let allowedRoles = [...readRoles];
-
-  if (hasCognitoPrivateRole) {
-    allowedRoles = allowedRoles.filter(r => !(r.startsWith('userPools:') && r !== 'userPools:private'));
-  }
-  if (hasOIDCPrivateRole) {
-    allowedRoles = allowedRoles.filter(r => !(r.startsWith('oidc:') && r !== 'oidc:private'));
-  }
-  return allowedRoles;
-};
-
-/**
  * Gets the rules from the auth directive
  */
 export const getAuthDirectiveRules = (authDir: DirectiveWrapper): AuthRule[] => {
@@ -117,23 +99,7 @@ export const getAuthDirectiveRules = (authDir: DirectiveWrapper): AuthRule[] => 
     rule.operations = rule.operations ?? MODEL_OPERATIONS;
 
     if (!rule.provider) {
-      switch (rule.allow) {
-        case 'owner':
-        case 'groups':
-          rule.provider = 'userPools';
-          break;
-        case 'private':
-          rule.provider = 'userPools';
-          break;
-        case 'public':
-          rule.provider = 'apiKey';
-          break;
-        case 'custom':
-          rule.provider = 'function';
-          break;
-        default:
-          throw new Error(`Need to specify an allow to assigned a provider: ${rule}`);
-      }
+      rule.provider = getDefaultRuleProvider(rule);
     }
 
     if (rule.provider === 'iam') {
@@ -142,4 +108,20 @@ export const getAuthDirectiveRules = (authDir: DirectiveWrapper): AuthRule[] => 
   });
   /* eslint-enable */
   return rules;
+};
+
+const getDefaultRuleProvider = (rule: AuthRule): AuthProvider => {
+  switch (rule.allow) {
+    case 'owner':
+    case 'groups':
+      return 'userPools';
+    case 'private':
+      return 'userPools';
+    case 'public':
+      return 'apiKey';
+    case 'custom':
+      return 'function';
+    default:
+      throw new Error(`Need to specify an allow to assigned a provider: ${rule}`);
+  }
 };

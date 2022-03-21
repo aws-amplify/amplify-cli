@@ -45,6 +45,7 @@ import {
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { getConnectionAttributeName } from '@aws-amplify/graphql-relational-transformer';
+import { getSortKeyFieldNames } from '@aws-amplify/graphql-transformer-core/lib/utils/schema-utils';
 import {
   generateAuthExpressionForCreate,
   generateAuthExpressionForUpdate,
@@ -57,8 +58,8 @@ import {
   generateAuthExpressionForSubscriptions,
   setDeniedFieldFlag,
   generateAuthExpressionForRelationQuery,
-  generateSandboxExpressionForField,
 } from './resolvers';
+import { generateSandboxExpressionForField } from './resolvers/field';
 import { AccessControlMatrix } from './accesscontrol';
 import {
   AUTH_PROVIDER_DIRECTIVE_MAP,
@@ -95,7 +96,6 @@ import {
   hasRelationalDirective,
   getPartitionKey,
   getRelationalPrimaryMap,
-  getReadRolesForField,
   getAuthDirectiveRules,
 } from './utils';
 
@@ -200,8 +200,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
 
     if (isParentTypeBuiltinType) {
       console.warn(
-        'Be careful when using @auth directives on a field in a root type. @auth directives on field definitions use the source '
-        + 'object to perform authorization logic and the source will be an empty object for fields on root types. '
+        'Be careful when using @auth directives on a field in a root type. @auth directives on field definitions use the source \n'
+        + 'object to perform authorization logic and the source will be an empty object for fields on root types. \n'
         + 'Static group authorization should perform as expected.',
       );
     }
@@ -260,11 +260,12 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       if (this.roleMap.get(role)!.strategy === 'owner') prev.push(this.roleMap.get(role)!.entity!);
       return prev;
     }, []);
+
     this.authModelConfig.forEach((acm, modelName) => {
       const def = context.output.getObject(modelName)!;
       const modelHasSearchable = def.directives.some(dir => dir.name.value === 'searchable');
       // collect ownerFields and them in the model
-      AuthTransformer.addFieldsToObject(context, modelName, getOwnerFields(acm));
+      this.addFieldsToObject(context, modelName, getOwnerFields(acm));
       // Get the directives we need to add to the GraphQL nodes
       const providers = this.getAuthProviders(acm.getRoles());
       const directives = this.getServiceDirectives(providers, providers.length === 0 ? this.shouldAddDefaultServiceDirective() : false);
@@ -277,6 +278,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       this.protectSchemaOperations(context, def, acm);
       this.propagateAuthDirectivesToNestedTypes(context, context.output.getObject(modelName)!, providers);
     });
+
     this.authNonModelConfig.forEach((acm, typeFieldName) => {
       // protect the non model field
       const [typeName, fieldName] = typeFieldName.split(':');
@@ -286,6 +288,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         addDirectivesToField(context, typeName, fieldName, directives);
       }
     });
+
     // add the service directives to the searchable aggregate types
     if (searchableAggregateServiceDirectives.size > 0) {
       const serviceDirectives = this.getServiceDirectives(Array.from(searchableAggregateServiceDirectives), false);
@@ -384,6 +387,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         .map(role => this.roleMap.get(role)!)
         // for subscriptions we only use static rules or owner rule where the field is not a list
         .filter(roleDef => (roleDef.strategy === 'owner' && !fieldIsList(def.fields ?? [], roleDef.entity!)) || roleDef.static);
+
       subscriptionFieldNames.forEach(subscription => {
         this.protectSubscriptionResolver(context, subscription.typeName, subscription.fieldName, subscriptionRoles);
       });
@@ -503,14 +507,10 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     const table = getTable(ctx, def);
     try {
       if (indexName) {
-        /* eslint-disable @typescript-eslint/no-explicit-any */
         primaryFields = getKeySchema(table, indexName).map((att: any) => att.attributeName);
-        /* eslint-enable */
       } else {
-        /* eslint-disable @typescript-eslint/no-explicit-any */
         primaryFields = table.keySchema.map((att: any) => att.attributeName);
         partitionKey = getPartitionKey(table.keySchema);
-        /* eslint-enable */
       }
     } catch (err) {
       throw new InvalidDirectiveError(`Could not fetch keySchema for ${def.name.value}.`);
@@ -538,7 +538,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   ): void => {
     let fieldAuthExpression: string;
     let relatedAuthExpression: string;
-    const relatedModelObject = AuthTransformer.getRelatedModelObject(ctx, getBaseType(field.type));
+    const relatedModelObject = this.getRelatedModelObject(ctx, getBaseType(field.type));
     if (this.authModelConfig.has(relatedModelObject.name.value)) {
       const acm = this.authModelConfig.get(relatedModelObject.name.value);
       const roleDefinitions = acm.getRolesPerOperation('read').map(r => this.roleMap.get(r)!);
@@ -621,7 +621,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   ): void => {
     const acmFields = acm.getResources();
     const modelFields = def.fields ?? [];
-    // only add readonly fields if they exist
+    // only add read-only fields if they exist
     const allowedAggFields = modelFields.map(f => f.name.value).filter(f => !acmFields.includes(f));
     let leastAllowedFields = acmFields;
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
@@ -640,7 +640,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       }
       return roleDefinition;
     });
-    // add readonly fields with all the fields every role has access to
+    // add read-only fields with all the fields every role has access to
     allowedAggFields.push(...leastAllowedFields);
     const authExpression = generateAuthExpressionForSearchQueries(
       this.configuredAuthProviders,
@@ -655,11 +655,11 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   };
 
   /*
-  Field Resovler can protect the following
+  Field Resolver can protect the following
   - model fields
   - fields on an operation (query/mutation)
   - protection on predictions/function/no directive
-  Order of precendence
+  Order of precedence
   - resolver in api host (ex. @function, @predictions)
   - no resolver -> creates a blank resolver will return the source field
   */
@@ -675,9 +675,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     const stack = getStackForField(ctx, def, fieldName, hasModelDirective);
     if (ctx.api.host.hasResolver(typeName, fieldName)) {
       // TODO: move pipeline resolvers created in the api host to the resolver manager
-      /* eslint-disable @typescript-eslint/no-explicit-any */
       const fieldResolver = ctx.api.host.getResolver(typeName, fieldName) as any;
-      /* eslint-enable */
       const fieldAuthExpression = generateAuthExpressionForField(this.configuredAuthProviders, roleDefinitions, [], fieldName);
       if (!ctx.api.host.hasDataSource(NONE_DS)) {
         ctx.api.host.addNoneDataSource(NONE_DS);
@@ -906,9 +904,10 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   }
 
   private doesTypeHaveRulesForOperation(acm: AccessControlMatrix, operation: ModelOperation): boolean {
-    const rolesHasDefaultProvider = (
-      roles: Array<string>,
-    ): boolean => roles.some(r => this.roleMap.get(r)!.provider! === this.configuredAuthProviders.default);
+    const rolesHasDefaultProvider = (roles: Array<string>): boolean => roles.some(
+      r => this.roleMap.get(r)!.provider! === this.configuredAuthProviders.default,
+    );
+
     const roles = acm.getRolesPerOperation(operation, operation === 'delete');
     return rolesHasDefaultProvider(roles) || (roles.length === 0 && this.shouldAddDefaultServiceDirective());
   }
@@ -926,7 +925,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   /**
    * Helper method to get related model object
    */
-  static getRelatedModelObject(ctx: TransformerContextProvider, typeName: string): ObjectTypeDefinitionNode | undefined {
+  getRelatedModelObject = (ctx: TransformerContextProvider, typeName: string): ObjectTypeDefinitionNode => {
     const modelObjectName: string = ModelResourceIDs.IsModelConnectionType(typeName)
       ? ModelResourceIDs.GetModelFromConnectionType(typeName)
       : typeName;
@@ -935,22 +934,21 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     } else {
       return ctx.output.getObject(modelObjectName);
     }
-  }
+  };
 
   /**
    * Helper method to add fields to object
    */
-  static addFieldsToObject(ctx: TransformerTransformSchemaStepContextProvider, modelName: string, ownerFields: string[]): void {
+  addFieldsToObject = (ctx: TransformerTransformSchemaStepContextProvider, modelName: string, ownerFields: Array<string>): void => {
     const modelObject = ctx.output.getObject(modelName)!;
     const existingFields = collectFieldNames(modelObject);
     const ownerFieldsToAdd = ownerFields.filter(field => !existingFields.includes(field));
     ownerFieldsToAdd.forEach(ownerField => {
-      /* eslint-disable @typescript-eslint/no-explicit-any */
       (modelObject as any).fields.push(makeField(ownerField, [], makeNamedType('String')));
-      /* eslint-enable */
     });
+
     ctx.output.putType(modelObject);
-  }
+  };
 
   private propagateAuthDirectivesToNestedTypes(
     ctx: TransformerTransformSchemaStepContextProvider,
@@ -1018,6 +1016,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     AUTH_PROVIDER_DIRECTIVE_MAP.forEach((directiveName, authProvider) => {
       addDirectiveIfNeeded(authProvider, directiveName);
     });
+
     /*
       If we have any rules for the default provider AND those with other providers,
       we add the default provider directive, regardless of the addDefaultDirective value
@@ -1072,16 +1071,16 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
           'auth-role-name',
           `arn:aws:iam::${cdk.Stack.of(rootStack).account}:role/${authRoleParameter}`,
         );
-        for (let i = 0; i < authPolicyDocuments.length; i += 1) {
+
+        authPolicyDocuments.forEach((authPolicyDocument, i) => {
           const paddedIndex = `${i + 1}`.padStart(2, '0');
           const resourceName = `${ResourceConstants.RESOURCES.AuthRolePolicy}${paddedIndex}`;
-          /* eslint-disable no-new */
+          // eslint-disable-next-line no-new
           new iam.ManagedPolicy(rootStack, resourceName, {
-            document: iam.PolicyDocument.fromJson(authPolicyDocuments[i]),
+            document: iam.PolicyDocument.fromJson(authPolicyDocument),
             roles: [iamAuthRoleArn],
           });
-          /* eslint-enable */
-        }
+        });
       }
     }
     if (this.generateIAMPolicyForUnauthRole) {
@@ -1097,16 +1096,15 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         'unauth-role-name',
         `arn:aws:iam::${cdk.Stack.of(rootStack).account}:role/${unauthRoleParameter}`,
       );
-      for (let i = 0; i < unauthPolicyDocuments.length; i += 1) {
+      unauthPolicyDocuments.forEach((unauthPolicyDocument, i) => {
         const paddedIndex = `${i + 1}`.padStart(2, '0');
         const resourceName = `${ResourceConstants.RESOURCES.UnauthRolePolicy}${paddedIndex}`;
-        /* eslint-disable no-new */
+        // eslint-disable-next-line no-new
         new iam.ManagedPolicy(ctx.stackManager.rootStack, resourceName, {
-          document: iam.PolicyDocument.fromJson(unauthPolicyDocuments[i]),
+          document: iam.PolicyDocument.fromJson(unauthPolicyDocument),
           roles: [iamUnauthRoleArn],
         });
-        /* eslint-enable */
-      }
+      });
     }
   }
 
@@ -1114,22 +1112,16 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     if (rules.length === 0 || this.generateIAMPolicyForAuthRole === true) {
       return;
     }
-    rules.forEach(rule => {
-      if ((rule.allow === 'private' || rule.allow === 'public') && rule.provider === 'iam') {
-        this.generateIAMPolicyForAuthRole = true;
-      }
-    });
+
+    this.generateIAMPolicyForAuthRole = rules.some(rule => (rule.allow === 'private' || rule.allow === 'public') && rule.provider === 'iam');
   }
 
   private setUnauthPolicyFlag(rules: AuthRule[]): void {
     if (rules.length === 0 || this.generateIAMPolicyForUnauthRole === true) {
       return;
     }
-    rules.forEach(rule => {
-      if (rule.allow === 'public' && rule.provider === 'iam') {
-        this.generateIAMPolicyForUnauthRole = true;
-      }
-    });
+
+    this.generateIAMPolicyForUnauthRole = rules.some(rule => (rule.allow === 'public' && rule.provider === 'iam'));
   }
 
   private addOperationToResourceReferences(operationName: string, fieldName: string, roles: Array<string>): void {
@@ -1201,11 +1193,11 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     const typeDefinitions = ctx.inputDocument.definitions.filter(it => it.kind === 'ObjectTypeDefinition') as ObjectTypeDefinitionNode[];
 
     this.addAutoGeneratedHasManyFields(typeDefinitions, def, allowedFields);
-    AuthTransformer.addAutoGeneratedHasOneFields(typeDefinitions, fields, def, allowedFields);
+    this.addAutoGeneratedHasOneFields(typeDefinitions, fields, def, allowedFields);
   };
 
-  addAutoGeneratedIndexFields = (definition: ObjectTypeDefinitionNode, allowedFields: Set<string>): void => {
-    const sortKeyFieldValues: ListValueNode[] = definition.fields
+  addAutoGeneratedIndexFields = (def: ObjectTypeDefinitionNode, allowedFields: Set<string>): void => {
+    const sortKeyFieldValues: ListValueNode[] = def.fields
       ?.map(it => it.directives)
       .flat()
       .filter(it => it.name.value === 'primaryKey' || it.name.value === 'index')
@@ -1232,34 +1224,35 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     allowedFields: Set<string>,
   ): void => {
     const hasManyRelatedFields = typeDefinitions
-      .map(it => it.fields.map(field => ({ ...field, relatedType: it.name.value })))
+      .map(it => it.fields.map(field => ({ ...field, relatedType: it })))
       .flat()
       .filter(it => getBaseType(it.type) === def.name.value && it.directives?.some(d => d.name.value === 'hasMany'));
 
     hasManyRelatedFields.forEach(relatedField => {
-      allowedFields.add(getConnectionAttributeName(relatedField.relatedType, relatedField.name.value));
+      allowedFields.add(getConnectionAttributeName(relatedField.relatedType.name.value, relatedField.name.value));
+      getSortKeyFieldNames(relatedField.relatedType).forEach(sortKeyFieldName => {
+        allowedFields.add(getConnectionAttributeName(relatedField.relatedType.name.value, sortKeyFieldName));
+      });
     });
   };
 
-  /**
-   * Helper to add auto generated @hasOne fields
-   */
-  static addAutoGeneratedHasOneFields(
+  addAutoGeneratedHasOneFields = (
     typeDefinitions: ObjectTypeDefinitionNode[],
     fields: readonly string[],
     def: ObjectTypeDefinitionNode,
     allowedFields: Set<string>,
-  ): void {
+  ): void => {
     fields.forEach(field => {
       const modelField = def.fields.find(it => it.name.value === field);
 
       const directives = modelField.directives?.filter(
         dir => !dir.arguments?.some(it => it.name.value === 'fields') && (dir.name.value === 'hasOne' || dir.name.value === 'belongsTo'),
       );
-      directives.forEach(directive => {
-        if (directive.name.value === 'hasOne') {
+
+      directives.forEach(dir => {
+        if (dir.name.value === 'hasOne') {
           allowedFields.add(getConnectionAttributeName(def.name.value, field));
-        } else if (directive.name.value === 'belongsTo') {
+        } else if (dir.name.value === 'belongsTo') {
           const relatedType = typeDefinitions.find(
             it => it.name.value === getBaseType(modelField.type)
               && it.fields?.some(f => getBaseType(f.type) === def.name.value && f.directives?.some(d => d.name.value === 'hasOne')),
@@ -1277,3 +1270,22 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     dataStoreFields.forEach(item => allowedFields.add(item));
   };
 }
+
+/**
+ * util to get allowed roles for field
+ * if we have a rule like cognito private we can remove all other related roles from the field since it has top level
+ * access by the provider
+ */
+const getReadRolesForField = (acm: AccessControlMatrix, readRoles: Array<string>, fieldName: string): Array<string> => {
+  const hasCognitoPrivateRole = readRoles.some(r => r === 'userPools:private') && acm.isAllowed('userPools:private', fieldName, 'read');
+  const hasOIDCPrivateRole = readRoles.some(r => r === 'oidc:private') && acm.isAllowed('oidc:private', fieldName, 'read');
+  let allowedRoles = [...readRoles];
+
+  if (hasCognitoPrivateRole) {
+    allowedRoles = allowedRoles.filter(r => !(r.startsWith('userPools:') && r !== 'userPools:private'));
+  }
+  if (hasOIDCPrivateRole) {
+    allowedRoles = allowedRoles.filter(r => !(r.startsWith('oidc:') && r !== 'oidc:private'));
+  }
+  return allowedRoles;
+};

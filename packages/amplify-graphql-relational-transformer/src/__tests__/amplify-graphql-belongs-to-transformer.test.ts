@@ -1,6 +1,7 @@
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { $TSAny } from 'amplify-cli-core';
 import { Kind, parse } from 'graphql';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
 
@@ -20,7 +21,7 @@ test('fails if @belongsTo was used on an object that is not a model type', () =>
     transformers: [new ModelTransformer(), new BelongsToTransformer()],
   });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError(`@belongsTo must be on an @model object type field.`);
+  expect(() => transformer.transform(inputSchema)).toThrowError('@belongsTo must be on an @model object type field.');
 });
 
 test('fails if @belongsTo was used with a related type that is not a model', () => {
@@ -39,7 +40,7 @@ test('fails if @belongsTo was used with a related type that is not a model', () 
     transformers: [new ModelTransformer(), new BelongsToTransformer()],
   });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError(`Object type Test1 must be annotated with @model.`);
+  expect(() => transformer.transform(inputSchema)).toThrowError('Object type Test1 must be annotated with @model.');
 });
 
 test('fails if the related type does not exist', () => {
@@ -80,7 +81,7 @@ test('fails if an empty list of fields is passed in', () => {
   expect(() => transformer.transform(inputSchema)).toThrowError('No fields passed to @belongsTo directive.');
 });
 
-test('fails if any of the fields passed in are not in the parent model', () => {
+test('fails if $TSAny of the fields passed in are not in the parent model', () => {
   const inputSchema = `
     type Test @model {
       id: ID!
@@ -270,41 +271,41 @@ test('creates belongs to relationship with implicit fields', () => {
   const schema = parse(out.schema);
   validateModelSchema(schema);
 
-  const test1ObjType = schema.definitions.find((def: any) => def.name && def.name.value === 'Test1') as any;
+  const test1ObjType = schema.definitions.find((def: $TSAny) => def.name && def.name.value === 'Test1') as $TSAny;
   expect(test1ObjType).toBeDefined();
-  const relatedField = test1ObjType.fields.find((f: any) => f.name.value === 'otherHalf2');
+  const relatedField = test1ObjType.fields.find((f: $TSAny) => f.name.value === 'otherHalf2');
   expect(relatedField).toBeDefined();
   expect(relatedField.type.kind).toEqual(Kind.NAMED_TYPE);
 
-  const create1Input = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateTest1Input') as any;
+  const create1Input = schema.definitions.find((def: $TSAny) => def.name && def.name.value === 'CreateTest1Input') as $TSAny;
   expect(create1Input).toBeDefined();
   expect(create1Input.fields.length).toEqual(4);
-  expect(create1Input.fields.find((f: any) => f.name.value === 'id')).toBeDefined();
-  expect(create1Input.fields.find((f: any) => f.name.value === 'friendID')).toBeDefined();
-  expect(create1Input.fields.find((f: any) => f.name.value === 'email')).toBeDefined();
-  expect(create1Input.fields.find((f: any) => f.name.value === 'test1OtherHalf2Id')).toBeDefined();
+  expect(create1Input.fields.find((f: $TSAny) => f.name.value === 'id')).toBeDefined();
+  expect(create1Input.fields.find((f: $TSAny) => f.name.value === 'friendID')).toBeDefined();
+  expect(create1Input.fields.find((f: $TSAny) => f.name.value === 'email')).toBeDefined();
+  expect(create1Input.fields.find((f: $TSAny) => f.name.value === 'test1OtherHalf2Id')).toBeDefined();
 
-  const update1Input = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTest1Input') as any;
+  const update1Input = schema.definitions.find((def: $TSAny) => def.name && def.name.value === 'UpdateTest1Input') as $TSAny;
   expect(update1Input).toBeDefined();
   expect(update1Input.fields.length).toEqual(4);
-  expect(update1Input.fields.find((f: any) => f.name.value === 'id')).toBeDefined();
-  expect(update1Input.fields.find((f: any) => f.name.value === 'friendID')).toBeDefined();
-  expect(update1Input.fields.find((f: any) => f.name.value === 'email')).toBeDefined();
-  expect(update1Input.fields.find((f: any) => f.name.value === 'test1OtherHalf2Id')).toBeDefined();
+  expect(update1Input.fields.find((f: $TSAny) => f.name.value === 'id')).toBeDefined();
+  expect(update1Input.fields.find((f: $TSAny) => f.name.value === 'friendID')).toBeDefined();
+  expect(update1Input.fields.find((f: $TSAny) => f.name.value === 'email')).toBeDefined();
+  expect(update1Input.fields.find((f: $TSAny) => f.name.value === 'test1OtherHalf2Id')).toBeDefined();
 
-  const createInput = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateTestInput') as any;
+  const createInput = schema.definitions.find((def: $TSAny) => def.name && def.name.value === 'CreateTestInput') as $TSAny;
   expect(createInput).toBeDefined();
   expect(createInput.fields.length).toEqual(3);
-  expect(createInput.fields.find((f: any) => f.name.value === 'id')).toBeDefined();
-  expect(createInput.fields.find((f: any) => f.name.value === 'email')).toBeDefined();
-  expect(createInput.fields.find((f: any) => f.name.value === 'testOtherHalfId')).toBeDefined();
+  expect(createInput.fields.find((f: $TSAny) => f.name.value === 'id')).toBeDefined();
+  expect(createInput.fields.find((f: $TSAny) => f.name.value === 'email')).toBeDefined();
+  expect(createInput.fields.find((f: $TSAny) => f.name.value === 'testOtherHalfId')).toBeDefined();
 
-  const updateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTestInput') as any;
+  const updateInput = schema.definitions.find((def: $TSAny) => def.name && def.name.value === 'UpdateTestInput') as $TSAny;
   expect(updateInput).toBeDefined();
   expect(updateInput.fields.length).toEqual(3);
-  expect(updateInput.fields.find((f: any) => f.name.value === 'id')).toBeDefined();
-  expect(updateInput.fields.find((f: any) => f.name.value === 'email')).toBeDefined();
-  expect(createInput.fields.find((f: any) => f.name.value === 'testOtherHalfId')).toBeDefined();
+  expect(updateInput.fields.find((f: $TSAny) => f.name.value === 'id')).toBeDefined();
+  expect(updateInput.fields.find((f: $TSAny) => f.name.value === 'email')).toBeDefined();
+  expect(createInput.fields.find((f: $TSAny) => f.name.value === 'testOtherHalfId')).toBeDefined();
 });
 
 test('regression test for implicit id field on related type', () => {
@@ -363,4 +364,56 @@ test('support for belongs to with Int fields', () => {
   expect(out.resolvers['ExamItem.owningBank.req.vtl']).not.toContain(
     '$util.defaultIfNullOrBlank($ctx.source.owningBankId, "___xamznone____"))',
   );
+});
+
+test('support for belongs to linked to hasMany with primary key and sort key fields', () => {
+  const inputSchema = `
+    type Blog @model {
+      id: ID!
+      name: String!
+      owner: Owner! @belongsTo
+    }
+
+    type Owner @model {
+      id: ID!
+      name: String! @primaryKey(sortKeyFields: ["wea"])
+      wea: String!
+      blogs: [Blog] @hasMany
+    }`;
+
+  const transformer = new GraphQLTransform({
+    transformers: [
+      new ModelTransformer(),
+      new PrimaryKeyTransformer(),
+      new HasManyTransformer(),
+      new BelongsToTransformer(),
+    ],
+  });
+
+  const out = transformer.transform(inputSchema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+
+  const blogType = schema.definitions.find((def: $TSAny) => def.name && def.name.value === 'Blog') as $TSAny;
+  expect(blogType).toBeDefined();
+  const sortKeyField = blogType.fields.find((f: $TSAny) => f.name.value === 'ownerWeaId');
+  expect(sortKeyField).toBeDefined();
+  expect(sortKeyField.type.kind).toEqual(Kind.NAMED_TYPE);
+
+  const createBlogInput = schema.definitions.find((def: $TSAny) => def.name && def.name.value === 'CreateBlogInput') as $TSAny;
+  expect(createBlogInput).toBeDefined();
+  expect(createBlogInput.fields.length).toEqual(4);
+  expect(createBlogInput.fields.find((f: $TSAny) => f.name.value === 'id')).toBeDefined();
+  expect(createBlogInput.fields.find((f: $TSAny) => f.name.value === 'name')).toBeDefined();
+  expect(createBlogInput.fields.find((f: $TSAny) => f.name.value === 'ownerBlogsId')).toBeDefined();
+  expect(createBlogInput.fields.find((f: $TSAny) => f.name.value === 'ownerWeaId')).toBeDefined();
+
+  const updateBlogInput = schema.definitions.find((def: $TSAny) => def.name && def.name.value === 'UpdateBlogInput') as $TSAny;
+  expect(updateBlogInput).toBeDefined();
+  expect(updateBlogInput.fields.length).toEqual(4);
+  expect(updateBlogInput.fields.find((f: $TSAny) => f.name.value === 'id')).toBeDefined();
+  expect(updateBlogInput.fields.find((f: $TSAny) => f.name.value === 'name')).toBeDefined();
+  expect(updateBlogInput.fields.find((f: $TSAny) => f.name.value === 'ownerBlogsId')).toBeDefined();
+  expect(updateBlogInput.fields.find((f: $TSAny) => f.name.value === 'ownerWeaId')).toBeDefined();
 });
