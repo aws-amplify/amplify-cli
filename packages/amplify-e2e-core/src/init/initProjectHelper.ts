@@ -348,36 +348,6 @@ export function initNewEnvWithProfile(cwd: string, s: { envName: string }): Prom
   });
 }
 
-export function updatedInitNewEnvWithProfile(cwd: string, s: { envName: string }): Promise<void> {
-  addCircleCITags(cwd);
-
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init'], {
-      cwd,
-      stripColors: true,
-    })
-      .wait('Do you want to use an existing environment?')
-      .sendConfirmNo()
-      .wait('Enter a name for the environment')
-      .sendLine(s.envName)
-      .wait('Choose your default editor:')
-      .sendCarriageReturn()
-      .wait('Using default provider  awscloudformation')
-      .wait('Select the authentication method you want to use:')
-      .sendCarriageReturn()
-      .wait('Please choose the profile you want to use')
-      .sendCarriageReturn()
-      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
-
 export function amplifyInitSandbox(cwd: string, settings: {}): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   let env;
