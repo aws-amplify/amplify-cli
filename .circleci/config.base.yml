@@ -885,6 +885,8 @@ workflows:
       - deploy:
           context:
             - amplify-ecr-image-pull
+            - e2e-auth-credentials
+            - e2e-test-context
             - npm-publish
           requires:
             # - test
