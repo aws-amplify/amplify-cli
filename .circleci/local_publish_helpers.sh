@@ -30,6 +30,10 @@ function uploadPkgCli {
     cd ..
 }
 
+function nothing {
+    echo "nothing"
+}
+
 function generatePkgCli {
   cd pkg
 

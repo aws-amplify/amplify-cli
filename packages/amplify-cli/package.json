@@ -24,7 +24,7 @@
   },
   "scripts": {
     "postinstall": "node ./install.js || echo \"failed to install amplify binary\"",
-    "version": "yarn run nothing && exit 1",
+    "version": "source ../../.circleci/local_publish_helpers.sh && nothing && exit 1",
     "run": "node ./run.js",
     "fmt": "prettier --write **/*a.js",
     "fmt:check": "prettier --check **/*.js"
