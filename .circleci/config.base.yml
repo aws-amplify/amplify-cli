@@ -251,30 +251,6 @@ jobs:
             unsetSudoNpmRegistryUrl
             amplify version
 
-  amplify_e2e_tests:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ./
-      - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
-      - restore_cache:
-          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
-      - restore_cache:
-          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
-      - run: *install_cli_from_local_registery
-      - run:
-          name: Run E2e Tests
-          command: |
-            source .circleci/local_publish_helpers.sh
-            retry runE2eTest
-          no_output_timeout: 90m
-      - run: *scan_e2e_test_artifacts
-      - store_test_results:
-          path: packages/amplify-e2e-tests/
-      - store_artifacts:
-          path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
-
   amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -765,14 +741,6 @@ workflows:
                 - master
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
-      - amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - cleanup-resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          # post-steps:
-          #   - run: *clean_e2e_resources
           filters:
             branches:
               only:
@@ -901,7 +869,6 @@ workflows:
             - cleanup-resources
             - e2e-test-context
           requires:
-            - amplify_e2e_tests
             - amplify_e2e_tests_pkg
             - amplify_migration_tests_v6
             - amplify_migration_tests_v5
@@ -915,7 +882,6 @@ workflows:
             - mock_e2e_tests
             - graphql_e2e_tests
             - integration_test
-            - amplify_e2e_tests
             - amplify_e2e_tests_pkg
             - amplify_sudo_install_test
             - amplify_console_integration_tests

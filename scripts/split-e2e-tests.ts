@@ -456,15 +456,8 @@ function verifyConfig() {
 
 function main(): void {
   const config = loadConfig();
-  const splitNodeTests = splitTests(
-    config,
-    'amplify_e2e_tests',
-    'build_test_deploy',
-    join(repoRoot, 'packages', 'amplify-e2e-tests'),
-    CONCURRENCY,
-  );
   const splitPkgTests = splitTests(
-    splitNodeTests,
+    config,
     'amplify_e2e_tests_pkg',
     'build_test_deploy',
     join(repoRoot, 'packages', 'amplify-e2e-tests'),
