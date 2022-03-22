@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli",
-  "version": "7.6.26",
+  "version": "7.6.27-npm-pkg-cli.0",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",

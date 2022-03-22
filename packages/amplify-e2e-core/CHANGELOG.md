@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.17-npm-pkg-cli.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.6.15...amplify-e2e-core@2.6.17-npm-pkg-cli.0) (2022-03-22)
+
+
+### Bug Fixes
+
+* build resource when adding new env ([#10003](https://github.com/aws-amplify/amplify-cli/issues/10003)) ([f53596d](https://github.com/aws-amplify/amplify-cli/commit/f53596d3346a015708610c3af686d887ac978df7))
+
+
+
+
+
 ## [2.6.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.6.15...amplify-e2e-core@2.6.16) (2022-03-22)
 
 

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.29-npm-pkg-cli.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@2.2.27...amplify-dotnet-function-template-provider@2.2.29-npm-pkg-cli.0) (2022-03-22)
+
+**Note:** Version bump only for package amplify-dotnet-function-template-provider
+
+
+
+
+
 ## [2.2.28](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@2.2.27...amplify-dotnet-function-template-provider@2.2.28) (2022-03-22)
 
 **Note:** Version bump only for package amplify-dotnet-function-template-provider

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.11-npm-pkg-cli.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.7.9...@aws-amplify/graphql-relational-transformer@0.7.11-npm-pkg-cli.0) (2022-03-22)
+
+
+### Bug Fixes
+
+* **graphql:** avoid static datastructures in gql transform ([#10006](https://github.com/aws-amplify/amplify-cli/issues/10006)) ([cd73fdd](https://github.com/aws-amplify/amplify-cli/commit/cd73fdde69f1545683e81684c4f9267145b845c6))
+* **graphql:** include sort key(s) in many to many directive relation model ([#9580](https://github.com/aws-amplify/amplify-cli/issues/9580)) ([93ebf35](https://github.com/aws-amplify/amplify-cli/commit/93ebf3566992bff95f035f70fe27b4b1871e1d3d))
+
+
+
+
+
 ## [0.7.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.7.9...@aws-amplify/graphql-relational-transformer@0.7.10) (2022-03-22)
 
 
