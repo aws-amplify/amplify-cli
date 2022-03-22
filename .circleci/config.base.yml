@@ -526,7 +526,11 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setNpmTag
             yarn update-versions --preid=$NPM_TAG --conventional-prerelease
-            yarn pkg-all-local
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setNpmRegistryUrlToLocal
+            changeNpmGlobalPath
+            yarn yarn-use-bash
+            yarn pkg-all
             unsetNpmRegistryUrl
             git stash
             uploadPkgCli
