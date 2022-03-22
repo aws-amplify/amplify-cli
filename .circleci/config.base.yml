@@ -541,7 +541,9 @@ jobs:
       - run:
           name: Check deployed version
           command: |
-            npm i -g @aws-amplify/cli
+            cd packages/amplify-cli
+            VERSION=$(npm version | grep @aws-amplify/cli | cut -d ":" -f2 | cut -d "'" -f2 | xargs echo -n)
+            npm i -g @aws-amplify/cli@$VERSION
             amplify --version
       - run: *scan_e2e_test_artifacts
   github_prerelease:

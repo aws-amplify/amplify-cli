@@ -13,7 +13,7 @@ function startLocalRegistry {
 }
 
 function setNpmTag {
-    if [[ -z $NPM_TAG]]; then
+    if [ -z $NPM_TAG ]; then
         if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
             if [[ "$CIRCLE_BRANCH" =~ ^tagged-release-without-e2e-tests\/.* ]]; then
                 export NPM_TAG="${CIRCLE_BRANCH/tagged-release-without-e2e-tests\//}"
