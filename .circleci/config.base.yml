@@ -528,6 +528,7 @@ jobs:
             yarn update-versions --preid=$NPM_TAG --conventional-prerelease
             yarn pkg-all-local
             unsetNpmRegistryUrl
+            git stash
             uploadPkgCli
             ./out/amplify-pkg-linux --version
       - run:
@@ -687,7 +688,6 @@ workflows:
             parameters:
               os:
                 - l
-                - w
       - lint:
           requires:
             - build
@@ -879,8 +879,9 @@ workflows:
             - amplify-ecr-image-pull
             - npm-publish
           requires:
-            - test
-            - mock_e2e_tests
+            # - test
+            # - mock_e2e_tests
+            - build
             - graphql_e2e_tests
             - integration_test
             - amplify_e2e_tests_pkg
