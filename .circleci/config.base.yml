@@ -528,6 +528,8 @@ jobs:
             yarn update-versions --preid=$NPM_TAG --conventional-prerelease
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
+            git config user.email not@used.com
+            git config user.name "Doesnt Matter"
             changeNpmGlobalPath
             yarn yarn-use-bash
             yarn pkg-all
