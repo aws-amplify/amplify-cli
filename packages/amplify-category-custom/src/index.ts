@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, IAmplifyResource, pathManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, IAmplifyResource, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as path from 'path';
 import { buildCustomResources } from './utils/build-custom-resources';
@@ -18,7 +18,11 @@ export async function executeAmplifyCommand(context: $TSContext) {
 
   const commandModule = await import(commandPath);
 
-  pathManager.getAmplifyMetaFilePath();
+  // Check if project has been initialized
+  if (!stateManager.metaFileExists()) {
+    printer.error('Could not find the amplfiy-meta.json file. Make sure your project is initialized in the cloud.');
+    return;
+  }
 
   await commandModule.run(context);
 }
