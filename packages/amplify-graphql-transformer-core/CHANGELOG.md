@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.16.3-hello.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.16.2...@aws-amplify/graphql-transformer-core@0.16.3-hello.0) (2022-03-22)
+
+
+### Bug Fixes
+
+* **graphql:** avoid static datastructures in gql transform ([#10006](https://github.com/aws-amplify/amplify-cli/issues/10006)) ([cd73fdd](https://github.com/aws-amplify/amplify-cli/commit/cd73fdde69f1545683e81684c4f9267145b845c6))
+
+
+
+
+
 ## [0.16.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.16.1...@aws-amplify/graphql-transformer-core@0.16.2) (2022-02-25)
 
 
