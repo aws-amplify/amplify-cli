@@ -12,6 +12,21 @@ function startLocalRegistry {
     grep -q 'http address' <(tail -f $tmp_registry_log)
 }
 
+function nextCliVersion {
+    if [[ -z $NPM_TAG]]; then
+
+        if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
+            if [[ "$CIRCLE_BRANCH" =~ ^tagged-release-without-e2e-tests\/.* ]]; then
+                export NPM_TAG="${CIRCLE_BRANCH/tagged-release-without-e2e-tests\//}"
+            elif [[ "$CIRCLE_BRANCH" =~ ^tagged-release\/.* ]]; then
+                export NPM_TAG="${CIRCLE_BRANCH/tagged-release\//}"
+            fi
+        fi
+    fi
+
+    echo "version is $(npm version | grep @aws-amplify/cli | cut -d ":" -f2 | cut -d "'" -f2 | xargs echo -n)"
+}
+
 function uploadPkgCli {
     cd out/
     export hash=$(git rev-parse HEAD | cut -c 1-12)

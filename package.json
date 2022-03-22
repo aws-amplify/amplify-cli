@@ -25,6 +25,7 @@
     "setup-dev": "yarn dev-build && yarn rm-dev-link && yarn link-dev && yarn rm-aa-dev-link && yarn link-aa-dev",
     "link-win": "node ./scripts/link-bin.js packages/amplify-cli-builder/bin/amplify amplify-dev",
     "link-aa-win": "node ./scripts/link-bin.js packages/amplify-app/bin/amplify-app amplify-app-dev",
+    "next-cli-version": "source .circleci/local_publish_helpers.sh && nextCliVersion",
     "setup-dev-win": "yarn dev-build && yarn link-win && yarn link-aa-win",
     "split-e2e-tests": "yarn ts-node ./scripts/split-e2e-tests.ts && git add .circleci/config.yml",
     "verify-commit": "yarn ts-node ./scripts/verify-commit.ts",
