@@ -13,6 +13,8 @@ import { pullHooks } from './utils/hooks-manager';
 import { buildOverridesEnabledResources } from './build-override-enabled-resources';
 
 export async function run(context: $TSContext, providerMetadata: $TSMeta) {
+  await buildOverridesEnabledResources(context);
+
   if (context.exeInfo && context.exeInfo.isNewEnv) {
     return context;
   }
@@ -115,6 +117,4 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
   if (hasMigratedResources) {
     stateManager.setCurrentMeta(undefined, amplifyMeta);
   }
-
-  await buildOverridesEnabledResources(context);
 }
