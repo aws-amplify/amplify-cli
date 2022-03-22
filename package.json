@@ -44,6 +44,7 @@
     "verdaccio-disconnect": "source .circleci/local_publish_helpers.sh && unsetNpmRegistryUrl",
     "verdaccio-stop": "kill -9 $(lsof -n -t -iTCP:4873 -sTCP:LISTEN)",
     "update-versions": "lerna version --yes --no-commit-hooks --no-push --exact --conventional-commits --no-git-tag-version",
+    "upload-pkg-cli": "yarn pkg-all-local && uploadPkgCli $NPM_TAG",
     "commit": "git-cz",
     "coverage": "codecov || exit 0"
   },
