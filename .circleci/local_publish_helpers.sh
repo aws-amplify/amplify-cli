@@ -12,9 +12,8 @@ function startLocalRegistry {
     grep -q 'http address' <(tail -f $tmp_registry_log)
 }
 
-function nextCliVersion {
+function setNpmTag {
     if [[ -z $NPM_TAG]]; then
-
         if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
             if [[ "$CIRCLE_BRANCH" =~ ^tagged-release-without-e2e-tests\/.* ]]; then
                 export NPM_TAG="${CIRCLE_BRANCH/tagged-release-without-e2e-tests\//}"
@@ -23,8 +22,6 @@ function nextCliVersion {
             fi
         fi
     fi
-
-    echo "version is $(npm version | grep @aws-amplify/cli | cut -d ":" -f2 | cut -d "'" -f2 | xargs echo -n)"
 }
 
 function uploadPkgCli {

@@ -520,12 +520,28 @@ jobs:
           keys:
             - amplify-cli-ssh-deps-{{ .Branch }}
       - run:
+          name: Upload Pkg Binary
+          command: |
+            yarn yarn-use-bash
+            source .circleci/local_publish_helpers.sh
+            setNpmTag
+            yarn update-versions --preid=$NPM_TAG --conventional-prerelease
+            yarn pkg-all-local
+            unsetNpmRegistryUrl
+            uploadPkgCli
+            ./out/amplify-pkg-linux --version
+      - run:
           name: Authenticate with npm
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
       - run:
           name: Publish Amplify CLI
           command: |
             bash ./.circleci/publish.sh
+      - run:
+          name: Check deployed version
+          command: |
+            npm i -g @aws-amplify/cli
+            amplify --version
       - run: *scan_e2e_test_artifacts
   github_prerelease:
     <<: *linux-e2e-executor
