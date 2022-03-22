@@ -741,15 +741,6 @@ workflows:
                 - master
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/.*/
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
       - amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
