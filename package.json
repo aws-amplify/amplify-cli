@@ -7,6 +7,7 @@
     "test": "lerna run test",
     "test-ci": "lerna run test --concurrency 1 -- --ci -i",
     "e2e": "lerna run e2e",
+    "nothing": "echo nothing",
     "cloud-e2e": "CURR_BRANCH=$(git branch | awk '/\\*/{printf \"%s\", $2}') && UPSTREAM_BRANCH=run-e2e/$USER/$CURR_BRANCH && git push $(git remote -v | grep aws-amplify/amplify-cli | head -n1 | awk '{print $1;}') $CURR_BRANCH:$UPSTREAM_BRANCH --no-verify --force-with-lease && echo \"\n\n 🏃 E2E test are running at:\nhttps://app.circleci.com/pipelines/github/aws-amplify/amplify-cli?branch=$UPSTREAM_BRANCH\"",
     "lint-fix": "git diff --name-only --cached --diff-filter d | grep -E '\\.(js|jsx|ts|tsx)$' | xargs eslint --fix --quiet",
     "addwords": "node ./scripts/add-to-dict.js",
