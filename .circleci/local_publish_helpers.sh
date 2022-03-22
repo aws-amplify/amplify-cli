@@ -28,6 +28,9 @@ function generatePkgCli {
   # Transpile code for packaging
   npx babel node_modules --extensions '.js,.jsx,.es6,.es,.ts' --copy-files --include-dotfiles -d ../build/node_modules
 
+  # Include third party licenses
+  cp ../Third_Party_Licenses.txt ../build/node_modules
+
   # Build pkg cli
   cp package.json ../build/node_modules/package.json
   npx pkg -t node12-macos-x64,node12-linux-x64,node12-win-x64 ../build/node_modules --out-path ../out
