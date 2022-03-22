@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli",
-  "version": "7.6.25",
+  "version": "7.6.26",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
@@ -24,7 +24,6 @@
   },
   "scripts": {
     "postinstall": "node ./install.js || echo \"failed to install amplify binary\"",
-    "version": "source ../../.circleci/local_publish_helpers.sh && echo $NPM_TAG && generatePkgCli && uploadPkgCli",
     "run": "node ./run.js",
     "fmt": "prettier --write **/*a.js",
     "fmt:check": "prettier --check **/*.js"
