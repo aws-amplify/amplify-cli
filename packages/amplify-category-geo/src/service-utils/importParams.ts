@@ -27,8 +27,8 @@ export type GeofenceParams = {
   }
 }
 
-export type PopulateParams = {
-  collectionToPopulate: string;
+export type ImportParams = {
+  collectionToImport: string;
   uniqueIdentifier: string;
   identifierOption: IdentifierOption;
   geoJSONObj: FeatureCollection;

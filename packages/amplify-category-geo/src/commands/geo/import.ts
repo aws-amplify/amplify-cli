@@ -1,12 +1,12 @@
 import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-import { populateResource } from '../../provider-controllers/populate';
+import { importResource } from '../../provider-controllers/import';
 
-export const name = 'populate';
+export const name = 'import';
 
 export const run = async (context: $TSContext) => {
   try {
-    return await populateResource(context);
+    return await importResource(context);
   } catch (error: $TSAny) {
     if (error.message) {
       printer.error(error.message);

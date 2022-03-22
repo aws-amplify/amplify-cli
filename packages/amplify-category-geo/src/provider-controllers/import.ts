@@ -1,17 +1,19 @@
+import ora from 'ora';
 import { $TSContext } from 'amplify-cli-core';
-import { ServiceName } from "../service-utils/constants";
 import { prompter } from 'amplify-prompts';
 import { existsSync, writeFileSync } from 'fs-extra';
 import { join } from 'path';
 import { Location } from 'aws-sdk';
+import { ServiceName } from '../service-utils/constants';
 import { validateGeoJSONFile } from '../service-utils/validateGeoJSONFile';
-import { FeatureCollection, PopulateParams, GeofenceCollectionParams, GeofenceParams, IdentifierOption } from '../service-utils/populateParams';
-import ora from "ora";
+import {
+  FeatureCollection, ImportParams, GeofenceCollectionParams, GeofenceParams, IdentifierOption
+} from '../service-utils/importParams';
 
 const MAX_ENTRIES_PER_BATCH = 10;
 const MIN_ENTRIES_PER_BATCH = 1;
 
-export const populateResource = async (context: $TSContext) => {
+export const importResource = async (context: $TSContext) => {
   const geofenceCollectionResources = ((await context.amplify.getResourceStatus()).allResources as any[])
   .filter(resource => resource.service === ServiceName.GeofenceCollection);
   if (geofenceCollectionResources.length === 0) {
@@ -26,13 +28,13 @@ export const populateResource = async (context: $TSContext) => {
   });
   //Get collection region
   const collectionRegion = geofenceCollectionResources[0].output.Region;
-  //Get the collection to populate
-  let collectionToPopulate: string = collectionNames[0];
+  //Get the collection to import
+  let collectionToImport: string = collectionNames[0];
   if (geofenceCollectionResources.length > 1) {
-    collectionToPopulate = await prompter.pick<'one', string>('Select the Geofence Collection to populate with Geofences', collectionNames)
+    collectionToImport = await prompter.pick<'one', string>('Select the Geofence Collection to import with Geofences', collectionNames)
   }
   //Ask for geo json file path
-  const geoJSONFilePath = join(await prompter.input(`Provide the path to GeoJSON file containing the Geofences for ${collectionToPopulate} collection. Refer https://geojson.io/ for a sample GeoJSON:`));
+  const geoJSONFilePath = join(await prompter.input(`Provide the path to GeoJSON file containing the Geofences for ${collectionToImport} collection. Refer https://geojson.io/ for a sample GeoJSON:`));
   if (!existsSync(geoJSONFilePath)) {
     throw new Error(`Cannot find GeoJSON file at ${geoJSONFilePath}`);
   }
@@ -62,7 +64,7 @@ export const populateResource = async (context: $TSContext) => {
     writeFileSync(geoJSONFilePath, JSON.stringify(geoJSONObj, null, 2));
   }
   //Construct geofence collection parameters
-  const geofenceCollectionParams = constructGeofenceCollectionParams({collectionToPopulate, uniqueIdentifier, identifierOption, geoJSONObj});
+  const geofenceCollectionParams = constructGeofenceCollectionParams({collectionToImport, uniqueIdentifier, identifierOption, geoJSONObj});
   //Upload geofences to collection
   const uploadSpinner = ora('Updating your Geofences in the collection...');
   uploadSpinner.start();
@@ -77,20 +79,20 @@ export const populateResource = async (context: $TSContext) => {
       const result = await bulkUploadGeofence(geofenceCollectionPerBatch, collectionRegion);
       successCount += result.Successes.length;
     }
-    uploadSpinner.succeed(`Successfully added/updated ${successCount} Geofences in your "${collectionToPopulate}" collection`);
+    uploadSpinner.succeed(`Successfully added/updated ${successCount} Geofences in your "${collectionToImport}" collection`);
   } catch (err) {
     uploadSpinner.fail('Error occurs while uploading geofences.');
     throw err;
   }
 };
 
-const constructGeofenceCollectionParams = (populateParam: PopulateParams): GeofenceCollectionParams => {
+const constructGeofenceCollectionParams = (importParam: ImportParams): GeofenceCollectionParams => {
   const Entries: GeofenceParams[] = [];
-  const { geoJSONObj } = populateParam;
+  const { geoJSONObj } = importParam;
   geoJSONObj.features.forEach(feature => {
     Entries.push({
-      GeofenceId: populateParam.identifierOption === IdentifierOption.CustomProperty
-        ? feature.properties[populateParam.uniqueIdentifier]
+      GeofenceId: importParam.identifierOption === IdentifierOption.CustomProperty
+        ? feature.properties[importParam.uniqueIdentifier]
         : feature.id,
       Geometry: {
         Polygon: feature.geometry.coordinates
@@ -98,7 +100,7 @@ const constructGeofenceCollectionParams = (populateParam: PopulateParams): Geofe
     })
   })
   return {
-    CollectionName: populateParam.collectionToPopulate,
+    CollectionName: importParam.collectionToImport,
     Entries
   }
 }
