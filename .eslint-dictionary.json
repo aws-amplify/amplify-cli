@@ -33,6 +33,7 @@
   "nock",
   "oidc",
   "openid",
+  "pathname",
   "positionally",
   "readdir",
   "reqheaders",

@@ -1,5 +1,4 @@
 import { Context } from '../domain/context';
-import { run } from '../index';
 
 describe('test SIGINT with execute', () => {
   afterAll(() => {
@@ -103,7 +102,10 @@ describe('test SIGINT with execute', () => {
       process.exitCode = 2;
     }, 10);
 
-    await run(Date.now());
+    // for some reason this test doesn't work when hoisting this require to a top level import
+    // probably something to do with how the mocks are constructed
+    // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
+    await require('../index').run(Date.now());
     expect(mockContext.usageData.emitAbort).toBeCalled();
     expect(mockContext.usageData.emitError).toHaveBeenCalledTimes(0);
     expect(mockContext.usageData.emitSuccess).toHaveBeenCalledTimes(0);

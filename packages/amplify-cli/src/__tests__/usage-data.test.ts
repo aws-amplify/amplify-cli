@@ -21,6 +21,12 @@ describe('test usageData', () => {
     delete process.env.AMPLIFY_CLI_BETA_USAGE_TRACKING_URL;
   });
 
+  const scope = nock(baseOriginalUrl, {
+    reqheaders: {
+      'content-type': 'application/json',
+    },
+  }).persist();
+
   it('test getUrl', () => {
     const testUrl = getUrl();
     const parseOriginalUrl = url.parse(originalUrl);
@@ -41,14 +47,18 @@ describe('test usageData', () => {
     usageData.startCodePathTimer(ManuallyTimedCodePath.PLUGIN_TIME);
     await new Promise(resolve => setTimeout(resolve, 10));
     usageData.stopCodePathTimer(ManuallyTimedCodePath.PLUGIN_TIME);
-    const result = (usageData as any).emit(null, 'SUCCEEDED') as UsageDataPayload;
+    scope.post(pathToUrl, () => true).reply(200, '1234567890'.repeat(14));
+
+    const result = await (usageData as any).emit(null, 'SUCCEEDED') as UsageDataPayload;
     expect(result.codePathDurations.pluginTime).toBeDefined();
   });
 
   it('errors if starting a duplicate timer', () => {
     const usageData = UsageData.Instance;
     usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES);
-    expect(() => usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES)).toThrowErrorMatchingInlineSnapshot();
+    expect(() => usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES)).toThrowErrorMatchingInlineSnapshot(
+      '"initEnvCategories already has a running timer"',
+    );
   });
 
   it('does nothing when stopping a timer that is not running', () => {
