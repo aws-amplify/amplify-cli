@@ -1,4 +1,3 @@
-import { readFileSync } from 'fs-extra';
 import Ajv from 'ajv';
 import GeoJSONSchema from 'amplify-category-geo/schema/GeoJSONSchema.json';
 import { v4 as uuid } from 'uuid';
