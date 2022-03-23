@@ -120,7 +120,7 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
  * Add geofence collection with default values. Assume auth and cognito group are configured
  * @param cwd command directory
  */
- export function populateGeofencesWithDefault(cwd: string, settings: GeoConfig = {}): Promise<void> {
+ export function importGeofencesWithDefault(cwd: string, settings: GeoConfig = {}): Promise<void> {
   const config = { ...defaultGeoConfig, ...settings };
   const chain = spawn(getCLIPath(), ['geo', 'populate'], { cwd, stripColors: true })
     .wait('Provide the path to GeoJSON file containing the Geofences')

@@ -40,7 +40,8 @@
     "promise-sequential": "^1.1.1",
     "uuid": "^8.3.2",
     "ora": "^4.0.3",
-    "ajv": "^6.12.6"
+    "ajv": "^6.12.6",
+    "aws-sdk": "^2.1084.0"
   },
   "jest": {
     "collectCoverage": true,

@@ -15,7 +15,6 @@ import {
 const MAX_ENTRIES_PER_BATCH = 10;
 const MIN_ENTRIES_PER_BATCH = 1;
 
-// eslint-disable-next-line max-lines-per-function
 export const importResource = async (context: $TSContext) => {
   const geofenceCollectionResources = ((await context.amplify.getResourceStatus()).allResources as any[])
   .filter(resource => resource.service === ServiceName.GeofenceCollection);
