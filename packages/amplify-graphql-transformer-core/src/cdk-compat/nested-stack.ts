@@ -47,12 +47,12 @@ export class TransformerNestedStack extends TransformerRootStack {
     this.parameters = props.parameters || {};
 
     this.resource = new CfnStack(parentScope, `${id}.NestedStackResource`, {
-      templateUrl: Lazy.stringValue({
+      templateUrl: Lazy.string({
         produce: () => {
           return this._templateUrl || '<unresolved>';
         },
       }),
-      parameters: Lazy.anyValue({
+      parameters: Lazy.any({
         produce: () => (Object.keys(this.parameters).length > 0 ? this.parameters : undefined),
       }),
       notificationArns: props.notificationArns,

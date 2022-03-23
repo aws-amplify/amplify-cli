@@ -31,6 +31,7 @@ jest.mock('chalk', () => ({
   red: jest.fn().mockImplementation(input => input),
   blue: jest.fn().mockImplementation(input => input),
   gray: jest.fn().mockImplementation(input => input),
+  grey: jest.fn().mockImplementation(input => input),
   bgRgb: jest.fn().mockImplementation(input => input),
   blueBright: jest.fn().mockImplementation(input => input),
   greenBright: jest.fn().mockImplementation(input => input),

@@ -15,7 +15,7 @@ export class TransformerSchema {
       this.api = api;
       this.schemaConstruct = new CfnGraphQLSchema(api, 'TransformerSchema', {
         apiId: api.apiId,
-        definitionS3Location: Lazy.stringValue({
+        definitionS3Location: Lazy.string({
           produce: () => {
             const asset = schema.addAsset();
             return asset.s3Url;
