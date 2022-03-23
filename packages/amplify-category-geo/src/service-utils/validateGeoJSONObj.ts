@@ -6,7 +6,7 @@ import { FeatureCollection, IdentifierOption } from './importParams';
 
 const MAX_VERTICES_NUM_PER_POLYGON = 1000;
 
-export const validateGeoJSONFile = (data: FeatureCollection, uniqueIdentifier: string = 'id', identifierOption: IdentifierOption = IdentifierOption.RootLevelID) => {
+export const validateGeoJSONObj = (data: FeatureCollection, uniqueIdentifier: string = 'id', identifierOption: IdentifierOption = IdentifierOption.RootLevelID) => {
   // Validate against pre-defined schema
   const ajv = new Ajv();
   const validator = ajv.compile(GeoJSONSchema);

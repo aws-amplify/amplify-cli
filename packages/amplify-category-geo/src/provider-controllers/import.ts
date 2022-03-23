@@ -6,7 +6,7 @@ import { existsSync, writeFileSync } from 'fs-extra';
 import { join } from 'path';
 import { Location } from 'aws-sdk';
 import { ServiceName } from '../service-utils/constants';
-import { validateGeoJSONFile } from '../service-utils/validateGeoJSONFile';
+import { validateGeoJSONObj } from '../service-utils/validateGeoJSONObj';
 import {
   FeatureCollection, ImportParams, GeofenceCollectionParams, GeofenceParams, IdentifierOption, IdentifierInfo
 } from '../service-utils/importParams';
@@ -57,7 +57,7 @@ export const importResource = async (context: $TSContext) => {
   const validationSpinner = ora('Validating your GeoJSON file...\n');
   validationSpinner.start();
   try {
-    geoJSONObj = validateGeoJSONFile(geoJSONObj, identifierField, identifierType);
+    geoJSONObj = validateGeoJSONObj(geoJSONObj, identifierField, identifierType);
     validationSpinner.succeed('Successfully validated GeoJSON file.');
   } catch (err) {
     validationSpinner.fail('Error occurs while validating GeoJSON file.');
@@ -122,9 +122,9 @@ const bulkUploadGeofence = async (params: GeofenceCollectionParams, region: stri
 };
 
 /**
- * Scan the custom properties as candidate options
+ * Scan the custom properties as candidate options.
  * @param geoJSONObj Geo features collection
- * @returns Array of candidate custom property names
+ * @returns Array of candidate custom property names which exist in all features
  */
 const scanCandidateCustomProperties = (geoJSONObj: FeatureCollection): string[] => {
   const { features } = geoJSONObj;
