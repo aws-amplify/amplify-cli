@@ -7,8 +7,7 @@ import { FeatureCollection, IdentifierOption } from './importParams';
 
 const MAX_VERTICES_NUM_PER_POLYGON = 1000;
 
-export const validateGeoJSONFile = (geoJSONFilePath: string, uniqueIdentifier: string = 'id', identifierOption: IdentifierOption = IdentifierOption.RootLevelID) => {
-  const data = JSON.parse(readFileSync(geoJSONFilePath, 'utf-8')) as FeatureCollection;
+export const validateGeoJSONFile = (data: FeatureCollection, uniqueIdentifier: string = 'id', identifierOption: IdentifierOption = IdentifierOption.RootLevelID) => {
   // Validate against pre-defined schema
   const ajv = new Ajv();
   const validator = ajv.compile(GeoJSONSchema);
@@ -23,18 +22,18 @@ export const validateGeoJSONFile = (geoJSONFilePath: string, uniqueIdentifier: s
     if (identifierOption === IdentifierOption.RootLevelID) {
       if (!feature.id) {
         feature.id = uuid();
-        printer.info(`No root level id found. Auto assigning feature with id ${feature.id}.`)
+        printer.info(`No root level id found. Auto assigning feature with id ${feature.id}.`);
       }
       identifierField = feature.id;
     } else {
       identifierField = feature.properties[uniqueIdentifier];
       // Check if custom identifier exists in property
       if (!identifierField) {
-        throw new Error(`Identifier field ${uniqueIdentifier} is missing in the feature property`)
+        throw new Error(`Identifier field ${uniqueIdentifier} is missing in the feature property`);
       }
     }
     if (identifierSet.has(identifierField)) {
-      throw new Error(`Identifier field ${uniqueIdentifier} is not unique in GeoJSON.`)
+      throw new Error(`Identifier field ${uniqueIdentifier} is not unique in GeoJSON.`);
     }
     identifierSet.add(identifierField);
     // Additional validation for each linear ring
@@ -45,7 +44,7 @@ export const validateGeoJSONFile = (geoJSONFilePath: string, uniqueIdentifier: s
       vortexCount += linearRing.length;
     });
     if (vortexCount > MAX_VERTICES_NUM_PER_POLYGON) {
-      throw new Error(`Polygon should have at most ${MAX_VERTICES_NUM_PER_POLYGON} vertices.`)
+      throw new Error(`Polygon should have at most ${MAX_VERTICES_NUM_PER_POLYGON} vertices.`);
     }
   });
   return data;

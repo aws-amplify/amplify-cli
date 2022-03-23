@@ -29,12 +29,17 @@ export type GeofenceParams = {
 
 export type ImportParams = {
   collectionToImport: string;
-  uniqueIdentifier: string;
-  identifierOption: IdentifierOption;
+  identifierField: string;
+  identifierType: IdentifierOption;
   geoJSONObj: FeatureCollection;
 }
 
 export enum IdentifierOption {
   RootLevelID = "RootLevelID",
   CustomProperty = "CustomProperty"
+}
+
+export type IdentifierInfo = {
+  identifierType: IdentifierOption;
+  identifierField: string;
 }
