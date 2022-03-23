@@ -10,13 +10,13 @@ import {
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
+import { default as S3 } from 'aws-sdk/clients/s3';
+import { default as moment } from 'moment';
+import { CloudFormationClient } from '../CloudFormationClient';
 import { GraphQLClient } from '../GraphQLClient';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
-import { default as S3 } from 'aws-sdk/clients/s3';
-import { default as moment } from 'moment';
 
 jest.setTimeout(2000000);
 
@@ -25,7 +25,7 @@ const customS3Client = new S3Client('us-west-2');
 const awsS3Client = new S3({ region: 'us-west-2' });
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-    return;
+
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
@@ -37,7 +37,7 @@ const BUCKET_NAME = `appsync-relational-transformers-test-${BUILD_TIMESTAMP}`;
 const LOCAL_FS_BUILD_DIR = '/tmp/relational_transforms_tests/';
 const S3_ROOT_DIR_KEY = 'deployments';
 
-let GRAPHQL_CLIENT: GraphQLClient = undefined;
+let GRAPHQL_CLIENT: GraphQLClient;
 
 function outputValueSelector(key: string) {
   return (outputs: Output[]) => {
@@ -126,6 +126,19 @@ type Foo @model {
 type Bar @model(queries: null) {
   strings: [String]
 }
+
+type ModelA @model {
+  id: ID! @primaryKey(sortKeyFields: ["sortId"])
+  sortId: ID!
+  name: String!
+  models: [ModelB] @manyToMany(relationName: "ModelAModelB")
+}
+
+type ModelB @model {
+  id: ID!
+  name: String!
+  models: [ModelA] @manyToMany(relationName: "ModelAModelB")
+}
 `;
   let out;
   try {
@@ -205,7 +218,7 @@ afterAll(async () => {
  * Test queries below
  */
 
-test('Test Parent.child getItem', async () => {
+test('Parent.child getItem', async () => {
   const createChild = await GRAPHQL_CLIENT.query(
     `mutation {
         createChild(input: { id: "1", name: "child1" }) {
@@ -243,12 +256,12 @@ test('Test Parent.child getItem', async () => {
     {},
   );
   expect(queryParent.data.getParent).toBeDefined();
-  const child = queryParent.data.getParent.child;
+  const { child } = queryParent.data.getParent;
   expect(child.id).toEqual(createParent.data.createParent.childID);
   expect(child.name).toEqual(createParent.data.createParent.childName);
 });
 
-test('Test Child.parents query', async () => {
+test('Child.parents query', async () => {
   const createChild = await GRAPHQL_CLIENT.query(
     `mutation {
         createChild(input: { id: "2", name: "child2" }) {
@@ -291,14 +304,14 @@ test('Test Child.parents query', async () => {
     {},
   );
   expect(queryChild.data.getChild).toBeDefined();
-  const items = queryChild.data.getChild.parents.items;
+  const { items } = queryChild.data.getChild.parents;
   expect(items.length).toEqual(1);
   expect(items[0].id).toEqual(createParent1.data.createParent.id);
   expect(items[0].childID).toEqual(createParent1.data.createParent.childID);
   expect(items[0].childName).toEqual(createParent1.data.createParent.childName);
 });
 
-test('Test PostModel.singleAuthor GetItem with composite sortkey', async () => {
+test('PostModel.singleAuthor GetItem with composite sortkey', async () => {
   const createUser = await GRAPHQL_CLIENT.query(
     `mutation {
         createUser(input: { id: "123", name: "Bob", surname: "Rob" }) {
@@ -352,7 +365,7 @@ test('Test PostModel.singleAuthor GetItem with composite sortkey', async () => {
   expect(author.surname).toEqual(createUser.data.createUser.surname);
 });
 
-test('Test PostModel.authors query with composite sortkey', async () => {
+test('PostModel.authors query with composite sortkey', async () => {
   const createUser = await GRAPHQL_CLIENT.query(
     `mutation {
         createUserModel(input: { id: "123", rollNumber: 1, name: "Bob", surname: "Rob" }) {
@@ -419,7 +432,7 @@ test('Test PostModel.authors query with composite sortkey', async () => {
     {},
   );
   expect(queryPostModel.data.getPostModel).toBeDefined();
-  const items = queryPostModel.data.getPostModel.authors.items;
+  const { items } = queryPostModel.data.getPostModel.authors;
   expect(items.length).toEqual(2);
   expect(items[0].id).toEqual(createUser.data.createUserModel.id);
   try {
@@ -436,7 +449,7 @@ test('Test PostModel.authors query with composite sortkey', async () => {
   expect(items[1].name).toEqual(createUser2.data.createUserModel.name);
 });
 
-test(`Test the default limit.`, async () => {
+test('the default limit.', async () => {
   for (let i = 0; i < 51; i++) {
     await GRAPHQL_CLIENT.query(
       `mutation {
@@ -472,7 +485,7 @@ test(`Test the default limit.`, async () => {
   expect(createResponse.data.createPost.authors.items.length).toEqual(50);
 });
 
-test('Test PostModel.authors query with composite sortkey passed as arg.', async () => {
+test('PostModel.authors query with composite sortkey passed as arg.', async () => {
   const createUser = await GRAPHQL_CLIENT.query(
     `mutation {
         createUser(input: { id: "123", name: "Bobby", surname: "Rob" }) {
@@ -514,14 +527,14 @@ test('Test PostModel.authors query with composite sortkey passed as arg.', async
     {},
   );
   expect(queryPost.data.getPost).toBeDefined();
-  const items = queryPost.data.getPost.authors.items;
+  const { items } = queryPost.data.getPost.authors;
   expect(items.length).toEqual(1);
   expect(items[0].id).toEqual(createUser.data.createUser.id);
   expect(items[0].name).toEqual(createUser.data.createUser.name);
   expect(items[0].surname).toEqual(createUser.data.createUser.surname);
 });
 
-test('Test User.authorPosts.posts query followed by getItem (intermediary model)', async () => {
+test('User.authorPosts.posts query followed by getItem (intermediary model)', async () => {
   const createUser = await GRAPHQL_CLIENT.query(
     `mutation {
         createUserModel(input: { id: "999", rollNumber: 1, name: "Peter", surname: "Pluck" }) {
@@ -578,13 +591,13 @@ test('Test User.authorPosts.posts query followed by getItem (intermediary model)
     {},
   );
   expect(queryUser.data.getUserModel).toBeDefined();
-  const items = queryUser.data.getUserModel.authorPosts.items;
+  const { items } = queryUser.data.getUserModel.authorPosts;
   expect(items.length).toEqual(1);
   expect(items[0].post.id).toEqual('888');
   expect(items[0].post.postContents).toEqual(['abcxyz']);
 });
 
-test('Test User.friendship.friend query (reflexive has many).', async () => {
+test('User.friendship.friend query (reflexive has many).', async () => {
   const createUser = await GRAPHQL_CLIENT.query(
     `mutation {
         createUser(input: { id: "12", name: "Bobby", surname: "Rob" }) {
@@ -643,13 +656,13 @@ test('Test User.friendship.friend query (reflexive has many).', async () => {
     {},
   );
   expect(queryUser.data.getUser).toBeDefined();
-  const items = queryUser.data.getUser.friendships.items;
+  const { items } = queryUser.data.getUser.friendships;
   expect(items.length).toEqual(1);
   expect(items[0].friend.items[0].id).toEqual('12');
   expect(items[0].friend.items[0].name).toEqual('Bobby');
 });
 
-test('Test Student and Course many to many relationship', async () => {
+test('Student and Course many to many relationship', async () => {
   const createStudent = await GRAPHQL_CLIENT.query(
     `mutation {
         createStudent(input: { id: "1", name: "Peter Pluck" }) {
@@ -757,3 +770,186 @@ test('Test Student and Course many to many relationship', async () => {
     ],
   });
 });
+
+test('many to many relationship with sort key', async () => {
+  await createModelAItem('1', 'A1', 'ModelA 1 - A1');
+  await createModelAItem('1', 'A2', 'ModelA 1 - A2');
+  await createModelAItem('2', 'A1', 'ModelA 2 - A1');
+
+  await createModelBItem('1', 'ModelB 1');
+  await createModelBItem('2', 'ModelB 2');
+
+  await createModelAModelBItem('1-A1-1', '1', 'A1', '1');
+  await createModelAModelBItem('1-A1-2', '1', 'A1', '2');
+  await createModelAModelBItem('2-A1-2', '2', 'A1', '2');
+
+  let queryRelation = await GRAPHQL_CLIENT.query(
+    `query {
+      listModelAS(filter: { id: { eq: "1" }, sortId: { eq: "A1" } }) {
+        items {
+          id
+          sortId
+          name
+          models {
+            items {
+              modelB {
+                id
+                name
+              }
+            }
+          }
+        }
+      }
+    }`,
+    {},
+  );
+  expect(queryRelation.errors).toBeUndefined();
+  expect(queryRelation.data.listModelAS).toEqual({
+    items: [
+      {
+        id: '1',
+        sortId: 'A1',
+        name: 'ModelA 1 - A1',
+        models: {
+          items: [
+            {
+              modelB: {
+                id: '2',
+                name: 'ModelB 2',
+              },
+            },
+            {
+              modelB: {
+                id: '1',
+                name: 'ModelB 1',
+              },
+            },
+          ],
+        },
+      },
+    ],
+  });
+
+  queryRelation = await GRAPHQL_CLIENT.query(
+    `query {
+      listModelAS(filter: { id: { eq: "2" }, sortId: { eq: "A1" } }) {
+        items {
+          id
+          sortId
+          name
+          models {
+            items {
+              modelB {
+                id
+                name
+              }
+            }
+          }
+        }
+      }
+    }`,
+    {},
+  );
+  expect(queryRelation.errors).toBeUndefined();
+  expect(queryRelation.data.listModelAS).toEqual({
+    items: [
+      {
+        id: '2',
+        sortId: 'A1',
+        name: 'ModelA 2 - A1',
+        models: {
+          items: [
+            {
+              modelB: {
+                id: '2',
+                name: 'ModelB 2',
+              },
+            },
+          ],
+        },
+      },
+    ],
+  });
+
+  queryRelation = await GRAPHQL_CLIENT.query(
+    `query {
+      listModelAS(filter: { id: { eq: "1" }, sortId: { eq: "A2" } }) {
+        items {
+          id
+          sortId
+          name
+          models {
+            items {
+              modelB {
+                id
+                name
+              }
+            }
+          }
+        }
+      }
+    }`,
+    {},
+  );
+  expect(queryRelation.errors).toBeUndefined();
+  expect(queryRelation.data.listModelAS).toEqual({
+    items: [
+      {
+        id: '1',
+        sortId: 'A2',
+        name: 'ModelA 1 - A2',
+        models: {
+          items: [],
+        },
+      },
+    ],
+  });
+});
+
+async function createModelAItem(id: string, sortId: string, name: string): Promise<void> {
+  const createModelA = await GRAPHQL_CLIENT.query(
+    `mutation {
+        createModelA(input: { id: "${id}", sortId: "${sortId}", name: "${name}" }) {
+          id
+          sortId
+          name
+        }
+    }`,
+    {},
+  );
+  expect(createModelA.data.createModelA.id).toEqual(id);
+  expect(createModelA.data.createModelA.sortId).toEqual(sortId);
+  expect(createModelA.data.createModelA.name).toEqual(name);
+}
+
+async function createModelBItem(id: string, name: string): Promise<void> {
+  const createModelB = await GRAPHQL_CLIENT.query(
+    `mutation {
+        createModelB(input: { id: "${id}", name: "${name}" }) {
+          id
+          name
+        }
+    }`,
+    {},
+  );
+  expect(createModelB.data.createModelB.id).toEqual(id);
+  expect(createModelB.data.createModelB.name).toEqual(name);
+}
+
+async function createModelAModelBItem(id: string, modelAId: string, modelASortId: string, modelBId: string) {
+  const createModelAModelB = await GRAPHQL_CLIENT.query(
+    `mutation {
+      createModelAModelB(input: { id: "${id}", modelAID: "${modelAId}", modelAsortId: "${modelASortId}", modelBID: "${modelBId}" }) {
+        id
+        modelAID
+        modelAsortId
+        modelBID
+      }
+    }`,
+    {},
+  );
+  expect(createModelAModelB.data.createModelAModelB.id).toEqual(id);
+  expect(createModelAModelB.data.createModelAModelB.modelAID).toEqual(modelAId);
+  expect(createModelAModelB.data.createModelAModelB.modelAsortId).toEqual(modelASortId);
+  expect(createModelAModelB.data.createModelAModelB.modelBID).toEqual(modelBId);
+}

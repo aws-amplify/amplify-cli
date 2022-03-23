@@ -54,6 +54,16 @@ describe('amplify init', () => {
     await amplifyInitSandbox(projRoot, {});
     const projectSchema = getProjectSchema(projRoot, 'amplifyDatasource');
     expect(projectSchema).toEqual(schemaBody.schema);
+    
+    const awsExportsPath = path.join(projRoot, 'src', 'aws-exports.js');
+    const modelsIndexPath = path.join(projRoot, 'src', 'models', 'index.js');
+    const modelsSchemaPath = path.join(projRoot, 'src', 'models', 'schema.js');
+    expect(
+      fs.existsSync(awsExportsPath) &&
+      fs.existsSync(modelsIndexPath) &&
+      fs.existsSync(modelsSchemaPath)
+    ).toBe(true);
+    
     await amplifyPush(projRoot);
   });
 
