@@ -162,7 +162,9 @@ export class TransformerResolver implements TransformerResolverProvider {
       slotEntry = [];
     }
 
-    if (!this.updateSlotIfExists(slotName, requestMappingTemplate, responseMappingTemplate)) {
+    if (this.slotExists(slotName, requestMappingTemplate, responseMappingTemplate)) {
+      this.updateSlot(slotName, requestMappingTemplate, responseMappingTemplate);
+    } else {
       slotEntry.push({
         requestMappingTemplate,
         responseMappingTemplate,
@@ -172,24 +174,23 @@ export class TransformerResolver implements TransformerResolverProvider {
     this.slotMap.set(slotName, slotEntry);
   };
 
-  updateSlotIfExists = (
+  slotExists = (
     slotName: string,
     requestMappingTemplate?: MappingTemplateProvider,
     responseMappingTemplate?: MappingTemplateProvider,
   ): boolean => {
-    const slotEntires = this.slotMap.get(slotName)!;
-    let slotIndex = 1;
+    const slotEntries = this.slotMap.get(slotName);
 
-    if (!slotEntires) {
+    if (!slotEntries) {
       return false;
     }
 
-    for (const slotItem of slotEntires) {
+    slotEntries.forEach((slotEntry, slotIndex) => {
       const [slotItemRequestMappingTemplate, slotItemResponseMappingTemplate] = [
-        (slotItem.requestMappingTemplate as any)?.name ?? '',
-        (slotItem.responseMappingTemplate as any)?.name ?? '',
+        (slotEntry.requestMappingTemplate as any)?.name ?? '',
+        (slotEntry.responseMappingTemplate as any)?.name ?? '',
       ]
-        .map(name => name.replace('{slotName}', slotName).replace('{slotIndex}', slotIndex));
+        .map(name => name.replace('{slotName}', slotName).replace('{slotIndex}', slotIndex + 1));
 
       // If both request and response mapping templates are inline, return false
       if (slotItemRequestMappingTemplate === '' && slotItemResponseMappingTemplate === '') {
@@ -201,18 +202,48 @@ export class TransformerResolver implements TransformerResolverProvider {
         slotItemRequestMappingTemplate === ((requestMappingTemplate as any)?.name ?? '')
         || slotItemResponseMappingTemplate === ((responseMappingTemplate as any)?.name ?? '')
       ) {
-        slotItem.requestMappingTemplate = (requestMappingTemplate as any)?.name
-          ? requestMappingTemplate
-          : slotItem.requestMappingTemplate;
-        slotItem.responseMappingTemplate = (responseMappingTemplate as any)?.name
-          ? responseMappingTemplate
-          : slotItem.responseMappingTemplate;
         return true;
       }
-      slotIndex++;
-    }
+    });
 
     return false;
+  }
+
+  updateSlot = (
+    slotName: string,
+    requestMappingTemplate?: MappingTemplateProvider,
+    responseMappingTemplate?: MappingTemplateProvider,
+  ): void => {
+    if (!this.slotExists(slotName, requestMappingTemplate, responseMappingTemplate)) {
+      return;
+    }
+
+    const slotEntries = this.slotMap.get(slotName);
+    slotEntries.forEach((slotEntry, slotIndex) => {
+      const [slotItemRequestMappingTemplate, slotItemResponseMappingTemplate] = [
+        (slotEntry.requestMappingTemplate as any)?.name ?? '',
+        (slotEntry.responseMappingTemplate as any)?.name ?? '',
+      ]
+        .map(name => name.replace('{slotName}', slotName).replace('{slotIndex}', slotIndex + 1));
+
+      // If both request and response mapping templates are inline, do not overwrite
+      if (slotItemRequestMappingTemplate === '' && slotItemResponseMappingTemplate === '') {
+        return;
+      }
+
+      // If name matches, then it is an overridden resolver
+      if (
+        slotItemRequestMappingTemplate === ((requestMappingTemplate as any)?.name ?? '')
+        || slotItemResponseMappingTemplate === ((responseMappingTemplate as any)?.name ?? '')
+      ) {
+        slotEntry.requestMappingTemplate = (requestMappingTemplate as any)?.name
+          ? requestMappingTemplate
+          : slotEntry.requestMappingTemplate;
+        slotEntry.responseMappingTemplate = (responseMappingTemplate as any)?.name
+          ? responseMappingTemplate
+          : slotEntry.responseMappingTemplate;
+      }
+    });
   }
 
   synthesize = (context: TransformerContextProvider, api: GraphQLAPIProvider): void => {
