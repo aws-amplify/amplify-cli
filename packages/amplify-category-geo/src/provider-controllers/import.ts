@@ -128,7 +128,7 @@ const bulkUploadGeofence = async (params: GeofenceCollectionParams, region: stri
  */
 const scanCandidateCustomProperties = (geoJSONObj: FeatureCollection): string[] => {
   const { features } = geoJSONObj;
-  if (features.length > 0) {
+  if (features && features.length > 0 && features[0].properties) {
     const candidateProperties: string[] = Object.keys(features[0].properties).filter(prop => {
       for (let i = 1; i < features.length; i += 1) {
         // Remove the property that does not exist in all features
