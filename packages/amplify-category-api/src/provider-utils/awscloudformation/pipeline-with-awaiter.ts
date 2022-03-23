@@ -1,6 +1,10 @@
-import * as codebuild from '@aws-cdk/aws-codebuild';
-import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import * as codepipelineactions from '@aws-cdk/aws-codepipeline-actions';
+/* eslint-disable no-new */
+/* eslint-disable import/no-cycle */
+/* eslint-disable max-classes-per-file */
+/* eslint-disable spellcheck/spell-checker */
+import * as codeBuild from '@aws-cdk/aws-codebuild';
+import * as codePipeline from '@aws-cdk/aws-codepipeline';
+import * as codePipelineActions from '@aws-cdk/aws-codepipeline-actions';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
@@ -8,35 +12,41 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as custom from '@aws-cdk/custom-resources';
+import { $TSAny } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
-import * as path from 'path';
+import * as nodePath from 'path';
 import { DEPLOYMENT_MECHANISM } from './base-api-stack';
 import { getGitHubOwnerRepoFromPath } from './utils/github';
 
 type PipelineAwaiterProps = {
-  pipeline: codepipeline.Pipeline;
+  pipeline: codePipeline.Pipeline;
   artifactBucketName?: string;
   artifactKey?: string;
   deploymentMechanism: DEPLOYMENT_MECHANISM;
 };
 
+/**
+ * GitHub Source Action Info
+ */
 export type GitHubSourceActionInfo = {
   path: string;
   tokenSecretArn: string;
 };
 
 // TODO update when CDK is updated to newer version that supports NODEJS_14_X
-const lambdaRuntimeNodeVersion = lambda.Runtime.NODEJS_12_X;
+const lambdaRuntimeNodeVersion = lambda.Runtime.NODEJS_14_X;
 
-const lambdasDir = path.resolve(__dirname, '../../../resources/awscloudformation/lambdas');
+const lambdasDir = nodePath.resolve(__dirname, '..', '..', '..', 'resources', 'awscloudformation', 'lambdas');
 
 class PipelineAwaiter extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: PipelineAwaiterProps) {
-    const { pipeline, artifactBucketName, artifactKey, deploymentMechanism } = props;
+    const {
+      pipeline, artifactBucketName, artifactKey, deploymentMechanism,
+    } = props;
 
     const { pipelineArn, pipelineName } = pipeline;
 
-    const pipelineOnEventCodeFilePath = path.join(lambdasDir, 'pipeline-on-event.js');
+    const pipelineOnEventCodeFilePath = nodePath.join(lambdasDir, 'pipeline-on-event.js');
     const onEventHandlerCode = fs.readFileSync(pipelineOnEventCodeFilePath, 'utf8');
 
     const onEventHandler = new lambda.Function(scope, `${id}CustomEventHandler`, {
@@ -46,7 +56,7 @@ class PipelineAwaiter extends cdk.Construct {
       timeout: cdk.Duration.seconds(15),
     });
 
-    const pipelineCodeFilePath = path.join(lambdasDir, 'pipeline.js');
+    const pipelineCodeFilePath = nodePath.join(lambdasDir, 'pipeline.js');
     const isCompleteHandlerCode = fs.readFileSync(pipelineCodeFilePath, 'utf8');
 
     const isCompleteHandler = new lambda.Function(scope, `${id}CustomCompleteHandler`, {
@@ -90,6 +100,9 @@ class PipelineAwaiter extends cdk.Construct {
   }
 }
 
+/**
+ * PipelineWithAwaiter extends cdk.Construct
+ */
 export class PipelineWithAwaiter extends cdk.Construct {
   pipelineName: string;
   constructor(
@@ -122,12 +135,12 @@ export class PipelineWithAwaiter extends cdk.Construct {
   ) {
     super(scope, id);
 
-    const sourceOutput = new codepipeline.Artifact('SourceArtifact');
-    const buildOutput = new codepipeline.Artifact('BuildArtifact');
+    const sourceOutput = new codePipeline.Artifact('SourceArtifact');
+    const buildOutput = new codePipeline.Artifact('BuildArtifact');
 
-    const codeBuildProject = new codebuild.PipelineProject(scope, `${id}CodeBuildProject`, {
+    const codeBuildProject = new codeBuild.PipelineProject(scope, `${id}CodeBuildProject`, {
       environment: {
-        buildImage: codebuild.LinuxBuildImage.STANDARD_4_0,
+        buildImage: codeBuild.LinuxBuildImage.STANDARD_4_0,
         // See: https://docs.aws.amazon.com/codebuild/latest/userguide/troubleshooting.html#troubleshooting-cannot-connect-to-docker-daemon
         privileged: true,
       },
@@ -177,7 +190,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
     const environmentVariables = containersInfo.reduce(
       (acc, c) => {
         acc[`${c.container.containerName}_REPOSITORY_URI`] = {
-          type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+          type: codeBuild.BuildEnvironmentVariableType.PLAINTEXT,
           value: c.repository.repositoryUri,
         };
 
@@ -185,19 +198,19 @@ export class PipelineWithAwaiter extends cdk.Construct {
       },
       {
         AWS_ACCOUNT_ID: {
-          type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+          type: codeBuild.BuildEnvironmentVariableType.PLAINTEXT,
           value: cdk.Aws.ACCOUNT_ID,
         },
-      } as Record<string, codebuild.BuildEnvironmentVariable>,
+      } as Record<string, codeBuild.BuildEnvironmentVariable>,
     );
 
-    const stagesWithDeploy = ([] as codepipeline.StageOptions[]).concat(prebuildStages, [
+    const stagesWithDeploy = ([] as codePipeline.StageOptions[]).concat(prebuildStages, [
       {
         stageName: 'Build',
         actions: [
-          new codepipelineactions.CodeBuildAction({
+          new codePipelineActions.CodeBuildAction({
             actionName: 'Build',
-            type: codepipelineactions.CodeBuildActionType.BUILD,
+            type: codePipelineActions.CodeBuildActionType.BUILD,
             project: codeBuildProject,
             input: sourceOutput,
             outputs: [buildOutput],
@@ -208,10 +221,10 @@ export class PipelineWithAwaiter extends cdk.Construct {
       {
         stageName: 'Predeploy',
         actions: [
-          new codepipelineactions.LambdaInvokeAction({
+          new codePipelineActions.LambdaInvokeAction({
             actionName: 'Predeploy',
             lambda: (() => {
-              const preDeployCodeFilePath = path.join(lambdasDir, 'predeploy.js');
+              const preDeployCodeFilePath = nodePath.join(lambdasDir, 'predeploy.js');
               const lambdaHandlerCode = fs.readFileSync(preDeployCodeFilePath, 'utf8');
 
               const action = new lambda.Function(scope, 'PreDeployLambda', {
@@ -244,17 +257,22 @@ export class PipelineWithAwaiter extends cdk.Construct {
       {
         stageName: 'Deploy',
         actions: [
-          new codepipelineactions.EcsDeployAction({
+          new codePipelineActions.EcsDeployAction({
             actionName: 'Deploy',
             service: new (class extends cdk.Construct implements ecs.IBaseService {
+              applyRemovalPolicy(_: cdk.RemovalPolicy): void { /* eslint-disable-line class-methods-use-this */
+                // TODO
+              }
+
               cluster = {
                 clusterName: service.cluster,
                 env: {},
               } as ecs.ICluster;
+
               serviceArn = cdk.Fn.ref(service.attrServiceArn);
               serviceName = service.serviceName;
               stack = cdk.Stack.of(this);
-              env = {} as any;
+              env = {} as $TSAny;
               node = service.node;
             })(this, 'tmpService'),
             input: buildOutput,
@@ -265,7 +283,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
 
     this.pipelineName = `${envName}-${service.serviceName}`;
 
-    const pipeline = new codepipeline.Pipeline(scope, `${id}Pipeline`, {
+    const pipeline = new codePipeline.Pipeline(scope, `${id}Pipeline`, {
       pipelineName: this.pipelineName,
       crossAccountKeys: false,
       artifactBucket: bucket,
@@ -286,28 +304,32 @@ export class PipelineWithAwaiter extends cdk.Construct {
     new cdk.CfnOutput(scope, 'PipelineName', { value: this.pipelineName });
   }
 
+  /**
+   * pipeline name getter
+   */
   getPipelineName(): string {
     return this.pipelineName;
   }
 }
 
-function createPreBuildStages(
+const createPreBuildStages = (
   scope: cdk.Construct,
   {
     bucket,
     s3SourceActionKey,
     gitHubSourceActionInfo,
     sourceOutput,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     roleName,
   }: {
     bucket: s3.IBucket;
     s3SourceActionKey: string;
     gitHubSourceActionInfo?: GitHubSourceActionInfo;
-    sourceOutput: codepipeline.Artifact;
+    sourceOutput: codePipeline.Artifact;
     roleName: string;
   },
-) {
-  const stages: codepipeline.StageOptions[] = [];
+): codePipeline.StageOptions[] => {
+  const stages: codePipeline.StageOptions[] = [];
 
   const stage = {
     stageName: 'Source',
@@ -320,10 +342,10 @@ function createPreBuildStages(
     const { path, tokenSecretArn } = gitHubSourceActionInfo;
     const { owner, repo, branch } = getGitHubOwnerRepoFromPath(path);
 
-    const preBuildOutput = new codepipeline.Artifact('PreBuildArtifact');
+    const preBuildOutput = new codePipeline.Artifact('PreBuildArtifact');
 
     stage.actions = [
-      new codepipelineactions.GitHubSourceAction({
+      new codePipelineActions.GitHubSourceAction({
         actionName: 'Source',
         oauthToken: cdk.SecretValue.secretsManager(tokenSecretArn),
         owner,
@@ -336,7 +358,7 @@ function createPreBuildStages(
     stages.push({
       stageName: 'PreBuild',
       actions: [
-        new codepipelineactions.LambdaInvokeAction({
+        new codePipelineActions.LambdaInvokeAction({
           actionName: 'PreBuild',
           lambda: new lambda.Function(scope, 'PreBuildLambda', {
             code: lambda.S3Code.fromBucket(bucket, 'codepipeline-action-buildspec-generator-lambda.zip'),
@@ -351,7 +373,7 @@ function createPreBuildStages(
     });
   } else {
     stage.actions = [
-      new codepipelineactions.S3SourceAction({
+      new codePipelineActions.S3SourceAction({
         actionName: 'Source',
         bucket,
         bucketKey: s3SourceActionKey,
@@ -361,8 +383,11 @@ function createPreBuildStages(
   }
 
   return stages;
-}
+};
 
+/**
+ * container stack props
+ */
 export type ContainerStackProps = {
   deploymentBucket: string;
   containerPort: number;

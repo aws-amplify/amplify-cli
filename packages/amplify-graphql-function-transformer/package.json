@@ -29,15 +29,15 @@
   "dependencies": {
     "@aws-amplify/graphql-transformer-core": "0.16.4",
     "@aws-amplify/graphql-transformer-interfaces": "1.13.0",
-    "@aws-cdk/aws-appsync": "~1.124.0",
-    "@aws-cdk/aws-lambda": "~1.124.0",
-    "@aws-cdk/core": "~1.124.0",
+    "@aws-cdk/aws-appsync": "~1.149.0",
+    "@aws-cdk/aws-lambda": "~1.149.0",
+    "@aws-cdk/core": "~1.149.0",
     "graphql": "^14.5.8",
     "graphql-mapping-template": "4.20.3",
     "graphql-transformer-common": "4.23.0"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "~1.124.0"
+    "@aws-cdk/assert": "~1.149.0"
   },
   "jest": {
     "transform": {
