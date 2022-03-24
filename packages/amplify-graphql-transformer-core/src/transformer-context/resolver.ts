@@ -179,34 +179,46 @@ export class TransformerResolver implements TransformerResolverProvider {
     requestMappingTemplate?: MappingTemplateProvider,
     responseMappingTemplate?: MappingTemplateProvider,
   ): boolean => {
+    const slot = this.findSlot(slotName, requestMappingTemplate, responseMappingTemplate);
+    if (slot) {
+      return true;
+    }
+    return false;
+  }
+
+  findSlot = (
+    slotName: string,
+    requestMappingTemplate?: MappingTemplateProvider,
+    responseMappingTemplate?: MappingTemplateProvider,
+  ): Slot | undefined => {
     const slotEntries = this.slotMap.get(slotName);
 
     if (!slotEntries) {
-      return false;
+      return;
     }
 
-    slotEntries.forEach((slotEntry, slotIndex) => {
-      const [slotItemRequestMappingTemplate, slotItemResponseMappingTemplate] = [
+    let slotIndex = 1;
+    for (const slotEntry of slotEntries) {
+      const [slotEntryRequestMappingTemplate, slotEntryResponseMappingTemplate] = [
         (slotEntry.requestMappingTemplate as any)?.name ?? '',
         (slotEntry.responseMappingTemplate as any)?.name ?? '',
       ]
-        .map(name => name.replace('{slotName}', slotName).replace('{slotIndex}', slotIndex + 1));
+        .map(name => name.replace('{slotName}', slotName).replace('{slotIndex}', slotIndex));
 
-      // If both request and response mapping templates are inline, return false
-      if (slotItemRequestMappingTemplate === '' && slotItemResponseMappingTemplate === '') {
-        return false;
+      // If both request and response mapping templates are inline, skip check
+      if (slotEntryRequestMappingTemplate === '' && slotEntryResponseMappingTemplate === '') {
+        continue;
       }
 
       // If name matches, then it is an overridden resolver
       if (
-        slotItemRequestMappingTemplate === ((requestMappingTemplate as any)?.name ?? '')
-        || slotItemResponseMappingTemplate === ((responseMappingTemplate as any)?.name ?? '')
+        slotEntryRequestMappingTemplate === ((requestMappingTemplate as any)?.name ?? '')
+        || slotEntryResponseMappingTemplate === ((responseMappingTemplate as any)?.name ?? '')
       ) {
-        return true;
+        return slotEntry;
       }
-    });
-
-    return false;
+      slotIndex++;
+    }
   }
 
   updateSlot = (
@@ -214,36 +226,15 @@ export class TransformerResolver implements TransformerResolverProvider {
     requestMappingTemplate?: MappingTemplateProvider,
     responseMappingTemplate?: MappingTemplateProvider,
   ): void => {
-    if (!this.slotExists(slotName, requestMappingTemplate, responseMappingTemplate)) {
-      return;
+    const slot = this.findSlot(slotName, requestMappingTemplate, responseMappingTemplate);
+    if (slot) {
+      slot.requestMappingTemplate = (requestMappingTemplate as any)?.name
+        ? requestMappingTemplate
+        : slot.requestMappingTemplate;
+      slot.responseMappingTemplate = (responseMappingTemplate as any)?.name
+        ? responseMappingTemplate
+        : slot.responseMappingTemplate;
     }
-
-    const slotEntries = this.slotMap.get(slotName);
-    slotEntries.forEach((slotEntry, slotIndex) => {
-      const [slotItemRequestMappingTemplate, slotItemResponseMappingTemplate] = [
-        (slotEntry.requestMappingTemplate as any)?.name ?? '',
-        (slotEntry.responseMappingTemplate as any)?.name ?? '',
-      ]
-        .map(name => name.replace('{slotName}', slotName).replace('{slotIndex}', slotIndex + 1));
-
-      // If both request and response mapping templates are inline, do not overwrite
-      if (slotItemRequestMappingTemplate === '' && slotItemResponseMappingTemplate === '') {
-        return;
-      }
-
-      // If name matches, then it is an overridden resolver
-      if (
-        slotItemRequestMappingTemplate === ((requestMappingTemplate as any)?.name ?? '')
-        || slotItemResponseMappingTemplate === ((responseMappingTemplate as any)?.name ?? '')
-      ) {
-        slotEntry.requestMappingTemplate = (requestMappingTemplate as any)?.name
-          ? requestMappingTemplate
-          : slotEntry.requestMappingTemplate;
-        slotEntry.responseMappingTemplate = (responseMappingTemplate as any)?.name
-          ? responseMappingTemplate
-          : slotEntry.responseMappingTemplate;
-      }
-    });
   }
 
   synthesize = (context: TransformerContextProvider, api: GraphQLAPIProvider): void => {
