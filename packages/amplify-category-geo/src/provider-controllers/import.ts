@@ -132,7 +132,7 @@ const scanCandidateCustomProperties = (geoJSONObj: FeatureCollection): string[] 
     const candidateProperties: string[] = Object.keys(features[0].properties).filter(prop => {
       for (let i = 1; i < features.length; i += 1) {
         // Remove the property that does not exist in all features
-        if (!features[i].properties[prop]) {
+        if (!features[i] || !features[i].properties || !features[i].properties[prop]) {
           return false;
         }
       }
