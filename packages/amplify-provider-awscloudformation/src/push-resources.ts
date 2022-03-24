@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 /* eslint-disable max-depth */
 /* eslint-disable max-lines-per-function */
 /* eslint-disable prefer-const */
@@ -353,13 +354,13 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
         // Sync backend-config.json to cloud folder
         await context.amplify.updateamplifyMetaAfterPush(unlinkedResources);
 
-        for (let i = 0; i < unlinkedResources.length; i++) {
+        for (let i = 0; i < unlinkedResources.length; i += 1) {
           context.amplify.updateamplifyMetaAfterResourceDelete(unlinkedResources[i].category, unlinkedResources[i].resourceName);
         }
       }
     }
 
-    for (let i = 0; i < resourcesToBeDeleted.length; i++) {
+    for (let i = 0; i < resourcesToBeDeleted.length; i += 1) {
       context.amplify.updateamplifyMetaAfterResourceDelete(resourcesToBeDeleted[i].category, resourcesToBeDeleted[i].resourceName);
     }
 
@@ -371,7 +372,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
 
     updatedAllResources = updatedAllResources.filter((resource: { service: string }) => resource.service === AmplifySupportedService.APIGW);
 
-    for (let i = 0; i < updatedAllResources.length; i++) {
+    for (let i = 0; i < updatedAllResources.length; i += 1) {
       if (resources.findIndex((resource: { resourceName: any; }) => resource.resourceName === updatedAllResources[i].resourceName) > -1) {
         newAPIresources.push(updatedAllResources[i]);
       }
@@ -1070,7 +1071,7 @@ export async function formNestedStack(
         const parameters = <$TSObject>loadResourceParameters(context, category, resource);
         const { dependsOn } = resourceDetails;
         if (dependsOn) {
-          for (let i = 0; i < dependsOn.length; ++i) {
+          for (let i = 0; i < dependsOn.length; i += 1) {
             for (const attribute of dependsOn[i]?.attributes || []) {
               // If the depends on resource is an imported resource we cannot form GetAtt type reference
               // since there is no such thing. We have to read the output.{AttributeName} from the meta
@@ -1103,9 +1104,13 @@ export async function formNestedStack(
               }
 
               const parameterKey = `${dependsOn[i].category}${dependsOn[i].resourceName}${attribute}`;
-              if (!isAuthTrigger(dependsOn[i])) {
-                parameters[parameterKey] = parameterValue;
+              // if resource is GQL API and dependency is auth, don't add CFN param here
+              // this is because GQL APIs handle the auth dependency by referencing the UserPoolId directly in the API's parameters.json file
+              const isResourceGqlWithAuthDep = resourceDetails?.service === 'AppSync' && dependsOn[i]?.category === 'auth';
+              if (isAuthTrigger(dependsOn[i]) || isResourceGqlWithAuthDep) {
+                continue;
               }
+              parameters[parameterKey] = parameterValue;
             }
 
             if (dependsOn[i].exports) {
@@ -1223,6 +1228,7 @@ function isAuthTrigger(dependsOnResource: $TSObject) {
 /**
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function generateAndUploadRootStack(context: $TSContext, destinationPath: string, destinationS3Key: string) {
   const projectDetails = context.amplify.getProjectDetails();
   const nestedStack = await formNestedStack(context, projectDetails);
