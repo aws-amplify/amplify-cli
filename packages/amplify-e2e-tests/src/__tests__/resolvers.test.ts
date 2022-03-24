@@ -52,6 +52,7 @@ describe('user created resolvers', () => {
       const slotName = 'Query.listTodos.auth.1.req.vtl';
       const slot = '$util.unauthorized()';
       const generatedResolverPath = join(projectDir, 'amplify', 'backend', 'api', apiName, 'build', 'resolvers', slotName);
+      const overriddenResolverPath = join(projectDir, 'amplify', 'backend', 'api', apiName, 'resolvers', slotName);
 
       await addApiWithoutSchema(projectDir, { apiName });
       updateApiSchema(projectDir, apiName, 'cognito_simple_model.graphql');
@@ -67,6 +68,7 @@ describe('user created resolvers', () => {
       const todoJson = JSON.parse(fs.readFileSync(todoJsonPath).toString());
 
       expect(fs.readFileSync(generatedResolverPath).toString()).toEqual(slot);
+      expect(fs.readFileSync(overriddenResolverPath).toString()).toEqual(slot);
       expect(todoJson.Resources.GetTodoResolver.Properties.PipelineConfig.Functions).toHaveLength(3);
       // The function count should be 3 even after overriding the auth resolver
       expect(todoJson.Resources.ListTodoResolver.Properties.PipelineConfig.Functions).toHaveLength(3);
