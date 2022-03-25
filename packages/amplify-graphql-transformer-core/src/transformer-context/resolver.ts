@@ -179,11 +179,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     requestMappingTemplate?: MappingTemplateProvider,
     responseMappingTemplate?: MappingTemplateProvider,
   ): boolean => {
-    const slot = this.findSlot(slotName, requestMappingTemplate, responseMappingTemplate);
-    if (slot) {
-      return true;
-    }
-    return false;
+    return this.findSlot(slotName, requestMappingTemplate, responseMappingTemplate) !== undefined;
   }
 
   findSlot = (
