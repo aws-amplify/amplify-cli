@@ -8924,6 +8924,18 @@ $util.toJson({})
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
+## [Start] Set the primary key. **
+$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
+  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id),
+  \\"rollNumber\\": $util.dynamodb.toDynamoDB($mergedValues.rollNumber)
+}))
+## [End] Set the primary key. **
+
+{}",
+  "Mutation.createUserModel.preAuth.2.req.vtl": "## [Start] Merge default values and inputs. **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## [End] Merge default values and inputs. **
 ## [Start] Validate create mutation for @index 'composite'. **
 #set( $hasSeenSomeKeyArg = false )
 #set( $keyFieldNames = [\\"name\\", \\"surname\\"] )
@@ -9554,6 +9566,17 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.deleteUserModel.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## [End] Merge default values and inputs. **
+## [Start] Set the primary key. **
+$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
+  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id),
+  \\"rollNumber\\": $util.dynamodb.toDynamoDB($mergedValues.rollNumber)
+}))
+## [End] Set the primary key. **
+{}",
+  "Mutation.deleteUserModel.preAuth.2.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -10750,6 +10773,18 @@ $util.toJson({
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.updateUserModel.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## [End] Merge default values and inputs. **
+## [Start] Set the primary key. **
+$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
+  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id),
+  \\"rollNumber\\": $util.dynamodb.toDynamoDB($mergedValues.rollNumber)
+}))
+## [End] Set the primary key. **
+
+{}",
+  "Mutation.updateUserModel.preAuth.2.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **

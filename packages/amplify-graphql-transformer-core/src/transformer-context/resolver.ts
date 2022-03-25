@@ -188,8 +188,11 @@ export class TransformerResolver implements TransformerResolverProvider {
     responseMappingTemplate?: MappingTemplateProvider,
   ): Slot | undefined => {
     const slotEntries = this.slotMap.get(slotName);
-
-    if (!slotEntries) {
+    const requestMappingTemplateName = (requestMappingTemplate as any)?.name ?? '';
+    const responseMappingTemplateName = (responseMappingTemplate as any)?.name ?? '';
+    if (!slotEntries
+      || requestMappingTemplateName.includes('{slotIndex}')
+      || responseMappingTemplateName.includes('{slotIndex}')) {
       return;
     }
 
@@ -208,8 +211,8 @@ export class TransformerResolver implements TransformerResolverProvider {
 
       // If name matches, then it is an overridden resolver
       if (
-        slotEntryRequestMappingTemplate === ((requestMappingTemplate as any)?.name ?? '')
-        || slotEntryResponseMappingTemplate === ((responseMappingTemplate as any)?.name ?? '')
+        slotEntryRequestMappingTemplate === requestMappingTemplateName
+        || slotEntryResponseMappingTemplate === responseMappingTemplateName
       ) {
         return slotEntry;
       }
