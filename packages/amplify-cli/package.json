@@ -1,5 +1,5 @@
 {
-  "name": "@aws-amplify/cli",
+  "name": "@aws-amplify/cli-internal",
   "version": "7.6.26",
   "description": "Amplify CLI",
   "repository": {
@@ -144,7 +144,7 @@
       "core": {
         "name": "core",
         "type": "core",
-        "packageName": "@aws-amplify/cli"
+        "packageName": "@aws-amplify/cli-internal"
       },
       "awscloudformation": {
         "name": "awscloudformation",
