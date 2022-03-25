@@ -1,12 +1,24 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Geo JSON file validation test should throw error for a invalid Geo JSON file with clockwise exterior ring 1`] = `"The first linear ring is exterior ring and should be counter-clockwise."`;
+exports[`Geo JSON file validation test should throw error for a invalid Geo JSON file with clockwise exterior ring 1`] = `"The first linear ring is an exterior ring and should be counter-clockwise."`;
 
 exports[`Geo JSON file validation test should throw error for a invalid Geo JSON file with counter-clockwise interior ring 1`] = `"The interior ring should be clockwise."`;
 
-exports[`Geo JSON file validation test should throw error for a invalid Geo JSON file with first and last position not identical 1`] = `"Linear ring of feature \\"notSameFirstAndLast\\" should have the identical values for first and last position."`;
+exports[`Geo JSON file validation test should throw error for a invalid Geo JSON file with first and last position not identical 1`] = `"Linear ring of feature \\"notSameFirstAndLast\\" should have identical values for the first and last position."`;
 
-exports[`Geo JSON file validation test should throw error for a invalid Geo JSON file with less than 4 points in a linear ring 1`] = `"The input GeoJSON file failed JSON schema validation. Underlying errors were [{\\"keyword\\":\\"minItems\\",\\"dataPath\\":\\".features[0].geometry.coordinates[0]\\",\\"schemaPath\\":\\"#/minItems\\",\\"params\\":{\\"limit\\":4},\\"message\\":\\"should NOT have fewer than 4 items\\"}]"`;
+exports[`Geo JSON file validation test should throw error for a invalid Geo JSON file with less than 4 points in a linear ring 1`] = `
+"The input GeoJSON file failed JSON schema validation. Underlying errors were [
+  {
+    \\"keyword\\": \\"minItems\\",
+    \\"dataPath\\": \\".features[0].geometry.coordinates[0]\\",
+    \\"schemaPath\\": \\"#/minItems\\",
+    \\"params\\": {
+      \\"limit\\": 4
+    },
+    \\"message\\": \\"should NOT have fewer than 4 items\\"
+  }
+]"
+`;
 
 exports[`Geo JSON file validation test should throw error for a invalid Geo JSON file with same identifier 1`] = `"Identifier field id is not unique in GeoJSON."`;
 

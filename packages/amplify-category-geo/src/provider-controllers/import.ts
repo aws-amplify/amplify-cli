@@ -1,4 +1,3 @@
-import ora from 'ora';
 import { readFileSync } from 'fs-extra';
 import { $TSContext } from 'amplify-cli-core';
 import { prompter } from 'amplify-prompts';
@@ -10,7 +9,7 @@ import { validateGeoJSONObj } from '../service-utils/validateGeoJSONObj';
 import {
   FeatureCollection, ImportParams, GeofenceCollectionParams, GeofenceParams, IdentifierOption, IdentifierInfo
 } from '../service-utils/importParams';
-
+import { printer } from 'amplify-prompts';
 
 const MAX_ENTRIES_PER_BATCH = 10;
 const MIN_ENTRIES_PER_BATCH = 1;
@@ -54,13 +53,12 @@ export const importResource = async (context: $TSContext) => {
   ];
   const { identifierField, identifierType } = await prompter.pick<'one', any>('Select the property to use as the Geofence feature identifier:', identifierWalkthroughOptions) as IdentifierInfo;
   // Validate the json file against schema
-  const validationSpinner = ora('Validating your GeoJSON file...\n');
-  validationSpinner.start();
+  printer.info('Validating your GeoJSON file...');
   try {
     geoJSONObj = validateGeoJSONObj(geoJSONObj, identifierField, identifierType);
-    validationSpinner.succeed('Successfully validated GeoJSON file.');
+    printer.success('Successfully validated GeoJSON file.');
   } catch (err) {
-    validationSpinner.fail('Error occurs while validating GeoJSON file.');
+    printer.error('Error occurs while validating GeoJSON file.');
     throw err;
   }
   // Update the GeoJSON file with auto-assigned ID
@@ -70,10 +68,8 @@ export const importResource = async (context: $TSContext) => {
   // Construct geofence collection parameters
   const geofenceCollectionParams = constructGeofenceCollectionParams({ collectionToImport, identifierField, identifierType, geoJSONObj });
   // Upload geofences to collection
-  const uploadSpinner = ora('Updating your Geofences in the collection...');
-  uploadSpinner.start();
+  printer.info('Updating your Geofences in the collection...');
   try {
-    let successCount = 0;
     const totalGeofenceCount = geofenceCollectionParams.Entries.length;
     for(let i = 0; i < totalGeofenceCount; i += MAX_ENTRIES_PER_BATCH){
       const geofenceCollectionPerBatch : GeofenceCollectionParams = {
@@ -81,28 +77,26 @@ export const importResource = async (context: $TSContext) => {
         Entries: geofenceCollectionParams.Entries.slice(i, i + MAX_ENTRIES_PER_BATCH)
       }
       const result = await bulkUploadGeofence(geofenceCollectionPerBatch, collectionRegion);
-      successCount += result.Successes.length;
     }
-    uploadSpinner.succeed(`Successfully added/updated ${successCount} Geofences in your "${collectionToImport}" collection`);
+    printer.success(`Successfully added/updated ${totalGeofenceCount} Geofences in your "${collectionToImport}" collection`);
   } catch (err) {
-    uploadSpinner.fail('Error occurs while uploading geofences.');
+    printer.error('Error occurs while uploading geofences.');
     throw err;
   }
 };
 
 const constructGeofenceCollectionParams = (importParam: ImportParams): GeofenceCollectionParams => {
-  const Entries: GeofenceParams[] = [];
   const { geoJSONObj } = importParam;
-  geoJSONObj.features.forEach(feature => {
-    Entries.push({
+  const Entries: GeofenceParams[] = [
+    ...geoJSONObj.features.map(feature => ({
       GeofenceId: importParam.identifierType === IdentifierOption.CustomProperty
         ? feature.properties[importParam.identifierField]
         : feature.id,
       Geometry: {
         Polygon: feature.geometry.coordinates,
       },
-    });
-  });
+    })),
+  ];
   return {
     CollectionName: importParam.collectionToImport,
     Entries,
@@ -111,13 +105,6 @@ const constructGeofenceCollectionParams = (importParam: ImportParams): GeofenceC
 
 const bulkUploadGeofence = async (params: GeofenceCollectionParams, region: string) => {
   const service = new Location({ region });
-  const geofenceNum = params.Entries.length;
-  if (geofenceNum < MIN_ENTRIES_PER_BATCH) {
-    throw new Error(`The uploaded geofences should have at least ${MIN_ENTRIES_PER_BATCH} item.`);
-  }
-  if (geofenceNum > MAX_ENTRIES_PER_BATCH) {
-    throw new Error(`The uploaded geofences should have at most ${MAX_ENTRIES_PER_BATCH} items per batch.`);
-  }
   return await service.batchPutGeofence(params).promise();
 };
 
