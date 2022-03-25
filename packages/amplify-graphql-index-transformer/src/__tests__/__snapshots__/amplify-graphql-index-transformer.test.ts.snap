@@ -27,6 +27,14 @@ $util.toJson({})
 $util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
+#set( $nullIndexFields = [] )
+#set( $indexFields = [\\"category\\"] )
+#foreach( $entry in $util.map.copyAndRetainAllKeys($mergedValues, $indexFields).entrySet() )
+  #if( $util.isNull($entry.value) )
+    $util.qr($nullIndexFields.add($entry.key))
+  #end
+#end
+#set( $mergedValues = $util.map.copyAndRemoveAllKeys($mergedValues, $nullIndexFields) )
 #set( $PutObject = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
@@ -637,6 +645,14 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 $util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
+#set( $nullIndexFields = [] )
+#set( $indexFields = [\\"email\\"] )
+#foreach( $entry in $util.map.copyAndRetainAllKeys($mergedValues, $indexFields).entrySet() )
+  #if( $util.isNull($entry.value) )
+    $util.qr($nullIndexFields.add($entry.key))
+  #end
+#end
+#set( $mergedValues = $util.map.copyAndRemoveAllKeys($mergedValues, $nullIndexFields) )
 #set( $PutObject = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
@@ -1306,6 +1322,14 @@ $util.toJson({})
 $util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
+#set( $nullIndexFields = [] )
+#set( $indexFields = [\\"email\\"] )
+#foreach( $entry in $util.map.copyAndRetainAllKeys($mergedValues, $indexFields).entrySet() )
+  #if( $util.isNull($entry.value) )
+    $util.qr($nullIndexFields.add($entry.key))
+  #end
+#end
+#set( $mergedValues = $util.map.copyAndRemoveAllKeys($mergedValues, $nullIndexFields) )
 #set( $PutObject = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
@@ -1831,6 +1855,14 @@ exports[`GSI composite sort keys are wrapped in conditional to check presence in
 $util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"Person\\"))
+#set( $nullIndexFields = [] )
+#set( $indexFields = [\\"firstName\\"] )
+#foreach( $entry in $util.map.copyAndRetainAllKeys($mergedValues, $indexFields).entrySet() )
+  #if( $util.isNull($entry.value) )
+    $util.qr($nullIndexFields.add($entry.key))
+  #end
+#end
+#set( $mergedValues = $util.map.copyAndRemoveAllKeys($mergedValues, $nullIndexFields) )
 #set( $PutObject = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
@@ -2063,6 +2095,14 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 $util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
+#set( $nullIndexFields = [] )
+#set( $indexFields = [\\"category\\"] )
+#foreach( $entry in $util.map.copyAndRetainAllKeys($mergedValues, $indexFields).entrySet() )
+  #if( $util.isNull($entry.value) )
+    $util.qr($nullIndexFields.add($entry.key))
+  #end
+#end
+#set( $mergedValues = $util.map.copyAndRemoveAllKeys($mergedValues, $nullIndexFields) )
 #set( $PutObject = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
@@ -2757,6 +2797,14 @@ $util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${mergedValues.status}#\
 $util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"Item\\"))
+#set( $nullIndexFields = [] )
+#set( $indexFields = [\\"status\\", \\"createdAt\\"] )
+#foreach( $entry in $util.map.copyAndRetainAllKeys($mergedValues, $indexFields).entrySet() )
+  #if( $util.isNull($entry.value) )
+    $util.qr($nullIndexFields.add($entry.key))
+  #end
+#end
+#set( $mergedValues = $util.map.copyAndRemoveAllKeys($mergedValues, $nullIndexFields) )
 #set( $PutObject = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
@@ -3921,6 +3969,14 @@ $util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${mergedValues.status}#\
 $util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"Item\\"))
+#set( $nullIndexFields = [] )
+#set( $indexFields = [\\"status\\", \\"createdAt\\"] )
+#foreach( $entry in $util.map.copyAndRetainAllKeys($mergedValues, $indexFields).entrySet() )
+  #if( $util.isNull($entry.value) )
+    $util.qr($nullIndexFields.add($entry.key))
+  #end
+#end
+#set( $mergedValues = $util.map.copyAndRemoveAllKeys($mergedValues, $nullIndexFields) )
 #set( $PutObject = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",

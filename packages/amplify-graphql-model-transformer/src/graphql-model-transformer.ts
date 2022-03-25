@@ -27,7 +27,9 @@ import {
   TransformerValidationStepContextProvider,
   TransformerBeforeStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { AttributeType, CfnTable, ITable, StreamViewType, Table, TableEncryption } from '@aws-cdk/aws-dynamodb';
+import {
+  AttributeType, CfnTable, ITable, StreamViewType, Table, TableEncryption,
+} from '@aws-cdk/aws-dynamodb';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { CfnDataSource } from '@aws-cdk/aws-appsync';
@@ -55,6 +57,7 @@ import {
   toCamelCase,
   toPascalCase,
 } from 'graphql-transformer-common';
+import { CfnRole } from '@aws-cdk/aws-iam';
 import {
   addDirectivesToOperation,
   addModelConditionInputs,
@@ -87,40 +90,13 @@ import {
   generateListRequestTemplate,
   generateSyncRequestTemplate,
 } from './resolvers/query';
-import { CfnRole } from '@aws-cdk/aws-iam';
-import md5 from 'md5';
 import { API_KEY_DIRECTIVE } from './definitions';
+import { SubscriptionLevel, ModelDirectiveConfiguration } from './directive';
 
+/**
+ * Nullable
+ */
 export type Nullable<T> = T | null;
-export type OptionalAndNullable<T> = Partial<T>;
-
-export enum SubscriptionLevel {
-  off = 'off',
-  public = 'public',
-  on = 'on',
-}
-export type ModelDirectiveConfiguration = {
-  queries?: OptionalAndNullable<{
-    get: OptionalAndNullable<string>;
-    list: OptionalAndNullable<string>;
-    sync: OptionalAndNullable<string>;
-  }>;
-  mutations: OptionalAndNullable<{
-    create: OptionalAndNullable<string>;
-    update: OptionalAndNullable<string>;
-    delete: OptionalAndNullable<string>;
-  }>;
-  subscriptions: OptionalAndNullable<{
-    onCreate: OptionalAndNullable<string>[];
-    onUpdate: OptionalAndNullable<string>[];
-    onDelete: OptionalAndNullable<string>[];
-    level: SubscriptionLevel;
-  }>;
-  timestamps: OptionalAndNullable<{
-    createdAt: OptionalAndNullable<string>;
-    updatedAt: OptionalAndNullable<string>;
-  }>;
-};
 
 export const directiveDefinition = /* GraphQl */ `
   directive @model(
@@ -160,6 +136,9 @@ type ModelTransformerOptions = {
   SyncConfig?: SyncConfig;
 };
 
+/**
+ * ModelTransformer
+ */
 export class ModelTransformer extends TransformerModelBase implements TransformerModelProvider {
   private options: ModelTransformerOptions;
   private datasourceMap: Record<string, DataSourceProvider> = {};
@@ -175,7 +154,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     this.options = this.getOptions(options);
   }
 
-  before = (ctx: TransformerBeforeStepContextProvider) => {
+  before = (ctx: TransformerBeforeStepContextProvider): void => {
     // add model related-parameters to the root stack
     ctx.stackManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS, {
       description: 'The number of read IOPS the table should support.',
@@ -207,10 +186,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   };
 
   object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider): void => {
-    const isTypeNameReserved =
-      definition.name.value === ctx.output.getQueryTypeName() ||
-      definition.name.value === ctx.output.getMutationTypeName() ||
-      definition.name.value === ctx.output.getSubscriptionTypeName();
+    const isTypeNameReserved = definition.name.value === ctx.output.getQueryTypeName()
+      || definition.name.value === ctx.output.getMutationTypeName()
+      || definition.name.value === ctx.output.getSubscriptionTypeName();
 
     if (isTypeNameReserved) {
       throw new InvalidDirectiveError(
@@ -264,12 +242,11 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     this.typesWithModelDirective.add(typeName);
   };
 
-  validate = () => {};
-  prepare = (context: TransformerPrepareStepContextProvider) => {
-    for (const modelTypeName of this.typesWithModelDirective) {
+  prepare = (context: TransformerPrepareStepContextProvider): void => {
+    this.typesWithModelDirective.forEach(modelTypeName => {
       const type = context.output.getObject(modelTypeName);
       context.providerRegistry.registerDataSourceProvider(type!, this);
-    }
+    });
   };
 
   transformSchema = (ctx: TransformerTransformSchemaStepContextProvider): void => {
@@ -277,7 +254,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     addModelConditionInputs(ctx);
 
     this.ensureModelSortDirectionEnum(ctx);
-    for (const type of this.typesWithModelDirective) {
+    this.typesWithModelDirective.forEach(type => {
       const def = ctx.output.getObject(type)!;
       const hasAuth = def.directives!.some(dir => dir.name.value === 'auth');
 
@@ -304,24 +281,24 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         const apiKeyDirArray = [makeDirective(API_KEY_DIRECTIVE, [])];
         extendTypeWithDirectives(ctx, def.name.value, apiKeyDirArray);
         propagateApiKeyToNestedTypes(ctx as TransformerContextProvider, def, new Set<string>());
-        for (let operationField of queryFields) {
+        queryFields.forEach(operationField => {
           const operationName = operationField.name.value;
           addDirectivesToOperation(ctx, ctx.output.getQueryTypeName()!, operationName, apiKeyDirArray);
-        }
-        for (let operationField of mutationFields) {
+        });
+        mutationFields.forEach(operationField => {
           const operationName = operationField.name.value;
           addDirectivesToOperation(ctx, ctx.output.getMutationTypeName()!, operationName, apiKeyDirArray);
-        }
-        for (let operationField of subscriptionsFields) {
+        });
+        subscriptionsFields.forEach(operationField => {
           const operationName = operationField.name.value;
           addDirectivesToOperation(ctx, ctx.output.getSubscriptionTypeName()!, operationName, apiKeyDirArray);
-        }
+        });
       }
-    }
+    });
   };
 
   generateResolvers = (context: TransformerContextProvider): void => {
-    for (let type of this.typesWithModelDirective) {
+    this.typesWithModelDirective.forEach(type => {
       const def = context.output.getObject(type)!;
       // This name is used by the mock functionality. Changing this can break mock.
       const tableBaseName = context.resourceHelper.getModelNameMapping(def!.name.value);
@@ -330,8 +307,8 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
       this.createModelTable(stack, def!, context);
 
-      const queryFields = this.getQueryFieldNames(context, def!);
-      for (let query of queryFields.values()) {
+      const queryFields = this.getQueryFieldNames(def!);
+      queryFields.forEach(query => {
         let resolver;
         switch (query.type) {
           case QueryFieldType.GET:
@@ -357,10 +334,10 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         );
         resolver.mapToStack(context.stackManager.getStackFor(query.resolverLogicalId, def!.name.value));
         context.resolvers.addResolver(query.typeName, query.fieldName, resolver);
-      }
+      });
 
-      const mutationFields = this.getMutationFieldNames(context, def!);
-      for (let mutation of mutationFields.values()) {
+      const mutationFields = this.getMutationFieldNames(def!);
+      mutationFields.forEach(mutation => {
         let resolver;
         switch (mutation.type) {
           case MutationFieldType.CREATE:
@@ -384,19 +361,18 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         );
         resolver.mapToStack(context.stackManager.getStackFor(mutation.resolverLogicalId, def!.name.value));
         context.resolvers.addResolver(mutation.typeName, mutation.fieldName, resolver);
-      }
+      });
 
       const subscriptionLevel = this.modelDirectiveConfig.get(def.name.value)?.subscriptions?.level;
       // in order to create subscription resolvers the level needs to be on
       if (subscriptionLevel === SubscriptionLevel.on) {
-        const subscriptionFields = this.getSubscriptionFieldNames(context, def!);
-        for (let subscription of subscriptionFields.values()) {
+        const subscriptionFields = this.getSubscriptionFieldNames(def!);
+        subscriptionFields.forEach(subscription => {
           let resolver;
           switch (subscription.type) {
             case SubscriptionFieldType.ON_CREATE:
               resolver = this.generateOnCreateResolver(
                 context,
-                def,
                 subscription.typeName,
                 subscription.fieldName,
                 subscription.resolverLogicalId,
@@ -405,7 +381,6 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
             case SubscriptionFieldType.ON_UPDATE:
               resolver = this.generateOnUpdateResolver(
                 context,
-                def,
                 subscription.typeName,
                 subscription.fieldName,
                 subscription.resolverLogicalId,
@@ -414,7 +389,6 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
             case SubscriptionFieldType.ON_DELETE:
               resolver = this.generateOnDeleteResolver(
                 context,
-                def,
                 subscription.typeName,
                 subscription.fieldName,
                 subscription.resolverLogicalId,
@@ -432,9 +406,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
           );
           resolver.mapToStack(context.stackManager.getStackFor(subscription.resolverLogicalId, def!.name.value));
           context.resolvers.addResolver(subscription.typeName, subscription.fieldName, resolver);
-        }
+        });
       }
-    }
+    });
   };
 
   generateGetResolver = (
@@ -515,7 +489,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       resolver.addToSlot(
         'init',
         MappingTemplate.s3MappingTemplateFromString(
-          generateUpdateInitSlotTemplate(type.name.value, this.modelDirectiveConfig.get(type.name.value)!),
+          generateUpdateInitSlotTemplate(this.modelDirectiveConfig.get(type.name.value)!),
           `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`,
         ),
       );
@@ -523,6 +497,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     }
     return this.resolverMap[resolverKey];
   };
+
   generateDeleteResolver = (
     ctx: TransformerContextProvider,
     type: ObjectTypeDefinitionNode,
@@ -551,7 +526,6 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
   generateOnCreateResolver = (
     ctx: TransformerContextProvider,
-    type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
     resolverLogicalId: string,
@@ -568,9 +542,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     }
     return this.resolverMap[resolverKey];
   };
+
   generateOnUpdateResolver = (
     ctx: TransformerContextProvider,
-    type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
     resolverLogicalId: string,
@@ -587,9 +561,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     }
     return this.resolverMap[resolverKey];
   };
+
   generateOnDeleteResolver = (
     ctx: TransformerContextProvider,
-    type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
     resolverLogicalId: string,
@@ -606,6 +580,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     }
     return this.resolverMap[resolverKey];
   };
+
   generateSyncResolver = (
     ctx: TransformerContextProvider,
     type: ObjectTypeDefinitionNode,
@@ -633,7 +608,6 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   };
 
   getQueryFieldNames = (
-    ctx: TransformerTransformSchemaStepContextProvider,
     type: ObjectTypeDefinitionNode,
   ): Set<{ fieldName: string; typeName: string; type: QueryFieldType; resolverLogicalId: string }> => {
     const typeName = type.name.value;
@@ -670,14 +644,13 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   };
 
   getMutationFieldNames = (
-    ctx: TransformerTransformSchemaStepContextProvider,
     type: ObjectTypeDefinitionNode,
   ): Set<{ fieldName: string; typeName: string; type: MutationFieldType; resolverLogicalId: string }> => {
     // Todo: get fields names from the directives
     const typeName = type.name.value;
     const modelDirectiveConfig = this.modelDirectiveConfig.get(typeName);
-    const getMutationType = (type: string): MutationFieldType => {
-      switch (type) {
+    const getMutationType = (mutationType: string): MutationFieldType => {
+      switch (mutationType) {
         case 'create':
           return MutationFieldType.CREATE;
         case 'update':
@@ -689,8 +662,8 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       }
     };
 
-    const getMutationResolverLogicalId = (type: string): string => {
-      switch (type) {
+    const getMutationResolverLogicalId = (mutationType: string): string => {
+      switch (mutationType) {
         case 'create':
           return ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName);
         case 'update':
@@ -703,7 +676,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     };
 
     const fieldNames: Set<{ fieldName: string; typeName: string; type: MutationFieldType; resolverLogicalId: string }> = new Set();
-    for (let [mutationType, mutationName] of Object.entries(modelDirectiveConfig?.mutations || {})) {
+    Object.entries(modelDirectiveConfig?.mutations || {}).forEach(([mutationType, mutationName]) => {
       if (mutationName) {
         fieldNames.add({
           typeName: 'Mutation',
@@ -712,7 +685,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
           resolverLogicalId: getMutationResolverLogicalId(mutationType),
         });
       }
-    }
+    });
 
     return fieldNames;
   };
@@ -731,7 +704,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       [SubscriptionFieldType.ON_UPDATE]: MutationFieldType.UPDATE,
       [SubscriptionFieldType.ON_DELETE]: MutationFieldType.DELETE,
     };
-    const mutation = Array.from(mutationMap).find(m => m.type == mutationToSubscriptionTypeMap[subscriptionType]);
+    const mutation = Array.from(mutationMap).find(m => m.type === mutationToSubscriptionTypeMap[subscriptionType]);
     if (mutation) {
       return mutation.fieldName;
     }
@@ -740,8 +713,8 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
   private createQueryFields = (ctx: TransformerValidationStepContextProvider, def: ObjectTypeDefinitionNode): FieldDefinitionNode[] => {
     const queryFields: FieldDefinitionNode[] = [];
-    const queryFieldNames = this.getQueryFieldNames(ctx, def!);
-    for (const queryField of queryFieldNames.values()) {
+    const queryFieldNames = this.getQueryFieldNames(def!);
+    queryFieldNames.forEach(queryField => {
       const outputType = this.getOutputType(ctx, def, queryField);
       const args = this.getInputs(ctx, def!, {
         fieldName: queryField.fieldName,
@@ -749,15 +722,15 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         type: queryField.type,
       });
       queryFields.push(makeField(queryField.fieldName, args, makeNamedType(outputType.name.value)));
-    }
+    });
 
     return queryFields;
   };
 
   private createMutationFields = (ctx: TransformerValidationStepContextProvider, def: ObjectTypeDefinitionNode): FieldDefinitionNode[] => {
     const mutationFields: FieldDefinitionNode[] = [];
-    const mutationFieldNames = this.getMutationFieldNames(ctx, def!);
-    for (const mutationField of mutationFieldNames) {
+    const mutationFieldNames = this.getMutationFieldNames(def!);
+    mutationFieldNames.forEach(mutationField => {
       const args = this.getInputs(ctx, def!, {
         fieldName: mutationField.fieldName,
         typeName: mutationField.typeName,
@@ -765,7 +738,8 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       });
 
       mutationFields.push(makeField(mutationField.fieldName, args, makeNamedType(def!.name.value)));
-    }
+    });
+
     return mutationFields;
   };
 
@@ -773,23 +747,22 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     ctx: TransformerTransformSchemaStepContextProvider,
     def: ObjectTypeDefinitionNode,
   ): FieldDefinitionNode[] => {
-    const subscriptionToMutationsMap = this.getSubscriptionToMutationsReverseMap(ctx, def);
-    const mutationFields = this.getMutationFieldNames(ctx, def!);
+    const subscriptionToMutationsMap = this.getSubscriptionToMutationsReverseMap(def);
+    const mutationFields = this.getMutationFieldNames(def!);
 
     const subscriptionFields: FieldDefinitionNode[] = [];
-    for (const subscriptionFieldName of Object.keys(subscriptionToMutationsMap)) {
+
+    Object.keys(subscriptionToMutationsMap).forEach(subscriptionFieldName => {
       const maps = subscriptionToMutationsMap[subscriptionFieldName];
 
       const args: InputValueDefinitionNode[] = [];
-      maps.map(it =>
-        args.concat(
-          this.getInputs(ctx, def!, {
-            fieldName: it.fieldName,
-            typeName: it.typeName,
-            type: it.type,
-          }),
-        ),
-      );
+      maps.map(it => args.concat(
+        this.getInputs(ctx, def!, {
+          fieldName: it.fieldName,
+          typeName: it.typeName,
+          type: it.type,
+        }),
+      ));
 
       const mutationNames = maps.map(it => this.getMutationName(it.type, mutationFields));
 
@@ -797,13 +770,12 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       const directive = makeDirective('aws_subscribe', [makeArgument('mutations', makeValueNode(mutationNames))]);
       const field = makeField(subscriptionFieldName, args, makeNamedType(def!.name.value), [directive]);
       subscriptionFields.push(field);
-    }
+    });
 
     return subscriptionFields;
   };
 
   getSubscriptionFieldNames = (
-    ctx: TransformerTransformSchemaStepContextProvider,
     type: ObjectTypeDefinitionNode,
   ): Set<{
     fieldName: string;
@@ -821,50 +793,46 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const modelDirectiveConfig = this.modelDirectiveConfig.get(type.name.value);
     if (modelDirectiveConfig?.subscriptions?.level !== SubscriptionLevel.off) {
       if (modelDirectiveConfig?.subscriptions?.onCreate && modelDirectiveConfig.mutations?.create) {
-        for (const fieldName of modelDirectiveConfig.subscriptions.onCreate) {
+        modelDirectiveConfig.subscriptions.onCreate.forEach((fieldName: string) => {
           fields.add({
             typeName: 'Subscription',
-            fieldName: fieldName,
+            fieldName,
             type: SubscriptionFieldType.ON_CREATE,
             resolverLogicalId: ResolverResourceIDs.ResolverResourceID('Subscription', fieldName),
           });
-        }
+        });
       }
 
       if (modelDirectiveConfig?.subscriptions?.onUpdate && modelDirectiveConfig.mutations?.update) {
-        for (const fieldName of modelDirectiveConfig.subscriptions.onUpdate) {
+        modelDirectiveConfig.subscriptions.onUpdate.forEach((fieldName: string) => {
           fields.add({
             typeName: 'Subscription',
-            fieldName: fieldName,
+            fieldName,
             type: SubscriptionFieldType.ON_UPDATE,
             resolverLogicalId: ResolverResourceIDs.ResolverResourceID('Subscription', fieldName),
           });
-        }
+        });
       }
 
       if (modelDirectiveConfig?.subscriptions?.onDelete && modelDirectiveConfig.mutations?.delete) {
-        for (const fieldName of modelDirectiveConfig.subscriptions.onDelete) {
+        modelDirectiveConfig.subscriptions.onDelete.forEach((fieldName: string) => {
           fields.add({
             typeName: 'Subscription',
-            fieldName: fieldName,
+            fieldName,
             type: SubscriptionFieldType.ON_DELETE,
             resolverLogicalId: ResolverResourceIDs.ResolverResourceID('Subscription', fieldName),
           });
-        }
+        });
       }
     }
 
     return fields;
   };
 
-  getDataSourceResource = (ctx: TransformerContextProvider, type: ObjectTypeDefinitionNode): DataSourceInstance => {
-    // Todo: add sanity check to ensure the type has an table
-    return this.ddbTableMap[type.name.value];
-  };
+  // Todo: add sanity check to ensure the type has an table
+  getDataSourceResource = (type: ObjectTypeDefinitionNode): DataSourceInstance => this.ddbTableMap[type.name.value];
 
-  getDataSourceType = (): AppSyncDataSourceType => {
-    return AppSyncDataSourceType.AMAZON_DYNAMODB;
-  };
+  getDataSourceType = (): AppSyncDataSourceType => AppSyncDataSourceType.AMAZON_DYNAMODB;
 
   generateCreateResolver = (
     ctx: TransformerContextProvider,
@@ -876,13 +844,14 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const isSyncEnabled = ctx.isProjectUsingDataStore();
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `Create${generateResolverKey(typeName, fieldName)}`;
+    const modelIndexFields = type.fields!.filter(field => field.directives?.some(it => it.name.value === 'index')).map(it => it.name.value);
     if (!this.resolverMap[resolverKey]) {
       const resolver = ctx.resolvers.generateMutationResolver(
         typeName,
         fieldName,
         resolverLogicalId,
         dataSource,
-        MappingTemplate.s3MappingTemplateFromString(generateCreateRequestTemplate(type.name.value), `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(generateCreateRequestTemplate(type.name.value, modelIndexFields), `${typeName}.${fieldName}.req.vtl`),
         MappingTemplate.s3MappingTemplateFromString(
           generateDefaultResponseMappingTemplate(isSyncEnabled, true),
           `${typeName}.${fieldName}.res.vtl`,
@@ -892,7 +861,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       resolver.addToSlot(
         'init',
         MappingTemplate.s3MappingTemplateFromString(
-          generateCreateInitSlotTemplate(type.name.value, this.modelDirectiveConfig.get(type.name.value)!),
+          generateCreateInitSlotTemplate(this.modelDirectiveConfig.get(type.name.value)!),
           `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`,
         ),
       );
@@ -919,34 +888,35 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       const filterInputs = createEnumModelFilters(ctx, type);
       conditionInput = makeMutationConditionInput(ctx, conditionTypeName, type);
       filterInputs.push(conditionInput);
-      for (let input of filterInputs) {
+      filterInputs.forEach(input => {
         const conditionInputName = input.name.value;
         if (!ctx.output.getType(conditionInputName)) {
           ctx.output.addInput(input);
         }
-      }
+      });
     }
     switch (operation.type) {
       case QueryFieldType.GET:
         return [makeInputValueDefinition('id', makeNonNullType(makeNamedType('ID')))];
 
-      case QueryFieldType.LIST:
+      case QueryFieldType.LIST: {
         const filterInputName = toPascalCase(['Model', type.name.value, 'FilterInput']);
         const filterInputs = createEnumModelFilters(ctx, type);
         filterInputs.push(makeListQueryFilterInput(ctx, filterInputName, type));
-        for (let input of filterInputs) {
+        filterInputs.forEach(input => {
           const conditionInputName = input.name.value;
           if (!ctx.output.getType(conditionInputName)) {
             ctx.output.addInput(input);
           }
-        }
+        });
 
         return [
           makeInputValueDefinition('filter', makeNamedType(filterInputName)),
           makeInputValueDefinition('limit', makeNamedType('Int')),
           makeInputValueDefinition('nextToken', makeNamedType('String')),
         ];
-      case QueryFieldType.SYNC:
+      }
+      case QueryFieldType.SYNC: {
         const syncFilterInputName = toPascalCase(['Model', type.name.value, 'FilterInput']);
         const syncFilterInputs = makeListQueryFilterInput(ctx, syncFilterInputName, type);
         const conditionInputName = syncFilterInputs.name.value;
@@ -959,8 +929,8 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
           makeInputValueDefinition('nextToken', makeNamedType('String')),
           makeInputValueDefinition('lastSync', makeNamedType('AWSTimestamp')),
         ];
-
-      case MutationFieldType.CREATE:
+      }
+      case MutationFieldType.CREATE: {
         const createInputField = makeCreateInputField(
           type,
           this.modelDirectiveConfig.get(type.name.value)!,
@@ -976,8 +946,8 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
           makeInputValueDefinition('input', makeNonNullType(makeNamedType(createInputTypeName))),
           makeInputValueDefinition('condition', makeNamedType(conditionInput!.name.value)),
         ];
-
-      case MutationFieldType.DELETE:
+      }
+      case MutationFieldType.DELETE: {
         const deleteInputField = makeDeleteInputField(type, isSyncEnabled);
         const deleteInputTypeName = deleteInputField.name.value;
         if (!ctx.output.getType(deleteInputField.name.value)) {
@@ -987,8 +957,8 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
           makeInputValueDefinition('input', makeNonNullType(makeNamedType(deleteInputTypeName))),
           makeInputValueDefinition('condition', makeNamedType(conditionInput!.name.value)),
         ];
-
-      case MutationFieldType.UPDATE:
+      }
+      case MutationFieldType.UPDATE: {
         const updateInputField = makeUpdateInputField(
           type,
           this.modelDirectiveConfig.get(type.name.value)!,
@@ -1004,17 +974,15 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
           makeInputValueDefinition('input', makeNonNullType(makeNamedType(updateInputTypeName))),
           makeInputValueDefinition('condition', makeNamedType(conditionInput!.name.value)),
         ];
-
+      }
       case SubscriptionFieldType.ON_CREATE:
       case SubscriptionFieldType.ON_DELETE:
       case SubscriptionFieldType.ON_UPDATE:
         return [];
-        break;
 
       default:
         throw new Error('Unknown operation type');
     }
-    return [];
   };
 
   getOutputType = (
@@ -1038,11 +1006,12 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         outputType = type;
         break;
       case QueryFieldType.SYNC:
-      case QueryFieldType.LIST:
+      case QueryFieldType.LIST: {
         const isSyncEnabled = ctx.isProjectUsingDataStore();
         const connectionFieldName = toPascalCase(['Model', type.name.value, 'Connection']);
         outputType = makeListQueryModel(type, connectionFieldName, isSyncEnabled);
         break;
+      }
       default:
         throw new Error(`${operation.type} not supported for ${type.name.value}`);
     }
@@ -1053,10 +1022,10 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   };
 
   private createNonModelInputs = (ctx: TransformerTransformSchemaStepContextProvider, obj: ObjectTypeDefinitionNode): void => {
-    for (let field of obj.fields || []) {
+    (obj.fields ?? []).forEach(field => {
       if (!isScalar(field.type)) {
         const def = ctx.output.getType(getBaseType(field.type));
-        if (def && def.kind == 'ObjectTypeDefinition' && !this.isModelField(def.name.value)) {
+        if (def && def.kind === 'ObjectTypeDefinition' && !this.isModelField(def.name.value)) {
           const name = this.getNonModelInputObjectName(def.name.value);
           if (!ctx.output.getType(name)) {
             const inputObj = InputObjectDefinitionWrapper.fromObject(name, def, ctx.inputDocument);
@@ -1065,18 +1034,16 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
           }
         }
       }
-    }
-  };
-  private isModelField = (name: string): boolean => {
-    return this.typesWithModelDirective.has(name) ? true : false;
+    });
   };
 
-  private getNonModelInputObjectName = (name: string): string => {
-    return `${name}Input`;
-  };
+  private isModelField = (name: string): boolean => (!!this.typesWithModelDirective.has(name));
+
+  private getNonModelInputObjectName = (name: string): string => `${name}Input`;
 
   /**
    * Model directive automatically adds id, created and updated time stamps to the filed, if they are configured
+   * @param ctx transform context
    * @param name Name of the type
    */
   private addAutoGeneratableFields = (ctx: TransformerTransformSchemaStepContextProvider, name: string): void => {
@@ -1103,7 +1070,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       }
     }
 
-    for (let fieldName of timestamps) {
+    timestamps.forEach(fieldName => {
       if (typeWrapper.hasField(fieldName)) {
         const field = typeWrapper.getField(fieldName);
         if (!['String', 'AWSDateTime'].includes(field.getTypeName())) {
@@ -1113,7 +1080,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         const field = FieldWrapper.create(fieldName, 'AWSDateTime');
         typeWrapper.addField(field);
       }
-    }
+    });
 
     ctx.output.updateObject(typeWrapper.serialize());
   };
@@ -1133,23 +1100,22 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   };
 
   private getSubscriptionToMutationsReverseMap = (
-    ctx: TransformerValidationStepContextProvider,
     def: ObjectTypeDefinitionNode,
   ): { [subField: string]: { fieldName: string; typeName: string; type: SubscriptionFieldType }[] } => {
     const subscriptionToMutationsMap: { [subField: string]: { fieldName: string; typeName: string; type: SubscriptionFieldType }[] } = {};
-    const subscriptionFieldNames = this.getSubscriptionFieldNames(ctx, def);
+    const subscriptionFieldNames = this.getSubscriptionFieldNames(def);
 
-    for (const subscriptionFieldName of subscriptionFieldNames) {
+    subscriptionFieldNames.forEach(subscriptionFieldName => {
       if (!subscriptionToMutationsMap[subscriptionFieldName.fieldName]) {
         subscriptionToMutationsMap[subscriptionFieldName.fieldName] = [];
       }
       subscriptionToMutationsMap[subscriptionFieldName.fieldName].push(subscriptionFieldName);
-    }
+    });
 
     return subscriptionToMutationsMap;
   };
 
-  private createModelTable(stack: cdk.Stack, def: ObjectTypeDefinitionNode, context: TransformerContextProvider) {
+  private createModelTable(stack: cdk.Stack, def: ObjectTypeDefinitionNode, context: TransformerContextProvider): void {
     const tableLogicalName = ModelResourceIDs.ModelTableResourceID(def!.name.value);
     const tableName = context.resourceHelper.generateTableName(def!.name.value);
 
@@ -1222,7 +1188,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       },
       stream: StreamViewType.NEW_AND_OLD_IMAGES,
       encryption: TableEncryption.DEFAULT,
-      removalPolicy: removalPolicy,
+      removalPolicy,
       ...(context.isProjectUsingDataStore() ? { timeToLiveAttribute: '_ttl' } : undefined),
     });
     const cfnTable = table.node.defaultChild as CfnTable;
@@ -1269,7 +1235,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     stack: cdk.Stack,
     role: iam.Role,
     dataSourceLogicalName: string,
-  ) {
+  ): void {
     const datasourceRoleLogicalID = ModelResourceIDs.ModelTableDataSourceID(def!.name.value);
     const dataSource = context.api.host.addDynamoDbDataSource(
       datasourceRoleLogicalID,
@@ -1282,6 +1248,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     cfnDataSource.addDependsOn(role.node.defaultChild as CfnRole);
 
     if (context.isProjectUsingDataStore()) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const datasourceDynamoDb = cfnDataSource.dynamoDbConfig as any;
       datasourceDynamoDb.deltaSyncConfig = {
         deltaSyncTableName: context.resourceHelper.generateTableName(SyncResourceIDs.syncTableName),
@@ -1304,10 +1271,13 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     this.datasourceMap[def!.name.value] = dataSource;
   }
 
-  private createIAMRole(context: TransformerContextProvider, def: ObjectTypeDefinitionNode, stack: cdk.Stack, tableName: string) {
+  /**
+   * createIAMRole
+   */
+  createIAMRole = (context: TransformerContextProvider, def: ObjectTypeDefinitionNode, stack: cdk.Stack, tableName: string): iam.Role => {
     const roleName = context.resourceHelper.generateIAMRoleName(ModelResourceIDs.ModelTableIAMRoleID(def!.name.value));
     const role = new iam.Role(stack, ModelResourceIDs.ModelTableIAMRoleID(def!.name.value), {
-      roleName: roleName,
+      roleName,
       assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
     });
 
@@ -1338,15 +1308,15 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
               }),
               ...(context.isProjectUsingDataStore()
                 ? [
-                    // eslint-disable-next-line no-template-curly-in-string
-                    cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
-                      tablename: amplifyDataStoreTableName,
-                    }),
-                    // eslint-disable-next-line no-template-curly-in-string
-                    cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
-                      tablename: amplifyDataStoreTableName,
-                    }),
-                  ]
+                  // eslint-disable-next-line no-template-curly-in-string
+                  cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
+                    tablename: amplifyDataStoreTableName,
+                  }),
+                  // eslint-disable-next-line no-template-curly-in-string
+                  cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
+                    tablename: amplifyDataStoreTableName,
+                  }),
+                ]
                 : []),
             ],
           }),
@@ -1360,10 +1330,11 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         SyncUtils.createSyncLambdaIAMPolicy(stack, syncConfig.LambdaConflictHandler.name, syncConfig.LambdaConflictHandler.region),
       );
     }
+
     return role;
   }
 
-  private ensureModelSortDirectionEnum(ctx: TransformerValidationStepContextProvider): void {
+  ensureModelSortDirectionEnum = (ctx: TransformerValidationStepContextProvider): void => {
     if (!ctx.output.hasType('ModelSortDirection')) {
       const modelSortDirection = makeModelSortDirectionEnumObject();
 
@@ -1371,16 +1342,8 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     }
   }
 
-  private getOptions = (options: ModelTransformerOptions): ModelTransformerOptions => {
-    return {
-      EnableDeletionProtection: false,
-      ...options,
-    };
-  };
-
-  private ensureValidSubscriptionName = (name: string): string => {
-    if (name.length <= 50) return name;
-
-    return name.slice(0, 45) + md5(name).slice(0, 5);
-  };
+  private getOptions = (options: ModelTransformerOptions): ModelTransformerOptions => ({
+    EnableDeletionProtection: false,
+    ...options,
+  });
 }

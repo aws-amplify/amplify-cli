@@ -19,7 +19,7 @@ import {
   printBlock,
 } from 'graphql-mapping-template';
 import { setArgs } from 'graphql-transformer-common';
-import { ModelDirectiveConfiguration } from '../graphql-model-transformer';
+import { ModelDirectiveConfiguration } from '../directive';
 import { generateConditionSlot } from './common';
 
 /**
@@ -64,7 +64,7 @@ export const generateUpdateRequestTemplate = (modelName: string, isSyncEnabled: 
       set(ref('keyFields'), list(keyFields)),
     ),
 
-    forEach(ref('entry'), ref(`util.map.copyAndRemoveAllKeys($mergedValues, $keyFields).entrySet()`), [
+    forEach(ref('entry'), ref('util.map.copyAndRemoveAllKeys($mergedValues, $keyFields).entrySet()'), [
       ifElse(
         raw(
           '!$util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) && $ctx.stash.metadata.dynamodbNameOverrideMap.containsKey("$entry.key")',
@@ -75,8 +75,8 @@ export const generateUpdateRequestTemplate = (modelName: string, isSyncEnabled: 
       ifElse(
         ref('util.isNull($entry.value)'),
         compoundExpression([
-          set(ref('discard'), ref(`expRemove.add("#$entryKeyAttributeName")`)),
-          qref(`$expNames.put("#$entryKeyAttributeName", "$entry.key")`),
+          set(ref('discard'), ref('expRemove.add("#$entryKeyAttributeName")')),
+          qref('$expNames.put("#$entryKeyAttributeName", "$entry.key")'),
         ]),
         compoundExpression([
           qref('$expSet.put("#$entryKeyAttributeName", ":$entryKeyAttributeName")'),
@@ -152,7 +152,7 @@ export const generateUpdateRequestTemplate = (modelName: string, isSyncEnabled: 
  * Generates VTL template in create mutation
  * @param modelName Name of the model
  */
-export const generateCreateRequestTemplate = (modelName: string): string => {
+export const generateCreateRequestTemplate = (modelName: string, modelIndexFields: string[]): string => {
   const statements: Expression[] = [
     setArgs,
     // Generate conditions
@@ -162,6 +162,17 @@ export const generateCreateRequestTemplate = (modelName: string): string => {
     qref(methodCall(ref('mergedValues.putAll'), methodCall(ref('util.defaultIfNull'), ref('args.input'), obj({})))),
     comment('set the typename'),
     qref(methodCall(ref('mergedValues.put'), str('__typename'), str(modelName))),
+
+    ...(modelIndexFields.length ? [
+      set(ref('nullIndexFields'), list([])),
+      set(ref('indexFields'), list(modelIndexFields.map(it => str(it)))),
+
+      forEach(ref('entry'), ref('util.map.copyAndRetainAllKeys($mergedValues, $indexFields).entrySet()'), [
+        iff(raw('$util.isNull($entry.value)'), qref(methodCall(ref('nullIndexFields.add'), ref('entry.key')))),
+      ]),
+
+      set(ref('mergedValues'), ref('util.map.copyAndRemoveAllKeys($mergedValues, $nullIndexFields)')),
+    ] : []),
 
     // Set PutObject
     set(
@@ -207,12 +218,11 @@ export const generateCreateRequestTemplate = (modelName: string): string => {
 
 /**
  * Generate mapping template that sets default values for create mutation
- * @param name modelName
  * @param modelConfig directive configuration
  */
-export const generateCreateInitSlotTemplate = (name: string, modelConfig: ModelDirectiveConfiguration): string => {
+export const generateCreateInitSlotTemplate = (modelConfig: ModelDirectiveConfiguration): string => {
   const statements: Expression[] = [
-    // initalize defaultVaules
+    // initialize defaultValues
     qref(
       methodCall(
         ref('ctx.stash.put'),
@@ -285,12 +295,11 @@ export const generateDeleteRequestTemplate = (isSyncEnabled: boolean): string =>
 
 /**
  * Generate VTL template that sets the default values for Update mutation
- * @param modelName Name of the model
  * @param modelConfig model directive configuration
  */
-export const generateUpdateInitSlotTemplate = (modelName: string, modelConfig: ModelDirectiveConfiguration): string => {
+export const generateUpdateInitSlotTemplate = (modelConfig: ModelDirectiveConfiguration): string => {
   const statements: Expression[] = [
-    // initalize defaultVaules
+    // initialize defaultValues
     qref(
       methodCall(
         ref('ctx.stash.put'),
@@ -316,14 +325,15 @@ export const generateUpdateInitSlotTemplate = (modelName: string, modelConfig: M
   return printBlock('Initialization default values')(compoundExpression(statements));
 };
 
-export function generateApplyDefaultsToInputTemplate(target: string): Expression {
-  return compoundExpression([
-    set(ref(target), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),
-    qref(methodCall(ref(`${target}.putAll`), methodCall(ref('util.defaultIfNull'), ref('ctx.args.input'), obj({})))),
-  ]);
-}
+/**
+ * generateApplyDefaultsToInputTemplate
+ */
+export const generateApplyDefaultsToInputTemplate = (target: string): Expression => compoundExpression([
+  set(ref(target), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),
+  qref(methodCall(ref(`${target}.putAll`), methodCall(ref('util.defaultIfNull'), ref('ctx.args.input'), obj({})))),
+]);
 
-function generateKeyConditionTemplate(attributeExistsValue: boolean): Expression[] {
+const generateKeyConditionTemplate = (attributeExistsValue: boolean): Expression[] => {
   const statements: Expression[] = [
     comment('Begin - key condition'),
     ifElse(
@@ -351,4 +361,4 @@ function generateKeyConditionTemplate(attributeExistsValue: boolean): Expression
   ];
 
   return statements;
-}
+};

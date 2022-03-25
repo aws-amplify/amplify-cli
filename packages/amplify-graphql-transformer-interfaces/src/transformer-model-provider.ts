@@ -1,24 +1,38 @@
 import { ObjectTypeDefinitionNode, DirectiveDefinitionNode, InputValueDefinitionNode } from 'graphql';
-import { TransformerPluginProvider } from './transformer-plugin-provider';
-import { TransformerResolverProvider, TransformerContextProvider, AppSyncDataSourceType, DataSourceInstance } from './transformer-context';
+import { TransformerPluginProvider } from '.';
+import {
+  TransformerResolverProvider, TransformerContextProvider, AppSyncDataSourceType, DataSourceInstance,
+} from './transformer-context';
 
+/**
+ * QueryFieldType
+ */
 export enum QueryFieldType {
   GET = 'GET',
   LIST = 'LIST',
   SYNC = 'SYNC',
 }
 
+/**
+ * MutationFieldType
+ */
 export enum MutationFieldType {
   CREATE = 'CREATE',
   UPDATE = 'UPDATE',
   DELETE = 'DELETE',
 }
 
+/**
+ * SubscriptionFieldType
+ */
 export enum SubscriptionFieldType {
   ON_CREATE = 'ON_CREATE',
   ON_DELETE = 'ON_DELETE',
   ON_UPDATE = 'ON_UPDATE',
 }
+/**
+ * TransformerModelProvider
+ */
 export interface TransformerModelProvider extends TransformerPluginProvider {
   getDataSourceType: () => AppSyncDataSourceType;
   generateGetResolver: (
@@ -63,7 +77,6 @@ export interface TransformerModelProvider extends TransformerPluginProvider {
   ) => TransformerResolverProvider;
   generateOnCreateResolver?: (
     ctx: TransformerContextProvider,
-    type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
     resolverLogicalId: string,
@@ -71,7 +84,6 @@ export interface TransformerModelProvider extends TransformerPluginProvider {
   ) => TransformerResolverProvider;
   generateOnUpdateResolver?: (
     ctx: TransformerContextProvider,
-    type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
     resolverLogicalId: string,
@@ -79,7 +91,6 @@ export interface TransformerModelProvider extends TransformerPluginProvider {
   ) => TransformerResolverProvider;
   generateOnDeleteResolver?: (
     ctx: TransformerContextProvider,
-    type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
     resolverLogicalId: string,
@@ -95,17 +106,14 @@ export interface TransformerModelProvider extends TransformerPluginProvider {
   ) => TransformerResolverProvider;
 
   getQueryFieldNames: (
-    ctx: TransformerContextProvider,
     type: ObjectTypeDefinitionNode,
     directive?: DirectiveDefinitionNode,
   ) => Set<{ fieldName: string; typeName: string; type: QueryFieldType }>;
   getMutationFieldNames: (
-    ctx: TransformerContextProvider,
     type: ObjectTypeDefinitionNode,
     directive?: DirectiveDefinitionNode,
   ) => Set<{ fieldName: string; typeName: string; type: MutationFieldType }>;
   getSubscriptionFieldNames: (
-    ctx: TransformerContextProvider,
     type: ObjectTypeDefinitionNode,
     directive?: DirectiveDefinitionNode,
   ) => Set<{
@@ -115,7 +123,7 @@ export interface TransformerModelProvider extends TransformerPluginProvider {
   }>;
 
   // Get instance of the CDK resource to augment the table (like adding additional indexes)
-  getDataSourceResource: (ctx: TransformerContextProvider, type: ObjectTypeDefinitionNode) => DataSourceInstance;
+  getDataSourceResource: (type: ObjectTypeDefinitionNode) => DataSourceInstance;
 
   getInputs: (
     ctx: TransformerContextProvider,
@@ -138,6 +146,12 @@ export interface TransformerModelProvider extends TransformerPluginProvider {
   ) => ObjectTypeDefinitionNode;
 }
 
-export interface TransformerAuthProvider extends TransformerPluginProvider {}
+/**
+ * TransformerAuthProvider
+ */
+export type TransformerAuthProvider = TransformerPluginProvider
 
-export interface TransformerModelEnhancementProvider extends Partial<TransformerModelProvider> {}
+/**
+ * TransformerModelEnhancementProvider
+ */
+export type TransformerModelEnhancementProvider = Partial<TransformerModelProvider>
