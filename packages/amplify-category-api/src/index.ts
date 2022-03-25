@@ -36,6 +36,7 @@ export {
   generateContainersArtifacts,
   processDockerConfig,
 } from './provider-utils/awscloudformation/utils/containers-artifacts';
+export { getAuthConfig } from './provider-utils/awscloudformation/utils/get-appsync-auth-config';
 export { getResolverConfig } from './provider-utils/awscloudformation/utils/get-appsync-resolver-config';
 export { getGitHubOwnerRepoFromPath } from './provider-utils/awscloudformation/utils/github';
 export * from './graphql-transformer';
