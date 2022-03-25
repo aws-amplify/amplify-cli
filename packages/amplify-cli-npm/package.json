@@ -1,0 +1,42 @@
+{
+  "name": "@aws-amplify/cli",
+  "version": "7.6.26",
+  "description": "Amplify CLI",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-cli"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "binary.js",
+  "types": "lib/index.d.ts",
+  "keywords": [
+    "graphql",
+    "appsync",
+    "aws"
+  ],
+  "bin": {
+    "amplify": "./lib/run.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "postinstall": "node ./install.js || echo \"failed to install amplify binary\"",
+    "prepublishOnly": "tsc",
+    "run": "ts-node ./run.ts",
+    "build": "tsc"
+  },
+  "binaryLocation": "https://d380lpju5pcsmv.cloudfront.net",
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "dependencies": {
+    "axios": "^0.26.0",
+    "rimraf": "^3.0.2"
+  },
+  "devDependencies": {
+    "prettier": "^1.19.1"
+  }
+}

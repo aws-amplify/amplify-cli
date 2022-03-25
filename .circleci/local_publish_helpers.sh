@@ -12,6 +12,55 @@ function startLocalRegistry {
     grep -q 'http address' <(tail -f $tmp_registry_log)
 }
 
+function setNpmTag {
+    if [ -z $NPM_TAG ]; then
+        if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
+            if [[ "$CIRCLE_BRANCH" =~ ^tagged-release-without-e2e-tests\/.* ]]; then
+                export NPM_TAG="${CIRCLE_BRANCH/tagged-release-without-e2e-tests\//}"
+            elif [[ "$CIRCLE_BRANCH" =~ ^tagged-release\/.* ]]; then
+                export NPM_TAG="${CIRCLE_BRANCH/tagged-release\//}"
+            fi
+        fi
+        if [[ "$CIRCLE_BRANCH" == "beta" ]]; then
+            export NPM_TAG="beta"
+        fi
+    else
+        echo "NPM tag was already set!"
+    fi
+    echo $NPM_TAG
+}
+
+function uploadPkgCli {
+    cd out/
+    export hash=$(git rev-parse HEAD | cut -c 1-12)
+    export version=$(./amplify-pkg-linux --version)
+    export e2eVersion=$(cat ../packages/amplify-cli-npm/package.json | jq -r -c .version)
+    sudo apt-get update
+    sudo apt-get install -y sudo tcl expect zip lsof jq groff python python-pip libpython-dev
+    sudo pip install awscli
+    if [ "0" -ne "$(aws s3 ls aws s3 cp amplify-pkg-linux s3://pkg-cli-ci-do-not-delete/$(echo $version)/amplify-pkg-linux-$(echo $hash) | wc -l)" ]; then
+        echo "Cannot overwrite existing file at s3://pkg-cli-ci-do-not-delete/$(echo $version)/amplify-pkg-linux-$(echo $hash)"
+        exit 1
+    fi
+
+    aws s3 cp amplify-pkg-win.exe s3://pkg-cli-ci-do-not-delete/$(echo $e2eVersion)/amplify-pkg-win-$(echo $hash).exe
+    aws s3 cp amplify-pkg-macos s3://pkg-cli-ci-do-not-delete/$(echo $e2eVersion)/amplify-pkg-macos-$(echo $hash)
+    aws s3 cp amplify-pkg-linux s3://pkg-cli-ci-do-not-delete/$(echo $e2eVersion)/amplify-pkg-linux-$(echo $hash)
+    if [ -z "$NPM_TAG" ]; then
+        exit 0
+    fi
+
+    echo "Tag name is $NPM_TAG. Uploading to s3://pkg-cli-ci-do-not-delete/$(echo $version)"
+    if [ "0" -ne "$(aws s3 ls s3://pkg-cli-ci-do-not-delete/$(echo $version)/amplify-pkg-linux | wc -l)" ]; then
+        echo "Cannot overwrite existing file at s3://pkg-cli-ci-do-not-delete/$(echo $version)/amplify-pkg-linux"
+        exit 1
+    fi
+    aws s3 cp amplify-pkg-win.exe s3://pkg-cli-ci-do-not-delete/$(echo $version)/amplify-pkg-win.exe
+    aws s3 cp amplify-pkg-macos s3://pkg-cli-ci-do-not-delete/$(echo $version)/amplify-pkg-macos
+    aws s3 cp amplify-pkg-linux s3://pkg-cli-ci-do-not-delete/$(echo $version)/amplify-pkg-linux
+    cd ..
+}
+
 function generatePkgCli {
   cd pkg
 
@@ -28,9 +77,14 @@ function generatePkgCli {
   # Transpile code for packaging
   npx babel node_modules --extensions '.js,.jsx,.es6,.es,.ts' --copy-files --include-dotfiles -d ../build/node_modules
 
+  # Include third party licenses
+  cp ../Third_Party_Licenses.txt ../build/node_modules
+
   # Build pkg cli
   cp package.json ../build/node_modules/package.json
   npx pkg -t node12-macos-x64,node12-linux-x64,node12-win-x64 ../build/node_modules --out-path ../out
+
+  cd ..
 }
 
 function loginToLocalRegistry {
@@ -180,5 +234,4 @@ function runE2eTest {
     else
         yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
     fi
-    
 }
