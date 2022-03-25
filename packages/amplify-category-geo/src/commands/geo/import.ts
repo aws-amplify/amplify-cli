@@ -13,9 +13,9 @@ export const run = async (context: $TSContext) => {
     }
     printer.blankLine();
     if (error.stack) {
-      printer.info(error.stack);
+      printer.debug(error.stack);
     }
-    printer.error('There was an error adding/updating the geofence collection');
+    printer.error('There was an error importing the geofence collection');
     context.usageData.emitError(error);
     process.exitCode = 1;
   }

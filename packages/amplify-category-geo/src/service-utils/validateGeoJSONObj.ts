@@ -11,7 +11,7 @@ export const validateGeoJSONObj = (data: FeatureCollection, uniqueIdentifier: st
   const ajv = new Ajv();
   const validator = ajv.compile(GeoJSONSchema);
   if (!validator(data) as boolean) {
-    throw new Error(`The input GeoJSON file failed JSON schema validation. Underlying errors were ${JSON.stringify(validator.errors)}`);
+    throw new Error(`The input GeoJSON file failed JSON schema validation. Underlying errors were ${JSON.stringify(validator.errors, undefined, 2)}`);
   }
   const { features } = data;
   const identifierSet = new Set();
@@ -37,12 +37,12 @@ export const validateGeoJSONObj = (data: FeatureCollection, uniqueIdentifier: st
     identifierSet.add(identifierField);
     // Additional validation for each linear ring
     const { coordinates } = feature.geometry;
-    let vortexCount = 0;
+    let vertexCount = 0;
     coordinates.forEach((linearRing, index) => {
       validateLinearRing(linearRing, index === 0, identifierField);
-      vortexCount += linearRing.length;
+      vertexCount += linearRing.length;
     });
-    if (vortexCount > MAX_VERTICES_NUM_PER_POLYGON) {
+    if (vertexCount > MAX_VERTICES_NUM_PER_POLYGON) {
       throw new Error(`Polygon should have at most ${MAX_VERTICES_NUM_PER_POLYGON} vertices.`);
     }
   });
@@ -58,14 +58,14 @@ const validateLinearRing = (linearRing: Array<Array<number>>, isFirstRing: boole
   const numPoint = linearRing.length;
   // Check if first position is identical to last one
   if (!(linearRing[0][0] === linearRing[numPoint-1][0] && linearRing[0][1] === linearRing[numPoint-1][1])) {
-    throw new Error(`Linear ring of feature "${featureIdentity}" should have the identical values for first and last position.`);
+    throw new Error(`Linear ring of feature "${featureIdentity}" should have identical values for the first and last position.`);
   }
   // Check polygon wind direction
   const isClockWise: boolean = isClockWiseLinearRing(linearRing);
   if (isFirstRing) {
     // First Ring should be counter clockwise
     if (isClockWise) {
-      throw new Error('The first linear ring is exterior ring and should be counter-clockwise.')
+      throw new Error('The first linear ring is an exterior ring and should be counter-clockwise.')
     }
   } else if (!isClockWise) {
     // Non-first should be clockwise
