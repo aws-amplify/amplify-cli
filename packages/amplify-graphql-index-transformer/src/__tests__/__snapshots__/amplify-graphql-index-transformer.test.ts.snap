@@ -3531,6 +3531,139 @@ $util.toJson({})
 #set( $filterArgsMap = {} )
 ## [End] Set map initialization for @key **
 ## [Start] Set query expression for @key **
+$util.qr($QueryMap.put('status+createdAt' , 'ByStatus'))
+$util.qr($PkMap.put('status' , 'ByStatus'))
+## [End] Set query expression for @key **
+## [Start] Set query expression for @key **
+$util.qr($QueryMap.put('createdAt+status' , 'ByCreatedAt'))
+$util.qr($PkMap.put('createdAt' , 'ByCreatedAt'))
+## [End] Set query expression for @key **
+## [Start] Set query expression for @key **
+#set( $filterArgsMap = $ctx.args.filter.get(\\"and\\") )
+#if( !$util.isNullOrEmpty($filterArgsMap) && ($util.isNull($ctx.args.lastSync) || $ctx.args.lastSync == 0) )
+  #set( $json = $filterArgsMap )
+  #foreach( $item in $json )
+    #set( $ind = $foreach.index )
+    #foreach( $entry in $item.entrySet() )
+      #if( $ind == 0 && !$util.isNullOrEmpty($entry.value.eq) && !$util.isNullOrEmpty($PkMap.get($entry.key)) )
+        #set( $pk = $entry.key )
+        #set( $scan = false )
+        $util.qr($ctx.args.put($pk,$entry.value.eq))
+        #set( $index = $PkMap.get($pk) )
+      #end
+      #if( $ind == 1 && !$util.isNullOrEmpty($pk) && !$util.isNullOrEmpty($QueryMap.get(\\"\${pk}+$entry.key\\")) )
+        #set( $sk = $entry.key )
+        $util.qr($ctx.args.put($sk,$entry.value))
+        #set( $index = $QueryMap.get(\\"\${pk}+$sk\\") )
+      #else
+        #if( $ind > 0 )
+          $util.qr($filterMap.put($entry.key,$entry.value))
+        #end
+      #end
+    #end
+  #end
+#else
+  #set( $filterMap = $ctx.args.filter )
+#end
+## [End] Set query expression for @key **
+## [Start] Set Primary Key initialization @key **
+#set( $modelQueryExpression = {} )
+#if( !$util.isNull($pk) )
+  #set( $modelQueryExpression.expression = \\"#pk = :pk\\" )
+  #set( $modelQueryExpression.expressionNames = {
+  \\"#pk\\": \\"$pk\\"
+} )
+  #set( $modelQueryExpression.expressionValues = {
+  \\":pk\\": $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($pk)))
+} )
+#end
+## [End] Set Primary Key initialization @key **
+## [Start] Applying Key Condition **
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).beginsWith) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND begins_with(#sortKey, :sortKey)\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).beginsWith))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).between) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey BETWEEN :sortKey0 AND :sortKey1\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).between[0]))))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).between[1]))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).eq) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey = :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).eq))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).lt) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey < :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).lt))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).le) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey <= :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).le))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).gt) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey > :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).gt))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).ge) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey >= :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).ge))))
+#end
+## [End] Applying Key Condition **
+## [Start]  Set query expression for @key **
+#if( !$scan )
+  #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $QueryRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Sync\\",
+  \\"limit\\": $limit,
+  \\"query\\": $modelQueryExpression
+} )
+  #if( !$util.isNull($ctx.args.sortDirection)
+                    && $ctx.args.sortDirection == \\"DESC\\" )
+    #set( $QueryRequest.scanIndexForward = false )
+  #else
+    #set( $QueryRequest.scanIndexForward = true )
+  #end
+#if( $context.args.nextToken ) #set( $QueryRequest.nextToken = $context.args.nextToken ) #end
+  #if( !$util.isNullOrEmpty($filterMap) )
+    #set( $QueryRequest.filter = $util.parseJson($util.transform.toDynamoDBFilterExpression($filterMap)) )
+  #end
+  #if( $index != \\"dbTable\\" )
+    #set( $QueryRequest.index = $index )
+  #end
+  $util.toJson($QueryRequest)
+#else
+{
+      \\"version\\": \\"2018-05-29\\",
+      \\"operation\\": \\"Sync\\",
+      \\"limit\\": $util.defaultIfNull($ctx.args.limit, 100),
+      \\"nextToken\\": $util.toJson($util.defaultIfNull($ctx.args.nextToken, null)),
+      \\"lastSync\\": $util.toJson($util.defaultIfNull($ctx.args.lastSync, null)),
+      \\"filter\\":     #if( !$util.isNullOrEmpty($ctx.args.filter) )
+$util.transform.toDynamoDBFilterExpression($ctx.args.filter)
+    #else
+null
+    #end
+  }
+#end
+## [End]  Set query expression for @key **
+",
+  "Query.syncItems.preAuth.2.req.vtl": "## [Start] Set map initialization for @key **
+#set( $index = \\"\\" )
+#set( $scan = true )
+#set( $filterMap = {} )
+#set( $QueryMap = {} )
+#set( $PkMap = {} )
+#set( $filterArgsMap = {} )
+## [End] Set map initialization for @key **
+## [Start] Set query expression for @key **
 $util.qr($QueryMap.put('orderId+status+createdAt' , 'dbTable'))
 $util.qr($PkMap.put('orderId' , 'dbTable'))
 ## [End] Set query expression for @key **
