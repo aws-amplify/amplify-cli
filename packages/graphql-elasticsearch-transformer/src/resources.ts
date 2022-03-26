@@ -31,11 +31,11 @@ import {
 import { MappingParameters } from 'graphql-transformer-core/lib/TransformerContext';
 
 /**
- *
+ * ResourceFactory
  */
 export class ResourceFactory {
   /**
-   *
+   * makeParams
    */
   public makeParams() {
     return {

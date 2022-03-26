@@ -161,7 +161,7 @@ function getTransformerFactory(
 
         if (typeof CustomTransformer === 'function') {
           return new CustomTransformer();
-        } if (typeof CustomTransformer === 'object') {
+        } else if (typeof CustomTransformer === 'object') {
           // Todo: Use a shim to ensure that it adheres to TransformerProvider interface. For now throw error
           // return CustomTransformer;
           throw new Error("Custom Transformers' should implement TransformerProvider interface");
