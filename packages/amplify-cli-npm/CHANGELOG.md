@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.0.0-pkg-npm.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.26...@aws-amplify/cli@8.0.0-pkg-npm.0) (2022-03-26)
+
+
+* build!: npm pkg cli ([5921db2](https://github.com/aws-amplify/amplify-cli/commit/5921db21051dffdcb324837e2052acdd5e563b99))
+
+
+### BREAKING CHANGES
+
+* package name update
+
+
+
+
+
 ## [7.6.26](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.25...@aws-amplify/cli@7.6.26) (2022-03-23)
 
 
