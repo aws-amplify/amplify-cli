@@ -178,9 +178,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     slotName: string,
     requestMappingTemplate?: MappingTemplateProvider,
     responseMappingTemplate?: MappingTemplateProvider,
-  ): boolean => {
-    return this.findSlot(slotName, requestMappingTemplate, responseMappingTemplate) !== undefined;
-  }
+  ): boolean => this.findSlot(slotName, requestMappingTemplate, responseMappingTemplate) !== undefined
 
   findSlot = (
     slotName: string,
@@ -199,8 +197,8 @@ export class TransformerResolver implements TransformerResolverProvider {
     let slotIndex = 1;
     for (const slotEntry of slotEntries) {
       const [slotEntryRequestMappingTemplate, slotEntryResponseMappingTemplate] = [
-        (slotEntry.requestMappingTemplate as any)?.name ?? '',
-        (slotEntry.responseMappingTemplate as any)?.name ?? '',
+        (slotEntry.requestMappingTemplate as any)?.name ?? 'NOT-FOUND',
+        (slotEntry.responseMappingTemplate as any)?.name ?? 'NOT-FOUND',
       ]
         .map(name => name.replace('{slotName}', slotName).replace('{slotIndex}', slotIndex));
 
