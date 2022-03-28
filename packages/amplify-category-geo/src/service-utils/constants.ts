@@ -23,3 +23,5 @@ export enum ServiceName {
   GeofenceCollection = 'GeofenceCollection',
   Tracker = 'Tracker',
 }
+
+export const cliInputsFileName = 'cli-inputs.json';

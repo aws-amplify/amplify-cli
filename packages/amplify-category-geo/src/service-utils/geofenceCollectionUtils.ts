@@ -1,8 +1,8 @@
-import { $TSContext, $TSObject, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { $TSContext, $TSObject } from 'amplify-cli-core';
 import { GeofenceCollectionParameters } from './geofenceCollectionParams';
 import _ from 'lodash';
 import { parametersFileName, provider, ServiceName } from './constants';
-import { authCategoryName, category } from '../constants';
+import { category } from '../constants';
 import { GeofenceCollectionStack } from '../service-stacks/geofenceCollectionStack';
 import {
   updateParametersFile,
@@ -10,13 +10,13 @@ import {
   updateDefaultResource,
   readResourceMetaParameters,
   getAuthResourceName,
-  ResourceDependsOn
+  ResourceDependsOn,
+  getResourceDependencies,
+  writeParamsToCLIInputs,
+  readParamsFromCLIInputs
 } from './resourceUtils';
 import { App } from '@aws-cdk/core';
 import { getTemplateMappings } from '../provider-controllers';
-import * as path from 'path';
-
-const geofenceCollectionParamsFileName = 'geofence-collection-params.json';
 
 export const createGeofenceCollectionResource = async (context: $TSContext, parameters: GeofenceCollectionParameters) => {
   const authResourceName = await getAuthResourceName(context);
@@ -29,7 +29,7 @@ export const createGeofenceCollectionResource = async (context: $TSContext, para
   );
   generateTemplateFile(geofenceCollectionStack, parameters.name);
   saveCFNParameters(parameters);
-  writeGeofenceCollectionParams(parameters);
+  writeParamsToCLIInputs({ groupPermissions: parameters.groupPermissions }, parameters.name);
 
   const geofenceCollectionMetaParameters = constructGeofenceCollectionMetaParameters(parameters, authResourceName);
 
@@ -40,6 +40,7 @@ export const createGeofenceCollectionResource = async (context: $TSContext, para
   }
 
   context.amplify.updateamplifyMetaAfterResourceAdd(category, parameters.name, geofenceCollectionMetaParameters);
+  context.amplify.updateBackendConfigAfterResourceAdd(category, parameters.name, geofenceCollectionMetaParameters);
 };
 
 export const modifyGeofenceCollectionResource = async (
@@ -56,7 +57,7 @@ export const modifyGeofenceCollectionResource = async (
   );
   generateTemplateFile(geofenceCollectionStack, parameters.name);
   saveCFNParameters(parameters);
-  writeGeofenceCollectionParams(parameters);
+  writeParamsToCLIInputs({ groupPermissions: parameters.groupPermissions }, parameters.name);
 
   // update the default Geofence collection
   if (parameters.isDefault) {
@@ -65,9 +66,10 @@ export const modifyGeofenceCollectionResource = async (
 
   const geofenceCollectionMetaParameters = constructGeofenceCollectionMetaParameters(parameters, authResourceName);
 
-  const paramsToUpdate = ['accessType', 'dependsOn'];
+  const paramsToUpdate = ['accessType', 'dependsOn'] as const;
   paramsToUpdate.forEach(param => {
-    context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.name, param, (geofenceCollectionMetaParameters as $TSObject)[param]);
+    context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.name, param, geofenceCollectionMetaParameters[param]);
+    context.amplify.updateBackendConfigAfterResourceUpdate(category, parameters.name, param, geofenceCollectionMetaParameters[param]);
   });
 };
 
@@ -85,20 +87,7 @@ function saveCFNParameters(
  * Gives the Geofence collection resource configurations to be stored in Amplify Meta file
  */
 export const constructGeofenceCollectionMetaParameters = (params: GeofenceCollectionParameters, authResourceName: string): GeofenceCollectionMetaParameters => {
-  const dependsOnResources = [
-    {
-      category: authCategoryName,
-      resourceName: authResourceName,
-      attributes: ['UserPoolId']
-    }
-  ];
-  Object.keys(params.groupPermissions).forEach( group => {
-    dependsOnResources.push({
-      category: authCategoryName,
-      resourceName: 'userPoolGroups',
-      attributes: [`${group}GroupRole`]
-    });
-  });
+  const dependsOnResources = getResourceDependencies(Object.keys(params.groupPermissions), authResourceName);
 
   const result: GeofenceCollectionMetaParameters = {
     isDefault: params.isDefault,
@@ -124,11 +113,11 @@ export type GeofenceCollectionMetaParameters = Pick<
 
 export const getCurrentGeofenceCollectionParameters = async (collectionName: string): Promise<Partial<GeofenceCollectionParameters>> => {
   const currentCollectionMetaParameters = (await readResourceMetaParameters(ServiceName.GeofenceCollection, collectionName)) as GeofenceCollectionMetaParameters;
-  const currentCollectionParameters = await readGeofenceCollectionParams(collectionName);
+  const currentCollectionParameters = (await readParamsFromCLIInputs())[collectionName];
   return {
     accessType: currentCollectionMetaParameters.accessType,
     isDefault: currentCollectionMetaParameters.isDefault,
-    groupPermissions: currentCollectionParameters.groupPermissions
+    groupPermissions: currentCollectionParameters.groupPermissions || {}
   };
 };
 
@@ -177,25 +166,6 @@ export const getGeofenceCollectionIamPolicies = (resourceName: string, crudOptio
   const attributes = ['Name'];
 
   return { policy, attributes };
-};
-
-export const readGeofenceCollectionParams = async (resourceName: string): Promise<Pick<GeofenceCollectionParameters, 'groupPermissions'>> => {
-  const groupPermissions = JSONUtilities.readJson<Pick<GeofenceCollectionParameters, 'groupPermissions'>>(
-    getGeofenceCollectionParamsFilePath(resourceName),
-    { throwIfNotExist: false }
-  ) || { groupPermissions: {}};
-  return groupPermissions;
-};
-
-export const writeGeofenceCollectionParams = async (params: Pick<GeofenceCollectionParameters, 'name' | 'groupPermissions'>) => {
-  JSONUtilities.writeJson(
-    getGeofenceCollectionParamsFilePath(params.name),
-    { groupPermissions: params.groupPermissions }
-  );
-}
-
-export const getGeofenceCollectionParamsFilePath = (resourceName: string): string => {
-  return path.join(pathManager.getBackendDirPath(), category, resourceName, geofenceCollectionParamsFileName);
 };
 
 export const crudPermissionsMap: Record<string, string[]> = {

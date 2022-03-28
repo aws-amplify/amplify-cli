@@ -13,22 +13,23 @@ export async function resourceAccessWalkthrough<T extends ResourceParameters & {
     const userPoolGroupList = context.amplify.getUserPoolGroupList();
 
     if (userPoolGroupList.length > 0) {
+        let defaultPermission = 'Auth/Guest Users';
+        if (parameters.accessType === AccessType.CognitoGroups) {
+            defaultPermission = 'Individual Groups'
+        }
+        else if (parameters.groupPermissions &&
+            parameters.groupPermissions.length > 0 &&
+            parameters.accessType !== AccessType.CognitoGroups) {
+            defaultPermission = 'Both'
+        }
+
         do {
             if (permissionSelected === LearnMore) {
-                printer.info('');
+                printer.blankLine();
                 printer.info(
-                    'You can restrict access using CRUD policies for Authenticated Users, Guest Users, or on individual Group that users belong to in a User Pool. If a user logs into your application and is not a member of any group they will use policy set for “Authenticated Users”, however if they belong to a group they will only get the policy associated with that specific group.',
+                    "You can restrict access using CRUD policies for Authenticated Users, Guest Users, or on individual Groups in a User Pool. If a user logs into your application and is not a member of any group they will have the permissions set for “Authenticated Users”. However if they belong to a group they will ONLY get the policy associated with that specific group. They will NOT get the union of 'Authenticated Users' and that group's policy.",
                 );
-                printer.info('');
-            }
-            let defaultPermission = 'Auth/Guest Users';
-            if (parameters.accessType === AccessType.CognitoGroups) {
-                defaultPermission = 'Individual Groups'
-            }
-            else if (parameters.groupPermissions &&
-                parameters.groupPermissions.length > 0 &&
-                parameters.accessType !== AccessType.CognitoGroups) {
-                defaultPermission = 'Both'
+                printer.blankLine();
             }
             permissionSelected = await prompter.pick<'one', string>(
                 `Restrict access by?`,
@@ -68,15 +69,10 @@ export async function resourceAccessWalkthrough<T extends ResourceParameters & {
         const selectedUserPoolGroups = await prompter.pick<'many', string>(
             'Select one or more cognito groups to give access:',
             userPoolGroupList,
-            { returnSize: 'many', initial: byValues(defaultSelectedGroups) }
+            { returnSize: 'many', initial: byValues(defaultSelectedGroups), pickAtLeast: 1 }
         );
 
-        if(typeof selectedUserPoolGroups === 'string') {
-            parameters.groupPermissions = [selectedUserPoolGroups];
-        }
-        else {
-            parameters.groupPermissions = selectedUserPoolGroups;
-        }
+        parameters.groupPermissions = selectedUserPoolGroups;
 
         if (permissionSelected === 'Individual Groups') {
             parameters.accessType = AccessType.CognitoGroups;

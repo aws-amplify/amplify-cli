@@ -19,7 +19,7 @@ describe('cdk stack creation for geofence collection service', () => {
         authResourceName: 'mockAuthResource123'
     };
     const geofenceCollectionStack = new GeofenceCollectionStack(new App(), 'GeofenceCollectionStack', stackProps);
-    expect(geofenceCollectionStack.toCloudFormation()).toMatchSnapshot();
+    expect(geofenceCollectionStack.toCloudFormation().Resources['collectionsAdminGeofenceCollectionPolicy']).toBeUndefined();
   });
 
   it('creates geofence collection policy for given group permissions', async () => {
@@ -39,6 +39,12 @@ describe('cdk stack creation for geofence collection service', () => {
         authResourceName: 'mockAuthResource123'
     };
     const geofenceCollectionStack = new GeofenceCollectionStack(new App(), 'GeofenceCollectionStack', stackProps);
-    expect(geofenceCollectionStack.toCloudFormation()).toMatchSnapshot();
+    const geofenceCollectionStackGroupAccessPolicy = geofenceCollectionStack.toCloudFormation().Resources['collectionsAdminGeofenceCollectionPolicy'];
+    expect(geofenceCollectionStackGroupAccessPolicy).toBeDefined();
+    const geofenceCollectionStackGroupAccessPolicyActions = geofenceCollectionStackGroupAccessPolicy.Properties.PolicyDocument.Statement[0].Action;
+    // policy actions corresponding to the group permissions specified are added
+    expect(geofenceCollectionStackGroupAccessPolicyActions).toContain("geo:GetGeofence");
+    expect(geofenceCollectionStackGroupAccessPolicyActions).toContain("geo:PutGeofence");
+    expect(geofenceCollectionStackGroupAccessPolicyActions).toContain("geo:BatchPutGeofence");
   });
 });

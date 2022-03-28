@@ -3,7 +3,7 @@ import { category, authCategoryName } from '../constants';
 import path from 'path';
 import _ from 'lodash';
 import { BaseStack } from '../service-stacks/baseStack';
-import { parametersFileName, ServiceName } from './constants';
+import { parametersFileName, ServiceName, cliInputsFileName } from './constants';
 import { ResourceParameters, AccessType } from './resourceParams';
 import os from 'os';
 import { getMapIamPolicies } from './mapUtils';
@@ -190,13 +190,12 @@ export const getServicePermissionPolicies = (
 }
 
 export const getAuthResourceName = async (context: $TSContext): Promise<string> => {
-  let authResources = (await context.amplify.getResourceStatus(authCategoryName)).allResources;
-  authResources = authResources.filter((resource: $TSObject) => resource.service === 'Cognito');
-
-  if (authResources.length === 0) {
-    throw new Error('No auth resource found. Please add it using "amplify add auth"');
+  const authMeta = stateManager.getMeta()?.[authCategoryName];
+  const cognitoResources = authMeta ? Object.keys(authMeta).filter(authResource => authMeta[authResource].service === 'Cognito') : [];
+  if (cognitoResources.length === 0) {
+    throw new Error('No auth resource found. Run "amplify add auth"');
   }
-  return authResources[0].resourceName;
+  return cognitoResources[0];
 }
 
 export type ResourceDependsOn = {
@@ -204,3 +203,50 @@ export type ResourceDependsOn = {
   resourceName: string;
   attributes: string[];
 };
+
+/**
+ * Construct the resource dependencies on other category resources
+ * @param groupNames Cognito groups that are granted permissions for the resource
+ * @param authResourceName Name of the auth category resource added
+ */
+export const getResourceDependencies = (groupNames: string[], authResourceName: string): ResourceDependsOn[] => {
+  const dependsOnResources = [
+    {
+      category: authCategoryName,
+      resourceName: authResourceName,
+      attributes: ['UserPoolId']
+    }
+  ];
+  if (groupNames.length > 0) {
+    dependsOnResources.push({
+      category: authCategoryName,
+      resourceName: 'userPoolGroups',
+      attributes: groupNames.map(group => `${group}GroupRole`)
+    });
+  }
+  return dependsOnResources;
+}
+
+/**
+ * Get the Geo resources added to the project
+ */
+export const getGeoResources = async (service: ServiceName): Promise<string[]> => {
+  const serviceMeta = await getGeoServiceMeta(service);
+  return serviceMeta ? Object.keys(serviceMeta) : [];
+}
+
+
+export const getCLIInputsFilePath = (): string => {
+  return path.join(pathManager.getBackendDirPath(), category, cliInputsFileName);
+};
+
+export const readParamsFromCLIInputs = async (): Promise<$TSObject> => {
+  return JSONUtilities.readJson(getCLIInputsFilePath(), { throwIfNotExist: false }) || {};
+};
+
+export const writeParamsToCLIInputs = async (params: $TSObject, resourceName: string) => {
+  const currentParameters = await readParamsFromCLIInputs();
+  currentParameters[resourceName] = { ...currentParameters[resourceName], ...params };
+  JSONUtilities.writeJson(getCLIInputsFilePath(), currentParameters);
+}
+

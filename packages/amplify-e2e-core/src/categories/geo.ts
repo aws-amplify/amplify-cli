@@ -44,23 +44,17 @@ export function addMapWithDefault(cwd: string, settings: GeoConfig = {}): Promis
       .wait('Who can access this Map?')
       .sendCarriageReturn();
 
-    chain.wait('Do you want to configure advanced settings?').sendConfirmNo();
+    chain.wait('Do you want to configure advanced settings?').sendNo();
 
     if (config.isAdditional === true) {
       chain.wait(defaultMapQuestion);
       if (config.isDefault === true) {
-        chain.sendConfirmYes();
+        chain.sendYes();
       } else {
-        chain.sendConfirmNo();
+        chain.sendNo();
       }
     }
-    chain.run((err: Error) => {
-      if (!err) {
-        resolve();
-      } else {
-        reject();
-      }
-    });
+    chain.runAsync();
   });
 }
 
@@ -80,22 +74,16 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
       .wait('Who can access this Search Index?')
       .sendCarriageReturn();
 
-    chain.wait('Do you want to configure advanced settings?').sendConfirmNo();
+    chain.wait('Do you want to configure advanced settings?').sendNo();
     if (config.isAdditional === true) {
       chain.wait(defaultSearchIndexQuestion);
       if (config.isDefault === true) {
-        chain.sendConfirmYes();
+        chain.sendYes();
       } else {
-        chain.sendConfirmNo();
+        chain.sendNo();
       }
     }
-    chain.run((err: Error) => {
-      if (!err) {
-        resolve();
-      } else {
-        reject();
-      }
-    });
+    chain.runAsync();
   });
 }
 
@@ -121,18 +109,12 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
     if (config.isAdditional === true) {
       chain.wait(defaultGeofenceCollectionQuestion);
       if (config.isDefault === true) {
-        chain.sendConfirmYes();
+        chain.sendYes();
       } else {
-        chain.sendConfirmNo();
+        chain.sendNo();
       }
     }
-    chain.run((err: Error) => {
-      if (!err) {
-        resolve();
-      } else {
-        reject(err);
-      }
-    });
+    chain.runAsync();
   });
 }
 
@@ -156,13 +138,7 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
       .wait('Provide the name of the property to use as a unique geofence identifier')
       .sendLine(config.customProperty)
     }
-    chain.run((err: Error) => {
-      if (!err) {
-        resolve();
-      } else {
-        reject(err);
-      }
-    });
+    chain.runAsync();
   });
 }
 
@@ -181,14 +157,8 @@ export function updateMapWithDefault(cwd: string): Promise<void> {
       .sendKeyDown()
       .sendCarriageReturn()
       .wait(defaultMapQuestion)
-      .sendConfirmYes()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject();
-        }
-      });
+      .sendYes()
+      .runAsync()
   });
 }
 
@@ -207,14 +177,8 @@ export function updateSecondMapAsDefault(cwd: string): Promise<void> {
       .wait('Who can access this Map?')
       .sendCarriageReturn()
       .wait(defaultMapQuestion)
-      .sendConfirmYes()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject();
-        }
-      });
+      .sendYes()
+      .runAsync()
   });
 }
 
@@ -234,14 +198,8 @@ export function updatePlaceIndexWithDefault(cwd: string): Promise<void> {
       .sendKeyDown()
       .sendCarriageReturn()
       .wait(defaultSearchIndexQuestion)
-      .sendConfirmYes()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject();
-        }
-      });
+      .sendYes()
+      .runAsync()
   });
 }
 
@@ -261,14 +219,8 @@ export function updateSecondPlaceIndexAsDefault(cwd: string): Promise<void> {
       .wait('Who can access this Search Index?')
       .sendCarriageReturn()
       .wait(defaultSearchIndexQuestion)
-      .sendConfirmYes()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject();
-        }
-      });
+      .sendYes()
+      .runAsync()
   });
 }
 
@@ -289,14 +241,8 @@ export function updateSecondPlaceIndexAsDefault(cwd: string): Promise<void> {
       .wait(`What kind of access do you want for ${groupName} users? Select ALL that apply:`)
       .sendCarriageReturn()
       .wait(defaultGeofenceCollectionQuestion)
-      .sendConfirmYes()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject();
-        }
-      });
+      .sendYes()
+      .runAsync()
   });
 }
 
@@ -318,14 +264,8 @@ export function updateSecondGeofenceCollectionAsDefault(cwd: string, groupName: 
       .wait(`What kind of access do you want for ${groupName} users? Select ALL that apply:`)
       .sendCarriageReturn()
       .wait(defaultGeofenceCollectionQuestion)
-      .sendConfirmYes()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject();
-        }
-      });
+      .sendYes()
+      .runAsync()
   });
 }
 
@@ -341,14 +281,8 @@ export function removeMap(cwd: string): Promise<void> {
       .wait('Select the Map you want to remove')
       .sendCarriageReturn()
       .wait('Are you sure you want to delete the resource?')
-      .sendConfirmYes()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject();
-        }
-      });
+      .sendYes()
+      .runAsync()
   });
 }
 
@@ -364,16 +298,10 @@ export function removeFirstDefaultMap(cwd: string): Promise<void> {
       .wait('Select the Map you want to remove')
       .sendCarriageReturn()
       .wait('Are you sure you want to delete the resource?')
-      .sendConfirmYes()
+      .sendYes()
       .wait('Select the Map you want to set as default:')
       .sendCarriageReturn()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject();
-        }
-      });
+      .runAsync()
   });
 }
 
@@ -390,14 +318,8 @@ export function removePlaceIndex(cwd: string): Promise<void> {
       .wait('Select the search index you want to remove')
       .sendCarriageReturn()
       .wait('Are you sure you want to delete the resource?')
-      .sendConfirmYes()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject();
-        }
-      });
+      .sendYes()
+      .runAsync()
   });
 }
 
@@ -414,16 +336,10 @@ export function removeFirstDefaultPlaceIndex(cwd: string): Promise<void> {
       .wait('Select the search index you want to remove')
       .sendCarriageReturn()
       .wait('Are you sure you want to delete the resource?')
-      .sendConfirmYes()
+      .sendYes()
       .wait('Select the search index you want to set as default:')
       .sendCarriageReturn()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject();
-        }
-      });
+      .runAsync()
   });
 }
 
@@ -440,14 +356,8 @@ export function removeFirstDefaultPlaceIndex(cwd: string): Promise<void> {
       .wait('Select the geofence collection you want to remove')
       .sendCarriageReturn()
       .wait('Are you sure you want to delete the resource?')
-      .sendConfirmYes()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject();
-        }
-      });
+      .sendYes()
+      .runAsync()
   });
 }
 
@@ -464,16 +374,10 @@ export function removeFirstDefaultGeofenceCollection(cwd: string): Promise<void>
       .wait('Select the geofence collection you want to remove')
       .sendCarriageReturn()
       .wait('Are you sure you want to delete the resource?')
-      .sendConfirmYes()
+      .sendYes()
       .wait('Select the geofence collection you want to set as default:')
       .sendCarriageReturn()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject();
-        }
-      });
+      .runAsync()
   });
 }
 

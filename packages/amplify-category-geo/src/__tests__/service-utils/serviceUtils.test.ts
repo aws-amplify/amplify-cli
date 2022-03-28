@@ -60,7 +60,7 @@ describe('Test resource utility functions', () => {
 
     it('gets current map parameters', async() => {
         const groupPermissions = ['mockCognitoGroup'];
-        JSONUtilities.readJson = jest.fn().mockReturnValue({groupPermissions: groupPermissions});
+        JSONUtilities.readJson = jest.fn().mockReturnValue({map1: {groupPermissions: groupPermissions}});
         pathManager.getBackendDirPath = jest.fn().mockReturnValue('');
         const getCurrentMapParameters = require('../../service-utils/mapUtils').getCurrentMapParameters;
         const mapParams = await getCurrentMapParameters('map1');
@@ -83,7 +83,7 @@ describe('Test resource utility functions', () => {
 
     it('gets current place index parameters', async() => {
         const groupPermissions = ['mockCognitoGroup'];
-        JSONUtilities.readJson = jest.fn().mockReturnValue({groupPermissions: groupPermissions});
+        JSONUtilities.readJson = jest.fn().mockReturnValue({placeIndex1: {groupPermissions: groupPermissions}});
         pathManager.getBackendDirPath = jest.fn().mockReturnValue('');
         const getCurrentPlaceIndexParameters = require('../../service-utils/placeIndexUtils').getCurrentPlaceIndexParameters;
         const placeIndexParams = await getCurrentPlaceIndexParameters('placeIndex1');
@@ -103,7 +103,7 @@ describe('Test resource utility functions', () => {
                 "Create/Update geofence"
             ]
         }
-        JSONUtilities.readJson = jest.fn().mockReturnValue({groupPermissions: groupPermissions});
+        JSONUtilities.readJson = jest.fn().mockReturnValue({geofenceCollection1: {groupPermissions: groupPermissions}});
         pathManager.getBackendDirPath = jest.fn().mockReturnValue('');
         const getCurrentGeofenceCollectionParameters = require('../../service-utils/geofenceCollectionUtils').getCurrentGeofenceCollectionParameters;
         const geofenceCollectionParams = await getCurrentGeofenceCollectionParameters('geofenceCollection1');

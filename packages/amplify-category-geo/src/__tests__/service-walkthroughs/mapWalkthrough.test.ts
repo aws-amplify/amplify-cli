@@ -4,6 +4,8 @@ import { AccessType, DataProvider } from '../../service-utils/resourceParams';
 import { provider, ServiceName, apiDocs } from '../../service-utils/constants';
 import { category } from '../../constants';
 import { printer, prompter } from 'amplify-prompts';
+const { createMapWalkthrough, updateMapWalkthrough } = require('../../service-walkthroughs/mapWalkthrough');
+const { removeWalkthrough } = require('../../service-walkthroughs/removeWalkthrough');
 
 jest.mock('amplify-cli-core');
 jest.mock('amplify-prompts');
@@ -49,10 +51,12 @@ describe('Map walkthrough works as expected', () => {
             serviceSelectionPrompt: async () => {
                 return { service: service, providerName: provider};
             },
-            getResourceStatus: jest.fn(),
             inputValidation: jest.fn(),
             getProjectMeta: jest.fn(),
-            updateamplifyMetaAfterResourceUpdate: jest.fn()
+            updateamplifyMetaAfterResourceUpdate: jest.fn(),
+            updateBackendConfigAfterResourceAdd: jest.fn(),
+            updateBackendConfigAfterResourceUpdate: jest.fn(),
+            updateBackendConfigAfterResourceRemove: jest.fn()
         },
         usageData: { emitError: jest.fn() }
     } as unknown) as $TSContext;
@@ -68,15 +72,6 @@ describe('Map walkthrough works as expected', () => {
         mockAmplifyMeta.geo[mockMapName] = { ...mockMapParameters, ...mockMapResource };
         mockAmplifyMeta.geo[secondaryMapName] = { ...mockMapParameters, ...secondaryMapResource };
         mockAmplifyMeta.geo[mockPlaceIndexResource.resourceName] = mockPlaceIndexResource;
-
-        mockContext.amplify.getResourceStatus = jest.fn().mockImplementation(
-            (category?: any, resourceName?: any, providerName?: any, filteredResources?: any): Promise<any> => {
-            return new Promise<any>((resolve) => {
-                resolve({
-                    allResources: [mockMapResource, secondaryMapResource, mockPlaceIndexResource]
-                });
-            });
-        });
         mockContext.amplify.getUserPoolGroupList = jest.fn().mockReturnValue([mockUserPoolGroup]);
 
         pathManager.getBackendDirPath = jest.fn().mockReturnValue('');
@@ -97,9 +92,9 @@ describe('Map walkthrough works as expected', () => {
             });
         });
         prompter.pick = jest.fn().mockImplementation((message: string): Promise<any> => {
-            let mockUserInput = 'mock';
+            let mockUserInput: string | string[];
             if (message === 'Select one or more cognito groups to give access:') {
-                mockUserInput = mockUserPoolGroup;
+                mockUserInput = mockMapParameters.groupPermissions;
             }
             if (message === 'Restrict access by?') {
                 mockUserInput = 'Both';
@@ -109,9 +104,6 @@ describe('Map walkthrough works as expected', () => {
             }
             else if (message === 'Who can access this Map?') {
                 mockUserInput = mockMapParameters.accessType;
-            }
-            else if (message === 'Are you tracking or directing commercial assets for your business in your app?') {
-                mockUserInput = 'Unknown';
             }
             else if (message === 'Select the Map you want to update') {
                 mockUserInput = mockMapParameters.name;
@@ -142,8 +134,6 @@ describe('Map walkthrough works as expected', () => {
             providerContext: mockMapParameters.providerContext
         };
 
-        const updateMapWalkthrough = require('../../service-walkthroughs/mapWalkthrough').updateMapWalkthrough;
-
         mapParams = await updateMapWalkthrough(mockContext, mapParams, mockMapName);
 
         // The default map is now changed to secondary map
@@ -158,20 +148,13 @@ describe('Map walkthrough works as expected', () => {
     });
 
     it('early returns and prints error if no map resource to update', async() => {
-        mockContext.amplify.getResourceStatus = jest.fn().mockImplementation(
-            (category?: any, resourceName?: any, providerName?: any, filteredResources?: any): Promise<any> => {
-            return new Promise<any>((resolve) => {
-                resolve({
-                    allResources: []
-                });
-            });
-        });
+        mockAmplifyMeta.geo = {};
+        stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
 
         let mapParams: Partial<MapParameters> = {
             providerContext: mockMapParameters.providerContext
         };
 
-        const updateMapWalkthrough = require('../../service-walkthroughs/mapWalkthrough').updateMapWalkthrough;
         await updateMapWalkthrough(mockContext, mapParams, mockMapName);
 
         expect(printer.error).toBeCalledWith('No Map resource to update. Use "amplify add geo" to create a new Map.');
@@ -187,7 +170,6 @@ describe('Map walkthrough works as expected', () => {
             providerContext: mockMapParameters.providerContext
         };
 
-        const createMapWalkthrough = require('../../service-walkthroughs/mapWalkthrough').createMapWalkthrough;
         mapParams = await createMapWalkthrough(mockContext, mapParams);
 
         expect(mockMapParameters).toMatchObject(mapParams);
@@ -201,7 +183,6 @@ describe('Map walkthrough works as expected', () => {
         stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
         prompter.yesOrNo = jest.fn().mockReturnValue(false);
 
-        const createMapWalkthrough = require('../../service-walkthroughs/mapWalkthrough').createMapWalkthrough;
         mapParams = await createMapWalkthrough(mockContext, mapParams);
 
         expect({ ...mockMapParameters, isDefault: true }).toMatchObject(mapParams);
@@ -211,21 +192,12 @@ describe('Map walkthrough works as expected', () => {
     });
 
     it('sets the resource to remove correctly', async() => {
-        const removeWalkthrough = require('../../service-walkthroughs/removeWalkthrough').removeWalkthrough;
         expect(await(removeWalkthrough(mockContext, service))).toEqual(mockMapName);
     });
 
     it('early returns and prints error if no map resource to remove', async() => {
-        mockContext.amplify.getResourceStatus = jest.fn().mockImplementation(
-            (category?: any, resourceName?: any, providerName?: any, filteredResources?: any): Promise<any> => {
-            return new Promise<any>((resolve) => {
-                resolve({
-                    allResources: []
-                });
-            });
-        });
-
-        const removeWalkthrough = require('../../service-walkthroughs/removeWalkthrough').removeWalkthrough;
+        mockAmplifyMeta.geo = {};
+        stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
         await removeWalkthrough(mockContext, service);
 
         expect(printer.error).toBeCalledWith(`No Map exists in the project.`);

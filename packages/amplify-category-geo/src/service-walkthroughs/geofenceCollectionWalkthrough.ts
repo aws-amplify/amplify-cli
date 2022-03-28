@@ -5,10 +5,10 @@ import { GeofenceCollectionParameters } from '../service-utils/geofenceCollectio
 import { ServiceName } from '../service-utils/constants';
 import { $TSContext } from 'amplify-cli-core';
 import { getCurrentGeofenceCollectionParameters, crudPermissionsMap } from '../service-utils/geofenceCollectionUtils';
-import { getGeoServiceMeta, updateDefaultResource, checkGeoResourceExists } from '../service-utils/resourceUtils';
+import { getGeoServiceMeta, updateDefaultResource, checkGeoResourceExists, getGeoResources } from '../service-utils/resourceUtils';
 import { getServiceFriendlyName, defaultResourceQuestion } from './resourceWalkthrough';
 import { AccessType } from '../service-utils/resourceParams';
-import { printer, prompter, alphanumeric, byValues } from 'amplify-prompts';
+import { printer, prompter, alphanumeric, byValues, and, minLength, maxLength } from 'amplify-prompts';
 
 const geofencingServiceFriendlyName = getServiceFriendlyName(ServiceName.GeofenceCollection);
 /**
@@ -41,18 +41,22 @@ export const createGeofenceCollectionWalkthrough = async (
   return parameters;
 };
 
-export const geofenceCollectionNameWalkthrough = async (context: any): Promise<Partial<GeofenceCollectionParameters>> => {
+export const geofenceCollectionNameWalkthrough = async (context: any): Promise<Pick<GeofenceCollectionParameters, 'name'>> => {
     let collectionName;
     while(!collectionName) {
         const [shortId] = uuid().split('-');
+        const nameValidationErrMsg = 'Geofence Collection name can only use the following characters: a-z 0-9 and should have minimum 1 character and max of 95 characters';
+        const validator = and([alphanumeric(), minLength(1), maxLength(95)], nameValidationErrMsg);
         const collectionNameInput = await prompter.input(
             'Provide a name for the Geofence Collection:',
-            { validate: alphanumeric(), initial: `geofenceCollection${shortId}` }
+            { validate: validator, initial: `geofenceCollection${shortId}` }
         );
         if (await checkGeoResourceExists(collectionNameInput)) {
             printer.info(`Geo resource ${collectionNameInput} already exists. Choose another name.`);
         }
-        else collectionName = collectionNameInput;
+        else { 
+            collectionName = collectionNameInput 
+        };
     }
     return { name: collectionName };
 };
@@ -67,9 +71,11 @@ export const geofenceCollectionAccessWalkthrough = async (
     if (userPoolGroupList.length <= 0) {
         if (await prompter.yesOrNo('Geofencing requires a Cognito user group for Admin only access control settings. Do you want to add it now?')) {
             printer.info('Select "Create or update Cognito user pool groups" to add a Cognito user group');
+            const currentcommand = context.input['command'];
             context.input['command'] = 'update';
             await context.amplify.invokePluginMethod(context, 'auth', undefined, 'executeAmplifyCommand', [context]);
             userPoolGroupList = context.amplify.getUserPoolGroupList();
+            context.input['command'] = currentcommand;
         } else {
             printer.error('No Cognito groups exist in the project. Please add a Cognito group using "amplify update auth" and selecting "Create or update Cognito user pool groups"');
             throw new Error('Failed to setup a Geofence Collection. Requires a Cognito group for Admin only access control settings');
@@ -90,17 +96,8 @@ export const geofenceCollectionAccessWalkthrough = async (
     const selectedUserPoolGroups = await prompter.pick<'many', string>(
         'Select one or more cognito groups to give access:',
         userPoolGroupList,
-        { returnSize: 'many', initial: byValues(defaultSelectedGroups) }
+        { returnSize: 'many', initial: byValues(defaultSelectedGroups), pickAtLeast: 1 }
     );
-
-    let selectedUserPoolGroupsList: string[] = [];
-
-    if(typeof selectedUserPoolGroups === 'string') {
-        selectedUserPoolGroupsList = [selectedUserPoolGroups];
-    }
-    else {
-        selectedUserPoolGroupsList = selectedUserPoolGroups;
-    }
 
     const groupCrudPermissionsFlow = async (group: string, defaults: string[] = []) => {
         const selectedCrudPermissions = await prompter.pick<'many', string>(
@@ -114,12 +111,8 @@ export const geofenceCollectionAccessWalkthrough = async (
 
     const selectedGroupPermissions: Record<string, string[]> = {};
 
-    for (const selectedUserPoolGroup of selectedUserPoolGroupsList) {
-        let defaults: string[] = [];
-
-        if (parameters.groupPermissions) {
-            defaults = parameters.groupPermissions[selectedUserPoolGroup] || [];
-        }
+    for (const selectedUserPoolGroup of selectedUserPoolGroups) {
+        const defaults = parameters?.groupPermissions?.[selectedUserPoolGroup] || [];
 
         const selectedCrudPermissions = await groupCrudPermissionsFlow(selectedUserPoolGroup, defaults);
 
@@ -141,15 +134,11 @@ export const updateGeofenceCollectionWalkthrough = async (
     parameters: Partial<GeofenceCollectionParameters>,
     resourceToUpdate?: string
 ): Promise<Partial<GeofenceCollectionParameters>> => {
-    const collectionResources = ((await context.amplify.getResourceStatus()).allResources as any[])
-    .filter(resource => resource.service === ServiceName.GeofenceCollection)
-
-    if (collectionResources.length === 0) {
+    const collectionResourceNames = await getGeoResources(ServiceName.GeofenceCollection);
+    if (collectionResourceNames.length === 0) {
         printer.error(`No ${geofencingServiceFriendlyName} resource to update. Use "amplify add geo" to create a new ${geofencingServiceFriendlyName}.`);
         return parameters;
     }
-
-    const collectionResourceNames = collectionResources.map(resource => resource.resourceName);
 
     if (resourceToUpdate) {
         if (!collectionResourceNames.includes(resourceToUpdate)) {
@@ -158,7 +147,7 @@ export const updateGeofenceCollectionWalkthrough = async (
         }
     }
     else {
-        resourceToUpdate = await prompter.pick<'one', string>(`Select the ${geofencingServiceFriendlyName} you want to update`, collectionResourceNames);
+        resourceToUpdate = await prompter.pick<'one', string>(`Select the ${geofencingServiceFriendlyName} to update`, collectionResourceNames);
     }
 
     parameters.name = resourceToUpdate;
@@ -171,7 +160,7 @@ export const updateGeofenceCollectionWalkthrough = async (
     const otherCollectionResources = collectionResourceNames.filter(collectionResourceName => collectionResourceName != resourceToUpdate);
     // if this is the only geofence collection, default cannot be removed
     if (otherCollectionResources.length > 0) {
-        const isDefault = await prompter.yesOrNo(defaultResourceQuestion(ServiceName.GeofenceCollection), true);
+        const isDefault = await prompter.yesOrNo(defaultResourceQuestion(ServiceName.GeofenceCollection), parameters.isDefault);
         // If a default geofence collection is updated, ask for new default
         if (parameters.isDefault && !isDefault) {
             await updateDefaultGeofenceCollectionWalkthrough(context, resourceToUpdate, otherCollectionResources);
@@ -197,11 +186,9 @@ export const updateDefaultGeofenceCollectionWalkthrough = async (
     availableGeofenceCollections?: string[]
 ): Promise<string> => {
     if (!availableGeofenceCollections) {
-        availableGeofenceCollections = ((await context.amplify.getResourceStatus()).allResources as any[])
-        .filter(resource => resource.service === ServiceName.GeofenceCollection)
-        .map(resource => resource.resourceName);
+        availableGeofenceCollections = await getGeoResources(ServiceName.GeofenceCollection);
     }
-    const otherCollectionResources = availableGeofenceCollections.filter(collectionResourceName => collectionResourceName != currentDefault);
+    const otherCollectionResources = availableGeofenceCollections.filter(collectionResourceName => collectionResourceName !== currentDefault);
     if (otherCollectionResources?.length > 0) {
         const defaultIndexName = await prompter.pick(`Select the ${geofencingServiceFriendlyName} you want to set as default:`, otherCollectionResources);
         await updateDefaultResource(context, ServiceName.GeofenceCollection, defaultIndexName);

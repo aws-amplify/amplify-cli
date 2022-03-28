@@ -5,7 +5,7 @@ import { DataSourceIntendedUse, PlaceIndexParameters } from '../service-utils/pl
 import { apiDocs, ServiceName } from '../service-utils/constants';
 import { $TSContext } from 'amplify-cli-core';
 import { getCurrentPlaceIndexParameters } from '../service-utils/placeIndexUtils';
-import { getGeoServiceMeta, updateDefaultResource, checkGeoResourceExists } from '../service-utils/resourceUtils';
+import { getGeoServiceMeta, updateDefaultResource, checkGeoResourceExists, getGeoResources } from '../service-utils/resourceUtils';
 import { resourceAccessWalkthrough, dataProviderWalkthrough, getServiceFriendlyName, defaultResourceQuestion } from './resourceWalkthrough';
 import { DataProvider } from '../service-utils/resourceParams';
 import { printer, formatter, prompter, alphanumeric } from 'amplify-prompts';
@@ -105,15 +105,12 @@ export const updatePlaceIndexWalkthrough = async (
     parameters: Partial<PlaceIndexParameters>,
     resourceToUpdate?: string
 ): Promise<Partial<PlaceIndexParameters>> => {
-    const indexResources = ((await context.amplify.getResourceStatus()).allResources as any[])
-    .filter(resource => resource.service === ServiceName.PlaceIndex)
+    const indexResourceNames = await getGeoResources(ServiceName.PlaceIndex);
 
-    if (indexResources.length === 0) {
+    if (indexResourceNames.length === 0) {
         printer.error(`No ${searchServiceFriendlyName} resource to update. Use "amplify add geo" to create a new ${searchServiceFriendlyName}.`);
         return parameters;
     }
-
-    const indexResourceNames = indexResources.map(resource => resource.resourceName);
 
     if (resourceToUpdate) {
         if (!indexResourceNames.includes(resourceToUpdate)) {
@@ -133,7 +130,7 @@ export const updatePlaceIndexWalkthrough = async (
     parameters.accessType = placeIndexAccessSettings.accessType;
     parameters.groupPermissions = placeIndexAccessSettings.groupPermissions;
 
-    const otherIndexResources = indexResourceNames.filter(indexResourceName => indexResourceName != resourceToUpdate);
+    const otherIndexResources = indexResourceNames.filter(indexResourceName => indexResourceName !== resourceToUpdate);
     // if this is the only place index, default cannot be removed
     if (otherIndexResources.length > 0) {
         const isDefault = await prompter.yesOrNo(defaultResourceQuestion(ServiceName.PlaceIndex), true);
@@ -162,11 +159,9 @@ export const updateDefaultPlaceIndexWalkthrough = async (
     availablePlaceIndices?: string[]
 ): Promise<string> => {
     if (!availablePlaceIndices) {
-      availablePlaceIndices = ((await context.amplify.getResourceStatus()).allResources as any[])
-        .filter(resource => resource.service === ServiceName.PlaceIndex)
-        .map(resource => resource.resourceName);
+      availablePlaceIndices = await getGeoResources(ServiceName.PlaceIndex);
     }
-    const otherIndexResources = availablePlaceIndices.filter(indexResourceName => indexResourceName != currentDefault);
+    const otherIndexResources = availablePlaceIndices.filter(indexResourceName => indexResourceName !== currentDefault);
     if (otherIndexResources?.length > 0) {
         const defaultIndexName = await prompter.pick(`Select the ${searchServiceFriendlyName} you want to set as default:`, otherIndexResources);
         await updateDefaultResource(context, ServiceName.PlaceIndex, defaultIndexName);

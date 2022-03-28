@@ -52,22 +52,13 @@ export const removePlaceIndexResource = async (
 
   const resourceParameters = await getCurrentPlaceIndexParameters(resourceToRemove);
 
-  try {
-    const resource = await amplify.removeResource(context, category, resourceToRemove);
-    if (resource?.service === ServiceName.PlaceIndex && resourceParameters.isDefault) {
-      // choose another default if removing a default place index
-      await updateDefaultPlaceIndexWalkthrough(context, resource?.resourceName);
-    }
-  } catch (err: $TSAny) {
-    if (err.stack) {
-      printer.error(err.stack);
-      printer.error(err.message);
-      printer.error(`An error occurred when removing the geo resource ${resourceToRemove}`);
-    }
-
-    context.usageData.emitError(err);
-    process.exitCode = 1;
+  const resource = await amplify.removeResource(context, category, resourceToRemove);
+  if (resource?.service === ServiceName.PlaceIndex && resourceParameters.isDefault) {
+    // choose another default if removing a default place index
+    await updateDefaultPlaceIndexWalkthrough(context, resource?.resourceName);
   }
+
+  context.amplify.updateBackendConfigAfterResourceRemove(category, resourceToRemove);
 
   printNextStepsSuccessMessage(context);
   return resourceToRemove;

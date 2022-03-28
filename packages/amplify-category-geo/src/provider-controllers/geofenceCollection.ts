@@ -12,7 +12,7 @@ export const addGeofenceCollectionResource = async (
   context: $TSContext
 ): Promise<string> => {
   // initialize the Geofence Collection parameters
-  let geofenceCollectionParams: Partial<GeofenceCollectionParameters> = {
+  const geofenceCollectionParams: Partial<GeofenceCollectionParameters> = {
     providerContext: setProviderContext(context, ServiceName.GeofenceCollection)
   };
   // populate the parameters for the resource
@@ -29,7 +29,7 @@ export const addGeofenceCollectionResource = async (
 export const updateGeofenceCollectionResource = async (
   context: $TSContext
 ): Promise<string> => {
-  let geofenceCollectionParams: Partial<GeofenceCollectionParameters> = {
+  const geofenceCollectionParams: Partial<GeofenceCollectionParameters> = {
     providerContext: setProviderContext(context, ServiceName.GeofenceCollection)
   };
   // populate the parameters for the resource
@@ -52,22 +52,12 @@ export const removeGeofenceCollectionResource = async (
 
   const resourceParameters = await getCurrentGeofenceCollectionParameters(resourceToRemove);
 
-  try {
-    const resource = await amplify.removeResource(context, category, resourceToRemove);
-    if (resource?.service === ServiceName.GeofenceCollection && resourceParameters.isDefault) {
-      // choose another default if removing a default geofence collection
-      await updateDefaultGeofenceCollectionWalkthrough(context, resource?.resourceName);
-    }
-  } catch (err: $TSAny) {
-    if (err.stack) {
-      printer.error(err.stack);
-      printer.error(err.message);
-      printer.error(`An error occurred when removing the geo resource ${resourceToRemove}`);
-    }
-
-    context.usageData.emitError(err);
-    process.exitCode = 1;
+  const resource = await amplify.removeResource(context, category, resourceToRemove);
+  if (resource?.service === ServiceName.GeofenceCollection && resourceParameters.isDefault) {
+    // choose another default if removing a default geofence collection
+    await updateDefaultGeofenceCollectionWalkthrough(context, resource?.resourceName);
   }
+  context.amplify.updateBackendConfigAfterResourceRemove(category, resourceToRemove);
 
   printNextStepsSuccessMessage(context);
   return resourceToRemove;

@@ -5,7 +5,7 @@ import { MapParameters, getGeoMapStyle, MapStyle, getMapStyleComponents, EsriMap
 import { apiDocs, ServiceName } from '../service-utils/constants';
 import { $TSContext } from 'amplify-cli-core';
 import { getCurrentMapParameters, getMapFriendlyNames } from '../service-utils/mapUtils';
-import { getGeoServiceMeta, updateDefaultResource, checkGeoResourceExists} from '../service-utils/resourceUtils';
+import { getGeoServiceMeta, updateDefaultResource, checkGeoResourceExists, getGeoResources } from '../service-utils/resourceUtils';
 import { resourceAccessWalkthrough, defaultResourceQuestion } from './resourceWalkthrough';
 import { DataProvider } from '../service-utils/resourceParams';
 import { printer, formatter, prompter, alphanumeric } from 'amplify-prompts';
@@ -112,15 +112,12 @@ export const updateMapWalkthrough = async (
     parameters: Partial<MapParameters>,
     resourceToUpdate?: string
 ): Promise<Partial<MapParameters>> => {
-    const mapResources = ((await context.amplify.getResourceStatus()).allResources as any[])
-    .filter(resource => resource.service === ServiceName.Map)
+    const mapResourceNames = await getGeoResources(ServiceName.Map);
 
-    if (mapResources.length === 0) {
+    if (mapResourceNames.length === 0) {
         printer.error('No Map resource to update. Use "amplify add geo" to create a new Map.');
         return parameters;
     }
-
-    const mapResourceNames = mapResources.map(resource => resource.resourceName);
 
     if (resourceToUpdate) {
         if (!mapResourceNames.includes(resourceToUpdate)) {
@@ -140,7 +137,7 @@ export const updateMapWalkthrough = async (
     parameters.accessType = mapAccessSettings.accessType;
     parameters.groupPermissions = mapAccessSettings.groupPermissions;
 
-    const otherMapResources = mapResourceNames.filter(mapResourceName => mapResourceName != resourceToUpdate);
+    const otherMapResources = mapResourceNames.filter(mapResourceName => mapResourceName !== resourceToUpdate);
     // if this is the only map, default cannot be removed
     if (otherMapResources.length > 0) {
         const isDefault = await prompter.yesOrNo(defaultResourceQuestion(ServiceName.Map), true);
@@ -169,11 +166,9 @@ export const updateDefaultMapWalkthrough = async (
     availableMaps?: string[]
 ): Promise<string> => {
     if (!availableMaps) {
-        availableMaps = ((await context.amplify.getResourceStatus()).allResources as any[])
-        .filter(resource => resource.service === ServiceName.Map)
-        .map(resource => resource.resourceName);
+        availableMaps = await getGeoResources(ServiceName.Map);
     }
-    const otherMapResources = availableMaps.filter(mapResourceName => mapResourceName != currentDefault);
+    const otherMapResources = availableMaps.filter(mapResourceName => mapResourceName !== currentDefault);
     if (otherMapResources?.length > 0) {
         const mapFriendlyNames = await getMapFriendlyNames(otherMapResources);
         const mapChoices = mapFriendlyNames.map((friendlyName, index) => ({ name: friendlyName, value: otherMapResources[index] }));

@@ -1,8 +1,8 @@
-import { $TSContext, $TSObject, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { $TSContext, $TSObject } from 'amplify-cli-core';
 import { PlaceIndexParameters } from './placeIndexParams';
 import _ from 'lodash';
 import { parametersFileName, provider, ServiceName } from './constants';
-import { authCategoryName, category } from '../constants';
+import { category } from '../constants';
 import { PlaceIndexStack } from '../service-stacks/placeIndexStack';
 import {
   updateParametersFile,
@@ -11,14 +11,14 @@ import {
   readResourceMetaParameters,
   checkAuthConfig,
   getAuthResourceName,
-  ResourceDependsOn
+  ResourceDependsOn,
+  getResourceDependencies,
+  writeParamsToCLIInputs,
+  readParamsFromCLIInputs
 } from './resourceUtils';
 import { App } from '@aws-cdk/core';
 import { getTemplateMappings } from '../provider-controllers';
-import * as path from 'path';
 import { DataProvider } from './resourceParams';
-
-const placeIndexParamsFileName = 'place-index-params.json';
 
 export const createPlaceIndexResource = async (context: $TSContext, parameters: PlaceIndexParameters) => {
   // allow unauth access for identity pool if guest access is enabled
@@ -31,7 +31,7 @@ export const createPlaceIndexResource = async (context: $TSContext, parameters: 
   const placeIndexStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', { ...parameters, ...templateMappings, authResourceName });
   generateTemplateFile(placeIndexStack, parameters.name);
   saveCFNParameters(parameters);
-  writePlaceIndexParams(parameters);
+  writeParamsToCLIInputs({ groupPermissions: parameters.groupPermissions }, parameters.name);
 
   const placeIndexMetaParameters = constructPlaceIndexMetaParameters(parameters, authResourceName);
 
@@ -54,7 +54,7 @@ export const modifyPlaceIndexResource = async (context: $TSContext, parameters: 
   const placeIndexStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', { ...parameters, ...templateMappings, authResourceName });
   generateTemplateFile(placeIndexStack, parameters.name);
   saveCFNParameters(parameters);
-  writePlaceIndexParams(parameters);
+  writeParamsToCLIInputs({ groupPermissions: parameters.groupPermissions }, parameters.name);
 
   // update the default place index
   if (parameters.isDefault) {
@@ -63,10 +63,12 @@ export const modifyPlaceIndexResource = async (context: $TSContext, parameters: 
 
   const placeIndexMetaParameters = constructPlaceIndexMetaParameters(parameters, authResourceName);
 
-  const paramsToUpdate = ['accessType', 'pricingPlan', 'dependsOn'];
+  const paramsToUpdate = ['accessType', 'dependsOn'] as const;
   paramsToUpdate.forEach(param => {
-    context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.name, param, (placeIndexMetaParameters as $TSObject)[param]);
+    context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.name, param, placeIndexMetaParameters[param]);
   });
+  // remove the pricingPlan if present on old resources
+  context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.name, 'pricingPlan', undefined);
 };
 
 function saveCFNParameters(
@@ -92,20 +94,7 @@ function saveCFNParameters(
  * Gives the Place Index resource configurations to be stored in Amplify Meta file
  */
 export const constructPlaceIndexMetaParameters = (params: PlaceIndexParameters, authResourceName: string): PlaceIndexMetaParameters => {
-  const dependsOnResources = [
-    {
-      category: authCategoryName,
-      resourceName: authResourceName,
-      attributes: ['UserPoolId']
-    }
-  ];
-  params.groupPermissions.forEach( group => {
-    dependsOnResources.push({
-      category: authCategoryName,
-      resourceName: 'userPoolGroups',
-      attributes: [`${group}GroupRole`]
-    });
-  });
+  const dependsOnResources = getResourceDependencies(params.groupPermissions, authResourceName);
 
   let result: PlaceIndexMetaParameters = {
     isDefault: params.isDefault,
@@ -133,13 +122,13 @@ export type PlaceIndexMetaParameters = Pick<
 
 export const getCurrentPlaceIndexParameters = async (indexName: string): Promise<Partial<PlaceIndexParameters>> => {
   const currentIndexMetaParameters = (await readResourceMetaParameters(ServiceName.PlaceIndex, indexName)) as PlaceIndexMetaParameters;
-  const currentIndexParameters = await readPlaceIndexParams(indexName);
+  const currentIndexParameters = (await readParamsFromCLIInputs())[indexName];
   return {
     dataProvider: currentIndexMetaParameters.dataProvider,
     dataSourceIntendedUse: currentIndexMetaParameters.dataSourceIntendedUse,
     accessType: currentIndexMetaParameters.accessType,
     isDefault: currentIndexMetaParameters.isDefault,
-    groupPermissions: currentIndexParameters.groupPermissions
+    groupPermissions: currentIndexParameters?.groupPermissions || []
   };
 };
 
@@ -191,23 +180,4 @@ export const getPlaceIndexIamPolicies = (resourceName: string, crudOptions: stri
   const attributes = ['Name'];
 
   return { policy, attributes };
-};
-
-export const readPlaceIndexParams = async (resourceName: string): Promise<Pick<PlaceIndexParameters, 'groupPermissions'>> => {
-  const groupPermissions = JSONUtilities.readJson<Pick<PlaceIndexParameters, 'groupPermissions'>>(
-    getPlaceIndexParamsFilePath(resourceName),
-    { throwIfNotExist: false }
-  ) || { groupPermissions: [] };
-  return groupPermissions;
-};
-
-export const writePlaceIndexParams = async (params: Pick<PlaceIndexParameters, 'name' | 'groupPermissions'>) => {
-  JSONUtilities.writeJson(
-    getPlaceIndexParamsFilePath(params.name),
-    { groupPermissions: params.groupPermissions }
-  );
-}
-
-export const getPlaceIndexParamsFilePath = (resourceName: string): string => {
-  return path.join(pathManager.getBackendDirPath(), category, resourceName, placeIndexParamsFileName);
 };
