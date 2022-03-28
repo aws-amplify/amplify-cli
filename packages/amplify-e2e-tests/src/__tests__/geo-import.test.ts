@@ -56,9 +56,6 @@ describe('amplify geo import', () => {
       const config = { geoJSONFileName: 'valid-custom-property.json', isRootLevelID: false, customProperty: 'name' };
       await expect(importGeofencesWithDefault(projRoot, config)).resolves.not.toThrow();
     });
-    it('should throw error if the GeoJSON file does not exist', async () => {
-      await expect(importGeofencesWithDefault(projRoot, { geoJSONFileName: 'not-exist.json' })).rejects.toThrowError();
-    });
     it('should throw error and not upload file if the GeoJSON file is invalid', async () => {
       await expect(importGeofencesWithDefault(projRoot, { geoJSONFileName: 'invalid-missing-coordinate.json' })).rejects.toThrowError();
     });
