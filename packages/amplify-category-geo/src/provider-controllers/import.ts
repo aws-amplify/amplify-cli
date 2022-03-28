@@ -3,7 +3,7 @@ import { $TSContext } from 'amplify-cli-core';
 import { prompter } from 'amplify-prompts';
 import { existsSync, writeFileSync } from 'fs-extra';
 import { join } from 'path';
-import { Location } from 'aws-sdk';
+import aws from 'aws-sdk';
 import { ServiceName } from '../service-utils/constants';
 import { validateGeoJSONObj } from '../service-utils/validateGeoJSONObj';
 import {
@@ -65,23 +65,11 @@ export const importResource = async (context: $TSContext) => {
     writeFileSync(geoJSONFilePath, JSON.stringify(geoJSONObj, null, 2));
   }
   // Construct geofence collection parameters
-  const geofenceCollectionParams = constructGeofenceCollectionParams({ collectionToImport, identifierField, identifierType, geoJSONObj });
+  const geofenceCollectionParams = constructGeofenceCollectionParams({
+    collectionToImport, identifierField, identifierType, geoJSONObj,
+  });
   // Upload geofences to collection
-  printer.info('Updating your Geofences in the collection...');
-  try {
-    const totalGeofenceCount = geofenceCollectionParams.Entries.length;
-    for(let i = 0; i < totalGeofenceCount; i += MAX_ENTRIES_PER_BATCH){
-      const geofenceCollectionPerBatch : GeofenceCollectionParams = {
-        CollectionName: geofenceCollectionParams.CollectionName,
-        Entries: geofenceCollectionParams.Entries.slice(i, i + MAX_ENTRIES_PER_BATCH)
-      }
-      await bulkUploadGeofence(geofenceCollectionPerBatch, collectionRegion);
-    }
-    printer.success(`Successfully added/updated ${totalGeofenceCount} Geofences in your "${collectionToImport}" collection`);
-  } catch (err) {
-    printer.error('Error occurs while uploading geofences.');
-    throw err;
-  }
+  await bulkUploadGeofence(context, geofenceCollectionParams, collectionRegion);
 };
 
 const constructGeofenceCollectionParams = (importParam: ImportParams): GeofenceCollectionParams => {
@@ -102,9 +90,28 @@ const constructGeofenceCollectionParams = (importParam: ImportParams): GeofenceC
   };
 };
 
-const bulkUploadGeofence = async (params: GeofenceCollectionParams, region: string) => {
-  const service = new Location({ region });
-  return await service.batchPutGeofence(params).promise();
+const bulkUploadGeofence = async (context: $TSContext, params: GeofenceCollectionParams, region: string) => {
+  printer.info('Updating your Geofences in the collection...');
+  try {
+    const { client } = await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'getConfiguredLocationServiceClient', [
+      context,
+      { region },
+    ]);
+    const totalGeofenceCount = params.Entries.length;
+    const uploadTasks = [];
+    for (let i = 0; i < totalGeofenceCount; i += MAX_ENTRIES_PER_BATCH) {
+      const geofenceCollectionPerBatch : GeofenceCollectionParams = {
+        CollectionName: params.CollectionName,
+        Entries: params.Entries.slice(i, i + MAX_ENTRIES_PER_BATCH),
+      };
+      uploadTasks.push((client as aws.Location).batchPutGeofence(geofenceCollectionPerBatch).promise());
+    }
+    await Promise.all(uploadTasks);
+    printer.success(`Successfully added/updated ${totalGeofenceCount} Geofences in your "${params.CollectionName}" collection`);
+  } catch (err) {
+    printer.error('Error occurs while uploading geofences.');
+    throw err;
+  }
 };
 
 /**
