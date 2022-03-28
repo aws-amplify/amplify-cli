@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0-npmpkg.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.6.16...amplify-e2e-core@3.0.0-npmpkg.0) (2022-03-28)
+
+
+* build!: npm pkg cli ([ff8a24c](https://github.com/aws-amplify/amplify-cli/commit/ff8a24cbb20dd1f129613d08c920947e5578944c))
+
+
+### BREAKING CHANGES
+
+* package name update
+
+
+
+
+
 ## [2.6.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.6.15...amplify-e2e-core@2.6.16) (2022-03-23)
 
 

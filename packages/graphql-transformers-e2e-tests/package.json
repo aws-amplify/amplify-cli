@@ -1,6 +1,6 @@
 {
   "name": "graphql-transformers-e2e-tests",
-  "version": "7.4.11",
+  "version": "7.4.12-npmpkg.0",
   "description": "End to end functional tests for appsync supported transformers.",
   "private": true,
   "repository": {

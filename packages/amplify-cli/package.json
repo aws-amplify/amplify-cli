@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli-builder",
-  "version": "7.6.26",
+  "version": "8.0.0-npmpkg.0",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
@@ -33,14 +33,14 @@
     "node": ">=12.0.0"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-api": "1.2.17",
+    "@aws-amplify/amplify-category-api": "2.0.0-npmpkg.0",
     "@aws-amplify/amplify-category-auth": "2.7.7",
     "@aws-amplify/amplify-category-custom": "2.3.24",
     "@aws-amplify/amplify-category-storage": "3.1.21",
     "@aws-amplify/amplify-util-uibuilder": "1.2.18",
     "@aws-amplify/graphql-auth-transformer": "0.7.10",
     "@aws-cdk/cloudformation-diff": "~1.124.0",
-    "amplify-app": "4.2.25",
+    "amplify-app": "5.0.0-npmpkg.0",
     "amplify-category-analytics": "3.2.24",
     "amplify-category-function": "3.5.6",
     "amplify-category-geo": "2.4.4",
@@ -53,7 +53,7 @@
     "amplify-cli-logger": "1.1.0",
     "amplify-codegen": "2.28.1",
     "amplify-console-hosting": "2.2.24",
-    "amplify-container-hosting": "2.4.28",
+    "amplify-container-hosting": "2.4.29-npmpkg.0",
     "amplify-dotnet-function-runtime-provider": "1.6.8",
     "amplify-dotnet-function-template-provider": "2.2.28",
     "amplify-frontend-android": "3.3.3",

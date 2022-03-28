@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0-npmpkg.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.2.17...@aws-amplify/amplify-category-api@2.0.0-npmpkg.0) (2022-03-28)
+
+
+* build!: npm pkg cli ([ff8a24c](https://github.com/aws-amplify/amplify-cli/commit/ff8a24cbb20dd1f129613d08c920947e5578944c))
+
+
+### BREAKING CHANGES
+
+* package name update
+
+
+
+
+
 ## [1.2.17](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.2.16...@aws-amplify/amplify-category-api@1.2.17) (2022-03-23)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api
