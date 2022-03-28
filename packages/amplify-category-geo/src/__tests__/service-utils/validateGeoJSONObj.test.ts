@@ -24,7 +24,7 @@ describe('Geo JSON file validation test', () => {
     expect(() => validateGeoJSONObj(loadGeoJSONObj('validGeofence.nameAsIdentifier.json'), 'id', IdentifierOption.CustomProperty)).toThrowErrorMatchingSnapshot();
   });
   it('should throw error for a invalid Geo JSON file with same identifier', () => {
-    expect(() => validateGeoJSONObj(loadGeoJSONObj('invalidGeofence.sameIdentifier.json'))).toThrowErrorMatchingSnapshot();
+    expect(() => validateGeoJSONObj(loadGeoJSONObj('invalidGeofence.sameIdentifier.json'), 'name', IdentifierOption.CustomProperty)).toThrowErrorMatchingSnapshot();
   });
   it('should throw error for a invalid Geo JSON file with counter-clockwise interior ring', () => {
     expect(() => validateGeoJSONObj(loadGeoJSONObj('invalidGeofence.counterclockwiseInteriorRing.json'))).toThrowErrorMatchingSnapshot();

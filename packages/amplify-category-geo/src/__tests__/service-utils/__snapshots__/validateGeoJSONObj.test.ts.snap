@@ -20,6 +20,6 @@ exports[`Geo JSON file validation test should throw error for a invalid Geo JSON
 ]"
 `;
 
-exports[`Geo JSON file validation test should throw error for a invalid Geo JSON file with same identifier 1`] = `"Identifier field id is not unique in GeoJSON."`;
+exports[`Geo JSON file validation test should throw error for a invalid Geo JSON file with same identifier 1`] = `"Identifier field \\"name\\" is not unique in GeoJSON. The following duplicate values are founded: [\\"myGeofence\\", \\"myGeofence2\\"]"`;
 
 exports[`Geo JSON file validation test should throw error if custom identifier is not found 1`] = `"Identifier field id is missing in the feature property"`;

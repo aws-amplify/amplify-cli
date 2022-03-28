@@ -15,37 +15,41 @@ export const validateGeoJSONObj = (data: FeatureCollection, uniqueIdentifier: st
   }
   const { features } = data;
   const identifierSet = new Set();
+  const duplicateValuesSet = new Set();
   features.forEach(feature => {
     // Check for identifier uniqueness
-    let identifierField: string;
+    let identifierFieldValue: string;
     if (identifierOption === IdentifierOption.RootLevelID) {
       if (!feature.id) {
         feature.id = uuid();
         printer.info(`No root level id found. Auto assigning feature with id ${feature.id}.`);
       }
-      identifierField = feature.id;
+      identifierFieldValue = feature.id;
     } else {
-      identifierField = feature.properties[uniqueIdentifier];
+      identifierFieldValue = feature.properties[uniqueIdentifier];
       // Check if custom identifier exists in property
-      if (!identifierField) {
+      if (!identifierFieldValue) {
         throw new Error(`Identifier field ${uniqueIdentifier} is missing in the feature property`);
       }
     }
-    if (identifierSet.has(identifierField)) {
-      throw new Error(`Identifier field ${uniqueIdentifier} is not unique in GeoJSON.`);
+    if (identifierSet.has(identifierFieldValue)) {
+      duplicateValuesSet.add(identifierFieldValue);
     }
-    identifierSet.add(identifierField);
+    identifierSet.add(identifierFieldValue);
     // Additional validation for each linear ring
     const { coordinates } = feature.geometry;
     let vertexCount = 0;
     coordinates.forEach((linearRing, index) => {
-      validateLinearRing(linearRing, index === 0, identifierField);
+      validateLinearRing(linearRing, index === 0, identifierFieldValue);
       vertexCount += linearRing.length;
     });
     if (vertexCount > MAX_VERTICES_NUM_PER_POLYGON) {
       throw new Error(`Polygon should have at most ${MAX_VERTICES_NUM_PER_POLYGON} vertices.`);
     }
   });
+  if (duplicateValuesSet.size > 0) {
+    throw new Error(`Identifier field "${uniqueIdentifier}" is not unique in GeoJSON. The following duplicate values are founded: [${Array.from(duplicateValuesSet).map(v => `"${v}"`).join(', ')}]`);
+  }
   return data;
 };
 
