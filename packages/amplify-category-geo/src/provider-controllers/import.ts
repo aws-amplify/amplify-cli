@@ -12,7 +12,6 @@ import {
 import { printer } from 'amplify-prompts';
 
 const MAX_ENTRIES_PER_BATCH = 10;
-const MIN_ENTRIES_PER_BATCH = 1;
 
 export const importResource = async (context: $TSContext) => {
   const geofenceCollectionResources = ((await context.amplify.getResourceStatus()).allResources as any[])
@@ -76,7 +75,7 @@ export const importResource = async (context: $TSContext) => {
         CollectionName: geofenceCollectionParams.CollectionName,
         Entries: geofenceCollectionParams.Entries.slice(i, i + MAX_ENTRIES_PER_BATCH)
       }
-      const result = await bulkUploadGeofence(geofenceCollectionPerBatch, collectionRegion);
+      await bulkUploadGeofence(geofenceCollectionPerBatch, collectionRegion);
     }
     printer.success(`Successfully added/updated ${totalGeofenceCount} Geofences in your "${collectionToImport}" collection`);
   } catch (err) {
