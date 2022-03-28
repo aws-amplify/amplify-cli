@@ -1,7 +1,6 @@
 import { $TSContext, $TSObject } from 'amplify-cli-core';
-import _ from 'lodash';
-import { App } from '@aws-cdk/core';
 import { MapParameters, getGeoMapStyle, getMapStyleComponents } from './mapParams';
+import _ from 'lodash';
 import { parametersFileName, provider, ServiceName } from './constants';
 import { category } from '../constants';
 import { MapStack } from '../service-stacks/mapStack';
@@ -16,13 +15,11 @@ import {
   ResourceDependsOn,
   getResourceDependencies,
   writeParamsToCLIInputs,
-  readParamsFromCLIInputs,
+  readParamsFromCLIInputs
 } from './resourceUtils';
+import { App } from '@aws-cdk/core';
 import { getTemplateMappings } from '../provider-controllers';
 
-/**
- *
- */
 export const createMapResource = async (context: $TSContext, parameters: MapParameters) => {
   // allow unauth access for identity pool if guest access is enabled
   await checkAuthConfig(context, parameters, ServiceName.Map);
@@ -46,9 +43,6 @@ export const createMapResource = async (context: $TSContext, parameters: MapPara
   context.amplify.updateamplifyMetaAfterResourceAdd(category, parameters.name, mapMetaParameters);
 };
 
-/**
- *
- */
 export const modifyMapResource = async (context: $TSContext, parameters: MapParameters) => {
   // allow unauth access for identity pool if guest access is enabled
   await checkAuthConfig(context, parameters, ServiceName.Map);
@@ -88,7 +82,7 @@ function saveCFNParameters(parameters: Pick<MapParameters, 'name' | 'mapStyleTyp
     mapName: parameters.name,
     mapStyle: getGeoMapStyle(parameters.dataProvider, parameters.mapStyleType),
     isDefault: parameters.isDefault,
-    pricingPlan: undefined,
+    pricingPlan: undefined
   };
   updateParametersFile(params, parameters.name, parametersFileName);
 }
@@ -105,7 +99,7 @@ export const constructMapMetaParameters = (params: MapParameters, authResourceNa
     service: ServiceName.Map,
     mapStyle: getGeoMapStyle(params.dataProvider, params.mapStyleType),
     accessType: params.accessType,
-    dependsOn: dependsOnResources,
+    dependsOn: dependsOnResources
   };
   return result;
 };
@@ -120,9 +114,6 @@ export type MapMetaParameters = Pick<MapParameters, 'isDefault' | 'accessType'> 
   dependsOn: ResourceDependsOn[];
 };
 
-/**
- *
- */
 export const getCurrentMapParameters = async (mapName: string): Promise<Partial<MapParameters>> => {
   const currentMapMetaParameters = (await readResourceMetaParameters(ServiceName.Map, mapName)) as MapMetaParameters;
   const currentMapParameters = (await readParamsFromCLIInputs())[mapName];
@@ -131,7 +122,7 @@ export const getCurrentMapParameters = async (mapName: string): Promise<Partial<
     dataProvider: getMapStyleComponents(currentMapMetaParameters.mapStyle).dataProvider,
     accessType: currentMapMetaParameters.accessType,
     isDefault: currentMapMetaParameters.isDefault,
-    groupPermissions: currentMapParameters?.groupPermissions || [],
+    groupPermissions: currentMapParameters?.groupPermissions || []
   };
 };
 
@@ -144,13 +135,10 @@ export const getMapFriendlyNames = async (mapNames: string[]): Promise<string[]>
   const currentMapResources = await getGeoServiceMeta(ServiceName.Map);
   return mapNames.map(mapName => {
     const mapStyle = currentMapResources?.[mapName]?.mapStyle;
-    return mapStyle ? `${mapName} (${mapStyle})` : mapName;
+    return !!mapStyle ? `${mapName} (${mapStyle})` : mapName;
   });
 };
 
-/**
- *
- */
 export const getMapIamPolicies = (resourceName: string, crudOptions: string[]): { policy: $TSObject[]; attributes: string[] } => {
   const policy = [];
   const actions = new Set<string>();
@@ -175,7 +163,7 @@ export const getMapIamPolicies = (resourceName: string, crudOptions: string[]): 
     }
   });
 
-  const mapPolicy = {
+  let mapPolicy = {
     Effect: 'Allow',
     Action: Array.from(actions),
     Resource: [
