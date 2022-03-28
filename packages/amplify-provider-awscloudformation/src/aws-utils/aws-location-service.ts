@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSContext } from 'amplify-cli-core';
 import * as AWS from 'aws-sdk';
 import { AwsSecrets, loadConfiguration } from '../configuration-manager';
 import aws from './aws.js';
