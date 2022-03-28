@@ -1,6 +1,5 @@
 import {
-  addApiWithoutSchema,
-  addFunction,
+  addApiWithBlankSchema, addFunction,
   amplifyPush,
   amplifyPushFunction, createNewProjectDir, deleteProject, deleteProjectDir, initJSProjectWithProfile, updateApiSchema,
 } from 'amplify-e2e-core';
@@ -18,21 +17,19 @@ describe('test function deploy when other resources are present', () => {
   });
 
   it('testing amplify push function command', async () => {
-    const projectName = 'demoApi';
+    const apiName = 'myApi';
     await initJSProjectWithProfile(projectRoot, {
-      name: projectName,
+      name: 'functions',
     });
-    await addApiWithoutSchema(projectRoot, { transformerVersion: 1 });
-    await updateApiSchema(projectRoot, projectName, 'simple_model.graphql');
+    await addApiWithBlankSchema(projectRoot, { apiName });
+    await updateApiSchema(projectRoot, apiName, 'simple_model.graphql');
     await amplifyPush(projectRoot);
     const random = Math.floor(Math.random() * 10000);
-    // eslint-disable-next-line spellcheck/spell-checker
     const fnName = `integtestFn${random}`;
     await addFunction(projectRoot, {
       name: fnName,
       functionTemplate: 'Hello World',
     },
-    // eslint-disable-next-line spellcheck/spell-checker
     'nodejs');
     await amplifyPushFunction(projectRoot);
   });
