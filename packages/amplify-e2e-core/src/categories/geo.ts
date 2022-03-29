@@ -87,7 +87,7 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
  * Add geofence collection with default values. Assume auth and cognito group are configured
  * @param cwd command directory
  */
- export function addGeofenceCollectionWithDefault(cwd: string, groupNames: string[], settings: GeoConfig = {}): Promise<void> {
+export function addGeofenceCollectionWithDefault(cwd: string, groupNames: string, settings: GeoConfig = {}): Promise<void> {
   const config = { ...defaultGeoConfig, ...settings };
   const chain = spawn(getCLIPath(), ['geo', 'add'], { cwd, stripColors: true })
     .wait('Select which capability you want to add:')
@@ -120,20 +120,18 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
  * Add geofence collection with default values. Assume auth and cognito group are configured
  * @param cwd command directory
  */
- export function importGeofencesWithDefault(cwd: string, settings: GeoConfig = {}): Promise<void> {
+export function importGeofencesWithDefault(cwd: string, settings: GeoConfig = {}): Promise<void> {
   const config = { ...defaultGeoConfig, ...settings };
-  const chain = spawn(getCLIPath(), ['geo', 'populate'], { cwd, stripColors: true })
+  const chain = spawn(getCLIPath(), ['geo', 'import'], { cwd, stripColors: true })
     .wait('Provide the path to GeoJSON file containing the Geofences')
     .sendLine(getGeoJSONFilePath(config.geoJSONFileName))
-    .wait('Do you have an identifier field in the Geofence(Feature) properties?');
+    .wait('Select the property to use as the Geofence feature identifier:');
   if (config.isRootLevelID) {
     chain.sendCarriageReturn(); //root level ID
   } else {
     chain
     .sendKeyDown()
     .sendCarriageReturn() //custom property
-    .wait('Provide the name of the property to use as a unique geofence identifier')
-    .sendLine(config.customProperty)
   }
   return chain.runAsync();
 }
