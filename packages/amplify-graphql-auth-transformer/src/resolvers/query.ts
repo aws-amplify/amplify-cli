@@ -266,16 +266,19 @@ const generateAuthFilter = (roles: Array<RoleDefinition>, fields: ReadonlyArray<
   roles.forEach((role, idx) => {
     const entityIsList = fieldIsList(fields, role.entity);
     if (role.strategy === 'owner') {
-      const ownerCondition = entityIsList ? 'contains' : 'eq';
-      authCollectionExp.push(
-        ...[
-          set(ref(`role${idx}`), getOwnerClaim(role.claim!)),
-          iff(
-            notEquals(ref(`role${idx}`), str(NONE_VALUE)),
-            qref(methodCall(ref('authFilter.add'), raw(`{"${role.entity}": { "${ownerCondition}": $role${idx} }}`))),
-          ),
-        ],
-      );
+      const ownerCondition = entityIsList ? 'contains' : 'beginsWith';
+      const claims = role.claim!.split(':');
+      claims.forEach((claim, secIdx) => {
+        authCollectionExp.push(
+          ...[
+            set(ref(`role${idx}_${secIdx}`), getOwnerClaim(claim)),
+            iff(
+              notEquals(ref(`role${idx}_${secIdx}`), str(NONE_VALUE)),
+              qref(methodCall(ref('authFilter.add'), raw(`{"${role.entity}": { "${ownerCondition}": $role${idx}_${secIdx} }}`))),
+            ),
+          ],
+        );
+      });
     } else if (role.strategy === 'groups') {
       // for fields where the group is a list and the token is a list we must add every group in the claim
       if (entityIsList) {
