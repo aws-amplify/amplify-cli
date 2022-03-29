@@ -35,16 +35,19 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> 
   // we only check against owner rules which are not list fields
   roles.forEach((role, idx) => {
     if (role.strategy === 'owner') {
-      ownerExpression.push(
-        iff(
-          not(ref(IS_AUTHORIZED_FLAG)),
-          compoundExpression([
-            set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.args.${role.entity!}`), nul())),
-            set(ref(`ownerClaim${idx}`), getOwnerClaim(role.claim!)),
-            iff(equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true))),
-          ]),
-        ),
-      );
+      const roleClaims = role.claim!.split(':');
+      ownerExpression.push(set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.args.${role.entity!}.split(":")[0]`), nul())));
+      roleClaims.forEach((claim, secIdx) => {
+        ownerExpression.push(
+          iff(
+            not(ref(IS_AUTHORIZED_FLAG)),
+            compoundExpression([
+              set(ref(`ownerClaim${idx}_${secIdx}`), getOwnerClaim(claim)),
+              iff(equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}_${secIdx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true))),
+            ]),
+          ),
+        );
+      });
     }
   });
 
