@@ -42,6 +42,7 @@
   "readdir",
   "readonly",
   "reqheaders",
+  "resolvers",
   "serializable",
   "serverless",
   "startable",
