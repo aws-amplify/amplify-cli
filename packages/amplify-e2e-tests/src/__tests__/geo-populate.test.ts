@@ -21,8 +21,9 @@ describe('amplify geo populate', () => {
     projRoot = await createNewProjectDir('geo-populate-test');
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
-    await updateAuthAddUserGroups(projRoot, ['admin']);
-    await addGeofenceCollectionWithDefault(projRoot, 'admin');
+    const cognitoGroups = ['admin', 'admin1'];
+    await updateAuthAddUserGroups(projRoot, cognitoGroups);
+    await addGeofenceCollectionWithDefault(projRoot, cognitoGroups);
   });
 
   afterAll(async () => {
