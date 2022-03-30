@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject } from 'amplify-cli-core';
+import { $TSContext, $TSObject, stateManager, pathManager } from 'amplify-cli-core';
 import { GeofenceCollectionParameters } from './geofenceCollectionParams';
 import _ from 'lodash';
 import { parametersFileName, provider, ServiceName } from './constants';
@@ -11,9 +11,7 @@ import {
   readResourceMetaParameters,
   getAuthResourceName,
   ResourceDependsOn,
-  getResourceDependencies,
-  writeParamsToCLIInputs,
-  readParamsFromCLIInputs
+  getResourceDependencies
 } from './resourceUtils';
 import { App } from '@aws-cdk/core';
 import { getTemplateMappings } from '../provider-controllers';
@@ -29,7 +27,7 @@ export const createGeofenceCollectionResource = async (context: $TSContext, para
   );
   generateTemplateFile(geofenceCollectionStack, parameters.name);
   saveCFNParameters(parameters);
-  writeParamsToCLIInputs({ groupPermissions: parameters.groupPermissions }, parameters.name);
+  stateManager.setResourceInputsJson(pathManager.findProjectRoot(), category, parameters.name, { groupPermissions: parameters.groupPermissions });
 
   const geofenceCollectionMetaParameters = constructGeofenceCollectionMetaParameters(parameters, authResourceName);
 
@@ -57,7 +55,7 @@ export const modifyGeofenceCollectionResource = async (
   );
   generateTemplateFile(geofenceCollectionStack, parameters.name);
   saveCFNParameters(parameters);
-  writeParamsToCLIInputs({ groupPermissions: parameters.groupPermissions }, parameters.name);
+  stateManager.setResourceInputsJson(pathManager.findProjectRoot(), category, parameters.name, { groupPermissions: parameters.groupPermissions });
 
   // update the default Geofence collection
   if (parameters.isDefault) {
@@ -113,11 +111,11 @@ export type GeofenceCollectionMetaParameters = Pick<
 
 export const getCurrentGeofenceCollectionParameters = async (collectionName: string): Promise<Partial<GeofenceCollectionParameters>> => {
   const currentCollectionMetaParameters = (await readResourceMetaParameters(ServiceName.GeofenceCollection, collectionName)) as GeofenceCollectionMetaParameters;
-  const currentCollectionParameters = (await readParamsFromCLIInputs())[collectionName];
+  const currentCollectionParameters = stateManager.getResourceInputsJson(pathManager.findProjectRoot(), category, collectionName, { throwIfNotExist: false }) || {};
   return {
     accessType: currentCollectionMetaParameters.accessType,
     isDefault: currentCollectionMetaParameters.isDefault,
-    groupPermissions: currentCollectionParameters.groupPermissions || {}
+    groupPermissions: currentCollectionParameters?.groupPermissions || {}
   };
 };
 

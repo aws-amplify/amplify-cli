@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject } from 'amplify-cli-core';
+import { $TSContext, $TSObject, stateManager, pathManager } from 'amplify-cli-core';
 import { PlaceIndexParameters } from './placeIndexParams';
 import _ from 'lodash';
 import { parametersFileName, provider, ServiceName } from './constants';
@@ -12,9 +12,7 @@ import {
   checkAuthConfig,
   getAuthResourceName,
   ResourceDependsOn,
-  getResourceDependencies,
-  writeParamsToCLIInputs,
-  readParamsFromCLIInputs
+  getResourceDependencies
 } from './resourceUtils';
 import { App } from '@aws-cdk/core';
 import { getTemplateMappings } from '../provider-controllers';
@@ -31,7 +29,7 @@ export const createPlaceIndexResource = async (context: $TSContext, parameters: 
   const placeIndexStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', { ...parameters, ...templateMappings, authResourceName });
   generateTemplateFile(placeIndexStack, parameters.name);
   saveCFNParameters(parameters);
-  writeParamsToCLIInputs({ groupPermissions: parameters.groupPermissions }, parameters.name);
+  stateManager.setResourceInputsJson(pathManager.findProjectRoot(), category, parameters.name, { groupPermissions: parameters.groupPermissions });
 
   const placeIndexMetaParameters = constructPlaceIndexMetaParameters(parameters, authResourceName);
 
@@ -54,7 +52,7 @@ export const modifyPlaceIndexResource = async (context: $TSContext, parameters: 
   const placeIndexStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', { ...parameters, ...templateMappings, authResourceName });
   generateTemplateFile(placeIndexStack, parameters.name);
   saveCFNParameters(parameters);
-  writeParamsToCLIInputs({ groupPermissions: parameters.groupPermissions }, parameters.name);
+  stateManager.setResourceInputsJson(pathManager.findProjectRoot(), category, parameters.name, { groupPermissions: parameters.groupPermissions });
 
   // update the default place index
   if (parameters.isDefault) {
@@ -122,7 +120,7 @@ export type PlaceIndexMetaParameters = Pick<
 
 export const getCurrentPlaceIndexParameters = async (indexName: string): Promise<Partial<PlaceIndexParameters>> => {
   const currentIndexMetaParameters = (await readResourceMetaParameters(ServiceName.PlaceIndex, indexName)) as PlaceIndexMetaParameters;
-  const currentIndexParameters = (await readParamsFromCLIInputs())[indexName];
+  const currentIndexParameters = stateManager.getResourceInputsJson(pathManager.findProjectRoot(), category, indexName, { throwIfNotExist: false }) || {};
   return {
     dataProvider: currentIndexMetaParameters.dataProvider,
     dataSourceIntendedUse: currentIndexMetaParameters.dataSourceIntendedUse,

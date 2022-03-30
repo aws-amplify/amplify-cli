@@ -147,7 +147,7 @@ export const updateGeofenceCollectionWalkthrough = async (
         }
     }
     else {
-        resourceToUpdate = await prompter.pick<'one', string>(`Select the ${geofencingServiceFriendlyName} to update`, collectionResourceNames);
+        resourceToUpdate = await prompter.pick<'one', string>(`Select the ${geofencingServiceFriendlyName} you want to update`, collectionResourceNames);
     }
 
     parameters.name = resourceToUpdate;

@@ -82,7 +82,7 @@ describe('Geofence Collection walkthrough works as expected', () => {
         // mock reading the group permissions
         const mockCollectionGroupPermissions: Record<string, $TSObject> = {};
         mockCollectionGroupPermissions[mockGeofenceCollectionName] = { groupPermissions: mockGeofenceCollectionParameters.groupPermissions };
-        JSONUtilities.readJson = jest.fn().mockReturnValue(mockCollectionGroupPermissions);
+        stateManager.getResourceInputsJson = jest.fn().mockReturnValue(mockCollectionGroupPermissions);
         JSONUtilities.writeJson = jest.fn().mockReturnValue('');
 
         stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);

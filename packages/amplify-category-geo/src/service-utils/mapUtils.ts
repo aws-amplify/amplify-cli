@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject } from 'amplify-cli-core';
+import { $TSContext, $TSObject, stateManager, pathManager } from 'amplify-cli-core';
 import { MapParameters, getGeoMapStyle, getMapStyleComponents } from './mapParams';
 import _ from 'lodash';
 import { parametersFileName, provider, ServiceName } from './constants';
@@ -13,9 +13,7 @@ import {
   checkAuthConfig,
   getAuthResourceName,
   ResourceDependsOn,
-  getResourceDependencies,
-  writeParamsToCLIInputs,
-  readParamsFromCLIInputs
+  getResourceDependencies
 } from './resourceUtils';
 import { App } from '@aws-cdk/core';
 import { getTemplateMappings } from '../provider-controllers';
@@ -30,7 +28,7 @@ export const createMapResource = async (context: $TSContext, parameters: MapPara
   const mapStack = new MapStack(new App(), 'MapStack', { ...parameters, ...templateMappings, authResourceName });
   generateTemplateFile(mapStack, parameters.name);
   saveCFNParameters(parameters);
-  writeParamsToCLIInputs({ groupPermissions: parameters.groupPermissions }, parameters.name);
+  stateManager.setResourceInputsJson(pathManager.findProjectRoot(), category, parameters.name, { groupPermissions: parameters.groupPermissions });
 
   const mapMetaParameters = constructMapMetaParameters(parameters, authResourceName);
 
@@ -53,7 +51,7 @@ export const modifyMapResource = async (context: $TSContext, parameters: MapPara
   const mapStack = new MapStack(new App(), 'MapStack', { ...parameters, ...templateMappings, authResourceName });
   generateTemplateFile(mapStack, parameters.name);
   saveCFNParameters(parameters);
-  writeParamsToCLIInputs({ groupPermissions: parameters.groupPermissions }, parameters.name);
+  stateManager.setResourceInputsJson(pathManager.findProjectRoot(), category, parameters.name, { groupPermissions: parameters.groupPermissions });
 
   // update the default map
   if (parameters.isDefault) {
@@ -115,7 +113,7 @@ export type MapMetaParameters = Pick<MapParameters, 'isDefault' | 'accessType'> 
 
 export const getCurrentMapParameters = async (mapName: string): Promise<Partial<MapParameters>> => {
   const currentMapMetaParameters = (await readResourceMetaParameters(ServiceName.Map, mapName)) as MapMetaParameters;
-  const currentMapParameters = (await readParamsFromCLIInputs())[mapName];
+  const currentMapParameters = stateManager.getResourceInputsJson(pathManager.findProjectRoot(), category, mapName, { throwIfNotExist: false }) || {};
   return {
     mapStyleType: getMapStyleComponents(currentMapMetaParameters.mapStyle).mapStyleType,
     dataProvider: getMapStyleComponents(currentMapMetaParameters.mapStyle).dataProvider,

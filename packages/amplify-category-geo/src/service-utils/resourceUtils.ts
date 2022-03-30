@@ -3,7 +3,7 @@ import { category, authCategoryName } from '../constants';
 import path from 'path';
 import _ from 'lodash';
 import { BaseStack } from '../service-stacks/baseStack';
-import { parametersFileName, ServiceName, cliInputsFileName } from './constants';
+import { parametersFileName, ServiceName } from './constants';
 import { ResourceParameters, AccessType } from './resourceParams';
 import os from 'os';
 import { getMapIamPolicies } from './mapUtils';
@@ -234,19 +234,3 @@ export const getGeoResources = async (service: ServiceName): Promise<string[]> =
   const serviceMeta = await getGeoServiceMeta(service);
   return serviceMeta ? Object.keys(serviceMeta) : [];
 }
-
-
-export const getCLIInputsFilePath = (): string => {
-  return path.join(pathManager.getBackendDirPath(), category, cliInputsFileName);
-};
-
-export const readParamsFromCLIInputs = async (): Promise<$TSObject> => {
-  return JSONUtilities.readJson(getCLIInputsFilePath(), { throwIfNotExist: false }) || {};
-};
-
-export const writeParamsToCLIInputs = async (params: $TSObject, resourceName: string) => {
-  const currentParameters = await readParamsFromCLIInputs();
-  currentParameters[resourceName] = { ...currentParameters[resourceName], ...params };
-  JSONUtilities.writeJson(getCLIInputsFilePath(), currentParameters);
-}
-

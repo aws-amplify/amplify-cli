@@ -35,27 +35,25 @@ export function getGeoJSONFilePath(fileName: string): string {
  */
 export function addMapWithDefault(cwd: string, settings: GeoConfig = {}): Promise<void> {
   const config = { ...defaultGeoConfig, ...settings };
-  return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['geo', 'add'], { cwd, stripColors: true })
-      .wait('Select which capability you want to add:')
-      .sendCarriageReturn()
-      .wait('Provide a name for the Map:')
-      .sendLine(config.resourceName)
-      .wait('Who can access this Map?')
-      .sendCarriageReturn();
+  const chain = spawn(getCLIPath(), ['geo', 'add'], { cwd, stripColors: true })
+    .wait('Select which capability you want to add:')
+    .sendCarriageReturn()
+    .wait('Provide a name for the Map:')
+    .sendLine(config.resourceName)
+    .wait('Who can access this Map?')
+    .sendCarriageReturn();
 
-    chain.wait('Do you want to configure advanced settings?').sendNo();
+  chain.wait('Do you want to configure advanced settings?').sendNo();
 
-    if (config.isAdditional === true) {
-      chain.wait(defaultMapQuestion);
-      if (config.isDefault === true) {
-        chain.sendYes();
-      } else {
-        chain.sendNo();
-      }
+  if (config.isAdditional === true) {
+    chain.wait(defaultMapQuestion);
+    if (config.isDefault === true) {
+      chain.sendYes();
+    } else {
+      chain.sendNo();
     }
-    chain.runAsync();
-  });
+  }
+  return chain.runAsync();
 }
 
 /**
@@ -64,27 +62,25 @@ export function addMapWithDefault(cwd: string, settings: GeoConfig = {}): Promis
  */
 export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}): Promise<void> {
   const config = { ...defaultGeoConfig, ...settings };
-  return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['geo', 'add'], { cwd, stripColors: true })
-      .wait('Select which capability you want to add:')
-      .sendKeyDown()
-      .sendCarriageReturn()
-      .wait('Provide a name for the location search index (place index):')
-      .sendLine(config.resourceName)
-      .wait('Who can access this Search Index?')
-      .sendCarriageReturn();
+  const chain = spawn(getCLIPath(), ['geo', 'add'], { cwd, stripColors: true })
+    .wait('Select which capability you want to add:')
+    .sendKeyDown()
+    .sendCarriageReturn()
+    .wait('Provide a name for the location search index (place index):')
+    .sendLine(config.resourceName)
+    .wait('Who can access this Search Index?')
+    .sendCarriageReturn();
 
-    chain.wait('Do you want to configure advanced settings?').sendNo();
-    if (config.isAdditional === true) {
-      chain.wait(defaultSearchIndexQuestion);
-      if (config.isDefault === true) {
-        chain.sendYes();
-      } else {
-        chain.sendNo();
-      }
+  chain.wait('Do you want to configure advanced settings?').sendNo();
+  if (config.isAdditional === true) {
+    chain.wait(defaultSearchIndexQuestion);
+    if (config.isDefault === true) {
+      chain.sendYes();
+    } else {
+      chain.sendNo();
     }
-    chain.runAsync();
-  });
+  }
+  return chain.runAsync();
 }
 
 /**
@@ -93,29 +89,27 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
  */
  export function addGeofenceCollectionWithDefault(cwd: string, groupName: string, settings: GeoConfig = {}): Promise<void> {
   const config = { ...defaultGeoConfig, ...settings };
-  return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['geo', 'add'], { cwd, stripColors: true })
-      .wait('Select which capability you want to add:')
-      .sendKeyDown(2)
-      .sendCarriageReturn()
-      .wait('Provide a name for the Geofence Collection:')
-      .sendLine(config.resourceName)
-      .wait('Select one or more cognito groups to give access:')
-      .sendCarriageReturn()
-      .wait(`What kind of access do you want for ${groupName} users? Select ALL that apply:`)
-      .sendCtrlA()
-      .sendCarriageReturn()
+  const chain = spawn(getCLIPath(), ['geo', 'add'], { cwd, stripColors: true })
+    .wait('Select which capability you want to add:')
+    .sendKeyDown(2)
+    .sendCarriageReturn()
+    .wait('Provide a name for the Geofence Collection:')
+    .sendLine(config.resourceName)
+    .wait('Select one or more cognito groups to give access:')
+    .sendCarriageReturn()
+    .wait(`What kind of access do you want for ${groupName} users? Select ALL that apply:`)
+    .sendCtrlA()
+    .sendCarriageReturn()
 
-    if (config.isAdditional === true) {
-      chain.wait(defaultGeofenceCollectionQuestion);
-      if (config.isDefault === true) {
-        chain.sendYes();
-      } else {
-        chain.sendNo();
-      }
+  if (config.isAdditional === true) {
+    chain.wait(defaultGeofenceCollectionQuestion);
+    if (config.isDefault === true) {
+      chain.sendYes();
+    } else {
+      chain.sendNo();
     }
-    chain.runAsync();
-  });
+  }
+  return chain.runAsync();
 }
 
 /**
@@ -124,22 +118,20 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
  */
  export function populateGeofencesWithDefault(cwd: string, settings: GeoConfig = {}): Promise<void> {
   const config = { ...defaultGeoConfig, ...settings };
-  return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['geo', 'populate'], { cwd, stripColors: true })
-      .wait('Provide the path to GeoJSON file containing the Geofences')
-      .sendLine(getGeoJSONFilePath(config.geoJSONFileName))
-      .wait('Do you have an identifier field in the Geofence(Feature) properties?');
-    if (config.isRootLevelID) {
-      chain.sendCarriageReturn(); //root level ID
-    } else {
-      chain
-      .sendKeyDown()
-      .sendCarriageReturn() //custom property
-      .wait('Provide the name of the property to use as a unique geofence identifier')
-      .sendLine(config.customProperty)
-    }
-    chain.runAsync();
-  });
+  const chain = spawn(getCLIPath(), ['geo', 'populate'], { cwd, stripColors: true })
+    .wait('Provide the path to GeoJSON file containing the Geofences')
+    .sendLine(getGeoJSONFilePath(config.geoJSONFileName))
+    .wait('Do you have an identifier field in the Geofence(Feature) properties?');
+  if (config.isRootLevelID) {
+    chain.sendCarriageReturn(); //root level ID
+  } else {
+    chain
+    .sendKeyDown()
+    .sendCarriageReturn() //custom property
+    .wait('Provide the name of the property to use as a unique geofence identifier')
+    .sendLine(config.customProperty)
+  }
+  return chain.runAsync();
 }
 
 /**
@@ -147,19 +139,17 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
  * @param cwd command directory
  */
 export function updateMapWithDefault(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['geo', 'update'], { cwd, stripColors: true })
-      .wait('Select which capability you want to update:')
-      .sendCarriageReturn()
-      .wait('Select the Map you want to update')
-      .sendCarriageReturn()
-      .wait('Who can access this Map?')
-      .sendKeyDown()
-      .sendCarriageReturn()
-      .wait(defaultMapQuestion)
-      .sendYes()
-      .runAsync()
-  });
+  return spawn(getCLIPath(), ['geo', 'update'], { cwd, stripColors: true })
+    .wait('Select which capability you want to update:')
+    .sendCarriageReturn()
+    .wait('Select the Map you want to update')
+    .sendCarriageReturn()
+    .wait('Who can access this Map?')
+    .sendKeyDown()
+    .sendCarriageReturn()
+    .wait(defaultMapQuestion)
+    .sendYes()
+    .runAsync()
 }
 
 /**
@@ -167,19 +157,17 @@ export function updateMapWithDefault(cwd: string): Promise<void> {
  * @param cwd command directory
  */
 export function updateSecondMapAsDefault(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['geo', 'update'], { cwd, stripColors: true })
-      .wait('Select which capability you want to update:')
-      .sendCarriageReturn()
-      .wait('Select the Map you want to update')
-      .sendKeyDown()
-      .sendCarriageReturn()
-      .wait('Who can access this Map?')
-      .sendCarriageReturn()
-      .wait(defaultMapQuestion)
-      .sendYes()
-      .runAsync()
-  });
+  return spawn(getCLIPath(), ['geo', 'update'], { cwd, stripColors: true })
+    .wait('Select which capability you want to update:')
+    .sendCarriageReturn()
+    .wait('Select the Map you want to update')
+    .sendKeyDown()
+    .sendCarriageReturn()
+    .wait('Who can access this Map?')
+    .sendCarriageReturn()
+    .wait(defaultMapQuestion)
+    .sendYes()
+    .runAsync()
 }
 
 /**
@@ -187,20 +175,18 @@ export function updateSecondMapAsDefault(cwd: string): Promise<void> {
  * @param cwd command directory
  */
 export function updatePlaceIndexWithDefault(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['geo', 'update'], { cwd, stripColors: true })
-      .wait('Select which capability you want to update:')
-      .sendKeyDown()
-      .sendCarriageReturn()
-      .wait('Select the search index you want to update')
-      .sendCarriageReturn()
-      .wait('Who can access this Search Index?')
-      .sendKeyDown()
-      .sendCarriageReturn()
-      .wait(defaultSearchIndexQuestion)
-      .sendYes()
-      .runAsync()
-  });
+  return spawn(getCLIPath(), ['geo', 'update'], { cwd, stripColors: true })
+    .wait('Select which capability you want to update:')
+    .sendKeyDown()
+    .sendCarriageReturn()
+    .wait('Select the search index you want to update')
+    .sendCarriageReturn()
+    .wait('Who can access this Search Index?')
+    .sendKeyDown()
+    .sendCarriageReturn()
+    .wait(defaultSearchIndexQuestion)
+    .sendYes()
+    .runAsync()
 }
 
 /**
@@ -208,20 +194,18 @@ export function updatePlaceIndexWithDefault(cwd: string): Promise<void> {
  * @param cwd command directory
  */
 export function updateSecondPlaceIndexAsDefault(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['geo', 'update'], { cwd, stripColors: true })
-      .wait('Select which capability you want to update:')
-      .sendKeyDown()
-      .sendCarriageReturn()
-      .wait('Select the search index you want to update')
-      .sendKeyDown()
-      .sendCarriageReturn()
-      .wait('Who can access this Search Index?')
-      .sendCarriageReturn()
-      .wait(defaultSearchIndexQuestion)
-      .sendYes()
-      .runAsync()
-  });
+  return spawn(getCLIPath(), ['geo', 'update'], { cwd, stripColors: true })
+    .wait('Select which capability you want to update:')
+    .sendKeyDown()
+    .sendCarriageReturn()
+    .wait('Select the search index you want to update')
+    .sendKeyDown()
+    .sendCarriageReturn()
+    .wait('Who can access this Search Index?')
+    .sendCarriageReturn()
+    .wait(defaultSearchIndexQuestion)
+    .sendYes()
+    .runAsync()
 }
 
 /**
@@ -229,21 +213,19 @@ export function updateSecondPlaceIndexAsDefault(cwd: string): Promise<void> {
  * @param cwd command directory
  */
  export function updateGeofenceCollectionWithDefault(cwd: string, groupName: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['geo', 'update'], { cwd, stripColors: true })
-      .wait('Select which capability you want to update:')
-      .sendKeyDown(2)
-      .sendCarriageReturn()
-      .wait('Select the geofence collection you want to update')
-      .sendCarriageReturn()
-      .wait('Select one or more cognito groups to give access:')
-      .sendCarriageReturn()
-      .wait(`What kind of access do you want for ${groupName} users? Select ALL that apply:`)
-      .sendCarriageReturn()
-      .wait(defaultGeofenceCollectionQuestion)
-      .sendYes()
-      .runAsync()
-  });
+  return spawn(getCLIPath(), ['geo', 'update'], { cwd, stripColors: true })
+    .wait('Select which capability you want to update:')
+    .sendKeyDown(2)
+    .sendCarriageReturn()
+    .wait('Select the geofence collection you want to update')
+    .sendCarriageReturn()
+    .wait('Select one or more cognito groups to give access:')
+    .sendCarriageReturn()
+    .wait(`What kind of access do you want for ${groupName} users? Select ALL that apply:`)
+    .sendCarriageReturn()
+    .wait(defaultGeofenceCollectionQuestion)
+    .sendYes()
+    .runAsync()
 }
 
 /**
@@ -251,22 +233,20 @@ export function updateSecondPlaceIndexAsDefault(cwd: string): Promise<void> {
  * @param cwd command directory
  */
 export function updateSecondGeofenceCollectionAsDefault(cwd: string, groupName: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['geo', 'update'], { cwd, stripColors: true })
-      .wait('Select which capability you want to update:')
-      .sendKeyDown(2)
-      .sendCarriageReturn()
-      .wait('Select the geofence collection you want to update')
-      .sendKeyDown()
-      .sendCarriageReturn()
-      .wait('Select one or more cognito groups to give access:')
-      .sendCarriageReturn()
-      .wait(`What kind of access do you want for ${groupName} users? Select ALL that apply:`)
-      .sendCarriageReturn()
-      .wait(defaultGeofenceCollectionQuestion)
-      .sendYes()
-      .runAsync()
-  });
+  return spawn(getCLIPath(), ['geo', 'update'], { cwd, stripColors: true })
+    .wait('Select which capability you want to update:')
+    .sendKeyDown(2)
+    .sendCarriageReturn()
+    .wait('Select the geofence collection you want to update')
+    .sendKeyDown()
+    .sendCarriageReturn()
+    .wait('Select one or more cognito groups to give access:')
+    .sendCarriageReturn()
+    .wait(`What kind of access do you want for ${groupName} users? Select ALL that apply:`)
+    .sendCarriageReturn()
+    .wait(defaultGeofenceCollectionQuestion)
+    .sendYes()
+    .runAsync()
 }
 
 /**
@@ -274,16 +254,14 @@ export function updateSecondGeofenceCollectionAsDefault(cwd: string, groupName: 
  * @param cwd command directory
  */
 export function removeMap(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['geo', 'remove'], { cwd, stripColors: true })
-      .wait('Select which capability you want to remove:')
-      .sendCarriageReturn()
-      .wait('Select the Map you want to remove')
-      .sendCarriageReturn()
-      .wait('Are you sure you want to delete the resource?')
-      .sendYes()
-      .runAsync()
-  });
+  return spawn(getCLIPath(), ['geo', 'remove'], { cwd, stripColors: true })
+    .wait('Select which capability you want to remove:')
+    .sendCarriageReturn()
+    .wait('Select the Map you want to remove')
+    .sendCarriageReturn()
+    .wait('Are you sure you want to delete the resource?')
+    .sendYes()
+    .runAsync()
 }
 
 /**
@@ -291,18 +269,16 @@ export function removeMap(cwd: string): Promise<void> {
  * @param cwd command directory
  */
 export function removeFirstDefaultMap(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['geo', 'remove'], { cwd, stripColors: true })
-      .wait('Select which capability you want to remove:')
-      .sendCarriageReturn()
-      .wait('Select the Map you want to remove')
-      .sendCarriageReturn()
-      .wait('Are you sure you want to delete the resource?')
-      .sendYes()
-      .wait('Select the Map you want to set as default:')
-      .sendCarriageReturn()
-      .runAsync()
-  });
+  return spawn(getCLIPath(), ['geo', 'remove'], { cwd, stripColors: true })
+    .wait('Select which capability you want to remove:')
+    .sendCarriageReturn()
+    .wait('Select the Map you want to remove')
+    .sendCarriageReturn()
+    .wait('Are you sure you want to delete the resource?')
+    .sendYes()
+    .wait('Select the Map you want to set as default:')
+    .sendCarriageReturn()
+    .runAsync()
 }
 
 /**
@@ -310,17 +286,15 @@ export function removeFirstDefaultMap(cwd: string): Promise<void> {
  * @param cwd command directory
  */
 export function removePlaceIndex(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['geo', 'remove'], { cwd, stripColors: true })
-      .wait('Select which capability you want to remove:')
-      .sendKeyDown()
-      .sendCarriageReturn()
-      .wait('Select the search index you want to remove')
-      .sendCarriageReturn()
-      .wait('Are you sure you want to delete the resource?')
-      .sendYes()
-      .runAsync()
-  });
+  return spawn(getCLIPath(), ['geo', 'remove'], { cwd, stripColors: true })
+    .wait('Select which capability you want to remove:')
+    .sendKeyDown()
+    .sendCarriageReturn()
+    .wait('Select the search index you want to remove')
+    .sendCarriageReturn()
+    .wait('Are you sure you want to delete the resource?')
+    .sendYes()
+    .runAsync()
 }
 
 /**
@@ -328,19 +302,17 @@ export function removePlaceIndex(cwd: string): Promise<void> {
  * @param cwd command directory
  */
 export function removeFirstDefaultPlaceIndex(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['geo', 'remove'], { cwd, stripColors: true })
-      .wait('Select which capability you want to remove:')
-      .sendKeyDown()
-      .sendCarriageReturn()
-      .wait('Select the search index you want to remove')
-      .sendCarriageReturn()
-      .wait('Are you sure you want to delete the resource?')
-      .sendYes()
-      .wait('Select the search index you want to set as default:')
-      .sendCarriageReturn()
-      .runAsync()
-  });
+  return spawn(getCLIPath(), ['geo', 'remove'], { cwd, stripColors: true })
+    .wait('Select which capability you want to remove:')
+    .sendKeyDown()
+    .sendCarriageReturn()
+    .wait('Select the search index you want to remove')
+    .sendCarriageReturn()
+    .wait('Are you sure you want to delete the resource?')
+    .sendYes()
+    .wait('Select the search index you want to set as default:')
+    .sendCarriageReturn()
+    .runAsync()
 }
 
 /**
@@ -348,17 +320,15 @@ export function removeFirstDefaultPlaceIndex(cwd: string): Promise<void> {
  * @param cwd command directory
  */
  export function removeGeofenceCollection(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['geo', 'remove'], { cwd, stripColors: true })
-      .wait('Select which capability you want to remove:')
-      .sendKeyDown(2)
-      .sendCarriageReturn()
-      .wait('Select the geofence collection you want to remove')
-      .sendCarriageReturn()
-      .wait('Are you sure you want to delete the resource?')
-      .sendYes()
-      .runAsync()
-  });
+  return spawn(getCLIPath(), ['geo', 'remove'], { cwd, stripColors: true })
+    .wait('Select which capability you want to remove:')
+    .sendKeyDown(2)
+    .sendCarriageReturn()
+    .wait('Select the geofence collection you want to remove')
+    .sendCarriageReturn()
+    .wait('Are you sure you want to delete the resource?')
+    .sendYes()
+    .runAsync()
 }
 
 /**
@@ -366,19 +336,17 @@ export function removeFirstDefaultPlaceIndex(cwd: string): Promise<void> {
  * @param cwd command directory
  */
 export function removeFirstDefaultGeofenceCollection(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['geo', 'remove'], { cwd, stripColors: true })
-      .wait('Select which capability you want to remove:')
-      .sendKeyDown(2)
-      .sendCarriageReturn()
-      .wait('Select the geofence collection you want to remove')
-      .sendCarriageReturn()
-      .wait('Are you sure you want to delete the resource?')
-      .sendYes()
-      .wait('Select the geofence collection you want to set as default:')
-      .sendCarriageReturn()
-      .runAsync()
-  });
+  return spawn(getCLIPath(), ['geo', 'remove'], { cwd, stripColors: true })
+    .wait('Select which capability you want to remove:')
+    .sendKeyDown(2)
+    .sendCarriageReturn()
+    .wait('Select the geofence collection you want to remove')
+    .sendCarriageReturn()
+    .wait('Are you sure you want to delete the resource?')
+    .sendYes()
+    .wait('Select the geofence collection you want to set as default:')
+    .sendCarriageReturn()
+    .runAsync()
 }
 
 

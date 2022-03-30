@@ -1,8 +1,11 @@
-import { stateManager, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { stateManager } from 'amplify-cli-core';
 import { provider, ServiceName } from '../../service-utils/constants';
 import { getMapStyleComponents, MapStyle } from '../../service-utils/mapParams';
 import { DataSourceIntendedUse } from '../../service-utils/placeIndexParams';
 import { AccessType, DataProvider } from '../../service-utils/resourceParams';
+import { getCurrentMapParameters, getMapFriendlyNames } from '../../service-utils/mapUtils';
+import { getCurrentPlaceIndexParameters } from '../../service-utils/placeIndexUtils';
+import { getCurrentGeofenceCollectionParameters } from '../../service-utils/geofenceCollectionUtils';
 
 jest.mock('amplify-cli-core');
 
@@ -60,9 +63,7 @@ describe('Test resource utility functions', () => {
 
     it('gets current map parameters', async() => {
         const groupPermissions = ['mockCognitoGroup'];
-        JSONUtilities.readJson = jest.fn().mockReturnValue({map1: {groupPermissions: groupPermissions}});
-        pathManager.getBackendDirPath = jest.fn().mockReturnValue('');
-        const getCurrentMapParameters = require('../../service-utils/mapUtils').getCurrentMapParameters;
+        stateManager.getResourceInputsJson = jest.fn().mockReturnValue({groupPermissions: groupPermissions});
         const mapParams = await getCurrentMapParameters('map1');
         expect({
             ...getMapStyleComponents(map1Params.mapStyle),
@@ -73,7 +74,6 @@ describe('Test resource utility functions', () => {
     });
 
     it('generates friendly names for maps containing the map styles', async() => {
-        const getMapFriendlyNames = require('../../service-utils/mapUtils').getMapFriendlyNames;
         const mapFriendlyNames = await getMapFriendlyNames(['map1', 'map2']);
         expect(mapFriendlyNames).toEqual([
             `map1 (${map1Params.mapStyle})`,
@@ -83,9 +83,7 @@ describe('Test resource utility functions', () => {
 
     it('gets current place index parameters', async() => {
         const groupPermissions = ['mockCognitoGroup'];
-        JSONUtilities.readJson = jest.fn().mockReturnValue({placeIndex1: {groupPermissions: groupPermissions}});
-        pathManager.getBackendDirPath = jest.fn().mockReturnValue('');
-        const getCurrentPlaceIndexParameters = require('../../service-utils/placeIndexUtils').getCurrentPlaceIndexParameters;
+        stateManager.getResourceInputsJson = jest.fn().mockReturnValue({groupPermissions: groupPermissions});
         const placeIndexParams = await getCurrentPlaceIndexParameters('placeIndex1');
         expect({
             dataProvider: placeIndex1Params.dataProvider,
@@ -103,9 +101,7 @@ describe('Test resource utility functions', () => {
                 "Create/Update geofence"
             ]
         }
-        JSONUtilities.readJson = jest.fn().mockReturnValue({geofenceCollection1: {groupPermissions: groupPermissions}});
-        pathManager.getBackendDirPath = jest.fn().mockReturnValue('');
-        const getCurrentGeofenceCollectionParameters = require('../../service-utils/geofenceCollectionUtils').getCurrentGeofenceCollectionParameters;
+        stateManager.getResourceInputsJson = jest.fn().mockReturnValue({groupPermissions: groupPermissions});
         const geofenceCollectionParams = await getCurrentGeofenceCollectionParameters('geofenceCollection1');
         expect({
             accessType: geofenceCollection1Params.accessType,
