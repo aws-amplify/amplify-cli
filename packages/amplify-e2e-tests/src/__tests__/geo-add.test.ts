@@ -76,8 +76,9 @@ describe('amplify geo add', () => {
   it('init a project with default auth config and add the geofence collection resource', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
-    await updateAuthAddUserGroups(projRoot, ['admin']);
-    await addGeofenceCollectionWithDefault(projRoot, 'admin');
+    const cognitoGroups = ['admin', 'admin1'];
+    await updateAuthAddUserGroups(projRoot, cognitoGroups);
+    await addGeofenceCollectionWithDefault(projRoot, cognitoGroups);
     await amplifyPushWithoutCodegen(projRoot);
 
     const meta = getProjectMeta(projRoot);
@@ -156,9 +157,10 @@ describe('amplify geo add', () => {
     const collection2Id = `geofencecollection${generateRandomShortId()}`;
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
-    await updateAuthAddUserGroups(projRoot, ['admin']);
-    await addGeofenceCollectionWithDefault(projRoot, 'admin', { resourceName: collection1Id });
-    await addGeofenceCollectionWithDefault(projRoot, 'admin', { resourceName: collection2Id, isAdditional: true });
+    const cognitoGroups = ['admin', 'admin1'];
+    await updateAuthAddUserGroups(projRoot, cognitoGroups);
+    await addGeofenceCollectionWithDefault(projRoot, cognitoGroups, { resourceName: collection1Id });
+    await addGeofenceCollectionWithDefault(projRoot, cognitoGroups, { resourceName: collection2Id, isAdditional: true });
     await amplifyPushWithoutCodegen(projRoot);
 
     // check amplify meta file

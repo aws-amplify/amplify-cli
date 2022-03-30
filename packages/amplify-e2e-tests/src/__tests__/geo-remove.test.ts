@@ -17,7 +17,6 @@ import {
   getGeoJSConfiguration,
   updateAuthAddUserGroups,
   addGeofenceCollectionWithDefault,
-  getGeofenceCollection,
   removeGeofenceCollection,
   removeFirstDefaultGeofenceCollection
 } from 'amplify-e2e-core';
@@ -76,8 +75,9 @@ describe('amplify geo remove', () => {
   it('init a project with default auth config and the geofence collection resource, then remove the geofence collection', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
-    await updateAuthAddUserGroups(projRoot, ['admin']);
-    await addGeofenceCollectionWithDefault(projRoot, 'admin');
+    const cognitoGroups = ['admin', 'admin1'];
+    await updateAuthAddUserGroups(projRoot, cognitoGroups);
+    await addGeofenceCollectionWithDefault(projRoot, cognitoGroups);
     await amplifyPushWithoutCodegen(projRoot);
 
     const oldMeta = getProjectMeta(projRoot);
@@ -149,10 +149,11 @@ describe('amplify geo remove', () => {
     const [collection1Id, collection2Id, collection3Id] = generateResourceIdsInOrder(3);
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
-    await updateAuthAddUserGroups(projRoot, ['admin']);
-    await addGeofenceCollectionWithDefault(projRoot, 'admin', { resourceName: collection1Id });
-    await addGeofenceCollectionWithDefault(projRoot, 'admin', { resourceName: collection2Id, isAdditional: true, isDefault: false });
-    await addGeofenceCollectionWithDefault(projRoot, 'admin', { resourceName: collection3Id, isAdditional: true, isDefault: false });
+    const cognitoGroups = ['admin', 'admin1'];
+    await updateAuthAddUserGroups(projRoot, cognitoGroups);
+    await addGeofenceCollectionWithDefault(projRoot, cognitoGroups, { resourceName: collection1Id });
+    await addGeofenceCollectionWithDefault(projRoot, cognitoGroups, { resourceName: collection2Id, isAdditional: true, isDefault: false });
+    await addGeofenceCollectionWithDefault(projRoot, cognitoGroups, { resourceName: collection3Id, isAdditional: true, isDefault: false });
     await amplifyPushWithoutCodegen(projRoot);
     const oldMeta = getProjectMeta(projRoot);
     expect(oldMeta.geo[collection1Id].isDefault).toBe(true);

@@ -1297,7 +1297,8 @@ export function updateAuthAddUserGroups(projectDir: string, groupNames: string[]
           .wait('Do you want to add another User Pool Group')
           .sendConfirmYes()
           .wait('Provide a name for your user pool group')
-          .send(groupNames[index++]);
+          .send(groupNames[index++])
+          .sendCarriageReturn();
       }
     }
 

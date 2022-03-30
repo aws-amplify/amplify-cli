@@ -1,4 +1,4 @@
-import { getCLIPath, nspawn as spawn, KEY_DOWN_ARROW, generateRandomShortId } from '..';
+import { getCLIPath, nspawn as spawn, generateRandomShortId } from '..';
 import path from 'path';
 
 export type GeoConfig = {
@@ -87,7 +87,7 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
  * Add geofence collection with default values. Assume auth and cognito group are configured
  * @param cwd command directory
  */
- export function addGeofenceCollectionWithDefault(cwd: string, groupName: string, settings: GeoConfig = {}): Promise<void> {
+ export function addGeofenceCollectionWithDefault(cwd: string, groupNames: string[], settings: GeoConfig = {}): Promise<void> {
   const config = { ...defaultGeoConfig, ...settings };
   const chain = spawn(getCLIPath(), ['geo', 'add'], { cwd, stripColors: true })
     .wait('Select which capability you want to add:')
@@ -96,10 +96,14 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
     .wait('Provide a name for the Geofence Collection:')
     .sendLine(config.resourceName)
     .wait('Select one or more cognito groups to give access:')
-    .sendCarriageReturn()
-    .wait(`What kind of access do you want for ${groupName} users? Select ALL that apply:`)
     .sendCtrlA()
-    .sendCarriageReturn()
+    .sendCarriageReturn();
+  
+  for (const groupName of groupNames){
+    chain.wait(`What kind of access do you want for ${groupName} users? Select ALL that apply:`)
+      .sendCtrlA()
+      .sendCarriageReturn();
+  }
 
   if (config.isAdditional === true) {
     chain.wait(defaultGeofenceCollectionQuestion);
@@ -212,28 +216,32 @@ export function updateSecondPlaceIndexAsDefault(cwd: string): Promise<void> {
  * Update an existing geofence collection with given settings. Assume auth is already configured
  * @param cwd command directory
  */
- export function updateGeofenceCollectionWithDefault(cwd: string, groupName: string): Promise<void> {
-  return spawn(getCLIPath(), ['geo', 'update'], { cwd, stripColors: true })
+ export function updateGeofenceCollectionWithDefault(cwd: string, groupNames: string[]): Promise<void> {
+  const chain = spawn(getCLIPath(), ['geo', 'update'], { cwd, stripColors: true })
     .wait('Select which capability you want to update:')
     .sendKeyDown(2)
     .sendCarriageReturn()
     .wait('Select the geofence collection you want to update')
     .sendCarriageReturn()
     .wait('Select one or more cognito groups to give access:')
-    .sendCarriageReturn()
-    .wait(`What kind of access do you want for ${groupName} users? Select ALL that apply:`)
-    .sendCarriageReturn()
-    .wait(defaultGeofenceCollectionQuestion)
+    .sendCarriageReturn();
+
+  for (const groupName of groupNames){
+    chain.wait(`What kind of access do you want for ${groupName} users? Select ALL that apply:`)
+      .sendCarriageReturn();
+  }
+
+  return chain.wait(defaultGeofenceCollectionQuestion)
     .sendYes()
-    .runAsync()
+    .runAsync();
 }
 
 /**
  * Update the second geofence collection as default. Assume auth is already configured and two geofence collections added with first default
  * @param cwd command directory
  */
-export function updateSecondGeofenceCollectionAsDefault(cwd: string, groupName: string): Promise<void> {
-  return spawn(getCLIPath(), ['geo', 'update'], { cwd, stripColors: true })
+export function updateSecondGeofenceCollectionAsDefault(cwd: string, groupNames: string[]): Promise<void> {
+  const chain = spawn(getCLIPath(), ['geo', 'update'], { cwd, stripColors: true })
     .wait('Select which capability you want to update:')
     .sendKeyDown(2)
     .sendCarriageReturn()
@@ -241,12 +249,15 @@ export function updateSecondGeofenceCollectionAsDefault(cwd: string, groupName: 
     .sendKeyDown()
     .sendCarriageReturn()
     .wait('Select one or more cognito groups to give access:')
-    .sendCarriageReturn()
-    .wait(`What kind of access do you want for ${groupName} users? Select ALL that apply:`)
-    .sendCarriageReturn()
-    .wait(defaultGeofenceCollectionQuestion)
+    .sendCarriageReturn();
+
+    for (const groupName of groupNames){
+      chain.wait(`What kind of access do you want for ${groupName} users? Select ALL that apply:`)
+        .sendCarriageReturn();
+    }
+    return chain.wait(defaultGeofenceCollectionQuestion)
     .sendYes()
-    .runAsync()
+    .runAsync();
 }
 
 /**

@@ -8,7 +8,7 @@ import { getCurrentGeofenceCollectionParameters, crudPermissionsMap } from '../s
 import { getGeoServiceMeta, updateDefaultResource, checkGeoResourceExists, getGeoResources } from '../service-utils/resourceUtils';
 import { getServiceFriendlyName, defaultResourceQuestion } from './resourceWalkthrough';
 import { AccessType } from '../service-utils/resourceParams';
-import { printer, prompter, alphanumeric, byValues, and, minLength, maxLength } from 'amplify-prompts';
+import { printer, prompter, alphanumeric, byValues, and, minLength, maxLength, Validator } from 'amplify-prompts';
 
 const geofencingServiceFriendlyName = getServiceFriendlyName(ServiceName.GeofenceCollection);
 /**
@@ -42,23 +42,16 @@ export const createGeofenceCollectionWalkthrough = async (
 };
 
 export const geofenceCollectionNameWalkthrough = async (context: any): Promise<Pick<GeofenceCollectionParameters, 'name'>> => {
-    let collectionName;
-    while(!collectionName) {
-        const [shortId] = uuid().split('-');
-        const nameValidationErrMsg = 'Geofence Collection name can only use the following characters: a-z 0-9 and should have minimum 1 character and max of 95 characters';
-        const validator = and([alphanumeric(), minLength(1), maxLength(95)], nameValidationErrMsg);
-        const collectionNameInput = await prompter.input(
-            'Provide a name for the Geofence Collection:',
-            { validate: validator, initial: `geofenceCollection${shortId}` }
-        );
-        if (await checkGeoResourceExists(collectionNameInput)) {
-            printer.info(`Geo resource ${collectionNameInput} already exists. Choose another name.`);
-        }
-        else { 
-            collectionName = collectionNameInput 
-        };
-    }
-    return { name: collectionName };
+    const [shortId] = uuid().split('-');
+    const nameValidationErrMsg = 'Geofence Collection name can only use the following characters: a-z 0-9 and should have minimum 1 character and max of 95 characters';
+    const uniquenessValidation: Validator = async (input: string) => await checkGeoResourceExists(input) ? `Geo resource ${input} already exists. Choose another name.` : true;
+    const validator = and([alphanumeric(nameValidationErrMsg), minLength(1, nameValidationErrMsg), maxLength(95, nameValidationErrMsg), uniquenessValidation]);
+    
+    const collectionNameInput = await prompter.input(
+        'Provide a name for the Geofence Collection:',
+        { validate: validator, initial: `geofenceCollection${shortId}` }
+    );
+    return { name: collectionNameInput };
 };
 
 export const geofenceCollectionAccessWalkthrough = async (
@@ -103,7 +96,7 @@ export const geofenceCollectionAccessWalkthrough = async (
         const selectedCrudPermissions = await prompter.pick<'many', string>(
             `What kind of access do you want for ${group} users? Select ALL that apply:`,
             Object.keys(crudPermissionsMap),
-            { returnSize: 'many', initial: byValues(defaults) }
+            { returnSize: 'many', initial: byValues(defaults), pickAtLeast: 1  }
         );
 
         return selectedCrudPermissions;
