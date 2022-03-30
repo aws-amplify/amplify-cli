@@ -2,7 +2,9 @@ import Output from 'cloudform-types/types/output';
 import AppSync from 'cloudform-types/types/appSync';
 import IAM from 'cloudform-types/types/iam';
 import Template from 'cloudform-types/types/template';
-import { Fn, StringParameter, NumberParameter, Lambda, Elasticsearch, Refs } from 'cloudform-types';
+import {
+  Fn, StringParameter, NumberParameter, Lambda, Elasticsearch, Refs,
+} from 'cloudform-types';
 import {
   ElasticsearchMappingTemplate,
   print,
@@ -23,10 +25,18 @@ import {
   bool,
   methodCall,
 } from 'graphql-mapping-template';
-import { toUpper, plurality, graphqlName, ResourceConstants, ModelResourceIDs } from 'graphql-transformer-common';
+import {
+  toUpper, plurality, graphqlName, ResourceConstants, ModelResourceIDs,
+} from 'graphql-transformer-common';
 import { MappingParameters } from 'graphql-transformer-core/lib/TransformerContext';
 
+/**
+ * ResourceFactory
+ */
 export class ResourceFactory {
+  /**
+   * makeParams
+   */
   public makeParams() {
     return {
       [ResourceConstants.PARAMETERS.ElasticsearchAccessIAMRoleName]: new StringParameter({
@@ -38,8 +48,8 @@ export class ResourceFactory {
         Default: 'python_streaming_function.lambda_handler',
       }),
       [ResourceConstants.PARAMETERS.ElasticsearchStreamingLambdaRuntime]: new StringParameter({
-        Description: `The lambda runtime \
-                (https://docs.aws.amazon.com/lambda/latest/dg/API_CreateFunction.html#SSS-CreateFunction-request-Runtime)`,
+        Description: 'The lambda runtime \
+                (https://docs.aws.amazon.com/lambda/latest/dg/API_CreateFunction.html#SSS-CreateFunction-request-Runtime)',
         Default: 'python3.6',
       }),
       [ResourceConstants.PARAMETERS.ElasticsearchStreamingFunctionName]: new StringParameter({
@@ -119,85 +129,45 @@ export class ResourceFactory {
           'c6g.4xlarge.elasticsearch',
           'c6g.xlarge.elasticsearch',
           'c6g.12xlarge.elasticsearch',
-          't3.small.search',
-          't3.medium.search',
-          't2.micro.search',
-          't2.small.search',
-          't2.medium.search',
-          'm6g.large.search',
-          'm6g.xlarge.search',
-          'm6g.2xlarge.search',
-          'm6g.4xlarge.search',
-          'm6g.8xlarge.search',
-          'm6g.12xlarge.search',
-          'm5.large.search',
-          'm5.xlarge.search',
-          'm5.2xlarge.search',
-          'm5.4xlarge.search',
-          'm5.12xlarge.search',
-          'm4.large.search',
-          'm4.xlarge.search',
-          'm4.2xlarge.search',
-          'm4.4xlarge.search',
-          'm4.10xlarge.search',
-          'c6g.large.search',
-          'c6g.xlarge.search',
-          'c6g.2xlarge.search',
-          'c6g.4xlarge.search',
-          'c6g.8xlarge.search',
-          'c6g.12xlarge.search',
-          'c5.large.search',
-          'c5.xlarge.search',
-          'c5.2xlarge.search',
-          'c5.4xlarge.search',
-          'c5.9xlarge.search',
-          'c5.18xlarge.search',
-          'c4.large.search',
-          'c4.xlarge.search',
-          'c4.2xlarge.search',
-          'c4.4xlarge.search',
-          'c4.8xlarge.search',
-          'r6g.large.search',
-          'r6g.xlarge.search',
-          'r6g.2xlarge.search',
-          'r6g.4xlarge.search',
-          'r6g.8xlarge.search',
-          'r6g.12xlarge.search',
-          'r6gd.large.search',
-          'r6gd.xlarge.search',
-          'r6gd.2xlarge.search',
-          'r6gd.4xlarge.search',
-          'r6gd.8xlarge.search',
-          'r6gd.12xlarge.search',
-          'r6gd.16xlarge.search',
-          'r5.large.search',
-          'r5.xlarge.search',
-          'r5.2xlarge.search',
-          'r5.4xlarge.search',
-          'r5.12xlarge.search',
-          'r4.large.search',
-          'r4.xlarge.search',
-          'r4.2xlarge.search',
-          'r4.4xlarge.search',
-          'r4.8xlarge.search',
-          'r4.16xlarge.search',
-          'r3.large.search',
-          'r3.xlarge.search',
-          'r3.2xlarge.search',
-          'r3.4xlarge.search',
-          'r3.8xlarge.search',
-          'i3.large.search',
-          'i3.xlarge.search',
-          'i3.2xlarge.search',
-          'i3.4xlarge.search',
-          'i3.8xlarge.search',
-          'i3.16xlarge.search',
-          'm3.medium.search',
-          'm3.large.search',
-          'm3.xlarge.search',
-          'm3.2xlarge.search',
-          'i2.xlarge.search',
-          'i2.2xlarge.search',
+          'c5.xlarge.elasticsearch',
+          'c5.large.elasticsearch',
+          't4g.small.elasticsearch',
+          'c5.9xlarge.elasticsearch',
+          'c6g.8xlarge.elasticsearch',
+          'c6g.large.elasticsearch',
+          'd2.xlarge.elasticsearch',
+          'ultrawarm1.medium.elasticsearch',
+          't3.nano.elasticsearch',
+          't3.medium.elasticsearch',
+          'm6g.2xlarge.elasticsearch',
+          't3.2xlarge.elasticsearch',
+          'c5.18xlarge.elasticsearch',
+          'm6g.4xlarge.elasticsearch',
+          'r6gd.2xlarge.elasticsearch',
+          'm5.xlarge.elasticsearch',
+          'r6gd.4xlarge.elasticsearch',
+          'r6g.2xlarge.elasticsearch',
+          'r5.2xlarge.elasticsearch',
+          'm5.12xlarge.elasticsearch',
+          'm6g.8xlarge.elasticsearch',
+          'm6g.large.elasticsearch',
+          'm5.24xlarge.elasticsearch',
+          'r6g.4xlarge.elasticsearch',
+          't3.large.elasticsearch',
+          'r5.4xlarge.elasticsearch',
+          'ultrawarm1.large.elasticsearch',
+          'r6gd.8xlarge.elasticsearch',
+          'r6gd.large.elasticsearch',
+          'r6g.xlarge.elasticsearch',
+          'r5.xlarge.elasticsearch',
+          'r6g.12xlarge.elasticsearch',
+          'r5.12xlarge.elasticsearch',
+          'm5.2xlarge.elasticsearch',
+          'r6gd.xlarge.elasticsearch',
+          'r6g.8xlarge.elasticsearch',
+          'r6g.large.elasticsearch',
+          'r5.24xlarge.elasticsearch',
+          'r5.large.elasticsearch',
         ],
       }),
       [ResourceConstants.PARAMETERS.ElasticsearchEBSVolumeGB]: new NumberParameter({
@@ -210,7 +180,7 @@ export class ResourceFactory {
   /**
    * Creates the barebones template for an application.
    */
-  public initTemplate(isProjectUsingDataStore: boolean = false): Template {
+  public initTemplate(isProjectUsingDataStore = false): Template {
     return {
       Parameters: this.makeParams(),
       Resources: {
@@ -249,6 +219,9 @@ export class ResourceFactory {
     }).dependsOn(ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID);
   }
 
+  /**
+   *
+   */
   public getLayerMapping(): MappingParameters {
     return {
       LayerResourceMapping: {
@@ -329,7 +302,7 @@ export class ResourceFactory {
    * Deploy a lambda function that will stream data from our DynamoDB table
    * to our elasticsearch index.
    */
-  public makeDynamoDBStreamingFunction(isProjectUsingDataStore: boolean = false) {
+  public makeDynamoDBStreamingFunction(isProjectUsingDataStore = false) {
     return new Lambda.Function({
       Code: {
         S3Bucket: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
@@ -361,6 +334,9 @@ export class ResourceFactory {
     ]);
   }
 
+  /**
+   *
+   */
   public makeDynamoDBStreamEventSourceMapping(typeName: string) {
     return new Lambda.EventSourceMapping({
       BatchSize: 1,
@@ -541,9 +517,9 @@ export class ResourceFactory {
     queryTypeName: string,
     improvePluralization: boolean,
     nameOverride?: string,
-    includeVersion: boolean = false,
+    includeVersion = false,
   ) {
-    const fieldName = nameOverride ? nameOverride : graphqlName('search' + plurality(toUpper(type), improvePluralization));
+    const fieldName = nameOverride || graphqlName(`search${plurality(toUpper(type), improvePluralization)}`);
     return new AppSync.Resolver({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
       DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticsearchDataSourceLogicalID, 'Name'),
@@ -629,6 +605,7 @@ export class ResourceFactory {
       },
     };
   }
+
   /**
    * Create output to export the Elasticsearch DomainEndpoint
    * @returns Output
