@@ -1,4 +1,5 @@
 import { $TSAny, $TSContext, $TSObject, exitOnNextTick, JSONUtilities } from 'amplify-cli-core';
+import { prompter } from 'amplify-prompts';
 import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
@@ -499,7 +500,7 @@ export const getTriggerEnvInputs = async (context, triggerPath, triggerKey, trig
             (Object.keys(currentEnvVars) && Object.keys(currentEnvVars).length === 0) ||
             !currentEnvVars[questions[j].key]
           ) {
-            const answer: any = await inquirer.prompt(questions[j].question);
+            const answer: any = await prompter[questions[j].question.type](questions[j].question.message);
             answers[questions[j].key] = answer[questions[j].key];
           }
         }
