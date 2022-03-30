@@ -1,5 +1,6 @@
 import { getCLIPath, nspawn as spawn, generateRandomShortId } from '..';
 import path from 'path';
+import { readFileSync } from 'fs-extra';
 
 export type GeoConfig = {
   isFirstGeoResource?: boolean;
@@ -373,4 +374,8 @@ export function generateResourceIdsInOrder(count: number): string[] {
     count--;
   }
   return resourceIdArr;
+}
+
+export function getGeoJSONObj(geoJSONFileName: string): any {
+  return JSON.parse(readFileSync(getGeoJSONFilePath(geoJSONFileName), 'utf8'));
 }
