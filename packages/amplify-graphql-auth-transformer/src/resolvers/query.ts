@@ -21,7 +21,6 @@ import {
   nul,
   notEquals,
   parens,
-  toJson,
 } from 'graphql-mapping-template';
 import { NONE_VALUE } from 'graphql-transformer-common';
 import {
@@ -449,41 +448,3 @@ export const generateAuthExpressionForRelationQuery = (
   );
   return printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
 };
-
-/**
- * Creates postDataLoad resolver to strip meta data from owner field for Get
- */
-export const generateGetPostDataLoadForOwner = (roles: Array<RoleDefinition>): string => {
-  const { cognitoDynamicRoles } = splitRoles(roles);
-  const expressions: Expression[] = [];
-
-  cognitoDynamicRoles.forEach((role, idx) => {
-    expressions.push(compoundExpression(stripOwnerField('ctx.prev.result', role, idx)));
-  });
-  expressions.push(toJson(ref('ctx.prev.result')));
-
-  return printBlock('Parse owner field auth for Get')(compoundExpression(expressions));
-};
-
-/**
- * Creates postDataLoad resolver to strip meta data from owner field for List
- */
-export const generateListPostDataLoadForOwner = (roles: Array<RoleDefinition>): string => {
-  const { cognitoDynamicRoles } = splitRoles(roles);
-  const expressions: Expression[] = [];
-
-  cognitoDynamicRoles.forEach((role, idx) => {
-    expressions.push(forEach(ref('item'), ref('ctx.prev.result.items'), stripOwnerField('item', role, idx)));
-  });
-
-  expressions.push(toJson(ref('ctx.prev.result')));
-
-  return printBlock('Parse owner field auth for List')(compoundExpression(expressions));
-};
-
-const stripOwnerField = (ownerResult: string, role: RoleDefinition, idx: number): Expression[] => [
-  set(ref(`ownerEntities${idx}`), ref(`${ownerResult}.${role.entity}.split(":")`)),
-  set(ref(`ownerEntitiesLastIdx${idx}`), raw(`$ownerEntities${idx}.size() - 1`)),
-  set(ref(`ownerEntitiesLast${idx}`), ref(`ownerEntities${idx}.get($ownerEntitiesLastIdx${idx})`)),
-  qref(methodCall(ref(`${ownerResult}.put`), str(role.entity), ref(`ownerEntitiesLast${idx}`))),
-];
