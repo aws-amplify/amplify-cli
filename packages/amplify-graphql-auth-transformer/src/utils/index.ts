@@ -1,10 +1,12 @@
 import { DirectiveWrapper } from '@aws-amplify/graphql-transformer-core';
-import { AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
-import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { AppSyncAuthMode, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Stack } from '@aws-cdk/core';
 import { ObjectTypeDefinitionNode } from 'graphql';
-import { AccessControlMatrix, MODEL_OPERATIONS } from '..';
-import { AuthProvider, AuthRule, AuthTransformerConfig, ConfiguredAuthProviders, RoleDefinition, RolesByProvider } from './definitions';
+import { AccessControlMatrix } from '../accesscontrol';
+import {
+  AuthProvider, AuthRule, AuthTransformerConfig, ConfiguredAuthProviders, RoleDefinition, RolesByProvider,
+} from './definitions';
+import { MODEL_OPERATIONS } from './constants';
 
 export * from './constants';
 export * from './definitions';
@@ -12,17 +14,18 @@ export * from './validations';
 export * from './schema';
 export * from './iam';
 
-export const splitRoles = (roles: Array<RoleDefinition>): RolesByProvider => {
-  return {
-    cognitoStaticRoles: roles.filter(r => r.static && r.provider === 'userPools'),
-    cognitoDynamicRoles: roles.filter(r => !r.static && r.provider === 'userPools'),
-    oidcStaticRoles: roles.filter(r => r.static && r.provider === 'oidc'),
-    oidcDynamicRoles: roles.filter(r => !r.static && r.provider === 'oidc'),
-    iamRoles: roles.filter(r => r.provider === 'iam'),
-    apiKeyRoles: roles.filter(r => r.provider === 'apiKey'),
-    lambdaRoles: roles.filter(r => r.provider === 'function'),
-  };
-};
+/**
+ * Splits roles into key value pairs by auth type
+ */
+export const splitRoles = (roles: Array<RoleDefinition>): RolesByProvider => ({
+  cognitoStaticRoles: roles.filter(r => r.static && r.provider === 'userPools'),
+  cognitoDynamicRoles: roles.filter(r => !r.static && r.provider === 'userPools'),
+  oidcStaticRoles: roles.filter(r => r.static && r.provider === 'oidc'),
+  oidcDynamicRoles: roles.filter(r => !r.static && r.provider === 'oidc'),
+  iamRoles: roles.filter(r => r.provider === 'iam'),
+  apiKeyRoles: roles.filter(r => r.provider === 'apiKey'),
+  lambdaRoles: roles.filter(r => r.provider === 'function'),
+});
 
 /**
  * gets stack name if the field is paired with function, predictions, or by itself
@@ -37,15 +40,17 @@ export const getStackForField = (
   const fieldDirectives = fieldNode.directives.map(d => d.name.value);
   if (fieldDirectives.includes('function')) {
     return ctx.stackManager.getStack('FunctionDirectiveStack');
-  } else if (fieldDirectives.includes('predictions')) {
+  } if (fieldDirectives.includes('predictions')) {
     return ctx.stackManager.getStack('PredictionsDirectiveStack');
-  } else if (hasModelDirective) {
+  } if (hasModelDirective) {
     return ctx.stackManager.getStack(obj.name.value);
-  } else {
-    return ctx.stackManager.rootStack;
   }
+  return ctx.stackManager.rootStack;
 };
 
+/**
+ * Returns auth provider passed on config
+ */
 export const getConfiguredAuthProviders = (config: AuthTransformerConfig): ConfiguredAuthProviders => {
   const providers = [
     config.authConfig.defaultAuthentication.authenticationType,
@@ -63,6 +68,8 @@ export const getConfiguredAuthProviders = (config: AuthTransformerConfig): Confi
         return 'oidc';
       case 'AWS_LAMBDA':
         return 'function';
+      default:
+        return 'apiKey';
     }
   };
   const hasIAM = providers.some(p => p === 'AWS_IAM');
@@ -100,9 +107,13 @@ export const getReadRolesForField = (acm: AccessControlMatrix, readRoles: Array<
   return allowedRoles;
 };
 
+/**
+ * Gets the rules from the auth directive
+ */
 export const getAuthDirectiveRules = (authDir: DirectiveWrapper): AuthRule[] => {
-  const rules = authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] }).rules;
-  for (const rule of rules) {
+  const { rules } = authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] });
+  /* eslint-disable no-param-reassign */
+  rules.forEach(rule => {
     rule.operations = rule.operations ?? MODEL_OPERATIONS;
 
     if (!rule.provider) {
@@ -128,6 +139,7 @@ export const getAuthDirectiveRules = (authDir: DirectiveWrapper): AuthRule[] => 
     if (rule.provider === 'iam') {
       rule.generateIAMPolicy = true;
     }
-  }
+  });
+  /* eslint-enable */
   return rules;
 };
