@@ -88,7 +88,7 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
  * Add geofence collection with default values. Assume auth and cognito group are configured
  * @param cwd command directory
  */
-export function addGeofenceCollectionWithDefault(cwd: string, groupNames: string, settings: GeoConfig = {}): Promise<void> {
+export function addGeofenceCollectionWithDefault(cwd: string, groupNames: string[], settings: GeoConfig = {}): Promise<void> {
   const config = { ...defaultGeoConfig, ...settings };
   const chain = spawn(getCLIPath(), ['geo', 'add'], { cwd, stripColors: true })
     .wait('Select which capability you want to add:')

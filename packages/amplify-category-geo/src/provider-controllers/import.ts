@@ -14,8 +14,6 @@ import { getGeoResources, getGeoServiceMeta } from '../service-utils/resourceUti
 const MAX_ENTRIES_PER_BATCH = 10;
 
 export const importResource = async (context: $TSContext) => {
-  // const geofenceCollectionResources = ((await context.amplify.getResourceStatus()).allResources as any[])
-  //   .filter(resource => resource.service === ServiceName.GeofenceCollection);
   const geofenceCollectionResourcesMap = await getGeoServiceMeta(ServiceName.GeofenceCollection);
   const collectionNames = await getGeoResources(ServiceName.GeofenceCollection);
   if (collectionNames.length === 0) {
