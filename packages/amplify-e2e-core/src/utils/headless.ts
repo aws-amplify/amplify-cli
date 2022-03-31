@@ -26,8 +26,9 @@ export const updateHeadlessApi = async (
   cwd: string,
   request: UpdateApiRequest,
   allowDestructiveUpdates?: boolean,
+  settings = { testingWithLatestCodebase: false },
 ): Promise<ExecaChildProcess<String>> => {
-  return await executeHeadlessCommand(cwd, 'api', 'update', request, undefined, allowDestructiveUpdates);
+  return await executeHeadlessCommand(cwd, 'api', 'update', request, undefined, allowDestructiveUpdates, settings);
 };
 
 export const removeHeadlessApi = async (cwd: string, apiName: string): Promise<ExecaChildProcess<String>> => {
@@ -39,7 +40,7 @@ export const addHeadlessAuth = async (cwd: string, request: AddAuthRequest): Pro
 };
 
 export const updateHeadlessAuth = async (cwd: string, request: UpdateAuthRequest, settings?: any): Promise<ExecaChildProcess<String>> => {
-  return await executeHeadlessCommand(cwd, 'auth', 'update', request, settings);
+  return await executeHeadlessCommand(cwd, 'auth', 'update', request, true, false, settings);
 };
 
 export const removeHeadlessAuth = async (cwd: string, authName: string): Promise<ExecaChildProcess<String>> => {
@@ -89,7 +90,7 @@ const executeHeadlessCommand = async (
   request: AnyHeadlessRequest,
   reject: boolean = true,
   allowDestructiveUpdates: boolean = false,
-  settings = { testingWithLatestCodebase: true },
+  settings = { testingWithLatestCodebase: false },
 ) => {
   const args = [operation, category, '--headless'];
   if (allowDestructiveUpdates) {

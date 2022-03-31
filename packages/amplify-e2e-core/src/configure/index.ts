@@ -48,7 +48,7 @@ export function amplifyConfigure(settings: AmplifyConfiguration): Promise<void> 
   }
 
   return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(process.platform !== 'win32'), ['configure'], { stripColors: true })
+    const chain = spawn(getCLIPath(), ['configure'], { stripColors: true })
       .wait('Sign in to your AWS administrator account:')
       .wait('Press Enter to continue')
       .sendCarriageReturn()
