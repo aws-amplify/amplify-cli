@@ -89,6 +89,13 @@ export const updateDefaultResource = async (
       (defaultResource === resource)
     );
 
+    context.amplify.updateBackendConfigAfterResourceUpdate(
+      category,
+      resource,
+      'isDefault',
+      (defaultResource === resource)
+    );
+
     updateParametersFile(
       { isDefault: (defaultResource === resource) },
       resource,

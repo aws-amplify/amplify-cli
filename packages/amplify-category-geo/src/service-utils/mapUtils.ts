@@ -63,9 +63,11 @@ export const modifyMapResource = async (context: $TSContext, parameters: MapPara
   const paramsToUpdate = ['accessType', 'dependsOn'] as const;
   paramsToUpdate.forEach(param => {
     context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.name, param, mapMetaParameters[param]);
+    context.amplify.updateBackendConfigAfterResourceUpdate(category, parameters.name, param, mapMetaParameters[param]);
   });
-  // remove the pricingPlan if present on old resources
+  // remove the pricingPlan if present on old resources where pricingPlan is configurable
   context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.name, 'pricingPlan', undefined);
+  context.amplify.updateBackendConfigAfterResourceUpdate(category, parameters.name, 'pricingPlan', undefined);
 };
 
 function saveCFNParameters(parameters: Pick<MapParameters, 'name' | 'mapStyleType' | 'dataProvider' | 'isDefault'>) {

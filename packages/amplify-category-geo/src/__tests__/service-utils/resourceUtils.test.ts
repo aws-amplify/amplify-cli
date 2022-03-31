@@ -84,7 +84,8 @@ const geofenceCollection2Params = {
 
 const mockContext = ({
     amplify: {
-        updateamplifyMetaAfterResourceUpdate: jest.fn()
+        updateamplifyMetaAfterResourceUpdate: jest.fn(),
+        updateBackendConfigAfterResourceUpdate: jest.fn()
     }
 } as unknown) as $TSContext;
 

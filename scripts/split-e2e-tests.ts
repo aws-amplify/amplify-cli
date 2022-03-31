@@ -125,6 +125,7 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/geo-add.test.ts',
   'src/__tests__/geo-update.test.ts',
   'src/__tests__/geo-remove.test.ts',
+  'src/__tests__/geo-multi-env.test.ts',
   //<25m
   'src/__tests__/schema-auth-10.test.ts',
   'src/__tests__/schema-key.test.ts',

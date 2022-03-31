@@ -64,9 +64,11 @@ export const modifyPlaceIndexResource = async (context: $TSContext, parameters: 
   const paramsToUpdate = ['accessType', 'dependsOn'] as const;
   paramsToUpdate.forEach(param => {
     context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.name, param, placeIndexMetaParameters[param]);
+    context.amplify.updateBackendConfigAfterResourceUpdate(category, parameters.name, param, placeIndexMetaParameters[param]);
   });
-  // remove the pricingPlan if present on old resources
+  // remove the pricingPlan if present on old resources where pricingPlan is configurable
   context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.name, 'pricingPlan', undefined);
+  context.amplify.updateBackendConfigAfterResourceUpdate(category, parameters.name, 'pricingPlan', undefined);
 };
 
 function saveCFNParameters(
