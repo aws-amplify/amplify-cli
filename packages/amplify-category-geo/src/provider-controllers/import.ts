@@ -9,28 +9,38 @@ import { validateGeoJSONObj } from '../service-utils/validateGeoJSONObj';
 import {
   FeatureCollection, ImportParams, GeofenceCollectionParams, GeofenceParams, IdentifierOption, IdentifierInfo,
 } from '../service-utils/importParams';
+import { getGeoResources, getGeoServiceMeta } from '../service-utils/resourceUtils';
 
 const MAX_ENTRIES_PER_BATCH = 10;
 
 export const importResource = async (context: $TSContext) => {
-  const geofenceCollectionResources = ((await context.amplify.getResourceStatus()).allResources as any[])
-    .filter(resource => resource.service === ServiceName.GeofenceCollection);
-  if (geofenceCollectionResources.length === 0) {
+  // const geofenceCollectionResources = ((await context.amplify.getResourceStatus()).allResources as any[])
+  //   .filter(resource => resource.service === ServiceName.GeofenceCollection);
+  const geofenceCollectionResourcesMap = await getGeoServiceMeta(ServiceName.GeofenceCollection);
+  const collectionNames = await getGeoResources(ServiceName.GeofenceCollection);
+  if (collectionNames.length === 0) {
     throw new Error('Geofence collection is not found. Run `amplify geo add` to create a new geofence collection.')
   }
   // Get provisioned geofence collection name
-  const collectionNames = geofenceCollectionResources.map(collection => {
+  const provisionedCollectionNames = collectionNames.filter(collectionName => {
+    const collection = geofenceCollectionResourcesMap[collectionName];
     if (!collection.output || !collection.output.Name || !collection.output.Region) {
-      throw new Error(`Geofence ${collection.resourceName} is not provisioned yet. Run \`amplify push\` to provision geofence collection.`)
+      return false;
     }
-    return collection.output.Name;
-  });
+    return true;
+  }).map(collectionName => geofenceCollectionResourcesMap[collectionName].output.Name);
+  if (provisionedCollectionNames.length === 0) {
+    throw new Error('No geofence is not provisioned yet. Run \`amplify push\` to provision geofence collection.')
+  }
   // Get collection region
-  const collectionRegion = geofenceCollectionResources[0].output.Region;
+  const collectionRegion = geofenceCollectionResourcesMap[collectionNames[0]].output.Region;
   // Get the collection to import
-  let collectionToImport: string = collectionNames[0];
-  if (geofenceCollectionResources.length > 1) {
-    collectionToImport = await prompter.pick<'one', string>('Select the Geofence Collection to import with Geofences', collectionNames)
+  let collectionToImport: string = provisionedCollectionNames[0];
+  if (provisionedCollectionNames.length > 1) {
+    if (provisionedCollectionNames.length < collectionNames.length) {
+      printer.warn('There are additional geofence collections in the project that have not been deployed. To import data into these resources, run `amplify push` first.');
+    }
+    collectionToImport = await prompter.pick<'one', string>('Select the Geofence Collection to import with Geofences', provisionedCollectionNames);
   }
   // Ask for geo json file path
   let geoJSONFilePath: string;
@@ -41,7 +51,7 @@ export const importResource = async (context: $TSContext) => {
   let geoJSONObj: FeatureCollection;
   geoJSONObj = JSON.parse(readFileSync(geoJSONFilePath, 'utf-8')) as FeatureCollection;
   const identifierWalkthroughOptions = [
-    { name: 'Use root-level "id" field. (Auto-assigned if missing)', value: { identifierType: IdentifierOption.RootLevelID, identifierField: 'id' } },
+    { name: 'Use root-level "id" field. (Auto-assigned if missing. This will MODIFY the GeoJSON file)', value: { identifierType: IdentifierOption.RootLevelID, identifierField: 'id' } },
     ...scanCandidateCustomProperties(geoJSONObj).map(prop => ({
       name: prop,
       value: {
