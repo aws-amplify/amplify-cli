@@ -1,21 +1,22 @@
 import { v4 as uuid } from 'uuid';
 import https from 'https';
 import { UrlWithStringQuery } from 'url';
-import { JSONUtilities } from 'amplify-cli-core';
+import { $TSAny, JSONUtilities } from 'amplify-cli-core';
 import { pick } from 'lodash';
 import { Input } from '../input';
 import redactInput from './identifiable-input-regex';
 import { UsageDataPayload, InputOptions } from './UsageDataPayload';
 import { getUrl } from './getUsageDataUrl';
 import {
-  IUsageData, TimedCodePath, ProjectSettings, StartableTimedCodePath, StoppableTimedCodePath, FromStartupTimedCodePaths,
+  IUsageData, TimedCodePath, ProjectSettings, StartableTimedCodePath, StoppableTimedCodePath, FromStartupTimedCodePaths, IFlowData,
 } from './IUsageData';
 import { Timer } from './Timer';
+import { CLIFlowReport } from './FlowReport';
 
 /**
  * Singleton class that manages the lifecycle of usage data during a CLI command
  */
-export class UsageData implements IUsageData {
+export class UsageData implements IUsageData, IFlowData {
   sessionUuid: string;
   accountId = '';
   installationUuid = '';
@@ -29,6 +30,7 @@ export class UsageData implements IUsageData {
   codePathDurations = new Map<TimedCodePath, number>();
 
   private static instance: UsageData;
+  public static flow : CLIFlowReport;
 
   private constructor() {
     this.sessionUuid = uuid();
@@ -57,13 +59,17 @@ export class UsageData implements IUsageData {
     this.input = redactInput(input, true);
     this.codePathTimers.set(FromStartupTimedCodePaths.PLATFORM_STARTUP, Timer.start(processStartTimeStamp));
     this.codePathTimers.set(FromStartupTimedCodePaths.TOTAL_DURATION, Timer.start(processStartTimeStamp));
+    UsageData.flow.setInput(this.input);
   }
 
   /**
    * Get the usage data singleton
    */
   static get Instance(): IUsageData {
-    if (!UsageData.instance) UsageData.instance = new UsageData();
+    if (!UsageData.instance) {
+      UsageData.instance = new UsageData();
+      UsageData.flow = CLIFlowReport.instance;
+    }
     return UsageData.instance;
   }
 
@@ -103,6 +109,14 @@ export class UsageData implements IUsageData {
    */
   stopCodePathTimer(codePath: StoppableTimedCodePath): void {
     this.internalStopCodePathTimer(codePath);
+  }
+
+  /**
+   * Append record to CLI Flow data
+   * @param flowData input accepted from the CLI
+   */
+  pushFlow(flowData: Record<string, $TSAny>):void {
+    UsageData.flow.pushOption(flowData);
   }
 
   private internalStopCodePathTimer = (codePath: TimedCodePath): void => {

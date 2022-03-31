@@ -1,3 +1,4 @@
+import { $TSAny } from 'amplify-cli-core';
 import { Input } from '../input';
 
 /**
@@ -73,3 +74,10 @@ export type ProjectSettings = {
   editor?: string;
   framework?: string;
 };
+
+/**
+ * CLI walk-through and headless flow data
+ */
+export interface IFlowData {
+  pushFlow: (flowData: Record<string, $TSAny>) => void;
+}
