@@ -10,7 +10,7 @@ describe('test SIGINT with execute', () => {
     const mockExit = jest.fn();
 
     jest.setMock('amplify-cli-core', {
-      ...(jest.requireActual('amplify-cli-core') as {}),
+      ...(jest.requireActual('amplify-cli-core') as Record<string, unknown>),
       JSONUtilities: {
         readJson: jest.fn().mockReturnValue({
           name: 'cli',
@@ -67,7 +67,7 @@ describe('test SIGINT with execute', () => {
       Redactor: jest.fn(),
     });
 
-    const mockContext: Context = jest.genMockFromModule('../domain/context');
+    const mockContext: Context = jest.createMockFromModule('../domain/context');
     mockContext.input = input;
     mockContext.print = {
       warning: jest.fn(),
@@ -75,12 +75,13 @@ describe('test SIGINT with execute', () => {
     mockContext.usageData = {
       emitError: jest.fn(),
       emitAbort: jest.fn(),
-      emitInvoke: jest.fn(),
       emitSuccess: jest.fn(),
       init: jest.fn(),
+      startCodePathTimer: jest.fn(),
+      stopCodePathTimer: jest.fn(),
     };
     mockContext.projectHasMobileHubResources = false;
-    mockContext.amplify = jest.genMockFromModule('../domain/amplify-toolkit');
+    mockContext.amplify = jest.createMockFromModule('../domain/amplify-toolkit');
     Object.defineProperty(mockContext.amplify, 'getEnvInfo', { value: jest.fn() });
     jest.setMock('../context-manager', {
       constructContext: jest.fn().mockReturnValue(mockContext),
@@ -101,17 +102,15 @@ describe('test SIGINT with execute', () => {
       process.exitCode = 2;
     }, 10);
 
-    await require('../index').run();
+    // for some reason this test doesn't work when hoisting this require to a top level import
+    // probably something to do with how the mocks are constructed
+    // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
+    await require('../index').run(Date.now());
     expect(mockContext.usageData.emitAbort).toBeCalled();
-    expect(mockContext.usageData.emitInvoke).toBeCalled();
     expect(mockContext.usageData.emitError).toHaveBeenCalledTimes(0);
     expect(mockContext.usageData.emitSuccess).toHaveBeenCalledTimes(0);
     expect(mockExit).toBeCalledWith(2);
   });
 });
 
-function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms);
-  });
-}
+const sleep = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));

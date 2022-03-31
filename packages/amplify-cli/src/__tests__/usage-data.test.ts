@@ -5,6 +5,8 @@ import * as uuid from 'uuid';
 import { UsageData } from '../domain/amplify-usageData/UsageData';
 import { getUrl } from '../domain/amplify-usageData/getUsageDataUrl';
 import { Input } from '../domain/input';
+import { ManuallyTimedCodePath } from '../domain/amplify-usageData/IUsageData';
+import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
 
 const baseOriginalUrl = 'https://cli.amplify';
 const pathToUrl = '/metrics';
@@ -19,18 +21,49 @@ describe('test usageData', () => {
     delete process.env.AMPLIFY_CLI_BETA_USAGE_TRACKING_URL;
   });
 
+  const scope = nock(baseOriginalUrl, {
+    reqheaders: {
+      'content-type': 'application/json',
+    },
+  }).persist();
+
   it('test getUrl', () => {
     const testUrl = getUrl();
-    const parseOrginalUrl = url.parse(originalUrl);
-    expect(testUrl).toEqual(parseOrginalUrl);
+    const parseOriginalUrl = url.parse(originalUrl);
+    expect(testUrl).toEqual(parseOriginalUrl);
   });
 
   it('test instance', () => {
     const a = UsageData.Instance;
     const b = UsageData.Instance;
-    a.init(uuid.v4(), '', new Input([]), 'accountId', { editor: 'vscode', framework: 'react', frontend: 'javascript' });
-    b.init(uuid.v4(), '', new Input([]), 'accountId', { editor: 'vscode', framework: 'react', frontend: 'javascript' });
+    const timeStamp = Date.now();
+    a.init(uuid.v4(), '', new Input([]), 'accountId', { editor: 'vscode', framework: 'react', frontend: 'javascript' }, timeStamp);
+    b.init(uuid.v4(), '', new Input([]), 'accountId', { editor: 'vscode', framework: 'react', frontend: 'javascript' }, timeStamp);
     expect(a).toEqual(b);
+  });
+
+  it('records specified code path timer', async () => {
+    const usageData = UsageData.Instance;
+    usageData.startCodePathTimer(ManuallyTimedCodePath.PLUGIN_TIME);
+    await new Promise(resolve => setTimeout(resolve, 10));
+    usageData.stopCodePathTimer(ManuallyTimedCodePath.PLUGIN_TIME);
+    scope.post(pathToUrl, () => true).reply(200, '1234567890'.repeat(14));
+
+    const result = await (usageData as any).emit(null, 'SUCCEEDED') as UsageDataPayload;
+    expect(result.codePathDurations.pluginTime).toBeDefined();
+  });
+
+  it('errors if starting a duplicate timer', () => {
+    const usageData = UsageData.Instance;
+    usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES);
+    expect(() => usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES)).toThrowErrorMatchingInlineSnapshot(
+      '"initEnvCategories already has a running timer"',
+    );
+  });
+
+  it('does nothing when stopping a timer that is not running', () => {
+    const usageData = UsageData.Instance;
+    expect(() => usageData.stopCodePathTimer(ManuallyTimedCodePath.PUSH_DEPLOYMENT)).not.toThrow();
   });
 });
 
@@ -48,6 +81,7 @@ describe('test usageData calls', () => {
       'content-type': 'application/json',
     },
   }).persist();
+
   it('test https with 503', async () => {
     scope.post(pathToUrl, () => true).reply(503, 'Service Unavailable');
     await checkUsageData();
@@ -69,7 +103,7 @@ describe('test usageData calls', () => {
     await checkUsageData();
   });
 
-  it('test https with 200 long randomstring', async () => {
+  it('test https with 200 long random string', async () => {
     scope.post(pathToUrl, () => true).reply(200, '1234567890'.repeat(14));
     await checkUsageData();
   });
@@ -80,7 +114,7 @@ describe('test usageData calls', () => {
   });
 });
 
-async function checkUsageData() {
+const checkUsageData = async (): Promise<void> => {
   const abortResponse = await UsageData.Instance.emitAbort();
   expect(abortResponse).toBeUndefined();
   const errorResponse = await UsageData.Instance.emitError(new Error('something went wrong'));
@@ -88,6 +122,4 @@ async function checkUsageData() {
 
   const successResponse = await UsageData.Instance.emitSuccess();
   expect(successResponse).toBeUndefined();
-  const invokeResponse = await UsageData.Instance.emitInvoke();
-  expect(invokeResponse).toBeUndefined();
-}
+};
