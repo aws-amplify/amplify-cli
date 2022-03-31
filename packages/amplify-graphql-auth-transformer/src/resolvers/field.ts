@@ -191,3 +191,18 @@ export const generateSandboxExpressionForField = (sandboxEnabled: boolean): stri
   else exp = methodCall(ref('util.unauthorized'));
   return printBlock(`Sandbox Mode ${sandboxEnabled ? 'Enabled' : 'Disabled'}`)(compoundExpression([exp, toJson(obj({}))]));
 };
+
+/**
+ * Creates field resolver for owner
+ */
+export const generateFieldResolverForOwner = (entity: string): string => {
+  const expressions: Expression[] = [
+    set(ref('ownerEntities'), ref(`ctx.source.${entity}.split(":")`)),
+    set(ref('ownerEntitiesLastIdx'), raw('$ownerEntities.size() - 1')),
+    set(ref('ownerEntitiesLast'), ref('ownerEntities.get($ownerEntitiesLastIdx)')),
+    qref(methodCall(ref('ctx.source.put'), str(entity), ref('ownerEntitiesLast'))),
+    toJson(ref(`ctx.source.${entity}`)),
+  ];
+
+  return printBlock('Parse owner field auth for Get')(compoundExpression(expressions));
+};
