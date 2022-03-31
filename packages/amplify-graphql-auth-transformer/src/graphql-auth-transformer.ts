@@ -471,6 +471,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   ): void => {
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     const roleDefinitions = acm.getRolesPerOperation('read').map(r => this.roleMap.get(r)!);
+    const { cognitoDynamicRoles } = splitRoles(roleDefinitions);
     const tableKeySchema = getTable(ctx, def).keySchema;
     const primaryFields = tableKeySchema.map(att => att.attributeName);
     const primaryKey = getPartitionKey(tableKeySchema);
@@ -486,6 +487,13 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       'auth',
       MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
     );
+    if (cognitoDynamicRoles.length > 0) {
+      resolver.addToSlot(
+        'postDataLoad',
+        undefined,
+        MappingTemplate.s3MappingTemplateFromString(generateGetPostDataLoadForOwner(roleDefinitions), `${typeName}.${fieldName}.{slotName}.{slotIndex}.res.vtl`),
+      );
+    }
   };
 
   protectListResolver = (
@@ -498,6 +506,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   ): void => {
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     const roleDefinitions = acm.getRolesPerOperation('read').map(r => this.roleMap.get(r)!);
+    const { cognitoDynamicRoles } = splitRoles(roleDefinitions);
     let primaryFields: Array<string>;
     let partitionKey: string;
     const table = getTable(ctx, def);
@@ -527,6 +536,13 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       'auth',
       MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
     );
+    if (cognitoDynamicRoles.length > 0) {
+      resolver.addToSlot(
+        'postDataLoad',
+        undefined,
+        MappingTemplate.s3MappingTemplateFromString(generateListPostDataLoadForOwner(roleDefinitions), `${typeName}.${fieldName}.{slotName}.{slotIndex}.res.vtl`),
+      );
+    }
   };
 
   protectRelationalResolver = (
