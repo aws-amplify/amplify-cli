@@ -1,6 +1,6 @@
 {
   "name": "amplify-app",
-  "version": "4.2.25",
+  "version": "5.0.0-pkg-npm-install.0",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",

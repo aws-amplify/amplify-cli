@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-pkg-npm-install.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.16...amplify-e2e-tests@4.0.0-pkg-npm-install.0) (2022-03-31)
+
+
+### Bug Fixes
+
+* **graphql:** avoid duplicate function when overriding resolvers ([#9980](https://github.com/aws-amplify/amplify-cli/issues/9980)) ([94398f8](https://github.com/aws-amplify/amplify-cli/commit/94398f88eca979a2e0806954e12272e126966a51))
+
+
+* build!: npm pkg cli ([49c1cdd](https://github.com/aws-amplify/amplify-cli/commit/49c1cdde4768a2492d38bb1c5bc255d51cda18a3))
+
+
+### BREAKING CHANGES
+
+* package name update
+
+
+
+
+
 ## [3.7.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.15...amplify-e2e-tests@3.7.16) (2022-03-23)
 
 

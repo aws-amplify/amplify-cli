@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-pkg-npm-install.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.27...amplify-migration-tests@5.0.0-pkg-npm-install.0) (2022-03-31)
+
+
+* build!: npm pkg cli ([49c1cdd](https://github.com/aws-amplify/amplify-cli/commit/49c1cdde4768a2492d38bb1c5bc255d51cda18a3))
+
+
+### BREAKING CHANGES
+
+* package name update
+
+
+
+
+
 ## [4.4.27](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.26...amplify-migration-tests@4.4.27) (2022-03-23)
 
 **Note:** Version bump only for package amplify-migration-tests

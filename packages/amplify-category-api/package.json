@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-api",
-  "version": "1.2.17",
+  "version": "1.2.18-pkg-npm-install.0",
   "description": "amplify-cli api plugin",
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-migrator": "1.2.31",
+    "@aws-amplify/graphql-transformer-migrator": "1.2.32-pkg-npm-install.0",
     "@aws-cdk/assets": "~1.124.0",
     "@aws-cdk/aws-apigateway": "~1.124.0",
     "@aws-cdk/aws-apigatewayv2": "~1.124.0",
@@ -71,7 +71,7 @@
     "amplify-cli-core": "2.5.0",
     "amplify-headless-interface": "1.14.2",
     "amplify-prompts": "1.6.3",
-    "amplify-provider-awscloudformation": "5.9.12",
+    "amplify-provider-awscloudformation": "5.9.13-pkg-npm-install.0",
     "amplify-util-headless-input": "1.9.3",
     "chalk": "^4.1.1",
     "constructs": "^3.3.125",

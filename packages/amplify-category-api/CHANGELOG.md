@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.18-pkg-npm-install.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.2.17...@aws-amplify/amplify-category-api@1.2.18-pkg-npm-install.0) (2022-03-31)
+
+
+### Bug Fixes
+
+* **container-api:** upgrade flask version for the python api ([#10077](https://github.com/aws-amplify/amplify-cli/issues/10077)) ([64ba2f1](https://github.com/aws-amplify/amplify-cli/commit/64ba2f1b0231ba3d237bfdbd2d36db303bedb9d3))
+
+
+
+
+
 ## [1.2.17](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.2.16...@aws-amplify/amplify-category-api@1.2.17) (2022-03-23)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api
