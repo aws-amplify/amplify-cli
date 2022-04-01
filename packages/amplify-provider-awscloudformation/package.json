@@ -109,6 +109,7 @@
     "graphql-key-transformer": "3.2.29",
     "graphql-predictions-transformer": "3.2.29",
     "graphql-transformer-core": "7.4.12",
+    "graphql-transformer-common": "4.23.0",
     "graphql-versioned-transformer": "5.2.29",
     "ignore": "^5.2.0",
     "import-from": "^3.0.0",

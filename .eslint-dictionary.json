@@ -23,6 +23,7 @@
   "durations",
   "elasticsearch",
   "dynamodb",
+  "elasticsearch",
   "enum",
   "execa",
   "extensibility",
