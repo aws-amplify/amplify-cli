@@ -337,13 +337,12 @@ export function addAuthWithCustomTrigger(cwd: string, settings: any): Promise<vo
       .send(' ')
       .sendCarriageReturn()
       .wait('Enter a comma-delimited list of disallowed email domains')
-      .send('amazon.com')
-      .sendCarriageReturn()
+      .sendLine('amazon.com')
       .wait('Successfully')
       .wait(`Do you want to edit your email-filter-denylist${settings.useInclusiveTerminology === false ? '-legacy' : ''} function now?`)
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Do you want to edit your custom function now')
-      .sendLine('n')
+      .sendConfirmNo()
       .run((err: Error) => {
         if (!err) {
           resolve();
