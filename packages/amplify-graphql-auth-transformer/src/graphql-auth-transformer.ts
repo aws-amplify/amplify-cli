@@ -387,6 +387,12 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       subscriptionFieldNames.forEach(subscription => {
         this.protectSubscriptionResolver(context, subscription.typeName, subscription.fieldName, subscriptionRoles);
       });
+
+      roleDefinitions.forEach(role => {
+        if (role.strategy === 'owner') {
+          this.addFieldResolverForDynamicAuth(context, def, modelName, role.entity);
+        }
+      });
     });
 
     this.authNonModelConfig.forEach((acm, typeFieldName) => {
