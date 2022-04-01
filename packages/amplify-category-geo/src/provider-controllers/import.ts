@@ -26,19 +26,21 @@ export const importResource = async (context: $TSContext) => {
       return false;
     }
     return true;
-  }).map(collectionName => geofenceCollectionResourcesMap[collectionName].output.Name);
+  });
   if (provisionedCollectionNames.length === 0) {
     throw new Error('No geofence is not provisioned yet. Run \`amplify push\` to provision geofence collection.')
   }
   // Get collection region
   const collectionRegion = geofenceCollectionResourcesMap[provisionedCollectionNames[0]].output.Region;
+  // Get collection output name
+  const provisionedCollectionOutputNames = provisionedCollectionNames.map(collectionName => geofenceCollectionResourcesMap[collectionName].output.Name);
   // Get the collection to import
-  let collectionToImport: string = provisionedCollectionNames[0];
-  if (provisionedCollectionNames.length > 1) {
-    if (provisionedCollectionNames.length < collectionNames.length) {
+  let collectionToImport: string = provisionedCollectionOutputNames[0];
+  if (provisionedCollectionOutputNames.length > 1) {
+    if (provisionedCollectionOutputNames.length < collectionNames.length) {
       printer.warn('There are additional geofence collections in the project that have not been deployed. To import data into these resources, run `amplify push` first.');
     }
-    collectionToImport = await prompter.pick<'one', string>('Select the Geofence Collection to import with Geofences', provisionedCollectionNames);
+    collectionToImport = await prompter.pick<'one', string>('Select the Geofence Collection to import with Geofences', provisionedCollectionOutputNames);
   }
   // Ask for geo json file path
   let geoJSONFilePath: string;
