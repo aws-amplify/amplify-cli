@@ -28,7 +28,7 @@ const LambdaTriggersKeys = [
   'PostAuthentication',
   'PostConfirmation',
   'PreAuthentication',
-  'PreSignUp',
+  'PreSignup',
   'PreTokenGeneration',
   'VerifyAuthChallengeResponse',
 ];
@@ -349,10 +349,10 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
               preAuthentication: cdk.Fn.ref(`function${props.resourceName}${'PreAuthentication'}Arn`),
             };
           }
-          if (trigger.resourceName.includes('PreSignUp')) {
+          if (trigger.resourceName.includes('PreSignup')) {
             this.userPool!.lambdaConfig = {
               ...this.userPool!.lambdaConfig,
-              preSignUp: cdk.Fn.ref(`function${props.resourceName}${'PreSignUp'}Arn`),
+              preSignUp: cdk.Fn.ref(`function${props.resourceName}${'PreSignup'}Arn`),
             };
           }
           if (trigger.resourceName.includes('PreTokenGeneration')) {
@@ -461,13 +461,13 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
 
       this.createUserPoolClientCustomResource(props);
       if (props.hostedUIDomainName) {
-        this.createHostedUICustomResource(props);
+        this.createHostedUICustomResource();
       }
       if (props.hostedUIProviderMeta) {
-        this.createHostedUIProviderCustomResource(props);
+        this.createHostedUIProviderCustomResource();
       }
       if (props.oAuthMetadata) {
-        this.createOAuthCustomResource(props);
+        this.createOAuthCustomResource();
       }
       if (!props.useEnabledMfas && props.mfaConfiguration != 'OFF') {
         this.createMFACustomResource(props);
@@ -653,7 +653,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     this.userPoolClientInputs.node.addDependency(this.userPoolClientLogPolicy);
   }
 
-  createHostedUICustomResource(props: CognitoStackOptions) {
+  createHostedUICustomResource() {
     // lambda function
     this.hostedUICustomResource = new lambda.CfnFunction(this, 'HostedUICustomResource', {
       code: {
@@ -731,7 +731,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     this.hostedUICustomResourceInputs.node.addDependency(this.hostedUICustomResourceLogPolicy);
   }
 
-  createHostedUIProviderCustomResource(props: CognitoStackOptions) {
+  createHostedUIProviderCustomResource() {
     // lambda function
     this.hostedUIProvidersCustomResource = new lambda.CfnFunction(this, 'HostedUIProvidersCustomResource', {
       code: {
@@ -811,7 +811,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     this.hostedUIProvidersCustomResourceInputs.node.addDependency(this.hostedUIProvidersCustomResourceLogPolicy);
   }
 
-  createOAuthCustomResource(props: CognitoStackOptions) {
+  createOAuthCustomResource() {
     // lambda function
     this.oAuthCustomResource = new lambda.CfnFunction(this, 'OAuthCustomResource', {
       code: {
@@ -822,8 +822,9 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       runtime: 'nodejs12.x',
       timeout: 300,
     });
-    //TODO
+
     this.oAuthCustomResource.node.addDependency(this.hostedUICustomResourceInputs!.node!.defaultChild!);
+    this.oAuthCustomResource.node.addDependency(this.hostedUIProvidersCustomResourceInputs!.node!.defaultChild!);
 
     // userPool client lambda policy
     /**

@@ -3,6 +3,50 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.4.18...amplify-cli-core@2.5.0) (2022-03-23)
+
+
+### Bug Fixes
+
+* make amplify prompts dependency explicit, lint errors ([#10007](https://github.com/aws-amplify/amplify-cli/issues/10007)) ([66cdc06](https://github.com/aws-amplify/amplify-cli/commit/66cdc06df5f4cba106345af6f6e196b3c3e39445))
+
+
+### Features
+
+* **amplify-cli-core:** Allow cloudformation functions (e.g. Fn::Sub, Fn::Join) in custom-policies.json resources ([#9076](https://github.com/aws-amplify/amplify-cli/issues/9076)) ([6357706](https://github.com/aws-amplify/amplify-cli/commit/6357706ded0a4e07914b8556690575ff1e547730))
+
+
+
+
+
+## [2.4.18](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.4.17...amplify-cli-core@2.4.18) (2022-03-14)
+
+
+### Bug Fixes
+
+* **cli:** spinner hiding prompt ([#9875](https://github.com/aws-amplify/amplify-cli/issues/9875)) ([c7e7b90](https://github.com/aws-amplify/amplify-cli/commit/c7e7b90e615da54dd1849435d63068cbe095b55a))
+* improve error message on custom policies validation failure ([#9862](https://github.com/aws-amplify/amplify-cli/issues/9862)) ([60e05f7](https://github.com/aws-amplify/amplify-cli/commit/60e05f7a5b77d32b539ab09d7106faea75736eee))
+
+
+
+
+
+## [2.4.17](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.4.16...amplify-cli-core@2.4.17) (2022-03-07)
+
+**Note:** Version bump only for package amplify-cli-core
+
+
+
+
+
+## [2.4.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.4.15...amplify-cli-core@2.4.16) (2022-02-25)
+
+**Note:** Version bump only for package amplify-cli-core
+
+
+
+
+
 ## [2.4.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.4.14...amplify-cli-core@2.4.15) (2022-02-15)
 
 **Note:** Version bump only for package amplify-cli-core

@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.11.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.11.2...@aws-amplify/graphql-index-transformer@0.11.3) (2022-03-23)
+
+
+### Bug Fixes
+
+* **graphql:** avoid static datastructures in gql transform ([#10006](https://github.com/aws-amplify/amplify-cli/issues/10006)) ([cd73fdd](https://github.com/aws-amplify/amplify-cli/commit/cd73fdde69f1545683e81684c4f9267145b845c6))
+
+
+
+
+
+## [0.11.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.11.1...@aws-amplify/graphql-index-transformer@0.11.2) (2022-02-25)
+
+
+### Bug Fixes
+
+* disallow lists in [@primary](https://github.com/primary)Key and [@index](https://github.com/index) fields ([#9749](https://github.com/aws-amplify/amplify-cli/issues/9749)) ([44df217](https://github.com/aws-amplify/amplify-cli/commit/44df21756f5892b174dcdac116e7576005a42ad5))
+* **graphql-auth-transformer:** fix relational map key schema lookup when using LSI ([#9722](https://github.com/aws-amplify/amplify-cli/issues/9722)) ([1794cda](https://github.com/aws-amplify/amplify-cli/commit/1794cda7658d9d7596b372c2a78b3f753d7d6aaf))
+* include default values in index arg validation ([#9759](https://github.com/aws-amplify/amplify-cli/issues/9759)) ([e135e42](https://github.com/aws-amplify/amplify-cli/commit/e135e42ece439dd9925edd8488dbc6a129d92aa8))
+
+
+
+
+
 ## [0.11.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.11.0...@aws-amplify/graphql-index-transformer@0.11.1) (2022-02-15)
 
 **Note:** Version bump only for package @aws-amplify/graphql-index-transformer

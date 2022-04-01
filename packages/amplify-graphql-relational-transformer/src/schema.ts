@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { makeModelSortDirectionEnumObject } from '@aws-amplify/graphql-model-transformer';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { DirectiveNode, FieldDefinitionNode, InputObjectTypeDefinitionNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
+import { DirectiveNode, FieldDefinitionNode, InputObjectTypeDefinitionNode, Kind, ListValueNode, ObjectTypeDefinitionNode, StringValueNode } from 'graphql';
 import {
   blankObject,
   blankObjectExtension,
@@ -108,11 +108,7 @@ function ensureModelSortDirectionEnum(ctx: TransformerContextProvider): void {
   }
 }
 
-export function ensureHasOneConnectionField(
-  config: HasOneDirectiveConfiguration,
-  ctx: TransformerContextProvider,
-  connectionAttributeName?: string,
-) {
+export function ensureHasOneConnectionField(config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider) {
   const { field, fieldNodes, object } = config;
 
   // If fields were explicitly provided to the directive, there is nothing else to do here.
@@ -120,10 +116,7 @@ export function ensureHasOneConnectionField(
     return;
   }
 
-  // Update the create and update input objects for this type.
-  if (!connectionAttributeName) {
-    connectionAttributeName = getConnectionAttributeName(object.name.value, field.name.value);
-  }
+  const connectionAttributeName = getConnectionAttributeName(object.name.value, field.name.value);
 
   const typeObject = ctx.output.getType(object.name.value) as ObjectTypeDefinitionNode;
   if (typeObject) {
@@ -428,4 +421,25 @@ export function getPartitionKeyField(ctx: TransformerContextProvider, object: Ob
   }
 
   return fieldMap.get(name) ?? makeField('id', [], wrapNonNull(makeNamedType('ID')));
+}
+
+export function getSortKeyFields(ctx: TransformerContextProvider, object: ObjectTypeDefinitionNode): FieldDefinitionNode[] {
+  const outputObject = ctx.output.getType(object.name.value) as ObjectTypeDefinitionNode;
+  assert(outputObject);
+  const fieldMap = new Map<string, FieldDefinitionNode>();
+
+  for (const field of outputObject.fields!) {
+    fieldMap.set(field.name.value, field);
+  }
+
+  for (const field of outputObject.fields!) {
+    for (const directive of field.directives!) {
+      if (directive.name.value === 'primaryKey') {
+        const values = directive.arguments?.find(arg => arg.name.value === 'sortKeyFields')?.value as ListValueNode;
+        return values ? values.values.map(val => fieldMap.get((val as StringValueNode).value)!) : [];
+      }
+    }
+  }
+
+  return [];
 }

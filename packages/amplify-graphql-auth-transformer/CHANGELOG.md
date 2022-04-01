@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.7.9...@aws-amplify/graphql-auth-transformer@0.7.10) (2022-03-23)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+
+
+
+
+## [0.7.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.7.8...@aws-amplify/graphql-auth-transformer@0.7.9) (2022-03-17)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** expand [@auth](https://github.com/auth) directive to explicit set of allowed operations ([#9859](https://github.com/aws-amplify/amplify-cli/issues/9859)) ([e44ed18](https://github.com/aws-amplify/amplify-cli/commit/e44ed189b2c94230cbd5674606ffa488cb6c7bfe))
+
+
+
+
+
+## [0.7.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.7.7...@aws-amplify/graphql-auth-transformer@0.7.8) (2022-03-07)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+
+
+
+
+## [0.7.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.7.6...@aws-amplify/graphql-auth-transformer@0.7.7) (2022-02-25)
+
+
+
+## 7.6.22 (2022-02-24)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** fix relational map key schema lookup when using LSI ([#9722](https://github.com/aws-amplify/amplify-cli/issues/9722)) ([1794cda](https://github.com/aws-amplify/amplify-cli/commit/1794cda7658d9d7596b372c2a78b3f753d7d6aaf))
+* **graphql-auth-transformer:** update resolver should allow if update operation is set ([#9808](https://github.com/aws-amplify/amplify-cli/issues/9808)) ([44a9bea](https://github.com/aws-amplify/amplify-cli/commit/44a9bea139a9a1483cfbc7db29b84938510ffdca))
+
+
+
+
+
 ## [0.7.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.7.5...@aws-amplify/graphql-auth-transformer@0.7.6) (2022-02-15)
 
 **Note:** Version bump only for package @aws-amplify/graphql-auth-transformer

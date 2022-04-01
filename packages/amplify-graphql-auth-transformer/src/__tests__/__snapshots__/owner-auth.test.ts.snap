@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ownerfield where the field is a list 1`] = `
+exports[`owner field where the field is a list 1`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
@@ -10,23 +10,24 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #if( !$isAuthorized )
     #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.editors, null) )
     #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-    #set( $ownerAllowedFields0 = [] )
+    #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"editors\\",\\"createdAt\\",\\"updatedAt\\"] )
+    #set( $isAuthorizedOnAllFields0 = true )
     #foreach( $allowedOwner in $ownerEntity0 )
       #if( $allowedOwner == $ownerClaim0 )
-        #if( !$ownerAllowedFields0.isEmpty() )
-          $util.qr($allowedFields.addAll($ownerAllowedFields0))
-        #else
+        #if( $isAuthorizedOnAllFields0 )
           #set( $isAuthorized = true )
           #break
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
         #end
       #end
     #end
     #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"editors\\") )
       $util.qr($ctx.args.input.put(\\"editors\\", [$ownerClaim0]))
-      #if( !$ownerAllowedFields0.isEmpty() )
-        $util.qr($allowedFields.addAll($ownerAllowedFields0))
-      #else
+      #if( $isAuthorizedOnAllFields0 )
         #set( $isAuthorized = true )
+      #else
+        $util.qr($allowedFields.addAll($ownerAllowedFields0))
       #end
     #end
   #end
@@ -44,7 +45,7 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **"
 `;
 
-exports[`ownerfield where the field is a list 2`] = `
+exports[`owner field where the field is a list 2`] = `
 "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -62,7 +63,7 @@ $util.toJson($GetRequest)
 ## [End] Get Request template. **"
 `;
 
-exports[`ownerfield where the field is a list 3`] = `
+exports[`owner field where the field is a list 3`] = `
 "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -80,7 +81,7 @@ $util.toJson($GetRequest)
 ## [End] Get Request template. **"
 `;
 
-exports[`ownerfield where the field is a list 4`] = `
+exports[`owner field where the field is a list 4`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
@@ -104,7 +105,7 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **"
 `;
 
-exports[`ownerfield where the field is a list 5`] = `
+exports[`owner field where the field is a list 5`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
@@ -128,7 +129,7 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **"
 `;
 
-exports[`test owner fields on primaryKey create authfilter for scan operation 1`] = `
+exports[`owner fields on primaryKey create auth filter for scan operation 1`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )

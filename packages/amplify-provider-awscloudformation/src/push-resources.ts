@@ -1,3 +1,20 @@
+// TODO This file is a catastrophe that is going to need a dedicated refactor effort
+/* eslint-disable import/no-cycle */
+/* eslint-disable max-depth */
+/* eslint-disable max-lines-per-function */
+/* eslint-disable prefer-const */
+/* eslint-disable no-param-reassign */
+/* eslint-disable no-return-await */
+/* eslint-disable consistent-return */
+/* eslint-disable jsdoc/require-description */
+/* eslint-disable no-continue */
+/* eslint-disable max-len */
+/* eslint-disable spellcheck/spell-checker */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable func-style */
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-await-in-loop */
 import _ from 'lodash';
 import * as fs from 'fs-extra';
 import { EOL } from 'os';
@@ -22,6 +39,7 @@ import {
   Template,
 } from 'amplify-cli-core';
 import ora from 'ora';
+import { Fn } from 'cloudform-types';
 import { S3 } from './aws-utils/aws-s3';
 import Cloudformation from './aws-utils/aws-cfn';
 import { formUserAgentParam } from './aws-utils/user-agent';
@@ -38,8 +56,9 @@ import { loadResourceParameters } from './resourceParams';
 import { uploadAuthTriggerFiles } from './upload-auth-trigger-files';
 import archiver from './utils/archiver';
 import amplifyServiceManager from './amplify-service-manager';
-import { DeploymentManager, DeploymentStep, DeploymentOp, DeploymentStateManager, runIterativeRollback } from './iterative-deployment';
-import { Fn } from 'cloudform-types';
+import {
+  DeploymentManager, DeploymentStep, DeploymentOp, DeploymentStateManager, runIterativeRollback,
+} from './iterative-deployment';
 import { getGqlUpdatedResource } from './graphql-transformer/utils';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { fileLogger } from './utils/aws-logger';
@@ -79,7 +98,10 @@ const deploymentInProgressErrorMessage = (context: $TSContext) => {
   context.print.error('"amplify push --force" to re-deploy');
 };
 
-export async function run(context: $TSContext, resourceDefinition: $TSObject, rebuild: boolean = false) {
+/**
+ *
+ */
+export const run = async (context: $TSContext, resourceDefinition: $TSObject, rebuild = false) => {
   const deploymentStateManager = await DeploymentStateManager.createDeploymentStateManager(context);
   let iterativeDeploymentWasInvoked = false;
   let layerResources = [];
@@ -100,7 +122,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
     } = context;
     let resources = !!context?.exeInfo?.forcePush || rebuild ? allResources : resourcesToBeCreated.concat(resourcesToBeUpdated);
 
-    layerResources = resources.filter(r => r.service === AmplifySupportedService.LAMBDA_LAYER);
+    layerResources = resources.filter((r: { service: string; }) => r.service === AmplifySupportedService.LAMBDA_LAYER);
 
     if (deploymentStateManager.isDeploymentInProgress() && !deploymentStateManager.isDeploymentFinished()) {
       if (context.exeInfo?.forcePush || context.exeInfo?.iterativeRollback) {
@@ -114,7 +136,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
     await createEnvLevelConstructs(context);
 
     // removing dependent functions if @model{Table} is deleted
-    const apiResourceTobeUpdated = resourcesToBeUpdated.filter(resource => resource.service === 'AppSync');
+    const apiResourceTobeUpdated = resourcesToBeUpdated.filter((resource: { service: string; }) => resource.service === 'AppSync');
     if (apiResourceTobeUpdated.length) {
       const functionResourceToBeUpdated = await ensureValidFunctionModelDependencies(
         context,
@@ -123,7 +145,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
       );
       // filter updated function to replace with existing updated ones(in case of duplicates)
       if (functionResourceToBeUpdated !== undefined && functionResourceToBeUpdated.length > 0) {
-        resources = _.uniqBy(resources.concat(functionResourceToBeUpdated), `resourceName`);
+        resources = _.uniqBy(resources.concat(functionResourceToBeUpdated), 'resourceName');
       }
     }
 
@@ -142,10 +164,10 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
         context.print.info(`${consoleUrl}\n`);
 
         context.print.info(
-          `It may take a few moments for this to appear. If you have trouble with first time deployments, please try refreshing this page after a few moments and watch the CodeBuild Details for debugging information.`,
+          'It may take a few moments for this to appear. If you have trouble with first time deployments, please try refreshing this page after a few moments and watch the CodeBuild Details for debugging information.',
         );
 
-        if (resourcesToBeUpdated.find(res => res.resourceName === resource.resourceName)) {
+        if (resourcesToBeUpdated.find((res: { resourceName: string; }) => res.resourceName === resource.resourceName)) {
           resource.lastPackageTimeStamp = undefined;
           await context.amplify.updateamplifyMetaAfterResourceUpdate('api', resource.resourceName, 'lastPackageTimeStamp', undefined);
         }
@@ -165,7 +187,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
      */
     await transformGraphQLSchema(context, {
       handleMigration: opts => updateStackForAPIMigration(context, 'api', undefined, opts),
-      minify: options['minify'],
+      minify: options.minify,
       promptApiKeyCreation: true,
     });
 
@@ -173,7 +195,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
     await prepareBuildableResources(context, resources);
     await buildOverridesEnabledResources(context);
 
-    //Removed api transformation to generate resources befoe starting deploy/
+    // Removed api transformation to generate resources befoe starting deploy/
 
     // If there is a deployment already in progress we have to fail the push operation as another
     // push in between could lead non-recoverable stacks and files.
@@ -185,7 +207,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
     let deploymentSteps: DeploymentStep[] = [];
 
     // location where the intermediate deployment steps are stored
-    let stateFolder: { local?: string; cloud?: string } = {};
+    const stateFolder: { local?: string; cloud?: string } = {};
 
     // Check if iterative updates are enabled or not and generate the required deployment steps if needed.
     if (FeatureFlags.getBoolean('graphQLTransformer.enableIterativeGSIUpdates')) {
@@ -233,14 +255,16 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
 
     // We do not need CloudFormation update if only syncable resources are the changes.
     if (
-      resourcesToBeCreated.length > 0 ||
-      resourcesToBeUpdated.length > 0 ||
-      resourcesToBeDeleted.length > 0 ||
-      tagsUpdated ||
-      rootStackUpdated ||
-      context.exeInfo.forcePush ||
-      rebuild
+      resourcesToBeCreated.length > 0
+      || resourcesToBeUpdated.length > 0
+      || resourcesToBeDeleted.length > 0
+      || tagsUpdated
+      || rootStackUpdated
+      || context.exeInfo.forcePush
+      || rebuild
     ) {
+      context.usageData.stopCodePathTimer('pushTransform');
+      context.usageData.startCodePathTimer('pushDeployment');
       // if there are deploymentSteps, need to do an iterative update
       if (deploymentSteps.length > 0) {
         // create deployment manager
@@ -303,13 +327,15 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
         } catch (err) {
           if (err?.name === 'ValidationError' && err?.message === 'No updates are to be performed.') {
             return;
-          } else {
-            throw err;
           }
+          throw err;
         } finally {
           spinner.stop();
         }
       }
+      context.usageData.stopCodePathTimer('pushDeployment');
+      // Cleanup the deployment-state file
+      await deploymentStateManager.deleteDeploymentStateFile();
     }
 
     await postPushGraphQLCodegen(context);
@@ -331,13 +357,13 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
         // Sync backend-config.json to cloud folder
         await context.amplify.updateamplifyMetaAfterPush(unlinkedResources);
 
-        for (let i = 0; i < unlinkedResources.length; i++) {
+        for (let i = 0; i < unlinkedResources.length; i += 1) {
           context.amplify.updateamplifyMetaAfterResourceDelete(unlinkedResources[i].category, unlinkedResources[i].resourceName);
         }
       }
     }
 
-    for (let i = 0; i < resourcesToBeDeleted.length; i++) {
+    for (let i = 0; i < resourcesToBeDeleted.length; i += 1) {
       context.amplify.updateamplifyMetaAfterResourceDelete(resourcesToBeDeleted[i].category, resourcesToBeDeleted[i].resourceName);
     }
 
@@ -349,8 +375,8 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
 
     updatedAllResources = updatedAllResources.filter((resource: { service: string }) => resource.service === AmplifySupportedService.APIGW);
 
-    for (let i = 0; i < updatedAllResources.length; i++) {
-      if (resources.findIndex(resource => resource.resourceName === updatedAllResources[i].resourceName) > -1) {
+    for (let i = 0; i < updatedAllResources.length; i += 1) {
+      if (resources.findIndex((resource: { resourceName: any; }) => resource.resourceName === updatedAllResources[i].resourceName) > -1) {
         newAPIresources.push(updatedAllResources[i]);
       }
     }
@@ -385,8 +411,8 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
 
               for (const additionalAuthenticationProvider of additionalAuthenticationProviders) {
                 if (
-                  additionalAuthenticationProvider &&
-                  additionalAuthenticationProvider.authenticationType === 'AMAZON_COGNITO_USER_POOLS'
+                  additionalAuthenticationProvider
+                  && additionalAuthenticationProvider.authenticationType === 'AMAZON_COGNITO_USER_POOLS'
                 ) {
                   additionalAuthenticationProvider.userPoolConfig.userPoolId = userPoolId;
 
@@ -406,7 +432,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
     await downloadAPIModels(context, newAPIresources);
 
     // remove emphemeral Lambda layer state
-    if (resources.concat(resourcesToBeDeleted).filter(r => r.service === AmplifySupportedService.LAMBDA_LAYER).length > 0) {
+    if (resources.concat(resourcesToBeDeleted).filter((r: { service: string; }) => r.service === AmplifySupportedService.LAMBDA_LAYER).length > 0) {
       await postPushLambdaLayerCleanup(context, resources, projectDetails.localEnvInfo.envName);
       await context.amplify.updateamplifyMetaAfterPush(resources);
     }
@@ -415,9 +441,9 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
     await storeCurrentCloudBackend(context);
     await amplifyServiceManager.storeArtifactsForAmplifyService(context);
 
-    //check for auth resources and remove deployment secret for push
+    // check for auth resources and remove deployment secret for push
     resources
-      .filter(resource => resource.category === 'auth' && resource.service === 'Cognito' && resource.providerPlugin === 'awscloudformation')
+      .filter((resource: { category: string; service: string; providerPlugin: string; }) => resource.category === 'auth' && resource.service === 'Cognito' && resource.providerPlugin === 'awscloudformation')
       .map(({ category, resourceName }) => context.amplify.removeDeploymentSecrets(context, category, resourceName));
 
     await adminModelgen(context, resources);
@@ -438,23 +464,28 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
 
     throw error;
   }
-}
+};
 
-async function canAutoResolveGraphQLAuthError(message: string) {
+const canAutoResolveGraphQLAuthError = async (message: string) => {
   if (
-    message === `@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.` ||
-    message ===
-      `@auth directive with 'userPools' provider found, but the project has no Cognito User Pools authentication provider configured.` ||
-    message === `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT authentication provider configured.` ||
-    message === `@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.` ||
-    message === `@auth directive with 'function' provider found, but the project has no Lambda authentication provider configured.`
+    message === '@auth directive with \'iam\' provider found, but the project has no IAM authentication provider configured.'
+    || message
+      === '@auth directive with \'userPools\' provider found, but the project has no Cognito User Pools authentication provider configured.'
+    || message === '@auth directive with \'oidc\' provider found, but the project has no OPENID_CONNECT authentication provider configured.'
+    || message === '@auth directive with \'apiKey\' provider found, but the project has no API Key authentication provider configured.'
+    || message === '@auth directive with \'function\' provider found, but the project has no Lambda authentication provider configured.'
   ) {
     return true;
   }
-}
+};
 
-export async function updateStackForAPIMigration(context: $TSContext, category: string, resourceName: string, options: $TSAny) {
-  const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, allResources } = await context.amplify.getResourceStatus(
+/**
+ *
+ */
+export const updateStackForAPIMigration = async (context: $TSContext, category: string, resourceName: string, options: $TSAny) => {
+  const {
+    resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, allResources,
+  } = await context.amplify.getResourceStatus(
     category,
     resourceName,
     providerName,
@@ -467,7 +498,7 @@ export async function updateStackForAPIMigration(context: $TSContext, category: 
 
   validateCfnTemplates(context, resources);
 
-  resources = allResources.filter(resource => resource.service === 'AppSync');
+  resources = allResources.filter((resource: { service: string; }) => resource.service === 'AppSync');
 
   await uploadAppSyncFiles(context, resources, allResources, {
     useDeprecatedParameters: isReverting,
@@ -523,9 +554,12 @@ export async function updateStackForAPIMigration(context: $TSContext, category: 
 
     throw error;
   }
-}
+};
 
-export async function storeCurrentCloudBackend(context: $TSContext) {
+/**
+ *
+ */
+export const storeCurrentCloudBackend = async (context: $TSContext) => {
   const zipFilename = '#current-cloud-backend.zip';
   const backendDir = pathManager.getBackendDirPath();
   const tempDir = path.join(backendDir, '.temp');
@@ -569,9 +603,9 @@ export async function storeCurrentCloudBackend(context: $TSContext) {
   }
 
   fs.removeSync(tempDir);
-}
+};
 
-function validateCfnTemplates(context: $TSContext, resourcesToBeUpdated: $TSAny[]) {
+const validateCfnTemplates = (context: $TSContext, resourcesToBeUpdated: $TSAny[]) => {
   for (const { category, resourceName } of resourcesToBeUpdated) {
     // Turning off the error log for Geo resources as they're considered invalid by cfn-lint
     if (category === 'geo') {
@@ -594,14 +628,14 @@ function validateCfnTemplates(context: $TSContext, resourcesToBeUpdated: $TSAny[
       }
     }
   }
-}
+};
 
-async function prepareBuildableResources(context: $TSContext, resources: $TSAny[]) {
+const prepareBuildableResources = async (context: $TSContext, resources: $TSAny[]): Promise<void> => {
   // Only build and package resources which are required
-  return await Promise.all(resources.filter(resource => resource.build).map(resource => prepareResource(context, resource)));
-}
+  await Promise.all(resources.filter(resource => resource.build).map(resource => prepareResource(context, resource)));
+};
 
-async function prepareResource(context: $TSContext, resource: $TSAny) {
+const prepareResource = async (context: $TSContext, resource: $TSAny) => {
   resource.lastBuildTimeStamp = await context.amplify.invokePluginMethod(context, AmplifyCategories.FUNCTION, undefined, 'buildResource', [
     context,
     resource,
@@ -650,10 +684,9 @@ async function prepareResource(context: $TSContext, resource: $TSAny) {
   });
 
   if (cfnFiles.length !== 1) {
-    const errorMessage =
-      cfnFiles.length > 1
-        ? 'Only one CloudFormation template is allowed in the resource directory'
-        : 'CloudFormation template is missing in the resource directory';
+    const errorMessage = cfnFiles.length > 1
+      ? 'Only one CloudFormation template is allowed in the resource directory'
+      : 'CloudFormation template is missing in the resource directory';
     context.print.error(errorMessage);
     context.print.error(resourceDir);
 
@@ -690,9 +723,9 @@ async function prepareResource(context: $TSContext, resource: $TSAny) {
     storeS3BucketInfo(category, s3Bucket, envName, resourceName, s3Key);
     JSONUtilities.writeJson(cfnFilePath, cfnTemplate);
   }
-}
+};
 
-function storeS3BucketInfo(category: string, deploymentBucketName: string, envName: string, resourceName: string, s3Key: string) {
+const storeS3BucketInfo = (category: string, deploymentBucketName: string, envName: string, resourceName: string, s3Key: string) => {
   const projectPath = pathManager.findProjectRoot();
   const amplifyMeta = stateManager.getMeta(projectPath);
   const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
@@ -704,14 +737,14 @@ function storeS3BucketInfo(category: string, deploymentBucketName: string, envNa
   _.set(amplifyMeta, [category, resourceName, 's3Bucket'], { deploymentBucketName, s3Key });
   stateManager.setMeta(projectPath, amplifyMeta);
   stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
-}
+};
 
-async function updateCloudFormationNestedStack(
+const updateCloudFormationNestedStack = async (
   context: $TSContext,
   nestedStack: $TSAny,
   resourcesToBeCreated: $TSAny,
   resourcesToBeUpdated: $TSAny,
-) {
+) => {
   const projectRoot = pathManager.findProjectRoot();
   const backEndDir = pathManager.getBackendDirPath(projectRoot);
   const rootStackFilePath = path.join(pathManager.getRootStackBuildDirPath(projectRoot), rootStackFileName);
@@ -729,9 +762,9 @@ async function updateCloudFormationNestedStack(
     log(error);
     throw error;
   }
-}
+};
 
-function generateUserAgentAction(resourcesToBeCreated: $TSAny, resourcesToBeUpdated: $TSAny) {
+const generateUserAgentAction = (resourcesToBeCreated: $TSAny, resourcesToBeUpdated: $TSAny) => {
   const uniqueCategoriesAdded = getAllUniqueCategories(resourcesToBeCreated);
   const uniqueCategoriesUpdated = getAllUniqueCategories(resourcesToBeUpdated);
   let userAgentAction = '';
@@ -756,17 +789,20 @@ function generateUserAgentAction(resourcesToBeCreated: $TSAny, resourcesToBeUpda
     });
   }
   return userAgentAction;
-}
+};
 
-function getAllUniqueCategories(resources: $TSObject[]): $TSObject[] {
+const getAllUniqueCategories = (resources: $TSObject[]): $TSObject[] => {
   const categories = new Set();
 
   resources.forEach(resource => categories.add(resource.category));
 
   return [...categories];
-}
+};
 
-export function getCfnFiles(category: string, resourceName: string, options?: glob.IOptions) {
+/**
+ *
+ */
+export const getCfnFiles = (category: string, resourceName: string, options?: glob.IOptions) => {
   const backEndDir = pathManager.getBackendDirPath();
   const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
   const resourceBuildDir = path.join(resourceDir, optionalBuildDirectoryName);
@@ -801,9 +837,9 @@ export function getCfnFiles(category: string, resourceName: string, options?: gl
     resourceDir,
     cfnFiles,
   };
-}
+};
 
-async function updateS3Templates(context: $TSContext, resourcesToBeUpdated: $TSAny, amplifyMeta: $TSMeta) {
+const updateS3Templates = async (context: $TSContext, resourcesToBeUpdated: $TSAny, amplifyMeta: $TSMeta) => {
   const promises = [];
 
   for (const { category, resourceName, service } of resourcesToBeUpdated) {
@@ -825,15 +861,18 @@ async function updateS3Templates(context: $TSContext, resourcesToBeUpdated: $TSA
   }
 
   return Promise.all(promises);
-}
+};
 
-export async function uploadTemplateToS3(
+/**
+ *
+ */
+export const uploadTemplateToS3 = async (
   context: $TSContext,
   filePath: string,
   category: string,
   resourceName: string,
   amplifyMeta: $TSMeta,
-) {
+): Promise<void> => {
   const cfnFile = path.parse(filePath).base;
   const s3 = await S3.getInstance(context);
 
@@ -843,7 +882,7 @@ export async function uploadTemplateToS3(
   };
 
   const log = logger('uploadTemplateToS3.s3.uploadFile', [{ Key: s3Params.Key }]);
-  let projectBucket;
+  let projectBucket: string;
   try {
     projectBucket = await s3.uploadFile(s3Params, false);
   } catch (error) {
@@ -860,18 +899,21 @@ export async function uploadTemplateToS3(
 
     context.amplify.updateamplifyMetaAfterResourceUpdate(category, resourceName, 'providerMetadata', providerMetadata);
   }
-}
+};
 
-export async function formNestedStack(
+/**
+ *
+ */
+export const formNestedStack = async (
   context: $TSContext,
   projectDetails: $TSObject,
   categoryName?: string,
   resourceName?: string,
   serviceName?: string,
   skipEnv?: boolean,
-  useExistingMeta?: boolean
-) {
-  let rootStack;
+  useExistingMeta?: boolean,
+): Promise<Template> => {
+  let rootStack: Template;
   // CFN transform for Root stack
   rootStack = await transformRootStack(context);
 
@@ -894,7 +936,7 @@ export async function formNestedStack(
   // update amplify meta with updated root stack Info
   if (Object.keys(metaToBeUpdated).length) {
     context.amplify.updateProvideramplifyMeta(providerName, metaToBeUpdated);
-    //update teamProviderInfo
+    // update teamProviderInfo
     const { envName } = context.amplify.getEnvInfo();
     const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
     const tpiResourceParams: $TSAny = _.get(teamProviderInfo, [envName, 'awscloudformation'], {});
@@ -953,7 +995,7 @@ export async function formNestedStack(
         TemplateURL: AuthTriggerTemplateURL,
         Parameters: {
           env: envName,
-        },
+        } as Record<string, $TSAny>,
       },
       DependsOn: [],
     };
@@ -961,24 +1003,24 @@ export async function formNestedStack(
     const cognitoResource = stateManager.getResourceFromMeta(amplifyMeta, 'auth', 'Cognito');
     const authRootStackResourceName = `auth${cognitoResource.resourceName}`;
 
-    stack.Properties.Parameters['userpoolId'] = {
+    stack.Properties.Parameters.userpoolId = {
       'Fn::GetAtt': [authRootStackResourceName, 'Outputs.UserPoolId'],
     };
-    stack.Properties.Parameters['userpoolArn'] = {
+    stack.Properties.Parameters.userpoolArn = {
       'Fn::GetAtt': [authRootStackResourceName, 'Outputs.UserPoolArn'],
     };
     stack.DependsOn.push(authRootStackResourceName);
 
-    const { dependsOn } = cognitoResource.resource as { dependsOn };
+    const { dependsOn } = cognitoResource.resource as { dependsOn: any };
 
-    dependsOn.forEach(resource => {
+    dependsOn.forEach((resource: { category: any; resourceName: any; attributes: any; }) => {
       const dependsOnStackName = `${resource.category}${resource.resourceName}`;
 
       stack.DependsOn.push(dependsOnStackName);
 
       const dependsOnAttributes = resource?.attributes;
 
-      dependsOnAttributes.forEach(attribute => {
+      dependsOnAttributes.forEach((attribute: any) => {
         const parameterKey = `${resource.category}${resource.resourceName}${attribute}`;
         const parameterValue = { 'Fn::GetAtt': [dependsOnStackName, `Outputs.${attribute}`] };
 
@@ -997,11 +1039,11 @@ export async function formNestedStack(
       },
     };
 
-    rootStack.Resources.DeploymentBucket.Properties['VersioningConfiguration'] = {
+    rootStack.Resources.DeploymentBucket.Properties.VersioningConfiguration = {
       Status: 'Enabled',
     };
 
-    rootStack.Resources.DeploymentBucket.Properties['LifecycleConfiguration'] = {
+    rootStack.Resources.DeploymentBucket.Properties.LifecycleConfiguration = {
       Rules: [
         {
           ExpirationInDays: 7,
@@ -1026,18 +1068,18 @@ export async function formNestedStack(
       }
 
       const resourceKey = category + resource;
-      let templateURL;
+      let templateURL: any;
 
       if (resourceDetails.providerPlugin) {
         const parameters = <$TSObject>loadResourceParameters(context, category, resource);
         const { dependsOn } = resourceDetails;
         if (dependsOn) {
-          for (let i = 0; i < dependsOn.length; ++i) {
+          for (let i = 0; i < dependsOn.length; i += 1) {
             for (const attribute of dependsOn[i]?.attributes || []) {
               // If the depends on resource is an imported resource we cannot form GetAtt type reference
               // since there is no such thing. We have to read the output.{AttributeName} from the meta
               // and inject the value itself into the parameters block
-              let parameterValue;
+              let parameterValue: { 'Fn::GetAtt': any[]; };
 
               const dependentResource = _.get(amplifyMeta, [dependsOn[i].category, dependsOn[i].resourceName], undefined);
 
@@ -1087,11 +1129,11 @@ export async function formNestedStack(
         }
 
         if (
-          (category === AmplifyCategories.API || category === AmplifyCategories.HOSTING) &&
-          resourceDetails.service === ApiServiceNameElasticContainer
+          (category === AmplifyCategories.API || category === AmplifyCategories.HOSTING)
+          && resourceDetails.service === ApiServiceNameElasticContainer
         ) {
-          parameters['deploymentBucketName'] = Fn.Ref('DeploymentBucketName');
-          parameters['rootStackName'] = Fn.Ref('AWS::StackName');
+          parameters.deploymentBucketName = Fn.Ref('DeploymentBucketName');
+          parameters.rootStackName = Fn.Ref('AWS::StackName');
         }
 
         const currentEnv = context.amplify.getEnvInfo().envName;
@@ -1107,8 +1149,9 @@ export async function formNestedStack(
         // If auth is imported check the parameters section of the nested template
         // and if it has auth or unauth role arn or name or userpool id, then inject it from the
         // imported auth resource's properties
-        const { imported, userPoolId, authRoleArn, authRoleName, unauthRoleArn, unauthRoleName } =
-          context.amplify.getImportedAuthProperties(context);
+        const {
+          imported, userPoolId, authRoleArn, authRoleName, unauthRoleArn, unauthRoleName,
+        } = context.amplify.getImportedAuthProperties(context);
 
         if (category !== AmplifyCategories.AUTH && resourceDetails.service !== 'Cognito' && imported) {
           if (parameters.AuthCognitoUserPoolId) {
@@ -1160,9 +1203,9 @@ export async function formNestedStack(
   }
 
   return rootStack;
-}
+};
 
-function updateIdPRolesInNestedStack(nestedStack: $TSAny, authResourceName: $TSAny) {
+const updateIdPRolesInNestedStack = (nestedStack: $TSAny, authResourceName: $TSAny) => {
   const authLogicalResourceName = `auth${authResourceName}`;
   const idpUpdateRoleCfnFilePath = path.join(__dirname, '..', 'resources', 'update-idp-roles-cfn.json');
   const idpUpdateRoleCfn = JSONUtilities.readJson<$TSObject>(idpUpdateRoleCfnFilePath);
@@ -1171,17 +1214,19 @@ function updateIdPRolesInNestedStack(nestedStack: $TSAny, authResourceName: $TSA
   idpUpdateRoleCfn.UpdateRolesWithIDPFunctionOutputs.Properties.idpId['Fn::GetAtt'].unshift(authLogicalResourceName);
 
   Object.assign(nestedStack.Resources, idpUpdateRoleCfn);
-}
+};
 
-function isAuthTrigger(dependsOnResource: $TSObject) {
-  return (
-    FeatureFlags.getBoolean('auth.breakCircularDependency') &&
-    dependsOnResource.category === 'function' &&
-    dependsOnResource.triggerProvider === 'Cognito'
-  );
-}
+const isAuthTrigger = (dependsOnResource: $TSObject) => (
+  FeatureFlags.getBoolean('auth.breakCircularDependency')
+    && dependsOnResource.category === 'function'
+    && dependsOnResource.triggerProvider === 'Cognito'
+);
 
-export async function generateAndUploadRootStack(context: $TSContext, destinationPath: string, destinationS3Key: string) {
+/**
+ *
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const generateAndUploadRootStack = async (context: $TSContext, destinationPath: string, destinationS3Key: string) => {
   const projectDetails = context.amplify.getProjectDetails();
   const nestedStack = await formNestedStack(context, projectDetails);
 
@@ -1195,9 +1240,9 @@ export async function generateAndUploadRootStack(context: $TSContext, destinatio
   };
 
   await s3Client.uploadFile(s3Params, false);
-}
+};
 
-function rollbackLambdaLayers(layerResources: $TSAny[]) {
+const rollbackLambdaLayers = (layerResources: $TSAny[]) => {
   if (layerResources.length > 0) {
     const projectRoot = pathManager.findProjectRoot();
     const currentMeta = stateManager.getCurrentMeta(projectRoot);
@@ -1211,4 +1256,4 @@ function rollbackLambdaLayers(layerResources: $TSAny[]) {
 
     stateManager.setMeta(projectRoot, meta);
   }
-}
+};

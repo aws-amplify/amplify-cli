@@ -21,7 +21,7 @@ import {
 } from '@aws-amplify/graphql-transformer-core';
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
 import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
-import { OverrideConfig } from '@aws-amplify/graphql-transformer-core/src/transformation/types';
+import { OverrideConfig } from '@aws-amplify/graphql-transformer-core/lib/transformation/types';
 import { AppSyncAuthConfiguration, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   $TSContext,
@@ -49,7 +49,9 @@ import { isAuthModeUpdated } from '../utils/auth-mode-compare';
 import { schemaHasSandboxModeEnabled, showGlobalSandboxModeWarning, showSandboxModePrompts } from '../utils/sandbox-mode-helpers';
 import { GraphQLSanityCheck, SanityCheckRules } from './sanity-check';
 import { parseUserDefinedSlots } from './user-defined-slots';
-import { getAdminRoles, getIdentityPoolId, mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
+import {
+  getAdminRoles, getIdentityPoolId, mergeUserConfigWithTransformOutput, writeDeploymentToDisk,
+} from './utils';
 
 const API_CATEGORY = 'api';
 const STORAGE_CATEGORY = 'storage';
@@ -59,10 +61,10 @@ const SCHEMA_DIR_NAME = 'schema';
 const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
 const S3_SERVICE_NAME = 'S3';
 
-const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
+const TRANSFORM_CONFIG_FILE_NAME = 'transform.conf.json';
 
 function warnOnAuth(map, docLink) {
-  const a: boolean = true;
+  const a = true;
   const unAuthModelTypes = Object.keys(map).filter(type => !map[type].includes('auth') && map[type].includes('model'));
   if (unAuthModelTypes.length) {
     printer.info(
@@ -177,6 +179,9 @@ function getTransformerFactory(
   };
 }
 
+/**
+ * Transform GraphQL Schema
+ */
 export async function transformGraphQLSchema(context, options) {
   let resourceName: string;
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
@@ -245,6 +250,12 @@ export async function transformGraphQLSchema(context, options) {
   if (!parameters && fs.existsSync(parametersFilePath)) {
     try {
       parameters = context.amplify.readJsonFile(parametersFilePath);
+
+      // OpenSearch Instance type support for x.y.search types
+      if (parameters[ResourceConstants.PARAMETERS.OpenSearchInstanceType]) {
+        parameters[ResourceConstants.PARAMETERS.OpenSearchInstanceType] = parameters[ResourceConstants.PARAMETERS.OpenSearchInstanceType]
+          .replace('.search', '.elasticsearch');
+      }
     } catch (e) {
       parameters = {};
     }
@@ -318,9 +329,8 @@ export async function transformGraphQLSchema(context, options) {
   const docLink = getGraphQLTransformerAuthDocLink(transformerVersion);
   const sandboxModeEnabled = schemaHasSandboxModeEnabled(project.schema, docLink);
   const directiveMap = collectDirectivesByTypeNames(project.schema);
-  const hasApiKey =
-    authConfig.defaultAuthentication.authenticationType === 'API_KEY' ||
-    authConfig.additionalAuthenticationProviders.some(a => a.authenticationType === 'API_KEY');
+  const hasApiKey = authConfig.defaultAuthentication.authenticationType === 'API_KEY'
+    || authConfig.additionalAuthenticationProviders.some(a => a.authenticationType === 'API_KEY');
   const showSandboxModeMessage = sandboxModeEnabled && hasApiKey;
 
   if (showSandboxModeMessage) {
@@ -388,7 +398,7 @@ export async function transformGraphQLSchema(context, options) {
     authConfig,
     sandboxModeEnabled,
     sanityCheckRules,
-    resolverConfig: resolverConfig,
+    resolverConfig,
   };
 
   const transformerOutput = await buildAPIProject(buildConfig);
@@ -428,6 +438,9 @@ async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {
   }
 }
 
+/**
+ * Get the Directive definitions
+ */
 export async function getDirectiveDefinitions(context: $TSContext, resourceDir: string) {
   const transformList = await getTransformerFactory(context, resourceDir)({ addSearchableTransformer: true, authConfig: {} });
   const appSynDirectives = getAppSyncServiceExtraDirectives();
@@ -489,6 +502,9 @@ type TransformerFactoryArgs = {
   identityPoolId?: string;
 };
 
+/**
+ * ProjectOptions Type Definition
+ */
 export type ProjectOptions<T> = {
   buildParameters: {
     S3DeploymentBucket: string;
@@ -511,6 +527,9 @@ export type ProjectOptions<T> = {
   overrideConfig: OverrideConfig;
 };
 
+/**
+ * buildAPIProject
+ */
 export async function buildAPIProject(opts: ProjectOptions<TransformerFactoryArgs>) {
   const schema = opts.projectConfig.schema.toString();
   // Skip building the project if the schema is blank

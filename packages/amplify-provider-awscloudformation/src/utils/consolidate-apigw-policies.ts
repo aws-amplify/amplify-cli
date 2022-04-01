@@ -7,7 +7,6 @@ import {
   $TSObject,
   AmplifyCategories,
   AmplifySupportedService,
-  exitOnNextTick,
   JSONUtilities,
   pathManager,
   stateManager,
@@ -87,8 +86,8 @@ export class ApiGatewayAuthStack extends cdk.Stack {
     let unauthRoleCount = 0;
     let authPolicyDocSize = 0;
     let unauthPolicyDocSize = 0;
-    let authManagedPolicy;
-    let unauthManagedPolicy;
+    let authManagedPolicy: iam.CfnManagedPolicy;
+    let unauthManagedPolicy: iam.CfnManagedPolicy;
 
     props.apiGateways.forEach(apiGateway => {
       const apiRef = new cdk.CfnParameter(this, apiGateway.resourceName, {
@@ -147,7 +146,7 @@ export class ApiGatewayAuthStack extends cdk.Stack {
     const { apiRef, env, roleName, path, methods, namePrefix, envName } = options;
     const apiPath = String(path.name).replace(/{[a-zA-Z0-9\-]+}/g, '*');
 
-    methods.forEach(method => {
+    methods.forEach((method: string) => {
       const policySizeIncrease = computePolicySizeIncrease(envName.length, method.length, apiPath.length);
 
       options.policyDocSize += policySizeIncrease;
@@ -214,11 +213,6 @@ export async function consolidateApiGatewayPolicies(context: $TSContext, stackNa
   const envInfo = stateManager.getLocalEnvInfo();
   const apis: $TSObject = meta?.api ?? {};
 
-  try {
-    const cfnPath = path.join(pathManager.getBackendDirPath(), AmplifyCategories.API, `${APIGW_AUTH_STACK_LOGICAL_ID}.json`);
-    fs.unlinkSync(cfnPath);
-  } catch {}
-
   for (const [resourceName, resource] of Object.entries(apis)) {
     const cliInputs = await loadApiCliInputs(context, resourceName, resource);
 
@@ -227,6 +221,11 @@ export async function consolidateApiGatewayPolicies(context: $TSContext, stackNa
       apiGateways.push(api);
     }
   }
+
+  try {
+    const cfnPath = path.join(pathManager.getBackendDirPath(), AmplifyCategories.API, `${APIGW_AUTH_STACK_LOGICAL_ID}.json`);
+    fs.unlinkSync(cfnPath);
+  } catch {}
 
   if (apiGateways.length === 0) {
     return { APIGatewayAuthURL: undefined };
@@ -276,27 +275,29 @@ function createApiGatewayAuthResources(stackName: string, apiGateways: $TSAny, e
 
 export async function loadApiCliInputs(context: $TSContext, resourceName: string, resource: $TSObject): Promise<$TSObject | undefined> {
   if (resource.providerPlugin !== ProviderName || resource.service !== AmplifySupportedService.APIGW || resourceName === 'AdminQueries') {
-    return;
+    return undefined;
   }
 
   const projectRoot = pathManager.findProjectRoot();
 
   if (!stateManager.resourceInputsJsonExists(projectRoot, AmplifyCategories.API, resourceName)) {
-    const legacyParamsFilePath = path.join(
+    const deprecatedParamsFileName = 'api-params.json';
+    const deprecatedParamsFilePath = path.join(
       pathManager.getResourceDirectoryPath(projectRoot, AmplifyCategories.API, resourceName),
-      'api-params.json',
+      deprecatedParamsFileName,
     );
 
-    if (fs.existsSync(legacyParamsFilePath)) {
-      // migration is required
-      await context.amplify.invokePluginMethod(context, AmplifyCategories.API, AmplifySupportedService.APIGW, 'migrate', [
-        context,
-        AmplifySupportedService.APIGW,
-      ]);
-
-      // answered no to migration
-      if (!stateManager.resourceInputsJsonExists(undefined, AmplifyCategories.API, resourceName)) {
-        exitOnNextTick(0);
+    if (fs.existsSync(deprecatedParamsFilePath)) {
+      if (!stateManager.resourceInputsJsonExists(projectRoot, AmplifyCategories.API, resourceName)) {
+        return {
+          paths: await context.amplify.invokePluginMethod(
+            context,
+            AmplifyCategories.API,
+            AmplifySupportedService.APIGW,
+            'convertDeperecatedRestApiPaths',
+            [deprecatedParamsFileName, deprecatedParamsFilePath, resourceName],
+          ),
+        };
       }
     }
   }

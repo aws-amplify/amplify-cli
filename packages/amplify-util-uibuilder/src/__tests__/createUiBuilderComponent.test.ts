@@ -1,10 +1,10 @@
-import * as codegen from '@aws-amplify/codegen-ui';
+import * as codegen from '@aws-amplify/codegen-ui-old';
 import {
   generateAmplifyUiBuilderIndexFile,
   createUiBuilderTheme,
   createUiBuilderComponent,
 } from '../commands/utils/createUiBuilderComponent';
-jest.mock('@aws-amplify/codegen-ui');
+jest.mock('@aws-amplify/codegen-ui-old');
 const codegen_mock = codegen as any;
 const renderSchemaToTemplateMock = jest.fn();
 

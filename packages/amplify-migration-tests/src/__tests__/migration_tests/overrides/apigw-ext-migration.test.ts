@@ -10,7 +10,6 @@ import {
   updateAuthAddAdminQueries,
   updateAuthAdminQueriesWithExtMigration,
   getProjectMeta,
-  amplifyPushForceWithYesFlag,
 } from 'amplify-e2e-core';
 import { addRestApiOldDx } from '../../../migration-helpers/api';
 import { v4 as uuid } from 'uuid';
@@ -58,20 +57,6 @@ describe('API Gateway CDK migration', () => {
     const authCliInputs = getCLIInputs(projRoot, 'auth', authName);
     expect(authCliInputs).toBeDefined();
 
-    const adminQueriesCliInputs = getCLIInputs(projRoot, 'api', 'AdminQueries');
-    expect(adminQueriesCliInputs).toBeDefined();
-  });
-
-  it('migrates rest apis on push', async () => {
-    await addRestApiOldDx(projRoot, { existingLambda: false, apiName: 'restapimig' });
-    await addAuthWithDefault(projRoot);
-    await updateAuthAddAdminQueries(projRoot);
-    await amplifyPushAuth(projRoot);
-
-    await amplifyPushForceWithYesFlag(projRoot, true);
-
-    const cliInputs = getCLIInputs(projRoot, 'api', 'restapimig');
-    expect(cliInputs).toBeDefined();
     const adminQueriesCliInputs = getCLIInputs(projRoot, 'api', 'AdminQueries');
     expect(adminQueriesCliInputs).toBeDefined();
   });

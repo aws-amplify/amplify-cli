@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.11...amplify-util-mock@4.3.12) (2022-03-23)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.3.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.10...amplify-util-mock@4.3.11) (2022-03-17)
+
+
+
+## 7.6.25 (2022-03-16)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** expand [@auth](https://github.com/auth) directive to explicit set of allowed operations ([#9859](https://github.com/aws-amplify/amplify-cli/issues/9859)) ([e44ed18](https://github.com/aws-amplify/amplify-cli/commit/e44ed189b2c94230cbd5674606ffa488cb6c7bfe))
+
+
+
+
+
+## [4.3.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.9...amplify-util-mock@4.3.10) (2022-03-14)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.3.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.8...amplify-util-mock@4.3.9) (2022-03-07)
+
+
+### Bug Fixes
+
+* support Java numbers in appsync simulator ([#9810](https://github.com/aws-amplify/amplify-cli/issues/9810)) ([84b61f8](https://github.com/aws-amplify/amplify-cli/commit/84b61f8c598b473d2de5922417612ed3b3da4620))
+
+
+
+
+
+## [4.3.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.7...amplify-util-mock@4.3.8) (2022-02-25)
+
+
+
+## 7.6.22 (2022-02-24)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** update resolver should allow if update operation is set ([#9808](https://github.com/aws-amplify/amplify-cli/issues/9808)) ([44a9bea](https://github.com/aws-amplify/amplify-cli/commit/44a9bea139a9a1483cfbc7db29b84938510ffdca))
+
+
+
+
+
 ## [4.3.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.6...amplify-util-mock@4.3.7) (2022-02-18)
 
 **Note:** Version bump only for package amplify-util-mock

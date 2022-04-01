@@ -3,15 +3,16 @@ import { pathManager, stateManager } from './state-manager';
 import Ajv from 'ajv';
 import { EOL } from 'os';
 import * as _ from 'lodash';
-import { printer } from 'amplify-prompts';
+import { formatter, printer } from 'amplify-prompts';
 import { JSONUtilities } from './jsonUtilities';
 import { CustomPoliciesFormatError } from './errors';
+import { $TSObject } from './index';
 
 export type CustomIAMPolicies = CustomIAMPolicy[];
 export type CustomIAMPolicy = {
   Action: string[];
   Effect?: string;
-  Resource: string[];
+  Resource: (string | $TSObject)[];
 };
 
 export const CustomIAMPoliciesSchema = {
@@ -21,7 +22,15 @@ export const CustomIAMPoliciesSchema = {
     type: 'object',
     properties: {
       Action: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: false },
-      Resource: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: false },
+      Resource: {
+        type: 'array',
+        anyOf: [
+          { contains: { type: 'string' } },
+          { contains: { type: 'object', additionalProperties: true } }
+        ],
+        minItems: 1,
+        nullable: false,
+      },
     },
     optionalProperties: {
       Effect: { type: 'string', enum: ['Allow', 'Deny'], default: 'Allow' },
@@ -91,7 +100,7 @@ function generateCustomPolicyStatements(customPolicies: CustomIAMPolicies): Cust
 
 function replaceEnvWithRef(policy: CustomIAMPolicy): CustomIAMPolicy {
   const resource = policy.Resource.map(resource =>
-    resource.includes('${env}') ? Fn.Sub(resource, { env: Fn.Ref('env') }) : resource,
+    typeof resource === 'string' && resource.includes('${env}') ? Fn.Sub(resource, { env: Fn.Ref('env') }) : resource,
   ) as any[];
   policy.Resource = resource;
   return policy;
@@ -103,14 +112,13 @@ function validateCustomPolicies(data: CustomIAMPolicies, categoryName: string, r
   const validatePolicy = ajv.compile(CustomIAMPoliciesSchema);
   const valid = validatePolicy(data);
   if (!valid) {
-    let errorMessage = `Invalid custom IAM policies in the ${resourceName} ${categoryName}.\n
-    Edit <project-dir>/amplify/backend/function/${resourceName}/custom-policies.json to fix
-    Learn more about custom IAM policies for ${categoryName}: https://docs.amplify.aws/cli/function/#access-existing-aws-resource-from-lambda-function\n`;
-    if (validatePolicy && validatePolicy.errors) {
-      errorMessage += validatePolicy.errors?.map((error: Ajv.ErrorObject) => error.message).join(EOL);
-    }
-
-    throw new CustomPoliciesFormatError(errorMessage);
+    printer.error(`${resourceName} ${categoryName} custom-policies.json failed validation:`);
+    formatter.list((validatePolicy?.errors || []).map(err => `${err.dataPath} ${err.message}`));
+    throw new CustomPoliciesFormatError(`
+      Invalid custom IAM policies for ${resourceName} ${categoryName}.
+      See details above and fix errors in <project-dir>/amplify/backend/${categoryName}/${resourceName}/custom-policies.json.
+      Learn more about custom IAM policies: https://docs.amplify.aws/cli/function/#access-existing-aws-resource-from-lambda-function
+    `);
   }
 
   for (const customPolicy of data) {
@@ -125,6 +133,10 @@ function validateCustomPolicies(data: CustomIAMPolicies, categoryName: string, r
     let errorMessage = '';
 
     for (const resource of resources) {
+      if (typeof resource !== 'string') {
+        continue;
+      }
+
       if (!(resourceRegex.test(resource) || resource === '*')) {
         wrongResourcesRegex.push(resource);
       }

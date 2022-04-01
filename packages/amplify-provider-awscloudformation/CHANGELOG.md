@@ -3,6 +3,85 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.9.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.11...amplify-provider-awscloudformation@5.9.12) (2022-03-23)
+
+
+### Bug Fixes
+
+* build resource when adding new env ([#10003](https://github.com/aws-amplify/amplify-cli/issues/10003)) ([f53596d](https://github.com/aws-amplify/amplify-cli/commit/f53596d3346a015708610c3af686d887ac978df7))
+* make amplify prompts dependency explicit, lint errors ([#10007](https://github.com/aws-amplify/amplify-cli/issues/10007)) ([66cdc06](https://github.com/aws-amplify/amplify-cli/commit/66cdc06df5f4cba106345af6f6e196b3c3e39445))
+
+
+### Reverts
+
+* Revert "fix: build resource when adding new env (#10003)" (#10037) ([37253b2](https://github.com/aws-amplify/amplify-cli/commit/37253b2de60a98540dd11a2ebe37500166ea7b00)), closes [#10003](https://github.com/aws-amplify/amplify-cli/issues/10003) [#10037](https://github.com/aws-amplify/amplify-cli/issues/10037)
+
+
+
+
+
+## [5.9.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.10...amplify-provider-awscloudformation@5.9.11) (2022-03-17)
+
+
+
+## 7.6.25 (2022-03-16)
+
+
+### Bug Fixes
+
+* allow init with auth role name overrides (ref [#9643](https://github.com/aws-amplify/amplify-cli/issues/9643)) ([#9688](https://github.com/aws-amplify/amplify-cli/issues/9688))  ([dbf9cf5](https://github.com/aws-amplify/amplify-cli/commit/dbf9cf52f19c824d868b30ff50b4c309be58ff86))
+* use lib paths instead of src to reference submodule imports across data-cli split ([#9984](https://github.com/aws-amplify/amplify-cli/issues/9984)) ([7130212](https://github.com/aws-amplify/amplify-cli/commit/7130212c8342d8ecb6b35bc2072ec5034780343f))
+
+
+
+
+
+## [5.9.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.9...amplify-provider-awscloudformation@5.9.10) (2022-03-14)
+
+
+
+## 7.6.24 (2022-03-10)
+
+
+### Bug Fixes
+
+* build resource when adding new env ([#9847](https://github.com/aws-amplify/amplify-cli/issues/9847)) ([7264e27](https://github.com/aws-amplify/amplify-cli/commit/7264e275306500f9b0e203dcaab3432db06d3cd4))
+* **cli:** spinner hiding prompt ([#9875](https://github.com/aws-amplify/amplify-cli/issues/9875)) ([c7e7b90](https://github.com/aws-amplify/amplify-cli/commit/c7e7b90e615da54dd1849435d63068cbe095b55a))
+* split policies for both legacy and migrated REST APIs ([#9572](https://github.com/aws-amplify/amplify-cli/issues/9572)) ([436d53f](https://github.com/aws-amplify/amplify-cli/commit/436d53f348954dab02364d1bed528c3b4121ede3))
+
+
+### Reverts
+
+* Revert "fix: build resource when adding new env (#9847)" (#9957) ([3df3af0](https://github.com/aws-amplify/amplify-cli/commit/3df3af0729a05b60d805dc5311d1626d643d06a5)), closes [#9847](https://github.com/aws-amplify/amplify-cli/issues/9847) [#9957](https://github.com/aws-amplify/amplify-cli/issues/9957)
+
+
+
+
+
+## [5.9.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.8...amplify-provider-awscloudformation@5.9.9) (2022-03-07)
+
+
+### Bug Fixes
+
+* use existing rather than deleted models ([#9769](https://github.com/aws-amplify/amplify-cli/issues/9769)) ([c4b7487](https://github.com/aws-amplify/amplify-cli/commit/c4b74879feda53bd73746158f4285d3b683981d2))
+
+
+### Reverts
+
+* Revert "fix: use existing rather than deleted models (#9769)" (#9884) ([94547e0](https://github.com/aws-amplify/amplify-cli/commit/94547e0c2efca702b53929d852274aa07c663206)), closes [#9769](https://github.com/aws-amplify/amplify-cli/issues/9769) [#9884](https://github.com/aws-amplify/amplify-cli/issues/9884)
+
+
+
+
+
+## [5.9.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.7...amplify-provider-awscloudformation@5.9.8) (2022-02-25)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
 ## [5.9.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.6...amplify-provider-awscloudformation@5.9.7) (2022-02-18)
 
 

@@ -5,7 +5,7 @@ export interface AddAuthRequest {
   /**
    * The schema version.
    */
-  version: 1;
+  version: 2;
   /**
    * A name for the auth resource.
    */
@@ -118,10 +118,6 @@ export interface CognitoUserPoolConfiguration {
    */
   mfa?: CognitoMFAConfiguration;
   /**
-   * If defined, specifies password recovery configiuration. Default is email recovery.
-   */
-  passwordRecovery?: CognitoPasswordRecoveryConfiguration;
-  /**
    * If defined, specifies password constraint configuration. Default is minimum length of 8 characters.
    */
   passwordPolicy?: CognitoPasswordPolicy;
@@ -141,6 +137,25 @@ export interface CognitoUserPoolConfiguration {
    * If defined, specified oAuth configuration will be applied to the user pool.
    */
   oAuth?: CognitoOAuthConfiguration;
+  /**
+   * Defines user attributes that will be automatically verified upon account creation.
+   */
+  autoVerifiedAttributes?: CognitoAutoVerifiedAttributesConfiguration;
+}
+
+export type CognitoAutoVerifiedAttributesConfiguration = Array<
+  CognitoAutoVerifyEmailConfiguration | CognitoAutoVerifyPhoneNumberConfiguration
+>;
+
+export interface CognitoAutoVerifyPhoneNumberConfiguration {
+  type: 'PHONE_NUMBER';
+  verificationMessage?: string;
+}
+
+export interface CognitoAutoVerifyEmailConfiguration {
+  type: 'EMAIL';
+  verificationMessage?: string;
+  verificationSubject?: string;
 }
 
 /**
@@ -223,25 +238,6 @@ export type CognitoSocialProviderConfiguration = SocialProviderConfig | SignInWi
 export interface CognitoPasswordPolicy {
   minimumLength?: number;
   additionalConstraints?: CognitoPasswordConstraint[];
-}
-
-export type CognitoPasswordRecoveryConfiguration = CognitoEmailPasswordRecoveryConfiguration | CognitoSMSPasswordRecoveryConfiguration;
-
-/**
- * Defines the email that will be sent to users to recover their password.
- */
-export interface CognitoEmailPasswordRecoveryConfiguration {
-  deliveryMethod: 'EMAIL';
-  emailMessage: string;
-  emailSubject: string;
-}
-
-/**
- * Defines the SMS message that will be send to users to recover their password
- */
-export interface CognitoSMSPasswordRecoveryConfiguration {
-  deliveryMethod: 'SMS';
-  smsMessage: string;
 }
 
 export type CognitoMFAConfiguration = CognitoMFAOff | CognitoMFASettings;

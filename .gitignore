@@ -28,6 +28,7 @@ packages/amplify-dynamodb-simulator/__test__/dynamodb-data
 packages/graphql*/lib
 packages/amplify-graphql-transformer-*/lib
 packages/amplify-cli/lib
+packages/amplify-cli-npm/lib
 packages/amplify-cli-core/lib
 packages/amplify-cli-logger/lib
 packages/amplify-mqtt-server/lib
@@ -76,6 +77,9 @@ test.out.log
 packages/amplify-graphiql-explorer/.eslintcache
 packages/amplify-cli-extensibility-helper/lib
 packages/amplify-cli-overrides-helper/lib
+packages/amplify-console-hosting/lib/
+packages/amplify-container-hosting/lib/
+packages/amplify-category-predictions/lib
+packages/amplify-category-analytics/lib
+packages/amplify-category-interactions/lib/
 !packages/amplify-graphql-model-transformer/src/__tests__/overrides/build/override.js
-
-

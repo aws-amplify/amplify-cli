@@ -426,6 +426,95 @@ describe('@model operations', () => {
     });
     expect(deleteResponseAsEditor.hadException).toEqual(false);
   });
+
+  test('explicit operations where update restricted', () => {
+    const validSchema = `
+      type Post @model @auth(rules: [
+        { allow: owner, operations: [create, read, delete] },
+        ]) {
+        id: ID
+        name: String
+        owner: String
+      }`;
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+    // load vtl templates
+    const createRequestTemplate = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
+    const readRequestTemplate = out.resolvers['Query.listPosts.auth.1.req.vtl'];
+    const updateResponseTemplate = out.resolvers['Mutation.updatePost.auth.1.res.vtl'];
+    const deleteResponseTemplate = out.resolvers['Mutation.deletePost.auth.1.res.vtl'];
+
+    // run the create request as owner should fail if the input is different the signed in owner
+    const createRequestAsNonOwner = vtlTemplate.render(createRequestTemplate, {
+      context: createPostInput('user2'),
+      requestParameters: ownerRequest,
+    });
+    expect(createRequestAsNonOwner.hadException).toEqual(true);
+
+    const createRequestAsOwner = vtlTemplate.render(createRequestTemplate, {
+      context: createPostInput('user1'),
+      requestParameters: ownerRequest,
+    });
+    expect(createRequestAsOwner.hadException).toEqual(false);
+
+    // read should have filter
+    const readRequestAsOwner = vtlTemplate.render(readRequestTemplate, { context: {}, requestParameters: ownerRequest });
+    expect(readRequestAsOwner.stash.hasAuth).toEqual(true);
+    expect(readRequestAsOwner.stash.authFilter).toEqual(
+      expect.objectContaining({
+        or: [{ owner: { eq: 'user1' } }],
+      }),
+    );
+
+    // read should have filter
+    const readRequestAsNonOwner = vtlTemplate.render(readRequestTemplate, { context: {}, requestParameters: adminGroupRequest });
+    expect(readRequestAsNonOwner.stash.authFilter).toEqual(
+      expect.objectContaining({
+        or: [{ owner: { eq: 'user2' } }],
+      }),
+    );
+
+    // update should fail for owner
+    const ddbUpdateResult: AppSyncVTLContext = {
+      result: { id: '001', name: 'sample', owner: 'user1' },
+      arguments: {
+        input: {
+          id: '001',
+          name: 'sample',
+        },
+      },
+    };
+    const updateResponseAsOwner = vtlTemplate.render(updateResponseTemplate, {
+      context: ddbUpdateResult,
+      requestParameters: ownerRequest,
+    });
+    expect(updateResponseAsOwner.hadException).toEqual(true);
+
+    // update should fail for NON owner
+    const updateResponseAsNonOwner = vtlTemplate.render(updateResponseTemplate, {
+      context: ddbUpdateResult,
+      requestParameters: adminGroupRequest,
+    });
+    expect(updateResponseAsNonOwner.hadException).toEqual(true);
+
+    // delete should fail for non owner
+    const ddbDeleteResult: AppSyncVTLContext = {
+      result: { id: '001', name: 'sample', owner: 'user1' },
+    };
+    const deleteResponseAsNonOwner = vtlTemplate.render(deleteResponseTemplate, {
+      context: ddbDeleteResult,
+      requestParameters: adminGroupRequest,
+    });
+    expect(deleteResponseAsNonOwner.hadException).toEqual(true);
+
+    // delete should pass for owner
+    const deleteResponseAsOwner = vtlTemplate.render(deleteResponseTemplate, {
+      context: ddbDeleteResult,
+      requestParameters: ownerRequest,
+    });
+    expect(deleteResponseAsOwner.hadException).toEqual(false);
+    expect(deleteResponseAsOwner.stash.hasAuth).toEqual(true);
+  });
 });
 
 describe('@model field auth', () => {
@@ -540,6 +629,92 @@ describe('@model field auth', () => {
       expect(out.resolvers?.[`Student.${field}.req.vtl`]).not.toBeDefined();
     });
   });
+
+  test('should allow setting name to null field', () => {
+    const validSchema = `
+      type Post @model @auth(rules: [{ allow: owner, operations: [create, read] }]) {
+        id: ID @auth(rules: [{ allow: owner, operations: [create, read, update, delete] }])
+        name: String @auth(rules: [{ allow: owner, operations: [create, read, delete] }])
+      }
+    `;
+
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    // load vtl templates
+    const createPostTemplate = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
+    const updatePostTemplate = out.resolvers['Mutation.updatePost.auth.1.res.vtl'];
+
+    const createPostContext = {
+      arguments: {
+        input: {
+          id: '001',
+          name: 'sample',
+        },
+      },
+    };
+    const createPostRequest = vtlTemplate.render(createPostTemplate, {
+      context: createPostContext,
+      requestParameters: ownerRequest,
+    });
+    expect(createPostRequest.hadException).toEqual(false);
+
+    const updatePostContext = {
+      result: {
+        id: '001',
+        name: null,
+        owner: 'user1',
+      },
+    };
+    const updatePostRequest = vtlTemplate.render(updatePostTemplate, {
+      context: updatePostContext,
+      requestParameters: ownerRequest,
+    });
+    expect(updatePostRequest.hadException).toEqual(false);
+  });
+
+  test('should allow owner to update', () => {
+    const validSchema = `
+    type Post @model @auth(rules: [{ allow: owner, operations: [create, update, read] }]) {
+      id: ID!
+      name: String!
+    }
+    `;
+
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    // load vtl templates
+    const createPostTemplate = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
+    const updatePostTemplate = out.resolvers['Mutation.updatePost.auth.1.res.vtl'];
+
+    const createPostContext = {
+      arguments: {
+        input: {
+          id: '001',
+          name: 'sample',
+        },
+      },
+    };
+    const createPostRequest = vtlTemplate.render(createPostTemplate, {
+      context: createPostContext,
+      requestParameters: ownerRequest,
+    });
+    expect(createPostRequest.hadException).toEqual(false);
+
+    const updatePostContext = {
+      result: {
+        id: '001',
+        name: 'updated',
+        owner: 'user1',
+      },
+    };
+    const updatePostRequest = vtlTemplate.render(updatePostTemplate, {
+      context: updatePostContext,
+      requestParameters: ownerRequest,
+    });
+    expect(updatePostRequest.hadException).toEqual(false);
+  });
 });
 
 describe('@model @primaryIndex @index auth', () => {
@@ -582,7 +757,7 @@ describe('@model @primaryIndex @index auth', () => {
     const validSchema = `
     type FamilyMember @model @auth(rules: [
       { allow: owner, ownerField: "parent", operations: [read] },
-      { allow: owner, ownerField: "child", operations: [read] } 
+      { allow: owner, ownerField: "child", operations: [read] }
     ]){
       parent: ID! @primaryKey(sortKeyFields: ["child"]) @index(name: "byParent", queryField: "byParent")
       child: ID! @index(name: "byChild", queryField: "byChild")

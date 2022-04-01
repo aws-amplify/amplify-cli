@@ -1,8 +1,7 @@
 #!/usr/bin/env node
+/* eslint-disable @typescript-eslint/no-var-requires, global-require */
+const startTime = Date.now();
 if (process.pkg) {
   require('../lib/utils/copy-override').copyOverride();
-} else {
-  // eslint-disable-next-line no-global-assign
-  require = require('esm')(module, { cache: false });
 }
-require('../lib/index').run();
+require('../lib/index').run(startTime);

@@ -3,6 +3,67 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.6.15...amplify-e2e-core@2.6.16) (2022-03-23)
+
+
+### Bug Fixes
+
+* build resource when adding new env ([#10003](https://github.com/aws-amplify/amplify-cli/issues/10003)) ([f53596d](https://github.com/aws-amplify/amplify-cli/commit/f53596d3346a015708610c3af686d887ac978df7))
+
+
+### Reverts
+
+* Revert "fix: build resource when adding new env (#10003)" (#10037) ([37253b2](https://github.com/aws-amplify/amplify-cli/commit/37253b2de60a98540dd11a2ebe37500166ea7b00)), closes [#10003](https://github.com/aws-amplify/amplify-cli/issues/10003) [#10037](https://github.com/aws-amplify/amplify-cli/issues/10037)
+
+
+
+
+
+## [2.6.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.6.14...amplify-e2e-core@2.6.15) (2022-03-17)
+
+**Note:** Version bump only for package amplify-e2e-core
+
+
+
+
+
+## [2.6.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.6.13...amplify-e2e-core@2.6.14) (2022-03-14)
+
+
+
+## 7.6.24 (2022-03-10)
+
+
+### Bug Fixes
+
+* allow api updates without migration ([#9864](https://github.com/aws-amplify/amplify-cli/issues/9864)) ([389f551](https://github.com/aws-amplify/amplify-cli/commit/389f551ea800afc9563b6e546f3ea0073bc13c68))
+* build resource when adding new env ([#9847](https://github.com/aws-amplify/amplify-cli/issues/9847)) ([7264e27](https://github.com/aws-amplify/amplify-cli/commit/7264e275306500f9b0e203dcaab3432db06d3cd4))
+
+
+### Reverts
+
+* Revert "fix: build resource when adding new env (#9847)" (#9957) ([3df3af0](https://github.com/aws-amplify/amplify-cli/commit/3df3af0729a05b60d805dc5311d1626d643d06a5)), closes [#9847](https://github.com/aws-amplify/amplify-cli/issues/9847) [#9957](https://github.com/aws-amplify/amplify-cli/issues/9957)
+
+
+
+
+
+## [2.6.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.6.12...amplify-e2e-core@2.6.13) (2022-03-07)
+
+**Note:** Version bump only for package amplify-e2e-core
+
+
+
+
+
+## [2.6.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.6.11...amplify-e2e-core@2.6.12) (2022-02-25)
+
+**Note:** Version bump only for package amplify-e2e-core
+
+
+
+
+
 ## [2.6.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.6.10...amplify-e2e-core@2.6.11) (2022-02-18)
 
 

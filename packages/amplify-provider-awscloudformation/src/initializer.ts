@@ -3,6 +3,8 @@ import _ from 'lodash';
 import { transformRootStack } from './override-manager';
 import { rootStackFileName } from './push-resources';
 import { getDefaultTemplateDescription } from './template-description-utils';
+import * as vm from 'vm2';
+import { printer, formatter } from 'amplify-prompts';
 
 const moment = require('moment');
 const path = require('path');
@@ -53,6 +55,37 @@ export async function run(context) {
     const authRoleName = `${stackName}-authRole`;
     const unauthRoleName = `${stackName}-unauthRole`;
 
+    const configuration = {
+      authRole: {
+        roleName: authRoleName,
+      },
+      unauthRole: {
+        roleName: unauthRoleName,
+      },
+    };
+
+    const noOverrideMsg = '';
+    try {
+      const backendDir = pathManager.getBackendDirPath();
+      const overrideFilePath = path.join(backendDir, 'awscloudformation', 'build', 'override.js');
+      const overrideCode: string = await fs.readFile(overrideFilePath, 'utf-8');
+      if (overrideCode) {
+        const sandboxNode = new vm.NodeVM({
+          console: 'inherit',
+          timeout: 5000,
+          sandbox: {},
+          require: {
+            context: 'sandbox',
+            builtin: ['path'],
+            external: true,
+          },
+        });
+        sandboxNode.run(overrideCode).override(configuration);
+      }
+    } catch (e) {
+      printer.debug(`Unable to apply auth role overrides: ${e.message}`);
+    }
+
     const rootStack = JSONUtilities.readJson<Template>(initTemplateFilePath);
 
     await prePushCfnTemplateModifier(rootStack);
@@ -71,11 +104,11 @@ export async function run(context) {
         },
         {
           ParameterKey: 'AuthRoleName',
-          ParameterValue: authRoleName,
+          ParameterValue: configuration.authRole.roleName,
         },
         {
           ParameterKey: 'UnauthRoleName',
-          ParameterValue: unauthRoleName,
+          ParameterValue: configuration.unauthRole.roleName,
         },
       ],
       Tags,

@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.9...amplify-appsync-simulator@2.3.10) (2022-03-14)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** base-resolver for response and added better error handling ([#9687](https://github.com/aws-amplify/amplify-cli/issues/9687)) ([6383260](https://github.com/aws-amplify/amplify-cli/commit/6383260a8607e0f8cd1f33028cd3a66abad9f91b))
+
+
+
+
+
+## [2.3.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.8...amplify-appsync-simulator@2.3.9) (2022-03-07)
+
+
+### Bug Fixes
+
+* support Java numbers in appsync simulator ([#9810](https://github.com/aws-amplify/amplify-cli/issues/9810)) ([84b61f8](https://github.com/aws-amplify/amplify-cli/commit/84b61f8c598b473d2de5922417612ed3b3da4620))
+
+
+
+
+
+## [2.3.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.7...amplify-appsync-simulator@2.3.8) (2022-02-25)
+
+**Note:** Version bump only for package amplify-appsync-simulator
+
+
+
+
+
 ## [2.3.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.6...amplify-appsync-simulator@2.3.7) (2022-02-10)
 
 

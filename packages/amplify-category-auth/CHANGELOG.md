@@ -3,6 +3,77 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.6...@aws-amplify/amplify-category-auth@2.7.7) (2022-03-23)
+
+
+### Bug Fixes
+
+* build resource when adding new env ([#10003](https://github.com/aws-amplify/amplify-cli/issues/10003)) ([f53596d](https://github.com/aws-amplify/amplify-cli/commit/f53596d3346a015708610c3af686d887ac978df7))
+
+
+### Reverts
+
+* Revert "fix: build resource when adding new env (#10003)" (#10037) ([37253b2](https://github.com/aws-amplify/amplify-cli/commit/37253b2de60a98540dd11a2ebe37500166ea7b00)), closes [#10003](https://github.com/aws-amplify/amplify-cli/issues/10003) [#10037](https://github.com/aws-amplify/amplify-cli/issues/10037)
+
+
+
+
+
+## [2.7.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.5...@aws-amplify/amplify-category-auth@2.7.6) (2022-03-17)
+
+
+### Bug Fixes
+
+* error message when auth is already imported ([#9865](https://github.com/aws-amplify/amplify-cli/issues/9865)) ([15f5e55](https://github.com/aws-amplify/amplify-cli/commit/15f5e55e179c20f7099b9cce51dbfd1d8cb09bc4))
+
+
+
+
+
+## [2.7.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.4...@aws-amplify/amplify-category-auth@2.7.5) (2022-03-14)
+
+
+
+## 7.6.24 (2022-03-10)
+
+
+### Bug Fixes
+
+* build resource when adding new env ([#9847](https://github.com/aws-amplify/amplify-cli/issues/9847)) ([7264e27](https://github.com/aws-amplify/amplify-cli/commit/7264e275306500f9b0e203dcaab3432db06d3cd4))
+* fixes preSignup trigger naming ([#9901](https://github.com/aws-amplify/amplify-cli/issues/9901)) ([9f3aa23](https://github.com/aws-amplify/amplify-cli/commit/9f3aa2368a311398b6d3b934360fce6adb6738f2))
+
+
+### Reverts
+
+* Revert "fix: build resource when adding new env (#9847)" (#9957) ([3df3af0](https://github.com/aws-amplify/amplify-cli/commit/3df3af0729a05b60d805dc5311d1626d643d06a5)), closes [#9847](https://github.com/aws-amplify/amplify-cli/issues/9847) [#9957](https://github.com/aws-amplify/amplify-cli/issues/9957)
+
+
+
+
+
+## [2.7.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.3...@aws-amplify/amplify-category-auth@2.7.4) (2022-03-07)
+
+
+### Bug Fixes
+
+* add HostedUIProvider dependency to OAuth Custom Lambda ([#9878](https://github.com/aws-amplify/amplify-cli/issues/9878)) ([a385de9](https://github.com/aws-amplify/amplify-cli/commit/a385de92c59cc0c48793f34b82ec6eac62100a7a))
+* map headless auth pw recovery to auto-verified attrs ([#9786](https://github.com/aws-amplify/amplify-cli/issues/9786)) ([f8c9100](https://github.com/aws-amplify/amplify-cli/commit/f8c9100d0ea0dfe87233624883ff8ae8c9bf48a7))
+
+
+
+
+
+## [2.7.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.2...@aws-amplify/amplify-category-auth@2.7.3) (2022-02-25)
+
+
+### Bug Fixes
+
+* add `context` to custom function handler entrypoint, ref [#9563](https://github.com/aws-amplify/amplify-cli/issues/9563) ([#9741](https://github.com/aws-amplify/amplify-cli/issues/9741)) ([c061288](https://github.com/aws-amplify/amplify-cli/commit/c06128854a5ea6181a49d6b8c5839290610674bb))
+
+
+
+
+
 ## [2.7.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.5.0...@aws-amplify/amplify-category-auth@2.7.2) (2022-02-15)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-auth
