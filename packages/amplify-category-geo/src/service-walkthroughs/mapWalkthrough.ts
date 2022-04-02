@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { v4 as uuid } from "uuid";
 import { merge } from '../service-utils/resourceUtils';
-import { MapParameters, getGeoMapStyle, MapStyle, getMapStyleComponents, EsriMapStyleType } from '../service-utils/mapParams';
+import { MapParameters, getGeoMapStyle, MapStyle, getMapStyleComponents, HereMapStyleType } from "../service-utils/mapParams";
 import { apiDocs, ServiceName } from '../service-utils/constants';
 import { $TSContext } from 'amplify-cli-core';
 import { getCurrentMapParameters, getMapFriendlyNames } from '../service-utils/mapUtils';
@@ -71,7 +71,7 @@ export const mapAdvancedWalkthrough = async (context: $TSContext, parameters: Pa
     }
     else {
         parameters.dataProvider = DataProvider.Here;
-        parameters.mapStyleType = EsriMapStyleType.Explore;
+        parameters.mapStyleType = HereMapStyleType.Explore;
     }
 
     return parameters;
