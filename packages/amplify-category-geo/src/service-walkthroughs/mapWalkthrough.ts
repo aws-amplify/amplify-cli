@@ -60,7 +60,7 @@ export const mapNameWalkthrough = async (context: any): Promise<Partial<MapParam
 };
 
 export const mapAdvancedWalkthrough = async (context: $TSContext, parameters: Partial<MapParameters>): Promise<Partial<MapParameters>> => {
-    const advancedSettingOptions: string[] = ['Map style & Map data provider (default: Streets provided by Esri)'];
+    const advancedSettingOptions: string[] = ["Map style & Map data provider (default: Explore provided by Here)"];
     printer.info('Available advanced settings:');
     formatter.list(advancedSettingOptions);
     printer.blankLine();
@@ -70,8 +70,8 @@ export const mapAdvancedWalkthrough = async (context: $TSContext, parameters: Pa
         parameters = merge(parameters, await mapStyleWalkthrough(parameters));
     }
     else {
-        parameters.dataProvider = DataProvider.Esri;
-        parameters.mapStyleType = EsriMapStyleType.Streets;
+        parameters.dataProvider = DataProvider.Here;
+        parameters.mapStyleType = EsriMapStyleType.Explore;
     }
 
     return parameters;
@@ -81,13 +81,15 @@ export const mapStyleWalkthrough = async (parameters: Partial<MapParameters>): P
     const mapStyleChoices = [
         { name: 'Streets (data provided by Esri)', value: MapStyle.VectorEsriStreets },
         { name: 'Berlin (data provided by HERE)', value: MapStyle.VectorHereBerlin },
+        { name: 'Explore (data provided by HERE)', value: MapStyle.VectorHereExplore },
+        { name: 'ExploreTruck (data provided by HERE)', value: MapStyle.VectorHereExploreTruck },
         { name: 'Topographic (data provided by Esri)', value: MapStyle.VectorEsriTopographic },
         { name: 'Navigation (data provided by Esri)', value: MapStyle.VectorEsriNavigation },
         { name: 'LightGrayCanvas (data provided by Esri)', value: MapStyle.VectorEsriLightGrayCanvas },
         { name: 'DarkGrayCanvas (data provided by Esri)', value: MapStyle.VectorEsriDarkGrayCanvas }
     ];
     const mapStyleDefault = parameters.dataProvider && parameters.mapStyleType ?
-        getGeoMapStyle(parameters.dataProvider, parameters.mapStyleType) : 'VectorEsriStreets';
+        getGeoMapStyle(parameters.dataProvider, parameters.mapStyleType) : 'VectorHereExplore';
 
     const mapStyleDefaultIndex = mapStyleChoices.findIndex(item => item.value === mapStyleDefault);
     const mapStyleInput = await prompter.pick<'one', string>(

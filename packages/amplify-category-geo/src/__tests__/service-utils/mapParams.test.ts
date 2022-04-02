@@ -7,7 +7,9 @@ describe('map style construction works as expected', () => {
         "VectorEsriTopographic",
         "VectorEsriDarkGrayCanvas",
         "VectorEsriLightGrayCanvas",
-        "VectorHereBerlin"
+        "VectorHereBerlin",
+        "VectorHereExplore",
+        "VectorHereExploreTruck"
     ];
 
     it('parses various supported map styles', () => {
