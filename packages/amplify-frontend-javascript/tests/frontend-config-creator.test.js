@@ -38,8 +38,8 @@ describe('generate maps and search configuration', () => {
         const mockGeoResources = {
             serviceResourceMapping: {
                 Map: [
-                    constructMapMeta('map12345', 'VectorEsriStreets', false),
-                    constructMapMeta('defaultMap12345', 'VectorEsriStreets', true)
+                    constructMapMeta('map12345', 'VectorHereExplore', false),
+                    constructMapMeta('defaultMap12345', 'VectorHereExplore', true)
                 ],
                 PlaceIndex: [
                     constructPlaceIndexMeta('index12345', false),
@@ -72,8 +72,8 @@ describe('generate maps and search configuration', () => {
         const mockGeoResources = {
             serviceResourceMapping: {
                 Map: [
-                    constructMapMeta('map12345', 'VectorEsriStreets', false, resourceRegion),
-                    constructMapMeta('defaultMap12345', 'VectorEsriStreets', true, resourceRegion)
+                    constructMapMeta('map12345', 'VectorHereExplore', false, resourceRegion),
+                    constructMapMeta('defaultMap12345', 'VectorHereExplore', true, resourceRegion)
                 ],
                 PlaceIndex: [
                     constructPlaceIndexMeta('index12345', false, resourceRegion),
