@@ -44,7 +44,15 @@ export class Lambda {
     const deletionPromises = [];
     for (const version of versions) {
       params.VersionNumber = version;
-      deletionPromises.push(this.lambda.deleteLayerVersion(params).promise());
+      deletionPromises.push(async () => {
+        try {
+          await this.lambda.deleteLayerVersion(params).promise();
+        } catch (err) {
+          if (err.code !== 'ParameterNotFound') {
+            throw err;
+          }
+        }
+      });
     }
 
     try {
