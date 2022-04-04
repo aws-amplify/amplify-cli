@@ -2,15 +2,20 @@ import Ajv, { AdditionalPropertiesParams } from 'ajv';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import _ from 'lodash';
-import { JSONSchema7, JSONSchema7Definition } from 'json-schema';
-import { CLIEnvironmentProvider, JSONValidationError } from '..';
-import { FeatureFlagConfiguration, FeatureFlagRegistration, FeatureFlagsEntry, FeatureFlagType } from '.';
-import { FeatureFlagFileProvider } from './featureFlagFileProvider';
+import { JSONSchema7, JSONSchema7Definition } from 'json-schema'; // eslint-disable-line import/no-extraneous-dependencies
+import { CLIEnvironmentProvider } from '../cliEnvironmentProvider';
+import { JSONValidationError } from '../jsonValidationError';
+import {
+  FeatureFlagConfiguration, FeatureFlagsEntry, FeatureFlagType, FeatureFlagRegistration,
+} from './featureFlagTypes';
+import { FeatureFlagFileProvider } from './featureFlagFileProvider'; // eslint-disable-line import/no-cycle
 import { FeatureFlagEnvironmentProvider } from './featureFlagEnvironmentProvider';
-import { pathManager } from '../state-manager/pathManager';
-import { stateManager } from '../state-manager';
+import { stateManager, pathManager } from '../state-manager'; // eslint-disable-line import/no-cycle
 import { JSONUtilities } from '../jsonUtilities';
 
+/**
+ * Feature flag class for the CLI
+ */
 export class FeatureFlags {
   private static instance: FeatureFlags;
 
@@ -25,16 +30,16 @@ export class FeatureFlags {
 
   public static initialize = async (
     environmentProvider: CLIEnvironmentProvider,
-    useNewDefaults: boolean = false,
+    useNewDefaults = false,
     additionalFlags?: Record<string, FeatureFlagRegistration[]>,
   ): Promise<void> => {
     // If we are not running by tests, guard against multiple calls to initialize invocations
     if (typeof jest === 'undefined' && FeatureFlags.instance) {
-      throw new Error('FeatureFlags can only be initialzied once');
+      throw new Error('FeatureFlags can only be initialized once');
     }
 
     if (!environmentProvider) {
-      throw new Error(`'environmentProvider' argument is required`);
+      throw new Error('\'environmentProvider\' argument is required');
     }
 
     // fallback to process.cwd() if no projectPath cannot be determined
@@ -48,11 +53,11 @@ export class FeatureFlags {
     instance.registerFlags();
 
     if (additionalFlags) {
-      for (const sectionName of Object.keys(additionalFlags)) {
+      Object.keys(additionalFlags).forEach(sectionName => {
         const flags = additionalFlags[sectionName];
 
         instance.registerFlag(sectionName, flags);
-      }
+      });
     }
 
     // Create the providers
@@ -70,8 +75,8 @@ export class FeatureFlags {
 
   /**
    * This method reads the project configuration file if exist and adds the features section based on the default feature flags file.
-   * If the configuration file does not exist it will be created with the default features. If the configuration file exists and already has a
-   * features section it will be preserved and will not be overwritten.
+   * If the configuration file does not exist it will be created with the default features. If the configuration file exists and already has
+   * a features section it will be preserved and will not be overwritten.
    *
    * @param newProject True if settings for new projects requested or false if default for existing project are requested
    */
@@ -95,13 +100,13 @@ export class FeatureFlags {
   };
 
   /**
-   * If feature flag exists do nothing, otherwise initalize the given feature flag with the default value.
+   * If feature flag exists do nothing, otherwise initialize the given feature flag with the default value.
    * If the configuration file does not exist it will be created with the default features.
    */
   public static ensureFeatureFlag = async (featureFlagSection: string, featureFlagName: string): Promise<void> => {
     FeatureFlags.ensureInitialized();
 
-    let config = stateManager.getCLIJSON(FeatureFlags.instance.projectPath, undefined, {
+    const config = stateManager.getCLIJSON(FeatureFlags.instance.projectPath, undefined, {
       throwIfNotExist: false,
       preserveComments: true,
     });
@@ -152,11 +157,11 @@ export class FeatureFlags {
     return FeatureFlags.instance.existingProjectDefaults;
   };
 
-  public static removeFeatureFlagConfiguration = async (removeProjectConfiguration: boolean, envNames: string[]) => {
+  public static removeFeatureFlagConfiguration = async (removeProjectConfiguration: boolean, envNames: string[]): Promise<void> => {
     FeatureFlags.ensureInitialized();
 
     if (!envNames) {
-      throw new Error(`'envNames' argument is required`);
+      throw new Error('\'envNames\' argument is required');
     }
 
     if (removeProjectConfiguration) {
@@ -165,16 +170,14 @@ export class FeatureFlags {
       await fs.remove(configFileName);
     }
 
-    for (let envName of envNames) {
+    envNames.forEach(async envName => {
       const configFileName = pathManager.getCLIJSONFilePath(FeatureFlags.instance.projectPath, envName);
 
       await fs.remove(configFileName);
-    }
+    });
   };
 
-  public static isInitialized = (): boolean => {
-    return FeatureFlags.instance !== undefined;
-  };
+  public static isInitialized = (): boolean => FeatureFlags.instance !== undefined;
 
   public static reloadValues = async (): Promise<void> => {
     FeatureFlags.ensureInitialized();
@@ -214,7 +217,7 @@ export class FeatureFlags {
 
   private getValue = <T extends boolean | number | string>(flagName: string, type: FeatureFlagType): T => {
     if (!flagName) {
-      throw new Error(`'flagName' argument is required`);
+      throw new Error('\'flagName\' argument is required');
     }
 
     let value: T | undefined;
@@ -242,7 +245,7 @@ export class FeatureFlags {
     }
 
     // Check if effective values has a value for the requested flag
-    value = <T>this.effectiveFlags[parts[0]]?.[parts[1]];
+    value = <T> this.effectiveFlags[parts[0]]?.[parts[1]];
 
     // If there is no value, return the registered defaults for existing projects
     if (value === undefined) {
@@ -256,51 +259,58 @@ export class FeatureFlags {
     return value;
   };
 
-  private buildJSONSchemaFromRegistrations = () => {
-    return [...this.registrations.entries()].reduce<JSONSchema7>(
-      (s: JSONSchema7, r: [string, FeatureFlagRegistration[]]) => {
-        // r is a tuple, 0=section, 1=array of registrations for that section
-        const currentSection = <JSONSchema7>(s.properties![r[0].toLowerCase()] ?? {
-          type: 'object',
-          additionalProperties: false,
-        });
-
-        currentSection.properties = r[1].reduce<{ [key: string]: JSONSchema7Definition }>((p, fr) => {
-          p![fr.name.toLowerCase()] = {
-            type: fr.type,
-            default: fr.defaultValueForNewProjects,
-          };
-
-          return p;
-        }, {});
-
-        s.properties![r[0].toLowerCase()] = currentSection;
-
-        return s;
-      },
-      {
-        $schema: 'http://json-schema.org/draft-07/schema#',
+  private buildJSONSchemaFromRegistrations = (): JSONSchema7 => [...this.registrations.entries()].reduce<JSONSchema7>(
+    (s: JSONSchema7, r: [string, FeatureFlagRegistration[]]) => {
+      // r is a tuple, 0=section, 1=array of registrations for that section
+      const currentSection = <JSONSchema7>(s.properties![r[0].toLowerCase()] ?? {
         type: 'object',
         additionalProperties: false,
-        properties: {},
-      },
-    );
-  };
+      });
+
+      currentSection.properties = r[1].reduce<{ [key: string]: JSONSchema7Definition }>((p, fr) => {
+        /* eslint-disable no-param-reassign */
+        p![fr.name.toLowerCase()] = {
+          type: fr.type,
+          default: fr.defaultValueForNewProjects,
+        };
+        /* eslint-enable */
+
+        return p;
+      }, {});
+
+        /* eslint-disable no-param-reassign */
+        s.properties![r[0].toLowerCase()] = currentSection;
+        /* eslint-enable */
+
+        return s;
+    },
+    {
+      $schema: 'http://json-schema.org/draft-07/schema#',
+      type: 'object',
+      additionalProperties: false,
+      properties: {},
+    },
+  );
 
   private buildDefaultValues = (): void => {
     this.newProjectDefaults = [...this.registrations.entries()].reduce<FeatureFlagsEntry>(
       (result: FeatureFlagsEntry, r: [string, FeatureFlagRegistration[]]) => {
         // r is a tuple, 0=section, 1=array of registrations for that section
+        /* eslint-disable @typescript-eslint/ban-types */
         const nest = r[1].reduce<{ [key: string]: {} }>((p, fr) => {
+          /* eslint-disable no-param-reassign */
           p![fr.name] = fr.defaultValueForNewProjects;
+          /* eslint-enable */
 
           return p;
         }, {});
 
+        /* eslint-disable no-param-reassign */
         result[r[0]] = {
           ...result[r[0]],
           ...nest,
         };
+        /* eslint-enable */
 
         return result;
       },
@@ -310,16 +320,21 @@ export class FeatureFlags {
     this.existingProjectDefaults = [...this.registrations.entries()].reduce<FeatureFlagsEntry>(
       (result: FeatureFlagsEntry, r: [string, FeatureFlagRegistration[]]) => {
         // r is a tuple, 0=section, 1=array of registrations for that section
+        /* eslint-disable @typescript-eslint/ban-types */
         const nest = r[1].reduce<{ [key: string]: {} }>((p, fr) => {
+          /* eslint-disable no-param-reassign */
           p![fr.name] = fr.defaultValueForExistingProjects;
+          /* eslint-enable */
 
           return p;
         }, {});
 
+        /* eslint-disable no-param-reassign */
         result[r[0]] = {
           ...result[r[0]],
           ...nest,
         };
+        /* eslint-enable */
 
         return result;
       },
@@ -334,14 +349,17 @@ export class FeatureFlags {
     });
     const schemaValidate = ajv.compile(schema);
 
-    const validator = (target: string, flags: FeatureFlagsEntry) => {
+    /* eslint-disable  @typescript-eslint/no-unused-vars */
+    const validator = (target: string, flags: FeatureFlagsEntry): void => {
+    /* eslint-enable */
+
       const valid = schemaValidate(flags);
 
       if (!valid && schemaValidate.errors) {
-        const unknownFlags = [];
-        const otherErrors = [];
+        const unknownFlags: string[] = [];
+        const otherErrors: string[] = [];
 
-        for (const error of schemaValidate.errors) {
+        schemaValidate.errors.forEach(error => {
           if (error.keyword === 'additionalProperties') {
             const additionalProperty = (<AdditionalPropertiesParams>error.params)?.additionalProperty;
             let flagName = error.dataPath.length > 0 && error.dataPath[0] === '.' ? `${error.dataPath.slice(1)}.` : '';
@@ -354,31 +372,30 @@ export class FeatureFlags {
               unknownFlags.push(flagName);
             }
           } else {
-            const errorMessage =
-              error.dataPath.length > 0 && error.dataPath[0] === '.'
-                ? `${error.dataPath.slice(1)}: ${error.message}`
-                : `${error.dataPath}: ${error.message}`;
+            const errorMessage = error.dataPath.length > 0 && error.dataPath[0] === '.'
+              ? `${error.dataPath.slice(1)}: ${error.message}`
+              : `${error.dataPath}: ${error.message}`;
 
             otherErrors.push(errorMessage);
           }
-        }
+        });
 
         throw new JSONValidationError('Invalid feature flag configuration', unknownFlags, otherErrors);
       }
     };
 
-    const featureFlagsValidator = (type: string, features: FeatureFlagConfiguration) => {
+    const featureFlagsValidator = (type: string, features: FeatureFlagConfiguration): void => {
       validator(`${type} project`, features.project);
 
-      for (let env of Object.keys(features.environments)) {
+      Object.keys(features.environments).forEach(env => {
         validator(`${type} environment (${env})`, features.environments[env]);
-      }
+      });
     };
 
-    for (let flagItem of allFlags) {
+    allFlags.forEach(flagItem => {
       // Validate file provider settings
       featureFlagsValidator(flagItem.name, flagItem.flags);
-    }
+    });
   };
 
   private transformEnvFlags = (features: FeatureFlagConfiguration): FeatureFlagConfiguration => {
@@ -386,7 +403,9 @@ export class FeatureFlags {
     // based on the registered data type, since validation and object merge requires type
     // matching values, but environment variables are all strings.
 
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     const convertValue = (section: string, flagName: string, value: any): any => {
+      /* eslint-enable */
       const sectionRegistration = this.registrations.get(section);
 
       if (!sectionRegistration) {
@@ -403,11 +422,11 @@ export class FeatureFlags {
         case 'boolean':
           if (value === 'true') {
             return true;
-          } else if (value === 'false') {
+          } if (value === 'false') {
             return false;
-          } else {
-            throw new Error(`Invalid boolean value: '${value}' for '${flagName}' in section '${section}'`);
           }
+          throw new Error(`Invalid boolean value: '${value}' for '${flagName}' in section '${section}'`);
+
         case 'string':
           // no conversion needed
           return value.toString();
@@ -415,40 +434,42 @@ export class FeatureFlags {
           const n = Number.parseInt(value, 10);
           if (!Number.isNaN(n)) {
             return n;
-          } else {
-            throw new Error(`Invalid number value: '${value}' for '${flagName}' in section '${section}'`);
           }
+          throw new Error(`Invalid number value: '${value}' for '${flagName}' in section '${section}'`);
         }
         default:
           throw new Error(`Invalid number value: ${value} for ${flagName}`);
       }
     };
 
-    const mapFeatureFlagEntry = (input: FeatureFlagsEntry) =>
-      Object.keys(input).reduce<FeatureFlagsEntry>((result, section) => {
-        const sourceObject = input[section];
+    const mapFeatureFlagEntry = (input: FeatureFlagsEntry): FeatureFlagsEntry => Object.keys(
+      input,
+    ).reduce<FeatureFlagsEntry>((result, section) => {
+      const sourceObject = input[section];
 
-        result[section] = Object.keys(sourceObject).reduce<FeatureFlagsEntry>((resultFlag, flagName) => {
-          const sourceValue = sourceObject[flagName];
+      /* eslint-disable no-param-reassign */
+      result[section] = Object.keys(sourceObject).reduce<FeatureFlagsEntry>((resultFlag, flagName) => {
+        const sourceValue = sourceObject[flagName];
 
-          resultFlag[flagName] = convertValue(section, flagName, sourceValue);
+        resultFlag[flagName] = convertValue(section, flagName, sourceValue);
 
-          return resultFlag;
-        }, {});
-
-        return result;
+        return resultFlag;
       }, {});
+
+      return result;
+    }, {});
 
     features.project = mapFeatureFlagEntry(features.project);
 
-    for (let env of Object.keys(features.environments)) {
+    Object.keys(features.environments).forEach(env => {
       features.environments[env] = mapFeatureFlagEntry(features.environments[env]);
-    }
+    });
+    /* eslint-enable */
 
     return features;
   };
 
-  private loadValues = async () => {
+  private loadValues = async (): Promise<void> => {
     // Load the flags from all providers
     const fileFlags = await this.fileValueProvider.load();
     const envFlags = this.transformEnvFlags(await this.envValueProvider.load());
@@ -470,7 +491,7 @@ export class FeatureFlags {
 
     //
     // To make access easy, we are unfolding the values from the providers, dot notation based key value pairs.
-    // Example: 'graphqltransformer.transformerversion': 5
+    // Example: 'graphqlTransformer.transformerVersion': 5
     //
     // top to bottom the following order is used:
     // - file project level
@@ -492,29 +513,30 @@ export class FeatureFlags {
 
   private registerFlag = (section: string, flags: FeatureFlagRegistration[]): void => {
     if (!section) {
-      throw new Error(`'section' argument is required`);
+      throw new Error('\'section\' argument is required');
     }
 
     if (!flags) {
-      throw new Error(`'flags' argument is required`);
+      throw new Error('\'flags\' argument is required');
     }
 
     const newFlags = this.registrations.get(section.toLowerCase()) ?? new Array<FeatureFlagRegistration>();
 
-    for (let flag of flags) {
+    flags.forEach(flag => {
       if (!flag.name || flag.name.trim().length === 0) {
-        throw new Error(`Flag does not have a name specified`);
+        throw new Error('Flag does not have a name specified');
       }
 
       if (newFlags.find(f => f.name === flag.name.toLowerCase())) {
         throw new Error(`Flag with name: '${flag.name}' is already registered in section: '${section}'`);
       }
 
-      // Convert name to lowercase for optimal lookup
-      flag.name = flag.name.toLowerCase();
+      /* eslint-disable no-param-reassign */
+      flag.name = flag.name.toLowerCase(); // Convert name to lowercase for optimal lookup
+      /* eslint-enable */
 
       newFlags.push(flag);
-    }
+    });
 
     this.registrations.set(section.toLowerCase(), newFlags);
   };
