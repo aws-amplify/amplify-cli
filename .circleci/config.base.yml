@@ -1031,6 +1031,7 @@ commands:
     steps:
       - run:
           name: Scan E2E artifacts
+          no_output_timeout: 90m
           command: |
             if ! yarn ts-node .circleci/scan_artifacts.ts; then
               echo "Cleaning the repository"
