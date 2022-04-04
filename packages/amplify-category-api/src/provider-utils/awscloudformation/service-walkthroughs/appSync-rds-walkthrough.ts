@@ -2,7 +2,6 @@ import { $TSContext, $TSObject, exitOnNextTick, ResourceCredentialsNotFoundError
 import { printer, prompter } from 'amplify-prompts';
 import chalk from 'chalk';
 import { DataApiParams } from 'graphql-relational-schema-transformer';
-import inquirer from 'inquirer';
 import ora from 'ora';
 
 const spinner = ora('');

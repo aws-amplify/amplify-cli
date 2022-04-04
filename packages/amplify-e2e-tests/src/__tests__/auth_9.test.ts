@@ -90,18 +90,18 @@ describe('amplify auth with trigger', () => {
         .wait('Specify an email verification message')
         .sendLine('New code is {####}') // New code is {####}
         .wait('Do you want to override the default password policy')
-        .sendNo()
+        .sendConfirmNo()
         .wait("Specify the app's refresh token expiration period")
         .sendCarriageReturn() // 30
         .wait('Do you want to specify the user attributes this app can read and write')
-        .sendNo()
+        .sendConfirmNo()
         .wait('Do you want to enable any of the following capabilities')
         .sendCarriageReturn() // Preserve recaptcha trigger
         .wait('Do you want to use an OAuth flow')
         .sendKeyDown()
         .sendCarriageReturn() // No
         .wait('Do you want to configure Lambda Triggers for Cognito')
-        .sendNo()
+        .sendConfirmNo()
         .sendEof()
         .run((err: Error) => (err ? reject(err) : resolve()));
     });

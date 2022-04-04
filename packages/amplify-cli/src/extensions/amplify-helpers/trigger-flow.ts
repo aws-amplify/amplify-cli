@@ -500,8 +500,14 @@ export const getTriggerEnvInputs = async (context, triggerPath, triggerKey, trig
             (Object.keys(currentEnvVars) && Object.keys(currentEnvVars).length === 0) ||
             !currentEnvVars[questions[j].key]
           ) {
-            const answer: any = await prompter[questions[j].question.type](questions[j].question.message);
-            answers[questions[j].key] = answer[questions[j].key];
+            const prompterTypeMapping = {
+              input: 'input',
+              list: 'pick',
+              confirm: 'yesOrNo',
+            }
+            const prompterFunction = prompterTypeMapping[questions[j].question.type];
+            const answer: any = await prompter[prompterFunction](questions[j].question.message);
+            answers[questions[j].key] = answer;
           }
         }
       }
