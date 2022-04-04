@@ -3,8 +3,9 @@
   "features": [
     {
       "type": "Feature",
-      "properties": {},
-      "id": "myGeofence",
+      "properties": {
+        "name": "myGeofence"
+      },
       "geometry": {
         "type": "Polygon",
         "coordinates": [
@@ -35,8 +36,9 @@
     },
     {
       "type": "Feature",
-      "properties": {},
-      "id": "myGeofence",
+      "properties": {
+        "name": "myGeofence"
+      },
       "geometry": {
         "type": "Polygon",
         "coordinates": [
@@ -60,6 +62,72 @@
             [
               109.248046875,
               21.37124437061831
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "myGeofence2"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -123.3544921875,
+              40.78885994449482
+            ],
+            [
+              -121.86035156249999,
+              40.78885994449482
+            ],
+            [
+              -121.86035156249999,
+              41.19518982948959
+            ],
+            [
+              -123.3544921875,
+              41.19518982948959
+            ],
+            [
+              -123.3544921875,
+              40.78885994449482
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "myGeofence2"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -122.618408203125,
+              40.052847601823984
+            ],
+            [
+              -121.871337890625,
+              40.052847601823984
+            ],
+            [
+              -121.871337890625,
+              40.40513069752789
+            ],
+            [
+              -122.618408203125,
+              40.40513069752789
+            ],
+            [
+              -122.618408203125,
+              40.052847601823984
             ]
           ]
         ]

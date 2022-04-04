@@ -108,7 +108,6 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/notifications.test.ts',
   'src/__tests__/geo-headless.test.ts',
   //<15m
-  'src/__tests__/geo-populate.test.ts',
   'src/__tests__/schema-versioned.test.ts',
   'src/__tests__/schema-data-access-patterns.test.ts',
   'src/__tests__/interactions.test.ts',
@@ -153,6 +152,7 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/import_dynamodb_1.test.ts',
   'src/__tests__/schema-iterative-rollback-1.test.ts',
   //<40m
+  'src/__tests__/geo-import.test.ts',
   'src/__tests__/schema-iterative-rollback-2.test.ts',
   'src/__tests__/env.test.ts',
   'src/__tests__/auth_2.test.ts',

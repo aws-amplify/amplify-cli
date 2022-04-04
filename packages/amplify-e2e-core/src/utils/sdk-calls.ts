@@ -379,3 +379,19 @@ export const getGeofenceCollection = async (geofenceCollectionName: string, regi
     CollectionName: geofenceCollectionName
   }).promise()
 }
+
+export const getGeofence = async (geofenceCollectionName: string, geofenceId: string, region: string) => {
+  const service = new Location({ region });
+  return (await service.getGeofence({
+    CollectionName: geofenceCollectionName,
+    GeofenceId: geofenceId,
+  })).promise();
+};
+
+export const listGeofences = async (geofenceCollectionName: string, region: string, nextToken: string = null) => {
+  const service = new Location({ region });
+  return (await service.listGeofences({
+    CollectionName: geofenceCollectionName,
+    NextToken: nextToken,
+  })).promise();
+};
