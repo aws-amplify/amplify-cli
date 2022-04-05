@@ -82,7 +82,7 @@ function generatePkgCli {
 
   # Build pkg cli
   cp package.json ../build/node_modules/package.json
-  npx pkg -t node12-macos-x64,node12-linux-x64,node12-linux-arm64,node12-win-x64 ../build/node_modules --out-path ../out
+  npx pkg -t node14-macos-x64,node14-linux-x64,node14-linux-arm64,node14-win-x64 ../build/node_modules --out-path ../out
 
   cd ..
 }
