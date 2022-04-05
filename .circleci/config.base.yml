@@ -23,7 +23,7 @@ executors:
     resource_class: large
     environment:
       AMPLIFY_DIR: /home/circleci/repo/out
-      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
 
 defaults: &defaults
   working_directory: ~/repo
@@ -544,7 +544,7 @@ jobs:
             git stash
             git stash drop
             uploadPkgCli
-            ./out/amplify-pkg-linux --version
+            ./out/amplify-pkg-linux-x64 --version
       - run:
           name: Authenticate with npm
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
@@ -950,7 +950,7 @@ commands:
                 name: Symlink Amplify packaged CLI
                 command: |
                   cd out
-                  ln -sf amplify-pkg-linux amplify
+                  ln -sf amplify-pkg-linux-x64 amplify
                   echo "export PATH=$AMPLIFY_DIR:$PATH" >> $BASH_ENV
                   source $BASH_ENV
             - run:
