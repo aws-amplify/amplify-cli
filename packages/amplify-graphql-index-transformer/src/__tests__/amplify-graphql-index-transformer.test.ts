@@ -67,6 +67,12 @@ test('throws if an LSI is missing sort fields', () => {
       foo: ID!
     }`;
 
+  const schemaEmptySortKeyFields = `
+    type Test @model {
+      id: ID! @primaryKey(sortKeyFields: []) @index(name: "index1")
+      foo: ID!
+    }`;
+
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
     featureFlags: {
@@ -90,6 +96,12 @@ test('throws if an LSI is missing sort fields', () => {
 
   expect(() => {
     transformer.transform(schemaInverted);
+  }).toThrow(
+    `Invalid @index 'index1'. You may not create an index where the partition key is the same as that of the primary key unless the index has a sort field. You cannot have a local secondary index without a sort key in the index.`,
+  );
+
+  expect(() => {
+    transformer.transform(schemaEmptySortKeyFields);
   }).toThrow(
     `Invalid @index 'index1'. You may not create an index where the partition key is the same as that of the primary key unless the index has a sort field. You cannot have a local secondary index without a sort key in the index.`,
   );
