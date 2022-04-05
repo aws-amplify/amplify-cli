@@ -2486,7 +2486,7 @@ describe('amplify pull with uibuilder', () => {
 
     spawnSync(
       getNpmPath(),
-      ['install', '-E', '@types/react', 'cypress', '@aws-amplify/ui-react', 'aws-amplify', '@radix-ui/react-id@0.1.1'],
+      ['install', '-E', '@types/react', 'cypress', '@aws-amplify/ui-react', 'aws-amplify'],
       { cwd: reactDir },
     );
 

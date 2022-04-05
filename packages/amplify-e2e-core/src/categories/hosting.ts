@@ -146,7 +146,10 @@ export function amplifyPublishWithUpdate(cwd: string): Promise<void> {
 
 export function amplifyPublishWithoutUpdate(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['publish'], { cwd, stripColors: true }).run((err: Error) => {
+    spawn(getCLIPath(), ['publish'], { cwd, stripColors: true })
+    .wait('Do you still want to publish the frontend')
+    .sendConfirmYes()
+    .run((err: Error) => {
       if (!err) {
         resolve();
       } else {
