@@ -41,8 +41,8 @@ function uploadPkgCli {
     export hash=$(git rev-parse HEAD | cut -c 1-12)
     export version=$(./amplify-pkg-linux-x64 --version)
 
-    aws --profile=s3-uploader s3 cp amplify-pkg-win.exe s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win-$(echo $hash).exe
-    aws --profile=s3-uploader s3 cp amplify-pkg-macos s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos-$(echo $hash)
+    aws --profile=s3-uploader s3 cp amplify-pkg-win-x64.exe s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win-$(echo $hash).exe
+    aws --profile=s3-uploader s3 cp amplify-pkg-macos-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos-$(echo $hash)
     aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-arm64-$(echo $hash)
     aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64-$(echo $hash)
     if [ -z "$NPM_TAG" ]; then
@@ -54,8 +54,8 @@ function uploadPkgCli {
         echo "Cannot overwrite existing file at s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64"
         exit 1
     fi
-    aws --profile=s3-uploader s3 cp amplify-pkg-win.exe s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win.exe
-    aws --profile=s3-uploader s3 cp amplify-pkg-macos s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos
+    aws --profile=s3-uploader s3 cp amplify-pkg-win-x64.exe s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win.exe
+    aws --profile=s3-uploader s3 cp amplify-pkg-macos-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos
     aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-arm64
     aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64
     cd ..

@@ -568,9 +568,9 @@ jobs:
           name: Compress binaries
           command: |
             cd out
-            tar zcvf amplify-pkg-macos.tgz amplify-pkg-macos
-            tar zcvf amplify-pkg-linux.tgz amplify-pkg-linux
-            tar zcvf amplify-pkg-win.exe.tgz amplify-pkg-win.exe
+            tar zcvf amplify-pkg-macos.tgz amplify-pkg-macos-x64
+            tar zcvf amplify-pkg-linux.tgz amplify-pkg-linux-x64
+            tar zcvf amplify-pkg-win.exe.tgz amplify-pkg-win-x64.exe
       - run:
           name: Publish Amplify CLI GitHub prerelease
           command: |
@@ -931,7 +931,7 @@ commands:
                 command: |
                   # rename the command to amplify
                   cd /home/circleci/repo/out
-                  cp amplify-pkg-win.exe amplify.exe
+                  cp amplify-pkg-win-x64.exe amplify.exe
             - run:
                 shell: powershell.exe
                 name: Move to CLI Binary to already existing PATH
@@ -974,7 +974,7 @@ commands:
             - run: yarn --cache-folder ~/.cache/yarn
             - run:
                 shell: powershell.exe
-                command: cp /home/circleci/repo/out/amplify-pkg-win.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps\amplify.exe
+                command: cp /home/circleci/repo/out/amplify-pkg-win-x64.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps\amplify.exe
   install_java:
     description: 'Install Java on Linux and Docker images'
     parameters:
