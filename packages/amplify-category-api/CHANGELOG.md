@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0-beta.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.2.17...@aws-amplify/amplify-category-api@2.0.0-beta.1.0) (2022-04-05)
+
+
+### Bug Fixes
+
+* **container-api:** upgrade flask version for the python api ([#10077](https://github.com/aws-amplify/amplify-cli/issues/10077)) ([64ba2f1](https://github.com/aws-amplify/amplify-cli/commit/64ba2f1b0231ba3d237bfdbd2d36db303bedb9d3))
+* use prompter and handle deletions ([#10122](https://github.com/aws-amplify/amplify-cli/issues/10122)) ([7eebb98](https://github.com/aws-amplify/amplify-cli/commit/7eebb98c77c6cbd218a9cbead36eabfa86c99a09))
+
+
+### BREAKING CHANGES
+
+* package name update requires version bump in order to keep in sync with lerna.
+
+
+
+
+
 ## [1.2.17](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.2.16...@aws-amplify/amplify-category-api@1.2.17) (2022-03-23)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api

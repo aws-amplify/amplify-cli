@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0-beta.1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@1.6.3...amplify-prompts@2.0.0-beta.1.0) (2022-04-05)
+
+
+### Bug Fixes
+
+* use prompter and handle deletions ([#10122](https://github.com/aws-amplify/amplify-cli/issues/10122)) ([7eebb98](https://github.com/aws-amplify/amplify-cli/commit/7eebb98c77c6cbd218a9cbead36eabfa86c99a09))
+
+
+### BREAKING CHANGES
+
+* package name update requires version bump in order to keep in sync with lerna.
+
+
+
+
+
 ## [1.6.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@1.6.2...amplify-prompts@1.6.3) (2022-01-27)
 
 
