@@ -7,13 +7,20 @@
     "skipLibCheck": true
   },
   "references": [
-    {"path": "../amplify-category-function"},
-    {"path": "../amplify-cli-core"},
-    {"path": "../amplify-graphql-auth-transformer"},
-    {"path": "../amplify-graphql-model-transformer"},
-    {"path": "../amplify-graphql-maps-to-transformer"},
-    {"path": "../amplify-storage-simulator"},
-    {"path": "../amplify-provider-awscloudformation"},
-    {"path": "../amplify-nodejs-function-runtime-provider"}
-  ],
+    {
+      "path": "../amplify-category-function"
+    },
+    {
+      "path": "../amplify-cli-core"
+    },
+    {
+      "path": "../amplify-storage-simulator"
+    },
+    {
+      "path": "../amplify-provider-awscloudformation"
+    },
+    {
+      "path": "../amplify-nodejs-function-runtime-provider"
+    }
+  ]
 }
