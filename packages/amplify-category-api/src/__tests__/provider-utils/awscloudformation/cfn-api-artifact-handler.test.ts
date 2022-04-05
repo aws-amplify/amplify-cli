@@ -16,6 +16,8 @@ import {
   getAppSyncResourceName,
 } from '../../../provider-utils/awscloudformation/utils/amplify-meta-utils';
 
+const testAuthId = 'testAuthId';
+
 jest.mock('fs-extra');
 const printerMock = printer as jest.Mocked<typeof printer>;
 printerMock.warn = jest.fn();
@@ -28,7 +30,7 @@ jest.mock('graphql-transformer-core', () => ({
 }));
 
 jest.mock('../../../provider-utils/awscloudformation/utils/amplify-meta-utils', () => ({
-  checkIfAuthExists: jest.fn(),
+  checkIfAuthExists: jest.fn().mockImplementation(() => testAuthId),
   getAppSyncResourceName: jest.fn(() => testApiName),
   getAppSyncAuthConfig: jest.fn(() => ({})),
   authConfigHasApiKey: jest.fn(() => true),
@@ -63,7 +65,7 @@ const testApiName = 'testApiName';
 const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
 pathManagerMock.getResourceDirectoryPath = jest.fn().mockReturnValue(`${backendDirPathStub}/api/${testApiName}`);
 
-const fsMock = fs as unknown as jest.Mocked<typeof fs>;
+const fsMock = (fs as unknown) as jest.Mocked<typeof fs>;
 const writeTransformerConfigurationMock = writeTransformerConfiguration as jest.MockedFunction<typeof writeTransformerConfiguration>;
 const getAppSyncResourceNameMock = getAppSyncResourceName as jest.MockedFunction<typeof getAppSyncResourceName>;
 const getAppSyncAuthConfigMock = getAppSyncAuthConfig as jest.MockedFunction<typeof getAppSyncAuthConfig>;
@@ -100,13 +102,13 @@ describe('create artifacts', () => {
   });
   beforeEach(() => {
     jest.clearAllMocks();
-    cfnApiArtifactHandler = getCfnApiArtifactHandler(contextStub as unknown as $TSContext);
+    cfnApiArtifactHandler = getCfnApiArtifactHandler((contextStub as unknown) as $TSContext);
   });
 
   it('does not create a second API if one already exists', async () => {
     getAppSyncResourceNameMock.mockImplementationOnce(() => testApiName);
     return expect(cfnApiArtifactHandler.createArtifacts(addRequestStub)).rejects.toMatchInlineSnapshot(
-      '[Error: GraphQL API testApiName already exists in the project. Use \'amplify update api\' to make modifications.]',
+      "[Error: GraphQL API testApiName already exists in the project. Use 'amplify update api' to make modifications.]",
     );
   });
 
@@ -174,6 +176,23 @@ describe('create artifacts', () => {
     );
   });
 
+  it('updates amplify meta with depends on auth if cognito specified', async () => {
+    const addRequestStubCognito = _.cloneDeep(addRequestStub);
+    addRequestStubCognito.serviceConfiguration.defaultAuthType = {
+      mode: 'AMAZON_COGNITO_USER_POOLS',
+      cognitoUserPoolId: testAuthId,
+    };
+    await cfnApiArtifactHandler.createArtifacts(addRequestStubCognito);
+    expect(contextStub.amplify.updateamplifyMetaAfterResourceAdd).toHaveBeenCalledTimes(1);
+    expect(contextStub.amplify.updateamplifyMetaAfterResourceAdd.mock.calls[0][2].dependsOn).toEqual([
+      {
+        category: 'auth',
+        resourceName: testAuthId,
+        attributes: ['UserPoolId'],
+      },
+    ]);
+  });
+
   it('returns the api name', async () => {
     const result = await cfnApiArtifactHandler.createArtifacts(addRequestStub);
     expect(result).toBe(addRequestStub.serviceConfiguration.apiName);
@@ -214,13 +233,13 @@ describe('update artifacts', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     updateRequestStub = _.cloneDeep(updateRequestStubBase);
-    cfnApiArtifactHandler = getCfnApiArtifactHandler(contextStub as unknown as $TSContext);
+    cfnApiArtifactHandler = getCfnApiArtifactHandler((contextStub as unknown) as $TSContext);
   });
 
   it('throws error if no GQL API in project', () => {
     getAppSyncResourceNameMock.mockImplementationOnce(() => undefined);
     return expect(cfnApiArtifactHandler.updateArtifacts(updateRequestStub)).rejects.toMatchInlineSnapshot(
-      '[Error: No AppSync API configured in the project. Use \'amplify add api\' to create an API.]',
+      "[Error: No AppSync API configured in the project. Use 'amplify add api' to create an API.]",
     );
   });
 
@@ -321,5 +340,27 @@ describe('update artifacts', () => {
     authConfigHasApiKeyMock.mockImplementationOnce(() => true).mockImplementationOnce(() => false);
     await cfnApiArtifactHandler.updateArtifacts(updateRequestStub);
     expect(printerMock.warn.mock.calls.length).toBe(3);
+  });
+
+  it('adds auth dependency if cognito auth specified', async () => {
+    getAppSyncAuthConfigMock.mockReturnValueOnce({
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        userPoolConfig: {
+          userPoolId: testAuthId,
+        },
+      },
+    });
+    await cfnApiArtifactHandler.updateArtifacts(updateRequestStub);
+    expect(contextStub.amplify.updateamplifyMetaAfterResourceUpdate.mock.calls.length).toBe(2);
+    expect(contextStub.amplify.updateamplifyMetaAfterResourceUpdate.mock.calls[1][3]).toEqual([
+      {
+        category: 'auth',
+        resourceName: testAuthId,
+        attributes: [
+          'UserPoolId',
+        ],
+      },
+    ]);
   });
 });
