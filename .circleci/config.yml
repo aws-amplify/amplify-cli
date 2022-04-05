@@ -26,7 +26,7 @@ executors:
     resource_class: large
     environment:
       AMPLIFY_DIR: /home/circleci/repo/out
-      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
 
 # our defined job, and its steps
 jobs:
@@ -71,7 +71,7 @@ jobs:
                 resource_class: large
                 environment:
                   AMPLIFY_DIR: /home/circleci/repo/out
-                  AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
+                  AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
               - << parameters.os >>
           steps:
             - persist_to_workspace:
@@ -84,7 +84,7 @@ jobs:
     resource_class: large
     environment:
       AMPLIFY_DIR: /home/circleci/repo/out
-      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
     steps:
       - attach_workspace:
           at: ./
@@ -177,7 +177,7 @@ jobs:
     resource_class: large
     environment:
       AMPLIFY_DIR: /home/circleci/repo/out
-      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
     steps:
       - attach_workspace:
           at: ./
