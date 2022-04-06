@@ -29,8 +29,10 @@ export const attachUsageData = async (context: Context, processStartTimeStamp: n
     : config.usageDataConfig.isUsageTrackingEnabled;
   if (usageTrackingEnabled) {
     context.usageData = UsageData.Instance;
+    context.flowData = UsageData.flowInstance;
   } else {
     context.usageData = NoUsageData.Instance;
+    context.flowData = NoUsageData.flowInstance;
   }
   const accountId = getSafeAccountId();
   context.usageData.init(

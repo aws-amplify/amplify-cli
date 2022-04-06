@@ -1,9 +1,16 @@
+/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable spellcheck/spell-checker */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable max-len */
+/* eslint-disable no-return-assign */
+/* eslint-disable no-nested-ternary */
 import { prompt } from 'enquirer';
 // enquirer actions are not part of the TS types, but they are the recommended way to override enquirer behavior
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import * as actions from 'enquirer/lib/combos';
 import chalk from 'chalk';
+import { IFlowData } from 'amplify-cli-shared-interfaces';
 import { isYes, isInteractiveShell } from './flags';
 import { Validator } from './validators';
 import { printer } from './printer';
@@ -12,6 +19,7 @@ import { printer } from './printer';
  * Provides methods for collecting interactive customer responses from the shell
  */
 class AmplifyPrompter implements Prompter {
+  flowData: IFlowData|undefined; // interactive cli flow data journal
   constructor(private readonly prompter: typeof prompt = prompt, private readonly print: typeof printer = printer) {
     // construct a shim on top of enquirer to throw an error if it is called when stdin is non-interactive
     // enquirer does not export its PromptOptions type and this package does not depend on amplify-cli-core so using 'any' as the input type
@@ -25,15 +33,34 @@ class AmplifyPrompter implements Prompter {
     this.prompter = prompterShim;
   }
 
+  setFlowData = (flowData: IFlowData):void => {
+    this.flowData = flowData;
+  }
+
+  private throwLoggedError = (message: string, errorMsg : string) : void => {
+    this.pushFlow({ prompt: message, input: errorMsg });
+    throw new Error(errorMsg);
+  }
+
+  pushFlow = (flowData: Record<string, unknown>) => {
+    if (this.flowData) {
+      this.flowData.pushFlow(flowData);
+    }
+  }
+
   /**
    * Asks a continue prompt.
    * Similar to yesOrNo, but 'false' is always the default and if the --yes flag is set, the prompt is skipped and 'true' is returned
    */
-  confirmContinue = async (message = 'Do you want to continue?'): Promise<boolean> => {
+  confirmContinue = async (message = 'Do you want to continue?') : Promise<boolean> => {
+    let result = false;
     if (isYes) {
-      return true;
+      result = true;
+    } else {
+      result = await this.yesOrNoCommon(message, false);
     }
-    return this.yesOrNoCommon(message, false);
+    this.pushFlow({ prompt: message, input: result });
+    return result;
   };
 
   /**
@@ -41,13 +68,17 @@ class AmplifyPrompter implements Prompter {
    * If the --yes flag is set, the prompt is skipped and the initial value is returned
    */
   yesOrNo = async (message: string, initial = true): Promise<boolean> => {
+    let result = false;
     if (isYes) {
-      return initial;
+      result = initial;
+    } else {
+      result = await this.yesOrNoCommon(message, initial);
     }
-    return this.yesOrNoCommon(message, initial);
+    this.pushFlow({ prompt: message, input: result });
+    return result;
   };
 
-  private yesOrNoCommon = async (message: string, initial: boolean): Promise<boolean> => {
+  private yesOrNoCommon = async (message: string, initial: boolean):Promise<boolean> => {
     let submitted = false;
     const { result } = await this.prompter<{ result: boolean }>({
       type: 'confirm',
@@ -61,6 +92,7 @@ class AmplifyPrompter implements Prompter {
       },
       initial,
     });
+    this.pushFlow({ prompt: message, input: result });
     return result;
   };
 
@@ -82,9 +114,10 @@ class AmplifyPrompter implements Prompter {
     const opts = options?.[0] ?? ({} as InputOptions<RS, T>);
     if (isYes) {
       if (opts.initial !== undefined) {
+        this.pushFlow({ prompt: message, input: opts.initial });
         return opts.initial as PromptReturn<RS, T>;
       }
-      throw new Error(`Cannot prompt for [${message}] when '--yes' flag is set`);
+      this.throwLoggedError(message, `Cannot prompt for [${message}] when '--yes' flag is set`);
     }
 
     const validator = (opts.returnSize === 'many' ? validateEachWith(opts.validate) : opts.validate) as ValidatorCast;
@@ -103,12 +136,16 @@ class AmplifyPrompter implements Prompter {
     });
 
     if (typeof opts.transform === 'function') {
+      let functionResult;
       if (Array.isArray(result)) {
-        // eslint-disable-next-line @typescript-eslint/ban-types
-        return (await Promise.all(result.map(async part => (opts.transform as Function)(part) as T))) as unknown as PromptReturn<RS, T>;
+        functionResult = (await Promise.all(result.map(async part => (opts.transform as Function)(part) as T))) as unknown as PromptReturn<RS, T>;
+      } else {
+        functionResult = opts.transform(result as string) as unknown as PromptReturn<RS, T>;
       }
-      return opts.transform(result as string) as unknown as PromptReturn<RS, T>;
+      this.pushFlow({ prompt: message, input: functionResult });
+      return functionResult;
     }
+    this.pushFlow({ prompt: message, input: result });
     return result as unknown as PromptReturn<RS, T>;
   };
 
@@ -132,7 +169,7 @@ class AmplifyPrompter implements Prompter {
   ): Promise<PromptReturn<RS, T>> => {
     // some choices must be provided
     if (!choices?.length) {
-      throw new Error(`No choices provided for prompt [${message}]`);
+      this.throwLoggedError(message, `No choices provided for prompt [${message}]`);
     }
 
     const opts = options?.[0] || {};
@@ -153,7 +190,8 @@ class AmplifyPrompter implements Prompter {
     const choiceValueMap = new Map<string, T>();
     const enquirerChoices = genericChoices.map(choice => {
       choiceValueMap.set(choice.name, choice.value);
-      return { name: choice.name, disabled: choice.disabled, hint: choice.hint };
+      const enqResult = { name: choice.name, disabled: choice.disabled, hint: choice.hint };
+      return enqResult;
     });
 
     actions.ctrl.a = 'a';
@@ -229,11 +267,16 @@ class AmplifyPrompter implements Prompter {
       process.removeListener('SIGTSTP', sigTstpListener);
     }
 
+    let loggedRet;
     if (Array.isArray(result)) {
-      return result.map(item => choiceValueMap.get(item) as T) as PromptReturn<RS, T>;
+      // result is an array
+      loggedRet = result.map(item => choiceValueMap.get(item) as T) as PromptReturn<RS, T>;
+    } else {
+      // result is a string
+      loggedRet = choiceValueMap.get(result as string) as PromptReturn<RS, T>;
     }
-    // result is a string
-    return choiceValueMap.get(result as string) as PromptReturn<RS, T>;
+    this.pushFlow({ prompt: message, input: loggedRet });
+    return loggedRet;
   };
 }
 
@@ -245,9 +288,7 @@ export const prompter: Prompter = new AmplifyPrompter();
  * @param equals An optional function to determine if two elements are equal. If not specified, === is used
  * Note that choices are assumed to be unique by the equals function definition
  */
-export const byValues = <T>(selection: T[], equals: EqualsFunction<T> = defaultEquals): MultiFilterFunction<T> => (
-  choices: T[],
-) => selection.map(sel => choices.findIndex(choice => equals(choice, sel))).filter(idx => idx >= 0);
+export const byValues = <T>(selection: T[], equals: EqualsFunction<T> = defaultEquals): MultiFilterFunction<T> => (choices: T[]) => selection.map(sel => choices.findIndex(choice => equals(choice, sel))).filter(idx => idx >= 0);
 
 /**
  * Helper function to generate a function that will return an index of a single selection from a list
@@ -300,6 +341,7 @@ type Prompter = {
     // options is typed using spread because it's the only way to make it required if RS is 'many' but optional if RS is 'one'
     ...options: MaybeOptionalPickOptions<RS, T>
   ) => Promise<PromptReturn<RS, T>>;
+  setFlowData : (flowData: IFlowData)=>void;
 };
 
 // the following types are the building blocks of the method input types

@@ -50,6 +50,7 @@
     "amplify-category-predictions": "4.0.3",
     "amplify-category-xr": "3.2.28",
     "amplify-cli-core": "2.6.0",
+    "amplify-cli-shared-interfaces": "1.0.0",
     "amplify-cli-logger": "1.1.0",
     "amplify-codegen": "^3.0.0",
     "amplify-console-hosting": "2.2.28",

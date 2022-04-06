@@ -2,12 +2,13 @@
 import { $TSAny, JSONUtilities, stateManager } from 'amplify-cli-core';
 import { logger, Redactor } from 'amplify-cli-logger';
 import { IAmplifyLogger } from 'amplify-cli-logger/lib/IAmplifyLogger';
+import { IFlowData, IFlowReport } from 'amplify-cli-shared-interfaces';
 import { Input } from '../input';
 
 /**
  * Store the data and sequence of events of CLI walkthrough
  */
-export class CLIFlowReport {
+export class CLIFlowReport implements IFlowData {
     private static _instance: CLIFlowReport = new CLIFlowReport();
     version!: string;
     runtime!: string;
@@ -19,8 +20,8 @@ export class CLIFlowReport {
     logger!: IAmplifyLogger;
     input!: Input;
     timestamp : string;
-    projectEnvIdentifier : string; // hash(ProjectName + Amplify AppId + EnvName)
-    ProjectIdentifier: string; // hash( ProjectName + Amplify App Id)
+    projectEnvIdentifier? : string; // hash(ProjectName + Amplify AppId + EnvName)
+    projectIdentifier?: string; // hash( ProjectName + Amplify App Id)
 
     private constructor() {
       const currentTime = Date.now();
@@ -30,12 +31,35 @@ export class CLIFlowReport {
       CLIFlowReport._instance = this;
       this.logger = logger;
       this.timestamp = currentTime.toString();
+    }
+
+    /**
+     * Set Project identifier
+     */
+    setProjectIdentifier(): void {
       const amplifyMeta = stateManager.getMeta();
       const projectName = amplifyMeta.getProjectConfig();
       const appId = amplifyMeta.getAppId();
       const { envName } = amplifyMeta.getEnvInfo();
       this.projectEnvIdentifier = `${projectName}${appId}${envName}`;
-      this.ProjectIdentifier = `${projectName}${appId}`;
+      this.projectIdentifier = `${projectName}${appId}`;
+    }
+
+    /**
+     * Initialize the project identifier to be used during the flow
+     */
+    initializeProjectIdentifier():undefined|string {
+      try {
+        const amplifyMeta = stateManager.getMeta();
+        const projectName = amplifyMeta.getProjectConfig();
+        const appId = amplifyMeta.getAppId();
+        const { envName } = amplifyMeta.getEnvInfo();
+        this.projectEnvIdentifier = `${projectName}${appId}${envName}`;
+        this.projectIdentifier = `${projectName}${appId}`;
+        return this.projectEnvIdentifier;
+      } catch (e) {
+        return undefined;
+      }
     }
 
     /**
@@ -60,7 +84,9 @@ export class CLIFlowReport {
       this.subCmd = (input.argv[3]) ? input.argv[3] : undefined;
       this.optionFlow = []; // key-value store with ordering maintained
       // Parse options
-      this.pushOption(input.options);
+      if (input.options) {
+        this.pushFlow(input.options);
+      }
     }
 
     /**
@@ -75,14 +101,17 @@ export class CLIFlowReport {
      *
      * @returns JSON version of the object
      */
-    getJSON(): $TSAny {
-      const result = {
+    getFlowReport(): IFlowReport {
+      const result : IFlowReport = {
         runtime: this.runtime,
         executable: this.executable,
         version: this.version,
         cmd: this.cmd,
         subCmd: this.subCmd,
         optionFlow: this.optionFlow,
+        category: this.category,
+        input: this.input,
+        timestamp: this.timestamp,
       };
       return result;
     }
@@ -91,7 +120,7 @@ export class CLIFlowReport {
      * This method is called whenever user selects an option in the CLI walkthrough
      * @param selectedOption - walkthrough options selected
      */
-    pushOption(selectedOption):void {
+    pushFlow(selectedOption: Record<string, $TSAny>):void {
       this.optionFlow.push(selectedOption);
     }
 

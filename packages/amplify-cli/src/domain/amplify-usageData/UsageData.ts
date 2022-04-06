@@ -3,12 +3,13 @@ import https from 'https';
 import { UrlWithStringQuery } from 'url';
 import { $TSAny, JSONUtilities } from 'amplify-cli-core';
 import { pick } from 'lodash';
+import { IFlowData, IFlowReport } from 'amplify-cli-shared-interfaces';
 import { Input } from '../input';
 import redactInput from './identifiable-input-regex';
 import { UsageDataPayload, InputOptions } from './UsageDataPayload';
 import { getUrl } from './getUsageDataUrl';
 import {
-  IUsageData, TimedCodePath, ProjectSettings, StartableTimedCodePath, StoppableTimedCodePath, FromStartupTimedCodePaths, IFlowData,
+  IUsageData, TimedCodePath, ProjectSettings, StartableTimedCodePath, StoppableTimedCodePath, FromStartupTimedCodePaths,
 } from './IUsageData';
 import { Timer } from './Timer';
 import { CLIFlowReport } from './FlowReport';
@@ -30,7 +31,7 @@ export class UsageData implements IUsageData, IFlowData {
   codePathDurations = new Map<TimedCodePath, number>();
 
   private static instance: UsageData;
-  public static flow : CLIFlowReport;
+  private static flow : CLIFlowReport;
 
   private constructor() {
     this.sessionUuid = uuid();
@@ -59,7 +60,7 @@ export class UsageData implements IUsageData, IFlowData {
     this.input = redactInput(input, true);
     this.codePathTimers.set(FromStartupTimedCodePaths.PLATFORM_STARTUP, Timer.start(processStartTimeStamp));
     this.codePathTimers.set(FromStartupTimedCodePaths.TOTAL_DURATION, Timer.start(processStartTimeStamp));
-    UsageData.flow.setInput(this.input);
+    UsageData.flow.setInput(input);
   }
 
   /**
@@ -71,6 +72,16 @@ export class UsageData implements IUsageData, IFlowData {
       UsageData.flow = CLIFlowReport.instance;
     }
     return UsageData.instance;
+  }
+
+  /**
+   * Get the flow data singleton
+   */
+  static get flowInstance(): IFlowData {
+    if (!UsageData.flow) {
+      UsageData.flow = CLIFlowReport.instance;
+    }
+    return UsageData.flow;
   }
 
   /**
@@ -115,8 +126,20 @@ export class UsageData implements IUsageData, IFlowData {
    * Append record to CLI Flow data
    * @param flowData input accepted from the CLI
    */
+  // eslint-disable-next-line class-methods-use-this
   pushFlow(flowData: Record<string, $TSAny>):void {
-    UsageData.flow.pushOption(flowData);
+    UsageData.flow.pushFlow(flowData);
+  }
+
+  /**
+   * Get the JSON version of the Flow Report.
+   */
+  // eslint-disable-next-line class-methods-use-this
+  getFlowReport() : IFlowReport {
+    if (UsageData.flow) {
+      return UsageData.flow.getFlowReport();
+    }
+    return {} as IFlowReport;
   }
 
   private internalStopCodePathTimer = (codePath: TimedCodePath): void => {
@@ -143,6 +166,7 @@ export class UsageData implements IUsageData, IFlowData {
       this.projectSettings,
       this.inputOptions,
       Object.fromEntries(this.codePathDurations),
+      UsageData.flowInstance.getFlowReport() as IFlowReport,
     );
     await this.send(payload);
     return payload;
