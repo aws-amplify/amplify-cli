@@ -21,7 +21,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-migrator": "1.2.31",
+    "@aws-amplify/graphql-transformer-migrator": "^1.2.31",
     "@aws-cdk/assets": "~1.124.0",
     "@aws-cdk/aws-apigateway": "~1.124.0",
     "@aws-cdk/aws-apigatewayv2": "~1.124.0",
@@ -77,8 +77,8 @@
     "constructs": "^3.3.125",
     "fs-extra": "^8.1.0",
     "graphql": "^14.5.8",
-    "graphql-relational-schema-transformer": "2.21.5",
-    "graphql-transformer-core": "7.4.11",
+    "graphql-relational-schema-transformer": "^2.21.5",
+    "graphql-transformer-core": "^7.4.11",
     "inquirer": "^7.3.3",
     "js-yaml": "^4.0.0",
     "lodash": "^4.17.21",

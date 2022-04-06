@@ -30,7 +30,7 @@
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "fs-extra": "^8.1.0",
-    "graphql-transformer-core": "7.4.11",
+    "graphql-transformer-core": "^7.4.11",
     "lodash": "^4.17.21",
     "rimraf": "^3.0.0",
     "uuid": "^8.3.2"
