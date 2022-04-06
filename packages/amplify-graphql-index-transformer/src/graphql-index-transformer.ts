@@ -138,7 +138,7 @@ function validate(config: IndexDirectiveConfiguration, ctx: TransformerContextPr
     for (const peerDirective of objectField.directives!) {
       const hasSortFields = peerDirective.arguments!.some((arg: any) => arg.name.value === 'sortKeyFields');
 
-      if (!defaultGSI && !hasSortFields && objectField == config.primaryKeyField) {
+      if (!defaultGSI && !hasSortFields && objectField == config.primaryKeyField && objectField.name.value === field.name.value) {
         throw new InvalidDirectiveError(
           `Invalid @index '${name}'. You may not create an index where the partition key ` +
             'is the same as that of the primary key unless the index has a sort field. ' +
