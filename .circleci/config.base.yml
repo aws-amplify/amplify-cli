@@ -568,6 +568,9 @@ jobs:
           name: Compress binaries
           command: |
             cd out
+            mv amplify-pkg-macos-x64 amplify-pkg-macos
+            mv amplify-pkg-linux-x64 amplify-pkg-linux
+            mv amplify-pkg-win-x64.exe amplify-pkg-win.exe
             tar zcvf amplify-pkg-macos.tgz amplify-pkg-macos-x64
             tar zcvf amplify-pkg-linux.tgz amplify-pkg-linux-x64
             tar zcvf amplify-pkg-win.exe.tgz amplify-pkg-win-x64.exe
