@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable class-methods-use-this */
 import { $TSAny } from 'amplify-cli-core';
 import { IFlowReport } from 'amplify-cli-shared-interfaces/lib/amplify-cli-flow-reporter-types';
@@ -59,6 +60,14 @@ export class NoUsageData implements IUsageData, IFlowData {
    */
   getFlowReport() : IFlowReport | Record<string, never> {
     return {};
+  }
+
+  /**
+   * NoOp function to assign Project identifier
+   * @returns undefined
+   */
+  assignProjectIdentifier() : string | undefined {
+    return undefined;
   }
 
   private static instance: NoUsageData;

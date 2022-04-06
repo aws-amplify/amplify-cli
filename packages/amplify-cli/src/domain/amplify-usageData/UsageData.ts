@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 import { v4 as uuid } from 'uuid';
 import https from 'https';
 import { UrlWithStringQuery } from 'url';
@@ -126,7 +127,6 @@ export class UsageData implements IUsageData, IFlowData {
    * Append record to CLI Flow data
    * @param flowData input accepted from the CLI
    */
-  // eslint-disable-next-line class-methods-use-this
   pushFlow(flowData: Record<string, $TSAny>):void {
     UsageData.flow.pushFlow(flowData);
   }
@@ -134,12 +134,21 @@ export class UsageData implements IUsageData, IFlowData {
   /**
    * Get the JSON version of the Flow Report.
    */
-  // eslint-disable-next-line class-methods-use-this
   getFlowReport() : IFlowReport {
     if (UsageData.flow) {
       return UsageData.flow.getFlowReport();
     }
     return {} as IFlowReport;
+  }
+
+  /**
+   * Generate a unique searchable
+   */
+  assignProjectIdentifier() : string|undefined {
+    if (UsageData.flow) {
+      return UsageData.flow.assignProjectIdentifier();
+    }
+    return undefined;
   }
 
   private internalStopCodePathTimer = (codePath: TimedCodePath): void => {
@@ -152,6 +161,8 @@ export class UsageData implements IUsageData, IFlowData {
   }
 
   private async emit(error: Error | null, state: string): Promise<UsageDataPayload> {
+    // initialize the unique project identifier if work space is initialized
+    UsageData.flowInstance.assignProjectIdentifier();
     // stop all currently running timers
     Array.from(this.codePathTimers.keys()).forEach(this.internalStopCodePathTimer);
 

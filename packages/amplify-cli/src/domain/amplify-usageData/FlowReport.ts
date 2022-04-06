@@ -22,6 +22,7 @@ export class CLIFlowReport implements IFlowData {
     timestamp : string;
     projectEnvIdentifier? : string; // hash(ProjectName + Amplify AppId + EnvName)
     projectIdentifier?: string; // hash( ProjectName + Amplify App Id)
+    envName?: string;
 
     private constructor() {
       const currentTime = Date.now();
@@ -34,26 +35,13 @@ export class CLIFlowReport implements IFlowData {
     }
 
     /**
-     * Set Project identifier
-     */
-    setProjectIdentifier(): void {
-      const amplifyMeta = stateManager.getMeta();
-      const projectName = amplifyMeta.getProjectConfig();
-      const appId = amplifyMeta.getAppId();
-      const { envName } = amplifyMeta.getEnvInfo();
-      this.projectEnvIdentifier = `${projectName}${appId}${envName}`;
-      this.projectIdentifier = `${projectName}${appId}`;
-    }
-
-    /**
      * Initialize the project identifier to be used during the flow
      */
-    initializeProjectIdentifier():undefined|string {
+    assignProjectIdentifier():undefined|string {
       try {
-        const amplifyMeta = stateManager.getMeta();
-        const projectName = amplifyMeta.getProjectConfig();
-        const appId = amplifyMeta.getAppId();
-        const { envName } = amplifyMeta.getEnvInfo();
+        const projectName = stateManager.getProjectName();
+        const envName = stateManager.getCurrentEnvName();
+        const appId = stateManager.getAppID();
         this.projectEnvIdentifier = `${projectName}${appId}${envName}`;
         this.projectIdentifier = `${projectName}${appId}`;
         return this.projectEnvIdentifier;
@@ -112,6 +100,8 @@ export class CLIFlowReport implements IFlowData {
         category: this.category,
         input: this.input,
         timestamp: this.timestamp,
+        projectEnvIdentifier: this.projectEnvIdentifier,
+        projectIdentifier: this.projectIdentifier,
       };
       return result;
     }

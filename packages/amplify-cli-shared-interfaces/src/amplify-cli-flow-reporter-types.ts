@@ -23,4 +23,5 @@ export interface IFlowReport {
 export interface IFlowData {
   pushFlow: (flowData: Record<string, unknown>) => void,
   getFlowReport: ()=>IFlowReport | Record<string, never>
+  assignProjectIdentifier: (envName?:string)=>string|undefined
 }

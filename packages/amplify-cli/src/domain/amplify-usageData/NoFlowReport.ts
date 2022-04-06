@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { $TSAny } from 'amplify-cli-core';
 import { IFlowData, IFlowReport } from 'amplify-cli-shared-interfaces';
 
@@ -8,6 +9,7 @@ export class CLINoFlowReport implements IFlowData {
     private static _instance: CLINoFlowReport = new CLINoFlowReport();
     pushFlow: (flowData: Record<string, $TSAny>) => void = _ => _ ;
     getFlowReport: () => IFlowReport | Record<string, never> = () => ({});
+    assignProjectIdentifier: ()=>string|undefined = () => undefined;
     /**
      * No-op instance of the CLINoFlowReport class
      */
