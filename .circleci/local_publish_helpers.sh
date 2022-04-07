@@ -41,10 +41,15 @@ function uploadPkgCli {
     export hash=$(git rev-parse HEAD | cut -c 1-12)
     export version=$(./amplify-pkg-linux-x64 --version)
 
-    aws --profile=s3-uploader s3 cp amplify-pkg-win-x64.exe s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win-$(echo $hash).exe
-    aws --profile=s3-uploader s3 cp amplify-pkg-macos-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos-$(echo $hash)
-    aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-arm64-$(echo $hash)
-    aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64-$(echo $hash)
+    if [[ "$CIRCLE_BRANCH" == "release" ]] || [[ "$CIRCLE_BRANCH" == "beta" ]] || [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
+        aws --profile=s3-uploader s3 cp amplify-pkg-win-x64.exe s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win-$(echo $hash).exe
+        aws --profile=s3-uploader s3 cp amplify-pkg-macos-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos-$(echo $hash)
+        aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-arm64-$(echo $hash)
+        aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64-$(echo $hash)
+    else
+        aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64-$(echo $hash)
+    fi
+
     if [ -z "$NPM_TAG" ] && [[ "$CIRCLE_BRANCH" != "release" ]]; then
         exit 0
     fi
@@ -54,6 +59,7 @@ function uploadPkgCli {
         echo "Cannot overwrite existing file at s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64"
         exit 1
     fi
+
     aws --profile=s3-uploader s3 cp amplify-pkg-win-x64.exe s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win.exe
     aws --profile=s3-uploader s3 cp amplify-pkg-macos-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos
     aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-arm64
@@ -82,7 +88,13 @@ function generatePkgCli {
 
   # Build pkg cli
   cp package.json ../build/node_modules/package.json
-  npx pkg -t node14-macos-x64,node14-linux-x64,node14-linux-arm64,node14-win-x64 ../build/node_modules --out-path ../out
+  if [[ "$CIRCLE_BRANCH" == "release" ]] || [[ "$CIRCLE_BRANCH" == "beta" ]] || [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
+    npx pkg -t node14-macos-x64,node14-linux-x64,node14-linux-arm64,node14-win-x64 ../build/node_modules --out-path ../out
+  else
+    npx pkg -t node14-linux-x64 ../build/node_modules --out-path ../out
+    mv ../out/amplify-pkg-linux ../out/amplify-pkg-linux-x64
+  fi
+
 
   cd ..
 }
@@ -220,10 +232,6 @@ function runE2eTest {
         startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
         setNpmRegistryUrlToLocal
         changeNpmGlobalPath
-        npm install -g @aws-amplify/cli
-        npm install -g amplify-app
-        amplify -v
-        amplify-app --version
         cd $(pwd)/packages/amplify-e2e-tests
     fi
 

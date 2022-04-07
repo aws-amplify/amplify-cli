@@ -155,7 +155,12 @@ jobs:
             loginToLocalRegistry
             git config user.email not@used.com
             git config user.name "Doesnt Matter"
-            yarn publish-to-verdaccio
+            setNpmTag
+            if [ -z $NPM_TAG ]; then
+              yarn publish-to-verdaccio
+            else
+              yarn lerna publish --exact --dist-tag=latest --preid=$NPM_TAG --conventional-commits --conventional-prerelease --no-verify-access --yes --no-commit-hooks --no-push --no-git-tag-version
+            fi
             unsetNpmRegistryUrl
       - run:
           name: Generate unified changelog
@@ -519,30 +524,12 @@ jobs:
       - restore_cache:
           keys:
             - amplify-cli-ssh-deps-{{ .Branch }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Upload Pkg Binary
           command: |
-            sudo apt-get install -y lsof
-            git config user.email not@used.com
-            git config user.name "Doesnt Matter"
             source .circleci/local_publish_helpers.sh
-            yarn yarn-use-bash
-            yarn verdaccio-clean
-            yarn verdaccio-disconnect
-            yarn verdaccio-stop
-            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
-            setNpmRegistryUrlToLocal
-            changeNpmGlobalPath
-            setNpmTag
-            if [ -z $NPM_TAG ]; then
-              yarn publish-to-verdaccio
-            else
-              yarn lerna publish --exact --dist-tag=latest --preid=$NPM_TAG --conventional-commits --conventional-prerelease --no-verify-access --yes --no-commit-hooks --no-push --no-git-tag-version
-            fi
-            yarn pkg-all
-            unsetNpmRegistryUrl
-            git stash
-            git stash drop
             uploadPkgCli
             ./out/amplify-pkg-linux-x64 --version
       - run:
@@ -699,7 +686,6 @@ workflows:
             parameters:
               os:
                 - l
-                - w
       - lint:
           requires:
             - build
