@@ -39,7 +39,7 @@ export class FeatureFlags {
     }
 
     if (!environmentProvider) {
-      throw new Error('\'environmentProvider\' argument is required');
+      throw new Error("'environmentProvider' argument is required");
     }
 
     // fallback to process.cwd() if no projectPath cannot be determined
@@ -161,7 +161,7 @@ export class FeatureFlags {
     FeatureFlags.ensureInitialized();
 
     if (!envNames) {
-      throw new Error('\'envNames\' argument is required');
+      throw new Error("'envNames' argument is required");
     }
 
     if (removeProjectConfiguration) {
@@ -217,7 +217,7 @@ export class FeatureFlags {
 
   private getValue = <T extends boolean | number | string>(flagName: string, type: FeatureFlagType): T => {
     if (!flagName) {
-      throw new Error('\'flagName\' argument is required');
+      throw new Error("'flagName' argument is required");
     }
 
     let value: T | undefined;
@@ -513,11 +513,11 @@ export class FeatureFlags {
 
   private registerFlag = (section: string, flags: FeatureFlagRegistration[]): void => {
     if (!section) {
-      throw new Error('\'section\' argument is required');
+      throw new Error("'section' argument is required");
     }
 
     if (!flags) {
-      throw new Error('\'flags\' argument is required');
+      throw new Error("'flags' argument is required");
     }
 
     const newFlags = this.registrations.get(section.toLowerCase()) ?? new Array<FeatureFlagRegistration>();

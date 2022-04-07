@@ -55,6 +55,10 @@ module.exports = {
       minLength: 4,
     }],
 
+    // Disables double quote error when using single quotes within string for readability
+    // https://eslint.org/docs/rules/quotes#avoidescape
+    'quotes': ['error', 'single', { 'avoidEscape': true }],
+
     // Typescript rules
     // Extends recommended rules here: https://www.npmjs.com/package/@typescript-eslint/eslint-plugin
     '@typescript-eslint/naming-convention': [ 'error',
