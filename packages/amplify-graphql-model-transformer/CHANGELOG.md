@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.13.3...@aws-amplify/graphql-model-transformer@0.13.4) (2022-04-07)
+
+**Note:** Version bump only for package @aws-amplify/graphql-model-transformer
+
+
+
+
+
 ## [0.13.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.13.2...@aws-amplify/graphql-model-transformer@0.13.3) (2022-03-23)
 
 

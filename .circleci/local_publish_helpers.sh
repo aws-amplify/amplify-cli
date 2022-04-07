@@ -12,6 +12,55 @@ function startLocalRegistry {
     grep -q 'http address' <(tail -f $tmp_registry_log)
 }
 
+function setNpmTag {
+    if [ -z $NPM_TAG ]; then
+        if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
+            if [[ "$CIRCLE_BRANCH" =~ ^tagged-release-without-e2e-tests\/.* ]]; then
+                export NPM_TAG="${CIRCLE_BRANCH/tagged-release-without-e2e-tests\//}"
+            elif [[ "$CIRCLE_BRANCH" =~ ^tagged-release\/.* ]]; then
+                export NPM_TAG="${CIRCLE_BRANCH/tagged-release\//}"
+            fi
+        fi
+        if [[ "$CIRCLE_BRANCH" == "beta" ]]; then
+            export NPM_TAG="beta"
+        fi
+    else
+        echo "NPM tag was already set!"
+    fi
+    echo $NPM_TAG
+}
+
+function uploadPkgCli {
+    sudo apt-get update
+    sudo apt-get install -y sudo tcl expect zip lsof jq groff python python-pip libpython-dev
+    sudo pip install awscli
+    aws configure --profile=s3-uploader set aws_access_key_id $S3_ACCESS_KEY
+    aws configure --profile=s3-uploader set aws_secret_access_key $S3_SECRET_ACCESS_KEY
+    aws configure --profile=s3-uploader set aws_session_token $S3_AWS_SESSION_TOKEN
+    cd out/
+    export hash=$(git rev-parse HEAD | cut -c 1-12)
+    export version=$(./amplify-pkg-linux-x64 --version)
+
+    aws --profile=s3-uploader s3 cp amplify-pkg-win-x64.exe s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win-$(echo $hash).exe
+    aws --profile=s3-uploader s3 cp amplify-pkg-macos-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos-$(echo $hash)
+    aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-arm64-$(echo $hash)
+    aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64-$(echo $hash)
+    if [ -z "$NPM_TAG" ] && [[ "$CIRCLE_BRANCH" != "release" ]]; then
+        exit 0
+    fi
+
+    echo "Tag name is $NPM_TAG. Uploading to s3://aws-amplify-cli-do-not-delete/$(echo $version)"
+    if [ "0" -ne "$(aws s3 ls s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64 | egrep -v "amplify-pkg-linux-x64-.*" | wc -l)" ]; then
+        echo "Cannot overwrite existing file at s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64"
+        exit 1
+    fi
+    aws --profile=s3-uploader s3 cp amplify-pkg-win-x64.exe s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win.exe
+    aws --profile=s3-uploader s3 cp amplify-pkg-macos-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos
+    aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-arm64
+    aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64
+    cd ..
+}
+
 function generatePkgCli {
   cd pkg
 
@@ -28,14 +77,19 @@ function generatePkgCli {
   # Transpile code for packaging
   npx babel node_modules --extensions '.js,.jsx,.es6,.es,.ts' --copy-files --include-dotfiles -d ../build/node_modules
 
+  # Include third party licenses
+  cp ../Third_Party_Licenses.txt ../build/node_modules
+
   # Build pkg cli
   cp package.json ../build/node_modules/package.json
-  npx pkg -t node12-macos-x64,node12-linux-x64,node12-win-x64 ../build/node_modules --out-path ../out
+  npx pkg -t node14-macos-x64,node14-linux-x64,node14-linux-arm64,node14-win-x64 ../build/node_modules --out-path ../out
+
+  cd ..
 }
 
 function loginToLocalRegistry {
     # Login so we can publish packages
-    (cd && npx npm-auth-to-token@1.0.0 -u user -p password -e user@example.com -r "$custom_registry_url")
+    (cd && npx npm-auth-to-token@1.0.0 -u user -p password -e usser@example.com -r "$custom_registry_url")
 }
 
 function unsetNpmRegistryUrl {
@@ -180,5 +234,4 @@ function runE2eTest {
     else
         yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
     fi
-    
 }

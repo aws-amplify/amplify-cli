@@ -19,6 +19,7 @@ function main(): void {
   if (!allowed.includes(testingAccountId)) {
     execa.commandSync(`git config --add secrets.allowed ${testingAccountId}`);
   }
+  execa.commandSync('git config --add secrets.allowed undefined');
   try {
     execa.commandSync(`git secrets --scan`);
   } catch {

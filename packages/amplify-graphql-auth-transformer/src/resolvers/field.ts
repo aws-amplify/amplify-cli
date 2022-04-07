@@ -43,7 +43,7 @@ import {
 } from './helpers';
 
 // Field Read VTL Functions
-const generateDynamicAuthReadExpression = (roles: Array<RoleDefinition>, fields: ReadonlyArray<FieldDefinitionNode>) => {
+const generateDynamicAuthReadExpression = (roles: Array<RoleDefinition>, fields: ReadonlyArray<FieldDefinitionNode>): Expression[] => {
   const ownerExpressions = new Array<Expression>();
   const dynamicGroupExpressions = new Array<Expression>();
   roles.forEach((role, idx) => {
@@ -57,13 +57,13 @@ const generateDynamicAuthReadExpression = (roles: Array<RoleDefinition>, fields:
             set(ref(`ownerClaim${idx}`), getOwnerClaim(role.claim!)),
             ...(entityIsList
               ? [
-                  forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
-                    iff(
-                      equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
-                      compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')]),
-                    ),
-                  ]),
-                ]
+                forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
+                  iff(
+                    equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
+                    compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')]),
+                  ),
+                ]),
+              ]
               : [iff(equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true)))]),
           ]),
         ),
@@ -77,20 +77,20 @@ const generateDynamicAuthReadExpression = (roles: Array<RoleDefinition>, fields:
             set(ref(`groupEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.source.${role.entity!}`), nul())),
             set(ref(`groupClaim${idx}`), getIdentityClaimExp(str(role.claim), list([]))),
             iff(
-              methodCall(ref(`util.isString`), ref(`groupClaim${idx}`)),
+              methodCall(ref('util.isString'), ref(`groupClaim${idx}`)),
               ifElse(
-                methodCall(ref(`util.isList`), methodCall(ref(`util.parseJson`), ref(`groupClaim${idx}`))),
-                set(ref(`groupClaim${idx}`), methodCall(ref(`util.parseJson`), ref(`groupClaim${idx}`))),
+                methodCall(ref('util.isList'), methodCall(ref('util.parseJson'), ref(`groupClaim${idx}`))),
+                set(ref(`groupClaim${idx}`), methodCall(ref('util.parseJson'), ref(`groupClaim${idx}`))),
                 set(ref(`groupClaim${idx}`), list([ref(`groupClaim${idx}`)])),
               ),
             ),
             entityIsList
               ? forEach(ref('userGroup'), ref(`groupClaim${idx}`), [
-                  iff(
-                    methodCall(ref(`groupEntity${idx}.contains`), ref('userGroup')),
-                    compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')]),
-                  ),
-                ])
+                iff(
+                  methodCall(ref(`groupEntity${idx}.contains`), ref('userGroup')),
+                  compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')]),
+                ),
+              ])
               : iff(ref(`groupClaim${idx}.contains($groupEntity${idx})`), set(ref(IS_AUTHORIZED_FLAG), bool(true))),
           ]),
         ),
@@ -100,14 +100,18 @@ const generateDynamicAuthReadExpression = (roles: Array<RoleDefinition>, fields:
   return [...(ownerExpressions.length > 0 || dynamicGroupExpressions.length > 0 ? [...ownerExpressions, ...dynamicGroupExpressions] : [])];
 };
 
+/**
+ * Generates an auth expression for field
+ */
 export const generateAuthExpressionForField = (
   providers: ConfiguredAuthProviders,
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
   fieldName: string = undefined,
 ): string => {
-  const { cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, iamRoles, apiKeyRoles, lambdaRoles } =
-    splitRoles(roles);
+  const {
+    cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, iamRoles, apiKeyRoles, lambdaRoles,
+  } = splitRoles(roles);
   const totalAuthExpressions: Array<Expression> = [set(ref(IS_AUTHORIZED_FLAG), bool(false))];
   if (providers.hasApiKey) {
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
@@ -148,8 +152,6 @@ export const generateAuthExpressionForField = (
 
 /**
  * This is the response resolver for fields to protect subscriptions
- * @param subscriptionsEnabled
- * @returns
  */
 export const generateFieldAuthResponse = (operation: string, fieldName: string, subscriptionsEnabled: boolean): string => {
   if (subscriptionsEnabled) {
@@ -163,6 +165,9 @@ export const generateFieldAuthResponse = (operation: string, fieldName: string, 
   return printBlock('Return Source Field')(toJson(ref(`context.source.${fieldName}`)));
 };
 
+/**
+ * Creates expression to deny field flag
+ */
 export const setDeniedFieldFlag = (operation: string, subscriptionsEnabled: boolean): string => {
   if (subscriptionsEnabled) {
     return printBlock('Check if subscriptions is protected')(
@@ -177,6 +182,9 @@ export const setDeniedFieldFlag = (operation: string, subscriptionsEnabled: bool
   return '';
 };
 
+/**
+ * Generates sandbox expression for field
+ */
 export const generateSandboxExpressionForField = (sandboxEnabled: boolean): string => {
   let exp: Expression;
   if (sandboxEnabled) exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY_AUTH_TYPE)), methodCall(ref('util.unauthorized')));

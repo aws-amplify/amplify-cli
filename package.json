@@ -42,7 +42,7 @@
     "verdaccio-connect": "source .circleci/local_publish_helpers.sh && setNpmRegistryUrlToLocal && loginToLocalRegistry",
     "publish-to-verdaccio": "lerna publish --yes --no-commit-hooks --no-push --exact --dist-tag=latest --conventional-commits --no-git-tag-version --no-verify-access",
     "verdaccio-disconnect": "source .circleci/local_publish_helpers.sh && unsetNpmRegistryUrl",
-    "verdaccio-stop": "kill -9 $(lsof -n -t -iTCP:4873 -sTCP:LISTEN)",
+    "verdaccio-stop": "kill -9 $(lsof -n -t -iTCP:4873 -sTCP:LISTEN) || true",
     "update-versions": "lerna version --yes --no-commit-hooks --no-push --exact --conventional-commits --no-git-tag-version",
     "commit": "git-cz",
     "coverage": "codecov || exit 0"

@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.0.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.12...amplify-provider-awscloudformation@6.0.0) (2022-04-07)
+
+
+### Bug Fixes
+
+* **graphql:** correct searchable instance types ([#9973](https://github.com/aws-amplify/amplify-cli/issues/9973)) ([dfcfa52](https://github.com/aws-amplify/amplify-cli/commit/dfcfa5237d538088331e8a7c7d51a9932c879429))
+* use prompter and handle deletions ([#10122](https://github.com/aws-amplify/amplify-cli/issues/10122)) ([5c0e290](https://github.com/aws-amplify/amplify-cli/commit/5c0e2904e5ac65824642281e732aae4f02904fd0))
+
+
+### Features
+
+* add latency metrics to usage data payload ([#10016](https://github.com/aws-amplify/amplify-cli/issues/10016)) ([9fe0405](https://github.com/aws-amplify/amplify-cli/commit/9fe04057537dc40dc8f4b428ed43ffcf4490202e))
+
+
+### BREAKING CHANGES
+
+* package name update requires version bump in order to keep in sync with lerna.
+
+
+
+
+
 ## [5.9.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.11...amplify-provider-awscloudformation@5.9.12) (2022-03-23)
 
 
