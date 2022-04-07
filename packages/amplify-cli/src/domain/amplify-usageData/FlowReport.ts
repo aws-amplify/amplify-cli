@@ -111,7 +111,10 @@ export class CLIFlowReport implements IFlowData {
      * @param selectedOption - walkthrough options selected
      */
     pushFlow(selectedOption: Record<string, $TSAny>):void {
-      this.optionFlow.push(selectedOption);
+      const redactedString = Redactor(JSON.stringify(selectedOption));
+      const cleanOption = JSON.parse(redactedString);
+      const timeStampedOption = { ...cleanOption, timestamp: new Date().valueOf() }; // attach unix-style timestamp
+      this.optionFlow.push(timeStampedOption);
     }
 
     /**
