@@ -75,6 +75,15 @@ export async function onSuccess(context: $TSContext) {
   if (!context.parameters.options.app) {
     printWelcomeMessage(context);
   }
+
+  const appId = currentAmplifyMeta?.providers?.awscloudformation?.AmplifyAppId;
+  
+  if (!appId) {
+    context.print.warning('You have reached your app limit:');
+    context.print.info('For more information on Amplify Service Quotas, see:');
+    context.print.info('https://docs.aws.amazon.com/general/latest/gr/amplify.html');
+    context.print.info('');
+  }
 }
 
 function generateLocalRuntimeFiles(context: $TSContext) {
