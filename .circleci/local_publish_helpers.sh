@@ -45,7 +45,7 @@ function uploadPkgCli {
     aws --profile=s3-uploader s3 cp amplify-pkg-macos-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos-$(echo $hash)
     aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-arm64-$(echo $hash)
     aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64-$(echo $hash)
-    if [ -z "$NPM_TAG" ]; then
+    if [ -z "$NPM_TAG" ] && [[ "$CIRCLE_BRANCH" != "release" ]]; then
         exit 0
     fi
 
