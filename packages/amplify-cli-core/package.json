@@ -1,6 +1,6 @@
 {
   "name": "amplify-cli-core",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "description": "Amplify CLI Core",
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
   "dependencies": {
     "ajv": "^6.12.6",
     "amplify-cli-logger": "1.1.0",
-    "amplify-prompts": "1.6.3",
+    "amplify-prompts": "2.0.0",
     "chalk": "^4.1.1",
     "ci-info": "^2.0.0",
     "cloudform-types": "^4.2.0",

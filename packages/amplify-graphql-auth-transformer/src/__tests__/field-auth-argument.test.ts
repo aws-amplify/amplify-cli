@@ -1,8 +1,8 @@
-import { AuthTransformer } from '../graphql-auth-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
+import { AuthTransformer } from '../graphql-auth-transformer';
 
 test('subscriptions are only generated if the respective mutation operation exists', () => {
   const validSchema = `
@@ -109,10 +109,10 @@ test('does not generate field resolvers when private rule takes precedence over 
   expect(out).toBeDefined();
   expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
   expect(out.resolvers['Student.ssn.res.vtl']).toMatchSnapshot();
-  for (let field of ['id', 'name']) {
+  ['id', 'name'].forEach(field => {
     expect(out.resolvers[`Student.${field}.req.vtl`]).toBeUndefined();
     expect(out.resolvers[`Student.${field}.res.vtl`]).toBeUndefined();
-  }
+  });
 });
 
 test('generates field resolver for other provider rules even if private removes all provided-related rules', () => {
@@ -137,10 +137,10 @@ test('generates field resolver for other provider rules even if private removes 
   expect(out).toBeDefined();
   expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
   expect(out.resolvers['Student.ssn.res.vtl']).toMatchSnapshot();
-  for (let field of ['id', 'name']) {
+  ['id', 'name'].forEach(field => {
     expect(out.resolvers[`Student.${field}.req.vtl`]).toBeDefined();
     expect(out.resolvers[`Student.${field}.res.vtl`]).toBeDefined();
-  }
+  });
 });
 
 describe('subscription disabled and userPools configured', () => {

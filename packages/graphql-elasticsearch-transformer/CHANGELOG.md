@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.29](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@5.2.28...graphql-elasticsearch-transformer@5.2.29) (2022-04-07)
+
+
+### Bug Fixes
+
+* **graphql:** correct searchable instance types ([#9973](https://github.com/aws-amplify/amplify-cli/issues/9973)) ([dfcfa52](https://github.com/aws-amplify/amplify-cli/commit/dfcfa5237d538088331e8a7c7d51a9932c879429))
+
+
+
+
+
 ## [5.2.28](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@5.2.27...graphql-elasticsearch-transformer@5.2.28) (2022-03-23)
 
 **Note:** Version bump only for package graphql-elasticsearch-transformer
