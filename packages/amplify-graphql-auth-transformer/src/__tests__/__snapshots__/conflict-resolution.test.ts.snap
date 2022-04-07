@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`test multi auth model with conflict resolution 1`] = `
+exports[`multi auth model with conflict resolution 1`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
@@ -31,7 +31,7 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **"
 `;
 
-exports[`test multi auth model with field auth with conflict resolution 1`] = `
+exports[`multi auth model with field auth with conflict resolution 1`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #if( $ctx.error )
@@ -48,7 +48,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #end
 #end
 #if( $util.authType() == \\"User Pool Authorization\\" )
-  $util.qr($allowedFields.addAll([\\"id\\",\\"writeable\\",\\"_version\\",\\"_deleted\\",\\"_lastChangedAt\\"]))
+  $util.qr($allowedFields.addAll([\\"id\\",\\"writable\\",\\"_version\\",\\"_deleted\\",\\"_lastChangedAt\\"]))
   $util.qr($nullAllowedFields.addAll([]))
 #end
 #if( !$isAuthorized && $allowedFields.isEmpty() && $nullAllowedFields.isEmpty() )
@@ -71,7 +71,7 @@ $util.toJson({})
 ## [End] Authorization Steps. **"
 `;
 
-exports[`test single auth model is enabled with conflict resolution 1`] = `
+exports[`single auth model is enabled with conflict resolution 1`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )

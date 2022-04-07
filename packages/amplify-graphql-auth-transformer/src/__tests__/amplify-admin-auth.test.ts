@@ -1,11 +1,11 @@
-import { AuthTransformer } from '../graphql-auth-transformer';
+import _ from 'lodash';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import _ from 'lodash';
+import { AuthTransformer } from '../graphql-auth-transformer';
 
 const ADMIN_UI_ROLES = ['us-fake-1_uuid_Full-access/CognitoIdentityCredentials', 'us-fake-1_uuid_Manage-only/CognitoIdentityCredentials'];
 
-test('test simple model with public auth rule and amplify admin app is present', () => {
+test('simple model with public auth rule and amplify admin app is present', () => {
   const validSchema = `
   type Post @model @auth(rules: [{allow: public}]) {
     id: ID!
@@ -36,7 +36,7 @@ test('test simple model with public auth rule and amplify admin app is present',
   expect(out.schema).toContain('Post @aws_api_key @aws_iam');
 });
 
-test('Test simple model with public auth rule and amplify admin app is not enabled', () => {
+test('simple model with public auth rule and amplify admin app is not enabled', () => {
   const validSchema = `
       type Post @model @auth(rules: [{allow: public}]) {
           id: ID!
@@ -59,7 +59,7 @@ test('Test simple model with public auth rule and amplify admin app is not enabl
   expect(out.schema).not.toContain('Post @aws_api_key @aws_iam');
 });
 
-test('Test model with public auth rule without all operations and amplify admin app is present', () => {
+test('model with public auth rule without all operations and amplify admin app is present', () => {
   const validSchema = `
       type Post @model @auth(rules: [{allow: public, operations: [read, update]}]) {
           id: ID!
@@ -99,7 +99,7 @@ test('Test model with public auth rule without all operations and amplify admin 
   expect(policyResources).toHaveLength(0);
 });
 
-test('Test simple model with private auth rule and amplify admin app is present', () => {
+test('simple model with private auth rule and amplify admin app is present', () => {
   const validSchema = `
       type Post @model @auth(rules: [{allow: groups, groups: ["Admin", "Dev"]}]) {
           id: ID!
@@ -131,7 +131,7 @@ test('Test simple model with private auth rule and amplify admin app is present'
   expect(out.schema).toContain('type Post @aws_iam @aws_cognito_user_pools');
 });
 
-test('Test simple model with private auth rule and amplify admin app not enabled', () => {
+test('simple model with private auth rule and amplify admin app not enabled', () => {
   const validSchema = `
       type Post @model @auth(rules: [{allow: groups, groups: ["Admin", "Dev"]}]) {
           id: ID!
@@ -158,7 +158,7 @@ test('Test simple model with private auth rule and amplify admin app not enabled
   expect(out.schema).not.toContain('type Post @aws_iam @aws_cognito_user_pools');
 });
 
-test('Test simple model with private auth rule, few operations, and amplify admin app enabled', () => {
+test('simple model with private auth rule, few operations, and amplify admin app enabled', () => {
   const validSchema = `
       type Post @model @auth(rules: [{allow: groups, groups: ["Admin", "Dev"], operations: [read]}]) {
           id: ID!
@@ -203,7 +203,7 @@ test('Test simple model with private auth rule, few operations, and amplify admi
   expect(policyResources).toHaveLength(0);
 });
 
-test('Test simple model with private IAM auth rule, few operations, and amplify admin app is not enabled', () => {
+test('simple model with private IAM auth rule, few operations, and amplify admin app is not enabled', () => {
   const validSchema = `
       type Post @model @auth(rules: [{allow: private, provider: iam, operations: [read, update]}]) {
           id: ID!
@@ -224,10 +224,10 @@ test('Test simple model with private IAM auth rule, few operations, and amplify 
       ],
     },
     transformers: [
-      new ModelTransformer(), 
-      new AuthTransformer( {
+      new ModelTransformer(),
+      new AuthTransformer({
         identityPoolId: 'testIdentityPoolId',
-      })
+      }),
     ],
   });
   const out = transformer.transform(validSchema);
@@ -243,10 +243,10 @@ test('Test simple model with private IAM auth rule, few operations, and amplify 
   expect(out.schema).toContain('listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection @aws_iam');
 
   expect(out.resolvers['Mutation.updatePost.auth.1.res.vtl']).toMatchSnapshot();
-  expect(out.resolvers['Mutation.updatePost.auth.1.res.vtl']).toContain(`#if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == "testIdentityPoolId" && $ctx.identity.cognitoIdentityAuthType == "authenticated") )`);
+  expect(out.resolvers['Mutation.updatePost.auth.1.res.vtl']).toContain('#if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == "testIdentityPoolId" && $ctx.identity.cognitoIdentityAuthType == "authenticated") )');
 });
 
-test('Test simple model with AdminUI enabled should add IAM policy only for fields that have explicit IAM auth', () => {
+test('simple model with AdminUI enabled should add IAM policy only for fields that have explicit IAM auth', () => {
   const validSchema = `
       type Post @model @auth(rules: [{allow: private, provider: iam, operations: [read]}]) {
           id: ID!
