@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.13.5...@aws-amplify/graphql-searchable-transformer@0.13.6) (2022-04-07)
+
+
+### Bug Fixes
+
+* **graphql:** correct searchable instance types ([#9973](https://github.com/aws-amplify/amplify-cli/issues/9973)) ([dfcfa52](https://github.com/aws-amplify/amplify-cli/commit/dfcfa5237d538088331e8a7c7d51a9932c879429))
+
+
+
+
+
 ## [0.13.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.13.4...@aws-amplify/graphql-searchable-transformer@0.13.5) (2022-03-23)
 
 **Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer

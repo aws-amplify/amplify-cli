@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.16.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.16.3...@aws-amplify/graphql-transformer-core@0.16.4) (2022-04-07)
+
+
+### Bug Fixes
+
+* **graphql:** avoid duplicate function when overriding resolvers ([#9980](https://github.com/aws-amplify/amplify-cli/issues/9980)) ([94398f8](https://github.com/aws-amplify/amplify-cli/commit/94398f88eca979a2e0806954e12272e126966a51))
+
+
+
+
+
 ## [0.16.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.16.2...@aws-amplify/graphql-transformer-core@0.16.3) (2022-03-23)
 
 
