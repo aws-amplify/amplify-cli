@@ -1,6 +1,6 @@
 {
   "name": "graphql-http-transformer",
-  "version": "5.2.28",
+  "version": "5.2.29",
   "description": "An AppSync model transform for HTTP resolvers.",
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
     "graphql": "^14.5.8",
     "graphql-mapping-template": "4.20.3",
     "graphql-transformer-common": "4.23.0",
-    "graphql-transformer-core": "7.4.11"
+    "graphql-transformer-core": "7.4.12"
   },
   "jest": {
     "transform": {

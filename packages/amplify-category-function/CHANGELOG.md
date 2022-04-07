@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.5.6...amplify-category-function@4.0.0) (2022-04-07)
+
+
+### Bug Fixes
+
+* use prompter and handle deletions ([#10122](https://github.com/aws-amplify/amplify-cli/issues/10122)) ([5c0e290](https://github.com/aws-amplify/amplify-cli/commit/5c0e2904e5ac65824642281e732aae4f02904fd0))
+
+
+### BREAKING CHANGES
+
+* package name update requires version bump in order to keep in sync with lerna.
+
+
+
+
+
 ## [3.5.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.5.5...amplify-category-function@3.5.6) (2022-03-23)
 
 **Note:** Version bump only for package amplify-category-function
