@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.26...@aws-amplify/cli@8.0.0) (2022-04-07)
+
+
+### chore
+
+* prevent cold start by warming binary immediately after installation ([#10139](https://github.com/aws-amplify/amplify-cli/issues/10139)) ([d7c6ba6](https://github.com/aws-amplify/amplify-cli/commit/d7c6ba6a391ba5ead0eb49e896ae9c1f56239e95))
+
+
+### Continuous Integration
+
+* add arm64 linux deployment ([#10134](https://github.com/aws-amplify/amplify-cli/issues/10134)) ([f04af99](https://github.com/aws-amplify/amplify-cli/commit/f04af99f4877987e75eb025e3855ea1e64dff8ab))
+
+
+### BREAKING CHANGES
+
+* to make sure lerna does the right thing
+* needed to make lerna behave
+
+Co-authored-by: John Corser <xss@amazon.com>
+
+
+
+
+
 ## [7.6.26](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.25...@aws-amplify/cli@7.6.26) (2022-03-23)
 
 

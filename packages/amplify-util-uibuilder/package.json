@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-util-uibuilder",
-  "version": "1.2.18",
+  "version": "1.2.19",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -17,9 +17,9 @@
     "@aws-amplify/codegen-ui-old": "npm:@aws-amplify/codegen-ui@1.2.0",
     "@aws-amplify/codegen-ui-react-new": "npm:@aws-amplify/codegen-ui-react@2.1.0",
     "@aws-amplify/codegen-ui-react-old": "npm:@aws-amplify/codegen-ui-react@1.2.0",
-    "amplify-cli-core": "2.5.0",
-    "amplify-prompts": "1.6.3",
-    "amplify-provider-awscloudformation": "5.9.12",
+    "amplify-cli-core": "2.5.1",
+    "amplify-prompts": "2.0.0",
+    "amplify-provider-awscloudformation": "6.0.0",
     "aws-sdk": "2.1084.0"
   },
   "devDependencies": {
