@@ -1,19 +1,25 @@
 import _ from 'lodash';
-import { FeatureFlagConfiguration, FeatureFlagsEntry } from '.';
-import { CLIEnvironmentProvider } from '..';
+import { FeatureFlagConfiguration, FeatureFlagsEntry } from './featureFlagTypes';
 import { FeatureFlagValueProvider } from './featureFlagValueProvider';
-import { stateManager } from '../state-manager';
+import { CLIEnvironmentProvider } from '../cliEnvironmentProvider';
+import { stateManager } from '../state-manager'; // eslint-disable-line import/no-cycle
 
+/**
+ * Provides a feature flag file provider options type
+ */
 export type FeatureFlagFileProviderOptions = {
   projectPath?: string;
 };
 
+/**
+ * Provides feature flag file provider class
+ */
 export class FeatureFlagFileProvider implements FeatureFlagValueProvider {
   constructor(private environmentProvider: CLIEnvironmentProvider, private options: FeatureFlagFileProviderOptions = {}) {}
 
   public load = async (): Promise<FeatureFlagConfiguration> => {
     if (!this.options.projectPath) {
-      throw new Error(`'projectPath' option is missing`);
+      throw new Error('\'projectPath\' option is missing');
     }
 
     const result: FeatureFlagConfiguration = {
@@ -51,13 +57,18 @@ export class FeatureFlagFileProvider implements FeatureFlagValueProvider {
       return undefined;
     }
 
-    const toLower = (result: any, val: any, key: string) => {
+    /* eslint-disable no-param-reassign */
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    const toLower = (result: any, val: any, key: string): void => {
       result[key.toLowerCase()] = val;
     };
+    /* eslint-enable */
 
     // Convert object keys to lowercase
     const mappedFeatures = Object.keys(configFileData.features).reduce<FeatureFlagsEntry>((ffe, f) => {
+      /* eslint-disable no-param-reassign */
       ffe[f.toLowerCase()] = _.transform(configFileData.features[f], toLower);
+      /* eslint-enable */
 
       return ffe;
     }, {});
