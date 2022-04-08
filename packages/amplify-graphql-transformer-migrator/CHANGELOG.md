@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.33-optimize-pipeline-1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-migrator@1.2.32...@aws-amplify/graphql-transformer-migrator@1.2.33-optimize-pipeline-1.0) (2022-04-08)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-migrator
+
+
+
+
+
 ## [1.2.32](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-migrator@1.2.31...@aws-amplify/graphql-transformer-migrator@1.2.32) (2022-04-07)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-migrator

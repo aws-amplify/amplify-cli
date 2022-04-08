@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.9-optimize-pipeline-1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.8...@aws-amplify/amplify-category-auth@2.7.9-optimize-pipeline-1.0) (2022-04-08)
+
+
+### Bug Fixes
+
+* build resource when adding new env ([#10058](https://github.com/aws-amplify/amplify-cli/issues/10058)) ([4a08ff5](https://github.com/aws-amplify/amplify-cli/commit/4a08ff58e86f53c1dc758b0b772765daf9169201)), closes [#10003](https://github.com/aws-amplify/amplify-cli/issues/10003) [#10037](https://github.com/aws-amplify/amplify-cli/issues/10037)
+
+
+
+
+
 ## [2.7.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.7...@aws-amplify/amplify-category-auth@2.7.8) (2022-04-07)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-auth
