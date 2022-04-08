@@ -656,7 +656,6 @@ workflows:
             - publish_to_local_registry
       - amplify_console_integration_tests:
           context:
-            - amplify-ecr-image-pull
             - console-e2e-test
             - e2e-auth-credentials
             - e2e-test-context
@@ -686,6 +685,7 @@ workflows:
             parameters:
               os:
                 - l
+                - w
       - lint:
           requires:
             - build
@@ -697,7 +697,6 @@ workflows:
             - build
       - graphql_e2e_tests:
           context:
-            - amplify-ecr-image-pull
             - e2e-test-context
           filters:
             branches:
@@ -709,7 +708,6 @@ workflows:
             - build_pkg_binaries
       - integration_test:
           context:
-            - amplify-ecr-image-pull
             - e2e-test-context
           filters:
             branches:
@@ -750,7 +748,6 @@ workflows:
                 - /run-e2e\/.*/
       - amplify_e2e_tests_pkg:
           context:
-            - amplify-ecr-image-pull
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
@@ -764,7 +761,6 @@ workflows:
             - build_pkg_binaries
       - amplify_migration_tests_v6:
           context:
-            - amplify-ecr-image-pull
             - e2e-auth-credentials
             - cleanup-resources
             - e2e-test-context
@@ -780,7 +776,6 @@ workflows:
           #   - run: *clean_e2e_resources
       - amplify_migration_tests_v5:
           context:
-            - amplify-ecr-image-pull
             - e2e-auth-credentials
             - cleanup-resources
             - e2e-test-context
@@ -796,7 +791,6 @@ workflows:
           #   - run: *clean_e2e_resources
       - amplify_migration_tests_non_multi_env_layers:
           context:
-            - amplify-ecr-image-pull
             - e2e-auth-credentials
             - cleanup-resources
             - e2e-test-context
@@ -812,7 +806,6 @@ workflows:
           #   - run: *clean_e2e_resources
       - amplify_migration_tests_multi_env_layers:
           context:
-            - amplify-ecr-image-pull
             - e2e-auth-credentials
             - cleanup-resources
             - e2e-test-context
@@ -828,7 +821,6 @@ workflows:
           #   - run: *clean_e2e_resources
       - amplify_console_integration_tests:
           context:
-            - amplify-ecr-image-pull
             - e2e-auth-credentials
             - cleanup-resources
             - console-e2e-test
@@ -867,7 +859,6 @@ workflows:
 
       - deploy:
           context:
-            - amplify-ecr-image-pull
             - e2e-auth-credentials
             - e2e-test-context
             - amplify-s3-upload
