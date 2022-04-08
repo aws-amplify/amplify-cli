@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1-optimize-pipeline-2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@2.0.0...@aws-amplify/amplify-category-api@2.0.1-optimize-pipeline-2.0) (2022-04-08)
+
+
+### Bug Fixes
+
+* api sets auth dependency correctly in meta files ([#10072](https://github.com/aws-amplify/amplify-cli/issues/10072)) ([42edc57](https://github.com/aws-amplify/amplify-cli/commit/42edc572ab21064da16ede94d16884fda5a9a54f))
+
+
+
+
+
 # [2.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.2.17...@aws-amplify/amplify-category-api@2.0.0) (2022-04-07)
 
 
