@@ -99,9 +99,6 @@ jobs:
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
       - run:
-          name: Install Java
-          command: sudo apt-get update && sudo apt-get install default-jdk
-      - run:
           name: Run tests
           command: yarn test-ci
       - run:
@@ -124,9 +121,6 @@ jobs:
           at: ./
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
-      - run:
-          name: Install Java
-          command: sudo apt-get update && sudo apt-get install default-jdk
       - run:
           name: Run Transformer end-to-end tests with mock server
           command: |
@@ -422,6 +416,7 @@ jobs:
           at: ./
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - run: cd .circleci/ && chmod +x aws.sh
       - run:
           name: Setup Dependencies
           command: |
@@ -434,7 +429,6 @@ jobs:
             sudo apt-get install -y python python-pip libpython-dev
             sudo apt-get install -y jq
             pip install awscli
-      - run: cd .circleci/ && chmod +x aws.sh
       - run: expect .circleci/aws_configure.exp
       - run:
           name: Configure Amplify CLI
@@ -955,22 +949,6 @@ commands:
             - run:
                 shell: powershell.exe
                 command: cp /home/circleci/repo/out/amplify-pkg-win-x64.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps\amplify.exe
-  install_java:
-    description: 'Install Java on Linux and Docker images'
-    parameters:
-      os:
-        type: executor
-        default: l
-    steps:
-      - when:
-          condition:
-            equal: [*linux-e2e-executor, << parameters.os >>]
-          steps:
-            - run:
-                name: Install Java
-                command: |
-                  sudo apt-get update && sudo apt-get install default-jdk
-
   run_e2e_tests:
     description: 'Run Amplify E2E tests'
     parameters:

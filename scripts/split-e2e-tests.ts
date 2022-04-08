@@ -15,10 +15,8 @@ const CONCURRENCY = 25;
 const WINDOWS_TEST_ALLOWLIST: string[] = [
   'schema-function-1_pkg',
   'tags_pkg',
-  'hosting_pkg',
   'schema-auth-9_pkg',
   'schema-model_pkg',
-  'schema-auth-5_pkg',
   'api_lambda_auth_pkg',
   'node-function_pkg',
   'schema-function-2_pkg',
@@ -38,8 +36,6 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
   'schema-connection_pkg',
   'auth_7_pkg',
   'iam-permissions-boundary_pkg',
-  'storage-1_pkg',
-  'init-special-case_pkg',
   'schema-data-access-patterns_pkg',
   'schema-auth-10_pkg',
   'schema-searchable_pkg',
@@ -47,7 +43,6 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
   'auth_8_pkg',
   's3-sse_pkg',
   'storage-2_pkg',
-  'containers-api_pkg',
   'schema-auth-4_pkg',
   'configure-project_pkg',
   'schema-auth-12_pkg',
@@ -61,9 +56,7 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
   'container-hosting_pkg',
   'schema-auth-13_pkg',
   'init_pkg',
-  'hostingPROD_pkg',
   'auth_5_pkg',
-  'auth_2_pkg',
 ];
 
 // Ensure to update packages/amplify-e2e-tests/src/cleanup-e2e-resources.ts is also updated this gets updated

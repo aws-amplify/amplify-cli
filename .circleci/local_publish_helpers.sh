@@ -31,9 +31,6 @@ function setNpmTag {
 }
 
 function uploadPkgCli {
-    sudo apt-get update
-    sudo apt-get install -y sudo tcl expect zip lsof jq groff python python-pip libpython-dev
-    sudo pip install awscli
     aws configure --profile=s3-uploader set aws_access_key_id $S3_ACCESS_KEY
     aws configure --profile=s3-uploader set aws_secret_access_key $S3_SECRET_ACCESS_KEY
     aws configure --profile=s3-uploader set aws_session_token $S3_AWS_SESSION_TOKEN
@@ -226,9 +223,6 @@ function setAwsAccountCredentials {
 function runE2eTest {
     FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
 
-    if [[ "$OSTYPE" == "linux-gnu" ]]; then
-        sudo apt-get install -y libatk-bridge2.0-0 libgtk-3.0 libasound2 lsof
-    fi
     if [ -z "$FIRST_RUN" ] || [ "$FIRST_RUN" == "true" ]; then
         startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
         setNpmRegistryUrlToLocal
