@@ -76,17 +76,17 @@ export class TransformerContractError extends Error {
  */
 export class InvalidMigrationError extends Error {
   fix: string;
-  cause: string;
-  constructor(message: string, cause: string, fix: string) {
+  reason: string;
+  constructor(message: string, reason: string, fix: string) {
     super(message);
     Object.setPrototypeOf(this, InvalidMigrationError.prototype);
     this.name = 'InvalidMigrationError';
     this.fix = fix;
-    this.cause = cause;
+    this.reason = reason;
   }
 }
 InvalidMigrationError.prototype.toString = function () {
-  return `${this.message}\nCause: ${this.cause}\nHow to fix: ${this.fix}`;
+  return `${this.message}\nCause: ${this.reason}\nHow to fix: ${this.fix}`;
 };
 
 export class InvalidDirectiveError extends Error {

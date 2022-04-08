@@ -95,19 +95,19 @@ export class DestructiveMigrationError extends Error {
  * Thrown by the sanity checker when a user is trying to make a migration that is known to not work.
  */
 export class InvalidMigrationError extends Error {
-  constructor(message: string, public cause: string, public fix: string) {
+  constructor(message: string, public reason: string, public fix: string) {
     super(message);
     Object.setPrototypeOf(this, new.target.prototype);
     this.name = 'InvalidMigrationError';
   }
-  toString = () => `${this.message}\nCause: ${this.cause}\nHow to fix: ${this.fix}`;
+  toString = () => `${this.message}\nCause: ${this.reason}\nHow to fix: ${this.fix}`;
 }
 
 export class InvalidGSIMigrationError extends InvalidMigrationError {
   fix: string;
-  cause: string;
-  constructor(message: string, cause: string, fix: string) {
-    super(message, cause, fix);
+  cause: Error;
+  constructor(message: string, reason: string, fix: string) {
+    super(message, reason, fix);
     this.name = 'InvalidGSIMigrationError';
   }
 }
