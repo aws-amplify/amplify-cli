@@ -3,10 +3,13 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "./src",
-    "strict": false, // TODO enable
+    "strict": false,
     "allowJs": true,
-    "checkJs": false, // TODO enable till we move everything to TS
-    "lib": ["ESNext", "dom"]
+    "checkJs": false,
+    "lib": [
+      "ESNext",
+      "dom"
+    ]
   },
   "exclude": [
     "lib",
@@ -15,21 +18,14 @@
     "resources/overrides-resource/override.ts"
   ],
   "references": [
-    { "path": "../amplify-cli-core" },
-    { "path": "../amplify-prompts" },
-    { "path": "../amplify-util-import" },
-    { "path": "../graphql-auth-transformer" },
-    { "path": "../graphql-connection-transformer" },
-    { "path": "../graphql-dynamodb-transformer" },
-    { "path": "../graphql-elasticsearch-transformer" },
-    { "path": "../graphql-function-transformer" },
-    { "path": "../graphql-http-transformer" },
-    { "path": "../graphql-key-transformer" },
-    { "path": "../graphql-predictions-transformer" },
-    { "path": "../graphql-transformer-core" },
-    { "path": "../graphql-versioned-transformer" },
-    { "path": "../amplify-graphql-transformer-core" },
-    { "path": "../amplify-graphql-transformer-interfaces" },
-    { "path": "../amplify-graphql-maps-to-transformer"},
+    {
+      "path": "../amplify-cli-core"
+    },
+    {
+      "path": "../amplify-prompts"
+    },
+    {
+      "path": "../amplify-util-import"
+    }
   ]
 }

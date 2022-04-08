@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
-    "strict": false, // because package has been converted from js
+    "strict": false,
     "allowJs": false
   },
   "exclude": [
@@ -18,11 +18,17 @@
     "src/__tests__"
   ],
   "references": [
-    {"path": "../amplify-cli-core"},
-    {"path": "../amplify-headless-interface"},
-    {"path": "../amplify-prompts"},
-    {"path": "../graphql-transformer-core"},
-    {"path": "../amplify-util-headless-input"},
-    {"path": "../amplify-graphql-transformer-migrator"},
+    {
+      "path": "../amplify-cli-core"
+    },
+    {
+      "path": "../amplify-headless-interface"
+    },
+    {
+      "path": "../amplify-prompts"
+    },
+    {
+      "path": "../amplify-util-headless-input"
+    }
   ]
 }
