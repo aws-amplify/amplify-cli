@@ -1,7 +1,9 @@
-import { existsSync, mkdirSync, createWriteStream } from 'fs';
-import { join } from 'path';
+import fs from 'fs';
+import path from 'path';
 import { spawnSync, execSync } from 'child_process';
 import util from 'util';
+import tar from 'tar-stream';
+import {createGunzip} from 'zlib';
 import stream from 'stream';
 import os from 'os';
 import axios from 'axios';
@@ -21,27 +23,27 @@ const supportedPlatforms = [
   {
     TYPE: 'Windows_NT',
     ARCHITECTURE: 'x64',
-    BINARY_NAME: 'amplify-pkg-win.exe',
+    COMPRESSED_BINARY_PATH: 'amplify-pkg-win-x64.tgz',
   },
   {
     TYPE: 'Linux',
     ARCHITECTURE: 'x64',
-    BINARY_NAME: 'amplify-pkg-linux-x64',
+    COMPRESSED_BINARY_PATH: 'amplify-pkg-linux-x64.tgz',
   },
   {
     TYPE: 'Linux',
     ARCHITECTURE: 'arm64',
-    BINARY_NAME: 'amplify-pkg-linux-arm64',
+    COMPRESSED_BINARY_PATH: 'amplify-pkg-linux-arm64.tgz',
   },
   {
     TYPE: 'Darwin',
     ARCHITECTURE: 'x64',
-    BINARY_NAME: 'amplify-pkg-macos',
+    COMPRESSED_BINARY_PATH: 'amplify-pkg-macos-x64.tgz',
   },
   {
     TYPE: 'Darwin',
     ARCHITECTURE: 'arm64',
-    BINARY_NAME: 'amplify-pkg-macos',
+    COMPRESSED_BINARY_PATH: 'amplify-pkg-macos-x64.tgz',
   },
 ];
 
@@ -50,7 +52,7 @@ const supportedPlatforms = [
  *
  * @returns Object
  */
-const getPlatformBinaryName = (): string => {
+const getPlatformCompressedBinaryName = (): string => {
   const type = os.type();
   const architecture = os.arch();
   const platform = supportedPlatforms.find(platformInfo => type === platformInfo.TYPE && architecture === platformInfo.ARCHITECTURE);
@@ -60,7 +62,7 @@ const getPlatformBinaryName = (): string => {
     );
   }
 
-  return platform!.BINARY_NAME;
+  return platform!.COMPRESSED_BINARY_PATH;
 };
 
 /**
@@ -68,16 +70,14 @@ const getPlatformBinaryName = (): string => {
  *
  * @returns string
  */
-const getBinaryUrl = (): string => {
-  const binaryName = getPlatformBinaryName();
-  let url = `${BINARY_LOCATION}/${version}/${binaryName}`;
+const getCompressedBinaryUrl = (): string => {
+  const compressedBinaryName = getPlatformCompressedBinaryName();
+  let url = `${BINARY_LOCATION}/${version}/${compressedBinaryName}`;
+
   if (process.env.IS_AMPLIFY_CI) {
-    if (url.endsWith('.exe')) {
-      url = url.replace('.exe', `-${getCommitHash()}.exe`);
-    } else {
-      url += `-${getCommitHash()}`;
-    }
+    url = url.replace('.tgz', `-${getCommitHash()}.tgz`);
   }
+
   return url;
 };
 
@@ -101,37 +101,37 @@ export class Binary {
   public binaryPath: string;
   public installDirectory: string;
   constructor() {
-    this.installDirectory = join(os.homedir(), '.amplify', 'bin');
+    this.installDirectory = path.join(os.homedir(), '.amplify', 'bin');
 
-    if (!existsSync(this.installDirectory)) {
-      mkdirSync(this.installDirectory, { recursive: true });
+    if (!fs.existsSync(this.installDirectory)) {
+      fs.mkdirSync(this.installDirectory, { recursive: true });
     }
 
     let amplifyExecutableName = 'amplify';
-    if (getPlatformBinaryName().endsWith('.exe')) {
+    if (os.type() === 'Windows_NT') {
       amplifyExecutableName = 'amplify.exe';
     }
-    this.binaryPath = join(this.installDirectory, amplifyExecutableName);
+    this.binaryPath = path.join(this.installDirectory, amplifyExecutableName);
   }
 
   /**
    * Downloads the binary to the installDirectory
    */
   async install(): Promise<void> {
-    if (existsSync(this.installDirectory)) {
+    if (fs.existsSync(this.installDirectory)) {
       rimraf.sync(this.installDirectory);
     }
 
-    mkdirSync(this.installDirectory, { recursive: true });
-    console.log(`Downloading release from ${getBinaryUrl()}`);
+    fs.mkdirSync(this.installDirectory, { recursive: true });
+    console.log(`Downloading release from ${getCompressedBinaryUrl()}`);
     try {
-      const res = await axios({ url: getBinaryUrl(), responseType: 'stream' });
+      const res = await axios({ url: getCompressedBinaryUrl(), responseType: 'stream' });
       await pipeline(
         res.data,
-        createWriteStream(this.binaryPath, {
-          mode: 0o755,
-        }),
+        createGunzip(),
+        this.extract(),
       );
+
       console.log('amplify has been installed!');
       spawnSync(this.binaryPath, ['version'], { cwd: process.cwd(), stdio: 'inherit' });
     } catch (e) {
@@ -143,7 +143,7 @@ export class Binary {
    * Passes all arguments into the downloaded binary
    */
   async run(): Promise<void> {
-    if (!existsSync(this.binaryPath)) {
+    if (!fs.existsSync(this.binaryPath)) {
       await this.install();
     }
 
@@ -151,5 +151,36 @@ export class Binary {
     const result = spawnSync(this.binaryPath, args, { cwd: process.cwd(), stdio: 'inherit' });
 
     process.exit(result.status as number);
+  }
+
+  /**
+   * Extracts a .tar file
+   *
+   * @returns tar.Extract
+   */
+  private extract(): tar.Extract {
+    const extract = tar.extract();
+    const chunks: Uint8Array[] = [];
+    extract.on('entry', (header, s, next) => {
+      if (header.type === 'file') {
+        s.on('data', chunk => {
+          chunks.push(chunk);
+        });
+      }
+      s.on('end', () => {
+        next();
+      });
+
+      s.resume();
+    });
+    extract.on('finish', () => {
+      if (chunks.length) {
+        const data = Buffer.concat(chunks);
+        fs.writeFileSync(this.binaryPath, data, {
+          mode: 0o755,
+        });
+      }
+    });
+    return extract;
   }
 }
