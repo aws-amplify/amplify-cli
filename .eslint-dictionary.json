@@ -30,6 +30,7 @@
   "func",
   "globals",
   "graphql",
+  "gunzip",
   "integtestFn",
   "homedir",
   "iam",

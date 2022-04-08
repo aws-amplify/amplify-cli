@@ -146,7 +146,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
-            loginToLocalRegistry
             git config user.email not@used.com
             git config user.name "Doesnt Matter"
             setNpmTag
@@ -720,6 +719,7 @@ workflows:
                 - beta
                 - release
                 - /tagged-release\/.*/
+                - /tagged-release-without-e2e-tests\/.*/
                 - /run-e2e\/.*/
           requires:
             - build
@@ -870,6 +870,7 @@ workflows:
             - amplify_migration_tests_non_multi_env_layers
             - amplify_migration_tests_multi_env_layers
             - github_prerelease_install_sanity_check
+            - build_pkg_binaries
           filters:
             branches:
               only:
