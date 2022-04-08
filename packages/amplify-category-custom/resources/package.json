@@ -9,11 +9,11 @@
   },
   "dependencies": {
     "@aws-amplify/cli-extensibility-helper": "^2.0.0",
-    "@aws-cdk/core": "~1.149.0",
-    "@aws-cdk/aws-iam": "~1.149.0",
-    "@aws-cdk/aws-sns-subscriptions": "~1.149.0",
-    "@aws-cdk/aws-sqs": "~1.149.0",
-    "@aws-cdk/aws-sns": "~1.149.0"
+    "@aws-cdk/core": "~1.152.0",
+    "@aws-cdk/aws-iam": "~1.152.0",
+    "@aws-cdk/aws-sns-subscriptions": "~1.152.0",
+    "@aws-cdk/aws-sqs": "~1.152.0",
+    "@aws-cdk/aws-sns": "~1.152.0"
   },
   "devDependencies": {
     "typescript": "^4.2.4"
