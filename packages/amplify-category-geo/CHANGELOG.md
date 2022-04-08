@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.6-apiSplit.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.4.5...amplify-category-geo@2.4.6-apiSplit.0) (2022-04-08)
+
+**Note:** Version bump only for package amplify-category-geo
+
+
+
+
+
 ## [2.4.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.4.4...amplify-category-geo@2.4.5) (2022-04-07)
 
 **Note:** Version bump only for package amplify-category-geo

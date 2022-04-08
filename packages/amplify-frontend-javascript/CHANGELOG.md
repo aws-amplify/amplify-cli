@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.26-apiSplit.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.3.25...amplify-frontend-javascript@3.3.26-apiSplit.0) (2022-04-08)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
 ## [3.3.25](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.3.24...amplify-frontend-javascript@3.3.25) (2022-04-07)
 
 **Note:** Version bump only for package amplify-frontend-javascript

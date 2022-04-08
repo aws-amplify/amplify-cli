@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.0.1-apiSplit.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.0.0...@aws-amplify/cli-internal@8.0.1-apiSplit.0) (2022-04-08)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
+
+
+
+
+
 # 8.0.0 (2022-04-07)
 
 
