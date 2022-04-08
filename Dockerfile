@@ -3,7 +3,24 @@ RUN sudo npm install -g npm@7
 RUN npm -v
 WORKDIR /tmp
 RUN sudo apt-get update && sudo apt-get install -y \
-  xdg-utils
+  xdg-utils \
+  libatk-bridge2.0-0 \
+  libgtk-3.0 \
+  libasound2 \
+  lsof \
+  sudo \
+  tcl \
+  expect \
+  zip \
+  lsof \
+  jq \
+  groff \
+  python \
+  python-pip \
+  libpython-dev \
+  default-jdk
+
+RUN sudo pip install awscli
 
 # Install Java
 WORKDIR /tmp
