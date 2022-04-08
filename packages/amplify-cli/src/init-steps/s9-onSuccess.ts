@@ -8,6 +8,7 @@ import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
 import { writeReadMeFile } from '../extensions/amplify-helpers/docs-manager';
 import { initializeEnv } from '../initialize-env';
 import _ from 'lodash';
+import { printer } from 'amplify-prompts';
 
 export async function onHeadlessSuccess(context: $TSContext) {
   const frontendPlugins = getFrontendPlugins(context);
@@ -77,12 +78,12 @@ export async function onSuccess(context: $TSContext) {
   }
 
   const appId = currentAmplifyMeta?.providers?.awscloudformation?.AmplifyAppId;
-  
+
   if (!appId) {
-    context.print.warning('You have reached your app limit:');
-    context.print.info('For more information on Amplify Service Quotas, see:');
-    context.print.info('https://docs.aws.amazon.com/general/latest/gr/amplify.html');
-    context.print.info('');
+    printer.warn('You have reached your app limit:');
+    printer.info('For more information on Amplify Service Quotas, see:');
+    printer.info('https://docs.aws.amazon.com/general/latest/gr/amplify.html');
+    printer.blankLine()
   }
 }
 
