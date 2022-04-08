@@ -34,6 +34,7 @@
     "rimraf": "^3.0.2"
   },
   "devDependencies": {
+    "@aws-amplify/cli-internal": "8.0.0",
     "prettier": "^1.19.1",
     "rimraf": "^3.0.2"
   }
