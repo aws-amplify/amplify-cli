@@ -1,13 +1,14 @@
 import { JSONUtilities, pathManager, $TSObject, stateManager, $TSContext } from 'amplify-cli-core';
-import { category, supportedRegions } from '../constants';
+import { category, authCategoryName } from '../constants';
 import path from 'path';
 import _ from 'lodash';
 import { BaseStack } from '../service-stacks/baseStack';
-import { parametersFileName, ServiceName, provider } from './constants';
+import { parametersFileName, ServiceName } from './constants';
 import { ResourceParameters, AccessType } from './resourceParams';
 import os from 'os';
 import { getMapIamPolicies } from './mapUtils';
 import { getPlaceIndexIamPolicies } from './placeIndexUtils';
+import { getGeofenceCollectionIamPolicies } from './geofenceCollectionUtils';
 import { printer } from 'amplify-prompts';
 
 // Merges other with existing in a non-destructive way.
@@ -82,6 +83,13 @@ export const updateDefaultResource = async (
   const serviceResources = await getGeoServiceMeta(service);
   Object.keys(serviceResources).forEach(resource => {
     context.amplify.updateamplifyMetaAfterResourceUpdate(
+      category,
+      resource,
+      'isDefault',
+      (defaultResource === resource)
+    );
+
+    context.amplify.updateBackendConfigAfterResourceUpdate(
       category,
       resource,
       'isDefault',
@@ -172,20 +180,13 @@ export const getServicePermissionPolicies = (
       return getMapIamPolicies(resourceName, crudOptions);
     case ServiceName.PlaceIndex:
       return getPlaceIndexIamPolicies(resourceName, crudOptions);
+    case ServiceName.GeofenceCollection:
+        return getGeofenceCollectionIamPolicies(resourceName, crudOptions);
     default:
       printer.warn(`${service} not supported in category ${category}`);
   }
   return {policy: [], attributes: []};
 }
-
-export const verifySupportedRegion = (): boolean => {
-  const currentRegion = stateManager.getMeta()?.providers[provider]?.Region;
-  if(!supportedRegions.includes(currentRegion)) {
-    printer.error(`Geo category is not supported in the region: [${currentRegion}]`);
-    return false;
-  }
-  return true;
-};
 
 /**
  * Check if any Geo resource exists
@@ -193,4 +194,50 @@ export const verifySupportedRegion = (): boolean => {
  export const checkAnyGeoResourceExists = async (): Promise<boolean> => {
   const geoMeta = stateManager.getMeta()?.[category];
   return geoMeta && Object.keys(geoMeta) && Object.keys(geoMeta).length > 0;
+}
+
+export const getAuthResourceName = async (context: $TSContext): Promise<string> => {
+  const authMeta = stateManager.getMeta()?.[authCategoryName];
+  const cognitoResources = authMeta ? Object.keys(authMeta).filter(authResource => authMeta[authResource].service === 'Cognito') : [];
+  if (cognitoResources.length === 0) {
+    throw new Error('No auth resource found. Run "amplify add auth"');
+  }
+  return cognitoResources[0];
+}
+
+export type ResourceDependsOn = {
+  category: string;
+  resourceName: string;
+  attributes: string[];
+};
+
+/**
+ * Construct the resource dependencies on other category resources
+ * @param groupNames Cognito groups that are granted permissions for the resource
+ * @param authResourceName Name of the auth category resource added
+ */
+export const getResourceDependencies = (groupNames: string[], authResourceName: string): ResourceDependsOn[] => {
+  const dependsOnResources = [
+    {
+      category: authCategoryName,
+      resourceName: authResourceName,
+      attributes: ['UserPoolId']
+    }
+  ];
+  if (groupNames.length > 0) {
+    dependsOnResources.push({
+      category: authCategoryName,
+      resourceName: 'userPoolGroups',
+      attributes: groupNames.map(group => `${group}GroupRole`)
+    });
+  }
+  return dependsOnResources;
+}
+
+/**
+ * Get the Geo resources added to the project
+ */
+export const getGeoResources = async (service: ServiceName): Promise<string[]> => {
+  const serviceMeta = await getGeoServiceMeta(service);
+  return serviceMeta ? Object.keys(serviceMeta) : [];
 }

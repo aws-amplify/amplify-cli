@@ -124,6 +124,7 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/geo-add.test.ts',
   'src/__tests__/geo-update.test.ts',
   'src/__tests__/geo-remove.test.ts',
+  'src/__tests__/geo-multi-env.test.ts',
   //<25m
   'src/__tests__/schema-auth-10.test.ts',
   'src/__tests__/schema-key.test.ts',
@@ -151,6 +152,7 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/import_dynamodb_1.test.ts',
   'src/__tests__/schema-iterative-rollback-1.test.ts',
   //<40m
+  'src/__tests__/geo-import.test.ts',
   'src/__tests__/schema-iterative-rollback-2.test.ts',
   'src/__tests__/env.test.ts',
   'src/__tests__/auth_2.test.ts',

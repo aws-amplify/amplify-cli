@@ -59,4 +59,15 @@ describe('remove command tests', () => {
 
         expect(mockRemoveResource).toHaveBeenCalledWith(mockContext, service);
     });
+
+    it('remove resource workflow is invoked for geofence collection service', async() => {
+        const service = ServiceName.GeofenceCollection;
+        mockContext.amplify.serviceSelectionPrompt  = jest.fn().mockImplementation( async () => {
+            return { service: service, providerName: provider};
+        });
+
+        await run(mockContext);
+
+        expect(mockRemoveResource).toHaveBeenCalledWith(mockContext, service);
+    });
 });
