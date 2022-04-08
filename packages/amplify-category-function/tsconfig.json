@@ -3,11 +3,14 @@
   "compilerOptions": {
     "outDir": "./lib",
     "rootDir": "./src",
-    "strict": false // because some files were converted from js
+    "strict": false
   },
   "references": [
-    {"path": "../amplify-function-plugin-interface"},
-    {"path": "../amplify-cli-core"},
-    {"path": "../graphql-transformer-core"}
+    {
+      "path": "../amplify-function-plugin-interface"
+    },
+    {
+      "path": "../amplify-cli-core"
+    }
   ]
 }
