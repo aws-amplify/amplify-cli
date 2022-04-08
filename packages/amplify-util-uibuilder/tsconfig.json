@@ -1,9 +1,9 @@
 {
-	"extends": "../../tsconfig.base.json",
-	"compilerOptions": {
-	  "outDir": "./lib",
-	  "rootDir": "./src",
-	  "strict": true,
-	  "skipLibCheck": true
-	}
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./lib",
+    "rootDir": "./src",
+    "strict": true,
+    "skipLibCheck": true
   }
+}

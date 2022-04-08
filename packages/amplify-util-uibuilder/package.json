@@ -13,17 +13,17 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/codegen-ui-new": "npm:@aws-amplify/codegen-ui@2.1.0",
-    "@aws-amplify/codegen-ui-old": "npm:@aws-amplify/codegen-ui@1.2.0",
-    "@aws-amplify/codegen-ui-react-new": "npm:@aws-amplify/codegen-ui-react@2.1.0",
-    "@aws-amplify/codegen-ui-react-old": "npm:@aws-amplify/codegen-ui-react@1.2.0",
+    "@aws-amplify/codegen-ui": "2.1.2",
+    "@aws-amplify/codegen-ui-react": "2.1.2",
     "amplify-cli-core": "2.5.1",
     "amplify-prompts": "2.0.0",
     "amplify-provider-awscloudformation": "6.0.0",
-    "aws-sdk": "2.1084.0"
+    "aws-sdk": "2.1084.0",
+    "ora": "^4.0.3"
   },
   "devDependencies": {
-    "@aws-amplify/codegen-ui": "2.1.0"
+    "@types/fs-extra": "^8.0.1",
+    "@types/semver": "^7.1.0"
   },
   "jest": {
     "testRunner": "jest-circus/runner",
