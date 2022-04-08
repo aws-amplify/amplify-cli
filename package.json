@@ -39,7 +39,7 @@
     "yarn-use-bash": "yarn config set script-shell /bin/bash",
     "verdaccio-start": "source .circleci/local_publish_helpers.sh && startLocalRegistry \"$(pwd)/.circleci/verdaccio.yaml\"",
     "verdaccio-clean": "rimraf ../verdaccio-cache",
-    "verdaccio-connect": "source .circleci/local_publish_helpers.sh && setNpmRegistryUrlToLocal && loginToLocalRegistry",
+    "verdaccio-connect": "source .circleci/local_publish_helpers.sh && setNpmRegistryUrlToLocal",
     "publish-to-verdaccio": "lerna publish --yes --no-commit-hooks --no-push --exact --dist-tag=latest --conventional-commits --no-git-tag-version --no-verify-access",
     "verdaccio-disconnect": "source .circleci/local_publish_helpers.sh && unsetNpmRegistryUrl",
     "verdaccio-stop": "kill -9 $(lsof -n -t -iTCP:4873 -sTCP:LISTEN) || true",
