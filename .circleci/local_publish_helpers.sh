@@ -92,7 +92,7 @@ function generatePkgCli {
     npx pkg -t node14-macos-x64,node14-linux-x64,node14-linux-arm64,node14-win-x64 ../build/node_modules --out-path ../out
   else
     npx pkg -t node14-linux-x64 ../build/node_modules --out-path ../out
-    mv ../out/amplify-pkg-linux ../out/amplify-pkg-linux-x64
+    mv ../out/amplify-pkg ../out/amplify-pkg-linux-x64
   fi
 
 
