@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.20-optimize-pipeline.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.2.19...@aws-amplify/amplify-util-uibuilder@1.2.20-optimize-pipeline.0) (2022-04-08)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
 ## [1.2.19](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.2.18...@aws-amplify/amplify-util-uibuilder@1.2.19) (2022-04-07)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder

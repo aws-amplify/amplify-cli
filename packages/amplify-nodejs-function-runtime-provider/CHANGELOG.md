@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.26-optimize-pipeline.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@2.2.25...amplify-nodejs-function-runtime-provider@2.2.26-optimize-pipeline.0) (2022-04-08)
+
+**Note:** Version bump only for package amplify-nodejs-function-runtime-provider
+
+
+
+
+
 ## [2.2.25](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@2.2.24...amplify-nodejs-function-runtime-provider@2.2.25) (2022-04-07)
 
 **Note:** Version bump only for package amplify-nodejs-function-runtime-provider
