@@ -728,6 +728,7 @@ workflows:
                 - beta
                 - release
                 - /tagged-release\/.*/
+                - /tagged-release-without-e2e-tests\/.*/
                 - /run-e2e\/.*/
           requires:
             - build
@@ -877,6 +878,8 @@ workflows:
             - mock_e2e_tests
             - graphql_e2e_tests
             - integration_test
+            - publish_to_local_registry
+            - build_pkg_binaries
             - amplify_e2e_tests_pkg
             - amplify_sudo_install_test
             - amplify_console_integration_tests
@@ -1008,7 +1011,6 @@ commands:
                 command: |
                   source .circleci/local_publish_helpers.sh
                   source $BASH_ENV
-                  amplify version
                   retry runE2eTest
                 no_output_timeout: 90m
   scan_e2e_test_artifacts:
