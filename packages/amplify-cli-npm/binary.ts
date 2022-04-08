@@ -6,6 +6,7 @@ import stream from 'stream';
 import os from 'os';
 import axios from 'axios';
 import rimraf from 'rimraf';
+import chalk from 'chalk';
 import { version, name } from './package.json';
 
 const BINARY_LOCATION = 'https://d2bkhsss993doa.cloudfront.net';
@@ -132,7 +133,34 @@ export class Binary {
           mode: 0o755,
         }),
       );
-      console.log('amplify has been installed!');
+
+      console.log(os.EOL);
+      console.log(chalk.green('----------------------------------------'));
+      console.log(chalk.green('Successfully installed the Amplify CLI'));
+      console.log(chalk.green('----------------------------------------'));
+      console.log(os.EOL);
+
+      console.log(chalk.green('JavaScript Getting Started - https://docs.amplify.aws/start'));
+      console.log(os.EOL);
+      console.log(chalk.green('Android Getting Started - https://docs.amplify.aws/start/q/integration/android'));
+      console.log(os.EOL);
+      console.log(chalk.green('iOS Getting Started - https://docs.amplify.aws/start/q/integration/ios'));
+      console.log(os.EOL);
+      console.log(chalk.green('Flutter Getting Started - https://docs.amplify.aws/start/q/integration/flutter'));
+      console.log(os.EOL);
+
+      console.log(
+        chalk.blue(
+          `Amplify CLI collects anonymized usage data, which is used to help understand${os.EOL}\
+      how to improve the product. If you don't wish to send anonymized Amplify CLI${os.EOL}\
+      usage data to AWS, run `,
+        )
+          + chalk.blue.italic.bgWhite('amplify configure --usage-data-off ')
+          + chalk.blue(` to opt-out.${os.EOL}${os.EOL}\
+      Learn more - https://docs.amplify.aws/cli/reference/usage-data`),
+      );
+      console.log(os.EOL);
+
       spawnSync(this.binaryPath, ['version'], { cwd: process.cwd(), stdio: 'inherit' });
     } catch (e) {
       error(`Error fetching release: ${e.message}`);

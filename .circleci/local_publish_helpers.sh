@@ -42,28 +42,18 @@ function uploadPkgCli {
     export version=$(./amplify-pkg-linux-x64 --version)
 
     if [[ "$CIRCLE_BRANCH" == "release" ]] || [[ "$CIRCLE_BRANCH" == "beta" ]] || [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
-        aws --profile=s3-uploader s3 cp amplify-pkg-win-x64.exe s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win-$(echo $hash).exe
-        aws --profile=s3-uploader s3 cp amplify-pkg-macos-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos-$(echo $hash)
-        aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-arm64-$(echo $hash)
-        aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64-$(echo $hash)
+        if [ "0" -ne "$(aws s3 ls s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64 | egrep -v "amplify-pkg-linux-x64-.*" | wc -l)" ]; then
+            echo "Cannot overwrite existing file at s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64"
+            exit 1
+        fi
+        aws --profile=s3-uploader s3 cp amplify-pkg-win-x64.exe s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win.exe
+        aws --profile=s3-uploader s3 cp amplify-pkg-macos-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos
+        aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-arm64
+        aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64
     else
         aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64-$(echo $hash)
     fi
 
-    if [ -z "$NPM_TAG" ] && [[ "$CIRCLE_BRANCH" != "release" ]]; then
-        exit 0
-    fi
-
-    echo "Tag name is $NPM_TAG. Uploading to s3://aws-amplify-cli-do-not-delete/$(echo $version)"
-    if [ "0" -ne "$(aws s3 ls s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64 | egrep -v "amplify-pkg-linux-x64-.*" | wc -l)" ]; then
-        echo "Cannot overwrite existing file at s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64"
-        exit 1
-    fi
-
-    aws --profile=s3-uploader s3 cp amplify-pkg-win-x64.exe s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win.exe
-    aws --profile=s3-uploader s3 cp amplify-pkg-macos-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos
-    aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-arm64
-    aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64
     cd ..
 }
 
@@ -224,17 +214,13 @@ function setAwsAccountCredentials {
 
 function runE2eTest {
     FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
-
-    if [[ "$OSTYPE" == "linux-gnu" ]]; then
-        sudo apt-get install -y libatk-bridge2.0-0 libgtk-3.0 libasound2 lsof
-    fi
     if [ -z "$FIRST_RUN" ] || [ "$FIRST_RUN" == "true" ]; then
-        startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
-        setNpmRegistryUrlToLocal
+        if [[ "$OSTYPE" == "linux-gnu" ]]; then
+            sudo apt-get install -y libatk-bridge2.0-0 libgtk-3.0 libasound2 lsof
+        fi
         changeNpmGlobalPath
         cd $(pwd)/packages/amplify-e2e-tests
     fi
-
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then
         # read the content of failed tests
         failedTests=$(<$FAILED_TEST_REGEX_FILE)

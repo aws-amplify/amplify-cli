@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "axios": "^0.26.0",
+    "chalk": "^4.1.1",
     "rimraf": "^3.0.2"
   },
   "devDependencies": {
