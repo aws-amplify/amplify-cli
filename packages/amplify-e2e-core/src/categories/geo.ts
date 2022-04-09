@@ -99,7 +99,7 @@ export function addGeofenceCollectionWithDefault(cwd: string, groupNames: string
     .wait('Select one or more cognito groups to give access:')
     .sendCtrlA()
     .sendCarriageReturn();
-  
+
   for (const groupName of groupNames){
     chain.wait(`What kind of access do you want for ${groupName} users? Select ALL that apply:`)
       .sendCtrlA()
@@ -270,7 +270,7 @@ export function removeMap(cwd: string): Promise<void> {
     .wait('Select the Map you want to remove')
     .sendCarriageReturn()
     .wait('Are you sure you want to delete the resource?')
-    .sendYes()
+    .sendConfirmYes()
     .runAsync()
 }
 
@@ -285,7 +285,7 @@ export function removeFirstDefaultMap(cwd: string): Promise<void> {
     .wait('Select the Map you want to remove')
     .sendCarriageReturn()
     .wait('Are you sure you want to delete the resource?')
-    .sendYes()
+    .sendConfirmYes()
     .wait('Select the Map you want to set as default:')
     .sendCarriageReturn()
     .runAsync()
@@ -303,7 +303,7 @@ export function removePlaceIndex(cwd: string): Promise<void> {
     .wait('Select the search index you want to remove')
     .sendCarriageReturn()
     .wait('Are you sure you want to delete the resource?')
-    .sendYes()
+    .sendConfirmYes()
     .runAsync()
 }
 
@@ -319,7 +319,7 @@ export function removeFirstDefaultPlaceIndex(cwd: string): Promise<void> {
     .wait('Select the search index you want to remove')
     .sendCarriageReturn()
     .wait('Are you sure you want to delete the resource?')
-    .sendYes()
+    .sendConfirmYes()
     .wait('Select the search index you want to set as default:')
     .sendCarriageReturn()
     .runAsync()
@@ -337,7 +337,7 @@ export function removeFirstDefaultPlaceIndex(cwd: string): Promise<void> {
     .wait('Select the geofence collection you want to remove')
     .sendCarriageReturn()
     .wait('Are you sure you want to delete the resource?')
-    .sendYes()
+    .sendConfirmYes()
     .runAsync()
 }
 
@@ -353,7 +353,7 @@ export function removeFirstDefaultGeofenceCollection(cwd: string): Promise<void>
     .wait('Select the geofence collection you want to remove')
     .sendCarriageReturn()
     .wait('Are you sure you want to delete the resource?')
-    .sendYes()
+    .sendConfirmYes()
     .wait('Select the geofence collection you want to set as default:')
     .sendCarriageReturn()
     .runAsync()
