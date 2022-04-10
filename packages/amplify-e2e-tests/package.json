@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "3.7.17",
+  "version": "3.7.18-apiSplitM1.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -24,8 +24,8 @@
   },
   "dependencies": {
     "@aws-amplify/graphql-transformer-core": "^0.16.4",
-    "amplify-cli-core": "2.5.1",
-    "amplify-e2e-core": "3.0.0",
+    "amplify-cli-core": "2.5.2-apiSplitM1.0",
+    "amplify-e2e-core": "3.0.1-apiSplitM1.0",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-sdk": "^2.1084.0",

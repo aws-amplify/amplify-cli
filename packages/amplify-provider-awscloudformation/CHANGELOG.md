@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.1-apiSplitM1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.0.0...amplify-provider-awscloudformation@6.0.1-apiSplitM1.0) (2022-04-10)
+
+
+### Bug Fixes
+
+* api sets auth dependency correctly in meta files ([#10072](https://github.com/aws-amplify/amplify-cli/issues/10072)) ([42edc57](https://github.com/aws-amplify/amplify-cli/commit/42edc572ab21064da16ede94d16884fda5a9a54f))
+* build resource when adding new env ([#10058](https://github.com/aws-amplify/amplify-cli/issues/10058)) ([4a08ff5](https://github.com/aws-amplify/amplify-cli/commit/4a08ff58e86f53c1dc758b0b772765daf9169201)), closes [#10003](https://github.com/aws-amplify/amplify-cli/issues/10003) [#10037](https://github.com/aws-amplify/amplify-cli/issues/10037)
+* deploy only function when doing amplify push function ([#10035](https://github.com/aws-amplify/amplify-cli/issues/10035)) ([93eddc5](https://github.com/aws-amplify/amplify-cli/commit/93eddc5915c61461f8ee99819fae9d9b738acfa7))
+
+
+
+
+
 # [6.0.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.9.12...amplify-provider-awscloudformation@6.0.0) (2022-04-07)
 
 
