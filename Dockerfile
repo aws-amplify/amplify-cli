@@ -18,8 +18,7 @@ RUN sudo apt-get install -y \
   groff \
   python \
   python-pip \
-  libpython-dev \
-  default-jdk
+  libpython-dev
 
 RUN sudo pip install awscli
 
