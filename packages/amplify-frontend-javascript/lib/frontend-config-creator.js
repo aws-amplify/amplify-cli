@@ -1,7 +1,13 @@
-const constants = require('./constants');
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
+/* eslint-disable func-style */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable jsdoc/require-jsdoc */
 const path = require('path');
 const fs = require('fs-extra');
 const graphQLConfig = require('graphql-config');
+const os = require('os');
+const constants = require('./constants');
 
 const MOCK_RESERVED_EXPORT_KEYS = [
   'aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing',
@@ -85,6 +91,7 @@ function deleteAmplifyConfig(context) {
     const targetFilePath = path.join(srcDirPath, constants.exportsFilename);
     fs.removeSync(targetFilePath);
   }
+  // eslint-disable-next-line spellcheck/spell-checker
   if (!fs.existsSync(path.join(projectPath, '.graphqlconfig.yml'))) return;
   const gqlConfig = graphQLConfig.getGraphQLConfig(projectPath);
   if (gqlConfig && gqlConfig.config) {
@@ -132,6 +139,7 @@ function createAmplifyConfig(context, amplifyResources) {
     const forceOverwrite = true;
     return amplify.copyBatch(context, copyJobs, options, forceOverwrite);
   }
+  return undefined;
 }
 
 async function createAWSExports(context, amplifyResources, cloudAmplifyResources) {
@@ -278,10 +286,13 @@ async function getCurrentAWSExports(context) {
 
   if (fs.existsSync(targetFilePath)) {
     // if packaged, we can't load an ES6 module because pkg doesn't support it yet
-    const es5export = 'module.exports = {default: awsmobile};\n';
-    const es6export = 'export default awsmobile;\n';
+    // eslint-disable-next-line spellcheck/spell-checker
+    const es5export = `module.exports = {default: awsmobile};${os.EOL}`;
+    // eslint-disable-next-line spellcheck/spell-checker
+    const es6export = `export default awsmobile;${os.EOL}`;
     const fileContents = fs.readFileSync(targetFilePath, 'utf-8');
     fs.writeFileSync(targetFilePath, fileContents.replace(es6export, es5export));
+    // eslint-disable-next-line global-require, import/no-dynamic-require
     awsExports = require(targetFilePath).default;
     fs.writeFileSync(targetFilePath, fileContents);
   }
@@ -335,6 +346,7 @@ function getCognitoConfig(cognitoResources, projectRegion) {
   let federationTarget;
 
   if (cognitoResource.output.HostedUIDomain) {
+    // eslint-disable-next-line spellcheck/spell-checker
     domain = `${cognitoResource.output.HostedUIDomain}.auth.${projectRegion}.amazoncognito.com`;
   }
   if (cognitoResource.output.OAuthMetadata) {
@@ -358,10 +370,10 @@ function getCognitoConfig(cognitoResources, projectRegion) {
   };
 
   if (
-    cognitoResource.output.GoogleWebClient ||
-    cognitoResource.output.FacebookWebClient ||
-    cognitoResource.output.AmazonWebClient ||
-    cognitoResource.output.AppleWebClient
+    cognitoResource.output.GoogleWebClient
+    || cognitoResource.output.FacebookWebClient
+    || cognitoResource.output.AmazonWebClient
+    || cognitoResource.output.AppleWebClient
   ) {
     idpFederation = true;
   }
