@@ -3,6 +3,7 @@ jest.mock('amplify-cli-core');
 
 const mapServiceName = 'Map';
 const placeIndexServiceName = 'PlaceIndex';
+const geofenceCollectionServiceName = 'GeofenceCollection';
 
 describe('generate maps and search configuration', () => {
 
@@ -29,6 +30,17 @@ describe('generate maps and search configuration', () => {
         };
     }
 
+    function constructGeofenceCollectionMeta(collectionName, isDefault, region) {
+        return {
+            service: geofenceCollectionServiceName,
+            output: {
+                Name: collectionName,
+                Region: region
+            },
+            isDefault: isDefault
+        };
+    }
+
     beforeEach(() => {
         jest.clearAllMocks();
     });
@@ -44,6 +56,10 @@ describe('generate maps and search configuration', () => {
                 PlaceIndex: [
                     constructPlaceIndexMeta('index12345', false),
                     constructPlaceIndexMeta('defaultIndex12345', true)
+                ],
+                GeofenceCollection: [
+                    constructGeofenceCollectionMeta('collection12345', false),
+                    constructGeofenceCollectionMeta('defaultCollection12345', true)
                 ]
             },
             metadata: {
@@ -78,6 +94,10 @@ describe('generate maps and search configuration', () => {
                 PlaceIndex: [
                     constructPlaceIndexMeta('index12345', false, resourceRegion),
                     constructPlaceIndexMeta('defaultIndex12345', true, resourceRegion)
+                ],
+                GeofenceCollection: [
+                    constructGeofenceCollectionMeta('collection12345', false, resourceRegion),
+                    constructGeofenceCollectionMeta('defaultCollection12345', true, resourceRegion)
                 ]
             },
             metadata: {

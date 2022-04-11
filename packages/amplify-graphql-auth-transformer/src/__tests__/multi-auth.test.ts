@@ -1,8 +1,10 @@
-import { AuthTransformer } from '../graphql-auth-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration, AppSyncAuthConfigurationOIDCEntry, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
-import { DocumentNode, ObjectTypeDefinitionNode, Kind, FieldDefinitionNode, parse, InputValueDefinitionNode } from 'graphql';
+import {
+  DocumentNode, ObjectTypeDefinitionNode, Kind, FieldDefinitionNode, parse, InputValueDefinitionNode,
+} from 'graphql';
+import { AuthTransformer } from '../graphql-auth-transformer';
 
 const userPoolsDefaultConfig: AppSyncAuthConfiguration = {
   defaultAuthentication: {
@@ -33,11 +35,11 @@ const withAuthModes = (authConfig: AppSyncAuthConfiguration, authModes: AppSyncA
     additionalAuthenticationProviders: [],
   };
 
-  for (const authMode of authModes) {
+  authModes.forEach(authMode => {
     newAuthConfig.additionalAuthenticationProviders.push({
       authenticationType: authMode,
     });
-  }
+  });
 
   return newAuthConfig;
 };
@@ -47,8 +49,7 @@ const userPoolsDirectiveName = 'aws_cognito_user_pools';
 const iamDirectiveName = 'aws_iam';
 const openIdDirectiveName = 'aws_oidc';
 
-const multiAuthDirective =
-  '@auth(rules: [{allow: private}, {allow: public}, {allow: private, provider: iam }, {allow: owner, provider: oidc }])';
+const multiAuthDirective = '@auth(rules: [{allow: private}, {allow: public}, {allow: private, provider: iam }, {allow: owner, provider: oidc }])';
 const ownerAuthDirective = '@auth(rules: [{allow: owner}])';
 const ownerWithIAMAuthDirective = '@auth(rules: [{allow: owner, provider: iam }])';
 const ownerRestrictedPublicAuthDirective = '@auth(rules: [{allow: owner},{allow: public, operations: [read]}])';
@@ -66,18 +67,15 @@ const privateAndPublicDirective = '@auth(rules: [{allow: private}, {allow: publi
 const privateIAMDirective = '@auth(rules: [{allow: private, provider: iam}])';
 // const privateAndPrivateIAMDirective = '@auth(rules: [{allow: private}, {allow: private, provider: iam}])';
 
-const getSchema = (authDirective: string) => {
-  return `
+const getSchema = (authDirective: string): string => `
     type Post @model ${authDirective} {
         id: ID!
         title: String!
         createdAt: String
         updatedAt: String
     }`;
-};
 
-const getSchemaWithFieldAuth = (authDirective: string) => {
-  return `
+const getSchemaWithFieldAuth = (authDirective: string): string => `
     type Post @model {
         id: ID
         title: String
@@ -85,10 +83,8 @@ const getSchemaWithFieldAuth = (authDirective: string) => {
         updatedAt: String
         protected: String ${authDirective}
     }`;
-};
 
-const getSchemaWithTypeAndFieldAuth = (typeAuthDirective: string, fieldAuthDirective: string) => {
-  return `
+const getSchemaWithTypeAndFieldAuth = (typeAuthDirective: string, fieldAuthDirective: string): string => `
     type Post @model ${typeAuthDirective} {
         id: ID
         title: String
@@ -96,10 +92,8 @@ const getSchemaWithTypeAndFieldAuth = (typeAuthDirective: string, fieldAuthDirec
         updatedAt: String
         protected: String ${fieldAuthDirective}
     }`;
-};
 
-const getSchemaWithNonModelField = (authDirective: string) => {
-  return `
+const getSchemaWithNonModelField = (authDirective: string): string => `
     type Post @model ${authDirective} {
         id: ID!
         title: String!
@@ -125,10 +119,8 @@ const getSchemaWithNonModelField = (authDirective: string) => {
       PUBLISHED,
       DRAFT
     }`;
-};
 
-const getSchemaWithRecursiveNonModelField = (authDirective: string) => {
-  return `
+const getSchemaWithRecursiveNonModelField = (authDirective: string): string => `
     type Post @model ${authDirective} {
       id: ID!
       title: String!
@@ -140,10 +132,8 @@ const getSchemaWithRecursiveNonModelField = (authDirective: string) => {
       tags: [Tag]
     }
   `;
-};
 
-const getRecursiveSchemaWithDiffModesOnParentType = (authDir1: string, authDir2: string) => {
-  return `
+const getRecursiveSchemaWithDiffModesOnParentType = (authDir1: string, authDir2: string): string => `
   type Post @model ${authDir1} {
     id: ID!
     title: String!
@@ -161,38 +151,39 @@ const getRecursiveSchemaWithDiffModesOnParentType = (authDir1: string, authDir2:
     tags: [Tag]
   }
   `;
-};
 
-const getTransformer = (authConfig: AppSyncAuthConfiguration) =>
-  new GraphQLTransform({
-    authConfig,
-    transformers: [new ModelTransformer(), new AuthTransformer()],
-  });
+const getTransformer = (authConfig: AppSyncAuthConfiguration): GraphQLTransform => new GraphQLTransform({
+  authConfig,
+  transformers: [new ModelTransformer(), new AuthTransformer()],
+});
 
-const getObjectType = (doc: DocumentNode, type: string): ObjectTypeDefinitionNode | undefined => {
-  return doc.definitions.find(def => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type) as
+const getObjectType = (
+  doc: DocumentNode,
+  type: string,
+):
+  ObjectTypeDefinitionNode
+  | undefined => doc.definitions.find(def => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type) as
     | ObjectTypeDefinitionNode
     | undefined;
+
+const expectNone = (fieldOrType): void => {
+  expect(fieldOrType.directives.length).toEqual(0);
 };
 
-const expectNone = fieldOrType => {
-  expect(fieldOrType.directives.length === 0);
-};
-
-const expectOne = (fieldOrType, directiveName) => {
+const expectOne = (fieldOrType, directiveName): void => {
   expect(fieldOrType.directives.length).toBe(1);
   expect(fieldOrType.directives.find(d => d.name.value === directiveName)).toBeDefined();
 };
 
-const expectTwo = (fieldOrType, directiveNames) => {
+const expectTwo = (fieldOrType, directiveNames): void => {
   expect(directiveNames).toBeDefined();
   expect(directiveNames).toHaveLength(2);
-  expect(fieldOrType.directives.length === 2);
+  expect(fieldOrType.directives).toHaveLength(2);
   expect(fieldOrType.directives.find(d => d.name.value === directiveNames[0])).toBeDefined();
   expect(fieldOrType.directives.find(d => d.name.value === directiveNames[1])).toBeDefined();
 };
 
-const expectMultiple = (fieldOrType: ObjectTypeDefinitionNode | FieldDefinitionNode, directiveNames: string[]) => {
+const expectMultiple = (fieldOrType: ObjectTypeDefinitionNode | FieldDefinitionNode, directiveNames: string[]): void => {
   expect(directiveNames).toBeDefined();
   expect(directiveNames).toHaveLength(directiveNames.length);
   expect(fieldOrType.directives.length).toEqual(directiveNames.length);
@@ -207,15 +198,15 @@ const expectMultiple = (fieldOrType: ObjectTypeDefinitionNode | FieldDefinitionN
   });
 };
 
-const getField = (type, name) => type.fields.find(f => f.name.value === name);
+const getField = (type, name): any => type.fields.find(f => f.name.value === name);
 
 describe('validation tests', () => {
-  const validationTest = (authDirective, authConfig, expectedError) => {
+  const validationTest = (authDirective, authConfig, expectedError): void => {
     const schema = getSchema(authDirective);
     const transformer = getTransformer(authConfig);
 
-    const t = () => {
-      const out = transformer.transform(schema);
+    const t = (): void => {
+      transformer.transform(schema);
     };
 
     expect(t).toThrowError(expectedError);
@@ -225,8 +216,7 @@ describe('validation tests', () => {
     validationTest(
       privateAuthDirective,
       apiKeyDefaultConfig,
-      `@auth directive with 'userPools' provider found, but the project has no Cognito User \
-Pools authentication provider configured.`,
+      "@auth directive with 'userPools' provider found, but the project has no Cognito User Pools authentication provider configured.",
     );
   });
 
@@ -234,8 +224,7 @@ Pools authentication provider configured.`,
     validationTest(
       publicAuthDirective,
       userPoolsDefaultConfig,
-      `@auth directive with 'apiKey' provider found, but the project has no API Key \
-authentication provider configured.`,
+      "@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.",
     );
   });
 
@@ -243,8 +232,7 @@ authentication provider configured.`,
     validationTest(
       publicIAMAuthDirective,
       userPoolsDefaultConfig,
-      `@auth directive with 'iam' provider found, but the project has no IAM \
-authentication provider configured.`,
+      "@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.",
     );
   });
 
@@ -252,50 +240,45 @@ authentication provider configured.`,
     validationTest(
       ownerOpenIdAuthDirective,
       userPoolsDefaultConfig,
-      `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT \
-authentication provider configured.`,
+      "@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT authentication provider configured.",
     );
   });
 
-  test(`'group' cannot have provider`, () => {
+  test("'group' cannot have provider", () => {
     validationTest(
       groupsWithProviderAuthDirective,
       userPoolsDefaultConfig,
-      `@auth directive with 'groups' strategy only supports 'userPools' and 'oidc' providers, but found \
-'iam' assigned`,
+      "@auth directive with 'groups' strategy only supports 'userPools' and 'oidc' providers, but found 'iam' assigned.",
     );
   });
 
-  test(`'owner' has invalid IAM provider`, () => {
+  test("'owner' has invalid IAM provider", () => {
     validationTest(
       ownerWithIAMAuthDirective,
       userPoolsDefaultConfig,
-      `@auth directive with 'owner' strategy only supports 'userPools' (default) and \
-'oidc' providers, but found 'iam' assigned.`,
+      "@auth directive with 'owner' strategy only supports 'userPools' (default) and 'oidc' providers, but found 'iam' assigned.",
     );
   });
 
-  test(`'public' has invalid 'userPools' provider`, () => {
+  test("'public' has invalid 'userPools' provider", () => {
     validationTest(
       publicUserPoolsAuthDirective,
       userPoolsDefaultConfig,
-      `@auth directive with 'public' strategy only supports 'apiKey' (default) and 'iam' providers, but \
-found 'userPools' assigned.`,
+      "@auth directive with 'public' strategy only supports 'apiKey' (default) and 'iam' providers, but found 'userPools' assigned.",
     );
   });
 
-  test(`'private' has invalid 'apiKey' provider`, () => {
+  test("'private' has invalid 'apiKey' provider", () => {
     validationTest(
       privateWithApiKeyAuthDirective,
       userPoolsDefaultConfig,
-      `@auth directive with 'private' strategy only supports 'userPools' (default) and 'iam' providers, but \
-found 'apiKey' assigned.`,
+      "@auth directive with 'private' strategy only supports 'userPools' (default) and 'iam' providers, but found 'apiKey' assigned.",
     );
   });
 });
 
 describe('schema generation directive tests', () => {
-  const transformTest = (authDirective, authConfig, expectedDirectiveNames?: string[] | undefined) => {
+  const transformTest = (authDirective, authConfig, expectedDirectiveNames?: string[] | undefined): void => {
     const schema = getSchema(authDirective);
     const transformer = getTransformer(authConfig);
 
@@ -306,22 +289,22 @@ describe('schema generation directive tests', () => {
     const postType = getObjectType(schemaDoc, 'Post');
 
     if (expectedDirectiveNames && expectedDirectiveNames.length > 0) {
-      let expectedDireciveNameCount = 0;
+      let expectedDirectiveNameCount = 0;
 
-      for (const expectedDirectiveName of expectedDirectiveNames) {
+      expectedDirectiveNames.forEach(expectedDirectiveName => {
         expect(postType.directives.find(d => d.name.value === expectedDirectiveName)).toBeDefined();
-        expectedDireciveNameCount++;
-      }
+        expectedDirectiveNameCount += 1;
+      });
 
-      expect(expectedDireciveNameCount).toEqual(postType.directives.length);
+      expect(expectedDirectiveNameCount).toEqual(postType.directives.length);
     }
   };
 
-  test(`When provider is the same as default, then no directive added`, () => {
+  test('When provider is the same as default, then no directive added', () => {
     transformTest(ownerAuthDirective, userPoolsDefaultConfig);
   });
 
-  test(`When all providers are configured all of them are added`, () => {
+  test('When all providers are configured all of them are added', () => {
     const authConfig = withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS', 'AWS_IAM', 'OPENID_CONNECT']);
 
     (authConfig.additionalAuthenticationProviders[2] as AppSyncAuthConfigurationOIDCEntry).openIDConnectConfig = {
@@ -332,7 +315,7 @@ describe('schema generation directive tests', () => {
     transformTest(multiAuthDirective, authConfig, [userPoolsDirectiveName, iamDirectiveName, openIdDirectiveName, apiKeyDirectiveName]);
   });
 
-  test(`Operation fields are getting the directive added, when type has the @auth for all operations`, () => {
+  test('Operation fields are getting the directive added, when type has the @auth for all operations', () => {
     const schema = getSchema(ownerAuthDirective);
     const transformer = getTransformer(withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
 
@@ -344,18 +327,18 @@ describe('schema generation directive tests', () => {
 
     const fields = [...queryType.fields, ...mutationType.fields];
 
-    for (const field of fields) {
-      expect(field.directives.length === 1);
+    fields.forEach(field => {
+      expect(field.directives.length).toEqual(1);
       expect(field.directives.find(d => d.name.value === userPoolsDirectiveName)).toBeDefined();
-    }
+    });
 
     // Check that owner is required when only using owner auth rules
-    for (const field of subscriptionType.fields) {
+    subscriptionType.fields.forEach(field => {
       expect(field.arguments).toHaveLength(1);
-      let arg: InputValueDefinitionNode = field.arguments[0];
+      const arg: InputValueDefinitionNode = field.arguments[0];
       expect(arg.name.value).toEqual('owner');
       expect(arg.type.kind).toEqual(Kind.NAMED_TYPE);
-    }
+    });
 
     // Check that resolvers containing the authMode check block
     const authStepSnippet = '## [Start] Authorization Steps. **';
@@ -368,7 +351,7 @@ describe('schema generation directive tests', () => {
     expect(out.resolvers['Mutation.deletePost.auth.1.res.vtl']).toContain(authStepSnippet);
   });
 
-  test(`Operation fields are getting the directive added, when type has the @auth only for allowed operations`, () => {
+  test('Operation fields are getting the directive added, when type has the @auth only for allowed operations', () => {
     const schema = getSchema(ownerRestrictedPublicAuthDirective);
     const transformer = getTransformer(withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
 
@@ -399,7 +382,7 @@ describe('schema generation directive tests', () => {
     );
   });
 
-  test(`Field level @auth is propagated to type and the type related operations`, () => {
+  test('Field level @auth is propagated to type and the type related operations', () => {
     const schema = getSchemaWithFieldAuth(ownerRestrictedPublicAuthDirective);
     const transformer = getTransformer(withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
 
@@ -425,7 +408,7 @@ describe('schema generation directive tests', () => {
     expect(out.resolvers['Post.updatedAt.req.vtl']).toContain(authModeCheckSnippet);
   });
 
-  test(`'groups' @auth at field level is propagated to type and the type related operations`, () => {
+  test("'groups' @auth at field level is propagated to type and the type related operations", () => {
     const schema = getSchemaWithFieldAuth(groupsAuthDirective);
     const transformer = getTransformer(withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
 
@@ -452,7 +435,7 @@ describe('schema generation directive tests', () => {
     expect(out.resolvers['Post.updatedAt.req.vtl']).toContain(authModeCheckSnippet);
   });
 
-  test(`'groups' @auth at field level is propagated to type and the type related operations, also default provider for read`, () => {
+  test("'groups' @auth at field level is propagated to type and the type related operations, also default provider for read", () => {
     const schema = getSchemaWithTypeAndFieldAuth(groupsAuthDirective, groupsWithApiKeyAuthDirective);
     const transformer = getTransformer(withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
 
@@ -478,7 +461,7 @@ describe('schema generation directive tests', () => {
     expect(out.resolvers['Post.updatedAt.req.vtl']).toContain(groupCheckSnippet);
   });
 
-  test(`Nested types without @model not getting directives applied for iam, and no policy is generated`, () => {
+  test('Nested types without @model not getting directives applied for iam, and no policy is generated', () => {
     const schema = getSchemaWithNonModelField('');
     const transformer = getTransformer(withAuthModes(iamDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
 
@@ -496,7 +479,7 @@ describe('schema generation directive tests', () => {
     expect(out.rootStack.Resources[authPolicyIdx]).toBeUndefined();
   });
 
-  test(`Nested types without @model not getting directives applied for iam, but policy is generated`, () => {
+  test('Nested types without @model not getting directives applied for iam, but policy is generated', () => {
     const schema = getSchemaWithNonModelField(privateIAMDirective);
     const transformer = getTransformer(withAuthModes(iamDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
 
@@ -511,31 +494,29 @@ describe('schema generation directive tests', () => {
 
     // find the key to account for the hash
     const authPolicyIdx = Object.keys(out.rootStack.Resources).find(r => r.includes('AuthRolePolicy01'));
-    expect(out.rootStack.Resources[authPolicyIdx]).toBeDefined;
+    expect(out.rootStack.Resources[authPolicyIdx]).toBeDefined();
     const authRolePolicy = out.rootStack.Resources[authPolicyIdx];
 
     const locationPolicy = authRolePolicy.Properties.PolicyDocument.Statement[0].Resource.filter(
-      r =>
-        r['Fn::Sub'] &&
-        r['Fn::Sub'].length &&
-        r['Fn::Sub'].length === 2 &&
-        r['Fn::Sub'][1].typeName &&
-        r['Fn::Sub'][1].typeName === 'Location',
+      r => r['Fn::Sub']
+        && r['Fn::Sub'].length
+        && r['Fn::Sub'].length === 2
+        && r['Fn::Sub'][1].typeName
+        && r['Fn::Sub'][1].typeName === 'Location',
     );
     expect(locationPolicy).toHaveLength(1);
 
     const addressPolicy = authRolePolicy.Properties.PolicyDocument.Statement[0].Resource.filter(
-      r =>
-        r['Fn::Sub'] &&
-        r['Fn::Sub'].length &&
-        r['Fn::Sub'].length === 2 &&
-        r['Fn::Sub'][1].typeName &&
-        r['Fn::Sub'][1].typeName === 'Address',
+      r => r['Fn::Sub']
+        && r['Fn::Sub'].length
+        && r['Fn::Sub'].length === 2
+        && r['Fn::Sub'][1].typeName
+        && r['Fn::Sub'][1].typeName === 'Address',
     );
     expect(addressPolicy).toHaveLength(1);
   });
 
-  test(`Recursive types with diff auth modes on parent @model types`, () => {
+  test('Recursive types with diff auth modes on parent @model types', () => {
     const schema = getRecursiveSchemaWithDiffModesOnParentType(ownerAuthDirective, privateIAMDirective);
     const transformer = getTransformer(withAuthModes(userPoolsDefaultConfig, ['AWS_IAM']));
 
@@ -548,7 +529,7 @@ describe('schema generation directive tests', () => {
     expectMultiple(tagType, expectedDirectiveNames);
   });
 
-  test(`Recursive types without @model`, () => {
+  test('Recursive types without @model', () => {
     const schema = getSchemaWithRecursiveNonModelField(ownerRestrictedIAMPrivateAuthDirective);
     const transformer = getTransformer(withAuthModes(userPoolsDefaultConfig, ['AWS_IAM']));
 
@@ -562,8 +543,7 @@ describe('schema generation directive tests', () => {
   });
 
   test('OIDC works with private', () => {
-    const cognitoUserPoolAndOidcAuthRules =
-      '@auth(rules: [ { allow: private, provider: oidc, operations: [read] } { allow: owner, ownerField: "editors" } { allow: groups, groupsField: "groups"} ])';
+    const cognitoUserPoolAndOidcAuthRules = '@auth(rules: [ { allow: private, provider: oidc, operations: [read] } { allow: owner, ownerField: "editors" } { allow: groups, groupsField: "groups"} ])';
     const authConfig = withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS', 'OPENID_CONNECT']);
 
     (authConfig.additionalAuthenticationProviders[1] as AppSyncAuthConfigurationOIDCEntry).openIDConnectConfig = {
@@ -573,7 +553,7 @@ describe('schema generation directive tests', () => {
     transformTest(cognitoUserPoolAndOidcAuthRules, authConfig, [userPoolsDirectiveName, openIdDirectiveName]);
   });
 
-  test(`Nested types without @model getting directives applied (cognito default, api key additional)`, () => {
+  test('Nested types without @model getting directives applied (cognito default, api key additional)', () => {
     const schema = getSchemaWithNonModelField(privateAndPublicDirective);
     const transformer = getTransformer(withAuthModes(userPoolsDefaultConfig, ['API_KEY']));
 
@@ -582,32 +562,30 @@ describe('schema generation directive tests', () => {
 
     const locationType = getObjectType(schemaDoc, 'Location');
     const addressType = getObjectType(schemaDoc, 'Address');
-    const expectedDirectiveNames = [userPoolsDirectiveName, apiKeyDirectiveName];
+    const expectedDirectiveNames = [userPoolsDirectiveName, apiKeyDirectiveName] || [];
 
-    if (expectedDirectiveNames && expectedDirectiveNames.length > 0) {
-      let expectedDireciveNameCount = 0;
+    let expectedDirectiveNameCount = 0;
 
-      for (const expectedDirectiveName of expectedDirectiveNames) {
-        expect(locationType.directives.find(d => d.name.value === expectedDirectiveName)).toBeDefined();
-        expectedDireciveNameCount++;
-      }
+    expectedDirectiveNames.forEach(expectedDirectiveName => {
+      expect(locationType.directives.find(d => d.name.value === expectedDirectiveName)).toBeDefined();
+      expectedDirectiveNameCount += 1;
+    });
 
-      expect(expectedDireciveNameCount).toEqual(locationType.directives.length);
+    expect(expectedDirectiveNameCount).toEqual(locationType.directives.length);
 
-      expectedDireciveNameCount = 0;
+    expectedDirectiveNameCount = 0;
 
-      for (const expectedDirectiveName of expectedDirectiveNames) {
-        expect(addressType.directives.find(d => d.name.value === expectedDirectiveName)).toBeDefined();
-        expectedDireciveNameCount++;
-      }
+    expectedDirectiveNames.forEach(expectedDirectiveName => {
+      expect(addressType.directives.find(d => d.name.value === expectedDirectiveName)).toBeDefined();
+      expectedDirectiveNameCount += 1;
+    });
 
-      expect(expectedDireciveNameCount).toEqual(addressType.directives.length);
-    }
+    expect(expectedDirectiveNameCount).toEqual(addressType.directives.length);
   });
 });
 
 describe('iam checks', () => {
-  const identityPoolId = 'us-fake-1:1234abc';
+  const identityPoolId = 'us-fake-1:abc';
   const adminRoles = ['helloWorldFunction', 'echoMessageFunction'];
 
   test('identity pool check gets added when using private rule', () => {
@@ -620,11 +598,11 @@ describe('iam checks', () => {
     expect(out).toBeDefined();
     const createResolver = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
     expect(createResolver).toContain(
-      `#if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == \"${identityPoolId}\" && $ctx.identity.cognitoIdentityAuthType == \"authenticated\") )`,
+      `#if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == "${identityPoolId}" && $ctx.identity.cognitoIdentityAuthType == "authenticated") )`,
     );
     const queryResolver = out.resolvers['Query.listPosts.auth.1.req.vtl'];
     expect(queryResolver).toContain(
-      `#if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == \"${identityPoolId}\" && $ctx.identity.cognitoIdentityAuthType == \"authenticated\") )`,
+      `#if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == "${identityPoolId}" && $ctx.identity.cognitoIdentityAuthType == "authenticated") )`,
     );
   });
 
@@ -637,12 +615,12 @@ describe('iam checks', () => {
     const out = transformer.transform(schema);
     expect(out).toBeDefined();
     const createResolver = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
-    expect(createResolver).toContain(`#if( $ctx.identity.userArn == $ctx.stash.unauthRole )`);
+    expect(createResolver).toContain('#if( $ctx.identity.userArn == $ctx.stash.unauthRole )');
     const queryResolver = out.resolvers['Query.listPosts.auth.1.req.vtl'];
-    expect(queryResolver).toContain(`#if( $ctx.identity.userArn == $ctx.stash.unauthRole )`);
+    expect(queryResolver).toContain('#if( $ctx.identity.userArn == $ctx.stash.unauthRole )');
   });
 
-  test('test that admin roles are added when functions have access to the graphql api', () => {
+  test('that admin roles are added when functions have access to the graphql api', () => {
     const schema = getSchema(privateIAMDirective);
     const transformer = new GraphQLTransform({
       authConfig: iamDefaultConfig,
@@ -651,7 +629,7 @@ describe('iam checks', () => {
     const out = transformer.transform(schema);
     expect(out).toBeDefined();
     const createResolver = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
-    expect(createResolver).toContain(`#set( $adminRoles = [\"helloWorldFunction\",\"echoMessageFunction\"] )`);
+    expect(createResolver).toContain('#set( $adminRoles = ["helloWorldFunction","echoMessageFunction"] )');
     expect(createResolver).toMatchSnapshot();
   });
 });

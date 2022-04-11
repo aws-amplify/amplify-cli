@@ -6,6 +6,7 @@ import _ from 'lodash';
  */
 export type PlaceIndexParameters = ResourceParameters & {
   dataSourceIntendedUse: DataSourceIntendedUse;
+  groupPermissions: string[];
 };
 
 /**
