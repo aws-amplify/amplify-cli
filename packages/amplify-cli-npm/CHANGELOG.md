@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.0.1-binary-compression.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@8.0.0...@aws-amplify/cli@8.0.1-binary-compression.0) (2022-04-11)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
 # [8.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.26...@aws-amplify/cli@8.0.0) (2022-04-07)
 
 

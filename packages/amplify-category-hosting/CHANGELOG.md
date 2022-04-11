@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.26-binary-compression.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@3.2.25...amplify-category-hosting@3.2.26-binary-compression.0) (2022-04-11)
+
+**Note:** Version bump only for package amplify-category-hosting
+
+
+
+
+
 ## [3.2.25](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@3.2.24...amplify-category-hosting@3.2.25) (2022-04-07)
 
 **Note:** Version bump only for package amplify-category-hosting
