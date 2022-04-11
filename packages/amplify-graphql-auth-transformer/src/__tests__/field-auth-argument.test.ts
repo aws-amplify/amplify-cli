@@ -3,6 +3,7 @@ import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthTransformer } from '../graphql-auth-transformer';
+import { featureFlags } from './test-helpers';
 
 test('subscriptions are only generated if the respective mutation operation exists', () => {
   const validSchema = `
@@ -26,6 +27,7 @@ test('subscriptions are only generated if the respective mutation operation exis
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   // expect to generate subscription resolvers for create and update only
@@ -54,6 +56,7 @@ test('per-field @auth without @model', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -83,6 +86,7 @@ test('error on non null fields which need resolvers', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   expect(() => transformer.transform(invalidSchema)).toThrowErrorMatchingSnapshot();
 });
@@ -104,6 +108,7 @@ test('does not generate field resolvers when private rule takes precedence over 
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -132,6 +137,7 @@ test('generates field resolver for other provider rules even if private removes 
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -168,6 +174,7 @@ describe('subscription disabled and userPools configured', () => {
         const transformer = new GraphQLTransform({
           authConfig,
           transformers: [new ModelTransformer(), new AuthTransformer()],
+          featureFlags,
         });
         const out = transformer.transform(validSchema);
         expect(out).toBeDefined();
@@ -208,6 +215,7 @@ describe('subscription disabled and userPools configured', () => {
         const transformer = new GraphQLTransform({
           authConfig,
           transformers: [new ModelTransformer(), new AuthTransformer()],
+          featureFlags,
         });
         const out = transformer.transform(validSchema);
         expect(out).toBeDefined();
@@ -253,6 +261,7 @@ describe('subscription disabled and userPools configured', () => {
         const transformer = new GraphQLTransform({
           authConfig,
           transformers: [new ModelTransformer(), new AuthTransformer()],
+          featureFlags,
         });
         const out = transformer.transform(validSchema);
         expect(out).toBeDefined();

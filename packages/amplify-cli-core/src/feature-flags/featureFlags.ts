@@ -619,6 +619,12 @@ export class FeatureFlags {
         defaultValueForExistingProjects: true,
         defaultValueForNewProjects: false,
       },
+      {
+        name: 'useSubUsernameForDefaultIdentityClaim',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: true,
+      },
     ]);
 
     this.registerFlag('frontend-ios', [
