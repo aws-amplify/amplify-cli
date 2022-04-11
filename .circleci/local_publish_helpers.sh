@@ -31,31 +31,36 @@ function setNpmTag {
 }
 
 function uploadPkgCli {
-    sudo apt-get update
-    sudo apt-get install -y sudo tcl expect zip lsof jq groff python python-pip libpython-dev
-    sudo pip install awscli
     aws configure --profile=s3-uploader set aws_access_key_id $S3_ACCESS_KEY
     aws configure --profile=s3-uploader set aws_secret_access_key $S3_SECRET_ACCESS_KEY
     aws configure --profile=s3-uploader set aws_session_token $S3_AWS_SESSION_TOKEN
     cd out/
     export hash=$(git rev-parse HEAD | cut -c 1-12)
-    export version=$(./amplify-pkg-linux --version)
+    export version=$(./amplify-pkg-linux-x64 --version)
 
-    aws --profile=s3-uploader s3 cp amplify-pkg-win.exe s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win-$(echo $hash).exe
-    aws --profile=s3-uploader s3 cp amplify-pkg-macos s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos-$(echo $hash)
-    aws --profile=s3-uploader s3 cp amplify-pkg-linux s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-$(echo $hash)
-    if [ -z "$NPM_TAG" ]; then
+    if [[ "$CIRCLE_BRANCH" == "release" ]] || [[ "$CIRCLE_BRANCH" == "beta" ]] || [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
+        aws --profile=s3-uploader s3 cp amplify-pkg-win-x64.exe s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win-$(echo $hash).exe
+        aws --profile=s3-uploader s3 cp amplify-pkg-macos-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos-$(echo $hash)
+        aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-arm64-$(echo $hash)
+        aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64-$(echo $hash)
+    else
+        aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64-$(echo $hash)
+    fi
+
+    if [ -z "$NPM_TAG" ] && [[ "$CIRCLE_BRANCH" != "release" ]]; then
         exit 0
     fi
 
     echo "Tag name is $NPM_TAG. Uploading to s3://aws-amplify-cli-do-not-delete/$(echo $version)"
-    if [ "0" -ne "$(aws s3 ls s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux | egrep -v "amplify-pkg-linux-.*" | wc -l)" ]; then
-        echo "Cannot overwrite existing file at s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux"
+    if [ "0" -ne "$(aws s3 ls s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64 | egrep -v "amplify-pkg-linux-x64-.*" | wc -l)" ]; then
+        echo "Cannot overwrite existing file at s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64"
         exit 1
     fi
-    aws --profile=s3-uploader s3 cp amplify-pkg-win.exe s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win.exe
-    aws --profile=s3-uploader s3 cp amplify-pkg-macos s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos
-    aws --profile=s3-uploader s3 cp amplify-pkg-linux s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux
+
+    aws --profile=s3-uploader s3 cp amplify-pkg-win-x64.exe s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win.exe
+    aws --profile=s3-uploader s3 cp amplify-pkg-macos-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos
+    aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-arm64
+    aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64
     cd ..
 }
 
@@ -80,14 +85,21 @@ function generatePkgCli {
 
   # Build pkg cli
   cp package.json ../build/node_modules/package.json
-  npx pkg -t node12-macos-x64,node12-linux-x64,node12-win-x64 ../build/node_modules --out-path ../out
+  if [[ "$CIRCLE_BRANCH" == "release" ]] || [[ "$CIRCLE_BRANCH" == "beta" ]] || [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
+    npx pkg -t node14-macos-x64,node14-linux-x64,node14-linux-arm64,node14-win-x64 ../build/node_modules --out-path ../out
+  else
+    npx pkg -t node14-linux-x64,node14-win-x64 ../build/node_modules --out-path ../out
+    mv ../out/amplify-pkg-linux ../out/amplify-pkg-linux-x64
+    mv ../out/amplify-pkg-win.exe ../out/amplify-pkg-win-x64.exe
+  fi
+
 
   cd ..
 }
 
 function loginToLocalRegistry {
     # Login so we can publish packages
-    (cd && npx npm-auth-to-token@1.0.0 -u user -p password -e user@example.com -r "$custom_registry_url")
+    (cd && npx npm-auth-to-token@1.0.0 -u user -p password -e usser@example.com -r "$custom_registry_url")
 }
 
 function unsetNpmRegistryUrl {
@@ -211,17 +223,10 @@ function setAwsAccountCredentials {
 function runE2eTest {
     FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
 
-    if [[ "$OSTYPE" == "linux-gnu" ]]; then
-        sudo apt-get install -y libatk-bridge2.0-0 libgtk-3.0 libasound2 lsof
-    fi
     if [ -z "$FIRST_RUN" ] || [ "$FIRST_RUN" == "true" ]; then
         startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
         setNpmRegistryUrlToLocal
         changeNpmGlobalPath
-        npm install -g @aws-amplify/cli
-        npm install -g amplify-app
-        amplify -v
-        amplify-app --version
         cd $(pwd)/packages/amplify-e2e-tests
     fi
 

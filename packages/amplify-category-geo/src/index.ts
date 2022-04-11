@@ -1,13 +1,14 @@
-import { $TSContext, $TSObject, stateManager, exitOnNextTick, $TSAny } from 'amplify-cli-core';
+import { $TSContext, $TSObject, stateManager, $TSAny } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 import { category } from './constants';
 import * as addCommand from './commands/geo/add';
 import * as updateCommand from './commands/geo/update';
 import * as removeCommand from './commands/geo/remove';
 import * as consoleCommand from './commands/geo/console';
 import * as helpCommand from './commands/geo/help';
+import * as importCommand from './commands/geo/import';
 import { getServicePermissionPolicies } from './service-utils/resourceUtils';
 import { ServiceName } from './service-utils/constants';
-import { printer } from 'amplify-prompts';
 import { addResourceHeadless, updateResourceHeadless } from './provider-controllers';
 
 export const executeAmplifyCommand = async (context: $TSContext) => {
@@ -26,6 +27,9 @@ export const executeAmplifyCommand = async (context: $TSContext) => {
       break;
     case 'help':
       await helpCommand.run(context);
+      break;
+    case 'import':
+      await importCommand.run(context);
       break;
     default:
       printer.error(`The subcommand ${context.input.command} is not supported for ${category} category`);
@@ -60,8 +64,8 @@ export const getPermissionPolicies = (context: $TSContext, resourceOpsMapping: $
     }
   });
 
-    return { permissionPolicies, resourceAttributes };
-}
+  return { permissionPolicies, resourceAttributes };
+};
 
 /**
  * Entry point for headless commands

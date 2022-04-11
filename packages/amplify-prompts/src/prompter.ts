@@ -65,7 +65,7 @@ class AmplifyPrompter implements Prompter {
   input = async <RS extends ReturnSize = 'one', T = string>(message: string, ...options: MaybeOptionalInputOptions<RS, T>) => {
     const opts = options?.[0] ?? ({} as InputOptions<RS, T>);
     if (isYes) {
-      if (opts.initial) {
+      if (opts.initial !== undefined) {
         return opts.initial as PromptReturn<RS, T>;
       } else {
         throw new Error(`Cannot prompt for [${message}] when '--yes' flag is set`);

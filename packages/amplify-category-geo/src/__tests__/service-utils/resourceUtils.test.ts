@@ -65,10 +65,27 @@ const placeIndex2Params = {
     dataSourceIntendedUse: DataSourceIntendedUse.SingleUse,
     accessType: AccessType.AuthorizedUsers
 };
+const geofenceCollection1Params = {
+    service: ServiceName.GeofenceCollection,
+    isDefault: false,
+    providerPlugin: provider,
+    dataProvider: DataProvider.Esri,
+    groupPermissions: {},
+    accessType: AccessType.CognitoGroups
+};
+const geofenceCollection2Params = {
+    service: ServiceName.GeofenceCollection,
+    isDefault: true,
+    providerPlugin: provider,
+    dataProvider: DataProvider.Here,
+    groupPermissions: {},
+    accessType: AccessType.CognitoGroups
+};
 
 const mockContext = ({
     amplify: {
-        updateamplifyMetaAfterResourceUpdate: jest.fn()
+        updateamplifyMetaAfterResourceUpdate: jest.fn(),
+        updateBackendConfigAfterResourceUpdate: jest.fn()
     }
 } as unknown) as $TSContext;
 
@@ -80,7 +97,9 @@ describe('Test updating the default resource', () => {
                 map1: map1Params,
                 map2: map2Params,
                 placeIndex1: placeIndex1Params,
-                placeIndex2: placeIndex2Params
+                placeIndex2: placeIndex2Params,
+                geofenceCollection1: geofenceCollection1Params,
+                geofenceCollection2: geofenceCollection2Params
             }
         });
         pathManager.getBackendDirPath = jest.fn().mockReturnValue('');
@@ -133,6 +152,29 @@ describe('Test updating the default resource', () => {
         expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
             category, 'placeIndex2', 'isDefault', false);
     });
+
+    it('updates given geofence collection as default in amplify meta', async() => {
+        mockContext.amplify.updateamplifyMetaAfterResourceUpdate = jest.fn();
+        await updateDefaultResource(mockContext, ServiceName.GeofenceCollection, 'geofenceCollection1');
+        expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledTimes(2);
+        expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
+            category, 'geofenceCollection1', 'isDefault', true);
+        expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
+            category, 'geofenceCollection2', 'isDefault', false);
+        expect(JSONUtilities.writeJson).toBeCalledTimes(2);
+        expect(JSONUtilities.writeJson).toBeCalledWith("geo/geofenceCollection1/parameters.json", {"isDefault": true});
+        expect(JSONUtilities.writeJson).toBeCalledWith("geo/geofenceCollection2/parameters.json", {"isDefault": false});
+    });
+
+    it('removes current default geofence collection if none is specified', async() => {
+        mockContext.amplify.updateamplifyMetaAfterResourceUpdate = jest.fn();
+        await updateDefaultResource(mockContext, ServiceName.GeofenceCollection);
+        expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledTimes(2);
+        expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
+            category, 'geofenceCollection1', 'isDefault', false);
+        expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
+            category, 'geofenceCollection2', 'isDefault', false);
+    });
 });
 
 describe('Test reading the resource meta information', () => {
@@ -143,7 +185,9 @@ describe('Test reading the resource meta information', () => {
                 map1: map1Params,
                 map2: map2Params,
                 placeIndex1: placeIndex1Params,
-                placeIndex2: placeIndex2Params
+                placeIndex2: placeIndex2Params,
+                geofenceCollection1: geofenceCollection1Params,
+                geofenceCollection2: geofenceCollection2Params
             }
         });
     });
@@ -157,5 +201,8 @@ describe('Test reading the resource meta information', () => {
 
         const nonExistingPlaceIndex = 'placeIndex12345';
         expect(async () => await readResourceMetaParameters(ServiceName.PlaceIndex, nonExistingPlaceIndex)).rejects.toThrowError(errorMessage(nonExistingPlaceIndex));
+
+        const nonExistingGeofenceCollection = 'geofenceCollection12345';
+        expect(async () => await readResourceMetaParameters(ServiceName.GeofenceCollection, nonExistingGeofenceCollection)).rejects.toThrowError(errorMessage(nonExistingGeofenceCollection));
     });
 });

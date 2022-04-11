@@ -4,7 +4,8 @@ import { AccessType, DataProvider } from '../../service-utils/resourceParams';
 import { provider, ServiceName } from '../../service-utils/constants';
 import { category } from '../../constants';
 import { printer, prompter } from 'amplify-prompts';
-import { updateDefaultPlaceIndexWalkthrough } from '../../service-walkthroughs/placeIndexWalkthrough';
+const { createPlaceIndexWalkthrough, updatePlaceIndexWalkthrough } = require('../../service-walkthroughs/placeIndexWalkthrough');
+const { removeWalkthrough } = require('../../service-walkthroughs/removeWalkthrough');
 
 jest.mock('amplify-cli-core');
 jest.mock('amplify-prompts');
@@ -14,6 +15,7 @@ describe('Search walkthrough works as expected', () => {
     const service = ServiceName.PlaceIndex;
     const mockPlaceIndexName = 'mockindex12345';
     const secondaryPlaceIndexName = 'secondaryindex12345';
+    const mockUserPoolGroup: string = 'mockCognitoGroup';
     const mockMapResource = {
         resourceName: 'map12345',
         service: ServiceName.Map
@@ -36,7 +38,8 @@ describe('Search walkthrough works as expected', () => {
         dataProvider: DataProvider.Here,
         dataSourceIntendedUse: DataSourceIntendedUse.SingleUse,
         accessType: AccessType.AuthorizedUsers,
-        isDefault: false
+        isDefault: false,
+        groupPermissions: [mockUserPoolGroup]
     };
 
     const mockContext = ({
@@ -44,10 +47,12 @@ describe('Search walkthrough works as expected', () => {
             serviceSelectionPrompt: async () => {
                 return { service: service, providerName: provider};
             },
-            getResourceStatus: jest.fn(),
             inputValidation: jest.fn(),
             getProjectMeta: jest.fn(),
-            updateamplifyMetaAfterResourceUpdate: jest.fn()
+            updateamplifyMetaAfterResourceUpdate: jest.fn(),
+            updateBackendConfigAfterResourceAdd: jest.fn(),
+            updateBackendConfigAfterResourceUpdate: jest.fn(),
+            updateBackendConfigAfterResourceRemove: jest.fn()
         },
         usageData: { emitError: jest.fn() }
     } as unknown) as $TSContext;
@@ -64,14 +69,8 @@ describe('Search walkthrough works as expected', () => {
         mockAmplifyMeta.geo[secondaryPlaceIndexName] = { ...mockPlaceIndexParameters, ...secondaryPlaceIndexResource };
         mockAmplifyMeta.geo[mockMapResource.resourceName] = mockMapResource;
 
-        mockContext.amplify.getResourceStatus = jest.fn().mockImplementation(
-            (category?: any, resourceName?: any, providerName?: any, filteredResources?: any): Promise<any> => {
-            return new Promise<any>((resolve) => {
-                resolve({
-                    allResources: [mockMapResource, secondaryPlaceIndexResource, mockPlaceIndexResource]
-                });
-            });
-        });
+        mockContext.amplify.getUserPoolGroupList = jest.fn().mockReturnValue([mockUserPoolGroup]);
+
         pathManager.getBackendDirPath = jest.fn().mockReturnValue('');
         JSONUtilities.readJson = jest.fn().mockReturnValue({});
         JSONUtilities.writeJson = jest.fn().mockReturnValue('');
@@ -90,11 +89,17 @@ describe('Search walkthrough works as expected', () => {
             });
         });
         prompter.pick = jest.fn().mockImplementation((message: string): Promise<any> => {
-            let mockUserInput = 'mock';
+            let mockUserInput: string | string[];
+            if (message === 'Select one or more cognito groups to give access:') {
+                mockUserInput = mockPlaceIndexParameters.groupPermissions;
+            }
+            if (message === 'Restrict access by?') {
+                mockUserInput = 'Both';
+            }
             if (message === 'Who can access this search index?') {
                 mockUserInput = mockPlaceIndexParameters.accessType;
             }
-            else if (message === 'Are you tracking commercial assets for your business in your app?') {
+            else if (message === 'Are you tracking or directing commercial assets for your business in your app?') {
                 mockUserInput = 'Unknown';
             }
             else if (message === 'Select the search index you want to update') {
@@ -129,8 +134,6 @@ describe('Search walkthrough works as expected', () => {
             providerContext: mockPlaceIndexParameters.providerContext
         };
 
-        const updatePlaceIndexWalkthrough = require('../../service-walkthroughs/placeIndexWalkthrough').updatePlaceIndexWalkthrough;
-
         indexParams = await updatePlaceIndexWalkthrough(mockContext, indexParams, mockPlaceIndexName);
 
         // The default place index is now changed to secondary map
@@ -145,20 +148,13 @@ describe('Search walkthrough works as expected', () => {
     });
 
     it('early returns and prints error if no place index resource to update', async() => {
-        mockContext.amplify.getResourceStatus = jest.fn().mockImplementation(
-            (category?: any, resourceName?: any, providerName?: any, filteredResources?: any): Promise<any> => {
-            return new Promise<any>((resolve) => {
-                resolve({
-                    allResources: []
-                });
-            });
-        });
+        mockAmplifyMeta.geo = {};
+        stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
 
         let indexParams: Partial<PlaceIndexParameters> = {
             providerContext: mockPlaceIndexParameters.providerContext
         };
 
-        const updatePlaceIndexWalkthrough = require('../../service-walkthroughs/placeIndexWalkthrough').updatePlaceIndexWalkthrough;
         await updatePlaceIndexWalkthrough(mockContext, indexParams, mockPlaceIndexName);
 
         expect(printer.error).toBeCalledWith('No search index resource to update. Use "amplify add geo" to create a new search index.');
@@ -174,7 +170,6 @@ describe('Search walkthrough works as expected', () => {
             providerContext: mockPlaceIndexParameters.providerContext
         };
 
-        const createPlaceIndexWalkthrough = require('../../service-walkthroughs/placeIndexWalkthrough').createPlaceIndexWalkthrough;
         indexParams = await createPlaceIndexWalkthrough(mockContext, indexParams);
 
         expect(mockPlaceIndexParameters).toMatchObject(indexParams);
@@ -187,7 +182,6 @@ describe('Search walkthrough works as expected', () => {
         mockAmplifyMeta.geo = {};
         stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
 
-        const createPlaceIndexWalkthrough = require('../../service-walkthroughs/placeIndexWalkthrough').createPlaceIndexWalkthrough;
         indexParams = await createPlaceIndexWalkthrough(mockContext, indexParams);
 
         expect({ ...mockPlaceIndexParameters, isDefault: true }).toMatchObject(indexParams);
@@ -197,21 +191,13 @@ describe('Search walkthrough works as expected', () => {
     });
 
     it('sets the resource to remove correctly', async() => {
-        const removeWalkthrough = require('../../service-walkthroughs/removeWalkthrough').removeWalkthrough;
         expect(await(removeWalkthrough(mockContext, service))).toEqual(mockPlaceIndexName);
     });
 
     it('early returns and prints error if no place index resource to remove', async() => {
-        mockContext.amplify.getResourceStatus = jest.fn().mockImplementation(
-            (category?: any, resourceName?: any, providerName?: any, filteredResources?: any): Promise<any> => {
-            return new Promise<any>((resolve) => {
-                resolve({
-                    allResources: []
-                });
-            });
-        });
+        mockAmplifyMeta.geo = {};
+        stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
 
-        const removeWalkthrough = require('../../service-walkthroughs/removeWalkthrough').removeWalkthrough;
         await removeWalkthrough(mockContext, service);
 
         expect(printer.error).toBeCalledWith(`No search index exists in the project.`);
@@ -219,9 +205,8 @@ describe('Search walkthrough works as expected', () => {
 
     it('updates default place index to another place index if it is removed', async() => {
         mockContext.amplify.removeResource = jest.fn().mockReturnValue({
-            then: jest.fn().mockReturnValue(
-                await updateDefaultPlaceIndexWalkthrough(mockContext, mockPlaceIndexName)
-            )
+            service: ServiceName.PlaceIndex,
+            resourceName: mockPlaceIndexName
         });
 
         // given the place index to be removed is default

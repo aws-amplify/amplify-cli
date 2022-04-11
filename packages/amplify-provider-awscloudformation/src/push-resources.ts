@@ -193,7 +193,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
 
     await prePushLambdaLayerPrompt(context, resources);
     await prepareBuildableResources(context, resources);
-    await buildOverridesEnabledResources(context);
+    await buildOverridesEnabledResources(context, resources);
 
     // Removed api transformation to generate resources befoe starting deploy/
 
@@ -989,7 +989,7 @@ export const formNestedStack = async (
   }
 
   if (AuthTriggerTemplateURL) {
-    const stack = {
+    const stack : $TSAny = {
       Type: 'AWS::CloudFormation::Stack',
       Properties: {
         TemplateURL: AuthTriggerTemplateURL,
@@ -1107,9 +1107,13 @@ export const formNestedStack = async (
               }
 
               const parameterKey = `${dependsOn[i].category}${dependsOn[i].resourceName}${attribute}`;
-              if (!isAuthTrigger(dependsOn[i])) {
-                parameters[parameterKey] = parameterValue;
+              // if resource is GQL API and dependency is auth, don't add CFN param here
+              // this is because GQL APIs handle the auth dependency by referencing the UserPoolId directly in the API's parameters.json file
+              const isResourceGqlWithAuthDep = resourceDetails?.service === 'AppSync' && dependsOn[i]?.category === 'auth';
+              if (isAuthTrigger(dependsOn[i]) || isResourceGqlWithAuthDep) {
+                continue;
               }
+              parameters[parameterKey] = parameterValue;
             }
 
             if (dependsOn[i].exports) {

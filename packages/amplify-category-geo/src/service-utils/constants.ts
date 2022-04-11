@@ -15,6 +15,7 @@ export const parametersFileName = 'parameters.json';
 export const provider = 'awscloudformation';
 export const customMapLambdaCodePath = path.join(__dirname, '../../resources/custom-map-resource-handler.js');
 export const customPlaceIndexLambdaCodePath = path.join(__dirname, '../../resources/custom-place-index-resource-handler.js');
+export const customGeofenceCollectionLambdaCodePath = path.join(__dirname, '../../resources/custom-geofence-collection-resource-handler.js');
 
 export enum ServiceName {
   Map = 'Map',

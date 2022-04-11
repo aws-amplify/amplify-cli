@@ -67,6 +67,35 @@ Array [
       },
     ],
   },
+  Object {
+    "Action": Array [
+      "geo:CreateGeofenceCollection",
+      "geo:DescribeGeofenceCollection",
+      "geo:DeleteGeofenceCollection",
+    ],
+    "Effect": "Allow",
+    "Resource": Array [
+      Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "arn:aws:geo:",
+            Object {
+              "Ref": "AWS::Region",
+            },
+            ":",
+            Object {
+              "Ref": "AWS::AccountId",
+            },
+            ":geofence-collection/",
+            Object {
+              "Ref": "geocollection12345Name",
+            },
+          ],
+        ],
+      },
+    ],
+  },
 ]
 `;
 
@@ -85,6 +114,13 @@ Array [
     ],
     "category": "geo",
     "resourceName": "index12345",
+  },
+  Object {
+    "attributes": Array [
+      "Name",
+    ],
+    "category": "geo",
+    "resourceName": "collection12345",
   },
 ]
 `;
@@ -145,6 +181,33 @@ Array [
       },
     ],
   },
+  Object {
+    "Action": Array [
+      "geo:CreateGeofenceCollection",
+    ],
+    "Effect": "Allow",
+    "Resource": Array [
+      Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "arn:aws:geo:",
+            Object {
+              "Ref": "AWS::Region",
+            },
+            ":",
+            Object {
+              "Ref": "AWS::AccountId",
+            },
+            ":geofence-collection/",
+            Object {
+              "Ref": "geocollection12345Name",
+            },
+          ],
+        ],
+      },
+    ],
+  },
 ]
 `;
 
@@ -163,6 +226,13 @@ Array [
     ],
     "category": "geo",
     "resourceName": "index12345",
+  },
+  Object {
+    "attributes": Array [
+      "Name",
+    ],
+    "category": "geo",
+    "resourceName": "collection12345",
   },
 ]
 `;
@@ -223,6 +293,33 @@ Array [
       },
     ],
   },
+  Object {
+    "Action": Array [
+      "geo:DeleteGeofenceCollection",
+    ],
+    "Effect": "Allow",
+    "Resource": Array [
+      Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "arn:aws:geo:",
+            Object {
+              "Ref": "AWS::Region",
+            },
+            ":",
+            Object {
+              "Ref": "AWS::AccountId",
+            },
+            ":geofence-collection/",
+            Object {
+              "Ref": "geocollection12345Name",
+            },
+          ],
+        ],
+      },
+    ],
+  },
 ]
 `;
 
@@ -241,6 +338,13 @@ Array [
     ],
     "category": "geo",
     "resourceName": "index12345",
+  },
+  Object {
+    "attributes": Array [
+      "Name",
+    ],
+    "category": "geo",
+    "resourceName": "collection12345",
   },
 ]
 `;
@@ -308,6 +412,33 @@ Array [
       },
     ],
   },
+  Object {
+    "Action": Array [
+      "geo:DescribeGeofenceCollection",
+    ],
+    "Effect": "Allow",
+    "Resource": Array [
+      Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "arn:aws:geo:",
+            Object {
+              "Ref": "AWS::Region",
+            },
+            ":",
+            Object {
+              "Ref": "AWS::AccountId",
+            },
+            ":geofence-collection/",
+            Object {
+              "Ref": "geocollection12345Name",
+            },
+          ],
+        ],
+      },
+    ],
+  },
 ]
 `;
 
@@ -326,6 +457,13 @@ Array [
     ],
     "category": "geo",
     "resourceName": "index12345",
+  },
+  Object {
+    "attributes": Array [
+      "Name",
+    ],
+    "category": "geo",
+    "resourceName": "collection12345",
   },
 ]
 `;
@@ -382,6 +520,31 @@ Array [
       },
     ],
   },
+  Object {
+    "Action": Array [],
+    "Effect": "Allow",
+    "Resource": Array [
+      Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "arn:aws:geo:",
+            Object {
+              "Ref": "AWS::Region",
+            },
+            ":",
+            Object {
+              "Ref": "AWS::AccountId",
+            },
+            ":geofence-collection/",
+            Object {
+              "Ref": "geocollection12345Name",
+            },
+          ],
+        ],
+      },
+    ],
+  },
 ]
 `;
 
@@ -400,6 +563,13 @@ Array [
     ],
     "category": "geo",
     "resourceName": "index12345",
+  },
+  Object {
+    "attributes": Array [
+      "Name",
+    ],
+    "category": "geo",
+    "resourceName": "collection12345",
   },
 ]
 `;

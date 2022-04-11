@@ -26,7 +26,12 @@ const supportedPlatforms = [
   {
     TYPE: 'Linux',
     ARCHITECTURE: 'x64',
-    BINARY_NAME: 'amplify-pkg-linux',
+    BINARY_NAME: 'amplify-pkg-linux-x64',
+  },
+  {
+    TYPE: 'Linux',
+    ARCHITECTURE: 'arm64',
+    BINARY_NAME: 'amplify-pkg-linux-arm64',
   },
   {
     TYPE: 'Darwin',
@@ -128,6 +133,7 @@ export class Binary {
         }),
       );
       console.log('amplify has been installed!');
+      spawnSync(this.binaryPath, ['version'], { cwd: process.cwd(), stdio: 'inherit' });
     } catch (e) {
       error(`Error fetching release: ${e.message}`);
     }
