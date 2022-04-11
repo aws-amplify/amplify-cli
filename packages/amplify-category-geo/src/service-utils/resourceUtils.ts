@@ -224,7 +224,7 @@ export const getResourceDependencies = (groupNames: string[], authResourceName: 
       attributes: ['UserPoolId']
     }
   ];
-  if (groupNames.length > 0) {
+  if (groupNames && groupNames.length > 0) {
     dependsOnResources.push({
       category: authCategoryName,
       resourceName: 'userPoolGroups',
