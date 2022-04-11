@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-util-uibuilder",
-  "version": "1.2.19",
+  "version": "1.2.20-binary-compression-2.0",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -15,9 +15,9 @@
   "dependencies": {
     "@aws-amplify/codegen-ui": "2.1.2",
     "@aws-amplify/codegen-ui-react": "2.1.2",
-    "amplify-cli-core": "2.5.1",
+    "amplify-cli-core": "2.5.2-binary-compression-2.0",
     "amplify-prompts": "2.0.0",
-    "amplify-provider-awscloudformation": "6.0.0",
+    "amplify-provider-awscloudformation": "6.1.0-binary-compression-2.0",
     "aws-sdk": "2.1084.0",
     "ora": "^4.0.3"
   },

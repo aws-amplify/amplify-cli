@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.30-binary-compression-2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.4.29...amplify-container-hosting@2.4.30-binary-compression-2.0) (2022-04-11)
+
+**Note:** Version bump only for package amplify-container-hosting
+
+
+
+
+
 ## [2.4.29](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.4.28...amplify-container-hosting@2.4.29) (2022-04-07)
 
 **Note:** Version bump only for package amplify-container-hosting

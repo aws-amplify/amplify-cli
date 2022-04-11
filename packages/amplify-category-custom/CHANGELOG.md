@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.26-binary-compression-2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.3.25...@aws-amplify/amplify-category-custom@2.3.26-binary-compression-2.0) (2022-04-11)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-custom
+
+
+
+
+
 ## [2.3.25](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.3.24...@aws-amplify/amplify-category-custom@2.3.25) (2022-04-07)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-custom
