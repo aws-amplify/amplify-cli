@@ -39,7 +39,7 @@ describe('Map walkthrough works as expected', () => {
             projectName: projectName
         },
         name: mockMapName,
-        mapStyleType: EsriMapStyleType.Streets,
+        mapStyleType: EsriMapStyleType.Navigation,
         dataProvider: DataProvider.Esri,
         accessType: AccessType.AuthorizedUsers,
         isDefault: false,
@@ -49,7 +49,7 @@ describe('Map walkthrough works as expected', () => {
     const mockContext = ({
         amplify: {
             serviceSelectionPrompt: async () => {
-                return { service: service, providerName: provider};
+                return { service: service, providerName: provider };
             },
             inputValidation: jest.fn(),
             getProjectMeta: jest.fn(),
