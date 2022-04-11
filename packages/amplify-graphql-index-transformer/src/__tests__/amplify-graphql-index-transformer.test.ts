@@ -43,14 +43,28 @@ test('throws if an invalid LSI is created', () => {
       id: ID! @primaryKey @index(name: "index1")
     }`;
 
+  const schemaEmptySortKeyFields = `
+  type Test @model {
+    id: ID! @primaryKey(sortKeyFields: []) @index(name: "index1")
+    foo: ID!
+  }`;
+
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer(), new PrimaryKeyTransformer()],
   });
 
+  const sortKeyFieldsError = 'Invalid @index \'index1\'. You may not create an index where the partition key is the same as that of the primary key unless the primary key has a sort field. You cannot have a local secondary index without a sort key in the primary key.';
+
   expect(() => {
     transformer.transform(schema);
   }).toThrow(
-    'Invalid @index \'index1\'. You may not create an index where the partition key is the same as that of the primary key unless the primary key has a sort field. You cannot have a local secondary index without a sort key in the primary key.',
+    sortKeyFieldsError,
+  );
+
+  expect(() => {
+    transformer.transform(schemaEmptySortKeyFields);
+  }).toThrow(
+    sortKeyFieldsError,
   );
 });
 
@@ -69,7 +83,7 @@ test('throws if an LSI is missing sort fields', () => {
 
   const schemaEmptySortKeyFields = `
     type Test @model {
-      id: ID! @primaryKey(sortKeyFields: []) @index(name: "index1")
+      id: ID! @primaryKey(sortKeyFields: ["foo"]) @index(name: "index1", sortKeyFields: [])
       foo: ID!
     }`;
 
@@ -88,24 +102,24 @@ test('throws if an LSI is missing sort fields', () => {
     },
   });
 
-  const sortKeyFieldsError = `Invalid @index 'index1'. You may not create an index where the partition key is the same as that of the primary key unless the index has a sort field. You cannot have a local secondary index without a sort key in the index.`;
+  const sortKeyFieldsError = 'Invalid @index \'index1\'. You may not create an index where the partition key is the same as that of the primary key unless the index has a sort field. You cannot have a local secondary index without a sort key in the index.';
 
   expect(() => {
     transformer.transform(schema);
   }).toThrow(
-    sortKeyFieldsError
+    sortKeyFieldsError,
   );
 
   expect(() => {
     transformer.transform(schemaInverted);
   }).toThrow(
-    sortKeyFieldsError
+    sortKeyFieldsError,
   );
 
   expect(() => {
     transformer.transform(schemaEmptySortKeyFields);
   }).toThrow(
-    sortKeyFieldsError
+    sortKeyFieldsError,
   );
 });
 
@@ -306,7 +320,7 @@ test('@index with a single sort key adds a query field and GSI correctly', () =>
     type Test @model {
       email: String!
       createdAt: AWSDateTime!
-      category: String! @index(name: "CategoryGSI", sortKeyFields: "createdAt", queryField: "testsByCategory")
+      category: String! @index(name: "CategoryGSI", sortKeyFields: ["createdAt"], queryField: "testsByCategory")
       description: String
     }`;
   const transformer = new GraphQLTransform({
@@ -599,7 +613,7 @@ test('sort direction and filter input are generated if default list query does n
 test('@index adds an LSI with secondaryKeyAsGSI FF set to false', () => {
   const inputSchema = `
     type Test @model {
-      email: String! @primaryKey(sortKeyFields: "createdAt") @index(name: "LSI_Email_UpdatedAt", sortKeyFields: "updatedAt" queryField: "testsByEmailByUpdatedAt")
+      email: String! @primaryKey(sortKeyFields: ["createdAt"]) @index(name: "LSI_Email_UpdatedAt", sortKeyFields: ["updatedAt"], queryField: "testsByEmailByUpdatedAt")
       createdAt: AWSDateTime!
       updatedAt: AWSDateTime!
     }`;
@@ -655,7 +669,7 @@ test('@index adds an LSI with secondaryKeyAsGSI FF set to false', () => {
 test('@index adds a GSI with secondaryKeyAsGSI FF set to true', () => {
   const inputSchema = `
     type Test @model {
-      email: String! @primaryKey(sortKeyFields: "createdAt") @index(name: "GSI_Email_UpdatedAt", sortKeyFields: "updatedAt" queryField: "testsByEmailByUpdatedAt")
+      email: String! @primaryKey(sortKeyFields: ["createdAt"]) @index(name: "GSI_Email_UpdatedAt", sortKeyFields: ["updatedAt"], queryField: "testsByEmailByUpdatedAt")
       createdAt: AWSDateTime!
       updatedAt: AWSDateTime!
     }`;
