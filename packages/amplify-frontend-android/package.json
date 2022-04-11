@@ -1,6 +1,6 @@
 {
   "name": "amplify-frontend-android",
-  "version": "3.3.3",
+  "version": "3.4.0-beta.0",
   "description": "amplify-cli front-end plugin for Android project",
   "repository": {
     "type": "git",
@@ -19,5 +19,6 @@
     "fs-extra": "^8.1.0",
     "graphql-config": "^2.2.1",
     "inquirer": "^7.3.3"
-  }
+  },
+  "gitHead": "7d376e82907cfe3e29b16925c02fa646df3d35b1"
 }

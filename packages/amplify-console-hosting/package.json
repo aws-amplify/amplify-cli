@@ -1,13 +1,13 @@
 {
   "name": "amplify-console-hosting",
-  "version": "2.2.25",
+  "version": "2.2.26-beta.0",
   "description": "cli plugin for AWS Amplify Console hosting",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "amplify-cli-core": "2.5.1",
+    "amplify-cli-core": "2.5.2-beta.0",
     "archiver": "^5.3.0",
     "aws-sdk": "^2.1084.0",
     "chalk": "^4.1.1",
@@ -23,5 +23,6 @@
     "build": "tsc && copyfiles -u 1 \"./src/hosting/templates/*.json\" \"./lib\"",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
     "watch": "tsc --watch"
-  }
+  },
+  "gitHead": "7d376e82907cfe3e29b16925c02fa646df3d35b1"
 }

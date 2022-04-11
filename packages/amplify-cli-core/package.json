@@ -1,6 +1,6 @@
 {
   "name": "amplify-cli-core",
-  "version": "2.5.1",
+  "version": "2.5.2-beta.0",
   "description": "Amplify CLI Core",
   "repository": {
     "type": "git",
@@ -73,5 +73,6 @@
       "node"
     ],
     "collectCoverage": true
-  }
+  },
+  "gitHead": "7d376e82907cfe3e29b16925c02fa646df3d35b1"
 }

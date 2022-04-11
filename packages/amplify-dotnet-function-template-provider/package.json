@@ -1,6 +1,6 @@
 {
   "name": "amplify-dotnet-function-template-provider",
-  "version": "2.2.29",
+  "version": "2.2.30-beta.0",
   "description": ".NET Core templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
@@ -22,12 +22,13 @@
     "clean": "rimraf lib tsconfig.tsbuildinfo"
   },
   "dependencies": {
-    "amplify-cli-core": "2.5.1",
+    "amplify-cli-core": "2.5.2-beta.0",
     "amplify-function-plugin-interface": "1.9.4",
-    "graphql-transformer-core": "7.4.12"
+    "graphql-transformer-core": "7.4.13-beta.0"
   },
   "devDependencies": {
     "@types/inquirer": "^6.5.0",
     "@types/node": "^12.12.6"
-  }
+  },
+  "gitHead": "7d376e82907cfe3e29b16925c02fa646df3d35b1"
 }
