@@ -25,7 +25,7 @@ describe('Map walkthrough works as expected', () => {
         resourceName: secondaryMapName,
         service: service,
         isDefault: false,
-        mapStyle: MapStyle.VectorEsriStreets
+        mapStyle: MapStyle.VectorEsriNavigation
     };
     const mockPlaceIndexResource = {
         resourceName: 'placeIndex12345',
