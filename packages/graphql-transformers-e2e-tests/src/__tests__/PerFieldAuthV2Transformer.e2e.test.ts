@@ -106,11 +106,11 @@ beforeAll(async () => {
       id: ID
       # bio and notes are the only field an owner can update
       bio: String
-    
+
       # Fields with ownership conditions take precendence to the Object @auth.
       # That means that both the @auth on Object AND the @auth on the field must
       # be satisfied.
-    
+
       # Owners & "Admin"s may view employee e_mail addresses. Only "Admin"s may create/update.
       # TODO: { allow: authenticated } would be useful here so that any employee could view.
       # Should also allow creation of underscore fields
@@ -121,7 +121,7 @@ beforeAll(async () => {
             { allow: owner, ownerField: "e_mail", operations: [read] }
           ]
         )
-    
+
       # The owner & "Admin"s may view the salary. Only "Admins" may create/update.
       salary: Int
         @auth(
@@ -130,7 +130,7 @@ beforeAll(async () => {
             { allow: owner, ownerField: "e_mail", operations: [read] }
           ]
         )
-    
+
       # The delete operation means you cannot update the value to "null" or "undefined".
       # Since delete operations are at the object level, this actually adds auth rules to the update mutation.
       notes: String
@@ -179,6 +179,17 @@ beforeAll(async () => {
       additionalAuthenticationProviders: [],
     },
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags: {
+      getBoolean(value: string) {
+        if (value === 'useSubUsernameForDefaultIdentityClaim') {
+          return false;
+        }
+        return false;
+      },
+      getString: jest.fn(),
+      getNumber: jest.fn(),
+      getObject: jest.fn(),
+    },
   });
   const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
   USER_POOL_ID = userPoolResponse.UserPool.Id;

@@ -5,6 +5,7 @@ import {
   DocumentNode, ObjectTypeDefinitionNode, Kind, FieldDefinitionNode, parse, InputValueDefinitionNode,
 } from 'graphql';
 import { AuthTransformer } from '../graphql-auth-transformer';
+import { featureFlags } from './test-helpers';
 
 const userPoolsDefaultConfig: AppSyncAuthConfiguration = {
   defaultAuthentication: {
@@ -155,6 +156,7 @@ const getRecursiveSchemaWithDiffModesOnParentType = (authDir1: string, authDir2:
 const getTransformer = (authConfig: AppSyncAuthConfiguration): GraphQLTransform => new GraphQLTransform({
   authConfig,
   transformers: [new ModelTransformer(), new AuthTransformer()],
+  featureFlags,
 });
 
 const getObjectType = (
