@@ -3,7 +3,7 @@ import path from 'path';
 import { spawnSync, execSync } from 'child_process';
 import util from 'util';
 import tar from 'tar-stream';
-import {createGunzip} from 'zlib';
+import { createGunzip } from 'zlib';
 import stream from 'stream';
 import os from 'os';
 import axios from 'axios';
@@ -107,10 +107,7 @@ export class Binary {
       fs.mkdirSync(this.installDirectory, { recursive: true });
     }
 
-    let amplifyExecutableName = 'amplify';
-    if (os.type() === 'Windows_NT') {
-      amplifyExecutableName = 'amplify.exe';
-    }
+    const amplifyExecutableName = os.type() === 'Windows_NT' ? 'amplify.exe' : ' amplify';
     this.binaryPath = path.join(this.installDirectory, amplifyExecutableName);
   }
 
@@ -161,17 +158,17 @@ export class Binary {
   private extract(): tar.Extract {
     const extract = tar.extract();
     const chunks: Uint8Array[] = [];
-    extract.on('entry', (header, s, next) => {
+    extract.on('entry', (header, extractStream, next) => {
       if (header.type === 'file') {
-        s.on('data', chunk => {
+        extractStream.on('data', chunk => {
           chunks.push(chunk);
         });
       }
-      s.on('end', () => {
+      extractStream.on('end', () => {
         next();
       });
 
-      s.resume();
+      extractStream.resume();
     });
     extract.on('finish', () => {
       if (chunks.length) {
