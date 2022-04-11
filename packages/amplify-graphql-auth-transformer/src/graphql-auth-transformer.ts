@@ -99,6 +99,7 @@ import {
   getReadRolesForField,
   getAuthDirectiveRules,
 } from './utils';
+import { showDefaultIdentityClaimWarning } from './utils/warnings';
 
 // @ auth
 // changing the schema
@@ -117,6 +118,8 @@ import {
 export class AuthTransformer extends TransformerAuthBase implements TransformerAuthProvider {
   private config: AuthTransformerConfig;
   private configuredAuthProviders: ConfiguredAuthProviders;
+  private useSubForDefaultIdentityClaim: boolean;
+  private rules: AuthRule[];
   // access control
   private roleMap: Map<string, RoleDefinition>;
   private authModelConfig: Map<string, AccessControlMatrix>;
@@ -144,12 +147,14 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     this.generateIAMPolicyForUnauthRole = false;
     this.generateIAMPolicyForAuthRole = false;
     this.authNonModelConfig = new Map();
+    this.rules = [];
   }
 
   before = (context: TransformerBeforeStepContextProvider): void => {
     // if there was no auth config in the props we add the authConfig from the context
     this.config.authConfig = this.config.authConfig ?? context.authConfig;
     this.configuredAuthProviders = getConfiguredAuthProviders(this.config);
+    this.useSubForDefaultIdentityClaim = context.featureFlags?.getBoolean('useSubUsernameForDefaultIdentityClaim');
   };
 
   object = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider): void => {
@@ -164,6 +169,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       isJoinType = context.metadata.get<Array<string>>('joinTypeList')!.includes(typeName);
     }
     const rules: AuthRule[] = getAuthDirectiveRules(new DirectiveWrapper(directive));
+    this.rules = rules;
 
     // validate rules
     validateRules(rules, this.configuredAuthProviders, def.name.value);
@@ -182,6 +188,10 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     this.convertRulesToRoles(acm, rules, isJoinType, undefined, undefined, context);
     this.modelDirectiveConfig.set(typeName, getModelConfig(modelDirective, typeName, context.isProjectUsingDataStore()));
     this.authModelConfig.set(typeName, acm);
+  };
+
+  after = (context: TransformerContextProvider): void => {
+    showDefaultIdentityClaimWarning(context, this.rules);
   };
 
   field = (

@@ -35,6 +35,7 @@
     "@aws-cdk/aws-dynamodb": "~1.124.0",
     "@aws-cdk/aws-iam": "~1.124.0",
     "@aws-cdk/core": "~1.124.0",
+    "amplify-prompts": "^2.0.0",
     "constructs": "^3.3.125",
     "graphql": "^14.5.8",
     "graphql-mapping-template": "4.20.3",
