@@ -39,11 +39,11 @@ import {
 import {
   getIdentityClaimExp,
   responseCheckForErrors,
-  getOwnerClaim,
   getInputFields,
   setHasAuthExpression,
   iamCheck,
   iamAdminRoleCheckExpression,
+  generateOwnerClaimExpression,
 } from './helpers';
 
 /**
@@ -180,7 +180,7 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
               ref(`ownerEntity${idx}`),
               methodCall(ref('util.defaultIfNull'), ref(`ctx.result.${role.entity!}`), entityIsList ? list([]) : nul()),
             ),
-            set(ref(`ownerClaim${idx}`), getOwnerClaim(role.claim!)),
+            generateOwnerClaimExpression(role.claim!, idx),
             set(ref(`ownerAllowedFields${idx}`), raw(JSON.stringify(role.allowedFields))),
             set(ref(`ownerNullAllowedFields${idx}`), raw(JSON.stringify(role.nullAllowedFields))),
             set(ref(`isAuthorizedOnAllFields${idx}`), bool(role.areAllFieldsAllowed && role.areAllFieldsNullAllowed)),

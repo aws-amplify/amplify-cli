@@ -21,6 +21,7 @@ import {
   and,
   parens,
   notEquals,
+  CompoundExpressionNode,
 } from 'graphql-mapping-template';
 import { NONE_VALUE } from 'graphql-transformer-common';
 import {
@@ -83,6 +84,42 @@ export const getOwnerClaim = (ownerClaim: string): Expression => {
     return getIdentityClaimExp(str(ownerClaim), getIdentityClaimExp(str(DEFAULT_COGNITO_IDENTITY_CLAIM), str(NONE_VALUE)));
   }
   return getIdentityClaimExp(str(ownerClaim), str(NONE_VALUE));
+};
+
+/**
+ * Creates generate owner claim expression owner
+ */
+export const generateOwnerClaimExpression = (ownerClaim: string, idx: number): CompoundExpressionNode => {
+  const expressions: Expression[] = [];
+  const identityClaims = ownerClaim.split(':');
+  const hasMultiIdentityClaims = identityClaims.length > 1 && ownerClaim !== 'cognito:username';
+
+  if (hasMultiIdentityClaims) {
+    expressions.push(set(ref('eachRole'), raw('[]')));
+    expressions.push(set(ref(`ownerClaim${idx}`), methodCall(ref('ctx.identity.claims.get'), str(identityClaims[0]))));
+
+    identityClaims.forEach((claim, idx2) => {
+      if (idx2 === 0 || claim === 'cognito') {
+        // skip
+      } else if (claim === 'username') {
+        expressions.push(
+          set(ref(`currentClaim${idx}`), getOwnerClaim(claim)),
+          set(ref(`ownerClaim${idx}`), raw(`"$ownerClaim${idx}:$currentClaim${idx}"`)),
+        );
+      } else {
+        expressions.push(
+          set(ref(`currentClaim${idx}`), methodCall(ref('ctx.identity.claims.get'), str(claim))),
+          set(ref(`ownerClaim${idx}`), raw(`"$ownerClaim${idx}:$currentClaim${idx}"`)),
+        );
+      }
+    });
+  } else {
+    expressions.push(
+      set(ref(`ownerClaim${idx}`), getOwnerClaim(ownerClaim)),
+    );
+  }
+
+  return compoundExpression(expressions);
 };
 
 /**
