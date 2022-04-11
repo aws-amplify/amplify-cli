@@ -4,7 +4,7 @@ const dictionary = require('../.eslint-dictionary.json');
 const main = async () => {
   const newWords = process.argv.slice(2);
   const wordSet = new Set(dictionary);
-  newWords.forEach(word => wordSet.add(word));
+  newWords.map(word => word.toLowerCase()).forEach(word => wordSet.add(word));
   const sortedDedupedWordList = Array.from(wordSet).sort();
   await fs.writeFile(require.resolve('../.eslint-dictionary.json'), `${JSON.stringify(sortedDedupedWordList, undefined, 2)}\n`)
 }

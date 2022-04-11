@@ -218,7 +218,6 @@ workflows:
             - build
       - amplify_console_integration_tests:
           context:
-            - amplify-ecr-image-pull
             - console-e2e-test
             - e2e-auth-credentials
             - e2e-test-context

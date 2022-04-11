@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@3.3.25...amplify-frontend-ios@3.4.0) (2022-04-11)
+
+
+### Features
+
+* **amplify-category-geo:** add geo category workflows for maps and search ([1663c8d](https://github.com/aws-amplify/amplify-cli/commit/1663c8d57699b28e0e7cc16b7ef9f3085a0e38b6)), closes [#7566](https://github.com/aws-amplify/amplify-cli/issues/7566) [#7858](https://github.com/aws-amplify/amplify-cli/issues/7858) [#7891](https://github.com/aws-amplify/amplify-cli/issues/7891) [#8031](https://github.com/aws-amplify/amplify-cli/issues/8031) [#8122](https://github.com/aws-amplify/amplify-cli/issues/8122) [#8155](https://github.com/aws-amplify/amplify-cli/issues/8155) [#8182](https://github.com/aws-amplify/amplify-cli/issues/8182) [#8237](https://github.com/aws-amplify/amplify-cli/issues/8237) [#8890](https://github.com/aws-amplify/amplify-cli/issues/8890) [#8822](https://github.com/aws-amplify/amplify-cli/issues/8822) [#9281](https://github.com/aws-amplify/amplify-cli/issues/9281) [#9399](https://github.com/aws-amplify/amplify-cli/issues/9399) [#9453](https://github.com/aws-amplify/amplify-cli/issues/9453) [#9594](https://github.com/aws-amplify/amplify-cli/issues/9594) [#10038](https://github.com/aws-amplify/amplify-cli/issues/10038)
+
+
+
+
+
 ## [3.3.25](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@3.3.24...amplify-frontend-ios@3.3.25) (2022-04-07)
 
 **Note:** Version bump only for package amplify-frontend-ios

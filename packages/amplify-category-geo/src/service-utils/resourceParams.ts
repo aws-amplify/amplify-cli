@@ -13,7 +13,8 @@ export type ResourceParameters = {
 
 export enum AccessType {
     AuthorizedUsers = 'AuthorizedUsers',
-    AuthorizedAndGuestUsers = 'AuthorizedAndGuestUsers'
+    AuthorizedAndGuestUsers = 'AuthorizedAndGuestUsers',
+    CognitoGroups = 'CognitoGroups'
 }
 
 export enum DataProvider {
