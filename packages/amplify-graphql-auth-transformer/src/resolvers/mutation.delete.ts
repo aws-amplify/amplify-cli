@@ -18,7 +18,7 @@ import {
   ifElse,
 } from 'graphql-mapping-template';
 import {
-  emptyPayload, getIdentityClaimExp, getOwnerClaim, iamAdminRoleCheckExpression, iamCheck, setHasAuthExpression,
+  emptyPayload, getIdentityClaimExp, iamAdminRoleCheckExpression, iamCheck, setHasAuthExpression, generateOwnerClaimExpression,
 } from './helpers';
 import {
   API_KEY_AUTH_TYPE,
@@ -122,7 +122,7 @@ const dynamicGroupRoleExpression = (
           not(ref(IS_AUTHORIZED_FLAG)),
           compoundExpression([
             set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.result.${role.entity!}`), nul())),
-            set(ref(`ownerClaim${idx}`), getOwnerClaim(role.claim!)),
+            generateOwnerClaimExpression(role.claim!, idx),
             ...(entityIsList
               ? [
                 forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
