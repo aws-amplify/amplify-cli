@@ -297,6 +297,17 @@ describe('@model with @auth', () => {
         new HasOneTransformer(),
         new AuthTransformer(),
       ],
+      featureFlags: {
+        getBoolean(value: string) {
+          if (value === 'useSubUsernameForDefaultIdentityClaim') {
+            return false;
+          }
+          return false;
+        },
+        getString: jest.fn(),
+        getNumber: jest.fn(),
+        getObject: jest.fn(),
+      }
     });
     const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
     USER_POOL_ID = userPoolResponse.UserPool.Id;

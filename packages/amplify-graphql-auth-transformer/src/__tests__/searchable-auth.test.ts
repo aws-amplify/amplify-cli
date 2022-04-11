@@ -6,6 +6,7 @@ import {
   DocumentNode, ObjectTypeDefinitionNode, Kind, FieldDefinitionNode, parse,
 } from 'graphql';
 import { AuthTransformer, SEARCHABLE_AGGREGATE_TYPES } from '..';
+import { featureFlags } from './test-helpers';
 
 const getObjectType = (
   doc: DocumentNode,
@@ -56,6 +57,7 @@ test('auth logic is enabled on owner/static rules in es request', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   // expect response resolver to contain auth logic for owner rule

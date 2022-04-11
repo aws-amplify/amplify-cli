@@ -65,6 +65,7 @@ import {
   AUTH_PROVIDER_DIRECTIVE_MAP,
   DEFAULT_GROUP_CLAIM,
   DEFAULT_IDENTITY_CLAIM,
+  DEFAULT_UNIQUE_IDENTITY_CLAIM,
   DEFAULT_GROUPS_FIELD,
   DEFAULT_OWNER_FIELD,
   MODEL_OPERATIONS,
@@ -179,7 +180,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     // add object into policy
     this.addTypeToResourceReferences(def.name.value, rules);
     // turn rules into roles and add into acm and roleMap
-    this.convertRulesToRoles(acm, rules, isJoinType);
+    this.convertRulesToRoles(acm, rules, isJoinType, undefined, undefined, context);
     this.modelDirectiveConfig.set(typeName, getModelConfig(modelDirective, typeName, context.isProjectUsingDataStore()));
     this.authModelConfig.set(typeName, acm);
   };
@@ -237,7 +238,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         acm = this.authModelConfig.get(typeName) as AccessControlMatrix;
         acm.resetAccessForResource(fieldName);
       }
-      this.convertRulesToRoles(acm, rules, false, fieldName);
+      this.convertRulesToRoles(acm, rules, false, fieldName, undefined, context);
       this.authModelConfig.set(typeName, acm);
     } else {
       // if @auth is used without @model only generate static group rules in the resolver
@@ -861,6 +862,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     allowRoleOverwrite: boolean,
     field?: string,
     overrideOperations?: ModelOperation[],
+    context?: TransformerSchemaVisitStepContextProvider,
   ): void {
     authRules.forEach(rule => {
       const operations: ModelOperation[] = overrideOperations || rule.operations || MODEL_OPERATIONS;
@@ -917,7 +919,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
               };
             } else if (rule.allow === 'owner') {
               const ownerField = rule.ownerField || DEFAULT_OWNER_FIELD;
-              const ownerClaim = rule.identityClaim || DEFAULT_IDENTITY_CLAIM;
+              const useSub = context.featureFlags.getBoolean('useSubUsernameForDefaultIdentityClaim');
+              const ownerClaim = rule.identityClaim || (useSub ? DEFAULT_UNIQUE_IDENTITY_CLAIM : DEFAULT_IDENTITY_CLAIM);
               roleName = `${rule.provider}:owner:${ownerField}:${ownerClaim}`;
               roleDefinition = {
                 provider: rule.provider,

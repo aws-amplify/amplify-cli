@@ -297,6 +297,17 @@ beforeAll(async () => {
       new HasManyTransformer(),
       new AuthTransformer({ identityPoolId: IDENTITY_POOL_ID }),
     ],
+    featureFlags: {
+      getBoolean(value: string) {
+        if (value === 'useSubUsernameForDefaultIdentityClaim') {
+          return false;
+        }
+        return false;
+      },
+      getString: jest.fn(),
+      getNumber: jest.fn(),
+      getObject: jest.fn(),
+    }
   });
   const out = transformer.transform(validSchema);
   const finishedStack = await deploy(
