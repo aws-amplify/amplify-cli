@@ -19,7 +19,7 @@ describe('Map walkthrough works as expected', () => {
     const mockMapResource = {
         resourceName: mockMapName,
         service: service,
-        mapStyle: MapStyle.VectorEsriStreets
+        mapStyle: MapStyle.VectorEsriNavigation
     };
     const secondaryMapResource = {
         resourceName: secondaryMapName,
