@@ -48,12 +48,12 @@ REPO_NAME=amplify-cli
 
 if [[ -z "$version" ]]; then
   # if no version specified, look up the latest version
-  version=`curl -sL https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/releases/latest | grep 'tag_name' | grep -oE "v[0-9]+\.[0-9]+\.[0-9]+(-[a-z]+\.[0-9]+)?"`
+  version=$(curl -sL 'https://registry.npmjs.org/-/v1/search?text=@aws-amplify/cli&size=1' | jq -rc '.objects[0].package.version')
 fi
 
-BASE_NAME=amplify-pkg-$PLATFORM
+BASE_NAME=amplify-pkg-$PLATFORM-$ARCH
 TAR_NAME=${BASE_NAME}.tgz
-BINARY_URL=https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/download/$version/$TAR_NAME
+BINARY_URL=https://d2bkhsss993doa.cloudfront.net/$version/$TAR_NAME
 
 # Dowload binary
 BINARIES_DIR_PATH=$HOME/.amplify/bin
