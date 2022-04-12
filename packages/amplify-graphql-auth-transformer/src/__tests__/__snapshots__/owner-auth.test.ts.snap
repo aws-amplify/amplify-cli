@@ -1,6 +1,353 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`owner field where the field is a list 1`] = `
+exports[`owner based @auth owner field where the field is a list 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.editors, null) )
+    #set( $ownerClaim0 = $ctx.identity.claims.get(\\"sub\\") )
+    #set( $currentClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+    #set( $ownerClaim0 = \\"$ownerClaim0:$currentClaim0\\" )
+    #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"editors\\",\\"createdAt\\",\\"updatedAt\\"] )
+    #set( $isAuthorizedOnAllFields0 = true )
+    #foreach( $allowedOwner in $ownerEntity0 )
+      #if( $allowedOwner == $ownerClaim0 )
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+          #break
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
+      #end
+    #end
+    #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"editors\\") )
+      $util.qr($ctx.args.input.put(\\"editors\\", [$ownerClaim0]))
+      #if( $isAuthorizedOnAllFields0 )
+        #set( $isAuthorized = true )
+      #else
+        $util.qr($allowedFields.addAll($ownerAllowedFields0))
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #set( $deniedFields = $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+  #if( $deniedFields.size() > 0 )
+    $util.error(\\"Unauthorized on \${deniedFields}\\", \\"Unauthorized\\")
+  #end
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth owner field where the field is a list 2`] = `
+"## [Start] Get Request template. **
+#set( $GetRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"GetItem\\"
+} )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $key = $ctx.stash.metadata.modelObjectKey )
+#else
+  #set( $key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+} )
+#end
+$util.qr($GetRequest.put(\\"key\\", $key))
+$util.toJson($GetRequest)
+## [End] Get Request template. **"
+`;
+
+exports[`owner based @auth owner field where the field is a list 3`] = `
+"## [Start] Get Request template. **
+#set( $GetRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"GetItem\\"
+} )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $key = $ctx.stash.metadata.modelObjectKey )
+#else
+  #set( $key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+} )
+#end
+$util.qr($GetRequest.put(\\"key\\", $key))
+$util.toJson($GetRequest)
+## [End] Get Request template. **"
+`;
+
+exports[`owner based @auth owner field where the field is a list 4`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $authFilter = [] )
+    #set( $role0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub:username\\"), \\"___xamznone____\\") )
+    #if( $role0 != \\"___xamznone____\\" )
+      $util.qr($authFilter.add({\\"editors\\": { \\"contains\\": $role0 }}))
+    #end
+    #if( !$authFilter.isEmpty() )
+      $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth owner field where the field is a list 5`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $authFilter = [] )
+    #set( $role0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub:username\\"), \\"___xamznone____\\") )
+    #if( $role0 != \\"___xamznone____\\" )
+      $util.qr($authFilter.add({\\"editors\\": { \\"contains\\": $role0 }}))
+    #end
+    #if( !$authFilter.isEmpty() )
+      $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth owner fields on primaryKey create auth filter for scan operation 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$util.isNull($ctx.args.parent) )
+    #set( $parentClaim = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
+    #if( $util.isString($ctx.args.parent) )
+      #set( $parentCondition = ($parentClaim == $ctx.args.parent) )
+    #else
+      #set( $parentCondition = ($parentClaim == $util.defaultIfNull($ctx.args.parent.get(\\"eq\\"), \\"___xamznone____\\")) )
+    #end
+    #if( $parentCondition )
+      #set( $isAuthorized = true )
+      $util.qr($ctx.stash.put(\\"authFilter\\", null))
+    #end
+  #else
+    $util.qr($primaryFieldMap.put(\\"parent\\", $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\")))
+  #end
+  #if( !$util.isNull($ctx.args.child) )
+    #set( $childClaim = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
+    #if( $util.isString($ctx.args.child) )
+      #set( $childCondition = ($childClaim == $ctx.args.child) )
+    #else
+      #set( $childCondition = ($childClaim == $util.defaultIfNull($ctx.args.child.get(\\"eq\\"), \\"___xamznone____\\")) )
+    #end
+    #if( $childCondition )
+      #set( $isAuthorized = true )
+      $util.qr($ctx.stash.put(\\"authFilter\\", null))
+    #end
+  #else
+    $util.qr($primaryFieldMap.put(\\"child\\", $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\")))
+  #end
+  #if( !$isAuthorized && !$primaryFieldMap.isEmpty() )
+    #if( $util.isNull($ctx.args.parent) )
+      #set( $authFilter = $util.defaultIfNull($ctx.stash.get(\\"authFilter\\").get(\\"or\\"), []) )
+      #foreach( $entry in $primaryFieldMap.entrySet() )
+        #set( $filterMap = {} )
+        #if( $util.isList($entry.value) )
+          $util.qr($filterMap.put($entry.key, { \\"in\\": $entry.value }))
+        #else
+          $util.qr($filterMap.put($entry.key, { \\"eq\\": $entry.value }))
+        #end
+        $util.qr($authFilter.add($filterMap))
+      #end
+      $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #else
+      #if( $util.isNull($ctx.stash.authFilter) )
+        #set( $modelQueryExpression = $ctx.stash.modelQueryExpression )
+        #foreach( $entry in $primaryFieldMap.entrySet() )
+          #set( $modelQueryExpression.expression = \\"\${modelQueryExpression.expression} AND #\${entry.key} = :\${entry.key}\\" )
+          $util.qr($modelQueryExpression.expressionNames.put(\\"#\${entry.key}\\", $entry.key))
+          $util.qr($modelQueryExpression.expressionValues.put(\\":\${entry.key}\\", $util.dynamodb.toDynamoDB($entry.value)))
+        #end
+        $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
+        #set( $isAuthorized = true )
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth owner where field is ":" delimited string 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.owner, null) )
+    #set( $ownerClaim0 = $ctx.identity.claims.get(\\"sub\\") )
+    #set( $currentClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+    #set( $ownerClaim0 = \\"$ownerClaim0:$currentClaim0\\" )
+    #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"] )
+    #set( $isAuthorizedOnAllFields0 = true )
+    #if( $ownerClaim0 == $ownerEntity0 )
+      #if( $isAuthorizedOnAllFields0 )
+        #set( $isAuthorized = true )
+      #else
+        $util.qr($allowedFields.addAll($ownerAllowedFields0))
+      #end
+    #end
+    #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+      $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+      #if( $isAuthorizedOnAllFields0 )
+        #set( $isAuthorized = true )
+      #else
+        $util.qr($allowedFields.addAll($ownerAllowedFields0))
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #set( $deniedFields = $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+  #if( $deniedFields.size() > 0 )
+    $util.error(\\"Unauthorized on \${deniedFields}\\", \\"Unauthorized\\")
+  #end
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth owner where field is ":" delimited string 2`] = `
+"## [Start] Get Request template. **
+#set( $GetRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"GetItem\\"
+} )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $key = $ctx.stash.metadata.modelObjectKey )
+#else
+  #set( $key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+} )
+#end
+$util.qr($GetRequest.put(\\"key\\", $key))
+$util.toJson($GetRequest)
+## [End] Get Request template. **"
+`;
+
+exports[`owner based @auth owner where field is ":" delimited string 3`] = `
+"## [Start] Get Request template. **
+#set( $GetRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"GetItem\\"
+} )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $key = $ctx.stash.metadata.modelObjectKey )
+#else
+  #set( $key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+} )
+#end
+$util.qr($GetRequest.put(\\"key\\", $key))
+$util.toJson($GetRequest)
+## [End] Get Request template. **"
+`;
+
+exports[`owner based @auth owner where field is ":" delimited string 4`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $authFilter = [] )
+    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
+    #set( $ownerPrefix0_0 = \\"$role0_0:\\" )
+    #if( $role0_0 != \\"___xamznone____\\" )
+      $util.qr($authFilter.add({\\"owner\\": { \\"beginsWith\\": $ownerPrefix0_0 }}))
+    #end
+    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+    #set( $ownerPrefix0_1 = \\"$role0_1:\\" )
+    #if( $role0_1 != \\"___xamznone____\\" )
+      $util.qr($authFilter.add({\\"owner\\": { \\"beginsWith\\": $ownerPrefix0_1 }}))
+    #end
+    #set( $role0_2 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub:username\\"), \\"___xamznone____\\") )
+    #if( $role0_2 != \\"___xamznone____\\" )
+      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_2 }}))
+    #end
+    #if( !$authFilter.isEmpty() )
+      $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth owner where field is ":" delimited string 5`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $authFilter = [] )
+    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
+    #set( $ownerPrefix0_0 = \\"$role0_0:\\" )
+    #if( $role0_0 != \\"___xamznone____\\" )
+      $util.qr($authFilter.add({\\"owner\\": { \\"beginsWith\\": $ownerPrefix0_0 }}))
+    #end
+    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+    #set( $ownerPrefix0_1 = \\"$role0_1:\\" )
+    #if( $role0_1 != \\"___xamznone____\\" )
+      $util.qr($authFilter.add({\\"owner\\": { \\"beginsWith\\": $ownerPrefix0_1 }}))
+    #end
+    #set( $role0_2 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub:username\\"), \\"___xamznone____\\") )
+    #if( $role0_2 != \\"___xamznone____\\" )
+      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_2 }}))
+    #end
+    #if( !$authFilter.isEmpty() )
+      $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth with identity claim feature flag disabled owner field where the field is a list 1`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
@@ -45,7 +392,7 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **"
 `;
 
-exports[`owner field where the field is a list 2`] = `
+exports[`owner based @auth with identity claim feature flag disabled owner field where the field is a list 2`] = `
 "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -63,7 +410,7 @@ $util.toJson($GetRequest)
 ## [End] Get Request template. **"
 `;
 
-exports[`owner field where the field is a list 3`] = `
+exports[`owner based @auth with identity claim feature flag disabled owner field where the field is a list 3`] = `
 "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -81,7 +428,7 @@ $util.toJson($GetRequest)
 ## [End] Get Request template. **"
 `;
 
-exports[`owner field where the field is a list 4`] = `
+exports[`owner based @auth with identity claim feature flag disabled owner field where the field is a list 4`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
@@ -105,7 +452,7 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **"
 `;
 
-exports[`owner field where the field is a list 5`] = `
+exports[`owner based @auth with identity claim feature flag disabled owner field where the field is a list 5`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
@@ -129,7 +476,7 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **"
 `;
 
-exports[`owner fields on primaryKey create auth filter for scan operation 1`] = `
+exports[`owner based @auth with identity claim feature flag disabled owner fields on primaryKey create auth filter for scan operation 1`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )

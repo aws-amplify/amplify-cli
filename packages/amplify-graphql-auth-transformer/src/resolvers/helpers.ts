@@ -95,12 +95,12 @@ export const generateOwnerClaimExpression = (ownerClaim: string, idx: number): C
   const hasMultiIdentityClaims = identityClaims.length > 1 && ownerClaim !== 'cognito:username';
 
   if (hasMultiIdentityClaims) {
-    expressions.push(set(ref('eachRole'), raw('[]')));
     expressions.push(set(ref(`ownerClaim${idx}`), methodCall(ref('ctx.identity.claims.get'), str(identityClaims[0]))));
 
-    identityClaims.forEach((claim, idx2) => {
-      if (idx2 === 0 || claim === 'cognito') {
-        // skip
+    identityClaims.forEach((claim, i2) => {
+      if (i2 === 0 || claim === 'cognito') {
+        // skip because it sets it first (ie. "sub" is set first) or
+        // because 'cognito:username' with delimited colon may be the key from the jwt
       } else if (claim === 'username') {
         expressions.push(
           set(ref(`currentClaim${idx}`), getOwnerClaim(claim)),

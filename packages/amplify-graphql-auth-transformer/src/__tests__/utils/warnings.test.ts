@@ -108,8 +108,8 @@ describe('showDefaultIdentityClaimWarning', () => {
 
         expect(printer.warn).toBeCalledTimes(1);
         expect(printer.warn).toBeCalledWith(
-          ' WARNING: Amplify CLI will change the default identity claim from \'cognito:username\' '
-            + 'to use \'sub\'. To continue using usernames, set \'identityClaim: "cognito:username"\' on your '
+          ' WARNING: Amplify CLI will change the default identity claim from \'username\' '
+            + 'to use \'sub:username\'. To continue using only usernames, set \'identityClaim: "username"\' on your '
             + '\'owner\' rules on your schema. The default will be officially switched with v8.0.0. To read '
             + 'more: https://link.to/docs-and-migration-gudes',
         );

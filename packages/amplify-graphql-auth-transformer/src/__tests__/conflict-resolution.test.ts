@@ -26,7 +26,10 @@ test('single auth model is enabled with conflict resolution', () => {
       },
     },
     transformers: [new ModelTransformer(), new AuthTransformer()],
-    featureFlags,
+    featureFlags: {
+      ...featureFlags,
+      ...{ getBoolean: () => false },
+    },
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -59,7 +62,10 @@ test('multi auth model with conflict resolution', () => {
       },
     },
     transformers: [new ModelTransformer(), new AuthTransformer()],
-    featureFlags,
+    featureFlags: {
+      ...featureFlags,
+      ...{ getBoolean: () => false },
+    },
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -108,6 +114,10 @@ test('multi auth model with field auth with conflict resolution', () => {
       },
     },
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags: {
+      ...featureFlags,
+      ...{ getBoolean: () => false },
+    },
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
