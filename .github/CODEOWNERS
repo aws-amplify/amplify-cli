@@ -1,1 +1,37 @@
-*   @aws-amplify/amplify-cli
+# Amplify CLI Team owns the full repo by default.
+* @aws-amplify/amplify-cli
+
+# Add Data team folks focused on GQL transform/codegen to ownership for packages which will be migrated, in addition to the existing cli team. We are using individuals, since we don't want to expose write permissions for all 20 people in the `data` team currently..
+/packages/amplify-category-api @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/amplify-graphiql-explorer @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/amplify-graphql-auth-transformer @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/amplify-graphql-default-value-transformer @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/amplify-graphql-function-transformer @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/amplify-graphql-http-transformer @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/amplify-graphql-index-transformer @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/amplify-graphql-maps-to-transformer @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/amplify-graphql-migration-tests @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/amplify-graphql-model-transformer @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/amplify-graphql-predictions-transformer @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/amplify-graphql-relational-transformer @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/amplify-graphql-schema-test-library @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/amplify-graphql-searchable-transformer @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/amplify-graphql-transformer-core @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/amplify-graphql-transformer-interfaces @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/amplify-graphql-transformer-migrator @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/amplify-migration-tests @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/amplify-velocity-template @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/graphql-auth-transformer @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/graphql-connection-transformer @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/graphql-dynamodb-transformer @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/graphql-elasticsearch-transformer @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/graphql-function-transformer @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/graphql-http-transformer @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/graphql-key-transformer @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/graphql-mapping-template @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/graphql-predictions-transformer @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/graphql-relational-schema-transformer @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/graphql-transformer-common @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/graphql-transformer-core @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/graphql-transformers-e2e-tests @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+/packages/graphql-versioned-transformer @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
