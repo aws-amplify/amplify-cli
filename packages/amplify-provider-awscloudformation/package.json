@@ -81,7 +81,7 @@
     "ajv": "^6.12.6",
     "amplify-cli-core": "2.5.2",
     "amplify-cli-logger": "1.1.0",
-    "amplify-codegen": "2.28.1",
+    "amplify-codegen": "^3.0.0",
     "amplify-prompts": "2.0.0",
     "amplify-util-import": "2.2.26",
     "archiver": "^5.3.0",
