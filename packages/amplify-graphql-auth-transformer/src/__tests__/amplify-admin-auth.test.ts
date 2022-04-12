@@ -31,6 +31,7 @@ test('simple model with public auth rule and amplify admin app is present', () =
         adminRoles: ADMIN_UI_ROLES,
       }),
     ],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -54,6 +55,7 @@ test('simple model with public auth rule and amplify admin app is not enabled', 
       additionalAuthenticationProviders: [],
     },
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -86,6 +88,7 @@ test('model with public auth rule without all operations and amplify admin app i
         adminRoles: ADMIN_UI_ROLES,
       }),
     ],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -126,6 +129,7 @@ test('simple model with private auth rule and amplify admin app is present', () 
         adminRoles: ADMIN_UI_ROLES,
       }),
     ],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -153,6 +157,7 @@ test('simple model with private auth rule and amplify admin app not enabled', ()
       ],
     },
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -185,6 +190,7 @@ test('simple model with private auth rule, few operations, and amplify admin app
         adminRoles: ADMIN_UI_ROLES,
       }),
     ],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -230,6 +236,7 @@ test('simple model with private IAM auth rule, few operations, and amplify admin
         identityPoolId: 'testIdentityPoolId',
       }),
     ],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -273,6 +280,7 @@ test('simple model with AdminUI enabled should add IAM policy only for fields th
         adminRoles: ADMIN_UI_ROLES,
       }),
     ],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();

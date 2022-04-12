@@ -119,7 +119,6 @@ import { showDefaultIdentityClaimWarning } from './utils/warnings';
 export class AuthTransformer extends TransformerAuthBase implements TransformerAuthProvider {
   private config: AuthTransformerConfig;
   private configuredAuthProviders: ConfiguredAuthProviders;
-  private useSubForDefaultIdentityClaim: boolean;
   private rules: AuthRule[];
   // access control
   private roleMap: Map<string, RoleDefinition>;
@@ -155,7 +154,6 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     // if there was no auth config in the props we add the authConfig from the context
     this.config.authConfig = this.config.authConfig ?? context.authConfig;
     this.configuredAuthProviders = getConfiguredAuthProviders(this.config);
-    this.useSubForDefaultIdentityClaim = context.featureFlags?.getBoolean('useSubUsernameForDefaultIdentityClaim');
   };
 
   object = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider): void => {

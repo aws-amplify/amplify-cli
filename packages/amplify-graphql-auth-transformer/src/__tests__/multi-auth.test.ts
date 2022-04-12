@@ -7,6 +7,8 @@ import {
 import { AuthTransformer } from '../graphql-auth-transformer';
 import { featureFlags } from './test-helpers';
 
+jest.mock('amplify-prompts');
+
 const userPoolsDefaultConfig: AppSyncAuthConfiguration = {
   defaultAuthentication: {
     authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -595,6 +597,7 @@ describe('iam checks', () => {
     const transformer = new GraphQLTransform({
       authConfig: iamDefaultConfig,
       transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId })],
+      featureFlags,
     });
     const out = transformer.transform(schema);
     expect(out).toBeDefined();
@@ -613,6 +616,7 @@ describe('iam checks', () => {
     const transformer = new GraphQLTransform({
       authConfig: iamDefaultConfig,
       transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId })],
+      featureFlags,
     });
     const out = transformer.transform(schema);
     expect(out).toBeDefined();
@@ -627,6 +631,7 @@ describe('iam checks', () => {
     const transformer = new GraphQLTransform({
       authConfig: iamDefaultConfig,
       transformers: [new ModelTransformer(), new AuthTransformer({ adminRoles })],
+      featureFlags,
     });
     const out = transformer.transform(schema);
     expect(out).toBeDefined();

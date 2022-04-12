@@ -8,13 +8,16 @@ import { AuthRule } from '.';
  */
 export const showDefaultIdentityClaimWarning = (context: TransformerContextProvider, optionRules?: AuthRule[]): void => {
   const rules = optionRules || [];
-  const usesCognitoUsernameAsDefault = !context.featureFlags?.getBoolean('useSubUsernameForDefaultIdentityClaim');
   const usesDefaultIdentityClaim = rules.some(rule => rule.allow === 'owner' && rule.identityClaim === undefined);
 
-  if (usesCognitoUsernameAsDefault && usesDefaultIdentityClaim) {
+  if (usesDefaultIdentityClaim) {
+    const hasFeatureFlagEnabled = context.featureFlags?.getBoolean('useSubUsernameForDefaultIdentityClaim');
+
+    if (hasFeatureFlagEnabled) return;
+
     printer.warn(
       ' WARNING: Amplify CLI will change the default identity claim from \'username\' '
-        + 'to use \'sub:username\'. To continue using usernames, set \'identityClaim: "sub:username"\' on your '
+        + 'to use \'sub:username\'. To continue using only usernames, set \'identityClaim: "username"\' on your '
         + '\'owner\' rules on your schema. The default will be officially switched with v8.0.0. To read '
         + 'more: https://link.to/docs-and-migration-gudes',
     );

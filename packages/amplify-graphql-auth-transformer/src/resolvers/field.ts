@@ -33,13 +33,13 @@ import {
   API_KEY_AUTH_TYPE,
 } from '../utils';
 import {
-  getOwnerClaim,
   generateStaticRoleExpression,
   apiKeyExpression,
   iamExpression,
   emptyPayload,
   lambdaExpression,
   getIdentityClaimExp,
+  generateOwnerClaimExpression,
 } from './helpers';
 
 // Field Read VTL Functions
@@ -54,7 +54,7 @@ const generateDynamicAuthReadExpression = (roles: Array<RoleDefinition>, fields:
           not(ref(IS_AUTHORIZED_FLAG)),
           compoundExpression([
             set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.source.${role.entity!}`), nul())),
-            set(ref(`ownerClaim${idx}`), getOwnerClaim(role.claim!)),
+            generateOwnerClaimExpression(role.claim!, idx),
             ...(entityIsList
               ? [
                 forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
