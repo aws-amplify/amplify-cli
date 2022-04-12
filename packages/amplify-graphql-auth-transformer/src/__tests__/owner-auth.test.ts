@@ -128,14 +128,19 @@ describe('owner based @auth', () => {
     expect(out.schema).toContain('onDeletePost(postOwner: String)');
 
     // expect logic in the resolvers to check for postOwner args as an allowed owner
+    expect(out.schema).toContain('onCreatePost(postOwner: String)');
+    expect(out.schema).toContain('onUpdatePost(postOwner: String)');
+    expect(out.schema).toContain('onDeletePost(postOwner: String)');
+
+    // expect logic in the resolvers to check for postOwner args as an allowed owner
     expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain(
-      '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.postOwner, null) )',
+      '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.postOwner.split(":")[0], null) )',
     );
     expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain(
-      '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.postOwner, null) )',
+      '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.postOwner.split(":")[0], null) )',
     );
     expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain(
-      '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.postOwner, null) )',
+      '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.postOwner.split(":")[0], null) )',
     );
   });
 
@@ -174,24 +179,24 @@ describe('owner based @auth', () => {
 
     // expect logic in the resolvers to check for owner args as an allowedOwner
     expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain(
-      '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.owner, null) )',
+      '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.owner.split(":")[0], null) )',
     );
     expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain(
-      '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.owner, null) )',
+      '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.owner.split(":")[0], null) )',
     );
     expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain(
-      '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.owner, null) )',
+      '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.owner.split(":")[0], null) )',
     );
 
     // expect logic in the resolvers to check for editor args as an allowedOwner
     expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain(
-      '#set( $ownerEntity1 = $util.defaultIfNull($ctx.args.editor, null) )',
+      '#set( $ownerEntity1 = $util.defaultIfNull($ctx.args.editor.split(":")[0], null) )',
     );
     expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain(
-      '#set( $ownerEntity1 = $util.defaultIfNull($ctx.args.editor, null) )',
+      '#set( $ownerEntity1 = $util.defaultIfNull($ctx.args.editor.split(":")[0], null) )',
     );
     expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain(
-      '#set( $ownerEntity1 = $util.defaultIfNull($ctx.args.editor, null) )',
+      '#set( $ownerEntity1 = $util.defaultIfNull($ctx.args.editor.split(":")[0], null) )',
     );
   });
 
