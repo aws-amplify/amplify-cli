@@ -1,5 +1,9 @@
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 
+/**
+ * Creates a type that supports several ACM
+ * scenarios for testing
+ */
 export type ACMTest = {
   sdl: string;
   authConfig: AppSyncAuthConfiguration;
@@ -36,7 +40,7 @@ export const acmTests: { [key: string]: ACMTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:owner:username',
+            roleType: 'userPools:owner:owner:sub:username',
             operations: {
               create: ['id', 'description'],
               read: ['id', 'description'],
@@ -67,7 +71,7 @@ export const acmTests: { [key: string]: ACMTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:owner:username',
+            roleType: 'userPools:owner:owner:sub:username',
             operations: {
               create: [],
               read: [],
@@ -98,7 +102,7 @@ export const acmTests: { [key: string]: ACMTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:owner:username',
+            roleType: 'userPools:owner:owner:sub:username',
             operations: {
               create: ['id', 'description'],
               read: ['id', 'description'],
@@ -129,7 +133,7 @@ export const acmTests: { [key: string]: ACMTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:owner:username',
+            roleType: 'userPools:owner:owner:sub:username',
             operations: {
               create: ['id', 'description'],
               read: ['id', 'description'],
@@ -160,7 +164,7 @@ export const acmTests: { [key: string]: ACMTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:owner:username',
+            roleType: 'userPools:owner:owner:sub:username',
             operations: {
               create: ['id', 'description'],
               read: ['id', 'description'],
@@ -191,7 +195,7 @@ export const acmTests: { [key: string]: ACMTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:owner:username',
+            roleType: 'userPools:owner:owner:sub:username',
             operations: {
               create: ['id', 'description'],
               read: ['id', 'description'],
@@ -222,7 +226,7 @@ export const acmTests: { [key: string]: ACMTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:owner:username',
+            roleType: 'userPools:owner:owner:sub:username',
             operations: {
               create: ['id', 'description'],
               read: ['description'],
@@ -253,7 +257,7 @@ export const acmTests: { [key: string]: ACMTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:owner:username',
+            roleType: 'userPools:owner:owner:sub:username',
             operations: {
               create: ['id', 'description'],
               read: ['id', 'description'],
@@ -284,7 +288,7 @@ export const acmTests: { [key: string]: ACMTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:owner:username',
+            roleType: 'userPools:owner:owner:sub:username',
             operations: {
               create: ['id', 'description'],
               read: ['id', 'description'],
@@ -1152,7 +1156,7 @@ export const acmTests: { [key: string]: ACMTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:owner:username',
+            roleType: 'userPools:owner:owner:sub:username',
             operations: {
               create: ['id', 'description'],
               read: ['id', 'description'],
@@ -1192,7 +1196,7 @@ export const acmTests: { [key: string]: ACMTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:owner:username',
+            roleType: 'userPools:owner:owner:sub:username',
             operations: {
               create: ['id'],
               read: ['id'],
@@ -1233,7 +1237,7 @@ export const acmTests: { [key: string]: ACMTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:author:username',
+            roleType: 'userPools:owner:author:sub:username',
             operations: {
               create: ['id', 'description', 'author'],
               read: ['id', 'description'],
@@ -1265,7 +1269,7 @@ export const acmTests: { [key: string]: ACMTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:authors:username',
+            roleType: 'userPools:owner:authors:sub:username',
             operations: {
               create: ['id', 'description', 'authors'],
               read: ['id', 'description'],
@@ -1328,7 +1332,7 @@ export const acmTests: { [key: string]: ACMTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:id:username',
+            roleType: 'userPools:owner:id:sub:username',
             operations: {
               create: ['id', 'description'],
               read: ['id', 'description'],
@@ -1359,7 +1363,7 @@ export const acmTests: { [key: string]: ACMTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:description:username',
+            roleType: 'userPools:owner:description:sub:username',
             operations: {
               create: ['id', 'description'],
               read: ['id', 'description'],
@@ -1393,7 +1397,7 @@ export const acmTests: { [key: string]: ACMTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:description:username',
+            roleType: 'userPools:owner:description:sub:username',
             operations: {
               create: ['id', 'description'],
               read: ['id', 'description'],
@@ -1407,7 +1411,7 @@ export const acmTests: { [key: string]: ACMTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:id:username',
+            roleType: 'userPools:owner:id:sub:username',
             operations: {
               create: ['id', 'description'],
               read: ['id', 'description'],
@@ -1440,7 +1444,7 @@ export const acmTests: { [key: string]: ACMTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:description:username',
+            roleType: 'userPools:owner:description:sub:username',
             operations: {
               create: ['id', 'description'],
               read: ['id', 'description'],
@@ -1474,7 +1478,7 @@ export const acmTests: { [key: string]: ACMTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:description:username',
+            roleType: 'userPools:owner:description:sub:username',
             operations: {
               create: ['id', 'description'],
               read: ['id', 'description'],
@@ -1488,7 +1492,7 @@ export const acmTests: { [key: string]: ACMTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:id:username',
+            roleType: 'userPools:owner:id:sub:username',
             operations: {
               create: ['id', 'description'],
               read: ['id', 'description'],
@@ -1522,7 +1526,7 @@ export const acmTests: { [key: string]: ACMTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:description:username',
+            roleType: 'userPools:owner:description:sub:username',
             operations: {
               create: ['id', 'description'],
               read: ['id', 'description'],
@@ -1536,7 +1540,7 @@ export const acmTests: { [key: string]: ACMTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:id:username',
+            roleType: 'userPools:owner:id:sub:username',
             operations: {
               create: ['id', 'description'],
               read: ['id', 'description'],
@@ -1570,7 +1574,7 @@ export const acmTests: { [key: string]: ACMTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:description:username',
+            roleType: 'userPools:owner:description:sub:username',
             operations: {
               create: ['id', 'description'],
               read: ['id', 'description'],
@@ -1584,7 +1588,7 @@ export const acmTests: { [key: string]: ACMTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:id:username',
+            roleType: 'userPools:owner:id:sub:username',
             operations: {
               create: ['id', 'description'],
               read: ['id', 'description'],

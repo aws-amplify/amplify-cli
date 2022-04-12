@@ -166,12 +166,12 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>, fields: ReadonlyArr
             set(ref(`isAuthorizedOnAllFields${idx}`), bool(role.areAllFieldsAllowed)),
             ...(entityIsList
               ? [
-                  forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
-                    iff(
-                      equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
-                      addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`, true),
-                    ),
-                  ]),
+                forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
+                  iff(
+                    equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
+                    addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`, true),
+                  ),
+                ]),
               ]
               : [
                 iff(
