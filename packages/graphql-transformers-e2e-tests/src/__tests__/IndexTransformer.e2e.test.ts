@@ -2,13 +2,15 @@ import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-in
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import { GraphQLClient } from '../GraphQLClient';
+// eslint-disable-next-line import/no-named-default
 import { default as moment } from 'moment';
+// eslint-disable-next-line import/no-named-default
+import { default as S3 } from 'aws-sdk/clients/s3';
+import { CloudFormationClient } from '../CloudFormationClient';
+import { GraphQLClient } from '../GraphQLClient';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
-import { default as S3 } from 'aws-sdk/clients/s3';
 
 jest.setTimeout(2000000);
 
@@ -16,27 +18,25 @@ const cf = new CloudFormationClient('us-west-2');
 const customS3Client = new S3Client('us-west-2');
 const awsS3Client = new S3({ region: 'us-west-2' });
 const featureFlags = {
-  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-    return;
-  }),
+  getBoolean: jest.fn(),
   getNumber: jest.fn(),
   getObject: jest.fn(),
   getString: jest.fn(),
 };
+// eslint-disable-next-line spellcheck/spell-checker
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `IndexTransformerTests-${BUILD_TIMESTAMP}`;
 const BUCKET_NAME = `appsync-index-transformer-test-bucket-${BUILD_TIMESTAMP}`;
 const LOCAL_FS_BUILD_DIR = '/tmp/index_transformer_tests/';
 const S3_ROOT_DIR_KEY = 'deployments';
 
-let GRAPHQL_CLIENT = undefined;
+let GRAPHQL_CLIENT;
 
-function outputValueSelector(key: string) {
-  return (outputs: Output[]) => {
-    const output = outputs.find((o: Output) => o.OutputKey === key);
-    return output ? output.OutputValue : null;
-  };
-}
+const outputValueSelector = (key: string) => (outputs: Output[]) => {
+  // eslint-disable-next-line react/destructuring-assignment
+  const output = outputs.find(o => o.OutputKey === key);
+  return output ? output.OutputValue : null;
+};
 
 beforeAll(async () => {
   const validSchema = /* GraphQL */ `
@@ -47,7 +47,7 @@ beforeAll(async () => {
     }
     type Customer @model {
       email: String! @primaryKey
-      addresslist: [String]
+      addressList: [String]
       username: String
     }
     type Item @model {
@@ -89,6 +89,10 @@ beforeAll(async () => {
       name: String!
       createdAt: AWSDateTime!
     }
+    type TestModel @model {
+      id: ID!
+      parentId: ID @index(name: "parent-id-index")
+    }
   `;
 
   try {
@@ -116,13 +120,16 @@ beforeAll(async () => {
   );
   // Arbitrary wait to make sure everything is ready.
   await cf.wait(5, () => Promise.resolve());
+  // eslint-disable-next-line jest/no-standalone-expect
   expect(finishedStack).toBeDefined();
   const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
   const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput);
   const endpoint = getApiEndpoint(finishedStack.Outputs);
   const apiKey = getApiKey(finishedStack.Outputs);
 
+  // eslint-disable-next-line jest/no-standalone-expect
   expect(apiKey).toBeDefined();
+  // eslint-disable-next-line jest/no-standalone-expect
   expect(endpoint).toBeDefined();
   GRAPHQL_CLIENT = new GraphQLClient(endpoint, { 'x-api-key': apiKey });
 });
@@ -134,7 +141,7 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test('Test next token with key', async () => {
+test('next token with key', async () => {
   const status = 'PENDING';
   const createdAt = '2019-06-06T00:01:01.000Z';
   // createItems
@@ -174,7 +181,7 @@ test('Test next token with key', async () => {
   await deleteItem('order4', status, createdAt);
 });
 
-test('Test getX with a two part primary key.', async () => {
+test('getX with a two part primary key.', async () => {
   const order1 = await createOrder('test@gmail.com', '1');
   expect(order1.data.createOrder.createdAt).toBeDefined();
   const getOrder1 = await getOrder('test@gmail.com', order1.data.createOrder.createdAt);
@@ -183,7 +190,7 @@ test('Test getX with a two part primary key.', async () => {
   expect(getOrder1.data.getOrder.createdAt).toEqual(order1.data.createOrder.createdAt);
 });
 
-test('Test updateX with a two part primary key.', async () => {
+test('updateX with a two part primary key.', async () => {
   const order2 = await createOrder('test3@gmail.com', '2');
   let getOrder2 = await getOrder('test3@gmail.com', order2.data.createOrder.createdAt);
   expect(getOrder2.data.getOrder.orderId).toEqual('2');
@@ -193,7 +200,7 @@ test('Test updateX with a two part primary key.', async () => {
   expect(getOrder2.data.getOrder.orderId).toEqual('3');
 });
 
-test('Test deleteX with a two part primary key.', async () => {
+test('deleteX with a two part primary key.', async () => {
   const order2 = await createOrder('test2@gmail.com', '2');
   let getOrder2 = await getOrder('test2@gmail.com', order2.data.createOrder.createdAt);
   expect(getOrder2.data.getOrder.orderId).toEqual('2');
@@ -203,14 +210,14 @@ test('Test deleteX with a two part primary key.', async () => {
   expect(getOrder2.data.getOrder).toBeNull();
 });
 
-test('Test getX with a three part primary key', async () => {
+test('getX with a three part primary key', async () => {
   const item1 = await createItem('1', 'PENDING', 'item1');
   const getItem1 = await getItem('1', 'PENDING', item1.data.createItem.createdAt);
   expect(getItem1.data.getItem.orderId).toEqual('1');
   expect(getItem1.data.getItem.status).toEqual('PENDING');
 });
 
-test('Test updateX with a three part primary key.', async () => {
+test('updateX with a three part primary key.', async () => {
   const item2 = await createItem('2', 'PENDING', 'item2');
   let getItem2 = await getItem('2', 'PENDING', item2.data.createItem.createdAt);
   expect(getItem2.data.getItem.orderId).toEqual('2');
@@ -220,7 +227,7 @@ test('Test updateX with a three part primary key.', async () => {
   expect(getItem2.data.getItem.name).toEqual('item2.1');
 });
 
-test('Test deleteX with a three part primary key.', async () => {
+test('deleteX with a three part primary key.', async () => {
   const item3 = await createItem('3', 'IN_TRANSIT', 'item3');
   let getItem3 = await getItem('3', 'IN_TRANSIT', item3.data.createItem.createdAt);
   expect(getItem3.data.getItem.name).toEqual('item3');
@@ -230,7 +237,7 @@ test('Test deleteX with a three part primary key.', async () => {
   expect(getItem3.data.getItem).toBeNull();
 });
 
-test('Test listX with three part primary key.', async () => {
+test('listX with three part primary key.', async () => {
   const hashKey = 'TEST_LIST_ID';
   await createItem(hashKey, 'IN_TRANSIT', 'list1', '2018-01-01T00:01:01.000Z');
   await createItem(hashKey, 'PENDING', 'list2', '2018-06-01T00:01:01.000Z');
@@ -267,7 +274,7 @@ test('Test listX with three part primary key.', async () => {
   await deleteItem(hashKey, 'PENDING', '2018-09-01T00:01:01.000Z');
 });
 
-test('Test query with three part secondary key.', async () => {
+test('query with three part secondary key.', async () => {
   const hashKey = 'UNKNOWN';
   await createItem('order1', 'UNKNOWN', 'list1', '2018-01-01T00:01:01.000Z');
   await createItem('order2', 'UNKNOWN', 'list2', '2018-06-01T00:01:01.000Z');
@@ -299,7 +306,7 @@ test('Test query with three part secondary key.', async () => {
   await deleteItem('order3', hashKey, '2018-09-01T00:01:01.000Z');
 });
 
-test('Test query with three part secondary key, where sort key is an enum.', async () => {
+test('query with three part secondary key, where sort key is an enum.', async () => {
   const hashKey = '2018-06-01T00:01:01.000Z';
   const sortKey = 'UNKNOWN';
   await createItem('order1', sortKey, 'list1', '2018-01-01T00:01:01.000Z');
@@ -332,16 +339,18 @@ test('Test query with three part secondary key, where sort key is an enum.', asy
   await deleteItem('order3', sortKey, '2018-09-01T00:01:01.000Z');
 });
 
-test('Test create/update mutation validation with three part secondary key.', async () => {
+test('create/update mutation validation with three part secondary key.', async () => {
   const createResponseMissingLastSortKey = await createShippingUpdate({ orderId: 'order1', itemId: 'item1', name: '42' });
   expect(createResponseMissingLastSortKey.data.createShippingUpdate).toBeNull();
   expect(createResponseMissingLastSortKey.errors).toHaveLength(1);
 
-  const createResponseMissingFirstSortKey = await createShippingUpdate({ orderId: '2ndtry', status: 'PENDING', name: '43?' });
+  const createResponseMissingFirstSortKey = await createShippingUpdate({ orderId: 'secondEntry', status: 'PENDING', name: '43?' });
   expect(createResponseMissingFirstSortKey.data.createShippingUpdate).toBeNull();
   expect(createResponseMissingFirstSortKey.errors).toHaveLength(1);
 
-  await createShippingUpdate({ orderId: 'order1', itemId: 'item1', status: 'PENDING', name: 'name1' });
+  await createShippingUpdate({
+    orderId: 'order1', itemId: 'item1', status: 'PENDING', name: 'name1',
+  });
   const items = await getShippingUpdates('order1');
   expect(items.data.shippingUpdates.items).toHaveLength(1);
   const item = items.data.shippingUpdates.items[0];
@@ -352,10 +361,12 @@ test('Test create/update mutation validation with three part secondary key.', as
   const itemWithFilter = itemsWithFilter.data.shippingUpdates.items[0];
   expect(itemWithFilter.name).toEqual('name1');
 
-  const itemsWithUnknownFilter = await getShippingUpdatesWithNameFilter('order1', 'unknownname');
+  const itemsWithUnknownFilter = await getShippingUpdatesWithNameFilter('order1', 'unknownName');
   expect(itemsWithUnknownFilter.data.shippingUpdates.items).toHaveLength(0);
 
-  const updateResponseMissingLastSortKey = await updateShippingUpdate({ id: item.id, orderId: 'order1', itemId: 'item1', name: 'name2' });
+  const updateResponseMissingLastSortKey = await updateShippingUpdate({
+    id: item.id, orderId: 'order1', itemId: 'item1', name: 'name2',
+  });
   expect(updateResponseMissingLastSortKey.data.updateShippingUpdate).toBeNull();
   expect(updateResponseMissingLastSortKey.errors).toHaveLength(1);
   const updateResponseMissingFirstSortKey = await updateShippingUpdate({
@@ -378,15 +389,15 @@ test('Test create/update mutation validation with three part secondary key.', as
   expect(updateResponseMissingNoKeys.data.updateShippingUpdate.name).toEqual('testing2');
 });
 
-test('Test Customer Create with list member and secondary key', async () => {
-  await createCustomer('customer1@email.com', ['thing1', 'thing2'], 'customerusr1');
+test('Customer Create with list member and secondary key', async () => {
+  await createCustomer('customer1@email.com', ['thing1', 'thing2'], 'customerUser1');
   const getCustomer1 = await getCustomer('customer1@email.com');
-  expect(getCustomer1.data.getCustomer.addresslist).toEqual(['thing1', 'thing2']);
+  expect(getCustomer1.data.getCustomer.addressList).toEqual(['thing1', 'thing2']);
 });
 
-test('Test cannot overwrite customer record with custom primary key', async () => {
-  await createCustomer('customer42@email.com', ['thing1', 'thing2'], 'customerusr42');
-  const response = await createCustomer('customer42@email.com', ['thing2'], 'customerusr43');
+test('cannot overwrite customer record with custom primary key', async () => {
+  await createCustomer('customer42@email.com', ['thing1', 'thing2'], 'customerUser42');
+  const response = await createCustomer('customer42@email.com', ['thing2'], 'customerUser43');
   expect(response.errors).toBeDefined();
   expect(response.errors[0]).toEqual(
     expect.objectContaining({
@@ -396,19 +407,19 @@ test('Test cannot overwrite customer record with custom primary key', async () =
   );
 });
 
-test('Test Customer Mutation with list member', async () => {
-  await createCustomer('customer2@email.com', ['thing1', 'thing2'], 'customerusr2');
-  await updateCustomer('customer2@email.com', ['thing3', 'thing4'], 'new_customerusr2');
+test('Customer Mutation with list member', async () => {
+  await createCustomer('customer2@email.com', ['thing1', 'thing2'], 'customerUser2');
+  await updateCustomer('customer2@email.com', ['thing3', 'thing4'], 'new_customerUser2');
   const getCustomer1 = await getCustomer('customer2@email.com');
-  expect(getCustomer1.data.getCustomer.addresslist).toEqual(['thing3', 'thing4']);
+  expect(getCustomer1.data.getCustomer.addressList).toEqual(['thing3', 'thing4']);
 });
 
-test('Test @primaryKey directive with customer sortDirection', async () => {
-  await createOrder('testorder1@email.com', '1', '2016-03-10T00:45:08+00:00');
-  await createOrder('testorder1@email.com', '2', '2018-05-22T21:45:08+00:00');
-  await createOrder('testorder1@email.com', '3', '2019-06-27T12:00:08+00:00');
-  const newOrders = await listOrders('testorder1@email.com', { beginsWith: '201' }, 'DESC');
-  const oldOrders = await listOrders('testorder1@email.com', { beginsWith: '201' }, 'ASC');
+test('@primaryKey directive with customer sortDirection', async () => {
+  await createOrder('testOrder@email.com', '1', '2016-03-10T00:45:08+00:00');
+  await createOrder('testOrder@email.com', '2', '2018-05-22T21:45:08+00:00');
+  await createOrder('testOrder@email.com', '3', '2019-06-27T12:00:08+00:00');
+  const newOrders = await listOrders('testOrder@email.com', { beginsWith: '201' }, 'DESC');
+  const oldOrders = await listOrders('testOrder@email.com', { beginsWith: '201' }, 'ASC');
   expect(newOrders.data.listOrders.items[0].createdAt).toEqual('2019-06-27T12:00:08+00:00');
   expect(newOrders.data.listOrders.items[0].orderId).toEqual('3');
   expect(oldOrders.data.listOrders.items[0].createdAt).toEqual('2016-03-10T00:45:08+00:00');
@@ -418,11 +429,19 @@ test('Test @primaryKey directive with customer sortDirection', async () => {
 // orderId: string, itemId: string, status: string, name?: string
 // DELIVERED IN_TRANSIT PENDING UNKNOWN
 // (orderId: string, itemId: string, sortDirection: string)
-test('Test @index directive with sortDirection on GSI', async () => {
-  await createShippingUpdate({ orderId: 'order99', itemId: 'product1', status: 'PENDING', name: 'order1Name1' });
-  await createShippingUpdate({ orderId: 'order99', itemId: 'product2', status: 'IN_TRANSIT', name: 'order1Name2' });
-  await createShippingUpdate({ orderId: 'order99', itemId: 'product3', status: 'DELIVERED', name: 'order1Name3' });
-  await createShippingUpdate({ orderId: 'order99', itemId: 'product4', status: 'DELIVERED', name: 'order1Name4' });
+test('@index directive with sortDirection on GSI', async () => {
+  await createShippingUpdate({
+    orderId: 'order99', itemId: 'product1', status: 'PENDING', name: 'order1Name1',
+  });
+  await createShippingUpdate({
+    orderId: 'order99', itemId: 'product2', status: 'IN_TRANSIT', name: 'order1Name2',
+  });
+  await createShippingUpdate({
+    orderId: 'order99', itemId: 'product3', status: 'DELIVERED', name: 'order1Name3',
+  });
+  await createShippingUpdate({
+    orderId: 'order99', itemId: 'product4', status: 'DELIVERED', name: 'order1Name4',
+  });
   const newShippingUpdates = await listGSIShippingUpdate('order99', { beginsWith: { itemId: 'product' } }, 'DESC');
   const oldShippingUpdates = await listGSIShippingUpdate('order99', { beginsWith: { itemId: 'product' } }, 'ASC');
   expect(oldShippingUpdates.data.shippingUpdates.items[0].status).toEqual('PENDING');
@@ -431,7 +450,7 @@ test('Test @index directive with sortDirection on GSI', async () => {
   expect(newShippingUpdates.data.shippingUpdates.items[0].name).toEqual('order1Name4');
 });
 
-test('Test @primaryKey directive supports auto Id and createdAt fields in create mutation', async () => {
+test('@primaryKey directive supports auto Id and createdAt fields in create mutation', async () => {
   const result = await GRAPHQL_CLIENT.query(
     `mutation CreateModelWithIdAndCreatedAtAsKey{
         createModelWithIdAndCreatedAtAsKey(input:{ name: "John Doe" }) {
@@ -446,7 +465,7 @@ test('Test @primaryKey directive supports auto Id and createdAt fields in create
   expect(result.data.createModelWithIdAndCreatedAtAsKey.name).toEqual('John Doe');
 });
 
-test('Test sortDirection validation error for List on KeyedBlog type', async () => {
+test('sortDirection validation error for List on KeyedBlog type', async () => {
   const result = await GRAPHQL_CLIENT.query(
     `mutation CreateKeyedBlog($input: CreateKeyedBlogInput!) {
         createKeyedBlog(input: $input) {
@@ -483,7 +502,7 @@ test('Test sortDirection validation error for List on KeyedBlog type', async () 
   expect(listResult.errors[0].message).toEqual('sortDirection is not supported for List operations without a Sort key defined.');
 });
 
-test('Test sortDirection validation error for List on KeyedSortedBlog type', async () => {
+test('sortDirection validation error for List on KeyedSortedBlog type', async () => {
   const result = await GRAPHQL_CLIENT.query(
     `mutation CreateKeyedSortedBlog($input: CreateKeyedSortedBlogInput!) {
         createKeyedSortedBlog(input: $input) {
@@ -532,47 +551,69 @@ test('Test sortDirection validation error for List on KeyedSortedBlog type', asy
 
   expect(listResult.data).not.toBeNull();
   expect(listResult.data.listKeyedSortedBlogs).not.toBeNull();
-  expect(listResult.errors).toBeUndefined;
+  expect(listResult.errors).toBeUndefined();
 });
 
-async function createCustomer(email: string, addresslist: string[], username: string) {
+test('create mutation with index field set to null', async () => {
+  const result = await GRAPHQL_CLIENT.query(
+    `mutation CreateTestModel($input: CreateTestModelInput!) {
+        createTestModel(input: $input) {
+            id
+            parentId
+        }
+    }`,
+    {
+      input: {
+        id: '1',
+        parentId: null,
+      },
+    },
+  );
+
+  expect(result.data).not.toBeNull();
+  expect(result.errors).toBeUndefined();
+  expect(result.data.createTestModel).not.toBeNull();
+  expect(result.data.createTestModel.parentId).toBeNull();
+});
+
+const createCustomer = async (email: string, addressList: string[], username: string): Promise<any> => {
   const result = await GRAPHQL_CLIENT.query(
     `mutation CreateCustomer($input: CreateCustomerInput!) {
         createCustomer(input: $input) {
             email
-            addresslist
+            addressList
             username
         }
     }`,
     {
-      input: { email, addresslist, username },
+      input: { email, addressList, username },
     },
   );
   return result;
-}
+};
 
-async function updateCustomer(email: string, addresslist: string[], username: string) {
+const updateCustomer = async (email: string, addressList: string[], username: string): Promise<any> => {
   const result = await GRAPHQL_CLIENT.query(
     `mutation UpdateCustomer($input: UpdateCustomerInput!) {
         updateCustomer(input: $input) {
             email
-            addresslist
+            addressList
             username
         }
     }`,
     {
-      input: { email, addresslist, username },
+      input: { email, addressList, username },
     },
   );
   return result;
-}
+};
 
-async function getCustomer(email: string) {
+const getCustomer = async (email: string): Promise<any> => {
   const result = await GRAPHQL_CLIENT.query(
     `query GetCustomer($email: String!) {
         getCustomer(email: $email) {
             email
-            addresslist
+            addressList
             username
         }
     }`,
@@ -581,9 +622,9 @@ async function getCustomer(email: string) {
     },
   );
   return result;
-}
+};
 
-async function createOrder(customerEmail: string, orderId: string, createdAt: string = new Date().toISOString()) {
+const createOrder = async (customerEmail: string, orderId: string, createdAt: string = new Date().toISOString()): Promise<any> => {
   const result = await GRAPHQL_CLIENT.query(
     `mutation CreateOrder($input: CreateOrderInput!) {
         createOrder(input: $input) {
@@ -597,9 +638,9 @@ async function createOrder(customerEmail: string, orderId: string, createdAt: st
     },
   );
   return result;
-}
+};
 
-async function updateOrder(customerEmail: string, createdAt: string, orderId: string) {
+const updateOrder = async (customerEmail: string, createdAt: string, orderId: string): Promise<any> => {
   const result = await GRAPHQL_CLIENT.query(
     `mutation UpdateOrder($input: UpdateOrderInput!) {
         updateOrder(input: $input) {
@@ -613,9 +654,9 @@ async function updateOrder(customerEmail: string, createdAt: string, orderId: st
     },
   );
   return result;
-}
+};
 
-async function deleteOrder(customerEmail: string, createdAt: string) {
+const deleteOrder = async (customerEmail: string, createdAt: string): Promise<any> => {
   const result = await GRAPHQL_CLIENT.query(
     `mutation DeleteOrder($input: DeleteOrderInput!) {
         deleteOrder(input: $input) {
@@ -629,9 +670,9 @@ async function deleteOrder(customerEmail: string, createdAt: string) {
     },
   );
   return result;
-}
+};
 
-async function getOrder(customerEmail: string, createdAt: string) {
+const getOrder = async (customerEmail: string, createdAt: string) : Promise<any> => {
   const result = await GRAPHQL_CLIENT.query(
     `query GetOrder($customerEmail: String!, $createdAt: AWSDateTime!) {
         getOrder(customerEmail: $customerEmail, createdAt: $createdAt) {
@@ -643,7 +684,7 @@ async function getOrder(customerEmail: string, createdAt: string) {
     { customerEmail, createdAt },
   );
   return result;
-}
+};
 
 interface ModelStringKeyConditionInput {
   eq?: string;
@@ -655,7 +696,7 @@ interface ModelStringKeyConditionInput {
   beginsWith?: string;
 }
 
-async function listOrders(customerEmail: string, createdAt: ModelStringKeyConditionInput, sortDirection: string) {
+const listOrders = async (customerEmail: string, createdAt: ModelStringKeyConditionInput, sortDirection: string): Promise<any> => {
   const input = { customerEmail, createdAt, sortDirection };
   const result = await GRAPHQL_CLIENT.query(
     `query ListOrders(
@@ -671,10 +712,12 @@ async function listOrders(customerEmail: string, createdAt: ModelStringKeyCondit
     input,
   );
   return result;
-}
+};
 
-async function createItem(orderId: string, status: string, name: string, createdAt: string = new Date().toISOString()) {
-  const input = { status, orderId, name, createdAt };
+const createItem = async (orderId: string, status: string, name: string, createdAt: string = new Date().toISOString()): Promise<any> => {
+  const input = {
+    status, orderId, name, createdAt,
+  };
   const result = await GRAPHQL_CLIENT.query(
     `mutation CreateItem($input: CreateItemInput!) {
         createItem(input: $input) {
@@ -689,10 +732,12 @@ async function createItem(orderId: string, status: string, name: string, created
     },
   );
   return result;
-}
+};
 
-async function updateItem(orderId: string, status: string, createdAt: string, name: string) {
-  const input = { status, orderId, createdAt, name };
+const updateItem = async (orderId: string, status: string, createdAt: string, name: string): Promise<any> => {
+  const input = {
+    status, orderId, createdAt, name,
+  };
   const result = await GRAPHQL_CLIENT.query(
     `mutation UpdateItem($input: UpdateItemInput!) {
         updateItem(input: $input) {
@@ -707,9 +752,9 @@ async function updateItem(orderId: string, status: string, createdAt: string, na
     },
   );
   return result;
-}
+};
 
-async function deleteItem(orderId: string, status: string, createdAt: string) {
+const deleteItem = async (orderId: string, status: string, createdAt: string): Promise<any> => {
   const input = { orderId, status, createdAt };
   const result = await GRAPHQL_CLIENT.query(
     `mutation DeleteItem($input: DeleteItemInput!) {
@@ -725,9 +770,9 @@ async function deleteItem(orderId: string, status: string, createdAt: string) {
     },
   );
   return result;
-}
+};
 
-async function getItem(orderId: string, status: string, createdAt: string) {
+const getItem = async (orderId: string, status: string, createdAt: string): Promise<any> => {
   const result = await GRAPHQL_CLIENT.query(
     `query GetItem($orderId: ID!, $status: Status!, $createdAt: AWSDateTime!) {
         getItem(orderId: $orderId, status: $status, createdAt: $createdAt) {
@@ -740,7 +785,7 @@ async function getItem(orderId: string, status: string, createdAt: string) {
     { orderId, status, createdAt },
   );
   return result;
-}
+};
 
 interface StringKeyConditionInput {
   eq?: string;
@@ -765,7 +810,12 @@ interface ItemCompositeKeyInput {
   status?: string;
   createdAt?: string;
 }
-async function listItem(orderId?: string, statusCreatedAt?: ItemCompositeKeyConditionInput, limit?: number, nextToken?: string) {
+const listItem = async (
+  orderId?: string,
+  statusCreatedAt?: ItemCompositeKeyConditionInput,
+  limit?: number,
+  nextToken?: string,
+): Promise<any> => {
   const result = await GRAPHQL_CLIENT.query(
     `query ListItems(
         $orderId: ID, $statusCreatedAt: ModelItemPrimaryCompositeKeyConditionInput, $limit: Int, $nextToken: String) {
@@ -779,12 +829,14 @@ async function listItem(orderId?: string, statusCreatedAt?: ItemCompositeKeyCond
             nextToken
         }
     }`,
-    { orderId, statusCreatedAt, limit, nextToken },
+    {
+      orderId, statusCreatedAt, limit, nextToken,
+    },
   );
   return result;
-}
+};
 
-async function itemsByStatus(status: string, createdAt?: StringKeyConditionInput, limit?: number, nextToken?: string) {
+const itemsByStatus = async (status: string, createdAt?: StringKeyConditionInput, limit?: number, nextToken?: string): Promise<any> => {
   const result = await GRAPHQL_CLIENT.query(
     `query ListByStatus(
         $status: Status!, $createdAt: ModelStringKeyConditionInput, $limit: Int, $nextToken: String) {
@@ -798,12 +850,19 @@ async function itemsByStatus(status: string, createdAt?: StringKeyConditionInput
             nextToken
         }
     }`,
-    { status, createdAt, limit, nextToken },
+    {
+      status, createdAt, limit, nextToken,
+    },
   );
   return result;
-}
+};
 
-async function itemsByCreatedAt(createdAt: string, status?: StringKeyConditionInput, limit?: number, nextToken?: string) {
+const itemsByCreatedAt = async (
+  createdAt: string,
+  status?: StringKeyConditionInput,
+  limit?: number,
+  nextToken?: string,
+): Promise<any> => {
   const result = await GRAPHQL_CLIENT.query(
     `query ListByCreatedAt(
         $createdAt: AWSDateTime!, $status: ModelStringKeyConditionInput, $limit: Int, $nextToken: String) {
@@ -817,10 +876,12 @@ async function itemsByCreatedAt(createdAt: string, status?: StringKeyConditionIn
             nextToken
         }
     }`,
-    { createdAt, status, limit, nextToken },
+    {
+      createdAt, status, limit, nextToken,
+    },
   );
   return result;
-}
+};
 
 interface CreateShippingInput {
   id?: string;
@@ -830,7 +891,7 @@ interface CreateShippingInput {
   name?: string;
 }
 
-async function createShippingUpdate(input: CreateShippingInput) {
+const createShippingUpdate = async (input: CreateShippingInput): Promise<any> => {
   const result = await GRAPHQL_CLIENT.query(
     `mutation CreateShippingUpdate($input: CreateShippingUpdateInput!) {
         createShippingUpdate(input: $input) {
@@ -846,9 +907,9 @@ async function createShippingUpdate(input: CreateShippingInput) {
     },
   );
   return result;
-}
+};
 
-async function listGSIShippingUpdate(orderId: string, itemId: object, sortDirection: string) {
+const listGSIShippingUpdate = async (orderId: string, itemId: any, sortDirection: string): Promise<any> => {
   const input = { orderId, itemId, sortDirection };
   const result = await GRAPHQL_CLIENT.query(
     `query queryGSI(
@@ -869,7 +930,7 @@ async function listGSIShippingUpdate(orderId: string, itemId: object, sortDirect
     input,
   );
   return result;
-}
+};
 
 interface UpdateShippingInput {
   id: string;
@@ -878,7 +939,7 @@ interface UpdateShippingInput {
   itemId?: string;
   name?: string;
 }
-async function updateShippingUpdate(input: UpdateShippingInput) {
+const updateShippingUpdate = async (input: UpdateShippingInput): Promise<any> => {
   const result = await GRAPHQL_CLIENT.query(
     `mutation UpdateShippingUpdate($input: UpdateShippingUpdateInput!) {
         updateShippingUpdate(input: $input) {
@@ -894,9 +955,9 @@ async function updateShippingUpdate(input: UpdateShippingInput) {
     },
   );
   return result;
-}
+};
 
-async function getShippingUpdates(orderId: string) {
+const getShippingUpdates = async (orderId: string): Promise<any> => {
   const result = await GRAPHQL_CLIENT.query(
     `query GetShippingUpdates($orderId: ID!) {
         shippingUpdates(orderId: $orderId) {
@@ -913,9 +974,9 @@ async function getShippingUpdates(orderId: string) {
     { orderId },
   );
   return result;
-}
+};
 
-async function getShippingUpdatesWithNameFilter(orderId: string, name: string) {
+const getShippingUpdatesWithNameFilter = async (orderId: string, name: string): Promise<any> => {
   const result = await GRAPHQL_CLIENT.query(
     `query GetShippingUpdates($orderId: ID!, $name: String) {
         shippingUpdates(orderId: $orderId, filter: { name: { eq: $name }}) {
@@ -932,4 +993,4 @@ async function getShippingUpdatesWithNameFilter(orderId: string, name: string) {
     { orderId, name },
   );
   return result;
-}
+};
