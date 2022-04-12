@@ -142,7 +142,7 @@ test('fails if @hasMany was used on an object that is not a model type', () => {
     transformers: [new ModelTransformer(), new HasManyTransformer()],
   });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError(`@hasMany must be on an @model object type field.`);
+  expect(() => transformer.transform(inputSchema)).toThrowError('@hasMany must be on an @model object type field.');
 });
 
 test('fails if @hasMany was used with a related type that is not a model', () => {
@@ -161,7 +161,7 @@ test('fails if @hasMany was used with a related type that is not a model', () =>
     transformers: [new ModelTransformer(), new HasManyTransformer()],
   });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError(`Object type Test1 must be annotated with @model.`);
+  expect(() => transformer.transform(inputSchema)).toThrowError('Object type Test1 must be annotated with @model.');
 });
 
 test('fails if the related type does not exist', () => {
@@ -279,7 +279,9 @@ test('bidirectional has many query case', () => {
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
+  // eslint-disable-next-line spellcheck/spell-checker
   expect((out.stacks as any).ConnectionStack.Resources.PostauthorResolver).toBeTruthy();
+  // eslint-disable-next-line spellcheck/spell-checker
   expect((out.stacks as any).ConnectionStack.Resources.UserpostsResolver).toBeTruthy();
 
   const userType = schema.definitions.find((def: any) => def.name && def.name.value === 'User') as any;
@@ -690,7 +692,7 @@ test('@hasMany and @hasMany cannot point at each other if DataStore is enabled',
   });
 
   expect(() => transformer.transform(inputSchema)).toThrowError(
-    `Blog and Post cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead.`,
+    'Blog and Post cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead.',
   );
 });
 
@@ -721,7 +723,7 @@ test('has many with queries null generate correct filter input objects for scala
     type Foo @model {
       bars: [Bar] @hasMany
     }
-    
+
     type Bar @model(queries: null) {
       strings: [String]
     }`;
@@ -736,8 +738,43 @@ test('has many with queries null generate correct filter input objects for scala
 
   const barFilterInput = schema.definitions.find((def: any) => def.name && def.name.value === 'ModelBarFilterInput') as any;
   expect(barFilterInput).toBeDefined();
-  
+
   const stringField = barFilterInput.fields.find((f: any) => f.name.value === 'strings');
   expect(stringField).toBeDefined();
   expect(stringField.type.name.value).toMatch('ModelStringInput');
+});
+
+test('has many with queries null generate correct filter input objects for enum type', () => {
+  const inputSchema = `
+    type IssueList @model {
+      id: ID!
+      issues: [Issue] @hasMany
+    }
+
+    type Issue @model {
+      id: ID!
+      title: String!
+      description: String
+      status: IssueStatus!
+    }
+
+    enum IssueStatus {
+      open
+      closed
+    }`;
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new HasManyTransformer()],
+  });
+
+  const out = transformer.transform(inputSchema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+
+  const issueFilterInput = schema.definitions.find((def: any) => def.name && def.name.value === 'ModelIssueFilterInput') as any;
+  expect(issueFilterInput).toBeDefined();
+
+  const statusField = issueFilterInput.fields.find((f: any) => f.name.value === 'status');
+  expect(statusField).toBeDefined();
+  expect(statusField.type.name.value).toMatch('ModelIssueStatusInput');
 });
