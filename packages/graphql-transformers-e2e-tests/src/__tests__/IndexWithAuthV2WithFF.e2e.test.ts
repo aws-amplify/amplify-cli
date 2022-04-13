@@ -104,7 +104,7 @@ beforeAll(async () => {
           return true;
         }
         if (name === 'useSubUsernameForDefaultIdentityClaim') {
-          return false;
+          return true;
         }
         return defaultValue;
       }),
