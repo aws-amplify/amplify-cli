@@ -74,7 +74,7 @@ export const mapAdvancedWalkthrough = async (
     }
     else {
         parameters.dataProvider = DataProvider.Esri;
-        parameters.mapStyleType = EsriMapStyleType.Streets;
+        parameters.mapStyleType = EsriMapStyleType.Navigation;
     }
 
     return parameters;
@@ -82,10 +82,10 @@ export const mapAdvancedWalkthrough = async (
 
 export const mapStyleWalkthrough = async (parameters: Partial<MapParameters>): Promise<Partial<MapParameters>> => {
     const mapStyleChoices = [
+        { name: 'Navigation (data provided by Esri)', value: MapStyle.VectorEsriNavigation },
         { name: 'Streets (data provided by Esri)', value: MapStyle.VectorEsriStreets },
         { name: 'Berlin (data provided by HERE)', value: MapStyle.VectorHereBerlin },
         { name: 'Topographic (data provided by Esri)', value: MapStyle.VectorEsriTopographic },
-        { name: 'Navigation (data provided by Esri)', value: MapStyle.VectorEsriNavigation },
         { name: 'LightGrayCanvas (data provided by Esri)', value: MapStyle.VectorEsriLightGrayCanvas },
         { name: 'DarkGrayCanvas (data provided by Esri)', value: MapStyle.VectorEsriDarkGrayCanvas }
     ];

@@ -19,13 +19,13 @@ describe('Map walkthrough works as expected', () => {
     const mockMapResource = {
         resourceName: mockMapName,
         service: service,
-        mapStyle: MapStyle.VectorEsriStreets
+        mapStyle: MapStyle.VectorEsriNavigation
     };
     const secondaryMapResource = {
         resourceName: secondaryMapName,
         service: service,
         isDefault: false,
-        mapStyle: MapStyle.VectorEsriStreets
+        mapStyle: MapStyle.VectorEsriNavigation
     };
     const mockPlaceIndexResource = {
         resourceName: 'placeIndex12345',
@@ -39,7 +39,7 @@ describe('Map walkthrough works as expected', () => {
             projectName: projectName
         },
         name: mockMapName,
-        mapStyleType: EsriMapStyleType.Streets,
+        mapStyleType: EsriMapStyleType.Navigation,
         dataProvider: DataProvider.Esri,
         accessType: AccessType.AuthorizedUsers,
         isDefault: false,
@@ -49,7 +49,7 @@ describe('Map walkthrough works as expected', () => {
     const mockContext = ({
         amplify: {
             serviceSelectionPrompt: async () => {
-                return { service: service, providerName: provider};
+                return { service: service, providerName: provider };
             },
             inputValidation: jest.fn(),
             getProjectMeta: jest.fn(),

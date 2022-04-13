@@ -2,8 +2,8 @@ import { getGeoMapStyle, getMapStyleComponents } from "../../service-utils/mapPa
 
 describe('map style construction works as expected', () => {
     const mapStyles = [
-        "VectorEsriStreets",
         "VectorEsriNavigation",
+        "VectorEsriStreets",
         "VectorEsriTopographic",
         "VectorEsriDarkGrayCanvas",
         "VectorEsriLightGrayCanvas",
