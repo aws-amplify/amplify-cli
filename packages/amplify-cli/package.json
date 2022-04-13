@@ -34,7 +34,7 @@
   },
   "amplify-cli": {
     "configuration": {
-      "minimumCompatibleCLIVersion": "6.4.0"
+      "minimumCompatibleCLIVersion": "8.0.0"
     }
   },
   "dependencies": {

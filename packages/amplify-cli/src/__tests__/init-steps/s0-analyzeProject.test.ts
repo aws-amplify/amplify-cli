@@ -3,6 +3,11 @@ import { analyzeProject } from '../../init-steps/s0-analyzeProject';
 import { constructMockPluginPlatform } from '../extensions/amplify-helpers/mock-plugin-platform';
 import { Input } from '../../domain/input';
 import { constructContext } from '../../context-manager';
+import { getCurrentCLIVersion } from '../../version-gating';
+
+jest.mock('../../version-gating');
+const getCurrentCLIVersionMock = getCurrentCLIVersion as jest.MockedFunction<typeof getCurrentCLIVersion>;
+getCurrentCLIVersionMock.mockReturnValue('8.0.0');
 
 describe('analyzeProject', () => {
   it('recognizes the default editor', async () => {

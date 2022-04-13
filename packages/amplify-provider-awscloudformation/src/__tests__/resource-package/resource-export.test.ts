@@ -282,6 +282,9 @@ describe('test resource export', () => {
         envName: 'dev',
       },
     },
+    versionInfo: {
+      currentCLIVersion: '8.0.0',
+    },
   } as unknown as $TSContext;
 
   let resourceExport: ResourceExport;
