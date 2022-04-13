@@ -93,10 +93,17 @@ export class SSMClientWrapper {
   };
 
   /**
-   * Delets all secrets in secretNames
+   * Deletes all secrets in secretNames
    */
   deleteSecrets = async (secretNames: string[]) => {
-    await this.ssmClient.deleteParameters({ Names: secretNames }).promise();
+    try {
+      await this.ssmClient.deleteParameters({ Names: secretNames }).promise();
+    } catch (err) {
+      // if the value didn't exist in the first place, consider it deleted
+      if (err.code !== 'ParameterNotFound') {
+        throw err;
+      }
+    }
   };
 }
 

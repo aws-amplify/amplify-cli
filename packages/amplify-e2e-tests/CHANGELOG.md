@@ -3,6 +3,83 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.17...amplify-e2e-tests@3.8.0) (2022-04-11)
+
+
+### Bug Fixes
+
+* build resource when adding new env ([#10058](https://github.com/aws-amplify/amplify-cli/issues/10058)) ([4a08ff5](https://github.com/aws-amplify/amplify-cli/commit/4a08ff58e86f53c1dc758b0b772765daf9169201)), closes [#10003](https://github.com/aws-amplify/amplify-cli/issues/10003) [#10037](https://github.com/aws-amplify/amplify-cli/issues/10037)
+* deploy only function when doing amplify push function ([#10035](https://github.com/aws-amplify/amplify-cli/issues/10035)) ([93eddc5](https://github.com/aws-amplify/amplify-cli/commit/93eddc5915c61461f8ee99819fae9d9b738acfa7))
+
+
+### Features
+
+* **amplify-category-geo:** add geo category workflows for maps and search ([1663c8d](https://github.com/aws-amplify/amplify-cli/commit/1663c8d57699b28e0e7cc16b7ef9f3085a0e38b6)), closes [#7566](https://github.com/aws-amplify/amplify-cli/issues/7566) [#7858](https://github.com/aws-amplify/amplify-cli/issues/7858) [#7891](https://github.com/aws-amplify/amplify-cli/issues/7891) [#8031](https://github.com/aws-amplify/amplify-cli/issues/8031) [#8122](https://github.com/aws-amplify/amplify-cli/issues/8122) [#8155](https://github.com/aws-amplify/amplify-cli/issues/8155) [#8182](https://github.com/aws-amplify/amplify-cli/issues/8182) [#8237](https://github.com/aws-amplify/amplify-cli/issues/8237) [#8890](https://github.com/aws-amplify/amplify-cli/issues/8890) [#8822](https://github.com/aws-amplify/amplify-cli/issues/8822) [#9281](https://github.com/aws-amplify/amplify-cli/issues/9281) [#9399](https://github.com/aws-amplify/amplify-cli/issues/9399) [#9453](https://github.com/aws-amplify/amplify-cli/issues/9453) [#9594](https://github.com/aws-amplify/amplify-cli/issues/9594) [#10038](https://github.com/aws-amplify/amplify-cli/issues/10038)
+
+
+
+
+
+## [3.7.17](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.16...amplify-e2e-tests@3.7.17) (2022-04-07)
+
+
+### Bug Fixes
+
+* **graphql:** avoid duplicate function when overriding resolvers ([#9980](https://github.com/aws-amplify/amplify-cli/issues/9980)) ([94398f8](https://github.com/aws-amplify/amplify-cli/commit/94398f88eca979a2e0806954e12272e126966a51))
+
+
+
+
+
+## [3.7.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.15...amplify-e2e-tests@3.7.16) (2022-03-23)
+
+
+### Bug Fixes
+
+* build resource when adding new env ([#10003](https://github.com/aws-amplify/amplify-cli/issues/10003)) ([f53596d](https://github.com/aws-amplify/amplify-cli/commit/f53596d3346a015708610c3af686d887ac978df7))
+* **test:** check aws-exports on sandbox pull ([#9959](https://github.com/aws-amplify/amplify-cli/issues/9959)) ([aaa3450](https://github.com/aws-amplify/amplify-cli/commit/aaa34500c8aa9c7418562e88aaf4e165dda73fe7))
+
+
+### Reverts
+
+* Revert "fix: build resource when adding new env (#10003)" (#10037) ([37253b2](https://github.com/aws-amplify/amplify-cli/commit/37253b2de60a98540dd11a2ebe37500166ea7b00)), closes [#10003](https://github.com/aws-amplify/amplify-cli/issues/10003) [#10037](https://github.com/aws-amplify/amplify-cli/issues/10037)
+
+
+
+
+
+## [3.7.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.14...amplify-e2e-tests@3.7.15) (2022-03-17)
+
+
+### Bug Fixes
+
+* allow init with auth role name overrides (ref [#9643](https://github.com/aws-amplify/amplify-cli/issues/9643)) ([#9688](https://github.com/aws-amplify/amplify-cli/issues/9688))  ([dbf9cf5](https://github.com/aws-amplify/amplify-cli/commit/dbf9cf52f19c824d868b30ff50b4c309be58ff86))
+* **amplify-category-auth:** expand [@auth](https://github.com/auth) directive to explicit set of allowed operations ([#9859](https://github.com/aws-amplify/amplify-cli/issues/9859)) ([e44ed18](https://github.com/aws-amplify/amplify-cli/commit/e44ed189b2c94230cbd5674606ffa488cb6c7bfe))
+
+
+
+
+
+## [3.7.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.13...amplify-e2e-tests@3.7.14) (2022-03-14)
+
+
+
+## 7.6.24 (2022-03-10)
+
+
+### Bug Fixes
+
+* build resource when adding new env ([#9847](https://github.com/aws-amplify/amplify-cli/issues/9847)) ([7264e27](https://github.com/aws-amplify/amplify-cli/commit/7264e275306500f9b0e203dcaab3432db06d3cd4))
+
+
+### Reverts
+
+* Revert "fix: build resource when adding new env (#9847)" (#9957) ([3df3af0](https://github.com/aws-amplify/amplify-cli/commit/3df3af0729a05b60d805dc5311d1626d643d06a5)), closes [#9847](https://github.com/aws-amplify/amplify-cli/issues/9847) [#9957](https://github.com/aws-amplify/amplify-cli/issues/9957)
+
+
+
+
+
 ## [3.7.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.7.12...amplify-e2e-tests@3.7.13) (2022-03-07)
 
 

@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@2.0.0...@aws-amplify/amplify-category-api@2.0.1) (2022-04-11)
+
+
+### Bug Fixes
+
+* api sets auth dependency correctly in meta files ([#10072](https://github.com/aws-amplify/amplify-cli/issues/10072)) ([42edc57](https://github.com/aws-amplify/amplify-cli/commit/42edc572ab21064da16ede94d16884fda5a9a54f))
+
+
+
+
+
+# [2.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.2.17...@aws-amplify/amplify-category-api@2.0.0) (2022-04-07)
+
+
+### Bug Fixes
+
+* **container-api:** upgrade flask version for the python api ([#10077](https://github.com/aws-amplify/amplify-cli/issues/10077)) ([64ba2f1](https://github.com/aws-amplify/amplify-cli/commit/64ba2f1b0231ba3d237bfdbd2d36db303bedb9d3))
+* use prompter and handle deletions ([#10122](https://github.com/aws-amplify/amplify-cli/issues/10122)) ([5c0e290](https://github.com/aws-amplify/amplify-cli/commit/5c0e2904e5ac65824642281e732aae4f02904fd0))
+
+
+### BREAKING CHANGES
+
+* package name update requires version bump in order to keep in sync with lerna.
+
+
+
+
+
+## [1.2.17](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.2.16...@aws-amplify/amplify-category-api@1.2.17) (2022-03-23)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+
+
+
+
+## [1.2.16](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.2.15...@aws-amplify/amplify-category-api@1.2.16) (2022-03-17)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+
+
+
+
+## [1.2.15](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.2.14...@aws-amplify/amplify-category-api@1.2.15) (2022-03-14)
+
+
+### Bug Fixes
+
+* allow api updates without migration ([#9864](https://github.com/aws-amplify/amplify-cli/issues/9864)) ([389f551](https://github.com/aws-amplify/amplify-cli/commit/389f551ea800afc9563b6e546f3ea0073bc13c68))
+* **amplify-category-api:** remove stack trace from printout for api ([#9877](https://github.com/aws-amplify/amplify-cli/issues/9877)) ([55be9c3](https://github.com/aws-amplify/amplify-cli/commit/55be9c3bac002fb1cc2cc4c1eae3df1b6972c4cb))
+* split policies for both legacy and migrated REST APIs ([#9572](https://github.com/aws-amplify/amplify-cli/issues/9572)) ([436d53f](https://github.com/aws-amplify/amplify-cli/commit/436d53f348954dab02364d1bed528c3b4121ede3))
+
+
+
+
+
 ## [1.2.14](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.2.13...@aws-amplify/amplify-category-api@1.2.14) (2022-03-07)
 
 

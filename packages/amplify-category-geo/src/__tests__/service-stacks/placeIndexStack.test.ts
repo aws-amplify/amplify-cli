@@ -15,6 +15,8 @@ describe('cdk stack creation for place index service', () => {
           locationServiceRegion: 'eu-central-1',
         },
       },
+      groupPermissions: ['adminGroup'],
+      authResourceName: 'mockAuth'
     };
     const mapStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', stackProps);
     expect(mapStack.toCloudFormation()).toMatchSnapshot();
@@ -28,6 +30,8 @@ describe('cdk stack creation for place index service', () => {
           locationServiceRegion: 'eu-central-1',
         },
       },
+      groupPermissions: ['adminGroup'],
+      authResourceName: 'mockAuth'
     };
     const mapStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', stackProps);
     expect(mapStack.toCloudFormation()).toMatchSnapshot();

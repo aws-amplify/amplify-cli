@@ -3,6 +3,73 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.8...@aws-amplify/amplify-category-auth@2.7.9) (2022-04-11)
+
+
+### Bug Fixes
+
+* build resource when adding new env ([#10058](https://github.com/aws-amplify/amplify-cli/issues/10058)) ([4a08ff5](https://github.com/aws-amplify/amplify-cli/commit/4a08ff58e86f53c1dc758b0b772765daf9169201)), closes [#10003](https://github.com/aws-amplify/amplify-cli/issues/10003) [#10037](https://github.com/aws-amplify/amplify-cli/issues/10037)
+
+
+
+
+
+## [2.7.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.7...@aws-amplify/amplify-category-auth@2.7.8) (2022-04-07)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
+## [2.7.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.6...@aws-amplify/amplify-category-auth@2.7.7) (2022-03-23)
+
+
+### Bug Fixes
+
+* build resource when adding new env ([#10003](https://github.com/aws-amplify/amplify-cli/issues/10003)) ([f53596d](https://github.com/aws-amplify/amplify-cli/commit/f53596d3346a015708610c3af686d887ac978df7))
+
+
+### Reverts
+
+* Revert "fix: build resource when adding new env (#10003)" (#10037) ([37253b2](https://github.com/aws-amplify/amplify-cli/commit/37253b2de60a98540dd11a2ebe37500166ea7b00)), closes [#10003](https://github.com/aws-amplify/amplify-cli/issues/10003) [#10037](https://github.com/aws-amplify/amplify-cli/issues/10037)
+
+
+
+
+
+## [2.7.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.5...@aws-amplify/amplify-category-auth@2.7.6) (2022-03-17)
+
+
+### Bug Fixes
+
+* error message when auth is already imported ([#9865](https://github.com/aws-amplify/amplify-cli/issues/9865)) ([15f5e55](https://github.com/aws-amplify/amplify-cli/commit/15f5e55e179c20f7099b9cce51dbfd1d8cb09bc4))
+
+
+
+
+
+## [2.7.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.4...@aws-amplify/amplify-category-auth@2.7.5) (2022-03-14)
+
+
+
+## 7.6.24 (2022-03-10)
+
+
+### Bug Fixes
+
+* build resource when adding new env ([#9847](https://github.com/aws-amplify/amplify-cli/issues/9847)) ([7264e27](https://github.com/aws-amplify/amplify-cli/commit/7264e275306500f9b0e203dcaab3432db06d3cd4))
+* fixes preSignup trigger naming ([#9901](https://github.com/aws-amplify/amplify-cli/issues/9901)) ([9f3aa23](https://github.com/aws-amplify/amplify-cli/commit/9f3aa2368a311398b6d3b934360fce6adb6738f2))
+
+
+### Reverts
+
+* Revert "fix: build resource when adding new env (#9847)" (#9957) ([3df3af0](https://github.com/aws-amplify/amplify-cli/commit/3df3af0729a05b60d805dc5311d1626d643d06a5)), closes [#9847](https://github.com/aws-amplify/amplify-cli/issues/9847) [#9957](https://github.com/aws-amplify/amplify-cli/issues/9957)
+
+
+
+
+
 ## [2.7.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.3...@aws-amplify/amplify-category-auth@2.7.4) (2022-03-07)
 
 

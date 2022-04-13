@@ -1,9 +1,9 @@
 import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode, InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { ModelResourceIDs, toPascalCase } from 'graphql-transformer-common';
-import { ModelDirectiveConfiguration } from '../graphql-model-transformer';
 import { InputFieldWrapper, InputObjectDefinitionWrapper, ObjectDefinitionWrapper } from '@aws-amplify/graphql-transformer-core';
 import { makeConditionFilterInput } from './common';
+import { ModelDirectiveConfiguration } from '../directive';
 
 /**
  * Generate input used for update mutation
@@ -21,7 +21,7 @@ export const makeUpdateInputField = (
   // sync related things
   const objectWrapped = new ObjectDefinitionWrapper(obj);
   const typeName = objectWrapped.name;
-  const name = toPascalCase([`Update`, typeName, 'Input']);
+  const name = toPascalCase(['Update', typeName, 'Input']);
   const hasIdField = objectWrapped.hasField('id');
   const fieldsToRemove = objectWrapped
     .fields!.filter(field => {
@@ -30,9 +30,7 @@ export const makeUpdateInputField = (
       }
       return false;
     })
-    .map(field => {
-      return field.name;
-    });
+    .map(field => field.name);
 
   const objectTypeDefinition: ObjectTypeDefinitionNode = {
     ...obj,
@@ -55,14 +53,14 @@ export const makeUpdateInputField = (
   }
 
   // Make createdAt and updatedAt field Optionals if present
-  for (let timeStampFieldName of Object.values(modelDirectiveConfig?.timestamps || {})) {
+  Object.values(modelDirectiveConfig?.timestamps || {}).forEach(timeStampFieldName => {
     if (input.hasField(timeStampFieldName!)) {
       const timestampField = input.getField(timeStampFieldName!);
       if (['String', 'AWSDateTime'].includes(timestampField.getTypeName())) {
         timestampField.makeNullable();
       }
     }
-  }
+  });
 
   if (isSyncEnabled) {
     input.addField(InputFieldWrapper.create('_version', 'Int', true));
@@ -114,9 +112,7 @@ export const makeCreateInputField = (
       }
       return false;
     })
-    .map(field => {
-      return field.name;
-    });
+    .map(field => field.name);
 
   const objectTypeDefinition: ObjectTypeDefinitionNode = {
     ...obj,
@@ -135,14 +131,14 @@ export const makeCreateInputField = (
     }
   }
   // Make createdAt and updatedAt field Optionals if present
-  for (let timeStampFieldName of Object.values(modelDirectiveConfig?.timestamps || {})) {
+  Object.values(modelDirectiveConfig?.timestamps || {}).forEach(timeStampFieldName => {
     if (input.hasField(timeStampFieldName!)) {
       const timestampField = input.getField(timeStampFieldName!);
       if (['String', 'AWSDateTime'].includes(timestampField.getTypeName())) {
         timestampField.makeNullable();
       }
     }
-  }
+  });
 
   if (isSyncEnabled) {
     input.addField(InputFieldWrapper.create('_version', 'Int', true));
@@ -151,6 +147,9 @@ export const makeCreateInputField = (
   return input.serialize();
 };
 
+/**
+ * makeMutationConditionInput
+ */
 export const makeMutationConditionInput = (
   ctx: TransformerTransformSchemaStepContextProvider,
   name: string,

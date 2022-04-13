@@ -1,15 +1,16 @@
 import assert from 'assert';
 import { InvalidDirectiveError, TransformerContractError } from '@aws-amplify/graphql-transformer-core';
+import { ModelOperation } from '../utils';
 
 type ACMConfig = {
   resources: string[];
-  operations: string[];
+  operations: ModelOperation[];
   name: string;
 };
 
 type SetRoleInput = {
   role: string;
-  operations: Array<string>;
+  operations: Array<ModelOperation>;
   resource?: string;
   allowRoleOverwrite?: boolean;
 };
@@ -17,11 +18,11 @@ type SetRoleInput = {
 type ValidateInput = {
   role?: string;
   resource?: string;
-  operations?: Array<string>;
+  operations?: Array<ModelOperation>;
 };
 
 type ResourceOperationInput = {
-  operations: Array<string>;
+  operations: Array<ModelOperation>;
   role?: string;
   resource?: string;
 };
@@ -36,7 +37,7 @@ type ResourceOperationInput = {
 export class AccessControlMatrix {
   private name: string;
   private roles: Array<string>;
-  private operations: Array<string>;
+  private operations: Array<ModelOperation>;
   private resources: Array<string>;
   private matrix: Array<Array<Array<boolean>>>;
 
@@ -86,7 +87,7 @@ export class AccessControlMatrix {
     return this.resources.includes(resource);
   }
 
-  public isAllowed(role: string, resource: string, operation: string): boolean {
+  public isAllowed(role: string, resource: string, operation: ModelOperation): boolean {
     this.validate({ role, resource, operations: [operation] });
     const roleIndex = this.roles.indexOf(role);
     const resourceIndex = this.resources.indexOf(resource);
@@ -109,7 +110,7 @@ export class AccessControlMatrix {
    * @param fullAccess boolean
    * @returns array of roles
    */
-  public getRolesPerOperation(operation: string, fullAccess: boolean = false): Array<string> {
+  public getRolesPerOperation(operation: ModelOperation, fullAccess: boolean = false): Array<string> {
     this.validate({ operations: [operation] });
     const operationIndex = this.operations.indexOf(operation);
     const roles = new Array<string>();
@@ -153,7 +154,7 @@ export class AccessControlMatrix {
    */
   private validate(input: ValidateInput) {
     if (input.resource && !this.resources.includes(input.resource)) {
-      throw new TransformerContractError(`Resource: ${input.resource} is not configued in the ACM`);
+      throw new TransformerContractError(`Resource: ${input.resource} is not configured in the ACM`);
     }
     if (input.role && !this.roles.includes(input.role)) {
       throw new TransformerContractError(`Role: ${input.role} does not exist in ACM.`);
@@ -172,7 +173,7 @@ export class AccessControlMatrix {
    * a denied array for every other resource is returned in the matrix
    * @param operations
    * @param resource
-   * @returns a 2d matrix containg the access for each resource
+   * @returns a 2d matrix containing the access for each resource
    */
   private getResourceOperationMatrix(input: ResourceOperationInput): Array<Array<boolean>> {
     const { operations, resource, role } = input;

@@ -1,4 +1,7 @@
 import { HydrateTags } from 'amplify-cli-core';
+import { Context } from '../domain/context';
+import { getTags } from '../extensions/amplify-helpers/get-tags';
+
 describe('getTags', () => {
   const mockConfig = {
     projectConfig: {
@@ -9,6 +12,9 @@ describe('getTags', () => {
     },
   };
   jest.setMock('amplify-cli-core', {
+    pathManager: {
+      findProjectRoot: jest.fn().mockResolvedValue('mockProjectRoot'),
+    },
     stateManager: {
       isTagFilePresent: jest.fn().mockReturnValue(false),
       localEnvInfoExists: jest.fn().mockReturnValue(false),
@@ -19,12 +25,11 @@ describe('getTags', () => {
     getProjectDetails: jest.fn().mockReturnValue(mockConfig),
   });
 
-  const { getTags } = require('../extensions/amplify-helpers/get-tags');
   const mockContext = {
     exeInfo: {
       ...mockConfig,
     },
-  };
+  } as unknown as Context;
 
   it('getTags exists', () => {
     expect(getTags).toBeDefined();

@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.7.10...@aws-amplify/graphql-relational-transformer@0.7.11) (2022-04-07)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+
+
+
+
+## [0.7.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.7.9...@aws-amplify/graphql-relational-transformer@0.7.10) (2022-03-23)
+
+
+### Bug Fixes
+
+* **graphql:** avoid static datastructures in gql transform ([#10006](https://github.com/aws-amplify/amplify-cli/issues/10006)) ([cd73fdd](https://github.com/aws-amplify/amplify-cli/commit/cd73fdde69f1545683e81684c4f9267145b845c6))
+* **graphql:** include sort key(s) in many to many directive relation model ([#9580](https://github.com/aws-amplify/amplify-cli/issues/9580)) ([93ebf35](https://github.com/aws-amplify/amplify-cli/commit/93ebf3566992bff95f035f70fe27b4b1871e1d3d))
+
+
+
+
+
+## [0.7.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.7.8...@aws-amplify/graphql-relational-transformer@0.7.9) (2022-03-17)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** expand [@auth](https://github.com/auth) directive to explicit set of allowed operations ([#9859](https://github.com/aws-amplify/amplify-cli/issues/9859)) ([e44ed18](https://github.com/aws-amplify/amplify-cli/commit/e44ed189b2c94230cbd5674606ffa488cb6c7bfe))
+
+
+
+
+
 ## [0.7.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.7.7...@aws-amplify/graphql-relational-transformer@0.7.8) (2022-03-07)
 
 **Note:** Version bump only for package @aws-amplify/graphql-relational-transformer

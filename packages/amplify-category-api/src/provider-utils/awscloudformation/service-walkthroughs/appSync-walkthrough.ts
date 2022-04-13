@@ -13,7 +13,7 @@ import {
   getGraphQLTransformerAuthDocLink,
 } from 'amplify-cli-core';
 import { UpdateApiRequest } from 'amplify-headless-interface';
-import { printer } from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
 import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import { collectDirectivesByTypeNames, readProjectConfiguration } from 'graphql-transformer-core';
@@ -817,7 +817,7 @@ async function askUserPoolQuestions(context: $TSContext) {
 export async function askApiKeyQuestions(authSettings: $TSObject = undefined) {
   let defaultValues = {
     apiKeyExpirationDays: 7,
-    description: undefined,
+    description: '',
   };
   Object.assign(defaultValues, authSettings?.apiKeyConfig);
 
@@ -845,9 +845,13 @@ export async function askApiKeyQuestions(authSettings: $TSObject = undefined) {
     },
   ];
 
-  const apiKeyConfig = await inquirer.prompt(apiKeyQuestions);
+  const apiKeyConfig: $TSObject = {};
+  for (const apiKeyQuestion of apiKeyQuestions) {
+    apiKeyConfig[apiKeyQuestion.name] = await prompter.input(apiKeyQuestion.message, { initial: apiKeyQuestion.default as string })
+  }
   const apiKeyExpirationDaysNum = Number(apiKeyConfig.apiKeyExpirationDays);
   apiKeyConfig.apiKeyExpirationDate = Expiration.after(Duration.days(apiKeyExpirationDaysNum)).date;
+  apiKeyConfig.apiKeyExpirationDays = apiKeyExpirationDaysNum;
 
   return {
     authenticationType: 'API_KEY',

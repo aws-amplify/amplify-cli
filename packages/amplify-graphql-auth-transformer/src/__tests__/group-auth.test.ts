@@ -218,6 +218,7 @@ test('dynamic group auth generates authorized fields list correctly', () => {
         #set( $groupClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
         #set( $groupAllowedFields0 = [\\"id\\",\\"description\\"] )
         #set( $groupNullAllowedFields0 = [] )
+        #set( $isAuthorizedOnAllFields0 = false )
         #if( $util.isString($groupClaim0) )
           #if( $util.isList($util.parseJson($groupClaim0)) )
             #set( $groupClaim0 = $util.parseJson($groupClaim0) )
@@ -227,7 +228,10 @@ test('dynamic group auth generates authorized fields list correctly', () => {
         #end
         #foreach( $userGroup in $groupClaim0 )
           #if( $groupEntity0.contains($userGroup) )
-            #if( !$groupAllowedFields0.isEmpty() || !$groupNullAllowedFields0.isEmpty() )
+            #if( $isAuthorizedOnAllFields0 )
+              #set( $isAuthorized = true )
+              #break
+            #else
               $util.qr($allowedFields.addAll($groupAllowedFields0))
               $util.qr($nullAllowedFields.addAll($groupNullAllowedFields0))
             #end

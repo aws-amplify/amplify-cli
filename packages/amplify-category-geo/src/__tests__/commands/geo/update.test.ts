@@ -54,6 +54,17 @@ describe('update command tests', () => {
     expect(mockUpdateResource).toHaveBeenCalledWith(mockContext, service);
   });
 
+  it('update resource workflow is invoked for geofence collection service', async () => {
+    const service = ServiceName.GeofenceCollection;
+    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => {
+      return { service: service, providerName: provider };
+    });
+
+    await run(mockContext);
+
+    expect(mockUpdateResource).toHaveBeenCalledWith(mockContext, service);
+  });
+
   it('update resource workflow is invoked for Map service in unsupported region', async () => {
     mockAmplifyMeta.providers[provider] = {
       Region: 'eu-west-2',
@@ -76,6 +87,21 @@ describe('update command tests', () => {
     stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
 
     const service = ServiceName.PlaceIndex;
+    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => {
+      return { service: service, providerName: provider };
+    });
+
+    await run(mockContext);
+    expect(mockUpdateResource).toHaveBeenCalledWith(mockContext, service);
+  });
+
+  it('update resource workflow is invoked for Geofence Collection service in unsupported region', async () => {
+    mockAmplifyMeta.providers[provider] = {
+      Region: 'eu-west-2',
+    };
+    stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
+
+    const service = ServiceName.GeofenceCollection;
     mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => {
       return { service: service, providerName: provider };
     });

@@ -1,8 +1,7 @@
 import { $TSContext, $TSObject, exitOnNextTick, ResourceCredentialsNotFoundError, ResourceDoesNotExistError } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
 import chalk from 'chalk';
 import { DataApiParams } from 'graphql-relational-schema-transformer';
-import inquirer from 'inquirer';
 import ora from 'ora';
 
 const spinner = ora('');
@@ -237,16 +236,13 @@ async function selectDatabase(context: $TSContext, inputs, clusterArn, secretArn
  * @param {*} choicesList
  */
 async function promptWalkthroughQuestion(inputs, questionNumber, choicesList) {
-  const question = [
-    {
+  const question = {
       type: inputs[questionNumber].type,
       name: inputs[questionNumber].key,
       message: inputs[questionNumber].question,
       choices: choicesList,
-    },
-  ];
-
-  const answer = await inquirer.prompt(question);
+    };
+  const answer = await prompter.pick(question.message, choicesList)
   return answer[inputs[questionNumber].key];
 }
 
