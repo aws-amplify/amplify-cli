@@ -1,21 +1,29 @@
 import * as fs from 'fs-extra';
 import { join } from 'path';
 import sequential from 'promise-sequential';
-import { CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager, $TSContext } from 'amplify-cli-core';
+import {
+  CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager, $TSContext,
+} from 'amplify-cli-core';
+import _ from 'lodash';
+import { printer } from 'amplify-prompts';
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
 import { writeReadMeFile } from '../extensions/amplify-helpers/docs-manager';
 import { initializeEnv } from '../initialize-env';
-import _ from 'lodash';
-import { printer } from 'amplify-prompts';
 
+/**
+ *
+ */
 export async function onHeadlessSuccess(context: $TSContext) {
   const frontendPlugins = getFrontendPlugins(context);
   const frontendModule = require(frontendPlugins[context.exeInfo.projectConfig.frontend]);
   await frontendModule.onInitSuccessful(context);
 }
 
+/**
+ *
+ */
 export async function onSuccess(context: $TSContext) {
   const { projectPath } = context.exeInfo.localEnvInfo;
 
@@ -80,10 +88,10 @@ export async function onSuccess(context: $TSContext) {
   const appId = currentAmplifyMeta?.providers?.awscloudformation?.AmplifyAppId;
 
   if (!appId) {
-    printer.warn('You have reached your app limit:');
+    printer.warn('You have reached your Amplify App limit:');
     printer.info('For more information on Amplify Service Quotas, see:');
     printer.info('https://docs.aws.amazon.com/general/latest/gr/amplify.html');
-    printer.blankLine()
+    printer.blankLine();
   }
 }
 
@@ -93,6 +101,9 @@ function generateLocalRuntimeFiles(context: $TSContext) {
   generateLocalTagsFile(context);
 }
 
+/**
+ *
+ */
 export function generateLocalEnvInfoFile(context: $TSContext) {
   const { projectPath } = context.exeInfo.localEnvInfo;
 
@@ -124,6 +135,9 @@ function generateLocalTagsFile(context: $TSContext) {
   }
 }
 
+/**
+ *
+ */
 export function generateAmplifyMetaFile(context: $TSContext) {
   if (context.exeInfo.isNewEnv) {
     const { projectPath } = context.exeInfo.localEnvInfo;
