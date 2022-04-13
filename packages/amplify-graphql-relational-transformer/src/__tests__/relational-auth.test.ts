@@ -1,11 +1,16 @@
+/* eslint-disable */
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
-import { DocumentNode, ObjectTypeDefinitionNode, Kind, parse } from 'graphql';
+import {
+  DocumentNode, ObjectTypeDefinitionNode, Kind, parse,
+} from 'graphql';
 import { HasManyTransformer, BelongsToTransformer, HasOneTransformer } from '..';
-import { ResourceConstants } from 'graphql-transformer-common';
+import { featureFlags } from './test-helper';
+
+jest.mock('amplify-prompts');
 
 const iamDefaultConfig: AppSyncAuthConfiguration = {
   defaultAuthentication: {
@@ -42,6 +47,7 @@ test('per-field auth on relational field', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new HasManyTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -51,7 +57,7 @@ test('per-field auth on relational field', () => {
   );
 });
 
-test(`ModelXConnection type is getting the directives added, when a field has @hasMany but one fo the types has no queries defined`, () => {
+test('ModelXConnection type is getting the directives added, when a field has @hasMany but one fo the types has no queries defined', () => {
   const validSchema = `
   type User @model
      @auth(rules: [
@@ -92,7 +98,7 @@ test(`ModelXConnection type is getting the directives added, when a field has @h
   expectTwo(modelPostConnectionType, ['aws_iam', 'aws_cognito_user_pools']);
 });
 
-test(`ModelXConnection type is getting the directives added, when a field has @connection but one of the types has no queries defined. Many to Many`, () => {
+test('ModelXConnection type is getting the directives added, when a field has @connection but one of the types has no queries defined. Many to Many', () => {
   const schema = `
   type Post @model @auth(rules: [{ allow: owner }]) {
     id: ID!
@@ -127,18 +133,17 @@ test(`ModelXConnection type is getting the directives added, when a field has @c
   expect((modelPostEditorConnectionType as any).directives.some((dir: any) => dir.name.value === 'aws_cognito_user_pools')).toBe(true);
 });
 
-const getTransformer = (authConfig: AppSyncAuthConfiguration) => {
-  return new GraphQLTransform({
-    authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new IndexTransformer(),
-      new HasManyTransformer(),
-      new BelongsToTransformer(),
-      new AuthTransformer(),
-    ],
-  });
-};
+const getTransformer = (authConfig: AppSyncAuthConfiguration) => new GraphQLTransform({
+  authConfig,
+  transformers: [
+    new ModelTransformer(),
+    new IndexTransformer(),
+    new HasManyTransformer(),
+    new BelongsToTransformer(),
+    new AuthTransformer(),
+  ],
+  featureFlags,
+});
 
 const withAuthModes = (authConfig: AppSyncAuthConfiguration, authModes: AppSyncAuthMode[]): AppSyncAuthConfiguration => {
   const newAuthConfig = {
@@ -157,11 +162,9 @@ const withAuthModes = (authConfig: AppSyncAuthConfiguration, authModes: AppSyncA
   return newAuthConfig;
 };
 
-const getObjectType = (doc: DocumentNode, type: string): ObjectTypeDefinitionNode | undefined => {
-  return doc.definitions.find(def => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type) as
+const getObjectType = (doc: DocumentNode, type: string): ObjectTypeDefinitionNode | undefined => doc.definitions.find(def => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type) as
     | ObjectTypeDefinitionNode
     | undefined;
-};
 
 const getField = (type: any, name: string) => type.fields.find((f: any) => f.name.value === name);
 
@@ -195,7 +198,7 @@ test('auth with hasMany relation - only partition key', () => {
         description: String
         comments: [Comment] @hasMany
       }
-      
+
       type Comment
         @model
         @auth(rules: [
@@ -215,10 +218,11 @@ test('auth with hasMany relation - only partition key', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
-  
+
   const schemaDoc = parse(out.schema);
   const modelPostConnectionType = getObjectType(schemaDoc, 'ModelPostConnection');
   expect(modelPostConnectionType).toBeDefined();
@@ -237,7 +241,7 @@ test('auth with hasOne relation mismatch fields count - missing sort key must th
         courseId: ID!
         scores: StudentScore @hasOne(fields: ["id"])
       }
-      
+
       type StudentScore
         @model
         @auth(rules: [
@@ -264,6 +268,7 @@ test('auth with hasOne relation mismatch fields count - missing sort key must th
       new BelongsToTransformer(),
       new AuthTransformer(),
     ],
+    featureFlags,
   });
   let out;
   expect(() => {
@@ -284,7 +289,7 @@ test('auth with hasOne relation match fields count - single sort key do not thro
       courseId: ID!
       scores: [StudentScore] @hasMany(fields: ["id", "courseId"])
     }
-    
+
     type StudentScore
       @model
       @auth(rules: [
@@ -311,6 +316,7 @@ test('auth with hasOne relation match fields count - single sort key do not thro
       new BelongsToTransformer(),
       new AuthTransformer(),
     ],
+    featureFlags,
   });
 
   // Graphql transform should not throw an error
@@ -331,7 +337,7 @@ test('auth with hasOne relation mismatch fields count - partial missing sort key
       localId: ID!
       scores: StudentScore @hasOne(fields: ["id", "courseId"])
     }
-    
+
     type StudentScore
       @model
       @auth(rules: [
@@ -359,6 +365,7 @@ test('auth with hasOne relation mismatch fields count - partial missing sort key
       new BelongsToTransformer(),
       new AuthTransformer(),
     ],
+    featureFlags,
   });
   let out;
   expect(() => {
@@ -380,7 +387,7 @@ test('auth with hasOne relation match fields count - multiple sort keys do not t
       localId: ID!
       scores: StudentScore @hasOne(fields: ["id", "courseId", "localId"])
     }
-    
+
     type StudentScore
       @model
       @auth(rules: [
@@ -408,8 +415,10 @@ test('auth with hasOne relation match fields count - multiple sort keys do not t
       new BelongsToTransformer(),
       new AuthTransformer(),
     ],
+    featureFlags,
   });
 
   // Graphql transform should not throw an error
   const out = transformer.transform(validSchema);
 });
+/* eslint-enable */
