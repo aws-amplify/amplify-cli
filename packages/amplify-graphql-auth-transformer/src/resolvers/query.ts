@@ -276,15 +276,17 @@ const generateAuthFilter = (roles: Array<RoleDefinition>, fields: ReadonlyArray<
       if (hasMultiClaims) {
         if (entityIsList) {
           claims.forEach((claim, secIdx) => {
-            authCollectionExp.push(
-              ...[
-                generateOwnerClaimExpression(claim, secIdx),
-                iff(
-                  notEquals(ref(`role${idx}_${secIdx}`), str(NONE_VALUE)),
-                  qref(methodCall(ref('authFilter.add'), raw(`{"${role.entity}": { "${ownerCondition}": $ownerClaim${secIdx} }}`))),
-                ),
-              ],
-            );
+            if (secIdx !== claims.length - 1) {
+              authCollectionExp.push(
+                ...[
+                  generateOwnerClaimExpression(claim, secIdx),
+                  iff(
+                    notEquals(ref(`role${idx}_${secIdx}`), str(NONE_VALUE)),
+                    qref(methodCall(ref('authFilter.add'), raw(`{"${role.entity}": { "${ownerCondition}": $ownerClaim${secIdx} }}`))),
+                  ),
+                ],
+              );
+            }
           });
 
           const secIdx = claims.length;
@@ -300,16 +302,18 @@ const generateAuthFilter = (roles: Array<RoleDefinition>, fields: ReadonlyArray<
           );
         } else {
           claims.forEach((claim, secIdx) => {
-            authCollectionExp.push(
-              ...[
-                set(ref(`role${idx}_${secIdx}`), getOwnerClaim(claim)),
-                set(ref(`ownerPrefix${idx}_${secIdx}`), str(`$role${idx}_${secIdx}:`)),
-                iff(
-                  notEquals(ref(`role${idx}_${secIdx}`), str(NONE_VALUE)),
-                  qref(methodCall(ref('authFilter.add'), raw(`{"${role.entity}": { "beginsWith": $ownerPrefix${idx}_${secIdx} }}`))),
-                ),
-              ],
-            );
+            if (secIdx !== claims.length - 1) {
+              authCollectionExp.push(
+                ...[
+                  set(ref(`role${idx}_${secIdx}`), getOwnerClaim(claim)),
+                  set(ref(`ownerPrefix${idx}_${secIdx}`), str(`$role${idx}_${secIdx}:`)),
+                  iff(
+                    notEquals(ref(`role${idx}_${secIdx}`), str(NONE_VALUE)),
+                    qref(methodCall(ref('authFilter.add'), raw(`{"${role.entity}": { "beginsWith": $ownerPrefix${idx}_${secIdx} }}`))),
+                  ),
+                ],
+              );
+            }
           });
 
           const secIdx = claims.length;
