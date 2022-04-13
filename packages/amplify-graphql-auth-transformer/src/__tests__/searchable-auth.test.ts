@@ -59,14 +59,14 @@ test('auth logic is enabled on owner/static rules in es request', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
-    featureFlags: {
-      ...featureFlags,
-      ...{ getBoolean: () => false },
-    },
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   // expect response resolver to contain auth logic for owner rule
   expect(out).toBeDefined();
+  expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain(
+    '"terms":       [$util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), "___xamznone____"))],',
+  );
   expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain(
     '"terms":       [$util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), "___xamznone____"))],',
   );

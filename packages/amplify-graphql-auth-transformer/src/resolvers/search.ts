@@ -22,7 +22,12 @@ import {
 } from 'graphql-mapping-template';
 import { NONE_VALUE } from 'graphql-transformer-common';
 import {
-  getIdentityClaimExp, getOwnerClaim, emptyPayload, setHasAuthExpression, iamCheck, iamAdminRoleCheckExpression,
+  getIdentityClaimExp,
+  getOwnerClaim,
+  emptyPayload,
+  setHasAuthExpression,
+  iamCheck,
+  iamAdminRoleCheckExpression,
 } from './helpers';
 import {
   COGNITO_AUTH_TYPE,
@@ -165,20 +170,88 @@ const generateAuthFilter = (
     const entityIsList = fieldIsList(fields, role.entity);
     const roleKey = entityIsList ? role.entity : `${role.entity}.keyword`;
     if (role.strategy === 'owner') {
-      filterExpression.push(
-        set(
-          ref(`owner${idx}`),
-          obj({
-            terms_set: obj({
-              [roleKey]: obj({
-                terms: list([getOwnerClaim(role.claim!)]),
-                minimum_should_match_script: obj({ source: str('1') }),
+      const claims = role.claim!.split(':');
+      const hasMultiClaims = claims.length > 1 && role.claim !== 'cognito:username';
+
+      if (hasMultiClaims) {
+        const lastIndex = claims.length - 1;
+        claims.forEach((claim, secIdx) => {
+          if (secIdx === 0) {
+            filterExpression.push(
+              set(
+                ref(`ownerClaim${idx}_${secIdx}`),
+                methodCall(ref('ctx.identity.claims.get'), str(claim)),
+              ),
+            );
+            filterExpression.push(
+              set(
+                ref(`owner${idx}_${secIdx}`),
+                obj({
+                  prefix_set: obj({
+                    [roleKey]: obj({
+                      prefix: list([str(`$ownerClaim${idx}_${secIdx}:`)]),
+                      minimum_should_match_script: obj({ source: str('1') }),
+                    }),
+                  }),
+                }),
+              ),
+            );
+          } else if (secIdx !== lastIndex) {
+            filterExpression.push(
+              set(
+                ref(`ownerClaim${idx}_${secIdx}`),
+                methodCall(ref('ctx.identity.claims.get'), str(claim)),
+              ),
+            );
+            filterExpression.push(
+              set(
+                ref(`owner${idx}_${secIdx}`),
+                obj({
+                  wildcard_set: obj({
+                    [roleKey]: obj({
+                      wildcard: list([str(`*:$ownerClaim${idx}_${secIdx}:*`)]),
+                      minimum_should_match_script: obj({ source: str('1') }),
+                    }),
+                  }),
+                }),
+              ),
+            );
+          } else {
+            filterExpression.push(
+              set(
+                ref(`owner${idx}_${secIdx}`),
+                obj({
+                  terms_set: obj({
+                    [roleKey]: obj({
+                      terms: list([getOwnerClaim(claim)]),
+                      minimum_should_match_script: obj({ source: str('1') }),
+                    }),
+                  }),
+                }),
+              ),
+            );
+          }
+
+          authFilter.push(ref(`owner${idx}_${secIdx}`));
+        });
+      } else {
+        filterExpression.push(
+          set(
+            ref(`owner${idx}`),
+            obj({
+              terms_set: obj({
+                [roleKey]: obj({
+                  terms: list([getOwnerClaim(role.claim!)]),
+                  minimum_should_match_script: obj({ source: str('1') }),
+                }),
               }),
             }),
-          }),
-        ),
-      );
-      authFilter.push(ref(`owner${idx}`));
+          ),
+        );
+
+        authFilter.push(ref(`owner${idx}`));
+      }
+
       if (role.allowedFields) {
         role.allowedFields.forEach(field => {
           if (!allowedAggFields.includes(field)) {
