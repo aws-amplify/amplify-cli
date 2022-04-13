@@ -86,6 +86,7 @@ describe('owner based @auth', () => {
     const transformer = new GraphQLTransform({
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
+      featureFlags,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
@@ -514,6 +515,40 @@ describe('owner based @auth', () => {
       expect(out.resolvers['Query.listPosts.auth.1.req.vtl']).toMatchSnapshot();
     });
 
+    test('owner where field is ":" delimited string', () => {
+      const authConfig: AppSyncAuthConfiguration = {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [],
+      };
+      const validSchema = `
+        type Post @model @auth(rules: [{allow: owner, identityClaim: "sub:username" }]) {
+          id: ID!
+          title: String!
+          createdAt: String
+          updatedAt: String
+        }`;
+      const transformer = new GraphQLTransform({
+        authConfig,
+        transformers: [new ModelTransformer(), new AuthTransformer()],
+        featureFlags: {
+          ...featureFlags,
+          ...{ getBoolean: () => false },
+        },
+      });
+      const out = transformer.transform(validSchema);
+      expect(out).toBeDefined();
+      expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
+        'AMAZON_COGNITO_USER_POOLS',
+      );
+      expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toMatchSnapshot();
+      expect(out.resolvers['Mutation.updatePost.auth.1.req.vtl']).toMatchSnapshot();
+      expect(out.resolvers['Mutation.deletePost.auth.1.req.vtl']).toMatchSnapshot();
+      expect(out.resolvers['Query.getPost.auth.1.req.vtl']).toMatchSnapshot();
+      expect(out.resolvers['Query.listPosts.auth.1.req.vtl']).toMatchSnapshot();
+    });
+
     test('owner field with subscriptions', () => {
       const authConfig: AppSyncAuthConfiguration = {
         defaultAuthentication: {
@@ -547,13 +582,13 @@ describe('owner based @auth', () => {
 
       // expect logic in the resolvers to check for postOwner args as an allowed owner
       expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain(
-        '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.postOwner, null) )',
+        '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.postOwner.split(":")[0], null) )',
       );
       expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain(
-        '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.postOwner, null) )',
+        '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.postOwner.split(":")[0], null) )',
       );
       expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain(
-        '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.postOwner, null) )',
+        '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.postOwner.split(":")[0], null) )',
       );
     });
 
@@ -595,24 +630,24 @@ describe('owner based @auth', () => {
 
       // expect logic in the resolvers to check for owner args as an allowedOwner
       expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain(
-        '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.owner, null) )',
+        '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.owner.split(":")[0], null) )',
       );
       expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain(
-        '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.owner, null) )',
+        '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.owner.split(":")[0], null) )',
       );
       expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain(
-        '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.owner, null) )',
+        '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.owner.split(":")[0], null) )',
       );
 
       // expect logic in the resolvers to check for editor args as an allowedOwner
       expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain(
-        '#set( $ownerEntity1 = $util.defaultIfNull($ctx.args.editor, null) )',
+        '#set( $ownerEntity1 = $util.defaultIfNull($ctx.args.editor.split(":")[0], null) )',
       );
       expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain(
-        '#set( $ownerEntity1 = $util.defaultIfNull($ctx.args.editor, null) )',
+        '#set( $ownerEntity1 = $util.defaultIfNull($ctx.args.editor.split(":")[0], null) )',
       );
       expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain(
-        '#set( $ownerEntity1 = $util.defaultIfNull($ctx.args.editor, null) )',
+        '#set( $ownerEntity1 = $util.defaultIfNull($ctx.args.editor.split(":")[0], null) )',
       );
     });
 
