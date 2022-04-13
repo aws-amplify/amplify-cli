@@ -63,7 +63,7 @@ export const mapAdvancedWalkthrough = async (
     context: $TSContext,
     parameters: Partial<MapParameters>
 ): Promise<Partial<MapParameters>> => {
-    const advancedSettingOptions: string[] = ['Map style & Map data provider (default: Streets provided by Esri)'];
+    const advancedSettingOptions: string[] = ['Map style & Map data provider (default: Navigation provided by Esri)'];
     printer.info('Available advanced settings:');
     formatter.list(advancedSettingOptions);
     printer.blankLine();
