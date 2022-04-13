@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { JSONUtilities } from 'amplify-cli-core';
 import {
   addApi,
@@ -20,6 +21,7 @@ import {
   updateApiSchema,
   updateAPIWithResolutionStrategyWithModels,
   setCustomRolesConfig,
+  addFeatureFlag,
 } from 'amplify-e2e-core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { existsSync, readFileSync } from 'fs';
@@ -27,6 +29,7 @@ import gql from 'graphql-tag';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import _ from 'lodash';
 import * as path from 'path';
+
 const providerName = 'awscloudformation';
 
 // to deal with bug in cognito-identity-js
@@ -49,14 +52,14 @@ describe('amplify add api (GraphQL)', () => {
   });
 
   it('init a project with conflict detection enabled and a schema with @key, test update mutation', async () => {
-    const name = `keyconflictdetection`;
+    const name = 'keyconflictdetection';
     await initJSProjectWithProfile(projRoot, { name });
     await addApiWithBlankSchemaAndConflictDetection(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, name, 'key-conflict-detection.graphql');
     await amplifyPush(projRoot);
 
     const meta = getProjectMeta(projRoot);
-    const region = meta['providers'][providerName]['Region'] as string;
+    const region = meta.providers[providerName].Region as string;
     const { output } = meta.api[name];
     const url = output.GraphQLAPIEndpointOutput as string;
     const apiKey = output.GraphQLAPIKeyOutput as string;
@@ -134,7 +137,7 @@ describe('amplify add api (GraphQL)', () => {
   });
 
   it('init a project with conflict detection enabled and toggle disable', async () => {
-    const name = `conflictdetection`;
+    const name = 'conflictdetection';
     await initJSProjectWithProfile(projRoot, { name });
     await addApiWithBlankSchemaAndConflictDetection(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, name, 'simple_model.graphql');
@@ -171,7 +174,7 @@ describe('amplify add api (GraphQL)', () => {
   });
 
   it('init a project with conflict detection enabled and admin UI enabled to generate datastore models in the cloud', async () => {
-    const name = `dsadminui`;
+    const name = 'dsadminui';
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false, name });
 
     let meta = getProjectMeta(projRoot);
@@ -181,7 +184,7 @@ describe('amplify add api (GraphQL)', () => {
     expect(appId).toBeDefined();
 
     const localEnvInfo = getLocalEnvInfo(projRoot);
-    const envName = localEnvInfo.envName;
+    const { envName } = localEnvInfo;
 
     // setupAdminUI
     await enableAdminUI(appId, envName, region);
@@ -206,7 +209,7 @@ describe('amplify add api (GraphQL)', () => {
   });
 
   it('init a sync enabled project and update conflict resolution strategy', async () => {
-    const name = `syncenabled`;
+    const name = 'syncenabled';
     await initJSProjectWithProfile(projRoot, { name });
     await addApiWithBlankSchemaAndConflictDetection(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, name, 'simple_model.graphql');
@@ -269,7 +272,7 @@ describe('amplify add api (GraphQL)', () => {
 
     // amplify update api to enable datastore
     await apiEnableDataStore(projRoot, {});
-    let transformConfigWithDS = getTransformConfig(projRoot, name);
+    const transformConfigWithDS = getTransformConfig(projRoot, name);
     expect(transformConfigWithDS).toBeDefined();
     expect(transformConfigWithDS.ResolverConfig).toBeDefined();
     expect(transformConfigWithDS.ResolverConfig.project).toBeDefined();
@@ -277,9 +280,39 @@ describe('amplify add api (GraphQL)', () => {
     expect(transformConfigWithDS.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
   });
 
-  it('init a project and add custom iam roles - local test with gql v2', async () => {
+  it.only('init a project and add custom iam roles - local test with gql v2', async () => {
     const name = 'customadminroles';
     await initJSProjectWithProfile(projRoot, { name });
+    await addApi(projRoot, { transformerVersion: 2, IAM: {}, 'Amazon Cognito User Pool': {} });
+    updateApiSchema(projRoot, name, 'cognito_simple_model.graphql');
+    await apiGqlCompile(projRoot);
+    const createResolver = path.join(
+      projRoot,
+      'amplify',
+      'backend',
+      'api',
+      name,
+      'build',
+      'resolvers',
+      'Mutation.createTodo.auth.1.req.vtl',
+    );
+    const beforeAdminConfig = readFileSync(createResolver).toString();
+    expect(beforeAdminConfig).toMatchSnapshot();
+
+    const customRolesConfig = {
+      adminRoleNames: ['myAdminRoleName'],
+    };
+    setCustomRolesConfig(projRoot, name, customRolesConfig);
+    await apiGqlCompile(projRoot);
+    const afterAdminConfig = readFileSync(createResolver).toString();
+    expect(afterAdminConfig).toMatchSnapshot();
+    expect(beforeAdminConfig).not.toEqual(afterAdminConfig);
+  });
+
+  it.only('init a project and add custom iam roles - local test with gql v2 w/ identity claim feature flag disabled', async () => {
+    const name = 'customadminroles';
+    await initJSProjectWithProfile(projRoot, { name });
+    addFeatureFlag(projRoot, 'graphqlTransformer', 'userSubUsernameForDefaultIdentityClaim', false);
     await addApi(projRoot, { transformerVersion: 2, IAM: {}, 'Amazon Cognito User Pool': {} });
     updateApiSchema(projRoot, name, 'cognito_simple_model.graphql');
     await apiGqlCompile(projRoot);
@@ -336,3 +369,5 @@ describe('amplify add api (GraphQL)', () => {
   //   }
   // });
 });
+
+/* eslint-enable */
