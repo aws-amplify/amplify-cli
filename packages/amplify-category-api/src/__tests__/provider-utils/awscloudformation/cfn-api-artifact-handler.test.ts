@@ -39,7 +39,7 @@ jest.mock('../../../provider-utils/awscloudformation/utils/amplify-meta-utils', 
 
 jest.mock('amplify-cli-core', () => ({
   pathManager: {
-    getBackendDirPath: jest.fn().mockReturnValue('/mockProject/amplify/mockbackendDirPath'),
+    getBackendDirPath: jest.fn().mockReturnValue('/mockProject/amplify/mockBackendDirPath'),
     findProjectRoot: jest.fn().mockReturnValue('/mockProject'),
   },
   stateManager: {
@@ -59,7 +59,7 @@ jest.mock('amplify-cli-core', () => ({
   isResourceNameUnique: jest.fn(),
 }));
 
-const backendDirPathStub = '/mockProject/amplify/mockbackendDirPath';
+const backendDirPathStub = '/mockProject/amplify/mockBackendDirPath';
 const testApiName = 'testApiName';
 
 const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
@@ -143,7 +143,7 @@ describe('create artifacts', () => {
       serviceConfiguration: {
         apiName: 'testApiName',
         defaultAuthType: { expirationTime: 10, keyDescription: 'api key description', mode: 'API_KEY' },
-        gqlSchemaPath: 'amplify/mockbackendDirPath/api/testApiName/schema.graphql',
+        gqlSchemaPath: 'amplify/mockBackendDirPath/api/testApiName/schema.graphql',
         serviceName: 'AppSync',
       },
       version: 1,
@@ -154,7 +154,7 @@ describe('create artifacts', () => {
     await cfnApiArtifactHandler.createArtifacts(addRequestStub);
     expect(fsMock.writeFileSync.mock.calls.length).toBe(1);
     expect(fsMock.writeFileSync.mock.calls[0]).toEqual([
-      path.join('amplify', 'mockbackendDirPath', category, addRequestStub.serviceConfiguration.apiName, 'schema.graphql'),
+      path.join('amplify', 'mockBackendDirPath', category, addRequestStub.serviceConfiguration.apiName, 'schema.graphql'),
       addRequestStub.serviceConfiguration.transformSchema,
     ]);
   });
@@ -295,7 +295,7 @@ describe('update artifacts', () => {
         additionalAuthTypes: [{ mode: 'AWS_IAM' }, { mode: 'API_KEY' }],
         apiName: 'testApiName',
         defaultAuthType: { expirationTime: 10, keyDescription: 'api key description', mode: 'API_KEY' },
-        gqlSchemaPath: 'amplify/mockbackendDirPath/api/testApiName/schema.graphql',
+        gqlSchemaPath: 'amplify/mockBackendDirPath/api/testApiName/schema.graphql',
         serviceName: 'AppSync',
       },
       version: 1,
