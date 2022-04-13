@@ -23,7 +23,9 @@
     "test-watch": "jest --watch",
     "build": "tsc",
     "watch": "tsc -w",
-    "clean": "rimraf lib tsconfig.tsbuildinfo"
+    "clean": "rimraf lib tsconfig.tsbuildinfo",
+    "velocity": "jest ./src/__tests__/velocity/*.test.ts",
+    "jest": "jest"
   },
   "dependencies": {
     "@hapi/topo": "^5.0.0",
