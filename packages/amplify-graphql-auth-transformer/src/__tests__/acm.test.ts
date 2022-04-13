@@ -5,6 +5,8 @@ import { AuthTransformer } from '..';
 import { ACMTest, acmTests } from './acm-test-library';
 import { featureFlags } from './test-helpers';
 
+jest.mock('amplify-prompts');
+
 describe('acm tests', () => {
   Object.entries(acmTests).forEach(([name, test]) => {
     it(`ACM test '${name}' passes as expected`, () => {

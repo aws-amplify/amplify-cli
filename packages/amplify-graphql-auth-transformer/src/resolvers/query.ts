@@ -31,6 +31,7 @@ import {
   lambdaExpression,
   emptyPayload,
   setHasAuthExpression,
+  generateOwnerClaimExpression,
 } from './helpers';
 import {
   COGNITO_AUTH_TYPE,
@@ -272,31 +273,39 @@ const generateAuthFilter = (roles: Array<RoleDefinition>, fields: ReadonlyArray<
       const hasMultiClaims = claims.length > 1 && role.claim !== 'cognito:username';
       const ownerCondition = entityIsList ? 'contains' : 'eq';
 
-      if (hasMultiClaims && !entityIsList) {
+      if (hasMultiClaims) {
+        authCollectionExp.push(
+          ...[
+            generateOwnerClaimExpression(role.claim!, idx),
+            iff(
+              notEquals(ref(`role${idx}`), str(NONE_VALUE)),
+              qref(methodCall(ref('authFilter.add'), raw(`{"${role.entity}": { "${ownerCondition}": $ownerClaim${idx} }}`))),
+            ),
+          ],
+        );
+
         claims.forEach((claim, secIdx) => {
           authCollectionExp.push(
             ...[
               set(ref(`role${idx}_${secIdx}`), getOwnerClaim(claim)),
-              set(ref(`ownerPrefix${idx}_${secIdx}`), str(`$role${idx}_${secIdx}:`)),
               iff(
                 notEquals(ref(`role${idx}_${secIdx}`), str(NONE_VALUE)),
-                qref(methodCall(ref('authFilter.add'), raw(`{"${role.entity}": { "beginsWith": $ownerPrefix${idx}_${secIdx} }}`))),
+                qref(methodCall(ref('authFilter.add'), raw(`{"${role.entity}": { "${ownerCondition}": $role${idx}_${secIdx} }}`))),
               ),
             ],
           );
         });
+      } else {
+        authCollectionExp.push(
+          ...[
+            set(ref(`role${idx}`), getOwnerClaim(role.claim!)),
+            iff(
+              notEquals(ref(`role${idx}`), str(NONE_VALUE)),
+              qref(methodCall(ref('authFilter.add'), raw(`{"${role.entity}": { "${ownerCondition}": $role${idx} }}`))),
+            ),
+          ],
+        );
       }
-      const secIdx = claims.length;
-
-      authCollectionExp.push(
-        ...[
-          set(ref(`role${idx}_${secIdx}`), getOwnerClaim(role.claim!)),
-          iff(
-            notEquals(ref(`role${idx}_${secIdx}`), str(NONE_VALUE)),
-            qref(methodCall(ref('authFilter.add'), raw(`{"${role.entity}": { "${ownerCondition}": $role${idx}_${secIdx} }}`))),
-          ),
-        ],
-      );
     } else if (role.strategy === 'groups') {
       // for fields where the group is a list and the token is a list we must add every group in the claim
       if (entityIsList) {
