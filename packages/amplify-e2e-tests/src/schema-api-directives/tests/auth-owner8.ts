@@ -69,7 +69,7 @@ export const expected_result_mutation = {
       title: 'title1',
       createdAt: '<check-defined>',
       updatedAt: '<check-defined>',
-      owner: '<uuid>:<username>',
+      owner: USERNAME,
     },
   },
 };
@@ -90,7 +90,7 @@ export const expected_result_query = {
     getPost: {
       id: '1',
       title: 'title1',
-      owner: '<uuid>:<username>',
+      owner: USERNAME,
     },
   },
 };

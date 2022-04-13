@@ -4,6 +4,7 @@ import {
   deleteProject,
   createNewProjectDir,
   deleteProjectDir,
+  addFeatureFlag,
 } from 'amplify-e2e-core';
 import { testSchema } from '../schema-api-directives';
 
@@ -19,6 +20,7 @@ describe('api directives @auth batch 14', () => {
     beforeEach(async () => {
       projectDir = await createNewProjectDir('auth1');
       await initJSProjectWithProfile(projectDir, {});
+      addFeatureFlag(projectDir, 'graphqlTransformer', 'useSubUsernameForDefaultIdentityClaim', true);
     });
 
     it('auth customClaims2', async () => {
@@ -36,6 +38,7 @@ describe('api directives @auth batch 14', () => {
     beforeEach(async () => {
       projectDir = await createNewProjectDir('auth2');
       await initAndroidProjectWithProfile(projectDir, {});
+      addFeatureFlag(projectDir, 'graphqlTransformer', 'useSubUsernameForDefaultIdentityClaim', true);
     });
 
     it('auth owner9', async () => {
