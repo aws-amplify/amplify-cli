@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.0.2-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.0.1...@aws-amplify/cli-internal@8.0.2-beta.1) (2022-04-14)
+
+
+### Bug Fixes
+
+* **cli:** Fix typo in description for upgrade command ([#10182](https://github.com/aws-amplify/amplify-cli/issues/10182)) ([5f213e0](https://github.com/aws-amplify/amplify-cli/commit/5f213e0b03eb24c97dc1c8a0989e34b5a34e87bd))
+
+
+
+
+
 ## [8.0.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.0.1...@aws-amplify/cli-internal@8.0.2-beta.0) (2022-04-14)
 
 

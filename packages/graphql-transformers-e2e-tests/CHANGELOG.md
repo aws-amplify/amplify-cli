@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.4.14-beta.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.4.13...graphql-transformers-e2e-tests@7.4.14-beta.1) (2022-04-14)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** fix create mutation when index field is null ([#10073](https://github.com/aws-amplify/amplify-cli/issues/10073)) ([1e9d140](https://github.com/aws-amplify/amplify-cli/commit/1e9d140a529e5a2474968feb26b53ac7c9bb5750))
+
+
+
+
+
 ## [7.4.14-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.4.13...graphql-transformers-e2e-tests@7.4.14-beta.0) (2022-04-14)
 
 
