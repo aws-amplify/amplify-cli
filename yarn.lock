@@ -100,21 +100,21 @@
   dependencies:
     "@aws-amplify/core" "4.3.11"
 
-"@aws-amplify/codegen-ui-react@2.1.2":
-  version "2.1.2"
-  resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui-react/-/codegen-ui-react-2.1.2.tgz#686e207e6e3a8202c5bc396d69e53952821a73a2"
-  integrity sha512-xDzZCcfhokKiukfEHp7BFonBETVNtofSZ+b+E/VlRO9xQXAcR1KbwflSI0BjjINQnWdi8M4GMsJrfJKQJYX09w==
+"@aws-amplify/codegen-ui-react@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui-react/-/codegen-ui-react-2.2.0.tgz#04f289715711bf7c9e31cdebec9532c536077515"
+  integrity sha512-TFiRa1rGZvVh66Wl7pPDoV5GVDbCh0toWoFuNqJluO0btItP1dyyF+244X1YCFnOlwp7qohGtmBMlxnStG4ZRw==
   dependencies:
-    "@aws-amplify/codegen-ui" "2.1.2"
+    "@aws-amplify/codegen-ui" "2.2.0"
     "@typescript/vfs" "~1.3.5"
     typescript "~4.4.4"
   optionalDependencies:
     prettier "2.3.2"
 
-"@aws-amplify/codegen-ui@2.1.2":
-  version "2.1.2"
-  resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui/-/codegen-ui-2.1.2.tgz#2a278d4f0fc79a2328505b912aa3cf10d466507d"
-  integrity sha512-YdFS6McPyBBpBPDwPvcW1sww8rS0I6+djkCYkd9aorYXp/w5EWttJE/RFGDjsfTVK8Tfdts+o1JBH8rgNRrUiQ==
+"@aws-amplify/codegen-ui@2.2.0", "@aws-amplify/codegen-ui@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui/-/codegen-ui-2.2.0.tgz#4b0f1e21b61b16b93ff671b2b00c669cd5f5c3ee"
+  integrity sha512-pJnRBVV8Ahaw+rU/JYXHc5Id5R/RTrO9UdPqT0eHqd4WH7XN0qzByKsVQ6hQvqYugiBIWuJL0DgPgzhsLCb8pw==
   dependencies:
     yup "^0.32.11"
 
@@ -8916,10 +8916,10 @@ aws-sdk-mock@^5.6.2:
     sinon "^11.1.1"
     traverse "^0.6.6"
 
-aws-sdk@2.1084.0:
-  version "2.1084.0"
-  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1084.0.tgz#cfc0c87ed87989a75a6ef25db814cc529fde09ac"
-  integrity sha512-fhMjPRrrln8LhMZw17IyrzkVXCG6okFMrZzgIZN1h63WWGot65qcIvYfUn7YyHpYWMLBeND8MRfW6x6PIqJBdA==
+aws-sdk@2.1113.0:
+  version "2.1113.0"
+  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1113.0.tgz#78ce8b713048f3f72c6c55561cd0d70b4ac71da1"
+  integrity sha512-F+B+HFnKCVIOmErZ1jJ8YL4XxDSaUI9l3JskfpIrk0XdJVcIfyHgA4XUrTUda4z5TOy1Z7eWV2IXgEpVRM4xyw==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
