@@ -1,6 +1,5 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext, spinner } from 'amplify-cli-core';
 import aws from 'aws-sdk';
-import ora from 'ora';
 
 /**
  * Wrapper around SSM SDK calls
@@ -110,13 +109,9 @@ export class SSMClientWrapper {
 }
 
 const getSSMClient = async (context: $TSContext): Promise<aws.SSM> => {
-  const spinner = ora('Initializing SSM Client');
-  if (context.exeInfo) {
-    context.exeInfo.spinner = spinner;
-  }
-
   try {
     spinner.start();
+    spinner.text = 'Building and packaging resources';
 
     const { client } = await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'getConfiguredSSMClient', [
       context,

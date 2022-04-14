@@ -1,5 +1,5 @@
 import {
-  $TSAny, $TSContext, JSONUtilities, pathManager, SecretFileMode,
+  $TSAny, $TSContext, JSONUtilities, pathManager, SecretFileMode, spinner,
 } from 'amplify-cli-core';
 
 import * as aws from 'aws-sdk';
@@ -132,7 +132,7 @@ const getRoleCredentials = async (context: $TSContext, profileName: string, prof
       context.print.info(`  ${profileConfig.role_arn}`);
       context.print.info('It requires MFA authentication. The MFA device is');
       context.print.info(`  ${profileConfig.mfa_serial}`);
-      mfaTokenCode = await getMfaTokenCode(context);
+      mfaTokenCode = await getMfaTokenCode();
     }
     logger('getRoleCredentials.aws.STS', [sourceProfileAwsConfig])();
     const sts = new aws.STS(sourceProfileAwsConfig);
@@ -165,10 +165,11 @@ const getRoleCredentials = async (context: $TSContext, profileName: string, prof
   return roleCredentials;
 };
 
-const getMfaTokenCode = async (context: $TSContext): Promise<string> => {
-  let spinner;
-  if (context.exeInfo?.spinner?.isSpinning) {
-    spinner = context.exeInfo.spinner.stopAndPersist();
+const getMfaTokenCode = async (): Promise<string> => {
+  let shouldResumeSpinning = false;
+  if (spinner.isSpinning) {
+    spinner.stopAndPersist();
+    shouldResumeSpinning = true;
   }
   const inputMfaTokenCode = {
     type: 'input',
@@ -187,7 +188,7 @@ const getMfaTokenCode = async (context: $TSContext): Promise<string> => {
     },
   };
   const answer: { tokenCode: string } = await inquirer.prompt(inputMfaTokenCode as $TSAny);
-  if (spinner) spinner.start();
+  if (shouldResumeSpinning) spinner.start();
   return answer.tokenCode;
 };
 
