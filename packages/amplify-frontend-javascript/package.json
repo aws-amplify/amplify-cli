@@ -1,6 +1,6 @@
 {
   "name": "amplify-frontend-javascript",
-  "version": "3.4.0",
+  "version": "3.4.1-beta.3",
   "description": "amplify-cli front-end plugin for JavaScript projects",
   "repository": {
     "type": "git",
@@ -24,5 +24,6 @@
     "inquirer": "^7.3.3",
     "lodash": "^4.17.21",
     "promise-sequential": "^1.1.1"
-  }
+  },
+  "gitHead": "0225c2acf42cfd767812c3c7d7744bf9fd7d4607"
 }

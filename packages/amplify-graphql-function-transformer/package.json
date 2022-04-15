@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-function-transformer",
-  "version": "0.7.13",
+  "version": "0.7.14-beta.3",
   "description": "Amplify GraphQL @function transformer",
   "repository": {
     "type": "git",
@@ -27,8 +27,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-core": "0.16.4",
-    "@aws-amplify/graphql-transformer-interfaces": "1.13.0",
+    "@aws-amplify/graphql-transformer-core": "0.16.5-beta.3",
+    "@aws-amplify/graphql-transformer-interfaces": "1.13.1-beta.3",
     "@aws-cdk/aws-appsync": "~1.124.0",
     "@aws-cdk/aws-lambda": "~1.124.0",
     "@aws-cdk/core": "~1.124.0",
@@ -56,5 +56,6 @@
     "modulePathIgnorePatterns": [
       "overrides"
     ]
-  }
+  },
+  "gitHead": "0225c2acf42cfd767812c3c7d7744bf9fd7d4607"
 }

@@ -1,6 +1,6 @@
 {
     "name": "@aws-amplify/graphql-model-transformer",
-    "version": "0.13.4",
+    "version": "0.13.5-beta.3",
     "description": "Amplify graphql @model transformer",
     "repository": {
         "type": "git",
@@ -28,8 +28,8 @@
         "test-watch": "jest --watch"
     },
     "dependencies": {
-        "@aws-amplify/graphql-transformer-core": "0.16.4",
-        "@aws-amplify/graphql-transformer-interfaces": "1.13.0",
+        "@aws-amplify/graphql-transformer-core": "0.16.5-beta.3",
+        "@aws-amplify/graphql-transformer-interfaces": "1.13.1-beta.3",
         "@aws-cdk/aws-applicationautoscaling": "~1.124.0",
         "@aws-cdk/aws-appsync": "~1.124.0",
         "@aws-cdk/aws-cloudwatch": "~1.124.0",
@@ -72,5 +72,6 @@
         "modulePathIgnorePatterns": [
             "overrides"
         ]
-    }
+    },
+    "gitHead": "0225c2acf42cfd767812c3c7d7744bf9fd7d4607"
 }
