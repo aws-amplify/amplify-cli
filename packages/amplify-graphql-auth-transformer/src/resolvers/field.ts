@@ -54,7 +54,7 @@ const generateDynamicAuthReadExpression = (roles: Array<RoleDefinition>, fields:
           not(ref(IS_AUTHORIZED_FLAG)),
           compoundExpression([
             set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.source.${role.entity!}`), nul())),
-            generateOwnerClaimExpression(role.claim!, idx),
+            generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`),
             ...(entityIsList
               ? [
                 forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
@@ -197,10 +197,25 @@ export const generateSandboxExpressionForField = (sandboxEnabled: boolean): stri
  */
 export const generateFieldResolverForOwner = (entity: string): string => {
   const expressions: Expression[] = [
-    set(ref('ownerEntities'), ref(`ctx.source.${entity}.split(":")`)),
-    set(ref('ownerEntitiesLastIdx'), raw('$ownerEntities.size() - 1')),
-    set(ref('ownerEntitiesLast'), ref('ownerEntities.get($ownerEntitiesLastIdx)')),
-    qref(methodCall(ref('ctx.source.put'), str(entity), ref('ownerEntitiesLast'))),
+    ifElse(
+      methodCall(ref('util.isString'), ref(`ctx.source.${entity}`)),
+      compoundExpression([
+        set(ref('ownerEntities'), ref(`ctx.source.${entity}.split(":")`)),
+        set(ref('ownerEntitiesLastIdx'), raw('$ownerEntities.size() - 1')),
+        set(ref('ownerEntitiesLast'), ref('ownerEntities.get($ownerEntitiesLastIdx)')),
+        qref(methodCall(ref('ctx.source.put'), str(entity), ref('ownerEntitiesLast'))),
+      ]),
+      compoundExpression([
+        set(ref('ownerEntitiesList'), list([])),
+        forEach(ref('ownerEntities'), ref(`ctx.source.${entity}`), [
+          set(ref('ownerEntities'), ref('ownerEntities.split(":")')),
+          set(ref('ownerEntitiesLastIdx'), raw('$ownerEntities.size() - 1')),
+          set(ref('ownerEntitiesLast'), ref('ownerEntities.get($ownerEntitiesLastIdx)')),
+          qref(methodCall(ref('ownerEntitiesList.add'), ref('ownerEntitiesLast'))),
+        ]),
+        qref(methodCall(ref(`ctx.source.${entity}.put`), ref('ownerEntitiesList'))),
+      ]),
+    ),
     toJson(ref(`ctx.source.${entity}`)),
   ];
 

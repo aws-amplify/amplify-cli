@@ -16,9 +16,16 @@ import {
   not,
   nul,
   ifElse,
+  or,
 } from 'graphql-mapping-template';
 import {
-  emptyPayload, getIdentityClaimExp, iamAdminRoleCheckExpression, iamCheck, setHasAuthExpression, generateOwnerClaimExpression,
+  emptyPayload,
+  getIdentityClaimExp,
+  iamAdminRoleCheckExpression,
+  iamCheck,
+  setHasAuthExpression,
+  generateOwnerClaimExpression,
+  generateOwnerClaimListExpression,
 } from './helpers';
 import {
   API_KEY_AUTH_TYPE,
@@ -122,15 +129,32 @@ const dynamicGroupRoleExpression = (
           not(ref(IS_AUTHORIZED_FLAG)),
           compoundExpression([
             set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.result.${role.entity!}`), nul())),
-            generateOwnerClaimExpression(role.claim!, idx),
+            generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`),
+            generateOwnerClaimListExpression(role.claim!, idx),
             ...(entityIsList
               ? [
                 forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
-                  iff(equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true))),
+                  iff(
+                    or([
+                      equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
+                      methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
+                    ]),
+                    set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+                  ),
                 ]),
               ]
-              : [iff(equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true)))]),
+              : [
+                iff(
+                  or([
+                    equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
+                    methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
+                  ]),
+                  set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+                ),
+              ]
+            ),
           ]),
+          // if authorized result != owner claim or result not in owner claim list, update owner to identity claim
         ),
       );
     }
