@@ -36,6 +36,7 @@ import {
   generateOwnerClaimListExpression,
 } from './helpers';
 import {
+  DEFAULT_COGNITO_IDENTITY_CLAIM,
   COGNITO_AUTH_TYPE,
   OIDC_AUTH_TYPE,
   RoleDefinition,
@@ -277,7 +278,7 @@ const generateAuthFilter = (roles: Array<RoleDefinition>, fields: ReadonlyArray<
     const entityIsList = fieldIsList(fields, role.entity);
     if (role.strategy === 'owner') {
       const claims = role.claim!.split(':');
-      const hasMultiClaims = claims.length > 1 && role.claim !== 'cognito:username';
+      const hasMultiClaims = claims.length > 1 && role.claim !== DEFAULT_COGNITO_IDENTITY_CLAIM;
       const ownerCondition = entityIsList ? 'contains' : 'eq';
 
       if (hasMultiClaims) {

@@ -99,6 +99,7 @@ import {
   getRelationalPrimaryMap,
   getReadRolesForField,
   getAuthDirectiveRules,
+  DEFAULT_COGNITO_IDENTITY_CLAIM,
 } from './utils';
 import { showDefaultIdentityClaimWarning } from './utils/warnings';
 
@@ -397,7 +398,10 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       });
 
       roleDefinitions.forEach(role => {
-        if (role.strategy === 'owner') {
+        const hasMultiClaims = role.claim?.split(':')?.length > 1 && role.claim !== DEFAULT_COGNITO_IDENTITY_CLAIM;
+        const createOwnerFieldResolver = role.strategy === 'owner' && hasMultiClaims;
+
+        if (createOwnerFieldResolver) {
           this.addFieldResolverForDynamicAuth(context, def, modelName, role.entity);
         }
       });
