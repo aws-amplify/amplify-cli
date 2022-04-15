@@ -253,6 +253,8 @@ const generateAuthFilter = (roles: Array<RoleDefinition>, fields: ReadonlyArray<
   const groupContainsExpression = new Array<Expression>();
   if (!(roles.length > 0)) return [];
   /**
+   * if ownerField is a concatenated string (ie. "sub:username")
+   * ownerField: { beginsWith: "sub: "}
    * if ownerField is string
    * ownerField: { eq: "cognito:owner" }
    * if ownerField is a List
@@ -266,13 +268,32 @@ const generateAuthFilter = (roles: Array<RoleDefinition>, fields: ReadonlyArray<
   roles.forEach((role, idx) => {
     const entityIsList = fieldIsList(fields, role.entity);
     if (role.strategy === 'owner') {
+      const claims = role.claim!.split(':');
+      const hasMultiClaims = claims.length > 1 && role.claim !== 'cognito:username';
       const ownerCondition = entityIsList ? 'contains' : 'eq';
+
+      if (hasMultiClaims && !entityIsList) {
+        claims.forEach((claim, secIdx) => {
+          authCollectionExp.push(
+            ...[
+              set(ref(`role${idx}_${secIdx}`), getOwnerClaim(claim)),
+              set(ref(`ownerPrefix${idx}_${secIdx}`), str(`$role${idx}_${secIdx}:`)),
+              iff(
+                notEquals(ref(`role${idx}_${secIdx}`), str(NONE_VALUE)),
+                qref(methodCall(ref('authFilter.add'), raw(`{"${role.entity}": { "beginsWith": $ownerPrefix${idx}_${secIdx} }}`))),
+              ),
+            ],
+          );
+        });
+      }
+      const secIdx = claims.length;
+
       authCollectionExp.push(
         ...[
-          set(ref(`role${idx}`), getOwnerClaim(role.claim!)),
+          set(ref(`role${idx}_${secIdx}`), getOwnerClaim(role.claim!)),
           iff(
-            notEquals(ref(`role${idx}`), str(NONE_VALUE)),
-            qref(methodCall(ref('authFilter.add'), raw(`{"${role.entity}": { "${ownerCondition}": $role${idx} }}`))),
+            notEquals(ref(`role${idx}_${secIdx}`), str(NONE_VALUE)),
+            qref(methodCall(ref('authFilter.add'), raw(`{"${role.entity}": { "${ownerCondition}": $role${idx}_${secIdx} }}`))),
           ),
         ],
       );
