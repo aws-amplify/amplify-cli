@@ -107,7 +107,7 @@ export class Binary {
       fs.mkdirSync(this.installDirectory, { recursive: true });
     }
 
-    const amplifyExecutableName = os.type() === 'Windows_NT' ? 'amplify.exe' : ' amplify';
+    const amplifyExecutableName = os.type() === 'Windows_NT' ? 'amplify.exe' : 'amplify';
     this.binaryPath = path.join(this.installDirectory, amplifyExecutableName);
   }
 
