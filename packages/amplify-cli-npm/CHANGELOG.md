@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.0.2-ic-changes.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@8.0.1...@aws-amplify/cli@8.0.2-ic-changes.1) (2022-04-15)
+
+
+### Bug Fixes
+
+* remove accidental space from amplify path ([#10224](https://github.com/aws-amplify/amplify-cli/issues/10224)) ([eceab8d](https://github.com/aws-amplify/amplify-cli/commit/eceab8d6810d59f4d1b24e3179caa066ef59a574))
+
+
+
+
+
 ## [8.0.2-ic-changes.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@8.0.1...@aws-amplify/cli@8.0.2-ic-changes.0) (2022-04-15)
 
 

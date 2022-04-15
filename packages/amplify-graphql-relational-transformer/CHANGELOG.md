@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0-ic-changes.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.7.11...@aws-amplify/graphql-relational-transformer@0.8.0-ic-changes.1) (2022-04-15)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** fix create mutation when index field is null ([#10073](https://github.com/aws-amplify/amplify-cli/issues/10073)) ([1e9d140](https://github.com/aws-amplify/amplify-cli/commit/1e9d140a529e5a2474968feb26b53ac7c9bb5750))
+* **graphql-model-transformer:** fix enum filter input when queries are set to null ([#10044](https://github.com/aws-amplify/amplify-cli/issues/10044)) ([53bef2e](https://github.com/aws-amplify/amplify-cli/commit/53bef2eb59c0e7540c87a5e43de903889a6d3d1d))
+
+
+### Features
+
+* add handling of colon-delimited identity claims to query ([#10189](https://github.com/aws-amplify/amplify-cli/issues/10189)) ([d7983f4](https://github.com/aws-amplify/amplify-cli/commit/d7983f411f69e79cbe7508684b31ba9f9f2d9c33))
+
+
+
+
+
 # [0.8.0-ic-changes.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.7.11...@aws-amplify/graphql-relational-transformer@0.8.0-ic-changes.0) (2022-04-15)
 
 

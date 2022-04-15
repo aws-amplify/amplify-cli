@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.12-ic-changes.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.3.11...amplify-nodejs-function-template-provider@2.3.12-ic-changes.1) (2022-04-15)
+
+**Note:** Version bump only for package amplify-nodejs-function-template-provider
+
+
+
+
+
 ## [2.3.12-ic-changes.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.3.11...amplify-nodejs-function-template-provider@2.3.12-ic-changes.0) (2022-04-15)
 
 **Note:** Version bump only for package amplify-nodejs-function-template-provider
