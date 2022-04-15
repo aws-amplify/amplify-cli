@@ -27,6 +27,7 @@ import { AppSyncAuthConfiguration, TransformerPluginProvider } from '@aws-amplif
 import {
   $TSAny,
   $TSContext,
+  $TSMeta,
   $TSObject,
   AmplifyCategories,
   AmplifySupportedService,
@@ -460,8 +461,8 @@ export const getDirectiveDefinitions = async (context: $TSContext, resourceDir: 
 const s3ResourceAlreadyExists = (): string | undefined => {
   try {
     let resourceName: string;
-    const amplifyMeta = stateManager.getMeta();
-    if (amplifyMeta[AmplifyCategories.STORAGE]) {
+    const amplifyMeta: $TSMeta = stateManager.getMeta(undefined, { throwIfNotExist: false });
+    if (amplifyMeta?.[AmplifyCategories.STORAGE]) {
       const categoryResources = amplifyMeta[AmplifyCategories.STORAGE];
       Object.keys(categoryResources).forEach(resource => {
         if (categoryResources[resource].service === AmplifySupportedService.S3) {
