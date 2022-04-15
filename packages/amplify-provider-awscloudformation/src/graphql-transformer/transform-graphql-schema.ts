@@ -194,7 +194,7 @@ export const transformGraphQLSchema = async (context: $TSContext, options): Prom
   const { forceCompile } = options;
 
   // Compilation during the push step
-  const { resourcesToBeCreated, resourcesToBeUpdated, allResources } = await context.amplify.getResourceStatus();
+  const { resourcesToBeCreated, resourcesToBeUpdated, allResources } = await context.amplify.getResourceStatus(AmplifyCategories.API);
   let resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
 
   // When build folder is missing include the API
@@ -419,8 +419,8 @@ place .graphql files in a directory at ${schemaDirPath}`);
 };
 
 const getProjectBucket = (): string => {
-  const meta = stateManager.getMeta();
-  const projectBucket = meta.providers ? meta.providers[ProviderName].DeploymentBucketName : '';
+  const meta: $TSMeta = stateManager.getMeta(undefined, { throwIfNotExist: false });
+  const projectBucket = meta?.providers ? meta.providers[ProviderName].DeploymentBucketName : '';
   return projectBucket;
 };
 
