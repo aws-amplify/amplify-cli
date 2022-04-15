@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-ic-changes.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.7.12...@aws-amplify/graphql-auth-transformer@1.0.0-ic-changes.0) (2022-04-15)
+
+
+### Bug Fixes
+
+* generate field resolver when claim has colon ([f7ce05a](https://github.com/aws-amplify/amplify-cli/commit/f7ce05aee9ec3914fed63539626bde2e82e80c45))
+
+
+### Features
+
+* add handling of colon-delimited identity claims to query ([#10189](https://github.com/aws-amplify/amplify-cli/issues/10189)) ([d7983f4](https://github.com/aws-amplify/amplify-cli/commit/d7983f411f69e79cbe7508684b31ba9f9f2d9c33))
+* add warning message for identity claim flag and breaking changes ([7e86cd7](https://github.com/aws-amplify/amplify-cli/commit/7e86cd7daade4e7961ded9c88c76fe98492160f7))
+* support multiclaim auth with searchable ([d3809eb](https://github.com/aws-amplify/amplify-cli/commit/d3809ebef8ab88ffad6ed7d505be1dc1235d0d5c))
+* use feature flag to set identity claim ([b5ab0f7](https://github.com/aws-amplify/amplify-cli/commit/b5ab0f7a4ced2645e2686c8336ae5de1e54d607c))
+
+
+### BREAKING CHANGES
+
+* This will store owner records in the database with the format '<sub>:<username>';
+previously, owner fields were stored as '<username>'.
+
+
+
+
+
 ## [0.7.12](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.7.11...@aws-amplify/graphql-auth-transformer@0.7.12) (2022-04-11)
 
 **Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
