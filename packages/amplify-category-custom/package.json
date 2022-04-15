@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-custom",
-  "version": "2.3.26",
+  "version": "2.3.27-beta.2",
   "description": "amplify-cli custom resources plugin",
   "repository": {
     "type": "git",
@@ -56,5 +56,6 @@
       "src/**/*.ts",
       "!**/*.d.ts"
     ]
-  }
+  },
+  "gitHead": "23a3c861abe98190f441694805fa299aada70839"
 }

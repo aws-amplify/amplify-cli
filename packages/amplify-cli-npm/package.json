@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli",
-  "version": "8.0.1",
+  "version": "8.0.2-beta.2",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
@@ -31,11 +31,14 @@
   },
   "dependencies": {
     "axios": "^0.26.0",
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "tar-stream": "^2.2.0"
   },
   "devDependencies": {
-    "@aws-amplify/cli-internal": "8.0.1",
+    "@aws-amplify/cli-internal": "8.0.2-beta.2",
+    "@types/tar": "^6.1.1",
     "prettier": "^1.19.1",
     "rimraf": "^3.0.2"
-  }
+  },
+  "gitHead": "23a3c861abe98190f441694805fa299aada70839"
 }

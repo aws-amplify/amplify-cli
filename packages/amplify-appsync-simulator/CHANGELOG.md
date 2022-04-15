@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.11-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.10...amplify-appsync-simulator@2.3.11-beta.2) (2022-04-15)
+
+
+### Bug Fixes
+
+* bump moment-timezone, and remove deprecated types dep ([#10177](https://github.com/aws-amplify/amplify-cli/issues/10177)) ([0a531ef](https://github.com/aws-amplify/amplify-cli/commit/0a531ef9f581e6a2c945fb0f097c9a1f68250e6b))
+
+
+
+
+
+## [2.3.11-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.10...amplify-appsync-simulator@2.3.11-beta.1) (2022-04-14)
+
+
+### Bug Fixes
+
+* bump moment-timezone, and remove deprecated types dep ([#10177](https://github.com/aws-amplify/amplify-cli/issues/10177)) ([0a531ef](https://github.com/aws-amplify/amplify-cli/commit/0a531ef9f581e6a2c945fb0f097c9a1f68250e6b))
+
+
+
+
+
+## [2.3.11-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.10...amplify-appsync-simulator@2.3.11-beta.0) (2022-04-14)
+
+
+### Bug Fixes
+
+* bump moment-timezone, and remove deprecated types dep ([#10177](https://github.com/aws-amplify/amplify-cli/issues/10177)) ([0a531ef](https://github.com/aws-amplify/amplify-cli/commit/0a531ef9f581e6a2c945fb0f097c9a1f68250e6b))
+
+
+
+
+
 ## [2.3.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.9...amplify-appsync-simulator@2.3.10) (2022-03-14)
 
 
