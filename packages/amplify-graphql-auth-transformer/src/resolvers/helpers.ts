@@ -89,26 +89,26 @@ export const getOwnerClaim = (ownerClaim: string): Expression => {
 /**
  * Creates generate owner claim expression owner
  */
-export const generateOwnerClaimExpression = (ownerClaim: string, idx: number): CompoundExpressionNode => {
+export const generateOwnerClaimExpression = (ownerClaim: string, refName: string): CompoundExpressionNode => {
   const expressions: Expression[] = [];
   const identityClaims = ownerClaim.split(':');
   const hasMultiIdentityClaims = identityClaims.length > 1 && ownerClaim !== 'cognito:username';
 
   if (hasMultiIdentityClaims) {
-    identityClaims.forEach((claim, secIdx) => {
+    identityClaims.forEach((claim, idx) => {
       expressions.push();
-      if (secIdx === 0) {
-        expressions.push(set(ref(`ownerClaim${idx}`), getOwnerClaim(claim)));
+      if (idx === 0) {
+        expressions.push(set(ref(refName), getOwnerClaim(claim)));
       } else {
         expressions.push(
           set(ref(`currentClaim${idx}`), getOwnerClaim(claim)),
-          set(ref(`ownerClaim${idx}`), raw(`"$ownerClaim${idx}:$currentClaim${idx}"`)),
+          set(ref(refName), raw(`"$${refName}:$currentClaim${idx}"`)),
         );
       }
     });
   } else {
     expressions.push(
-      set(ref(`ownerClaim${idx}`), getOwnerClaim(ownerClaim)),
+      set(ref(refName), getOwnerClaim(ownerClaim)),
     );
   }
 
@@ -226,6 +226,20 @@ export const generateAuthRequestExpression = (): string => {
     toJson(ref('GetRequest')),
   ];
   return printBlock('Get Request template')(compoundExpression(statements));
+};
+
+/**
+ * Generates a list of claims to be iterated over for authorization
+ */
+export const generateOwnerClaimListExpression = (claim: string, idx: number): Expression => {
+  const claims = claim.split(':');
+
+  return compoundExpression([
+    set(ref(`ownerClaimsList${idx}`), list([])),
+    compoundExpression(
+      claims.map(c => qref(methodCall(ref(`ownerClaimsList${idx}.add`), getOwnerClaim(c)))),
+    ),
+  ]);
 };
 
 export const emptyPayload = toJson(raw(JSON.stringify({ version: '2018-05-29', payload: {} })));

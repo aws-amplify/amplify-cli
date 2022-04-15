@@ -186,8 +186,8 @@ describe('subscription disabled and userPools configured', () => {
   #if( !$isAuthorized )
     #set( $ownerEntity0 = $util.defaultIfNull($ctx.source.owner, null) )
     #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("sub"), "___xamznone____") )
-    #set( $currentClaim0 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), "___xamznone____")) )
-    #set( $ownerClaim0 = "$ownerClaim0:$currentClaim0" )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), "___xamznone____")) )
+    #set( $ownerClaim0 = "$ownerClaim0:$currentClaim1" )
     #if( $ownerEntity0 == $ownerClaim0 )
       #set( $isAuthorized = true )
     #end
@@ -275,8 +275,8 @@ describe('subscription disabled and userPools configured', () => {
   #if( !$isAuthorized )
     #set( $ownerEntity0 = $util.defaultIfNull($ctx.source.owner, null) )
     #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("sub"), "___xamznone____") )
-    #set( $currentClaim0 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), "___xamznone____")) )
-    #set( $ownerClaim0 = "$ownerClaim0:$currentClaim0" )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), "___xamznone____")) )
+    #set( $ownerClaim0 = "$ownerClaim0:$currentClaim1" )
     #if( $ownerEntity0 == $ownerClaim0 )
       #set( $isAuthorized = true )
     #end

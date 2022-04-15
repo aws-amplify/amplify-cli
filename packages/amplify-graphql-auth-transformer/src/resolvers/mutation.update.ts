@@ -20,6 +20,7 @@ import {
   printBlock,
   ifElse,
   nul,
+  or,
 } from 'graphql-mapping-template';
 import {
   API_KEY_AUTH_TYPE,
@@ -44,6 +45,7 @@ import {
   iamCheck,
   iamAdminRoleCheckExpression,
   generateOwnerClaimExpression,
+  generateOwnerClaimListExpression,
 } from './helpers';
 
 /**
@@ -180,7 +182,8 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
               ref(`ownerEntity${idx}`),
               methodCall(ref('util.defaultIfNull'), ref(`ctx.result.${role.entity!}`), entityIsList ? list([]) : nul()),
             ),
-            generateOwnerClaimExpression(role.claim!, idx),
+            generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`),
+            generateOwnerClaimListExpression(role.claim!, idx),
             set(ref(`ownerAllowedFields${idx}`), raw(JSON.stringify(role.allowedFields))),
             set(ref(`ownerNullAllowedFields${idx}`), raw(JSON.stringify(role.nullAllowedFields))),
             set(ref(`isAuthorizedOnAllFields${idx}`), bool(role.areAllFieldsAllowed && role.areAllFieldsNullAllowed)),
@@ -188,7 +191,10 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
               ? [
                 forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
                   iff(
-                    equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
+                    or([
+                      equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
+                      methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
+                    ]),
                     addAllowedFieldsIfElse(
                       `ownerAllowedFields${idx}`,
                       `ownerNullAllowedFields${idx}`,
@@ -200,7 +206,10 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
               ]
               : [
                 iff(
-                  equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
+                  or([
+                    equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
+                    methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
+                  ]),
                   addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `ownerNullAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`),
                 ),
               ]),

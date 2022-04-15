@@ -18,6 +18,7 @@ import {
   str,
   printBlock,
   ifElse,
+  or,
 } from 'graphql-mapping-template';
 import {
   getIdentityClaimExp,
@@ -27,6 +28,7 @@ import {
   iamCheck,
   iamAdminRoleCheckExpression,
   generateOwnerClaimExpression,
+  generateOwnerClaimListExpression,
 } from './helpers';
 import {
   API_KEY_AUTH_TYPE,
@@ -161,21 +163,28 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>, fields: ReadonlyArr
           not(ref(IS_AUTHORIZED_FLAG)),
           compoundExpression([
             set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.args.input.${role.entity!}`), nul())),
-            generateOwnerClaimExpression(role.claim!, idx),
+            generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`),
+            generateOwnerClaimListExpression(role.claim!, idx),
             set(ref(`ownerAllowedFields${idx}`), raw(JSON.stringify(role.allowedFields))),
             set(ref(`isAuthorizedOnAllFields${idx}`), bool(role.areAllFieldsAllowed)),
             ...(entityIsList
               ? [
                 forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
                   iff(
-                    equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
+                    or([
+                      equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
+                      methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
+                    ]),
                     addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`, true),
                   ),
                 ]),
               ]
               : [
                 iff(
-                  equals(ref(`ownerClaim${idx}`), ref(`ownerEntity${idx}`)),
+                  or([
+                    equals(ref(`ownerClaim${idx}`), ref(`ownerEntity${idx}`)),
+                    methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
+                  ]),
                   addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`),
                 ),
               ]),
