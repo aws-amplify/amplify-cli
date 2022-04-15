@@ -45,13 +45,32 @@ export class NoUsageData implements IUsageData, IFlowData {
    *  Noop implementation of stopCodePathTimer
    */
   stopCodePathTimer(): void { /* noop */ }
+
   /**
-   * Append record to CLI Flow data
-   * @param flowData input accepted from the CLI
+   * Noop function 
+   * @param _prompt 
+   * @param _input accepted from the CLI
    */
   // eslint-disable-next-line class-methods-use-this
-  pushFlow(flowData: Record<string, $TSAny>):void {
-    NoUsageData.flow.pushFlow(flowData);
+  pushInteractiveFlow = (_prompt: string, _input: unknown) : void  => {
+    /* noop */ 
+  }
+
+  /**
+   * Noop function
+   * @param _headlessFlowDataString accepted from the CLI
+   */
+  // eslint-disable-next-line class-methods-use-this
+  pushHeadlessFlow = (_headlessFlowDataString : string) : void  => {
+    /* noop */ 
+  }
+
+  /**
+   * Noop function to set isHeadless flag in flowLogger
+   * @param _headless 
+   */
+  setIsHeadless =  (_headless: boolean): void => {
+    /* noop */ 
   }
 
   /**

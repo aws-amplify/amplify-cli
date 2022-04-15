@@ -1,3 +1,4 @@
+import { IFlowData } from 'amplify-cli-shared-interfaces';
 import { ViewResourceTableParams } from './cliViewAPI';
 import { ServiceSelection } from './serviceSelection';
 import { Tag } from './tags';
@@ -57,6 +58,7 @@ export type $TSContext = {
   input: $TSAny;
   parameters: $TSAny;
   usageData: $TSAny;
+  flowData : IFlowData;
   runtime: $TSAny;
   pluginPlatform: IPluginPlatform;
   newUserInfo?: $TSAny;

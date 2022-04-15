@@ -73,6 +73,7 @@ export const getPermissionPolicies = (context: $TSContext, resourceOpsMapping: $
  * @param {string} headlessPayload The serialized payload from the platform
  */
  export const executeAmplifyHeadlessCommand = async (context: $TSContext, headlessPayload: string) => {
+  context.flowData?.pushHeadlessFlow(headlessPayload);
   switch (context.input.command) {
     case 'add':
       await addResourceHeadless(context, headlessPayload);

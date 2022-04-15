@@ -2,7 +2,7 @@
 import { $TSAny, JSONUtilities, stateManager } from 'amplify-cli-core';
 import { logger, Redactor } from 'amplify-cli-logger';
 import { IAmplifyLogger } from 'amplify-cli-logger/lib/IAmplifyLogger';
-import { IFlowData, IFlowReport } from 'amplify-cli-shared-interfaces';
+import { IFlowData, IFlowReport, IOptionFlowCLIData, IOptionFlowHeadlessData, TypeOptionFlowData } from 'amplify-cli-shared-interfaces';
 import { Input } from '../input';
 
 /**
@@ -14,9 +14,10 @@ export class CLIFlowReport implements IFlowData {
     runtime!: string;
     executable!: string;
     category!: string;
+    isHeadless!: boolean;
     cmd!: string;
     subCmd: string| undefined;
-    optionFlow!: Array<$TSAny>;
+    optionFlowData!: Array<TypeOptionFlowData>;
     logger!: IAmplifyLogger;
     input!: Input;
     timestamp : string;
@@ -32,6 +33,7 @@ export class CLIFlowReport implements IFlowData {
       CLIFlowReport._instance = this;
       this.logger = logger;
       this.timestamp = currentTime.toString();
+      this.isHeadless = false; //set headless to true if running in headless mode : TBD: can we query this from stateManager?
     }
 
     /**
@@ -70,10 +72,11 @@ export class CLIFlowReport implements IFlowData {
       this.executable = input.argv[1] as string;
       this.cmd = input.argv[2] as string;
       this.subCmd = (input.argv[3]) ? input.argv[3] : undefined;
-      this.optionFlow = []; // key-value store with ordering maintained
+      this.optionFlowData = []; // key-value store with ordering maintained
       // Parse options
-      if (input.options) {
-        this.pushFlow(input.options);
+      if (input.options?.prompt) {
+        const prompt: string = input.options.prompt as unknown as string;
+        this.pushInteractiveFlow(prompt, input.options.input);
       }
     }
 
@@ -96,7 +99,8 @@ export class CLIFlowReport implements IFlowData {
         version: this.version,
         cmd: this.cmd,
         subCmd: this.subCmd,
-        optionFlow: this.optionFlow,
+        isHeadless: this.isHeadless,
+        optionFlowData: this.optionFlowData,
         category: this.category,
         input: this.input,
         timestamp: this.timestamp,
@@ -107,14 +111,32 @@ export class CLIFlowReport implements IFlowData {
     }
 
     /**
+     * This method is to configure when the current flow is headless.
+     * @param isHeadless 
+     */
+    setIsHeadless(isHeadless: boolean): void {
+      this.isHeadless = isHeadless;
+    } 
+
+    /**
      * This method is called whenever user selects an option in the CLI walkthrough
      * @param selectedOption - walkthrough options selected
      */
-    pushFlow(selectedOption: Record<string, $TSAny>):void {
-      const redactedString = Redactor(JSON.stringify(selectedOption));
+    pushInteractiveFlow( prompt: string, input: unknown ): void {
+      const redactedString = Redactor(JSON.stringify({prompt, input}));
       const cleanOption = JSON.parse(redactedString);
-      const timeStampedOption = { ...cleanOption, timestamp: new Date().valueOf() }; // attach unix-style timestamp
-      this.optionFlow.push(timeStampedOption);
+      const timeStampedCLIFlowOption:IOptionFlowCLIData = { ...cleanOption, timestamp: new Date().valueOf() }; // attach unix-style timestamp
+      this.optionFlowData.push(timeStampedCLIFlowOption);
+    }
+
+    /**
+     * This method is called whenever the CLI is invoked in headless mode
+     * @param headlessParameterString - headless parameter string ( serialized but before schema validation )
+     */
+    pushHeadlessFlow(headlessParameterString: string): void {
+      const cleanOption = Redactor(headlessParameterString);
+      const timeStampedOption:IOptionFlowHeadlessData = { input: cleanOption, timestamp: new Date().valueOf() }; // attach unix-style timestamp
+      this.optionFlowData.push(timeStampedOption);
     }
 
     /**
@@ -128,7 +150,4 @@ export class CLIFlowReport implements IFlowData {
       ${this.input.options ? Redactor(JSONUtilities.stringify(this.input.options, { minify: true })) : ''}`,
       });
     }
-
-  // TBD function to stream the input to a local file
-  // TBD function to save to a file
 }

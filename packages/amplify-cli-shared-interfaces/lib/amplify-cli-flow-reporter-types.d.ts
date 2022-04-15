@@ -1,19 +1,33 @@
 import { ICommandInput } from './amplify-cli-interactions';
+export interface IOptionFlowHeadlessData {
+    input: string;
+    timestamp: number;
+}
+export interface IOptionFlowCLIData {
+    prompt: string;
+    input: unknown;
+    timestamp: number;
+}
+export declare type TypeOptionFlowData = IOptionFlowHeadlessData | IOptionFlowCLIData;
 export interface IFlowReport {
     version: string;
     runtime: string;
     executable: string;
     category: string;
+    isHeadless: boolean;
     cmd: string;
     subCmd: string | undefined;
-    optionFlow: Array<Record<string, unknown>>;
+    optionFlowData: Array<TypeOptionFlowData>;
     input: ICommandInput;
     timestamp: string;
     projectEnvIdentifier?: string;
     projectIdentifier?: string;
 }
 export interface IFlowData {
-    pushFlow: (flowData: Record<string, unknown>) => void;
+    setIsHeadless: (headless: boolean) => void;
+    pushHeadlessFlow: (headlessFlowDataString: string) => void;
+    pushInteractiveFlow: (prompt: string, input: unknown) => void;
     getFlowReport: () => IFlowReport | Record<string, never>;
+    assignProjectIdentifier: (envName?: string) => string | undefined;
 }
 //# sourceMappingURL=amplify-cli-flow-reporter-types.d.ts.map

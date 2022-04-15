@@ -33,18 +33,24 @@ class AmplifyPrompter implements Prompter {
     this.prompter = prompterShim;
   }
 
+  private throwLoggedError = (message: string, errorMsg : string) : void => {
+    this.flowData?.pushInteractiveFlow(message, errorMsg);
+    throw new Error(errorMsg);
+  }
+
   setFlowData = (flowData: IFlowData):void => {
     this.flowData = flowData;
   }
 
-  private throwLoggedError = (message: string, errorMsg : string) : void => {
-    this.pushFlow({ prompt: message, input: errorMsg });
-    throw new Error(errorMsg);
+  pushInteractiveFlow = (promptString: string, input: unknown) => {
+    if (this.flowData) {
+      this.flowData.pushInteractiveFlow(promptString, input);
+    }
   }
 
-  pushFlow = (flowData: Record<string, unknown>) => {
+  pushHeadlessFlow = (headlessFlowDataString: string) => {
     if (this.flowData) {
-      this.flowData.pushFlow(flowData);
+      this.flowData.pushHeadlessFlow(headlessFlowDataString);
     }
   }
 
@@ -59,7 +65,7 @@ class AmplifyPrompter implements Prompter {
     } else {
       result = await this.yesOrNoCommon(message, false);
     }
-    this.pushFlow({ prompt: message, input: result });
+    this.pushInteractiveFlow(message, result);
     return result;
   };
 
@@ -74,7 +80,7 @@ class AmplifyPrompter implements Prompter {
     } else {
       result = await this.yesOrNoCommon(message, initial);
     }
-    this.pushFlow({ prompt: message, input: result });
+    this.pushInteractiveFlow(message, result);
     return result;
   };
 
@@ -92,7 +98,7 @@ class AmplifyPrompter implements Prompter {
       },
       initial,
     });
-    this.pushFlow({ prompt: message, input: result });
+    this.pushInteractiveFlow(message, result);
     return result;
   };
 
@@ -114,7 +120,7 @@ class AmplifyPrompter implements Prompter {
     const opts = options?.[0] ?? ({} as InputOptions<RS, T>);
     if (isYes) {
       if (opts.initial !== undefined) {
-        this.pushFlow({ prompt: message, input: opts.initial });
+        this.pushInteractiveFlow(message, opts.initial);
         return opts.initial as PromptReturn<RS, T>;
       }
       this.throwLoggedError(message, `Cannot prompt for [${message}] when '--yes' flag is set`);
@@ -142,10 +148,10 @@ class AmplifyPrompter implements Prompter {
       } else {
         functionResult = opts.transform(result as string) as unknown as PromptReturn<RS, T>;
       }
-      this.pushFlow({ prompt: message, input: functionResult });
+      this.pushInteractiveFlow(message, functionResult);
       return functionResult;
     }
-    this.pushFlow({ prompt: message, input: result });
+    this.pushInteractiveFlow(message, result);
     return result as unknown as PromptReturn<RS, T>;
   };
 
@@ -275,7 +281,7 @@ class AmplifyPrompter implements Prompter {
       // result is a string
       loggedRet = choiceValueMap.get(result as string) as PromptReturn<RS, T>;
     }
-    this.pushFlow({ prompt: message, input: loggedRet });
+    this.pushInteractiveFlow(message, loggedRet);
     return loggedRet;
   };
 }

@@ -425,6 +425,7 @@ async function executeAmplifyCommand(context) {
  * @param {string} headlessPayload The serialized payload from the platform
  */
 const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
+  context.flowData.pushHeadlessFlow(headlessPayload);
   switch (context.input.command) {
     case 'add':
       if (projectHasAuth(context)) {
@@ -432,7 +433,7 @@ const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
       }
       await validateAddAuthRequest(headlessPayload)
         .then(getAddAuthRequestAdaptor(context.amplify.getProjectConfig().frontend))
-        .then(getAddAuthHandler(context));
+        .then(getAddAuthHandler(context))
       return;
     case 'update':
       // migration check for headless update
