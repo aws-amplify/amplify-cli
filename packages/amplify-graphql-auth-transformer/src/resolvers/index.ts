@@ -1,4 +1,7 @@
-export { generateAuthExpressionForQueries, generateAuthExpressionForRelationQuery } from './query';
+export {
+  generateAuthExpressionForQueries,
+  generateAuthExpressionForRelationQuery,
+} from './query';
 export { generateAuthExpressionForSearchQueries } from './search';
 export { generateAuthExpressionForCreate } from './mutation.create';
 export { generateAuthExpressionForUpdate } from './mutation.update';
@@ -8,6 +11,7 @@ export {
   generateFieldAuthResponse,
   setDeniedFieldFlag,
   generateSandboxExpressionForField,
+  generateFieldResolverForOwner,
 } from './field';
 export { generateAuthExpressionForSubscriptions } from './subscriptions';
 export { generateAuthRequestExpression } from './helpers';
