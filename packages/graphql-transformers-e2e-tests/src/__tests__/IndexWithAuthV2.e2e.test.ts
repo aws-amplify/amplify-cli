@@ -103,6 +103,9 @@ beforeAll(async () => {
         if (name === 'secondaryKeyAsGSI') {
           return true;
         }
+        if (name === 'useSubUsernameForDefaultIdentityClaim') {
+          return false;
+        }
         return defaultValue;
       }),
       getNumber: jest.fn(),

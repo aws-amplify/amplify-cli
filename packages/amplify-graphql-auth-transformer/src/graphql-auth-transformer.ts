@@ -167,11 +167,10 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     if (context.metadata.has('joinTypeList')) {
       isJoinType = context.metadata.get<Array<string>>('joinTypeList')!.includes(typeName);
     }
-    const rules: AuthRule[] = getAuthDirectiveRules(new DirectiveWrapper(directive));
-    this.rules = rules;
+    this.rules = getAuthDirectiveRules(new DirectiveWrapper(directive));
 
     // validate rules
-    validateRules(rules, this.configuredAuthProviders, def.name.value);
+    validateRules(this.rules, this.configuredAuthProviders, def.name.value);
     // create access control for object
     const acm = new AccessControlMatrix({
       name: def.name.value,
@@ -179,12 +178,12 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       resources: collectFieldNames(def),
     });
     // Check the rules to see if we should generate Auth/Unauth Policies
-    this.setAuthPolicyFlag(rules);
-    this.setUnauthPolicyFlag(rules);
+    this.setAuthPolicyFlag(this.rules);
+    this.setUnauthPolicyFlag(this.rules);
     // add object into policy
-    this.addTypeToResourceReferences(def.name.value, rules);
+    this.addTypeToResourceReferences(def.name.value, this.rules);
     // turn rules into roles and add into acm and roleMap
-    this.convertRulesToRoles(acm, rules, isJoinType, undefined, undefined, context);
+    this.convertRulesToRoles(acm, this.rules, isJoinType, undefined, undefined, context);
     this.modelDirectiveConfig.set(typeName, getModelConfig(modelDirective, typeName, context.isProjectUsingDataStore()));
     this.authModelConfig.set(typeName, acm);
   };

@@ -169,16 +169,16 @@ beforeAll(async () => {
     },
     transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
     featureFlags: {
-      getBoolean(value: string) {
+      getBoolean: (value: string, defaultValue?: boolean) => {
         if (value === 'useSubUsernameForDefaultIdentityClaim') {
           return false;
         }
-        return false;
+        return defaultValue;
       },
       getString: jest.fn(),
       getNumber: jest.fn(),
       getObject: jest.fn(),
-    }
+    },
   });
   const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
   USER_POOL_ID = userPoolResponse.UserPool.Id;

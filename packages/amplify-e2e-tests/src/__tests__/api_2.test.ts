@@ -280,7 +280,7 @@ describe('amplify add api (GraphQL)', () => {
     expect(transformConfigWithDS.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
   });
 
-  it.only('init a project and add custom iam roles - local test with gql v2', async () => {
+  it('init a project and add custom iam roles - local test with gql v2', async () => {
     const name = 'customadminroles';
     await initJSProjectWithProfile(projRoot, { name });
     await addApi(projRoot, { transformerVersion: 2, IAM: {}, 'Amazon Cognito User Pool': {} });
@@ -309,7 +309,7 @@ describe('amplify add api (GraphQL)', () => {
     expect(beforeAdminConfig).not.toEqual(afterAdminConfig);
   });
 
-  it.only('init a project and add custom iam roles - local test with gql v2 w/ identity claim feature flag disabled', async () => {
+  it('init a project and add custom iam roles - local test with gql v2 w/ identity claim feature flag disabled', async () => {
     const name = 'customadminroles';
     await initJSProjectWithProfile(projRoot, { name });
     addFeatureFlag(projRoot, 'graphqlTransformer', 'userSubUsernameForDefaultIdentityClaim', false);
