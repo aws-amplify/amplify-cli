@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.1-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.4.0...amplify-frontend-javascript@3.4.1-beta.1) (2022-04-14)
+
+
+### Bug Fixes
+
+* use EOL instead of \n when reading aws-exports ([#10147](https://github.com/aws-amplify/amplify-cli/issues/10147)) ([846048c](https://github.com/aws-amplify/amplify-cli/commit/846048c746d143483972aea801f05d81358e2d7d))
+
+
+
+
+
+## [3.4.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.4.0...amplify-frontend-javascript@3.4.1-beta.0) (2022-04-14)
+
+
+### Bug Fixes
+
+* use EOL instead of \n when reading aws-exports ([#10147](https://github.com/aws-amplify/amplify-cli/issues/10147)) ([846048c](https://github.com/aws-amplify/amplify-cli/commit/846048c746d143483972aea801f05d81358e2d7d))
+
+
+
+
+
 # [3.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.3.25...amplify-frontend-javascript@3.4.0) (2022-04-11)
 
 
