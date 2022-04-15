@@ -1,3 +1,4 @@
+/* eslint-disable */
 import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs-extra';
@@ -14,6 +15,10 @@ function getAmplifyConfigAndroidPath(projRoot: string): string {
 
 function getAmplifyConfigIOSPath(projRoot: string): string {
   return path.join(projRoot, 'amplifyconfiguration.json');
+}
+
+function getAmplifyConfigFlutterPath(projRoot: string): string {
+  return path.join(projRoot, 'lib', 'amplifyconfiguration.dart');
 }
 
 function getAmplifyDirPath(projRoot: string): string {
@@ -107,6 +112,12 @@ function getAmplifyIOSConfig(projectRoot: string): any {
   return JSONUtilities.readJson(configPath);
 }
 
+function getAmplifyFlutterConfig(projectRoot: string): any {
+  const configPath = getAmplifyConfigFlutterPath(projectRoot);
+  const dartFile = fs.readFileSync(configPath);
+  return JSON.parse(dartFile.toString().split(/'''/)[1]);
+}
+
 function getDeploymentSecrets(): any {
   const deploymentSecretsPath: string = path.join(os.homedir(), '.aws', 'amplify', 'deployment-secrets.json');
   return (
@@ -166,10 +177,12 @@ function setCategoryParameters(projRoot: string, category: string, resourceName:
 export {
   getProjectMeta,
   getProjectTags,
+  getAmplifyFlutterConfig,
   getBackendAmplifyMeta,
   getAwsAndroidConfig,
   getAwsIOSConfig,
   getAmplifyIOSConfig,
+  getAmplifyConfigFlutterPath,
   getAWSConfigAndroidPath,
   getAmplifyConfigAndroidPath,
   getAmplifyConfigIOSPath,
@@ -190,3 +203,4 @@ export {
   getLocalEnvInfo,
   getCustomPoliciesPath,
 };
+/* eslint-enable */
