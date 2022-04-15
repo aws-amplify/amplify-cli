@@ -92,7 +92,7 @@ export const getOwnerClaim = (ownerClaim: string): Expression => {
 export const generateOwnerClaimExpression = (ownerClaim: string, refName: string): CompoundExpressionNode => {
   const expressions: Expression[] = [];
   const identityClaims = ownerClaim.split(':');
-  const hasMultiIdentityClaims = identityClaims.length > 1 && ownerClaim !== 'cognito:username';
+  const hasMultiIdentityClaims = identityClaims.length > 1 && ownerClaim !== DEFAULT_COGNITO_IDENTITY_CLAIM;
 
   if (hasMultiIdentityClaims) {
     identityClaims.forEach((claim, idx) => {
