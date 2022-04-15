@@ -39,28 +39,31 @@ function uploadPkgCli {
     export version=$(./amplify-pkg-linux-x64 --version)
 
     if [[ "$CIRCLE_BRANCH" == "release" ]] || [[ "$CIRCLE_BRANCH" == "beta" ]] || [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
-        aws --profile=s3-uploader s3 cp amplify-pkg-win-x64.exe s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win-$(echo $hash).exe
-        aws --profile=s3-uploader s3 cp amplify-pkg-macos-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos-$(echo $hash)
-        aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-arm64-$(echo $hash)
-        aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64-$(echo $hash)
+        tar -czvf amplify-pkg-linux-arm64.tgz amplify-pkg-linux-arm64
+        tar -czvf amplify-pkg-linux-x64.tgz amplify-pkg-linux-x64
+        tar -czvf amplify-pkg-macos-x64.tgz amplify-macos-x64
+        tar -czvf amplify-pkg-win-x64.tgz amplify-pkg-win-x64.exe
+
+        aws --profile=s3-uploader s3 cp amplify-pkg-win-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win-$(echo $hash).tgz
+        aws --profile=s3-uploader s3 cp amplify-pkg-macos-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos-$(echo $hash).tgz
+        aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-arm64-$(echo $hash).tgz
+        aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64-$(echo $hash).tgz
+
+        if [ "0" -ne "$(aws s3 ls s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64 | egrep -v "amplify-pkg-linux-x64-.*" | wc -l)" ]; then
+            echo "Cannot overwrite existing file at s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64.tgz"
+            exit 1
+        fi
+
+        aws --profile=s3-uploader s3 cp amplify-pkg-win-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win.tgz
+        aws --profile=s3-uploader s3 cp amplify-pkg-macos-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos.tgz
+        aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-arm64.tgz
+        aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64.tgz
+
     else
-        aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64-$(echo $hash)
+        tar -czvf amplify-pkg-linux-x64.tgz amplify-pkg-linux-x64
+        aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64-$(echo $hash).tgz
     fi
 
-    if [ -z "$NPM_TAG" ] && [[ "$CIRCLE_BRANCH" != "release" ]]; then
-        exit 0
-    fi
-
-    echo "Tag name is $NPM_TAG. Uploading to s3://aws-amplify-cli-do-not-delete/$(echo $version)"
-    if [ "0" -ne "$(aws s3 ls s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64 | egrep -v "amplify-pkg-linux-x64-.*" | wc -l)" ]; then
-        echo "Cannot overwrite existing file at s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64"
-        exit 1
-    fi
-
-    aws --profile=s3-uploader s3 cp amplify-pkg-win-x64.exe s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win.exe
-    aws --profile=s3-uploader s3 cp amplify-pkg-macos-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos
-    aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-arm64
-    aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64 s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64
     cd ..
 }
 
@@ -96,12 +99,6 @@ function generatePkgCli {
 
   cd ..
 }
-
-function loginToLocalRegistry {
-    # Login so we can publish packages
-    (cd && npx npm-auth-to-token@1.0.0 -u user -p password -e usser@example.com -r "$custom_registry_url")
-}
-
 function unsetNpmRegistryUrl {
     # Restore the original NPM and Yarn registry URLs
     npm set registry "https://registry.npmjs.org/"
