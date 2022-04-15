@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-ic-changes.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.7.12...@aws-amplify/graphql-auth-transformer@1.0.0-ic-changes.0) (2022-04-15)
+
+
+### Features
+
+* add warning message for identity claim flag and breaking changes ([744fa3c](https://github.com/aws-amplify/amplify-cli/commit/744fa3c86fdf084d7ece513a51fbf9fd834e5b36))
+* replace the post data load slot with a field resolver ([be0cf17](https://github.com/aws-amplify/amplify-cli/commit/be0cf176420313acb72ad576fabc616c57f759d0))
+* support multiclaim auth with searchable ([1856360](https://github.com/aws-amplify/amplify-cli/commit/185636092fe2956c55e8a67364b7cac1fe2a41dc))
+* use feature flag to set identity claim ([050c4c5](https://github.com/aws-amplify/amplify-cli/commit/050c4c50f06b37f7fb5aa15950513195488c7631))
+
+
+### BREAKING CHANGES
+
+* This will store owner records in the database with the format '<sub>:<username>';
+previously, owner fields were stored as '<username>'.
+
+
+
+
+
 ## [0.7.12](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.7.11...@aws-amplify/graphql-auth-transformer@0.7.12) (2022-04-11)
 
 **Note:** Version bump only for package @aws-amplify/graphql-auth-transformer

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.16.5-ic-changes.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.16.4...@aws-amplify/graphql-transformer-core@0.16.5-ic-changes.0) (2022-04-15)
+
+
+### Bug Fixes
+
+* improve instanceof checks to support custom transformers ([#10188](https://github.com/aws-amplify/amplify-cli/issues/10188)) ([f2ac2b2](https://github.com/aws-amplify/amplify-cli/commit/f2ac2b27b6b0dbf0c52edbc696c35b71f539c944))
+
+
+
+
+
 ## [0.16.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.16.3...@aws-amplify/graphql-transformer-core@0.16.4) (2022-04-07)
 
 
