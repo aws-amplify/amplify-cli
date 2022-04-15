@@ -41,7 +41,7 @@ function uploadPkgCli {
     if [[ "$CIRCLE_BRANCH" == "release" ]] || [[ "$CIRCLE_BRANCH" == "beta" ]] || [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
         tar -czvf amplify-pkg-linux-arm64.tgz amplify-pkg-linux-arm64
         tar -czvf amplify-pkg-linux-x64.tgz amplify-pkg-linux-x64
-        tar -czvf amplify-pkg-macos-x64.tgz amplify-macos-x64
+        tar -czvf amplify-pkg-macos-x64.tgz amplify-pkg-macos-x64
         tar -czvf amplify-pkg-win-x64.tgz amplify-pkg-win-x64.exe
 
         aws --profile=s3-uploader s3 cp amplify-pkg-win-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win-$(echo $hash).tgz
