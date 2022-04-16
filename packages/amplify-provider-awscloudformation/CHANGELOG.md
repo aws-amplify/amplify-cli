@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.1.1-beta.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.1.1-beta.4...amplify-provider-awscloudformation@6.1.1-beta.5) (2022-04-16)
+
+
+### Bug Fixes
+
+* accidental changes to meta file reading and resource status filter ([#10227](https://github.com/aws-amplify/amplify-cli/issues/10227)) ([17b5df0](https://github.com/aws-amplify/amplify-cli/commit/17b5df0f91ac17593578b6ff16f0a9b6b8ac1602))
+* amplify meta file resolution, update yarn.lock ([#10225](https://github.com/aws-amplify/amplify-cli/issues/10225)) ([a253c70](https://github.com/aws-amplify/amplify-cli/commit/a253c706aa62539f42114ad3bd92494c7018f39b))
+
+
+
+
+
 ## [6.1.1-beta.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.1.0...amplify-provider-awscloudformation@6.1.1-beta.4) (2022-04-15)
 
 **Note:** Version bump only for package amplify-provider-awscloudformation
