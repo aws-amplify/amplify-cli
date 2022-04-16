@@ -27,6 +27,7 @@ import { AppSyncAuthConfiguration, TransformerPluginProvider } from '@aws-amplif
 import {
   $TSAny,
   $TSContext,
+  $TSMeta,
   $TSObject,
   AmplifyCategories,
   AmplifySupportedService,
@@ -193,7 +194,7 @@ export const transformGraphQLSchema = async (context: $TSContext, options): Prom
   const { forceCompile } = options;
 
   // Compilation during the push step
-  const { resourcesToBeCreated, resourcesToBeUpdated, allResources } = await context.amplify.getResourceStatus();
+  const { resourcesToBeCreated, resourcesToBeUpdated, allResources } = await context.amplify.getResourceStatus(AmplifyCategories.API);
   let resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
 
   // When build folder is missing include the API
@@ -418,8 +419,8 @@ place .graphql files in a directory at ${schemaDirPath}`);
 };
 
 const getProjectBucket = (): string => {
-  const meta = stateManager.getMeta();
-  const projectBucket = meta.providers ? meta.providers[ProviderName].DeploymentBucketName : '';
+  const meta: $TSMeta = stateManager.getMeta(undefined, { throwIfNotExist: false });
+  const projectBucket = meta?.providers ? meta.providers[ProviderName].DeploymentBucketName : '';
   return projectBucket;
 };
 
@@ -460,8 +461,8 @@ export const getDirectiveDefinitions = async (context: $TSContext, resourceDir: 
 const s3ResourceAlreadyExists = (): string | undefined => {
   try {
     let resourceName: string;
-    const amplifyMeta = stateManager.getMeta();
-    if (amplifyMeta[AmplifyCategories.STORAGE]) {
+    const amplifyMeta: $TSMeta = stateManager.getMeta(undefined, { throwIfNotExist: false });
+    if (amplifyMeta?.[AmplifyCategories.STORAGE]) {
       const categoryResources = amplifyMeta[AmplifyCategories.STORAGE];
       Object.keys(categoryResources).forEach(resource => {
         if (categoryResources[resource].service === AmplifySupportedService.S3) {
