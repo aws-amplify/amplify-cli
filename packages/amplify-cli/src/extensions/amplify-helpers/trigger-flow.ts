@@ -503,7 +503,7 @@ export const getTriggerEnvInputs = async (context, triggerPath, triggerKey, trig
             const prompterTypeMapping = {
               input: 'input',
               list: 'pick',
-              confirm: 'yesOrNo',
+              confirm: 'confirmContinue',
             }
             const prompterFunction = prompterTypeMapping[questions[j].question.type];
             const answer: any = await prompter[prompterFunction](questions[j].question.message);
