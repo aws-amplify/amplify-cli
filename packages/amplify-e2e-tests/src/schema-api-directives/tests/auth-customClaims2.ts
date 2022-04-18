@@ -79,12 +79,12 @@ export const createPostMutation = `
 mutation CreatePost {
   createPost(input: {
     id: "1",
-    postname: "post1",
+    name: "post1",
     content: "post1 content"
   }) {
     id
     owner
-    postname
+    name
     content
     createdAt
     updatedAt
@@ -97,7 +97,7 @@ export const expectedResultCreatePostMutation = {
     createPost: {
       id: '1',
       owner: 'user1',
-      postname: 'post1',
+      name: 'post1',
       content: 'post1 content',
       createdAt: '<check-defined>',
       updatedAt: '<check-defined>',
