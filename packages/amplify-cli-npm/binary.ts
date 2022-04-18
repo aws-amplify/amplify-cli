@@ -146,7 +146,9 @@ export class Binary {
 
     const [, , ...args] = process.argv;
     const result = spawnSync(this.binaryPath, args, { cwd: process.cwd(), stdio: 'inherit' });
-
+    if (args[0] === 'uninstall') {
+      spawnSync('npm', ['uninstall', '-g', '@aws-amplify/cli'], { cwd: process.cwd(), stdio: 'inherit' });
+    }
     process.exit(result.status as number);
   }
 
