@@ -73,7 +73,7 @@ const generateDynamicAuthReadExpression = (roles: Array<RoleDefinition>, fields:
               : [
                 iff(
                   or([
-                    equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
+                    equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
                     methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
                   ]),
                   set(ref(IS_AUTHORIZED_FLAG), bool(true)),
