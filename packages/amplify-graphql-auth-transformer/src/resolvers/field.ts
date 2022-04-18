@@ -21,6 +21,7 @@ import {
   notEquals,
   obj,
   list,
+  or,
 } from 'graphql-mapping-template';
 import {
   RoleDefinition,
@@ -40,6 +41,7 @@ import {
   lambdaExpression,
   getIdentityClaimExp,
   generateOwnerClaimExpression,
+  generateOwnerClaimListExpression,
 } from './helpers';
 
 // Field Read VTL Functions
@@ -55,16 +57,29 @@ const generateDynamicAuthReadExpression = (roles: Array<RoleDefinition>, fields:
           compoundExpression([
             set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.source.${role.entity!}`), nul())),
             generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`),
+            generateOwnerClaimListExpression(role.claim!, idx),
             ...(entityIsList
               ? [
                 forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
                   iff(
-                    equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
+                    or([
+                      equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
+                      methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
+                    ]),
                     compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')]),
                   ),
                 ]),
               ]
-              : [iff(equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true)))]),
+              : [
+                iff(
+                  or([
+                    equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
+                    methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
+                  ]),
+                  set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+                ),
+              ]
+            ),
           ]),
         ),
       );
