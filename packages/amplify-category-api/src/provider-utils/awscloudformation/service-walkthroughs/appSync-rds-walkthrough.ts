@@ -62,7 +62,7 @@ export async function serviceWalkthrough(context: $TSContext, datasourceMetadata
 
   // RDS Cluster Question
   let selectedClusterArn = cfnJsonParameters.rdsClusterIdentifier
-  let clusterResourceId = getClusterResourceIdFromArn(selectedClusterArn, AWS);
+  let clusterResourceId = getRdsClusterResourceIdFromArn(selectedClusterArn, AWS);
   if (!selectedClusterArn || !clusterResourceId) {
     ({ selectedClusterArn, clusterResourceId } = await selectCluster(context, inputs, AWS));
   }
@@ -88,7 +88,8 @@ export async function serviceWalkthrough(context: $TSContext, datasourceMetadata
   };
 }
 
-async function getClusterResourceIdFromArn(arn: string|undefined, AWS) {
+async function getRdsClusterResourceIdFromArn(arn: string|undefined, AWS) {
+  // If the arn was not already existing in cloudformation template, return undefined to prompt for input.
   if (!arn) {
     return;
   }
