@@ -59,16 +59,19 @@ test('auth logic is enabled on owner/static rules in es request', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
-    featureFlags: {
-      ...featureFlags,
-      ...{ getBoolean: () => false },
-    },
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   // expect response resolver to contain auth logic for owner rule
   expect(out).toBeDefined();
   expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain(
-    '"terms":       [$util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), "___xamznone____"))],',
+    '#set( $ownerClaim0 = "$ownerClaim0::$currentClaim1" )',
+  );
+  expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain(
+    '$util.qr($ownerClaimsList0.add($ownerClaim0))',
+  );
+  expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain(
+    '"terms": $ownerClaimsList0,',
   );
   // expect response resolver to contain auth logic for group rule
   expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain(
@@ -124,4 +127,51 @@ test('auth logic is enabled for iam/apiKey auth rules', () => {
   expect(out.resolvers['Query.searchPosts.auth.1.req.vtl']).toContain(
     '#set( $allowedAggFields = ["createdAt","updatedAt","id","content"] )',
   );
+});
+
+describe('identity flag feature flag disabled', () => {
+  test('auth logic is enabled on owner/static rules in es request', () => {
+    const validSchema = `
+          type Comment @model
+              @searchable
+              @auth(rules: [
+                  { allow: owner }
+                  { allow: groups, groups: ["writer"]}
+              ])
+          {
+              id: ID!
+              content: String
+          }
+      `;
+    const authConfig: AppSyncAuthConfiguration = {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [],
+    };
+    const transformer = new GraphQLTransform({
+      authConfig,
+      transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
+      featureFlags: {
+        ...featureFlags,
+        ...{ getBoolean: () => false },
+      },
+    });
+    const out = transformer.transform(validSchema);
+    // expect response resolver to contain auth logic for owner rule
+    expect(out).toBeDefined();
+    expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain(
+      '#set( $ownerClaim0 = "$ownerClaim0::$currentClaim1" )',
+    );
+    expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain(
+      '$util.qr($ownerClaimsList0.add($ownerClaim0))',
+    );
+    expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain(
+      '"terms": $ownerClaimsList0,',
+    );
+    // expect response resolver to contain auth logic for group rule
+    expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain(
+      '#set( $staticGroupRoles = [{"claim":"cognito:groups","entity":"writer"}] )',
+    );
+  });
 });
