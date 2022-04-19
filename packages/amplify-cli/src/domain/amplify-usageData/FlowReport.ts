@@ -63,6 +63,18 @@ export class CLIFlowReport implements IFlowData {
     }
 
     /**
+     * Singleton instance resetter //used only for testing
+     * @param input 
+     */
+     static reset() : CLIFlowReport {
+      if (CLIFlowReport._instance) {
+        CLIFlowReport._instance = new CLIFlowReport();
+      }
+      CLIFlowReport._instance.timestamp = (new Date()).toString();
+      return CLIFlowReport._instance;
+    }
+
+    /**
      * Set the CLI input args
      * @param input - first arguments provided in the CLI flow
      */
