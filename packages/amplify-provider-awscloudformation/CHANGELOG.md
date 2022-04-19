@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.1.2-ic-changes.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.1.1...amplify-provider-awscloudformation@6.1.2-ic-changes.3) (2022-04-19)
+
+
+### Bug Fixes
+
+* show mfa prompt ([#9954](https://github.com/aws-amplify/amplify-cli/issues/9954)) ([5176dba](https://github.com/aws-amplify/amplify-cli/commit/5176dba3c41e66471f440e772006b62536b34090))
+
+
+
+
+
 ## [6.1.2-ic-changes.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.1.1...amplify-provider-awscloudformation@6.1.2-ic-changes.2) (2022-04-19)
 
 

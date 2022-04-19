@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-ic-changes.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.8.0...@aws-amplify/graphql-auth-transformer@1.0.0-ic-changes.3) (2022-04-19)
+
+
+### Bug Fixes
+
+* generate field resolver when claim has colon ([5e2e560](https://github.com/aws-amplify/amplify-cli/commit/5e2e56017edf3ec2f212b0b470d84c51d64435ad))
+* match identifier values when populating input ([e61e9fc](https://github.com/aws-amplify/amplify-cli/commit/e61e9fcd14f9c0d67ecf0e7f6ca179a5c21ef374))
+* match identifier values when populating input ([7156aeb](https://github.com/aws-amplify/amplify-cli/commit/7156aebe283de8e827149badab1fb99b8c5376df))
+
+
+### Features
+
+* add warning message for identity claim flag and breaking changes ([45e55fb](https://github.com/aws-amplify/amplify-cli/commit/45e55fba523b67485c153509e2dd56c657177a11))
+* support search with colon delimited claim ([8d99be2](https://github.com/aws-amplify/amplify-cli/commit/8d99be27ff2d810bce20d8db0d082c73c019895d))
+* use feature flag to set identity claim ([f4a0078](https://github.com/aws-amplify/amplify-cli/commit/f4a0078ac5cc2bfa438acd9fa0de335bcd02e666))
+
+
+### Reverts
+
+* Revert "Revert "feat: add handling of colon-delimited identity claims to query (#10189)" (#10213)" ([54d6787](https://github.com/aws-amplify/amplify-cli/commit/54d6787c85f1732afbbe8df1b28c0618be4c0a39)), closes [#10189](https://github.com/aws-amplify/amplify-cli/issues/10189) [#10213](https://github.com/aws-amplify/amplify-cli/issues/10213)
+
+
+### BREAKING CHANGES
+
+* This will store owner records in the database with the format '<sub>:<username>';
+previously, owner fields were stored as '<username>'.
+
+
+
+
+
 # [1.0.0-ic-changes.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.8.0...@aws-amplify/graphql-auth-transformer@1.0.0-ic-changes.2) (2022-04-19)
 
 
