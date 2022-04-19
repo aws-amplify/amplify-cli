@@ -351,8 +351,8 @@ function runCompare(queue: { received: any; expected: any; depth: number }[]): b
     } else if (itemToCompare.expected === '<check-defined>') {
       result = itemToCompare.received !== null && itemToCompare.received !== undefined;
     } else if (itemToCompare.expected === '<uuid>:<username>') {
-      result = itemToCompare.received.split(':');
-      result = result[0].match(UUID_REGEX);
+      const [itemPrefix] = itemToCompare.received.split(':');
+      result = itemPrefix.match(UUID_REGEX);
     } else {
       result = itemToCompare.received === itemToCompare.expected;
     }
