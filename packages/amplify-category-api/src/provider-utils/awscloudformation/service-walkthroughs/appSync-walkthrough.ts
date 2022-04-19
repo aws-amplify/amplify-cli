@@ -537,7 +537,7 @@ async function displayApiInformation(context: $TSContext, resource: $TSObject, p
 
 async function displayAuthMode(context: $TSContext, resource: $TSObject, authMode: string) {
   if (authMode === 'API_KEY' && resource.output.GraphQLAPIKeyOutput) {
-    let { apiKeys } = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getAppSyncApiKeys', {
+    let { apiKeys } = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getGraphQLApiKeys', {
       apiId: resource.output.GraphQLAPIIdOutput,
     });
     let apiKeyExpires = apiKeys.find(key => key.id == resource.output.GraphQLAPIKeyOutput)?.expires;
