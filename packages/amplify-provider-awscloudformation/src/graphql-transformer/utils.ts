@@ -4,36 +4,20 @@ import { TransformerProjectConfig, DeploymentResources } from '@aws-amplify/grap
 import rimraf from 'rimraf';
 import { ProviderName as providerName } from '../constants';
 import { $TSContext, AmplifyCategories, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
-import { CloudFormation, Template, Fn } from 'cloudform';
-import { Diff, diff as getDiffs } from 'deep-diff';
+import { CloudFormation, Fn } from 'cloudform';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { pullAllBy, find } from 'lodash';
 import { isAmplifyAdminApp } from '../utils/admin-helpers';
 import { printer } from 'amplify-prompts';
 import { prePushCfnTemplateModifier } from '../pre-push-cfn-processor/pre-push-cfn-modifier';
 
-const ROOT_STACK_FILE_NAME = 'cloudformation-template.json';
 const PARAMETERS_FILE_NAME = 'parameters.json';
 const CUSTOM_ROLES_FILE_NAME = 'custom-roles.json';
 const AMPLIFY_ADMIN_ROLE = '_Full-access/CognitoIdentityCredentials';
 const AMPLIFY_MANAGE_ROLE = '_Manage-only/CognitoIdentityCredentials';
 
-export interface CustomRolesConfig {
+interface CustomRolesConfig {
   adminRoleNames?: Array<string>;
-}
-export interface DiffableProject {
-  stacks: {
-    [stackName: string]: Template;
-  };
-  root: Template;
-}
-
-export type DiffChanges<T> = Array<Diff<DiffableProject, DiffableProject>>;
-
-export interface GQLDiff {
-  diff: DiffChanges<DiffableProject>;
-  next: DiffableProject;
-  current: DiffableProject;
 }
 
 export const getIdentityPoolId = async (ctx: $TSContext): Promise<string | undefined> => {
@@ -89,59 +73,6 @@ export const getAdminRoles = async (ctx: $TSContext, apiResourceName: string | u
   }
   return adminRoles;
 };
-
-export const getGQLDiff = (currentBackendDir: string, cloudBackendDir: string): GQLDiff => {
-  const currentBuildDir = path.join(currentBackendDir, 'build');
-  const cloudBuildDir = path.join(cloudBackendDir, 'build');
-  if (fs.existsSync(cloudBuildDir) && fs.existsSync(currentBuildDir)) {
-    const current = loadDiffableProject(cloudBuildDir, ROOT_STACK_FILE_NAME);
-    const next = loadDiffableProject(currentBuildDir, ROOT_STACK_FILE_NAME);
-    return { current, next, diff: getDiffs(current, next) };
-  }
-  return null;
-};
-
-export const getGqlUpdatedResource = (resources: any[]) =>
-  resources.find(
-    resource =>
-      resource?.service === 'AppSync' && resource?.providerMetadata?.logicalId && resource?.providerPlugin === 'awscloudformation',
-  ) || null;
-
-export function loadDiffableProject(path: string, rootStackName: string): DiffableProject {
-  const project = readFromPath(path);
-  const currentStacks = project.stacks || {};
-  const diffableProject: DiffableProject = {
-    stacks: {},
-    root: {},
-  };
-  for (const key of Object.keys(currentStacks)) {
-    diffableProject.stacks[key] = JSONUtilities.parse(project.stacks[key]);
-  }
-  if (project[rootStackName]) {
-    diffableProject.root = JSONUtilities.parse(project[rootStackName]);
-  }
-  return diffableProject;
-}
-
-export function readFromPath(directory: string): any {
-  const pathExists = fs.pathExistsSync(directory);
-  if (!pathExists) {
-    return;
-  }
-  const dirStats = fs.lstatSync(directory);
-  if (!dirStats.isDirectory()) {
-    const buf = fs.readFileSync(directory);
-    return buf.toString();
-  }
-  const files = fs.readdirSync(directory);
-  const accum = {};
-  for (const fileName of files) {
-    const fullPath = path.join(directory, fileName);
-    const value = readFromPath(fullPath);
-    accum[fileName] = value;
-  }
-  return accum;
-}
 
 export function mergeUserConfigWithTransformOutput(
   userConfig: TransformerProjectConfig,
@@ -368,7 +299,7 @@ function stacksDirectoryPath(rootPath: string) {
   return path.normalize(rootPath + `/stacks`);
 }
 
-export function throwIfNotJSONExt(stackFile: string) {
+function throwIfNotJSONExt(stackFile: string) {
   const extension = path.extname(stackFile);
   if (extension === '.yaml' || extension === '.yml') {
     throw new Error(`Yaml is not yet supported. Please convert the CloudFormation stack ${stackFile} to json.`);

@@ -1,7 +1,7 @@
 import * as gsiTestHelper from './gsi-test-helpers';
-import { Diff, diff as getDiffs } from 'deep-diff';
+import { diff as getDiffs } from 'deep-diff';
 import { DynamoDB } from 'cloudform';
-import { DiffableProject } from '../../graphql-transformer/utils';
+import { DiffableProject } from '../../graphql-resource-manager/utils';
 
 export const getDiffedProject = (
   currentGSI: gsiTestHelper.GSIDefinition[] | undefined,

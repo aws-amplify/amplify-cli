@@ -51,7 +51,7 @@ import { prePushAuthTransform } from './auth-transform';
 import { transformGraphQLSchema } from './transform-graphql-schema';
 import { displayHelpfulURLs } from './display-helpful-urls';
 import { downloadAPIModels } from './download-api-models';
-import { GraphQLResourceManager } from './graphql-transformer';
+import { GraphQLResourceManager } from './graphql-resource-manager';
 import { loadResourceParameters } from './resourceParams';
 import { uploadAuthTriggerFiles } from './upload-auth-trigger-files';
 import archiver from './utils/archiver';
@@ -59,7 +59,6 @@ import amplifyServiceManager from './amplify-service-manager';
 import {
   DeploymentManager, DeploymentStep, DeploymentOp, DeploymentStateManager, runIterativeRollback,
 } from './iterative-deployment';
-import { getGqlUpdatedResource } from './graphql-transformer/utils';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { fileLogger } from './utils/aws-logger';
 import { APIGW_AUTH_STACK_LOGICAL_ID, loadApiCliInputs } from './utils/consolidate-apigw-policies';
@@ -211,6 +210,13 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
 
     // Check if iterative updates are enabled or not and generate the required deployment steps if needed.
     if (FeatureFlags.getBoolean('graphQLTransformer.enableIterativeGSIUpdates')) {
+      const getGqlUpdatedResource = (resourcesToCheck: any[]) => resourcesToCheck.find(
+        resourceToCheck => (
+          resourceToCheck?.service === 'AppSync'
+          && resourceToCheck?.providerMetadata?.logicalId
+          && resourceToCheck?.providerPlugin === 'awscloudformation'
+        ),
+      ) || null;
       const gqlResource = getGqlUpdatedResource(rebuild ? resources : resourcesToBeUpdated);
 
       if (gqlResource) {
