@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.1-ic-changes.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.8.0...@aws-amplify/graphql-relational-transformer@0.8.1-ic-changes.2) (2022-04-19)
+
+
+### Reverts
+
+* Revert "Revert "feat: add handling of colon-delimited identity claims to query (#10189)" (#10213)" ([54d6787](https://github.com/aws-amplify/amplify-cli/commit/54d6787c85f1732afbbe8df1b28c0618be4c0a39)), closes [#10189](https://github.com/aws-amplify/amplify-cli/issues/10189) [#10213](https://github.com/aws-amplify/amplify-cli/issues/10213)
+
+
+
+
+
+## [0.8.1-ic-changes.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.8.0...@aws-amplify/graphql-relational-transformer@0.8.1-ic-changes.1) (2022-04-19)
+
+
+### Reverts
+
+* Revert "Revert "feat: add handling of colon-delimited identity claims to query (#10189)" (#10213)" ([54d6787](https://github.com/aws-amplify/amplify-cli/commit/54d6787c85f1732afbbe8df1b28c0618be4c0a39)), closes [#10189](https://github.com/aws-amplify/amplify-cli/issues/10189) [#10213](https://github.com/aws-amplify/amplify-cli/issues/10213)
+
+
+
+
+
+## [0.8.1-ic-changes.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.8.0...@aws-amplify/graphql-relational-transformer@0.8.1-ic-changes.0) (2022-04-19)
+
+
+### Reverts
+
+* Revert "Revert "feat: add handling of colon-delimited identity claims to query (#10189)" (#10213)" ([54d6787](https://github.com/aws-amplify/amplify-cli/commit/54d6787c85f1732afbbe8df1b28c0618be4c0a39)), closes [#10189](https://github.com/aws-amplify/amplify-cli/issues/10189) [#10213](https://github.com/aws-amplify/amplify-cli/issues/10213)
+
+
+
+
+
 # [0.8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.7.11...@aws-amplify/graphql-relational-transformer@0.8.0) (2022-04-18)
 
 

@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.11-ic-changes.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.10...@aws-amplify/amplify-category-auth@2.7.11-ic-changes.2) (2022-04-19)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
+## [2.7.11-ic-changes.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.10...@aws-amplify/amplify-category-auth@2.7.11-ic-changes.1) (2022-04-19)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
+## [2.7.11-ic-changes.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.10...@aws-amplify/amplify-category-auth@2.7.11-ic-changes.0) (2022-04-19)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
 ## [2.7.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.9...@aws-amplify/amplify-category-auth@2.7.10) (2022-04-18)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-auth

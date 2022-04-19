@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.0.3-ic-changes.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@8.0.2...@aws-amplify/cli@8.0.3-ic-changes.2) (2022-04-19)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [8.0.3-ic-changes.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@8.0.2...@aws-amplify/cli@8.0.3-ic-changes.1) (2022-04-19)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [8.0.3-ic-changes.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@8.0.2...@aws-amplify/cli@8.0.3-ic-changes.0) (2022-04-19)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
 ## [8.0.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@8.0.1...@aws-amplify/cli@8.0.2) (2022-04-18)
 
 

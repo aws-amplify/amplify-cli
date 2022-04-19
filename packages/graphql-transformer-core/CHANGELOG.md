@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.4.14-ic-changes.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.4.13...graphql-transformer-core@7.4.14-ic-changes.2) (2022-04-19)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+## [7.4.14-ic-changes.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.4.13...graphql-transformer-core@7.4.14-ic-changes.1) (2022-04-19)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+## [7.4.14-ic-changes.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.4.13...graphql-transformer-core@7.4.14-ic-changes.0) (2022-04-19)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
 ## [7.4.13](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.4.12...graphql-transformer-core@7.4.13) (2022-04-11)
 
 **Note:** Version bump only for package graphql-transformer-core
