@@ -192,8 +192,6 @@ export class UsageData implements IUsageData {
       Object.fromEntries(this.codePathDurations),
       this.flow.getFlowReport() as IFlowReport,
     );
-    await this.send(payload);
-
     return payload;
   }
 
