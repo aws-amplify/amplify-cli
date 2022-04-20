@@ -18,7 +18,7 @@
     "amplify-cli-core": "2.5.2",
     "amplify-prompts": "2.0.0",
     "amplify-provider-awscloudformation": "6.1.1",
-    "aws-sdk": "2.1113.0",
+    "aws-sdk": "^2.1113.0",
     "ora": "^4.0.3"
   },
   "devDependencies": {
