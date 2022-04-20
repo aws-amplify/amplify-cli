@@ -385,10 +385,11 @@ export class TransformerResolver implements TransformerResolverProvider {
    * substitueSlotInfo
    */
   private substitueSlotInfo(template: MappingTemplateProvider, slotName: string, index: number) {
-    if (template instanceof S3MappingTemplate) {
-      template.substitueValues({
-        slotName, slotIndex: index, typeName: this.typeName, fieldName: this.fieldName,
-      });
+    // Check the constructor name instead of using 'instanceof' because the latter does not work
+    // with copies of the class, which happens with custom transformers.
+    // See: https://github.com/aws-amplify/amplify-cli/issues/9362
+    if (template.constructor.name === S3MappingTemplate.name) {
+      (template as S3MappingTemplate).substitueValues({ slotName, slotIndex: index, typeName: this.typeName, fieldName: this.fieldName });
     }
   }
 

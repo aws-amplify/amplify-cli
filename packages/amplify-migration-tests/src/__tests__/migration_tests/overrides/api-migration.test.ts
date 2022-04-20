@@ -215,7 +215,7 @@ describe('api migration update test', () => {
       testingWithLatestCodebase: false,
     });
     await amplifyPush(projRoot);
-    await updateHeadlessApi(projRoot, updateApiRequest, true);
+    await updateHeadlessApi(projRoot, updateApiRequest, true, { testingWithLatestCodebase: true });
     expect(getCLIInputs(projRoot, 'api', 'myApiName')).toBeDefined();
     await amplifyPushUpdate(projRoot, undefined, undefined, true);
 

@@ -23,7 +23,7 @@ describe('should notify when packages are missing', () => {
         },
       },
     };
-    notifyMissingPackages(context as JSONUtilitiesDependency.$TSContext, []);
+    notifyMissingPackages(context as JSONUtilitiesDependency.$TSContext);
     expect(printerDependency.printer.debug).toBeCalledTimes(1);
   });
 
@@ -39,7 +39,7 @@ describe('should notify when packages are missing', () => {
         },
       },
     };
-    notifyMissingPackages(context as JSONUtilitiesDependency.$TSContext, []);
+    notifyMissingPackages(context as JSONUtilitiesDependency.$TSContext);
     expect(printerDependency.printer.debug).toBeCalledTimes(1);
   });
 
@@ -51,7 +51,7 @@ describe('should notify when packages are missing', () => {
         },
       },
     };
-    notifyMissingPackages(context as JSONUtilitiesDependency.$TSContext, []);
+    notifyMissingPackages(context as JSONUtilitiesDependency.$TSContext);
     expect(printerDependency.printer.warn).toBeCalledTimes(1);
   });
 
@@ -67,7 +67,7 @@ describe('should notify when packages are missing', () => {
         },
       },
     };
-    notifyMissingPackages(context as JSONUtilitiesDependency.$TSContext, []);
+    notifyMissingPackages(context as JSONUtilitiesDependency.$TSContext);
     expect(printerDependency.printer.warn).toBeCalledTimes(1);
   });
 });

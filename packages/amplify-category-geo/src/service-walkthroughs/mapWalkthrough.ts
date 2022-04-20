@@ -5,7 +5,7 @@ import { MapParameters, getGeoMapStyle, MapStyle, getMapStyleComponents, EsriMap
 import { apiDocs, ServiceName } from '../service-utils/constants';
 import { $TSContext } from 'amplify-cli-core';
 import { getCurrentMapParameters, getMapFriendlyNames } from '../service-utils/mapUtils';
-import { getGeoServiceMeta, updateDefaultResource, checkGeoResourceExists} from '../service-utils/resourceUtils';
+import { getGeoServiceMeta, updateDefaultResource, checkGeoResourceExists, getGeoResources } from '../service-utils/resourceUtils';
 import { resourceAccessWalkthrough, defaultResourceQuestion } from './resourceWalkthrough';
 import { DataProvider } from '../service-utils/resourceParams';
 import { printer, formatter, prompter, alphanumeric } from 'amplify-prompts';
@@ -23,7 +23,7 @@ export const createMapWalkthrough = async (
   parameters = merge(parameters, await mapNameWalkthrough(context));
 
   // get the access
-  parameters = merge(parameters, await resourceAccessWalkthrough(parameters, ServiceName.Map));
+  parameters = merge(parameters, await resourceAccessWalkthrough(context, parameters, ServiceName.Map));
 
   // optional advanced walkthrough
   parameters = merge(parameters, await mapAdvancedWalkthrough(context, parameters));
@@ -52,14 +52,17 @@ export const mapNameWalkthrough = async (context: any): Promise<Partial<MapParam
             { validate: alphanumeric(), initial: `map${shortId}` }
         );
         if (await checkGeoResourceExists(mapNameInput)) {
-            printer.info(`Map ${mapNameInput} already exists. Choose another name.`);
+            printer.info(`Geo resource ${mapNameInput} already exists. Choose another name.`);
         }
         else mapName = mapNameInput;
     }
     return { name: mapName };
 };
 
-export const mapAdvancedWalkthrough = async (context: $TSContext, parameters: Partial<MapParameters>): Promise<Partial<MapParameters>> => {
+export const mapAdvancedWalkthrough = async (
+    context: $TSContext,
+    parameters: Partial<MapParameters>
+): Promise<Partial<MapParameters>> => {
     const advancedSettingOptions: string[] = ['Map style & Map data provider (default: Streets provided by Esri)'];
     printer.info('Available advanced settings:');
     formatter.list(advancedSettingOptions);
@@ -109,15 +112,12 @@ export const updateMapWalkthrough = async (
     parameters: Partial<MapParameters>,
     resourceToUpdate?: string
 ): Promise<Partial<MapParameters>> => {
-    const mapResources = ((await context.amplify.getResourceStatus()).allResources as any[])
-    .filter(resource => resource.service === ServiceName.Map)
+    const mapResourceNames = await getGeoResources(ServiceName.Map);
 
-    if (mapResources.length === 0) {
+    if (mapResourceNames.length === 0) {
         printer.error('No Map resource to update. Use "amplify add geo" to create a new Map.');
         return parameters;
     }
-
-    const mapResourceNames = mapResources.map(resource => resource.resourceName);
 
     if (resourceToUpdate) {
         if (!mapResourceNames.includes(resourceToUpdate)) {
@@ -133,9 +133,11 @@ export const updateMapWalkthrough = async (
     parameters = merge(parameters, await getCurrentMapParameters(resourceToUpdate));
 
     // overwrite the parameters based on user input
-    parameters.accessType = (await resourceAccessWalkthrough(parameters, ServiceName.Map)).accessType;
+    const mapAccessSettings = (await resourceAccessWalkthrough(context, parameters, ServiceName.Map));
+    parameters.accessType = mapAccessSettings.accessType;
+    parameters.groupPermissions = mapAccessSettings.groupPermissions;
 
-    const otherMapResources = mapResourceNames.filter(mapResourceName => mapResourceName != resourceToUpdate);
+    const otherMapResources = mapResourceNames.filter(mapResourceName => mapResourceName !== resourceToUpdate);
     // if this is the only map, default cannot be removed
     if (otherMapResources.length > 0) {
         const isDefault = await prompter.yesOrNo(defaultResourceQuestion(ServiceName.Map), true);
@@ -164,11 +166,9 @@ export const updateDefaultMapWalkthrough = async (
     availableMaps?: string[]
 ): Promise<string> => {
     if (!availableMaps) {
-        availableMaps = ((await context.amplify.getResourceStatus()).allResources as any[])
-        .filter(resource => resource.service === ServiceName.Map)
-        .map(resource => resource.resourceName);
+        availableMaps = await getGeoResources(ServiceName.Map);
     }
-    const otherMapResources = availableMaps.filter(mapResourceName => mapResourceName != currentDefault);
+    const otherMapResources = availableMaps.filter(mapResourceName => mapResourceName !== currentDefault);
     if (otherMapResources?.length > 0) {
         const mapFriendlyNames = await getMapFriendlyNames(otherMapResources);
         const mapChoices = mapFriendlyNames.map((friendlyName, index) => ({ name: friendlyName, value: otherMapResources[index] }));

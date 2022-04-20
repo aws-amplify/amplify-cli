@@ -17,7 +17,9 @@ import {
   nul,
   ifElse,
 } from 'graphql-mapping-template';
-import { emptyPayload, getIdentityClaimExp, getOwnerClaim, iamAdminRoleCheckExpression, iamCheck, setHasAuthExpression } from './helpers';
+import {
+  emptyPayload, getIdentityClaimExp, getOwnerClaim, iamAdminRoleCheckExpression, iamCheck, setHasAuthExpression,
+} from './helpers';
 import {
   API_KEY_AUTH_TYPE,
   COGNITO_AUTH_TYPE,
@@ -33,38 +35,33 @@ import {
 
 /**
  * There is only one role for ApiKey we can use the first index
- * @param roles
- * @returns Expression | null
  */
-const apiKeyExpression = (roles: Array<RoleDefinition>) => {
+const apiKeyExpression = (roles: Array<RoleDefinition>): Expression | null => {
   const expression = new Array<Expression>();
   if (roles.length === 0) {
     return iff(equals(ref('util.authType()'), str(API_KEY_AUTH_TYPE)), ref('util.unauthorized()'));
-  } else {
-    expression.push(set(ref(IS_AUTHORIZED_FLAG), bool(true)));
   }
+  expression.push(set(ref(IS_AUTHORIZED_FLAG), bool(true)));
   return iff(equals(ref('util.authType()'), str(API_KEY_AUTH_TYPE)), compoundExpression(expression));
 };
 /**
  * No need to combine allowed fields as the request can only be signed by one iam role
- * @param roles
- * @returns
  */
 const iamExpression = (
   roles: Array<RoleDefinition>,
-  hasAdminRolesEnabled: boolean = false,
+  hasAdminRolesEnabled = false,
   adminRoles: Array<string> = [],
   identityPoolId?: string,
-) => {
+): Expression | null => {
   const expression = new Array<Expression>();
   // allow if using an admin role
   if (hasAdminRolesEnabled) {
     expression.push(iamAdminRoleCheckExpression(adminRoles));
   }
   if (roles.length > 0) {
-    for (let role of roles) {
+    roles.forEach(role => {
       expression.push(iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)), identityPoolId));
-    }
+    });
   } else {
     expression.push(ref('util.unauthorized()'));
   }
@@ -73,21 +70,19 @@ const iamExpression = (
 
 /**
  * There is only one role for Lambda we can use the first index
- * @param roles
- * @returns Expression | null
  */
-const lambdaExpression = (roles: Array<RoleDefinition>) => {
+const lambdaExpression = (roles: Array<RoleDefinition>): Expression | null => {
   const expression = new Array<Expression>();
   if (roles.length === 0) {
     return iff(equals(ref('util.authType()'), str(LAMBDA_AUTH_TYPE)), ref('util.unauthorized()'));
-  } else {
-    expression.push(set(ref(IS_AUTHORIZED_FLAG), bool(true)));
   }
+  expression.push(set(ref(IS_AUTHORIZED_FLAG), bool(true)));
+
   return iff(equals(ref('util.authType()'), str(LAMBDA_AUTH_TYPE)), compoundExpression(expression));
 };
 
 const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
-  const staticRoleExpression: Array<Expression> = new Array();
+  const staticRoleExpression: Array<Expression> = [];
   const privateRoleIdx = roles.findIndex(r => r.strategy === 'private');
   if (privateRoleIdx > -1) {
     staticRoleExpression.push(set(ref(IS_AUTHORIZED_FLAG), bool(true)));
@@ -113,7 +108,10 @@ const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expre
   return staticRoleExpression;
 };
 
-const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: ReadonlyArray<FieldDefinitionNode>) => {
+const dynamicGroupRoleExpression = (
+  roles: Array<RoleDefinition>,
+  fields: ReadonlyArray<FieldDefinitionNode>,
+): Expression[] => {
   const ownerExpression = new Array<Expression>();
   const dynamicGroupExpression = new Array<Expression>();
   roles.forEach((role, idx) => {
@@ -127,10 +125,10 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
             set(ref(`ownerClaim${idx}`), getOwnerClaim(role.claim!)),
             ...(entityIsList
               ? [
-                  forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
-                    iff(equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true))),
-                  ]),
-                ]
+                forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
+                  iff(equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true))),
+                ]),
+              ]
               : [iff(equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true)))]),
           ]),
         ),
@@ -147,10 +145,10 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
             ),
             set(ref(`groupClaim${idx}`), getIdentityClaimExp(str(role.claim!), list([]))),
             iff(
-              methodCall(ref(`util.isString`), ref(`groupClaim${idx}`)),
+              methodCall(ref('util.isString'), ref(`groupClaim${idx}`)),
               ifElse(
-                methodCall(ref(`util.isList`), methodCall(ref(`util.parseJson`), ref(`groupClaim${idx}`))),
-                set(ref(`groupClaim${idx}`), methodCall(ref(`util.parseJson`), ref(`groupClaim${idx}`))),
+                methodCall(ref('util.isList'), methodCall(ref('util.parseJson'), ref(`groupClaim${idx}`))),
+                set(ref(`groupClaim${idx}`), methodCall(ref('util.parseJson'), ref(`groupClaim${idx}`))),
                 set(ref(`groupClaim${idx}`), list([ref(`groupClaim${idx}`)])),
               ),
             ),
@@ -170,13 +168,17 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
   return [...(ownerExpression.length > 0 ? ownerExpression : []), ...(dynamicGroupExpression.length > 0 ? dynamicGroupExpression : [])];
 };
 
+/**
+ * Generates auth expression for delete
+ */
 export const generateAuthExpressionForDelete = (
   providers: ConfiguredAuthProviders,
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
-) => {
-  const { cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles } =
-    splitRoles(roles);
+): string => {
+  const {
+    cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles,
+  } = splitRoles(roles);
   const totalAuthExpressions: Array<Expression> = [setHasAuthExpression, set(ref(IS_AUTHORIZED_FLAG), bool(false))];
   if (providers.hasApiKey) {
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));

@@ -1,25 +1,21 @@
-import { pathManager, JSONUtilities, $TSContext, $TSAny } from 'amplify-cli-core';
+import {
+  pathManager, JSONUtilities, $TSContext, $TSAny,
+} from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import fs from 'fs-extra';
 import path from 'path';
 import rangeSubset from 'semver/ranges/subset';
+import { RequiredDependency } from '@aws-amplify/codegen-ui';
+import { ReactRequiredDependencyProvider } from '@aws-amplify/codegen-ui-react';
 import { extractArgs } from './extractArgs';
-import { ReactRequiredDependencyProvider } from '@aws-amplify/codegen-ui-react-old';
-import { ReactRequiredDependencyProvider as ReactRequiredDependencyProviderNew } from '@aws-amplify/codegen-ui-react-new';
-import { StudioComponent } from '@aws-amplify/codegen-ui-new';
 
-const isUpdatedSchema = (schemas: StudioComponent[]) => {
-  return schemas.some(schema => schema.schemaVersion && schema.schemaVersion === '1.0');
-};
+const getRequiredDependencies = (): RequiredDependency[] => new ReactRequiredDependencyProvider().getRequiredDependencies();
 
-const getRequiredDependencies = (schemas: StudioComponent[]) => {
-  if (isUpdatedSchema(schemas)) {
-    return new ReactRequiredDependencyProviderNew().getRequiredDependencies();
-  }
-  return new ReactRequiredDependencyProvider().getRequiredDependencies();
-};
-
-export const notifyMissingPackages = (context: $TSContext, schemas: StudioComponent[]) => {
+/**
+ * Displays a warning to the user if they have npm dependencies
+ * they need to install in their application for UIBuilder components to work properly
+ */
+export const notifyMissingPackages = (context: $TSContext): void => {
   const args = extractArgs(context);
   const localEnvFilePath = args.localEnvFilePath ?? pathManager.getLocalEnvFilePath();
   if (!fs.existsSync(localEnvFilePath)) {
@@ -33,7 +29,7 @@ export const notifyMissingPackages = (context: $TSContext, schemas: StudioCompon
     return;
   }
   const packageJson = JSONUtilities.readJson(packageJsonPath) as { dependencies: { [key: string]: string } };
-  getRequiredDependencies(schemas).forEach((dependency: $TSAny) => {
+  getRequiredDependencies().forEach((dependency: $TSAny) => {
     const packageIsInstalled = Object.keys(packageJson.dependencies).includes(dependency.dependencyName);
     if (!packageIsInstalled) {
       printer.warn(

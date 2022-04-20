@@ -68,10 +68,8 @@ async function add(context, skipNextSteps = false) {
 async function transformCategoryStack(context, resource) {
   if (resource.service === AmplifySupportedService.COGNITO) {
     if (canResourceBeTransformed(resource.resourceName)) {
-      generateAuthStackTemplate(context, resource.resourceName);
+      await generateAuthStackTemplate(context, resource.resourceName);
     }
-  } else if (resource.service === 'S3') {
-    // Not yet implemented
   }
 }
 

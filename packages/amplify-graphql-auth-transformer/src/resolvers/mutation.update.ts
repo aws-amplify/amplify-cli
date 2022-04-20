@@ -48,10 +48,8 @@ import {
 
 /**
  * There is only one role for ApiKey we can use the first index
- * @param roles
- * @returns Expression | null
  */
-const apiKeyExpression = (roles: Array<RoleDefinition>) => {
+const apiKeyExpression = (roles: Array<RoleDefinition>): Expression | null => {
   const expression = new Array<Expression>();
   if (roles.length === 0) {
     return iff(equals(ref('util.authType()'), str(API_KEY_AUTH_TYPE)), ref('util.unauthorized()'));
@@ -70,10 +68,8 @@ const apiKeyExpression = (roles: Array<RoleDefinition>) => {
 
 /**
  * There is only one role for Lambda we can use the first index
- * @param roles
- * @returns Expression | null
  */
-const lambdaExpression = (roles: Array<RoleDefinition>) => {
+const lambdaExpression = (roles: Array<RoleDefinition>): Expression | null => {
   const expression = new Array<Expression>();
   if (roles.length === 0) {
     return iff(equals(ref('util.authType()'), str(LAMBDA_AUTH_TYPE)), ref('util.unauthorized()'));
@@ -91,17 +87,17 @@ const lambdaExpression = (roles: Array<RoleDefinition>) => {
 
 const iamExpression = (
   roles: Array<RoleDefinition>,
-  hasAdminRolesEnabled: boolean = false,
+  hasAdminRolesEnabled = false,
   adminRoles: Array<string> = [],
   identityPoolId?: string,
-) => {
+): Expression => {
   const expression = new Array<Expression>();
   // allow if using an admin role
   if (hasAdminRolesEnabled) {
     expression.push(iamAdminRoleCheckExpression(adminRoles));
   }
   if (roles.length > 0) {
-    for (let role of roles) {
+    roles.forEach(role => {
       if (role.areAllFieldsAllowed && role.areAllFieldsNullAllowed) {
         expression.push(iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)), identityPoolId));
       } else {
@@ -116,15 +112,15 @@ const iamExpression = (
           ),
         );
       }
-    }
+    });
   } else {
     expression.push(ref('util.unauthorized()'));
   }
   return iff(equals(ref('util.authType()'), str(IAM_AUTH_TYPE)), compoundExpression(expression));
 };
 
-const generateStaticRoleExpression = (roles: Array<RoleDefinition>) => {
-  const staticRoleExpression: Array<Expression> = new Array();
+const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Expression[] => {
+  const staticRoleExpression: Array<Expression> = [];
   const privateRoleIdx = roles.findIndex(r => r.strategy === 'private');
   if (privateRoleIdx > -1) {
     const privateRole = roles[privateRoleIdx];
@@ -161,7 +157,7 @@ const generateStaticRoleExpression = (roles: Array<RoleDefinition>) => {
             set(ref('groupsInToken'), getIdentityClaimExp(ref('groupRole.claim'), list([]))),
             iff(
               methodCall(ref('groupsInToken.contains'), ref('groupRole.entity')),
-              addAllowedFieldsIfElse(`groupRole.allowedFields`, `groupRole.nullAllowedFields`, `groupRole.isAuthorizedOnAllFields`, true),
+              addAllowedFieldsIfElse('groupRole.allowedFields', 'groupRole.nullAllowedFields', 'groupRole.isAuthorizedOnAllFields', true),
             ),
           ]),
         ]),
@@ -190,24 +186,24 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
             set(ref(`isAuthorizedOnAllFields${idx}`), bool(role.areAllFieldsAllowed && role.areAllFieldsNullAllowed)),
             ...(entityIsList
               ? [
-                  forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
-                    iff(
-                      equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
-                      addAllowedFieldsIfElse(
-                        `ownerAllowedFields${idx}`,
-                        `ownerNullAllowedFields${idx}`,
-                        `isAuthorizedOnAllFields${idx}`,
-                        true,
-                      ),
-                    ),
-                  ]),
-                ]
-              : [
+                forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
                   iff(
-                    equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
-                    addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `ownerNullAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`),
+                    equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
+                    addAllowedFieldsIfElse(
+                      `ownerAllowedFields${idx}`,
+                      `ownerNullAllowedFields${idx}`,
+                      `isAuthorizedOnAllFields${idx}`,
+                      true,
+                    ),
                   ),
                 ]),
+              ]
+              : [
+                iff(
+                  equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
+                  addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `ownerNullAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`),
+                ),
+              ]),
           ]),
         ),
       );
@@ -226,10 +222,10 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
             set(ref(`groupNullAllowedFields${idx}`), raw(JSON.stringify(role.nullAllowedFields))),
             set(ref(`isAuthorizedOnAllFields${idx}`), bool(role.areAllFieldsAllowed && role.areAllFieldsNullAllowed)),
             iff(
-              methodCall(ref(`util.isString`), ref(`groupClaim${idx}`)),
+              methodCall(ref('util.isString'), ref(`groupClaim${idx}`)),
               ifElse(
-                methodCall(ref(`util.isList`), methodCall(ref(`util.parseJson`), ref(`groupClaim${idx}`))),
-                set(ref(`groupClaim${idx}`), methodCall(ref(`util.parseJson`), ref(`groupClaim${idx}`))),
+                methodCall(ref('util.isList'), methodCall(ref('util.parseJson'), ref(`groupClaim${idx}`))),
+                set(ref(`groupClaim${idx}`), methodCall(ref('util.parseJson'), ref(`groupClaim${idx}`))),
                 set(ref(`groupClaim${idx}`), list([ref(`groupClaim${idx}`)])),
               ),
             ),
@@ -255,18 +251,15 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
  * unauthorized if
  *  - none of the roles have been met and there are no field conditions
  *  - role is partially allowed but the field conditions have not been met
- * @param providers
- * @param roles
- * @param fields
- * @returns
  */
 export const generateAuthExpressionForUpdate = (
   providers: ConfiguredAuthProviders,
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
-) => {
-  const { cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles } =
-    splitRoles(roles);
+): string => {
+  const {
+    cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles,
+  } = splitRoles(roles);
   const totalAuthExpressions: Array<Expression> = [
     setHasAuthExpression,
     responseCheckForErrors(),
@@ -319,7 +312,7 @@ export const generateAuthExpressionForUpdate = (
             qref(methodCall(ref(`${DENIED_FIELDS}.put`), ref('entry.key'), str(''))),
           ),
         ]),
-        forEach(ref('deniedField'), ref(`util.list.copyAndRemoveAll($inputFields, \$${ALLOWED_FIELDS})`), [
+        forEach(ref('deniedField'), ref(`util.list.copyAndRemoveAll($inputFields, $${ALLOWED_FIELDS})`), [
           qref(methodCall(ref(`${DENIED_FIELDS}.put`), ref('deniedField'), str(''))),
         ]),
       ]),
@@ -336,14 +329,12 @@ const addAllowedFieldsIfElse = (
   allowedFieldsKey: string,
   nullAllowedFieldsKey: string,
   condition: string,
-  breakLoop: boolean = false,
-): Expression => {
-  return ifElse(
-    ref(condition),
-    compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), ...(breakLoop ? [raw('#break')] : [])]),
-    compoundExpression([
-      qref(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), ref(allowedFieldsKey))),
-      qref(methodCall(ref(`${NULL_ALLOWED_FIELDS}.addAll`), ref(nullAllowedFieldsKey))),
-    ]),
-  );
-};
+  breakLoop = false,
+): Expression => ifElse(
+  ref(condition),
+  compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), ...(breakLoop ? [raw('#break')] : [])]),
+  compoundExpression([
+    qref(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), ref(allowedFieldsKey))),
+    qref(methodCall(ref(`${NULL_ALLOWED_FIELDS}.addAll`), ref(nullAllowedFieldsKey))),
+  ]),
+);

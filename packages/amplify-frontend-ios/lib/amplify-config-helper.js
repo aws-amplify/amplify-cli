@@ -10,6 +10,7 @@ function generateConfig(context, newAWSConfig) {
   constructAuth(metadata, amplifyConfig, newAWSConfig);
   constructPredictions(metadata, amplifyConfig);
   constructStorage(metadata, amplifyConfig);
+  constructGeo(metadata, amplifyConfig);
 
   return amplifyConfig;
 }
@@ -184,6 +185,64 @@ function constructStorage(metadata, amplifyConfig) {
         }
       }
     });
+  }
+}
+
+function constructGeo(metadata, amplifyConfig) {
+  const categoryName = 'geo';
+  const pluginName = 'awsLocationGeoPlugin';
+  let geoRegion = metadata.providers.awscloudformation.Region;
+  if (!metadata[categoryName] || Object.keys(metadata[categoryName]).length <= 0) {
+    return;
+  }
+
+  let defaultMap = '';
+  const mapConfig = {
+    items: {}
+  };
+  let defaultPlaceIndex = '';
+  const placeIndexConfig = {
+    items: []
+  };
+
+  Object.keys(metadata[categoryName]).forEach(r => {
+    const resourceMeta = metadata[categoryName][r];
+    if (resourceMeta.output) {
+      if (resourceMeta.service === 'Map') {
+        const mapName = resourceMeta.output.Name;
+        geoRegion = resourceMeta.output.Region || geoRegion;
+        mapConfig.items[mapName] = {
+          style: resourceMeta.output.Style
+        }
+        if(resourceMeta.isDefault === true) {
+          defaultMap = mapName;
+        }
+      }
+      else if (resourceMeta.service === 'PlaceIndex') {
+        const placeIndexName = resourceMeta.output.Name;
+        geoRegion = resourceMeta.output.Region || geoRegion;
+        placeIndexConfig.items.push(placeIndexName);
+        if(resourceMeta.isDefault === true) {
+          defaultPlaceIndex = placeIndexName;
+        }
+      }
+    }
+  });
+
+  mapConfig.default = defaultMap;
+  placeIndexConfig.default = defaultPlaceIndex;
+
+  amplifyConfig[categoryName] = {
+    plugins: {}
+  };
+  amplifyConfig[categoryName].plugins[pluginName] = {
+    region: geoRegion
+  };
+  if (Object.keys(mapConfig.items).length > 0) {
+    amplifyConfig[categoryName].plugins[pluginName]['maps'] = mapConfig;
+  }
+  if (placeIndexConfig.items.length > 0) {
+    amplifyConfig[categoryName].plugins[pluginName]['searchIndices'] = placeIndexConfig;
   }
 }
 

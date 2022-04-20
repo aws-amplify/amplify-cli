@@ -1,8 +1,8 @@
-import aws from 'aws-sdk';
 import { extractArgs } from './utils/extractArgs';
 import { listUiBuilderComponents } from './utils/syncAmplifyUiBuilderComponents';
 import { printer } from 'amplify-prompts';
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSContext } from 'amplify-cli-core';
+import { getAmplifyUIBuilderService } from './utils/amplifyUiBuilderService';
 
 export async function run(context: $TSContext) {
   printer.debug('Running create components command in amplify-util-uibuilder');
@@ -26,21 +26,7 @@ export async function run(context: $TSContext) {
 
   const environmentName = args.environmentName ?? context.exeInfo.localEnvInfo.envName;
   const appId = args.appId ?? context.exeInfo.teamProviderInfo[environmentName].awscloudformation.AmplifyAppId;
-  const awsConfigInfo = (await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'loadConfigurationForEnv', [
-    context,
-    newEnvName,
-    appId,
-  ])) as $TSAny;
-
-  if (process.env.UI_BUILDER_ENDPOINT) {
-    awsConfigInfo.endpoint = process.env.UI_BUILDER_ENDPOINT;
-  }
-
-  if (process.env.UI_BUILDER_REGION) {
-    awsConfigInfo.region = process.env.UI_BUILDER_REGION;
-  }
-
-  const amplifyUIBuilder = new aws.AmplifyUIBuilder(awsConfigInfo);
+  const amplifyUIBuilder = await getAmplifyUIBuilderService(context, environmentName, appId);
   const components = existingComponents.entities;
   if (!components.length) {
     printer.debug(`No UIBuilder components found in app ${appId} from env ${sourceEnvName}. Skipping component clone process.`);

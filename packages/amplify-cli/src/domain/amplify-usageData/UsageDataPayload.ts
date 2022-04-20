@@ -1,7 +1,13 @@
 import * as os from 'os';
+import { isCI } from 'amplify-cli-core';
 import { Input } from '../input';
 import { getLatestPayloadVersion } from './VersionManager';
-import { isCI } from 'amplify-cli-core';
+import { SerializableError } from './SerializableError';
+import { ProjectSettings, TimedCodePath } from './IUsageData';
+
+/**
+ * Metadata that is sent to the usage data endpoint
+ */
 export class UsageDataPayload {
   sessionUuid: string;
   installationUuid: string;
@@ -18,7 +24,7 @@ export class UsageDataPayload {
   isCi: boolean;
   accountId: string;
   projectSetting: ProjectSettings;
-  record: Record<string, any>[];
+  codePathDurations: Partial<Record<TimedCodePath, number>>
   constructor(
     sessionUuid: string,
     installationUuid: string,
@@ -29,7 +35,7 @@ export class UsageDataPayload {
     accountId: string,
     project: ProjectSettings,
     inputOptions: InputOptions,
-    record: Record<string, any>[],
+    codePathDurations: Partial<Record<TimedCodePath, number>>,
   ) {
     this.sessionUuid = sessionUuid;
     this.installationUuid = installationUuid;
@@ -45,23 +51,14 @@ export class UsageDataPayload {
     this.isCi = isCI();
     this.projectSetting = project;
     this.inputOptions = inputOptions;
-    this.record = record;
+    this.codePathDurations = codePathDurations;
     if (error) {
       this.error = new SerializableError(error);
     }
   }
 }
 
-export type ProjectSettings = {
-  frontend?: string;
-  editor?: string;
-  framework?: string;
-};
-
+/**
+ * Command-line args that were specified to the currently running command
+ */
 export type InputOptions = Record<string, string | boolean>;
-export class SerializableError {
-  name: string;
-  constructor(error: Error) {
-    this.name = error.name;
-  }
-}

@@ -10,29 +10,39 @@ import { customPlaceIndexLambdaCodePath } from '../service-utils/constants';
 import * as fs from 'fs-extra';
 import { Runtime } from '@aws-cdk/aws-lambda';
 
-type PlaceIndexStackProps = Pick<PlaceIndexParameters, 'accessType'> & TemplateMappings;
+type PlaceIndexStackProps = Pick<PlaceIndexParameters, 'accessType' | 'groupPermissions'> &
+  TemplateMappings & { authResourceName: string };
 
 export class PlaceIndexStack extends BaseStack {
+  protected readonly groupPermissions: string[];
   protected readonly accessType: string;
   protected readonly placeIndexResource: cdk.CustomResource;
   protected readonly placeIndexRegion: string;
   protected readonly placeIndexName: string;
+  protected readonly authResourceName: string;
 
   constructor(scope: cdk.Construct, id: string, private readonly props: PlaceIndexStackProps) {
     super(scope, id, props);
 
     this.accessType = this.props.accessType;
+    this.groupPermissions = this.props.groupPermissions;
+    this.authResourceName = this.props.authResourceName;
     this.placeIndexRegion = this.regionMapping.findInMap(cdk.Fn.ref('AWS::Region'), 'locationServiceRegion');
 
-    this.parameters = this.constructInputParameters([
+    const inputParameters: string[] = this.props.groupPermissions.map(
+      (group: string) => `authuserPoolGroups${group}GroupRole`
+    );
+    inputParameters.push(
+      `auth${this.authResourceName}UserPoolId`,
       'authRoleName',
       'unauthRoleName',
       'indexName',
       'dataProvider',
       'dataSourceIntendedUse',
       'env',
-      'isDefault',
-    ]);
+      'isDefault'
+    );
+    this.parameters = this.constructInputParameters(inputParameters);
 
     this.placeIndexName = Fn.join('-', [this.parameters.get('indexName')!.valueAsString, this.parameters.get('env')!.valueAsString]);
 
@@ -114,9 +124,23 @@ export class PlaceIndexStack extends BaseStack {
     });
 
     let cognitoRoles: Array<string> = new Array();
-    cognitoRoles.push(this.parameters.get('authRoleName')!.valueAsString);
+    if (this.accessType === AccessType.AuthorizedUsers ||
+      this.accessType === AccessType.AuthorizedAndGuestUsers) {
+      cognitoRoles.push(this.parameters.get('authRoleName')!.valueAsString);
+    }
     if (this.accessType == AccessType.AuthorizedAndGuestUsers) {
       cognitoRoles.push(this.parameters.get('unauthRoleName')!.valueAsString);
+    }
+    if (this.groupPermissions && this.authResourceName) {
+      this.groupPermissions.forEach((group: string) => {
+        cognitoRoles.push(
+          cdk.Fn.join('-',
+          [
+            this.parameters.get(`auth${this.authResourceName}UserPoolId`)!.valueAsString,
+            `${group}GroupRole`
+          ])
+        );
+      });
     }
 
     return new iam.CfnPolicy(this, 'PlaceIndexPolicy', {

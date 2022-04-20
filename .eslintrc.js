@@ -55,6 +55,10 @@ module.exports = {
       minLength: 4,
     }],
 
+    // Disables double quote error when using single quotes within string for readability
+    // https://eslint.org/docs/rules/quotes#avoidescape
+    'quotes': ['error', 'single', { 'avoidEscape': true }],
+
     // Typescript rules
     // Extends recommended rules here: https://www.npmjs.com/package/@typescript-eslint/eslint-plugin
     '@typescript-eslint/naming-convention': [ 'error',
@@ -149,6 +153,24 @@ module.exports = {
     'no-useless-constructor': 'off',
     'no-underscore-dangle': 'off',
     'no-template-curly-in-string': 'off',
+    'no-plusplus': 'off',
+
+    // same as air-bnb default with the exception of allowing for...of
+    'no-restricted-syntax': [
+      'error',
+      {
+        selector: 'ForInStatement',
+        message: 'for..in loops iterate over the entire prototype chain, which is virtually never what you want. Use Object.{keys,values,entries}, and iterate over the resulting array.',
+      },
+      {
+        selector: 'LabeledStatement',
+        message: 'Labels are a form of GOTO; using them makes code confusing and hard to maintain and understand.',
+      },
+      {
+        selector: 'WithStatement',
+        message: '`with` is disallowed in strict mode because it makes code impossible to predict and optimize.',
+      },
+    ],
 
     // function style
     'arrow-parens': ['error', 'as-needed'],
@@ -179,6 +201,7 @@ module.exports = {
       rules: {
         '@typescript-eslint/unbound-method': 'off',
         'jest/unbound-method': 'error',
+        '@typescript-eslint/no-explicit-any': 'off',
       }
     }
   ],
@@ -205,6 +228,9 @@ module.exports = {
     'function-template-dir',
     '/packages/graphql-predictions-transformer/lambdaFunction',
 
+    // Ignore override resource test files
+    '/packages/amplify-e2e-tests/overrides',
+
     // Ignore lib directory of typescript packages until all packages are migrated to typescript
     '/packages/amplify-*-function-*/lib',
     '/packages/amplify-appsync-simulator/lib',
@@ -213,6 +239,7 @@ module.exports = {
     '/packages/amplify-category-function/lib',
     '/packages/amplify-category-geo/lib',
     '/packages/amplify-category-storage/lib',
+    '/packages/amplify-cli-npm/lib',
     '/packages/amplify-cli-core/lib',
     '/packages/amplify-cli/lib',
     '/packages/amplify-cli-logger/lib',

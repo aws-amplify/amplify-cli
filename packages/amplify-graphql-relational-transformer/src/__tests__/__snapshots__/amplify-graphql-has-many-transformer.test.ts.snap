@@ -8363,6 +8363,14 @@ $util.toJson({})
 $util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"Friendship\\"))
+#set( $nullIndexFields = [] )
+#set( $indexFields = [\\"userID\\"] )
+#foreach( $entry in $util.map.copyAndRetainAllKeys($mergedValues, $indexFields).entrySet() )
+  #if( $util.isNull($entry.value) )
+    $util.qr($nullIndexFields.add($entry.key))
+  #end
+#end
+#set( $mergedValues = $util.map.copyAndRemoveAllKeys($mergedValues, $nullIndexFields) )
 #set( $PutObject = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
@@ -8454,6 +8462,14 @@ $util.toJson({})
 $util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"Parent\\"))
+#set( $nullIndexFields = [] )
+#set( $indexFields = [\\"childID\\"] )
+#foreach( $entry in $util.map.copyAndRetainAllKeys($mergedValues, $indexFields).entrySet() )
+  #if( $util.isNull($entry.value) )
+    $util.qr($nullIndexFields.add($entry.key))
+  #end
+#end
+#set( $mergedValues = $util.map.copyAndRemoveAllKeys($mergedValues, $nullIndexFields) )
 #set( $PutObject = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
@@ -8636,6 +8652,14 @@ $util.toJson({})
 $util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"PostAuthor\\"))
+#set( $nullIndexFields = [] )
+#set( $indexFields = [\\"authorID\\"] )
+#foreach( $entry in $util.map.copyAndRetainAllKeys($mergedValues, $indexFields).entrySet() )
+  #if( $util.isNull($entry.value) )
+    $util.qr($nullIndexFields.add($entry.key))
+  #end
+#end
+#set( $mergedValues = $util.map.copyAndRemoveAllKeys($mergedValues, $nullIndexFields) )
 #set( $PutObject = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
@@ -8967,6 +8991,14 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 $util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"UserModel\\"))
+#set( $nullIndexFields = [] )
+#set( $indexFields = [\\"id\\"] )
+#foreach( $entry in $util.map.copyAndRetainAllKeys($mergedValues, $indexFields).entrySet() )
+  #if( $util.isNull($entry.value) )
+    $util.qr($nullIndexFields.add($entry.key))
+  #end
+#end
+#set( $mergedValues = $util.map.copyAndRemoveAllKeys($mergedValues, $nullIndexFields) )
 #set( $PutObject = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",

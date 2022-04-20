@@ -12,7 +12,14 @@ import {
   nul,
   printBlock,
 } from 'graphql-mapping-template';
-import { COGNITO_AUTH_TYPE, ConfiguredAuthProviders, IS_AUTHORIZED_FLAG, OIDC_AUTH_TYPE, RoleDefinition, splitRoles } from '../utils';
+import {
+  COGNITO_AUTH_TYPE,
+  ConfiguredAuthProviders,
+  IS_AUTHORIZED_FLAG,
+  OIDC_AUTH_TYPE,
+  RoleDefinition,
+  splitRoles,
+} from '../utils';
 import {
   generateStaticRoleExpression,
   getOwnerClaim,
@@ -28,25 +35,32 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> 
   // we only check against owner rules which are not list fields
   roles.forEach((role, idx) => {
     if (role.strategy === 'owner') {
-      ownerExpression.push(
-        iff(
-          not(ref(IS_AUTHORIZED_FLAG)),
-          compoundExpression([
-            set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.args.${role.entity!}`), nul())),
-            set(ref(`ownerClaim${idx}`), getOwnerClaim(role.claim!)),
-            iff(equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true))),
-          ]),
-        ),
-      );
+      const roleClaims = role.claim!.split(':');
+      ownerExpression.push(set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.args.${role.entity!}.split(":")[0]`), nul())));
+      roleClaims.forEach((claim, secIdx) => {
+        ownerExpression.push(
+          iff(
+            not(ref(IS_AUTHORIZED_FLAG)),
+            compoundExpression([
+              set(ref(`ownerClaim${idx}_${secIdx}`), getOwnerClaim(claim)),
+              iff(equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}_${secIdx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true))),
+            ]),
+          ),
+        );
+      });
     }
   });
 
   return [...(ownerExpression.length > 0 ? ownerExpression : [])];
 };
 
+/**
+ * Generates auth expressions for each auth type for Subscription requests
+ */
 export const generateAuthExpressionForSubscriptions = (providers: ConfiguredAuthProviders, roles: Array<RoleDefinition>): string => {
-  const { cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, iamRoles, apiKeyRoles, lambdaRoles } =
-    splitRoles(roles);
+  const {
+    cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, iamRoles, apiKeyRoles, lambdaRoles,
+  } = splitRoles(roles);
   const totalAuthExpressions: Array<Expression> = [setHasAuthExpression, set(ref(IS_AUTHORIZED_FLAG), bool(false))];
   if (providers.hasApiKey) {
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
@@ -57,20 +71,22 @@ export const generateAuthExpressionForSubscriptions = (providers: ConfiguredAuth
   if (providers.hasIAM) {
     totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.adminRoles, providers.identityPoolId));
   }
-  if (providers.hasUserPools)
+  if (providers.hasUserPools) {
     totalAuthExpressions.push(
       iff(
         equals(ref('util.authType()'), str(COGNITO_AUTH_TYPE)),
         compoundExpression([...generateStaticRoleExpression(cognitoStaticRoles), ...dynamicRoleExpression(cognitoDynamicRoles)]),
       ),
     );
-  if (providers.hasOIDC)
+  }
+  if (providers.hasOIDC) {
     totalAuthExpressions.push(
       iff(
         equals(ref('util.authType()'), str(OIDC_AUTH_TYPE)),
         compoundExpression([...generateStaticRoleExpression(oidcStaticRoles), ...dynamicRoleExpression(oidcDynamicRoles)]),
       ),
     );
+  }
   totalAuthExpressions.push(iff(not(ref(IS_AUTHORIZED_FLAG)), ref('util.unauthorized()')));
   return printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
 };
