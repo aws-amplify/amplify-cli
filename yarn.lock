@@ -7926,6 +7926,13 @@
   dependencies:
     "@types/glob" "*"
 
+"@types/archiver@^5.3.1":
+  version "5.3.1"
+  resolved "https://registry.npmjs.org/@types/archiver/-/archiver-5.3.1.tgz#02991e940a03dd1a32678fead4b4ca03d0e387ca"
+  integrity sha512-wKYZaSXaDvTZuInAWjCeGG7BEAgTWG2zZW0/f7IYFcoHB2X2d9lkVFnrOlXl3W6NrvO6Ml3FLLu8Uksyymcpnw==
+  dependencies:
+    "@types/glob" "*"
+
 "@types/aria-query@^4.2.0":
   version "4.2.2"
   resolved "https://registry.npmjs.org/@types/aria-query/-/aria-query-4.2.2.tgz#ed4e0ad92306a704f9fb132a0cfcf77486dbe2bc"
@@ -8012,7 +8019,7 @@
   resolved "https://registry.npmjs.org/@types/ci-info/-/ci-info-2.0.0.tgz#51848cc0f5c30c064f4b25f7f688bf35825b3971"
   integrity sha512-5R2/MHILQLDCzTuhs1j4Qqq8AaKUf7Ma4KSSkCtc12+fMs47zfa34qhto9goxpyX00tQK1zxB885VCiawZ5Qhg==
 
-"@types/columnify@^1.5.0":
+"@types/columnify@^1.5.0", "@types/columnify@^1.5.1":
   version "1.5.1"
   resolved "https://registry.npmjs.org/@types/columnify/-/columnify-1.5.1.tgz#c6551c5e8614e13a6ccee97c5172637815066d6b"
   integrity sha512-pXWQTEvwcO7GAwFvSvaMOIktLcJ2ajIAUyMR93KDZZVWN2G7uieEDBPJskEmXb0Qv8JMPHhaRA52azCPfiFmQA==
@@ -14259,6 +14266,15 @@ form-data@^3.0.0:
   version "3.0.1"
   resolved "https://registry.npmjs.org/form-data/-/form-data-3.0.1.tgz#ebd53791b78356a99af9a300d4282c4d5eb9755f"
   integrity sha512-RHkBKtLWUVwd7SqRIvCZMEvAMoGUp0XU+seQiZejj0COz3RI3hWP4sCv3gZWWLjJTd7rGwcsF5eKZGii0r/hbg==
+  dependencies:
+    asynckit "^0.4.0"
+    combined-stream "^1.0.8"
+    mime-types "^2.1.12"
+
+form-data@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/form-data/-/form-data-4.0.0.tgz#93919daeaf361ee529584b9b31664dc12c9fa452"
+  integrity sha512-ETEklSGi5t0QMZuiXoA/Q6vcnxcLQP5vdugSpuAyi6SVGi2clPPp+xgEhuMaHC+zGgn31Kd235W35f7Hykkaww==
   dependencies:
     asynckit "^0.4.0"
     combined-stream "^1.0.8"

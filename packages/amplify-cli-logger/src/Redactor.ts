@@ -27,7 +27,7 @@ export function Redactor(arg: string | undefined): string {
 
   return arg;
 }
-function stringMasker(s: string): string {
+export function stringMasker(s: string): string {
   if (!s.includes('-') && !s.includes('/')) return redactPart(s);
 
   // if string only includes '/' char
