@@ -19143,7 +19143,7 @@ nock@^13.0.11:
     lodash.set "^4.3.2"
     propagate "^2.0.0"
 
-node-abi@^2.21.0, node-abi@^2.7.0:
+node-abi@^2.21.0:
   version "2.30.1"
   resolved "https://registry.npmjs.org/node-abi/-/node-abi-2.30.1.tgz#c437d4b1fe0e285aaf290d45b45d4d7afedac4cf"
   integrity sha512-/2D0wOQPgaUWzVSVgRMx+trKJRC2UG4SUc4oCJoXx9Uxjtp0Vy3/kt7zcbxHF8+Z/pK3UloLWzBISg72brfy1w==
@@ -19237,13 +19237,12 @@ node-notifier@^8.0.0:
     uuid "^8.3.0"
     which "^2.0.2"
 
-node-pty-prebuilt-multiarch@^0.9.0:
-  version "0.9.0"
-  resolved "https://registry.npmjs.org/node-pty-prebuilt-multiarch/-/node-pty-prebuilt-multiarch-0.9.0.tgz#8081184198f3f1290906d656e216cae5ecc8324b"
-  integrity sha512-n5LkPEuBwI+S2GgDk+IEByoVZClYFQGfp1b6dbMMEln7e43ikF8LZVi3vxpLXVq1rnS8t54YOnMB7HSB4jw8Tg==
+node-pty@beta:
+  version "0.11.0-beta19"
+  resolved "https://registry.npmjs.org/node-pty/-/node-pty-0.11.0-beta19.tgz#cb09fcd2ac984365af7f770df900fc0c8c587dcd"
+  integrity sha512-1cdUx15rCVYEcvOvqNRO4S52vYM9mnFyTAceut+lW8/+YWcYQl1TQ3naDqtWHDcVjZI/FbDX1j4iQFwypmJSLQ==
   dependencies:
     nan "^2.14.0"
-    prebuild-install "^5.2.5"
 
 node-releases@^2.0.1:
   version "2.0.1"
@@ -19262,11 +19261,6 @@ noms@0.0.0:
   dependencies:
     inherits "^2.0.1"
     readable-stream "~1.0.31"
-
-noop-logger@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.npmjs.org/noop-logger/-/noop-logger-0.1.1.tgz#94a2b1633c4f1317553007d8966fd0e841b6a4c2"
-  integrity sha1-lKKxYzxPExdVMAfYlm/Q6EG2pMI=
 
 nopt@1.0.10:
   version "1.0.10"
@@ -20968,27 +20962,6 @@ prebuild-install@6.1.4:
     simple-get "^3.0.3"
     tar-fs "^2.0.0"
     tunnel-agent "^0.6.0"
-
-prebuild-install@^5.2.5:
-  version "5.3.6"
-  resolved "https://registry.npmjs.org/prebuild-install/-/prebuild-install-5.3.6.tgz#7c225568d864c71d89d07f8796042733a3f54291"
-  integrity sha512-s8Aai8++QQGi4sSbs/M1Qku62PFK49Jm1CbgXklGz4nmHveDq0wzJkg7Na5QbnO1uNH8K7iqx2EQ/mV0MZEmOg==
-  dependencies:
-    detect-libc "^1.0.3"
-    expand-template "^2.0.3"
-    github-from-package "0.0.0"
-    minimist "^1.2.3"
-    mkdirp-classic "^0.5.3"
-    napi-build-utils "^1.0.1"
-    node-abi "^2.7.0"
-    noop-logger "^0.1.1"
-    npmlog "^4.0.1"
-    pump "^3.0.0"
-    rc "^1.2.7"
-    simple-get "^3.0.3"
-    tar-fs "^2.0.0"
-    tunnel-agent "^0.6.0"
-    which-pm-runs "^1.0.0"
 
 prelude-ls@^1.2.1:
   version "1.2.1"
@@ -24945,11 +24918,6 @@ which-module@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/which-module/-/which-module-2.0.0.tgz#d9ef07dce77b9902b8a3a8fa4b31c3e3f7e6e87a"
   integrity sha1-2e8H3Od7mQK4o6j6SzHD4/fm6Ho=
-
-which-pm-runs@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/which-pm-runs/-/which-pm-runs-1.0.0.tgz#670b3afbc552e0b55df6b7780ca74615f23ad1cb"
-  integrity sha1-Zws6+8VS4LVd9rd4DKdGFfI60cs=
 
 which-typed-array@^1.1.2:
   version "1.1.7"
