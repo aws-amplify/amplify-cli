@@ -13,11 +13,22 @@ jest.mock('../domain/amplify-usageData/', () => ({
     Instance: {
       init: jest.fn(),
     },
+    flowInstance: {
+      setIsHeadless: jest.fn(),
+    }
   },
   NoUsageData: {
     Instance: {
       init: jest.fn(),
     },
+    flowInstance: {
+      setIsHeadless: jest.fn(),
+    }
+  },
+  CLINoFlowReport: {
+    instance: jest.fn(() => ({
+      setIsHeadless: jest.fn(),
+    }))
   },
 }));
 jest.mock('../app-config');
@@ -96,5 +107,6 @@ describe('test attachUsageData', () => {
       {},
       ts,
     );
+
   });
 });
