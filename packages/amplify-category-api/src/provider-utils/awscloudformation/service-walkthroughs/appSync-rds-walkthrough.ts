@@ -1,11 +1,10 @@
-import { $TSContext, $TSObject, exitOnNextTick, ResourceCredentialsNotFoundError, ResourceDoesNotExistError, pathManager } from 'amplify-cli-core';
+import { $TSContext, $TSObject, exitOnNextTick, ResourceCredentialsNotFoundError, ResourceDoesNotExistError, pathManager, JSONUtilities, $TSAny } from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
 import chalk from 'chalk';
 import { DataApiParams } from 'graphql-relational-schema-transformer';
 import ora from 'ora';
-import fs from 'fs-extra';
+import { cfnRootStackFileName } from 'amplify-provider-awscloudformation';
 
-const cfnRootStackFileName = 'root-cloudformation-stack.json';
 const spinner = ora('');
 const category = 'api';
 const providerName = 'awscloudformation';
@@ -45,9 +44,9 @@ export async function serviceWalkthrough(context: $TSContext, datasourceMetadata
   const { inputs, availableRegions } = datasourceMetadata;
 
   // FIXME: We should NOT be treating CloudFormation templates as inputs to prompts! This a temporary exception while we move team-provider-info to a service.
-  const cfnJson = fs.readJSONSync(`${pathManager.getCurrentCloudRootStackDirPath(pathManager.findProjectRoot())}/${cfnRootStackFileName}`);
+  const cfnJson: $TSAny = JSONUtilities.readJson(`${pathManager.getCurrentCloudRootStackDirPath(pathManager.findProjectRoot())}/${cfnRootStackFileName}`);
   const cfnJsonParameters = cfnJson?.Resources[`api${appSyncApi}`]?.Properties?.Parameters || {};
-  let selectedRegion = cfnJsonParameters.rdsRegion;
+  let selectedRegion = cfnJsonParameters?.rdsRegion;
   // Region Question
   if (!selectedRegion) {
     selectedRegion = await promptWalkthroughQuestion(inputs, 0, availableRegions);
@@ -61,20 +60,20 @@ export async function serviceWalkthrough(context: $TSContext, datasourceMetadata
   });
 
   // RDS Cluster Question
-  let selectedClusterArn = cfnJsonParameters.rdsClusterIdentifier
+  let selectedClusterArn = cfnJsonParameters?.rdsClusterIdentifier
   let clusterResourceId = getRdsClusterResourceIdFromArn(selectedClusterArn, AWS);
   if (!selectedClusterArn || !clusterResourceId) {
     ({ selectedClusterArn, clusterResourceId } = await selectCluster(context, inputs, AWS));
   }
 
   // Secret Store Question
-  let selectedSecretArn = cfnJsonParameters.rdsSecretStoreArn;
+  let selectedSecretArn = cfnJsonParameters?.rdsSecretStoreArn;
   if (!selectedSecretArn) {
     selectedSecretArn = await getSecretStoreArn(context, inputs, clusterResourceId, AWS);
   }
 
   // Database Name Question
-  let selectedDatabase = cfnJsonParameters.rdsDatabaseName;
+  let selectedDatabase = cfnJsonParameters?.rdsDatabaseName;
   if (!selectedDatabase) {
     selectedDatabase = await selectDatabase(context, inputs, selectedClusterArn, selectedSecretArn, AWS);
   }
