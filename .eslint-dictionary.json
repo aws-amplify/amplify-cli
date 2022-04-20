@@ -17,6 +17,7 @@
   "cloudformation",
   "cloudfront",
   "codegen",
+  "columnify",
   "cognito",
   "cors",
   "creds",

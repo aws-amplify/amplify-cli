@@ -1,205 +1,146 @@
-import { stateManager, pathManager, PathConstants, NotInitializedError, $TSContext } from "amplify-cli-core";
+import {
+  stateManager, pathManager, NotInitializedError, $TSContext,
+} from 'amplify-cli-core';
 import archiver from 'archiver';
 import * as fs from 'fs-extra';
-import _ from "lodash";
 import * as path from 'path';
-import url from 'url';
-const report = 'https://5h7ammarg5.execute-api.us-east-1.amazonaws.com/dev/report'
-import FormData from 'form-data'
+import FormData from 'form-data';
 import fetch from 'node-fetch';
-import { prompter } from 'amplify-prompts';
 import * as crypto from 'crypto';
-export async function run(context: $TSContext) {
+import { Redactor, stringMasker } from 'amplify-cli-logger';
+import columnify from 'columnify';
+import * as _ from 'lodash';
+import os from 'os';
+import { collectFiles } from './helpers/collect-files';
+import { getPublicKey } from './helpers/get-public-key';
+import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
 
-    const rootpath = pathManager.findProjectRoot();
-    const confirmation = await prompter.confirmContinue('Report this issue to Amplify CLI team?');
-    if(!confirmation.valueOf())
-        return;
+const report = 'https://5h7ammarg5.execute-api.us-east-1.amazonaws.com/dev/report';
 
-    const email = await prompter.input("Enter email for communication", {
-        initial: 'myname@gmail.com'
-    });
-    const description = await prompter.input("Enter brief description", {
-        initial: "Receiving error 'Resource Not Ready' on push"
-    });
-    if (!rootpath) {
-        throw new NotInitializedError();
-    }
+/**
+ * Send an error report with redacted project files to Amplify CLI
+ * @param context the amplify context object
+ * @param error if invoked due to an error
+ */
+export const run = async (context: $TSContext, error: Error | undefined): Promise<void> => {
+  await collectAndSendReport(context, error);
+};
 
-    const { projectEnvIdentifier, projectIdentifier } = hashedProjectIdentifiers();
-    const backend = stateManager.getBackendConfig(rootpath);
-    const resources : { category: string, resourceName: string, service: string }[] = [];
-    const categoryResources = Object.keys(backend)
-        .reduce((array, key) => {
-            Object.keys(backend[key])
-                .forEach((resourceKey) => {
-                    array.push({
-                        category: key,
-                        resourceName: resourceKey,
-                        service: backend[key][resourceKey].service
-                    })
-                })
-
-            return array
-        },resources)
-        .map(amplifyResource => filesMap[amplifyResource.category](amplifyResource.category, amplifyResource.resourceName, amplifyResource.service))
-    const files = _.flatten(categoryResources);
-    files.push(pathManager.getCLIJSONFilePath(rootpath));
-    files.push(pathManager.getBackendConfigFilePath(rootpath));
-    const output = fs.createWriteStream(path.join(rootpath, 'example.zip'));
-    const zipper = archiver.create('zip', {});
-    zipper.pipe(output);
-    files.forEach(file => {
-        zipper.append(fs.createReadStream(file), {
-            name: path.relative(rootpath, file),
-        })
-    });
-    if(context.exeInfo && context.exeInfo.cloudformationEvents) {
-        zipper.append(context.exeInfo.cloudformationEvents, {
-            name: 'cloudformation_log.txt'
-        })
-    }
-    zipper.finalize();
-    return new Promise((resolve, reject) => {
-        output.on('close',() => {
-        sendFile(path.join(rootpath, 'example.zip'), { email, description, projectEnvIdentifier, projectIdentifier }).then(() => {
-            resolve('')
-        })
-
+const collectAndSendReport = async (context: $TSContext, error: Error | undefined): Promise<void> => {
+  const rootPath = pathManager.findProjectRoot();
+  if (!rootPath) {
+    throw new NotInitializedError();
+  }
+  const backend = stateManager.getBackendConfig(rootPath);
+  const resources : { category: string, resourceName: string, service: string }[] = [];
+  const categoryResources = Object.keys(backend)
+    .reduce((array, key) => {
+      Object.keys(backend[key])
+        .forEach(resourceKey => {
+          array.push({
+            category: key,
+            resourceName: resourceKey,
+            service: backend[key][resourceKey].service,
+          });
         });
-        output.on('error', reject);
-    })
 
-}
-
-function createTree(filePath: string[]):any {
-    let result: any[] = [];
-    let level = {result};
-    filePath.forEach(path => {
-        path.split('/').reduce((r, name, i, a) => {
-          if(!r[name]) {
-            r[name] = {result: []};
-            r.result.push({name, children: r[name].result})
-          }
-          return r[name];
-        }, level)
-      })
-
-    return result;
-}
-
-async function sendFile(zipPath: string, metaData: {}) {
-    const stream = fs.readFileSync(zipPath);
-    const stat = fs.statSync(zipPath);
-    const form = new FormData()
-    // new File([stream], '',{})
-    // form.append('file', new File(stream.buffer, 'example.zip'));
-    form.append('file', stream, {
-        filename: 'example.zip',
+      return array;
+    }, resources);
+  const filePaths = collectFiles(categoryResources, rootPath);
+  console.log(filePaths);
+  const zipper = archiver.create('zip', {
+    encoding: 'utf-8',
+  });
+  filePaths.forEach(file => {
+    zipper.append(file.redact ? Redactor(fs.readFileSync(file.filePath, { encoding: 'utf-8' })) : fs.readFileSync(file.filePath, { encoding: 'utf-8' }), {
+      name: path.relative(rootPath, file.filePath),
     });
-    form.append('metadata', JSON.stringify(metaData),{
-        contentType: 'application/json',
+  });
+  if (context.exeInfo && context.exeInfo.cloudformationEvents) {
+    const COLUMNS = ['ResourceStatus', 'LogicalResourceId', 'ResourceType', 'Timestamp', 'ResourceStatusReason'];
+    const events = context.exeInfo.cloudformationEvents.map(r => ({
+      ...r,
+      LogicalResourceId: stringMasker(r.LogicalResourceId),
+    }));
+    const cloudformation = columnify(events, {
+      columns: COLUMNS,
+      showHeaders: false,
     });
-    console.log(zipPath);
-    await fetch(report, {
-        method: 'POST',
-        headers: form.getHeaders(),
-        body: form,
-    }).then(() => {})
-}
+    zipper.append(cloudformation, {
+      name: 'cloudformation_log.txt',
+    });
+  }
 
-function hashedProjectIdentifiers(): { projectIdentifier: string, projectEnvIdentifier: string  } {
-    const projectConfig = stateManager.getProjectConfig();
-    const envName = stateManager.getCurrentEnvName();
-    const appid = getAppId();
-    const projectIdentifier = crypto.createHash('md5').update(`${projectConfig.projectName}-${appid}`).digest('hex');
-    const projectEnvIdentifier = crypto.createHash('md5').update(`${projectConfig.projectName}-${appid}-${envName}`).digest('hex');
-    return {
-        projectIdentifier,
-        projectEnvIdentifier
-    };
-}
+  if (error) {
+    zipper.append(JSON.stringify(error, null, 4), {
+      name: 'error.json',
+    });
+  }
 
-function getAppId(): string {
-    const meta = stateManager.getMeta();
-    return _.get(meta, ['providers', 'awscloudformation', 'AmplifyAppId']);
-}
+  
+  const { projectName } = stateManager.getProjectConfig();
 
-const filesMap = {
-    api: getApiFiles,
-    auth: getAuthFiles,
-    storage: getStorageFiles,
-    function: getFunctionFiles,
-}
+  // eslint-disable-next-line spellcheck/spell-checker
+  const fileDestination = path.join(os.tmpdir(), projectName, `report-${Date.now()}`);
+  const output = fs.createWriteStream(path.join(fileDestination, 'example.zip'));
+  zipper.pipe(output);
+  zipper.finalize();
+  const ids = hashedProjectIdentifiers();
+  const usageDataPayload : UsageDataPayload = context.usageData.getUsageDataPayload();
 
-function getAuthFiles(category: string, resource: string, service: string): string[] {
-    const resourceDirectory = pathManager.getResourceDirectoryPath(undefined, category, resource);
+  await sendFile(fileDestination, {
+    ...ids,
+    sessionUuid: usageDataPayload.sessionUuid,
+    installationUuid: usageDataPayload.installationUuid,
+    amplifyCliVersion: usageDataPayload.amplifyCliVersion,
+    nodeVersion: usageDataPayload.nodeVersion,
+  });
+};
 
-    if(service === 'Cognito-UserPool-Groups') {
-        return ['user-pool-group-precedence.json', path.join('build', 'parameters.json'), 'override.ts' ]
-        .map(r => path.join(resourceDirectory, r))
-        .filter(r => fs.existsSync(r));
-    }
+// eslint-disable-next-line spellcheck/spell-checker
 
-    if(service === 'Cognito') {
-        return ['cli-inputs.json', path.join('build', 'parameters.json'), 'override.ts']
-    .map(r => path.join(resourceDirectory, r))
-    .filter(r => fs.existsSync(r));
-    }
+const sendFile = async (
+  zipPath: string,
+  metaData: {
+    projectIdentifier: string,
+    projectEnvIdentifier: string,
+    sessionUuid: string,
+    installationUuid: string,
+    amplifyCliVersion: string,
+    nodeVersion: string,
+  },
+): Promise<void> => {
+  const stream = fs.readFileSync(zipPath);
+  const encryptedBuffer = crypto.publicEncrypt(await getPublicKey(), stream);
+  const form = new FormData();
+  form.append('file', encryptedBuffer, {
+    filename: path.basename(zipPath),
+  });
+  form.append('metadata', JSON.stringify(metaData), {
+    contentType: 'application/json',
+  });
+  await fetch(report, {
+    method: 'POST',
+    headers: form.getHeaders(),
+    body: form,
+  }).then(() => {
+    // no op
+  });
+};
 
-    return []
-}
+const hashedProjectIdentifiers = (): { projectIdentifier: string, projectEnvIdentifier: string } => {
+  const projectConfig = stateManager.getProjectConfig();
+  const envName = stateManager.getCurrentEnvName();
+  const appId = getAppId();
+  const projectIdentifier = crypto.createHash('md5').update(`${projectConfig.projectName}-${appId}`).digest('hex');
+  const projectEnvIdentifier = crypto.createHash('md5').update(`${projectConfig.projectName}-${appId}-${envName}`).digest('hex');
+  return {
+    projectIdentifier,
+    projectEnvIdentifier,
+  };
+};
 
-function getStorageFiles(category: string, resource: string, service: string): string[] {
-    const resourceDirectory = pathManager.getResourceDirectoryPath(undefined, category, resource);
-
-    return ['cli-inputs.json', path.join('build', 'parameters.json'), 'override.ts']
-    .map(r => path.join(resourceDirectory, r))
-    .filter(r => fs.existsSync(r));
-}
-
-function getApiFiles(category: string, resource: string, service: string): string[] {
-    const resourceDirectory = pathManager.getResourceDirectoryPath(undefined, category, resource);
-
-    if(service === 'AppSync') {
-        return ['cli-inputs.json', 'parameters.json', 'transfer.conf.json', 'schema.graphql', 'override.ts']
-        .map(r => path.join(resourceDirectory, r))
-        .filter(r => fs.existsSync(r));
-    }
-
-    if(service === 'API Gateway') {
-        return ['cli-inputs.json', path.join('build', 'parameters.json'), 'override.ts']
-        .map(r => path.join(resourceDirectory, r))
-        .filter(r => fs.existsSync(r));
-    }
-
-
-    return [];
-}
-
-function getFunctionFiles(category: string, resource: string, service: string): string[] {
-    const resourceDirectory = pathManager.getResourceDirectoryPath(undefined, category, resource);
-
-    if(service === 'Lambda'){
-        const amplifyState = 'amplify.state';
-        const parameters = 'function-parameters.json';
-        const customPolicies = 'custom-policies.json';
-        const packageJson = path.join('src', 'package.json');
-        return [amplifyState, parameters, customPolicies, packageJson]
-            .map(r => path.join(resourceDirectory, r))
-            .filter( r => fs.existsSync(r))
-    }
-
-    if(service === 'LambdaLayer') {
-        const layerConfiguration = 'layer-configuration.json';
-        const parameters = 'parameters.json';
-        const packageJson = path.join('lib', 'nodejs', 'package.json');
-        return [
-            layerConfiguration,
-            parameters,
-            packageJson,
-        ].map(r => path.join(resourceDirectory, r))
-        .filter( r => fs.existsSync(r));
-    }
-    return [];
-}
+const getAppId = (): string => {
+  const meta = stateManager.getMeta();
+  return _.get(meta, ['providers', 'awscloudformation', 'AmplifyAppId']);
+};
