@@ -22,7 +22,7 @@ const report = 'https://5h7ammarg5.execute-api.us-east-1.amazonaws.com/dev/repor
  * @param context the amplify context object
  * @param error if invoked due to an error
  */
-export const run = async (context: $TSContext, error: Error | undefined = undefined): Promise<void> => {
+export const run = async (context: $TSContext, error: Error | undefined): Promise<void> => {
   await collectAndSendReport(context, error);
 };
 
@@ -57,8 +57,6 @@ const collectAndSendReport = async (context: $TSContext, error: Error | undefine
     });
   });
   if (context.exeInfo && context.exeInfo.cloudformationEvents) {
-    console.log(JSON.stringify(context.exeInfo.cloudformationEvents, null, 4));
-
     const COLUMNS = ['ResourceStatus', 'LogicalResourceId', 'ResourceType', 'Timestamp', 'ResourceStatusReason'];
     const events = context.exeInfo.cloudformationEvents.map(r => ({
       ...r,
