@@ -120,7 +120,7 @@ export const pushResources = async (
           );
           printer.error(err.message);
         }
-        await reportRunner(context);
+        await reportRunner(context, err);
         throw err;
       }
     }

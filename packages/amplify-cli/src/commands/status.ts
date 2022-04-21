@@ -10,7 +10,7 @@ export const run = async (context: $TSContext) => {
     cliOptions: context?.input?.options,
   };
 
-  await reportRun(context);
+  //await reportRun(context);
   const view = new ViewResourceTableParams(cliParams);
   if (context?.input?.subCommands?.includes('help')) {
     context.print.info(view.getStyledHelp());

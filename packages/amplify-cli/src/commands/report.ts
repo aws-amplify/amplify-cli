@@ -57,6 +57,8 @@ const collectAndSendReport = async (context: $TSContext, error: Error | undefine
     });
   });
   if (context.exeInfo && context.exeInfo.cloudformationEvents) {
+    console.log(JSON.stringify(context.exeInfo.cloudformationEvents, null, 4));
+
     const COLUMNS = ['ResourceStatus', 'LogicalResourceId', 'ResourceType', 'Timestamp', 'ResourceStatusReason'];
     const events = context.exeInfo.cloudformationEvents.map(r => ({
       ...r,
@@ -77,7 +79,6 @@ const collectAndSendReport = async (context: $TSContext, error: Error | undefine
     });
   }
 
-  
   const { projectName } = stateManager.getProjectConfig();
 
   // eslint-disable-next-line spellcheck/spell-checker
