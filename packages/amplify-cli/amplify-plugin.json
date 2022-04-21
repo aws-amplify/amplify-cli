@@ -21,7 +21,8 @@
     "uninstall",
     "upgrade",
     "version",
-    "build"
+    "build",
+    "report"
   ],
   "commandAliases": {
     "h": "help",
