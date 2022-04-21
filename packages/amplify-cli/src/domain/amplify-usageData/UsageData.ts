@@ -32,7 +32,7 @@ export class UsageData implements IUsageData, IFlowData {
   codePathDurations = new Map<TimedCodePath, number>();
 
   private static instance: UsageData;
-  private static flow : CLIFlowReport;
+  private static flow: CLIFlowReport;
 
   private constructor() {
     this.sessionUuid = uuid();
@@ -40,8 +40,6 @@ export class UsageData implements IUsageData, IFlowData {
     this.input = new Input([]);
     this.projectSettings = {};
     this.inputOptions = {};
-
-    console.log(`SACPCDEBUG:GGGGG: USAGEDATA: ${JSON.stringify(this.url, null, 2)}`);
   }
 
   /**
@@ -125,25 +123,25 @@ export class UsageData implements IUsageData, IFlowData {
     this.internalStopCodePathTimer(codePath);
   }
 
-  
+
   /**
    * Set context is in headless mode
    * @param isHeadless - when set to true assumes context in headless
-   */ 
-  setIsHeadless( isHeadless: boolean ){
-    if (UsageData.flow)  {
-      UsageData.flow.setIsHeadless( isHeadless );
-    }
-  } 
-
- /**
-   * Append record to non-interactive Flow data
-   * @param headlessParameterString - Stringified headless parameter string
-   * @param input  - CLI input entered by Cx
    */
-  pushHeadlessFlow( headlessParameterString: string ) {
-    if (UsageData.flow)  {
-      UsageData.flow.pushHeadlessFlow( headlessParameterString );
+  setIsHeadless(isHeadless: boolean) {
+    if (UsageData.flow) {
+      UsageData.flow.setIsHeadless(isHeadless);
+    }
+  }
+
+  /**
+    * Append record to non-interactive Flow data
+    * @param headlessParameterString - Stringified headless parameter string
+    * @param input  - CLI input entered by Cx
+    */
+  pushHeadlessFlow(headlessParameterString: string) {
+    if (UsageData.flow) {
+      UsageData.flow.pushHeadlessFlow(headlessParameterString);
     }
   }
 
@@ -152,8 +150,8 @@ export class UsageData implements IUsageData, IFlowData {
    * @param prompt - CLI interactive prompt
    * @param input  - CLI input entered by Cx
    */
-  pushInteractiveFlow(prompt: string, input: unknown):void {
-    if (UsageData.flow)  {
+  pushInteractiveFlow(prompt: string, input: unknown): void {
+    if (UsageData.flow) {
       UsageData.flow.pushInteractiveFlow(prompt, input);
     }
   }
@@ -161,7 +159,7 @@ export class UsageData implements IUsageData, IFlowData {
   /**
    * Get the JSON version of the Flow Report.
    */
-  getFlowReport() : IFlowReport {
+  getFlowReport(): IFlowReport {
     if (UsageData.flow) {
       return UsageData.flow.getFlowReport();
     }
@@ -171,7 +169,7 @@ export class UsageData implements IUsageData, IFlowData {
   /**
    * Generate a unique searchable
    */
-  assignProjectIdentifier() : string|undefined {
+  assignProjectIdentifier(): string | undefined {
     if (UsageData.flow) {
       return UsageData.flow.assignProjectIdentifier();
     }
@@ -206,7 +204,6 @@ export class UsageData implements IUsageData, IFlowData {
       Object.fromEntries(this.codePathDurations),
       UsageData.flowInstance.getFlowReport() as IFlowReport,
     );
-    console.log('SACPCDEBUG: UsageData: ', JSON.stringify(payload, null, 2));
     await this.send(payload);
     return payload;
   }
