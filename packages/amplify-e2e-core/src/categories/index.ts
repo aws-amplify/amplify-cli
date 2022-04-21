@@ -11,3 +11,4 @@ export * from './predictions';
 export * from './storage';
 export * from './geo';
 export * from './custom';
+export * from './uibuilder';
