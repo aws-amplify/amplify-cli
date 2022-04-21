@@ -41,6 +41,7 @@
     "collectCoverageFrom": [
       "lib/**/*.js",
       "index.js"
-    ]
+    ],
+    "testEnvironment": "node"
   }
 }

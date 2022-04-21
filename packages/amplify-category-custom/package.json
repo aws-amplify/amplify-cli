@@ -55,6 +55,7 @@
     "collectCoverageFrom": [
       "src/**/*.ts",
       "!**/*.d.ts"
-    ]
+    ],
+    "testEnvironment": "node"
   }
 }

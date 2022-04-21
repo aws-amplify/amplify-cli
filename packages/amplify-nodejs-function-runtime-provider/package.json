@@ -54,6 +54,7 @@
       "jsx",
       "json",
       "node"
-    ]
+    ],
+    "testEnvironment": "node"
   }
 }

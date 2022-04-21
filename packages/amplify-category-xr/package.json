@@ -29,6 +29,7 @@
     "collectCoverageFrom": [
       "lib/**/*.js",
       "commands/**/*.js"
-    ]
+    ],
+    "testEnvironment": "node"
   }
 }

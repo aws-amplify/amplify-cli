@@ -32,6 +32,7 @@
     "coveragePathIgnorePatterns": [
       "/node_modules/"
     ],
+    "testEnvironment": "node",
     "collectCoverage": true,
     "collectCoverageFrom": [
       "lib/**/*.js"

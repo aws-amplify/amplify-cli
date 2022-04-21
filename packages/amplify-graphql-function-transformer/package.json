@@ -55,6 +55,7 @@
     "collectCoverage": true,
     "modulePathIgnorePatterns": [
       "overrides"
-    ]
+    ],
+    "testEnvironment": "node"
   }
 }

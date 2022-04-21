@@ -36,7 +36,8 @@
       "json",
       "node"
     ],
-    "collectCoverage": true
+    "collectCoverage": true,
+    "testEnvironment": "node"
   },
   "homepage": "https://github.com/aws-amplify/amplify-cli#readme",
   "dependencies": {

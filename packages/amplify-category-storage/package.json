@@ -66,6 +66,7 @@
     "coverageReporters": [
       "json",
       "html"
-    ]
+    ],
+    "testEnvironment": "node"
   }
 }

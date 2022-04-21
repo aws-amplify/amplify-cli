@@ -69,6 +69,7 @@
     "testPathIgnorePatterns": [
       "/node_modules/",
       "/lib/"
-    ]
+    ],
+    "testEnvironment": "node"
   }
 }

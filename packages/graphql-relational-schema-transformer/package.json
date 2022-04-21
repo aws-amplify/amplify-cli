@@ -53,6 +53,7 @@
       "ts-jest": {
         "diagnostics": false
       }
-    }
+    },
+    "testEnvironment": "node"
   }
 }

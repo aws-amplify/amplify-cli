@@ -34,7 +34,8 @@
       "jsx",
       "json",
       "node"
-    ]
+    ],
+    "testEnvironment": "node"
   },
   "devDependencies": {
     "@aws-amplify/graphql-auth-transformer": "0.8.0",
