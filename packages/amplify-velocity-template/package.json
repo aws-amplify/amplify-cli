@@ -30,7 +30,6 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "browser": "^0.2.6",
     "coveralls": "~3.0.9",
     "growl": "^1.10.5",
     "istanbul": "~0.4.5",
