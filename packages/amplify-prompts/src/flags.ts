@@ -14,6 +14,6 @@ export const isSilent = process.argv.includes('--silent');
 export const isYes = !!['--yes', '-y'].find(yesFlag => process.argv.includes(yesFlag));
 
 /**
- * Set to true if isYes is true or if stdin is not a TTY
+ * Set to true if stdin is a TTY (interactive shell)
  */
 export const isInteractiveShell = process.stdin.isTTY;

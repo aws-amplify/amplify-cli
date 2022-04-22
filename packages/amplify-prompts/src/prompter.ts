@@ -14,7 +14,7 @@ import { printer } from './printer';
 class AmplifyPrompter implements Prompter {
   constructor(private readonly prompter: typeof prompt = prompt, private readonly print: typeof printer = printer) {
     // construct a shim on top of enquirer to throw an error if it is called when stdin is non-interactive
-    // enquirer does not export the PromptOptions and this package does not depend on amplify-cli-core so using any type here
+    // enquirer does not export its PromptOptions type and this package does not depend on amplify-cli-core so using 'any' as the input type
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const prompterShim = ((opts: any) => {
       if (isInteractiveShell) {
@@ -245,12 +245,9 @@ export const prompter: Prompter = new AmplifyPrompter();
  * @param equals An optional function to determine if two elements are equal. If not specified, === is used
  * Note that choices are assumed to be unique by the equals function definition
  */
-export const byValues = <T>(
-  selection: T[],
-  equals: EqualsFunction<T> = defaultEquals,
-): MultiFilterFunction<T> => (
-    choices: T[],
-  ) => selection.map(sel => choices.findIndex(choice => equals(choice, sel))).filter(idx => idx >= 0);
+export const byValues = <T>(selection: T[], equals: EqualsFunction<T> = defaultEquals): MultiFilterFunction<T> => (
+  choices: T[],
+) => selection.map(sel => choices.findIndex(choice => equals(choice, sel))).filter(idx => idx >= 0);
 
 /**
  * Helper function to generate a function that will return an index of a single selection from a list
@@ -289,10 +286,7 @@ type EqualsFunction<T> = (a: T, b: T) => boolean;
 
 const defaultEquals = <T>(a: T, b: T): boolean => a === b;
 
-/**
- * Interface for the Amplify Prompter
- */
-export type Prompter = {
+type Prompter = {
   confirmContinue: (message?: string) => Promise<boolean>;
   yesOrNo: (message: string, initial?: boolean) => Promise<boolean>;
   // options is typed using spread because it's the only way to make it optional if RS is 'one' and T is a string but required otherwise
