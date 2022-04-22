@@ -5,12 +5,12 @@ import { DocumentNode, ExecutableDefinitionNode, ExecutionResult, FieldNode } fr
 import { createServer as createHTTPServer, Server } from 'http';
 import { address as getLocalIpAddress } from 'ip';
 import { AddressInfo } from 'net';
-import portfinder from 'portfinder';
 import { inspect } from 'util';
 import { AmplifyAppSyncSimulator } from '..';
 import { AppSyncSimulatorServerConfig } from '../type-definition';
 import { MQTTServer } from './subscription/mqtt-server';
 import { WebsocketSubscriptionServer } from './subscription/websocket-server/server';
+import getPort from 'get-port';
 
 const MINUTE = 1000 * 60;
 const CONNECTION_TIMEOUT = 2 * MINUTE; // 2 mins
@@ -64,17 +64,14 @@ export class SubscriptionServer {
 
   async start() {
     if (!this.port) {
-      this.port = await portfinder.getPortPromise({
-        startPort: BASE_PORT,
-        stopPort: MAX_PORT,
-      });
+      this.port = await getPort({
+        port: getPort.makeRange(BASE_PORT, MAX_PORT),
+      })
     } else {
       try {
-        await portfinder.getPortPromise({
-          startPort: this.port,
-          stopPort: this.port,
+        await getPort({
           port: this.port,
-        });
+        })
       } catch (e) {
         throw new Error(`Port ${this.port} is already in use. Please kill the program using this port and restart Mock`);
       }

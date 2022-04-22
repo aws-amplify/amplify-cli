@@ -17,9 +17,7 @@
 /* eslint-disable no-await-in-loop */
 import _ from 'lodash';
 import * as fs from 'fs-extra';
-import { EOL } from 'os';
 import * as path from 'path';
-import { validateFile } from 'cfn-lint';
 import glob from 'glob';
 import {
   AmplifyCategories,
@@ -149,7 +147,6 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
       }
     }
 
-    validateCfnTemplates(context, resources);
 
     for (const resource of resources) {
       if (resource.service === ApiServiceNameElasticContainer && resource.category === 'api') {
@@ -493,12 +490,10 @@ export const updateStackForAPIMigration = async (context: $TSContext, category: 
 
   const { isReverting, isCLIMigration } = options;
 
-  let resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
   let projectDetails = context.amplify.getProjectDetails();
 
-  validateCfnTemplates(context, resources);
 
-  resources = allResources.filter((resource: { service: string; }) => resource.service === 'AppSync');
+  const resources = allResources.filter((resource: { service: string; }) => resource.service === 'AppSync');
 
   await uploadAppSyncFiles(context, resources, allResources, {
     useDeprecatedParameters: isReverting,
@@ -603,31 +598,6 @@ export const storeCurrentCloudBackend = async (context: $TSContext) => {
   }
 
   fs.removeSync(tempDir);
-};
-
-const validateCfnTemplates = (context: $TSContext, resourcesToBeUpdated: $TSAny[]) => {
-  for (const { category, resourceName } of resourcesToBeUpdated) {
-    // Turning off the error log for Geo resources as they're considered invalid by cfn-lint
-    if (category === 'geo') {
-      continue;
-    }
-    const backEndDir = pathManager.getBackendDirPath();
-    const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
-    const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
-      cwd: resourceDir,
-      ignore: [parametersJson],
-    });
-
-    for (const cfnFile of cfnFiles) {
-      const filePath = path.normalize(path.join(resourceDir, cfnFile));
-
-      try {
-        validateFile(filePath);
-      } catch (err) {
-        context.print.warning(`Invalid CloudFormation template: ${filePath}${EOL}${err.message}`);
-      }
-    }
-  }
 };
 
 const prepareBuildableResources = async (context: $TSContext, resources: $TSAny[]): Promise<void> => {

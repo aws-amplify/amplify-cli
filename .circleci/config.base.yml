@@ -943,9 +943,6 @@ commands:
           condition:
             equal: [*windows-e2e-executor, << parameters.os >>]
           steps:
-            - run: nvm install 12.22.5
-            - run: nvm use 12.22.5
-            - run: npm install -g yarn
             - run: yarn --cache-folder ~/.cache/yarn
             - run:
                 shell: powershell.exe

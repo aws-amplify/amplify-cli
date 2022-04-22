@@ -1,4 +1,4 @@
-import * as pty from 'node-pty-prebuilt-multiarch';
+import * as pty from 'node-pty';
 import chalk from 'chalk';
 
 export type RecordingHeader = {
