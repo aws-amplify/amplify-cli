@@ -1,6 +1,6 @@
 {
   "name": "amplify-dotnet-function-template-provider",
-  "version": "2.2.30",
+  "version": "2.2.31-apiSplitM1Refresh1.0",
   "description": ".NET Core templates supplied by the Amplify Team",
   "repository": {
     "type": "git",

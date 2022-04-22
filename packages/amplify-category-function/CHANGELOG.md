@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.2-apiSplitM1Refresh1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.0.1...amplify-category-function@4.0.2-apiSplitM1Refresh1.0) (2022-04-22)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
 ## [4.0.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.0.0...amplify-category-function@4.0.1) (2022-04-11)
 
 **Note:** Version bump only for package amplify-category-function

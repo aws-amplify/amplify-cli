@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.13-apiSplitM1Refresh1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.3.12...amplify-nodejs-function-template-provider@2.3.13-apiSplitM1Refresh1.0) (2022-04-22)
+
+**Note:** Version bump only for package amplify-nodejs-function-template-provider
+
+
+
+
+
 ## [2.3.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.3.11...amplify-nodejs-function-template-provider@2.3.12) (2022-04-18)
 
 **Note:** Version bump only for package amplify-nodejs-function-template-provider

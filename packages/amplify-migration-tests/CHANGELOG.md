@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.30-apiSplitM1Refresh1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.29...amplify-migration-tests@4.4.30-apiSplitM1Refresh1.0) (2022-04-22)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
 ## [4.4.29](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.28...amplify-migration-tests@4.4.29) (2022-04-11)
 
 **Note:** Version bump only for package amplify-migration-tests
