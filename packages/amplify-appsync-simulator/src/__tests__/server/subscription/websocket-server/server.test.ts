@@ -70,10 +70,6 @@ describe('WebsocketSubscriptionServer', () => {
       { server: httpServer, path: SUBSCRIPTION_PATH },
     );
 
-    // serverPort = await getPort({
-    //   startPort: 20001,
-    //   stopPort: 66666,
-    // });
     serverPort = await getPort({
       port: getPort.makeRange(20001, 65536),
     });
