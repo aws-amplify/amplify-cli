@@ -490,11 +490,10 @@ export const updateStackForAPIMigration = async (context: $TSContext, category: 
 
   const { isReverting, isCLIMigration } = options;
 
-  let resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
   let projectDetails = context.amplify.getProjectDetails();
 
 
-  resources = allResources.filter((resource: { service: string; }) => resource.service === 'AppSync');
+  const resources = allResources.filter((resource: { service: string; }) => resource.service === 'AppSync');
 
   await uploadAppSyncFiles(context, resources, allResources, {
     useDeprecatedParameters: isReverting,
