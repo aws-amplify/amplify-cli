@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "download-cli": "^1.1.1",
-    "portfinder": "^1.0.25"
+    "get-port": "^5.1.1"
   },
   "jest": {
     "testEnvironment": "node",
