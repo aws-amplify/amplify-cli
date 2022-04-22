@@ -124,6 +124,8 @@
   },
   "resolutions": {
     "**/glob-parent": "^6.0.2",
+    "**/istanbul/async": "^2.6.4",
+    "**/jake/async": "^2.6.4",
     "**/nth-check": "^2.0.1"
   }
 }
