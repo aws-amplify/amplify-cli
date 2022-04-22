@@ -1,7 +1,7 @@
 import { createServer, Server } from 'http';
 import { URL, URLSearchParams } from 'url';
 import WS from 'ws';
-import portFinder from 'portfinder';
+import getPort from 'get-port';
 import { PubSub } from 'graphql-subscriptions';
 import { parse } from 'graphql';
 
@@ -70,9 +70,12 @@ describe('WebsocketSubscriptionServer', () => {
       { server: httpServer, path: SUBSCRIPTION_PATH },
     );
 
-    serverPort = await portFinder.getPortPromise({
-      startPort: 20001,
-      stopPort: 66666,
+    // serverPort = await getPort({
+    //   startPort: 20001,
+    //   stopPort: 66666,
+    // });
+    serverPort = await getPort({
+      port: getPort.makeRange(20001, 65536),
     });
     httpServer.listen(serverPort);
     server.start();
