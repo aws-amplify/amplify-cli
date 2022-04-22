@@ -23,7 +23,6 @@ import {
 import { NONE_VALUE } from 'graphql-transformer-common';
 import {
   getIdentityClaimExp,
-  getOwnerClaim,
   emptyPayload,
   setHasAuthExpression,
   iamCheck,
@@ -172,43 +171,22 @@ const generateAuthFilter = (
     const entityIsList = fieldIsList(fields, role.entity);
     const roleKey = entityIsList ? role.entity : `${role.entity}.keyword`;
     if (role.strategy === 'owner') {
-      const claims = role.claim!.split(':');
-      const hasMultiClaims = claims.length > 1
-        && role.claim! !== 'cognito:username'
-        && claims[0] !== 'custom';
-
-      if (hasMultiClaims) {
-        filterExpression.push(
-          generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`),
-          generateOwnerClaimListExpression(role.claim!, idx),
-          qref(methodCall(ref(`ownerClaimsList${idx}.add`), ref(`ownerClaim${idx}`))),
-          set(
-            ref(`owner${idx}`),
-            obj({
-              terms_set: obj({
-                [roleKey]: obj({
-                  terms: ref(`ownerClaimsList${idx}`),
-                  minimum_should_match_script: obj({ source: str('1') }),
-                }),
+      filterExpression.push(
+        generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`),
+        generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
+        qref(methodCall(ref(`ownerClaimsList${idx}.add`), ref(`ownerClaim${idx}`))),
+        set(
+          ref(`owner${idx}`),
+          obj({
+            terms_set: obj({
+              [roleKey]: obj({
+                terms: ref(`ownerClaimsList${idx}`),
+                minimum_should_match_script: obj({ source: str('1') }),
               }),
             }),
-          ),
-        );
-      } else {
-        filterExpression.push(
-          set(
-            ref(`owner${idx}`),
-            obj({
-              terms_set: obj({
-                [roleKey]: obj({
-                  terms: list([getOwnerClaim(role.claim!)]),
-                  minimum_should_match_script: obj({ source: str('1') }),
-                }),
-              }),
-            }),
-          ),
-        );
-      }
+          }),
+        ),
+      );
 
       authFilter.push(ref(`owner${idx}`));
 

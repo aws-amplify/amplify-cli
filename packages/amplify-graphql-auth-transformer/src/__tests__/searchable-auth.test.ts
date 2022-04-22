@@ -37,7 +37,7 @@ const expectMultiple = (
   });
 };
 
-test('auth logic is enabled on owner/static rules in es request', () => {
+test('auth logic is enabled on owner/static rules in os request', () => {
   const validSchema = `
         type Comment @model
             @searchable
@@ -64,9 +64,6 @@ test('auth logic is enabled on owner/static rules in es request', () => {
   const out = transformer.transform(validSchema);
   // expect response resolver to contain auth logic for owner rule
   expect(out).toBeDefined();
-  expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain(
-    '#set( $ownerClaim0 = "$ownerClaim0::$currentClaim1" )',
-  );
   expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain(
     '$util.qr($ownerClaimsList0.add($ownerClaim0))',
   );
@@ -130,7 +127,7 @@ test('auth logic is enabled for iam/apiKey auth rules', () => {
 });
 
 describe('identity flag feature flag disabled', () => {
-  test('auth logic is enabled on owner/static rules in es request', () => {
+  test('auth logic is enabled on owner/static rules in os request', () => {
     const validSchema = `
           type Comment @model
               @searchable
@@ -160,9 +157,6 @@ describe('identity flag feature flag disabled', () => {
     const out = transformer.transform(validSchema);
     // expect response resolver to contain auth logic for owner rule
     expect(out).toBeDefined();
-    expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain(
-      '#set( $ownerClaim0 = "$ownerClaim0::$currentClaim1" )',
-    );
     expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain(
       '$util.qr($ownerClaimsList0.add($ownerClaim0))',
     );
