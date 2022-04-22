@@ -123,6 +123,7 @@
     "typescript": "^4.5.5"
   },
   "resolutions": {
+    "**/glob-parent": "^6.0.2",
     "**/nth-check": "^2.0.1"
   }
 }
