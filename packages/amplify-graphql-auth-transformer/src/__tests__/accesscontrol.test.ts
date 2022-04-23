@@ -71,14 +71,14 @@ test('access control on object and field', () => {
   expect(acm.isAllowed(studentOwnerRole, 'email', 'update')).toBe(true);
 });
 
-test('test access control only on field', () => {
+test('access control only on field', () => {
   /*
   given the following schema
   type Student
   @model {
   studentID: ID
   name: String
-  # only allows read access on email and ssn for studentID ownerfield can also only update email
+  # only allows read access on email and ssn for studentID ownerField can also only update email
   email: AWSEmail @auth(rules: [
     { allow: owner, ownerField: "studentID", operations: [read, update] }
   ])
@@ -122,7 +122,7 @@ test('that adding a role again without a resource is not allowed', () => {
     operations: MODEL_OPERATIONS,
   });
   acm.setRole({ role: blogOwnerRole, operations: MODEL_OPERATIONS });
-  for (let field of blogFields) {
+  for (const field of blogFields) {
     expect(acm.isAllowed(blogOwnerRole, field, 'create')).toBe(true);
     expect(acm.isAllowed(blogOwnerRole, field, 'read')).toBe(true);
     expect(acm.isAllowed(blogOwnerRole, field, 'update')).toBe(true);
@@ -144,14 +144,14 @@ test('that adding a role again without a resource is allowed with overwrite flag
     operations: MODEL_OPERATIONS,
   });
   acm.setRole({ role: blogOwnerRole, operations: MODEL_OPERATIONS });
-  for (let field of blogFields) {
+  for (const field of blogFields) {
     expect(acm.isAllowed(blogOwnerRole, field, 'create')).toBe(true);
     expect(acm.isAllowed(blogOwnerRole, field, 'read')).toBe(true);
     expect(acm.isAllowed(blogOwnerRole, field, 'update')).toBe(true);
     expect(acm.isAllowed(blogOwnerRole, field, 'delete')).toBe(true);
   }
   acm.setRole({ role: blogOwnerRole, operations: ['read'], allowRoleOverwrite: true });
-  for (let field of blogFields) {
+  for (const field of blogFields) {
     expect(acm.isAllowed(blogOwnerRole, field, 'create')).toBe(false);
     expect(acm.isAllowed(blogOwnerRole, field, 'read')).toBe(true);
     expect(acm.isAllowed(blogOwnerRole, field, 'update')).toBe(false);

@@ -99,7 +99,11 @@ describe('relational tests', () => {
     expect(ownerFieldResponse.hadException).toBe(false);
     expect(ownerFieldResponse.stash.authFilter).toEqual(
       expect.objectContaining({
-        or: [{ owner: { eq: 'user1' } }],
+        or: [
+          { owner: { eq: `${ownerRequest.jwt.sub}:user1` } },
+          { owner: { eq: `${ownerRequest.jwt.sub}` } },
+          { owner: { eq: 'user1' } },
+        ],
       }),
     );
   });

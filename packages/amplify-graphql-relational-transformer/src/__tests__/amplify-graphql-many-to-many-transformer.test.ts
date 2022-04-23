@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
@@ -6,6 +7,8 @@ import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-inter
 import { DocumentNode, ObjectTypeDefinitionNode, parse } from 'graphql';
 import { HasOneTransformer, ManyToManyTransformer } from '..';
 import { featureFlags } from './test-helpers';
+
+jest.mock('amplify-prompts');
 
 test('fails if @manyToMany was used on an object that is not a model type', () => {
   const inputSchema = `
@@ -462,3 +465,4 @@ function expectObjectAndFields(schema: DocumentNode, type: String, fields: Strin
     expect(relationModel.fields?.find(f => f.name.value === field)).toBeDefined();
   });
 }
+/* eslint-enable */
