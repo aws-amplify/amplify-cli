@@ -144,7 +144,7 @@ beforeAll(async () => {
         getString: jest.fn(),
         getNumber: jest.fn(),
         getObject: jest.fn(),
-      }
+      },
     });
     out = transformer.transform(validSchema);
   } catch (e) {
