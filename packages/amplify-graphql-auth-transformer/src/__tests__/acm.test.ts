@@ -3,6 +3,9 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AuthTransformer } from '..';
 import { ACMTest, acmTests } from './acm-test-library';
+import { featureFlags } from './test-helpers';
+
+jest.mock('amplify-prompts');
 
 describe('acm tests', () => {
   Object.entries(acmTests).forEach(([name, test]) => {
@@ -17,6 +20,7 @@ const testSchemaACM = (test: ACMTest): void => {
   const transformer = new GraphQLTransform({
     authConfig: test.authConfig,
     transformers: [new ModelTransformer(), new IndexTransformer(), new PrimaryKeyTransformer(), authTransformer],
+    featureFlags,
   });
 
   transformer.transform(test.sdl);

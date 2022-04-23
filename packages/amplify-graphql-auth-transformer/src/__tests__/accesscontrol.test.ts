@@ -1,7 +1,7 @@
 import { AccessControlMatrix } from '../accesscontrol';
 import { MODEL_OPERATIONS } from '../utils';
 
-test('test access control on object and field', () => {
+test('access control on object and field', () => {
   /*
   given the following schema
   type Student
