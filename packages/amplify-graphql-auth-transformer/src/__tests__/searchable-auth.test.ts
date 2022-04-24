@@ -1,16 +1,25 @@
-import { AuthTransformer, SEARCHABLE_AGGREGATE_TYPES } from '../';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import { DocumentNode, ObjectTypeDefinitionNode, Kind, FieldDefinitionNode, parse, InputValueDefinitionNode } from 'graphql';
+import {
+  DocumentNode, ObjectTypeDefinitionNode, Kind, FieldDefinitionNode, parse,
+} from 'graphql';
+import { AuthTransformer, SEARCHABLE_AGGREGATE_TYPES } from '..';
 
-const getObjectType = (doc: DocumentNode, type: string): ObjectTypeDefinitionNode | undefined => {
-  return doc.definitions.find(def => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type) as
+const getObjectType = (
+  doc: DocumentNode,
+  type: string,
+):
+  ObjectTypeDefinitionNode
+  | undefined => doc.definitions.find(def => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type) as
     | ObjectTypeDefinitionNode
     | undefined;
-};
-const expectMultiple = (fieldOrType: ObjectTypeDefinitionNode | FieldDefinitionNode, directiveNames: string[]) => {
+
+const expectMultiple = (
+  fieldOrType: ObjectTypeDefinitionNode | FieldDefinitionNode,
+  directiveNames: string[],
+): void => {
   expect(directiveNames).toBeDefined();
   expect(directiveNames).toHaveLength(directiveNames.length);
   expect(fieldOrType.directives.length).toEqual(directiveNames.length);
@@ -99,12 +108,12 @@ test('auth logic is enabled for iam/apiKey auth rules', () => {
   expect(out).toBeDefined();
   expect(out.schema).toBeDefined();
   const schemaDoc = parse(out.schema);
-  for (const aggregateType of SEARCHABLE_AGGREGATE_TYPES) {
+  SEARCHABLE_AGGREGATE_TYPES.forEach(aggregateType => {
     expectMultiple(getObjectType(schemaDoc, aggregateType), expectedDirectives);
-  }
-  // expect the searchbable types to have the auth directives for total providers
+  });
+  // expect the searchable types to have the auth directives for total providers
   // expect the allowed fields for agg to exclude secret
   expect(out.resolvers['Query.searchPosts.auth.1.req.vtl']).toContain(
-    `#set( $allowedAggFields = ["createdAt","updatedAt","id","content"] )`,
+    '#set( $allowedAggFields = ["createdAt","updatedAt","id","content"] )',
   );
 });

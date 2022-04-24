@@ -14,6 +14,9 @@ describe('only grant permission policies as requested', () => {
             },
             index12345: {
                 service: 'PlaceIndex'
+            },
+            collection12345: {
+                service: 'GeofenceCollection'
             }
         }
     };
@@ -34,7 +37,8 @@ describe('only grant permission policies as requested', () => {
         const crudOptions = ['create', 'read', 'update', 'delete'];
         const mockResourceOpsMapping = {
             map12345: crudOptions,
-            index12345: crudOptions
+            index12345: crudOptions,
+            collection12345: crudOptions
         };
 
         const { permissionPolicies, resourceAttributes } = getPermissionPolicies(mockContext, mockResourceOpsMapping);
@@ -46,7 +50,8 @@ describe('only grant permission policies as requested', () => {
         const crudOptions = ['create'];
         const mockResourceOpsMapping = {
             map12345: crudOptions,
-            index12345: crudOptions
+            index12345: crudOptions,
+            collection12345: crudOptions
         };
 
         const { permissionPolicies, resourceAttributes } = getPermissionPolicies(mockContext, mockResourceOpsMapping);
@@ -58,7 +63,8 @@ describe('only grant permission policies as requested', () => {
         const crudOptions = ['read'];
         const mockResourceOpsMapping = {
             map12345: crudOptions,
-            index12345: crudOptions
+            index12345: crudOptions,
+            collection12345: crudOptions
         };
 
         const { permissionPolicies, resourceAttributes } = getPermissionPolicies(mockContext, mockResourceOpsMapping);
@@ -70,7 +76,8 @@ describe('only grant permission policies as requested', () => {
         const crudOptions = ['update'];
         const mockResourceOpsMapping = {
             map12345: crudOptions,
-            index12345: crudOptions
+            index12345: crudOptions,
+            collection12345: crudOptions
         };
 
         const { permissionPolicies, resourceAttributes } = getPermissionPolicies(mockContext, mockResourceOpsMapping);
@@ -82,7 +89,8 @@ describe('only grant permission policies as requested', () => {
         const crudOptions = ['delete'];
         const mockResourceOpsMapping = {
             map12345: crudOptions,
-            index12345: crudOptions
+            index12345: crudOptions,
+            collection12345: crudOptions
         };
 
         const { permissionPolicies, resourceAttributes } = getPermissionPolicies(mockContext, mockResourceOpsMapping);

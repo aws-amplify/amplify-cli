@@ -178,7 +178,7 @@ describe('amplify auth migration', () => {
 
     await initJSProjectWithProfile(projRoot, defaultSettings);
     await addAuthWithDefault(projRoot, {});
-    await updateHeadlessAuth(projRoot, updateAuthRequest, {});
+    await updateHeadlessAuth(projRoot, updateAuthRequest, { testingWithLatestCodebase: true });
     await amplifyPushAuth(projRoot, true);
     const meta = getProjectMeta(projRoot);
     const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;

@@ -5,10 +5,9 @@ const ini = require('ini');
 const { spawn } = require('child_process');
 const inquirer = require('inquirer');
 
-const amplify = /^win/.test(process.platform) ? 'amplify.cmd' : 'amplify';
+const amplify = process.env.AMPLIFY_PATH ? process.env.AMPLIFY_PATH : /^win/.test(process.platform) ? 'amplify.cmd' : 'amplify';
 const dotAWSDirPath = path.normalize(path.join(os.homedir(), '.aws'));
 const configFilePath = path.join(dotAWSDirPath, 'config');
-
 run();
 
 function getNamedProfiles() {

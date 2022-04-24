@@ -1,9 +1,9 @@
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
-import { IndexTransformer } from '@aws-amplify/graphql-index-transformer';
+import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import { parse } from 'graphql';
+import { DocumentNode, ObjectTypeDefinitionNode, parse } from 'graphql';
 import { HasOneTransformer, ManyToManyTransformer } from '..';
 
 test('fails if @manyToMany was used on an object that is not a model type', () => {
@@ -174,6 +174,76 @@ test('valid schema', () => {
   expect(out.resolvers).toMatchSnapshot();
 });
 
+test('one of the models with sort key', () => {
+  const inputSchema = `
+    type ModelA @model {
+      id: ID! @primaryKey(sortKeyFields: ["sortId"])
+      sortId: ID!
+      models: [ModelB] @manyToMany(relationName: "ModelAModelB")
+    }
+
+    type ModelB @model {
+      id: ID!
+      models: [ModelA] @manyToMany(relationName: "ModelAModelB")
+    }`;
+  const transformer = createTransformer();
+  const out = transformer.transform(inputSchema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+
+  expect(out.schema).toMatchSnapshot();
+  expectObjectAndFields(schema, "ModelAModelB", ["modelAID", "modelAsortId", "modelBID"]);
+});
+
+test('both models with sort key', () => {
+  const inputSchema = `
+    type ModelA @model {
+      id: ID! @primaryKey(sortKeyFields: ["sortId"])
+      sortId: ID!
+      models: [ModelB] @manyToMany(relationName: "ModelAModelB")
+    }
+
+    type ModelB @model {
+      id: ID! @primaryKey(sortKeyFields: ["sortId"])
+      sortId: ID!
+      models: [ModelA] @manyToMany(relationName: "ModelAModelB")
+    }`;
+  const transformer = createTransformer();
+  const out = transformer.transform(inputSchema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+
+  expect(out.schema).toMatchSnapshot();
+  expectObjectAndFields(schema, "ModelAModelB", ["modelAID", "modelAsortId", "modelBID", "modelBsortId"]);
+  expect(out.resolvers).toMatchSnapshot();
+});
+
+test('models with multiple sort keys', () => {
+  const inputSchema = `
+    type ModelA @model {
+      id: ID! @primaryKey(sortKeyFields: ["sortId", "secondSortId"])
+      sortId: ID!
+      secondSortId: ID!
+      models: [ModelB] @manyToMany(relationName: "ModelAModelB")
+    }
+
+    type ModelB @model {
+      id: ID! @primaryKey(sortKeyFields: ["sortId"])
+      sortId: ID!
+      models: [ModelA] @manyToMany(relationName: "ModelAModelB")
+    }`;
+  const transformer = createTransformer();
+  const out = transformer.transform(inputSchema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+
+  expect(out.schema).toMatchSnapshot();
+  expectObjectAndFields(schema, "ModelAModelB", ["modelAID", "modelAsortId", "modelAsecondSortId", "modelBID", "modelBsortId"]);
+});
+
 test('join table inherits auth from first table', () => {
   const inputSchema = `
     type Foo @model @auth(rules: [{ allow: public, provider: apiKey }]) {
@@ -195,7 +265,9 @@ test('join table inherits auth from first table', () => {
   expect(out.resolvers['Query.getFooBar.res.vtl']).toEqual(out.resolvers['Query.getFoo.res.vtl']);
   expect(out.resolvers['Query.listFooBars.auth.1.req.vtl']).toEqual(out.resolvers['Query.listFoos.auth.1.req.vtl']);
   expect(out.resolvers['Query.listFooBars.postAuth.1.req.vtl']).toEqual(out.resolvers['Query.listFoos.postAuth.1.req.vtl']);
-  expect(out.resolvers['Mutation.createFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.createFoo.auth.1.req.vtl']);
+  expect(
+    out.resolvers['Mutation.createFooBar.auth.1.req.vtl'].replace('#set( $allowedFields = ["id","fooID","barID","foo","bar"] )', ''),
+  ).toEqual(out.resolvers['Mutation.createFoo.auth.1.req.vtl'].replace('#set( $allowedFields = ["id","bars"] )', ''));
   expect(out.resolvers['Mutation.createFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.createFoo.postAuth.1.req.vtl']);
   expect(out.resolvers['Mutation.deleteFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.deleteFoo.auth.1.req.vtl']);
   expect(out.resolvers['Mutation.deleteFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.deleteFoo.postAuth.1.req.vtl']);
@@ -204,7 +276,15 @@ test('join table inherits auth from first table', () => {
   expect(out.resolvers['Mutation.deleteFooBar.res.vtl']).toEqual(out.resolvers['Mutation.deleteFoo.res.vtl']);
   expect(out.resolvers['Mutation.updateFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.updateFoo.auth.1.req.vtl']);
   expect(out.resolvers['Mutation.updateFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.updateFoo.postAuth.1.req.vtl']);
-  expect(out.resolvers['Mutation.updateFooBar.auth.1.res.vtl']).toEqual(out.resolvers['Mutation.updateFoo.auth.1.res.vtl']);
+  expect(
+    out.resolvers['Mutation.updateFooBar.auth.1.res.vtl']
+      .replace('#set( $allowedFields = ["id","fooID","barID","foo","bar"] )', '')
+      .replace('#set( $nullAllowedFields = ["id","fooID","barID","foo","bar"] )', ''),
+  ).toEqual(
+    out.resolvers['Mutation.updateFoo.auth.1.res.vtl']
+      .replace('#set( $allowedFields = ["id","bars"] )', '')
+      .replace('#set( $nullAllowedFields = ["id","bars"] )', ''),
+  );
   expect(out.resolvers['Mutation.updateFooBar.req.vtl']).toEqual(out.resolvers['Mutation.updateFoo.req.vtl']);
   expect(out.resolvers['Mutation.updateFooBar.res.vtl']).toEqual(out.resolvers['Mutation.updateFoo.res.vtl']);
 });
@@ -230,7 +310,9 @@ test('join table inherits auth from second table', () => {
   expect(out.resolvers['Query.getFooBar.res.vtl']).toEqual(out.resolvers['Query.getBar.res.vtl']);
   expect(out.resolvers['Query.listFooBars.auth.1.req.vtl']).toEqual(out.resolvers['Query.listBars.auth.1.req.vtl']);
   expect(out.resolvers['Query.listFooBars.postAuth.1.req.vtl']).toEqual(out.resolvers['Query.listBars.postAuth.1.req.vtl']);
-  expect(out.resolvers['Mutation.createFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.createBar.auth.1.req.vtl']);
+  expect(
+    out.resolvers['Mutation.createFooBar.auth.1.req.vtl'].replace('#set( $allowedFields = ["id","fooID","barID","foo","bar"] )', ''),
+  ).toEqual(out.resolvers['Mutation.createBar.auth.1.req.vtl'].replace('#set( $allowedFields = ["id","foos"] )', ''));
   expect(out.resolvers['Mutation.createFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.createBar.postAuth.1.req.vtl']);
   expect(out.resolvers['Mutation.deleteFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.deleteBar.auth.1.req.vtl']);
   expect(out.resolvers['Mutation.deleteFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.deleteBar.postAuth.1.req.vtl']);
@@ -239,7 +321,15 @@ test('join table inherits auth from second table', () => {
   expect(out.resolvers['Mutation.deleteFooBar.res.vtl']).toEqual(out.resolvers['Mutation.deleteBar.res.vtl']);
   expect(out.resolvers['Mutation.updateFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.updateBar.auth.1.req.vtl']);
   expect(out.resolvers['Mutation.updateFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.updateBar.postAuth.1.req.vtl']);
-  expect(out.resolvers['Mutation.updateFooBar.auth.1.res.vtl']).toEqual(out.resolvers['Mutation.updateBar.auth.1.res.vtl']);
+  expect(
+    out.resolvers['Mutation.updateFooBar.auth.1.res.vtl']
+      .replace('#set( $allowedFields = ["id","fooID","barID","foo","bar"] )', '')
+      .replace('#set( $nullAllowedFields = ["id","fooID","barID","foo","bar"] )', ''),
+  ).toEqual(
+    out.resolvers['Mutation.updateBar.auth.1.res.vtl']
+      .replace('#set( $allowedFields = ["id","foos"] )', '')
+      .replace('#set( $nullAllowedFields = ["id","foos"] )', ''),
+  );
   expect(out.resolvers['Mutation.updateFooBar.req.vtl']).toEqual(out.resolvers['Mutation.updateBar.req.vtl']);
   expect(out.resolvers['Mutation.updateFooBar.res.vtl']).toEqual(out.resolvers['Mutation.updateBar.res.vtl']);
 });
@@ -347,10 +437,12 @@ function createTransformer(authConfig?: AppSyncAuthConfiguration) {
   const modelTransformer = new ModelTransformer();
   const indexTransformer = new IndexTransformer();
   const hasOneTransformer = new HasOneTransformer();
+  const primaryKeyTransformer = new PrimaryKeyTransformer();
   const transformer = new GraphQLTransform({
     authConfig: transformerAuthConfig,
     transformers: [
       modelTransformer,
+      primaryKeyTransformer,
       indexTransformer,
       hasOneTransformer,
       new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
@@ -359,4 +451,12 @@ function createTransformer(authConfig?: AppSyncAuthConfiguration) {
   });
 
   return transformer;
+}
+
+function expectObjectAndFields(schema: DocumentNode, type: String, fields: String[]) {
+  const relationModel = schema.definitions.find(def => def.kind === "ObjectTypeDefinition" && def.name.value === type) as ObjectTypeDefinitionNode;
+  expect(relationModel).toBeDefined();
+  fields.forEach(field => {
+    expect(relationModel.fields?.find(f => f.name.value === field)).toBeDefined();
+  });
 }

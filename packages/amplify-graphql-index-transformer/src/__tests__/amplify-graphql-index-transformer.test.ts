@@ -1,5 +1,7 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { ConflictHandlerType, GraphQLTransform, SyncConfig, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import {
+  ConflictHandlerType, GraphQLTransform, SyncConfig, validateModelSchema,
+} from '@aws-amplify/graphql-transformer-core';
 import { expect as cdkExpect, haveResourceLike } from '@aws-cdk/assert';
 import { parse } from 'graphql';
 import { IndexTransformer, PrimaryKeyTransformer } from '..';
@@ -32,7 +34,7 @@ test('throws if the same index name is defined multiple times on an object', () 
 
   expect(() => {
     transformer.transform(schema);
-  }).toThrow(`You may only supply one @index with the name 'index1' on type 'Test'.`);
+  }).toThrow('You may only supply one @index with the name \'index1\' on type \'Test\'.');
 });
 
 test('throws if an invalid LSI is created', () => {
@@ -41,14 +43,83 @@ test('throws if an invalid LSI is created', () => {
       id: ID! @primaryKey @index(name: "index1")
     }`;
 
+  const schemaEmptySortKeyFields = `
+  type Test @model {
+    id: ID! @primaryKey(sortKeyFields: []) @index(name: "index1")
+    foo: ID!
+  }`;
+
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new IndexTransformer(), new PrimaryKeyTransformer()],
   });
 
+  const sortKeyFieldsError = 'Invalid @index \'index1\'. You may not create an index where the partition key is the same as that of the primary key unless the primary key has a sort field. You cannot have a local secondary index without a sort key in the primary key.';
+
   expect(() => {
     transformer.transform(schema);
   }).toThrow(
-    `Invalid @index 'index1'. You may not create an index where the partition key is the same as that of the primary key unless the primary key has a sort field. You cannot have a local secondary index without a sort key in the primary key.`,
+    sortKeyFieldsError,
+  );
+
+  expect(() => {
+    transformer.transform(schemaEmptySortKeyFields);
+  }).toThrow(
+    sortKeyFieldsError,
+  );
+});
+
+test('throws if an LSI is missing sort fields', () => {
+  const schema = `
+    type Test @model {
+      id: ID! @primaryKey(sortKeyFields: ["foo"]) @index(name: "index1")
+      foo: ID!
+    }`;
+
+  const schemaInverted = `
+    type Test @model {
+      id: ID! @index(name: "index1") @primaryKey(sortKeyFields: ["foo"]) 
+      foo: ID!
+    }`;
+
+  const schemaEmptySortKeyFields = `
+    type Test @model {
+      id: ID! @primaryKey(sortKeyFields: ["foo"]) @index(name: "index1", sortKeyFields: [])
+      foo: ID!
+    }`;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
+    featureFlags: {
+      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+        if (name === 'secondaryKeyAsGSI') {
+          return false;
+        }
+        return defaultValue;
+      }),
+      getNumber: jest.fn(),
+      getObject: jest.fn(),
+      getString: jest.fn(),
+    },
+  });
+
+  const sortKeyFieldsError = 'Invalid @index \'index1\'. You may not create an index where the partition key is the same as that of the primary key unless the index has a sort field. You cannot have a local secondary index without a sort key in the index.';
+
+  expect(() => {
+    transformer.transform(schema);
+  }).toThrow(
+    sortKeyFieldsError,
+  );
+
+  expect(() => {
+    transformer.transform(schemaInverted);
+  }).toThrow(
+    sortKeyFieldsError,
+  );
+
+  expect(() => {
+    transformer.transform(schemaEmptySortKeyFields);
+  }).toThrow(
+    sortKeyFieldsError,
   );
 });
 
@@ -69,7 +140,7 @@ test('throws if @index is used on a non-scalar field', () => {
 
   expect(() => {
     transformer.transform(schema);
-  }).toThrow(`Index 'wontwork' on type 'Test.id' cannot be a non-scalar.`);
+  }).toThrow('Index \'wontwork\' on type \'Test.id\' cannot be a non-scalar.');
 });
 
 test('throws if @index uses a sort key field that does not exist', () => {
@@ -85,7 +156,7 @@ test('throws if @index uses a sort key field that does not exist', () => {
 
   expect(() => {
     transformer.transform(schema);
-  }).toThrow(`Can't find field 'doesnotexist' in Test, but it was specified in index 'wontwork'.`);
+  }).toThrow('Can\'t find field \'doesnotexist\' in Test, but it was specified in index \'wontwork\'.');
 });
 
 test('throws if @index uses a sort key field that is a non-scalar', () => {
@@ -105,7 +176,7 @@ test('throws if @index uses a sort key field that is a non-scalar', () => {
 
   expect(() => {
     transformer.transform(schema);
-  }).toThrow(`The sort key of index 'wontwork' on type 'Test.email' cannot be a non-scalar.`);
+  }).toThrow('The sort key of index \'wontwork\' on type \'Test.email\' cannot be a non-scalar.');
 });
 
 test('throws if @index refers to itself', () => {
@@ -121,7 +192,7 @@ test('throws if @index refers to itself', () => {
 
   expect(() => {
     transformer.transform(schema);
-  }).toThrow(`@index field 'id' cannot reference itself.`);
+  }).toThrow('@index field \'id\' cannot reference itself.');
 });
 
 test('throws if @index is specified on a list', () => {
@@ -137,7 +208,7 @@ test('throws if @index is specified on a list', () => {
 
   expect(() => {
     transformer.transform(schema);
-  }).toThrow(`Index 'GSI' on type 'Test.strings' cannot be a non-scalar.`);
+  }).toThrow('Index \'GSI\' on type \'Test.strings\' cannot be a non-scalar.');
 });
 
 test('throws if @index sort key fields are a list', () => {
@@ -154,7 +225,7 @@ test('throws if @index sort key fields are a list', () => {
 
   expect(() => {
     transformer.transform(schema);
-  }).toThrow(`The sort key of index 'GSI' on type 'Test.strings' cannot be a non-scalar.`);
+  }).toThrow('The sort key of index \'GSI\' on type \'Test.strings\' cannot be a non-scalar.');
 });
 
 test('@index with multiple sort keys adds a query field and GSI correctly', () => {
@@ -249,7 +320,7 @@ test('@index with a single sort key adds a query field and GSI correctly', () =>
     type Test @model {
       email: String!
       createdAt: AWSDateTime!
-      category: String! @index(name: "CategoryGSI", sortKeyFields: "createdAt", queryField: "testsByCategory")
+      category: String! @index(name: "CategoryGSI", sortKeyFields: ["createdAt"], queryField: "testsByCategory")
       description: String
     }`;
   const transformer = new GraphQLTransform({
@@ -542,7 +613,7 @@ test('sort direction and filter input are generated if default list query does n
 test('@index adds an LSI with secondaryKeyAsGSI FF set to false', () => {
   const inputSchema = `
     type Test @model {
-      email: String! @primaryKey(sortKeyFields: "createdAt") @index(name: "LSI_Email_UpdatedAt", sortKeyFields: "updatedAt" queryField: "testsByEmailByUpdatedAt")
+      email: String! @primaryKey(sortKeyFields: ["createdAt"]) @index(name: "LSI_Email_UpdatedAt", sortKeyFields: ["updatedAt"], queryField: "testsByEmailByUpdatedAt")
       createdAt: AWSDateTime!
       updatedAt: AWSDateTime!
     }`;
@@ -553,7 +624,6 @@ test('@index adds an LSI with secondaryKeyAsGSI FF set to false', () => {
         if (name === 'secondaryKeyAsGSI') {
           return false;
         }
-        return;
       }),
       getNumber: jest.fn(),
       getObject: jest.fn(),
@@ -599,7 +669,7 @@ test('@index adds an LSI with secondaryKeyAsGSI FF set to false', () => {
 test('@index adds a GSI with secondaryKeyAsGSI FF set to true', () => {
   const inputSchema = `
     type Test @model {
-      email: String! @primaryKey(sortKeyFields: "createdAt") @index(name: "GSI_Email_UpdatedAt", sortKeyFields: "updatedAt" queryField: "testsByEmailByUpdatedAt")
+      email: String! @primaryKey(sortKeyFields: ["createdAt"]) @index(name: "GSI_Email_UpdatedAt", sortKeyFields: ["updatedAt"], queryField: "testsByEmailByUpdatedAt")
       createdAt: AWSDateTime!
       updatedAt: AWSDateTime!
     }`;
@@ -610,7 +680,6 @@ test('@index adds a GSI with secondaryKeyAsGSI FF set to true', () => {
         if (name === 'secondaryKeyAsGSI') {
           return true;
         }
-        return;
       }),
       getNumber: jest.fn(),
       getObject: jest.fn(),
@@ -673,7 +742,7 @@ test('validate resolver code', () => {
   validateModelSchema(parse(out.schema));
 });
 
-it('@model mutation with user defined null args ', () => {
+it('@model mutation with user defined null args', () => {
   const inputSchema = `
     type Call @model(queries: null, mutations: null) {
       senderId: ID! @index(name: "bySender", sortKeyFields: ["receiverId"])
@@ -711,7 +780,7 @@ it('@model mutation with user defined null args ', () => {
   expect(senderIdField).toBeUndefined();
 });
 
-it('@model mutation with user defined create args ', () => {
+it('@model mutation with user defined create args', () => {
   const inputSchema = `
     type Call @model(queries: null, mutations: { delete: "testDelete" }) {
       senderId: ID! @index(name: "bySender", sortKeyFields: ["receiverId"])

@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import {
   TransformerPluginType,
   TransformerModelProvider,
@@ -25,6 +26,9 @@ import {
 
 import { InvalidTransformerError } from '../errors';
 
+/**
+ * TransformerPluginBase
+ */
 export abstract class TransformerPluginBase implements TransformerPluginProvider {
   public readonly name: string;
   public readonly directive: DirectiveDefinitionNode;
@@ -38,21 +42,25 @@ export abstract class TransformerPluginBase implements TransformerPluginProvider
     const doc = typeof document === 'string' ? parse(document) : document;
     this.name = name;
     const directives = doc.definitions.filter(d => d.kind === Kind.DIRECTIVE_DEFINITION) as DirectiveDefinitionNode[];
-    const extraDefs = doc.definitions.filter(d => d.kind !== Kind.DIRECTIVE_DEFINITION) as TypeDefinitionNode[];
+    const extraDefinitions = doc.definitions.filter(d => d.kind !== Kind.DIRECTIVE_DEFINITION) as TypeDefinitionNode[];
     if (directives.length !== 1) {
       throw new InvalidTransformerError('Transformers must specify exactly one directive definition.');
     }
-    this.directive = directives[0];
+    [this.directive] = directives;
 
     // Transformers can define extra shapes that can be used by the directive
     // and validated. TODO: Validation.
-    this.typeDefinitions = extraDefs;
+    this.typeDefinitions = extraDefinitions;
   }
 }
+/**
+ * TransformerModelBase
+ */
 export abstract class TransformerModelBase extends TransformerPluginBase implements TransformerModelProvider {
   constructor(name: string, document: DocumentNode | string, type: TransformerPluginType = TransformerPluginType.DATA_SOURCE_PROVIDER) {
     super(name, document, type);
   }
+
   abstract getDataSourceType: () => AppSyncDataSourceType;
 
   abstract generateGetResolver: (
@@ -102,7 +110,6 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
 
   abstract generateOnCreateResolver?: (
     ctx: TransformerContextProvider,
-    type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
     resolverLogicalId: string,
@@ -111,7 +118,6 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
 
   abstract generateOnUpdateResolver?: (
     ctx: TransformerContextProvider,
-    type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
     resolverLogicalId: string,
@@ -120,7 +126,6 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
 
   abstract generateOnDeleteResolver?: (
     ctx: TransformerContextProvider,
-    type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
     resolverLogicalId: string,
@@ -137,18 +142,16 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
   ) => TransformerResolverProvider;
 
   abstract getQueryFieldNames: (
-    ctx: TransformerContextProvider,
     type: ObjectTypeDefinitionNode,
     directive?: DirectiveDefinitionNode,
   ) => Set<{ fieldName: string; typeName: string; type: QueryFieldType }>;
+
   abstract getMutationFieldNames: (
-    ctx: TransformerContextProvider,
     type: ObjectTypeDefinitionNode,
     directive?: DirectiveDefinitionNode,
   ) => Set<{ fieldName: string; typeName: string; type: MutationFieldType }>;
 
   abstract getSubscriptionFieldNames: (
-    ctx: TransformerContextProvider,
     type: ObjectTypeDefinitionNode,
     directive?: DirectiveDefinitionNode,
   ) => Set<{
@@ -158,7 +161,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
   }>;
 
   // Get instance of the CDK resource to augment the table (like adding additional indexes)
-  abstract getDataSourceResource: (ctx: TransformerContextProvider, type: ObjectTypeDefinitionNode) => DataSourceInstance;
+  abstract getDataSourceResource: (type: ObjectTypeDefinitionNode) => DataSourceInstance;
 
   abstract getInputs: (
     ctx: TransformerContextProvider,
@@ -181,12 +184,18 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
   ) => ObjectTypeDefinitionNode;
 }
 
+/**
+ * TransformerModelEnhancerBase
+ */
 export abstract class TransformerModelEnhancerBase extends TransformerModelBase implements TransformerModelEnhancementProvider {
   constructor(name: string, doc: DocumentNode | string, type: TransformerPluginType = TransformerPluginType.DATA_SOURCE_ENHANCER) {
     super(name, doc, type);
   }
 }
 
+/**
+ * TransformerAuthBase
+ */
 export abstract class TransformerAuthBase extends TransformerPluginBase implements TransformerAuthProvider {
   constructor(name: string, doc: DocumentNode | string, type: TransformerPluginType = TransformerPluginType.AUTH) {
     super(name, doc, type);

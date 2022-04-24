@@ -1,12 +1,12 @@
 import { parse } from 'graphql';
-import { AuthTransformer } from '../graphql-auth-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { PrimaryKeyTransformer, IndexTransformer } from '@aws-amplify/graphql-index-transformer';
 import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { getField, getObjectType } from './test-helpers';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
+import { AuthTransformer } from '../graphql-auth-transformer';
+import { getField, getObjectType } from './test-helpers';
 
 test('auth transformer validation happy case', () => {
   const authConfig: AppSyncAuthConfiguration = {
@@ -33,7 +33,7 @@ test('auth transformer validation happy case', () => {
   );
 });
 
-test('ownerfield where the field is a list', () => {
+test('owner field where the field is a list', () => {
   const authConfig: AppSyncAuthConfiguration = {
     defaultAuthentication: {
       authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -64,7 +64,7 @@ test('ownerfield where the field is a list', () => {
   expect(out.resolvers['Query.listPosts.auth.1.req.vtl']).toMatchSnapshot();
 });
 
-test('ownerfield with subscriptions', () => {
+test('owner field with subscriptions', () => {
   const authConfig: AppSyncAuthConfiguration = {
     defaultAuthentication: {
       authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -189,11 +189,14 @@ test('implicit owner fields get added to the type', () => {
 
   const postOwnerField = getField(postType, 'postOwner');
   expect(postOwnerField).toBeDefined();
-  expect((postOwnerField as any).type.name.value).toEqual('String');
 
   const customOwner = getField(postType, 'customOwner');
   expect(customOwner).toBeDefined();
+
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  expect((postOwnerField as any).type.name.value).toEqual('String');
   expect((customOwner as any).type.name.value).toEqual('String');
+  /* eslint-enable */
 });
 
 test('implicit owner fields from field level auth get added to the type', () => {
@@ -225,14 +228,17 @@ test('implicit owner fields from field level auth get added to the type', () => 
 
   const postOwnerField = getField(postType, 'postOwner');
   expect(postOwnerField).toBeDefined();
-  expect((postOwnerField as any).type.name.value).toEqual('String');
 
   const customOwner = getField(postType, 'customOwner');
   expect(customOwner).toBeDefined();
+
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  expect((postOwnerField as any).type.name.value).toEqual('String');
   expect((customOwner as any).type.name.value).toEqual('String');
+  /* eslint-enable */
 });
 
-test('test owner fields on primaryKey create authfilter for scan operation', () => {
+test('owner fields on primaryKey create auth filter for scan operation', () => {
   const validSchema = `
   type FamilyMember @model @auth(rules: [
     {allow: owner, ownerField: "parent", identityClaim: "sub", operations: [read] },
@@ -273,16 +279,19 @@ test('test owner fields on primaryKey create authfilter for scan operation', () 
   // use double type as it's non-null
   const parentOwnerField = getField(familyMemberType, 'parent');
   expect(parentOwnerField).toBeDefined();
-  expect((parentOwnerField as any).type.type.name.value).toEqual('ID');
 
   const childOwnerField = getField(familyMemberType, 'child');
   expect(childOwnerField).toBeDefined();
+
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  expect((parentOwnerField as any).type.type.name.value).toEqual('ID');
   expect((childOwnerField as any).type.type.name.value).toEqual('ID');
+  /* eslint-enable */
 
   expect(out.resolvers['Query.listFamilyMembers.auth.1.req.vtl']).toMatchSnapshot();
 });
 
-test('test @auth on relational schema with LSI and GSI', () => {
+test('@auth on relational schema with LSI and GSI', () => {
   const inputSchema = `
     type User @model
       @auth(rules: [
@@ -342,7 +351,7 @@ test('test @auth on relational schema with LSI and GSI', () => {
   validateModelSchema(schema);
 });
 
-test('test @auth on schema with LSI and GSI', () => {
+test('@auth on schema with LSI and GSI', () => {
   const inputSchema = `
     type Model @model @auth(rules: [{allow: public, provider: apiKey}]) {
       user: String! @primaryKey(sortKeyFields: ["channel", "token", "secret"]) @index(name: "byUser", queryField: "listModelsByUser", sortKeyFields: ["channel"])

@@ -40,11 +40,11 @@ describe('Pipeline Resolvers', () => {
     expect(getMappingTemplate).toHaveBeenCalledTimes(2);
   });
 
-  it('should throw error when request templates are missing', () => {
+  it('should throw error when templates are missing', () => {
     getMappingTemplate.mockImplementation(() => {
-      throw new Error('Missing template');
+      throw new Error('mock error');
     });
-    expect(() => new AppSyncPipelineResolver(baseConfig, simulatorContext)).toThrowError('Missing request mapping template');
+    expect(() => new AppSyncPipelineResolver(baseConfig, simulatorContext)).toThrowError('Missing response mapping template mock error');
     expect(getMappingTemplate).toHaveBeenCalled();
   });
 

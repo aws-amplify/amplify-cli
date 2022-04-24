@@ -23,13 +23,68 @@
       "Properties": {
         "BucketName": {
           "Ref": "DeploymentBucketName"
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        }
+      }
+    },
+    "DeploymentBucketBlockHTTP": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "DeploymentBucketName"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Effect": "Deny",
+              "Principal": "*",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "DeploymentBucketName"
+                      },
+                      "/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "DeploymentBucketName"
+                      }
+                    ]
+                  ]
+                }
+              ],
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": false
+                }
+              }
+            }
+          ]
         }
       }
     },
     "AuthRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
-        "RoleName": { "Ref": "AuthRoleName" },
+        "RoleName": {
+          "Ref": "AuthRoleName"
+        },
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
@@ -48,7 +103,9 @@
     "UnauthRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
-        "RoleName": { "Ref": "UnauthRoleName" },
+        "RoleName": {
+          "Ref": "UnauthRoleName"
+        },
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
@@ -68,43 +125,73 @@
   "Outputs": {
     "Region": {
       "Description": "CloudFormation provider root stack Region",
-      "Value": { "Ref": "AWS::Region" },
+      "Value": {
+        "Ref": "AWS::Region"
+      },
       "Export": {
-        "Name": { "Fn::Sub": "${AWS::StackName}-Region" }
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-Region"
+        }
       }
     },
     "StackName": {
       "Description": "CloudFormation provider root stack ID",
-      "Value": { "Ref": "AWS::StackName" },
+      "Value": {
+        "Ref": "AWS::StackName"
+      },
       "Export": {
-        "Name": { "Fn::Sub": "${AWS::StackName}-StackName" }
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-StackName"
+        }
       }
     },
     "StackId": {
       "Description": "CloudFormation provider root stack name",
-      "Value": { "Ref": "AWS::StackId" },
+      "Value": {
+        "Ref": "AWS::StackId"
+      },
       "Export": {
-        "Name": { "Fn::Sub": "${AWS::StackName}-StackId" }
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-StackId"
+        }
       }
     },
     "DeploymentBucketName": {
       "Description": "CloudFormation provider root stack deployment bucket name",
-      "Value": { "Ref": "DeploymentBucketName" },
+      "Value": {
+        "Ref": "DeploymentBucketName"
+      },
       "Export": {
-        "Name": { "Fn::Sub": "${AWS::StackName}-DeploymentBucketName" }
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-DeploymentBucketName"
+        }
       }
     },
     "AuthRoleArn": {
-      "Value": { "Fn::GetAtt": ["AuthRole", "Arn"] }
+      "Value": {
+        "Fn::GetAtt": [
+          "AuthRole",
+          "Arn"
+        ]
+      }
     },
     "UnauthRoleArn": {
-      "Value": { "Fn::GetAtt": ["UnauthRole", "Arn"] }
+      "Value": {
+        "Fn::GetAtt": [
+          "UnauthRole",
+          "Arn"
+        ]
+      }
     },
     "AuthRoleName": {
-      "Value": { "Ref": "AuthRole" }
+      "Value": {
+        "Ref": "AuthRole"
+      }
     },
     "UnauthRoleName": {
-      "Value": { "Ref": "UnauthRole" }
+      "Value": {
+        "Ref": "UnauthRole"
+      }
     }
   }
 }

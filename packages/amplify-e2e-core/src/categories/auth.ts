@@ -106,8 +106,7 @@ export function addAuthWithGroupTrigger(cwd: string, settings: any): Promise<voi
       .send(' ')
       .sendCarriageReturn()
       .wait('Enter the name of the group to which users will be added.')
-      .send('mygroup')
-      .sendCarriageReturn()
+      .sendLine('mygroup')
       .wait('Do you want to edit your add-to-group function now?')
       .sendConfirmNo()
       .run((err: Error) => {
@@ -159,8 +158,7 @@ export function addAuthViaAPIWithTrigger(cwd: string, opts: Partial<AddApiOption
       .send(' ')
       .sendCarriageReturn()
       .wait('Enter the name of the group to which users will be added.')
-      .send('mygroup')
-      .sendCarriageReturn()
+      .sendLine('mygroup')
       .wait('Do you want to edit your add-to-group function now?')
       .sendConfirmNo()
       .wait(/.*Configure additional auth types.*/)
@@ -249,8 +247,7 @@ export function addAuthwithUserPoolGroupsViaAPIWithTrigger(cwd: string, opts: Pa
       .wait('What functionality do you want to use for Post Confirmation')
       .sendCarriageReturn()
       .wait('Enter the name of the group to which users will be added.')
-      .send('mygroup')
-      .sendCarriageReturn()
+      .sendLine('mygroup')
       .wait('Do you want to edit your add-to-group function now?')
       .sendConfirmNo()
       .wait(/.*Configure additional auth types.*/)
@@ -337,13 +334,12 @@ export function addAuthWithCustomTrigger(cwd: string, settings: any): Promise<vo
       .send(' ')
       .sendCarriageReturn()
       .wait('Enter a comma-delimited list of disallowed email domains')
-      .send('amazon.com')
-      .sendCarriageReturn()
+      .sendLine('amazon.com')
       .wait('Successfully')
       .wait(`Do you want to edit your email-filter-denylist${settings.useInclusiveTerminology === false ? '-legacy' : ''} function now?`)
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Do you want to edit your custom function now')
-      .sendLine('n')
+      .sendConfirmNo()
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -496,8 +492,7 @@ export function addAuthWithRecaptchaTrigger(cwd: string, settings: any): Promise
       .wait('Do you want to edit your captcha-create-challenge function now?')
       .sendConfirmNo()
       .wait('Enter the Google reCaptcha secret key:')
-      .send('dummykey')
-      .sendCarriageReturn()
+      .sendLine('dummykey')
       .wait('Do you want to edit your captcha-verify function now?')
       .sendConfirmNo()
       .run((err: Error) => {
@@ -1297,7 +1292,8 @@ export function updateAuthAddUserGroups(projectDir: string, groupNames: string[]
           .wait('Do you want to add another User Pool Group')
           .sendConfirmYes()
           .wait('Provide a name for your user pool group')
-          .send(groupNames[index++]);
+          .send(groupNames[index++])
+          .sendCarriageReturn();
       }
     }
 
@@ -1691,5 +1687,56 @@ export function updateAuthAdminQueriesWithExtMigration(cwd: string, settings: { 
     .sendLine('mycustomgroup')
     .wait('A migration is needed to support latest updates')
     .sendYes()
+    .runAsync();
+}
+
+export function updateAuthMFAConfiguration(projectDir: string, settings: any = {}): Promise<void> {
+  return spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'auth'], { cwd: projectDir, stripColors: true })
+    .wait('What do you want to do?')
+    .send(KEY_DOWN_ARROW)
+    .sendCarriageReturn() // Walkthrough all the auth configurations
+    .wait('Select the authentication/authorization services that you want to use')
+    .sendCarriageReturn() // User Sign-Up, Sign-In, connected with AWS IAM controls (Enables per-user Storage features for images or other content, Analytics, and more)
+    .wait('Allow unauthenticated logins? (Provides scoped down permissions that you can control via AWS IAM)')
+    .sendCarriageReturn() // No
+    .wait('Do you want to enable 3rd party authentication providers in your identity pool?')
+    .send(KEY_DOWN_ARROW)
+    .sendCarriageReturn() // No
+    .wait('Do you want to add User Pool Groups?')
+    .send(KEY_DOWN_ARROW)
+    .sendCarriageReturn() // No
+    .wait('Do you want to add an admin queries API?')
+    .send(KEY_DOWN_ARROW)
+    .sendCarriageReturn() // No
+    .wait('Multifactor authentication (MFA) user login options')
+    .send(KEY_DOWN_ARROW)
+    .sendCarriageReturn() // OPTIONAL (Individual users can use MFA)
+    .wait('For user login, select the MFA types')
+    .send('a')
+    .sendCarriageReturn()
+    .wait('Specify an SMS authentication message:')
+    .sendCarriageReturn() //  (Your authentication code is {####})
+    .wait('Email based user registration/forgot password')
+    .sendCarriageReturn() // Enabled (Requires per-user email entry at registration)
+    .wait('Specify an email verification subject')
+    .sendCarriageReturn() // (Your verification code)
+    .wait('Specify an email verification message:')
+    .sendCarriageReturn() // (Your verification code is {####})
+    .wait('Do you want to override the default password policy for this User Pool?')
+    .sendNo()
+    .sendCarriageReturn()
+    .wait(`Specify the app's refresh token expiration period (in days)`)
+    .sendCarriageReturn() // 30
+    .wait('Do you want to specify the user attributes this app can read and write?')
+    .sendNo()
+    .sendCarriageReturn()
+    .wait('Do you want to enable any of the following capabilities?')
+    .sendCarriageReturn()
+    .wait('Do you want to use an OAuth flow?')
+    .send(KEY_DOWN_ARROW)
+    .sendCarriageReturn()
+    .wait('Do you want to configure Lambda Triggers for Cognito?')
+    .sendNo()
+    .sendCarriageReturn()
     .runAsync();
 }

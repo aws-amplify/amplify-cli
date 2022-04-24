@@ -3,6 +3,53 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.29](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.28...amplify-migration-tests@4.4.29) (2022-04-11)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.28](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.27...amplify-migration-tests@4.4.28) (2022-04-07)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.27](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.26...amplify-migration-tests@4.4.27) (2022-03-23)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [4.4.26](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.25...amplify-migration-tests@4.4.26) (2022-03-17)
+
+
+### Bug Fixes
+
+* allow init with auth role name overrides (ref [#9643](https://github.com/aws-amplify/amplify-cli/issues/9643)) ([#9688](https://github.com/aws-amplify/amplify-cli/issues/9688))  ([dbf9cf5](https://github.com/aws-amplify/amplify-cli/commit/dbf9cf52f19c824d868b30ff50b4c309be58ff86))
+
+
+
+
+
+## [4.4.25](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.24...amplify-migration-tests@4.4.25) (2022-03-14)
+
+
+### Bug Fixes
+
+* allow api updates without migration ([#9864](https://github.com/aws-amplify/amplify-cli/issues/9864)) ([389f551](https://github.com/aws-amplify/amplify-cli/commit/389f551ea800afc9563b6e546f3ea0073bc13c68))
+* split policies for both legacy and migrated REST APIs ([#9572](https://github.com/aws-amplify/amplify-cli/issues/9572)) ([436d53f](https://github.com/aws-amplify/amplify-cli/commit/436d53f348954dab02364d1bed528c3b4121ede3))
+
+
+
+
+
 ## [4.4.24](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.23...amplify-migration-tests@4.4.24) (2022-03-07)
 
 

@@ -9,6 +9,8 @@
     "e2e": "lerna run e2e",
     "cloud-e2e": "CURR_BRANCH=$(git branch | awk '/\\*/{printf \"%s\", $2}') && UPSTREAM_BRANCH=run-e2e/$USER/$CURR_BRANCH && git push $(git remote -v | grep aws-amplify/amplify-cli | head -n1 | awk '{print $1;}') $CURR_BRANCH:$UPSTREAM_BRANCH --no-verify --force-with-lease && echo \"\n\n 🏃 E2E test are running at:\nhttps://app.circleci.com/pipelines/github/aws-amplify/amplify-cli?branch=$UPSTREAM_BRANCH\"",
     "lint-fix": "git diff --name-only --cached --diff-filter d | grep -E '\\.(js|jsx|ts|tsx)$' | xargs eslint --fix --quiet",
+    "addwords": "node ./scripts/add-to-dict.js",
+    "mergewords": "yarn ts-node ./scripts/handle-dict-conflicts.ts",
     "clean": "lerna run clean && lerna exec yarn rimraf tsconfig.tsbuildinfo && lerna clean --yes && yarn rimraf node_modules",
     "check-version-conflicts:beta": "yarn ts-node ./scripts/check-version.ts beta",
     "check-version-conflicts:release": "yarn ts-node ./scripts/check-version.ts",
@@ -38,10 +40,10 @@
     "yarn-use-bash": "yarn config set script-shell /bin/bash",
     "verdaccio-start": "source .circleci/local_publish_helpers.sh && startLocalRegistry \"$(pwd)/.circleci/verdaccio.yaml\"",
     "verdaccio-clean": "rimraf ../verdaccio-cache",
-    "verdaccio-connect": "source .circleci/local_publish_helpers.sh && setNpmRegistryUrlToLocal && loginToLocalRegistry",
+    "verdaccio-connect": "source .circleci/local_publish_helpers.sh && setNpmRegistryUrlToLocal",
     "publish-to-verdaccio": "lerna publish --yes --no-commit-hooks --no-push --exact --dist-tag=latest --conventional-commits --no-git-tag-version --no-verify-access",
     "verdaccio-disconnect": "source .circleci/local_publish_helpers.sh && unsetNpmRegistryUrl",
-    "verdaccio-stop": "kill -9 $(lsof -n -t -iTCP:4873 -sTCP:LISTEN)",
+    "verdaccio-stop": "kill -9 $(lsof -n -t -iTCP:4873 -sTCP:LISTEN) || true",
     "update-versions": "lerna version --yes --no-commit-hooks --no-push --exact --conventional-commits --no-git-tag-version",
     "commit": "git-cz",
     "coverage": "codecov || exit 0"
@@ -74,7 +76,7 @@
       "packages/*"
     ],
     "nohoist": [
-      "@aws-amplify/cli/amplify-codegen"
+      "@aws-amplify/cli-internal/amplify-codegen"
     ]
   },
   "devDependencies": {
@@ -83,11 +85,12 @@
     "@babel/plugin-proposal-numeric-separator": "^7.10.4",
     "@babel/plugin-transform-modules-commonjs": "7.10.4",
     "@babel/plugin-transform-typescript": "7.10.5",
-    "@commitlint/cli": "^15.0.0",
-    "@commitlint/config-conventional": "^15.0.0",
-    "@commitlint/config-lerna-scopes": "^15.0.0",
-    "@commitlint/cz-commitlint": "^15.0.0",
-    "@commitlint/prompt": "^15.0.0",
+    "@commitlint/cli": "^16.2.3",
+    "@commitlint/config-conventional": "^16.2.1",
+    "@commitlint/config-lerna-scopes": "^16.2.2",
+    "@commitlint/cz-commitlint": "^16.2.3",
+    "@commitlint/prompt": "^16.2.3",
+    "@types/glob": "^7.1.1",
     "@types/jest": "^26.0.20",
     "@types/js-yaml": "^4.0.0",
     "@typescript-eslint/eslint-plugin": "^4.14.2",
@@ -96,7 +99,6 @@
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
     "codecov": "^3.7.0",
-    "commitizen": "^4.2.4",
     "copyfiles": "^2.2.0",
     "eslint": "^7.19.0",
     "eslint-config-airbnb": "^18.0.1",
@@ -120,9 +122,10 @@
     "ts-node": "^8.10.1",
     "typescript": "^4.5.5"
   },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/@commitlint/cz-commitlint"
-    }
+  "resolutions": {
+    "**/glob-parent": "^6.0.2",
+    "**/istanbul/async": "^2.6.4",
+    "**/jake/async": "^2.6.4",
+    "**/nth-check": "^2.0.1"
   }
 }

@@ -629,6 +629,92 @@ describe('@model field auth', () => {
       expect(out.resolvers?.[`Student.${field}.req.vtl`]).not.toBeDefined();
     });
   });
+
+  test('should allow setting name to null field', () => {
+    const validSchema = `
+      type Post @model @auth(rules: [{ allow: owner, operations: [create, read] }]) {
+        id: ID @auth(rules: [{ allow: owner, operations: [create, read, update, delete] }])
+        name: String @auth(rules: [{ allow: owner, operations: [create, read, delete] }])
+      }
+    `;
+
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    // load vtl templates
+    const createPostTemplate = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
+    const updatePostTemplate = out.resolvers['Mutation.updatePost.auth.1.res.vtl'];
+
+    const createPostContext = {
+      arguments: {
+        input: {
+          id: '001',
+          name: 'sample',
+        },
+      },
+    };
+    const createPostRequest = vtlTemplate.render(createPostTemplate, {
+      context: createPostContext,
+      requestParameters: ownerRequest,
+    });
+    expect(createPostRequest.hadException).toEqual(false);
+
+    const updatePostContext = {
+      result: {
+        id: '001',
+        name: null,
+        owner: 'user1',
+      },
+    };
+    const updatePostRequest = vtlTemplate.render(updatePostTemplate, {
+      context: updatePostContext,
+      requestParameters: ownerRequest,
+    });
+    expect(updatePostRequest.hadException).toEqual(false);
+  });
+
+  test('should allow owner to update', () => {
+    const validSchema = `
+    type Post @model @auth(rules: [{ allow: owner, operations: [create, update, read] }]) {
+      id: ID!
+      name: String!
+    }
+    `;
+
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    // load vtl templates
+    const createPostTemplate = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
+    const updatePostTemplate = out.resolvers['Mutation.updatePost.auth.1.res.vtl'];
+
+    const createPostContext = {
+      arguments: {
+        input: {
+          id: '001',
+          name: 'sample',
+        },
+      },
+    };
+    const createPostRequest = vtlTemplate.render(createPostTemplate, {
+      context: createPostContext,
+      requestParameters: ownerRequest,
+    });
+    expect(createPostRequest.hadException).toEqual(false);
+
+    const updatePostContext = {
+      result: {
+        id: '001',
+        name: 'updated',
+        owner: 'user1',
+      },
+    };
+    const updatePostRequest = vtlTemplate.render(updatePostTemplate, {
+      context: updatePostContext,
+      requestParameters: ownerRequest,
+    });
+    expect(updatePostRequest.hadException).toEqual(false);
+  });
 });
 
 describe('@model @primaryIndex @index auth', () => {

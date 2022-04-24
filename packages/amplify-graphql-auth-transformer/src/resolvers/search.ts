@@ -20,7 +20,10 @@ import {
   set,
   ifElse,
 } from 'graphql-mapping-template';
-import { getIdentityClaimExp, getOwnerClaim, emptyPayload, setHasAuthExpression, iamCheck, iamAdminRoleCheckExpression } from './helpers';
+import { NONE_VALUE } from 'graphql-transformer-common';
+import {
+  getIdentityClaimExp, getOwnerClaim, emptyPayload, setHasAuthExpression, iamCheck, iamAdminRoleCheckExpression,
+} from './helpers';
 import {
   COGNITO_AUTH_TYPE,
   OIDC_AUTH_TYPE,
@@ -33,7 +36,6 @@ import {
   API_KEY_AUTH_TYPE,
   IAM_AUTH_TYPE,
 } from '../utils';
-import { NONE_VALUE } from 'graphql-transformer-common';
 
 const allowedAggFieldsList = 'allowedAggFields';
 const aggFieldsFilterMap = 'aggFieldsFilterMap';
@@ -71,10 +73,10 @@ const lambdaExpression = (roles: Array<RoleDefinition>): Expression => {
 
 const iamExpression = (
   roles: Array<RoleDefinition>,
-  hasAdminRolesEnabled: boolean = false,
+  hasAdminRolesEnabled = false,
   adminRoles: Array<string> = [],
   identityPoolId?: string,
-) => {
+): Expression => {
   const expression = new Array<Expression>();
   // allow if using an admin role
   if (hasAdminRolesEnabled) {
@@ -83,7 +85,7 @@ const iamExpression = (
   if (roles.length === 0) {
     expression.push(ref('util.unauthorized()'));
   } else {
-    for (let role of roles) {
+    roles.forEach(role => {
       const exp: Expression[] = [set(ref(IS_AUTHORIZED_FLAG), bool(true))];
       if (role.allowedFields) {
         exp.push(qref(methodCall(ref(`${allowedAggFieldsList}.addAll`), raw(JSON.stringify(role.allowedFields)))));
@@ -91,14 +93,14 @@ const iamExpression = (
         exp.push(set(ref(allowedAggFieldsList), ref(totalFields)));
       }
       expression.push(iff(not(ref(IS_AUTHORIZED_FLAG)), iamCheck(role.claim!, compoundExpression(exp), identityPoolId)));
-    }
+    });
   }
   return iff(equals(ref('util.authType()'), str(IAM_AUTH_TYPE)), compoundExpression(expression));
 };
 
 const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
   const staticRoleExpression: Array<Expression> = [];
-  let privateRoleIdx = roles.findIndex(r => r.strategy === 'private');
+  const privateRoleIdx = roles.findIndex(r => r.strategy === 'private');
   if (privateRoleIdx > -1) {
     if (roles[privateRoleIdx].allowedFields) {
       staticRoleExpression.push(
@@ -131,7 +133,7 @@ const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expre
                 set(ref(IS_AUTHORIZED_FLAG), bool(true)),
                 ifElse(
                   methodCall(ref('util.isNull'), ref('groupRole.allowedFields')),
-                  compoundExpression([set(ref(allowedAggFieldsList), ref(totalFields)), raw(`#break`)]),
+                  compoundExpression([set(ref(allowedAggFieldsList), ref(totalFields)), raw('#break')]),
                   qref(methodCall(ref(`${allowedAggFieldsList}.addAll`), ref('groupRole.allowedFields'))),
                 ),
               ]),
@@ -227,19 +229,20 @@ const generateAuthFilter = (
   return filterExpression;
 };
 
-/*
-creates the auth expression for searchable
-- handles object level search query
-- creates field auth expression for aggregation query
-*/
+/**
+ * creates the auth expression for searchable
+ * - handles object level search query
+ * - creates field auth expression for aggregation query
+ */
 export const generateAuthExpressionForSearchQueries = (
   providers: ConfiguredAuthProviders,
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
   allowedAggFields: Array<string>,
 ): string => {
-  const { cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles } =
-    splitRoles(roles);
+  const {
+    cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles,
+  } = splitRoles(roles);
   const totalAuthExpressions: Array<Expression> = [
     setHasAuthExpression,
     set(ref(IS_AUTHORIZED_FLAG), bool(false)),

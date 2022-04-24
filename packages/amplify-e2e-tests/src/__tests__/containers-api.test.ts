@@ -8,6 +8,7 @@ import {
   initJSProjectWithProfile,
   getProjectMeta,
   modifyRestAPI,
+  retry,
 } from 'amplify-e2e-core';
 import fetch from 'node-fetch';
 import { getAWSExports } from '../aws-exports/awsExports';
@@ -44,8 +45,20 @@ describe('amplify api add', () => {
     expect(name).toBeDefined();
     expect(endpoint).toBeDefined();
 
-    const result = await (await fetch(`${endpoint}/images`)).text();
-    expect(result).toEqual('Processing images...');
+    const url = `${endpoint}/images`;
+    const expected = 'Processing images...';
+    const result = await retry(
+      async (): Promise<string> => (await fetch(url)).text(),
+      (fetchResult: string) => fetchResult === expected,
+      {
+        times: 100,
+        delayMS: 100,
+        // five minutes
+        timeoutMS: 300000,
+        stopOnError: false,
+      },
+    );
+    expect(result).toEqual(expected);
   });
 
   it('init project, enable containers and add multicontainer api push, edit and push', async () => {
@@ -56,9 +69,8 @@ describe('amplify api add', () => {
     await addRestContainerApi(projRoot, { apiName });
     await amplifyPushWithoutCodegen(projRoot);
     const meta = await getProjectMeta(projRoot);
-    const api = Object.keys(meta['api'])[0];
+    const api = Object.keys(meta.api)[0];
     modifyRestAPI(projRoot, api);
     await amplifyPushWithoutCodegen(projRoot);
   });
-
 });

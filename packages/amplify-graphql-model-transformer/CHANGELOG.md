@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.13.4...@aws-amplify/graphql-model-transformer@0.13.5) (2022-04-18)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** fix create mutation when index field is null ([#10073](https://github.com/aws-amplify/amplify-cli/issues/10073)) ([1e9d140](https://github.com/aws-amplify/amplify-cli/commit/1e9d140a529e5a2474968feb26b53ac7c9bb5750))
+
+
+
+
+
+## [0.13.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.13.3...@aws-amplify/graphql-model-transformer@0.13.4) (2022-04-07)
+
+**Note:** Version bump only for package @aws-amplify/graphql-model-transformer
+
+
+
+
+
+## [0.13.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.13.2...@aws-amplify/graphql-model-transformer@0.13.3) (2022-03-23)
+
+
+### Bug Fixes
+
+* **graphql:** avoid static datastructures in gql transform ([#10006](https://github.com/aws-amplify/amplify-cli/issues/10006)) ([cd73fdd](https://github.com/aws-amplify/amplify-cli/commit/cd73fdde69f1545683e81684c4f9267145b845c6))
+
+
+
+
+
 ## [0.13.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.13.1...@aws-amplify/graphql-model-transformer@0.13.2) (2022-02-25)
 
 **Note:** Version bump only for package @aws-amplify/graphql-model-transformer

@@ -1,25 +1,18 @@
 import { executeAmplifyHeadlessCommand } from '../../../src';
 import { ImportAuthRequest } from 'amplify-headless-interface';
 import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
-import { stateManager, FeatureFlags, JSONUtilities } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
+import { stateManager } from 'amplify-cli-core';
 
 jest.mock('amplify-prompts', () => ({
   printer: {
     info: jest.fn(),
+    warn: jest.fn(),
   },
 }));
 
 jest.mock('amplify-cli-core', () => ({
   ...(jest.requireActual('amplify-cli-core') as {}),
-  stateManager: {
-    setResourceParametersJson: jest.fn(),
-    getMeta: jest.fn().mockReturnValue({
-      providers: {
-        awscloudformation: {},
-      },
-    }),
-  },
   FeatureFlags: {
     getBoolean: () => false,
   },
@@ -27,6 +20,14 @@ jest.mock('amplify-cli-core', () => ({
     parse: JSON.parse,
   },
 }));
+
+const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
+stateManager_mock.getMeta = jest.fn().mockReturnValue({
+  providers: {
+    awscloudformation: {},
+  },
+});
+stateManager_mock.setResourceParametersJson = jest.fn();
 
 jest.mock('../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state');
 
@@ -130,11 +131,6 @@ describe('import auth headless', () => {
         getPluginInstance: pluginInstanceMock.mockReturnValue(pluginInstance),
         saveEnvResourceParameters: jest.fn(),
       },
-      print: {
-        warning: jest.fn(),
-        info: jest.fn(),
-        error: jest.fn(),
-      },
       parameters: {
         first: 'mockFirst',
       },
@@ -144,7 +140,7 @@ describe('import auth headless', () => {
     };
   });
 
-  beforeEach(() => {
+  afterEach(() => {
     jest.clearAllMocks();
   });
 
@@ -161,19 +157,46 @@ describe('import auth headless', () => {
   it('should warn if auth has already been added', async () => {
     getProjectDetailsMock.mockReturnValueOnce({
       projectConfig,
-      amplifyMeta: {
-        auth: {
-          foo: 'bar',
+    });
+
+    stateManager_mock.getMeta = jest.fn().mockReturnValueOnce({
+      auth: {
+        foo: {},
+      },
+    });
+
+    await executeAmplifyHeadlessCommand(mockContext, headlessPayloadString);
+
+    expect(printer.warn).toBeCalledWith(messages.authExists);
+  });
+
+  it('should warn if auth has already been imported', async () => {
+    getProjectDetailsMock.mockReturnValueOnce({
+      projectConfig,
+    });
+
+    stateManager_mock.getMeta = jest.fn().mockReturnValueOnce({
+      auth: {
+        foo: {
+          serviceType: 'imported',
         },
       },
     });
 
     await executeAmplifyHeadlessCommand(mockContext, headlessPayloadString);
 
-    expect(mockContext.print.warning).toBeCalledWith(messages.authExists);
+    expect(printer.warn).toBeCalledWith(
+      'Auth has already been imported to this project and cannot be modified from the CLI. To modify, run "amplify remove auth" to unlink the imported auth resource. Then run "amplify import auth".',
+    );
   });
 
   it('should throw user pool not found exception', async () => {
+    stateManager_mock.getMeta = jest.fn().mockReturnValue({
+      providers: {
+        awscloudformation: {},
+      },
+    });
+
     try {
       getUserPoolDetailsMock.mockRejectedValueOnce({
         name: 'ResourceNotFoundException',
@@ -188,6 +211,12 @@ describe('import auth headless', () => {
   });
 
   it('should throw web clients not found exception ', async () => {
+    stateManager_mock.getMeta = jest.fn().mockReturnValue({
+      providers: {
+        awscloudformation: {},
+      },
+    });
+
     try {
       listUserPoolClientsMock.mockResolvedValue([]);
 
@@ -202,6 +231,11 @@ describe('import auth headless', () => {
   });
 
   it('should throw no matching identity pool found exception', async () => {
+    stateManager_mock.getMeta = jest.fn().mockReturnValue({
+      providers: {
+        awscloudformation: {},
+      },
+    });
     const INVALID_USER_POOL_ID = USER_POOL_ID + '-invalid';
     const invalidHeadlessPayload = {
       ...headlessPayload,

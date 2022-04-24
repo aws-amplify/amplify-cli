@@ -254,7 +254,7 @@ export function appSyncFunctionHandler(resourceName, resource, cfnContext: Cloud
   const dataSourceName = parseValue(properties.DataSourceName, cfnContext);
   return {
     ref: `arn:aws:appsync:us-east-1:123456789012:apis/graphqlapiid/functions/${resource.Properties.Name}`,
-    cfnExposedAttributes: { DataSourceName: 'dataSourceName', FunctionArn: 'Ref', FunctionId: 'name', Name: 'name' },
+    cfnExposedAttributes: { DataSourceName: 'dataSourceName', FunctionArn: 'ref', FunctionId: 'name', Name: 'name' },
     name: resource.Properties.Name,
     dataSourceName,
     requestMappingTemplateLocation: requestMappingTemplateLocation,

@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject } from 'amplify-cli-core';
+import { $TSContext, $TSObject, stateManager, pathManager } from 'amplify-cli-core';
 import { PlaceIndexParameters } from './placeIndexParams';
 import _ from 'lodash';
 import { parametersFileName, provider, ServiceName } from './constants';
@@ -10,6 +10,9 @@ import {
   updateDefaultResource,
   readResourceMetaParameters,
   checkAuthConfig,
+  getAuthResourceName,
+  ResourceDependsOn,
+  getResourceDependencies
 } from './resourceUtils';
 import { App } from '@aws-cdk/core';
 import { getTemplateMappings } from '../provider-controllers';
@@ -19,13 +22,16 @@ export const createPlaceIndexResource = async (context: $TSContext, parameters: 
   // allow unauth access for identity pool if guest access is enabled
   await checkAuthConfig(context, parameters, ServiceName.PlaceIndex);
 
+  const authResourceName = await getAuthResourceName(context);
+
   // generate CFN files
   const templateMappings = await getTemplateMappings(context);
-  const placeIndexStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', { ...parameters, ...templateMappings });
+  const placeIndexStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', { ...parameters, ...templateMappings, authResourceName });
   generateTemplateFile(placeIndexStack, parameters.name);
   saveCFNParameters(parameters);
+  stateManager.setResourceInputsJson(pathManager.findProjectRoot(), category, parameters.name, { groupPermissions: parameters.groupPermissions });
 
-  const placeIndexMetaParameters = constructPlaceIndexMetaParameters(parameters);
+  const placeIndexMetaParameters = constructPlaceIndexMetaParameters(parameters, authResourceName);
 
   // update the default place index
   if (parameters.isDefault) {
@@ -36,29 +42,33 @@ export const createPlaceIndexResource = async (context: $TSContext, parameters: 
   context.amplify.updateamplifyMetaAfterResourceAdd(category, parameters.name, placeIndexMetaParameters);
 };
 
-export const modifyPlaceIndexResource = async (
-  context: $TSContext,
-  parameters: PlaceIndexParameters,
-) => {
+export const modifyPlaceIndexResource = async (context: $TSContext, parameters: PlaceIndexParameters) => {
   // allow unauth access for identity pool if guest access is enabled
   await checkAuthConfig(context, parameters, ServiceName.PlaceIndex);
 
+  const authResourceName = await getAuthResourceName(context);
   // generate CFN files
   const templateMappings = await getTemplateMappings(context);
-  const placeIndexStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', { ...parameters, ...templateMappings });
+  const placeIndexStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', { ...parameters, ...templateMappings, authResourceName });
   generateTemplateFile(placeIndexStack, parameters.name);
   saveCFNParameters(parameters);
+  stateManager.setResourceInputsJson(pathManager.findProjectRoot(), category, parameters.name, { groupPermissions: parameters.groupPermissions });
 
   // update the default place index
   if (parameters.isDefault) {
     await updateDefaultResource(context, ServiceName.PlaceIndex, parameters.name);
   }
 
-  const placeIndexMetaParameters = constructPlaceIndexMetaParameters(parameters);
-  const paramsToUpdate = ['accessType', 'pricingPlan'];
+  const placeIndexMetaParameters = constructPlaceIndexMetaParameters(parameters, authResourceName);
+
+  const paramsToUpdate = ['accessType', 'dependsOn'] as const;
   paramsToUpdate.forEach(param => {
-    context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.name, param, (placeIndexMetaParameters as $TSObject)[param]);
+    context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.name, param, placeIndexMetaParameters[param]);
+    context.amplify.updateBackendConfigAfterResourceUpdate(category, parameters.name, param, placeIndexMetaParameters[param]);
   });
+  // remove the pricingPlan if present on old resources where pricingPlan is configurable
+  context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.name, 'pricingPlan', undefined);
+  context.amplify.updateBackendConfigAfterResourceUpdate(category, parameters.name, 'pricingPlan', undefined);
 };
 
 function saveCFNParameters(
@@ -83,7 +93,9 @@ function saveCFNParameters(
 /**
  * Gives the Place Index resource configurations to be stored in Amplify Meta file
  */
-export const constructPlaceIndexMetaParameters = (params: PlaceIndexParameters): PlaceIndexMetaParameters => {
+export const constructPlaceIndexMetaParameters = (params: PlaceIndexParameters, authResourceName: string): PlaceIndexMetaParameters => {
+  const dependsOnResources = getResourceDependencies(params.groupPermissions, authResourceName);
+
   let result: PlaceIndexMetaParameters = {
     isDefault: params.isDefault,
     providerPlugin: provider,
@@ -91,6 +103,7 @@ export const constructPlaceIndexMetaParameters = (params: PlaceIndexParameters):
     dataProvider: params.dataProvider,
     dataSourceIntendedUse: params.dataSourceIntendedUse,
     accessType: params.accessType,
+    dependsOn: dependsOnResources
   };
   return result;
 };
@@ -104,15 +117,18 @@ export type PlaceIndexMetaParameters = Pick<
 > & {
   providerPlugin: string;
   service: string;
+  dependsOn: ResourceDependsOn[];
 };
 
 export const getCurrentPlaceIndexParameters = async (indexName: string): Promise<Partial<PlaceIndexParameters>> => {
   const currentIndexMetaParameters = (await readResourceMetaParameters(ServiceName.PlaceIndex, indexName)) as PlaceIndexMetaParameters;
+  const currentIndexParameters = stateManager.getResourceInputsJson(pathManager.findProjectRoot(), category, indexName, { throwIfNotExist: false }) || {};
   return {
     dataProvider: currentIndexMetaParameters.dataProvider,
     dataSourceIntendedUse: currentIndexMetaParameters.dataSourceIntendedUse,
     accessType: currentIndexMetaParameters.accessType,
     isDefault: currentIndexMetaParameters.isDefault,
+    groupPermissions: currentIndexParameters?.groupPermissions || []
   };
 };
 

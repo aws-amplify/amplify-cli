@@ -22,6 +22,7 @@ import {
   notEquals,
   parens,
 } from 'graphql-mapping-template';
+import { NONE_VALUE } from 'graphql-transformer-common';
 import {
   getIdentityClaimExp,
   getOwnerClaim,
@@ -41,11 +42,10 @@ import {
   fieldIsList,
   RelationalPrimaryMapConfig,
 } from '../utils';
-import { NONE_VALUE } from 'graphql-transformer-common';
 
 const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
   const staticRoleExpression: Array<Expression> = [];
-  let privateRoleIdx = roles.findIndex(r => r.strategy === 'private');
+  const privateRoleIdx = roles.findIndex(r => r.strategy === 'private');
   if (privateRoleIdx > -1) {
     staticRoleExpression.push(set(ref(IS_AUTHORIZED_FLAG), bool(true)));
     roles.splice(privateRoleIdx, 1);
@@ -60,7 +60,7 @@ const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expre
             set(ref('groupsInToken'), getIdentityClaimExp(ref('groupRole.claim'), list([]))),
             iff(
               methodCall(ref('groupsInToken.contains'), ref('groupRole.entity')),
-              compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw(`#break`)]),
+              compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')]),
             ),
           ]),
         ]),
@@ -116,13 +116,12 @@ const generateAuthOnModelQueryExpression = (
   isIndexQuery = false,
   primaryKey: string | undefined = undefined,
 ): Array<Expression> => {
-  const modelQueryExpression = new Array<Expression>();
+  const modelQueryExpression: Expression[] = new Array<Expression>();
   const primaryRoles = roles.filter(r => primaryFields.includes(r.entity));
   if (primaryRoles.length > 0) {
     if (isIndexQuery) {
-      for (let role of primaryRoles) {
-        const claimExpression =
-          role.strategy === 'owner' ? getOwnerClaim(role.claim!) : getIdentityClaimExp(str(role.claim!), str(NONE_VALUE));
+      primaryRoles.forEach(role => {
+        const claimExpression = role.strategy === 'owner' ? getOwnerClaim(role.claim!) : getIdentityClaimExp(str(role.claim!), str(NONE_VALUE));
         modelQueryExpression.push(
           ifElse(
             not(ref(`util.isNull($ctx.args.${role.entity})`)),
@@ -152,7 +151,7 @@ const generateAuthOnModelQueryExpression = (
             qref(methodCall(ref('primaryFieldMap.put'), str(role.entity), claimExpression)),
           ),
         );
-      }
+      });
       modelQueryExpression.push(
         iff(
           and([
@@ -169,9 +168,8 @@ const generateAuthOnModelQueryExpression = (
         ),
       );
     } else {
-      for (let role of primaryRoles) {
-        const claimExpression =
-          role.strategy === 'owner' ? getOwnerClaim(role.claim!) : getIdentityClaimExp(str(role.claim!), str(NONE_VALUE));
+      primaryRoles.forEach(role => {
+        const claimExpression = role.strategy === 'owner' ? getOwnerClaim(role.claim!) : getIdentityClaimExp(str(role.claim!), str(NONE_VALUE));
         modelQueryExpression.push(
           ifElse(
             not(ref(`util.isNull($ctx.args.${role.entity})`)),
@@ -203,7 +201,7 @@ const generateAuthOnModelQueryExpression = (
             qref(methodCall(ref('primaryFieldMap.put'), str(role.entity), claimExpression)),
           ),
         );
-      }
+      });
       modelQueryExpression.push(
         // if no args where provided to the listX operation
         // @model will create a scan operation we add these primary fields in the auth filter
@@ -225,8 +223,8 @@ const generateAuthOnModelQueryExpression = (
               ]),
               qref(methodCall(ref('ctx.stash.put'), str('authFilter'), raw('{ "or": $authFilter }'))),
             ]),
-            // if authfilter is null, the partitionkey is provided in the args, and there is still values in the fieldmap then we are dealing with sortKeys
-            // we need to append the sort keys to the model query expression
+            // if auth filter is null, the partition key is provided in the args, and there is still values in the field map then we are
+            // dealing with sort keys we need to append the sort keys to the model query expression
             iff(
               methodCall(ref('util.isNull'), ref('ctx.stash.authFilter')),
               compoundExpression([
@@ -263,7 +261,7 @@ const generateAuthFilter = (roles: Array<RoleDefinition>, fields: ReadonlyArray<
    * if groupsField is a string
    * groupsField: { in: "cognito:groups" }
    * if groupsField is a list
-   * we create contains experession for each cognito group
+   * we create contains expression for each cognito group
    *  */
   roles.forEach((role, idx) => {
     const entityIsList = fieldIsList(fields, role.entity);
@@ -291,10 +289,10 @@ const generateAuthFilter = (roles: Array<RoleDefinition>, fields: ReadonlyArray<
           ...[
             set(ref(`role${idx}`), getIdentityClaimExp(str(role.claim!), list([]))),
             iff(
-              methodCall(ref(`util.isString`), ref(`role${idx}`)),
+              methodCall(ref('util.isString'), ref(`role${idx}`)),
               ifElse(
-                methodCall(ref(`util.isList`), methodCall(ref(`util.parseJson`), ref(`role${idx}`))),
-                set(ref(`role${idx}`), methodCall(ref(`util.parseJson`), ref(`role${idx}`))),
+                methodCall(ref('util.isList'), methodCall(ref('util.parseJson'), ref(`role${idx}`))),
+                set(ref(`role${idx}`), methodCall(ref('util.parseJson'), ref(`role${idx}`))),
                 set(ref(`role${idx}`), list([ref(`role${idx}`)])),
               ),
             ),
@@ -307,17 +305,15 @@ const generateAuthFilter = (roles: Array<RoleDefinition>, fields: ReadonlyArray<
       }
     }
   });
-  for (let [groupClaim, fieldList] of groupMap) {
+  groupMap.forEach((fieldList, groupClaim) => {
     groupContainsExpression.push(
       forEach(
         ref('group'),
         ref(`util.defaultIfNull($ctx.identity.claims.get("${groupClaim}"), [])`),
-        fieldList.map(field =>
-          iff(not(methodCall(ref(`group.isEmpty`))), qref(methodCall(ref('authFilter.add'), raw(`{"${field}": { "contains": $group }}`)))),
-        ),
+        fieldList.map(field => iff(not(methodCall(ref('group.isEmpty'))), qref(methodCall(ref('authFilter.add'), raw(`{"${field}": { "contains": $group }}`))))),
       ),
     );
-  }
+  });
   return [
     iff(
       not(ref(IS_AUTHORIZED_FLAG)),
@@ -334,6 +330,9 @@ const generateAuthFilter = (roles: Array<RoleDefinition>, fields: ReadonlyArray<
   ];
 };
 
+/**
+ * Generates the auth filter for the queries
+ */
 export const generateAuthExpressionForQueries = (
   providers: ConfiguredAuthProviders,
   roles: Array<RoleDefinition>,
@@ -342,9 +341,12 @@ export const generateAuthExpressionForQueries = (
   isIndexQuery = false,
   primaryKey: string | undefined = undefined,
 ): string => {
-  const { cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles } =
-    splitRoles(roles);
-  const getNonPrimaryFieldRoles = (roles: RoleDefinition[]) => roles.filter(roles => !primaryFields.includes(roles.entity));
+  const {
+    cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles,
+  } = splitRoles(roles);
+  const getNonPrimaryFieldRoles = (
+    rolesToFilter: RoleDefinition[],
+  ): RoleDefinition[] => rolesToFilter.filter(role => !primaryFields.includes(role.entity));
   const totalAuthExpressions: Array<Expression> = [
     setHasAuthExpression,
     set(ref(IS_AUTHORIZED_FLAG), bool(false)),
@@ -389,15 +391,21 @@ export const generateAuthExpressionForQueries = (
   return printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
 };
 
+/**
+ * Generates auth filters for relational queries
+ */
 export const generateAuthExpressionForRelationQuery = (
   providers: ConfiguredAuthProviders,
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
   primaryFieldMap: RelationalPrimaryMapConfig,
-) => {
-  const { cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles } =
-    splitRoles(roles);
-  const getNonPrimaryFieldRoles = (roles: RoleDefinition[]) => roles.filter(roles => !primaryFieldMap.has(roles.entity));
+): string => {
+  const {
+    cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles,
+  } = splitRoles(roles);
+  const getNonPrimaryFieldRoles = (
+    rolesToFilter: RoleDefinition[],
+  ): RoleDefinition[] => rolesToFilter.filter(role => !primaryFieldMap.has(role.entity));
   const totalAuthExpressions: Array<Expression> = [setHasAuthExpression, set(ref(IS_AUTHORIZED_FLAG), bool(false))];
   if (providers.hasApiKey) {
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));

@@ -9,18 +9,26 @@ import glob from 'glob';
  */
 export const transformCurrentProjectToGitPulledProject = (projRoot: string) => {
   const gitIgnoreFilePath = pathManager.getGitIgnoreFilePath(projRoot);
-  const regexArray = fs.readFileSync(gitIgnoreFilePath, 'utf-8').split('\n');
-  regexArray.forEach(str => {
+  const regexrArray = fs.readFileSync(gitIgnoreFilePath, 'utf-8').split('\n');
+  regexrArray.forEach(str => {
+    if (str.endsWith('/')) {
+      str = str.split('/')[0];
+    }
     const dirPath = glob.sync(str, {
       cwd: projRoot,
       absolute: true,
+      matchBase: true,
     });
     dirPath.forEach(file => {
-      if (fs.existsSync(file) && fs.lstatSync(file).isDirectory()) {
-        fs.removeSync(file);
-      } else {
-        fs.unlinkSync(file);
-      }
+      try {
+        if (fs.existsSync(file)) {
+          if (fs.lstatSync(file).isDirectory()) {
+            fs.removeSync(file);
+          } else {
+            fs.unlinkSync(file);
+          }
+        }
+      } catch (err) {}
     });
   });
 };

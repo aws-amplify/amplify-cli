@@ -9,10 +9,6 @@ Array [
         "AttributeName": "personID",
         "KeyType": "HASH",
       },
-      Object {
-        "AttributeName": "todoID",
-        "KeyType": "RANGE",
-      },
     ],
     "Projection": Object {
       "ProjectionType": "ALL",
@@ -40,10 +36,6 @@ Array [
       Object {
         "AttributeName": "todoID",
         "KeyType": "HASH",
-      },
-      Object {
-        "AttributeName": "personID",
-        "KeyType": "RANGE",
       },
     ],
     "Projection": Object {

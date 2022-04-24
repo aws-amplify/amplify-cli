@@ -3,6 +3,61 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.14...amplify-util-mock@4.3.15) (2022-04-18)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.3.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.13...amplify-util-mock@4.3.14) (2022-04-11)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.3.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.12...amplify-util-mock@4.3.13) (2022-04-07)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.3.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.11...amplify-util-mock@4.3.12) (2022-03-23)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.3.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.10...amplify-util-mock@4.3.11) (2022-03-17)
+
+
+
+## 7.6.25 (2022-03-16)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** expand [@auth](https://github.com/auth) directive to explicit set of allowed operations ([#9859](https://github.com/aws-amplify/amplify-cli/issues/9859)) ([e44ed18](https://github.com/aws-amplify/amplify-cli/commit/e44ed189b2c94230cbd5674606ffa488cb6c7bfe))
+
+
+
+
+
+## [4.3.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.9...amplify-util-mock@4.3.10) (2022-03-14)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
 ## [4.3.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.8...amplify-util-mock@4.3.9) (2022-03-07)
 
 

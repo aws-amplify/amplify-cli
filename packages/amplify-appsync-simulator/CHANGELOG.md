@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.10...amplify-appsync-simulator@2.3.11) (2022-04-18)
+
+
+### Bug Fixes
+
+* bump moment-timezone, and remove deprecated types dep ([#10177](https://github.com/aws-amplify/amplify-cli/issues/10177)) ([0a531ef](https://github.com/aws-amplify/amplify-cli/commit/0a531ef9f581e6a2c945fb0f097c9a1f68250e6b))
+
+
+
+
+
+## [2.3.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.9...amplify-appsync-simulator@2.3.10) (2022-03-14)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** base-resolver for response and added better error handling ([#9687](https://github.com/aws-amplify/amplify-cli/issues/9687)) ([6383260](https://github.com/aws-amplify/amplify-cli/commit/6383260a8607e0f8cd1f33028cd3a66abad9f91b))
+
+
+
+
+
 ## [2.3.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.8...amplify-appsync-simulator@2.3.9) (2022-03-07)
 
 

@@ -6,5 +6,9 @@ export const supportedServices = {
   PlaceIndex: {
     alias: 'Location search (search by places, addresses, coordinates)',
     provider: 'awscloudformation'
+  },
+  GeofenceCollection: {
+    alias: 'Geofencing (visualize virtual perimeters)',
+    provider: 'awscloudformation'
   }
 };

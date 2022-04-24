@@ -3,6 +3,57 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.7.12...@aws-amplify/graphql-auth-transformer@0.8.0) (2022-04-18)
+
+
+### Features
+
+* add handling of colon-delimited identity claims to query ([#10189](https://github.com/aws-amplify/amplify-cli/issues/10189)) ([d7983f4](https://github.com/aws-amplify/amplify-cli/commit/d7983f411f69e79cbe7508684b31ba9f9f2d9c33))
+
+
+### Reverts
+
+* Revert "feat: add handling of colon-delimited identity claims to query (#10189)" (#10213) ([9f13064](https://github.com/aws-amplify/amplify-cli/commit/9f13064d592937c82e534c32469053d7e96a169b)), closes [#10189](https://github.com/aws-amplify/amplify-cli/issues/10189) [#10213](https://github.com/aws-amplify/amplify-cli/issues/10213)
+
+
+
+
+
+## [0.7.12](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.7.11...@aws-amplify/graphql-auth-transformer@0.7.12) (2022-04-11)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+
+
+
+
+## [0.7.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.7.10...@aws-amplify/graphql-auth-transformer@0.7.11) (2022-04-07)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+
+
+
+
+## [0.7.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.7.9...@aws-amplify/graphql-auth-transformer@0.7.10) (2022-03-23)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+
+
+
+
+## [0.7.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.7.8...@aws-amplify/graphql-auth-transformer@0.7.9) (2022-03-17)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** expand [@auth](https://github.com/auth) directive to explicit set of allowed operations ([#9859](https://github.com/aws-amplify/amplify-cli/issues/9859)) ([e44ed18](https://github.com/aws-amplify/amplify-cli/commit/e44ed189b2c94230cbd5674606ffa488cb6c7bfe))
+
+
+
+
+
 ## [0.7.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.7.7...@aws-amplify/graphql-auth-transformer@0.7.8) (2022-03-07)
 
 **Note:** Version bump only for package @aws-amplify/graphql-auth-transformer

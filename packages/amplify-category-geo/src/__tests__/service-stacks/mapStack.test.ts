@@ -15,6 +15,8 @@ describe('cdk stack creation for map service', () => {
           locationServiceRegion: 'eu-central-1',
         },
       },
+      groupPermissions: ['adminGroup'],
+      authResourceName: 'mockAuth'
     };
     const mapStack = new MapStack(new App(), 'MapStack', stackProps);
     expect(mapStack.toCloudFormation()).toMatchSnapshot();
@@ -28,6 +30,8 @@ describe('cdk stack creation for map service', () => {
           locationServiceRegion: 'eu-central-1',
         },
       },
+      groupPermissions: ['adminGroup'],
+      authResourceName: 'mockAuth'
     };
     const mapStack = new MapStack(new App(), 'MapStack', stackProps);
     expect(mapStack.toCloudFormation()).toMatchSnapshot();
