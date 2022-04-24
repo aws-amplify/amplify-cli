@@ -121,62 +121,9 @@ Object {
         "BucketName": Object {
           "Ref": "DeploymentBucketName",
         },
-        "PublicAccessBlockConfiguration": Object {
-          "BlockPublicAcls": true,
-          "BlockPublicPolicy": true,
-          "IgnorePublicAcls": true,
-          "RestrictPublicBuckets": true,
-        },
       },
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Retain",
-    },
-    "DeploymentBucketBlockHTTP": Object {
-      "Properties": Object {
-        "Bucket": Object {
-          "Ref": "DeploymentBucketName",
-        },
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "s3:*",
-              "Condition": Object {
-                "Bool": Object {
-                  "aws:SecureTransport": false,
-                },
-              },
-              "Effect": "Deny",
-              "Principal": "*",
-              "Resource": Array [
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:aws:s3:::",
-                      Object {
-                        "Ref": "DeploymentBucketName",
-                      },
-                      "/*",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:aws:s3:::",
-                      Object {
-                        "Ref": "DeploymentBucketName",
-                      },
-                    ],
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-      },
-      "Type": "AWS::S3::BucketPolicy",
     },
     "UnauthRole": Object {
       "Properties": Object {
