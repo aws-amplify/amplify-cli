@@ -65,6 +65,7 @@ import {
   AUTH_PROVIDER_DIRECTIVE_MAP,
   DEFAULT_GROUP_CLAIM,
   DEFAULT_IDENTITY_CLAIM,
+  IDENTITY_CLAIM_DELIMITER,
   DEFAULT_GROUPS_FIELD,
   DEFAULT_OWNER_FIELD,
   MODEL_OPERATIONS,
@@ -388,11 +389,16 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         this.protectSubscriptionResolver(context, subscription.typeName, subscription.fieldName, subscriptionRoles);
       });
 
-      roleDefinitions.forEach(role => {
-        if (role.strategy === 'owner') {
-          this.addFieldResolverForDynamicAuth(context, def, modelName, role.entity);
-        }
-      });
+      if (context.featureFlags.getBoolean('useSubUsernameForDefaultIdentityClaim')) {
+        roleDefinitions.forEach(role => {
+          const hasMultiClaims = role.claim?.split(IDENTITY_CLAIM_DELIMITER)?.length > 1;
+          const createOwnerFieldResolver = role.strategy === 'owner' && hasMultiClaims;
+
+          if (createOwnerFieldResolver) {
+            this.addFieldResolverForDynamicAuth(context, def, modelName, role.entity);
+          }
+        });
+      }
     });
 
     this.authNonModelConfig.forEach((acm, typeFieldName) => {
