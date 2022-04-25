@@ -87,7 +87,7 @@ describe('@model owner mutation checks', () => {
     const updateResponseTemplate = out.resolvers['Mutation.updatePost.auth.1.res.vtl'];
     // response where the owner is indeed the owner
     const updateVTLResponse = vtlTemplate.render(updateResponseTemplate, {
-      context: { ...ownerContext, result: { id: '001', owner: `${ownerRequest.jwt.sub}:user1` } },
+      context: { ...ownerContext, result: { id: '001', owner: 'user1' } },
       requestParameters: ownerRequest,
     });
     expect(updateVTLResponse).toBeDefined();
