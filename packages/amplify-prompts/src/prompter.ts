@@ -10,7 +10,9 @@ import { prompt } from 'enquirer';
 // @ts-ignore
 import * as actions from 'enquirer/lib/combos';
 import chalk from 'chalk';
-import { IFlowData } from 'amplify-cli-shared-interfaces';
+import {
+  ICommandInput, IFlowData,
+} from 'amplify-cli-shared-interfaces';
 import { isYes, isInteractiveShell } from './flags';
 import { Validator } from './validators';
 import { printer } from './printer';
@@ -38,7 +40,7 @@ class AmplifyPrompter implements Prompter {
     throw new Error(errorMsg);
   }
 
-  setFlowData = (flowData: IFlowData):void => {
+  setFlowData = (flowData: IFlowData): void => {
     this.flowData = flowData;
   }
 
@@ -48,9 +50,9 @@ class AmplifyPrompter implements Prompter {
     }
   }
 
-  pushHeadlessFlow = (headlessFlowDataString: string) => {
+  pushHeadlessFlow = (headlessFlowDataString: string, input: ICommandInput) => {
     if (this.flowData) {
-      this.flowData.pushHeadlessFlow(headlessFlowDataString);
+      this.flowData.pushHeadlessFlow(headlessFlowDataString, input);
     }
   }
 
@@ -58,7 +60,7 @@ class AmplifyPrompter implements Prompter {
    * Asks a continue prompt.
    * Similar to yesOrNo, but 'false' is always the default and if the --yes flag is set, the prompt is skipped and 'true' is returned
    */
-  confirmContinue = async (message = 'Do you want to continue?') : Promise<boolean> => {
+  confirmContinue = async (message = 'Do you want to continue?'): Promise<boolean> => {
     let result = false;
     if (isYes) {
       result = true;
@@ -84,7 +86,7 @@ class AmplifyPrompter implements Prompter {
     return result;
   };
 
-  private yesOrNoCommon = async (message: string, initial: boolean):Promise<boolean> => {
+  private yesOrNoCommon = async (message: string, initial: boolean): Promise<boolean> => {
     let submitted = false;
     const { result } = await this.prompter<{ result: boolean }>({
       type: 'confirm',
@@ -347,7 +349,7 @@ type Prompter = {
     // options is typed using spread because it's the only way to make it required if RS is 'many' but optional if RS is 'one'
     ...options: MaybeOptionalPickOptions<RS, T>
   ) => Promise<PromptReturn<RS, T>>;
-  setFlowData : (flowData: IFlowData)=>void;
+  setFlowData: (flowData: IFlowData) => void;
 };
 
 // the following types are the building blocks of the method input types
@@ -356,8 +358,8 @@ type Prompter = {
 type MaybeAvailableHiddenInputOption<RS extends ReturnSize> = RS extends 'many'
   ? unknown
   : {
-      hidden?: boolean;
-    };
+    hidden?: boolean;
+  };
 
 // The initial selection for a pick prompt can be specified either by index or a selection function that generates indexes.
 // See byValues and byValue above
@@ -376,14 +378,14 @@ type InitialValueOption<T> = {
 type MultiSelectMinimum<RS extends ReturnSize> = RS extends 'one'
   ? unknown
   : {
-      pickAtLeast?: number;
-    };
+    pickAtLeast?: number;
+  };
 
 type MultiSelectMaximum<RS extends ReturnSize> = RS extends 'one'
   ? unknown
   : {
-      pickAtMost?: number;
-    };
+    pickAtMost?: number;
+  };
 
 type ValidateValueOption = {
   validate?: Validator;
@@ -399,11 +401,11 @@ type MaybeOptionalTransformOption<T> = T extends string ? Partial<TransformOptio
 
 type ReturnSizeOption<RS extends ReturnSize> = RS extends 'many'
   ? {
-      returnSize: 'many';
-    }
+    returnSize: 'many';
+  }
   : {
-      returnSize?: 'one';
-    };
+    returnSize?: 'one';
+  };
 
 type Choices<T> = T extends string ? GenericChoice<T>[] | string[] : GenericChoice<T>[];
 

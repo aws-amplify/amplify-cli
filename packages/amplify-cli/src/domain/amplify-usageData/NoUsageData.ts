@@ -2,7 +2,7 @@
 /* eslint-disable class-methods-use-this */
 import { $TSAny } from 'amplify-cli-core';
 import { IFlowReport } from 'amplify-cli-shared-interfaces/lib/amplify-cli-flow-reporter-types';
-import { IFlowData } from 'amplify-cli-shared-interfaces';
+import { ICommandInput, IFlowData } from 'amplify-cli-shared-interfaces';
 import { CLINoFlowReport } from './NoFlowReport';
 import { IUsageData } from './IUsageData';
 
@@ -52,8 +52,8 @@ export class NoUsageData implements IUsageData, IFlowData {
    * @param _input accepted from the CLI
    */
   // eslint-disable-next-line class-methods-use-this
-  pushInteractiveFlow = (_prompt: string, _input: unknown) : void  => {
-    /* noop */ 
+  pushInteractiveFlow = (_prompt: string, _input: unknown): void => {
+    /* noop */
   }
 
   /**
@@ -61,23 +61,23 @@ export class NoUsageData implements IUsageData, IFlowData {
    * @param _headlessFlowDataString accepted from the CLI
    */
   // eslint-disable-next-line class-methods-use-this
-  pushHeadlessFlow = (_headlessFlowDataString : string) : void  => {
-    /* noop */ 
+  pushHeadlessFlow = (_headlessFlowDataString: string, _input: ICommandInput): void => {
+    /* noop */
   }
 
   /**
    * Noop function to set isHeadless flag in flowLogger
    * @param _headless 
    */
-  setIsHeadless =  (_headless: boolean): void => {
-    /* noop */ 
+  setIsHeadless = (_headless: boolean): void => {
+    /* noop */
   }
 
   /**
    * Empty function is for flow report.
    * @returns empty object
    */
-  getFlowReport() : IFlowReport | Record<string, never> {
+  getFlowReport(): IFlowReport | Record<string, never> {
     return {};
   }
 
@@ -85,7 +85,7 @@ export class NoUsageData implements IUsageData, IFlowData {
    * NoOp function to assign Project identifier
    * @returns undefined
    */
-  assignProjectIdentifier() : string | undefined {
+  assignProjectIdentifier(): string | undefined {
     return undefined;
   }
 

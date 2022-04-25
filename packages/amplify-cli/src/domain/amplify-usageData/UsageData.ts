@@ -4,7 +4,7 @@ import https from 'https';
 import { UrlWithStringQuery } from 'url';
 import { $TSAny, JSONUtilities } from 'amplify-cli-core';
 import { pick } from 'lodash';
-import { IFlowData, IFlowReport } from 'amplify-cli-shared-interfaces';
+import { ICommandInput, IFlowData, IFlowReport } from 'amplify-cli-shared-interfaces';
 import { Input } from '../input';
 import redactInput from './identifiable-input-regex';
 import { UsageDataPayload, InputOptions } from './UsageDataPayload';
@@ -62,6 +62,7 @@ export class UsageData implements IUsageData, IFlowData {
     this.codePathTimers.set(FromStartupTimedCodePaths.PLATFORM_STARTUP, Timer.start(processStartTimeStamp));
     this.codePathTimers.set(FromStartupTimedCodePaths.TOTAL_DURATION, Timer.start(processStartTimeStamp));
     UsageData.flow.setInput(input);
+    UsageData.flow.setVersion(version);
   }
 
   /**
@@ -139,9 +140,9 @@ export class UsageData implements IUsageData, IFlowData {
     * @param headlessParameterString - Stringified headless parameter string
     * @param input  - CLI input entered by Cx
     */
-  pushHeadlessFlow(headlessParameterString: string) {
+  pushHeadlessFlow(headlessParameterString: string, input: ICommandInput) {
     if (UsageData.flow) {
-      UsageData.flow.pushHeadlessFlow(headlessParameterString);
+      UsageData.flow.pushHeadlessFlow(headlessParameterString, input);
     }
   }
 
@@ -204,9 +205,12 @@ export class UsageData implements IUsageData, IFlowData {
       Object.fromEntries(this.codePathDurations),
       UsageData.flowInstance.getFlowReport() as IFlowReport,
     );
+
     await this.send(payload);
+
     return payload;
   }
+
 
   private async send(payload: UsageDataPayload): Promise<void> {
     return new Promise<void>(resolve => {
