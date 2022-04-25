@@ -1,4 +1,6 @@
-import { CfnResource, Construct, IAsset, IConstruct } from '@aws-cdk/core';
+import {
+  CfnResource, Construct, IAsset, IConstruct,
+} from '@aws-cdk/core';
 import { Grant, IGrantable, IRole } from '@aws-cdk/aws-iam';
 import { TransformHostProvider } from './transform-host-provider';
 
@@ -91,16 +93,19 @@ export enum TemplateType {
 }
 export interface InlineMappingTemplateProvider {
   type: TemplateType.INLINE;
-  bind(scope: Construct): string;
+  bind: (scope: Construct) => string;
+  getInlineTemplate: () => string;
 }
+
 export interface S3MappingTemplateProvider {
   type: TemplateType.S3_LOCATION;
-  bind(scope: Construct): string;
+  bind: (scope: Construct) => string;
+  getS3Template: () => string;
 }
 
 export interface S3MappingFunctionCodeProvider {
   type: TemplateType.S3_LOCATION;
-  bind(scope: Construct): IAsset;
+  bind: (scope: Construct) => IAsset;
 }
 
 export type MappingTemplateProvider = InlineMappingTemplateProvider | S3MappingTemplateProvider;
@@ -111,31 +116,31 @@ export interface GraphQLAPIProvider {
 
   // getDefaultAuthorization(): Readonly<AuthorizationMode>;
   // getAdditionalAuthorizationModes(): Readonly<AuthorizationMode[]>;
-  addToSchema(addition: string): void;
-  addSchemaDependency(construct: CfnResource): boolean;
+  addToSchema: (addition: string) => void;
+  addSchemaDependency: (construct: CfnResource) => boolean;
 
-  grant(grantee: IGrantable, resources: APIIAMResourceProvider, ...actions: string[]): Grant;
+  grant: (grantee: IGrantable, resources: APIIAMResourceProvider, ...actions: string[]) => Grant;
   // /**
   //  *  Adds an IAM policy statement for Mutation access to this GraphQLApi to an IAM principal's policy.
   //  *
   //  * @param grantee The principal.
   //  * @param fields The fields to grant access to that are Mutations (leave blank for all).
   //  */
-  grantMutation(grantee: IGrantable, ...fields: string[]): Grant;
+  grantMutation: (grantee: IGrantable, ...fields: string[]) => Grant;
   // /**
   //  *  Adds an IAM policy statement for Query access to this GraphQLApi to an IAM principal's policy.
   //  *
   //  * @param grantee The principal.
   //  * @param fields The fields to grant access to that are Queries (leave blank for all).
   //  */
-  grantQuery(grantee: IGrantable, ...fields: string[]): Grant;
+  grantQuery: (grantee: IGrantable, ...fields: string[]) => Grant;
   // /**
   //  *  Adds an IAM policy statement for Subscription access to this GraphQLApi to an IAM principal's policy.
   //  *
   //  * @param grantee The principal.
   //  * @param fields The fields to grant access to that are Subscriptions (leave blank for all).
   //  */
-  grantSubscription(grantee: IGrantable, ...fields: string[]): Grant;
+  grantSubscription: (grantee: IGrantable, ...fields: string[]) => Grant;
 }
 
 export interface APIIAMResourceProvider {
@@ -144,5 +149,5 @@ export interface APIIAMResourceProvider {
    *
    * @param api The GraphQL API to give permissions
    */
-  resourceArns(api: GraphQLAPIProvider): string[];
+  resourceArns: (api: GraphQLAPIProvider) => string[];
 }

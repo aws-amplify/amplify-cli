@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Test SearchableModelTransformer enum type generates StringFilterInput 1`] = `
+exports[`SearchableModelTransformer enum type generates StringFilterInput 1`] = `
 "
 type Employee {
   id: ID!
@@ -314,7 +314,7 @@ input SearchableEmployeeAggregationInput {
 "
 `;
 
-exports[`Test SearchableModelTransformer validation happy case 1`] = `
+exports[`SearchableModelTransformer validation happy case 1`] = `
 "
 type Post {
   id: ID!
@@ -611,7 +611,7 @@ input SearchablePostAggregationInput {
 "
 `;
 
-exports[`Test SearchableModelTransformer vtl 1`] = `
+exports[`SearchableModelTransformer vtl 1`] = `
 Object {
   "Mutation.createPost.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
@@ -1226,7 +1226,7 @@ $util.toJson(null)
 }
 `;
 
-exports[`Test SearchableModelTransformer with datastore enabled vtl 1`] = `
+exports[`SearchableModelTransformer with datastore enabled vtl 1`] = `
 "#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $indexPath = \\"/post/_search\\" )
 #set( $allowedAggFields = $util.defaultIfNull($ctx.stash.allowedAggFields, []) )
@@ -1327,7 +1327,7 @@ exports[`Test SearchableModelTransformer with datastore enabled vtl 1`] = `
 }"
 `;
 
-exports[`Test SearchableModelTransformer with datastore enabled vtl 2`] = `
+exports[`SearchableModelTransformer with datastore enabled vtl 2`] = `
 "#set( $es_items = [] )
 #set( $aggregateValues = [] )
 #foreach( $entry in $context.result.hits.hits )
@@ -1364,7 +1364,7 @@ $util.toJson({
 })"
 `;
 
-exports[`Test SearchableModelTransformer with multiple model searchable directives 1`] = `
+exports[`SearchableModelTransformer with multiple model searchable directives 1`] = `
 "
 type Post {
   id: ID!
@@ -1753,7 +1753,7 @@ input SearchableUserAggregationInput {
 "
 `;
 
-exports[`Test SearchableModelTransformer with only create mutations 1`] = `
+exports[`SearchableModelTransformer with only create mutations 1`] = `
 "
 type Post {
   id: ID!
@@ -2035,7 +2035,7 @@ input SearchablePostAggregationInput {
 "
 `;
 
-exports[`Test SearchableModelTransformer with query overrides 1`] = `
+exports[`SearchableModelTransformer with query overrides 1`] = `
 "
 type Post {
   id: ID!
@@ -2332,7 +2332,7 @@ input SearchablePostAggregationInput {
 "
 `;
 
-exports[`Test SearchableModelTransformer with sort fields 1`] = `
+exports[`SearchableModelTransformer with sort fields 1`] = `
 "
 type Post {
   id: ID!

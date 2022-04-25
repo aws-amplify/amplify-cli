@@ -15,6 +15,7 @@ import {
 } from 'amplify-e2e-core';
 import { join } from 'path';
 import * as fs from 'fs-extra';
+import _ from 'lodash';
 
 describe('user created resolvers', () => {
   let projectDir: string;
@@ -69,9 +70,20 @@ describe('user created resolvers', () => {
 
       expect(fs.readFileSync(generatedResolverPath).toString()).toEqual(slot);
       expect(fs.readFileSync(overriddenResolverPath).toString()).toEqual(slot);
-      expect(todoJson.Resources.GetTodoResolver.Properties.PipelineConfig.Functions).toHaveLength(3);
+      const getResolverAppsyncFunctions = todoJson.Resources.GetTodoResolver.Properties.PipelineConfig.Functions;
+      const listResolverAppsyncFunctions = todoJson.Resources.ListTodoResolver.Properties.PipelineConfig.Functions;
+
+      expect(getResolverAppsyncFunctions).toHaveLength(3);
       // The function count should be 3 even after overriding the auth resolver
-      expect(todoJson.Resources.ListTodoResolver.Properties.PipelineConfig.Functions).toHaveLength(3);
+      expect(listResolverAppsyncFunctions).toHaveLength(3);
+
+      // checking if deduplication isn't removing overrided slot
+      // 1. postAuth slot appsync functions should be same
+      // 2. list resolver auth slot should be different
+
+      const filterFunctions = listResolverAppsyncFunctions.filter(func1 => getResolverAppsyncFunctions.some(func2 => func1['Fn::GetAtt'][0] === func2['Fn::GetAtt'][0]));
+      expect(filterFunctions).toMatchSnapshot();
+      expect(listResolverAppsyncFunctions.filter(obj => obj['Fn::GetAtt'][0].includes('QuerylistTodosauth0Function'))).toMatchSnapshot();
     });
   });
 

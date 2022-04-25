@@ -1,21 +1,23 @@
 import { ConflictHandlerType, GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { SearchableModelTransformer } from '../';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { anything, countResources, expect as cdkExpect, haveResource } from '@aws-cdk/assert';
+import {
+  anything, countResources, expect as cdkExpect, haveResource,
+} from '@aws-cdk/assert';
 import { parse } from 'graphql';
+import { SearchableModelTransformer } from '..';
+
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
     if (name === 'improvePluralization') {
       return true;
     }
-    return;
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
   getString: jest.fn(),
 };
 
-test('Test SearchableModelTransformer validation happy case', () => {
+test('SearchableModelTransformer validation happy case', () => {
   const validSchema = `
     type Post @model @searchable {
         id: ID!
@@ -34,7 +36,7 @@ test('Test SearchableModelTransformer validation happy case', () => {
   expect(out.schema).toMatchSnapshot();
 });
 
-test('Test SearchableModelTransformer vtl', () => {
+test('SearchableModelTransformer vtl', () => {
   const validSchema = `
     type Post @model @searchable {
         id: ID!
@@ -53,7 +55,7 @@ test('Test SearchableModelTransformer vtl', () => {
   expect(out.resolvers).toMatchSnapshot();
 });
 
-test('Test SearchableModelTransformer with datastore enabled vtl', () => {
+test('SearchableModelTransformer with datastore enabled vtl', () => {
   const validSchema = `
     type Post @model @searchable {
         id: ID!
@@ -69,18 +71,18 @@ test('Test SearchableModelTransformer with datastore enabled vtl', () => {
       project: {
         ConflictHandler: ConflictHandlerType.AUTOMERGE,
         ConflictDetection: 'VERSION',
-      }
-    }
+      },
+    },
   });
 
   const out = transformer.transform(validSchema);
   expect(parse(out.schema)).toBeDefined();
   expect(out.resolvers['Query.searchPosts.req.vtl']).toMatchSnapshot();
   expect(out.resolvers['Query.searchPosts.res.vtl']).toMatchSnapshot();
-  expect(out.resolvers['Query.searchPosts.res.vtl']).toContain(`$util.qr($row.put("_version", $entry.get("_version")))`);
+  expect(out.resolvers['Query.searchPosts.res.vtl']).toContain('$util.qr($row.put("_version", $entry.get("_version")))');
 });
 
-test('Test SearchableModelTransformer with query overrides', () => {
+test('SearchableModelTransformer with query overrides', () => {
   const validSchema = `type Post @model @searchable(queries: { search: "customSearchPost" }) {
         id: ID!
         title: String!
@@ -98,7 +100,7 @@ test('Test SearchableModelTransformer with query overrides', () => {
   expect(out.schema).toMatchSnapshot();
 });
 
-test('Test SearchableModelTransformer with only create mutations', () => {
+test('SearchableModelTransformer with only create mutations', () => {
   const validSchema = `type Post @model(mutations: { create: "customCreatePost" }) @searchable {
         id: ID!
         title: String!
@@ -116,7 +118,7 @@ test('Test SearchableModelTransformer with only create mutations', () => {
   expect(out.schema).toMatchSnapshot();
 });
 
-test('Test SearchableModelTransformer with multiple model searchable directives', () => {
+test('SearchableModelTransformer with multiple model searchable directives', () => {
   const validSchema = `
     type Post @model @searchable {
         id: ID!
@@ -140,7 +142,7 @@ test('Test SearchableModelTransformer with multiple model searchable directives'
   expect(out.schema).toMatchSnapshot();
 });
 
-test('Test SearchableModelTransformer with sort fields', () => {
+test('SearchableModelTransformer with sort fields', () => {
   const validSchema = `
     type Post @model @searchable {
         id: ID!
@@ -276,7 +278,7 @@ test('it generates expected resources', () => {
       PipelineConfig: {
         Functions: [
           {
-            'Fn::GetAtt': [anything(), 'FunctionId'],
+            Ref: anything(),
           },
           {
             'Fn::GetAtt': [anything(), 'FunctionId'],
@@ -348,7 +350,7 @@ test('it generates expected resources', () => {
   );
 });
 
-test('Test SearchableModelTransformer enum type generates StringFilterInput', () => {
+test('SearchableModelTransformer enum type generates StringFilterInput', () => {
   const validSchema = `
     type Employee @model @searchable {
       id: ID!

@@ -1,10 +1,10 @@
-import { DynamoDbDataSourceOptions, TransformHostProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { SearchableDataSourceOptions, MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces/lib/graphql-api-provider';
-import { Duration, Stack, Token } from '@aws-cdk/core';
-import { SearchableDataSource } from './cdk-compat/searchable-datasource';
 import {
-  BaseDataSource,
-  CfnResolver,
+  DynamoDbDataSourceOptions,
+  InlineMappingTemplateProvider,
+  MappingTemplateProvider, MappingTemplateType, S3MappingTemplateProvider, SearchableDataSourceOptions, TransformHostProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  BaseDataSource, CfnResolver,
   DataSourceOptions,
   DynamoDbDataSource,
   HttpDataSource,
@@ -13,42 +13,65 @@ import {
   NoneDataSource,
 } from '@aws-cdk/aws-appsync';
 import { ITable } from '@aws-cdk/aws-dynamodb';
-import { CfnFunction, Code, Function, IFunction, ILayerVersion, Runtime } from '@aws-cdk/aws-lambda';
-import { AppSyncFunctionConfiguration } from './appsync-function';
 import { IRole } from '@aws-cdk/aws-iam';
-import { InlineTemplate, S3MappingFunctionCode } from './cdk-compat/template-asset';
+import {
+  CfnFunction, Code, Function, IFunction, ILayerVersion, Runtime,
+} from '@aws-cdk/aws-lambda';
+import { Duration, Stack, Token } from '@aws-cdk/core';
 import { ResolverResourceIDs, resourceName, toCamelCase } from 'graphql-transformer-common';
+import hash from 'object-hash';
+import { AppSyncFunctionConfiguration } from './appsync-function';
+import { SearchableDataSource } from './cdk-compat/searchable-datasource';
+import { InlineTemplate, S3MappingFunctionCode } from './cdk-compat/template-asset';
 import { GraphQLApi } from './graphql-api';
 
+type Slot = {
+  requestMappingTemplate?: string;
+  responseMappingTemplate?: string;
+  dataSource?: string;
+};
+
+/**
+ *
+ */
 export interface DefaultTransformHostOptions {
   readonly api: GraphQLApi;
 }
 
+/**
+ *
+ */
 export class DefaultTransformHost implements TransformHostProvider {
   private dataSources: Map<string, BaseDataSource> = new Map();
   private resolvers: Map<string, CfnResolver> = new Map();
+  private appsyncFunctions: Map<string, AppSyncFunctionConfiguration> = new Map();
   private api: GraphQLApi;
 
   public constructor(options: DefaultTransformHostOptions) {
     this.api = options.api;
   }
 
+  /**
+   *
+   */
   public setAPI(api: GraphQLApi): void {
     this.api = api;
   }
 
+  /**
+   *
+   */
   public hasDataSource(name: string): boolean {
     return this.dataSources.has(name);
   }
+
   public getDataSource = (name: string): BaseDataSource | void => {
     if (this.hasDataSource(name)) {
       return this.dataSources.get(name);
     }
   };
 
-  public hasResolver = (typeName: string, fieldName: string) => {
-    return this.resolvers.has(`${typeName}:${fieldName}`);
-  };
+  public hasResolver = (typeName: string, fieldName: string) => this.resolvers.has(`${typeName}:${fieldName}`);
 
   public getResolver = (typeName: string, fieldName: string): CfnResolver | void => {
     if (this.resolvers.has(`${typeName}:${fieldName}`)) {
@@ -56,6 +79,9 @@ export class DefaultTransformHost implements TransformHostProvider {
     }
   };
 
+  /**
+   *
+   */
   addSearchableDataSource(
     name: string,
     awsRegion: string,
@@ -71,7 +97,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     return data;
   }
 
-  public addHttpDataSource(name: string, endpoint: string, options?: DataSourceOptions, stack?: Stack): HttpDataSource {
+  public addHttpDataSource = (name: string, endpoint: string, options?: DataSourceOptions, stack?: Stack): HttpDataSource => {
     if (this.dataSources.has(name)) {
       throw new Error(`DataSource ${name} already exists in the API`);
     }
@@ -80,7 +106,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     return dataSource;
   }
 
-  public addDynamoDbDataSource(name: string, table: ITable, options?: DynamoDbDataSourceOptions, stack?: Stack): DynamoDbDataSource {
+  public addDynamoDbDataSource = (name: string, table: ITable, options?: DynamoDbDataSourceOptions, stack?: Stack): DynamoDbDataSource => {
     if (this.dataSources.has(name)) {
       throw new Error(`DataSource ${name} already exists in the API`);
     }
@@ -89,7 +115,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     return dataSource;
   }
 
-  public addNoneDataSource(name: string, options?: DataSourceOptions, stack?: Stack): NoneDataSource {
+  public addNoneDataSource = (name: string, options?: DataSourceOptions, stack?: Stack): NoneDataSource => {
     if (this.dataSources.has(name)) {
       throw new Error(`DataSource ${name} already exists in the API`);
     }
@@ -98,7 +124,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     return dataSource;
   }
 
-  public addLambdaDataSource(name: string, lambdaFunction: IFunction, options?: DataSourceOptions, stack?: Stack): LambdaDataSource {
+  public addLambdaDataSource = (name: string, lambdaFunction: IFunction, options?: DataSourceOptions, stack?: Stack): LambdaDataSource => {
     if (!Token.isUnresolved(name) && this.dataSources.has(name)) {
       throw new Error(`DataSource ${name} already exists in the API`);
     }
@@ -107,28 +133,55 @@ export class DefaultTransformHost implements TransformHostProvider {
     return dataSource;
   }
 
-  public addAppSyncFunction(
+  public addAppSyncFunction = (
     name: string,
     requestMappingTemplate: MappingTemplateProvider,
     responseMappingTemplate: MappingTemplateProvider,
     dataSourceName: string,
     stack?: Stack,
-  ): AppSyncFunctionConfiguration {
+  ): AppSyncFunctionConfiguration => {
     if (dataSourceName && !Token.isUnresolved(dataSourceName) && !this.dataSources.has(dataSourceName)) {
       throw new Error(`DataSource ${dataSourceName} is missing in the API`);
     }
 
+    // calculate hash of the slot object
+    // if the slot exists for the hash, then return same fn else create function
+
     const dataSource = this.dataSources.get(dataSourceName);
+    const requestTemplate = requestMappingTemplate.type === MappingTemplateType.INLINE
+      ? (requestMappingTemplate as InlineMappingTemplateProvider).getInlineTemplate()
+      : (requestMappingTemplate as S3MappingTemplateProvider).getS3Template();
+
+    const responseTemplate = responseMappingTemplate.type === MappingTemplateType.INLINE
+      ? (responseMappingTemplate as InlineTemplate).getInlineTemplate()
+      : (responseMappingTemplate as S3MappingTemplateProvider).getS3Template();
+
+    const obj :Slot = {
+      dataSource: dataSourceName,
+      requestMappingTemplate: requestTemplate,
+      responseMappingTemplate: responseTemplate,
+    };
+
+    const slotHash = hash(obj);
+    if (this.appsyncFunctions.has(slotHash)) {
+      const appsyncFunction = this.appsyncFunctions.get(slotHash)!;
+      // generating duplicate appsync functions vtl files to help in custom overrides
+      requestMappingTemplate.bind(appsyncFunction);
+      responseMappingTemplate.bind(appsyncFunction);
+      return appsyncFunction;
+    }
+
     const fn = new AppSyncFunctionConfiguration(stack || this.api, name, {
       api: this.api,
       dataSource: dataSource || dataSourceName,
       requestMappingTemplate,
       responseMappingTemplate,
     });
+    this.appsyncFunctions.set(slotHash, fn);
     return fn;
   }
 
-  public addResolver(
+  public addResolver = (
     typeName: string,
     fieldName: string,
     requestMappingTemplate: MappingTemplateProvider,
@@ -137,7 +190,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     dataSourceName?: string,
     pipelineConfig?: string[],
     stack?: Stack,
-  ): CfnResolver {
+  ): CfnResolver => {
     if (dataSourceName && !Token.isUnresolved(dataSourceName) && !this.dataSources.has(dataSourceName)) {
       throw new Error(`DataSource ${dataSourceName} is missing in the API`);
     }
@@ -151,8 +204,8 @@ export class DefaultTransformHost implements TransformHostProvider {
       const dataSource = this.dataSources.get(dataSourceName);
       const resolver = new CfnResolver(stack || this.api, resolverName, {
         apiId: this.api.apiId,
-        fieldName: fieldName,
-        typeName: typeName,
+        fieldName,
+        typeName,
         kind: 'UNIT',
         dataSourceName: dataSource?.ds.attrName || dataSourceName,
         ...(requestMappingTemplate instanceof InlineTemplate
@@ -165,11 +218,11 @@ export class DefaultTransformHost implements TransformHostProvider {
       resolver.overrideLogicalId(resourceId);
       this.api.addSchemaDependency(resolver);
       return resolver;
-    } else if (pipelineConfig) {
+    } if (pipelineConfig) {
       const resolver = new CfnResolver(stack || this.api, resolverName, {
         apiId: this.api.apiId,
-        fieldName: fieldName,
-        typeName: typeName,
+        fieldName,
+        typeName,
         kind: 'PIPELINE',
         ...(requestMappingTemplate instanceof InlineTemplate
           ? { requestMappingTemplate: requestTemplateLocation }
@@ -185,12 +238,11 @@ export class DefaultTransformHost implements TransformHostProvider {
       this.api.addSchemaDependency(resolver);
       this.resolvers.set(`${typeName}:${fieldName}`, resolver);
       return resolver;
-    } else {
-      throw new Error('Resolver needs either dataSourceName or pipelineConfig to be passed');
     }
+    throw new Error('Resolver needs either dataSourceName or pipelineConfig to be passed');
   }
 
-  addLambdaFunction(
+  addLambdaFunction = (
     functionName: string,
     functionKey: string,
     handlerName: string,
@@ -201,10 +253,10 @@ export class DefaultTransformHost implements TransformHostProvider {
     environment?: { [key: string]: string },
     timeout?: Duration,
     stack?: Stack,
-  ): IFunction {
-    const dummycode = `if __name__ == "__main__":`; // assing dummy code so as to be overriden later
+  ): IFunction => {
+    const dummyCode = 'if __name__ == "__main__":'; // assing dummy code so as to be overriden later
     const fn = new Function(stack || this.api, functionName, {
-      code: Code.fromInline(dummycode),
+      code: Code.fromInline(dummyCode),
       handler: handlerName,
       runtime,
       role,

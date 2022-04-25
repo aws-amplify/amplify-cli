@@ -1,9 +1,9 @@
-import { GraphQLAPIProvider, TransformerResourceHelperProvider, ModelFieldMap } from '@aws-amplify/graphql-transformer-interfaces';
+import { GraphQLAPIProvider, ModelFieldMap, TransformerResourceHelperProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { CfnParameter, Token } from '@aws-cdk/core';
-import { StackManager } from './stack-manager';
-import md5 from 'md5';
 import { ModelResourceIDs } from 'graphql-transformer-common';
+import md5 from 'md5';
 import { ModelFieldMapImpl } from './model-field-map';
+import { StackManager } from './stack-manager';
 
 /**
  * Contains helper methods for transformers to access and compile context about resource generation
@@ -33,7 +33,7 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
     }
     this.ensureEnv();
     const env = (this.stackManager.getParameter('env') as CfnParameter).valueAsString;
-    const apiId = this.api!.apiId;
+    const { apiId } = this.api!;
     const baseName = this.#modelNameMap.get(modelName) ?? modelName;
     return `${baseName}-${apiId}-${env}`;
   };
@@ -44,13 +44,16 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
     }
     this.ensureEnv();
     const env = (this.stackManager.getParameter('env') as CfnParameter).valueAsString;
-    const apiId = this.api!.apiId;
+    const { apiId } = this.api!;
     // 38 = 26(apiId) + 10(env) + 2(-)
     const shortName = `${Token.isUnresolved(name) ? name : name.slice(0, 64 - 38 - 6)}${md5(name).slice(0, 6)}`;
     return `${shortName}-${apiId}-${env}`; // max of 64.
   };
 
-  bind(api: GraphQLAPIProvider) {
+  /**
+   * binds api to Resource helper class
+   */
+  bind(api: GraphQLAPIProvider): void {
     this.api = api;
   }
 
@@ -59,24 +62,24 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
    * @param modelName The current model name in the schema
    * @param mappedName The original model name as specified by @mapsTo
    */
-  setModelNameMapping = (modelName: string, mappedName: string) => {
+  setModelNameMapping = (modelName: string, mappedName: string): void => {
     this.#modelNameMap.set(modelName, mappedName);
   };
 
   /**
    * Gets the mapped name of a model, if present in the map. Otherwise, returns the given model name unchanged
    */
-  getModelNameMapping = (modelName: string) => this.#modelNameMap.get(modelName) ?? modelName;
+  getModelNameMapping = (modelName: string): string => this.#modelNameMap.get(modelName) ?? modelName;
 
   /**
    * True if the model name has a mapping, false otherwise
    */
-  isModelRenamed = (modelName: string) => this.getModelNameMapping(modelName) !== modelName;
+  isModelRenamed = (modelName: string): boolean => this.getModelNameMapping(modelName) !== modelName;
 
   /**
    * Gets the field mapping object for the model if present. If not present, an new field map object is created and returned
    */
-  getModelFieldMap = (modelName: string) => {
+  getModelFieldMap = (modelName: string): ModelFieldMap => {
     if (!this.#modelFieldMaps.has(modelName)) {
       this.#modelFieldMaps.set(modelName, new ModelFieldMapImpl());
     }
