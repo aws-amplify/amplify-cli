@@ -1,9 +1,11 @@
-import { AuthTransformer } from '../graphql-auth-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { IndexTransformer } from '@aws-amplify/graphql-index-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
+import { AuthTransformer } from '../graphql-auth-transformer';
+
+jest.mock('amplify-prompts');
 
 test('happy case with static groups', () => {
   const authConfig: AppSyncAuthConfiguration = {

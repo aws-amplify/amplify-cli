@@ -30,6 +30,7 @@ import {
   API_KEY_AUTH_TYPE,
   LAMBDA_AUTH_TYPE,
   IAM_AUTH_TYPE,
+  IDENTITY_CLAIM_DELIMITER,
 } from '../utils';
 
 // note in the resolver that operation is protected by auth
@@ -199,3 +200,83 @@ export const generateAuthRequestExpression = (): string => {
 };
 
 export const emptyPayload = toJson(raw(JSON.stringify({ version: '2018-05-29', payload: {} })));
+
+/**
+ * Generates a list of claims to be iterated over for authorization
+ */
+export const generateOwnerClaimListExpression = (claim: string, refName: string): Expression => {
+  const claims = claim.split(IDENTITY_CLAIM_DELIMITER);
+
+  if (claims.length <= 1) {
+    return set(ref(refName), list([]));
+  }
+
+  return compoundExpression([
+    set(ref(refName), list([])),
+    compoundExpression(
+      claims.map(c => qref(methodCall(ref(`${refName}.add`), getOwnerClaim(c)))),
+    ),
+  ]);
+};
+
+/**
+ * Creates generate owner claim expression owner
+ */
+export const generateOwnerClaimExpression = (ownerClaim: string, refName: string): Expression => {
+  const expressions: Expression[] = [];
+  const identityClaims = ownerClaim.split(IDENTITY_CLAIM_DELIMITER);
+  const hasMultiIdentityClaims = identityClaims.length > 1;
+
+  if (hasMultiIdentityClaims) {
+    identityClaims.forEach((claim, idx) => {
+      expressions.push();
+      if (idx === 0) {
+        expressions.push(set(ref(refName), getOwnerClaim(claim)));
+      } else {
+        expressions.push(
+          set(ref(`currentClaim${idx}`), getOwnerClaim(claim)),
+          set(
+            ref(refName),
+            raw(`"$${refName}${IDENTITY_CLAIM_DELIMITER}$currentClaim${idx}"`),
+          ),
+        );
+      }
+    });
+  } else {
+    expressions.push(
+      set(ref(refName), getOwnerClaim(ownerClaim)),
+    );
+  }
+
+  return compoundExpression(expressions);
+};
+
+/**
+ * Creates field resolver for owner
+ */
+export const generateFieldResolverForOwner = (entity: string): string => {
+  const expressions: Expression[] = [
+    ifElse(
+      methodCall(ref('util.isString'), ref(`ctx.source.${entity}`)),
+      compoundExpression([
+        set(ref('ownerEntities'), ref(`ctx.source.${entity}.split("${IDENTITY_CLAIM_DELIMITER}")`)),
+        set(ref('ownerEntitiesLastIdx'), raw('$ownerEntities.size() - 1')),
+        set(ref('ownerEntitiesLast'), ref('ownerEntities.get($ownerEntitiesLastIdx)')),
+        qref(methodCall(ref('ctx.source.put'), str(entity), ref('ownerEntitiesLast'))),
+      ]),
+      compoundExpression([
+        set(ref('ownerEntitiesList'), list([])),
+        forEach(ref('ownerEntities'), ref(`ctx.source.${entity}`), [
+          set(ref('ownerEntities'), ref(`ownerEntities.split("${IDENTITY_CLAIM_DELIMITER}")`)),
+          set(ref('ownerEntitiesLastIdx'), raw('$ownerEntities.size() - 1')),
+          set(ref('ownerEntitiesLast'), ref('ownerEntities.get($ownerEntitiesLastIdx)')),
+          qref(methodCall(ref('ownerEntitiesList.add'), ref('ownerEntitiesLast'))),
+        ]),
+        qref(methodCall(ref(`ctx.source.${entity}.put`), ref('ownerEntitiesList'))),
+      ]),
+    ),
+    toJson(ref(`ctx.source.${entity}`)),
+  ];
+
+  return printBlock('Parse owner field auth for Get')(compoundExpression(expressions));
+};

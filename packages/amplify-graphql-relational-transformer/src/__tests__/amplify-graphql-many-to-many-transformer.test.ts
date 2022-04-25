@@ -5,6 +5,7 @@ import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-tran
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode, ObjectTypeDefinitionNode, parse } from 'graphql';
 import { HasOneTransformer, ManyToManyTransformer } from '..';
+import { featureFlags } from './test-helpers';
 
 test('fails if @manyToMany was used on an object that is not a model type', () => {
   const inputSchema = `
@@ -448,6 +449,7 @@ function createTransformer(authConfig?: AppSyncAuthConfiguration) {
       new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
       authTransformer,
     ],
+    featureFlags,
   });
 
   return transformer;
