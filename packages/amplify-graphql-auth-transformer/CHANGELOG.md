@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0-beta.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.8.0...@aws-amplify/graphql-auth-transformer@0.8.0-beta.5) (2022-04-25)
+
+
+### Reverts
+
+* Revert "refactor: use a prefix matching for the claim in subscriptions (#10199)" (#10264) ([eff77da](https://github.com/aws-amplify/amplify-cli/commit/eff77da6a9a26f3529bce8448a8243a0c44c746b)), closes [#10199](https://github.com/aws-amplify/amplify-cli/issues/10199) [#10264](https://github.com/aws-amplify/amplify-cli/issues/10264)
+
+
+
+
+
 # [0.8.0-beta.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.7.12...@aws-amplify/graphql-auth-transformer@0.8.0-beta.4) (2022-04-15)
 
 

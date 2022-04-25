@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.1.1-beta.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.1.1...amplify-provider-awscloudformation@6.1.1-beta.6) (2022-04-25)
+
+
+### Bug Fixes
+
+* remove unsupported cfn-lint ([#10270](https://github.com/aws-amplify/amplify-cli/issues/10270)) ([9541aa5](https://github.com/aws-amplify/amplify-cli/commit/9541aa5a965206a3d281bd032f06506d5d1e0f15))
+* show mfa prompt ([#9954](https://github.com/aws-amplify/amplify-cli/issues/9954)) ([5176dba](https://github.com/aws-amplify/amplify-cli/commit/5176dba3c41e66471f440e772006b62536b34090))
+* update s3 bucket policies to adhere to best practices ([#10272](https://github.com/aws-amplify/amplify-cli/issues/10272)) ([b156327](https://github.com/aws-amplify/amplify-cli/commit/b156327f3b38a5244530f706612c5368a4ec12f9))
+
+
+### Reverts
+
+* Revert "fix: update s3 bucket policies to adhere to best practices (#10272)" (#10282) ([0909769](https://github.com/aws-amplify/amplify-cli/commit/0909769dc64c83bcb5e91e79156db2f6ec60ac85)), closes [#10272](https://github.com/aws-amplify/amplify-cli/issues/10272) [#10282](https://github.com/aws-amplify/amplify-cli/issues/10282)
+
+
+
+
+
 ## [6.1.1-beta.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.1.1-beta.4...amplify-provider-awscloudformation@6.1.1-beta.5) (2022-04-16)
 
 

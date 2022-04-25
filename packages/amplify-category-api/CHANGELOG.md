@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.2-beta.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@2.0.2...@aws-amplify/amplify-category-api@2.0.2-beta.6) (2022-04-25)
+
+
+### Bug Fixes
+
+* remove prompt from rds headless pull ([#10239](https://github.com/aws-amplify/amplify-cli/issues/10239)) ([3e276d1](https://github.com/aws-amplify/amplify-cli/commit/3e276d1cc154995281ef9baeb7775b3f71d5948b))
+
+
+
+
+
 ## [2.0.2-beta.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@2.0.2-beta.4...@aws-amplify/amplify-category-api@2.0.2-beta.5) (2022-04-16)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api
