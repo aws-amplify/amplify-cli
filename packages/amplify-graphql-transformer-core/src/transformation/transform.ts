@@ -265,9 +265,7 @@ export class GraphQLTransform {
       }
       reverseThroughTransformers -= 1;
     }
-    // collect resolvers
     this.collectResolvers(context, context.api);
-    // apply overrides
     if (this.overrideConfig?.overrideFlag) {
       this.applyOverride(stackManager);
       return this.synthesize(context);

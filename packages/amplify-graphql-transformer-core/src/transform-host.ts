@@ -31,16 +31,10 @@ type Slot = {
   dataSource?: string;
 };
 
-/**
- *
- */
 export interface DefaultTransformHostOptions {
   readonly api: GraphQLApi;
 }
 
-/**
- *
- */
 export class DefaultTransformHost implements TransformHostProvider {
   private dataSources: Map<string, BaseDataSource> = new Map();
   private resolvers: Map<string, CfnResolver> = new Map();
@@ -51,16 +45,10 @@ export class DefaultTransformHost implements TransformHostProvider {
     this.api = options.api;
   }
 
-  /**
-   *
-   */
   public setAPI(api: GraphQLApi): void {
     this.api = api;
   }
 
-  /**
-   *
-   */
   public hasDataSource(name: string): boolean {
     return this.dataSources.has(name);
   }
@@ -71,7 +59,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     }
   };
 
-  public hasResolver = (typeName: string, fieldName: string) => this.resolvers.has(`${typeName}:${fieldName}`);
+  public hasResolver = (typeName: string, fieldName: string): boolean => this.resolvers.has(`${typeName}:${fieldName}`);
 
   public getResolver = (typeName: string, fieldName: string): CfnResolver | void => {
     if (this.resolvers.has(`${typeName}:${fieldName}`)) {
@@ -79,9 +67,6 @@ export class DefaultTransformHost implements TransformHostProvider {
     }
   };
 
-  /**
-   *
-   */
   addSearchableDataSource(
     name: string,
     awsRegion: string,
