@@ -1689,3 +1689,54 @@ export function updateAuthAdminQueriesWithExtMigration(cwd: string, settings: { 
     .sendYes()
     .runAsync();
 }
+
+export function updateAuthMFAConfiguration(projectDir: string, settings: any = {}): Promise<void> {
+  return spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'auth'], { cwd: projectDir, stripColors: true })
+    .wait('What do you want to do?')
+    .send(KEY_DOWN_ARROW)
+    .sendCarriageReturn() // Walkthrough all the auth configurations
+    .wait('Select the authentication/authorization services that you want to use')
+    .sendCarriageReturn() // User Sign-Up, Sign-In, connected with AWS IAM controls (Enables per-user Storage features for images or other content, Analytics, and more)
+    .wait('Allow unauthenticated logins? (Provides scoped down permissions that you can control via AWS IAM)')
+    .sendCarriageReturn() // No
+    .wait('Do you want to enable 3rd party authentication providers in your identity pool?')
+    .send(KEY_DOWN_ARROW)
+    .sendCarriageReturn() // No
+    .wait('Do you want to add User Pool Groups?')
+    .send(KEY_DOWN_ARROW)
+    .sendCarriageReturn() // No
+    .wait('Do you want to add an admin queries API?')
+    .send(KEY_DOWN_ARROW)
+    .sendCarriageReturn() // No
+    .wait('Multifactor authentication (MFA) user login options')
+    .send(KEY_DOWN_ARROW)
+    .sendCarriageReturn() // OPTIONAL (Individual users can use MFA)
+    .wait('For user login, select the MFA types')
+    .send('a')
+    .sendCarriageReturn()
+    .wait('Specify an SMS authentication message:')
+    .sendCarriageReturn() //  (Your authentication code is {####})
+    .wait('Email based user registration/forgot password')
+    .sendCarriageReturn() // Enabled (Requires per-user email entry at registration)
+    .wait('Specify an email verification subject')
+    .sendCarriageReturn() // (Your verification code)
+    .wait('Specify an email verification message:')
+    .sendCarriageReturn() // (Your verification code is {####})
+    .wait('Do you want to override the default password policy for this User Pool?')
+    .sendNo()
+    .sendCarriageReturn()
+    .wait(`Specify the app's refresh token expiration period (in days)`)
+    .sendCarriageReturn() // 30
+    .wait('Do you want to specify the user attributes this app can read and write?')
+    .sendNo()
+    .sendCarriageReturn()
+    .wait('Do you want to enable any of the following capabilities?')
+    .sendCarriageReturn()
+    .wait('Do you want to use an OAuth flow?')
+    .send(KEY_DOWN_ARROW)
+    .sendCarriageReturn()
+    .wait('Do you want to configure Lambda Triggers for Cognito?')
+    .sendNo()
+    .sendCarriageReturn()
+    .runAsync();
+}

@@ -81,7 +81,7 @@ function saveCFNParameters(parameters: Pick<MapParameters, 'name' | 'mapStyleTyp
     mapName: parameters.name,
     mapStyle: getGeoMapStyle(parameters.dataProvider, parameters.mapStyleType),
     isDefault: parameters.isDefault,
-    pricingPlan: undefined
+    pricingPlan: undefined,
   };
   updateParametersFile(params, parameters.name, parametersFileName);
 }
