@@ -1,6 +1,6 @@
 import { hashElement } from 'folder-hash';
 import * as fs from 'fs-extra';
-import { NotInitializedError } from '../../../../../amplify-cli-core/lib';
+import { NotInitializedError } from 'amplify-cli-core/lib';
 import { print } from '../../../extensions/amplify-helpers/print';
 import { getEnvInfo } from '../../../extensions/amplify-helpers/get-env-info';
 import { getHashForResourceDir, getResourceStatus, showResourceTable } from '../../../extensions/amplify-helpers/resource-status';
@@ -12,7 +12,6 @@ import {
 } from '../../../extensions/amplify-helpers/get-cloud-init-status';
 import { stateManager } from 'amplify-cli-core';
 import { hashLayerResource } from 'amplify-category-function';
-import { cronJobSetting } from '../../../../../amplify-category-function/lib/provider-utils/awscloudformation/utils/constants';
 
 const sample_hash1 = 'testhash1';
 const sample_hash2 = 'testhash2';

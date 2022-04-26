@@ -1,4 +1,4 @@
-import { JSONUtilities } from '../../../../amplify-cli-core/lib';
+import { JSONUtilities } from 'amplify-cli-core/lib';
 import { PluginInfo } from '../../domain/plugin-info';
 import { PluginManifest } from '../../domain/plugin-manifest';
 import { PluginPlatform } from '../../domain/plugin-platform';

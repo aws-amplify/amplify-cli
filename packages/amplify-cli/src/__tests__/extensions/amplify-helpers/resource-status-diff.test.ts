@@ -4,7 +4,6 @@ import glob from 'glob';
 import path from 'path';
 import * as fs from 'fs-extra';
 import { stateManager, pathManager } from 'amplify-cli-core';
-import { cronJobSetting } from '../../../../../amplify-category-function/lib/provider-utils/awscloudformation/utils/constants';
 
 //Mock Glob to fetch test cloudformation
 jest.mock('glob');
