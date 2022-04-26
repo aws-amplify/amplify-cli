@@ -59,19 +59,19 @@ describe('delete old version', () => {
 
   it('prints warning if old version cannot be deleted', () => {
     //This test is only valid for the windows platform
-        const consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
-        const consoleLogSpy = jest.spyOn(console, "log").mockImplementation(()=>{});
-        fs_mock.removeSync.mockImplementationOnce(() => {
-          throw new Error('test error removing old binary');
-        });
-        deleteOldVersion();
-        expect(consoleWarnSpy.mock.calls.length).toBe(2);
-        expect(consoleWarnSpy.mock.calls[0][0]).toMatchInlineSnapshot(
-          `"Failed to clean up previous CLI installation at [homedir/.amplify/bin/amplify-old.exe]."`,
-        );
-        expect(consoleWarnSpy.mock.calls[1][0]).toMatchInlineSnapshot(`"Make sure this file is not open anywhere else."`);
-        consoleWarnSpy.mockReset();
-        consoleLogSpy.mockReset();
+    const consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
+    const consoleLogSpy = jest.spyOn(console, "log").mockImplementation(()=>{});
+    fs_mock.removeSync.mockImplementationOnce(() => {
+      throw new Error('test error removing old binary');
+    });
+    deleteOldVersion();
+    expect(consoleWarnSpy.mock.calls.length).toBe(2);
+    expect(consoleWarnSpy.mock.calls[0][0]).toMatchInlineSnapshot(
+      `"Failed to clean up previous CLI installation at [homedir/.amplify/bin/amplify-old.exe]."`,
+    );
+    expect(consoleWarnSpy.mock.calls[1][0]).toMatchInlineSnapshot(`"Make sure this file is not open anywhere else."`);
+    consoleWarnSpy.mockReset();
+    consoleLogSpy.mockReset();
   });
 });
 
