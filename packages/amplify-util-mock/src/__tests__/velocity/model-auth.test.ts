@@ -59,7 +59,7 @@ describe('@model owner mutation checks', () => {
     expect(queryResponse.stash.authFilter).toEqual(
       expect.objectContaining({
         or: [
-          { owner: { eq: `${ownerRequest.jwt.sub}:user1` } },
+          { owner: { eq: `${ownerRequest.jwt.sub}::user1` } },
           { owner: { eq: `${ownerRequest.jwt.sub}` } },
           { owner: { eq: 'user1' } },
         ],
@@ -73,7 +73,7 @@ describe('@model owner mutation checks', () => {
     expect(createVTLRequest.args).toBeDefined();
     expect(createVTLRequest.hadException).toEqual(false);
     // since we have an owner rule we expect the owner field to be defined in the argument input
-    expect(createVTLRequest.args.input.owner).toEqual(`${ownerRequest.jwt.sub}:user1`);
+    expect(createVTLRequest.args.input.owner).toEqual(`${ownerRequest.jwt.sub}::user1`);
 
     const updateRequestTemplate = out.resolvers['Mutation.updatePost.auth.1.req.vtl'];
     const updateVTLRequest = vtlTemplate.render(updateRequestTemplate, { context: ownerContext, requestParameters: ownerRequest });
@@ -136,7 +136,7 @@ describe('@model owner mutation checks', () => {
     expect(createVTLRequest.args).toBeDefined();
     expect(createVTLRequest.hadException).toEqual(false);
     // since we have an owner rule we expect the owner field to be defined in the argument input
-    expect(createVTLRequest.args.input.editor).toEqual(`${ownerRequest.jwt.sub}:user1`);
+    expect(createVTLRequest.args.input.editor).toEqual(`${ownerRequest.jwt.sub}::user1`);
   });
 
   test('explicit owner with default field', () => {
@@ -162,7 +162,7 @@ describe('@model owner mutation checks', () => {
     expect(createVTLRequest.args).toBeDefined();
     expect(createVTLRequest.hadException).toEqual(false);
     // since we have an owner rule we expect the owner field to be defined in the argument input
-    expect(createVTLRequest.args.input.owner).toEqual(`${ownerRequest.jwt.sub}:user1`);
+    expect(createVTLRequest.args.input.owner).toEqual(`${ownerRequest.jwt.sub}::user1`);
   });
 
   test('explicit owner with custom field', () => {
@@ -188,7 +188,7 @@ describe('@model owner mutation checks', () => {
     expect(createVTLRequest.args).toBeDefined();
     expect(createVTLRequest.hadException).toEqual(false);
     // since we have an owner rule we expect the owner field to be defined in the argument input
-    expect(createVTLRequest.args.input.editor).toEqual(`${ownerRequest.jwt.sub}:user1`);
+    expect(createVTLRequest.args.input.editor).toEqual(`${ownerRequest.jwt.sub}::user1`);
 
     const differentOwnerContext: AppSyncVTLContext = { arguments: { input: { id: '001', title: 'sample', editor: 'user2' } } };
     const createVTLRequestWithErrors = vtlTemplate.render(createRequestTemplate, {
@@ -231,7 +231,7 @@ describe('@model owner mutation checks', () => {
     expect(createVTLRequest.args).toBeDefined();
     expect(createVTLRequest.hadException).toEqual(false);
     // since we have an owner rule we expect the owner field to be defined in the argument input
-    expect(createVTLRequest.args.input.editors).toEqual([`${ownerRequest.jwt.sub}:user1`]);
+    expect(createVTLRequest.args.input.editors).toEqual([`${ownerRequest.jwt.sub}::user1`]);
 
     // should fail if the list of users does not contain the currently signed user
     const failedCreateVTLRequest = vtlTemplate.render(createRequestTemplate, {
@@ -344,7 +344,7 @@ describe('@model operations', () => {
     expect(readRequestAsOwner.stash.authFilter).toEqual(
       expect.objectContaining({
         or: [
-          { owner: { eq: `${ownerRequest.jwt.sub}:user1` } },
+          { owner: { eq: `${ownerRequest.jwt.sub}::user1` } },
           { owner: { eq: `${ownerRequest.jwt.sub}` } },
           { owner: { eq: 'user1' } },
         ],
@@ -413,7 +413,7 @@ describe('@model operations', () => {
     expect(readPostsAsOwner.stash.authFilter).toEqual(
       expect.objectContaining({
         or: [
-          { owner: { eq: `${ownerRequest.jwt.sub}:user1` } },
+          { owner: { eq: `${ownerRequest.jwt.sub}::user1` } },
           { owner: { eq: `${ownerRequest.jwt.sub}` } },
           { owner: { eq: 'user1' } },
         ],
@@ -479,7 +479,7 @@ describe('@model operations', () => {
     expect(readRequestAsOwner.stash.authFilter).toEqual(
       expect.objectContaining({
         or: [
-          { owner: { eq: `${ownerRequest.jwt.sub}:user1` } },
+          { owner: { eq: `${ownerRequest.jwt.sub}::user1` } },
           { owner: { eq: `${ownerRequest.jwt.sub}` } },
           { owner: { eq: 'user1' } },
         ],
@@ -491,7 +491,7 @@ describe('@model operations', () => {
     expect(readRequestAsNonOwner.stash.authFilter).toEqual(
       expect.objectContaining({
         or: [
-          { owner: { eq: `${adminGroupRequest.jwt.sub}:user2` } },
+          { owner: { eq: `${adminGroupRequest.jwt.sub}::user2` } },
           { owner: { eq: `${adminGroupRequest.jwt.sub}` } },
           { owner: { eq: 'user2' } },
         ],
@@ -807,8 +807,8 @@ describe('@model @primaryIndex @index auth', () => {
     expect(listAuthVTLRequest.stash.authFilter).toEqual(
       expect.objectContaining({
         or: expect.arrayContaining([
-          expect.objectContaining({ child: { eq: `${ownerRequest.jwt.sub}:user1` } }),
-          expect.objectContaining({ parent: { eq: `${ownerRequest.jwt.sub}:user1` } }),
+          expect.objectContaining({ child: { eq: `${ownerRequest.jwt.sub}::user1` } }),
+          expect.objectContaining({ parent: { eq: `${ownerRequest.jwt.sub}::user1` } }),
         ]),
       }),
     );
@@ -850,7 +850,7 @@ describe('@model @primaryIndex @index auth', () => {
         },
         "expressionValues": Object {
           ":child": Object {
-            "S": "${ownerRequest.jwt.sub}:user1",
+            "S": "${ownerRequest.jwt.sub}::user1",
           },
           ":parent": Object {
             "S": "$ctx.args.parent",
