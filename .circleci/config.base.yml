@@ -3,13 +3,13 @@ orbs:
   aws-ecr: circleci/aws-ecr@6.15.3
 machine:
   environment:
-    PATH: '${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin'
+    PATH: "${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin"
 
 executors:
   w: &windows-e2e-executor
     machine:
-      image: 'windows-server-2019-vs2019:stable'
-      resource_class: 'windows.medium'
+      image: "windows-server-2019-vs2019:stable"
+      resource_class: "windows.medium"
       shell: bash.exe
     working_directory: ~/repo
     environment:
@@ -20,7 +20,7 @@ executors:
     docker:
       - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
-    resource_class: large
+    resource_class: xlarge
     environment:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
@@ -129,7 +129,7 @@ jobs:
             yarn e2e
           no_output_timeout: 90m
           environment:
-            JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
+            JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
       - store_test_results:
           path: packages/amplify-util-mock/
 
@@ -216,7 +216,7 @@ jobs:
             cd packages/graphql-transformers-e2e-tests/
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
-            AMPLIFY_CLI_DISABLE_LOGGING: 'true'
+            AMPLIFY_CLI_DISABLE_LOGGING: "true"
           no_output_timeout: 90m
       - store_test_results:
           path: packages/graphql-transformers-e2e-tests/
@@ -394,7 +394,7 @@ jobs:
             amplify -v
             cd packages/amplify-console-integration-tests
             retry yarn run console-integration --maxWorkers=3
-          name: 'Run Amplify Console integration tests'
+          name: "Run Amplify Console integration tests"
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -405,7 +405,7 @@ jobs:
 
   integration_test:
     working_directory: ~/repo
-    resource_class: large
+    resource_class: xlarge
     docker:
       - image: cypress/base:14.17.0
         environment:
@@ -597,7 +597,7 @@ jobs:
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
       - run:
-          name: 'Run cleanup script'
+          name: "Run cleanup script"
           command: |
             cd packages/amplify-e2e-tests
             yarn clean-e2e-resources
@@ -615,7 +615,7 @@ jobs:
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
       - run:
-          name: 'Run cleanup script'
+          name: "Run cleanup script"
           command: |
             cd packages/amplify-e2e-tests
             yarn clean-e2e-resources workflow ${CIRCLE_WORKFLOW_ID}
@@ -630,7 +630,7 @@ workflows:
   nightly_console_integration_tests:
     triggers:
       - schedule:
-          cron: '0 14 * * *'
+          cron: "0 14 * * *"
           filters:
             branches:
               only:
@@ -657,7 +657,7 @@ workflows:
   e2e_resource_cleanup:
     triggers:
       - schedule:
-          cron: '45 0,12 * * *'
+          cron: "45 0,12 * * *"
           filters:
             branches:
               only:
@@ -890,7 +890,7 @@ workflows:
 
 commands:
   install_packaged_cli:
-    description: 'Install Amplify Packaged CLI to PATH'
+    description: "Install Amplify Packaged CLI to PATH"
     parameters:
       os:
         type: executor
@@ -933,7 +933,7 @@ commands:
                 command: amplify version
 
   install_yarn:
-    description: 'Install Amplify Packaged CLI to PATH'
+    description: "Install Amplify Packaged CLI to PATH"
     parameters:
       os:
         type: executor
@@ -948,7 +948,7 @@ commands:
                 shell: powershell.exe
                 command: cp /home/circleci/repo/out/amplify-pkg-win-x64.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps\amplify.exe
   run_e2e_tests:
-    description: 'Run Amplify E2E tests'
+    description: "Run Amplify E2E tests"
     parameters:
       os:
         type: executor
@@ -979,7 +979,7 @@ commands:
                   retry runE2eTest
                 no_output_timeout: 90m
   scan_e2e_test_artifacts:
-    description: 'Scan And Cleanup E2E Test Artifacts'
+    description: "Scan And Cleanup E2E Test Artifacts"
     parameters:
       os:
         type: executor
