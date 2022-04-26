@@ -308,7 +308,7 @@ describe('amplify add api (GraphQL)', () => {
     expect(beforeAdminConfig).not.toEqual(afterAdminConfig);
   });
 
-  it.only('init a project and add custom iam roles - local test with gql v2 w/ identity claim feature flag disabled', async () => {
+  it('init a project and add custom iam roles - local test with gql v2 w/ identity claim feature flag disabled', async () => {
     const name = 'customadminroles';
     await initJSProjectWithProfile(projRoot, { name });
     await addFeatureFlag(projRoot, 'graphqltransformer', 'useSubUsernameForDefaultIdentityClaim', false);
