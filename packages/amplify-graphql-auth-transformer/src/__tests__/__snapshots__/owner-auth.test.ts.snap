@@ -197,7 +197,7 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **"
 `;
 
-exports[`owner where field is ":" delimited string 1`] = `
+exports[`owner where field is "::" delimited string 1`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
@@ -206,7 +206,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #if( !$isAuthorized )
     #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.owner, null) )
-    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub:username\\"), \\"___xamznone____\\") )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub::username\\"), \\"___xamznone____\\") )
     #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"] )
     #set( $isAuthorizedOnAllFields0 = true )
     #if( $ownerClaim0 == $ownerEntity0 )
@@ -239,7 +239,7 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **"
 `;
 
-exports[`owner where field is ":" delimited string 2`] = `
+exports[`owner where field is "::" delimited string 2`] = `
 "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -257,7 +257,7 @@ $util.toJson($GetRequest)
 ## [End] Get Request template. **"
 `;
 
-exports[`owner where field is ":" delimited string 3`] = `
+exports[`owner where field is "::" delimited string 3`] = `
 "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -275,7 +275,7 @@ $util.toJson($GetRequest)
 ## [End] Get Request template. **"
 `;
 
-exports[`owner where field is ":" delimited string 4`] = `
+exports[`owner where field is "::" delimited string 4`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
@@ -288,14 +288,19 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #if( $role0_0 != \\"___xamznone____\\" )
       $util.qr($authFilter.add({\\"owner\\": { \\"beginsWith\\": $ownerPrefix0_0 }}))
     #end
-    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"\\"), \\"___xamznone____\\") )
     #set( $ownerPrefix0_1 = \\"$role0_1:\\" )
     #if( $role0_1 != \\"___xamznone____\\" )
       $util.qr($authFilter.add({\\"owner\\": { \\"beginsWith\\": $ownerPrefix0_1 }}))
     #end
-    #set( $role0_2 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub:username\\"), \\"___xamznone____\\") )
+    #set( $role0_2 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+    #set( $ownerPrefix0_2 = \\"$role0_2:\\" )
     #if( $role0_2 != \\"___xamznone____\\" )
-      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_2 }}))
+      $util.qr($authFilter.add({\\"owner\\": { \\"beginsWith\\": $ownerPrefix0_2 }}))
+    #end
+    #set( $role0_3 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub::username\\"), \\"___xamznone____\\") )
+    #if( $role0_3 != \\"___xamznone____\\" )
+      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_3 }}))
     #end
     #if( !$authFilter.isEmpty() )
       $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
@@ -309,7 +314,7 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **"
 `;
 
-exports[`owner where field is ":" delimited string 5`] = `
+exports[`owner where field is "::" delimited string 5`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
@@ -322,14 +327,19 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #if( $role0_0 != \\"___xamznone____\\" )
       $util.qr($authFilter.add({\\"owner\\": { \\"beginsWith\\": $ownerPrefix0_0 }}))
     #end
-    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"\\"), \\"___xamznone____\\") )
     #set( $ownerPrefix0_1 = \\"$role0_1:\\" )
     #if( $role0_1 != \\"___xamznone____\\" )
       $util.qr($authFilter.add({\\"owner\\": { \\"beginsWith\\": $ownerPrefix0_1 }}))
     #end
-    #set( $role0_2 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub:username\\"), \\"___xamznone____\\") )
+    #set( $role0_2 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+    #set( $ownerPrefix0_2 = \\"$role0_2:\\" )
     #if( $role0_2 != \\"___xamznone____\\" )
-      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_2 }}))
+      $util.qr($authFilter.add({\\"owner\\": { \\"beginsWith\\": $ownerPrefix0_2 }}))
+    #end
+    #set( $role0_3 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub::username\\"), \\"___xamznone____\\") )
+    #if( $role0_3 != \\"___xamznone____\\" )
+      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_3 }}))
     #end
     #if( !$authFilter.isEmpty() )
       $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))

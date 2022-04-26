@@ -6,7 +6,7 @@ import { ResourceConstants } from 'graphql-transformer-common';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { AuthTransformer } from '../graphql-auth-transformer';
-import { getField, getObjectType } from './test-helpers';
+import { getField, getObjectType, featureFlags } from './test-helpers';
 
 test('auth transformer validation happy case', () => {
   const authConfig: AppSyncAuthConfiguration = {
@@ -25,6 +25,7 @@ test('auth transformer validation happy case', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -51,6 +52,7 @@ test('owner field where the field is a list', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -64,7 +66,7 @@ test('owner field where the field is a list', () => {
   expect(out.resolvers['Query.listPosts.auth.1.req.vtl']).toMatchSnapshot();
 });
 
-test('owner where field is ":" delimited string', () => {
+test('owner where field is "::" delimited string', () => {
   const authConfig: AppSyncAuthConfiguration = {
     defaultAuthentication: {
       authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -72,7 +74,7 @@ test('owner where field is ":" delimited string', () => {
     additionalAuthenticationProviders: [],
   };
   const validSchema = `
-    type Post @model @auth(rules: [{allow: owner, identityClaim: "sub:username" }]) {
+    type Post @model @auth(rules: [{allow: owner, identityClaim: "sub::username" }]) {
       id: ID!
       title: String!
       createdAt: String
@@ -81,6 +83,7 @@ test('owner where field is ":" delimited string', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -112,6 +115,7 @@ test('owner field with subscriptions', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -156,6 +160,7 @@ test('multiple owner rules with subscriptions', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -198,6 +203,7 @@ test('implicit owner fields get added to the type', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const validSchema = `
   type Post @model
@@ -249,6 +255,7 @@ test('implicit owner fields from field level auth get added to the type', () => 
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
