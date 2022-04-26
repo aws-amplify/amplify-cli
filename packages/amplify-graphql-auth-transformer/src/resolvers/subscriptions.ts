@@ -11,6 +11,7 @@ import {
   str,
   nul,
   printBlock,
+  or,
 } from 'graphql-mapping-template';
 import {
   COGNITO_AUTH_TYPE,
@@ -22,12 +23,13 @@ import {
 } from '../utils';
 import {
   generateStaticRoleExpression,
-  getOwnerClaim,
   apiKeyExpression,
   iamExpression,
   lambdaExpression,
   emptyPayload,
   setHasAuthExpression,
+  generateOwnerClaimExpression,
+  generateOwnerClaimListExpression,
 } from './helpers';
 
 const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
@@ -35,19 +37,25 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> 
   // we only check against owner rules which are not list fields
   roles.forEach((role, idx) => {
     if (role.strategy === 'owner') {
-      const roleClaims = role.claim!.split(':');
-      ownerExpression.push(set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.args.${role.entity!}.split(":")[0]`), nul())));
-      roleClaims.forEach((claim, secIdx) => {
-        ownerExpression.push(
-          iff(
-            not(ref(IS_AUTHORIZED_FLAG)),
-            compoundExpression([
-              set(ref(`ownerClaim${idx}_${secIdx}`), getOwnerClaim(claim)),
-              iff(equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}_${secIdx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true))),
-            ]),
-          ),
-        );
-      });
+      ownerExpression.push(
+        generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`),
+        generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
+        set(
+          ref(`ownerEntity${idx}`),
+          methodCall(ref('util.defaultIfNull'), ref(`ctx.args.${role.entity!}`), nul()),
+        ),
+        iff(
+          not(ref(IS_AUTHORIZED_FLAG)),
+          compoundExpression([
+            iff(
+              or([
+                equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}}`)),
+                methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
+              ]),
+              set(ref(IS_AUTHORIZED_FLAG), bool(true))),
+          ]),
+        ),
+      );
     }
   });
 
