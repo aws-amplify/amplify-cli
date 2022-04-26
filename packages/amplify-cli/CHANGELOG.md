@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.0.2-beta.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.0.2...@aws-amplify/cli-internal@8.0.2-beta.7) (2022-04-26)
+
+
+### Bug Fixes
+
+* **amplify-category-auth,amplify-category-geo:** update backend-config on auth/geo category update ([#9768](https://github.com/aws-amplify/amplify-cli/issues/9768)) ([0e6a99a](https://github.com/aws-amplify/amplify-cli/commit/0e6a99a9dfd7b40004cc8ad6f46cdc1c76158873))
+* lint errors ([db26c8f](https://github.com/aws-amplify/amplify-cli/commit/db26c8f8a7cf58a670db7824f530880e558d0758))
+* show mfa prompt ([#9954](https://github.com/aws-amplify/amplify-cli/issues/9954)) ([5176dba](https://github.com/aws-amplify/amplify-cli/commit/5176dba3c41e66471f440e772006b62536b34090))
+* use confirmContinue instead of yesOrNo behavior in conversion from inquirer to prompter ([#10217](https://github.com/aws-amplify/amplify-cli/issues/10217)) ([621ffa1](https://github.com/aws-amplify/amplify-cli/commit/621ffa16ccf6b38c628fde2c480a8855c213eeb5))
+* windows unit test for missing path assertion ([c97b30e](https://github.com/aws-amplify/amplify-cli/commit/c97b30ef977f950c54e9c4a157ce6d2ad95572e5))
+
+
+
+
+
 ## [8.0.2-beta.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.0.2...@aws-amplify/cli-internal@8.0.2-beta.6) (2022-04-25)
 
 

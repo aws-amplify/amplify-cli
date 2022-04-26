@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@2.0.0...amplify-prompts@2.0.1-beta.1) (2022-04-26)
+
+
+### Bug Fixes
+
+* block prompts if shell is not a tty ([#10276](https://github.com/aws-amplify/amplify-cli/issues/10276)) ([f27d56a](https://github.com/aws-amplify/amplify-cli/commit/f27d56ac49062f58f64d3cd4a26436923a2dd3e2))
+
+
+
+
+
 ## [2.0.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@2.0.0...amplify-prompts@2.0.1-beta.0) (2022-04-25)
 
 

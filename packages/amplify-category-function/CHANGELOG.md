@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.2-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.0.1...amplify-category-function@4.0.2-beta.1) (2022-04-26)
+
+
+### Bug Fixes
+
+* add missing property layer version logical id to layer cloud state ([#10097](https://github.com/aws-amplify/amplify-cli/issues/10097)) ([5c53683](https://github.com/aws-amplify/amplify-cli/commit/5c53683b852a0ff23cbb1e46063bbff56cba6beb)), closes [#9636](https://github.com/aws-amplify/amplify-cli/issues/9636) [#9636](https://github.com/aws-amplify/amplify-cli/issues/9636)
+* show mfa prompt ([#9954](https://github.com/aws-amplify/amplify-cli/issues/9954)) ([5176dba](https://github.com/aws-amplify/amplify-cli/commit/5176dba3c41e66471f440e772006b62536b34090))
+
+
+
+
+
 ## [4.0.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.0.1...amplify-category-function@4.0.2-beta.0) (2022-04-25)
 
 
