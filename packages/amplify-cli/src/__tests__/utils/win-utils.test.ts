@@ -58,7 +58,6 @@ describe('delete old version', () => {
   });
 
   it('prints warning if old version cannot be deleted', () => {
-    //This test is only valid for the windows platform
     const consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
     const consoleLogSpy = jest.spyOn(console, "log").mockImplementation(()=>{});
     fs_mock.removeSync.mockImplementationOnce(() => {
