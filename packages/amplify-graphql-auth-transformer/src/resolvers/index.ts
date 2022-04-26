@@ -11,7 +11,9 @@ export {
   generateFieldAuthResponse,
   setDeniedFieldFlag,
   generateSandboxExpressionForField,
-  generateFieldResolverForOwner,
 } from './field';
 export { generateAuthExpressionForSubscriptions } from './subscriptions';
-export { generateAuthRequestExpression } from './helpers';
+export {
+  generateAuthRequestExpression,
+  generateFieldResolverForOwner,
+} from './helpers';
