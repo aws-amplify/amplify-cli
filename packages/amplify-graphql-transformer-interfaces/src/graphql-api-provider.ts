@@ -94,13 +94,13 @@ export enum TemplateType {
 export interface InlineMappingTemplateProvider {
   type: TemplateType.INLINE;
   bind: (scope: Construct) => string;
-  getInlineTemplate: () => string;
+  getTemplateHash: () => string;
 }
 
 export interface S3MappingTemplateProvider {
   type: TemplateType.S3_LOCATION;
   bind: (scope: Construct) => string;
-  getS3Template: () => string;
+  getTemplateHash: () => string;
 }
 
 export interface S3MappingFunctionCodeProvider {

@@ -65,8 +65,8 @@ export class S3MappingTemplate implements S3MappingTemplateProvider {
    * get the resolver content
    * @returns string
    */
-  getS3Template() : string {
-    return this.content;
+   getTemplateHash() : string {
+    return crypto.createHash('sha256').update(this.content).digest('base64');
   }
 
   substitueValues(values: Record<string, string | number>): void {
@@ -92,8 +92,8 @@ export class InlineTemplate implements InlineMappingTemplateProvider {
    *  get the resolver inline template content
    * @returns string
    */
-  getInlineTemplate(): string {
-    return this.content;
+   getTemplateHash(): string {
+    return crypto.createHash('sha256').update(this.content).digest('base64');
   }
 }
 

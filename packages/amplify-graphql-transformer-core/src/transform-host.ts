@@ -133,18 +133,11 @@ export class DefaultTransformHost implements TransformHostProvider {
     // if the slot exists for the hash, then return same fn else create function
 
     const dataSource = this.dataSources.get(dataSourceName);
-    const requestTemplate = requestMappingTemplate.type === MappingTemplateType.INLINE
-      ? (requestMappingTemplate as InlineMappingTemplateProvider).getInlineTemplate()
-      : (requestMappingTemplate as S3MappingTemplateProvider).getS3Template();
-
-    const responseTemplate = responseMappingTemplate.type === MappingTemplateType.INLINE
-      ? (responseMappingTemplate as InlineTemplate).getInlineTemplate()
-      : (responseMappingTemplate as S3MappingTemplateProvider).getS3Template();
 
     const obj :Slot = {
       dataSource: dataSourceName,
-      requestMappingTemplate: requestTemplate,
-      responseMappingTemplate: responseTemplate,
+      requestMappingTemplate: requestMappingTemplate.getTemplateHash(),
+      responseMappingTemplate: responseMappingTemplate.getTemplateHash(),
     };
 
     const slotHash = hash(obj);
