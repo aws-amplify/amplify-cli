@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.13.7...@aws-amplify/graphql-searchable-transformer@0.13.8) (2022-04-27)
+
+
+### Bug Fixes
+
+* **graphql:** upgrade searchable streaming lambda python version ([#10243](https://github.com/aws-amplify/amplify-cli/issues/10243)) ([e95fc80](https://github.com/aws-amplify/amplify-cli/commit/e95fc805d65f73ecb4ebe28108d55001cc3c863b))
+
+
+
+
+
 ## [0.13.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.13.6...@aws-amplify/graphql-searchable-transformer@0.13.7) (2022-04-18)
 
 **Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer

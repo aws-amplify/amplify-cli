@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.5.2...amplify-cli-core@2.5.3) (2022-04-27)
+
+
+
+## 8.0.3 (2022-04-25)
+
+
+### Bug Fixes
+
+* prevent crash when xdg-open is not available ([#10233](https://github.com/aws-amplify/amplify-cli/issues/10233)) ([56b8d93](https://github.com/aws-amplify/amplify-cli/commit/56b8d934c9e1217e04f4ec8f17647c72a53d3eaf))
+
+
+
+
+
 ## [2.5.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.5.1...amplify-cli-core@2.5.2) (2022-04-11)
 
 **Note:** Version bump only for package amplify-cli-core

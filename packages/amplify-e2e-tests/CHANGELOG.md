@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.8.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.8.1...amplify-e2e-tests@3.8.2) (2022-04-27)
+
+
+### Bug Fixes
+
+* **amplify-category-auth,amplify-category-geo:** update backend-config on auth/geo category update ([#9768](https://github.com/aws-amplify/amplify-cli/issues/9768)) ([0e6a99a](https://github.com/aws-amplify/amplify-cli/commit/0e6a99a9dfd7b40004cc8ad6f46cdc1c76158873))
+
+
+
+
+
 ## [3.8.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.8.0...amplify-e2e-tests@3.8.1) (2022-04-18)
 
 **Note:** Version bump only for package amplify-e2e-tests

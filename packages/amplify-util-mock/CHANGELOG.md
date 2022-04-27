@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.15...amplify-util-mock@4.3.16) (2022-04-27)
+
+
+
+## 8.0.3 (2022-04-25)
+
+
+### Bug Fixes
+
+* **amplify-util-mock:** Change exposed attr to reference correct attr ([#10080](https://github.com/aws-amplify/amplify-cli/issues/10080)) ([8314372](https://github.com/aws-amplify/amplify-cli/commit/831437205f18b4343ac6c34f27a8b9848ce77fdd))
+
+
+
+
+
 ## [4.3.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.14...amplify-util-mock@4.3.15) (2022-04-18)
 
 **Note:** Version bump only for package amplify-util-mock

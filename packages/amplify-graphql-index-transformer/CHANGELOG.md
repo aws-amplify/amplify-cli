@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.11.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.11.5...@aws-amplify/graphql-index-transformer@0.11.6) (2022-04-27)
+
+
+### Bug Fixes
+
+* validate the presence of sortKeyFields when index is on the same field as the primary key ([#9841](https://github.com/aws-amplify/amplify-cli/issues/9841)) ([754ae44](https://github.com/aws-amplify/amplify-cli/commit/754ae44a738af7b344bbb64ba3db11f100c564ec)), closes [#4138](https://github.com/aws-amplify/amplify-cli/issues/4138)
+
+
+
+
+
 ## [0.11.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.11.4...@aws-amplify/graphql-index-transformer@0.11.5) (2022-04-18)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.11...amplify-appsync-simulator@2.3.12) (2022-04-27)
+
+
+### Bug Fixes
+
+* removed unsupported portfinder ([#10269](https://github.com/aws-amplify/amplify-cli/issues/10269)) ([33d8a8f](https://github.com/aws-amplify/amplify-cli/commit/33d8a8ffeebbb9f05f9dbcd8afc6b0629bcf3819))
+
+
+
+
+
 ## [2.3.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.10...amplify-appsync-simulator@2.3.11) (2022-04-18)
 
 
