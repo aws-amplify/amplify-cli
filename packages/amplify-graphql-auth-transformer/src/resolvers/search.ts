@@ -22,7 +22,13 @@ import {
 } from 'graphql-mapping-template';
 import { NONE_VALUE } from 'graphql-transformer-common';
 import {
-  getIdentityClaimExp, getOwnerClaim, emptyPayload, setHasAuthExpression, iamCheck, iamAdminRoleCheckExpression,
+  getIdentityClaimExp,
+  emptyPayload,
+  setHasAuthExpression,
+  iamCheck,
+  iamAdminRoleCheckExpression,
+  generateOwnerClaimExpression,
+  generateOwnerClaimListExpression,
 } from './helpers';
 import {
   COGNITO_AUTH_TYPE,
@@ -166,19 +172,24 @@ const generateAuthFilter = (
     const roleKey = entityIsList ? role.entity : `${role.entity}.keyword`;
     if (role.strategy === 'owner') {
       filterExpression.push(
+        generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`),
+        generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
+        qref(methodCall(ref(`ownerClaimsList${idx}.add`), ref(`ownerClaim${idx}`))),
         set(
           ref(`owner${idx}`),
           obj({
             terms_set: obj({
               [roleKey]: obj({
-                terms: list([getOwnerClaim(role.claim!)]),
+                terms: ref(`ownerClaimsList${idx}`),
                 minimum_should_match_script: obj({ source: str('1') }),
               }),
             }),
           }),
         ),
       );
+
       authFilter.push(ref(`owner${idx}`));
+
       if (role.allowedFields) {
         role.allowedFields.forEach(field => {
           if (!allowedAggFields.includes(field)) {
