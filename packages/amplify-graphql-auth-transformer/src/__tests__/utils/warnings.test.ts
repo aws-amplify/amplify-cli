@@ -111,7 +111,7 @@ describe('showDefaultIdentityClaimWarning', () => {
           ' WARNING: Amplify CLI will change the default identity claim from \'username\' '
             + 'to use \'sub::username\'. To continue using only usernames, set \'identityClaim: "username"\' on your '
             + '\'owner\' rules on your schema. The default will be officially switched with v9.0.0. To read '
-            + 'more: https://link.to/docs-and-migration-gudes',
+            + 'more: https://docs.amplify.aws/cli/migration/identity-claim-changes/',
         );
       });
     });
