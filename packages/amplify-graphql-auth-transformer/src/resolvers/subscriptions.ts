@@ -11,6 +11,7 @@ import {
   str,
   nul,
   printBlock,
+  or,
 } from 'graphql-mapping-template';
 import {
   COGNITO_AUTH_TYPE,
@@ -22,12 +23,13 @@ import {
 } from '../utils';
 import {
   generateStaticRoleExpression,
-  getOwnerClaim,
   apiKeyExpression,
   iamExpression,
   lambdaExpression,
   emptyPayload,
   setHasAuthExpression,
+  generateOwnerClaimExpression,
+  generateOwnerClaimListExpression,
 } from './helpers';
 
 const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
@@ -36,12 +38,21 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> 
   roles.forEach((role, idx) => {
     if (role.strategy === 'owner') {
       ownerExpression.push(
+        generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`),
+        generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
+        set(
+          ref(`ownerEntity${idx}`),
+          methodCall(ref('util.defaultIfNull'), ref(`ctx.args.${role.entity!}`), nul()),
+        ),
         iff(
           not(ref(IS_AUTHORIZED_FLAG)),
           compoundExpression([
-            set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.args.${role.entity!}`), nul())),
-            set(ref(`ownerClaim${idx}`), getOwnerClaim(role.claim!)),
-            iff(equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true))),
+            iff(
+              or([
+                equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
+                methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
+              ]),
+              set(ref(IS_AUTHORIZED_FLAG), bool(true))),
           ]),
         ),
       );
