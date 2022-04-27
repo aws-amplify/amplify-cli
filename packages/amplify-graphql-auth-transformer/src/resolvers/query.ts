@@ -127,26 +127,52 @@ const generateAuthOnModelQueryExpression = (
   const primaryRoles = roles.filter(r => primaryFields.includes(r.entity));
   if (primaryRoles.length > 0) {
     if (isIndexQuery) {
-      primaryRoles.forEach(role => {
+      primaryRoles.forEach((role, idx) => {
         modelQueryExpression.push(
           generateOwnerClaimExpression(role.claim!, `${role.entity}Claim`),
+          generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
+          qref(methodCall(ref(`ownerClaimsList${idx}.add`), ref(`${role.entity}Claim`))),
           ifElse(
             not(ref(`util.isNull($ctx.args.${role.entity})`)),
             compoundExpression([
               ifElse(
                 ref(`util.isString($ctx.args.${role.entity})`),
-                set(ref(`${role.entity}Condition`), parens(equals(ref(`${role.entity}Claim`), ref(`ctx.args.${role.entity}`)))),
                 set(
                   ref(`${role.entity}Condition`),
-                  parens(
-                    or([
-                      equals(
-                        ref(`${role.entity}Claim`),
-                        methodCall(ref('util.defaultIfNull'), raw(`$ctx.args.${role.entity}.get("eq")`), str(NONE_VALUE)),
-                      ),
+                  or([
+                    parens(equals(ref(`${role.entity}Claim`), ref(`ctx.args.${role.entity}`))),
+                    methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ctx.args.${role.entity}`)),
+                  ]),
+                ),
+                compoundExpression([
+                  set(
+                    ref(`${role.entity}Condition`),
+                    parens(
+                      or([
+                        equals(
+                          ref(`${role.entity}Claim`),
+                          methodCall(ref('util.defaultIfNull'), raw(`$ctx.args.${role.entity}.get("eq")`), str(NONE_VALUE)),
+                        ),
+                      ]),
+                    ),
+                  ),
+                  iff(
+                    not(ref(`${role.entity}Condition`)),
+                    compoundExpression([
+                      set(ref('entityValues'), raw('0')),
+                      forEach(ref(`argEntity`), ref(`ctx.args.${role.entity}.get("eq")`), [
+                        iff(
+                          methodCall(ref(`ownerClaimsList${idx}.contains`), ref('argEntity')),
+                          set(ref('entityValues'), raw('$entityValues + 1')),
+                        ),
+                      ]),
+                      iff(
+                        equals(ref('entityValues'), ref(`ctx.args.${role.entity}.get("eq").size()`)),
+                        set(ref(`${role.entity}Condition`), bool(true)),
+                      )
                     ]),
                   ),
-                ),
+                ])
               ),
               iff(
                 ref(`${role.entity}Condition`),
@@ -157,8 +183,7 @@ const generateAuthOnModelQueryExpression = (
               ),
             ]),
             qref(
-              methodCall(ref('primaryFieldMap.put'), str(role.entity), ref(`${role.entity}Claim`)),
-            ),
+              methodCall(ref('primaryFieldMap.put'), str(role.entity), ref(`ownerClaimsList${idx}`))),
           ),
         );
       });
@@ -178,26 +203,52 @@ const generateAuthOnModelQueryExpression = (
         ),
       );
     } else {
-      primaryRoles.forEach(role => {
+      primaryRoles.forEach((role, idx) => {
         modelQueryExpression.push(
           generateOwnerClaimExpression(role.claim!, `${role.entity}Claim`),
+          generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
+          qref(methodCall(ref(`ownerClaimsList${idx}.add`), ref(`${role.entity}Claim`))),
           ifElse(
             not(ref(`util.isNull($ctx.args.${role.entity})`)),
             compoundExpression([
               ifElse(
                 ref(`util.isString($ctx.args.${role.entity})`),
-                set(ref(`${role.entity}Condition`), parens(equals(ref(`${role.entity}Claim`), ref(`ctx.args.${role.entity}`)))),
-                // this type is mainly applied on list queries with primaryKeys therefore we can use the get "eq" key
-                // to check if the dynamic role condition is met
                 set(
                   ref(`${role.entity}Condition`),
-                  parens(
-                    equals(
-                      ref(`${role.entity}Claim`),
-                      methodCall(ref('util.defaultIfNull'), raw(`$ctx.args.${role.entity}.get("eq")`), str(NONE_VALUE)),
+                  or([
+                    parens(equals(ref(`${role.entity}Claim`), ref(`ctx.args.${role.entity}`))),
+                    methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ctx.args.${role.entity}`)),
+                  ]),
+                ),
+                // this type is mainly applied on list queries with primaryKeys therefore we can use the get "eq" key
+                // to check if the dynamic role condition is met
+                compoundExpression([
+                  set(
+                    ref(`${role.entity}Condition`),
+                    parens(
+                      equals(
+                        ref(`${role.entity}Claim`),
+                        methodCall(ref('util.defaultIfNull'), raw(`$ctx.args.${role.entity}.get("eq")`), str(NONE_VALUE)),
+                      ),
                     ),
                   ),
-                ),
+                  iff(
+                    not(ref(`${role.entity}Condition`)),
+                    compoundExpression([
+                      set(ref('entityValues'), raw('0')),
+                      forEach(ref(`argEntity`), ref(`ctx.args.${role.entity}.get("eq")`), [
+                        iff(
+                          methodCall(ref(`ownerClaimsList${idx}.contains`), ref('argEntity')),
+                          set(ref('entityValues'), raw('$entityValues + 1')),
+                        ),
+                      ]),
+                      iff(
+                        equals(ref('entityValues'), ref(`ctx.args.${role.entity}.get("eq").size()`)),
+                        set(ref(`${role.entity}Condition`), bool(true)),
+                      )
+                    ]),
+                  ),
+                ])
               ),
               iff(
                 ref(`${role.entity}Condition`),
@@ -207,7 +258,7 @@ const generateAuthOnModelQueryExpression = (
                 ]),
               ),
             ]),
-            qref(methodCall(ref('primaryFieldMap.put'), str(role.entity), ref(`${role.entity}Claim`))),
+            qref(methodCall(ref('primaryFieldMap.put'), str(role.entity), ref(`ownerClaimsList${idx}`))),
           ),
         );
       });
