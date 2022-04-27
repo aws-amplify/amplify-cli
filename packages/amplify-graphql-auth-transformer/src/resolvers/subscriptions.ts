@@ -49,7 +49,7 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> 
           compoundExpression([
             iff(
               or([
-                equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}}`)),
+                equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
                 methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
               ]),
               set(ref(IS_AUTHORIZED_FLAG), bool(true))),
