@@ -111,9 +111,11 @@ export class CloudFormationClient {
     const stack = await this.describeStack(name);
     if (success.includes(stack.StackStatus)) {
       return Promise.resolve(stack);
-    } if (failure.includes(stack.StackStatus)) {
+    }
+    if (failure.includes(stack.StackStatus)) {
       return Promise.reject(new Error(`Stack ${stack.StackName} failed with status "${stack.StackStatus}"`));
-    } if (poll.includes(stack.StackStatus)) {
+    }
+    if (poll.includes(stack.StackStatus)) {
       if (maxPolls === 0) {
         return Promise.reject(new Error('Stack did not finish before hitting the max poll count.'));
       }

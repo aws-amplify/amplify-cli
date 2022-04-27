@@ -82,8 +82,27 @@ describe('user created resolvers', () => {
       // 2. list resolver auth slot should be different
 
       const filterFunctions = listResolverAppsyncFunctions.filter(func1 => getResolverAppsyncFunctions.some(func2 => func1['Fn::GetAtt'][0] === func2['Fn::GetAtt'][0]));
-      expect(filterFunctions).toMatchSnapshot();
-      expect(listResolverAppsyncFunctions.filter(obj => obj['Fn::GetAtt'][0].includes('QuerylistTodosauth0Function'))).toMatchSnapshot();
+      expect(filterFunctions).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "QuerygetTodopostAuth0FunctionQuerygetTodopostAuth0FunctionAppSyncFunction6BE14593",
+              "FunctionId",
+            ],
+          },
+        ]
+      `);
+      expect(listResolverAppsyncFunctions.filter(obj => obj["Fn::GetAtt"][0].includes("QuerylistTodosauth0Function")))
+        .toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "QuerylistTodosauth0FunctionQuerylistTodosauth0FunctionAppSyncFunction7D761961",
+              "FunctionId",
+            ],
+          },
+        ]
+      `);
     });
   });
 

@@ -5,7 +5,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { getSchemaDeployer, SchemaDeployer } from '../deploySchema';
 
-jest.setTimeout(1000 * 60 * 5 * 2); // 10 minutes
+jest.setTimeout(1000 * 60 * 10); // 10 minutes
 
 describe('@belongsTo transformer', () => {
   const transformerFactory = () => new GraphQLTransform({
