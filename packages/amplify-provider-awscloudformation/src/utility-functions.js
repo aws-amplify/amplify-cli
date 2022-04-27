@@ -272,8 +272,14 @@ module.exports = {
       throw err;
     }
   },
+  /**
+   * @deprecated Use getGraphQLAPIs instead
+   */
   getAppSyncAPIs: context => {
-    const log = logger('getAppSyncAPIs.appSyncModel.appSync.listGraphqlApis', { maxResults: 25 });
+    return this.getGraphQLAPIs(context);
+  },
+  getGraphQLAPIs: context => {
+    const log = logger('getGraphQLAPIs.appSyncModel.appSync.listGraphqlApis', { maxResults: 25 });
 
     return new AppSync(context)
       .then(result => {
@@ -365,12 +371,18 @@ module.exports = {
         throw ex;
       });
   },
+  /**
+   * @deprecated Use getGraphQLApiKeys instead
+   */
   getAppSyncApiKeys: (context, options) => {
+    return this.getGraphQLApiKeys(context, options);
+  },
+  getGraphQLApiKeys: (context, options) => {
     const awsOptions = {};
     if (options.region) {
       awsOptions.region = options.region;
     }
-    const log = logger('getAppSyncApiKeys.appSync.listApiKeys', [
+    const log = logger('getGraphQLApiKeys.appSync.listApiKeys', [
       {
         apiId: options.apiId,
       },
