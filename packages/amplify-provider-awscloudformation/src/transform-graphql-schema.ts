@@ -21,7 +21,6 @@ import {
   AmplifyCategories,
   getGraphQLTransformerAuthDocLink,
   getGraphQLTransformerAuthSubscriptionsDocLink,
-  getGraphQLTransformerOpenSearchDocLink,
   getGraphQLTransformerOpenSearchProductionDocLink,
   JSONUtilities,
   pathManager,
@@ -31,7 +30,6 @@ import { ResourceConstants } from 'graphql-transformer-common';
 import { printer } from 'amplify-prompts';
 import _ from 'lodash';
 import { isAuthModeUpdated } from './utils/auth-mode-compare';
-
 import {
   collectDirectivesByTypeNames,
   readTransformerConfiguration,
@@ -48,7 +46,6 @@ import {
   TransformConfig,
   getSanityCheckRules,
 } from 'graphql-transformer-core';
-
 import { print } from 'graphql';
 import { hashDirectory } from './upload-appsync-files';
 import { exitOnNextTick, FeatureFlags } from 'amplify-cli-core';

@@ -1,4 +1,4 @@
-import * as gsiUtils from '../../graphql-transformer/dynamodb-gsi-helpers';
+import * as gsiUtils from '../../graphql-resource-manager/dynamodb-gsi-helpers';
 
 import { makeTableWithGSI } from './gsi-test-helpers';
 
