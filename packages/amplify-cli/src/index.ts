@@ -1,5 +1,4 @@
 import {
-  $TSAny,
   $TSContext,
   BannerMessage,
   CLIContextEnvironmentProvider,
