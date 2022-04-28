@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.14.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.13.8...@aws-amplify/graphql-searchable-transformer@0.14.0-beta.1) (2022-04-28)
+
+
+### Features
+
+* dedup appsync functions ([#10289](https://github.com/aws-amplify/amplify-cli/issues/10289)) ([1a5607c](https://github.com/aws-amplify/amplify-cli/commit/1a5607c3e40d3a8144fc5f66a1632d90f061ed99))
+
+
+
+
+
+# [0.14.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.13.8...@aws-amplify/graphql-searchable-transformer@0.14.0-beta.0) (2022-04-28)
+
+
+### Features
+
+* dedup appsync functions ([#10289](https://github.com/aws-amplify/amplify-cli/issues/10289)) ([1a5607c](https://github.com/aws-amplify/amplify-cli/commit/1a5607c3e40d3a8144fc5f66a1632d90f061ed99))
+
+
+
+
+
 ## [0.13.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.13.7...@aws-amplify/graphql-searchable-transformer@0.13.8) (2022-04-27)
 
 

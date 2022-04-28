@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.9.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.8.1...@aws-amplify/graphql-relational-transformer@0.9.0-beta.1) (2022-04-28)
+
+
+### Features
+
+* use sub:username identity claim by default when persisting behind a feature flag ([#10196](https://github.com/aws-amplify/amplify-cli/issues/10196)) ([947aae6](https://github.com/aws-amplify/amplify-cli/commit/947aae6e692653d06d83f3f33298da3a33d87564))
+
+
+
+
+
+# [0.9.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.8.1...@aws-amplify/graphql-relational-transformer@0.9.0-beta.0) (2022-04-28)
+
+
+### Features
+
+* use sub:username identity claim by default when persisting behind a feature flag ([#10196](https://github.com/aws-amplify/amplify-cli/issues/10196)) ([947aae6](https://github.com/aws-amplify/amplify-cli/commit/947aae6e692653d06d83f3f33298da3a33d87564))
+
+
+
+
+
 ## [0.8.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.8.0...@aws-amplify/graphql-relational-transformer@0.8.1) (2022-04-27)
 
 
