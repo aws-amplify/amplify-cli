@@ -103,6 +103,17 @@ describe('V2 transformer options', () => {
             authConfig,
             transformers: [new ModelTransformer(), new AuthTransformer()],
             userDefinedSlots,
+            featureFlags: {
+              getBoolean(value: string, defaultValue?: boolean) {
+                if (value === 'useSubUsernameForDefaultIdentityClaim') {
+                  return false;
+                }
+                return defaultValue;
+              },
+              getString: jest.fn(),
+              getNumber: jest.fn(),
+              getObject: jest.fn(),
+            }
           });
 
           const out = transformer.transform(validSchema);

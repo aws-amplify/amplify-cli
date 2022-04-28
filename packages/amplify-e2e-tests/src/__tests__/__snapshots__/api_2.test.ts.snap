@@ -13,9 +13,10 @@ $util.unauthorized()
   #if( !$isAuthorized )
     #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.owner, null) )
     #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+    #set( $ownerClaimsList0 = [] )
     #set( $ownerAllowedFields0 = [\\"id\\",\\"content\\"] )
     #set( $isAuthorizedOnAllFields0 = true )
-    #if( $ownerClaim0 == $ownerEntity0 )
+    #if( $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
       #if( $isAuthorizedOnAllFields0 )
         #set( $isAuthorized = true )
       #else
@@ -64,9 +65,108 @@ $util.unauthorized()
   #if( !$isAuthorized )
     #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.owner, null) )
     #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+    #set( $ownerClaimsList0 = [] )
     #set( $ownerAllowedFields0 = [\\"id\\",\\"content\\"] )
     #set( $isAuthorizedOnAllFields0 = true )
-    #if( $ownerClaim0 == $ownerEntity0 )
+    #if( $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
+      #if( $isAuthorizedOnAllFields0 )
+        #set( $isAuthorized = true )
+      #else
+        $util.qr($allowedFields.addAll($ownerAllowedFields0))
+      #end
+    #end
+    #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+      $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+      #if( $isAuthorizedOnAllFields0 )
+        #set( $isAuthorized = true )
+      #else
+        $util.qr($allowedFields.addAll($ownerAllowedFields0))
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #set( $deniedFields = $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+  #if( $deniedFields.size() > 0 )
+    $util.error(\\"Unauthorized on \${deniedFields}\\", \\"Unauthorized\\")
+  #end
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`amplify add api (GraphQL) init a project and add custom iam roles - local test with gql v2 w/ identity claim feature flag disabled 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#if( $util.authType() == \\"IAM Authorization\\" )
+$util.unauthorized()
+#end
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.owner, null) )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+    #set( $ownerClaimsList0 = [] )
+    #set( $ownerAllowedFields0 = [\\"id\\",\\"content\\"] )
+    #set( $isAuthorizedOnAllFields0 = true )
+    #if( $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
+      #if( $isAuthorizedOnAllFields0 )
+        #set( $isAuthorized = true )
+      #else
+        $util.qr($allowedFields.addAll($ownerAllowedFields0))
+      #end
+    #end
+    #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+      $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+      #if( $isAuthorizedOnAllFields0 )
+        #set( $isAuthorized = true )
+      #else
+        $util.qr($allowedFields.addAll($ownerAllowedFields0))
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #set( $deniedFields = $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+  #if( $deniedFields.size() > 0 )
+    $util.error(\\"Unauthorized on \${deniedFields}\\", \\"Unauthorized\\")
+  #end
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`amplify add api (GraphQL) init a project and add custom iam roles - local test with gql v2 w/ identity claim feature flag disabled 2`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #set( $adminRoles = [\\"myAdminRoleName\\"] )
+  #foreach( $adminRole in $adminRoles )
+    #if( $ctx.identity.userArn.contains($adminRole) && $ctx.identity.userArn != $ctx.stash.authRole && $ctx.identity.userArn != $ctx.stash.unauthRole )
+      #return($util.toJson({}))
+    #end
+  #end
+$util.unauthorized()
+#end
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.owner, null) )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+    #set( $ownerClaimsList0 = [] )
+    #set( $ownerAllowedFields0 = [\\"id\\",\\"content\\"] )
+    #set( $isAuthorizedOnAllFields0 = true )
+    #if( $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
       #if( $isAuthorizedOnAllFields0 )
         #set( $isAuthorized = true )
       #else
