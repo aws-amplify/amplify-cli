@@ -623,7 +623,7 @@ export class FeatureFlags {
         name: 'useSubUsernameForDefaultIdentityClaim',
         type: 'boolean',
         defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: false,
+        defaultValueForNewProjects: true,
       },
     ]);
 
