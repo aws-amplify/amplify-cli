@@ -836,13 +836,13 @@ describe("@model @primaryIndex @index auth", () => {
           ":child": Object {
             "L": Array [
               Object {
-                "S": "283f31dc-8aed-4f96-9641-eda3339d70fc",
+                "S": "${ownerRequest.jwt.sub}",
               },
               Object {
                 "S": "user1",
               },
               Object {
-                "S": "283f31dc-8aed-4f96-9641-eda3339d70fc::user1",
+                "S": "${ownerRequest.jwt.sub}::user1",
               },
             ],
           },
