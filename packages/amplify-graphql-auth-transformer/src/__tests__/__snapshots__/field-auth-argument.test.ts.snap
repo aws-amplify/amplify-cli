@@ -9,8 +9,13 @@ $util.unauthorized()
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #if( !$isAuthorized )
     #set( $ownerEntity0 = $util.defaultIfNull($ctx.source.owner, null) )
-    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-    #if( $ownerEntity0 == $ownerClaim0 )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+    #set( $ownerClaimsList0 = [] )
+    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\")))
+    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\"))))
+    #if( $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
       #set( $isAuthorized = true )
     #end
   #end
@@ -48,8 +53,13 @@ exports[`generates field resolver for other provider rules even if private remov
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #if( !$isAuthorized )
     #set( $ownerEntity0 = $util.defaultIfNull($ctx.source.owner, null) )
-    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-    #if( $ownerEntity0 == $ownerClaim0 )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+    #set( $ownerClaimsList0 = [] )
+    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\")))
+    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\"))))
+    #if( $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
       #set( $isAuthorized = true )
     #end
   #end
@@ -139,8 +149,13 @@ exports[`subscription disabled and userPools configured with non-nullable (requi
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #if( !$isAuthorized )
     #set( $ownerEntity0 = $util.defaultIfNull($ctx.source.owner, null) )
-    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-    #if( $ownerEntity0 == $ownerClaim0 )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+    #set( $ownerClaimsList0 = [] )
+    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\")))
+    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\"))))
+    #if( $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
       #set( $isAuthorized = true )
     #end
   #end
@@ -180,8 +195,210 @@ exports[`subscription disabled and userPools configured with nullable fields top
 #if( $util.authType() == \\"User Pool Authorization\\" )
   #if( !$isAuthorized )
     #set( $ownerEntity0 = $util.defaultIfNull($ctx.source.owner, null) )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+    #set( $ownerClaimsList0 = [] )
+    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\")))
+    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\"))))
+    #if( $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Field Authorization Steps. **"
+`;
+
+exports[`with identity claim feature flag disabled does not generate field resolvers when private rule takes precedence over provider-related rules 1`] = `
+"## [Start] Field Authorization Steps. **
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"IAM Authorization\\" )
+$util.unauthorized()
+#end
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $ownerEntity0 = $util.defaultIfNull($ctx.source.owner, null) )
     #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
-    #if( $ownerEntity0 == $ownerClaim0 )
+    #set( $ownerClaimsList0 = [] )
+    #if( $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Field Authorization Steps. **"
+`;
+
+exports[`with identity claim feature flag disabled does not generate field resolvers when private rule takes precedence over provider-related rules 2`] = `
+"## [Start] Checking for allowed operations which can return this field. **
+#set( $operation = $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) )
+#if( $operation == \\"Mutation\\" )
+  $util.toJson(null)
+#else
+  $util.toJson($context.source.ssn)
+#end
+## [End] Checking for allowed operations which can return this field. **"
+`;
+
+exports[`with identity claim feature flag disabled error on non null fields which need resolvers 1`] = `"Because \\"Post\\" has a field-level authorization rule and subscriptions are enabled, you need to either apply field-level authorization rules to all required fields where all rules have read access [\\"id\\",\\"name\\",\\"ssn\\"], make those fields nullable, or disable subscriptions for \\"Post\\" (setting level to off or public)."`;
+
+exports[`with identity claim feature flag disabled generates field resolver for other provider rules even if private removes all provided-related rules 1`] = `
+"## [Start] Field Authorization Steps. **
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( !$isAuthorized )
+    #if( $ctx.identity.userArn == $ctx.stash.authRole )
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $ownerEntity0 = $util.defaultIfNull($ctx.source.owner, null) )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+    #set( $ownerClaimsList0 = [] )
+    #if( $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Field Authorization Steps. **"
+`;
+
+exports[`with identity claim feature flag disabled generates field resolver for other provider rules even if private removes all provided-related rules 2`] = `
+"## [Start] Checking for allowed operations which can return this field. **
+#set( $operation = $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) )
+#if( $operation == \\"Mutation\\" )
+  $util.toJson(null)
+#else
+  $util.toJson($context.source.ssn)
+#end
+## [End] Checking for allowed operations which can return this field. **"
+`;
+
+exports[`with identity claim feature flag disabled per-field @auth without @model 1`] = `
+Object {
+  "Properties": Object {
+    "Description": "",
+    "Path": "/",
+    "PolicyDocument": Object {
+      "Statement": Array [
+        Object {
+          "Action": "appsync:GraphQL",
+          "Effect": "Allow",
+          "Resource": Object {
+            "Fn::Sub": Array [
+              "arn:aws:appsync:\${AWS::Region}:\${AWS::AccountId}:apis/\${apiId}/types/\${typeName}/fields/\${fieldName}",
+              Object {
+                "apiId": Object {
+                  "Fn::GetAtt": Array [
+                    "GraphQLAPI",
+                    "ApiId",
+                  ],
+                },
+                "fieldName": "listContext",
+                "typeName": "Query",
+              },
+            ],
+          },
+        },
+      ],
+      "Version": "2012-10-17",
+    },
+    "Roles": Array [
+      Object {
+        "Ref": "authRoleName",
+      },
+    ],
+  },
+  "Type": "AWS::IAM::ManagedPolicy",
+}
+`;
+
+exports[`with identity claim feature flag disabled subscription disabled and userPools configured with non-nullable (required) fields top level private and field level group auth generates field resolver for required field with expected group role 1`] = `
+"## [Start] Field Authorization Steps. **
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $staticGroupRoles = [{\\"claim\\":\\"cognito:groups\\",\\"entity\\":\\"admin\\"}] )
+    #foreach( $groupRole in $staticGroupRoles )
+      #set( $groupsInToken = $util.defaultIfNull($ctx.identity.claims.get($groupRole.claim), []) )
+      #if( $groupsInToken.contains($groupRole.entity) )
+        #set( $isAuthorized = true )
+        #break
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Field Authorization Steps. **"
+`;
+
+exports[`with identity claim feature flag disabled subscription disabled and userPools configured with non-nullable (required) fields top level private and field level owner auth generates field resolver for required field with expected owner claim 1`] = `
+"## [Start] Field Authorization Steps. **
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $ownerEntity0 = $util.defaultIfNull($ctx.source.owner, null) )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+    #set( $ownerClaimsList0 = [] )
+    #if( $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Field Authorization Steps. **"
+`;
+
+exports[`with identity claim feature flag disabled subscription disabled and userPools configured with nullable fields top level private and field level group auth generates field resolver for field with expected group roles 1`] = `
+"## [Start] Field Authorization Steps. **
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $staticGroupRoles = [{\\"claim\\":\\"cognito:groups\\",\\"entity\\":\\"admin\\"}] )
+    #foreach( $groupRole in $staticGroupRoles )
+      #set( $groupsInToken = $util.defaultIfNull($ctx.identity.claims.get($groupRole.claim), []) )
+      #if( $groupsInToken.contains($groupRole.entity) )
+        #set( $isAuthorized = true )
+        #break
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Field Authorization Steps. **"
+`;
+
+exports[`with identity claim feature flag disabled subscription disabled and userPools configured with nullable fields top level private and field level owner auth generates field resolver for field with expected owner claim 1`] = `
+"## [Start] Field Authorization Steps. **
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $ownerEntity0 = $util.defaultIfNull($ctx.source.owner, null) )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+    #set( $ownerClaimsList0 = [] )
+    #if( $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
       #set( $isAuthorized = true )
     #end
   #end

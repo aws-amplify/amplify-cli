@@ -78,7 +78,7 @@ test('happy case with dynamic groups', () => {
   expect(out.resolvers['Mutation.deletePost.auth.1.res.vtl']).toContain('#set( $groupClaim0 = [$groupClaim0] )');
 });
 
-test(`'groups' @auth with dynamic groups and custom claim on index query`, () => {
+test('\'groups\' @auth with dynamic groups and custom claim on index query', () => {
   const authConfig: AppSyncAuthConfiguration = {
     defaultAuthentication: {
       authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -206,7 +206,8 @@ test('dynamic group auth generates authorized fields list correctly', () => {
   });
   const result = transformer.transform(schema);
   // ideally this could be a more specific test rather than a big snapshot test
-  // the part we are looking for here is that the allowedFields and nullAllowedFields are set to groupAllowedFields0 and groupNullAllowedFields0, respectively.
+  // the part we are looking for here is that the allowedFields and nullAllowedFields are set to
+  // groupAllowedFields0 and groupNullAllowedFields0, respectively.
   // a more targeted test would require some bigger refactoring
   expect(result.resolvers['Mutation.updateTodo.auth.1.res.vtl']).toMatchInlineSnapshot(`
     "## [Start] Authorization Steps. **

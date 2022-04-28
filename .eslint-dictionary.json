@@ -6,6 +6,7 @@
   "argv",
   "arn",
   "arns",
+  "authorizer",
   "awscloudformation",
   "axios",
   "backend",

@@ -21,6 +21,7 @@ import {
   notEquals,
   obj,
   list,
+  or,
 } from 'graphql-mapping-template';
 import {
   RoleDefinition,
@@ -33,13 +34,14 @@ import {
   API_KEY_AUTH_TYPE,
 } from '../utils';
 import {
-  getOwnerClaim,
   generateStaticRoleExpression,
   apiKeyExpression,
   iamExpression,
   emptyPayload,
   lambdaExpression,
   getIdentityClaimExp,
+  generateOwnerClaimExpression,
+  generateOwnerClaimListExpression,
 } from './helpers';
 
 // Field Read VTL Functions
@@ -54,17 +56,29 @@ const generateDynamicAuthReadExpression = (roles: Array<RoleDefinition>, fields:
           not(ref(IS_AUTHORIZED_FLAG)),
           compoundExpression([
             set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.source.${role.entity!}`), nul())),
-            set(ref(`ownerClaim${idx}`), getOwnerClaim(role.claim!)),
+            generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`),
+            generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
             ...(entityIsList
               ? [
                 forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
                   iff(
-                    equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
+                    or([
+                      equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
+                      methodCall(ref(`ownerClaimsList${idx}.contains`), ref('allowedOwner')),
+                    ]),
                     compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')]),
                   ),
                 ]),
               ]
-              : [iff(equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true)))]),
+              : [
+                iff(
+                  or([
+                    equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
+                    methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
+                  ]),
+                  set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+                )
+              ]),
           ]),
         ),
       );
