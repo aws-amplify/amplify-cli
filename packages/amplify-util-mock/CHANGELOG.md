@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.4.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.16...amplify-util-mock@4.4.0-beta.2) (2022-04-28)
+
+
+### Features
+
+* add handling of colon-delimited identity claims to query (revert) ([#10222](https://github.com/aws-amplify/amplify-cli/issues/10222)) ([f5d7620](https://github.com/aws-amplify/amplify-cli/commit/f5d76206929da18b44f8639afb095179de1e589f)), closes [#10189](https://github.com/aws-amplify/amplify-cli/issues/10189) [#10213](https://github.com/aws-amplify/amplify-cli/issues/10213)
+* use sub:username identity claim by default when persisting behind a feature flag ([#10196](https://github.com/aws-amplify/amplify-cli/issues/10196)) ([947aae6](https://github.com/aws-amplify/amplify-cli/commit/947aae6e692653d06d83f3f33298da3a33d87564))
+
+
+
+
+
 # [4.4.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.16...amplify-util-mock@4.4.0-beta.1) (2022-04-28)
 
 
