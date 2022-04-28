@@ -128,6 +128,8 @@ const generateAuthOnModelQueryExpression = (
   if (primaryRoles.length > 0) {
     if (isIndexQuery) {
       primaryRoles.forEach((role, idx) => {
+        const claims = role.claim!.split(IDENTITY_CLAIM_DELIMITER);
+        const hasMultiClaims = claims.length > 1;
         modelQueryExpression.push(
           generateOwnerClaimExpression(role.claim!, `${role.entity}Claim`),
           generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
@@ -188,8 +190,13 @@ const generateAuthOnModelQueryExpression = (
                 ]),
               ),
             ]),
-            qref(
-              methodCall(ref('primaryFieldMap.put'), str(role.entity), ref(`${role.entity}Claim`))),
+            (
+              hasMultiClaims ?
+              qref(
+                methodCall(ref('primaryFieldMap.put'), str(role.entity), ref(`ownerClaimsList${idx}`))) :
+              qref(
+                methodCall(ref('primaryFieldMap.put'), str(role.entity), ref(`${role.entity}Claim`)))
+            ),
           ),
         );
       });
@@ -210,6 +217,8 @@ const generateAuthOnModelQueryExpression = (
       );
     } else {
       primaryRoles.forEach((role, idx) => {
+        const claims = role.claim!.split(IDENTITY_CLAIM_DELIMITER);
+        const hasMultiClaims = claims.length > 1;
         modelQueryExpression.push(
           generateOwnerClaimExpression(role.claim!, `${role.entity}Claim`),
           generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
@@ -272,7 +281,13 @@ const generateAuthOnModelQueryExpression = (
                 ]),
               ),
             ]),
-            qref(methodCall(ref('primaryFieldMap.put'), str(role.entity), ref(`${role.entity}Claim`))),
+            (
+              hasMultiClaims ?
+              qref(
+                methodCall(ref('primaryFieldMap.put'), str(role.entity), ref(`ownerClaimsList${idx}`))) :
+              qref(
+                methodCall(ref('primaryFieldMap.put'), str(role.entity), ref(`${role.entity}Claim`)))
+            ),
           ),
         );
       });
