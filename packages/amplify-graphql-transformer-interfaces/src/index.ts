@@ -29,6 +29,7 @@ export {
   AppSyncAuthConfigurationUserPoolEntry,
   AppSyncAuthMode,
   UserPoolConfig,
+  SearchableDataSourceOptions,
 } from './graphql-api-provider';
 
 export { TransformHostProvider, DynamoDbDataSourceOptions } from './transform-host-provider';

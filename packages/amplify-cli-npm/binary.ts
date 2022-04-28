@@ -8,7 +8,7 @@ import stream from 'stream';
 import os from 'os';
 import axios from 'axios';
 import rimraf from 'rimraf';
-import { version, name } from './package.json';
+import { name, version } from './package.json';
 
 const BINARY_LOCATION = 'https://d2bkhsss993doa.cloudfront.net';
 

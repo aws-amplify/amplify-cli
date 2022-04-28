@@ -11,7 +11,6 @@ import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transfo
 import { App } from '@aws-cdk/core';
 import { DocumentNode } from 'graphql';
 import { ResolverConfig } from '../config/transformer-config';
-import { GraphQLApi } from '../graphql-api';
 import { TransformerDataSourceManager } from './datasource';
 import { NoopFeatureFlagProvider } from './noop-feature-flag';
 import { TransformerOutput } from './output';
@@ -19,6 +18,7 @@ import { TransformerContextProviderRegistry } from './provider-registry';
 import { ResolverManager } from './resolver';
 import { TransformerResourceHelper } from './resource-helper';
 import { StackManager } from './stack-manager';
+
 export { TransformerResolver } from './resolver';
 export class TransformerContextMetadata implements TransformerContextMetadataProvider {
   /**
@@ -81,7 +81,7 @@ export class TransformerContext implements TransformerContextProvider {
    * @param api API instance available publicaly when the transformation starts
    * @internal
    */
-  public bind(api: GraphQLApi) {
+  public bind(api: GraphQLAPIProvider) {
     this._api = api;
     this.resourceHelper.bind(api);
   }
@@ -92,9 +92,7 @@ export class TransformerContext implements TransformerContextProvider {
     return this._api!;
   }
 
-  public getResolverConfig = <ResolverConfig>(): ResolverConfig | undefined => {
-    return this.resolverConfig as ResolverConfig;
-  };
+  public getResolverConfig = <ResolverConfig>(): ResolverConfig | undefined => this.resolverConfig as ResolverConfig;
 
   public isProjectUsingDataStore(): boolean {
     return !!this.resolverConfig?.project || !!this.resolverConfig?.models;

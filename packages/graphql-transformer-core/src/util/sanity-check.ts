@@ -73,7 +73,7 @@ export const sanityCheckDiffs = (
  * @param currentBuild The last deployed build.
  * @param nextBuild The next build.
  */
-export const getCantEditKeySchemaRule = (iterativeUpdatesEnabled: boolean = false) => {
+export const getCantEditKeySchemaRule = (iterativeUpdatesEnabled = false) => {
   const cantEditKeySchemaRule = (diff: Diff): void => {
     if (diff.kind === 'E' && diff.path.length === 8 && diff.path[5] === 'KeySchema') {
       // diff.path = [ "stacks", "Todo.json", "Resources", "TodoTable", "Properties", "KeySchema", 0, "AttributeName"]
@@ -105,13 +105,13 @@ export const getCantEditKeySchemaRule = (iterativeUpdatesEnabled: boolean = fals
  * @param currentBuild The last deployed build.
  * @param nextBuild The next build.
  */
-export const getCantAddLSILaterRule = (iterativeUpdatesEnabled: boolean = false) => {
+export const getCantAddLSILaterRule = (iterativeUpdatesEnabled = false) => {
   const cantAddLSILaterRule = (diff: Diff): void => {
     if (
       // When adding a LSI to a table that has 0 LSIs.
-      (diff.kind === 'N' && diff.path.length === 6 && diff.path[5] === 'LocalSecondaryIndexes') ||
+      (diff.kind === 'N' && diff.path.length === 6 && diff.path[5] === 'LocalSecondaryIndexes')
       // When adding a LSI to a table that already has at least one LSI.
-      (diff.kind === 'A' && diff.path.length === 6 && diff.path[5] === 'LocalSecondaryIndexes' && diff.item.kind === 'N')
+      || (diff.kind === 'A' && diff.path.length === 6 && diff.path[5] === 'LocalSecondaryIndexes' && diff.item.kind === 'N')
     ) {
       // diff.path = [ "stacks", "Todo.json", "Resources", "TodoTable", "Properties", "LocalSecondaryIndexes" ]
       const stackName = path.basename(diff.path[1], '.json');
@@ -126,8 +126,8 @@ export const getCantAddLSILaterRule = (iterativeUpdatesEnabled: boolean = false)
       }
 
       throw new InvalidMigrationError(
-        `Attempting to add a local secondary index to the ${tableName} table in the ${stackName} stack. ` +
-          'Local secondary indexes must be created when the table is created.',
+        `Attempting to add a local secondary index to the ${tableName} table in the ${stackName} stack. `
+          + 'Local secondary indexes must be created when the table is created.',
         "Adding a @key directive where the first field in 'fields' is the same as the first field in the 'fields' of the primary @key.",
         "Change the first field in 'fields' such that a global secondary index is created or delete and recreate the model.",
       );
@@ -148,19 +148,19 @@ export const cantEditGSIKeySchemaRule = (diff: Diff, currentBuild: DiffableProje
     throw new InvalidGSIMigrationError(
       `Attempting to edit the global secondary index ${indexName} on the ${tableName} table in the ${stackName} stack. `,
       'The key schema of a global secondary index cannot be changed after being deployed.',
-      'If using @key, first add a new @key, run `amplify push`, ' +
-        'and then remove the old @key. If using @connection, first remove the @connection, run `amplify push`, ' +
-        'and then add the new @connection with the new configuration.',
+      'If using @key, first add a new @key, run `amplify push`, '
+        + 'and then remove the old @key. If using @connection, first remove the @connection, run `amplify push`, '
+        + 'and then add the new @connection with the new configuration.',
     );
   };
 
   if (
     // implies a field was changed in a GSI after it was created.
     // Path like:["stacks","Todo.json","Resources","TodoTable","Properties","GlobalSecondaryIndexes",0,"KeySchema",0,"AttributeName"]
-    (diff.kind === 'E' && diff.path.length === 10 && diff.path[5] === 'GlobalSecondaryIndexes' && diff.path[7] === 'KeySchema') ||
+    (diff.kind === 'E' && diff.path.length === 10 && diff.path[5] === 'GlobalSecondaryIndexes' && diff.path[7] === 'KeySchema')
     // implies a field was added to a GSI after it was created.
     // Path like: [ "stacks", "Comment.json", "Resources", "CommentTable", "Properties", "GlobalSecondaryIndexes", 0, "KeySchema" ]
-    (diff.kind === 'A' && diff.path.length === 8 && diff.path[5] === 'GlobalSecondaryIndexes' && diff.path[7] === 'KeySchema')
+    || (diff.kind === 'A' && diff.path.length === 8 && diff.path[5] === 'GlobalSecondaryIndexes' && diff.path[7] === 'KeySchema')
   ) {
     // This error is symptomatic of a change to the GSI array but does not necessarily imply a breaking change.
     const pathToGSIs = diff.path.slice(0, 6);
@@ -206,18 +206,18 @@ export const cantAddAndRemoveGSIAtSameTimeRule = (diff: Diff, currentBuild: Diff
     throw new InvalidGSIMigrationError(
       `Attempting to add and remove a global secondary index at the same time on the ${tableName} table in the ${stackName} stack. `,
       'You may only change one global secondary index in a single CloudFormation stack update. ',
-      'If using @key, change one @key at a time. ' +
-        'If using @connection, add the new @connection, run `amplify push`, ' +
-        'and then remove the new @connection with the new configuration.',
+      'If using @key, change one @key at a time. '
+        + 'If using @connection, add the new @connection, run `amplify push`, '
+        + 'and then remove the new @connection with the new configuration.',
     );
   };
 
   if (
     // implies a field was changed in a GSI after it was created.
     // Path like:["stacks","Todo.json","Resources","TodoTable","Properties","GlobalSecondaryIndexes", ... ]
-    diff.kind === 'E' &&
-    diff.path.length > 6 &&
-    diff.path[5] === 'GlobalSecondaryIndexes'
+    diff.kind === 'E'
+    && diff.path.length > 6
+    && diff.path[5] === 'GlobalSecondaryIndexes'
   ) {
     // This error is symptomatic of a change to the GSI array but does not necessarily imply a breaking change.
     const pathToGSIs = diff.path.slice(0, 6);
@@ -260,9 +260,9 @@ export const cantBatchMutateGSIAtUpdateTimeRule = (diff: Diff, currentBuild: Dif
     throw new InvalidGSIMigrationError(
       `Attempting to add and remove a global secondary index at the same time on the ${tableName} table in the ${stackName} stack. `,
       'You may only change one global secondary index in a single CloudFormation stack update. ',
-      'If using @key, change one @key at a time. ' +
-        'If using @connection, add the new @connection, run `amplify push`, ' +
-        'and then remove the new @connection with the new configuration.',
+      'If using @key, change one @key at a time. '
+        + 'If using @connection, add the new @connection, run `amplify push`, '
+        + 'and then remove the new @connection with the new configuration.',
     );
   }
 };
@@ -279,22 +279,22 @@ export const cantMutateMultipleGSIAtUpdateTimeRule = (diffs: Diff[], currentBuil
     throw new InvalidGSIMigrationError(
       `Attempting to mutate more than 1 global secondary index at the same time on the ${tableName} table in the ${stackName} stack. `,
       'You may only mutate one global secondary index in a single CloudFormation stack update. ',
-      'If using @key, include one @key at a time. ' +
-        'If using @connection, just add one new @connection which is using @key, run `amplify push`, ',
+      'If using @key, include one @key at a time. '
+        + 'If using @connection, just add one new @connection which is using @key, run `amplify push`, ',
     );
   };
 
   if (diffs) {
     // update flow counting the tables which need more than one gsi update
-    const seenTables: Set<String> = new Set();
+    const seenTables: Set<string> = new Set();
 
     for (const diff of diffs) {
       if (
         // implies a field was changed in a GSI after it was created if it ends in GSI
         // Path like: ["stacks","Todo.json","Resources","TodoTable","Properties","GlobalSecondaryIndexes" ]
-        diff.kind === 'A' &&
-        diff.path.length >= 6 &&
-        diff.path.slice(-1)[0] === 'GlobalSecondaryIndexes'
+        diff.kind === 'A'
+        && diff.path.length >= 6
+        && diff.path.slice(-1)[0] === 'GlobalSecondaryIndexes'
       ) {
         const diffTableName = diff.path[3];
 
@@ -317,14 +317,14 @@ export const cantMutateMultipleGSIAtUpdateTimeRule = (diffs: Diff[], currentBuil
  * @param currentBuild The last deployed build.
  * @param nextBuild The next build.
  */
-export const getCantEditLSIKeySchemaRule = (iterativeUpdatesEnabled: boolean = false) => {
+export const getCantEditLSIKeySchemaRule = (iterativeUpdatesEnabled = false) => {
   const cantEditLSIKeySchemaRule = (diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject): void => {
     if (
       // ["stacks","Todo.json","Resources","TodoTable","Properties","LocalSecondaryIndexes",0,"KeySchema",0,"AttributeName"]
-      diff.kind === 'E' &&
-      diff.path.length === 10 &&
-      diff.path[5] === 'LocalSecondaryIndexes' &&
-      diff.path[7] === 'KeySchema'
+      diff.kind === 'E'
+      && diff.path.length === 10
+      && diff.path[5] === 'LocalSecondaryIndexes'
+      && diff.path[7] === 'KeySchema'
     ) {
       // This error is symptomatic of a change to the GSI array but does not necessarily imply a breaking change.
       const pathToGSIs = diff.path.slice(0, 6);
@@ -352,8 +352,8 @@ export const getCantEditLSIKeySchemaRule = (iterativeUpdatesEnabled: boolean = f
           throw new InvalidMigrationError(
             `Attempting to edit the local secondary index ${indexName} on the ${tableName} table in the ${stackName} stack. `,
             'The key schema of a local secondary index cannot be changed after being deployed.',
-            'When enabling new access patterns you should: 1. Add a new @key 2. run amplify push ' +
-              '3. Verify the new access pattern and remove the old @key.',
+            'When enabling new access patterns you should: 1. Add a new @key 2. run amplify push '
+              + '3. Verify the new access pattern and remove the old @key.',
           );
         }
       }
@@ -362,7 +362,7 @@ export const getCantEditLSIKeySchemaRule = (iterativeUpdatesEnabled: boolean = f
   return cantEditLSIKeySchemaRule;
 };
 
-export const getCantRemoveLSILater = (iterativeUpdatesEnabled: boolean = false) => {
+export const getCantRemoveLSILater = (iterativeUpdatesEnabled = false) => {
   const cantRemoveLSILater = (diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject) => {
     const throwError = (stackName: string, tableName: string): void => {
       if (iterativeUpdatesEnabled) {
@@ -400,20 +400,22 @@ export const cantHaveMoreThan500ResourcesRule = (diffs: Diff[], currentBuild: Di
       throw new InvalidMigrationError(
         `The ${stackName} stack defines more than 500 resources.`,
         'CloudFormation templates may contain at most 500 resources.',
-        'If the stack is a custom stack, break the stack up into multiple files in stacks/. ' +
-          'If the stack was generated, you have hit a limit and can use the StackMapping argument in ' +
-          `${TRANSFORM_CONFIG_FILE_NAME} to fine tune how resources are assigned to stacks.`,
+        'If the stack is a custom stack, break the stack up into multiple files in stacks/. '
+          + 'If the stack was generated, you have hit a limit and can use the StackMapping argument in '
+          + `${TRANSFORM_CONFIG_FILE_NAME} to fine tune how resources are assigned to 
+          stacks.Follow the instruction in this document to divide resources into additional AWS CloudFormation files to overcome the resource count limit:
+          
+          https://docs.amplify.aws/cli/graphql/override/#place-appsync-resolvers-in-custom-named-stacks`,
       );
     }
   }
 };
 
 export const cantRemoveTableAfterCreation = (_: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject): void => {
-  const getTableLogicalIds = (proj: DiffableProject) =>
-    Object.values(proj.stacks)
-      .flatMap(stack => Object.entries(stack.Resources))
-      .filter(([_, resource]) => resource.Type === 'AWS::DynamoDB::Table')
-      .map(([name]) => name);
+  const getTableLogicalIds = (proj: DiffableProject) => Object.values(proj.stacks)
+    .flatMap(stack => Object.entries(stack.Resources))
+    .filter(([_, resource]) => resource.Type === 'AWS::DynamoDB::Table')
+    .map(([name]) => name);
 
   const currentTables = getTableLogicalIds(currentBuild);
   const nextTables = getTableLogicalIds(nextBuild);

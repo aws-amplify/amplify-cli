@@ -13,11 +13,15 @@ import {
   UserPoolConfig,
   UserPoolDefaultAction,
 } from '@aws-cdk/aws-appsync';
-import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { CfnResource, Construct, Duration, Stack } from '@aws-cdk/core';
+import {
+  Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal,
+} from '@aws-cdk/aws-iam';
+import {
+  CfnResource, Construct, Duration, Stack,
+} from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/core';
 import { TransformerSchema } from './cdk-compat/schema-asset';
 import { DefaultTransformHost } from './transform-host';
-import * as cdk from '@aws-cdk/core';
 
 export interface GraphqlApiProps {
   /**
@@ -100,14 +104,12 @@ export class IamResource implements APIIAMResourceProvider {
    * @param api The GraphQL API to give permissions
    */
   public resourceArns(api: GraphQLAPIProvider): string[] {
-    return this.arns.map(arn =>
-      Stack.of(api).formatArn({
-        service: 'appsync',
-        resource: `apis/${api.apiId}`,
-        sep: '/',
-        resourceName: `${arn}`,
-      }),
-    );
+    return this.arns.map(arn => Stack.of(api).formatArn({
+      service: 'appsync',
+      resource: `apis/${api.apiId}`,
+      sep: '/',
+      resourceName: `${arn}`,
+    }));
   }
 }
 
@@ -215,9 +217,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     const hasApiKey = modes.some(mode => mode.authorizationType === AuthorizationType.API_KEY);
 
     if (props.createApiKey && hasApiKey) {
-      const config = modes.find((mode: AuthorizationMode) => {
-        return mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig;
-      })?.apiKeyConfig;
+      const config = modes.find((mode: AuthorizationMode) => mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig)?.apiKeyConfig;
       this.apiKeyResource = this.createAPIKey(config);
       this.apiKeyResource.addDependsOn(this.schemaResource);
       this.apiKey = this.apiKeyResource.attrApiKey;
@@ -243,7 +243,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
    * @param resources The set of resources to allow (i.e. ...:[region]:[accountId]:apis/GraphQLId/...)
    * @param actions The actions that should be granted to the principal (i.e. appsync:graphql )
    */
-  public grant(grantee: IGrantable, resources: IamResource, ...actions: string[]): Grant {
+  public grant(grantee: IGrantable, resources: APIIAMResourceProvider, ...actions: string[]): Grant {
     return Grant.addToPrincipal({
       grantee,
       actions,
@@ -359,7 +359,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     return {
       authorizerUri: this.lambdaArnKey(config.lambdaFunction),
       authorizerResultTtlInSeconds: config.ttlSeconds,
-      identityValidationExpression: "",
+      identityValidationExpression: '',
     };
   }
 

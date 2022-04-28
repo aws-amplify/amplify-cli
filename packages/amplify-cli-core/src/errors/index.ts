@@ -1,3 +1,5 @@
+/* eslint-disable max-classes-per-file */
+
 export class NotImplementedError extends Error {}
 export class ResourceAlreadyExistsError extends Error {}
 export class ResourceCredentialsNotFoundError extends Error {}
@@ -36,10 +38,25 @@ export class NotInitializedError extends Error {
   }
 }
 
+/**
+ *  amplify cli error when cfn resource not exists
+ */
 export class ResourceDoesNotExistError extends Error {
   public constructor(errMessage: string) {
     super();
     this.name = 'ResourceDoesNotExistError';
+    this.message = errMessage;
+    this.stack = undefined;
+  }
+}
+
+/**
+ *  amplify cli error when cfn resources exceeds service limits
+ */
+export class ResourceCountLimitExceedError extends Error {
+  public constructor(errMessage: string) {
+    super();
+    this.name = 'ResourceCountLimitExceedError';
     this.message = errMessage;
     this.stack = undefined;
   }

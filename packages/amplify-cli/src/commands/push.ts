@@ -72,8 +72,8 @@ export const run = async (context: $TSContext): Promise<$TSAny|void> => {
     await syncCurrentCloudBackend(context);
     return await context.amplify.pushResources(context);
   } catch (e) {
-    const message = e.name === 'GraphQLError' ? e.toString() : e.message;
-    printer.error(`An error occurred during the push operation: ${message}`);
+    const message = (e.name === 'GraphQLError' || e.name === 'InvalidMigrationError') ? e.toString() : e.message;
+    printer.error(`An error occurred during the push operation: /\n${message}`);
     await context.usageData.emitError(e);
     showTroubleshootingURL();
     exitOnNextTick(1);

@@ -7,7 +7,9 @@ import {
   TransformHostProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync';
-import { App, Aws, CfnOutput, CfnResource, Fn } from '@aws-cdk/core';
+import {
+  App, Aws, CfnOutput, CfnResource, Fn,
+} from '@aws-cdk/core';
 import { printer } from 'amplify-prompts';
 import assert from 'assert';
 import * as fs from 'fs-extra';
@@ -272,8 +274,8 @@ export class GraphQLTransform {
   }
 
   private applyOverride = (stackManager: StackManager) => {
-    let stacks: string[] = [];
-    let amplifyApiObj: any = {};
+    const stacks: string[] = [];
+    const amplifyApiObj: any = {};
     stackManager.rootStack.node.findAll().forEach(node => {
       const resource = node as CfnResource;
       if (resource.cfnResourceType === 'AWS::CloudFormation::Stack') {
@@ -295,12 +297,12 @@ export class GraphQLTransform {
         if (!_.isEmpty(constructPathObj.rootStack)) {
           // api scope
           const field = constructPathObj.rootStack!.stackType;
-          const resourceName = constructPathObj.resourceName;
+          const { resourceName } = constructPathObj;
           _.set(amplifyApiObj, [field, resourceName], resource);
         } else if (!_.isEmpty(constructPathObj.nestedStack)) {
           const fieldType = constructPathObj.nestedStack!.stackType;
           const fieldName = constructPathObj.nestedStack!.stackName;
-          const resourceName = constructPathObj.resourceName;
+          const { resourceName } = constructPathObj;
           if (constructPathObj.resourceType.includes('Resolver')) {
             _.set(amplifyApiObj, [fieldType, fieldName, 'resolvers', resourceName], resource);
           } else if (constructPathObj.resourceType.includes('FunctionConfiguration')) {
@@ -312,7 +314,7 @@ export class GraphQLTransform {
       }
     });
 
-    let appsyncResourceObj = convertToAppsyncResourceObj(amplifyApiObj);
+    const appsyncResourceObj = convertToAppsyncResourceObj(amplifyApiObj);
     if (!_.isEmpty(this.overrideConfig) && this.overrideConfig!.overrideFlag) {
       const overrideCode: string = fs.readFileSync(path.join(this.overrideConfig!.overrideDir, 'build', 'override.js'), 'utf-8');
       const sandboxNode = new vm.NodeVM({
@@ -340,7 +342,7 @@ export class GraphQLTransform {
     // Todo: Move this to its own transformer plugin to support modifying the API
     // Like setting the auth mode and enabling logging and such
 
-    const rootStack = stackManager.rootStack;
+    const { rootStack } = stackManager;
     const authorizationConfig = adoptAuthModes(stackManager, this.authConfig);
     const apiName = stackManager.addParameter('AppSyncApiName', {
       default: 'AppSyncSimpleTransform',
@@ -360,8 +362,8 @@ export class GraphQLTransform {
     );
 
     if (
-      authModes.includes(AuthorizationType.API_KEY) &&
-      !(this.buildParameters.CreateAPIKey && this.buildParameters.CreateAPIKey !== false)
+      authModes.includes(AuthorizationType.API_KEY)
+      && !(this.buildParameters.CreateAPIKey && this.buildParameters.CreateAPIKey !== false)
     ) {
       const apiKeyConfig: AuthorizationMode | undefined = [
         authorizationConfig.defaultAuthorization,
@@ -409,8 +411,8 @@ export class GraphQLTransform {
 
     const templates = stackManager.getCloudFormationTemplates();
     const rootStackTemplate = templates.get('transformer-root-stack');
-    let childStacks: Record<string, Template> = {};
-    for (let [templateName, template] of templates.entries()) {
+    const childStacks: Record<string, Template> = {};
+    for (const [templateName, template] of templates.entries()) {
       if (templateName !== 'transformer-root-stack') {
         childStacks[templateName] = template;
       }
@@ -420,7 +422,7 @@ export class GraphQLTransform {
     const pipelineFunctions: Record<string, string> = {};
     const resolvers: Record<string, string> = {};
     const functions: Record<string, string> = {};
-    for (let [templateName, template] of fileAssets) {
+    for (const [templateName, template] of fileAssets) {
       if (templateName.startsWith('pipelineFunctions/')) {
         pipelineFunctions[templateName.replace('pipelineFunctions/', '')] = template;
       } else if (templateName.startsWith('resolvers/')) {

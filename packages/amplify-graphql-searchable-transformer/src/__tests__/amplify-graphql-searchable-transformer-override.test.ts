@@ -9,7 +9,6 @@ const featureFlags = {
     if (name === 'improvePluralization') {
       return true;
     }
-    return;
   }),
   getNumber: jest.fn(),
   getObject: jest.fn(),
@@ -100,7 +99,7 @@ test('it overrides expected resources', () => {
       PipelineConfig: {
         Functions: [
           {
-            'Fn::GetAtt': [anything(), 'FunctionId'],
+            Ref: anything(),
           },
           {
             'Fn::GetAtt': [anything(), 'FunctionId'],

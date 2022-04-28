@@ -22,6 +22,7 @@
     "build-tests": "yarn tsc --build tsconfig.tests.json"
   },
   "dependencies": {
+    "@aws-amplify/graphql-relational-transformer": "^0.8.0",
     "axios": "^0.26.0",
     "cloudform-types": "^4.2.0",
     "graphql": "^14.5.8",

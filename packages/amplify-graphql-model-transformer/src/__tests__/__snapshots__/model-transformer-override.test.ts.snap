@@ -104,6 +104,38 @@ Object {
         ],
       },
     },
+    "transformerrootstackPostMutationcreatePostinit0FunctionMutationcreatePostinit0FunctionAppSyncFunctionB82DB57BFunctionId": Object {
+      "Value": Object {
+        "Fn::GetAtt": Array [
+          "MutationcreatePostinit0FunctionMutationcreatePostinit0FunctionAppSyncFunction9E444A7F",
+          "FunctionId",
+        ],
+      },
+    },
+    "transformerrootstackPostMutationupdatePostinit0FunctionMutationupdatePostinit0FunctionAppSyncFunction148F70DDFunctionId": Object {
+      "Value": Object {
+        "Fn::GetAtt": Array [
+          "MutationupdatePostinit0FunctionMutationupdatePostinit0FunctionAppSyncFunctionBAC7D532",
+          "FunctionId",
+        ],
+      },
+    },
+    "transformerrootstackPostQuerygetPostpostAuth0FunctionQuerygetPostpostAuth0FunctionAppSyncFunction052A79B2FunctionId": Object {
+      "Value": Object {
+        "Fn::GetAtt": Array [
+          "QuerygetPostpostAuth0FunctionQuerygetPostpostAuth0FunctionAppSyncFunctionC72E5C0F",
+          "FunctionId",
+        ],
+      },
+    },
+    "transformerrootstackPostSubscriptionOnCreatePostDataResolverFnSubscriptionOnCreatePostDataResolverFnAppSyncFunctionAE3ECF1FFunctionId": Object {
+      "Value": Object {
+        "Fn::GetAtt": Array [
+          "SubscriptionOnCreatePostDataResolverFnSubscriptionOnCreatePostDataResolverFnAppSyncFunctionB4572868",
+          "FunctionId",
+        ],
+      },
+    },
   },
   "Parameters": Object {
     "DynamoDBBillingMode": Object {
@@ -177,7 +209,7 @@ Object {
             },
             Object {
               "Fn::GetAtt": Array [
-                "MutationcreatePostpostAuth0FunctionMutationcreatePostpostAuth0FunctionAppSyncFunction2C708069",
+                "QuerygetPostpostAuth0FunctionQuerygetPostpostAuth0FunctionAppSyncFunctionC72E5C0F",
                 "FunctionId",
               ],
             },
@@ -228,7 +260,7 @@ $util.toJson({})",
           "Functions": Array [
             Object {
               "Fn::GetAtt": Array [
-                "MutationdeletePostpostAuth0FunctionMutationdeletePostpostAuth0FunctionAppSyncFunctionFF4E884F",
+                "QuerygetPostpostAuth0FunctionQuerygetPostpostAuth0FunctionAppSyncFunctionC72E5C0F",
                 "FunctionId",
               ],
             },
@@ -405,7 +437,7 @@ $util.toJson({})",
           "Functions": Array [
             Object {
               "Fn::GetAtt": Array [
-                "QuerylistPostspostAuth0FunctionQuerylistPostspostAuth0FunctionAppSyncFunction3585C8F4",
+                "QuerygetPostpostAuth0FunctionQuerygetPostpostAuth0FunctionAppSyncFunctionC72E5C0F",
                 "FunctionId",
               ],
             },
@@ -628,66 +660,6 @@ $util.toJson({})",
       },
       "Type": "AWS::AppSync::FunctionConfiguration",
     },
-    "MutationcreatePostpostAuth0FunctionMutationcreatePostpostAuth0FunctionAppSyncFunction2C708069": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "MutationcreatePostpostAuth0Function",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Mutation.createPost.postAuth.1.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson({})",
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
-    "MutationdeletePostpostAuth0FunctionMutationdeletePostpostAuth0FunctionAppSyncFunctionFF4E884F": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "MutationdeletePostpostAuth0Function",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Mutation.deletePost.postAuth.1.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson({})",
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
     "MutationupdatePostinit0FunctionMutationupdatePostinit0FunctionAppSyncFunctionBAC7D532": Object {
       "Properties": Object {
         "ApiId": Object {
@@ -711,36 +683,6 @@ $util.toJson({})",
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
               },
               "/resolvers/Mutation.updatePost.init.1.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson({})",
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
-    "MutationupdatePostpostAuth0FunctionMutationupdatePostpostAuth0FunctionAppSyncFunctionB977D8DD": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "MutationupdatePostpostAuth0Function",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Mutation.updatePost.postAuth.1.req.vtl",
             ],
           ],
         },
@@ -1056,36 +998,6 @@ $util.toJson({})",
       },
       "Type": "AWS::AppSync::FunctionConfiguration",
     },
-    "QuerylistPostspostAuth0FunctionQuerylistPostspostAuth0FunctionAppSyncFunction3585C8F4": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "QuerylistPostspostAuth0Function",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Query.listPosts.postAuth.1.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson({})",
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
     "SubscriptionOnCreatePostDataResolverFnSubscriptionOnCreatePostDataResolverFnAppSyncFunctionB4572868": Object {
       "Properties": Object {
         "ApiId": Object {
@@ -1131,96 +1043,6 @@ $util.toJson({})",
       },
       "Type": "AWS::AppSync::FunctionConfiguration",
     },
-    "SubscriptionOnDeletePostDataResolverFnSubscriptionOnDeletePostDataResolverFnAppSyncFunction9D84E829": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "SubscriptionOnDeletePostDataResolverFn",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Subscription.onDeletePost.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Subscription.onDeletePost.res.vtl",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
-    "SubscriptionOnUpdatePostDataResolverFnSubscriptionOnUpdatePostDataResolverFnAppSyncFunction325AAFC9": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "SubscriptionOnUpdatePostDataResolverFn",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Subscription.onUpdatePost.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Subscription.onUpdatePost.res.vtl",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
     "SubscriptiononCreatePostResolver": Object {
       "Properties": Object {
         "ApiId": Object {
@@ -1232,7 +1054,7 @@ $util.toJson({})",
           "Functions": Array [
             Object {
               "Fn::GetAtt": Array [
-                "SubscriptiononCreatePostpostAuth0FunctionSubscriptiononCreatePostpostAuth0FunctionAppSyncFunction3197D95D",
+                "QuerygetPostpostAuth0FunctionQuerygetPostpostAuth0FunctionAppSyncFunctionC72E5C0F",
                 "FunctionId",
               ],
             },
@@ -1268,36 +1090,6 @@ $util.toJson({})",
       },
       "Type": "AWS::AppSync::Resolver",
     },
-    "SubscriptiononCreatePostpostAuth0FunctionSubscriptiononCreatePostpostAuth0FunctionAppSyncFunction3197D95D": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "SubscriptiononCreatePostpostAuth0Function",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Subscription.onCreatePost.postAuth.1.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson({})",
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
     "SubscriptiononDeletePostResolver": Object {
       "Properties": Object {
         "ApiId": Object {
@@ -1309,13 +1101,13 @@ $util.toJson({})",
           "Functions": Array [
             Object {
               "Fn::GetAtt": Array [
-                "SubscriptiononDeletePostpostAuth0FunctionSubscriptiononDeletePostpostAuth0FunctionAppSyncFunction80B1275A",
+                "QuerygetPostpostAuth0FunctionQuerygetPostpostAuth0FunctionAppSyncFunctionC72E5C0F",
                 "FunctionId",
               ],
             },
             Object {
               "Fn::GetAtt": Array [
-                "SubscriptionOnDeletePostDataResolverFnSubscriptionOnDeletePostDataResolverFnAppSyncFunction9D84E829",
+                "SubscriptionOnCreatePostDataResolverFnSubscriptionOnCreatePostDataResolverFnAppSyncFunctionB4572868",
                 "FunctionId",
               ],
             },
@@ -1345,36 +1137,6 @@ $util.toJson({})",
       },
       "Type": "AWS::AppSync::Resolver",
     },
-    "SubscriptiononDeletePostpostAuth0FunctionSubscriptiononDeletePostpostAuth0FunctionAppSyncFunction80B1275A": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "SubscriptiononDeletePostpostAuth0Function",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Subscription.onDeletePost.postAuth.1.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson({})",
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
     "SubscriptiononUpdatePostResolver": Object {
       "Properties": Object {
         "ApiId": Object {
@@ -1386,13 +1148,13 @@ $util.toJson({})",
           "Functions": Array [
             Object {
               "Fn::GetAtt": Array [
-                "SubscriptiononUpdatePostpostAuth0FunctionSubscriptiononUpdatePostpostAuth0FunctionAppSyncFunction3D79B6CB",
+                "QuerygetPostpostAuth0FunctionQuerygetPostpostAuth0FunctionAppSyncFunctionC72E5C0F",
                 "FunctionId",
               ],
             },
             Object {
               "Fn::GetAtt": Array [
-                "SubscriptionOnUpdatePostDataResolverFnSubscriptionOnUpdatePostDataResolverFnAppSyncFunction325AAFC9",
+                "SubscriptionOnCreatePostDataResolverFnSubscriptionOnCreatePostDataResolverFnAppSyncFunctionB4572868",
                 "FunctionId",
               ],
             },
@@ -1403,36 +1165,6 @@ $util.toJson({})",
         "TypeName": "Subscription",
       },
       "Type": "AWS::AppSync::Resolver",
-    },
-    "SubscriptiononUpdatePostpostAuth0FunctionSubscriptiononUpdatePostpostAuth0FunctionAppSyncFunction3D79B6CB": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "SubscriptiononUpdatePostpostAuth0Function",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Subscription.onUpdatePost.postAuth.1.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson({})",
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
     },
     "UpdatePostResolver": Object {
       "Properties": Object {
@@ -1451,7 +1183,7 @@ $util.toJson({})",
             },
             Object {
               "Fn::GetAtt": Array [
-                "MutationupdatePostpostAuth0FunctionMutationupdatePostpostAuth0FunctionAppSyncFunctionB977D8DD",
+                "QuerygetPostpostAuth0FunctionQuerygetPostpostAuth0FunctionAppSyncFunctionC72E5C0F",
                 "FunctionId",
               ],
             },
@@ -1641,7 +1373,16 @@ Object {
     "referencetotransformerrootstackGraphQLAPI20497F53ApiId": Object {
       "Type": "String",
     },
-    "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name": Object {
+    "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostMutationcreatePostinit0FunctionMutationcreatePostinit0FunctionAppSyncFunctionB82DB57BFunctionId": Object {
+      "Type": "String",
+    },
+    "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostMutationupdatePostinit0FunctionMutationupdatePostinit0FunctionAppSyncFunction148F70DDFunctionId": Object {
+      "Type": "String",
+    },
+    "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostQuerygetPostpostAuth0FunctionQuerygetPostpostAuth0FunctionAppSyncFunction052A79B2FunctionId": Object {
+      "Type": "String",
+    },
+    "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostSubscriptionOnCreatePostDataResolverFnSubscriptionOnCreatePostDataResolverFnAppSyncFunctionAE3ECF1FFunctionId": Object {
       "Type": "String",
     },
     "referencetotransformerrootstackS3DeploymentBucket7592718ARef": Object {
@@ -1841,16 +1582,10 @@ Object {
         "PipelineConfig": Object {
           "Functions": Array [
             Object {
-              "Fn::GetAtt": Array [
-                "MutationcreateCommentinit0FunctionMutationcreateCommentinit0FunctionAppSyncFunction77870FAC",
-                "FunctionId",
-              ],
+              "Ref": "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostMutationcreatePostinit0FunctionMutationcreatePostinit0FunctionAppSyncFunctionB82DB57BFunctionId",
             },
             Object {
-              "Fn::GetAtt": Array [
-                "MutationcreateCommentpostAuth0FunctionMutationcreateCommentpostAuth0FunctionAppSyncFunction4F8AA7FF",
-                "FunctionId",
-              ],
+              "Ref": "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostQuerygetPostpostAuth0FunctionQuerygetPostpostAuth0FunctionAppSyncFunction052A79B2FunctionId",
             },
             Object {
               "Fn::GetAtt": Array [
@@ -1898,10 +1633,7 @@ $util.toJson({})",
         "PipelineConfig": Object {
           "Functions": Array [
             Object {
-              "Fn::GetAtt": Array [
-                "MutationdeleteCommentpostAuth0FunctionMutationdeleteCommentpostAuth0FunctionAppSyncFunctionDFFD097E",
-                "FunctionId",
-              ],
+              "Ref": "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostQuerygetPostpostAuth0FunctionQuerygetPostpostAuth0FunctionAppSyncFunction052A79B2FunctionId",
             },
             Object {
               "Fn::GetAtt": Array [
@@ -2024,10 +1756,7 @@ $util.toJson({})",
         "PipelineConfig": Object {
           "Functions": Array [
             Object {
-              "Fn::GetAtt": Array [
-                "QuerygetCommentpostAuth0FunctionQuerygetCommentpostAuth0FunctionAppSyncFunction27405A71",
-                "FunctionId",
-              ],
+              "Ref": "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostQuerygetPostpostAuth0FunctionQuerygetPostpostAuth0FunctionAppSyncFunction052A79B2FunctionId",
             },
             Object {
               "Fn::GetAtt": Array [
@@ -2075,10 +1804,7 @@ $util.toJson({})",
         "PipelineConfig": Object {
           "Functions": Array [
             Object {
-              "Fn::GetAtt": Array [
-                "QuerylistCommentspostAuth0FunctionQuerylistCommentspostAuth0FunctionAppSyncFunctionEDC68EF5",
-                "FunctionId",
-              ],
+              "Ref": "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostQuerygetPostpostAuth0FunctionQuerygetPostpostAuth0FunctionAppSyncFunction052A79B2FunctionId",
             },
             Object {
               "Fn::GetAtt": Array [
@@ -2269,156 +1995,6 @@ $util.toJson({})",
       },
       "Type": "AWS::AppSync::FunctionConfiguration",
     },
-    "MutationcreateCommentinit0FunctionMutationcreateCommentinit0FunctionAppSyncFunction77870FAC": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "MutationcreateCommentinit0Function",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Mutation.createComment.init.1.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson({})",
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
-    "MutationcreateCommentpostAuth0FunctionMutationcreateCommentpostAuth0FunctionAppSyncFunction4F8AA7FF": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "MutationcreateCommentpostAuth0Function",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Mutation.createComment.postAuth.1.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson({})",
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
-    "MutationdeleteCommentpostAuth0FunctionMutationdeleteCommentpostAuth0FunctionAppSyncFunctionDFFD097E": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "MutationdeleteCommentpostAuth0Function",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Mutation.deleteComment.postAuth.1.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson({})",
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
-    "MutationupdateCommentinit0FunctionMutationupdateCommentinit0FunctionAppSyncFunction9C9EFBAD": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "MutationupdateCommentinit0Function",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Mutation.updateComment.init.1.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson({})",
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
-    "MutationupdateCommentpostAuth0FunctionMutationupdateCommentpostAuth0FunctionAppSyncFunctionCDD716F2": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "MutationupdateCommentpostAuth0Function",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Mutation.updateComment.postAuth.1.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson({})",
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
     "QueryGetCommentDataResolverFnQueryGetCommentDataResolverFnAppSyncFunction8473E2B0": Object {
       "DependsOn": Array [
         "CommentDataSource",
@@ -2521,201 +2097,6 @@ $util.toJson({})",
       },
       "Type": "AWS::AppSync::FunctionConfiguration",
     },
-    "QuerygetCommentpostAuth0FunctionQuerygetCommentpostAuth0FunctionAppSyncFunction27405A71": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "QuerygetCommentpostAuth0Function",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Query.getComment.postAuth.1.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson({})",
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
-    "QuerylistCommentspostAuth0FunctionQuerylistCommentspostAuth0FunctionAppSyncFunctionEDC68EF5": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "QuerylistCommentspostAuth0Function",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Query.listComments.postAuth.1.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson({})",
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
-    "SubscriptionOnCreateCommentDataResolverFnSubscriptionOnCreateCommentDataResolverFnAppSyncFunction72E30EF8": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "SubscriptionOnCreateCommentDataResolverFn",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Subscription.onCreateComment.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Subscription.onCreateComment.res.vtl",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
-    "SubscriptionOnDeleteCommentDataResolverFnSubscriptionOnDeleteCommentDataResolverFnAppSyncFunctionB17CE9F9": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "SubscriptionOnDeleteCommentDataResolverFn",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Subscription.onDeleteComment.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Subscription.onDeleteComment.res.vtl",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
-    "SubscriptionOnUpdateCommentDataResolverFnSubscriptionOnUpdateCommentDataResolverFnAppSyncFunction6B18681F": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "SubscriptionOnUpdateCommentDataResolverFn",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Subscription.onUpdateComment.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Subscription.onUpdateComment.res.vtl",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
     "SubscriptiononCreateCommentResolver": Object {
       "Properties": Object {
         "ApiId": Object {
@@ -2726,16 +2107,10 @@ $util.toJson({})",
         "PipelineConfig": Object {
           "Functions": Array [
             Object {
-              "Fn::GetAtt": Array [
-                "SubscriptiononCreateCommentpostAuth0FunctionSubscriptiononCreateCommentpostAuth0FunctionAppSyncFunction34E6A73D",
-                "FunctionId",
-              ],
+              "Ref": "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostQuerygetPostpostAuth0FunctionQuerygetPostpostAuth0FunctionAppSyncFunction052A79B2FunctionId",
             },
             Object {
-              "Fn::GetAtt": Array [
-                "SubscriptionOnCreateCommentDataResolverFnSubscriptionOnCreateCommentDataResolverFnAppSyncFunction72E30EF8",
-                "FunctionId",
-              ],
+              "Ref": "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostSubscriptionOnCreatePostDataResolverFnSubscriptionOnCreatePostDataResolverFnAppSyncFunctionAE3ECF1FFunctionId",
             },
           ],
         },
@@ -2763,36 +2138,6 @@ $util.toJson({})",
       },
       "Type": "AWS::AppSync::Resolver",
     },
-    "SubscriptiononCreateCommentpostAuth0FunctionSubscriptiononCreateCommentpostAuth0FunctionAppSyncFunction34E6A73D": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "SubscriptiononCreateCommentpostAuth0Function",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Subscription.onCreateComment.postAuth.1.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson({})",
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
     "SubscriptiononDeleteCommentResolver": Object {
       "Properties": Object {
         "ApiId": Object {
@@ -2803,16 +2148,10 @@ $util.toJson({})",
         "PipelineConfig": Object {
           "Functions": Array [
             Object {
-              "Fn::GetAtt": Array [
-                "SubscriptiononDeleteCommentpostAuth0FunctionSubscriptiononDeleteCommentpostAuth0FunctionAppSyncFunction67A1094D",
-                "FunctionId",
-              ],
+              "Ref": "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostQuerygetPostpostAuth0FunctionQuerygetPostpostAuth0FunctionAppSyncFunction052A79B2FunctionId",
             },
             Object {
-              "Fn::GetAtt": Array [
-                "SubscriptionOnDeleteCommentDataResolverFnSubscriptionOnDeleteCommentDataResolverFnAppSyncFunctionB17CE9F9",
-                "FunctionId",
-              ],
+              "Ref": "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostSubscriptionOnCreatePostDataResolverFnSubscriptionOnCreatePostDataResolverFnAppSyncFunctionAE3ECF1FFunctionId",
             },
           ],
         },
@@ -2840,36 +2179,6 @@ $util.toJson({})",
       },
       "Type": "AWS::AppSync::Resolver",
     },
-    "SubscriptiononDeleteCommentpostAuth0FunctionSubscriptiononDeleteCommentpostAuth0FunctionAppSyncFunction67A1094D": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "SubscriptiononDeleteCommentpostAuth0Function",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Subscription.onDeleteComment.postAuth.1.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson({})",
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
     "SubscriptiononUpdateCommentResolver": Object {
       "Properties": Object {
         "ApiId": Object {
@@ -2880,16 +2189,10 @@ $util.toJson({})",
         "PipelineConfig": Object {
           "Functions": Array [
             Object {
-              "Fn::GetAtt": Array [
-                "SubscriptiononUpdateCommentpostAuth0FunctionSubscriptiononUpdateCommentpostAuth0FunctionAppSyncFunction0EF93814",
-                "FunctionId",
-              ],
+              "Ref": "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostQuerygetPostpostAuth0FunctionQuerygetPostpostAuth0FunctionAppSyncFunction052A79B2FunctionId",
             },
             Object {
-              "Fn::GetAtt": Array [
-                "SubscriptionOnUpdateCommentDataResolverFnSubscriptionOnUpdateCommentDataResolverFnAppSyncFunction6B18681F",
-                "FunctionId",
-              ],
+              "Ref": "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostSubscriptionOnCreatePostDataResolverFnSubscriptionOnCreatePostDataResolverFnAppSyncFunctionAE3ECF1FFunctionId",
             },
           ],
         },
@@ -2917,36 +2220,6 @@ $util.toJson({})",
       },
       "Type": "AWS::AppSync::Resolver",
     },
-    "SubscriptiononUpdateCommentpostAuth0FunctionSubscriptiononUpdateCommentpostAuth0FunctionAppSyncFunction0EF93814": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "DataSourceName": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "SubscriptiononUpdateCommentpostAuth0Function",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/resolvers/Subscription.onUpdateComment.postAuth.1.req.vtl",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson({})",
-      },
-      "Type": "AWS::AppSync::FunctionConfiguration",
-    },
     "UpdateCommentResolver": Object {
       "Properties": Object {
         "ApiId": Object {
@@ -2957,16 +2230,10 @@ $util.toJson({})",
         "PipelineConfig": Object {
           "Functions": Array [
             Object {
-              "Fn::GetAtt": Array [
-                "MutationupdateCommentinit0FunctionMutationupdateCommentinit0FunctionAppSyncFunction9C9EFBAD",
-                "FunctionId",
-              ],
+              "Ref": "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostMutationupdatePostinit0FunctionMutationupdatePostinit0FunctionAppSyncFunction148F70DDFunctionId",
             },
             Object {
-              "Fn::GetAtt": Array [
-                "MutationupdateCommentpostAuth0FunctionMutationupdateCommentpostAuth0FunctionAppSyncFunctionCDD716F2",
-                "FunctionId",
-              ],
+              "Ref": "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostQuerygetPostpostAuth0FunctionQuerygetPostpostAuth0FunctionAppSyncFunction052A79B2FunctionId",
             },
             Object {
               "Fn::GetAtt": Array [

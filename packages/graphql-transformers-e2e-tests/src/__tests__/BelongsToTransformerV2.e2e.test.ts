@@ -1,16 +1,17 @@
-import { getSchemaDeployer, SchemaDeployer } from '../deploySchema';
+/* eslint-disable max-lines-per-function */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
+import { getSchemaDeployer, SchemaDeployer } from '../deploySchema';
 
-jest.setTimeout(1000 * 60 * 5); // 5 minutes
+jest.setTimeout(1000 * 60 * 10); // 10 minutes
 
 describe('@belongsTo transformer', () => {
-  const transformerFactory = () =>
-    new GraphQLTransform({
-      transformers: [new ModelTransformer(), new BelongsToTransformer(), new HasManyTransformer(), new HasOneTransformer()],
-      sandboxModeEnabled: true,
-    });
+  const transformerFactory = () => new GraphQLTransform({
+    transformers: [new ModelTransformer(), new BelongsToTransformer(), new HasManyTransformer(), new HasOneTransformer()],
+    sandboxModeEnabled: true,
+  });
   const validSchema = /* GraphQL */ `
     type Blog @model {
       id: ID!
