@@ -189,7 +189,7 @@ const generateAuthOnModelQueryExpression = (
               ),
             ]),
             qref(
-              methodCall(ref('primaryFieldMap.put'), str(role.entity), ref(`ownerClaimsList${idx}`))),
+              methodCall(ref('primaryFieldMap.put'), str(role.entity), ref(`${role.entity}Claim`))),
           ),
         );
       });
@@ -272,7 +272,7 @@ const generateAuthOnModelQueryExpression = (
                 ]),
               ),
             ]),
-            qref(methodCall(ref('primaryFieldMap.put'), str(role.entity), ref(`ownerClaimsList${idx}`))),
+            qref(methodCall(ref('primaryFieldMap.put'), str(role.entity), ref(`${role.entity}Claim`))),
           ),
         );
       });

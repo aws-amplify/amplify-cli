@@ -140,9 +140,9 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   $util.qr($ownerClaimsList0.add($parentClaim))
   #if( !$util.isNull($ctx.args.parent) )
     #if( $util.isString($ctx.args.parent) )
-      #set( $parentCondition = ($parentClaim == $ctx.args.parent) || $ownerClaimsList0.contains($ctx.args.parent) )
+      #set( $parentCondition = (($parentClaim == $ctx.args.parent) || $ownerClaimsList0.contains($ctx.args.parent)) )
     #else
-      #set( $parentCondition = ($parentClaim == $util.defaultIfNull($ctx.args.parent.get(\\"eq\\"), \\"___xamznone____\\")) )
+      #set( $parentCondition = ($parentClaim == $util.defaultIfNull($ctx.args.parent.get(\\"eq\\"), \\"___xamznone____\\") || $ownerClaimsList0.contains($util.defaultIfNull($ctx.args.parent.get(\\"eq\\"), \\"___xamznone____\\"))) )
       #if( !$parentCondition )
         #set( $entityValues = 0 )
         #foreach( $argEntity in $ctx.args.parent.get(\\"eq\\") )
@@ -160,16 +160,16 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
       $util.qr($ctx.stash.put(\\"authFilter\\", null))
     #end
   #else
-    $util.qr($primaryFieldMap.put(\\"parent\\", $ownerClaimsList0))
+    $util.qr($primaryFieldMap.put(\\"parent\\", $parentClaim))
   #end
   #set( $childClaim = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), \\"___xamznone____\\") )
   #set( $ownerClaimsList1 = [] )
   $util.qr($ownerClaimsList1.add($childClaim))
   #if( !$util.isNull($ctx.args.child) )
     #if( $util.isString($ctx.args.child) )
-      #set( $childCondition = ($childClaim == $ctx.args.child) || $ownerClaimsList1.contains($ctx.args.child) )
+      #set( $childCondition = (($childClaim == $ctx.args.child) || $ownerClaimsList1.contains($ctx.args.child)) )
     #else
-      #set( $childCondition = ($childClaim == $util.defaultIfNull($ctx.args.child.get(\\"eq\\"), \\"___xamznone____\\")) )
+      #set( $childCondition = ($childClaim == $util.defaultIfNull($ctx.args.child.get(\\"eq\\"), \\"___xamznone____\\") || $ownerClaimsList1.contains($util.defaultIfNull($ctx.args.child.get(\\"eq\\"), \\"___xamznone____\\"))) )
       #if( !$childCondition )
         #set( $entityValues = 0 )
         #foreach( $argEntity in $ctx.args.child.get(\\"eq\\") )
@@ -187,7 +187,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
       $util.qr($ctx.stash.put(\\"authFilter\\", null))
     #end
   #else
-    $util.qr($primaryFieldMap.put(\\"child\\", $ownerClaimsList1))
+    $util.qr($primaryFieldMap.put(\\"child\\", $childClaim))
   #end
   #if( !$isAuthorized && !$primaryFieldMap.isEmpty() )
     #if( $util.isNull($ctx.args.parent) )
