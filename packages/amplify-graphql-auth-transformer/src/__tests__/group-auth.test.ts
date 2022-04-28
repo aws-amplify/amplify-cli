@@ -4,6 +4,7 @@ import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthTransformer } from '../graphql-auth-transformer';
+import { featureFlags } from './test-helpers';
 
 jest.mock('amplify-prompts');
 
@@ -24,6 +25,7 @@ test('happy case with static groups', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -51,6 +53,7 @@ test('happy case with dynamic groups', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
 
@@ -95,6 +98,7 @@ test(`'groups' @auth with dynamic groups and custom claim on index query`, () =>
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer(), new IndexTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
 
@@ -198,6 +202,7 @@ test('dynamic group auth generates authorized fields list correctly', () => {
   const transformer = new GraphQLTransform({
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
+    featureFlags,
   });
   const result = transformer.transform(schema);
   // ideally this could be a more specific test rather than a big snapshot test

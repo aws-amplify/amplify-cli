@@ -1,4 +1,7 @@
-export { generateAuthExpressionForQueries, generateAuthExpressionForRelationQuery } from './query';
+export {
+  generateAuthExpressionForQueries,
+  generateAuthExpressionForRelationQuery,
+} from './query';
 export { generateAuthExpressionForSearchQueries } from './search';
 export { generateAuthExpressionForCreate } from './mutation.create';
 export { generateAuthExpressionForUpdate } from './mutation.update';
@@ -10,4 +13,7 @@ export {
   generateSandboxExpressionForField,
 } from './field';
 export { generateAuthExpressionForSubscriptions } from './subscriptions';
-export { generateAuthRequestExpression } from './helpers';
+export {
+  generateAuthRequestExpression,
+  generateFieldResolverForOwner,
+} from './helpers';

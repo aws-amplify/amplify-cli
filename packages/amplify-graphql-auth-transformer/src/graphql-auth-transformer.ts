@@ -58,12 +58,14 @@ import {
   setDeniedFieldFlag,
   generateAuthExpressionForRelationQuery,
   generateSandboxExpressionForField,
+  generateFieldResolverForOwner,
 } from './resolvers';
 import { AccessControlMatrix } from './accesscontrol';
 import {
   AUTH_PROVIDER_DIRECTIVE_MAP,
   DEFAULT_GROUP_CLAIM,
   DEFAULT_IDENTITY_CLAIM,
+  IDENTITY_CLAIM_DELIMITER,
   DEFAULT_GROUPS_FIELD,
   DEFAULT_OWNER_FIELD,
   MODEL_OPERATIONS,
@@ -304,7 +306,9 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       const def = context.output.getObject(modelName)!;
       const modelNameConfig = this.modelDirectiveConfig.get(modelName);
       const searchableDirective = def.directives.find(dir => dir.name.value === 'searchable');
-      // queries
+      const readRoles = acm.getRolesPerOperation('read');
+      const roleDefinitions = readRoles.map(role => this.roleMap.get(role)!);
+
       const queryFields = getQueryFieldNames(this.modelDirectiveConfig.get(modelName)!);
       queryFields.forEach(query => {
         switch (query.type) {
@@ -337,7 +341,6 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       // get fields specified in the schema
       // if there is a role that does not have read access on the field then we create a field resolver
       // or there is a relational directive on the field then we should protect that as well
-      const readRoles = acm.getRolesPerOperation('read');
       const modelFields = def.fields?.filter(f => acm.hasResource(f.name.value)) ?? [];
       const errorFields = new Array<string>();
       modelFields.forEach(field => {
@@ -379,14 +382,23 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       });
 
       const subscriptionFieldNames = getSubscriptionFieldNames(this.modelDirectiveConfig.get(modelName)!);
-      const subscriptionRoles = acm
-        .getRolesPerOperation('read')
-        .map(role => this.roleMap.get(role)!)
+      const subscriptionRoles = roleDefinitions
         // for subscriptions we only use static rules or owner rule where the field is not a list
         .filter(roleDef => (roleDef.strategy === 'owner' && !fieldIsList(def.fields ?? [], roleDef.entity!)) || roleDef.static);
       subscriptionFieldNames.forEach(subscription => {
         this.protectSubscriptionResolver(context, subscription.typeName, subscription.fieldName, subscriptionRoles);
       });
+
+      if (context.featureFlags.getBoolean('useSubUsernameForDefaultIdentityClaim')) {
+        roleDefinitions.forEach(role => {
+          const hasMultiClaims = role.claim?.split(IDENTITY_CLAIM_DELIMITER)?.length > 1;
+          const createOwnerFieldResolver = role.strategy === 'owner' && hasMultiClaims;
+
+          if (createOwnerFieldResolver) {
+            this.addFieldResolverForDynamicAuth(context, def, modelName, role.entity);
+          }
+        });
+      }
     });
 
     this.authNonModelConfig.forEach((acm, typeFieldName) => {
@@ -395,6 +407,45 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       const def = context.output.getObject(typeName);
       this.protectFieldResolver(context, def, typeName, fieldName, acm.getRoles());
     });
+  };
+
+  addFieldResolverForDynamicAuth = (
+    ctx: TransformerContextProvider,
+    def: ObjectTypeDefinitionNode,
+    typeName: string,
+    fieldName: string,
+  ): void => {
+    let resolver = ctx.resolvers.getResolver(typeName, fieldName);
+
+    if (resolver) {
+      resolver.addToSlot(
+        'finish',
+        undefined,
+        MappingTemplate.s3MappingTemplateFromString(
+          generateFieldResolverForOwner(fieldName),
+          `${typeName}.${fieldName}.{slotName}.{slotIndex}.res.vtl`,
+        ),
+      );
+    } else {
+      const hasModelDirective = def.directives.some(dir => dir.name.value === 'model');
+      const stack = getStackForField(ctx, def, fieldName, hasModelDirective);
+
+      resolver = ctx.resolvers.addResolver(
+        typeName,
+        fieldName,
+        new TransformerResolver(
+          typeName,
+          fieldName,
+          ResolverResourceIDs.ResolverResourceID(typeName, fieldName),
+          MappingTemplate.s3MappingTemplateFromString('$util.toJson({"version":"2018-05-29","payload":{}})', `${typeName}.${fieldName}.req.vtl`),
+          MappingTemplate.s3MappingTemplateFromString(generateFieldResolverForOwner(fieldName), `${typeName}.${fieldName}.res.vtl`),
+          ['init'],
+          ['finish'],
+        ),
+      );
+
+      resolver.mapToStack(stack);
+    }
   };
 
   protectSchemaOperations = (
