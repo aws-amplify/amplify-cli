@@ -12,7 +12,7 @@ import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { showResourceTable } from './resource-status';
 import { isValidGraphQLAuthError, handleValidGraphQLAuthError } from './apply-auth-mode';
 import { ManuallyTimedCodePath } from '../../domain/amplify-usageData/IUsageData';
-import { run as reportRunner } from '../../commands/report'
+import { run as reportRunner } from '../../commands/diagnose'
 /**
  * Entry point for pushing resources to the cloud
  */

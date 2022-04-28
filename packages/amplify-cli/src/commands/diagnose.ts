@@ -14,19 +14,28 @@ import os from 'os';
 import { collectFiles } from './helpers/collect-files';
 import { getPublicKey } from './helpers/get-public-key';
 import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
-
+import { prompter, printer } from 'amplify-prompts';
 const report = 'https://5h7ammarg5.execute-api.us-east-1.amazonaws.com/dev/report';
-
+const choices = ['Generate report']
 /**
  * Send an error report with redacted project files to Amplify CLI
  * @param context the amplify context object
  * @param error if invoked due to an error
  */
 export const run = async (context: $TSContext, error: Error | undefined = undefined): Promise<void> => {
-  await collectAndSendReport(context, error);
+  const skipPrompts = context.input.options && context.input.options['send-report'];
+  if(!skipPrompts) {
+    await prompter.pick('What would you like to do?', ['Generate report'], { initial: 1 })
+  }
+  const fileDestination = await createZip(context, error);
+  const canSendReport = skipPrompts || await prompter.confirmContinue('Send report');
+  if (canSendReport) {
+    await sendReport(context, fileDestination);
+  }
+
 };
 
-const collectAndSendReport = async (context: $TSContext, error: Error | undefined): Promise<void> => {
+const createZip = async (context: $TSContext, error: Error | undefined): Promise<string> => {
   const rootPath = pathManager.findProjectRoot();
   if (!rootPath) {
     throw new NotInitializedError();
@@ -76,7 +85,6 @@ const collectAndSendReport = async (context: $TSContext, error: Error | undefine
       name: 'error.json',
     });
   }
-
   const { projectName } = stateManager.getProjectConfig();
 
   // eslint-disable-next-line spellcheck/spell-checker
@@ -84,6 +92,14 @@ const collectAndSendReport = async (context: $TSContext, error: Error | undefine
   const output = fs.createWriteStream(path.join(fileDestination, 'example.zip'));
   zipper.pipe(output);
   zipper.finalize();
+  return fileDestination;
+}
+
+const sendReport = async (context: $TSContext, fileDestination): Promise<void> => {
+ 
+
+  
+
   const ids = hashedProjectIdentifiers();
   const usageDataPayload : UsageDataPayload = context.usageData.getUsageDataPayload();
 
