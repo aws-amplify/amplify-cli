@@ -139,10 +139,12 @@ const generateAuthOnModelQueryExpression = (
                 ref(`util.isString($ctx.args.${role.entity})`),
                 set(
                   ref(`${role.entity}Condition`),
-                  or([
-                    parens(equals(ref(`${role.entity}Claim`), ref(`ctx.args.${role.entity}`))),
-                    methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ctx.args.${role.entity}`)),
-                  ]),
+                  parens(
+                    or([
+                      parens(equals(ref(`${role.entity}Claim`), ref(`ctx.args.${role.entity}`))),
+                      methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ctx.args.${role.entity}`)),
+                    ]),
+                  )
                 ),
                 compoundExpression([
                   set(
@@ -151,6 +153,10 @@ const generateAuthOnModelQueryExpression = (
                       or([
                         equals(
                           ref(`${role.entity}Claim`),
+                          methodCall(ref('util.defaultIfNull'), raw(`$ctx.args.${role.entity}.get("eq")`), str(NONE_VALUE)),
+                        ),
+                        methodCall(
+                          ref(`ownerClaimsList${idx}.contains`),
                           methodCall(ref('util.defaultIfNull'), raw(`$ctx.args.${role.entity}.get("eq")`), str(NONE_VALUE)),
                         ),
                       ]),
@@ -215,10 +221,12 @@ const generateAuthOnModelQueryExpression = (
                 ref(`util.isString($ctx.args.${role.entity})`),
                 set(
                   ref(`${role.entity}Condition`),
-                  or([
-                    parens(equals(ref(`${role.entity}Claim`), ref(`ctx.args.${role.entity}`))),
-                    methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ctx.args.${role.entity}`)),
-                  ]),
+                  parens(
+                    or([
+                      parens(equals(ref(`${role.entity}Claim`), ref(`ctx.args.${role.entity}`))),
+                      methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ctx.args.${role.entity}`)),
+                    ]),
+                  )
                 ),
                 // this type is mainly applied on list queries with primaryKeys therefore we can use the get "eq" key
                 // to check if the dynamic role condition is met
@@ -226,10 +234,16 @@ const generateAuthOnModelQueryExpression = (
                   set(
                     ref(`${role.entity}Condition`),
                     parens(
-                      equals(
-                        ref(`${role.entity}Claim`),
-                        methodCall(ref('util.defaultIfNull'), raw(`$ctx.args.${role.entity}.get("eq")`), str(NONE_VALUE)),
-                      ),
+                      or([
+                        equals(
+                          ref(`${role.entity}Claim`),
+                          methodCall(ref('util.defaultIfNull'), raw(`$ctx.args.${role.entity}.get("eq")`), str(NONE_VALUE)),
+                        ),
+                        methodCall(
+                          ref(`ownerClaimsList${idx}.contains`),
+                          methodCall(ref('util.defaultIfNull'), raw(`$ctx.args.${role.entity}.get("eq")`), str(NONE_VALUE)),
+                        ),
+                      ]),
                     ),
                   ),
                   iff(
