@@ -3,21 +3,10 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { PrimaryKeyTransformer, IndexTransformer } from '@aws-amplify/graphql-index-transformer';
 import { HasManyTransformer, HasOneTransformer, BelongsToTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { AppSyncAuthConfiguration, FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionContext } from 'amplify-appsync-simulator';
+import { featureFlags } from '@aws-amplify/graphql-auth-transformer/src/__tests__/test-helpers';
 import { VelocityTemplateSimulator, getJWTToken, getIAMToken } from '../../velocity';
-
-const mockFeatureFlags: FeatureFlagProvider = {
-  getBoolean: (value: string): boolean => {
-    if (value === 'useSubUsernameForDefaultIdentityClaim') {
-      return true;
-    }
-    return false;
-  },
-  getString: jest.fn(),
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-};
 
 jest.mock('amplify-prompts');
 
@@ -69,7 +58,7 @@ describe('relational tests', () => {
         new HasOneTransformer(),
         new BelongsToTransformer(),
       ],
-      featureFlags: mockFeatureFlags,
+      featureFlags,
     });
     vtlTemplate = new VelocityTemplateSimulator({ authConfig });
   });
@@ -394,7 +383,7 @@ describe('with identity claim feature flag disabled', () => {
           new BelongsToTransformer(),
         ],
         featureFlags: {
-          ...mockFeatureFlags,
+          ...featureFlags,
           ...{ getBoolean: () => false },
         },
       });
