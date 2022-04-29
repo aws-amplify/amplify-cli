@@ -1,4 +1,3 @@
-/* eslint-disable */
 const fs = require('fs');
 const fsext = require('fs-extra');
 const path = require('path');
@@ -231,6 +230,9 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
 async function hashDirectory(directory) {
   const options = {
     encoding: 'hex',
+    folders: {
+      exclude: ['build'],
+    },
   };
 
   const hashResult = await hashElement(directory, options);
@@ -243,4 +245,3 @@ module.exports = {
   uploadAppSyncFiles,
   hashDirectory,
 };
-/* eslint-enable */
