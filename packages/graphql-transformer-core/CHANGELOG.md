@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.5.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.4.14...graphql-transformer-core@7.5.0) (2022-04-29)
+
+
+### Features
+
+* dedup appsync functions ([#10289](https://github.com/aws-amplify/amplify-cli/issues/10289)) ([1a5607c](https://github.com/aws-amplify/amplify-cli/commit/1a5607c3e40d3a8144fc5f66a1632d90f061ed99))
+
+
+
+
+
 ## [7.4.14](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.4.13...graphql-transformer-core@7.4.14) (2022-04-27)
 
 **Note:** Version bump only for package graphql-transformer-core
