@@ -3,7 +3,7 @@ const chalk = require('chalk');
 const { BannerMessage, stateManager, FeatureFlags } = require('amplify-cli-core');
 const { fileLogger } = require('./utils/aws-logger');
 const { SNS } = require('./aws-utils/aws-sns');
-const { getTransformerVersion } = require('./transform-graphql-schema');
+const { getTransformerVersion } = require('./graphql-transformer-factory/transformer-version');
 const { printer } = require('amplify-prompts');
 
 const logger = fileLogger('display-helpful-urls');
