@@ -1,0 +1,1 @@
+export { AccessControlMatrix } from './acm';

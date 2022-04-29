@@ -1,0 +1,12 @@
+*.js
+*.d.ts
+node_modules
+!src-server/*.js
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out
+
+# Parcel build directories
+.cache
+.build
