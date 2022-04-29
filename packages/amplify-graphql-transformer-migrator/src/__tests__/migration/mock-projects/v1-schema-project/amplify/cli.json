@@ -1,0 +1,10 @@
+{
+  "features": {
+    "graphqltransformer": {
+      "improvepluralization": true,
+      "useexperimentalpipelinedtransformer": false,
+      "transformerversion": 1,
+      "suppressschemamigrationprompt": false
+    }
+  }
+}
