@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.9.1-apiSplitM1Refresh3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.9.0...amplify-e2e-tests@3.9.1-apiSplitM1Refresh3.0) (2022-04-29)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
 # [3.9.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.8.2...amplify-e2e-tests@3.9.0) (2022-04-29)
 
 

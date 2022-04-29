@@ -1,6 +1,6 @@
 {
   "name": "amplify-nodejs-function-template-provider",
-  "version": "2.3.14",
+  "version": "2.3.15-apiSplitM1Refresh3.0",
   "description": "Node JS templates supplied by the Amplify Team",
   "repository": {
     "type": "git",

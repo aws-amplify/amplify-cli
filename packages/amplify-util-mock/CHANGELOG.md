@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.1-apiSplitM1Refresh3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.4.0...amplify-util-mock@4.4.1-apiSplitM1Refresh3.0) (2022-04-29)
+
+
+### Bug Fixes
+
+* update mock test avoid importing mocked featureflag provider from trasnsformer ([518d4c0](https://github.com/aws-amplify/amplify-cli/commit/518d4c0e8f93dc68a5335b2a1ab50b2448843c3e))
+
+
+
+
+
 # [4.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.16...amplify-util-mock@4.4.0) (2022-04-29)
 
 
