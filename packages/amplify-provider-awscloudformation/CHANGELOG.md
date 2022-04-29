@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.1.3-beta.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.1.2...amplify-provider-awscloudformation@6.1.3-beta.3) (2022-04-29)
+
+
+### Bug Fixes
+
+* remove exclusion of build directory on appsync upload ([#10248](https://github.com/aws-amplify/amplify-cli/issues/10248)) ([8ac54a2](https://github.com/aws-amplify/amplify-cli/commit/8ac54a2913c80efd0d42cf7b2c61ae4bd911485b))
+
+
+
+
+
 ## [6.1.3-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.1.2...amplify-provider-awscloudformation@6.1.3-beta.2) (2022-04-29)
 
 
