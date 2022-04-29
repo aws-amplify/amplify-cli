@@ -80,7 +80,7 @@ export function createParametersStack(stack: Stack): Map<string, CfnParameter> {
       OpenSearchDebugStreamingLambda,
       new CfnParameter(stack, OpenSearchDebugStreamingLambda, {
         description: 'Enable debug logs for the Dynamo -> OpenSearch streaming lambda.',
-        default: 1,
+        default: 0,
         type: 'Number',
         allowedValues: ['0', '1'],
       }),
