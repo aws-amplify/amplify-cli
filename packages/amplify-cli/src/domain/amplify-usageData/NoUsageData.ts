@@ -48,8 +48,6 @@ export class NoUsageData implements IUsageData, IFlowData {
 
   /**
    * Noop function 
-   * @param _prompt 
-   * @param _input accepted from the CLI
    */
   // eslint-disable-next-line class-methods-use-this
   pushInteractiveFlow = (_prompt: string, _input: unknown): void => {
@@ -58,7 +56,6 @@ export class NoUsageData implements IUsageData, IFlowData {
 
   /**
    * Noop function
-   * @param _headlessFlowDataString accepted from the CLI
    */
   // eslint-disable-next-line class-methods-use-this
   pushHeadlessFlow = (_headlessFlowDataString: string, _input: ICommandInput): void => {
