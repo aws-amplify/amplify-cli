@@ -33,6 +33,11 @@ export interface TransformerContextProvider {
   getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;
 }
 
+export type TransformerPreProcessContextProvider = Pick<
+  TransformerContextProvider,
+  'inputDocument' | 'featureFlags'
+>;
+
 export type TransformerBeforeStepContextProvider = Pick<
   TransformerContextProvider,
   'inputDocument' | 'featureFlags' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig' | 'stackManager' | 'sandboxModeEnabled'

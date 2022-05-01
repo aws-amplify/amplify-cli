@@ -5,13 +5,29 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { DirectiveNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
-import { isListType } from 'graphql-transformer-common';
+import {
+  ArgumentNode,
+  DirectiveNode,
+  DocumentNode,
+  FieldDefinitionNode,
+  InterfaceTypeDefinitionNode,
+  ObjectTypeDefinitionNode,
+} from 'graphql';
+import {
+  isListType,
+  isNonNullType,
+  makeArgument,
+  makeField,
+  makeNamedType,
+  makeNonNullType,
+  makeValueNode,
+} from 'graphql-transformer-common';
+import { produce } from 'immer';
 import { makeGetItemConnectionWithKeyResolver } from './resolvers';
 import { ensureHasOneConnectionField } from './schema';
 import { HasOneDirectiveConfiguration } from './types';
 import {
-  ensureFieldsArray,
+  ensureFieldsArray, getConnectionAttributeName,
   getFieldsNodes,
   getRelatedType,
   getRelatedTypeIndex,
@@ -20,6 +36,8 @@ import {
   validateModelDirective,
   validateRelatedModelDirective,
 } from './utils';
+import { TransformerPreProcessContextProvider } from '@aws-amplify/graphql-transformer-interfaces/lib/transformer-context/transformer-context-provider';
+import { WritableDraft } from 'immer/dist/types/types-external';
 
 const directiveName = 'hasOne';
 const directiveDefinition = `
@@ -50,6 +68,49 @@ export class HasOneTransformer extends TransformerPluginBase {
     validate(args, context as TransformerContextProvider);
     this.directiveList.push(args);
   };
+
+  /** During the preProcess step, modify the document node and return it
+   * so that it represents any schema modifications the plugin needs
+   */
+  preProcess = (context: TransformerPreProcessContextProvider): DocumentNode => {
+    const document = produce(context.inputDocument, draftDoc => {
+      draftDoc.definitions.forEach(def => {
+        if (def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension') {
+          def?.fields?.forEach(field => {
+            field?.directives?.forEach(dir => {
+              if (dir.name.value === directiveName) {
+                const connectionAttributeName = getConnectionAttributeName(def.name.value, field.name.value);
+                let hasFieldsDefined = false;
+                let removalIndex = -1;
+                dir?.arguments?.forEach((arg, idx) => {
+                  if (arg.name.value === 'fields') {
+                    if ((arg.value.kind === 'StringValue' && arg.value.value) || (arg.value.kind === 'ListValue' && arg.value.values && arg.value.values.length > 0)) {
+                      hasFieldsDefined = true;
+                    } else {
+                      removalIndex = idx;
+                    }
+                  }
+                });
+                if (removalIndex !== -1) {
+                  dir?.arguments?.splice(removalIndex, 1);
+                }
+                if (!hasFieldsDefined) {
+                  dir.arguments = [makeArgument('fields', makeValueNode(connectionAttributeName)) as WritableDraft<ArgumentNode>];
+                  def?.fields?.push(
+                    makeField(
+                      connectionAttributeName, [], isNonNullType(field.type) ?
+                        makeNonNullType(makeNamedType('ID')) : makeNamedType('ID'), [],
+                    ) as WritableDraft<FieldDefinitionNode>,
+                  );
+                }
+              }
+            });
+          });
+        }
+      });
+    });
+    return document;
+  }
 
   /**
    * During the prepare step, register any foreign keys that are renamed due to a model rename

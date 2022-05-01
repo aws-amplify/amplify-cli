@@ -53,6 +53,8 @@ import {
   sortTransformerPlugins,
 } from './utils';
 import { validateAuthModes, validateModelSchema } from './validation';
+import { DocumentNode } from 'graphql/language';
+import { TransformerPreProcessContextProvider } from '@aws-amplify/graphql-transformer-interfaces/lib/transformer-context/transformer-context-provider';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 function isFunction(obj: any): obj is Function {
@@ -128,6 +130,31 @@ export class GraphQLTransform {
     this.userDefinedSlots = options.userDefinedSlots || ({} as Record<string, UserDefinedSlot[]>);
     this.resolverConfig = options.resolverConfig || {};
     this.overrideConfig = options.overrideConfig;
+  }
+
+  /**
+   * Processes the schema using the transformer plugins
+   * that have specified a pre-process method. The purpose
+   * is to make any necessary schema changes prior to the
+   * transformation step
+   * @param schema A parsed GraphQL DocumentNode
+   */
+  public preProcessSchema(schema: DocumentNode): DocumentNode {
+    let processedSchema = schema;
+    const createContext = (inputSchema: DocumentNode): TransformerPreProcessContextProvider => {
+      return {
+        inputDocument: inputSchema,
+        featureFlags: this.options.featureFlags,
+      } as TransformerPreProcessContextProvider;
+    };
+    let context = createContext(processedSchema);
+    this.transformers.forEach(transformer => {
+      if (isFunction(transformer.preProcess)) {
+        processedSchema = JSON.parse(JSON.stringify(transformer.preProcess(context)));
+        context = createContext(processedSchema);
+      }
+    });
+    return processedSchema;
   }
 
   /**

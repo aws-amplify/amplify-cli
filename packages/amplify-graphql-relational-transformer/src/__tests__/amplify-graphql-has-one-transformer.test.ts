@@ -1,7 +1,7 @@
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ConflictHandlerType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { Kind, parse } from 'graphql';
+import { DocumentNode, Kind, parse } from 'graphql';
 import { HasManyTransformer, HasOneTransformer } from '..';
 
 test('fails if @hasOne was used on an object that is not a model type', () => {
@@ -465,4 +465,124 @@ test('recursive @hasOne relationships are supported if DataStore is enabled', ()
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
+});
+
+describe('Pre Processing Tests', () => {
+  let transformer: GraphQLTransform;
+  const hasGeneratedField = (doc: DocumentNode, objectType: string, fieldName: string): boolean => {
+    let hasField = false;
+    doc?.definitions?.forEach(def => {
+      if ((def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension') && def.name.value === objectType) {
+        def?.fields?.forEach(field => {
+          if (field.name.value === fieldName) {
+            hasField = true;
+          }
+        });
+      }
+    });
+    return hasField;
+  };
+
+  const hasGeneratedFieldArgument = (doc: DocumentNode, objectType: string, fieldName: string, generatedFieldName: string): boolean => {
+    let hasFieldArgument = false;
+    doc?.definitions?.forEach(def => {
+      if ((def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension') && def.name.value === objectType) {
+        def?.fields?.forEach(field => {
+          if (field.name.value === fieldName) {
+            field?.directives?.forEach(dir => {
+              if (dir.name.value === 'hasOne') {
+                dir?.arguments?.forEach(arg => {
+                  if (arg.name.value === 'fields') {
+                    if (arg.value.kind === 'ListValue' && arg.value.values[0].kind === 'StringValue' && arg.value.values[0].value === generatedFieldName) {
+                      hasFieldArgument = true;
+                    }
+                    else if (arg.value.kind === 'StringValue' && arg.value.value === generatedFieldName) {
+                      hasFieldArgument = true;
+                    }
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
+    });
+    return hasFieldArgument;
+  };
+
+  beforeEach(() => {
+    transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer(), new HasOneTransformer()],
+    });
+  });
+
+  test('Should generate connecting field when one is not provided', () => {
+    const schema = `
+    type Blog @model {
+      id: ID!
+      blogName: BlogName @hasOne
+    }
+    
+    type BlogName @model {
+      id: ID!
+    }
+    `;
+
+    const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
+    expect(hasGeneratedField(updatedSchemaDoc, 'Blog', 'blogBlogNameId')).toBeTruthy();
+    expect(hasGeneratedFieldArgument(updatedSchemaDoc, 'Blog', 'blogName', 'blogBlogNameId')).toBeTruthy();
+  });
+
+  test('Should generate connecting field when empty fields are provided', () => {
+    const schema = `
+    type Blog @model {
+      id: ID!
+      blogName: BlogName @hasOne(fields: [])
+    }
+    
+    type BlogName @model {
+      id: ID!
+    }
+    `;
+
+    const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
+    expect(hasGeneratedField(updatedSchemaDoc, 'Blog', 'blogBlogNameId')).toBeTruthy();
+    expect(hasGeneratedFieldArgument(updatedSchemaDoc, 'Blog', 'blogName', 'blogBlogNameId')).toBeTruthy();
+  });
+
+  test('Should not generate connecting field when one is provided', () => {
+    const schema = `
+    type Blog @model {
+      id: ID!
+      connectionField: ID
+      blogName: BlogName @hasOne(fields: "connectionField")
+    }
+    
+    type BlogName @model {
+      id: ID!
+    }
+    `;
+
+    const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
+    expect(hasGeneratedField(updatedSchemaDoc, 'Blog', 'blogBlogNameId')).toBeFalsy();
+    expect(hasGeneratedFieldArgument(updatedSchemaDoc, 'Blog', 'blogName', 'blogBlogNameId')).toBeFalsy();
+  });
+
+  test('Should not generate connecting field when a list one is provided', () => {
+    const schema = `
+    type Blog @model {
+      id: ID!
+      connectionField: ID
+      blogName: BlogName @hasOne(fields: ["connectionField"])
+    }
+    
+    type BlogName @model {
+      id: ID!
+    }
+    `;
+
+    const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
+    expect(hasGeneratedField(updatedSchemaDoc, 'Blog', 'blogBlogNameId')).toBeFalsy();
+    expect(hasGeneratedFieldArgument(updatedSchemaDoc, 'Blog', 'blogName', 'blogBlogNameId')).toBeFalsy();
+  });
 });

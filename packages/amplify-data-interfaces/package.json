@@ -1,0 +1,58 @@
+{
+  "name": "amplify-data-interfaces",
+  "version": "1.0.0",
+  "description": "Amplify CLI Data Interfaces",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "test": "jest",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rimraf lib tsconfig.tsbuildinfo"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aws-amplify/amplify-cli.git"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/aws-amplify/amplify-cli/issues"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/src/__tests__/.*|(\\.|/)test)\\.tsx?$",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/templates/"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "collectCoverage": true
+  },
+  "homepage": "https://github.com/aws-amplify/amplify-cli#readme",
+  "dependencies": {
+    "amplify-cli-core": "2.5.0",
+    "@aws-amplify/graphql-auth-transformer": "0.7.10",
+    "@aws-amplify/graphql-default-value-transformer": "0.5.18",
+    "@aws-amplify/graphql-function-transformer": "0.7.12",
+    "@aws-amplify/graphql-http-transformer": "0.8.12",
+    "@aws-amplify/graphql-index-transformer": "0.11.3",
+    "@aws-amplify/graphql-maps-to-transformer": "1.1.10",
+    "@aws-amplify/graphql-model-transformer": "0.13.3",
+    "@aws-amplify/graphql-predictions-transformer": "0.6.12",
+    "@aws-amplify/graphql-relational-transformer": "0.7.10",
+    "@aws-amplify/graphql-searchable-transformer": "0.13.5",
+    "@aws-amplify/graphql-transformer-core": "0.16.3",
+    "@aws-amplify/graphql-transformer-interfaces": "1.13.0",
+    "graphql": "^16.3.0"
+  }
+}

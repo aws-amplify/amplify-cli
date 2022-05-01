@@ -46,6 +46,8 @@ packages/amplify-category-geo/lib/
 packages/amplify-e2e-tests/amplify-e2e-reports
 packages/amplify-console-integration-tests/lib
 packages/amplify-console-integration-tests/console-integration-reports
+packages/amplify-data-core/lib
+packages/amplify-data-interfaces/lib
 packages/amplify-migration-tests/amplify-migration-reports
 packages/amplify-migration-tests/lib
 packages/amplify-headless-interface/lib

@@ -18,7 +18,7 @@ import {
   TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerValidationStepContextProvider,
-  TransformerTransformSchemaStepContextProvider,
+  TransformerTransformSchemaStepContextProvider, TransformerPreProcessContextProvider,
 } from './transformer-context/transformer-context-provider';
 
 export enum TransformerPluginType {
@@ -35,6 +35,16 @@ export interface TransformerPluginProvider {
   readonly directive: DirectiveDefinitionNode;
 
   typeDefinitions: TypeDefinitionNode[];
+
+  /**
+   * A processing step executed prior to and separate from transformation.
+   * This method is used by plugins to make any necessary schema modifications
+   * before processing is done. This allows external sources to make necessary
+   * schema modifications without adding all the other transformation logic
+   * @param context the context provider with the document and feature flags
+   * @returns DocumentNode returns a modified GraphQL DocumentNode
+   */
+  preProcess?: (context: TransformerPreProcessContextProvider) => void;
 
   /**
    * An initializer that is called once at the beginning of a transformation.
