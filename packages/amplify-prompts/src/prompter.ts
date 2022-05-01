@@ -44,15 +44,9 @@ class AmplifyPrompter implements Prompter {
     this.flowData = flowData;
   }
 
-  pushInteractiveFlow = (promptString: string, input: unknown) => {
+  private pushInteractiveFlow = (promptString: string, input: unknown) => {
     if (this.flowData) {
       this.flowData.pushInteractiveFlow(promptString, input);
-    }
-  }
-
-  pushHeadlessFlow = (headlessFlowDataString: string, input: ICommandInput) => {
-    if (this.flowData) {
-      this.flowData.pushHeadlessFlow(headlessFlowDataString, input);
     }
   }
 
