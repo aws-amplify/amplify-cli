@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable class-methods-use-this */
-import { $TSAny } from 'amplify-cli-core';
 import { IFlowReport } from 'amplify-cli-shared-interfaces/lib/amplify-cli-flow-reporter-types';
 import { ICommandInput, IFlowData } from 'amplify-cli-shared-interfaces';
 import { CLINoFlowReport } from './NoFlowReport';

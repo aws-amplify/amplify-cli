@@ -1,5 +1,5 @@
 /* eslint-disable spellcheck/spell-checker */
-import { $TSAny, JSONUtilities, stateManager } from 'amplify-cli-core';
+import { stateManager } from 'amplify-cli-core';
 import { logger, Redactor } from 'amplify-cli-logger';
 import { IAmplifyLogger } from 'amplify-cli-logger/lib/IAmplifyLogger';
 import { ICommandInput, IFlowData, IFlowReport, IOptionFlowCLIData, IOptionFlowHeadlessData, TypeOptionFlowData } from 'amplify-cli-shared-interfaces';

@@ -2,7 +2,7 @@
 import { v4 as uuid } from 'uuid';
 import https from 'https';
 import { UrlWithStringQuery } from 'url';
-import { $TSAny, JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities } from 'amplify-cli-core';
 import { pick } from 'lodash';
 import { ICommandInput, IFlowData, IFlowReport } from 'amplify-cli-shared-interfaces';
 import { Input } from '../input';

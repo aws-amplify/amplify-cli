@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { $TSAny } from 'amplify-cli-core';
-import { ICommandInput, IFlowData, IFlowReport, IOptionFlowCLIData, IOptionFlowHeadlessData } from 'amplify-cli-shared-interfaces';
+
+import { ICommandInput, IFlowData, IFlowReport } from 'amplify-cli-shared-interfaces';
 
 /**
  * No-Op class for flow data logging
