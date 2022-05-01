@@ -36,7 +36,7 @@ import { deleteOldVersion } from './utils/win-utils';
 import { notify } from './version-notifier';
 import { getAmplifyVersion } from './extensions/amplify-helpers/get-amplify-version';
 
-export { UsageData, CLIFlowReport } from './domain/amplify-usageData';
+export { UsageData } from './domain/amplify-usageData';
 
 // Adjust defaultMaxListeners to make sure Inquirer will not fail under Windows because of the multiple subscriptions
 // https://github.com/SBoudrias/Inquirer.js/issues/887
@@ -179,7 +179,7 @@ export const run = async (startTime: number): Promise<number | undefined> => {
 
     await attachUsageData(context, startTime);
 
-    prompter.setFlowData(context.flowData);
+    prompter.setFlowData(context.usageData);
 
     if (!(await migrateTeamProviderInfo(context))) {
       context.usageData.emitError(new TeamProviderInfoMigrateError());

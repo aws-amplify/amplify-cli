@@ -13,7 +13,6 @@ import { IUsageData } from './amplify-usageData';
 export class Context {
   amplify: AmplifyToolkit;
   usageData!: IUsageData;
-  flowData!: IFlowData;
   constructor(public pluginPlatform: PluginPlatform, public input: Input) {
     this.amplify = new AmplifyToolkit();
   }

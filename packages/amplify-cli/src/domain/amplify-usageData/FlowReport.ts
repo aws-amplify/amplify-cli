@@ -9,7 +9,6 @@ import { Input } from '../input';
  * Store the data and sequence of events of CLI walkthrough
  */
 export class CLIFlowReport implements IFlowData {
-  private static _instance: CLIFlowReport = new CLIFlowReport();
   version!: string;
   runtime!: string;
   executable!: string;
@@ -25,12 +24,8 @@ export class CLIFlowReport implements IFlowData {
   projectIdentifier?: string; // hash( ProjectName + Amplify App Id)
   envName?: string;
 
-  private constructor() {
+  constructor() {
     const currentTime = Date.now();
-    if (CLIFlowReport._instance) {
-      throw new Error('Use CLIFlowReport.instance');
-    }
-    CLIFlowReport._instance = this;
     this.logger = logger;
     this.timestamp = currentTime.toString();
     this.isHeadless = false; //set headless to true if running in headless mode : TBD: can we query this from stateManager?
@@ -55,15 +50,6 @@ export class CLIFlowReport implements IFlowData {
     }
   }
 
-  /**
-   * Singleton instance builder
-   */
-  static get instance(): CLIFlowReport {
-    if (!CLIFlowReport._instance) {
-      CLIFlowReport._instance = new CLIFlowReport();
-    }
-    return CLIFlowReport._instance;
-  }
 
   /**
    * Set the CLI input args

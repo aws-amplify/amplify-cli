@@ -12,20 +12,18 @@ import { Redactor } from 'amplify-cli-logger';
 
 describe('Test FlowReport Logging', () => {
     beforeAll(() => {
-        const flowReport = CLIFlowReport.instance;
     });
 
     afterAll(() => {
-        // CLIFlowReport.reset();
         jest.clearAllMocks();
     });
     it('flow-log-interactive-payload: Interactive payload is available in payload', () => {
-        const flowReport = CLIFlowReport.instance;
+        const flowReport = new CLIFlowReport();
         flowReport.pushInteractiveFlow(mockInputs.interactivePrompt, mockInputs.interactiveValue);
         expect(flowReport.optionFlowData[0].input).toContain(mockInputs.interactiveValue);
     })
     it('Project Identifiers are correctly formed', () => {
-        const flowReport = CLIFlowReport.instance;
+        const flowReport = new CLIFlowReport();
         flowReport.setIsHeadless(true);
         flowReport.setVersion(mockInputs.version);
         //Mock the state-manager functions
@@ -42,7 +40,7 @@ describe('Test FlowReport Logging', () => {
     it('flow-log-headless-payload: (Auth) is redacted in flowReport', () => {
         const input = getAuthHeadlessTestInput();
         const inputString = JSON.stringify(input);
-        const flowReport = CLIFlowReport.instance;
+        const flowReport = new CLIFlowReport();
         flowReport.pushHeadlessFlow(inputString, mockInputs.headlessInput('auth', 'add'));
         expect(flowReport.optionFlowData[0].input).not.toContain(input.identityPoolId);
         expect(flowReport.optionFlowData[0].input).not.toContain(input.webClientId);
@@ -57,7 +55,7 @@ describe('Test FlowReport Logging', () => {
     it('flow-log-headless-payload: (Storage S3) is redacted in flowReport', () => {
         const input = getAddStorageS3HeadlessTestInput();
         const inputString = JSON.stringify(input);
-        const flowReport = CLIFlowReport.instance;
+        const flowReport = new CLIFlowReport();
         flowReport.assignProjectIdentifier();
         flowReport.pushHeadlessFlow(inputString, mockInputs.headlessInput('storage', 'add'));
         expect(flowReport.optionFlowData[0].input).not.toContain(input.serviceConfiguration.bucketName);
@@ -78,7 +76,7 @@ describe('Test FlowReport Logging', () => {
         const input = getGraphQLHeadlessTestInput();
 
         const inputString = JSON.stringify(input);
-        const flowReport = CLIFlowReport.instance;
+        const flowReport = new CLIFlowReport();
         flowReport.assignProjectIdentifier();
         flowReport.pushHeadlessFlow(inputString, mockInputs.headlessInput('api', 'add'));
         expect(flowReport.optionFlowData[0].input).not.toContain(input.serviceConfiguration.apiName); //resource name redacted
@@ -91,7 +89,7 @@ describe('Test FlowReport Logging', () => {
         const input = getGeoHeadlessTestInput();
         const inputString = JSON.stringify(input);
         const redactedName = redactValue('name', input.serviceConfiguration.name);
-        const flowReport = CLIFlowReport.instance;
+        const flowReport = new CLIFlowReport();
         flowReport.assignProjectIdentifier();
         flowReport.pushHeadlessFlow(inputString, mockInputs.headlessInput('geo', 'add'));
         expect(flowReport.optionFlowData[0].input).not.toContain(input.serviceConfiguration.name); //resource name redacted

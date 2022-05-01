@@ -425,7 +425,7 @@ async function executeAmplifyCommand(context) {
  * @param {string} headlessPayload The serialized payload from the platform
  */
 const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
-  context.flowData.pushHeadlessFlow(headlessPayload, context.input);
+  context.usageData.pushHeadlessFlow(headlessPayload, context.input);
   switch (context.input.command) {
     case 'add':
       if (projectHasAuth(context)) {

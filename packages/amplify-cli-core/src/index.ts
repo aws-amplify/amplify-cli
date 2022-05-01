@@ -58,7 +58,6 @@ export type $TSContext = {
   input: $TSAny;
   parameters: $TSAny;
   usageData: $TSAny;
-  flowData : IFlowData;
   runtime: $TSAny;
   pluginPlatform: IPluginPlatform;
   newUserInfo?: $TSAny;

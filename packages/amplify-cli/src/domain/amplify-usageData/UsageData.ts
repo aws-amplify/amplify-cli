@@ -30,9 +30,9 @@ export class UsageData implements IUsageData, IFlowData {
   requestTimeout = 100;
   codePathTimers = new Map<TimedCodePath, Timer>();
   codePathDurations = new Map<TimedCodePath, number>();
+  flow: CLIFlowReport = new CLIFlowReport();
 
   private static instance: UsageData;
-  private static flow: CLIFlowReport;
 
   private constructor() {
     this.sessionUuid = uuid();
@@ -61,8 +61,8 @@ export class UsageData implements IUsageData, IFlowData {
     this.input = redactInput(input, true);
     this.codePathTimers.set(FromStartupTimedCodePaths.PLATFORM_STARTUP, Timer.start(processStartTimeStamp));
     this.codePathTimers.set(FromStartupTimedCodePaths.TOTAL_DURATION, Timer.start(processStartTimeStamp));
-    UsageData.flow.setInput(input);
-    UsageData.flow.setVersion(version);
+    this.flow.setInput(input);
+    this.flow.setVersion(version);
   }
 
   /**
@@ -71,19 +71,8 @@ export class UsageData implements IUsageData, IFlowData {
   static get Instance(): IUsageData {
     if (!UsageData.instance) {
       UsageData.instance = new UsageData();
-      UsageData.flow = CLIFlowReport.instance;
     }
     return UsageData.instance;
-  }
-
-  /**
-   * Get the flow data singleton
-   */
-  static get flowInstance(): IFlowData {
-    if (!UsageData.flow) {
-      UsageData.flow = CLIFlowReport.instance;
-    }
-    return UsageData.flow;
   }
 
   /**
@@ -130,9 +119,7 @@ export class UsageData implements IUsageData, IFlowData {
    * @param isHeadless - when set to true assumes context in headless
    */
   setIsHeadless(isHeadless: boolean) {
-    if (UsageData.flow) {
-      UsageData.flow.setIsHeadless(isHeadless);
-    }
+      this.flow.setIsHeadless(isHeadless);
   }
 
   /**
@@ -141,9 +128,7 @@ export class UsageData implements IUsageData, IFlowData {
     * @param input  - CLI input entered by Cx
     */
   pushHeadlessFlow(headlessParameterString: string, input: ICommandInput) {
-    if (UsageData.flow) {
-      UsageData.flow.pushHeadlessFlow(headlessParameterString, input);
-    }
+      this.flow.pushHeadlessFlow(headlessParameterString, input);
   }
 
   /**
@@ -152,29 +137,21 @@ export class UsageData implements IUsageData, IFlowData {
    * @param input  - CLI input entered by Cx
    */
   pushInteractiveFlow(prompt: string, input: unknown): void {
-    if (UsageData.flow) {
-      UsageData.flow.pushInteractiveFlow(prompt, input);
-    }
+      this.flow.pushInteractiveFlow(prompt, input);
   }
 
   /**
    * Get the JSON version of the Flow Report.
    */
   getFlowReport(): IFlowReport {
-    if (UsageData.flow) {
-      return UsageData.flow.getFlowReport();
-    }
-    return {} as IFlowReport;
+      return this.flow.getFlowReport();
   }
 
   /**
    * Generate a unique searchable
    */
   assignProjectIdentifier(): string | undefined {
-    if (UsageData.flow) {
-      return UsageData.flow.assignProjectIdentifier();
-    }
-    return undefined;
+      return this.flow.assignProjectIdentifier();
   }
 
   private internalStopCodePathTimer = (codePath: TimedCodePath): void => {
@@ -188,7 +165,7 @@ export class UsageData implements IUsageData, IFlowData {
 
   private async emit(error: Error | null, state: string): Promise<UsageDataPayload> {
     // initialize the unique project identifier if work space is initialized
-    UsageData.flowInstance.assignProjectIdentifier();
+    this.flow.assignProjectIdentifier();
     // stop all currently running timers
     Array.from(this.codePathTimers.keys()).forEach(this.internalStopCodePathTimer);
 
@@ -203,7 +180,7 @@ export class UsageData implements IUsageData, IFlowData {
       this.projectSettings,
       this.inputOptions,
       Object.fromEntries(this.codePathDurations),
-      UsageData.flowInstance.getFlowReport() as IFlowReport,
+      this.flow.getFlowReport() as IFlowReport,
     );
 
     await this.send(payload);

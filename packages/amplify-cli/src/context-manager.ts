@@ -31,12 +31,10 @@ export const attachUsageData = async (context: Context, processStartTimeStamp: n
     : config.usageDataConfig.isUsageTrackingEnabled;
   if (usageTrackingEnabled) {
     context.usageData = UsageData.Instance;
-    context.flowData = UsageData.flowInstance;
-    context.flowData.setIsHeadless( isHeadlessCommand(context) );
+    context.usageData.setIsHeadless( isHeadlessCommand(context) );
   } else {
     context.usageData = NoUsageData.Instance;
-    context.flowData = NoUsageData.flowInstance;
-    context.flowData.setIsHeadless( isHeadlessCommand(context) );
+    context.usageData.setIsHeadless( isHeadlessCommand(context) );
   }
   const accountId = getSafeAccountId();
   context.usageData.init(
