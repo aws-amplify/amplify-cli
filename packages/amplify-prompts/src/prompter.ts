@@ -67,7 +67,6 @@ class AmplifyPrompter implements Prompter {
     } else {
       result = await this.yesOrNoCommon(message, false);
     }
-    this.pushInteractiveFlow(message, result);
     return result;
   };
 
@@ -82,7 +81,6 @@ class AmplifyPrompter implements Prompter {
     } else {
       result = await this.yesOrNoCommon(message, initial);
     }
-    this.pushInteractiveFlow(message, result);
     return result;
   };
 
@@ -296,7 +294,9 @@ export const prompter: Prompter = new AmplifyPrompter();
  * @param equals An optional function to determine if two elements are equal. If not specified, === is used
  * Note that choices are assumed to be unique by the equals function definition
  */
-export const byValues = <T>(selection: T[], equals: EqualsFunction<T> = defaultEquals): MultiFilterFunction<T> => (choices: T[]) => selection.map(sel => choices.findIndex(choice => equals(choice, sel))).filter(idx => idx >= 0);
+export const byValues = <T>(selection: T[], equals: EqualsFunction<T> = defaultEquals): MultiFilterFunction<T> => (
+  choices: T[]
+  ) => selection.map(sel => choices.findIndex(choice => equals(choice, sel))).filter(idx => idx >= 0);
 
 /**
  * Helper function to generate a function that will return an index of a single selection from a list
