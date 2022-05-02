@@ -934,7 +934,7 @@ export const formNestedStack = async (
   let authResourceName: string;
 
   // Add CLI versioning information to the root stack's metadata
-  const metadata = nestedStack.Metadata || {};
+  const metadata = rootStack.Metadata || {};
 
   Object.assign(metadata, {
     AmplifyCLI: {
@@ -943,7 +943,7 @@ export const formNestedStack = async (
     },
   });
 
-  nestedStack.Metadata = metadata;
+  rootStack.Metadata = metadata;
 
   const { APIGatewayAuthURL, NetworkStackS3Url, AuthTriggerTemplateURL } = amplifyMeta.providers[constants.ProviderName];
   const { envName } = stateManager.getLocalEnvInfo(projectPath);
