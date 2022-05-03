@@ -14,6 +14,8 @@ module.exports = {
     'packages/graphql-transformers-e2e-tests/',
     'packages/amplify-util-mock/src/__e2e__/',
     'packages/amplify-ui-tests/',
+    'packages/amplify-graphql-transformer-interfaces/',
+    'packages/amplify-cli-shared-interfaces/',
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'core', 'node'],
   collectCoverage: true,
