@@ -88,6 +88,14 @@ export const getProfiledAwsConfig = async (context: $TSContext, profileName: str
         ...profileConfig,
         ...roleCredentials,
       };
+
+      if (profileConfig.credential_process) {
+        const chain = new aws.CredentialProviderChain();
+        const processProvider = () => new aws.ProcessCredentials({ profile: profileName });
+        chain.providers.push(processProvider);
+
+        awsConfigInfo.credentialProvider = chain;
+      }
     } else {
       logger('getProfiledAwsConfig.getProfileCredentials', [profileName]);
       const profileCredentials = getProfileCredentials(profileName);
