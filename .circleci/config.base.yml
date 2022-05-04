@@ -672,6 +672,13 @@ workflows:
             - build
 
   build_test_deploy:
+    triggers:
+      - schedule:
+          cron: '0 14 * * *'
+          filters:
+            branches:
+              only:
+                - master
     jobs:
       - build:
           matrix:
