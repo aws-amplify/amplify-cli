@@ -40,7 +40,7 @@ describe('API Gateway e2e tests', () => {
     await amplifyPushAuth(projRoot);
     await addAuthWithGroupsAndAdminAPI(projRoot); // Groups: Admins, Users
     await amplifyPushAuth(projRoot);
-    await addRestApi(projRoot, { isFirstRestApi: false, path: '/foo', projectContainsFunctions: true }); // Add a path
+    await addRestApi(projRoot, { isFirstRestApi: false, path: '/', projectContainsFunctions: true }); // Add root path
     await addRestApi(projRoot, {
       apiName: secondRestApiName,
       isFirstRestApi: false,
@@ -64,15 +64,15 @@ describe('API Gateway e2e tests', () => {
     expect(secondRootUrl).toBeDefined();
 
     const firstItemsResponse = await get(`${firstRootUrl}/items`);
-    const fooResponse = await get(`${firstRootUrl}/foo`);
+    const rootUrlResponse = await get(firstRootUrl);
     const secondItemsResponse = await get(`${secondRootUrl}/items`);
 
     const firstItemsResJson = await firstItemsResponse.json();
-    const fooResJson = await fooResponse.json();
+    const rootUrlResJson = await rootUrlResponse.json();
     const secondItemsResJson = await secondItemsResponse.json();
 
     expect(firstItemsResJson).toEqual({ success: 'get call succeed!', url: '/items' });
-    expect(fooResJson).toEqual({ success: 'get call succeed!', url: '/foo' });
+    expect(rootUrlResJson).toEqual({ success: 'get call succeed!', url: '/' });
     expect(secondItemsResJson).toEqual({ message: 'Missing Authentication Token' }); // Restricted API
   });
 
