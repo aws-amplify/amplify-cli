@@ -44,9 +44,12 @@ class AmplifyPrompter implements Prompter {
     this.flowData = flowData;
   }
 
-  private pushInteractiveFlow = (promptString: string, input: unknown) => {
-    if (this.flowData) {
-      this.flowData.pushInteractiveFlow(promptString, input);
+  private pushInteractiveFlow = (promptString: string, input: unknown, redact : boolean =  false) => {
+    if ( isInteractiveShell ) {
+      if (this.flowData && input ) {
+        const finalInput = ( redact ) ? "*".repeat((input as string).length) : input;
+        this.flowData.pushInteractiveFlow(promptString, finalInput);
+      }
     }
   }
 
@@ -96,6 +99,8 @@ class AmplifyPrompter implements Prompter {
     return result;
   };
 
+ 
+
   /**
    * Prompt for an input.
    * By default the input is a string, but can be any type.
@@ -112,9 +117,11 @@ class AmplifyPrompter implements Prompter {
    */
   input = async <RS extends ReturnSize = 'one', T = string>(message: string, ...options: MaybeOptionalInputOptions<RS, T>): Promise<PromptReturn<RS, T>> => {
     const opts = options?.[0] ?? ({} as InputOptions<RS, T>);
+    const enquirerPromptType : EnquirerPromptType =  'hidden' in opts && opts.hidden ? EnquirerPromptType.INVISIBLE : opts.returnSize === 'many' ? EnquirerPromptType.LIST : EnquirerPromptType.INPUT;
+
     if (isYes) {
       if (opts.initial !== undefined) {
-        this.pushInteractiveFlow(message, opts.initial);
+        this.pushInteractiveFlow(message, opts.initial, enquirerPromptType == EnquirerPromptType.INVISIBLE);
         return opts.initial as PromptReturn<RS, T>;
       }
       this.throwLoggedError(message, `Cannot prompt for [${message}] when '--yes' flag is set`);
@@ -124,7 +131,7 @@ class AmplifyPrompter implements Prompter {
 
     const { result } = await this.prompter<{ result: RS extends 'many' ? string[] : string }>({
       // eslint-disable-next-line no-nested-ternary
-      type: 'hidden' in opts && opts.hidden ? 'invisible' : opts.returnSize === 'many' ? 'list' : 'input',
+      type: enquirerPromptType,
       name: 'result',
       message,
       validate: validator,
@@ -142,10 +149,10 @@ class AmplifyPrompter implements Prompter {
       } else {
         functionResult = opts.transform(result as string) as unknown as PromptReturn<RS, T>;
       }
-      this.pushInteractiveFlow(message, functionResult);
+      this.pushInteractiveFlow(message, functionResult, enquirerPromptType == EnquirerPromptType.INVISIBLE );
       return functionResult;
     }
-    this.pushInteractiveFlow(message, result);
+    this.pushInteractiveFlow(message, result, enquirerPromptType == EnquirerPromptType.INVISIBLE );
     return result as unknown as PromptReturn<RS, T>;
   };
 
@@ -433,3 +440,10 @@ type InputOptions<RS extends ReturnSize, T> = ReturnSizeOption<RS> &
   InitialValueOption<T> &
   MaybeOptionalTransformOption<T> &
   MaybeAvailableHiddenInputOption<RS>;
+
+// abstraction over equirer prompt types
+enum EnquirerPromptType {
+    INVISIBLE = 'invisible',
+    LIST = 'list',
+    INPUT = 'input'
+};
