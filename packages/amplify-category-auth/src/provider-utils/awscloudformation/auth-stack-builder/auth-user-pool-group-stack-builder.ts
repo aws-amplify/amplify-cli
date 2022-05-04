@@ -261,7 +261,7 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
           zipFile: fs.readFileSync(roleMapLambdaFilePath, 'utf-8'),
         },
         handler: 'index.handler',
-        runtime: 'nodejs12.x',
+        runtime: 'nodejs14.x',
         timeout: 300,
         role: cdk.Fn.getAtt('LambdaExecutionRole', 'Arn').toString(),
       });

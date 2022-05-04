@@ -1,5 +1,5 @@
 <% var autoVerifiedAttributes = props.autoVerifiedAttributes ? props.autoVerifiedAttributes.concat(props.aliasAttributes ? props.aliasAttributes : []).filter((attr, i, aliasAttributeArray) => ['email', 'phone_number'].includes(attr) && aliasAttributeArray.indexOf(attr) === i) : [] %>
-<% var configureSMS = ((props.autoVerifiedAttributes && props.autoVerifiedAttributes.includes('phone_number')) || (props.mfaConfiguration != 'OFF' && props.mfaTypes && props.mfaTypes.includes('SMS Text Message')) || (props.requiredAttributes && props.requiredAttributes.includes('phone_number'))) %> 
+<% var configureSMS = ((props.autoVerifiedAttributes && props.autoVerifiedAttributes.includes('phone_number')) || (props.mfaConfiguration != 'OFF' && props.mfaTypes && props.mfaTypes.includes('SMS Text Message')) || (props.requiredAttributes && props.requiredAttributes.includes('phone_number'))) %>
 AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
@@ -109,7 +109,7 @@ Resources:
                 Action:
                   - "sns:Publish"
                 Resource: "*"
-  <% } %> 
+  <% } %>
   # BEGIN USER POOL RESOURCES
   UserPool:
   # Created upon user selection
@@ -187,14 +187,14 @@ Resources:
       MfaConfiguration: !Ref mfaConfiguration
       <% if(props.useEnabledMfas && props.mfaConfiguration != 'OFF') {%>
       EnabledMfas:
-        <% if(configureSMS) {%> 
+        <% if(configureSMS) {%>
         - SMS_MFA
         <% } %>
         <% if(props.mfaTypes.includes('TOTP')) {%>
         - SOFTWARE_TOKEN_MFA
         <% } %>
-      <% } %>  
-      <% if(!props.useEnabledMfas || configureSMS) {%> 
+      <% } %>
+      <% if(!props.useEnabledMfas || configureSMS) {%>
       SmsVerificationMessage: !Ref smsVerificationMessage
       SmsAuthenticationMessage: !Ref smsAuthenticationMessage
       SmsConfiguration:
@@ -402,7 +402,7 @@ Resources:
             - ' }'
             - '};'
       Handler: index.handler
-      Runtime: nodejs12.x
+      Runtime: nodejs14.x
       Timeout: 300
       Role: !GetAtt
         - UserPoolClientRole
@@ -528,7 +528,7 @@ Resources:
 
 
       Handler: index.handler
-      Runtime: nodejs12.x
+      Runtime: nodejs14.x
       Timeout: 300
       Role: !GetAtt
         - UserPoolClientRole
@@ -670,7 +670,7 @@ Resources:
             - '} '
 
       Handler: index.handler
-      Runtime: nodejs12.x
+      Runtime: nodejs14.x
       Timeout: 300
       Role: !GetAtt
         - UserPoolClientRole
@@ -769,7 +769,7 @@ Resources:
             - '}'
 
       Handler: index.handler
-      Runtime: nodejs12.x
+      Runtime: nodejs14.x
       Timeout: 300
       Role: !GetAtt
         - UserPoolClientRole
@@ -899,7 +899,7 @@ Resources:
             - ' }'
             - '};'
       Handler: index.handler
-      Runtime: nodejs12.x
+      Runtime: nodejs14.x
       Timeout: 300
       Role: !GetAtt
         - MFALambdaRole
@@ -1059,7 +1059,7 @@ Resources:
             - ' }'
             - '};'
       Handler: index.handler
-      Runtime: nodejs12.x
+      Runtime: nodejs14.x
       Timeout: 300
       Role: !GetAtt
         - OpenIdLambdaRole
