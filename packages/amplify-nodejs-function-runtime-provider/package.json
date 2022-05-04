@@ -19,7 +19,7 @@
   "scripts": {
     "watch": "tsc -w",
     "build": "tsc",
-    "clean": "rimraf lib tsconfig.tsbuildinfo",
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "test": "jest"
   },
   "dependencies": {

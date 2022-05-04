@@ -21,7 +21,7 @@
   },
   "scripts": {
     "build": "tsc && copyfiles -u 1 \"./src/hosting/templates/*.json\" \"./lib\"",
-    "clean": "rimraf lib tsconfig.tsbuildinfo",
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "watch": "tsc --watch"
   }
 }

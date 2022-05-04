@@ -21,7 +21,7 @@
     "test-ci": "jest --ci -i",
     "build": "tsc",
     "watch": "tsc -w",
-    "clean": "rimraf lib tsconfig.tsbuildinfo"
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules"
   },
   "dependencies": {
     "ajv": "^6.12.6",

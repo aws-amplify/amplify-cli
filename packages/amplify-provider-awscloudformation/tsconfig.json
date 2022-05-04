@@ -22,6 +22,9 @@
       "path": "../amplify-cli-core"
     },
     {
+      "path": "../amplify-cli-extensibility-helper"
+    },
+    {
       "path": "../amplify-prompts"
     },
     {

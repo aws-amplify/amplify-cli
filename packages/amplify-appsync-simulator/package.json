@@ -20,7 +20,7 @@
     "copy-assets": "yarn rimraf ./public && yarn copyfiles -u 3 \"../amplify-graphiql-explorer/build/**/*\" ./public",
     "build": "yarn copy-assets && tsc",
     "build-tests": "tsc --build tsconfig.tests.json",
-    "clean": "rimraf ./lib",
+    "clean": "rimraf ./lib tsconfig.tsbuildinfo tsconfig.tests.tsbuildinfo node_modules",
     "watch": "tsc -w",
     "start": "node ./lib/index.js",
     "test": "jest"
