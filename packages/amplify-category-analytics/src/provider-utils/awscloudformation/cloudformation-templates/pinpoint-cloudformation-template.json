@@ -280,7 +280,6 @@
     },
     "CognitoUnauthPolicy": {
       "Type": "AWS::IAM::Policy",
-      "Condition": "ShouldCreatePinpointApp",
       "Properties": {
         "PolicyName": { "Ref": "unauthPolicyName" },
         "Roles": [{ "Ref": "unauthRoleName" }],
@@ -332,7 +331,6 @@
     },
     "CognitoAuthPolicy": {
       "Type": "AWS::IAM::Policy",
-      "Condition": "ShouldCreatePinpointApp",
       "Properties": {
         "PolicyName": { "Ref": "authPolicyName" },
         "Roles": [{ "Ref": "authRoleName" }],
