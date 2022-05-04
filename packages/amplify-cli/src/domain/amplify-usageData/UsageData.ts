@@ -4,7 +4,7 @@ import https from 'https';
 import { UrlWithStringQuery } from 'url';
 import { JSONUtilities } from 'amplify-cli-core';
 import { pick } from 'lodash';
-import { ICommandInput, IFlowData, IFlowReport } from 'amplify-cli-shared-interfaces';
+import { ICommandInput, IFlowReport } from 'amplify-cli-shared-interfaces';
 import { Input } from '../input';
 import redactInput from './identifiable-input-regex';
 import { UsageDataPayload, InputOptions } from './UsageDataPayload';
@@ -18,7 +18,7 @@ import { CLIFlowReport } from './FlowReport';
 /**
  * Singleton class that manages the lifecycle of usage data during a CLI command
  */
-export class UsageData implements IUsageData, IFlowData {
+export class UsageData implements IUsageData {
   sessionUuid: string;
   accountId = '';
   installationUuid = '';
