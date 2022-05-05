@@ -95,6 +95,17 @@ const deploymentInProgressErrorMessage = (context: $TSContext) => {
   context.print.error('"amplify push --force" to re-deploy');
 };
 
+// The following list of files are required depended on by the Studio UI and must be accessible
+// from the root of the deployment bucket so the #current-cloud-backend.zip file doesn't need
+// to be unpacked to retrieve metadata.
+const amplifyStudioFiles = [
+  'amplify-meta.json',
+  'schema.graphql',
+  'transform.conf.json',
+  'backend-config.json',
+  'parameters.json',
+];
+
 /**
  *
  */
@@ -145,7 +156,6 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
         resources = _.uniqBy(resources.concat(functionResourceToBeUpdated), 'resourceName');
       }
     }
-
 
     for (const resource of resources) {
       if (resource.service === ApiServiceNameElasticContainer && resource.category === 'api') {
@@ -498,7 +508,6 @@ export const updateStackForAPIMigration = async (context: $TSContext, category: 
 
   let projectDetails = context.amplify.getProjectDetails();
 
-
   const resources = allResources.filter((resource: { service: string; }) => resource.service === 'AppSync');
 
   await uploadAppSyncFiles(context, resources, allResources, {
@@ -585,19 +594,23 @@ export const storeCurrentCloudBackend = async (context: $TSContext) => {
   let log = null;
   const result = await archiver.run(currentCloudBackendDir, zipFilePath, undefined, cliJSONFiles);
 
-  const s3Key = `${result.zipFilename}`;
-
   const s3 = await S3.getInstance(context);
 
-  const s3Params = {
-    Body: fs.createReadStream(result.zipFilePath),
-    Key: s3Key,
-  };
+  const listOfFilesToUpload = amplifyStudioFiles.map(baseName => path.join(currentCloudBackendDir, baseName));
+  listOfFilesToUpload.push(...cliJSONFiles, result.zipFilePath);
 
-  log = logger('storeCurrentcoudBackend.s3.uploadFile', [{ Key: s3Key }]);
+  const s3ParamsList = listOfFilesToUpload
+    .filter(fs.existsSync)
+    .map(filepath => ({
+      Body: fs.createReadStream(filepath),
+      Key: path.basename(filepath),
+    }));
+
+  log = logger('storeCurrentcoudBackend.s3.uploadFile', [{ Key: result.zipFilePath }]);
   log();
   try {
-    await s3.uploadFile(s3Params);
+    const promises = s3ParamsList.map(params => s3.uploadFile(params));
+    await Promise.all(promises);
   } catch (error) {
     log(error);
     throw error;
