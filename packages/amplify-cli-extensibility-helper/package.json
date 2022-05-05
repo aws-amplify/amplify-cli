@@ -24,7 +24,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "clean": "rimraf lib tsconfig.buildinfo node_modules"
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules"
   },
   "dependencies": {
     "@aws-amplify/amplify-category-custom": "2.3.29",
