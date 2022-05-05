@@ -36,7 +36,9 @@ describe('analyzeProject', () => {
       },
     };
     mockContext.runtime.plugins.push(...frontendPlugins);
+    const consoleLogSpy = jest.spyOn(console, "log").mockImplementation(() => {});
     const result = await analyzeProject(mockContext);
     expect(result.exeInfo.localEnvInfo.defaultEditor).toStrictEqual('Visual Studio Code');
+    consoleLogSpy.mockClear();
   });
 });
