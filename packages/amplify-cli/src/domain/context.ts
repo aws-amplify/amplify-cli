@@ -1,7 +1,6 @@
 /* eslint-disable import/no-cycle */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable spellcheck/spell-checker */
-import { IFlowData } from 'amplify-cli-shared-interfaces';
 import { Input } from './input';
 import { AmplifyToolkit } from './amplify-toolkit';
 import { PluginPlatform } from './plugin-platform';

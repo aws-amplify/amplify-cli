@@ -14,6 +14,7 @@ describe('test version manager', () => {
   });
 
   it('payload version should be the latest', () => {
+    const usageData = UsageData.Instance;
     const payload = new UsageDataPayload(
       '',
       '',
@@ -25,7 +26,7 @@ describe('test version manager', () => {
       { frontend: 'javascript', editor: 'vscode', framework: 'react' },
       {},
       {},
-      UsageData.flowInstance.getFlowReport() as IFlowReport
+      usageData.getFlowReport() as IFlowReport
     );
     expect(payload.payloadVersion).toEqual(getLatestPayloadVersion());
   });

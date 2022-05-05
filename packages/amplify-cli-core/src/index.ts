@@ -1,4 +1,3 @@
-import { IFlowData } from 'amplify-cli-shared-interfaces';
 import { ViewResourceTableParams } from './cliViewAPI';
 import { ServiceSelection } from './serviceSelection';
 import { Tag } from './tags';
