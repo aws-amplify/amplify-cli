@@ -23,11 +23,17 @@ import {
 import { printer } from 'amplify-prompts';
 import fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { DiffRule, getSanityCheckRules, loadProject, ProjectRule, sanityCheckProject } from 'graphql-transformer-core';
+import {
+  DiffRule,
+  getSanityCheckRules,
+  loadProject,
+  ProjectRule,
+  sanityCheckProject,
+} from 'graphql-transformer-core';
 import _ from 'lodash';
 import path from 'path';
 import { destructiveUpdatesFlag, ProviderName } from '../constants';
-import { getTransformerFactoryV2 } from '../graphql-transformer-factory/transformer-factory';
+import { getTransformerFactory } from '../graphql-transformer-factory/transformer-factory';
 import { getTransformerVersion } from '../graphql-transformer-factory/transformer-version';
 /* eslint-disable-next-line import/no-cycle */
 import { searchablePushChecks } from './api-utils';
@@ -227,7 +233,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
 
   searchablePushChecks(context, directiveMap.types, parameters[ResourceConstants.PARAMETERS.AppSyncApiName]);
 
-  const transformerListFactory = getTransformerFactoryV2(resourceDir);
+  const transformerListFactory = await getTransformerFactory(context, resourceDir);
 
   if (sandboxModeEnabled && options.promptApiKeyCreation) {
     const apiKeyConfig = await showSandboxModePrompts(context);
