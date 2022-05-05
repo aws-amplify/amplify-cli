@@ -39,7 +39,7 @@ export { getLocationSupportedRegion, getLocationRegionMapping } from './aws-util
 import { updateEnv } from './update-env';
 
 import { uploadHooksDirectory } from './utils/hooks-manager';
-import { getTransformerVersion } from './transform-graphql-schema';
+import { getTransformerVersion } from './graphql-transformer-factory/transformer-version';
 
 export const cfnRootStackFileName = 'root-cloudformation-stack.json';
 export { storeRootStackTemplate } from './initializer';

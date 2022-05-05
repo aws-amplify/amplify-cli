@@ -1,5 +1,6 @@
 import { TransformConfig } from '@aws-amplify/graphql-transformer-core';
 import fs from 'fs-extra';
+import { TRANSFORM_CONFIG_FILE_NAME } from 'graphql-transformer-core';
 import * as path from 'path';
 
 export interface ProjectOptions {
@@ -15,8 +16,6 @@ export interface ProjectOptions {
   buildParameters?: Object;
   minify?: boolean;
 }
-
-export const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
 
 /**
  * try to load transformer config from specified projectDir
