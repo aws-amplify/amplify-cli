@@ -88,9 +88,9 @@ export async function onSuccess(context: $TSContext) {
   const appId = currentAmplifyMeta?.providers?.awscloudformation?.AmplifyAppId;
 
   if (!appId) {
-    printer.warn('You have reached your Amplify App limit:');
+    printer.warn('The maximum number of apps that you can create with Amplify in this region has likely been reached:');
     printer.info('For more information on Amplify Service Quotas, see:');
-    printer.info('https://docs.aws.amazon.com/general/latest/gr/amplify.html');
+    printer.info('https://docs.aws.amazon.com/general/latest/gr/amplify.html#service-quotas-amplify');
     printer.blankLine();
   }
 }
