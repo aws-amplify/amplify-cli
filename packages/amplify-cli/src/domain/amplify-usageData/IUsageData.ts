@@ -1,9 +1,10 @@
 import { Input } from '../input';
+import { IFlowData } from 'amplify-cli-shared-interfaces'
 
 /**
  * Base interface for emitting usage data
  */
-export interface IUsageData {
+interface IUsageMetricsData {
   emitError: (error: Error) => Promise<void>;
   emitAbort: () => Promise<void>;
   emitSuccess: () => Promise<void>;
@@ -17,6 +18,9 @@ export interface IUsageData {
   ) => void;
   startCodePathTimer: (codePath: StartableTimedCodePath) => void;
   stopCodePathTimer: (codePath: StoppableTimedCodePath) => void;
+}
+
+export interface IUsageData extends IUsageMetricsData, IFlowData {
 }
 
 /**

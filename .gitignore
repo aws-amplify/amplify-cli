@@ -54,6 +54,7 @@ packages/amplify-prompts/lib
 packages/amplify-util-import/lib
 packages/amplify-util-headless-input/lib
 packages/amplify-util-uibuilder/lib
+packages/amplify-cli-shared-interfaces/lib
 packages/*/node_modules
 packages/*/package-lock.json
 **/.env

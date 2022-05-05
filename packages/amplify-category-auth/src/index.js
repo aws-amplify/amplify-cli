@@ -352,7 +352,7 @@ async function initEnv(context) {
   await sequential(authTasks);
 }
 
-async function console(context) {
+async function authConsole(context) {
   const { amplify } = context;
   const amplifyMeta = amplify.getProjectMeta();
 
@@ -425,6 +425,7 @@ async function executeAmplifyCommand(context) {
  * @param {string} headlessPayload The serialized payload from the platform
  */
 const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
+  context.usageData.pushHeadlessFlow(headlessPayload, context.input);
   switch (context.input.command) {
     case 'add':
       if (projectHasAuth(context)) {
@@ -432,7 +433,7 @@ const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
       }
       await validateAddAuthRequest(headlessPayload)
         .then(getAddAuthRequestAdaptor(context.amplify.getProjectConfig().frontend))
-        .then(getAddAuthHandler(context));
+        .then(getAddAuthHandler(context))
       return;
     case 'update':
       // migration check for headless update
@@ -515,7 +516,7 @@ module.exports = {
   add,
   migrate,
   initEnv,
-  console,
+  console : authConsole,
   getPermissionPolicies,
   executeAmplifyCommand,
   executeAmplifyHeadlessCommand,

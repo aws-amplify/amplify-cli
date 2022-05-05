@@ -1,13 +1,12 @@
 {
-  "name": "amplify-prompts",
-  "version": "2.0.1",
-  "description": "Utility functions for Amplify CLI terminal I/O",
+  "name": "amplify-cli-shared-interfaces",
+  "version": "1.0.0",
+  "description": "API interfaces to be shared across different amplfy-cli packages",
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
     "demo": "yarn build && node lib/demo/demo.js",
-    "test": "jest --color",
     "watch": "tsc -w"
   },
   "repository": {
@@ -25,28 +24,7 @@
     "url": "https://github.com/aws-amplify/amplify-cli/issues"
   },
   "homepage": "https://github.com/aws-amplify/amplify-cli#readme",
-  "dependencies": {
-    "chalk": "^4.1.1",
-    "enquirer": "^2.3.6",
-    "amplify-cli-shared-interfaces": "1.0.0"
-  },
   "devDependencies": {
     "rimraf": "^3.0.2"
-  },
-  "jest": {
-    "collectCoverage": true,
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testURL": "http://localhost",
-    "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ]
   }
 }

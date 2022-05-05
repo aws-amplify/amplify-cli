@@ -17,7 +17,8 @@ import { isCI } from 'ci-info';
 import { EventEmitter } from 'events';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { formatter, printer } from 'amplify-prompts';
+
+import { formatter, printer, prompter } from 'amplify-prompts';
 import { logInput } from './conditional-local-logging-init';
 import { attachUsageData, constructContext } from './context-manager';
 import { displayBannerMessages } from './display-banner-messages';
@@ -34,6 +35,8 @@ import { migrateTeamProviderInfo } from './utils/team-provider-migrate';
 import { deleteOldVersion } from './utils/win-utils';
 import { notify } from './version-notifier';
 import { getAmplifyVersion } from './extensions/amplify-helpers/get-amplify-version';
+
+export { UsageData } from './domain/amplify-usageData';
 
 // Adjust defaultMaxListeners to make sure Inquirer will not fail under Windows because of the multiple subscriptions
 // https://github.com/SBoudrias/Inquirer.js/issues/887
@@ -117,7 +120,6 @@ const normalizeStatusCommandOptions = (input: Input): Input => {
 export const run = async (startTime: number): Promise<number | undefined> => {
   try {
     deleteOldVersion();
-
     let pluginPlatform = await getPluginPlatform();
     let input = getCommandLineInput(pluginPlatform);
 
@@ -177,9 +179,10 @@ export const run = async (startTime: number): Promise<number | undefined> => {
 
     await attachUsageData(context, startTime);
 
+    prompter.setFlowData(context.usageData);
+
     if (!(await migrateTeamProviderInfo(context))) {
       context.usageData.emitError(new TeamProviderInfoMigrateError());
-
       return 1;
     }
 

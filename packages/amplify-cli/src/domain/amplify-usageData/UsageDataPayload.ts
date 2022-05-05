@@ -1,5 +1,6 @@
 import * as os from 'os';
 import { isCI } from 'amplify-cli-core';
+import { IFlowReport } from 'amplify-cli-shared-interfaces';
 import { Input } from '../input';
 import { getLatestPayloadVersion } from './VersionManager';
 import { SerializableError } from './SerializableError';
@@ -24,7 +25,8 @@ export class UsageDataPayload {
   isCi: boolean;
   accountId: string;
   projectSetting: ProjectSettings;
-  codePathDurations: Partial<Record<TimedCodePath, number>>
+  codePathDurations: Partial<Record<TimedCodePath, number>>;
+  flowReport: IFlowReport;
   constructor(
     sessionUuid: string,
     installationUuid: string,
@@ -36,6 +38,7 @@ export class UsageDataPayload {
     project: ProjectSettings,
     inputOptions: InputOptions,
     codePathDurations: Partial<Record<TimedCodePath, number>>,
+    flowReport : IFlowReport,
   ) {
     this.sessionUuid = sessionUuid;
     this.installationUuid = installationUuid;
@@ -52,6 +55,7 @@ export class UsageDataPayload {
     this.projectSetting = project;
     this.inputOptions = inputOptions;
     this.codePathDurations = codePathDurations;
+    this.flowReport = flowReport;
     if (error) {
       this.error = new SerializableError(error);
     }

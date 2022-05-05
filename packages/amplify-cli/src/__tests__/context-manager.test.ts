@@ -6,18 +6,25 @@ import { constructContext, attachUsageData } from '../context-manager';
 import { Context } from '../domain/context';
 import { PluginInfo } from '../domain/plugin-info';
 import { PluginManifest } from '../domain/plugin-manifest';
-import * as UsageData from '../domain/amplify-usageData';
+import { UsageData, NoUsageData} from '../domain/amplify-usageData';
 
 jest.mock('../domain/amplify-usageData/', () => ({
   UsageData: {
     Instance: {
-      init: jest.fn(),
+      setIsHeadless: jest.fn(),
+      init : jest.fn(),
     },
   },
   NoUsageData: {
-    Instance: {
-      init: jest.fn(),
+    Instance:  {
+        setIsHeadless: jest.fn(),
+        init : jest.fn(),
     },
+  },
+  CLINoFlowReport: {
+    instance: jest.fn(() => ({
+      setIsHeadless: jest.fn(),
+    }))
   },
 }));
 jest.mock('../app-config');
@@ -34,6 +41,19 @@ describe('test attachUsageData', () => {
   ]);
   mockContext.pluginPlatform = new PluginPlatform();
   mockContext.pluginPlatform.plugins.core = [new PluginInfo('', version, '', new PluginManifest('', ''))];
+  mockContext.usageData = {
+    init : jest.fn(),
+    setIsHeadless : jest.fn(),
+    emitError : jest.fn(), 
+    emitAbort : jest.fn(), 
+    emitSuccess : jest.fn(),
+    startCodePathTimer : jest.fn(), 
+    stopCodePathTimer : jest.fn(), 
+    pushHeadlessFlow : jest.fn(), 
+    pushInteractiveFlow : jest.fn(), 
+    getFlowReport : jest.fn(), 
+    assignProjectIdentifier : jest.fn(),
+  }
 
   const stateManagerMocked = stateManager as jest.Mocked<typeof stateManager>;
   stateManagerMocked.metaFileExists.mockReturnValue(true);
@@ -66,7 +86,7 @@ describe('test attachUsageData', () => {
     mockedInit.mockReturnValue(returnValue);
     const ts = Date.now();
     await attachUsageData(mockContext, ts);
-    expect(UsageData.UsageData.Instance.init).toBeCalledWith(
+    expect(UsageData.Instance.init).toBeCalledWith(
       returnValue.usageDataConfig.installationUuid,
       version,
       mockContext.input,
@@ -88,7 +108,7 @@ describe('test attachUsageData', () => {
     mockedInit.mockReturnValue(returnValue);
     const ts = Date.now();
     await attachUsageData(mockContext, ts);
-    expect(UsageData.NoUsageData.Instance.init).toBeCalledWith(
+    expect(NoUsageData.Instance.init).toBeCalledWith(
       returnValue.usageDataConfig.installationUuid,
       version,
       mockContext.input,
@@ -96,5 +116,6 @@ describe('test attachUsageData', () => {
       {},
       ts,
     );
+
   });
 });

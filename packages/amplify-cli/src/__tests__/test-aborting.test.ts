@@ -72,6 +72,7 @@ describe('test SIGINT with execute', () => {
     mockContext.print = {
       warning: jest.fn(),
     };
+
     mockContext.usageData = {
       emitError: jest.fn(),
       emitAbort: jest.fn(),
@@ -79,8 +80,15 @@ describe('test SIGINT with execute', () => {
       init: jest.fn(),
       startCodePathTimer: jest.fn(),
       stopCodePathTimer: jest.fn(),
+      setIsHeadless: jest.fn(),
+      pushHeadlessFlow: jest.fn(),
+      pushInteractiveFlow: jest.fn(),
+      getFlowReport: jest.fn(),
+      assignProjectIdentifier: jest.fn(),
+
     };
     mockContext.projectHasMobileHubResources = false;
+    
     mockContext.amplify = jest.createMockFromModule('../domain/amplify-toolkit');
     Object.defineProperty(mockContext.amplify, 'getEnvInfo', { value: jest.fn() });
     jest.setMock('../context-manager', {
