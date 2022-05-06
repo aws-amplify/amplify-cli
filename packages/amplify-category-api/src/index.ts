@@ -235,6 +235,7 @@ export async function executeAmplifyCommand(context: $TSContext) {
 }
 
 export const executeAmplifyHeadlessCommand = async (context: $TSContext, headlessPayload: string) => {
+  context.usageData.pushHeadlessFlow(headlessPayload, context.input);
   switch (context.input.command) {
     case 'add':
       await getCfnApiArtifactHandler(context).createArtifacts(await validateAddApiRequest(headlessPayload));

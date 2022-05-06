@@ -12,7 +12,7 @@ import {
 import _ from 'lodash';
 import { legacyLayerMigration, prePushLambdaLayerPrompt } from '../lambdaLayerInvocations';
 import { formNestedStack, getCfnFiles, updateStackForAPIMigration } from '../push-resources';
-import { transformGraphQLSchema } from '../transform-graphql-schema';
+import { transformGraphQLSchema } from '../graphql-transformer';
 import { ensureValidFunctionModelDependencies } from '../utils/remove-dependent-function';
 import { Constants } from './constants';
 import { consolidateApiGatewayPolicies } from '../utils/consolidate-apigw-policies';

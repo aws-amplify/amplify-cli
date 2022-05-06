@@ -18,6 +18,8 @@ export const constructContext = (pluginPlatform: PluginPlatform, input: Input): 
   return context;
 };
 
+export const isHeadlessCommand = (context: any): boolean => context.input.options && context.input.options.headless;
+
 /**
  * Initialize and attach the usageData object to context
  */
@@ -29,8 +31,10 @@ export const attachUsageData = async (context: Context, processStartTimeStamp: n
     : config.usageDataConfig.isUsageTrackingEnabled;
   if (usageTrackingEnabled) {
     context.usageData = UsageData.Instance;
+    context.usageData.setIsHeadless( isHeadlessCommand(context) );
   } else {
     context.usageData = NoUsageData.Instance;
+    context.usageData.setIsHeadless( isHeadlessCommand(context) );
   }
   const accountId = getSafeAccountId();
   context.usageData.init(
