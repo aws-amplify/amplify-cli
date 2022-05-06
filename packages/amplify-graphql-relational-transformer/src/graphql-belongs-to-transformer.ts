@@ -5,7 +5,14 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { DirectiveNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
+import {
+  DirectiveNode,
+  DocumentNode,
+  FieldDefinitionNode,
+  InterfaceTypeDefinitionNode,
+  ObjectTypeDefinitionNode,
+  ObjectTypeExtensionNode,
+} from 'graphql';
 import { getBaseType, isListType } from 'graphql-transformer-common';
 import { makeGetItemConnectionWithKeyResolver } from './resolvers';
 import { ensureBelongsToConnectionField } from './schema';
@@ -19,6 +26,9 @@ import {
   validateModelDirective,
   validateRelatedModelDirective,
 } from './utils';
+import { TransformerPreProcessContextProvider } from '@aws-amplify/graphql-transformer-interfaces/lib/transformer-context/transformer-context-provider';
+import produce from 'immer';
+import { WritableDraft } from 'immer/dist/types/types-external';
 
 const directiveName = 'belongsTo';
 const directiveDefinition = `
@@ -49,6 +59,45 @@ export class BelongsToTransformer extends TransformerPluginBase {
     validate(args, context as TransformerContextProvider);
     this.directiveList.push(args);
   };
+
+  /** During the preProcess step, modify the document node and return it
+   * so that it represents any schema modifications the plugin needs
+   */
+  preProcess = (context: TransformerPreProcessContextProvider): DocumentNode => {
+    const resultDoc: DocumentNode = produce(context.inputDocument, draftDoc => {
+      const objectTypeMap = new Map<string, WritableDraft<ObjectTypeDefinitionNode | ObjectTypeExtensionNode>>(); // key: type name | value: object type node
+      // First iteration builds a map of the object types to reference for relation types
+      draftDoc?.definitions?.forEach(def => {
+        if (def.kind === 'ObjectTypeExtension' || def.kind === 'ObjectTypeDefinition') {
+          objectTypeMap.set(def.name.value, def);
+        }
+      });
+
+      draftDoc?.definitions?.forEach(def => {
+        if (def.kind === 'ObjectTypeExtension' || def.kind === 'ObjectTypeDefinition') {
+          def?.fields?.forEach(field => {
+            field?.directives?.forEach(dir => {
+              if (dir.name.value === directiveName) {
+                const relatedType = objectTypeMap.get(getBaseType(field.type));
+                if (relatedType) { // Validation is done in a different segment of the life cycle
+                  const relationTypeField = relatedType?.fields?.find(relatedField => {
+                    if (getBaseType(field.type) === def.name.value && relatedField?.directives?.some(
+                      relatedDir => relatedDir.name.value === 'hasOne' || relatedDir.name.value === 'hasMany',
+                    )) {
+                      return true;
+                    }
+                    return false;
+                  });
+                  const typeOfRelation = relationTypeField // WIP
+                }
+              }
+            });
+          });
+        }
+      });
+    });
+    return resultDoc;
+  }
 
   /**
    * During the prepare step, register any foreign keys that are renamed due to a model rename

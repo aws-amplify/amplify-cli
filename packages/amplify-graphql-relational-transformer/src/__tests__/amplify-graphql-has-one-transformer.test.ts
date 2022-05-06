@@ -467,7 +467,7 @@ test('recursive @hasOne relationships are supported if DataStore is enabled', ()
   validateModelSchema(schema);
 });
 
-describe('Pre Processing Tests', () => {
+describe('Pre Processing Has One Tests', () => {
   let transformer: GraphQLTransform;
   const hasGeneratedField = (doc: DocumentNode, objectType: string, fieldName: string): boolean => {
     let hasField = false;
