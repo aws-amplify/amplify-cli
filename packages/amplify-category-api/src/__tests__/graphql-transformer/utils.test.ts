@@ -1,11 +1,11 @@
 import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from '../../graphql-transformer/utils';
-import { prePushCfnTemplateModifier } from '../../pre-push-cfn-processor/pre-push-cfn-modifier';
+import { prePushCfnTemplateModifier } from 'amplify-provider-awscloudformation';
 import { TransformerProjectConfig, DeploymentResources } from '@aws-amplify/graphql-transformer-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
 jest.mock('fs-extra');
-jest.mock('../../pre-push-cfn-processor/pre-push-cfn-modifier');
+jest.mock('amplify-provider-awscloudformation');
 
 const fs_mock = fs as jest.Mocked<typeof fs>;
 const prePushCfnTemplateModifier_mock = prePushCfnTemplateModifier as jest.MockedFunction<typeof prePushCfnTemplateModifier>;

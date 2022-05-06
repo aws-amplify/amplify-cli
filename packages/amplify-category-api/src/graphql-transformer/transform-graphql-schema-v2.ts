@@ -15,7 +15,6 @@ import {
   $TSObject,
   AmplifyCategories,
   AmplifySupportedService,
-  getGraphQLTransformerAuthDocLink,
   JSONUtilities,
   pathManager,
   stateManager,
@@ -32,19 +31,18 @@ import {
 } from 'graphql-transformer-core';
 import _ from 'lodash';
 import path from 'path';
-import { destructiveUpdatesFlag, ProviderName } from '../constants';
-import { getTransformerFactory } from '../graphql-transformer-factory/transformer-factory';
-import { getTransformerVersion } from '../graphql-transformer-factory/transformer-version';
-/* eslint-disable-next-line import/no-cycle */
+import { hashDirectory } from 'amplify-provider-awscloudformation';
 import { searchablePushChecks } from './api-utils';
-import { hashDirectory } from '../upload-appsync-files';
-import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
-import { isAuthModeUpdated } from '../utils/auth-mode-compare';
-import { schemaHasSandboxModeEnabled, showGlobalSandboxModeWarning, showSandboxModePrompts } from '../utils/sandbox-mode-helpers';
+import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
+import { isAuthModeUpdated } from './auth-mode-compare';
 import { parseUserDefinedSlots } from './user-defined-slots';
 import {
   getAdminRoles, getIdentityPoolId, mergeUserConfigWithTransformOutput, writeDeploymentToDisk,
 } from './utils';
+import { getTransformerFactory, getTransformerVersion } from '../graphql-transformer-factory';
+import { PROVIDER_NAME, DESTRUCTIVE_UPDATES_FLAG } from './provider-utils';
+import { schemaHasSandboxModeEnabled, showGlobalSandboxModeWarning, showSandboxModePrompts } from './sandbox-mode-helpers';
+import { getGraphQLTransformerAuthDocLink } from '../doc-links';
 
 const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';
@@ -108,7 +106,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
     // There can only be one appsync resource
     if (resources.length > 0) {
       const resource = resources[0];
-      if (resource.providerPlugin !== ProviderName) {
+      if (resource.providerPlugin !== PROVIDER_NAME) {
         return undefined;
       }
       const { category } = resource;
@@ -124,7 +122,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
   if (!previouslyDeployedBackendDir) {
     if (resources.length > 0) {
       const resource = resources[0];
-      if (resource.providerPlugin !== ProviderName) {
+      if (resource.providerPlugin !== PROVIDER_NAME) {
         return undefined;
       }
       const { category } = resource;
@@ -249,7 +247,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
   // construct sanityCheckRules
   const ff = new AmplifyCLIFeatureFlagAdapter();
   const isNewAppSyncAPI: boolean = resourcesToBeCreated.some(resource => resource.service === 'AppSync');
-  const allowDestructiveUpdates = context?.input?.options?.[destructiveUpdatesFlag] || context?.input?.options?.force;
+  const allowDestructiveUpdates = context?.input?.options?.[DESTRUCTIVE_UPDATES_FLAG] || context?.input?.options?.force;
   const sanityCheckRules = getSanityCheckRules(isNewAppSyncAPI, ff, allowDestructiveUpdates);
   let resolverConfig = {};
   if (!_.isEmpty(resources)) {
@@ -310,7 +308,7 @@ place .graphql files in a directory at ${schemaDirPath}`);
 
 const getProjectBucket = (): string => {
   const meta: $TSMeta = stateManager.getMeta(undefined, { throwIfNotExist: false });
-  const projectBucket = meta?.providers ? meta.providers[ProviderName].DeploymentBucketName : '';
+  const projectBucket = meta?.providers ? meta.providers[PROVIDER_NAME].DeploymentBucketName : '';
   return projectBucket;
 };
 

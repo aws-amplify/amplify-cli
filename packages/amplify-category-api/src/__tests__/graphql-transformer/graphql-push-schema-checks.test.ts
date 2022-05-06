@@ -1,6 +1,7 @@
-import { stateManager, FeatureFlags, getGraphQLTransformerOpenSearchProductionDocLink } from 'amplify-cli-core';
+import { stateManager, FeatureFlags } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-import { searchablePushChecks } from '../graphql-transformer/api-utils';
+import { searchablePushChecks } from '../../graphql-transformer/api-utils';
+import { getGraphQLTransformerOpenSearchProductionDocLink } from '../doc-links';
 
 jest.mock('amplify-cli-core');
 jest.mock('amplify-prompts');

@@ -3,8 +3,14 @@ import * as path from 'path';
 import { JSONUtilities } from 'amplify-cli-core';
 import { Template } from 'cloudform';
 import { Diff, diff as getDiffs } from 'deep-diff';
+import { GlobalSecondaryIndex, AttributeDefinition } from 'cloudform-types/types/dynamoDb/table';
 
 const ROOT_STACK_FILE_NAME = 'cloudformation-template.json';
+
+export interface GSIRecord {
+  attributeDefinition: AttributeDefinition[];
+  gsi: GlobalSecondaryIndex;
+}
 
 export interface DiffableProject {
   stacks: {

@@ -43,7 +43,9 @@
     "proxy-agent": "^5.0.0",
     "semver": "^7.3.5",
     "typescript-json-schema": "~0.52.0",
-    "which": "^2.0.2"
+    "which": "^2.0.2",
+    "@aws-amplify/graphql-transformer-core": "^0.17.0",
+    "graphql-transformer-core": "^7.5.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",

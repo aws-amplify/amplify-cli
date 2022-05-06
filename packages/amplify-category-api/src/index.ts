@@ -4,7 +4,6 @@ import {
   AmplifyCategories,
   AmplifySupportedService,
   buildOverrideDir,
-  exitOnNextTick,
   pathManager,
   stateManager,
 } from 'amplify-cli-core';
@@ -13,7 +12,7 @@ import { validateAddApiRequest, validateUpdateApiRequest } from 'amplify-util-he
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { run } from './commands/api/console';
-import { getAppSyncAuthConfig, getAppSyncResourceName } from './provider-utils/awscloudformation//utils/amplify-meta-utils';
+import { getAppSyncAuthConfig, getAppSyncResourceName } from './provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { provider } from './provider-utils/awscloudformation/aws-constants';
 import { ApigwStackTransform } from './provider-utils/awscloudformation/cdk-stack-builder';
 import { getCfnApiArtifactHandler } from './provider-utils/awscloudformation/cfn-api-artifact-handler';
@@ -21,8 +20,9 @@ import { askAuthQuestions } from './provider-utils/awscloudformation/service-wal
 import { authConfigToAppSyncAuthType } from './provider-utils/awscloudformation/utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { checkAppsyncApiResourceMigration } from './provider-utils/awscloudformation/utils/check-appsync-api-migration';
 import { getAppSyncApiResourceName } from './provider-utils/awscloudformation/utils/getAppSyncApiName';
+
 export { NETWORK_STACK_LOGICAL_ID } from './category-constants';
-export { addAdminQueriesApi, updateAdminQueriesApi } from './provider-utils/awscloudformation/';
+export { addAdminQueriesApi, updateAdminQueriesApi } from './provider-utils/awscloudformation';
 export { DEPLOYMENT_MECHANISM } from './provider-utils/awscloudformation/base-api-stack';
 export { convertDeperecatedRestApiPaths } from './provider-utils/awscloudformation/convert-deprecated-apigw-paths';
 export { getContainers } from './provider-utils/awscloudformation/docker-compose';
@@ -37,6 +37,10 @@ export {
 export { getAuthConfig } from './provider-utils/awscloudformation/utils/get-appsync-auth-config';
 export { getResolverConfig } from './provider-utils/awscloudformation/utils/get-appsync-resolver-config';
 export { getGitHubOwnerRepoFromPath } from './provider-utils/awscloudformation/utils/github';
+export * from './graphql-transformer-factory';
+export * from './graphql-transformer';
+export * from './graphql-resource-manager';
+export * from './doc-links';
 
 const category = AmplifyCategories.API;
 const categories = 'categories';

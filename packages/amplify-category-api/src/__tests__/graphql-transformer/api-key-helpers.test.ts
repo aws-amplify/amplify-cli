@@ -1,4 +1,9 @@
-import { getAppSyncApiConfig, getApiKeyConfig, apiKeyIsActive, hasApiKey } from '../../utils/api-key-helpers';
+import {
+  getAppSyncApiConfig,
+  getApiKeyConfig,
+  apiKeyIsActive,
+  hasApiKey,
+} from '../../graphql-transformer/api-key-helpers';
 
 jest.mock('amplify-cli-core', () => {
   const original = jest.requireActual('amplify-cli-core');

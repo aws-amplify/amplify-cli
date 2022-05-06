@@ -10,6 +10,7 @@ import {
 import { printer, prompter } from 'amplify-prompts';
 import * as path from 'path';
 import { ADMIN_QUERIES_NAME } from '../../category-constants';
+import { getTransformerVersion } from '../../graphql-transformer-factory';
 import { AdminQueriesProps, ApigwInputState } from '../../provider-utils/awscloudformation/apigw-input-state';
 import { ApigwStackTransform } from '../../provider-utils/awscloudformation/cdk-stack-builder';
 import { checkAppsyncApiResourceMigration } from '../../provider-utils/awscloudformation/utils/check-appsync-api-migration';
@@ -57,9 +58,7 @@ export const run = async (context: $TSContext) => {
     /**
      * Below steps checks for TransformerV1 app and updates the FF { useexperimentalpipelinedtransformer , transformerversion}
      */
-    const transformerVersion = await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'getTransformerVersion', [
-      context,
-    ]);
+    const transformerVersion = await getTransformerVersion(context);
     if (transformerVersion === 2 && (await checkAppsyncApiResourceMigration(context, selectedResourceName, false))) {
       await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'compileSchema', [context, { forceCompile: true }]);
       await generateOverrideSkeleton(context, srcPath, destPath);

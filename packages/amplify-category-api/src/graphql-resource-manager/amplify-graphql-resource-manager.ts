@@ -1,11 +1,4 @@
-import { $TSContext, JSONUtilities, pathManager } from 'amplify-cli-core';
-import { DeploymentOp, DeploymentStep, DEPLOYMENT_META } from '../iterative-deployment';
-import { DiffChanges, DiffableProject, getGQLDiff } from './utils';
-import { DynamoDB, Template } from 'cloudform-types';
-import { GSIChange, getGSIDiffs } from './gsi-diff-helpers';
-import { GSIRecord, TemplateState, getPreviousDeploymentRecord, getTableNames } from '../utils/amplify-resource-state-utils';
-import { ROOT_APPSYNC_S3_KEY, hashDirectory } from '../upload-appsync-files';
-import { addGSI, getGSIDetails, removeGSI } from './dynamodb-gsi-helpers';
+import { $TSAny, $TSContext, JSONUtilities, pathManager } from 'amplify-cli-core';
 import {
   cantAddAndRemoveGSIAtSameTimeRule,
   cantBatchMutateGSIAtUpdateTimeRule,
@@ -13,13 +6,31 @@ import {
   cantHaveMoreThan500ResourcesRule,
   sanityCheckDiffs,
 } from 'graphql-transformer-core';
-
+import { DynamoDB, Template } from 'cloudform-types';
 import { CloudFormation } from 'aws-sdk';
+import path from 'path';
+import fs from 'fs-extra';
 import { Diff } from 'deep-diff';
 import _ from 'lodash';
-import { loadConfiguration } from '../configuration-manager';
-import fs from 'fs-extra';
-import path from 'path';
+import {
+  ROOT_APPSYNC_S3_KEY,
+  hashDirectory,
+  DeploymentOp,
+  DeploymentStep,
+  DEPLOYMENT_META,
+  loadConfiguration,
+  TemplateState,
+  getPreviousDeploymentRecord,
+  getTableNames,
+} from 'amplify-provider-awscloudformation';
+import {
+  DiffChanges,
+  DiffableProject,
+  getGQLDiff,
+  GSIRecord,
+} from './utils';
+import { GSIChange, getGSIDiffs } from './gsi-diff-helpers';
+import { addGSI, getGSIDetails, removeGSI } from './dynamodb-gsi-helpers';
 
 export type GQLResourceManagerProps = {
   cfnClient: CloudFormation;
@@ -356,3 +367,13 @@ export class GraphQLResourceManager {
 export const assertUnreachable = (_: never): never => {
   throw new Error('Default case should never reach');
 };
+
+/**
+ * Utility method to create the resource manager, to expose over the amplify plugin interface.
+ */
+export const createGraphQLResourceManager = async (
+  context: $TSContext,
+  gqlResource: $TSAny,
+  StackId: string,
+  rebuildAllTables: boolean,
+): Promise<GraphQLResourceManager> => GraphQLResourceManager.createInstance(context, gqlResource, StackId, rebuildAllTables);

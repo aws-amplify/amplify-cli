@@ -1,5 +1,5 @@
-import { AmplifyCLIFeatureFlagAdapter } from '../../utils/amplify-cli-feature-flag-adapter';
 import { FeatureFlags } from 'amplify-cli-core';
+import { AmplifyCLIFeatureFlagAdapter } from '../../graphql-transformer/amplify-cli-feature-flag-adapter';
 
 jest.mock('amplify-cli-core');
 

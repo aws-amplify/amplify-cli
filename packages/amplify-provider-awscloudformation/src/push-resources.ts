@@ -35,6 +35,7 @@ import {
   DeploymentStepStatus,
   readCFNTemplate,
   Template,
+  ApiCategoryFacade,
 } from 'amplify-cli-core';
 import ora from 'ora';
 import { Fn } from 'cloudform-types';
@@ -46,10 +47,8 @@ import { uploadAppSyncFiles } from './upload-appsync-files';
 import { prePushGraphQLCodegen, postPushGraphQLCodegen } from './graphql-codegen';
 import { adminModelgen } from './admin-modelgen';
 import { prePushAuthTransform } from './auth-transform';
-import { transformGraphQLSchema } from './graphql-transformer';
 import { displayHelpfulURLs } from './display-helpful-urls';
 import { downloadAPIModels } from './download-api-models';
-import { GraphQLResourceManager } from './graphql-resource-manager';
 import { loadResourceParameters } from './resourceParams';
 import { uploadAuthTriggerFiles } from './upload-auth-trigger-files';
 import archiver from './utils/archiver';
@@ -181,7 +180,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     /**
      * calling transform schema here to support old project with out overrides
      */
-    await transformGraphQLSchema(context, {
+    await ApiCategoryFacade.transformGraphQLSchema(context, {
       handleMigration: opts => updateStackForAPIMigration(context, 'api', undefined, opts),
       minify: options.minify,
       promptApiKeyCreation: true,
@@ -217,7 +216,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
       const gqlResource = getGqlUpdatedResource(rebuild ? resources : resourcesToBeUpdated);
 
       if (gqlResource) {
-        const gqlManager = await GraphQLResourceManager.createInstance(context, gqlResource, cloudformationMeta.StackId, rebuild);
+        const gqlManager = await ApiCategoryFacade.createGraphQLResourceManager(context, gqlResource, cloudformationMeta.StackId, rebuild);
         deploymentSteps = await gqlManager.run();
 
         // If any models are being replaced, we prepend steps to the iterative deployment to remove references to the replaced table in functions that have a dependeny on the tables

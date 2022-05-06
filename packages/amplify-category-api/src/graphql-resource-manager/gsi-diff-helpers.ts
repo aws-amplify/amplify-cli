@@ -1,7 +1,5 @@
 import * as _ from 'lodash';
-
 import { DynamoDB, IntrinsicFunction } from 'cloudform';
-
 import { GlobalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
 import { diff as getDiffs } from 'deep-diff';
 

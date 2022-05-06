@@ -1,5 +1,10 @@
 import { keys } from 'lodash';
-import { $TSAny, $TSContext, stateManager, getTransformerVersion, getGraphQLTransformerFunctionDocLink } from 'amplify-cli-core';
+import {
+  $TSAny,
+  $TSContext,
+  stateManager,
+  ApiCategoryFacade,
+} from 'amplify-cli-core';
 import _ = require('lodash');
 import { ServiceName } from 'amplify-category-function';
 import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
@@ -9,8 +14,7 @@ import { ProcessedLambdaFunction } from '../CFNParser/stack/types';
  * Attempts to match an arn object against the array of lambdas configured in the project
  */
 export const lambdaArnToConfig = async (context: $TSContext, arn: $TSAny): Promise<ProcessedLambdaFunction> => {
-  const version = await getTransformerVersion(context);
-  const doclink = getGraphQLTransformerFunctionDocLink(version);
+  const doclink = await ApiCategoryFacade.getGraphQLTransformerFunctionDocLink(context);
   const errorSuffix = `\nSee ${doclink} for information on how to configure Lambda resolvers.`;
   let searchString = '';
   if (typeof arn === 'string') {

@@ -39,7 +39,6 @@ export { getLocationSupportedRegion, getLocationRegionMapping } from './aws-util
 import { updateEnv } from './update-env';
 
 import { uploadHooksDirectory } from './utils/hooks-manager';
-import { getTransformerVersion } from './graphql-transformer-factory/transformer-version';
 
 export const cfnRootStackFileName = 'root-cloudformation-stack.json';
 export { storeRootStackTemplate } from './initializer';
@@ -50,6 +49,13 @@ export { rootStackFileName } from './push-resources';
 
 import { compileSchema } from './utility-functions';
 import { LocationService } from './aws-utils/aws-location-service';
+
+export { prePushCfnTemplateModifier } from './pre-push-cfn-processor/pre-push-cfn-modifier';
+export { isAmplifyAdminApp } from './utils/admin-helpers';
+export { hashDirectory, ROOT_APPSYNC_S3_KEY } from './upload-appsync-files';
+export { DeploymentOp, DeploymentStep, DEPLOYMENT_META } from './iterative-deployment';
+export { loadConfiguration } from './configuration-manager';
+export { TemplateState, getPreviousDeploymentRecord, getTableNames } from './utils/amplify-resource-state-utils';
 
 function init(context) {
   return initializer.run(context);
@@ -190,7 +196,6 @@ module.exports = {
   uploadHooksDirectory,
   getLocationSupportedRegion,
   getLocationRegionMapping,
-  getTransformerVersion,
   transformResourceWithOverrides,
   rootStackFileName,
   compileSchema,

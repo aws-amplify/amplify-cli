@@ -1,5 +1,3 @@
-
-
 export function getGraphQLTransformerFunctionDocLink(version: number) : string {
     switch(version){
         case 1:
@@ -10,7 +8,6 @@ export function getGraphQLTransformerFunctionDocLink(version: number) : string {
             return '';
     }
 }
-
 
 export function getGraphQLTransformerAuthDocLink(version: number): string {
     switch(version){
@@ -34,7 +31,7 @@ export function getGraphQLTransformerAuthSubscriptionsDocLink(version: number): 
     }
 }
 
-export function getGraphQLTransformerOpenSearchDocLink(version: number): string {
+function getGraphQLTransformerOpenSearchDocLink(version: number): string {
     switch(version){
         case 1:
             return 'https://docs.amplify.aws/cli-legacy/graphql-transformer/searchable/';

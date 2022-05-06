@@ -10,7 +10,6 @@ import {
   ResourceDoesNotExistError,
   stateManager,
   UnknownResourceTypeError,
-  getGraphQLTransformerAuthDocLink,
 } from 'amplify-cli-core';
 import { UpdateApiRequest } from 'amplify-headless-interface';
 import { printer, prompter } from 'amplify-prompts';
@@ -22,6 +21,8 @@ import _ from 'lodash';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import { category } from '../../../category-constants';
+import { getGraphQLTransformerAuthDocLink } from '../../../doc-links';
+import { getTransformerVersion } from '../../../graphql-transformer-factory';
 import { rootAssetDir } from '../aws-constants';
 import { getAllDefaults } from '../default-values/appSync-defaults';
 import { dataStoreLearnMore } from '../sync-conflict-handler-assets/syncAssets';
@@ -393,8 +394,7 @@ const updateApiInputWalkthrough = async (context: $TSContext, project: $TSObject
 
 export const serviceWalkthrough = async (context: $TSContext, serviceMetadata: $TSObject) => {
   const resourceName = resourceAlreadyExists();
-  const providerPlugin = await import(context.amplify.getProviderPlugins(context)[providerName]);
-  const transformerVersion = await providerPlugin.getTransformerVersion(context);
+  const transformerVersion = await getTransformerVersion(context);
   await addLambdaAuthorizerChoice(context);
 
   if (resourceName) {
@@ -424,7 +424,8 @@ export const serviceWalkthrough = async (context: $TSContext, serviceMetadata: $
 
   const { templateSelection } = await inquirer.prompt(templateSelectionQuestion);
   const schemaFilePath = path.join(graphqlSchemaDir, templateSelection);
-  schemaContent += transformerVersion === 2 ? defineGlobalSandboxMode(getGraphQLTransformerAuthDocLink(transformerVersion)) : '';
+  const docLink = getGraphQLTransformerAuthDocLink(transformerVersion);
+  schemaContent += transformerVersion === 2 ? defineGlobalSandboxMode(docLink) : '';
   schemaContent += fs.readFileSync(schemaFilePath, 'utf8');
 
   return {
@@ -665,8 +666,7 @@ async function askSyncFunctionQuestion() {
 }
 
 async function addLambdaAuthorizerChoice(context: $TSContext) {
-  const providerPlugin = await import(context.amplify.getProviderPlugins(context)[providerName]);
-  const transformerVersion = await providerPlugin.getTransformerVersion(context);
+  const transformerVersion = await getTransformerVersion(context);
   if (transformerVersion === 2 && !authProviderChoices.some(choice => choice.value == 'AWS_LAMBDA')) {
     authProviderChoices.push({
       name: 'Lambda',

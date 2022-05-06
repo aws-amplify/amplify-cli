@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 import { $TSContext } from 'amplify-cli-core';
-import { hasApiKey } from './api-key-helpers';
 import { printer } from 'amplify-prompts';
 import { parse } from 'graphql';
+import { hasApiKey } from './api-key-helpers';
 
 const AMPLIFY = 'AMPLIFY';
 const AUTHORIZATION_RULE = 'AuthRule';

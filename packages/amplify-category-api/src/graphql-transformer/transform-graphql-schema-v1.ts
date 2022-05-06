@@ -2,21 +2,14 @@ import fs from 'fs-extra';
 import path from 'path';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
-import { destructiveUpdatesFlag, ProviderName as providerName } from '../constants';
-import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
 import {
   $TSContext,
   AmplifyCategories,
-  getGraphQLTransformerAuthDocLink,
-  getGraphQLTransformerAuthSubscriptionsDocLink,
-  getGraphQLTransformerOpenSearchProductionDocLink,
   JSONUtilities,
   pathManager,
   stateManager,
 } from 'amplify-cli-core';
 import { ResourceConstants } from 'graphql-transformer-common';
-import _ from 'lodash';
-import { isAuthModeUpdated } from '../utils/auth-mode-compare';
 import {
   collectDirectivesByTypeNames,
   readTransformerConfiguration,
@@ -30,11 +23,18 @@ import {
   buildAPIProject,
   getSanityCheckRules,
 } from 'graphql-transformer-core';
-import { hashDirectory } from '../upload-appsync-files';
 import { exitOnNextTick } from 'amplify-cli-core';
-import { getTransformerVersion } from '../graphql-transformer-factory/transformer-version';
-import { getTransformerFactory } from '../graphql-transformer-factory/transformer-factory';
+import { hashDirectory } from 'amplify-provider-awscloudformation';
+import { isAuthModeUpdated } from './auth-mode-compare';
+import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
 import { searchablePushChecks } from './api-utils';
+import { PROVIDER_NAME, DESTRUCTIVE_UPDATES_FLAG } from './provider-utils';
+import { getTransformerFactory, getTransformerVersion } from '../graphql-transformer-factory';
+import {
+  getGraphQLTransformerAuthDocLink,
+  getGraphQLTransformerAuthSubscriptionsDocLink,
+  getGraphQLTransformerOpenSearchProductionDocLink,
+} from '../doc-links';
 
 const apiCategory = 'api';
 const parametersFileName = 'parameters.json';
@@ -224,7 +224,7 @@ export async function transformGraphQLSchemaV1(context, options) {
     // There can only be one appsync resource
     if (resources.length > 0) {
       const resource = resources[0];
-      if (resource.providerPlugin !== providerName) {
+      if (resource.providerPlugin !== PROVIDER_NAME) {
         return;
       }
       const { category, resourceName } = resource;
@@ -239,7 +239,7 @@ export async function transformGraphQLSchemaV1(context, options) {
   if (!previouslyDeployedBackendDir) {
     if (resources.length > 0) {
       const resource = resources[0];
-      if (resource.providerPlugin !== providerName) {
+      if (resource.providerPlugin !== PROVIDER_NAME) {
         return;
       }
       const { category, resourceName } = resource;
@@ -370,7 +370,7 @@ export async function transformGraphQLSchemaV1(context, options) {
   }
 
   const ff = new AmplifyCLIFeatureFlagAdapter();
-  const allowDestructiveUpdates = context?.input?.options?.[destructiveUpdatesFlag] || context?.input?.options?.force;
+  const allowDestructiveUpdates = context?.input?.options?.[DESTRUCTIVE_UPDATES_FLAG] || context?.input?.options?.force;
   const sanityCheckRulesList = getSanityCheckRules(isNewAppSyncAPI, ff, allowDestructiveUpdates);
 
   const buildConfig = {
@@ -402,7 +402,7 @@ place .graphql files in a directory at ${schemaDirPath}`);
 
 function getProjectBucket(context) {
   const projectDetails = context.amplify.getProjectDetails();
-  const projectBucket = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName : '';
+  const projectBucket = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[PROVIDER_NAME].DeploymentBucketName : '';
   return projectBucket;
 }
 

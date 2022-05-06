@@ -1,9 +1,8 @@
 import { AttributeDefinition, GlobalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
 import { DynamoDB, IntrinsicFunction } from 'cloudform';
-
-import { GSIRecord } from '../utils/amplify-resource-state-utils';
 import { KeySchema } from 'cloudform-types/types/dynamoDb/table';
 import _ from 'lodash';
+import { GSIRecord } from './utils';
 
 export const MAX_GSI_PER_TABLE = 20;
 /**

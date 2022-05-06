@@ -1,11 +1,9 @@
 import { showGraphQLTransformerVersion, showSMSSandboxWarning } from '../display-helpful-urls';
-import { BannerMessage, stateManager } from 'amplify-cli-core';
+import { BannerMessage, stateManager, ApiCategoryFacade } from 'amplify-cli-core';
 import { SNS } from '../aws-utils/aws-sns';
-import { getTransformerVersion } from '../graphql-transformer-factory/transformer-version';
 import { AWSError } from 'aws-sdk';
 
 jest.mock('../aws-utils/aws-sns');
-jest.mock('../graphql-transformer-factory/transformer-version');
 jest.mock('amplify-cli-core');
 
 describe('showGraphQLTransformerVersion', () => {
@@ -25,7 +23,7 @@ describe('showGraphQLTransformerVersion', () => {
   });
 
   it('prints the transformer version if there are AppSync APIs', async () => {
-    (getTransformerVersion as jest.Mock).mockReturnValueOnce(2);
+    (ApiCategoryFacade.getTransformerVersion as jest.Mock).mockReturnValueOnce(2);
     (stateManager.getMeta as jest.Mock).mockReturnValueOnce({
       api: { testapi: { service: 'AppSync' } },
     });

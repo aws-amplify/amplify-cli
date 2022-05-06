@@ -1,14 +1,9 @@
 import { Template } from 'cloudform-types';
-import { GlobalSecondaryIndex, AttributeDefinition } from 'cloudform-types/types/dynamoDb/table';
 import { CloudFormation } from 'aws-sdk';
 import { Capabilities } from 'aws-sdk/clients/cloudformation';
 import _ from 'lodash';
 import { JSONUtilities } from 'amplify-cli-core';
 
-export interface GSIRecord {
-  attributeDefinition: AttributeDefinition[];
-  gsi: GlobalSecondaryIndex;
-}
 /**
  * Use previously deployed variables
  */

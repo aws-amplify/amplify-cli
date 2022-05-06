@@ -5,9 +5,7 @@ const AppSync = require('./aws-utils/aws-appsync');
 const { Lex } = require('./aws-utils/aws-lex');
 const Polly = require('./aws-utils/aws-polly');
 const SageMaker = require('./aws-utils/aws-sagemaker');
-const { transformGraphQLSchema } = require('./graphql-transformer');
 const { transformResourceWithOverrides } = require('./override-manager');
-const { getDirectiveDefinitions } = require('./graphql-transformer-factory/directive-definitions');
 const { updateStackForAPIMigration } = require('./push-resources');
 const SecretsManager = require('./aws-utils/aws-secretsmanager');
 const Route53 = require('./aws-utils/aws-route53');
@@ -17,6 +15,7 @@ const { pagedAWSCall } = require('./aws-utils/paged-call');
 const { fileLogger } = require('./utils/aws-logger');
 const logger = fileLogger('utility-functions');
 const { getAccountId } = require('./amplify-sts');
+const { ApiCategoryFacade } = require('amplify-cli-core');
 
 module.exports = {
   zipFiles: (context, [srcDir, dstZipFilePath]) => {
@@ -60,7 +59,7 @@ module.exports = {
       };
     }
 
-    return transformGraphQLSchema(context, optionsWithUpdateHandler);
+    return ApiCategoryFacade.transformGraphQLSchema(context, optionsWithUpdateHandler);
   },
 
   /**
@@ -158,7 +157,7 @@ module.exports = {
     if (!resourceDir) {
       throw new Error('missing resource directory');
     }
-    return getDirectiveDefinitions(context, resourceDir);
+    return ApiCategoryFacade.getDirectiveDefinitions(context, resourceDir);
   },
   getRegions: () => awsRegions.regions,
   getRegionMappings: () => awsRegions.regionMappings,

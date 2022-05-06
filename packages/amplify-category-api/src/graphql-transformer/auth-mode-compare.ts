@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _ from 'lodash';
 
 export function isAuthModeUpdated(options): boolean {
   const { authConfig, previousAuthConfig } = getAuthConfigForCompare(options);
