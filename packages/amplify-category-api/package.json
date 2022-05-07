@@ -13,7 +13,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "clean": "rimraf lib tsconfig.tsbuildinfo",
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "test": "jest",
     "generateSchemas": "ts-node ./scripts/generateApiSchemas.ts"
   },

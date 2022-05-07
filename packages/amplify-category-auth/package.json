@@ -21,7 +21,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "clean": "rimraf lib tsconfig.tsbuildinfo",
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "test": "jest",
     "test-watch": "jest --watch",
     "generateSchemas": "ts-node ./scripts/generateAuthSchemas.ts"

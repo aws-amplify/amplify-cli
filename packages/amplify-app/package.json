@@ -21,7 +21,7 @@
     "access": "public"
   },
   "scripts": {
-    "clean": "rimraf ./lib"
+    "clean": "rimraf ./lib node_modules"
   },
   "engines": {
     "node": ">=12.0.0",

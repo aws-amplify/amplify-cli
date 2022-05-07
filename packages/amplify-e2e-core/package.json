@@ -19,7 +19,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "clean": "rimraf ./lib"
+    "clean": "rimraf ./lib tsconfig.tsbuildinfo"
   },
   "dependencies": {
     "amplify-cli-core": "2.6.0",
