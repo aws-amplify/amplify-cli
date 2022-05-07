@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { v4 as uuid } from "uuid";
 import { merge } from '../service-utils/resourceUtils';
-import { MapParameters, getGeoMapStyle, MapStyle, getMapStyleComponents, HereMapStyleType } from "../service-utils/mapParams";
+import { MapParameters, getGeoMapStyle, MapStyle, getMapStyleComponents, EsriMapStyleType } from '../service-utils/mapParams';
 import { apiDocs, ServiceName } from '../service-utils/constants';
 import { $TSContext } from 'amplify-cli-core';
 import { getCurrentMapParameters, getMapFriendlyNames } from '../service-utils/mapUtils';
@@ -60,7 +60,7 @@ export const mapNameWalkthrough = async (context: any): Promise<Partial<MapParam
 };
 
 export const mapAdvancedWalkthrough = async (context: $TSContext, parameters: Partial<MapParameters>): Promise<Partial<MapParameters>> => {
-    const advancedSettingOptions: string[] = ["Map style & Map data provider (default: Explore provided by Here)"];
+    const advancedSettingOptions: string[] = ['Map style & Map data provider (default: Streets provided by Esri)'];
     printer.info('Available advanced settings:');
     formatter.list(advancedSettingOptions);
     printer.blankLine();
@@ -70,8 +70,8 @@ export const mapAdvancedWalkthrough = async (context: $TSContext, parameters: Pa
         parameters = merge(parameters, await mapStyleWalkthrough(parameters));
     }
     else {
-        parameters.dataProvider = DataProvider.Here;
-        parameters.mapStyleType = HereMapStyleType.Explore;
+        parameters.dataProvider = DataProvider.Esri;
+        parameters.mapStyleType = EsriMapStyleType.Streets;
     }
 
     return parameters;
@@ -89,7 +89,7 @@ export const mapStyleWalkthrough = async (parameters: Partial<MapParameters>): P
         { name: 'DarkGrayCanvas (data provided by Esri)', value: MapStyle.VectorEsriDarkGrayCanvas }
     ];
     const mapStyleDefault = parameters.dataProvider && parameters.mapStyleType ?
-        getGeoMapStyle(parameters.dataProvider, parameters.mapStyleType) : 'VectorHereExplore';
+        getGeoMapStyle(parameters.dataProvider, parameters.mapStyleType) : 'VectorEsriStreets';
 
     const mapStyleDefaultIndex = mapStyleChoices.findIndex(item => item.value === mapStyleDefault);
     const mapStyleInput = await prompter.pick<'one', string>(

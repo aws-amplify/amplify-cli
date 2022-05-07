@@ -9,10 +9,10 @@ Object {
         "default": "defaultMap12345",
         "items": Object {
           "defaultMap12345": Object {
-            "style": "VectorHereExplore",
+            "style": "VectorEsriStreets",
           },
           "map12345": Object {
-            "style": "VectorHereExplore",
+            "style": "VectorEsriStreets",
           },
         },
       },
@@ -38,10 +38,10 @@ Object {
         "default": "defaultMap12345",
         "items": Object {
           "defaultMap12345": Object {
-            "style": "VectorHereExplore",
+            "style": "VectorEsriStreets",
           },
           "map12345": Object {
-            "style": "VectorHereExplore",
+            "style": "VectorEsriStreets",
           },
         },
       },

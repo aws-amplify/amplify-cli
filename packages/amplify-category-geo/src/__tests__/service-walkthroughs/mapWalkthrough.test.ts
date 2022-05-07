@@ -1,5 +1,5 @@
 import { $TSContext, $TSObject, stateManager, pathManager, JSONUtilities } from 'amplify-cli-core';
-import { HereMapStyleType, getGeoMapStyle, MapParameters, MapStyle } from "../../service-utils/mapParams";
+import { EsriMapStyleType, getGeoMapStyle, MapParameters, MapStyle } from '../../service-utils/mapParams';
 import { AccessType, DataProvider } from '../../service-utils/resourceParams';
 import { provider, ServiceName, apiDocs } from '../../service-utils/constants';
 import { category } from '../../constants';
@@ -17,13 +17,13 @@ describe('Map walkthrough works as expected', () => {
     const mockMapResource = {
         resourceName: mockMapName,
         service: service,
-        mapStyle: MapStyle.VectorHereExplore
+        mapStyle: MapStyle.VectorEsriStreets
     };
     const secondaryMapResource = {
         resourceName: secondaryMapName,
         service: service,
         isDefault: false,
-        mapStyle: MapStyle.VectorHereExplore
+        mapStyle: MapStyle.VectorEsriStreets
     };
     const mockPlaceIndexResource = {
         resourceName: 'placeIndex12345',
@@ -37,8 +37,8 @@ describe('Map walkthrough works as expected', () => {
             projectName: projectName
         },
         name: mockMapName,
-        mapStyleType: HereMapStyleType.Explore,
-        dataProvider: DataProvider.Here,
+        mapStyleType: EsriMapStyleType.Streets,
+        dataProvider: DataProvider.Esri,
         accessType: AccessType.AuthorizedUsers,
         isDefault: false
     };

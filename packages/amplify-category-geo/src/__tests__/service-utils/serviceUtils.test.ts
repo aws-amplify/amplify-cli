@@ -18,7 +18,7 @@ describe('Test resource utility functions', () => {
         service: ServiceName.Map,
         isDefault: true,
         providerPlugin: provider,
-        mapStyle: MapStyle.VectorHereExplore,
+        mapStyle: MapStyle.VectorEsriStreets,
         accessType: AccessType.AuthorizedUsers
     };
     const placeIndex1Params = {

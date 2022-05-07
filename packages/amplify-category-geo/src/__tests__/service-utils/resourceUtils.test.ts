@@ -1,4 +1,4 @@
-import { HereMapStyleType, MapParameters } from "../../service-utils/mapParams";
+import { EsriMapStyleType, MapParameters } from '../../service-utils/mapParams';
 import { merge, updateDefaultResource, readResourceMetaParameters } from '../../service-utils/resourceUtils';
 import { stateManager, $TSContext, pathManager, JSONUtilities } from 'amplify-cli-core';
 import { provider, ServiceName } from '../../service-utils/constants';
@@ -27,7 +27,7 @@ describe('parameter merge utility function works as expected', () => {
         };
 
         const otherParams: Partial<MapParameters> = {
-            'mapStyleType': HereMapStyleType.Explore
+            'mapStyleType': EsriMapStyleType.Streets
         };
 
         const mergedParams = merge(existingParams, otherParams);
@@ -46,7 +46,7 @@ const map2Params = {
     service: ServiceName.Map,
     isDefault: true,
     providerPlugin: provider,
-    mapStyle: MapStyle.VectorHereExplore,
+    mapStyle: MapStyle.VectorEsriStreets,
     accessType: AccessType.AuthorizedUsers
 };
 const placeIndex1Params = {
