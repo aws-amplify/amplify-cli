@@ -16,7 +16,8 @@ export enum EsriMapStyleType {
     Streets = "Streets",
     Topographic = "Topographic",
     DarkGrayCanvas = "DarkGrayCanvas",
-    LightGrayCanvas = "LightGrayCanvas"
+    LightGrayCanvas = "LightGrayCanvas",
+    Imagery = "Imagery"
 }
 
 /**
@@ -39,6 +40,7 @@ export enum MapStyle {
     VectorEsriTopographic = "VectorEsriTopographic",
     VectorEsriDarkGrayCanvas = "VectorEsriDarkGrayCanvas",
     VectorEsriLightGrayCanvas = "VectorEsriLightGrayCanvas",
+    RasterEsriImagery = "RasterEsriImagery",
     VectorHereBerlin = "VectorHereBerlin",
     VectorHereExplore = "VectorHereExplore",
     VectorHereExploreTruck = "VectorHereExploreTruck"
@@ -82,6 +84,8 @@ export const getMapStyleComponents = (mapStyle: string): Pick<MapParameters, 'da
             return { dataProvider: DataProvider.Esri, mapStyleType: EsriMapStyleType.Streets };
         case MapStyle.VectorEsriTopographic:
             return { dataProvider: DataProvider.Esri, mapStyleType: EsriMapStyleType.Topographic };
+        case MapStyle.RasterEsriImagery:
+            return { dataProvider: DataProvider.Esri, mapStyleType: EsriMapStyleType.Imagery };
         case MapStyle.VectorHereBerlin:
             return { dataProvider: DataProvider.Here, mapStyleType: HereMapStyleType.Berlin };
         case MapStyle.VectorHereExplore:

@@ -91,6 +91,7 @@
                 "VectorEsriNavigation",
                 "VectorEsriStreets",
                 "VectorEsriTopographic",
+                "RasterEsriImagery",
                 "VectorHereBerlin",
                 "VectorHereExplore",
                 "VectorHereExploreTruck"

@@ -7,6 +7,7 @@ describe('map style construction works as expected', () => {
         "VectorEsriTopographic",
         "VectorEsriDarkGrayCanvas",
         "VectorEsriLightGrayCanvas",
+        "RasterEsriImagery",
         "VectorHereBerlin",
         "VectorHereExplore",
         "VectorHereExploreTruck"
