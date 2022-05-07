@@ -160,7 +160,7 @@ export class ApiGatewayAuthStack extends cdk.Stack {
       }
 
       options.managedPolicy.policyDocument.Statement[0].Resource.push(
-        createApiResource(this.region, this.account, apiRef, env, method, `${apiPath}/*`),
+        createApiResource(this.region, this.account, apiRef, env, method, appendToUrlPath(apiPath, '*')),
         createApiResource(this.region, this.account, apiRef, env, method, apiPath),
       );
     });
@@ -177,18 +177,18 @@ function createManagedPolicy(stack: cdk.Stack, policyName: string, roleName: str
   });
 }
 
-function createApiResource(region, account, api, env, method, resourceName) {
+function createApiResource(regionRef, accountRef, apiNameRef, envRef, method: string, apiPath: string) {
   return cdk.Fn.join('', [
     'arn:aws:execute-api:',
-    region,
+    regionRef,
     ':',
-    account,
+    accountRef,
     ':',
-    api,
+    apiNameRef,
     '/',
-    cdk.Fn.conditionIf('ShouldNotCreateEnvResources', 'Prod', env) as unknown as string,
+    cdk.Fn.conditionIf('ShouldNotCreateEnvResources', 'Prod', envRef) as unknown as string,
     method,
-    resourceName,
+    apiPath,
   ]);
 }
 
@@ -304,3 +304,7 @@ export async function loadApiCliInputs(context: $TSContext, resourceName: string
 
   return stateManager.getResourceInputsJson(projectRoot, AmplifyCategories.API, resourceName, { throwIfNotExist: false });
 }
+
+const appendToUrlPath = (path: string, postfix: string) => {
+  return path.charAt(path.length - 1) === '/' ? `${path}${postfix}` : `${path}/${postfix}`;
+};

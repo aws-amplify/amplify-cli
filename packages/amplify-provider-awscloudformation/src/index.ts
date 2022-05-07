@@ -39,7 +39,7 @@ export { getLocationSupportedRegion, getLocationRegionMapping } from './aws-util
 import { updateEnv } from './update-env';
 
 import { uploadHooksDirectory } from './utils/hooks-manager';
-import { getTransformerVersion } from './transform-graphql-schema';
+import { getTransformerVersion } from './graphql-transformer-factory/transformer-version';
 
 export const cfnRootStackFileName = 'root-cloudformation-stack.json';
 export { storeRootStackTemplate } from './initializer';
@@ -49,6 +49,7 @@ import { rootStackFileName } from './push-resources';
 export { rootStackFileName } from './push-resources';
 
 import { compileSchema } from './utility-functions';
+import { LocationService } from './aws-utils/aws-location-service';
 
 function init(context) {
   return initializer.run(context);
@@ -131,6 +132,10 @@ export async function getConfiguredSSMClient(context) {
   return await SSM.getInstance(context);
 }
 
+export async function getConfiguredLocationServiceClient(context: $TSContext) {
+  return await LocationService.getInstance(context);
+}
+
 async function getLambdaSdk(context: $TSContext) {
   return await new Lambda(context);
 }
@@ -189,4 +194,5 @@ module.exports = {
   transformResourceWithOverrides,
   rootStackFileName,
   compileSchema,
+  getConfiguredLocationServiceClient,
 };

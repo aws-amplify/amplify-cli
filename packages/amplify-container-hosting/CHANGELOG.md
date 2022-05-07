@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.33](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.4.32...amplify-container-hosting@2.4.33) (2022-04-29)
+
+**Note:** Version bump only for package amplify-container-hosting
+
+
+
+
+
+## [2.4.32](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.4.31...amplify-container-hosting@2.4.32) (2022-04-27)
+
+**Note:** Version bump only for package amplify-container-hosting
+
+
+
+
+
+## [2.4.31](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.4.30...amplify-container-hosting@2.4.31) (2022-04-18)
+
+**Note:** Version bump only for package amplify-container-hosting
+
+
+
+
+
+## [2.4.30](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.4.29...amplify-container-hosting@2.4.30) (2022-04-11)
+
+**Note:** Version bump only for package amplify-container-hosting
+
+
+
+
+
+## [2.4.29](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.4.28...amplify-container-hosting@2.4.29) (2022-04-07)
+
+**Note:** Version bump only for package amplify-container-hosting
+
+
+
+
+
 ## [2.4.28](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.4.27...amplify-container-hosting@2.4.28) (2022-03-23)
 
 **Note:** Version bump only for package amplify-container-hosting

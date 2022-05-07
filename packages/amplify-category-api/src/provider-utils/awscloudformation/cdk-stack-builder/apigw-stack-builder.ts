@@ -110,7 +110,8 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
   }
 
   private _craftPolicyDocument(apiResourceName: string, pathName: string, supportedOperations: string[]) {
-    const resources = [pathName, `${pathName}/*`].flatMap(path =>
+    const paths = [pathName, appendToUrlPath(pathName, '*')];
+    const resources = paths.flatMap(path =>
       supportedOperations.map(op =>
         cdk.Fn.join('', [
           'arn:aws:execute-api:',
@@ -288,7 +289,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
         lambdaPermissionLogicalId = `${ADMIN_QUERIES_NAME}APIGWPolicyForLambda`;
       } else {
         this.paths[pathName] = createPathObject(path);
-        this.paths[`${pathName}/{proxy+}`] = createPathObject(path);
+        this.paths[appendToUrlPath(pathName, '{proxy+}')] = createPathObject(path);
         lambdaPermissionLogicalId = `function${path.lambdaFunction}Permission${resourceName}`;
       }
 
@@ -324,6 +325,10 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
     });
   };
 }
+
+const appendToUrlPath = (path: string, postfix: string) => {
+  return path.charAt(path.length - 1) === '/' ? `${path}${postfix}` : `${path}/${postfix}`;
+};
 
 const getAdminQueriesPathObject = (lambdaFunctionName: string) => ({
   options: {

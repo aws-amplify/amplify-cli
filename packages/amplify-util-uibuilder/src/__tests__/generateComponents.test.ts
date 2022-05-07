@@ -33,6 +33,8 @@ describe('can generate components', () => {
         {
           resultType: 'SUCCESS',
           schemaName: 'testSchema',
+          name: 'testSchema',
+          schemaVersion: '1.0',
         },
       ],
     };

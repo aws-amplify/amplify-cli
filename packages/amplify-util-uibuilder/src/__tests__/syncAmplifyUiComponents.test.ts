@@ -5,10 +5,10 @@ import {
   getAppId,
   listUiBuilderComponents,
   listUiBuilderThemes,
-  getAmplifyUIBuilderService,
   resolveAppId,
   generateUiBuilderThemes,
 } from '../commands/utils/syncAmplifyUiBuilderComponents';
+import { getAmplifyUIBuilderService } from '../commands/utils/amplifyUiBuilderService'
 import aws from 'aws-sdk';
 import * as CLICore from 'amplify-cli-core';
 import * as createUiBuilderComponentDependency from '../commands/utils/createUiBuilderComponent';

@@ -1,20 +1,29 @@
 import { stateManager } from 'amplify-cli-core';
+import * as _ from 'lodash';
 import { init } from './app-config';
-import { attachExtentions } from './context-extensions';
+// eslint-disable-next-line spellcheck/spell-checker
+import { attachExtentions as attachExtensions } from './context-extensions';
 import { NoUsageData, UsageData } from './domain/amplify-usageData';
-import { ProjectSettings } from './domain/amplify-usageData/UsageDataPayload';
+import { ProjectSettings } from './domain/amplify-usageData/IUsageData';
 import { Context } from './domain/context';
 import { Input } from './domain/input';
 import { PluginPlatform } from './domain/plugin-platform';
-import * as _ from 'lodash';
 
-export function constructContext(pluginPlatform: PluginPlatform, input: Input): Context {
+/**
+ * Initialize the context object
+ */
+export const constructContext = (pluginPlatform: PluginPlatform, input: Input): Context => {
   const context = new Context(pluginPlatform, input);
-  attachExtentions(context);
+  attachExtensions(context);
   return context;
-}
+};
 
-export async function attachUsageData(context: Context) {
+export const isHeadlessCommand = (context: any): boolean => context.input.options && context.input.options.headless;
+
+/**
+ * Initialize and attach the usageData object to context
+ */
+export const attachUsageData = async (context: Context, processStartTimeStamp: number): Promise<void> => {
   const { AMPLIFY_CLI_ENABLE_USAGE_DATA } = process.env;
   const config = init(context);
   const usageTrackingEnabled = AMPLIFY_CLI_ENABLE_USAGE_DATA
@@ -22,35 +31,47 @@ export async function attachUsageData(context: Context) {
     : config.usageDataConfig.isUsageTrackingEnabled;
   if (usageTrackingEnabled) {
     context.usageData = UsageData.Instance;
+    context.usageData.setIsHeadless( isHeadlessCommand(context) );
   } else {
     context.usageData = NoUsageData.Instance;
+    context.usageData.setIsHeadless( isHeadlessCommand(context) );
   }
   const accountId = getSafeAccountId();
-  context.usageData.init(config.usageDataConfig.installationUuid, getVersion(context), context.input, accountId, getProjectSettings());
-}
+  context.usageData.init(
+    config.usageDataConfig.installationUuid,
+    getVersion(context),
+    context.input,
+    accountId,
+    getProjectSettings(),
+    processStartTimeStamp,
+  );
+};
 
-const getSafeAccountId = () => {
-  if(stateManager.metaFileExists()){
-    const amplifyMeta = stateManager.getMeta();
-    const stackId = _.get(amplifyMeta, ['providers','awscloudformation', 'StackId']) as string;
-    if(stackId) {
-      const splitString = stackId.split(':');
-      if(splitString.length > 4) {
-        return splitString[4];
-      }
-    }
+const getSafeAccountId = (): string => {
+  const emptyString = '';
+  if (!stateManager.metaFileExists()) {
+    return emptyString;
+  }
+  const amplifyMeta = stateManager.getMeta();
+  const stackId = _.get(amplifyMeta, ['providers', 'awscloudformation', 'StackId']) as string;
+  if (!stackId) {
+    return emptyString;
+  }
+  const splitString = stackId.split(':');
+  if (splitString.length > 4) {
+    return splitString[4];
   }
 
-  return '';
-}
+  return emptyString;
+};
 
-const getVersion = (context: Context) => context.pluginPlatform.plugins.core[0].packageVersion;
+const getVersion = (context: Context): string => context.pluginPlatform.plugins.core[0].packageVersion;
 
 const getProjectSettings = (): ProjectSettings => {
   const projectSettings: ProjectSettings = {};
   if (stateManager.projectConfigExists()) {
     const projectConfig = stateManager.getProjectConfig();
-    const frontend = projectConfig.frontend;
+    const { frontend } = projectConfig;
     projectSettings.frontend = frontend;
     projectSettings.framework = projectConfig?.[frontend]?.framework;
   }

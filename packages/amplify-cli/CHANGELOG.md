@@ -3,6 +3,68 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.0.3...@aws-amplify/cli-internal@8.1.0) (2022-04-29)
+
+
+### Features
+
+* dedup appsync functions ([#10289](https://github.com/aws-amplify/amplify-cli/issues/10289)) ([1a5607c](https://github.com/aws-amplify/amplify-cli/commit/1a5607c3e40d3a8144fc5f66a1632d90f061ed99))
+
+
+
+
+
+## [8.0.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.0.2...@aws-amplify/cli-internal@8.0.3) (2022-04-27)
+
+
+### Bug Fixes
+
+* **amplify-category-auth,amplify-category-geo:** update backend-config on auth/geo category update ([#9768](https://github.com/aws-amplify/amplify-cli/issues/9768)) ([0e6a99a](https://github.com/aws-amplify/amplify-cli/commit/0e6a99a9dfd7b40004cc8ad6f46cdc1c76158873))
+* show mfa prompt ([#9954](https://github.com/aws-amplify/amplify-cli/issues/9954)) ([5176dba](https://github.com/aws-amplify/amplify-cli/commit/5176dba3c41e66471f440e772006b62536b34090))
+* use confirmContinue instead of yesOrNo behavior in conversion from inquirer to prompter ([#10217](https://github.com/aws-amplify/amplify-cli/issues/10217)) ([621ffa1](https://github.com/aws-amplify/amplify-cli/commit/621ffa16ccf6b38c628fde2c480a8855c213eeb5))
+
+
+
+
+
+## [8.0.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.0.1...@aws-amplify/cli-internal@8.0.2) (2022-04-18)
+
+
+### Bug Fixes
+
+* **cli:** Fix typo in description for upgrade command ([#10182](https://github.com/aws-amplify/amplify-cli/issues/10182)) ([5f213e0](https://github.com/aws-amplify/amplify-cli/commit/5f213e0b03eb24c97dc1c8a0989e34b5a34e87bd))
+
+
+
+
+
+## [8.0.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.0.0...@aws-amplify/cli-internal@8.0.1) (2022-04-11)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
+
+
+
+
+
+# 8.0.0 (2022-04-07)
+
+
+### Bug Fixes
+
+* make amplify prompts dependency explicit, lint errors ([#10007](https://github.com/aws-amplify/amplify-cli/issues/10007)) ([66cdc06](https://github.com/aws-amplify/amplify-cli/commit/66cdc06df5f4cba106345af6f6e196b3c3e39445))
+* use prompter and handle deletions ([#10122](https://github.com/aws-amplify/amplify-cli/issues/10122)) ([5c0e290](https://github.com/aws-amplify/amplify-cli/commit/5c0e2904e5ac65824642281e732aae4f02904fd0))
+
+
+### Features
+
+* add latency metrics to usage data payload ([#10016](https://github.com/aws-amplify/amplify-cli/issues/10016)) ([9fe0405](https://github.com/aws-amplify/amplify-cli/commit/9fe04057537dc40dc8f4b428ed43ffcf4490202e))
+
+
+### BREAKING CHANGES
+
+* package name update requires version bump in order to keep in sync with lerna.
+
+
 ## [7.6.26](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.6.25...@aws-amplify/cli@7.6.26) (2022-03-23)
 
 

@@ -1,8 +1,11 @@
+import url from 'url';
 import { prodUrl } from '../domain/amplify-usageData/getUsageDataUrl';
 import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
+import { UsageData } from '../domain/amplify-usageData'
 import { getLatestApiVersion, getLatestPayloadVersion } from '../domain/amplify-usageData/VersionManager';
 import { Input } from '../domain/input';
-import url from 'url';
+import { IFlowReport } from 'amplify-cli-shared-interfaces';
+
 describe('test version manager', () => {
   it('url version should be the latest URL', () => {
     const prodURL = url.parse(prodUrl);
@@ -11,6 +14,7 @@ describe('test version manager', () => {
   });
 
   it('payload version should be the latest', () => {
+    const usageData = UsageData.Instance;
     const payload = new UsageDataPayload(
       '',
       '',
@@ -21,7 +25,8 @@ describe('test version manager', () => {
       '12311232',
       { frontend: 'javascript', editor: 'vscode', framework: 'react' },
       {},
-      [],
+      {},
+      usageData.getFlowReport() as IFlowReport
     );
     expect(payload.payloadVersion).toEqual(getLatestPayloadVersion());
   });

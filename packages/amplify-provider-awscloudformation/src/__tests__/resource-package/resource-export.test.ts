@@ -110,7 +110,6 @@ jest.mock('../../template-description-utils', () => ({
   getDefaultTemplateDescription: jest.fn().mockReturnValue('mock description'),
 }))
 jest.mock('../../download-api-models', () => ({}));
-jest.mock('../../graphql-transformer', () => ({}));
 jest.mock('../../amplify-service-manager', () => ({}));
 jest.mock('../../iterative-deployment', () => ({}));
 jest.mock('../../utils/env-level-constructs', () => ({
@@ -120,7 +119,7 @@ jest.mock('../../utils/consolidate-apigw-policies', () => ({
   consolidateApiGatewayPolicies: mockconsolidateApiGatewayPolicies,
   loadApiCliInputs: jest.fn(),
 }));
-jest.mock('../../transform-graphql-schema', () => ({
+jest.mock('../../graphql-transformer', () => ({
   transformGraphQLSchema: mockTransformGql,
 }));
 

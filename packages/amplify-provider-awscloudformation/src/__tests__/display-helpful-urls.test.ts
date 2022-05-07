@@ -1,11 +1,11 @@
 import { showGraphQLTransformerVersion, showSMSSandboxWarning } from '../display-helpful-urls';
 import { BannerMessage, stateManager } from 'amplify-cli-core';
 import { SNS } from '../aws-utils/aws-sns';
-import { getTransformerVersion } from '../transform-graphql-schema';
+import { getTransformerVersion } from '../graphql-transformer-factory/transformer-version';
 import { AWSError } from 'aws-sdk';
 
 jest.mock('../aws-utils/aws-sns');
-jest.mock('../transform-graphql-schema');
+jest.mock('../graphql-transformer-factory/transformer-version');
 jest.mock('amplify-cli-core');
 
 describe('showGraphQLTransformerVersion', () => {

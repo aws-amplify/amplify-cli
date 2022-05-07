@@ -1,4 +1,6 @@
-import { $TSAny, $TSContext, isResourceNameUnique, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import {
+  $TSAny, $TSContext, isResourceNameUnique, JSONUtilities, pathManager, stateManager,
+} from 'amplify-cli-core';
 import {
   AddApiRequest,
   AppSyncServiceConfiguration,
@@ -16,9 +18,13 @@ import { v4 as uuid } from 'uuid';
 import { category } from '../../category-constants';
 import { ApiArtifactHandler, ApiArtifactHandlerOptions } from '../api-artifact-handler';
 import { AppsyncApiInputState } from './api-input-manager/appsync-api-input-state';
-import { cfnParametersFilename, gqlSchemaFilename, provider, rootAssetDir } from './aws-constants';
+import {
+  cfnParametersFilename, gqlSchemaFilename, provider, rootAssetDir,
+} from './aws-constants';
 import { AppSyncCLIInputs, AppSyncServiceConfig } from './service-walkthrough-types/appsync-user-input-types';
-import { authConfigHasApiKey, checkIfAuthExists, getAppSyncAuthConfig, getAppSyncResourceName } from './utils/amplify-meta-utils';
+import {
+  authConfigHasApiKey, checkIfAuthExists, getAppSyncAuthConfig, getAppSyncResourceName,
+} from './utils/amplify-meta-utils';
 import { appSyncAuthTypeToAuthConfig } from './utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { printApiKeyWarnings } from './utils/print-api-key-warnings';
 import { conflictResolutionToResolverConfig } from './utils/resolver-config-to-conflict-resolution-bi-di-mapper';
@@ -26,13 +32,16 @@ import { conflictResolutionToResolverConfig } from './utils/resolver-config-to-c
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaFunction = 'Lambda';
 
-export const getCfnApiArtifactHandler = (context: $TSContext): ApiArtifactHandler => {
-  return new CfnApiArtifactHandler(context);
-};
+/**
+ * Factory function that returns an ApiArtifactHandler instance
+ */
+export const getCfnApiArtifactHandler = (context: $TSContext): ApiArtifactHandler => new CfnApiArtifactHandler(context);
+
 const resolversDirName = 'resolvers';
 const stacksDirName = 'stacks';
 const defaultStackName = 'CustomResources.json';
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const defaultCfnParameters = (apiName: string) => ({
   AppSyncApiName: apiName,
   DynamoDBBillingMode: 'PAY_PER_REQUEST',
@@ -96,7 +105,9 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
       authConfig,
     });
 
-    this.context.amplify.updateamplifyMetaAfterResourceAdd(category, serviceConfig.apiName, this.createAmplifyMeta(authConfig));
+    const dependsOn = amendDependsOnForAuthConfig([], authConfig);
+
+    this.context.amplify.updateamplifyMetaAfterResourceAdd(category, serviceConfig.apiName, this.createAmplifyMeta(authConfig, dependsOn));
     return serviceConfig.apiName;
   };
 
@@ -106,7 +117,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     const updates = request.serviceModification;
     const apiName = getAppSyncResourceName(stateManager.getMeta());
     if (!apiName) {
-      throw new Error(`No AppSync API configured in the project. Use 'amplify add api' to create an API.`);
+      throw new Error('No AppSync API configured in the project. Use \'amplify add api\' to create an API.');
     }
     const resourceDir = this.getResourceDir(apiName);
     // update appsync cli-inputs
@@ -140,42 +151,51 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
 
     this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, apiName, 'output', { authConfig });
     this.context.amplify.updateBackendConfigAfterResourceUpdate(category, apiName, 'output', { authConfig });
+
+    const existingDependsOn = stateManager.getBackendConfig()?.[category]?.[apiName]?.dependsOn || [];
+    const newDependsOn = amendDependsOnForAuthConfig(existingDependsOn, authConfig);
+    this.context.amplify.updateBackendConfigAfterResourceUpdate(category, apiName, 'dependsOn', newDependsOn);
+    this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, apiName, 'dependsOn', newDependsOn);
+
     printApiKeyWarnings(oldConfigHadApiKey, authConfigHasApiKey(authConfig));
   };
 
-  private writeSchema = (resourceDir: string, schema: string) => {
+  private writeSchema = (resourceDir: string, schema: string): void => {
     fs.writeFileSync(resourceDir, schema);
   };
 
-  private getResourceDir = (apiName: string) => pathManager.getResourceDirectoryPath(undefined, category, apiName);
+  private getResourceDir = (apiName: string): string => pathManager.getResourceDirectoryPath(undefined, category, apiName);
 
-  private createAmplifyMeta = authConfig => ({
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  private createAmplifyMeta = (authConfig: AuthConfig, dependsOn?: DependsOnEntry[]) => ({
     service: 'AppSync',
     providerPlugin: provider,
+    dependsOn,
     output: {
       authConfig,
     },
   });
 
-  private extractAuthConfig = (config: AppSyncServiceConfig) => ({
+  private extractAuthConfig = (config: AppSyncServiceConfig): AuthConfig => ({
     defaultAuthentication: appSyncAuthTypeToAuthConfig(config.defaultAuthType),
     additionalAuthenticationProviders: (config.additionalAuthTypes || []).map(appSyncAuthTypeToAuthConfig),
   });
 
-  private updateTransformerConfigVersion = async resourceDir => {
+  private updateTransformerConfigVersion = async (resourceDir: string): Promise<void> => {
     const localTransformerConfig = await readTransformerConfiguration(resourceDir);
     localTransformerConfig.Version = TRANSFORM_CURRENT_VERSION;
     localTransformerConfig.ElasticsearchWarning = true;
     await writeTransformerConfiguration(resourceDir, localTransformerConfig);
   };
 
-  private createResolverResources = async (conflictResolution: ConflictResolution = {}) => {
+  private createResolverResources = async (conflictResolution: ConflictResolution = {}): Promise<ConflictResolution> => {
     const newConflictResolution = _.cloneDeep(conflictResolution);
 
-    // if the strat is a new lambda, generate the lambda and update the strategy to reference the new lambda
-    const generateLambdaIfNew = async (strat: ResolutionStrategy) => {
-      if (strat && strat.type === 'LAMBDA' && strat.resolver.type === 'NEW') {
-        strat.resolver = {
+    // if the strategy is a new lambda, generate the lambda and update the strategy to reference the new lambda
+    const generateLambdaIfNew = async (strategy: ResolutionStrategy): Promise<void> => {
+      if (strategy && strategy.type === 'LAMBDA' && strategy.resolver.type === 'NEW') {
+        // eslint-disable-next-line no-param-reassign
+        strategy.resolver = {
           type: 'EXISTING',
           name: await this.createSyncFunction(),
         };
@@ -184,13 +204,13 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     await generateLambdaIfNew(newConflictResolution.defaultResolutionStrategy);
     await Promise.all(
       (newConflictResolution.perModelResolutionStrategy || [])
-        .map(perModelStrat => perModelStrat.resolutionStrategy)
+        .map(perModelStrategy => perModelStrategy.resolutionStrategy)
         .map(generateLambdaIfNew),
     );
     return newConflictResolution;
   };
 
-  private getCfnParameters = (apiName: string, authConfig, resourceDir: string) => {
+  private getCfnParameters = (apiName: string, authConfig, resourceDir: string): Record<string, unknown> => {
     const cfnPath = path.join(resourceDir, cfnParametersFilename);
     const params = JSONUtilities.readJson<$TSAny>(cfnPath, { throwIfNotExist: false }) || defaultCfnParameters(apiName);
     const cognitoPool = this.getCognitoUserPool(authConfig);
@@ -202,32 +222,33 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     return params;
   };
 
-  private getCognitoUserPool = authConfig => {
+  private getCognitoUserPool = (authConfig: AuthConfig): Record<string, unknown> | undefined => {
     const additionalUserPoolProvider = (authConfig.additionalAuthenticationProviders || []).find(
-      provider => provider.authenticationType === 'AMAZON_COGNITO_USER_POOLS',
+      aap => aap.authenticationType === 'AMAZON_COGNITO_USER_POOLS',
     );
-    const defaultAuth = authConfig.defaultAuthentication || {};
-    if (defaultAuth.authenticationType === 'AMAZON_COGNITO_USER_POOLS' || additionalUserPoolProvider) {
-      let userPoolId;
-      const configuredUserPoolName = checkIfAuthExists();
-
-      if (authConfig.userPoolConfig) {
-        ({ userPoolId } = authConfig.userPoolConfig);
-      } else if (additionalUserPoolProvider && additionalUserPoolProvider.userPoolConfig) {
-        ({ userPoolId } = additionalUserPoolProvider.userPoolConfig);
-      } else if (configuredUserPoolName) {
-        userPoolId = `auth${configuredUserPoolName}`;
-      } else {
-        throw new Error('Cannot find a configured Cognito User Pool.');
-      }
-
-      return {
-        'Fn::GetAtt': [userPoolId, 'Outputs.UserPoolId'],
-      };
+    const defaultAuth = authConfig.defaultAuthentication;
+    if (!(defaultAuth?.authenticationType === 'AMAZON_COGNITO_USER_POOLS') && !additionalUserPoolProvider) {
+      return undefined;
     }
+    let userPoolId;
+    const configuredUserPoolName = checkIfAuthExists();
+
+    if (authConfig.userPoolConfig) {
+      ({ userPoolId } = authConfig.userPoolConfig);
+    } else if (additionalUserPoolProvider && additionalUserPoolProvider.userPoolConfig) {
+      ({ userPoolId } = additionalUserPoolProvider.userPoolConfig);
+    } else if (configuredUserPoolName) {
+      userPoolId = `auth${configuredUserPoolName}`;
+    } else {
+      throw new Error('Cannot find a configured Cognito User Pool.');
+    }
+
+    return {
+      'Fn::GetAtt': [userPoolId, 'Outputs.UserPoolId'],
+    };
   };
 
-  private createSyncFunction = async () => {
+  private createSyncFunction = async (): Promise<string> => {
     const targetDir = pathManager.getBackendDirPath();
     const assetDir = path.normalize(path.join(rootAssetDir, 'sync-conflict-handler'));
     const [shortId] = uuid().split('-');
@@ -269,10 +290,10 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     await this.context.amplify.updateamplifyMetaAfterResourceAdd('function', functionName, backendConfigs);
     printer.success(`Successfully added ${functionName} function locally`);
 
-    return functionName + '-${env}';
+    return `${functionName}-\${env}`;
   };
 
-  private generateAppsyncCLIInputs = async (serviceConfig: AppSyncServiceConfiguration, resourceDir: string) => {
+  private generateAppsyncCLIInputs = async (serviceConfig: AppSyncServiceConfiguration, resourceDir: string): Promise<AppSyncCLIInputs> => {
     const appsyncCLIInputs: AppSyncCLIInputs = {
       version: 1,
       serviceConfiguration: {
@@ -337,8 +358,73 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
  *
  * write to the transformer conf if the resolverConfig is valid
  */
-export const writeResolverConfig = async (conflictResolution: ConflictResolution, resourceDir: string) => {
+export const writeResolverConfig = async (conflictResolution: ConflictResolution, resourceDir: string): Promise<void> => {
   const localTransformerConfig = await readTransformerConfiguration(resourceDir);
   localTransformerConfig.ResolverConfig = conflictResolutionToResolverConfig(conflictResolution);
   await writeTransformerConfiguration(resourceDir, localTransformerConfig);
 };
+
+const amendDependsOnForAuthConfig = (currentDependsOn: DependsOnEntry[], authConfig: AuthConfig): DependsOnEntry[] => {
+  if (hasCognitoAuthMode(authConfig)) {
+    return ensureDependsOnAuth(currentDependsOn);
+  }
+  return ensureNoDependsOnAuth(currentDependsOn);
+};
+
+const hasCognitoAuthMode = (authConfig: AuthConfig): boolean => (
+  authConfig?.defaultAuthentication?.authenticationType === 'AMAZON_COGNITO_USER_POOLS'
+    || authConfig?.additionalAuthenticationProviders?.find(aap => aap.authenticationType === 'AMAZON_COGNITO_USER_POOLS') !== undefined
+);
+
+// returns a new dependsOn array that has a single depends on auth block
+const ensureDependsOnAuth = (currentDependsOn: DependsOnEntry[]): DependsOnEntry[] => {
+  const authResourceName = checkIfAuthExists();
+  if (!authResourceName) {
+    return [];
+  }
+  // if dependency already exists, don't add it again
+  if (currentDependsOn.find(dep => dep.category === 'auth' && dep.resourceName === authResourceName)) {
+    return currentDependsOn;
+  }
+  return currentDependsOn.concat({
+    category: 'auth',
+    resourceName: authResourceName,
+    attributes: ['UserPoolId'],
+  });
+};
+
+// returns a new dependsOn array that does not have a depends on auth block
+const ensureNoDependsOnAuth = (currentDependsOn: DependsOnEntry[]): DependsOnEntry[] => {
+  const authResourceName = checkIfAuthExists();
+  if (!authResourceName) {
+    return currentDependsOn;
+  }
+  const authIdx = currentDependsOn.findIndex(dep => dep.category === 'auth' && dep.resourceName === authResourceName);
+  if (authIdx < 0) {
+    return currentDependsOn;
+  }
+  const newDependsOn = Array.from(currentDependsOn);
+  newDependsOn.splice(authIdx, 1);
+  return newDependsOn;
+};
+
+type DependsOnEntry = {
+  category: string;
+  resourceName: string;
+  attributes: string[];
+};
+
+type AuthConfig = {
+  defaultAuthentication?: AuthType;
+  additionalAuthenticationProviders?: (AuthType & UserPoolConfig)[];
+} & UserPoolConfig
+
+type UserPoolConfig = {
+  userPoolConfig?: {
+    userPoolId: string
+  }
+}
+
+type AuthType = {
+  authenticationType: string;
+}

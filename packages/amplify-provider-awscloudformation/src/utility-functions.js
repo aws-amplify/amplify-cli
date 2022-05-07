@@ -5,9 +5,9 @@ const AppSync = require('./aws-utils/aws-appsync');
 const { Lex } = require('./aws-utils/aws-lex');
 const Polly = require('./aws-utils/aws-polly');
 const SageMaker = require('./aws-utils/aws-sagemaker');
-const { transformGraphQLSchema, getDirectiveDefinitions } = require('./transform-graphql-schema');
+const { transformGraphQLSchema } = require('./graphql-transformer');
 const { transformResourceWithOverrides } = require('./override-manager');
-
+const { getDirectiveDefinitions } = require('./graphql-transformer-factory/directive-definitions');
 const { updateStackForAPIMigration } = require('./push-resources');
 const SecretsManager = require('./aws-utils/aws-secretsmanager');
 const Route53 = require('./aws-utils/aws-route53');
@@ -272,8 +272,14 @@ module.exports = {
       throw err;
     }
   },
+  /**
+   * @deprecated Use getGraphQLAPIs instead
+   */
   getAppSyncAPIs: context => {
-    const log = logger('getAppSyncAPIs.appSyncModel.appSync.listGraphqlApis', { maxResults: 25 });
+    return this.getGraphQLAPIs(context);
+  },
+  getGraphQLAPIs: context => {
+    const log = logger('getGraphQLAPIs.appSyncModel.appSync.listGraphqlApis', { maxResults: 25 });
 
     return new AppSync(context)
       .then(result => {
@@ -365,12 +371,18 @@ module.exports = {
         throw ex;
       });
   },
+  /**
+   * @deprecated Use getGraphQLApiKeys instead
+   */
   getAppSyncApiKeys: (context, options) => {
+    return this.getGraphQLApiKeys(context, options);
+  },
+  getGraphQLApiKeys: (context, options) => {
     const awsOptions = {};
     if (options.region) {
       awsOptions.region = options.region;
     }
-    const log = logger('getAppSyncApiKeys.appSync.listApiKeys', [
+    const log = logger('getGraphQLApiKeys.appSync.listApiKeys', [
       {
         apiId: options.apiId,
       },

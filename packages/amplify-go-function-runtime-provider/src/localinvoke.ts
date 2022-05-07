@@ -1,8 +1,7 @@
 import path from 'path';
 import fs from 'fs-extra';
-import portfinder from 'portfinder';
 import { $TSContext, pathManager } from 'amplify-cli-core';
-
+import getPort from 'get-port';
 import { InvocationRequest } from 'amplify-function-plugin-interface';
 import { executeCommand } from './runtime';
 import { MAIN_SOURCE, MAX_PORT, BASE_PORT, BIN_LOCAL, MAIN_BINARY, MAIN_BINARY_WIN, packageName, relativeShimSrcPath } from './constants';
@@ -68,10 +67,7 @@ export const localInvoke = async (request: InvocationRequest, context: $TSContex
   const localInvoker = await buildLocalInvoker(context);
 
   // Find a free tcp port for the Lambda to launch on
-  const portNumber = await portfinder.getPortPromise({
-    startPort: BASE_PORT,
-    stopPort: MAX_PORT,
-  });
+  const portNumber = await getPort({port: getPort.makeRange(BASE_PORT, MAX_PORT)});
 
   const lambdaExecutableDir = path.join(request.srcRoot, BIN_LOCAL);
   const lambdaExecutablePath = path.join(lambdaExecutableDir, MAIN_BINARY);

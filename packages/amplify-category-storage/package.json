@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-storage",
-  "version": "3.1.21",
+  "version": "3.1.26",
   "description": "amplify-cli storage plugin",
   "repository": {
     "type": "git",
@@ -14,7 +14,7 @@
   "scripts": {
     "build": "tsc",
     "test": "jest",
-    "clean": "rimraf lib tsconfig.tsbuildinfo",
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "watch": "tsc -w",
     "generateSchemas": "ts-node ./resources/genInputSchema.ts"
   },
@@ -26,14 +26,14 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/cli-extensibility-helper": "2.3.20",
+    "@aws-amplify/cli-extensibility-helper": "2.3.25",
     "@aws-cdk/aws-dynamodb": "~1.124.0",
     "@aws-cdk/aws-s3": "~1.124.0",
     "@aws-cdk/core": "~1.124.0",
-    "amplify-cli-core": "2.5.0",
+    "amplify-cli-core": "2.6.0",
     "amplify-headless-interface": "1.14.2",
-    "amplify-prompts": "1.6.3",
-    "amplify-util-import": "2.2.24",
+    "amplify-prompts": "2.0.1",
+    "amplify-util-import": "2.2.28",
     "chalk": "^4.1.1",
     "enquirer": "^2.3.6",
     "fs-extra": "^8.1.0",
@@ -44,7 +44,7 @@
     "vm2": "^3.9.8"
   },
   "devDependencies": {
-    "aws-sdk": "^2.1084.0",
+    "aws-sdk": "^2.1113.0",
     "cloudform-types": "^4.2.0",
     "rimraf": "^3.0.2"
   },

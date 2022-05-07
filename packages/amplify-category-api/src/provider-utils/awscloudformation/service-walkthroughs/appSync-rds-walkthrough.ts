@@ -1,9 +1,9 @@
-import { $TSContext, $TSObject, exitOnNextTick, ResourceCredentialsNotFoundError, ResourceDoesNotExistError } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSContext, $TSObject, exitOnNextTick, ResourceCredentialsNotFoundError, ResourceDoesNotExistError, pathManager, JSONUtilities, $TSAny } from 'amplify-cli-core';
+import { printer, prompter } from 'amplify-prompts';
 import chalk from 'chalk';
 import { DataApiParams } from 'graphql-relational-schema-transformer';
-import inquirer from 'inquirer';
 import ora from 'ora';
+import { cfnRootStackFileName } from 'amplify-provider-awscloudformation';
 
 const spinner = ora('');
 const category = 'api';
@@ -43,8 +43,14 @@ export async function serviceWalkthrough(context: $TSContext, datasourceMetadata
 
   const { inputs, availableRegions } = datasourceMetadata;
 
+  // FIXME: We should NOT be treating CloudFormation templates as inputs to prompts! This a temporary exception while we move team-provider-info to a service.
+  const cfnJson: $TSAny = JSONUtilities.readJson(`${pathManager.getCurrentCloudRootStackDirPath(pathManager.findProjectRoot())}/${cfnRootStackFileName}`);
+  const cfnJsonParameters = cfnJson?.Resources[`api${appSyncApi}`]?.Properties?.Parameters || {};
+  let selectedRegion = cfnJsonParameters?.rdsRegion;
   // Region Question
-  const selectedRegion = await promptWalkthroughQuestion(inputs, 0, availableRegions);
+  if (!selectedRegion) {
+    selectedRegion = await promptWalkthroughQuestion(inputs, 0, availableRegions);
+  }
 
   const AWS = await getAwsClient(context, 'list');
 
@@ -54,13 +60,23 @@ export async function serviceWalkthrough(context: $TSContext, datasourceMetadata
   });
 
   // RDS Cluster Question
-  const { selectedClusterArn, clusterResourceId } = await selectCluster(context, inputs, AWS);
+  let selectedClusterArn = cfnJsonParameters?.rdsClusterIdentifier
+  let clusterResourceId = getRdsClusterResourceIdFromArn(selectedClusterArn, AWS);
+  if (!selectedClusterArn || !clusterResourceId) {
+    ({ selectedClusterArn, clusterResourceId } = await selectCluster(context, inputs, AWS));
+  }
 
   // Secret Store Question
-  const selectedSecretArn = await getSecretStoreArn(context, inputs, clusterResourceId, AWS);
+  let selectedSecretArn = cfnJsonParameters?.rdsSecretStoreArn;
+  if (!selectedSecretArn) {
+    selectedSecretArn = await getSecretStoreArn(context, inputs, clusterResourceId, AWS);
+  }
 
   // Database Name Question
-  const selectedDatabase = await selectDatabase(context, inputs, selectedClusterArn, selectedSecretArn, AWS);
+  let selectedDatabase = cfnJsonParameters?.rdsDatabaseName;
+  if (!selectedDatabase) {
+    selectedDatabase = await selectDatabase(context, inputs, selectedClusterArn, selectedSecretArn, AWS);
+  }
 
   return {
     region: selectedRegion,
@@ -69,6 +85,19 @@ export async function serviceWalkthrough(context: $TSContext, datasourceMetadata
     databaseName: selectedDatabase,
     resourceName: appSyncApi,
   };
+}
+
+async function getRdsClusterResourceIdFromArn(arn: string|undefined, AWS) {
+  // If the arn was not already existing in cloudformation template, return undefined to prompt for input.
+  if (!arn) {
+    return;
+  }
+
+  const RDS = new AWS.RDS();
+  const describeDBClustersResult = await RDS.describeDBClusters().promise();
+  const rawClusters = describeDBClustersResult.DBClusters;
+  const identifiedCluster = rawClusters.find(cluster => cluster.DBClusterArn === arn);
+  return identifiedCluster.DBClusterIdentifier;
 }
 
 /**
@@ -237,17 +266,13 @@ async function selectDatabase(context: $TSContext, inputs, clusterArn, secretArn
  * @param {*} choicesList
  */
 async function promptWalkthroughQuestion(inputs, questionNumber, choicesList) {
-  const question = [
-    {
+  const question = {
       type: inputs[questionNumber].type,
       name: inputs[questionNumber].key,
       message: inputs[questionNumber].question,
       choices: choicesList,
-    },
-  ];
-
-  const answer = await inquirer.prompt(question);
-  return answer[inputs[questionNumber].key];
+    };
+  return await prompter.pick(question.message, choicesList)
 }
 
 async function getAwsClient(context: $TSContext, action: string) {

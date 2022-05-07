@@ -2,10 +2,11 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./lib",
-    "rootDir": "./src",
+    "rootDir": "./src"
   },
   "references": [
-    {"path": "../amplify-function-plugin-interface"},
-    {"path": "../graphql-transformer-core"},
+    {
+      "path": "../amplify-function-plugin-interface"
+    }
   ]
 }

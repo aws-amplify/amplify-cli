@@ -1,12 +1,23 @@
 import _ from 'lodash';
 import ora from 'ora';
 import sequential from 'promise-sequential';
-import { stateManager, $TSAny, $TSMeta, $TSContext, $TSTeamProviderInfo } from 'amplify-cli-core';
+import {
+  stateManager, $TSAny, $TSMeta, $TSContext, $TSTeamProviderInfo,
+} from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';
+import { ManuallyTimedCodePath } from './domain/amplify-usageData/IUsageData';
+
 const spinner = ora('');
 const CATEGORIES = 'categories';
 
-export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $TSMeta) {
+/**
+ * Entry point for initializing an environment. Delegates out to plugins initEnv function
+ */
+export const initializeEnv = async (
+  context: $TSContext,
+  currentAmplifyMeta: $TSMeta = stateManager.currentMetaFileExists() ? stateManager.getCurrentMeta() : undefined,
+): Promise<void> => {
   const currentEnv = context.exeInfo.localEnvInfo.envName;
   const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
 
@@ -17,13 +28,6 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
     const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
 
     amplifyMeta.providers = _.pick(teamProviderInfo[currentEnv], 'awscloudformation');
-
-    if (!currentAmplifyMeta) {
-      // Get current-cloud-backend's amplify-meta
-      if (stateManager.currentMetaFileExists()) {
-        currentAmplifyMeta = stateManager.getCurrentMeta();
-      }
-    }
 
     if (!context.exeInfo.restoreBackend) {
       populateAmplifyMeta(projectPath, amplifyMeta);
@@ -39,6 +43,7 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
     availableCategories.forEach(category => {
       categoryPluginInfoList[category].forEach(pluginInfo => {
         try {
+          // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
           const { initEnv } = require(pluginInfo.packageLocation);
 
           if (initEnv) {
@@ -56,6 +61,7 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
     const providerPushTasks: (() => Promise<$TSAny>)[] = [];
 
     context.exeInfo.projectConfig.providers.forEach(provider => {
+      // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
       const providerModule = require(providerPlugins[provider]);
       initializationTasks.push(() => providerModule.initEnv(context, amplifyMeta.providers[provider]));
     });
@@ -65,11 +71,14 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
     );
 
     try {
+      context.usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_PLATFORM);
       await sequential(initializationTasks);
     } catch (e) {
-      context.print.error(`Could not initialize '${currentEnv}': ${e.message}`);
+      printer.error(`Could not initialize '${currentEnv}': ${e.message}`);
       context.usageData.emitError(e);
       process.exit(1);
+    } finally {
+      context.usageData.stopCodePathTimer(ManuallyTimedCodePath.INIT_ENV_PLATFORM);
     }
 
     spinner.succeed(
@@ -81,7 +90,9 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
     context.exeInfo = context.exeInfo || {};
     Object.assign(context.exeInfo, projectDetails);
 
+    context.usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES);
     await sequential(categoryInitializationTasks);
+    context.usageData.stopCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES);
 
     if (context.exeInfo.forcePush === undefined) {
       context.exeInfo.forcePush = await context.amplify.confirmPrompt(
@@ -90,40 +101,43 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
     }
 
     if (context.exeInfo.forcePush) {
-      for (let provider of context.exeInfo.projectConfig.providers) {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const provider of context.exeInfo.projectConfig.providers) {
+        // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
         const providerModule = require(providerPlugins[provider]);
-        const resourceDefiniton = await context.amplify.getResourceStatus(undefined, undefined, provider);
-        providerPushTasks.push(() => providerModule.pushResources(context, resourceDefiniton));
+        // eslint-disable-next-line no-await-in-loop
+        const resourceDefinition = await context.amplify.getResourceStatus(undefined, undefined, provider);
+        providerPushTasks.push(() => providerModule.pushResources(context, resourceDefinition));
       }
 
       await sequential(providerPushTasks);
     }
 
-    // Generate AWS exports/configurtion file
+    // Generate AWS exports/configuration file
     await context.amplify.onCategoryOutputsChange(context, currentAmplifyMeta);
 
-    context.print.success(isPulling ? '' : 'Initialized your environment successfully.');
+    printer.success(isPulling ? '' : 'Initialized your environment successfully.');
   } catch (e) {
     spinner.fail('There was an error initializing your environment.');
     throw e;
   }
-}
+};
 
-function populateAmplifyMeta(projectPath: string, amplifyMeta: $TSMeta) {
+const populateAmplifyMeta = (projectPath: string, amplifyMeta: $TSMeta): void => {
   const backendConfig = stateManager.getBackendConfig(projectPath);
   Object.assign(amplifyMeta, backendConfig);
   stateManager.setMeta(projectPath, amplifyMeta);
-}
+};
 
-function populateCategoriesMeta(
+const populateCategoriesMeta = (
   projectPath: string,
   amplifyMeta: $TSMeta,
   teamProviderInfo: $TSTeamProviderInfo,
   category: string,
   serviceName: string,
-) {
+): void => {
   if (amplifyMeta[category]?.[serviceName] && teamProviderInfo[CATEGORIES]?.[category]?.[serviceName]) {
     Object.assign(amplifyMeta[category][serviceName], teamProviderInfo[CATEGORIES][category][serviceName]);
     stateManager.setMeta(projectPath, amplifyMeta);
   }
-}
+};

@@ -28,6 +28,7 @@ packages/amplify-dynamodb-simulator/__test__/dynamodb-data
 packages/graphql*/lib
 packages/amplify-graphql-transformer-*/lib
 packages/amplify-cli/lib
+packages/amplify-cli-npm/lib
 packages/amplify-cli-core/lib
 packages/amplify-cli-logger/lib
 packages/amplify-mqtt-server/lib
@@ -53,6 +54,7 @@ packages/amplify-prompts/lib
 packages/amplify-util-import/lib
 packages/amplify-util-headless-input/lib
 packages/amplify-util-uibuilder/lib
+packages/amplify-cli-shared-interfaces/lib
 packages/*/node_modules
 packages/*/package-lock.json
 **/.env

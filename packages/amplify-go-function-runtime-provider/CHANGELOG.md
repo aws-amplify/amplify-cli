@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.28](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@2.2.27...amplify-go-function-runtime-provider@2.2.28) (2022-04-29)
+
+**Note:** Version bump only for package amplify-go-function-runtime-provider
+
+
+
+
+
+## [2.2.27](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@2.2.26...amplify-go-function-runtime-provider@2.2.27) (2022-04-27)
+
+
+### Bug Fixes
+
+* removed unsupported portfinder ([#10269](https://github.com/aws-amplify/amplify-cli/issues/10269)) ([33d8a8f](https://github.com/aws-amplify/amplify-cli/commit/33d8a8ffeebbb9f05f9dbcd8afc6b0629bcf3819))
+
+
+
+
+
+## [2.2.26](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@2.2.25...amplify-go-function-runtime-provider@2.2.26) (2022-04-11)
+
+**Note:** Version bump only for package amplify-go-function-runtime-provider
+
+
+
+
+
+## [2.2.25](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@2.2.24...amplify-go-function-runtime-provider@2.2.25) (2022-04-07)
+
+**Note:** Version bump only for package amplify-go-function-runtime-provider
+
+
+
+
+
 ## [2.2.24](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@2.2.23...amplify-go-function-runtime-provider@2.2.24) (2022-03-23)
 
 **Note:** Version bump only for package amplify-go-function-runtime-provider

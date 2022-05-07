@@ -3,7 +3,7 @@ import { removeWalkthrough } from '../service-walkthroughs/removeWalkthrough';
 import { category } from '../constants';
 import { updateDefaultMapWalkthrough, createMapWalkthrough, updateMapWalkthrough } from '../service-walkthroughs/mapWalkthrough';
 import { convertToCompleteMapParams, MapParameters } from '../service-utils/mapParams';
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSContext } from 'amplify-cli-core';
 import { printNextStepsSuccessMessage, setProviderContext } from './index';
 import { ServiceName } from '../service-utils/constants';
 import { printer } from 'amplify-prompts';
@@ -44,24 +44,13 @@ export const removeMapResource = async (
 
   const resourceParameters = await getCurrentMapParameters(resourceToRemove);
 
-  try {
-    await amplify.removeResource(context, category, resourceToRemove)
-    .then(async (resource: { service: string; resourceName: string }) => {
-      if (resource?.service === ServiceName.Map && resourceParameters.isDefault) {
-        // choose another default if removing a default map
-        await updateDefaultMapWalkthrough(context, resource.resourceName);
-      }
-    });
-  } catch (err: $TSAny) {
-    if (err.stack) {
-      printer.error(err.stack);
-      printer.error(err.message);
-      printer.error(`An error occurred when removing the geo resource ${resourceToRemove}`);
-    }
-
-    context.usageData.emitError(err);
-    process.exitCode = 1;
+  const resource = await amplify.removeResource(context, category, resourceToRemove);
+  if (resource?.service === ServiceName.Map && resourceParameters.isDefault) {
+    // choose another default if removing a default map
+    await updateDefaultMapWalkthrough(context, resource?.resourceName);
   }
+
+  context.amplify.updateBackendConfigAfterResourceRemove(category, resourceToRemove);
 
   printNextStepsSuccessMessage(context);
   return resourceToRemove;
@@ -114,6 +103,7 @@ export const updateMapResourceWithParams = async (
   mapParams: Partial<MapParameters>
 ): Promise<string> => {
   const completeParameters: MapParameters = convertToCompleteMapParams(mapParams);
+
   await modifyMapResource(context, completeParameters);
 
   printer.success(`Successfully updated resource ${mapParams.name} locally.`);

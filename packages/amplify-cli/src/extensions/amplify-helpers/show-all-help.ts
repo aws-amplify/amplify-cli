@@ -92,7 +92,7 @@ export function showAllHelp(context) {
     commands.push(
       {
         name: 'upgrade',
-        description: 'Donwload and install the latest version of the Amplify CLI',
+        description: 'Download and install the latest version of the Amplify CLI',
       },
       {
         name: 'uninstall',
