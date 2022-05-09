@@ -1,13 +1,18 @@
-import * as fs from 'fs-extra';
-import { v4 as uuid } from 'uuid';
 import _ from 'lodash';
-import { $TSAny, DebugConfigValueNotSetError, NotInitializedError, pathManager, stateManager } from 'amplify-cli-core';
+import {
+  $TSAny, DebugConfigValueNotSetError, NotInitializedError, pathManager, stateManager,
+} from 'amplify-cli-core';
 
+/**
+ * Singleton class to handle debug values
+ */
 export class DebugConfig {
-
   private static instance: DebugConfig;
   private debug : DebugConfigType
   private dirty: boolean
+  /**
+   * Static instance
+   */
   public static get Instance(): DebugConfig {
     if (!this.instance) {
       this.instance = new DebugConfig();
@@ -15,74 +20,83 @@ export class DebugConfig {
 
     return this.instance;
   }
-  
+
   private constructor() {
     this.debug = {
-      shareProjectConfig: undefined
-    }
+      shareProjectConfig: undefined,
+    };
     this.dirty = false;
   }
 
-
-
-
+  // eslint-disable-next-line class-methods-use-this
   private getCLIJson(): $TSAny {
     const rootPath = pathManager.findProjectRoot();
-    if(!rootPath){
-        throw new NotInitializedError();
+    if (!rootPath) {
+      throw new NotInitializedError();
     }
 
-    const cliJson = stateManager.getCLIJSON(rootPath)
+    const cliJson = stateManager.getCLIJSON(rootPath);
     return cliJson;
-
   }
 
-  
+  /**
+   * Sets flag in memory, don't call get without writing it the file
+   */
   setShareProjectConfig(shareProjectConfig: boolean | undefined): void {
-    this.debug =  {
+    this.debug = {
       shareProjectConfig,
-    }
+    };
     this.dirty = true;
   }
 
+  /**
+   * Writes the in memory flag to cli.json
+   */
   writeShareProjectConfig(): void {
-      const rootPath = pathManager.findProjectRoot();
-      if(!rootPath){
-          throw new NotInitializedError();
-      }
-      const cliJson = this.getCLIJson();
-      if(!cliJson) {
-          return;
-      }
-      const updatedCliJson = _.set(cliJson, [], this.debug)
-      stateManager.setCLIJSON(rootPath, {...updatedCliJson, debug: this.debug});
-      this.dirty = false;
+    const rootPath = pathManager.findProjectRoot();
+    if (!rootPath) {
+      throw new NotInitializedError();
+    }
+    const cliJson = this.getCLIJson();
+    if (!cliJson) {
+      return;
+    }
+    const updatedCliJson = _.set(cliJson, [], this.debug);
+    stateManager.setCLIJSON(rootPath, { ...updatedCliJson, debug: this.debug });
+    this.dirty = false;
   }
 
+  /**
+   * Gets the flag, throws error if not written to file
+   */
   getCanSendReport() : boolean {
-    if(this.dirty) {
+    if (this.dirty) {
       throw new DebugConfigValueNotSetError();
     }
 
     return this.debug.shareProjectConfig === true;
   }
 
+  /**
+   * return boolean if a prompt is required to get consent
+   */
   promptSendReport() : boolean {
-    if(this.dirty) {
+    if (this.dirty) {
       throw new DebugConfigValueNotSetError();
     }
-    return this.debug.shareProjectConfig === undefined
+    return this.debug.shareProjectConfig === undefined;
   }
 
-  setAndWriteShareProject(shareProjectConfig: boolean | undefined){
+  /**
+   * sets in memory flag and writes to cli.json
+   */
+  setAndWriteShareProject(shareProjectConfig: boolean | undefined): void {
     this.setShareProjectConfig(shareProjectConfig);
-    this.writeShareProjectConfig()
+    this.writeShareProjectConfig();
   }
-
- }
+}
 
  type DebugConfigType = {
    shareProjectConfig: boolean | undefined
  }
-
-
+ 
