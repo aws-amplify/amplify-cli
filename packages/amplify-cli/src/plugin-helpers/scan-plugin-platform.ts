@@ -1,20 +1,24 @@
-import * as path from 'path';
+/* eslint-disable no-param-reassign */
+import { $TSAny, isPackaged, JSONUtilities } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
-import { PluginCollection } from '../domain/plugin-collection';
-import { PluginPlatform } from '../domain/plugin-platform';
+import * as path from 'path';
+import sequential from 'promise-sequential';
 import { constants } from '../domain/constants';
-import { getGlobalNodeModuleDirPath } from '../utils/global-prefix';
-import { PluginManifest } from '../domain/plugin-manifest';
+import { PluginCollection } from '../domain/plugin-collection';
 import { PluginInfo } from '../domain/plugin-info';
-import { verifyPlugin } from './verify-plugin';
+import { PluginManifest } from '../domain/plugin-manifest';
+import { PluginPlatform } from '../domain/plugin-platform';
+import { getGlobalNodeModuleDirPath } from '../utils/global-prefix';
+import isChildPath from '../utils/is-child-path';
 import { readPluginsJsonFile, writePluginsJsonFile } from './access-plugins-file';
 import { twoPluginsAreTheSame } from './compare-plugins';
 import { checkPlatformHealth } from './platform-health-check';
-import isChildPath from '../utils/is-child-path';
-import { JSONUtilities, $TSAny, isPackaged } from 'amplify-cli-core';
-import sequential from 'promise-sequential';
+import { verifyPlugin } from './verify-plugin';
 
-export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promise<PluginPlatform> {
+/**
+ * scan for platform plugins, including both core and custom plugins
+ */
+export const scanPluginPlatform = async (pluginPlatform?: PluginPlatform): Promise<PluginPlatform> => {
   pluginPlatform = pluginPlatform || readPluginsJsonFile() || new PluginPlatform();
 
   pluginPlatform!.plugins = new PluginCollection();
@@ -29,7 +33,7 @@ export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promi
     });
 
     const scanUserLocationTasks = pluginPlatform!.userAddedLocations.map(
-      pluginDirPath => async () => await verifyAndAdd(pluginPlatform!, pluginDirPath),
+      pluginDirPath => async () => verifyAndAdd(pluginPlatform!, pluginDirPath),
     );
     await sequential(scanUserLocationTasks);
   }
@@ -41,19 +45,18 @@ export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promi
   if (pluginPlatform!.pluginDirectories.length > 0 && pluginPlatform!.pluginPrefixes.length > 0) {
     const scanDirTasks = pluginPlatform!.pluginDirectories.map(directory => async () => {
       directory = normalizePluginDirectory(directory);
-      const exists = await fs.pathExists(directory);
-      if (exists) {
-        //adding subDir based on amplify-
-        const subDirNames = await fs.readdir(directory);
+      // adding subDir based on amplify-
+      const subDirNames = await fs.readdir(directory);
+      // adding plugin based on @aws-amplify/amplify-
+      if (subDirNames.includes('@aws-amplify')) {
+        const nameSpacedDir = path.join(directory, '@aws-amplify');
+        const nameSpacedPackages = await fs.readdir(nameSpacedDir);
+        await addPluginPrefixWithMatchingPattern(nameSpacedPackages, nameSpacedDir, pluginPlatform!);
+      } else {
         await addPluginPrefixWithMatchingPattern(subDirNames, directory, pluginPlatform!);
-        //ading plugin based on @aws-amplify/amplify-
-        if (subDirNames.includes('@aws-amplify')) {
-          const nameSpacedDir = path.join(directory, '@aws-amplify');
-          const nameSpacedPackages = await fs.readdir(nameSpacedDir);
-          await addPluginPrefixWithMatchingPattern(nameSpacedPackages, nameSpacedDir, pluginPlatform!);
-        }
       }
     });
+
     await sequential(scanDirTasks);
   }
 
@@ -63,19 +66,23 @@ export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promi
   await checkPlatformHealth(pluginPlatform);
 
   return pluginPlatform;
-}
+};
 
-export function getCorePluginDirPath(): string {
-  return path.normalize(path.join(__dirname, '../../'));
-}
+/**
+ * get core plugin directory path
+ */
+export const getCorePluginDirPath = (): string => path.join(__dirname, '..', '..');
 
-export function getCorePluginVersion(): string {
-  const packageJsonFilePath = path.normalize(path.join(__dirname, '..', '..', 'package.json'));
+/**
+ * get version from root package.json
+ */
+export const getCorePluginVersion = (): string => {
+  const packageJsonFilePath = path.join(__dirname, '..', '..', 'package.json');
   const packageJson = JSONUtilities.readJson<$TSAny>(packageJsonFilePath);
   return packageJson.version;
-}
+};
 
-async function addCore(pluginPlatform: PluginPlatform) {
+const addCore = async (pluginPlatform: PluginPlatform): Promise<void> => {
   const corePluginDirPath = getCorePluginDirPath();
   const pluginVerificationResult = await verifyPlugin(corePluginDirPath);
   if (pluginVerificationResult.verified) {
@@ -88,24 +95,27 @@ async function addCore(pluginPlatform: PluginPlatform) {
   } else {
     throw new Error('The local Amplify-CLI is corrupted');
   }
-}
+};
 
-export function normalizePluginDirectory(directory: string): string {
+/**
+ * path resolution for various plugin directories
+ */
+export const normalizePluginDirectory = (directory: string): string => {
   switch (directory) {
     case constants.PackagedNodeModules:
-      return path.normalize(path.join(__dirname, '../../../..'));
+      return path.join(__dirname, '..', '..', '..', '..');
     case constants.LocalNodeModules:
-      return path.normalize(path.join(__dirname, '../../node_modules'));
+      return path.join(__dirname, '..', '..', 'node_modules');
     case constants.ParentDirectory:
-      return path.normalize(path.join(__dirname, '../../../'));
+      return path.join(__dirname, '..', '..', '..');
     case constants.GlobalNodeModules:
       return getGlobalNodeModuleDirPath();
     default:
       return directory;
   }
-}
+};
 
-function isMatchingNamePattern(pluginPrefixes: string[], pluginDirName: string): boolean {
+const isMatchingNamePattern = (pluginPrefixes: string[], pluginDirName: string): boolean => {
   if (pluginPrefixes && pluginPrefixes.length > 0) {
     return pluginPrefixes.some(prefix => {
       const regex = new RegExp(`^${prefix}`);
@@ -113,13 +123,14 @@ function isMatchingNamePattern(pluginPrefixes: string[], pluginDirName: string):
     });
   }
   return true;
-}
-async function verifyAndAdd(pluginPlatform: PluginPlatform, pluginDirPath: string) {
+};
+
+const verifyAndAdd = async (pluginPlatform: PluginPlatform, pluginDirPath: string): Promise<void> => {
   const pluginVerificationResult = await verifyPlugin(pluginDirPath);
   if (
-    pluginVerificationResult.verified &&
+    pluginVerificationResult.verified
     // Only the current core is added by the addCore(.) method, other packages can not be core
-    pluginVerificationResult.manifest!.name !== constants.CORE
+    && pluginVerificationResult.manifest!.name !== constants.CORE
   ) {
     const manifest = pluginVerificationResult.manifest as PluginManifest;
     const { name, version } = pluginVerificationResult.packageJson;
@@ -139,9 +150,12 @@ async function verifyAndAdd(pluginPlatform: PluginPlatform, pluginDirPath: strin
       }
     }
   }
-}
+};
 
-export function isUnderScanCoverageSync(pluginPlatform: PluginPlatform, pluginDirPath: string): boolean {
+/**
+ * return true if the passed in plugin has already been scanned, otherwise return false
+ */
+export const isUnderScanCoverageSync = (pluginPlatform: PluginPlatform, pluginDirPath: string): boolean => {
   let result = false;
   pluginDirPath = path.normalize(pluginDirPath);
   const pluginDirName = path.basename(pluginDirPath);
@@ -149,24 +163,24 @@ export function isUnderScanCoverageSync(pluginPlatform: PluginPlatform, pluginDi
   if (fs.existsSync(pluginDirPath) && isMatchingNamePattern(pluginPlatform.pluginPrefixes, pluginDirName)) {
     result = pluginPlatform.pluginDirectories.some(directory => {
       directory = normalizePluginDirectory(directory);
-      if (fs.existsSync(directory) && isChildPath(pluginDirPath, directory)) {
-        return true;
-      }
+      return fs.existsSync(directory) && isChildPath(pluginDirPath, directory);
     });
   }
 
   return result;
-}
+};
 
-const addPluginPrefixWithMatchingPattern = async (subDirNames: string[], directory: string, pluginPlatform: PluginPlatform) => {
+const addPluginPrefixWithMatchingPattern = async (
+  subDirNames: string[],
+  directory: string,
+  pluginPlatform: PluginPlatform,
+): Promise<void> => {
   if (subDirNames.length > 0) {
-    const scanSubDirTasks = subDirNames.map(subDirName => {
-      return async () => {
-        if (isMatchingNamePattern(pluginPlatform.pluginPrefixes, subDirName)) {
-          const pluginDirPath = path.join(directory, subDirName);
-          await verifyAndAdd(pluginPlatform, pluginDirPath);
-        }
-      };
+    const scanSubDirTasks = subDirNames.map(subDirName => async () => {
+      if (isMatchingNamePattern(pluginPlatform.pluginPrefixes, subDirName)) {
+        const pluginDirPath = path.join(directory, subDirName);
+        await verifyAndAdd(pluginPlatform, pluginDirPath);
+      }
     });
     await sequential(scanSubDirTasks);
   }

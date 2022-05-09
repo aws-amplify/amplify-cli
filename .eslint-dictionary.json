@@ -74,6 +74,7 @@
   "parens",
   "pathname",
   "pipelined",
+  "pluggable",
   "positionally",
   "postauthorcd",
   "promisify",
