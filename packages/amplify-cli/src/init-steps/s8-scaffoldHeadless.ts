@@ -10,8 +10,6 @@ import {
   pathManager,
 } from 'amplify-cli-core';
 import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
-import { DebugConfig } from '../app-config/debug-config';
-import _ from 'lodash';
 
 /**
  * Extract amplify project structure with backend-config and project-config
@@ -38,7 +36,7 @@ export async function scaffoldProjectHeadless(context: $TSContext) {
     throw new Error(`project-config.json template not found for frontend: ${frontend}`);
   }
 
-  projectConfigFile['projectName'] = projectName;
+  projectConfigFile.projectName = projectName;
   JSONUtilities.writeJson(pathManager.getProjectConfigFilePath(projectPath), projectConfigFile);
 
   // copy backend folder
@@ -48,9 +46,7 @@ export async function scaffoldProjectHeadless(context: $TSContext) {
 
   // Initialize feature flags
   const contextEnvironmentProvider = new CLIContextEnvironmentProvider({
-    getEnvInfo: () => {
-      return context.exeInfo.localEnvInfo;
-    },
+    getEnvInfo: () => context.exeInfo.localEnvInfo,
   });
 
   if (!FeatureFlags.isInitialized()) {
@@ -58,5 +54,4 @@ export async function scaffoldProjectHeadless(context: $TSContext) {
   }
 
   await FeatureFlags.ensureDefaultFeatureFlags(true);
-  DebugConfig.Instance.writeShareProjectConfig();
 }
