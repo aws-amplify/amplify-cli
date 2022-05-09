@@ -671,13 +671,6 @@ workflows:
           requires:
             - build
   nightly_e2e_tests:
-    triggers:
-      - schedule:
-          cron: '0 12 * * *'
-          filters:
-            branches:
-              only:
-                - master
     jobs:
       - build:
           matrix:
