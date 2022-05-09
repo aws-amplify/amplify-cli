@@ -7,7 +7,8 @@ import { editors, editorSelection, normalizeEditor } from '../extensions/amplify
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
 import { getSuitableFrontend } from './s1-initFrontend';
-
+import { prompter } from 'amplify-prompts';
+import { DebugConfig } from '../app-config/debug-config';
 export async function analyzeProjectHeadless(context: $TSContext) {
   const projectPath = process.cwd();
   const projectName = path.basename(projectPath);
@@ -79,6 +80,9 @@ async function displayAndSetDefaults(context: $TSContext, projectPath: string, p
   context.print.info('');
 
   if (context.exeInfo.inputParams.yes || (await context.amplify.confirmPrompt('Initialize the project with the above configuration?'))) {
+    const result = await prompter.yesOrNo("Help improve Amplify CLI by sharing non sensitive configs on failures", false)
+    const actualResult = context.exeInfo.inputParams.yes ? undefined : result;
+    DebugConfig.Instance.setShareProjectConfig(actualResult);
     await setConfigurationDefaults(context, projectPath, defaultProjectName, defaultEnv, defaultEditorName);
     await frontendModule.setFrontendDefaults(context, projectPath);
   }

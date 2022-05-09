@@ -50,6 +50,11 @@ const mockMeta = {
       service: 'AppSync',
     },
   },
+  input: {
+    options: {
+      'send-report': true
+    }
+  }
 };
 const collectedFiles : { filePath: string, redact: boolean }[] = [
   {

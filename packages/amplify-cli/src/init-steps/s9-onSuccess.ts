@@ -11,6 +11,8 @@ import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-p
 import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
 import { writeReadMeFile } from '../extensions/amplify-helpers/docs-manager';
 import { initializeEnv } from '../initialize-env';
+import _ from 'lodash';
+import { DebugConfig } from '../app-config/debug-config';
 
 /**
  *
@@ -64,6 +66,7 @@ export async function onSuccess(context: $TSContext) {
     }
 
     await FeatureFlags.ensureDefaultFeatureFlags(true);
+    DebugConfig.Instance.writeShareProjectConfig()
   }
 
   context.exeInfo.projectConfig.providers.forEach(provider => {

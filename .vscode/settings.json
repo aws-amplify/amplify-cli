@@ -20,7 +20,7 @@
   "jest.showCoverageOnLoad": true,
   "jest.runAllTestsFirst": false,
   "[typescript]": {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[javascript]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
