@@ -67,6 +67,12 @@ export const convertToCompleteMapParams = (partial: Partial<MapParameters>): Map
  * Constructs the Amazon Location Map Style from available map parameters
  */
 export const getGeoMapStyle = (dataProvider: DataProvider, mapStyleType: MapStyleType) => {
+    if (dataProvider === DataProvider.Here) {
+      return `VectorHere${mapStyleType}`;
+    }
+    else if (dataProvider === DataProvider.Esri && mapStyleType === EsriMapStyleType.Imagery) {
+      return MapStyle.RasterEsriImagery;
+    }
     return `Vector${dataProvider}${mapStyleType}`;
 };
 
