@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.26-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.3.25...@aws-amplify/cli-extensibility-helper@2.3.26-beta.0) (2022-05-09)
+
+
+### Bug Fixes
+
+* root path handling for REST APIs ([#9842](https://github.com/aws-amplify/amplify-cli/issues/9842)) ([08fb69f](https://github.com/aws-amplify/amplify-cli/commit/08fb69f6237a8e0a98ffdf6d73cb0b030ace583e))
+
+
+
+
+
 ## [2.3.25](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.3.24...@aws-amplify/cli-extensibility-helper@2.3.25) (2022-04-29)
 
 **Note:** Version bump only for package @aws-amplify/cli-extensibility-helper

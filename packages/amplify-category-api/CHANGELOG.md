@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@2.0.4...@aws-amplify/amplify-category-api@2.1.0-beta.0) (2022-05-09)
+
+
+### Bug Fixes
+
+* root path handling for REST APIs ([#9842](https://github.com/aws-amplify/amplify-cli/issues/9842)) ([08fb69f](https://github.com/aws-amplify/amplify-cli/commit/08fb69f6237a8e0a98ffdf6d73cb0b030ace583e))
+
+
+### Features
+
+* usage flow logging for interactive and non-interactive cli commands ([#10288](https://github.com/aws-amplify/amplify-cli/issues/10288)) ([da391b1](https://github.com/aws-amplify/amplify-cli/commit/da391b146612d8914f72e558e5503d075456c820)), closes [#10293](https://github.com/aws-amplify/amplify-cli/issues/10293)
+
+
+
+
+
 ## [2.0.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@2.0.3...@aws-amplify/amplify-category-api@2.0.4) (2022-04-29)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api
