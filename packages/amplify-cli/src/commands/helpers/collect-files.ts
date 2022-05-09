@@ -10,6 +10,7 @@ const rootStackFileName = 'root-cloudformation-stack.json';
 
 const files = [
   'user-pool-group-precedence.json',
+  'schema.graphql',
   buildParametersJson,
   'override.ts',
   parametersJson,
@@ -36,27 +37,27 @@ export const collectFiles = (resources: { category: string, resourceName: string
   const filePaths: {filePath: string, redact: boolean }[] = [];
   resources.reduce((arr, resource) => {
     const resourceDirectory = pathManager.getResourceDirectoryPath(rootPath, resource.category, resource.resourceName);
-    arr.concat(
-      files.map(r => ({
+    files.map(r => {
+      return {
         filePath: path.join(resourceDirectory, r),
         redact: redactSet.has(r),
-      })).filter(r => fs.existsSync(r.filePath)),
-    );
+      }
+    }).filter(r => fs.existsSync(r.filePath)).forEach(file => arr.push(file));
     if (resource.service === 'AppSync' && !fs.existsSync(path.join(resourceDirectory, 'schema.graphql'))) {
       const schemaDirectoryPath = path.join(resourceDirectory, 'schema');
       if (fs.existsSync(schemaDirectoryPath)) {
         const schemaFiles = glob.sync('**/*.graphql', { cwd: schemaDirectoryPath }).map(fileName => path.join(schemaDirectoryPath, fileName));
-        arr.concat(schemaFiles.map(r => ({
+        schemaFiles.map(r => ({
           filePath: r,
           redact: false,
-        })));
+        })).forEach(file => arr.push(file));
       }
     }
     const cfnFiles = getCfnFiles(resourceDirectory);
-    arr.concat(cfnFiles.map(r => ({
+    cfnFiles.map(r => ({
       filePath: r,
       redact: false,
-    })));
+    })).forEach(file => arr.push(file))
     return arr;
   }, filePaths);
   // add root stack
@@ -91,6 +92,7 @@ const getCfnFiles = (resourceDir: string): string[] => {
   if (fs.existsSync(resourceBuildDir) && fs.lstatSync(resourceBuildDir).isDirectory()) {
     const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
       cwd: resourceBuildDir,
+      absolute: true,
       ignore: [parametersJson],
     });
 
@@ -101,6 +103,7 @@ const getCfnFiles = (resourceDir: string): string[] => {
 
   const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
     cwd: resourceDir,
+    absolute: true,
     ignore: [parametersJson],
   });
   return cfnFiles;

@@ -10,6 +10,8 @@ import {
   pathManager,
 } from 'amplify-cli-core';
 import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
+import { DebugConfig } from '../app-config/debug-config';
+import _ from 'lodash';
 
 /**
  * Extract amplify project structure with backend-config and project-config
@@ -56,4 +58,5 @@ export async function scaffoldProjectHeadless(context: $TSContext) {
   }
 
   await FeatureFlags.ensureDefaultFeatureFlags(true);
+  DebugConfig.Instance.writeShareProjectConfig();
 }
