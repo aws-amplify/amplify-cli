@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.2.0-diagnose-report.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.1.0...@aws-amplify/cli-internal@8.2.0-diagnose-report.0) (2022-05-09)
+
+
+### Bug Fixes
+
+* removed extra print ([f949648](https://github.com/aws-amplify/amplify-cli/commit/f949648182b64f4b86249468946a14073bbe5015))
+* removed extra print ([6248042](https://github.com/aws-amplify/amplify-cli/commit/6248042ffb253427c1a6cefd29e40bf33ff58f29))
+* validate that the app limit has not been reached (issue  [#10063](https://github.com/aws-amplify/amplify-cli/issues/10063)) ([#10158](https://github.com/aws-amplify/amplify-cli/issues/10158)) ([6669996](https://github.com/aws-amplify/amplify-cli/commit/6669996cacafbf1ecbbf9023d01cd2511b8fe09e))
+* windows unit test for missing path assertion ([#10294](https://github.com/aws-amplify/amplify-cli/issues/10294)) ([5f63b33](https://github.com/aws-amplify/amplify-cli/commit/5f63b33c419f935f2af36f5377f30acf87e1cb99))
+
+
+### Features
+
+* report uploader ([bb8a9c4](https://github.com/aws-amplify/amplify-cli/commit/bb8a9c46e3f52e72164227fea7700b44dcabb815))
+* usage flow logging for interactive and non-interactive cli commands ([#10288](https://github.com/aws-amplify/amplify-cli/issues/10288)) ([da391b1](https://github.com/aws-amplify/amplify-cli/commit/da391b146612d8914f72e558e5503d075456c820)), closes [#10293](https://github.com/aws-amplify/amplify-cli/issues/10293)
+* WIP reporter ([87ff947](https://github.com/aws-amplify/amplify-cli/commit/87ff9476cc3e56257d928650feb512c36011816c))
+* WIP reporter ([137f132](https://github.com/aws-amplify/amplify-cli/commit/137f1327c78f885573c51e47a0038db4822e3c54))
+
+
+
+
+
 # [8.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.0.3...@aws-amplify/cli-internal@8.1.0) (2022-04-29)
 
 
