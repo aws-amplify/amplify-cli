@@ -80,7 +80,7 @@
     "@octokit/rest": "^18.0.9",
     "ajv": "^6.12.6",
     "amplify-cli-core": "2.6.0",
-    "amplify-cli-logger": "1.1.0",
+    "amplify-cli-logger": "1.1.2",
     "amplify-codegen": "^3.0.0",
     "amplify-prompts": "2.0.1",
     "amplify-util-import": "2.2.28",
