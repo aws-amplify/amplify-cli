@@ -1,31 +1,43 @@
-import { stateManager, pathManager, NotInitializedError, $TSContext, spinner } from "amplify-cli-core";
-import archiver from "archiver";
-import * as fs from "fs-extra";
-import * as path from "path";
-import fetch from "node-fetch";
-import * as crypto from "crypto";
-import { Redactor, stringMasker } from "amplify-cli-logger";
-import columnify from "columnify";
-import * as _ from "lodash";
-import os from "os";
-import { collectFiles } from "./helpers/collect-files";
-import { encryptBuffer, encryptKey } from "./helpers/encryption-helpers";
-import { v4 } from "uuid";
-import { UsageDataPayload } from "../domain/amplify-usageData/UsageDataPayload";
-import { prompter, printer } from "amplify-prompts";
-import { DebugConfig } from "../app-config/debug-config";
-import { isHeadlessCommand } from "../utils/headless-input-utils";
-const report = "https://yc65ayd1ge.execute-api.us-east-1.amazonaws.com/beta/";
+import {
+  stateManager, pathManager, NotInitializedError, $TSContext, spinner,
+} from 'amplify-cli-core';
+import archiver from 'archiver';
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import fetch from 'node-fetch';
+import * as crypto from 'crypto';
+import { Redactor, stringMasker } from 'amplify-cli-logger';
+import columnify from 'columnify';
+import * as _ from 'lodash';
+import os from 'os';
+import { v4 } from 'uuid';
+import { prompter, printer } from 'amplify-prompts';
+import { collectFiles } from './helpers/collect-files';
+import { encryptBuffer, encryptKey } from './helpers/encryption-helpers';
+import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
+import { DebugConfig } from '../app-config/debug-config';
+import { isHeadlessCommand } from '../utils/headless-input-utils';
 
+const report = 'https://yc65ayd1ge.execute-api.us-east-1.amazonaws.com/beta/';
+
+/**
+ * Prompts if there is a failure in the CLI
+ * @param context amplify cli context object
+ * @param error optional error to be reported
+ */
 export const reportError = async (context: $TSContext, error: Error | undefined): Promise<void> => {
   let sendReport: boolean;
+  // if no root path don't do anything
+  const rootPath = pathManager.findProjectRoot();
+  if (!rootPath) {
+    return;
+  }
   if (DebugConfig.Instance.promptSendReport()) {
-    const isheadless = isHeadlessCommand(context) || _.get(context, ['input', 'options', 'yes'], false);
-    sendReport = await prompter.yesOrNo("Help improve Amplify CLI by sharing non sensitive configs on failures", false);
-    if(!isheadless) {
-      DebugConfig.Instance.setAndWriteShareProject(sendReport)
+    const isHeadless = isHeadlessCommand(context) || _.get(context, ['input', 'options', 'yes'], false);
+    sendReport = await prompter.yesOrNo('Help improve Amplify CLI by sharing non sensitive configs on failures', false);
+    if (!isHeadless) {
+      DebugConfig.Instance.setAndWriteShareProject(sendReport);
     }
-
   } else {
     sendReport = DebugConfig.Instance.getCanSendReport();
   }
@@ -43,12 +55,12 @@ export const run = async (context: $TSContext, error: Error | undefined = undefi
   const skipPrompts = _.get(context, ['input', 'options', 'send-report'], false);
   const turnOff = _.get(context, ['input', 'options', 'auto-send-off'], false);
   const turnOn = _.get(context, ['input', 'options', 'auto-send-on'], false);
-  if(turnOff) {
+  if (turnOff) {
     DebugConfig.Instance.setAndWriteShareProject(false);
     return;
   }
 
-  if(turnOn) {
+  if (turnOn) {
     DebugConfig.Instance.setAndWriteShareProject(true);
     return;
   }
@@ -56,15 +68,14 @@ export const run = async (context: $TSContext, error: Error | undefined = undefi
 };
 
 const zipSend = async (context: $TSContext, skipPrompts: boolean, error: Error | undefined): Promise<void> => {
-  const choices = ["Generate report", "Nothing"];
+  const choices = ['Generate report', 'Nothing'];
   if (!skipPrompts) {
-    const diagnoseAction = await prompter.pick("What would you like to do?", choices);
+    const diagnoseAction = await prompter.pick('What would you like to do?', choices);
     if (diagnoseAction !== choices[0]) {
       return;
     }
   }
-  spinner.start("Creating Zip");
-  console.log("kajshdkasjdhkajshd")
+  spinner.start('Creating Zip');
   const fileDestination = await createZip(context, error);
   spinner.stop();
   printer.blankLine();
@@ -72,12 +83,12 @@ const zipSend = async (context: $TSContext, skipPrompts: boolean, error: Error |
   printer.blankLine();
   let canSendReport = true;
   if (!skipPrompts) {
-    canSendReport = await prompter.yesOrNo("Send Report", false);
+    canSendReport = await prompter.yesOrNo('Send Report', false);
   }
   if (canSendReport) {
-    spinner.start("Sending zip");
+    spinner.start('Sending zip');
     await sendReport(context, fileDestination);
-    spinner.succeed("Done");
+    spinner.succeed('Done');
   }
 };
 
@@ -93,40 +104,40 @@ const createZip = async (context: $TSContext, error: Error | undefined): Promise
       array.push({
         category: key,
         resourceName: resourceKey,
-        service: backend[key][resourceKey].service
+        service: backend[key][resourceKey].service,
       });
     });
 
     return array;
   }, resources);
   const filePaths = collectFiles(categoryResources, rootPath);
-  const zipper = archiver.create("zip");
+  const zipper = archiver.create('zip');
   filePaths.forEach(file => {
     zipper.append(
-      file.redact ? Redactor(fs.readFileSync(file.filePath, { encoding: "utf-8" })) : fs.readFileSync(file.filePath, { encoding: "utf-8" }),
+      file.redact ? Redactor(fs.readFileSync(file.filePath, { encoding: 'utf-8' })) : fs.readFileSync(file.filePath, { encoding: 'utf-8' }),
       {
-        name: path.relative(rootPath, file.filePath)
-      }
+        name: path.relative(rootPath, file.filePath),
+      },
     );
   });
   if (context.exeInfo && context.exeInfo.cloudformationEvents) {
-    const COLUMNS = ["ResourceStatus", "LogicalResourceId", "ResourceType", "Timestamp", "ResourceStatusReason"];
+    const COLUMNS = ['ResourceStatus', 'LogicalResourceId', 'ResourceType', 'Timestamp', 'ResourceStatusReason'];
     const events = context.exeInfo.cloudformationEvents.map(r => ({
       ...r,
-      LogicalResourceId: stringMasker(r.LogicalResourceId)
+      LogicalResourceId: stringMasker(r.LogicalResourceId),
     }));
     const cloudformation = columnify(events, {
       columns: COLUMNS,
-      showHeaders: false
+      showHeaders: false,
     });
     zipper.append(cloudformation, {
-      name: "cloudformation_log.txt"
+      name: 'cloudformation_log.txt',
     });
   }
 
   if (error) {
     zipper.append(JSON.stringify(error, null, 4), {
-      name: "error.json"
+      name: 'error.json',
     });
   }
   const { projectName } = stateManager.getProjectConfig();
@@ -139,8 +150,8 @@ const createZip = async (context: $TSContext, error: Error | undefined): Promise
   await zipper.finalize();
 
   return new Promise((resolve, reject) => {
-    output.on("close", () => resolve(fileDestination));
-    output.on("error", err => {
+    output.on('close', () => resolve(fileDestination));
+    output.on('error', err => {
       reject(err);
     });
   });
@@ -155,7 +166,7 @@ const sendReport = async (context: $TSContext, fileDestination): Promise<void> =
     sessionUuid: usageDataPayload.sessionUuid,
     installationUuid: usageDataPayload.installationUuid,
     amplifyCliVersion: usageDataPayload.amplifyCliVersion,
-    nodeVersion: usageDataPayload.nodeVersion
+    nodeVersion: usageDataPayload.nodeVersion,
   });
 };
 
@@ -170,7 +181,7 @@ const sendFile = async (
     installationUuid: string;
     amplifyCliVersion: string;
     nodeVersion: string;
-  }
+  },
 ): Promise<void> => {
   const stream = fs.readFileSync(zipPath);
   const passKey = v4();
@@ -178,12 +189,12 @@ const sendFile = async (
   const key = await encryptKey(passKey);
   const data = JSON.stringify({ ...metaData, key, encryptedFile: cipherTextBlob });
   await fetch(report, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "content-type": "application/json",
-      "content-length": data.length.toString()
+      'content-type': 'application/json',
+      'content-length': data.length.toString(),
     },
-    body: data
+    body: data,
   }).then(r => {
     console.log(r);
     // no op
@@ -195,20 +206,20 @@ const hashedProjectIdentifiers = (): { projectIdentifier: string; projectEnvIden
   const envName = stateManager.getCurrentEnvName();
   const appId = getAppId();
   const projectIdentifier = crypto
-    .createHash("md5")
+    .createHash('md5')
     .update(`${projectConfig.projectName}-${appId}`)
-    .digest("hex");
+    .digest('hex');
   const projectEnvIdentifier = crypto
-    .createHash("md5")
+    .createHash('md5')
     .update(`${projectConfig.projectName}-${appId}-${envName}`)
-    .digest("hex");
+    .digest('hex');
   return {
     projectIdentifier,
-    projectEnvIdentifier
+    projectEnvIdentifier,
   };
 };
 
 const getAppId = (): string => {
   const meta = stateManager.getMeta();
-  return _.get(meta, ["providers", "awscloudformation", "AmplifyAppId"]);
+  return _.get(meta, ['providers', 'awscloudformation', 'AmplifyAppId']);
 };
