@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.13-diagnose-report.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.12...amplify-appsync-simulator@2.3.13-diagnose-report.2) (2022-05-10)
+
+**Note:** Version bump only for package amplify-appsync-simulator
+
+
+
+
+
 ## [2.3.13-diagnose-report.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.12...amplify-appsync-simulator@2.3.13-diagnose-report.1) (2022-05-10)
 
 **Note:** Version bump only for package amplify-appsync-simulator
