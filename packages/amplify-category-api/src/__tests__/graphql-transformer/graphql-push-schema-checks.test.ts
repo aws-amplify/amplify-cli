@@ -1,4 +1,4 @@
-import { stateManager, FeatureFlags, getGraphQLTransformerOpenSearchProductionDocLink } from 'amplify-cli-core';
+import { stateManager, getGraphQLTransformerOpenSearchProductionDocLink, getTransformerVersion } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { searchablePushChecks } from '../../graphql-transformer/api-utils';
 
@@ -7,13 +7,15 @@ jest.mock('amplify-prompts');
 
 const printerMock = printer as jest.Mocked<typeof printer>;
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
-const FeatureFlagsMock = FeatureFlags as jest.Mocked<typeof FeatureFlags>;
+const getTransformerVersionMock = getTransformerVersion as jest.MockedFunction<typeof getTransformerVersion>
 const getGraphQLTransformerOpenSearchProductionDocLinkMock = getGraphQLTransformerOpenSearchProductionDocLink as jest.MockedFunction<
   typeof getGraphQLTransformerOpenSearchProductionDocLink
 >;
+printerMock.warn.mockImplementation(jest.fn());
 getGraphQLTransformerOpenSearchProductionDocLinkMock.mockReturnValue('mockDocsLink');
+// use transformer v2 for tests
+getTransformerVersionMock.mockReturnValue(new Promise(resolve => resolve(2)));
 
-FeatureFlags.getNumber = jest.fn().mockReturnValue(2);
 describe('graphql schema checks', () => {
   const contextMock = {
     amplify: {
@@ -26,7 +28,6 @@ describe('graphql schema checks', () => {
   });
 
   it('should warn users if they use not recommended open search instance without overrides', async () => {
-    printerMock.warn.mockImplementation(jest.fn());
     stateManagerMock.getTeamProviderInfo.mockReturnValue({});
     contextMock.amplify.getEnvInfo.mockReturnValue({ envName: 'test' });
     const map = { Post: ['model', 'searchable'] };
@@ -37,13 +38,12 @@ describe('graphql schema checks', () => {
   });
 
   it('should warn users if they use not recommended open search instance with overrides', async () => {
-    printerMock.warn.mockImplementation(jest.fn());
     stateManagerMock.getTeamProviderInfo.mockReturnValue({
       test: {
         categories: {
           api: {
             test_api_name: {
-              ElasticSearchInstanceType: 't2.small.elasticsearch',
+              OpenSearchInstanceType: 't2.small.elasticsearch',
             },
           },
         },
@@ -58,13 +58,12 @@ describe('graphql schema checks', () => {
   });
 
   it('should NOT warn users if they use recommended open search instance', async () => {
-    printerMock.warn.mockImplementation(jest.fn());
     stateManagerMock.getTeamProviderInfo.mockReturnValue({
       test: {
         categories: {
           api: {
             test_api_name: {
-              ElasticSearchInstanceType: 't2.medium.elasticsearch',
+              OpenSearchInstanceType: 't2.medium.elasticsearch',
             },
           },
         },
@@ -77,13 +76,12 @@ describe('graphql schema checks', () => {
   });
 
   it('should NOT warn users if they use recommended open search instance on the environment', async () => {
-    printerMock.warn.mockImplementation(jest.fn());
     stateManagerMock.getTeamProviderInfo.mockReturnValue({
       dev: {
         categories: {
           api: {
             test_api_name: {
-              ElasticSearchInstanceType: 't2.small.elasticsearch',
+              OpenSearchInstanceType: 't2.small.elasticsearch',
             },
           },
         },
@@ -92,7 +90,7 @@ describe('graphql schema checks', () => {
         categories: {
           api: {
             test_api_name: {
-              ElasticSearchInstanceType: 't2.medium.elasticsearch',
+              OpenSearchInstanceType: 't2.medium.elasticsearch',
             },
           },
         },
@@ -105,7 +103,6 @@ describe('graphql schema checks', () => {
   });
 
   it('should NOT warn users if they do NOT use searchable', async () => {
-    printerMock.warn.mockImplementation(jest.fn());
     stateManagerMock.getTeamProviderInfo.mockReturnValue({});
     contextMock.amplify.getEnvInfo.mockReturnValue({ envName: 'test' });
     const map = { Post: ['model'] };
@@ -114,7 +111,6 @@ describe('graphql schema checks', () => {
   });
 
   it('should warn users if they use not recommended open search instance with overrides', async () => {
-    printerMock.warn.mockImplementation(jest.fn());
     stateManagerMock.getTeamProviderInfo.mockReturnValue({
       test: {
         categories: {},
