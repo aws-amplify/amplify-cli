@@ -1,26 +1,27 @@
-import { AmplifyUserPoolGroupTransform } from '../../../../provider-utils/awscloudformation/auth-stack-builder';
 import { $TSContext } from 'amplify-cli-core';
+import { AmplifyUserPoolGroupTransform } from '../../../../provider-utils/awscloudformation/auth-stack-builder';
 
 jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as {}),
+  ...(jest.requireActual('amplify-cli-core') as Record<string, unknown>),
   stateManager: {
-    getLocalEnvInfo: jest.fn().mockReturnValue('testenv'),
+    getLocalEnvInfo: jest.fn().mockReturnValue('testEnv'),
   },
   pathManager: {
     getBackendDirPath: jest.fn().mockReturnValue('..'),
   },
   JSONUtilities: {
+    writeJson: jest.fn(),
     readJson: jest
       .fn()
       .mockReturnValueOnce([
         {
-          groupName: 'adin',
+          groupName: 'admin',
           precedence: 1,
         },
       ])
       .mockReturnValueOnce([
         {
-          groupName: 'adinmock',
+          groupName: 'adminMock',
           precedence: 2,
         },
       ]),
@@ -29,45 +30,41 @@ jest.mock('amplify-cli-core', () => ({
   writeCFNTemplate: jest.fn(),
 }));
 
-const getCLIInputPayload_mock = jest.fn().mockReturnValue({
+const getCLIInputPayloadMock = jest.fn().mockReturnValue({
   cognitoConfig: {
-    identityPoolName: 'extauth387063394_identitypool_87063394',
-    resourceName: 'extauth38706339487063394',
+    identityPoolName: 'testIdentityPoolName',
+    resourceName: 'testAuthResourceName',
   },
 });
 
-const isCLIInputsValid_mock = jest.fn().mockReturnValue('true');
+const isCLIInputsValidMock = jest.fn().mockReturnValue('true');
 
-jest.mock('../../../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state.ts', () => {
-  return {
-    AuthInputState: jest.fn().mockImplementation(() => {
-      return {
-        getCLIInputPayload: getCLIInputPayload_mock,
-        isCLIInputsValid: isCLIInputsValid_mock,
-      };
-    }),
-  };
-});
+jest.mock('../../../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state.ts', () => ({
+  AuthInputState: jest.fn().mockImplementation(() => ({
+    getCLIInputPayload: getCLIInputPayloadMock,
+    isCLIInputsValid: isCLIInputsValidMock,
+  })),
+}));
 
-const context_stub = {};
+const contextStub = {};
 
-const context_stub_typed = context_stub as unknown as $TSContext;
+const contextStubTyped = contextStub as unknown as $TSContext;
 describe('Check UserPool Group Template', () => {
-  it('Generated rootstack template during Push one group', async () => {
+  it('Generated root stack template during Push one group', async () => {
     // CFN transform for UserPool Group stack
 
     const resourceName = 'mockResource';
     const userPoolTransform = new AmplifyUserPoolGroupTransform(resourceName);
-    const mock_template = await userPoolTransform.transform(context_stub_typed);
-    expect(mock_template).toMatchSnapshot();
+    const mockTemplate = await userPoolTransform.transform(contextStubTyped);
+    expect(mockTemplate).toMatchSnapshot();
   });
 
-  it('Generated rootstack template during Push with two groups', async () => {
+  it('Generated root stack template during Push with two groups', async () => {
     // CFN transform for UserPool Group stack
 
     const resourceName = 'mockResource';
     const userPoolTransform = new AmplifyUserPoolGroupTransform(resourceName);
-    const mock_template = await userPoolTransform.transform(context_stub_typed);
-    expect(mock_template).toMatchSnapshot();
+    const mockTemplate = await userPoolTransform.transform(contextStubTyped);
+    expect(mockTemplate).toMatchSnapshot();
   });
 });

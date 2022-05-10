@@ -73,9 +73,7 @@
         "LambdaCloudWatchPolicy": {
             "Type": "AWS::IAM::Policy",
             "Properties": {
-                "PolicyName": {
-                    "Ref": "<%= props.cloudWatchPolicyName %>"
-                },
+                "PolicyName": "<%= props.cloudWatchPolicyName %>",
                 "Roles": [
                     {
                         "Ref": "LambdaExecutionRole"
