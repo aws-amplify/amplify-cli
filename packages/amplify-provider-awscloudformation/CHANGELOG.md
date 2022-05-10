@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.2.0-diagnose-report.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.1.3...amplify-provider-awscloudformation@6.2.0-diagnose-report.0) (2022-05-09)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** use the right profile with SSO and credential_process ([#9095](https://github.com/aws-amplify/amplify-cli/issues/9095)) ([811f257](https://github.com/aws-amplify/amplify-cli/commit/811f2571c69e67c91fe998a2e141f6fa5fc73a16)), closes [#4488](https://github.com/aws-amplify/amplify-cli/issues/4488)
+* root path handling for REST APIs ([#9842](https://github.com/aws-amplify/amplify-cli/issues/9842)) ([08fb69f](https://github.com/aws-amplify/amplify-cli/commit/08fb69f6237a8e0a98ffdf6d73cb0b030ace583e))
+
+
+### Features
+
+* WIP reporter ([137f132](https://github.com/aws-amplify/amplify-cli/commit/137f1327c78f885573c51e47a0038db4822e3c54))
+
+
+
+
+
 ## [6.1.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.1.2...amplify-provider-awscloudformation@6.1.3) (2022-04-29)
 
 
