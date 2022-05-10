@@ -8,12 +8,11 @@ export async function searchablePushChecks(context, map, apiName): Promise<void>
     if (searchableModelTypes.length) {
       const currEnv = context.amplify.getEnvInfo().envName;
       const teamProviderInfo = stateManager.getTeamProviderInfo();
-      const version = await getTransformerVersion(context);
-      const instanceType = _.get(
-        teamProviderInfo,
-        [currEnv, 'categories', 'api', apiName, version === 2 ? ResourceConstants.PARAMETERS.OpenSearchInstanceType : ResourceConstants.PARAMETERS.ElasticsearchInstanceType],
-        't2.small.elasticsearch',
-      );
+      const getInstanceType = (instanceTypeParam: string) => _.get(teamProviderInfo, [currEnv, 'categories', 'api', apiName, instanceTypeParam]);
+      const instanceType = 
+        getInstanceType(ResourceConstants.PARAMETERS.OpenSearchInstanceType) ??
+        getInstanceType(ResourceConstants.PARAMETERS.ElasticsearchInstanceType) ??
+        't2.small.elasticsearch';
       if (instanceType === 't2.small.elasticsearch' || instanceType === 't3.small.elasticsearch') {
         const version = await ApiCategoryFacade.getTransformerVersion(context);
         const docLink = getGraphQLTransformerOpenSearchProductionDocLink(version);
