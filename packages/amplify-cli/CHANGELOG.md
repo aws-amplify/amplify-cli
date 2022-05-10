@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.1.0...@aws-amplify/cli-internal@8.2.0) (2022-05-10)
+
+
+### Bug Fixes
+
+* validate that the app limit has not been reached (issue  [#10063](https://github.com/aws-amplify/amplify-cli/issues/10063)) ([#10158](https://github.com/aws-amplify/amplify-cli/issues/10158)) ([6669996](https://github.com/aws-amplify/amplify-cli/commit/6669996cacafbf1ecbbf9023d01cd2511b8fe09e))
+* windows unit test for missing path assertion ([#10294](https://github.com/aws-amplify/amplify-cli/issues/10294)) ([5f63b33](https://github.com/aws-amplify/amplify-cli/commit/5f63b33c419f935f2af36f5377f30acf87e1cb99))
+
+
+### Features
+
+* usage flow logging for interactive and non-interactive cli commands ([#10288](https://github.com/aws-amplify/amplify-cli/issues/10288)) ([da391b1](https://github.com/aws-amplify/amplify-cli/commit/da391b146612d8914f72e558e5503d075456c820)), closes [#10293](https://github.com/aws-amplify/amplify-cli/issues/10293)
+
+
+
+
+
 # [8.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.0.3...@aws-amplify/cli-internal@8.1.0) (2022-04-29)
 
 

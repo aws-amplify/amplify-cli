@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.29](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@2.2.28...amplify-nodejs-function-runtime-provider@2.2.29) (2022-05-10)
+
+
+### Bug Fixes
+
+* prevent symlinks on nodejs package install ([#10293](https://github.com/aws-amplify/amplify-cli/issues/10293)) ([2af11f4](https://github.com/aws-amplify/amplify-cli/commit/2af11f48f04bf1553a9f55e4ec08ce6e72a7e6d6))
+
+
+
+
+
 ## [2.2.28](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@2.2.27...amplify-nodejs-function-runtime-provider@2.2.28) (2022-04-29)
 
 **Note:** Version bump only for package amplify-nodejs-function-runtime-provider

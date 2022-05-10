@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.1.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.1.3...amplify-provider-awscloudformation@6.1.4) (2022-05-10)
+
+
+
+# 8.2.0 (2022-05-10)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** use the right profile with SSO and credential_process ([#9095](https://github.com/aws-amplify/amplify-cli/issues/9095)) ([811f257](https://github.com/aws-amplify/amplify-cli/commit/811f2571c69e67c91fe998a2e141f6fa5fc73a16)), closes [#4488](https://github.com/aws-amplify/amplify-cli/issues/4488)
+* root path handling for REST APIs ([#9842](https://github.com/aws-amplify/amplify-cli/issues/9842)) ([08fb69f](https://github.com/aws-amplify/amplify-cli/commit/08fb69f6237a8e0a98ffdf6d73cb0b030ace583e))
+
+
+### Reverts
+
+* Revert "chore: wrap getTransformerFactory behind a single API (#10373)" (#10390) ([c2629f6](https://github.com/aws-amplify/amplify-cli/commit/c2629f6ac6aba05d205e6a3622a8cfa9f8c2d0bf)), closes [#10373](https://github.com/aws-amplify/amplify-cli/issues/10373) [#10390](https://github.com/aws-amplify/amplify-cli/issues/10390)
+
+
+
+
+
 ## [6.1.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.1.2...amplify-provider-awscloudformation@6.1.3) (2022-04-29)
 
 
