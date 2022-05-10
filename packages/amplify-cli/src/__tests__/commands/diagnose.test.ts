@@ -1,13 +1,13 @@
 import * as fs from 'fs-extra';
 import archiver from 'archiver';
-import { $TSContext, pathManager, stateManager } from 'amplify-cli-core';
+import { pathManager, stateManager } from 'amplify-cli-core';
 import { Redactor } from 'amplify-cli-logger';
 import { WriteStream } from 'fs-extra';
 import fetch from 'node-fetch';
 import * as uuid from 'uuid';
 import { collectFiles } from '../../commands/helpers/collect-files';
-import { encryptBuffer, encryptKey } from '../../commands/helpers/encryption-helpers';
 import { run } from '../../commands/diagnose';
+import { Context } from '../../domain/context';
 
 jest.mock('uuid');
 jest.mock('amplify-cli-core');
@@ -161,7 +161,7 @@ describe('run report command', () => {
 
 
 
-    const contextMockTyped = contextMock as unknown as $TSContext;
+    const contextMockTyped = contextMock as unknown as Context;
     await run(contextMockTyped, new Error('mock error'));
     expect(fsMock.readFileSync).toBeCalled();
     expect(Redactor).toBeCalledTimes(1);
