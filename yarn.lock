@@ -9206,6 +9206,40 @@ amdefine@>=0.0.4:
   resolved "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
+amplify-cli-core@2.6.0:
+  version "2.6.0"
+  resolved "https://registry.npmjs.org/amplify-cli-core/-/amplify-cli-core-2.6.0.tgz#b1b0d90146b7411200b35710bd28cf076bfeacb5"
+  integrity sha512-8tfPP6tkwq97znTCWQf14a/t3p9EHSFDU5COHi8T59iuZfU6BEp9Td+o9DSml8RWwXyvVqaVO2lw8jNnlV2dWw==
+  dependencies:
+    ajv "^6.12.6"
+    amplify-cli-logger "1.1.0"
+    amplify-prompts "2.0.1"
+    chalk "^4.1.1"
+    ci-info "^2.0.0"
+    cloudform-types "^4.2.0"
+    dotenv "^8.2.0"
+    execa "^5.1.1"
+    fs-extra "^8.1.0"
+    globby "^11.0.3"
+    hjson "^3.2.1"
+    js-yaml "^4.0.0"
+    lodash "^4.17.21"
+    node-fetch "^2.6.7"
+    open "^8.4.0"
+    ora "^4.0.3"
+    proxy-agent "^5.0.0"
+    semver "^7.3.5"
+    typescript-json-schema "~0.52.0"
+    which "^2.0.2"
+
+amplify-cli-logger@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/amplify-cli-logger/-/amplify-cli-logger-1.1.0.tgz#cbe42f243bc88085aa93be034a9ded73980c287d"
+  integrity sha512-OESR1EMu85C8l67a2ugMR8RNnYvMOWImmseKz61yG7+3tQCNssO+WSS5AIk8no3tAfUkMMYjD+FudTR0jyV7pA==
+  dependencies:
+    winston "^3.3.3"
+    winston-daily-rotate-file "^4.5.0"
+
 amplify-codegen@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/amplify-codegen/-/amplify-codegen-3.0.0.tgz#b07248c732b01d403114d6d60cd2a28d4b7996c9"
@@ -9226,6 +9260,14 @@ amplify-codegen@^3.0.0:
     ora "^4.0.3"
     semver "^7.3.5"
     slash "^3.0.0"
+
+amplify-prompts@2.0.1, amplify-prompts@^2.0.0:
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/amplify-prompts/-/amplify-prompts-2.0.1.tgz#6b25ded5aefb4f9d408e3fa6d13d91ae2ce434ca"
+  integrity sha512-X8sNkC9eBA0LWrCBiH+j9hp3yQcK1TBbbte9f6O/S8C1lpf1sgzCztctIC72iSXvbON4EPKYBxLVbkVc6ki9Rw==
+  dependencies:
+    chalk "^4.1.1"
+    enquirer "^2.3.6"
 
 ansi-align@^3.0.0:
   version "3.0.1"
