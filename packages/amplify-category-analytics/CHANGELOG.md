@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.4-diagnose-report.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@4.0.3...amplify-category-analytics@4.0.4-diagnose-report.1) (2022-05-10)
+
+
+### Bug Fixes
+
+* **amplify-category-analytics:** ensure pinpoint permissions are created ([#10091](https://github.com/aws-amplify/amplify-cli/issues/10091)) ([4050cfc](https://github.com/aws-amplify/amplify-cli/commit/4050cfc7f29f925c009797445ea8c6e71d085bd9))
+
+
+
+
+
 ## [4.0.4-diagnose-report.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@4.0.3...amplify-category-analytics@4.0.4-diagnose-report.0) (2022-05-09)
 
 

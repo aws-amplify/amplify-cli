@@ -1,6 +1,6 @@
 {
   "name": "amplify-provider-awscloudformation",
-  "version": "6.2.0-diagnose-report.0",
+  "version": "6.2.0-diagnose-report.1",
   "description": "AWS CloudFormation Provider",
   "repository": {
     "type": "git",
@@ -24,8 +24,8 @@
     "watch": "tsc --watch"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-custom": "2.3.30-diagnose-report.0",
-    "@aws-amplify/cli-extensibility-helper": "2.3.26-diagnose-report.0",
+    "@aws-amplify/amplify-category-custom": "2.3.30-diagnose-report.1",
+    "@aws-amplify/cli-extensibility-helper": "2.3.26-diagnose-report.1",
     "@aws-amplify/graphql-auth-transformer": "^0.9.0",
     "@aws-amplify/graphql-default-value-transformer": "^0.5.22",
     "@aws-amplify/graphql-function-transformer": "^0.7.16",
@@ -79,11 +79,11 @@
     "@aws-cdk/region-info": "~1.124.0",
     "@octokit/rest": "^18.0.9",
     "ajv": "^6.12.6",
-    "amplify-cli-core": "2.7.0-diagnose-report.0",
-    "amplify-cli-logger": "1.1.1-diagnose-report.0",
+    "amplify-cli-core": "2.7.0-diagnose-report.1",
+    "amplify-cli-logger": "1.1.1-diagnose-report.1",
     "amplify-codegen": "^3.0.0",
-    "amplify-prompts": "2.1.0-diagnose-report.0",
-    "amplify-util-import": "2.2.29-diagnose-report.0",
+    "amplify-prompts": "2.1.0-diagnose-report.1",
+    "amplify-util-import": "2.2.29-diagnose-report.1",
     "archiver": "^5.3.0",
     "aws-sdk": "^2.1113.0",
     "bottleneck": "2.19.5",
