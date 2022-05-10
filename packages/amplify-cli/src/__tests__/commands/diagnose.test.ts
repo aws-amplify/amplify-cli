@@ -137,7 +137,6 @@ describe('run report command', () => {
 
     collectFilesMock.mockReturnValue(collectedFiles);
 
-
     const mockArchiver = archiver as jest.Mocked<typeof archiver>;
     const zipperMock = {
       append: jest.fn(),
@@ -158,8 +157,6 @@ describe('run report command', () => {
 
     const uuidMock = uuid as jest.Mocked<typeof uuid>;
     uuidMock.v4.mockReturnValue('randomPassPhrase');
-
-
 
     const contextMockTyped = contextMock as unknown as Context;
     await run(contextMockTyped, new Error('mock error'));
