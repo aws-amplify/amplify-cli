@@ -22,20 +22,24 @@ export class DebugConfig {
   }
 
   private constructor() {
+    const cliJson = this.getCLIJson(false);
     this.debug = {
-      shareProjectConfig: undefined,
+      shareProjectConfig: _.get(cliJson, ['debug', 'shareProjectConfig'])
     };
     this.dirty = false;
   }
 
   // eslint-disable-next-line class-methods-use-this
-  private getCLIJson(): $TSAny {
+  private getCLIJson(throwIfNotExist: boolean = true): $TSAny {
     const rootPath = pathManager.findProjectRoot();
     if (!rootPath) {
+      if(!throwIfNotExist) {
+        return {}
+      }
       throw new NotInitializedError();
     }
 
-    const cliJson = stateManager.getCLIJSON(rootPath);
+    const cliJson = stateManager.getCLIJSON(rootPath, undefined, { throwIfNotExist });
     return cliJson;
   }
 
