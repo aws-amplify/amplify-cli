@@ -1,5 +1,5 @@
 import {
-  stateManager, pathManager, NotInitializedError, spinner,
+  stateManager, pathManager, NotInitializedError, spinner, DiagnoseReportUploadError,
 } from 'amplify-cli-core';
 import archiver from 'archiver';
 import * as fs from 'fs-extra';
@@ -87,8 +87,13 @@ const zipSend = async (context: Context, skipPrompts: boolean, error: Error | un
   }
   if (canSendReport) {
     spinner.start('Sending zip');
-    await sendReport(context, fileDestination);
-    spinner.succeed('Done');
+    try {
+      await sendReport(context, fileDestination);
+      spinner.succeed('Done');
+    } catch (ex) {
+      context.usageData.emitError(ex);
+      spinner.fail();
+    }
   }
 };
 
@@ -159,7 +164,7 @@ const createZip = async (context: Context, error: Error | undefined): Promise<st
 
 const sendReport = async (context: Context, fileDestination): Promise<void> => {
   const ids = hashedProjectIdentifiers();
-  const usageDataPayload: UsageDataPayload = context.usageData.getUsageDataPayload(null, "");
+  const usageDataPayload: UsageDataPayload = context.usageData.getUsageDataPayload(null, '');
 
   await sendFile(fileDestination, {
     ...ids,
@@ -188,17 +193,17 @@ const sendFile = async (
   const cipherTextBlob = await encryptBuffer(stream, passKey);
   const key = await encryptKey(passKey);
   const data = JSON.stringify({ ...metaData, key, encryptedFile: cipherTextBlob });
-  await fetch(report, {
+  const response = await fetch(report, {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
       'content-length': data.length.toString(),
     },
     body: data,
-  }).then(r => {
-    console.log(r);
-    // no op
   });
+  if (response.status !== 200) {
+    throw new DiagnoseReportUploadError();
+  }
 };
 
 const hashedProjectIdentifiers = (): { projectIdentifier: string; projectEnvIdentifier: string } => {

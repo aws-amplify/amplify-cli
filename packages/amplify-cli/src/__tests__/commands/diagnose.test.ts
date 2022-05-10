@@ -34,7 +34,7 @@ jest.mock('crypto', () => ({
   createCipheriv: jest.fn(),
   /* eslint-enable spellcheck/spell-checker*/
 }));
-jest.mock('node-fetch', () => jest.fn().mockReturnValue({ then: jest.fn() }));
+jest.mock('node-fetch', () => jest.fn().mockReturnValue({ status: 200 }));
 
 const mockMeta = {
   providers: {
