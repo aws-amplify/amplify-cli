@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.13-diagnose-report.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.12...amplify-java-function-template-provider@1.5.13-diagnose-report.2) (2022-05-10)
+
+**Note:** Version bump only for package amplify-java-function-template-provider
+
+
+
+
+
+## [1.5.13-diagnose-report.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.12...amplify-java-function-template-provider@1.5.13-diagnose-report.1) (2022-05-10)
+
+**Note:** Version bump only for package amplify-java-function-template-provider
+
+
+
+
+
+## [1.5.13-diagnose-report.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.12...amplify-java-function-template-provider@1.5.13-diagnose-report.0) (2022-05-09)
+
+**Note:** Version bump only for package amplify-java-function-template-provider
+
+
+
+
+
 ## [1.5.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.10...amplify-java-function-template-provider@1.5.12) (2022-01-10)
 
 

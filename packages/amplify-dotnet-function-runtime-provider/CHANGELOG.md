@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.9-diagnose-report.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@1.6.8...amplify-dotnet-function-runtime-provider@1.6.9-diagnose-report.2) (2022-05-10)
+
+**Note:** Version bump only for package amplify-dotnet-function-runtime-provider
+
+
+
+
+
+## [1.6.9-diagnose-report.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@1.6.8...amplify-dotnet-function-runtime-provider@1.6.9-diagnose-report.1) (2022-05-10)
+
+**Note:** Version bump only for package amplify-dotnet-function-runtime-provider
+
+
+
+
+
+## [1.6.9-diagnose-report.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@1.6.8...amplify-dotnet-function-runtime-provider@1.6.9-diagnose-report.0) (2022-05-09)
+
+**Note:** Version bump only for package amplify-dotnet-function-runtime-provider
+
+
+
+
+
 ## [1.6.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@1.6.7...amplify-dotnet-function-runtime-provider@1.6.8) (2022-02-25)
 
 **Note:** Version bump only for package amplify-dotnet-function-runtime-provider
