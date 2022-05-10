@@ -3,8 +3,8 @@ import { DefaultValueTransformer as DefaultValueTransformerV2 } from '@aws-ampli
 import { FunctionTransformer as FunctionTransformerV2 } from '@aws-amplify/graphql-function-transformer';
 import { HttpTransformer as HttpTransformerV2 } from '@aws-amplify/graphql-http-transformer';
 import {
-  IndexTransformer as IndexTransformerV2,
-  PrimaryKeyTransformer as PrimaryKeyTransformerV2,
+    IndexTransformer as IndexTransformerV2,
+    PrimaryKeyTransformer as PrimaryKeyTransformerV2,
 } from '@aws-amplify/graphql-index-transformer';
 import { MapsToTransformer as MapsToTransformerV2 } from '@aws-amplify/graphql-maps-to-transformer';
 import { ModelTransformer as ModelTransformerV2 } from '@aws-amplify/graphql-model-transformer';
@@ -26,26 +26,25 @@ import { FunctionTransformer as FunctionTransformerV1 } from 'graphql-function-t
 import { HttpTransformer as HttpTransformerV1 } from 'graphql-http-transformer';
 import { PredictionsTransformer as PredictionsTransformerV1 } from 'graphql-predictions-transformer';
 import { KeyTransformer as KeyTransformerV1 } from 'graphql-key-transformer';
+import { isAmplifyAdminApp } from '../utils/admin-helpers';
 import {
   $TSAny,
   $TSContext,
   pathManager,
   stateManager,
 } from 'amplify-cli-core';
+import { ProviderName as providerName } from '../constants';
 import { printer } from 'amplify-prompts';
 import {
-  loadProject,
-  readTransformerConfiguration,
-  TRANSFORM_CONFIG_FILE_NAME,
-  ITransformer,
-  TransformConfig,
+    loadProject,
+    readTransformerConfiguration,
+    TRANSFORM_CONFIG_FILE_NAME,
+    ITransformer,
+    TransformConfig,
 } from 'graphql-transformer-core';
 import importFrom from 'import-from';
 import importGlobal from 'import-global';
 import path from 'path';
-import { ProviderName as providerName } from '../constants';
-import { isAmplifyAdminApp } from '../utils/admin-helpers';
-import { getTransformerVersion } from './transformer-version';
 
 type TransformerFactoryArgs = {
     addSearchableTransformer: boolean;
@@ -55,21 +54,7 @@ type TransformerFactoryArgs = {
     identityPoolId?: string;
   };
 
-/**
- * Return the graphql transformer factory based on the projects current transformer version.
- */
-export const getTransformerFactory = async (
-  context: $TSContext,
-  resourceDir: string,
-  authConfig?: $TSAny,
-): Promise<(options: $TSAny) => Promise<(TransformerPluginProviderV2 | ITransformer)[]>> => {
-  const transformerVersion = await getTransformerVersion(context);
-  return transformerVersion === 2
-    ? getTransformerFactoryV2(resourceDir)
-    : getTransformerFactoryV1(resourceDir, authConfig);
-};
-
-const getTransformerFactoryV2 = (
+export const getTransformerFactoryV2 = (
   resourceDir: string,
 ): (options: TransformerFactoryArgs) => Promise<TransformerPluginProviderV2[]> => async (options?: TransformerFactoryArgs) => {
   const modelTransformer = new ModelTransformerV2();
@@ -126,7 +111,7 @@ const getTransformerFactoryV2 = (
   return transformerList;
 };
 
-function getTransformerFactoryV1(resourceDir: string, authConfig?: $TSAny) {
+export function getTransformerFactoryV1(context: $TSContext, resourceDir: string, authConfig?: $TSAny) {
   return async (addSearchableTransformer: boolean, storageConfig?: $TSAny) => {
     const transformerList: ITransformer[] = [
       // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
