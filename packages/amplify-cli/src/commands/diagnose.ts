@@ -1,5 +1,5 @@
 import {
-  stateManager, pathManager, NotInitializedError, $TSContext, spinner,
+  stateManager, pathManager, NotInitializedError, spinner,
 } from 'amplify-cli-core';
 import archiver from 'archiver';
 import * as fs from 'fs-extra';
@@ -17,15 +17,16 @@ import { encryptBuffer, encryptKey } from './helpers/encryption-helpers';
 import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
 import { DebugConfig } from '../app-config/debug-config';
 import { isHeadlessCommand } from '../utils/headless-input-utils';
+import { Context } from '../domain/context';
 
-const report = 'https://yc65ayd1ge.execute-api.us-east-1.amazonaws.com/beta/';
+const report = 'https://yc65ayd1ge.execute-api.us-east-1.amazonaws.com/beta/report';
 
 /**
  * Prompts if there is a failure in the CLI
  * @param context amplify cli context object
  * @param error optional error to be reported
  */
-export const reportError = async (context: $TSContext, error: Error | undefined): Promise<void> => {
+export const reportError = async (context: Context, error: Error | undefined): Promise<void> => {
   let sendReport: boolean;
   // if no root path don't do anything
   const rootPath = pathManager.findProjectRoot();
@@ -41,7 +42,6 @@ export const reportError = async (context: $TSContext, error: Error | undefined)
   } else {
     sendReport = DebugConfig.Instance.getCanSendReport();
   }
-
   if (sendReport) {
     await zipSend(context, true, error);
   }
@@ -51,7 +51,7 @@ export const reportError = async (context: $TSContext, error: Error | undefined)
  * @param context the amplify context object
  * @param error if invoked due to an error
  */
-export const run = async (context: $TSContext, error: Error | undefined = undefined): Promise<void> => {
+export const run = async (context: Context, error: Error | undefined = undefined): Promise<void> => {
   const skipPrompts = _.get(context, ['input', 'options', 'send-report'], false);
   const turnOff = _.get(context, ['input', 'options', 'auto-send-off'], false);
   const turnOn = _.get(context, ['input', 'options', 'auto-send-on'], false);
@@ -67,7 +67,7 @@ export const run = async (context: $TSContext, error: Error | undefined = undefi
   await zipSend(context, skipPrompts, error);
 };
 
-const zipSend = async (context: $TSContext, skipPrompts: boolean, error: Error | undefined): Promise<void> => {
+const zipSend = async (context: Context, skipPrompts: boolean, error: Error | undefined): Promise<void> => {
   const choices = ['Generate report', 'Nothing'];
   if (!skipPrompts) {
     const diagnoseAction = await prompter.pick('What would you like to do?', choices);
@@ -92,7 +92,7 @@ const zipSend = async (context: $TSContext, skipPrompts: boolean, error: Error |
   }
 };
 
-const createZip = async (context: $TSContext, error: Error | undefined): Promise<string> => {
+const createZip = async (context: Context, error: Error | undefined): Promise<string> => {
   const rootPath = pathManager.findProjectRoot();
   if (!rootPath) {
     throw new NotInitializedError();
@@ -157,9 +157,9 @@ const createZip = async (context: $TSContext, error: Error | undefined): Promise
   });
 };
 
-const sendReport = async (context: $TSContext, fileDestination): Promise<void> => {
+const sendReport = async (context: Context, fileDestination): Promise<void> => {
   const ids = hashedProjectIdentifiers();
-  const usageDataPayload: UsageDataPayload = context.usageData.getUsageDataPayload();
+  const usageDataPayload: UsageDataPayload = context.usageData.getUsageDataPayload(null, "");
 
   await sendFile(fileDestination, {
     ...ids,

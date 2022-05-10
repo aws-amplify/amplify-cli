@@ -1,5 +1,6 @@
 import { Input } from '../input';
 import { IFlowData } from 'amplify-cli-shared-interfaces'
+import { UsageDataPayload } from './UsageDataPayload';
 
 /**
  * Base interface for emitting usage data
@@ -16,6 +17,7 @@ interface IUsageMetricsData {
     projectSettings: ProjectSettings,
     processStartTimeStamp: number
   ) => void;
+  getUsageDataPayload: (error: Error | null, state: string) => UsageDataPayload
   startCodePathTimer: (codePath: StartableTimedCodePath) => void;
   stopCodePathTimer: (codePath: StoppableTimedCodePath) => void;
 }
