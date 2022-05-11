@@ -10,7 +10,7 @@ import axios from 'axios';
 import rimraf from 'rimraf';
 import { name, version } from './package.json';
 
-const BINARY_LOCATION = 'https://d2bkhsss993doa.cloudfront.net';
+const BINARY_LOCATION = 'https://package.cli.amplify.aws';
 
 const pipeline = util.promisify(stream.pipeline);
 
