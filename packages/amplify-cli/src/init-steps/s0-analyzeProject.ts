@@ -1,4 +1,6 @@
-import { $TSContext, exitOnNextTick, InvalidEnvironmentNameError, stateManager } from 'amplify-cli-core';
+import {
+  $TSContext, exitOnNextTick, InvalidEnvironmentNameError, stateManager,
+} from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
 import * as path from 'path';
@@ -7,8 +9,10 @@ import { editors, editorSelection, normalizeEditor } from '../extensions/amplify
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
 import { getSuitableFrontend } from './s1-initFrontend';
-import { prompter } from 'amplify-prompts';
-import { DebugConfig } from '../app-config/debug-config';
+
+/**
+ *
+ */
 export async function analyzeProjectHeadless(context: $TSContext) {
   const projectPath = process.cwd();
   const projectName = path.basename(projectPath);
@@ -28,6 +32,9 @@ export async function analyzeProjectHeadless(context: $TSContext) {
 
 // defaultEnv: string | undefined - this is an accurate type description based on what the code does,
 // but this might indicate an unhandled edge case
+/**
+ *
+ */
 export function displayConfigurationDefaults(
   context: $TSContext,
   defaultProjectName: string,
@@ -80,15 +87,15 @@ async function displayAndSetDefaults(context: $TSContext, projectPath: string, p
   context.print.info('');
 
   if (context.exeInfo.inputParams.yes || (await context.amplify.confirmPrompt('Initialize the project with the above configuration?'))) {
-    const result = await prompter.yesOrNo("Help improve Amplify CLI by sharing non sensitive configs on failures", false)
-    const actualResult = context.exeInfo.inputParams.yes ? undefined : result;
-    DebugConfig.Instance.setShareProjectConfig(actualResult);
     await setConfigurationDefaults(context, projectPath, defaultProjectName, defaultEnv, defaultEditorName);
     await frontendModule.setFrontendDefaults(context, projectPath);
   }
 }
 
-export async function analyzeProject(context: $TSContext): Promise<$TSContext> {
+/**
+ *
+ */
+export const analyzeProject = async (context: $TSContext): Promise<$TSContext> => {
   if (!context.parameters.options.app || !context.parameters.options.quickstart) {
     context.print.warning('Note: It is recommended to run this command from the root of your app directory');
   }
@@ -126,8 +133,9 @@ export async function analyzeProject(context: $TSContext): Promise<$TSContext> {
   setProjectConfig(context, projectName);
   setExeInfo(context, projectPath, defaultEditor, envName);
 
+
   return context;
-}
+};
 
 function setProjectConfig(context: $TSContext, projectName: string) {
   context.exeInfo.isNewProject = isNewProject(context);
@@ -137,7 +145,7 @@ function setProjectConfig(context: $TSContext, projectName: string) {
   };
 }
 
-function setExeInfo(context: $TSContext, projectPath: String, defaultEditor?: String, envName?: String) {
+function setExeInfo(context: $TSContext, projectPath: string, defaultEditor?: string, envName?: string) {
   context.exeInfo.localEnvInfo = {
     projectPath,
     defaultEditor,
@@ -203,9 +211,7 @@ async function getEditor(context: $TSContext) {
 }
 /* End getEditor */
 
-const isEnvNameValid = (inputEnvName: string) => {
-  return /^[a-z]{2,10}$/.test(inputEnvName);
-};
+const isEnvNameValid = (inputEnvName: string) => /^[a-z]{2,10}$/.test(inputEnvName);
 
 const INVALID_ENV_NAME_MSG = 'Environment name must be between 2 and 10 characters, and lowercase only.';
 
@@ -246,7 +252,7 @@ async function getEnvName(context: $TSContext) {
   }
 
   const newEnvQuestion = async () => {
-    let defaultEnvName = getDefaultEnv(context);
+    const defaultEnvName = getDefaultEnv(context);
     const envNameQuestion: inquirer.InputQuestion = {
       type: 'input',
       name: 'envName',

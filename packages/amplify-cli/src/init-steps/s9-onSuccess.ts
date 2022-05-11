@@ -5,7 +5,7 @@ import {
   CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager, $TSContext,
 } from 'amplify-cli-core';
 import _ from 'lodash';
-import { printer } from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
@@ -16,16 +16,16 @@ import { DebugConfig } from '../app-config/debug-config';
 /**
  *
  */
-export async function onHeadlessSuccess(context: $TSContext) {
+export const onHeadlessSuccess = async (context: $TSContext) => {
   const frontendPlugins = getFrontendPlugins(context);
   const frontendModule = require(frontendPlugins[context.exeInfo.projectConfig.frontend]);
   await frontendModule.onInitSuccessful(context);
-}
+};
 
 /**
  *
  */
-export async function onSuccess(context: $TSContext) {
+export const onSuccess = async (context: $TSContext): Promise<void> => {
   const { projectPath } = context.exeInfo.localEnvInfo;
 
   const amplifyDirPath = pathManager.getAmplifyDirPath(projectPath);
@@ -65,14 +65,16 @@ export async function onSuccess(context: $TSContext) {
     }
 
     await FeatureFlags.ensureDefaultFeatureFlags(true);
-    DebugConfig.Instance.writeShareProjectConfig()
+    const result = await prompter.yesOrNo('Help improve Amplify CLI by sharing non sensitive configurations on failures', false);
+    const actualResult = context.exeInfo.inputParams.yes ? undefined : result;
+    DebugConfig.Instance.setAndWriteShareProject(actualResult);
   }
 
   context.exeInfo.projectConfig.providers.forEach(provider => {
     const providerModule = require(providerPlugins[provider]);
     providerOnSuccessTasks.push(() => providerModule.onInitSuccessful(context));
   });
-
+ 
   await sequential(providerOnSuccessTasks);
 
   // Get current-cloud-backend's amplify-meta
