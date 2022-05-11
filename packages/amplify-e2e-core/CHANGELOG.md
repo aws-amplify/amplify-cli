@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.3-diagnose-report.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@3.1.2...amplify-e2e-core@3.1.3-diagnose-report.3) (2022-05-11)
+
+
+### Bug Fixes
+
+* changed the location of the prompt ([f738067](https://github.com/aws-amplify/amplify-cli/commit/f7380672d9df8bc85f85917e4791b15895c9a6e1))
+
+
+
+
+
 ## [3.1.3-diagnose-report.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@3.1.2...amplify-e2e-core@3.1.3-diagnose-report.2) (2022-05-10)
 
 **Note:** Version bump only for package amplify-e2e-core

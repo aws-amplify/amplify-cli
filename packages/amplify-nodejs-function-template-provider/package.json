@@ -1,6 +1,6 @@
 {
   "name": "amplify-nodejs-function-template-provider",
-  "version": "2.3.15-diagnose-report.2",
+  "version": "2.3.15-diagnose-report.3",
   "description": "Node JS templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
@@ -21,8 +21,8 @@
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules"
   },
   "dependencies": {
-    "amplify-cli-core": "2.7.0-diagnose-report.2",
-    "amplify-function-plugin-interface": "1.9.5-diagnose-report.2",
+    "amplify-cli-core": "2.7.0-diagnose-report.3",
+    "amplify-function-plugin-interface": "1.9.5-diagnose-report.3",
     "graphql-transformer-core": "^7.5.0",
     "lodash": "^4.17.21"
   },
