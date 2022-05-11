@@ -83,7 +83,8 @@
     "js-yaml": "^4.0.0",
     "lodash": "^4.17.21",
     "ora": "^4.0.3",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "@aws-amplify/graphql-transformer-core": "^0.17.0"
   },
   "devDependencies": {
     "@aws-cdk/assertions": "~1.124.0",

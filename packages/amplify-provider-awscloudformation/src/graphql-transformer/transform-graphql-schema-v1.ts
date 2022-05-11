@@ -7,6 +7,7 @@ import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-
 import {
   $TSContext,
   AmplifyCategories,
+  ApiCategoryFacade,
   getGraphQLTransformerAuthDocLink,
   getGraphQLTransformerAuthSubscriptionsDocLink,
   getGraphQLTransformerOpenSearchProductionDocLink,
@@ -32,7 +33,6 @@ import {
 } from 'graphql-transformer-core';
 import { hashDirectory } from '../upload-appsync-files';
 import { exitOnNextTick } from 'amplify-cli-core';
-import { getTransformerVersion } from '../graphql-transformer-factory/transformer-version';
 import { getTransformerFactory } from '../graphql-transformer-factory/transformer-factory';
 import { searchablePushChecks } from './api-utils';
 
@@ -45,7 +45,7 @@ const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
 async function warnOnAuth(context, map) {
   const unAuthModelTypes = Object.keys(map).filter(type => !map[type].includes('auth') && map[type].includes('model'));
   if (unAuthModelTypes.length) {
-    const transformerVersion = await getTransformerVersion(context);
+    const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
     const docLink = getGraphQLTransformerAuthDocLink(transformerVersion);
     context.print.warning("\nThe following types do not have '@auth' enabled. Consider using @auth with @model");
     context.print.warning(unAuthModelTypes.map(type => `\t - ${type}`).join('\n'));
@@ -57,7 +57,7 @@ async function warnOnAuth(context, map) {
  * @TODO Include a map of versions to keep track
  */
 async function transformerVersionCheck(context, resourceDir, cloudBackendDirectory, updatedResources, usedDirectives) {
-  const transformerVersion = await getTransformerVersion(context);
+  const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
   const authDocLink = getGraphQLTransformerAuthSubscriptionsDocLink(transformerVersion);
   const searchable = getGraphQLTransformerOpenSearchProductionDocLink(transformerVersion);
   const versionChangeMessage = `The default behavior for @auth has changed in the latest version of Amplify\nRead here for details: ${authDocLink}`;
