@@ -28,8 +28,7 @@
   "dependencies": {
     "amplify-cli-shared-interfaces": "1.1.0-diagnose-report.2",
     "chalk": "^4.1.1",
-    "enquirer": "^2.3.6",
-    "amplify-cli-shared-interfaces": "1.0.0"
+    "enquirer": "^2.3.6"
   },
   "devDependencies": {
     "rimraf": "^3.0.2"
