@@ -1,20 +1,17 @@
-import { $TSAny, JSONUtilities } from 'amplify-cli-core';
-import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as fs from 'fs-extra';
 import { constants } from '../domain/constants';
 import { PluginManifest } from '../domain/plugin-manifest';
-import { PluginVerificationError, PluginVerificationResult } from '../domain/plugin-verification-result';
+import { PluginVerificationResult, PluginVerificationError } from '../domain/plugin-verification-result';
+import { JSONUtilities, $TSAny } from 'amplify-cli-core';
 
 type VerificationContext = {
   pluginDirPath: string;
   manifest?: PluginManifest;
-  pluginModule?: $TSAny;
+  pluginModule?: any;
 };
 
-/**
- * Verify plugin is configured correctly
- */
-export const verifyPlugin = async (pluginDirPath: string): Promise<PluginVerificationResult> => {
+export async function verifyPlugin(pluginDirPath: string): Promise<PluginVerificationResult> {
   let exists = await fs.pathExists(pluginDirPath);
   if (exists) {
     const stat = await fs.stat(pluginDirPath);
@@ -26,20 +23,14 @@ export const verifyPlugin = async (pluginDirPath: string): Promise<PluginVerific
     return verifyNodePackage(pluginDirPath);
   }
   return new PluginVerificationResult(false, PluginVerificationError.PluginDirPathNotExist);
-};
+}
 
-/**
- * PluginNameValidationResult type
- */
 export type PluginNameValidationResult = {
   isValid: boolean;
   message?: string;
 };
 
-/**
- * Ensure no naming conflict exists between custom plugins and Amplify CLI core plugins
- */
-export const validPluginName = async (pluginName: string): Promise<PluginNameValidationResult> => {
+export async function validPluginName(pluginName: string): Promise<PluginNameValidationResult> {
   const result: PluginNameValidationResult = {
     isValid: true,
   };
@@ -49,9 +40,9 @@ export const validPluginName = async (pluginName: string): Promise<PluginNameVal
     result.message = 'Amplify CLI core command names can not be used as plugin name';
   }
   return result;
-};
+}
 
-const verifyNodePackage = async (pluginDirPath: string): Promise<PluginVerificationResult> => {
+async function verifyNodePackage(pluginDirPath: string): Promise<PluginVerificationResult> {
   const pluginPackageJsonFilePath = path.join(pluginDirPath, constants.PACKAGEJSON_FILE_NAME);
   try {
     const packageJson = JSONUtilities.readJson(pluginPackageJsonFilePath);
@@ -66,9 +57,9 @@ const verifyNodePackage = async (pluginDirPath: string): Promise<PluginVerificat
   } catch (err) {
     return new PluginVerificationResult(false, PluginVerificationError.InvalidNodePackage, err);
   }
-};
+}
 
-const verifyAmplifyManifest = async (context: VerificationContext): Promise<PluginVerificationResult> => {
+async function verifyAmplifyManifest(context: VerificationContext): Promise<PluginVerificationResult> {
   const pluginManifestFilePath = path.join(context.pluginDirPath, constants.MANIFEST_FILE_NAME);
   let exists = await fs.pathExists(pluginManifestFilePath);
   if (exists) {
@@ -86,32 +77,54 @@ const verifyAmplifyManifest = async (context: VerificationContext): Promise<Plug
     if (pluginNameValidationResult.isValid) {
       context.manifest = manifest;
 
-      const pluginVerificationResult = await verifyEventHandlers(context);
-      pluginVerificationResult.manifest = manifest;
+      let result = verifyCommands(context);
 
-      return pluginVerificationResult;
+      result = result.verified ? verifyEventHandlers(context) : result;
+      result.manifest = manifest;
+
+      return result;
     }
 
     return new PluginVerificationResult(false, PluginVerificationError.InvalidManifest, pluginNameValidationResult.message);
   } catch (err) {
     return new PluginVerificationResult(false, PluginVerificationError.InvalidManifest, err);
   }
-};
+}
 
-const verifyEventHandlers = async (context: VerificationContext): Promise<PluginVerificationResult> => {
+function verifyCommands(context: VerificationContext): PluginVerificationResult {
+  //   let isVerified = true;
+  //   if (manifest.commands && manifest.commands.length > 0) {
+  //     isVerified = pluginModule.hasOwnProperty(constants.ExecuteAmplifyCommand) &&
+  //         typeof pluginModule[constants.ExecuteAmplifyCommand] === 'function';
+  //   }
+
+  //   if (isVerified) {
+  //     return new PluginVerificationResult(true);
+  //   }
+  //   return new PluginVerificationResult(
+  //             false,
+  //             PluginVerificationError.MissingExecuteAmplifyCommandMethod,
+  //         );
+
+  // verification should be on the plugin type and if it implement all the required METHODS;
+  return new PluginVerificationResult(true);
+}
+
+function verifyEventHandlers(context: VerificationContext): PluginVerificationResult {
   let isVerified = true;
   if (context.manifest!.eventHandlers && context.manifest!.eventHandlers.length > 0) {
     // Lazy load the plugin if not yet loaded
     if (!context.pluginModule) {
-      context.pluginModule = await import(context.pluginDirPath);
+      context.pluginModule = require(context.pluginDirPath);
     }
 
-    isVerified = context.pluginModule?.[constants.HandleAmplifyEvent]
-      && typeof context.pluginModule[constants.HandleAmplifyEvent] === 'function';
+    isVerified =
+      context.pluginModule.hasOwnProperty(constants.HandleAmplifyEvent) &&
+      typeof context.pluginModule[constants.HandleAmplifyEvent] === 'function';
   }
 
   if (isVerified) {
     return new PluginVerificationResult(true);
   }
   return new PluginVerificationResult(false, PluginVerificationError.MissingHandleAmplifyEventMethod);
-};
+}
