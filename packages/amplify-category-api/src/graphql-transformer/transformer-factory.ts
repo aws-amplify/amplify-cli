@@ -32,6 +32,7 @@ import {
   pathManager,
   stateManager,
   ApiCategoryFacade,
+  CloudformationProviderFacade,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import {
@@ -44,8 +45,8 @@ import {
 import importFrom from 'import-from';
 import importGlobal from 'import-global';
 import path from 'path';
-import { ProviderName as providerName } from '../constants';
-import { isAmplifyAdminApp } from '../utils/admin-helpers';
+
+const PROVIDER_NAME = 'awscloudformation';
 
 type TransformerFactoryArgs = {
     addSearchableTransformer: boolean;
@@ -66,7 +67,7 @@ export const getTransformerFactory = async (
   const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
   return transformerVersion === 2
     ? getTransformerFactoryV2(resourceDir)
-    : getTransformerFactoryV1(resourceDir, authConfig);
+    : getTransformerFactoryV1(context, resourceDir, authConfig);
 };
 
 const getTransformerFactoryV2 = (
@@ -126,7 +127,7 @@ const getTransformerFactoryV2 = (
   return transformerList;
 };
 
-function getTransformerFactoryV1(resourceDir: string, authConfig?: $TSAny) {
+function getTransformerFactoryV1(context: $TSContext, resourceDir: string, authConfig?: $TSAny) {
   return async (addSearchableTransformer: boolean, storageConfig?: $TSAny) => {
     const transformerList: ITransformer[] = [
       // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
@@ -172,8 +173,8 @@ function getTransformerFactoryV1(resourceDir: string, authConfig?: $TSAny) {
 
     try {
       const amplifyMeta = stateManager.getMeta();
-      const appId = amplifyMeta?.providers?.[providerName]?.AmplifyAppId;
-      const res = await isAmplifyAdminApp(appId);
+      const appId = amplifyMeta?.providers?.[PROVIDER_NAME]?.AmplifyAppId;
+      const res = await CloudformationProviderFacade.isAmplifyAdminApp(context, appId);
       amplifyAdminEnabled = res.isAdminApp;
     } catch (err) {
       // if it is not an AmplifyAdmin app, do nothing

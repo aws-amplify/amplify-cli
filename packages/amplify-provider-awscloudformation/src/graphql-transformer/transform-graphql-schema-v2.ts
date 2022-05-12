@@ -34,7 +34,6 @@ import {
 import _ from 'lodash';
 import path from 'path';
 import { destructiveUpdatesFlag, ProviderName } from '../constants';
-import { getTransformerFactory } from '../graphql-transformer-factory/transformer-factory';
 /* eslint-disable-next-line import/no-cycle */
 import { searchablePushChecks } from './api-utils';
 import { hashDirectory } from '../upload-appsync-files';
@@ -233,7 +232,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
 
   searchablePushChecks(context, directiveMap.types, parameters[ResourceConstants.PARAMETERS.AppSyncApiName]);
 
-  const transformerListFactory = await getTransformerFactory(context, resourceDir);
+  const transformerListFactory = await ApiCategoryFacade.getTransformerFactory(context, resourceDir);
 
   if (sandboxModeEnabled && options.promptApiKeyCreation) {
     const apiKeyConfig = await showSandboxModePrompts(context);

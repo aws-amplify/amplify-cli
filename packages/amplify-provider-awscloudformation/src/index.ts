@@ -50,11 +50,6 @@ export { rootStackFileName } from './push-resources';
 import { compileSchema } from './utility-functions';
 import { LocationService } from './aws-utils/aws-location-service';
 
-/**
- * Exports for API Category Split
- */
-import { getTransformerFactory } from './graphql-transformer-factory/transformer-factory';
-
 function init(context) {
   return initializer.run(context);
 }
@@ -196,7 +191,7 @@ module.exports = {
   getLocationRegionMapping,
   // Keeping for backwards compatibility
   getTransformerVersion: ApiCategoryFacade.getTransformerVersion,
-  getTransformerFactory,
+  getTransformerFactory: ApiCategoryFacade.getTransformerFactory,
   transformResourceWithOverrides,
   rootStackFileName,
   compileSchema,
