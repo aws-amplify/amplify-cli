@@ -16,7 +16,8 @@
     "aws"
   ],
   "scripts": {
-    "build": "download --extract -o emulator https://s3-us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_latest.zip",
+    "build": "node ./scripts/update-ddb-simulator.js",
+    "clean": "rimraf emulator ddbSimulator.zip",
     "test": "jest"
   },
   "dependencies": {
@@ -31,7 +32,6 @@
     "which": "^2.0.2"
   },
   "devDependencies": {
-    "download-cli": "^1.1.1",
     "get-port": "^5.1.1"
   },
   "jest": {
