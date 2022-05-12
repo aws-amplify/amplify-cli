@@ -57,6 +57,26 @@ describe('graphql schema checks', () => {
     );
   });
 
+  it('should warn users if they use not recommended elastic search instance with overrides', async () => {
+    stateManagerMock.getTeamProviderInfo.mockReturnValue({
+      test: {
+        categories: {
+          api: {
+            test_api_name: {
+              ElasticSearchInstanceType: 't2.small.elasticsearch',
+            },
+          },
+        },
+      },
+    });
+    contextMock.amplify.getEnvInfo.mockReturnValue({ envName: 'test' });
+    const map = { Post: ['model', 'searchable'] };
+    await searchablePushChecks(contextMock, map, 'test_api_name');
+    expect(printerMock.warn).lastCalledWith(
+      'Your instance type for OpenSearch is t2.small.elasticsearch, you may experience performance issues or data loss. Consider reconfiguring with the instructions here mockDocsLink',
+    );
+  });
+
   it('should NOT warn users if they use recommended open search instance', async () => {
     stateManagerMock.getTeamProviderInfo.mockReturnValue({
       test: {
@@ -64,6 +84,24 @@ describe('graphql schema checks', () => {
           api: {
             test_api_name: {
               OpenSearchInstanceType: 't2.medium.elasticsearch',
+            },
+          },
+        },
+      },
+    });
+    contextMock.amplify.getEnvInfo.mockReturnValue({ envName: 'test' });
+    const map = { Post: ['model', 'searchable'] };
+    await searchablePushChecks(contextMock, map, 'test_api_name');
+    expect(printerMock.warn).not.toBeCalled();
+  });
+
+  it('should NOT warn users if they use recommended elastic search instance', async () => {
+    stateManagerMock.getTeamProviderInfo.mockReturnValue({
+      test: {
+        categories: {
+          api: {
+            test_api_name: {
+              ElasticSearchInstanceType: 't2.medium.elasticsearch',
             },
           },
         },
@@ -91,6 +129,33 @@ describe('graphql schema checks', () => {
           api: {
             test_api_name: {
               OpenSearchInstanceType: 't2.medium.elasticsearch',
+            },
+          },
+        },
+      },
+    });
+    contextMock.amplify.getEnvInfo.mockReturnValue({ envName: 'prod' });
+    const map = { Post: ['model', 'searchable'] };
+    await searchablePushChecks(contextMock, map, 'test_api_name');
+    expect(printerMock.warn).not.toBeCalled();
+  });
+
+  it('should NOT warn users if they use recommended elastic search instance on the environment', async () => {
+    stateManagerMock.getTeamProviderInfo.mockReturnValue({
+      dev: {
+        categories: {
+          api: {
+            test_api_name: {
+              ElasticSearchInstanceType: 't2.small.elasticsearch',
+            },
+          },
+        },
+      },
+      prod: {
+        categories: {
+          api: {
+            test_api_name: {
+              ElasticSearchInstanceType: 't2.medium.elasticsearch',
             },
           },
         },
