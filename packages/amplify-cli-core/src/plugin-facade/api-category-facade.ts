@@ -7,7 +7,6 @@ import {
 } from '..';
 
 const API_CATEGORY_NAME = 'api';
-const PROVIDER_NAME = 'awscloudformation';
 
 /**
  * Facade for the API Category, to facilitate typed requests against some of the plugin methods exposed.
@@ -36,7 +35,6 @@ export class ApiCategoryFacade {
     resourceDir: string,
     authConfig?: $TSAny,
   ): Promise<(options: $TSAny) => Promise<(TransformerPluginProviderV2 | TransformerPluginProviderV1)[]>> {
-    const providerPlugin = await import(context.amplify.getProviderPlugins(context)[PROVIDER_NAME]);
-    return providerPlugin.getTransformerFactory(context, resourceDir, authConfig);
+    return context.amplify.invokePluginMethod(context, API_CATEGORY_NAME, undefined, 'getTransformerFactory', [context, resourceDir, authConfig]);
   }
 }

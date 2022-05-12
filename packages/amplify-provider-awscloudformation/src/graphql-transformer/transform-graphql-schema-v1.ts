@@ -33,7 +33,6 @@ import {
 } from 'graphql-transformer-core';
 import { hashDirectory } from '../upload-appsync-files';
 import { exitOnNextTick } from 'amplify-cli-core';
-import { getTransformerFactory } from '../graphql-transformer-factory/transformer-factory';
 import { searchablePushChecks } from './api-utils';
 
 const apiCategory = 'api';
@@ -361,7 +360,7 @@ export async function transformGraphQLSchemaV1(context, options) {
 
   await transformerVersionCheck(context, resourceDir, previouslyDeployedBackendDir, resourcesToBeUpdated, directiveMap.directives);
 
-  const transformerListFactory = await getTransformerFactory(context, resourceDir, authConfig);
+  const transformerListFactory = await ApiCategoryFacade.getTransformerFactory(context, resourceDir, authConfig);
 
   let searchableTransformerFlag = false;
 
