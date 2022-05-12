@@ -7,8 +7,9 @@ jest.mock('amplify-cli-core', () => ({
   pathManager: {
     getAmplifyPackageLibDirPath: jest.fn().mockReturnValue('test/path'),
   },
-  getTransformerVersion: jest.fn().mockReturnValue(2),
-  getGraphQLTransformerFunctionDocLink: jest.fn().mockReturnValue('mockdocs'),
+  ApiCategoryFacade: {
+    getTransformerVersion: jest.fn().mockReturnValue(2),
+  },  getGraphQLTransformerFunctionDocLink: jest.fn().mockReturnValue('mockdocs'),
   stateManager: {
     getMeta: jest.fn().mockReturnValue({
       function: {

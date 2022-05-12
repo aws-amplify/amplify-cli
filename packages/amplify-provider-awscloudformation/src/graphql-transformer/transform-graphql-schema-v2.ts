@@ -15,6 +15,7 @@ import {
   $TSObject,
   AmplifyCategories,
   AmplifySupportedService,
+  ApiCategoryFacade,
   getGraphQLTransformerAuthDocLink,
   JSONUtilities,
   pathManager,
@@ -34,7 +35,6 @@ import _ from 'lodash';
 import path from 'path';
 import { destructiveUpdatesFlag, ProviderName } from '../constants';
 import { getTransformerFactory } from '../graphql-transformer-factory/transformer-factory';
-import { getTransformerVersion } from '../graphql-transformer-factory/transformer-version';
 /* eslint-disable-next-line import/no-cycle */
 import { searchablePushChecks } from './api-utils';
 import { hashDirectory } from '../upload-appsync-files';
@@ -217,7 +217,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
   const lastDeployedProjectConfig = fs.existsSync(previouslyDeployedBackendDir)
     ? await loadProject(previouslyDeployedBackendDir)
     : undefined;
-  const transformerVersion = await getTransformerVersion(context);
+  const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
   const docLink = getGraphQLTransformerAuthDocLink(transformerVersion);
   const sandboxModeEnabled = schemaHasSandboxModeEnabled(project.schema, docLink);
   const directiveMap = collectDirectivesByTypeNames(project.schema);

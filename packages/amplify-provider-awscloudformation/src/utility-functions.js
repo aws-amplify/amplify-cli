@@ -7,7 +7,7 @@ const Polly = require('./aws-utils/aws-polly');
 const SageMaker = require('./aws-utils/aws-sagemaker');
 const { transformGraphQLSchema } = require('./graphql-transformer');
 const { transformResourceWithOverrides } = require('./override-manager');
-const { getDirectiveDefinitions } = require('./graphql-transformer-factory/directive-definitions');
+const { ApiCategoryFacade } = require('amplify-cli-core');
 const { updateStackForAPIMigration } = require('./push-resources');
 const SecretsManager = require('./aws-utils/aws-secretsmanager');
 const Route53 = require('./aws-utils/aws-route53');
@@ -158,7 +158,7 @@ module.exports = {
     if (!resourceDir) {
       throw new Error('missing resource directory');
     }
-    return getDirectiveDefinitions(context, resourceDir);
+    return ApiCategoryFacade.getDirectiveDefinitions(context, resourceDir);
   },
   getRegions: () => awsRegions.regions,
   getRegionMappings: () => awsRegions.regionMappings,
