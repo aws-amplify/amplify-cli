@@ -1,5 +1,5 @@
-import { TransformerPluginProvider as TransformerPluginProviderV2 } from '@aws-amplify/graphql-transformer-interfaces';
-import { ITransformer as TransformerPluginProviderV1 } from 'graphql-transformer-core';
+import { DeploymentResources as DeploymentResourcesV2 } from '@aws-amplify/graphql-transformer-core';
+import { DeploymentResources as DeploymentResourcesV1 } from 'graphql-transformer-core';
 // eslint-disable-next-line import/no-cycle
 import {
   $TSAny,
@@ -27,14 +27,13 @@ export class ApiCategoryFacade {
   }
 
   /**
-   * Return the transformer factory, will return the relevant factory based on whether the project
-   * is using v2 or v1 transformers.
+   * Perform the actual transformation for a given project. This is predominantlyu a side-effecting call, but we
+   * also return the deployment resources as well.
    */
-  static async getTransformerFactory(
+  static async transformGraphQLSchema(
     context: $TSContext,
-    resourceDir: string,
-    authConfig?: $TSAny,
-  ): Promise<(options: $TSAny) => Promise<(TransformerPluginProviderV2 | TransformerPluginProviderV1)[]>> {
-    return context.amplify.invokePluginMethod(context, API_CATEGORY_NAME, undefined, 'getTransformerFactory', [context, resourceDir, authConfig]);
+    options: $TSAny,
+  ): Promise<DeploymentResourcesV2 | DeploymentResourcesV1 | undefined> {
+    return context.amplify.invokePluginMethod(context, API_CATEGORY_NAME, undefined, 'transformGraphQLSchema', [context, options]);
   }
 }

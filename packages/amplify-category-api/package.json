@@ -107,7 +107,10 @@
     "graphql-transformer-core": "^7.5.0",
     "graphql-versioned-transformer": "^5.2.32",
     "import-from": "^3.0.0",
-    "import-global": "^0.1.0"
+    "import-global": "^0.1.0",
+    "rimraf": "^3.0.0",
+    "cloudform": "^4.2.0",
+    "cloudform-types": "^4.2.0"
   },
   "devDependencies": {
     "@aws-cdk/assertions": "~1.124.0",
