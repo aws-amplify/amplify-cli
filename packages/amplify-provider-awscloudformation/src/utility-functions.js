@@ -276,7 +276,7 @@ module.exports = {
    * @deprecated Use getGraphQLAPIs instead
    */
   getAppSyncAPIs: context => {
-    return this.getGraphQLAPIs(context);
+    return module.exports.getGraphQLAPIs(context);
   },
   getGraphQLAPIs: context => {
     const log = logger('getGraphQLAPIs.appSyncModel.appSync.listGraphqlApis', { maxResults: 25 });
@@ -375,7 +375,7 @@ module.exports = {
    * @deprecated Use getGraphQLApiKeys instead
    */
   getAppSyncApiKeys: (context, options) => {
-    return this.getGraphQLApiKeys(context, options);
+    return module.exports.getGraphQLApiKeys(context, options);
   },
   getGraphQLApiKeys: (context, options) => {
     const awsOptions = {};
