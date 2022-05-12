@@ -5,7 +5,6 @@ const AppSync = require('./aws-utils/aws-appsync');
 const { Lex } = require('./aws-utils/aws-lex');
 const Polly = require('./aws-utils/aws-polly');
 const SageMaker = require('./aws-utils/aws-sagemaker');
-const { transformGraphQLSchema } = require('./graphql-transformer');
 const { transformResourceWithOverrides } = require('./override-manager');
 const { ApiCategoryFacade } = require('amplify-cli-core');
 const { updateStackForAPIMigration } = require('./push-resources');
@@ -60,7 +59,7 @@ module.exports = {
       };
     }
 
-    return transformGraphQLSchema(context, optionsWithUpdateHandler);
+    return ApiCategoryFacade.transformGraphQLSchema(context, optionsWithUpdateHandler);
   },
 
   /**

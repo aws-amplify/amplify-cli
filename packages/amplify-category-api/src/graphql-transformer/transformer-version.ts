@@ -2,8 +2,8 @@ import {
   $TSContext,
   pathManager,
   stateManager,
+  FeatureFlags,
 } from 'amplify-cli-core';
-import { FeatureFlags } from 'amplify-cli-core';
 
 /**
  * Shorthand for Feature flag retrieval.

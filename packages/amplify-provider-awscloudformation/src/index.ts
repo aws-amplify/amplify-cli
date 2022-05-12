@@ -49,6 +49,9 @@ export { rootStackFileName } from './push-resources';
 
 import { compileSchema } from './utility-functions';
 import { LocationService } from './aws-utils/aws-location-service';
+import { hashDirectory } from './upload-appsync-files';
+import { prePushCfnTemplateModifier } from './pre-push-cfn-processor/pre-push-cfn-modifier';
+import { getApiKeyConfig } from './utils/api-key-helpers';
 
 function init(context) {
   return initializer.run(context);
@@ -191,9 +194,11 @@ module.exports = {
   getLocationRegionMapping,
   // Keeping for backwards compatibility
   getTransformerVersion: ApiCategoryFacade.getTransformerVersion,
-  getTransformerFactory: ApiCategoryFacade.getTransformerFactory,
   transformResourceWithOverrides,
   rootStackFileName,
   compileSchema,
   getConfiguredLocationServiceClient,
+  hashDirectory,
+  prePushCfnTemplateModifier,
+  getApiKeyConfig,
 };
