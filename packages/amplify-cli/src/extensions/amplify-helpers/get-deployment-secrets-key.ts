@@ -4,7 +4,10 @@ import _ from 'lodash';
 
 const prePushKeyName = 'prePushDeploymentSecretsKey';
 
-export function getDeploymentSecretsKey(): string {
+/**
+ *  Gets the key for this project + environment in the deployment secrets file
+ */
+export const getDeploymentSecretsKey = (): string => {
   const teamProviderInfo = stateManager.getTeamProviderInfo();
   const { envName } = stateManager.getLocalEnvInfo();
   const envTeamProviderInfo = teamProviderInfo[envName];
@@ -21,4 +24,4 @@ export function getDeploymentSecretsKey(): string {
   _.set(teamProviderInfo, [envName, 'awscloudformation', prePushKeyName], newKey);
   stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
   return newKey;
-}
+};

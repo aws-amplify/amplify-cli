@@ -146,7 +146,6 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
       }
     }
 
-
     for (const resource of resources) {
       if (resource.service === ApiServiceNameElasticContainer && resource.category === 'api') {
         const {
@@ -497,7 +496,6 @@ export const updateStackForAPIMigration = async (context: $TSContext, category: 
   const { isReverting, isCLIMigration } = options;
 
   let projectDetails = context.amplify.getProjectDetails();
-
 
   const resources = allResources.filter((resource: { service: string; }) => resource.service === 'AppSync');
 
