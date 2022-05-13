@@ -125,7 +125,7 @@ export const migrateLegacyLayer = async (context: $TSContext, layerName: string)
   const permissions: LegacyPermission[] = layerVersionMap[`${_.first(layerVersions)}`]?.permissions;
 
   if (permissions === undefined) {
-    context.print.warning(`Unable to find layer permissions for ${layerName}, falling back to default.`);
+    printer.warn(`Unable to find layer permissions for ${layerName}, falling back to default.`);
     layerConfiguration.permissions = [defaultLayerPermission];
   } else {
     layerConfiguration.permissions = [];

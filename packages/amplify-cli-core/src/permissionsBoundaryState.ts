@@ -2,9 +2,9 @@ import _ from 'lodash';
 // eslint-disable-next-line import/no-cycle
 import { stateManager } from './state-manager';
 // eslint-disable-next-line import/no-cycle
-import { $TSAny, $TSObject } from '.';
+import { $TSAny, $TSObject, $TSTeamProviderInfo } from '.';
 
-let preInitTeamProviderInfo: $TSAny;
+let preInitTeamProviderInfo: $TSTeamProviderInfo;
 
 /**
  * Gets the permission boundary arn for the given environment, or the current environment

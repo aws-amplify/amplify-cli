@@ -3,7 +3,7 @@ import _ from 'lodash';
 import * as uuid from 'uuid';
 import inquirer from 'inquirer';
 import {
-  $TSContext, stateManager, pathManager, JSONUtilities, exitOnNextTick, $TSAny,
+  $TSContext, stateManager, pathManager, JSONUtilities, exitOnNextTick, $TSAny, $TSObject,
 } from 'amplify-cli-core';
 import {
   formatter, maxLength, printer, prompter,
@@ -276,7 +276,7 @@ const getStoredList = (resourceName: string): { cloudFormationParameterName: str
   const projectBackendDirPath = pathManager.getBackendDirPath();
   const resourcePath = path.join(projectBackendDirPath, categoryName, resourceName);
   const functionParameterFilePath = path.join(resourcePath, functionParametersFileName);
-  const functionParameters = (JSONUtilities.readJson(functionParameterFilePath, { throwIfNotExist: false }) as $TSAny) || {};
+  const functionParameters = JSONUtilities.readJson<$TSObject>(functionParameterFilePath, { throwIfNotExist: false }) || {};
   return _.get(functionParameters, 'environmentVariableList', []);
 };
 
@@ -284,7 +284,7 @@ const setStoredList = (resourceName: string, newList: $TSAny): void => {
   const projectBackendDirPath = pathManager.getBackendDirPath();
   const resourcePath = path.join(projectBackendDirPath, categoryName, resourceName);
   const functionParameterFilePath = path.join(resourcePath, functionParametersFileName);
-  const functionParameters = (JSONUtilities.readJson(functionParameterFilePath, { throwIfNotExist: false }) as $TSAny) || {};
+  const functionParameters = JSONUtilities.readJson<$TSObject>(functionParameterFilePath, { throwIfNotExist: false }) || {};
   _.set(functionParameters, 'environmentVariableList', newList);
   JSONUtilities.writeJson(functionParameterFilePath, functionParameters);
 };
@@ -294,7 +294,7 @@ const getStoredReferences = (resourceName: string): $TSAny => {
   const resourcePath = path.join(projectBackendDirPath, categoryName, resourceName);
   const cfnFileName = `${resourceName}-cloudformation-template.json`;
   const cfnFilePath = path.join(resourcePath, cfnFileName);
-  const cfnContent = JSONUtilities.readJson(cfnFilePath, { throwIfNotExist: false }) || {};
+  const cfnContent = JSONUtilities.readJson<$TSObject>(cfnFilePath, { throwIfNotExist: false }) || {};
   return _.get(cfnContent, ['Resources', 'LambdaFunction', 'Properties', 'Environment', 'Variables'], {});
 };
 
@@ -303,7 +303,7 @@ const setStoredReference = (resourceName: string, newReferences: $TSAny): void =
   const resourcePath = path.join(projectBackendDirPath, categoryName, resourceName);
   const cfnFileName = `${resourceName}-cloudformation-template.json`;
   const cfnFilePath = path.join(resourcePath, cfnFileName);
-  const cfnContent = (JSONUtilities.readJson(cfnFilePath, { throwIfNotExist: false }) as $TSAny) || {};
+  const cfnContent = JSONUtilities.readJson<$TSObject>(cfnFilePath, { throwIfNotExist: false }) || {};
   _.set(cfnContent, ['Resources', 'LambdaFunction', 'Properties', 'Environment', 'Variables'], newReferences);
   JSONUtilities.writeJson(cfnFilePath, cfnContent);
 };
@@ -322,7 +322,7 @@ const setStoredParameters = (resourceName: string, newParameters: $TSAny): void 
   const resourcePath = path.join(projectBackendDirPath, categoryName, resourceName);
   const cfnFileName = `${resourceName}-cloudformation-template.json`;
   const cfnFilePath = path.join(resourcePath, cfnFileName);
-  const cfnContent = (JSONUtilities.readJson(cfnFilePath, { throwIfNotExist: false }) as $TSAny) || {};
+  const cfnContent = JSONUtilities.readJson<$TSObject>(cfnFilePath, { throwIfNotExist: false }) || {};
   _.set(cfnContent, ['Parameters'], newParameters);
   JSONUtilities.writeJson(cfnFilePath, cfnContent);
 };
@@ -336,7 +336,7 @@ const getStoredKeyValue = (resourceName: string, currentEnvName?: string): $TSAn
 
 const setStoredKeyValue = (resourceName: string, newKeyValue: $TSAny): void => {
   const projectPath = pathManager.findProjectRoot();
-  const { envName } = stateManager.getLocalEnvInfo();
+  const { envName } = stateManager.getLocalEnvInfo(projectPath);
   const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath, { throwIfNotExist: false });
   _.set(teamProviderInfo, [envName, 'categories', categoryName, resourceName], newKeyValue);
   stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
