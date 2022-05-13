@@ -1,12 +1,16 @@
-const { ensureDir, readFile, remove, writeFile } = require('fs-extra');
-const extract = require('extract-zip');
+const { ensureDir, readFile, writeFile } = require('fs-extra');
+const gunzip = require('gunzip-maybe');
+const hash = require('hash.js');
 const nodefetch = require('node-fetch');
 const { join } = require('path');
-const hash = require('hash.js');
+const { pipeline, Readable } = require('stream');
+const tar = require('tar');
+const { promisify } = require('util');
 
 const main = async () => {
-  const ddbSimulatorUrl = 'https://s3-us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_latest.zip';
-  const sha256Url = 'https://s3.us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_latest.zip.sha256';
+
+  const ddbSimulatorUrl = 'https://s3.us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_latest.tar.gz';
+  const sha256Url = `${ddbSimulatorUrl}.sha256`;
 
   const emulatorDirPath = join(__dirname, '..', 'emulator');
   const sha256FilePath = join(emulatorDirPath, 'sha256');
@@ -23,18 +27,16 @@ const main = async () => {
   }
 
   if (previousSha256 !== latestSha256) {
-    const ddbSimulatorZip = await nodefetch(ddbSimulatorUrl).then(res => res.buffer());
-    const ddbSimulatorZipPath = join(__dirname, '..', 'ddbSimulator.zip');
-
-    const computedSha256 = hash.sha256().update(ddbSimulatorZip).digest('hex');
+    const ddbSimulatorGunZippedTarball = await nodefetch(ddbSimulatorUrl).then(res => res.buffer());
+    const computedSha256 = hash.sha256().update(ddbSimulatorGunZippedTarball).digest('hex');
     if (latestSha256 !== computedSha256) {
       throw Error(`SHA256 DID NOT MATCH CHECKSUM. EXPECTED: ${latestSha256} RECEIVED: ${computedSha256}`);
     }
 
-    // TODO: find a way to extract the zip file directly from memory
-    await writeFile(ddbSimulatorZipPath, ddbSimulatorZip);
-    await extract(ddbSimulatorZipPath, { dir: emulatorDirPath });
-    return Promise.all([writeFile(sha256FilePath, latestSha256), remove(ddbSimulatorZipPath)]);
+    // Create a Readable stream from the in-memory tar.gz, unzip it, and extract it to /emulator
+    await promisify(pipeline)(Readable.from(ddbSimulatorGunZippedTarball), gunzip(), tar.extract({ C: 'emulator' }));
+
+    return writeFile(sha256FilePath, latestSha256);
   }
 }
 
