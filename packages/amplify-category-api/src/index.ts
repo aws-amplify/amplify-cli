@@ -66,7 +66,6 @@ export const migrate = async (context: $TSContext, serviceName?: string): Promis
     for (const resourceName of Object.keys(amplifyMeta[category])) {
       try {
         if (amplifyMeta[category][resourceName].providerPlugin) {
-          // eslint-disable-next-line no-await-in-loop
           const providerController = await import(
             path.join(__dirname, 'provider-utils', amplifyMeta[category][resourceName].providerPlugin, 'index')
           );
@@ -91,7 +90,6 @@ export const migrate = async (context: $TSContext, serviceName?: string): Promis
     }
   }
   for (const migrateResourcePromise of migrateResourcePromises) {
-    // eslint-disable-next-line no-await-in-loop
     await migrateResourcePromise;
   }
 };

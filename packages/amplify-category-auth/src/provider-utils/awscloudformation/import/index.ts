@@ -206,7 +206,6 @@ const importServiceWalkthrough = async (
   let oauthLoopFinished = false;
 
   do {
-    // eslint-disable-next-line no-await-in-loop
     await selectAppClients(context, enquirer, questionParameters, answers);
 
     let proceedWithChecks = true;
@@ -252,7 +251,6 @@ const importServiceWalkthrough = async (
       userPoolSelectionSucceeded = true;
     } else {
       // Check OAuth config matching and enabled
-      // eslint-disable-next-line no-await-in-loop
       const oauthResult = await appClientsOAuthPropertiesMatching(context, answers.appClientWeb!, answers.appClientNative!);
 
       if (oauthResult.isValid) {
@@ -462,7 +460,6 @@ const selectAppClients = async (
 
       context.print.info(importMessages.MultipleAppClients('Web'));
 
-      // eslint-disable-next-line no-await-in-loop
       const { appClientWebId } = await enquirer.prompt(appClientSelectQuestion);
       // eslint-disable-next-line no-param-reassign
       answers.appClientWeb = questionParameters.webClients!.find(c => c.ClientId! === appClientWebId);
@@ -498,7 +495,6 @@ const selectAppClients = async (
 
       context.print.info(importMessages.MultipleAppClients('Native'));
 
-      // eslint-disable-next-line no-await-in-loop
       const { appClientNativeId } = await enquirer.prompt(appClientSelectQuestion);
       // eslint-disable-next-line no-param-reassign
       answers.appClientNative = questionParameters.nativeClients!.find(c => c.ClientId! === appClientNativeId);
@@ -506,7 +502,7 @@ const selectAppClients = async (
       answers.appClientNativeId = undefined; // Only to be used by enquirer
 
       changeAppClientSelection = answers.appClientNative === answers.appClientWeb
-        // eslint-disable-next-line no-await-in-loop
+
         ? await context.prompt.confirm(importMessages.ConfirmUseDifferentAppClient)
         : false;
     }

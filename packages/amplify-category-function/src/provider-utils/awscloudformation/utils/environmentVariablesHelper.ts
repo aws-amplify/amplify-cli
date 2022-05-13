@@ -226,7 +226,6 @@ export const ensureEnvironmentVariableValues = async (context: $TSContext): Prom
   // prompt for the missing env vars
   for (const { funcName, existingKeyValues: keyValues, missingEnvVars } of functionConfigMissingEnvVars) {
     for (const { cloudFormationParameterName: cfnName, environmentVariableName: envVarName } of missingEnvVars) {
-      // eslint-disable-next-line no-await-in-loop
       const newValue = await prompter.input(`Enter the missing environment variable value of ${envVarName} in ${funcName}:`, {
         validate: maxLength(2048),
       });
