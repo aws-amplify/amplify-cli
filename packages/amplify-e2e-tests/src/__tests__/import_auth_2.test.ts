@@ -11,7 +11,6 @@ import {
   getAppId,
   initJSProjectWithProfile,
   addS3StorageWithSettings,
-  setAmplifyAppIdInBackendAmplifyMeta,
 } from 'amplify-e2e-core';
 import {
   AuthProjectDetails,
@@ -66,7 +65,6 @@ describe('auth import identity pool and userpool', () => {
     ogSettings = createIDPAndUserPoolWithOAuthSettings(ogProjectSettings.name, ogShortId);
 
     await initJSProjectWithProfile(ogProjectRoot, { ...ogProjectSettings, disableAmplifyAppCreation: false });
-    //setAmplifyAppIdInBackendAmplifyMeta(ogProjectRoot);
     await addAuthIdentityPoolAndUserPoolWithOAuth(ogProjectRoot, ogSettings);
     await amplifyPushAuth(ogProjectRoot);
 
@@ -77,7 +75,6 @@ describe('auth import identity pool and userpool', () => {
     dummyOGSettings = createIDPAndUserPoolWithOAuthSettings(dummyOGProjectSettings.name, ogShortId);
 
     await initJSProjectWithProfile(dummyOGProjectRoot, { ...dummyOGProjectSettings, disableAmplifyAppCreation: false });
-    //setAmplifyAppIdInBackendAmplifyMeta(dummyOGProjectRoot);
     await addAuthIdentityPoolAndUserPoolWithOAuth(dummyOGProjectRoot, dummyOGSettings);
     await amplifyPushAuth(dummyOGProjectRoot);
   });

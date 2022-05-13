@@ -5,7 +5,6 @@ import {
   headlessAuthImport,
   createNewProjectDir,
   deleteProjectDir,
-  setAmplifyAppIdInBackendAmplifyMeta,
 } from 'amplify-e2e-core';
 import { ImportAuthRequest } from 'amplify-headless-interface';
 import _ from 'lodash';
@@ -46,7 +45,6 @@ describe('headless auth', () => {
       };
       ogProjectRoot = await createNewProjectDir(ogProjectSettings.name);
       await initJSProjectWithProfile(ogProjectRoot, { ...ogProjectSettings, disableAmplifyAppCreation: false });
-      //setAmplifyAppIdInBackendAmplifyMeta(ogProjectRoot);
     });
 
     afterEach(async () => {

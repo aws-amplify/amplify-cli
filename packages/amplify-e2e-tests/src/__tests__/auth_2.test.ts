@@ -7,7 +7,6 @@ import {
   validateNodeModulesDirRemoval,
   updateFunction,
   addAuthwithUserPoolGroupsViaAPIWithTrigger,
-  setAmplifyAppIdInBackendAmplifyMeta,
   addAuthWithDefaultSocial, addAuthWithGroupTrigger, addAuthWithRecaptchaTrigger, addAuthViaAPIWithTrigger,
   createNewProjectDir,
   deleteProjectDir,
@@ -36,7 +35,6 @@ describe('amplify add auth...', () => {
 
   it('...should init a project and add auth with defaultSocial', async () => {
     await initJSProjectWithProfile(projRoot, { ...defaultsSettings, disableAmplifyAppCreation: false });
-    //setAmplifyAppIdInBackendAmplifyMeta(projRoot);
     await addAuthWithDefaultSocial(projRoot, {});
     // expect(isDeploymentSecretForEnvExists(projRoot, 'integtest')).toBeTruthy();
     await amplifyPushAuth(projRoot);
@@ -58,7 +56,6 @@ describe('amplify add auth...', () => {
 
   it('...should init a project and add auth with defaultSocial and then remove federation', async () => {
     await initJSProjectWithProfile(projRoot, { ...defaultsSettings, disableAmplifyAppCreation: false });
-    //setAmplifyAppIdInBackendAmplifyMeta(projRoot);
     await addAuthWithDefaultSocial(projRoot, {});
     await amplifyPushAuth(projRoot);
     await removeAuthWithDefault(projRoot);

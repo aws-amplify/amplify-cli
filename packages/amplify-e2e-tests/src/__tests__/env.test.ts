@@ -12,7 +12,6 @@ import {
   deleteProjectDir,
   getProjectMeta,
   initJSProjectWithProfile,
-  setAmplifyAppIdInBackendAmplifyMeta,
 } from 'amplify-e2e-core';
 import {
   addEnvironment,
@@ -165,7 +164,6 @@ describe('environment commands with HostedUI params', () => {
   beforeAll(async () => {
     projRoot = await createNewProjectDir('env-test');
     await initJSProjectWithProfile(projRoot, { envName: 'enva', disableAmplifyAppCreation: false});
-    //setAmplifyAppIdInBackendAmplifyMeta(projRoot);
     await addAuthWithDefaultSocial(projRoot, {});
     await amplifyPushAuth(projRoot);
   });

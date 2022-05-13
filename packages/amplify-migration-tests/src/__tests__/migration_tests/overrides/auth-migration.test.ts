@@ -16,7 +16,6 @@ import {
   getUserPoolClients,
   initAndroidProjectWithProfile,
   initJSProjectWithProfile,
-  setAmplifyAppIdInBackendAmplifyMeta,
   updateAuthRemoveRecaptchaTrigger,
   updateAuthSignInSignOutUrl,
   updateAuthWithoutCustomTrigger,
@@ -143,7 +142,6 @@ describe('amplify auth migration', () => {
       updatesignoutUrl: 'http://localhost:3004/',
     };
     await initAndroidProjectWithProfile(projRoot, { ...defaultSettings, disableAmplifyAppCreation: false });
-    //setAmplifyAppIdInBackendAmplifyMeta(projRoot);
     await addAuthWithSignInSignOutUrl(projRoot, settings);
 
     const amplifyMeta = getBackendAmplifyMeta(projRoot);

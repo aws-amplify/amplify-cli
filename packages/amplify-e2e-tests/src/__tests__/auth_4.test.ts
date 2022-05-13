@@ -6,7 +6,6 @@ import {
   deleteProject,
   amplifyPushAuth,
   addFeatureFlag,
-  setAmplifyAppIdInBackendAmplifyMeta,
 } from 'amplify-e2e-core';
 import {
   addAuthWithRecaptchaTrigger,
@@ -52,7 +51,6 @@ describe('amplify updating auth...', () => {
       updatesignoutUrl: 'http://localhost:3004/',
     };
     await initAndroidProjectWithProfile(projRoot, { ...defaultsSettings, disableAmplifyAppCreation: false });
-    //setAmplifyAppIdInBackendAmplifyMeta(projRoot);
     await addAuthWithSignInSignOutUrl(projRoot, settings);
     await updateAuthSignInSignOutUrl(projRoot, settings);
   });

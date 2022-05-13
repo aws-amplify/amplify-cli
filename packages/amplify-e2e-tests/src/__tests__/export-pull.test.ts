@@ -28,7 +28,6 @@ import {
   initFlutterProjectWithProfile,
   initIosProjectWithProfile,
   initJSProjectWithProfile,
-  setAmplifyAppIdInBackendAmplifyMeta,
 } from 'amplify-e2e-core';
 import * as path from 'path';
 import * as fs from 'fs-extra';
@@ -48,7 +47,6 @@ describe('amplify export pull', () => {
 
   it('init a js project and compare with export pull', async () => {
     await initJSProjectWithProfile(projRoot, { envName: 'dev', disableAmplifyAppCreation: false  });
-    //setAmplifyAppIdInBackendAmplifyMeta(projRoot);
     await AddandPushCategories();
     const exportsPath = getAWSExportsPath(projRoot);
     const pathToExportGeneratedConfig = await generatePullConfig('javascript');
@@ -57,7 +55,6 @@ describe('amplify export pull', () => {
 
   it('init an ios project and compare with export pull', async () => {
     await initIosProjectWithProfile(projRoot, { envName: 'dev', disableAmplifyAppCreation: false });
-    //setAmplifyAppIdInBackendAmplifyMeta(projRoot);
     await AddandPushCategories('ios');
     const awsConfigPath = getAWSConfigIOSPath(projRoot);
     const amplifyConfigPath = getAmplifyConfigIOSPath(projRoot);
@@ -68,7 +65,6 @@ describe('amplify export pull', () => {
 
   it('init an android project and compare with export pull', async () => {
     await initAndroidProjectWithProfile(projRoot, { envName: 'dev', disableAmplifyAppCreation: false  });
-    //setAmplifyAppIdInBackendAmplifyMeta(projRoot);
     await AddandPushCategories('android');
     const awsConfigPath = getAWSConfigAndroidPath(projRoot);
     const amplifyConfigPath = getAmplifyConfigAndroidPath(projRoot);
@@ -78,8 +74,7 @@ describe('amplify export pull', () => {
   });
 
   it('init a flutter project and compare with export pull', async () => {
-    await initFlutterProjectWithProfile(projRoot, { envName: 'dev' });
-    setAmplifyAppIdInBackendAmplifyMeta(projRoot);
+    await initFlutterProjectWithProfile(projRoot, { envName: 'dev', disableAmplifyAppCreation: false   });
     await AddandPushCategories('flutter');
     const amplifyConfigPath = path.join(projRoot, 'lib', 'amplifyconfiguration.dart');
     const pullConfigPath = await generatePullConfig('flutter');

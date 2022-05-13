@@ -9,7 +9,6 @@ import {
   exportBackend,
   getProjectConfig,
   initJSProjectWithProfile,
-  setAmplifyAppIdInBackendAmplifyMeta,
 } from 'amplify-e2e-core';
 import * as path from 'path';
 import { JSONUtilities, readCFNTemplate } from 'amplify-cli-core';
@@ -28,7 +27,6 @@ describe('amplify export backend', () => {
 
   it('init a js project and export', async () => {
     await initJSProjectWithProfile(projRoot, { envName: 'dev', disableAmplifyAppCreation: false});
-    //setAmplifyAppIdInBackendAmplifyMeta(projRoot);
     await addAuthWithMaxOptions(projRoot, {});
     await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await addS3StorageWithIdpAuth(projRoot);

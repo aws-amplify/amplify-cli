@@ -1,5 +1,5 @@
 import {
-  initJSProjectWithProfile, deleteProject, amplifyPushAuth, setAmplifyAppIdInBackendAmplifyMeta,
+  initJSProjectWithProfile, deleteProject, amplifyPushAuth,
 } from 'amplify-e2e-core';
 import {
   addAuthWithDefault,
@@ -54,8 +54,7 @@ describe('amplify add auth...', () => {
   });
 
   it('...should init a project with only user pool and no identity pool', async () => {
-    await initJSProjectWithProfile(projRoot, { ...defaultsSettings, disableAmplifyAppCreation: false });
-    //setAmplifyAppIdInBackendAmplifyMeta(projRoot);
+    await initJSProjectWithProfile(projRoot, { ...defaultsSettings, disableAmplifyAppCreation: false }); 
     await addAuthUserPoolOnly(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
@@ -67,7 +66,6 @@ describe('amplify add auth...', () => {
 
   it('...should init a project where all possible options are selected', async () => {
     await initJSProjectWithProfile(projRoot, { ...defaultsSettings, disableAmplifyAppCreation: false });
-    //setAmplifyAppIdInBackendAmplifyMeta(projRoot);
     await addAuthWithMaxOptions(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
