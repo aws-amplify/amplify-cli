@@ -90,31 +90,6 @@ export const getAwsAndroidConfig = (projectRoot: string): $TSAny => {
 
 export const getAwsIOSConfig = (projectRoot: string): $TSAny => {
   const configPath = getAWSConfigIOSPath(projectRoot);
-  return JSONUtilities.readJson(configPath);
-};
-
-export const getAmplifyIOSConfig = (projectRoot: string): $TSAny => {
-  const configPath = getAmplifyConfigIOSPath(projectRoot);
-  return JSONUtilities.readJson(configPath);
-};
-
-export const getAmplifyFlutterConfig = (projectRoot: string): $TSAny => {
-  const configPath = getAmplifyConfigFlutterPath(projectRoot);
-  const dartFile = fs.readFileSync(configPath);
-  return JSON.parse(dartFile.toString().split(/'''/)[1]);
-};
-
-export const getDeploymentSecrets = (): $TSAny => {
-  const deploymentSecretsPath: string = path.join(os.homedir(), '.aws', 'amplify', 'deployment-secrets.json');
-  return (
-    JSONUtilities.readJson(deploymentSecretsPath, {
-      throwIfNotExist: false,
-    }) || { appSecrets: [] }
-  );
-};
-
-export const isDeploymentSecretForEnvExists = (projectRoot: string, envName: string): boolean => {
-  const teamProviderInfo = getTeamProviderInfo(projectRoot);
   const rootStackId = teamProviderInfo[envName].awscloudformation.StackId.split('/')[2];
   const resource = _.first(Object.keys(teamProviderInfo[envName].categories.auth));
   const deploymentSecrets = getDeploymentSecrets();

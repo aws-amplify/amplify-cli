@@ -20,7 +20,8 @@ describe('amplify add analytics', () => {
   });
 
   it('add pinpoint for javascript', async () => {
-    await initJSProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false });
+    //setAmplifyAppIdInBackendAmplifyMeta(projRoot);
     const rightName = 'myapp';
     await addPinpoint(projRoot, { rightName, wrongName: '$' });
     const pinpointTemplateFilePath = path.join(
@@ -75,7 +76,8 @@ describe('amplify add analytics', () => {
   });
 
   it('add kinesis', async () => {
-    await initJSProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfile(projRoot, {disableAmplifyAppCreation: false });
+    //setAmplifyAppIdInBackendAmplifyMeta(projRoot);
     const random = Math.floor(Math.random() * 10000);
     const rightName = `myapp${random}`;
     await addKinesis(projRoot, { rightName, wrongName: '$' });

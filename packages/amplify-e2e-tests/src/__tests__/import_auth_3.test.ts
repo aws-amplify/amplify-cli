@@ -12,6 +12,7 @@ import {
   getTeamProviderInfo,
   initJSProjectWithProfile,
   initProjectWithAccessKey,
+  setAmplifyAppIdInBackendAmplifyMeta,
 } from 'amplify-e2e-core';
 import { addEnvironmentWithImportedAuth, checkoutEnvironment, removeEnvironment } from '../environment/env';
 import {
@@ -63,14 +64,15 @@ describe('auth import userpool only', () => {
   let dummyOGSettings: AddAuthUserPoolOnlyWithOAuthSettings;
 
   let projectRoot: string;
-  let ignoreProjectDeleteErrors: boolean = false;
+  let ignoreProjectDeleteErrors = false;
 
   beforeAll(async () => {
     ogProjectRoot = await createNewProjectDir(ogProjectSettings.name);
     ogShortId = getShortId();
     ogSettings = createUserPoolOnlyWithOAuthSettings(ogProjectSettings.name, ogShortId);
 
-    await initJSProjectWithProfile(ogProjectRoot, ogProjectSettings);
+    await initJSProjectWithProfile(ogProjectRoot, { ...ogProjectSettings, disableAmplifyAppCreation: false });
+    //setAmplifyAppIdInBackendAmplifyMeta(ogProjectRoot);
     await addAuthUserPoolOnlyWithOAuth(ogProjectRoot, ogSettings);
     await amplifyPushAuth(ogProjectRoot);
 
@@ -80,7 +82,8 @@ describe('auth import userpool only', () => {
     dummyOGShortId = getShortId();
     dummyOGSettings = createUserPoolOnlyWithOAuthSettings(dummyOGProjectSettings.name, ogShortId);
 
-    await initJSProjectWithProfile(dummyOGProjectRoot, dummyOGProjectSettings);
+    await initJSProjectWithProfile(dummyOGProjectRoot, { ...dummyOGProjectSettings, disableAmplifyAppCreation: false });
+    //setAmplifyAppIdInBackendAmplifyMeta(dummyOGProjectRoot);
     await addAuthUserPoolOnlyWithOAuth(dummyOGProjectRoot, dummyOGSettings);
     await amplifyPushAuth(dummyOGProjectRoot);
   });

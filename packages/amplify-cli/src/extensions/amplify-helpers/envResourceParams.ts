@@ -78,43 +78,12 @@ export const saveEnvResourceParameters = (context: $TSContext, category: string,
 
   if (!isMigrationContext(context)) {
     stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
-    // write hostedUIProviderCreds to deploymentSecrets
-    const deploymentSecrets = stateManager.getDeploymentSecrets();
-    const rootStackId = getRootStackId();
-    if (hostedUIProviderCreds) {
-      stateManager.setDeploymentSecrets(
-        mergeDeploymentSecrets({
-          currentDeploymentSecrets: deploymentSecrets,
-          rootStackId,
-          category,
-          envName: currentEnv,
-          keyName: hostedUIProviderCredsField,
-          value: hostedUIProviderCreds,
-          resource,
-        }),
-      );
-    } else {
-      stateManager.setDeploymentSecrets(
-        removeFromDeploymentSecrets({
-          currentDeploymentSecrets: deploymentSecrets,
-          rootStackId,
-          category,
-          resource,
-          envName: currentEnv,
-          keyName: hostedUIProviderCredsField,
-        }),
-      );
-    }
   }
 };
 
-/**
- * Load resource params from TPI and deployment secrets
- */
-export const loadEnvResourceParameters = (context: $TSContext, category: string, resource: string): $TSAny => {
+export function loadEnvResourceParameters(context: $TSContext, category: string, resource: string) {
   const envParameters = {
-    ...loadEnvResourceParametersFromDeploymentSecrets(context, category, resource),
-    ...loadEnvResourceParametersFromTeamProviderInfo(context, category, resource),
+    ...loadEnvResourceParametersFromTeamproviderInfo(context, category, resource),
   };
   return envParameters;
 };

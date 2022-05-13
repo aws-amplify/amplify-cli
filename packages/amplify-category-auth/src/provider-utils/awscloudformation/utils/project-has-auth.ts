@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject, stateManager } from 'amplify-cli-core';
+import { $TSContext, $TSObject, AmplifyCategories, pathManager, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { messages } from '../assets/string-maps';
 
@@ -29,3 +29,16 @@ export const projectHasAuth = (context: $TSContext): boolean => {
 const checkAuthIsImported = (authResources: [string, $TSObject][]): boolean => {
   return authResources.filter(([_, resource]) => resource?.serviceType === 'imported').length > 0;
 };
+
+export const isAmplifyAuthPushed = (resourceName: string): boolean => {
+  const meta = stateManager.getCurrentMeta(undefined, { throwIfNotExist: false });
+  const existingAuthResources: [string, $TSObject][] = Object.entries(meta?.auth || {});
+
+  if (existingAuthResources.length > 0) {
+    if (!checkAuthIsImported(existingAuthResources)) {
+      printer.warn('Auth has already been imported to this project and cannot be modified from the CLI.');
+      return true;
+    }
+  }
+  return false
+}

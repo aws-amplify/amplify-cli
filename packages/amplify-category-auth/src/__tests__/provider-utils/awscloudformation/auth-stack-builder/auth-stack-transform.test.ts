@@ -165,6 +165,11 @@ const getCLIInputPayload_mock = jest.fn().mockReturnValueOnce(inputPayload1).moc
 
 const isCLIInputsValid_mock = jest.fn().mockReturnValue('true');
 
+jest.mock('../../../../provider-utils/awscloudformation/auth-secret-manager/secret-name', () => ({
+  ...(jest.requireActual('../../../../provider-utils/awscloudformation/auth-secret-manager/secret-name') as {}),
+  getAppId: jest.fn().mockReturnValue('mockAmplifyAppId'),
+}));
+
 jest.mock('../../../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state.ts', () => {
   return {
     AuthInputState: jest.fn().mockImplementation(() => {

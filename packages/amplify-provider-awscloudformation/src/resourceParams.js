@@ -42,9 +42,9 @@ function loadResourceParameters(context, category, resource) {
   }
   const envSpecificParams = context.amplify.loadEnvResourceParameters(context, category, resource);
   let resourceParameters = { ...parameters, ...envSpecificParams };
-  if (category === 'auth' && parameters && parameters.hostedUI && !resourceParameters[hostedUIProviderCredsField]) {
-    resourceParameters = _.set(resourceParameters, hostedUIProviderCredsField, '[]');
-  }
+  // if (category === 'auth' && parameters && parameters.hostedUI && !resourceParameters[hostedUIProviderCredsField]) {
+  //   resourceParameters = _.set(resourceParameters, hostedUIProviderCredsField, '[]');
+  // }
   return resourceParameters;
 }
 

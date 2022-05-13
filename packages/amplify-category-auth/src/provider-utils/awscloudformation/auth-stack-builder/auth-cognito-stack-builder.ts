@@ -17,7 +17,8 @@ import {
 import * as fs from 'fs-extra';
 import { AmplifyStackTemplate } from 'amplify-cli-core';
 import { AttributeType } from '../service-walkthrough-types/awsCognito-user-input-types';
-
+import * as path from 'path';
+import { oauthObjSecretKey, oAuthSecretsPathAmplifyAppIdKey } from '../auth-secret-manager/secret-name';
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'Amplify Cognito Stack for AWS Amplify CLI';
 
@@ -75,6 +76,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   hostedUIProvidersCustomResource?: lambda.CfnFunction;
   hostedUIProvidersCustomResourcePolicy?: iam.CfnPolicy;
   hostedUIProvidersCustomResourceLogPolicy?: iam.CfnPolicy;
+  hostedUIProviderCustomResourceSecretsPolicy?: iam.CfnPolicy;
   hostedUIProvidersCustomResourceInputs?: cdk.CustomResource;
   // custom resource OAUTH Provider
   oAuthCustomResource?: lambda.CfnFunction;
@@ -464,7 +466,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         this.createHostedUICustomResource();
       }
       if (props.hostedUIProviderMeta) {
-        this.createHostedUIProviderCustomResource();
+        this.createHostedUIProviderCustomResource(props.resourceName);
       }
       if (props.oAuthMetadata) {
         this.createOAuthCustomResource();
@@ -731,7 +733,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     this.hostedUICustomResourceInputs.node.addDependency(this.hostedUICustomResourceLogPolicy);
   }
 
-  createHostedUIProviderCustomResource() {
+  createHostedUIProviderCustomResource(authResourceName: string) {
     // lambda function
     this.hostedUIProvidersCustomResource = new lambda.CfnFunction(this, 'HostedUIProvidersCustomResource', {
       code: {
@@ -741,6 +743,18 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
       runtime: 'nodejs14.x',
       timeout: 300,
+      environment:{
+        variables:{
+          hostedUIProviderCreds:cdk.Fn.join('', [
+            cdk.Fn.sub(path.posix.join('/amplify', '${appId}', '${env}', 'AMPLIFY_${resourceName}_'),{
+              appId: cdk.Fn.ref(`${oAuthSecretsPathAmplifyAppIdKey}`),
+              env: cdk.Fn.ref('env'),
+              resourceName: cdk.Fn.ref('resourceName'),
+            }),
+            `${oauthObjSecretKey}`,
+          ]),
+        }
+      }
     });
     this.hostedUIProvidersCustomResource.addDependsOn(this.userPoolClientRole!);
 
@@ -796,7 +810,39 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       roles: [cdk.Fn.ref('UserPoolClientRole')],
     });
+
     this.hostedUIProvidersCustomResourceLogPolicy.addDependsOn(this.hostedUIProvidersCustomResourcePolicy);
+
+    // iam policy for hostedUIProvider Lambda Functio to get/put OAuth secrets
+
+    this.hostedUIProviderCustomResourceSecretsPolicy= new iam.CfnPolicy(this, 'hostedUIProvidersCustomResourceSecretPolicy', {
+      policyName: cdk.Fn.join('-', [cdk.Fn.ref('UserPool'), 'hostedUIProvidersCustomResourceSecretPolicy']),
+      policyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Action: ['ssm:GetParameter'],
+            Resource: cdk.Fn.join('', [
+              'arn:aws:ssm:',
+              cdk.Fn.ref('AWS::Region'),
+              ':',
+              cdk.Fn.ref('AWS::AccountId'),
+              ':parameter',
+              cdk.Fn.sub(path.posix.join('/amplify', '${appId}', '${env}', 'AMPLIFY_${resourceName}_'),{
+                appId: cdk.Fn.ref(`${oAuthSecretsPathAmplifyAppIdKey}`),
+                env: cdk.Fn.ref('env'), // this is dependent on the Amplify env name being a parameter to the CFN template which should always be the case
+                resourceName: cdk.Fn.ref('resourceName'),
+              }),
+              `${oauthObjSecretKey}`,
+            ]),
+          },
+        ],
+      },
+      roles: [cdk.Fn.ref('UserPoolClientRole')],
+    });
+
+    this.hostedUIProviderCustomResourceSecretsPolicy.addDependsOn(this.hostedUIProvidersCustomResourcePolicy);
 
     // userPoolClient Custom Resource
     this.hostedUIProvidersCustomResourceInputs = new cdk.CustomResource(this, 'HostedUIProvidersCustomResourceInputs', {
@@ -804,7 +850,6 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       resourceType: 'Custom::LambdaCallout',
       properties: {
         hostedUIProviderMeta: cdk.Fn.ref('hostedUIProviderMeta'),
-        hostedUIProviderCreds: cdk.Fn.ref('hostedUIProviderCreds'),
         userPoolId: cdk.Fn.ref('UserPool'),
       },
     });

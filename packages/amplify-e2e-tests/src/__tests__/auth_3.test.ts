@@ -1,4 +1,6 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from 'amplify-e2e-core';
+import {
+  initJSProjectWithProfile, deleteProject, amplifyPushAuth, setAmplifyAppIdInBackendAmplifyMeta,
+} from 'amplify-e2e-core';
 import {
   addAuthWithDefault,
   removeAuthWithDefault,
@@ -38,9 +40,7 @@ describe('amplify add auth...', () => {
 
     const amplifyMeta = getBackendAmplifyMeta(projRoot);
     const { AuthRoleName, UnauthRoleName } = amplifyMeta.providers.awscloudformation;
-    const cognitoResource = Object.values(amplifyMeta.auth).find((res: any) => {
-      return res.service === 'Cognito';
-    }) as any;
+    const cognitoResource = Object.values(amplifyMeta.auth).find((res: any) => res.service === 'Cognito') as any;
     const idpId = cognitoResource.output.IdentityPoolId;
 
     expect(AuthRoleName).toHaveValidPolicyConditionMatchingIdpId(idpId);
@@ -54,7 +54,8 @@ describe('amplify add auth...', () => {
   });
 
   it('...should init a project with only user pool and no identity pool', async () => {
-    await initJSProjectWithProfile(projRoot, defaultsSettings);
+    await initJSProjectWithProfile(projRoot, { ...defaultsSettings, disableAmplifyAppCreation: false });
+    //setAmplifyAppIdInBackendAmplifyMeta(projRoot);
     await addAuthUserPoolOnly(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
@@ -65,7 +66,8 @@ describe('amplify add auth...', () => {
   });
 
   it('...should init a project where all possible options are selected', async () => {
-    await initJSProjectWithProfile(projRoot, defaultsSettings);
+    await initJSProjectWithProfile(projRoot, { ...defaultsSettings, disableAmplifyAppCreation: false });
+    //setAmplifyAppIdInBackendAmplifyMeta(projRoot);
     await addAuthWithMaxOptions(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);

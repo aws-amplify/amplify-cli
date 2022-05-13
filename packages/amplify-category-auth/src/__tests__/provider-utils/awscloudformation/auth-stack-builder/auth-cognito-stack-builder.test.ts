@@ -4,15 +4,30 @@ import * as cdk from '@aws-cdk/core';
 import * as iam from '@aws-cdk/aws-iam';
 import { CognitoStackOptions } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/cognito-user-input-types';
 
+jest.mock('amplify-cli-core', () => ({
+  ...(jest.requireActual('amplify-cli-core') as {}),
+  stateManager: {
+    getLocalEnvInfo: jest.fn().mockReturnValue({envName: 'mockEnv'}),
+    getMeta: jest.fn().mockReturnValue({
+      providers: {
+        awscloudformation: {
+          AmplifyAppId: "mockAmplifyAppId"
+        }
+      }
+    }),
+  }
+}));
+
 describe('generateCognitoStackResources', () => {
   it('adds correct custom oauth lambda dependencies', () => {
     const testApp = new cdk.App();
+    const authResourceName = 'mockAuthResource'
     const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'testCognitoStack', { synthesizer: new AuthStackSynthesizer() });
     cognitoStack.userPoolClientRole = new iam.CfnRole(cognitoStack, 'testRole', {
       assumeRolePolicyDocument: 'test policy document',
     });
     cognitoStack.createHostedUICustomResource();
-    cognitoStack.createHostedUIProviderCustomResource();
+    cognitoStack.createHostedUIProviderCustomResource(authResourceName);
     cognitoStack.createOAuthCustomResource();
     expect(cognitoStack.oAuthCustomResource).toBeDefined();
     expect(

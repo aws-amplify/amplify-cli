@@ -12,6 +12,7 @@ import {
   getUserPool,
   initJSProjectWithProfile,
   runAmplifyAuthConsole,
+  setAmplifyAppIdInBackendAmplifyMeta,
 } from 'amplify-e2e-core';
 import * as path from 'path';
 import * as fs from 'fs-extra';
@@ -32,7 +33,8 @@ describe('zero config auth ', () => {
   });
 
   it('...should init a javascript project and add auth with all options and update front end config', async () => {
-    await initJSProjectWithProfile(projRoot, defaultSettings);
+    await initJSProjectWithProfile(projRoot, { ...defaultSettings, disableAmplifyAppCreation: false });
+    //setAmplifyAppIdInBackendAmplifyMeta(projRoot);
     await addAuthWithMaxOptions(projRoot, {});
     await amplifyPushAuth(projRoot);
 
