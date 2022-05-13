@@ -1,4 +1,4 @@
-import { stateManager, getGraphQLTransformerOpenSearchProductionDocLink, getTransformerVersion } from 'amplify-cli-core';
+import { stateManager, getGraphQLTransformerOpenSearchProductionDocLink, ApiCategoryFacade } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { searchablePushChecks } from '../../graphql-transformer/api-utils';
 
@@ -7,7 +7,7 @@ jest.mock('amplify-prompts');
 
 const printerMock = printer as jest.Mocked<typeof printer>;
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
-const getTransformerVersionMock = getTransformerVersion as jest.MockedFunction<typeof getTransformerVersion>
+const getTransformerVersionMock = ApiCategoryFacade.getTransformerVersion as jest.MockedFunction<typeof ApiCategoryFacade.getTransformerVersion>
 const getGraphQLTransformerOpenSearchProductionDocLinkMock = getGraphQLTransformerOpenSearchProductionDocLink as jest.MockedFunction<
   typeof getGraphQLTransformerOpenSearchProductionDocLink
 >;
