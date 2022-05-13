@@ -32,11 +32,11 @@
     "which": "^2.0.2"
   },
   "devDependencies": {
-    "tar": "^6.1.11",
     "get-port": "^5.1.1",
     "gunzip-maybe": "^1.4.2",
     "hash.js": "^1.1.7",
-    "node-fetch": "^2.6.7"
+    "node-fetch": "^2.6.7",
+    "tar": "^6.1.11"
   },
   "jest": {
     "testEnvironment": "node",
