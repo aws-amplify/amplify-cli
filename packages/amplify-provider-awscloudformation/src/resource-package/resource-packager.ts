@@ -9,6 +9,7 @@ import {
   writeCFNTemplate,
   spinner,
   $TSAny,
+  ApiCategoryFacade,
 } from 'amplify-cli-core';
 import _ from 'lodash';
 import { Fn, Template } from 'cloudform-types';
@@ -16,7 +17,6 @@ import * as path from 'path';
 import { legacyLayerMigration, prePushLambdaLayerPrompt } from '../lambdaLayerInvocations';
 // eslint-disable-next-line import/no-cycle
 import { formNestedStack, getCfnFiles, updateStackForAPIMigration } from '../push-resources';
-import { transformGraphQLSchema } from '../graphql-transformer';
 import { ensureValidFunctionModelDependencies } from '../utils/remove-dependent-function';
 import { Constants } from './constants';
 import { consolidateApiGatewayPolicies } from '../utils/consolidate-apigw-policies';
@@ -175,7 +175,7 @@ export abstract class ResourcePackager {
     const { options } = this.context.parameters;
     const { API_CATEGORY } = Constants;
     if (this.resourcesHasCategoryService(packagedResources, API_CATEGORY.NAME, API_CATEGORY.SERVICE.APP_SYNC)) {
-      await transformGraphQLSchema(this.context, {
+      await ApiCategoryFacade.transformGraphQLSchema(this.context, {
         handleMigration: opts => updateStackForAPIMigration(this.context, 'api', undefined, opts),
         minify: options.minify,
       });

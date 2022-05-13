@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 import { $TSContext } from 'amplify-cli-core';
-import { hasApiKey } from './api-key-helpers';
 import { printer } from 'amplify-prompts';
 import { parse } from 'graphql';
+import { hasApiKey } from './api-key-helpers';
 
 const AMPLIFY = 'AMPLIFY';
 const AUTHORIZATION_RULE = 'AuthRule';
@@ -10,7 +10,7 @@ const ALLOW = 'allow';
 const PUBLIC = 'public';
 
 export async function showSandboxModePrompts(context: $TSContext): Promise<any> {
-  if (!hasApiKey()) {
+  if (!(await hasApiKey(context))) {
     printer.info(
       `
 ⚠️  WARNING: Global Sandbox Mode has been enabled, which requires a valid API key. If
