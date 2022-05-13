@@ -1,3 +1,5 @@
+// disabling lint until this file is converted to TS
+/* eslint-disable */
 const fs = require('fs-extra');
 const path = require('path');
 const inquirer = require('inquirer');

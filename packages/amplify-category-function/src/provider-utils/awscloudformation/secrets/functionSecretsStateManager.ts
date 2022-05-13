@@ -1,12 +1,18 @@
-import { $TSContext, JSONUtilities, pathManager, ResourceName, stateManager } from 'amplify-cli-core';
-import { removeSecret, retainSecret, SecretDeltas, SecretName, setSecret } from 'amplify-function-plugin-interface';
+import {
+  $TSContext, JSONUtilities, pathManager, ResourceName, stateManager,
+} from 'amplify-cli-core';
+import {
+  removeSecret, retainSecret, SecretDeltas, SecretName, setSecret,
+} from 'amplify-function-plugin-interface';
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import _ from 'lodash';
 import { categoryName } from '../../../constants';
 import { prePushMissingSecretsWalkthrough } from '../service-walkthroughs/secretValuesWalkthrough';
 import { getFunctionCloudFormationTemplate, setFunctionCloudFormationTemplate } from '../utils/cloudformationHelpers';
 import { functionParametersFileName, ServiceName } from '../utils/constants';
 import { isFunctionPushed } from '../utils/funcionStateUtils';
+// eslint-disable-next-line import/no-cycle
 import { createParametersFile } from '../utils/storeResources';
 import { tryPrependSecretsUsageExample } from '../utils/updateTopLevelComment';
 import { getExistingSecrets, hasExistingSecrets, secretNamesToSecretDeltas } from './secretDeltaUtilities';
@@ -19,7 +25,6 @@ import {
 } from './secretName';
 import { updateSecretsInCfnTemplate } from './secretsCfnModifier';
 import { SSMClientWrapper } from './ssmClientWrapper';
-import _ from 'lodash';
 
 let secretsPendingRemoval: Record<ResourceName, SecretName[]> = {};
 
@@ -35,7 +40,7 @@ let secretsPendingRemoval: Record<ResourceName, SecretName[]> = {};
 export class FunctionSecretsStateManager {
   private static instance: FunctionSecretsStateManager;
 
-  static getInstance = async (context: $TSContext) => {
+  static getInstance = async (context: $TSContext): Promise<FunctionSecretsStateManager> => {
     if (!FunctionSecretsStateManager.instance) {
       FunctionSecretsStateManager.instance = new FunctionSecretsStateManager(context, await SSMClientWrapper.getInstance(context));
     }
@@ -69,6 +74,9 @@ export class FunctionSecretsStateManager {
             break;
           case 'set':
             await this.ssmClientWrapper.setSecret(fullyQualifiedSecretName, secretDelta.value);
+            break;
+          default:
+            // retain is a noop
         }
       }),
     );
@@ -89,7 +97,7 @@ export class FunctionSecretsStateManager {
   /**
    * Checks that all locally defined secrets for the function are present in the cloud. If any are missing, it prompts for values
    */
-  ensureNewLocalSecretsSyncedToCloud = async (functionName: string) => {
+  ensureNewLocalSecretsSyncedToCloud = async (functionName: string): Promise<void> => {
     const localSecretNames = getLocalFunctionSecretNames(functionName);
     if (!localSecretNames.length) {
       return;
@@ -111,7 +119,7 @@ export class FunctionSecretsStateManager {
   /**
    * Deletes all secrets in the cloud for the specified function
    */
-  deleteAllFunctionSecrets = async (functionName: string) => {
+  deleteAllFunctionSecrets = async (functionName: string): Promise<void> => {
     const cloudSecretNames = await this.getCloudFunctionSecretNames(functionName);
     await this.syncSecretDeltas(secretNamesToSecretDeltas(cloudSecretNames, removeSecret), functionName);
   };
@@ -121,17 +129,15 @@ export class FunctionSecretsStateManager {
    *
    * It is expected that storeSecretsPendingRemoval has been called before calling this function. If not, this function is a noop.
    */
-  syncSecretsPendingRemoval = async () => {
+  syncSecretsPendingRemoval = async (): Promise<void> => {
     await Promise.all(
-      Object.entries(secretsPendingRemoval).map(([functionName, secretNames]) =>
-        this.syncSecretDeltas(
-          {
-            ...secretNamesToSecretDeltas(getLocalFunctionSecretNames(functionName)),
-            ...secretNamesToSecretDeltas(secretNames, removeSecret),
-          },
-          functionName,
-        ),
-      ),
+      Object.entries(secretsPendingRemoval).map(([functionName, secretNames]) => this.syncSecretDeltas(
+        {
+          ...secretNamesToSecretDeltas(getLocalFunctionSecretNames(functionName)),
+          ...secretNamesToSecretDeltas(secretNames, removeSecret),
+        },
+        functionName,
+      )),
     );
     secretsPendingRemoval = {};
   };
@@ -140,7 +146,7 @@ export class FunctionSecretsStateManager {
    * Deletes all secrets under an environment prefix (/amplify/appId/envName/)
    * @param envName The environment to remove
    */
-  deleteAllEnvironmentSecrets = async (envName: string) => {
+  deleteAllEnvironmentSecrets = async (envName: string): Promise<void> => {
     const secretNames = await this.ssmClientWrapper.getSecretNamesByPath(getEnvSecretPrefix(envName));
     await this.ssmClientWrapper.deleteSecrets(secretNames);
   };
@@ -151,7 +157,7 @@ export class FunctionSecretsStateManager {
    * @param functionName The function from which to get secrets
    * @returns SecretDeltas for the function in the environment
    */
-  getEnvCloneDeltas = async (sourceEnv: string, functionName: string) => {
+  getEnvCloneDeltas = async (sourceEnv: string, functionName: string): Promise<SecretDeltas> => {
     const destDelta = secretNamesToSecretDeltas(getLocalFunctionSecretNames(functionName), retainSecret);
     const sourceCloudSecretNames = await this.getCloudFunctionSecretNames(functionName, sourceEnv);
     const sourceCloudSecrets = await this.ssmClientWrapper.getSecrets(
@@ -171,7 +177,7 @@ export class FunctionSecretsStateManager {
    * @param envName Optional environment. If not specified, the current env is assumed
    * @returns string[] of all secret names for the function
    */
-  private getCloudFunctionSecretNames = async (functionName: string, envName?: string) => {
+  private getCloudFunctionSecretNames = async (functionName: string, envName?: string): Promise<string[]> => {
     const prefix = getFunctionSecretPrefix(functionName, envName);
     const parts = path.parse(prefix);
     const unfilteredSecrets = await this.ssmClientWrapper.getSecretNamesByPath(parts.dir);
@@ -203,7 +209,7 @@ export class FunctionSecretsStateManager {
  * @param context The Amplify context, used to determine which functions will be deleted
  * @param functionNames A list of all function names in the project
  */
-export const storeSecretsPendingRemoval = async (context: $TSContext, functionNames: string[]) => {
+export const storeSecretsPendingRemoval = async (context: $TSContext, functionNames: string[]): Promise<void> => {
   functionNames.forEach(functionName => {
     const cloudSecretNames = getLocalFunctionSecretNames(functionName, { fromCurrentCloudBackend: true });
     const localSecretNames = getLocalFunctionSecretNames(functionName);
@@ -233,6 +239,7 @@ export const getLocalFunctionSecretNames = (
   functionName: string,
   options: Partial<typeof defaultGetFunctionSecretNamesOptions> = defaultGetFunctionSecretNamesOptions,
 ): string[] => {
+  // eslint-disable-next-line no-param-reassign
   options = { ...defaultGetFunctionSecretNamesOptions, ...options };
   const parametersFilePath = path.join(
     options.fromCurrentCloudBackend ? pathManager.getCurrentCloudBackendDirPath() : pathManager.getBackendDirPath(),
@@ -251,7 +258,7 @@ export const getLocalFunctionSecretNames = (
  *
  * DO NOT EXPORT this method. All exported state management should happen through higher-level interfaces
  */
-const setLocalFunctionSecretState = (functionName: string, secretDeltas: SecretDeltas) => {
+const setLocalFunctionSecretState = (functionName: string, secretDeltas: SecretDeltas): void => {
   const existingSecrets = Object.keys(getExistingSecrets(secretDeltas));
   const secretsParametersContent: LocalSecretsState = {
     secretNames: existingSecrets,
@@ -270,7 +277,7 @@ const setLocalFunctionSecretState = (functionName: string, secretDeltas: SecretD
   }
 };
 
-const setAppIdForFunctionInTeamProvider = (functionName: string) => {
+const setAppIdForFunctionInTeamProvider = (functionName: string): void => {
   const tpi = stateManager.getTeamProviderInfo(undefined, { throwIfNotExist: false, default: {} });
   const env = stateManager.getLocalEnvInfo()?.envName as string;
   let funcTpi = tpi?.[env]?.categories?.[categoryName]?.[functionName];
@@ -282,7 +289,7 @@ const setAppIdForFunctionInTeamProvider = (functionName: string) => {
   stateManager.setTeamProviderInfo(undefined, tpi);
 };
 
-const removeAppIdForFunctionInTeamProvider = (functionName: string) => {
+const removeAppIdForFunctionInTeamProvider = (functionName: string): void => {
   const tpi = stateManager.getTeamProviderInfo(undefined, { throwIfNotExist: false, default: {} });
   const env = stateManager.getLocalEnvInfo()?.envName as string;
   _.unset(tpi, [env, 'categories', categoryName, functionName, secretsPathAmplifyAppIdKey]);
@@ -292,7 +299,7 @@ const removeAppIdForFunctionInTeamProvider = (functionName: string) => {
 /**
  * Iterates over to-be-deleted lambda functions and stores any secret names for deleted functions in secretsPendingRemoval
  */
-const storeToBeRemovedFunctionsWithSecrets = async (context: $TSContext) => {
+const storeToBeRemovedFunctionsWithSecrets = async (context: $TSContext): Promise<void> => {
   const resourceStatus = await context.amplify.getResourceStatus(categoryName);
   const resourcesToBeDeleted = (resourceStatus?.resourcesToBeDeleted || []) as {
     category: string;
@@ -303,8 +310,8 @@ const storeToBeRemovedFunctionsWithSecrets = async (context: $TSContext) => {
     .filter(resource => resource.service === ServiceName.LambdaFunction)
     .map(resource => resource.resourceName);
   for (const deletedLambda of deletedLambdas) {
-    const cloudSecretNames = await getLocalFunctionSecretNames(deletedLambda, { fromCurrentCloudBackend: true });
-    const localSecretNames = await getLocalFunctionSecretNames(deletedLambda);
+    const cloudSecretNames = getLocalFunctionSecretNames(deletedLambda, { fromCurrentCloudBackend: true });
+    const localSecretNames = getLocalFunctionSecretNames(deletedLambda);
     // we need the secret names from #current-cloud-backend as well as /amplify/backend because a customer may have added a secret and then
     // deleted the function without pushing in between in which case the secret name would only be present in /amplify/backend
     const secretNames = Array.from(new Set(cloudSecretNames.concat(localSecretNames)));

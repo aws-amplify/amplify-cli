@@ -1,10 +1,10 @@
 import {
+  $TSAny,
   $TSContext,
   $TSObject,
   AmplifyCategories,
   AmplifySupportedService,
   buildOverrideDir,
-  exitOnNextTick,
   pathManager,
   stateManager,
 } from 'amplify-cli-core';
@@ -13,7 +13,7 @@ import { validateAddApiRequest, validateUpdateApiRequest } from 'amplify-util-he
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { run } from './commands/api/console';
-import { getAppSyncAuthConfig, getAppSyncResourceName } from './provider-utils/awscloudformation//utils/amplify-meta-utils';
+import { getAppSyncAuthConfig, getAppSyncResourceName } from './provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { provider } from './provider-utils/awscloudformation/aws-constants';
 import { ApigwStackTransform } from './provider-utils/awscloudformation/cdk-stack-builder';
 import { getCfnApiArtifactHandler } from './provider-utils/awscloudformation/cfn-api-artifact-handler';
@@ -21,9 +21,11 @@ import { askAuthQuestions } from './provider-utils/awscloudformation/service-wal
 import { authConfigToAppSyncAuthType } from './provider-utils/awscloudformation/utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { checkAppsyncApiResourceMigration } from './provider-utils/awscloudformation/utils/check-appsync-api-migration';
 import { getAppSyncApiResourceName } from './provider-utils/awscloudformation/utils/getAppSyncApiName';
+
 export { NETWORK_STACK_LOGICAL_ID } from './category-constants';
-export { addAdminQueriesApi, updateAdminQueriesApi } from './provider-utils/awscloudformation/';
+export { addAdminQueriesApi, updateAdminQueriesApi } from './provider-utils/awscloudformation';
 export { DEPLOYMENT_MECHANISM } from './provider-utils/awscloudformation/base-api-stack';
+// eslint-disable-next-line spellcheck/spell-checker
 export { convertDeperecatedRestApiPaths } from './provider-utils/awscloudformation/convert-deprecated-apigw-paths';
 export { getContainers } from './provider-utils/awscloudformation/docker-compose';
 export { EcsAlbStack } from './provider-utils/awscloudformation/ecs-alb-stack';
@@ -41,45 +43,62 @@ export { getGitHubOwnerRepoFromPath } from './provider-utils/awscloudformation/u
 const category = AmplifyCategories.API;
 const categories = 'categories';
 
-export async function console(context: $TSContext) {
+/**
+ * Open the AppSync/API Gateway AWS console
+ */
+export const console = async (context: $TSContext): Promise<void> => {
   await run(context);
-}
+};
 
-export async function migrate(context: $TSContext, serviceName?: string) {
+/**
+ * Migrate from original API config
+ */
+export const migrate = async (context: $TSContext, serviceName?: string): Promise<void> => {
   const { projectPath } = context?.migrationInfo ?? { projectPath: pathManager.findProjectRoot() };
   const amplifyMeta = stateManager.getMeta(projectPath);
   const migrateResourcePromises = [];
   for (const categoryName of Object.keys(amplifyMeta)) {
-    if (categoryName === category) {
-      for (const resourceName of Object.keys(amplifyMeta[category])) {
-        try {
-          if (amplifyMeta[category][resourceName].providerPlugin) {
-            const providerController = await import(
-              path.join(__dirname, 'provider-utils', amplifyMeta[category][resourceName].providerPlugin, 'index')
-            );
-            if (providerController) {
-              if (!serviceName || serviceName === amplifyMeta[category][resourceName].service) {
-                migrateResourcePromises.push(
-                  providerController.migrateResource(context, projectPath, amplifyMeta[category][resourceName].service, resourceName),
-                );
-              }
-            }
-          } else {
-            printer.error(`Provider not configured for ${category}: ${resourceName}`);
+    if (categoryName !== category) {
+      // eslint-disable-next-line no-continue
+      continue;
+    }
+    for (const resourceName of Object.keys(amplifyMeta[category])) {
+      try {
+        if (amplifyMeta[category][resourceName].providerPlugin) {
+          // eslint-disable-next-line no-await-in-loop
+          const providerController = await import(
+            path.join(__dirname, 'provider-utils', amplifyMeta[category][resourceName].providerPlugin, 'index')
+          );
+          // eslint-disable-next-line max-depth
+          if (!providerController) {
+            // eslint-disable-next-line no-continue
+            continue;
           }
-        } catch (e) {
-          printer.warn(`Could not run migration for ${category}: ${resourceName}`);
-          throw e;
+          // eslint-disable-next-line max-depth
+          if (!serviceName || serviceName === amplifyMeta[category][resourceName].service) {
+            migrateResourcePromises.push(
+              providerController.migrateResource(context, projectPath, amplifyMeta[category][resourceName].service, resourceName),
+            );
+          }
+        } else {
+          printer.error(`Provider not configured for ${category}: ${resourceName}`);
         }
+      } catch (e) {
+        printer.warn(`Could not run migration for ${category}: ${resourceName}`);
+        throw e;
       }
     }
   }
   for (const migrateResourcePromise of migrateResourcePromises) {
+    // eslint-disable-next-line no-await-in-loop
     await migrateResourcePromise;
   }
-}
+};
 
-export async function initEnv(context: $TSContext) {
+/**
+ * Setup new environment with rds datasource
+ */
+export const initEnv = async (context: $TSContext): Promise<void> => {
   const datasource = 'Aurora Serverless';
   const service = 'service';
   const rdsInit = 'rdsInit';
@@ -137,50 +156,54 @@ export async function initEnv(context: $TSContext) {
   /**
    * Check team provider info to ensure it hasn't already been created for current env
    */
-  const currEnv = amplify.getEnvInfo().envName;
+  const currentEnv = amplify.getEnvInfo().envName;
   const teamProviderInfo = stateManager.getTeamProviderInfo();
   if (
-    teamProviderInfo[currEnv][categories] &&
-    teamProviderInfo[currEnv][categories][category] &&
-    teamProviderInfo[currEnv][categories][category][resourceName] &&
-    teamProviderInfo[currEnv][categories][category][resourceName] &&
-    teamProviderInfo[currEnv][categories][category][resourceName][rdsRegion]
+    teamProviderInfo[currentEnv][categories]
+    && teamProviderInfo[currentEnv][categories][category]
+    && teamProviderInfo[currentEnv][categories][category][resourceName]
+    && teamProviderInfo[currentEnv][categories][category][resourceName]
+    && teamProviderInfo[currentEnv][categories][category][resourceName][rdsRegion]
   ) {
     return;
   }
 
-  /**
-   * Execute the walkthrough
-   */
-  return providerController
+  // execute the walkthrough
+  await providerController
     .addDatasource(context, category, datasource)
     .then(answers => {
       /**
        * Write the new answers to the team provider info
        */
-      if (!teamProviderInfo[currEnv][categories]) {
-        teamProviderInfo[currEnv][categories] = {};
+      if (!teamProviderInfo[currentEnv][categories]) {
+        teamProviderInfo[currentEnv][categories] = {};
       }
-      if (!teamProviderInfo[currEnv][categories][category]) {
-        teamProviderInfo[currEnv][categories][category] = {};
+      if (!teamProviderInfo[currentEnv][categories][category]) {
+        teamProviderInfo[currentEnv][categories][category] = {};
       }
-      if (!teamProviderInfo[currEnv][categories][category][resourceName]) {
-        teamProviderInfo[currEnv][categories][category][resourceName] = {};
+      if (!teamProviderInfo[currentEnv][categories][category][resourceName]) {
+        teamProviderInfo[currentEnv][categories][category][resourceName] = {};
       }
 
-      teamProviderInfo[currEnv][categories][category][resourceName][rdsRegion] = answers.region;
-      teamProviderInfo[currEnv][categories][category][resourceName][rdsClusterIdentifier] = answers.dbClusterArn;
-      teamProviderInfo[currEnv][categories][category][resourceName][rdsSecretStoreArn] = answers.secretStoreArn;
-      teamProviderInfo[currEnv][categories][category][resourceName][rdsDatabaseName] = answers.databaseName;
+      teamProviderInfo[currentEnv][categories][category][resourceName][rdsRegion] = answers.region;
+      teamProviderInfo[currentEnv][categories][category][resourceName][rdsClusterIdentifier] = answers.dbClusterArn;
+      teamProviderInfo[currentEnv][categories][category][resourceName][rdsSecretStoreArn] = answers.secretStoreArn;
+      teamProviderInfo[currentEnv][categories][category][resourceName][rdsDatabaseName] = answers.databaseName;
 
       stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
     })
     .then(() => {
       context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { forceCompile: true });
     });
-}
+};
 
-export async function getPermissionPolicies(context: $TSContext, resourceOpsMapping: $TSObject) {
+/**
+ * Get permissions for depending on this resource
+ */
+export const getPermissionPolicies = async (
+  context: $TSContext,
+  resourceOpsMapping: $TSObject,
+): Promise<{ permissionPolicies: $TSAny[]; resourceAttributes: $TSAny[]; }> => {
   const amplifyMeta = stateManager.getMeta();
   const permissionPolicies = [];
   const resourceAttributes = [];
@@ -209,9 +232,12 @@ export async function getPermissionPolicies(context: $TSContext, resourceOpsMapp
     }),
   );
   return { permissionPolicies, resourceAttributes };
-}
+};
 
-export async function executeAmplifyCommand(context: $TSContext) {
+/**
+ * Main entry point for executing an api subcommand
+ */
+export const executeAmplifyCommand = async (context: $TSContext): Promise<void> => {
   let commandPath = path.normalize(path.join(__dirname, 'commands'));
   if (context.input.command === 'help') {
     commandPath = path.join(commandPath, category);
@@ -232,35 +258,46 @@ export async function executeAmplifyCommand(context: $TSContext) {
     }
     process.exitCode = 1;
   }
-}
+};
 
-export const executeAmplifyHeadlessCommand = async (context: $TSContext, headlessPayload: string) => {
+/**
+ * Main entry point for executing a headless api command
+ */
+export const executeAmplifyHeadlessCommand = async (context: $TSContext, headlessPayload: string): Promise<void> => {
   context.usageData.pushHeadlessFlow(headlessPayload, context.input);
   switch (context.input.command) {
     case 'add':
       await getCfnApiArtifactHandler(context).createArtifacts(await validateAddApiRequest(headlessPayload));
       break;
-    case 'update':
+    case 'update': {
       const resourceName = await getAppSyncApiResourceName(context);
       await checkAppsyncApiResourceMigration(context, resourceName, true);
       await getCfnApiArtifactHandler(context).updateArtifacts(await validateUpdateApiRequest(headlessPayload));
       break;
+    }
     default:
       printer.error(`Headless mode for ${context.input.command} api is not implemented yet`);
   }
 };
 
-export async function handleAmplifyEvent(context: $TSContext, args) {
+/**
+ * Not yet implemented
+ */
+export const handleAmplifyEvent = async (_: $TSContext, args): Promise<void> => {
   printer.info(`${category} handleAmplifyEvent to be implemented`);
   printer.info(`Received event args ${args}`);
-}
+};
 
-export async function addGraphQLAuthorizationMode(context: $TSContext, args: $TSObject) {
+/**
+ * Add a new auth mode to the API
+ */
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const addGraphQLAuthorizationMode = async (context: $TSContext, args: $TSObject) => {
   const { authType, printLeadText, authSettings } = args;
   const meta = stateManager.getMeta();
   const apiName = getAppSyncResourceName(meta);
   if (!apiName) {
-    return;
+    return undefined;
   }
 
   const authConfig = getAppSyncAuthConfig(meta);
@@ -283,9 +320,12 @@ export async function addGraphQLAuthorizationMode(context: $TSContext, args: $TS
   );
 
   return addAuthConfig;
-}
+};
 
-export async function transformCategoryStack(context: $TSContext, resource: $TSObject) {
+/**
+ * Synthesize the CFN template for the API
+ */
+export const transformCategoryStack = async (context: $TSContext, resource: $TSObject): Promise<void> => {
   if (resource.service === AmplifySupportedService.APPSYNC) {
     if (canResourceBeTransformed(resource.resourceName)) {
       const backendDir = pathManager.getBackendDirPath();
@@ -300,7 +340,7 @@ export async function transformCategoryStack(context: $TSContext, resource: $TSO
           forceCompile: true,
           overrideConfig: {
             overrideFlag: isBuild,
-            overrideDir: overrideDir,
+            overrideDir,
             resourceName: resource.resourceName,
           },
         },
@@ -313,8 +353,8 @@ export async function transformCategoryStack(context: $TSContext, resource: $TSO
       apigwStack.transform();
     }
   }
-}
+};
 
-function canResourceBeTransformed(resourceName: string) {
-  return stateManager.resourceInputsJsonExists(undefined, AmplifyCategories.API, resourceName);
-}
+const canResourceBeTransformed = (
+  resourceName: string,
+): boolean => stateManager.resourceInputsJsonExists(undefined, AmplifyCategories.API, resourceName);

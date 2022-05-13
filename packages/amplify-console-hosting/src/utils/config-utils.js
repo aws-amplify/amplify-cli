@@ -1,3 +1,5 @@
+// disabling eslint until this file is migrated to TS
+/* eslint-disable */
 const fs = require('fs-extra');
 const path = require('path');
 const { pathManager, PathConstants } = require('amplify-cli-core');
@@ -231,3 +233,4 @@ module.exports = {
   deleteConsoleConfigFromTeamProviderInfo,
   deleteConsoleConfigFromCurrMeta,
 };
+/* eslint-enable */

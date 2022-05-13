@@ -52,8 +52,8 @@ export class StateManager {
   currentMetaFileExists = (projectPath?: string): boolean => this.doesExist(pathManager.getCurrentAmplifyMetaFilePath, projectPath);
 
   setDeploymentSecrets = (deploymentSecrets: DeploymentSecrets): void => {
-    const path = pathManager.getDeploymentSecrets();
-    JSONUtilities.writeJson(path, deploymentSecrets, { mode: SecretFileMode }); // set deployment secret file permissions to -rw-------
+    const deploymentSecretsPath = pathManager.getDeploymentSecrets();
+    JSONUtilities.writeJson(deploymentSecretsPath, deploymentSecrets, { mode: SecretFileMode }); // set deployment secret file permissions to -rw-------
   };
 
   getCurrentMeta = (projectPath?: string, options?: GetOptions<$TSMeta>): $TSMeta => {
@@ -204,7 +204,7 @@ export class StateManager {
     return this.getData<$TSAny>(filePath, mergedOptions);
   };
 
-  getAmplifyAdminConfigEntry = (appId: string, options?: GetOptions<$TSAny>) => {
+  getAmplifyAdminConfigEntry = (appId: string, options?: GetOptions<$TSAny>): $TSAny => {
     const mergedOptions = {
       throwIfNotExist: false,
       default: {},
@@ -215,13 +215,13 @@ export class StateManager {
     return adminConfig[appId];
   };
 
-  removeAmplifyAdminConfigEntry = (appId: string) => {
+  removeAmplifyAdminConfigEntry = (appId: string): void => {
     const adminConfig: $TSAny = JSONUtilities.readJson(pathManager.getAmplifyAdminConfigFilePath());
     delete adminConfig[appId];
     JSONUtilities.writeJson(pathManager.getAmplifyAdminConfigFilePath(), adminConfig, { secureFile: true });
   };
 
-  setAmplifyAdminConfigEntry = (appId: string, config: $TSAny) => {
+  setAmplifyAdminConfigEntry = (appId: string, config: $TSAny): void => {
     const adminConfig: $TSAny = JSONUtilities.readJson(pathManager.getAmplifyAdminConfigFilePath(), { throwIfNotExist: false }) || {};
     adminConfig[appId] = config;
     JSONUtilities.writeJson(pathManager.getAmplifyAdminConfigFilePath(), adminConfig, { secureFile: true });
@@ -343,7 +343,7 @@ export class StateManager {
     return this.getData<$TSAny>(filePath, mergedOptions);
   };
 
-  setCLIJSON = (projectPath: string, cliJSON: any, env?: string): void => {
+  setCLIJSON = (projectPath: string, cliJSON: $TSAny, env?: string): void => {
     const filePath = pathManager.getCLIJSONFilePath(projectPath, env);
 
     JSONUtilities.writeJson(filePath, cliJSON, {
@@ -352,7 +352,7 @@ export class StateManager {
   };
 
   getResourceFromMeta = (
-    amplifyMeta: Record<string, any>,
+    amplifyMeta: Record<string, $TSAny>,
     categoryName: string,
     serviceName: string,
     resourceName?: string | undefined,
@@ -360,7 +360,7 @@ export class StateManager {
   ): ResourceEntry | null => {
     const resources = this.filterResourcesFromMeta(amplifyMeta, categoryName, serviceName, resourceName);
 
-    if (resources.length == 0) {
+    if (resources.length === 0) {
       const withNamePart = resourceName ? `with name: ${resourceName} ` : '';
 
       if (throwIfNotExist) {
@@ -378,7 +378,7 @@ export class StateManager {
   };
 
   private filterResourcesFromMeta = (
-    amplifyMeta: Record<string, any>,
+    amplifyMeta: Record<string, $TSAny>,
     categoryName: string,
     serviceName: string,
     resourceName?: string,
