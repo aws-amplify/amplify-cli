@@ -86,7 +86,7 @@ module.exports = {
     'no-invalid-this': 'off',
     '@typescript-eslint/no-invalid-this': 'error',
     'no-unused-vars': 'off',
-    '@typescript-eslint/no-unused-vars': ['error', { vars: 'all', args: 'all', argsIgnorePattern: '^_$' }],
+    '@typescript-eslint/no-unused-vars': ['error', { vars: 'all', args: 'all', argsIgnorePattern: '^_{2,}[A-Za-z0-9]*$' }],
     'no-shadow': 'off',
     '@typescript-eslint/no-shadow': 'error',
 
