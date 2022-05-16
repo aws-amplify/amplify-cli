@@ -1,6 +1,6 @@
-import { $TSContext, spinner, stateManager } from 'amplify-cli-core';
+import { $TSContext, stateManager } from 'amplify-cli-core';
 import aws from 'aws-sdk';
-import { getFullyQualifiedSecretName, oauthObjSecretKey } from './secret-name';
+import { getFullyQualifiedSecretName, oAuthObjSecretKey } from './secret-name';
 
 /**
  * Manages the state of OAuth secrets in AWS ParameterStore
@@ -24,7 +24,7 @@ export class OAuthSecretsStateManager {
  */
   setOAuthSecrets = async (hostedUISecretObj: string, resourceName: string): Promise<void> => {
     const { envName } = stateManager.getLocalEnvInfo();
-    const secretName = getFullyQualifiedSecretName(oauthObjSecretKey, resourceName, envName);
+    const secretName = getFullyQualifiedSecretName(oAuthObjSecretKey, resourceName, envName);
     const secretValue = hostedUISecretObj;
     await this.ssmClient
       .putParameter({
@@ -40,7 +40,7 @@ export class OAuthSecretsStateManager {
    */
   getOAuthSecrets = async (resourceName: string): Promise<string | undefined> => {
     const { envName } = stateManager.getLocalEnvInfo();
-    const secretName = getFullyQualifiedSecretName(oauthObjSecretKey, resourceName, envName);
+    const secretName = getFullyQualifiedSecretName(oAuthObjSecretKey, resourceName, envName);
     let secretValue;
     try {
       const parameter = await this.ssmClient

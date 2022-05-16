@@ -1,14 +1,19 @@
 const path = require('path');
 const fs = require('fs-extra');
 const _ = require('lodash');
-const hostedUIProviderCredsField = 'hostedUIProviderCreds';
 
+/**
+ * get resource dir path
+ */
 function getResourceDirPath(context, category, resource) {
   const { projectPath } = context.migrationInfo || context.amplify.getEnvInfo();
   const backendDirPath = context.amplify.pathManager.getBackendDirPath(projectPath);
   return path.join(backendDirPath, category, resource);
 }
 
+/**
+ * save parameters for selected resource
+ */
 function saveResourceParameters(context, category, resource, parameters, envSpecificParamsName = []) {
   const resourceDirPath = getResourceDirPath(context, category, resource);
   const parametersFilePath = path.join(resourceDirPath, 'parameters.json');
@@ -29,6 +34,9 @@ function saveResourceParameters(context, category, resource, parameters, envSpec
   return parameters;
 }
 
+/**
+ * load parameter for a resource
+ */
 function loadResourceParameters(context, category, resource) {
   let parameters = {};
   const resourceDirPath = getResourceDirPath(context, category, resource);
@@ -41,10 +49,7 @@ function loadResourceParameters(context, category, resource) {
     parameters = context.amplify.readJsonFile(parametersFilePath);
   }
   const envSpecificParams = context.amplify.loadEnvResourceParameters(context, category, resource);
-  let resourceParameters = { ...parameters, ...envSpecificParams };
-  // if (category === 'auth' && parameters && parameters.hostedUI && !resourceParameters[hostedUIProviderCredsField]) {
-  //   resourceParameters = _.set(resourceParameters, hostedUIProviderCredsField, '[]');
-  // }
+  const resourceParameters = { ...parameters, ...envSpecificParams };
   return resourceParameters;
 }
 

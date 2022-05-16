@@ -11,5 +11,5 @@ export const generateAuthStackTemplate = async (context: $TSContext, resourceNam
     return template;
   }
 
-  throw new Error('Cant find the generated template');
+  throw new Error(`Failed to generate auth CloudFormation template for ${resourceName}.`);
 };

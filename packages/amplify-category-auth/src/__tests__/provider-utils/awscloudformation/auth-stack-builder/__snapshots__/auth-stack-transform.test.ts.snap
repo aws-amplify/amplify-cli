@@ -1344,7 +1344,7 @@ const updateIdentityProvider = async (providerName, userPoolId, hostedUIProvider
     "HostedUIProvidersCustomResourceInputs": Object {
       "DeletionPolicy": "Delete",
       "DependsOn": Array [
-        "HostedUIProvidersCustomResourceLogPolicy",
+        "hostedUIProvidersCustomResourceSecretPolicy",
       ],
       "Properties": Object {
         "ServiceToken": Object {

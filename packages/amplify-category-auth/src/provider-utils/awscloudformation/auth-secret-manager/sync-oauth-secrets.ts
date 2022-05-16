@@ -22,7 +22,7 @@ export const syncOAuthSecretsToCloud = async (context: $TSContext, authResourceN
     const authCliInputs = cliState.getCLIInputPayload();
     const oAuthSecretsStateManager = await OAuthSecretsStateManager.getInstance(context);
     const authProviders = authCliInputs.cognitoConfig.authProvidersUserPool;
-    const { hostedUI } = authCliInputs.cognitoConfig;
+    const { hostedUI, userPoolName } = authCliInputs.cognitoConfig;
     if (!_.isEmpty(authProviders) && hostedUI) {
       if (!_.isEmpty(secrets)) {
         oAuthSecrets = secrets?.hostedUIProviderCreds;
@@ -34,7 +34,7 @@ export const syncOAuthSecretsToCloud = async (context: $TSContext, authResourceN
         // eslint-disable-next-line max-depth
         if (_.isEmpty(oAuthSecrets)) {
           // data is present in deployent secrets , which can be fetched from cognito
-          oAuthSecrets = await getOAuthObjectFromCognito(context, authResourceName);
+          oAuthSecrets = await getOAuthObjectFromCognito(context, userPoolName!);
           await oAuthSecretsStateManager.setOAuthSecrets(oAuthSecrets, authResourceName);
         }
       }

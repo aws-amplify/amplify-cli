@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import {
   $TSAny, $TSContext, $TSObject, stateManager,
 } from 'amplify-cli-core';
@@ -89,7 +90,7 @@ export const getAddAuthHandler = (context: $TSContext, skipNextSteps = false) =>
 };
 
 /**
- *
+ * Factory function that returns a CognitoCLIInputs consumer that handles all update operations of the resource generation logic.
  */
 export const getUpdateAuthHandler = (context: $TSContext) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
   const { defaultValuesFilename } = getSupportedServices()[request.serviceName];
@@ -130,7 +131,7 @@ export const getUpdateAuthHandler = (context: $TSContext) => async (request: Ser
   privateKeys.forEach(p => delete sharedParams[p]);
   sharedParams = removeDeprecatedProps(sharedParams);
   // extracting env-specific params from parameters object
-  const envSpecificParams: any = {};
+  const envSpecificParams: $TSAny = {};
   const cliInputs = { ...sharedParams };
   ENV_SPECIFIC_PARAMS.forEach(paramName => {
     if (paramName in request) {
@@ -140,7 +141,7 @@ export const getUpdateAuthHandler = (context: $TSContext) => async (request: Ser
   });
   context.amplify.saveEnvResourceParameters(context, category, requestWithDefaults.resourceName, envSpecificParams);
 
-  // handling triggers to be saved  coorectly in cli-inputs
+  // handling triggers to be saved  correctly in cli-inputs
   await getResourceUpdater(context, cliInputs);
   // saving updated request here
   /**
@@ -155,7 +156,6 @@ export const getUpdateAuthHandler = (context: $TSContext) => async (request: Ser
   try {
     const cliState = new AuthInputState(cognitoCLIInputs.cognitoConfig.resourceName);
     const { triggers } = cognitoCLIInputs.cognitoConfig;
-    // convert triggers to JSON as overided in defaults
     if (triggers && typeof triggers === 'string') {
       cognitoCLIInputs.cognitoConfig.triggers = JSON.parse(triggers);
     }
@@ -163,7 +163,7 @@ export const getUpdateAuthHandler = (context: $TSContext) => async (request: Ser
     await cliState.saveCLIInputPayload(cognitoCLIInputs);
     // updating OAuth secrets
     await syncOAuthSecretsToCloud(context, cognitoCLIInputs.cognitoConfig.resourceName, envSpecificParams);
-    // remoe this when api and functions transform are done
+    // remove this when api and functions transform are done
     if (request.updateFlow !== 'updateUserPoolGroups' && request.updateFlow !== 'updateAdminQueries') {
       await generateAuthStackTemplate(context, cognitoCLIInputs.cognitoConfig.resourceName);
     }

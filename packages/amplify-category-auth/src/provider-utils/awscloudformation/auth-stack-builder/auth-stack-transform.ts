@@ -1,5 +1,5 @@
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable max-lines-per-function */
-/* eslint-disable spellcheck/spell-checker */
 import {
   AmplifyCategories,
   AmplifySupportedService,
@@ -50,6 +50,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     this._app = new cdk.App();
     this._category = AmplifyCategories.AUTH;
     this._service = AmplifySupportedService.COGNITO;
+    // eslint-disable-next-line spellcheck/spell-checker
     this._authTemplateObj = new AmplifyAuthCognitoStack(this._app, 'AmplifyAuthCongitoStack', { synthesizer: this._synthesizer });
   }
 
@@ -86,8 +87,8 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     // save stack and parameters.json
     if (template) {
       await this.saveBuildFiles(context, template);
-      return template;
     }
+    return template;
   }
 
   /**
@@ -162,7 +163,9 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     let cognitoStackProps : CognitoStackOptions = {
       ...this._cliInputs.cognitoConfig,
       ...roles,
+      // eslint-disable-next-line spellcheck/spell-checker
       breakCircularDependency: FeatureFlags.getBoolean('auth.breakcirculardependency'),
+      // eslint-disable-next-line spellcheck/spell-checker
       useEnabledMfas: FeatureFlags.getBoolean('auth.useenabledmfas'),
       dependsOn: [],
     };
@@ -171,9 +174,9 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     }
 
     // get env secrets
-    const teamProviderobj = context.amplify.loadEnvResourceParameters(context, this._category, this.resourceName);
-    if (!_.isEmpty(teamProviderobj)) {
-      cognitoStackProps = Object.assign(cognitoStackProps, teamProviderobj);
+    const tpiInfo = context.amplify.loadEnvResourceParameters(context, this._category, this.resourceName);
+    if (!_.isEmpty(tpiInfo)) {
+      cognitoStackProps = Object.assign(cognitoStackProps, tpiInfo);
     }
     // determine permissions needed for each trigger module
     if (!_.isEmpty(this._cliInputs.cognitoConfig.triggers)) {
@@ -208,17 +211,18 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
   };
 
   /**
-   * returns CFN templates sunthesized by app
+   * returns CFN templates synthesized by app
    */
   private synthesizeTemplates = async (): Promise<Template | undefined> => {
     this._app.synth();
     const templates = this._synthesizer.collectStacks();
+    // eslint-disable-next-line spellcheck/spell-checker
     return templates.get('AmplifyAuthCongitoStack');
   };
 
   public saveBuildFiles = async (context: $TSContext, template: Template): Promise<void> => {
     const cognitoStackFileName = `${this.resourceName}-cloudformation-template.json`;
-    const cognitostackFilePath = path.join(
+    const cognitoStackFilePath = path.join(
       pathManager.getBackendDirPath(),
       this._category,
       this.resourceName,
@@ -226,7 +230,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       cognitoStackFileName,
     );
     // write CFN template
-    await writeCFNTemplate(template, cognitostackFilePath, {
+    await writeCFNTemplate(template, cognitoStackFilePath, {
       templateFormat: CFNTemplateFormat.JSON,
     });
     // write parameters.json
@@ -542,16 +546,6 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
         );
       }
     }
-
-    // if (Object.keys(props).includes('hostedUIProviderMeta') && !Object.keys(props).includes('hostedUIProviderCreds')) {
-    //   this._authTemplateObj.addCfnParameter(
-    //     {
-    //       type: 'String',
-    //       default: '[]',
-    //     },
-    //     'hostedUIProviderCreds',
-    //   );
-    // }
   };
 
   private addCfnConditions = (props: CognitoStackOptions): void => {

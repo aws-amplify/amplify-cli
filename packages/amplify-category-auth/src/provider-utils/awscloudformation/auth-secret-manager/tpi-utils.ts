@@ -18,7 +18,7 @@ export const setAppIdForFunctionInTeamProvider = (authResourceName: string): voi
 };
 
 /**
- * remove app id in tea provider info
+ * remove app id in team provider info
  */
 export const removeAppIdForFunctionInTeamProvider = (authResourceName: string): void => {
   const tpi = stateManager.getTeamProviderInfo(undefined, { throwIfNotExist: false, default: {} });

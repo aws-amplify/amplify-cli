@@ -3,7 +3,7 @@ import * as path from 'path';
 import { getAppId } from '../utils/get-app-id';
 
 export const oAuthSecretsPathAmplifyAppIdKey = 'oAuthSecretsPathAmplifyAppId';
-export const oauthObjSecretKey = 'hostedUIProviderCreds';
+export const oAuthObjSecretKey = 'hostedUIProviderCreds';
 
 /**
   * Returns the full name of the SSM parameter for secretName in resourceName in envName.

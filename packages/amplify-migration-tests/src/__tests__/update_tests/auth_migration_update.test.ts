@@ -99,10 +99,10 @@ describe('amplify auth migration', () => {
     };
     // eslint-disable-next-line spellcheck/spell-checker
     await updateAuthWithoutTrigger(projectRoot, { testingWithLatestCodebase: true, overrides: overridesObj });
-    await expect(await amplifyPushAuth(projectRoot, true)).resolves.not.toThrowError();
+    await expect(amplifyPushAuth(projectRoot, true)).resolves.not.toThrowError();
   });
 
-  it('...should init a project and add auth with default, and then add function and push', async () => {
+  it('...should init a project and add auth with Max options, and then add function and push', async () => {
     // add and push auth with installed cli
     await addAuthWithMaxOptions(projectRoot, {});
     await amplifyPushAuth(projectRoot);
@@ -116,6 +116,6 @@ describe('amplify auth migration', () => {
       },
       'nodejs',
     );
-    await expect(await amplifyPushAuth(projectRoot, true)).resolves.not.toThrowError();
+    await expect(amplifyPushAuth(projectRoot, true)).resolves.not.toThrowError();
   });
 });

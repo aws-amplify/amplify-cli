@@ -47,6 +47,6 @@ describe('amplify auth migration', () => {
     };
     // eslint-disable-next-line spellcheck/spell-checker
     await updateAuthSignInSignOutUrl(projectRoot, { testingWithLatestCodebase: true, overrides: overridesObj });
-    await expect(await amplifyPushAuth(projectRoot, true)).resolves.not.toThrowError();
+    await expect(amplifyPushAuth(projectRoot, true)).resolves.not.toThrowError();
   });
 });
