@@ -1,14 +1,16 @@
 import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from '../../graphql-transformer/utils';
-import { prePushCfnTemplateModifier } from '../../pre-push-cfn-processor/pre-push-cfn-modifier';
 import { TransformerProjectConfig, DeploymentResources } from '@aws-amplify/graphql-transformer-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { $TSContext, CloudformationProviderFacade } from 'amplify-cli-core';
 
 jest.mock('fs-extra');
-jest.mock('../../pre-push-cfn-processor/pre-push-cfn-modifier');
+jest.mock('amplify-cli-core');
 
 const fs_mock = fs as jest.Mocked<typeof fs>;
-const prePushCfnTemplateModifier_mock = prePushCfnTemplateModifier as jest.MockedFunction<typeof prePushCfnTemplateModifier>;
+const prePushCfnTemplateModifier_mock = jest.fn();
+
+CloudformationProviderFacade.prePushCfnTemplateModifier = prePushCfnTemplateModifier_mock;
 
 fs_mock.readdirSync.mockReturnValue([]);
 
@@ -53,7 +55,8 @@ describe('graphql transformer utils', () => {
         }
       });
 
-      await writeDeploymentToDisk(transformerOutput, path.join('test', 'deployment'), undefined, {});
+      const context = { amplify: {} } as unknown as $TSContext;
+      await writeDeploymentToDisk(context, transformerOutput, path.join('test', 'deployment'), undefined, {});
       expect(hasWrittenTransformedTemplate).toBe(true);
     });
   });

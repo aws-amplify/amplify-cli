@@ -1,8 +1,8 @@
-import { showSandboxModePrompts, showGlobalSandboxModeWarning, schemaHasSandboxModeEnabled } from '../../utils/sandbox-mode-helpers';
 import { $TSContext } from 'amplify-cli-core';
 import chalk from 'chalk';
 import * as prompts from 'amplify-prompts';
-import * as apiKeyHelpers from '../../utils/api-key-helpers';
+import { showSandboxModePrompts, showGlobalSandboxModeWarning, schemaHasSandboxModeEnabled } from '../../graphql-transformer/sandbox-mode-helpers';
+import * as apiKeyHelpers from '../../graphql-transformer/api-key-helpers';
 
 let ctx;
 let apiKeyPresent = true;
@@ -20,7 +20,7 @@ describe('sandbox mode helpers', () => {
     } as unknown as $TSContext;
 
     jest.spyOn(prompts.printer, 'info').mockImplementation();
-    jest.spyOn(apiKeyHelpers, 'hasApiKey').mockReturnValue(apiKeyPresent);
+    jest.spyOn(apiKeyHelpers, 'hasApiKey').mockResolvedValue(apiKeyPresent);
   });
 
   describe('showSandboxModePrompts', () => {

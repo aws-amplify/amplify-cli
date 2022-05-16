@@ -2,11 +2,12 @@ import fs from 'fs-extra';
 import path from 'path';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
-import { destructiveUpdatesFlag, ProviderName as providerName } from '../constants';
-import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
+import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
 import {
   $TSContext,
   AmplifyCategories,
+  ApiCategoryFacade,
+  CloudformationProviderFacade,
   getGraphQLTransformerAuthDocLink,
   getGraphQLTransformerAuthSubscriptionsDocLink,
   getGraphQLTransformerOpenSearchProductionDocLink,
@@ -15,8 +16,7 @@ import {
   stateManager,
 } from 'amplify-cli-core';
 import { ResourceConstants } from 'graphql-transformer-common';
-import _ from 'lodash';
-import { isAuthModeUpdated } from '../utils/auth-mode-compare';
+import { isAuthModeUpdated } from './auth-mode-compare';
 import {
   collectDirectivesByTypeNames,
   readTransformerConfiguration,
@@ -30,22 +30,22 @@ import {
   buildAPIProject,
   getSanityCheckRules,
 } from 'graphql-transformer-core';
-import { hashDirectory } from '../upload-appsync-files';
 import { exitOnNextTick } from 'amplify-cli-core';
-import { getTransformerVersion } from '../graphql-transformer-factory/transformer-version';
-import { getTransformerFactoryV1 } from '../graphql-transformer-factory/transformer-factory';
 import { searchablePushChecks } from './api-utils';
+import { getTransformerFactory } from './transformer-factory';
 
 const apiCategory = 'api';
 const parametersFileName = 'parameters.json';
 const schemaFileName = 'schema.graphql';
 const schemaDirName = 'schema';
 const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
+const DESTRUCTIVE_UPDATES_FLAG = 'allow-destructive-graphql-schema-updates';
+const PROVIDER_NAME = 'awscloudformation';
 
 async function warnOnAuth(context, map) {
   const unAuthModelTypes = Object.keys(map).filter(type => !map[type].includes('auth') && map[type].includes('model'));
   if (unAuthModelTypes.length) {
-    const transformerVersion = await getTransformerVersion(context);
+    const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
     const docLink = getGraphQLTransformerAuthDocLink(transformerVersion);
     context.print.warning("\nThe following types do not have '@auth' enabled. Consider using @auth with @model");
     context.print.warning(unAuthModelTypes.map(type => `\t - ${type}`).join('\n'));
@@ -57,7 +57,7 @@ async function warnOnAuth(context, map) {
  * @TODO Include a map of versions to keep track
  */
 async function transformerVersionCheck(context, resourceDir, cloudBackendDirectory, updatedResources, usedDirectives) {
-  const transformerVersion = await getTransformerVersion(context);
+  const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
   const authDocLink = getGraphQLTransformerAuthSubscriptionsDocLink(transformerVersion);
   const searchable = getGraphQLTransformerOpenSearchProductionDocLink(transformerVersion);
   const versionChangeMessage = `The default behavior for @auth has changed in the latest version of Amplify\nRead here for details: ${authDocLink}`;
@@ -224,7 +224,7 @@ export async function transformGraphQLSchemaV1(context, options) {
     // There can only be one appsync resource
     if (resources.length > 0) {
       const resource = resources[0];
-      if (resource.providerPlugin !== providerName) {
+      if (resource.providerPlugin !== PROVIDER_NAME) {
         return;
       }
       const { category, resourceName } = resource;
@@ -239,7 +239,7 @@ export async function transformGraphQLSchemaV1(context, options) {
   if (!previouslyDeployedBackendDir) {
     if (resources.length > 0) {
       const resource = resources[0];
-      if (resource.providerPlugin !== providerName) {
+      if (resource.providerPlugin !== PROVIDER_NAME) {
         return;
       }
       const { category, resourceName } = resource;
@@ -334,7 +334,7 @@ export async function transformGraphQLSchemaV1(context, options) {
   const schemaDirPath = path.normalize(path.join(resourceDir, schemaDirName));
   let deploymentRootKey = await getPreviousDeploymentRootKey(previouslyDeployedBackendDir);
   if (!deploymentRootKey) {
-    const deploymentSubKey = await hashDirectory(resourceDir);
+    const deploymentSubKey = await CloudformationProviderFacade.hashDirectory(context, resourceDir);
     deploymentRootKey = `${ROOT_APPSYNC_S3_KEY}/${deploymentSubKey}`;
   }
   const projectBucket = options.dryRun ? 'fake-bucket' : getProjectBucket(context);
@@ -361,7 +361,7 @@ export async function transformGraphQLSchemaV1(context, options) {
 
   await transformerVersionCheck(context, resourceDir, previouslyDeployedBackendDir, resourcesToBeUpdated, directiveMap.directives);
 
-  const transformerListFactory = getTransformerFactoryV1(context, resourceDir, authConfig);
+  const transformerListFactory = await getTransformerFactory(context, resourceDir, authConfig);
 
   let searchableTransformerFlag = false;
 
@@ -370,7 +370,7 @@ export async function transformGraphQLSchemaV1(context, options) {
   }
 
   const ff = new AmplifyCLIFeatureFlagAdapter();
-  const allowDestructiveUpdates = context?.input?.options?.[destructiveUpdatesFlag] || context?.input?.options?.force;
+  const allowDestructiveUpdates = context?.input?.options?.[DESTRUCTIVE_UPDATES_FLAG] || context?.input?.options?.force;
   const sanityCheckRulesList = getSanityCheckRules(isNewAppSyncAPI, ff, allowDestructiveUpdates);
 
   const buildConfig = {
@@ -402,7 +402,7 @@ place .graphql files in a directory at ${schemaDirPath}`);
 
 function getProjectBucket(context) {
   const projectDetails = context.amplify.getProjectDetails();
-  const projectBucket = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName : '';
+  const projectBucket = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[PROVIDER_NAME].DeploymentBucketName : '';
   return projectBucket;
 }
 

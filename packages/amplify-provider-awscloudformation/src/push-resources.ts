@@ -35,6 +35,7 @@ import {
   DeploymentStepStatus,
   readCFNTemplate,
   Template,
+  ApiCategoryFacade,
 } from 'amplify-cli-core';
 import ora from 'ora';
 import { Fn } from 'cloudform-types';
@@ -46,7 +47,6 @@ import { uploadAppSyncFiles } from './upload-appsync-files';
 import { prePushGraphQLCodegen, postPushGraphQLCodegen } from './graphql-codegen';
 import { adminModelgen } from './admin-modelgen';
 import { prePushAuthTransform } from './auth-transform';
-import { transformGraphQLSchema } from './graphql-transformer';
 import { displayHelpfulURLs } from './display-helpful-urls';
 import { downloadAPIModels } from './download-api-models';
 import { GraphQLResourceManager } from './graphql-resource-manager';
@@ -146,7 +146,6 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
       }
     }
 
-
     for (const resource of resources) {
       if (resource.service === ApiServiceNameElasticContainer && resource.category === 'api') {
         const {
@@ -181,7 +180,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     /**
      * calling transform schema here to support old project with out overrides
      */
-    await transformGraphQLSchema(context, {
+    await ApiCategoryFacade.transformGraphQLSchema(context, {
       handleMigration: opts => updateStackForAPIMigration(context, 'api', undefined, opts),
       minify: options.minify,
       promptApiKeyCreation: true,
@@ -497,7 +496,6 @@ export const updateStackForAPIMigration = async (context: $TSContext, category: 
   const { isReverting, isCLIMigration } = options;
 
   let projectDetails = context.amplify.getProjectDetails();
-
 
   const resources = allResources.filter((resource: { service: string; }) => resource.service === 'AppSync');
 

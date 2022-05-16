@@ -154,6 +154,7 @@ module.exports = {
     'no-underscore-dangle': 'off',
     'no-template-curly-in-string': 'off',
     'no-plusplus': 'off',
+    'no-await-in-loop': 'off',
 
     // same as air-bnb default with the exception of allowing for...of
     'no-restricted-syntax': [
@@ -275,6 +276,7 @@ module.exports = {
     '/packages/amplify-category-analytics/lib',
     '/amplify-category-interactions/lib',
     '/packages/amplify-category-custom/src/utils/generate-cfn-from-cdk.ts',
+    '/packages/amplify-environment-parameters/lib',
 
     // Ignore CHANGELOG.md files
     '/packages/*/CHANGELOG.md',

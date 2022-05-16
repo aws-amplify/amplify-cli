@@ -1,6 +1,9 @@
 import { stateManager } from 'amplify-cli-core';
 
-export function getAllEnvs(): string[] {
+/**
+ * Get all locally configured environments
+ */
+export const getAllEnvs = (): string[] => {
   let allEnvs: string[] = [];
 
   const envInfo = stateManager.getTeamProviderInfo(undefined, {
@@ -11,4 +14,4 @@ export function getAllEnvs(): string[] {
   allEnvs = Object.keys(envInfo);
 
   return allEnvs;
-}
+};

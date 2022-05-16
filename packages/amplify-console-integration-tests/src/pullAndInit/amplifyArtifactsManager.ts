@@ -1,16 +1,18 @@
+/* eslint-disable jsdoc/require-jsdoc */
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import { $TSAny } from 'amplify-cli-core';
 import * as util from '../util';
 
-export function removeDotConfigDir(projectRootDirPath: string) {
+export const removeDotConfigDir = (projectRootDirPath: string): void => {
   const amplifyDirPath = path.join(projectRootDirPath, 'amplify');
 
   const dotConfigDirPath = path.join(amplifyDirPath, '.config');
 
   fs.removeSync(dotConfigDirPath);
-}
+};
 
-export function removeFilesForTeam(projectRootDirPath: string) {
+export const removeFilesForTeam = (projectRootDirPath: string): void => {
   const amplifyDirPath = path.join(projectRootDirPath, 'amplify');
 
   const dotConfigDirPath = path.join(amplifyDirPath, '.config');
@@ -32,19 +34,19 @@ export function removeFilesForTeam(projectRootDirPath: string) {
   const awsCloudFormationDirPath = path.join(backendDirPath, 'awscloudformation');
   fs.removeSync(awsCloudFormationDirPath);
   fs.removeSync(amplifyMetaFilePath);
-}
+};
 
-export function removeFilesForThirdParty(projectRootDirPath: string) {
+export const removeFilesForThirdParty = (projectRootDirPath: string): void => {
   removeFilesForTeam(projectRootDirPath);
   removeTeamProviderInfo(projectRootDirPath);
-}
+};
 
-function removeTeamProviderInfo(projectRootDirPath: string) {
+const removeTeamProviderInfo = (projectRootDirPath: string): void => {
   const teamProviderInfoFilePath = path.join(projectRootDirPath, 'amplify', 'team-provider-info.json');
   fs.removeSync(teamProviderInfoFilePath);
-}
+};
 
-export function checkAmplifyFolderStructure(projectRootDirPath: string): boolean {
+export const checkAmplifyFolderStructure = (projectRootDirPath: string): boolean => {
   const amplifyDirPath = path.join(projectRootDirPath, 'amplify');
   const teamProviderInfoFilePath = path.join(amplifyDirPath, 'team-provider-info.json');
 
@@ -60,33 +62,33 @@ export function checkAmplifyFolderStructure(projectRootDirPath: string): boolean
   const amplifyMetaFilePath = path.join(backendDirPath, 'amplify-meta.json');
 
   return (
-    fs.existsSync(amplifyDirPath) &&
-    fs.existsSync(teamProviderInfoFilePath) &&
-    fs.existsSync(dotConfigDirPath) &&
-    fs.existsSync(localAWSInfoFilePath) &&
-    fs.existsSync(localEnvInfoFilePath) &&
-    fs.existsSync(projectConfigFilePath) &&
-    fs.existsSync(currentCloudBackendDirPath) &&
-    fs.existsSync(currentAmplifyMetaFilePath) &&
-    fs.existsSync(backendDirPath) &&
-    fs.existsSync(amplifyMetaFilePath)
+    fs.existsSync(amplifyDirPath)
+    && fs.existsSync(teamProviderInfoFilePath)
+    && fs.existsSync(dotConfigDirPath)
+    && fs.existsSync(localAWSInfoFilePath)
+    && fs.existsSync(localEnvInfoFilePath)
+    && fs.existsSync(projectConfigFilePath)
+    && fs.existsSync(currentCloudBackendDirPath)
+    && fs.existsSync(currentAmplifyMetaFilePath)
+    && fs.existsSync(backendDirPath)
+    && fs.existsSync(amplifyMetaFilePath)
   );
-}
+};
 
-export function getTeamProviderInfo(projectRootDirPath: string) {
+export const getTeamProviderInfo = (projectRootDirPath: string): $TSAny => {
   let teamProviderInfo;
   const teamProviderInfoFilePath = path.join(projectRootDirPath, 'amplify', 'team-provider-info.json');
   if (fs.existsSync(teamProviderInfoFilePath)) {
     teamProviderInfo = util.readJsonFileSync(teamProviderInfoFilePath);
   }
   return teamProviderInfo;
-}
+};
 
-export function getProjectConfig(projectRootDirPath: string) {
+export const getProjectConfig = (projectRootDirPath: string): $TSAny => {
   let projectConfig;
   const projectConfigPath = path.join(projectRootDirPath, 'amplify', '.config', 'project-config.json');
   if (fs.existsSync(projectConfigPath)) {
     projectConfig = util.readJsonFileSync(projectConfigPath);
   }
   return projectConfig;
-}
+};

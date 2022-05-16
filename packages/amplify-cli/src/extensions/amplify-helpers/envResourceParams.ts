@@ -1,23 +1,23 @@
 import _ from 'lodash';
+import {
+  $TSContext, $TSObject, stateManager, mergeDeploymentSecrets, removeFromDeploymentSecrets, $TSAny,
+} from 'amplify-cli-core';
 import { getEnvInfo } from './get-env-info';
-import { $TSContext, $TSObject, stateManager, mergeDeploymentSecrets, removeFromDeploymentSecrets } from 'amplify-cli-core';
 import { getRootStackId } from './get-root-stack-id';
 
 const CATEGORIES = 'categories';
 const hostedUIProviderCredsField = 'hostedUIProviderCreds';
 
-function isMigrationContext(context: $TSContext) {
-  return 'migrationInfo' in context;
-}
+const isMigrationContext = (context: $TSContext): boolean => 'migrationInfo' in context;
 
-function getCurrentEnvName(context: $TSContext) {
+const getCurrentEnvName = (context: $TSContext): string => {
   if (isMigrationContext(context)) {
     return context.migrationInfo.localEnvInfo.envName;
   }
   return getEnvInfo().envName;
-}
+};
 
-function getApplicableTeamProviderInfo(context: $TSContext) {
+const getApplicableTeamProviderInfo = (context: $TSContext): $TSAny => {
   try {
     if (isMigrationContext(context)) {
       return context.migrationInfo.teamProviderInfo;
@@ -30,9 +30,9 @@ function getApplicableTeamProviderInfo(context: $TSContext) {
   } catch (e) {
     return {};
   }
-}
+};
 
-function getOrCreateSubObject(data, keys) {
+const getOrCreateSubObject = (data: $TSAny, keys: $TSAny): $TSAny => {
   let currentObj = data;
   keys.forEach(key => {
     if (!(key in currentObj)) {
@@ -41,26 +41,31 @@ function getOrCreateSubObject(data, keys) {
     currentObj = currentObj[key];
   });
   return currentObj;
-}
+};
 
-function removeObjectRecursively(obj, keys) {
+const removeObjectRecursively = (obj: $TSAny, keys: $TSAny): $TSAny => {
   if (keys.length > 1) {
     const [currentKey, ...rest] = keys;
     if (currentKey in obj) {
       removeObjectRecursively(obj[currentKey], rest);
       if (!Object.keys(obj[currentKey]).length) {
+        // eslint-disable-next-line no-param-reassign
         delete obj[currentKey];
       }
     }
   } else {
     const [currentKey] = keys;
     if (currentKey in obj) {
+      // eslint-disable-next-line no-param-reassign
       delete obj[currentKey];
     }
   }
-}
+};
 
-export function saveEnvResourceParameters(context: $TSContext, category: string, resource: string, parameters?: $TSObject) {
+/**
+ * Save environment-specific resource params
+ */
+export const saveEnvResourceParameters = (context: $TSContext, category: string, resource: string, parameters?: $TSObject): void => {
   if (!parameters) {
     return;
   }
@@ -101,17 +106,22 @@ export function saveEnvResourceParameters(context: $TSContext, category: string,
       );
     }
   }
-}
+};
 
-export function loadEnvResourceParameters(context: $TSContext, category: string, resource: string) {
+/**
+ * Load resource params from TPI and deployment secrets
+ */
+export const loadEnvResourceParameters = (context: $TSContext, category: string, resource: string): $TSAny => {
   const envParameters = {
     ...loadEnvResourceParametersFromDeploymentSecrets(context, category, resource),
-    ...loadEnvResourceParametersFromTeamproviderInfo(context, category, resource),
+    ...loadEnvResourceParametersFromTeamProviderInfo(context, category, resource),
   };
   return envParameters;
-}
+};
 
-function loadEnvResourceParametersFromDeploymentSecrets(context: $TSContext, category: string, resource: string) {
+const loadEnvResourceParametersFromDeploymentSecrets = (
+  context: $TSContext, category: string, resource: string,
+): Record<string, string> => {
   try {
     const currentEnv = getCurrentEnvName(context);
     const deploymentSecrets = stateManager.getDeploymentSecrets();
@@ -119,18 +129,19 @@ function loadEnvResourceParametersFromDeploymentSecrets(context: $TSContext, cat
     const deploymentSecretByAppId = _.find(deploymentSecrets.appSecrets, appSecret => appSecret.rootStackId === rootStackId);
     if (deploymentSecretByAppId) {
       return _.get(deploymentSecretByAppId.environments, [currentEnv, category, resource]);
-    } else {
-      const parameters = stateManager.getResourceParametersJson(undefined, category, resource);
-      //set empty default if no hostedUIProviderCreds found
-      if (parameters && parameters.hostedUI) {
-        return _.set({}, hostedUIProviderCredsField, '[]');
-      }
     }
-  } catch (e) {}
+    const parameters = stateManager.getResourceParametersJson(undefined, category, resource);
+    // set empty default if no hostedUIProviderCreds found
+    if (parameters && parameters.hostedUI) {
+      return _.set({}, hostedUIProviderCredsField, '[]');
+    }
+  } catch (e) {
+    // swallow error
+  }
   return {};
-}
+};
 
-function loadEnvResourceParametersFromTeamproviderInfo(context: $TSContext, category: string, resource: string) {
+const loadEnvResourceParametersFromTeamProviderInfo = (context: $TSContext, category: string, resource: string): Record<string, string> => {
   try {
     const teamProviderInfo = getApplicableTeamProviderInfo(context);
     const currentEnv = getCurrentEnvName(context);
@@ -138,9 +149,12 @@ function loadEnvResourceParametersFromTeamproviderInfo(context: $TSContext, cate
   } catch (e) {
     return {};
   }
-}
+};
 
-export function removeResourceParameters(context: $TSContext, category: string, resource: string) {
+/**
+ * Remove env specific resource param from TPI and/or deployment secrets
+ */
+export const removeResourceParameters = (context: $TSContext, category: string, resource: string): void => {
   const teamProviderInfo = getApplicableTeamProviderInfo(context);
   const currentEnv = getCurrentEnvName(context);
   removeObjectRecursively(teamProviderInfo, [currentEnv, CATEGORIES, category, resource]);
@@ -149,10 +163,13 @@ export function removeResourceParameters(context: $TSContext, category: string, 
     stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
     removeDeploymentSecrets(context, category, resource);
   }
-}
-// removes deployment secrets
-// called after remove and push
-export function removeDeploymentSecrets(context: $TSContext, category: string, resource: string) {
+};
+
+/**
+ * removes deployment secrets
+ * called after remove and push
+ */
+export const removeDeploymentSecrets = (context: $TSContext, category: string, resource: string): void => {
   const currentEnv = getCurrentEnvName(context);
   const deploymentSecrets = stateManager.getDeploymentSecrets();
   const rootStackId = getRootStackId();
@@ -163,10 +180,10 @@ export function removeDeploymentSecrets(context: $TSContext, category: string, r
         currentDeploymentSecrets: deploymentSecrets,
         rootStackId,
         envName: currentEnv,
-        category: category,
-        resource: resource,
+        category,
+        resource,
         keyName: hostedUIProviderCredsField,
       }),
     );
   }
-}
+};
