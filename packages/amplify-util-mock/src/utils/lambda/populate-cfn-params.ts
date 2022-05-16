@@ -86,14 +86,14 @@ const getAmplifyMetaParams = (
 /**
  * Loads CFN parameters from the parameters.json file for the resource (if present)
  */
-// eslint-disable-next-line @typescript-eslint/no-shadow
-const getParametersJsonParams = (_, resourceName: string): Record<string, string> => stateManager.getResourceParametersJson(undefined, 'function', resourceName, { throwIfNotExist: false }) ?? {};
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const getParametersJsonParams = (print, resourceName: string): Record<string, string> => stateManager.getResourceParametersJson(undefined, 'function', resourceName, { throwIfNotExist: false }) ?? {};
 
 /**
  * Loads CFN parameters for the resource in the team-provider-info.json file (if present)
  */
-// eslint-disable-next-line @typescript-eslint/no-shadow
-const getTeamProviderParams = (_, resourceName: string): Record<string, string> => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const getTeamProviderParams = (print, resourceName: string): Record<string, string> => {
   const env = stateManager.getLocalEnvInfo().envName;
   return _.get(stateManager.getTeamProviderInfo(), [env, 'categories', 'function', resourceName], {});
 };
