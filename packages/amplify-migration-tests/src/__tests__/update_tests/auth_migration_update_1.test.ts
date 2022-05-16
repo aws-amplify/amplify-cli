@@ -5,7 +5,7 @@ import {
   amplifyPushAuth,
   createNewProjectDir,
   deleteProject,
-  deleteProjectDir, getProjectMeta, updateAuthSignInSignOutUrl
+  deleteProjectDir, getProjectMeta, updateAuthSignInSignOutUrl,
 } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import { join } from 'path';
@@ -47,17 +47,6 @@ describe('amplify auth migration', () => {
     };
     // eslint-disable-next-line spellcheck/spell-checker
     await updateAuthSignInSignOutUrl(projectRoot, { testingWithLatestCodebase: true, overrides: overridesObj });
-    await amplifyPushAuth(projectRoot, true);
-    expect().toBe();
+    await expect(await amplifyPushAuth(projectRoot, true)).resolves.not.toThrowError();
   });
-  // it.skip('...should init a project and add auth with default, and then update with latest and push', async () => {
-  //   // add and push auth with installed cli
-  //   await addAuthWithDefault(projectRoot, {});
-  //   await amplifyPushAuth(projectRoot);
-  //   const meta = getProjectMeta(projectRoot);
-  //   const authResourceName = Object.keys(meta.auth).filter(resourceName => meta.auth[resourceName].service === 'Cognito')[0];
-  //   await updateAuthSignInSignOutUrl(projectRoot, { testingWithLatestCodebase: true });
-  //   await amplifyPushAuth(projectRoot, true);
-  //   expect().toBe();
-  // });
 });
