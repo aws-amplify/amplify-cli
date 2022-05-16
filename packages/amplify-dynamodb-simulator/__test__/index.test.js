@@ -97,7 +97,7 @@ describe('emulator operations', () => {
     expect(emu.port).toBe(port);
   });
 
-  it('reports on invalid dbPath values', async () => {
+  it.skip('reports on invalid dbPath values', async () => {
     expect.assertions(1);
     await expect(ddbSimulator.launch({ dbPath: 'dynamodb-data' })).rejects.toThrow('invalid directory for database creation');
   });

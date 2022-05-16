@@ -166,7 +166,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       useEnabledMfas: FeatureFlags.getBoolean('auth.useenabledmfas'),
       dependsOn: [],
     };
-    if (this._cliInputs.cognitoConfig.hostedUI) {
+    if (this._cliInputs.cognitoConfig.hostedUI && this._cliInputs.cognitoConfig.authProvidersUserPool) {
       cognitoStackProps.oAuthSecretsPathAmplifyAppId = getAppId();
     }
 
@@ -261,10 +261,6 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       useEnabledMfas: this._cognitoStackProps.useEnabledMfas,
       dependsOn: [], // to support undefined meta in update,
     };
-
-    if (this._cliInputs.cognitoConfig.hostedUI) {
-      (parameters as $TSAny).oAuthSecretsPathAmplifyAppId = getAppId();
-    }
 
     // convert triggers to JSON
     if (this._cognitoStackProps.triggers && !_.isEmpty(this._cognitoStackProps.triggers)) {

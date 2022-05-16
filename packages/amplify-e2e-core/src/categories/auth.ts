@@ -390,6 +390,45 @@ export function updateAuthSignInSignOutUrl(cwd: string, settings: any): Promise<
   });
 }
 
+export function updateAuthWithOAuthProviders(cwd: string, settings: any): Promise<void> {
+  const testingWithLatestCodebase = settings.testingWithLatestCodebase ?? false;
+  return new Promise((resolve, reject) => {
+    const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'auth'], { cwd, stripColors: true });
+    if (settings?.overrides?.category === 'auth') {
+      chain.wait('A migration is needed to support latest updates on auth resources').sendConfirmYes();
+    }
+    chain
+      .wait('What do you want to do?')
+      .send(KEY_DOWN_ARROW)
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
+      .wait('Select the authentication/authorization services that you want to use')
+      .sendCarriageReturn()
+      .wait(`Allow unauthenticated logins`)
+      .sendCarriageReturn()
+      .send(settings.updatesigninUrl)
+      .sendCarriageReturn()
+      .wait('Do you want to add redirect signin URIs?')
+      .sendConfirmNo()
+      .wait('Which redirect signout URIs do you want to edit?')
+      .sendCtrlA()
+      .sendCarriageReturn()
+      .wait(`Update ${settings.signoutUrl}`)
+      .send(settings.updatesignoutUrl)
+      .sendCarriageReturn()
+      .wait('Do you want to add redirect signout URIs?')
+      .sendConfirmNo()
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 export function updateAuthToRemoveFederation(cwd: string, settings: any): Promise<void> {
   const testingWithLatestCodebase = settings.testingWithLatestCodebase ?? false;
   return new Promise((resolve, reject) => {

@@ -14,7 +14,7 @@ exports.handler = async(event, context) => {
     let hostedUIProviderMeta = JSON.parse(event.ResourceProperties.hostedUIProviderMeta);
     let hostedUIProviderCreds = JSON.parse(parameter.Parameter.Value);
     if (event.RequestType == 'Delete') {
-      response.send(event, context, response.SUCCESS, {});
+      await response.send(event, context, response.SUCCESS, {});
     }
     if (event.RequestType == 'Update' || event.RequestType == 'Create') {
       const result = await identity.listIdentityProviders({ UserPoolId: userPoolId, MaxResults: 60 }).promise();

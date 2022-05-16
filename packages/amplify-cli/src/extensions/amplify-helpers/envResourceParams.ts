@@ -83,7 +83,7 @@ export const saveEnvResourceParameters = (context: $TSContext, category: string,
 
 export function loadEnvResourceParameters(context: $TSContext, category: string, resource: string) {
   const envParameters = {
-    ...loadEnvResourceParametersFromTeamproviderInfo(context, category, resource),
+    ...loadEnvResourceParametersFromTeamProviderInfo(context, category, resource),
   };
   return envParameters;
 };
@@ -130,7 +130,6 @@ export const removeResourceParameters = (context: $TSContext, category: string, 
 
   if (!isMigrationContext(context)) {
     stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
-    removeDeploymentSecrets(context, category, resource);
   }
 };
 

@@ -165,8 +165,7 @@ const getCLIInputPayload_mock = jest.fn().mockReturnValueOnce(inputPayload1).moc
 
 const isCLIInputsValid_mock = jest.fn().mockReturnValue('true');
 
-jest.mock('../../../../provider-utils/awscloudformation/auth-secret-manager/secret-name', () => ({
-  ...(jest.requireActual('../../../../provider-utils/awscloudformation/auth-secret-manager/secret-name') as {}),
+jest.mock('../../../../provider-utils/awscloudformation/utils/get-app-id', () => ({
   getAppId: jest.fn().mockReturnValue('mockAmplifyAppId'),
 }));
 
@@ -236,7 +235,7 @@ describe('Check Auth Template', () => {
     const resourceName = 'mockResource';
     const authTransform = new AmplifyAuthTransform(resourceName);
     const mock_template = await authTransform.transform(context_stub_typed);
-    expect(mock_template.Resources?.UserPool.Properties.UsernameConfiguration).toEqual({ CaseSensitive: false });
+    expect(mock_template?.Resources?.UserPool.Properties.UsernameConfiguration).toEqual({ CaseSensitive: false });
 
     getCLIInputPayload_mock.mockReturnValue({
       cognitoConfig: {
@@ -247,7 +246,7 @@ describe('Check Auth Template', () => {
 
     const authTransform2 = new AmplifyAuthTransform(resourceName);
     const mock_template2 = await authTransform2.transform(context_stub_typed);
-    expect(mock_template2.Resources?.UserPool.Properties).not.toContain('UsernameConfiguration');
+    expect(mock_template2?.Resources?.UserPool.Properties).not.toContain('UsernameConfiguration');
   });
 
   it('should validate cfn parameters if no original', () => {

@@ -189,7 +189,7 @@ describe('import auth headless', () => {
     await executeAmplifyHeadlessCommand(mockContext, headlessPayloadString);
 
     expect(printer.warn).toBeCalledWith(
-      'Auth has already been imported to this project and cannot be modified from the CLI. To modify, run "amplify remove auth" to unlink the imported auth resource. Then run "amplify import auth".',
+      "Auth has already been imported to this project and cannot be modified from the CLI. To modify, run \"amplify remove auth\" to un-link the imported auth resource. Then run \"amplify import auth\".",
     );
   });
 
