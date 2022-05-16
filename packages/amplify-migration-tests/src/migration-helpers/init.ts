@@ -55,6 +55,8 @@ export function initJSProjectWithProfileOldDX(cwd: string, settings: Object, tes
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendLine(s.profileName)
+      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+      .sendYes()
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
         if (!err) {
@@ -105,6 +107,8 @@ export function initJSProjectWithProfile(cwd: string, settings: Object, testingW
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendLine(s.profileName)
+      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+      .sendYes()
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
         if (!err) {
