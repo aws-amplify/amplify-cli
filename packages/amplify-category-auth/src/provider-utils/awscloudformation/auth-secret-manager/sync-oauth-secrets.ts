@@ -40,8 +40,6 @@ export const syncOAuthSecretsToCloud = async (context: $TSContext, authResourceN
       }
       setAppIdForFunctionInTeamProvider(authResourceName);
     } else {
-      // remove oAuth secrets but there is currently no way to update in a desired way
-      // await oAuthSecretsStateManager.removeOAuthSecrets(hostedUIProviderCreds, cognitoCLIInputs.cognitoConfig.resourceName);
       removeAppIdForFunctionInTeamProvider(authResourceName);
     }
   }

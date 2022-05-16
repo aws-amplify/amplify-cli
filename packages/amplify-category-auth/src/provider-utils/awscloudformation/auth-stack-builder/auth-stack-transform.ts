@@ -160,7 +160,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       },
     };
 
-    let cognitoStackProps : CognitoStackOptions = {
+    let cognitoStackProps: CognitoStackOptions = {
       ...this._cliInputs.cognitoConfig,
       ...roles,
       // eslint-disable-next-line spellcheck/spell-checker

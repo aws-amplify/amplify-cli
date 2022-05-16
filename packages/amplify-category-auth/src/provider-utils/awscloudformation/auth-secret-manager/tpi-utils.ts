@@ -8,12 +8,12 @@ import { oAuthSecretsPathAmplifyAppIdKey } from './secret-name';
 export const setAppIdForFunctionInTeamProvider = (authResourceName: string): void => {
   const tpi = stateManager.getTeamProviderInfo(undefined, { throwIfNotExist: false, default: {} });
   const env = stateManager.getLocalEnvInfo()?.envName as string;
-  let funcTpi = tpi?.[env]?.categories?.[AmplifyCategories.AUTH]?.[authResourceName];
-  if (!funcTpi) {
+  let authResourceTpi = tpi?.[env]?.categories?.[AmplifyCategories.AUTH]?.[authResourceName];
+  if (!authResourceTpi) {
     _.set(tpi, [env, 'categories', AmplifyCategories.AUTH, authResourceName], {});
-    funcTpi = tpi[env].categories[AmplifyCategories.AUTH][authResourceName];
+    authResourceTpi = tpi[env].categories[AmplifyCategories.AUTH][authResourceName];
   }
-  _.assign(funcTpi, { [oAuthSecretsPathAmplifyAppIdKey]: getAppId() });
+  _.assign(authResourceTpi, { [oAuthSecretsPathAmplifyAppIdKey]: getAppId() });
   stateManager.setTeamProviderInfo(undefined, tpi);
 };
 

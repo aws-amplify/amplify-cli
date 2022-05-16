@@ -19,6 +19,7 @@ import {
 } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import { join } from 'path';
+import { v4 as uuid } from 'uuid';
 import { allowedVersionsToMigrateFrom, initJSProjectWithProfile, versionCheck } from '../../migration-helpers';
 
 describe('amplify auth migration', () => {
@@ -106,8 +107,8 @@ describe('amplify auth migration', () => {
     // add and push auth with installed cli
     await addAuthWithMaxOptions(projectRoot, {});
     await amplifyPushAuth(projectRoot);
-    const random = Math.floor(Math.random() * 10000);
-    const fnName = `integtestfn${random}`;
+    const [shortId] = uuid().split('-');
+    const fnName = `integtestfn${shortId}`;
     await addFunction(
       projectRoot,
       {
