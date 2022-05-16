@@ -20,6 +20,5 @@ export const getOAuthObjectFromCognito = async (context: $TSContext, userPoolNam
     return createOAuthCredentials(identityProviders);
   }
 
-  const errMessage = 'No auth resource found. Add it using amplify add auth';
-  throw new ResourceDoesNotExistError(errMessage);
+  throw new ResourceDoesNotExistError('No auth resource found. Add one using `amplify add auth`');
 };

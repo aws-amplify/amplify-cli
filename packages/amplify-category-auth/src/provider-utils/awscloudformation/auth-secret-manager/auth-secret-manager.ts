@@ -10,17 +10,16 @@ export class OAuthSecretsStateManager {
 
   static getInstance = async (context: $TSContext): Promise<OAuthSecretsStateManager> => {
     if (!OAuthSecretsStateManager.instance) {
-      OAuthSecretsStateManager.instance = new OAuthSecretsStateManager(context, await getSSMClient(context));
+      OAuthSecretsStateManager.instance = new OAuthSecretsStateManager(await getSSMClient(context));
     }
     return OAuthSecretsStateManager.instance;
   };
 
-  private constructor(private readonly context: $TSContext, private readonly ssmClient: aws.SSM) {
+  private constructor(private readonly ssmClient: aws.SSM) {
   }
 
   /**
- * Set OAuth secret in parameter with
- * key :
+ * Set OAuth secret in parameter
  */
   setOAuthSecrets = async (hostedUISecretObj: string, resourceName: string): Promise<void> => {
     const { envName } = stateManager.getLocalEnvInfo();

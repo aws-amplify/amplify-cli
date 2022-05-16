@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import * as cdk from '@aws-cdk/core';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as iam from '@aws-cdk/aws-iam';
@@ -76,7 +75,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   userPoolClientLambdaPolicy?: iam.CfnPolicy;
   userPoolClientLogPolicy?: iam.CfnPolicy;
   userPoolClientInputs?: cdk.CustomResource;
-  // customresources HostedUI
+  // custom resources HostedUI
   hostedUICustomResource?: lambda.CfnFunction;
   hostedUICustomResourcePolicy?: iam.CfnPolicy;
   hostedUICustomResourceLogPolicy?: iam.CfnPolicy;
@@ -768,14 +767,12 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       timeout: 300,
       environment: {
         variables: {
-          hostedUIProviderCreds: cdk.Fn.join('', [
-            cdk.Fn.sub(path.posix.join('/amplify', '${appId}', '${env}', 'AMPLIFY_${resourceName}_'), {
-              appId: cdk.Fn.ref(`${oAuthSecretsPathAmplifyAppIdKey}`),
-              env: cdk.Fn.ref('env'),
-              resourceName: cdk.Fn.ref('resourceName'),
-            }),
-            `${oAuthObjSecretKey}`,
-          ]),
+          hostedUIProviderCreds: cdk.Fn.sub(path.posix.join('/amplify', '${appId}', '${env}', 'AMPLIFY_${resourceName}_${oauthObjSecretKey}'), {
+            appId: cdk.Fn.ref(`${oAuthSecretsPathAmplifyAppIdKey}`),
+            env: cdk.Fn.ref('env'),
+            resourceName: cdk.Fn.ref('resourceName'),
+            oauthObjSecretKey: `${oAuthObjSecretKey}`,
+          }),
         },
       },
     });
@@ -846,21 +843,14 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
           {
             Effect: 'Allow',
             Action: ['ssm:GetParameter'],
-            Resource: cdk.Fn.join('', [
-              'arn:aws:ssm:',
-              cdk.Fn.ref('AWS::Region'),
-              ':',
-              cdk.Fn.ref('AWS::AccountId'),
-              ':parameter',
-              cdk.Fn.sub(path.posix.join('/amplify', '${appId}', '${env}', 'AMPLIFY_${resourceName}_'), {
-                appId: cdk.Fn.ref(`${oAuthSecretsPathAmplifyAppIdKey}`),
-                env: cdk.Fn.ref('env'), // this is dependent on the Amplify env name being a parameter to the CFN template which should always be the case
-                resourceName: cdk.Fn.ref('resourceName'),
-              }),
-              `${oAuthObjSecretKey}`,
-            ]),
-          },
-        ],
+            // eslint-disable-next-line spellcheck/spell-checker
+            Resource: cdk.Fn.sub(`arn:aws:ssm:\${AWS::Region}:\${AWS::AccountId}:parameter/${path.posix.join('amplify', '${appid}', '${env}', 'AMPLIFY_${resourceName}_${oauthObjSecretKey}')}`, {
+              appId: cdk.Fn.ref(`${oAuthSecretsPathAmplifyAppIdKey}`),
+              env: cdk.Fn.ref('env'), // this is dependent on the Amplify env name being a parameter to the CFN template which should always be the case
+              resourceName: cdk.Fn.ref('resourceName'),
+              oauthObjSecretKey: `${oAuthObjSecretKey}`,
+            }),
+          }],
       },
       roles: [cdk.Fn.ref('UserPoolClientRole')],
     });

@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable max-lines-per-function */
 import {
   AmplifyCategories,

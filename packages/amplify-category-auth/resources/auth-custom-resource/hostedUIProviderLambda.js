@@ -20,15 +20,15 @@ exports.handler = async(event, context) => {
       const result = await identity.listIdentityProviders({ UserPoolId: userPoolId, MaxResults: 60 }).promise();
       let providerList = result.Providers.map(provider => provider.ProviderName);
       let providerListInParameters = hostedUIProviderMeta.map(provider => provider.ProviderName);
-      for await (const providerMetadata of hostedUIProviderMeta){
-        if (providerList.indexOf(providerMetadata.ProviderName) > -1) {
+      for (const providerMetadata of hostedUIProviderMeta){
+        if (providerList.includes(providerMetadata.ProviderName) {
           responseData = await updateIdentityProvider(providerMetadata.ProviderName,userPoolId, hostedUIProviderMeta, hostedUIProviderCreds);
         } else {
           responseData = await createIdentityProvider(providerMetadata.ProviderName,userPoolId, hostedUIProviderMeta, hostedUIProviderCreds);
         }
       };
-      for await (const provider of providerList){
-        if (providerListInParameters.indexOf(provider) < 0) {
+      for (const provider of providerList){
+        if (!providerListInParameters.includes(provider)) {
           responseData = await deleteIdentityProvider(provider,userPoolId);
         }
       };
@@ -40,12 +40,12 @@ exports.handler = async(event, context) => {
   }
 };
 
-let getRequestParams = (providerName,userPoolId, hostedUIProviderMeta, hostedUIProviderCreds) => {
-  let providerMetaIndex = hostedUIProviderMeta.findIndex(provider => provider.ProviderName === providerName);
-  let providerMeta = hostedUIProviderMeta[providerMetaIndex];
-  let providerCredsIndex = hostedUIProviderCreds.findIndex(provider => provider.ProviderName === providerName);
-  let providerCreds = hostedUIProviderCreds[providerCredsIndex];
-  let requestParams = {
+const getRequestParams = (providerName,userPoolId, hostedUIProviderMeta, hostedUIProviderCreds) => {
+  const providerMetaIndex = hostedUIProviderMeta.findIndex(provider => provider.ProviderName === providerName);
+  const providerMeta = hostedUIProviderMeta[providerMetaIndex];
+  const providerCredsIndex = hostedUIProviderCreds.findIndex(provider => provider.ProviderName === providerName);
+  const providerCreds = hostedUIProviderCreds[providerCredsIndex];
+  const requestParams = {
     ProviderName: providerMeta.ProviderName,
     UserPoolId: userPoolId,
     AttributeMapping: providerMeta.AttributeMapping,

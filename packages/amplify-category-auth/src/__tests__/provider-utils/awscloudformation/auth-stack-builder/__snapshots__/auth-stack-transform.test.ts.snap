@@ -1221,15 +1221,15 @@ exports.handler = async(event, context) => {
       const result = await identity.listIdentityProviders({ UserPoolId: userPoolId, MaxResults: 60 }).promise();
       let providerList = result.Providers.map(provider => provider.ProviderName);
       let providerListInParameters = hostedUIProviderMeta.map(provider => provider.ProviderName);
-      for await (const providerMetadata of hostedUIProviderMeta){
-        if (providerList.indexOf(providerMetadata.ProviderName) > -1) {
+      for (const providerMetadata of hostedUIProviderMeta){
+        if (providerList.includes(providerMetadata.ProviderName) {
           responseData = await updateIdentityProvider(providerMetadata.ProviderName,userPoolId, hostedUIProviderMeta, hostedUIProviderCreds);
         } else {
           responseData = await createIdentityProvider(providerMetadata.ProviderName,userPoolId, hostedUIProviderMeta, hostedUIProviderCreds);
         }
       };
-      for await (const provider of providerList){
-        if (providerListInParameters.indexOf(provider) < 0) {
+      for (const provider of providerList){
+        if (!providerListInParameters.includes(provider)) {
           responseData = await deleteIdentityProvider(provider,userPoolId);
         }
       };
@@ -1241,12 +1241,12 @@ exports.handler = async(event, context) => {
   }
 };
 
-let getRequestParams = (providerName,userPoolId, hostedUIProviderMeta, hostedUIProviderCreds) => {
-  let providerMetaIndex = hostedUIProviderMeta.findIndex(provider => provider.ProviderName === providerName);
-  let providerMeta = hostedUIProviderMeta[providerMetaIndex];
-  let providerCredsIndex = hostedUIProviderCreds.findIndex(provider => provider.ProviderName === providerName);
-  let providerCreds = hostedUIProviderCreds[providerCredsIndex];
-  let requestParams = {
+const getRequestParams = (providerName,userPoolId, hostedUIProviderMeta, hostedUIProviderCreds) => {
+  const providerMetaIndex = hostedUIProviderMeta.findIndex(provider => provider.ProviderName === providerName);
+  const providerMeta = hostedUIProviderMeta[providerMetaIndex];
+  const providerCredsIndex = hostedUIProviderCreds.findIndex(provider => provider.ProviderName === providerName);
+  const providerCreds = hostedUIProviderCreds[providerCredsIndex];
+  const requestParams = {
     ProviderName: providerMeta.ProviderName,
     UserPoolId: userPoolId,
     AttributeMapping: providerMeta.AttributeMapping,
@@ -1304,27 +1304,20 @@ const updateIdentityProvider = async (providerName, userPoolId, hostedUIProvider
         "Environment": Object {
           "Variables": Object {
             "hostedUIProviderCreds": Object {
-              "Fn::Join": Array [
-                "",
-                Array [
-                  Object {
-                    "Fn::Sub": Array [
-                      "/amplify/\${appId}/\${env}/AMPLIFY_\${resourceName}_",
-                      Object {
-                        "appId": Object {
-                          "Ref": "oAuthSecretsPathAmplifyAppId",
-                        },
-                        "env": Object {
-                          "Ref": "env",
-                        },
-                        "resourceName": Object {
-                          "Ref": "resourceName",
-                        },
-                      },
-                    ],
+              "Fn::Sub": Array [
+                "/amplify/\${appId}/\${env}/AMPLIFY_\${resourceName}_\${oauthObjSecretKey}",
+                Object {
+                  "appId": Object {
+                    "Ref": "oAuthSecretsPathAmplifyAppId",
                   },
-                  "hostedUIProviderCreds",
-                ],
+                  "env": Object {
+                    "Ref": "env",
+                  },
+                  "oauthObjSecretKey": "hostedUIProviderCreds",
+                  "resourceName": Object {
+                    "Ref": "resourceName",
+                  },
+                },
               ],
             },
           },
@@ -2242,36 +2235,20 @@ exports.handler = (event, context, callback) => {
               ],
               "Effect": "Allow",
               "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:aws:ssm:",
-                    Object {
-                      "Ref": "AWS::Region",
+                "Fn::Sub": Array [
+                  "arn:aws:ssm:\${AWS::Region}:\${AWS::AccountId}:parameter/amplify/\${appid}/\${env}/AMPLIFY_\${resourceName}_\${oauthObjSecretKey}",
+                  Object {
+                    "appId": Object {
+                      "Ref": "oAuthSecretsPathAmplifyAppId",
                     },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
+                    "env": Object {
+                      "Ref": "env",
                     },
-                    ":parameter",
-                    Object {
-                      "Fn::Sub": Array [
-                        "/amplify/\${appId}/\${env}/AMPLIFY_\${resourceName}_",
-                        Object {
-                          "appId": Object {
-                            "Ref": "oAuthSecretsPathAmplifyAppId",
-                          },
-                          "env": Object {
-                            "Ref": "env",
-                          },
-                          "resourceName": Object {
-                            "Ref": "resourceName",
-                          },
-                        },
-                      ],
+                    "oauthObjSecretKey": "hostedUIProviderCreds",
+                    "resourceName": Object {
+                      "Ref": "resourceName",
                     },
-                    "hostedUIProviderCreds",
-                  ],
+                  },
                 ],
               },
             },
