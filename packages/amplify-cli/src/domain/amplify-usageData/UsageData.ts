@@ -10,10 +10,11 @@ import redactInput from './identifiable-input-regex';
 import { UsageDataPayload, InputOptions } from './UsageDataPayload';
 import { getUrl } from './getUsageDataUrl';
 import {
-  IUsageData, TimedCodePath, ProjectSettings, StartableTimedCodePath, StoppableTimedCodePath, FromStartupTimedCodePaths,
+  IUsageData, TimedCodePath, ProjectSettings, StartableTimedCodePath, StoppableTimedCodePath, FromStartupTimedCodePaths, ManuallyTimedCodePath,
 } from './IUsageData';
 import { Timer } from './Timer';
 import { CLIFlowReport } from './FlowReport';
+import { prompter } from 'amplify-prompts';
 
 /**
  * Singleton class that manages the lifecycle of usage data during a CLI command
@@ -166,9 +167,13 @@ export class UsageData implements IUsageData {
   private async emit(error: Error | null, state: string): Promise<UsageDataPayload> {
     // initialize the unique project identifier if work space is initialized
     this.flow.assignProjectIdentifier();
+
+    // add prompt time
+    this.codePathDurations.set(ManuallyTimedCodePath.PROMPT_TIME, prompter.getTotalPromptElapsedTime());
+
     // stop all currently running timers
     Array.from(this.codePathTimers.keys()).forEach(this.internalStopCodePathTimer);
-
+    
     const payload = new UsageDataPayload(
       this.sessionUuid,
       this.installationUuid,
@@ -182,7 +187,7 @@ export class UsageData implements IUsageData {
       Object.fromEntries(this.codePathDurations),
       this.flow.getFlowReport() as IFlowReport,
     );
-
+    
     await this.send(payload);
 
     return payload;
