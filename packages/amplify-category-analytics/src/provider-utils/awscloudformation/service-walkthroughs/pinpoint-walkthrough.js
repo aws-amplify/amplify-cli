@@ -1,3 +1,11 @@
+/* eslint-disable spellcheck/spell-checker */
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable import/order */
+/* eslint-disable import/first */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
+/* eslint-disable consistent-return */
+/* eslint-disable func-style */
 const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
@@ -11,6 +19,9 @@ const serviceName = 'Pinpoint';
 const templateFileName = 'pinpoint-cloudformation-template.json';
 import { ResourceAlreadyExistsError, exitOnNextTick } from 'amplify-cli-core';
 
+/**
+ * Add resource walkthough for Pinpoint/Kinesis resource.
+ */
 async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   const resourceName = resourceAlreadyExists(context);
 
@@ -62,28 +73,22 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
     };
 
     if (inputs[i].type && inputs[i].type === 'list') {
-      question = Object.assign(
-        {
-          type: 'list',
-          choices: inputs[i].options,
-        },
-        question,
-      );
+      question = {
+        type: 'list',
+        choices: inputs[i].options,
+        ...question,
+      };
     } else if (inputs[i].type && inputs[i].type === 'multiselect') {
-      question = Object.assign(
-        {
-          type: 'checkbox',
-          choices: inputs[i].options,
-        },
-        question,
-      );
+      question = {
+        type: 'checkbox',
+        choices: inputs[i].options,
+        ...question,
+      };
     } else {
-      question = Object.assign(
-        {
-          type: 'input',
-        },
-        question,
-      );
+      question = {
+        type: 'input',
+        ...question,
+      };
     }
     questions.push(question);
   }
@@ -226,13 +231,39 @@ function getTemplateMappings(context) {
   return Mappings;
 }
 
-function writeParams(resourceDirPath, values) {
+/**
+ * Save the params.json file for analytics category
+ * @param {*} resourceDirPath Path to params.json
+ * @param {*} values values to be written to params.json
+ */
+export function writeParams(resourceDirPath, values) {
   fs.ensureDirSync(resourceDirPath);
   const parametersFilePath = path.join(resourceDirPath, parametersFileName);
   const jsonString = JSON.stringify(values, null, 4);
   fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
 }
 
+/**
+ * Readthe params.json file for analytics category
+ * @param {*} resourceDirPath Path to params.json
+ */
+export function readParams(resourceDirPath) {
+  fs.ensureDirSync(resourceDirPath);
+  const parametersFilePath = path.join(resourceDirPath, parametersFileName);
+  if (!fs.existsSync(parametersFilePath)) {
+    return {};
+  }
+  try {
+    return JSON.parse(fs.readFileSync(parametersFilePath, 'utf8'));
+  } catch (e) {
+    e.message = `Failed to load Analytics parameters.json \n ${e.message}`;
+    throw e;
+  }
+}
+
+/**
+ *
+ */
 function migrate(context) {
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const { amplifyMeta } = context.migrationInfo;
@@ -368,6 +399,9 @@ function isRefNode(node, refName) {
   return false;
 }
 
+/**
+ *
+ */
 function getIAMPolicies(resourceName, crudOptions) {
   let policy = {};
   const actions = [];

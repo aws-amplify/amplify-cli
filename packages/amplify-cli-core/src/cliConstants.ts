@@ -1,4 +1,5 @@
-export const SecretFileMode = 0o600; //file permissions for -rw-------
+/* eslint-disable spellcheck/spell-checker */
+export const SecretFileMode = 0o600; // file permissions for -rw-------
 export const CLISubCommands = {
   ADD: 'add',
   PUSH: 'push',
@@ -8,6 +9,9 @@ export const CLISubCommands = {
   CONSOLE: 'console',
   IMPORT: 'import',
 };
+/**
+ *
+ */
 export enum CLISubCommandType {
   ADD = 'add',
   PUSH = 'push',
@@ -41,10 +45,15 @@ export const AmplifySupportedService = {
   COGNITOUSERPOOLGROUPS: 'Cognito-UserPool-Groups',
   LAMBDA: 'Lambda',
   LAMBDA_LAYER: 'LambdaLayer',
+  PINPOINT: 'Pinpoint',
+  KINESIS: 'Kinesis',
 };
 
 export const overriddenCategories = [AmplifyCategories.AUTH, AmplifyCategories.STORAGE, AmplifyCategories.CUSTOM, AmplifyCategories.API];
 
+/**
+ *
+ */
 export type IAmplifyResource = {
   category: string;
   resourceName: string;
@@ -60,15 +69,15 @@ export const AWS_PREMIUM_SUPPORT_URL = 'https://aws.amazon.com/premiumsupport';
 export const AMPLIFY_SUPPORT_DOCS = {
   CLI_PROJECT_TROUBLESHOOTING: {
     name: 'Amplify CLI troubleshooting guide',
-    url: `${AMPLIFY_DOCS_URL}/cli/project/troubleshooting/`
+    url: `${AMPLIFY_DOCS_URL}/cli/project/troubleshooting/`,
   },
   CLI_GRAPHQL_TROUBLESHOOTING: {
     name: 'Amplify CLI GraphQL troubleshooting guide',
-    url: `${AMPLIFY_DOCS_URL}/cli/graphql/troubleshooting/`
+    url: `${AMPLIFY_DOCS_URL}/cli/graphql/troubleshooting/`,
   },
   CLI_EXTENSIBILITY: {
     name: 'Amplify CLI extensibility guide',
-    url: `${AMPLIFY_DOCS_URL}/cli/#extensibility`
+    url: `${AMPLIFY_DOCS_URL}/cli/#extensibility`,
   },
   AWS_CUSTOM_DOMAIN_TROUBLESHOOTING: {
     name: 'AWS custom domain troubleshooting guide',
@@ -88,6 +97,6 @@ export const AMPLIFY_SUPPORT_DOCS = {
   },
   AWS_KNOWLEDGE_CENTER: {
     name: 'AWS knowledge center',
-    url: `${AWS_PREMIUM_SUPPORT_URL}/knowledge-center/`
+    url: `${AWS_PREMIUM_SUPPORT_URL}/knowledge-center/`,
   },
 };
