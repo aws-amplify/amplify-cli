@@ -1,5 +1,5 @@
+import { IFlowData } from 'amplify-cli-shared-interfaces';
 import { Input } from '../input';
-import { IFlowData } from 'amplify-cli-shared-interfaces'
 
 /**
  * Base interface for emitting usage data
@@ -20,6 +20,9 @@ interface IUsageMetricsData {
   stopCodePathTimer: (codePath: StoppableTimedCodePath) => void;
 }
 
+/**
+ *
+ */
 export interface IUsageData extends IUsageMetricsData, IFlowData {
 }
 

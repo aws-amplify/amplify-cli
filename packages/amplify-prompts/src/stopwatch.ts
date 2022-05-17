@@ -35,10 +35,9 @@ export class Stopwatch {
 
       this._currentState = StopwatchState.PAUSED;
       if (this._slices.length < 1) {
-        throw new Error('');
+        throw new Error('no time started');
       }
       const latestItem = this._slices[this._slices.length - 1];
-
 
       latestItem.stop = Date.now();
     }
