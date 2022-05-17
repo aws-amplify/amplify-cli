@@ -1222,7 +1222,7 @@ exports.handler = async(event, context) => {
       let providerList = result.Providers.map(provider => provider.ProviderName);
       let providerListInParameters = hostedUIProviderMeta.map(provider => provider.ProviderName);
       for (const providerMetadata of hostedUIProviderMeta){
-        if (providerList.includes(providerMetadata.ProviderName) {
+        if (providerList.includes(providerMetadata.ProviderName)) {
           responseData = await updateIdentityProvider(providerMetadata.ProviderName,userPoolId, hostedUIProviderMeta, hostedUIProviderCreds);
         } else {
           responseData = await createIdentityProvider(providerMetadata.ProviderName,userPoolId, hostedUIProviderMeta, hostedUIProviderCreds);
@@ -2236,7 +2236,7 @@ exports.handler = (event, context, callback) => {
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::Sub": Array [
-                  "arn:aws:ssm:\${AWS::Region}:\${AWS::AccountId}:parameter/amplify/\${appid}/\${env}/AMPLIFY_\${resourceName}_\${oauthObjSecretKey}",
+                  "arn:aws:ssm:\${AWS::Region}:\${AWS::AccountId}:parameter/amplify/\${appId}/\${env}/AMPLIFY_\${resourceName}_\${oauthObjSecretKey}",
                   Object {
                     "appId": Object {
                       "Ref": "oAuthSecretsPathAmplifyAppId",

@@ -844,7 +844,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
             Effect: 'Allow',
             Action: ['ssm:GetParameter'],
             // eslint-disable-next-line spellcheck/spell-checker
-            Resource: cdk.Fn.sub(`arn:aws:ssm:\${AWS::Region}:\${AWS::AccountId}:parameter/${path.posix.join('amplify', '${appid}', '${env}', 'AMPLIFY_${resourceName}_${oauthObjSecretKey}')}`, {
+            Resource: cdk.Fn.sub(`arn:aws:ssm:\${AWS::Region}:\${AWS::AccountId}:parameter/${path.posix.join('amplify', '${appId}', '${env}', 'AMPLIFY_${resourceName}_${oauthObjSecretKey}')}`, {
               appId: cdk.Fn.ref(`${oAuthSecretsPathAmplifyAppIdKey}`),
               env: cdk.Fn.ref('env'), // this is dependent on the Amplify env name being a parameter to the CFN template which should always be the case
               resourceName: cdk.Fn.ref('resourceName'),

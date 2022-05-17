@@ -21,7 +21,7 @@ exports.handler = async(event, context) => {
       let providerList = result.Providers.map(provider => provider.ProviderName);
       let providerListInParameters = hostedUIProviderMeta.map(provider => provider.ProviderName);
       for (const providerMetadata of hostedUIProviderMeta){
-        if (providerList.includes(providerMetadata.ProviderName) {
+        if (providerList.includes(providerMetadata.ProviderName)) {
           responseData = await updateIdentityProvider(providerMetadata.ProviderName,userPoolId, hostedUIProviderMeta, hostedUIProviderCreds);
         } else {
           responseData = await createIdentityProvider(providerMetadata.ProviderName,userPoolId, hostedUIProviderMeta, hostedUIProviderCreds);
