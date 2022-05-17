@@ -14,10 +14,13 @@
     "amplify",
     "aws"
   ],
-  "scripts": {
-    "test": "jest --coverage"
+ "scripts": {
+    "build": "tsc",
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
+    "watch": "tsc --watch"
   },
   "dependencies": {
+    "amplify-cli-core": "2.7.0",
     "@aws-amplify/amplify-environment-parameters": "1.0.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",

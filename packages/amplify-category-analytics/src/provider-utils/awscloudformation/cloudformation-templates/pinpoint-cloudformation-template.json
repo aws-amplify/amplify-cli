@@ -38,6 +38,10 @@
     },
     "env": {
       "Type": "String"
+    },
+    "pinpointInAppMsgPolicyName": {
+      "Type": "String",
+      "Default": "NONE"
     }
   },
   "Metadata": {
@@ -67,6 +71,14 @@
       "Fn::Equals": [
         {
           "Ref": "env"
+        },
+        "NONE"
+      ]
+    },
+    "ShouldEnablePinpointInAppMessaging": {
+      "Fn::Equals": [
+        {
+          "Ref": "pinpointInAppMsgPolicyName"
         },
         "NONE"
       ]
@@ -116,6 +128,25 @@
           ]
         },
         "Policies": [
+          {
+            "PolicyName": {
+              "Ref": "cloudWatchPolicyName"
+            },
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": "arn:aws:logs:*:*:*"
+                }
+              ]
+            }
+          },
           {
             "PolicyName": {
               "Ref": "pinpointPolicyName"
@@ -430,6 +461,97 @@
               "Action": [
                 "mobiletargeting:PutEvents",
                 "mobiletargeting:UpdateEndpoint"
+              ],
+              "Resource": [
+                {
+                  "Fn::If": [
+                    "ShouldCreatePinpointApp",
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:aws:mobiletargeting:*:",
+                          {
+                            "Fn::Select": [
+                              "4",
+                              {
+                                "Fn::Split": [
+                                  ":",
+                                  {
+                                    "Ref": "authRoleArn"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          ":apps/",
+                          {
+                            "Fn::GetAtt": [
+                              "PinpointFunctionOutputs",
+                              "Id"
+                            ]
+                          },
+                          "*"
+                        ]
+                      ]
+                    },
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:aws:mobiletargeting:*:",
+                          {
+                            "Fn::Select": [
+                              "4",
+                              {
+                                "Fn::Split": [
+                                  ":",
+                                  {
+                                    "Ref": "authRoleArn"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          ":apps/",
+                          {
+                            "Ref": "appId"
+                          },
+                          "*"
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "PinpointInAppMessagingPolicy": {
+      "Condition": "ShouldEnablePinpointInAppMessaging",
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": {
+          "Ref": "pinpointInAppMsgPolicyName"
+        },
+        "Roles": [
+          {
+            "Ref": "unauthRoleName"
+          },
+          {
+            "Ref": "authRoleName"
+          }
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "AmplifyCLIInAppMessaging0",
+              "Effect": "Allow",
+              "Action": [
+                "mobiletargeting:GetInAppMessages"
               ],
               "Resource": [
                 {

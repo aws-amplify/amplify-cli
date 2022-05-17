@@ -1,3 +1,13 @@
+/* eslint-disable global-require */
+/* eslint-disable import/no-dynamic-require */
+/* eslint-disable func-style */
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
+
+import { $TSAny, $TSContext } from 'amplify-cli-core';
+
+/* eslint-disable spellcheck/spell-checker */
 const path = require('path');
 const inquirer = require('inquirer');
 const pinpointHelper = require('./lib/pinpoint-helper');
@@ -5,8 +15,12 @@ const kinesisHelper = require('./lib/kinesis-helper');
 const { migrate } = require('./provider-utils/awscloudformation/service-walkthroughs/pinpoint-walkthrough');
 
 const category = 'analytics';
+export * from './analytics-resource-api';
 
-async function console(context) {
+/**
+ * Command to open AWS console for kinesis/pinpoint
+ */
+async function console(context: $TSContext) {
   const hasKinesisResource = kinesisHelper.hasResource(context);
   const hasPinpointResource = pinpointHelper.hasResource(context);
 
@@ -42,11 +56,14 @@ async function console(context) {
   }
 }
 
-async function getPermissionPolicies(context, resourceOpsMapping) {
+/**
+ * Get Permission policies
+ */
+async function getPermissionPolicies(context: $TSContext, resourceOpsMapping: { [x: string]: $TSAny; }) {
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
-  const permissionPolicies = [];
-  const resourceAttributes = [];
+  const permissionPolicies: $TSAny[] = [];
+  const resourceAttributes: $TSAny[] = [];
 
   Object.keys(resourceOpsMapping).forEach(resourceName => {
     try {
@@ -72,7 +89,11 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
   return { permissionPolicies, resourceAttributes };
 }
 
-async function executeAmplifyCommand(context) {
+/**
+ * Execute the Amplify CLI command
+ * @param context - Amplify CLI context
+ */
+async function executeAmplifyCommand(context: $TSContext) {
   let commandPath = path.normalize(path.join(__dirname, 'commands'));
   if (context.input.command === 'help') {
     commandPath = path.join(commandPath, category);
@@ -84,7 +105,10 @@ async function executeAmplifyCommand(context) {
   await commandModule.run(context);
 }
 
-async function handleAmplifyEvent(context, args) {
+/**
+ *  Placeholder for Amplify events
+ */
+async function handleAmplifyEvent(context: $TSContext, args: $TSAny): Promise<void> {
   context.print.info(`${category} handleAmplifyEvent to be implemented`);
   context.print.info(`Received event args ${args}`);
 }
