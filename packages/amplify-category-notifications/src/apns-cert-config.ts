@@ -1,14 +1,15 @@
-const inquirer = require('inquirer');
-const p12decoder = require('./p12decoder');
-const validateFilePath = require('./validateFilepath');
+import { $TSAny } from 'amplify-cli-core';
+import * as inquirer from 'inquirer';
+import { ICertificateInfo, run as p12DecoderRun } from './p12decoder';
+import * as validateFilePath from './validateFilepath';
 
 /**
- *
+ * Run function of Cert Configuration
  */
-async function run(channelInput) {
-  let certificateConfig;
+export const run = async (channelInput: $TSAny): Promise<ICertificateInfo> => {
+  let certificateConfig: ICertificateInfo;
   if (channelInput) {
-    certificateConfig = await p12decoder.run(channelInput);
+    certificateConfig = p12DecoderRun(channelInput);
   } else {
     const questions = [
       {
@@ -24,11 +25,11 @@ async function run(channelInput) {
       },
     ];
     const answers = await inquirer.prompt(questions);
-    certificateConfig = await p12decoder.run(answers);
+    certificateConfig = p12DecoderRun(answers);
   }
 
   return certificateConfig;
-}
+};
 
 module.exports = {
   run,
