@@ -1,39 +1,39 @@
-/* eslint-disable prefer-arrow/prefer-arrow-functions */
-/* eslint-disable func-style */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-const ora = require('ora');
-const inquirer = require('inquirer');
-const { open } = require('amplify-cli-core');
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable global-require */
+/* eslint-disable import/no-dynamic-require */
+/* eslint-disable no-param-reassign */
+/* eslint-disable max-depth */
 
-const constants = require('./constants');
-const authHelper = require('./auth-helper');
+import ora from 'ora';
+import * as inquirer from 'inquirer';
+import {
+  $TSAny, $TSContext, open, AmplifySupportedService, AmplifyCategories, stateManager,
+} from 'amplify-cli-core';
+import * as authHelper from './auth-helper';
 
 const providerName = 'awscloudformation';
 const spinner = ora('');
 
 /**
- *
+ * Get the Pinpoint app from analytics category
  */
-function getPinpointApp(context) {
+export const getPinpointApp = (context: $TSContext):ICategoryMeta|undefined => {
   const { amplifyMeta } = context.exeInfo;
-  let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName]);
-  if (!pinpointApp) {
-    pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.AnalyticsCategoryName]);
-  }
+  const pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.ANALYTICS], undefined);
   return pinpointApp;
-}
+};
 
 /**
- *
+ * Ensure Pinpoint app exists
  */
-async function ensurePinpointApp(context, pinpointNotificationsMeta) {
-  let pinpointApp;
+export const ensurePinpointApp = async (context: $TSContext, pinpointNotificationsMeta: $TSAny): Promise<void> => {
+  let pinpointApp : ICategoryMeta|undefined;
   let resourceName;
   const { amplifyMeta, localEnvInfo } = context.exeInfo;
 
   if (pinpointNotificationsMeta) {
     if (
-      pinpointNotificationsMeta.service === constants.PinpointName
+      pinpointNotificationsMeta.service === AmplifySupportedService.PINPOINT
       && pinpointNotificationsMeta.output
       && pinpointNotificationsMeta.output.Id
     ) {
@@ -44,25 +44,25 @@ async function ensurePinpointApp(context, pinpointNotificationsMeta) {
       }
 
       pinpointApp = pinpointNotificationsMeta.output;
-      constructResourceMeta(amplifyMeta, resourceName, pinpointApp);
+      constructResourceMeta(amplifyMeta, resourceName, pinpointApp as ICategoryMeta);
     } else {
       resourceName = pinpointNotificationsMeta.resourceName; //eslint-disable-line
     }
   }
 
   if (!pinpointApp) {
-    const scanOptions = {
+    const scanOptions : $TSAny = {
       isRegulatingResourceName: true,
       envName: localEnvInfo.envName,
     };
-    pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName], scanOptions);
+    pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.NOTIFICATIONS], scanOptions);
     if (pinpointApp) {
       resourceName = scanOptions.regulatedResourceName;
     }
   }
 
   if (!pinpointApp) {
-    pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.AnalyticsCategoryName]);
+    pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.ANALYTICS], undefined);
     if (pinpointApp) {
       resourceName = generateResourceName(pinpointApp.Name, localEnvInfo.envName);
       constructResourceMeta(amplifyMeta, resourceName, pinpointApp);
@@ -74,24 +74,18 @@ async function ensurePinpointApp(context, pinpointNotificationsMeta) {
     resourceName = await createPinpointApp(context, resourceName);
   }
 
-  context.exeInfo.serviceMeta = context.exeInfo.amplifyMeta[constants.CategoryName][resourceName];
+  context.exeInfo.serviceMeta = context.exeInfo.amplifyMeta[AmplifyCategories.NOTIFICATIONS][resourceName];
   context.exeInfo.pinpointApp = context.exeInfo.serviceMeta.output;
-}
+};
 
 // Resource name is consistent cross environments
-function generateResourceName(pinpointAppName, envName) {
-  return pinpointAppName.replace(getEnvTagPattern(envName), '');
-}
+const generateResourceName = (pinpointAppName: string, envName: string):string => pinpointAppName.replace(getEnvTagPattern(envName), '');
 
-function generatePinpointAppName(resourceName, envName) {
-  return resourceName + getEnvTagPattern(envName);
-}
+const generatePinpointAppName = (resourceName : string, envName: string):string => resourceName + getEnvTagPattern(envName);
 
-function getEnvTagPattern(envName) {
-  return envName === 'NONE' ? '' : `-${envName}`;
-}
+const getEnvTagPattern = (envName: string) : string => (envName === 'NONE' ? '' : `-${envName}`);
 
-async function createPinpointApp(context, resourceName) {
+const createPinpointApp = async (context : $TSContext, resourceName: string) : Promise<string> => {
   const { projectConfig, amplifyMeta, localEnvInfo } = context.exeInfo;
 
   context.print.info('An Amazon Pinpoint project will be created for notifications.');
@@ -119,60 +113,61 @@ async function createPinpointApp(context, resourceName) {
   }
 
   const pinpointAppName = generatePinpointAppName(resourceName, localEnvInfo.envName);
-  const pinpointApp = await createApp(context, pinpointAppName);
+  const pinpointApp:ICategoryMeta = await createApp(context, pinpointAppName) as ICategoryMeta;
   constructResourceMeta(amplifyMeta, resourceName, pinpointApp);
   context.exeInfo.pinpointApp = pinpointApp; // needed for authHelper.ensureAuth(context);
 
   context.print.info('');
   await authHelper.ensureAuth(context, resourceName);
   context.print.info('');
-
   return resourceName;
-}
+};
 
-function constructResourceMeta(amplifyMeta, resourceName, pinpointApp) {
-  amplifyMeta[constants.CategoryName] = amplifyMeta[constants.CategoryName] || {};
-  amplifyMeta[constants.CategoryName][resourceName] = {
-    service: constants.PinpointName,
+const constructResourceMeta = (amplifyMeta : $TSAny, resourceName: string, pinpointApp:ICategoryMeta):void => {
+  amplifyMeta[AmplifyCategories.NOTIFICATIONS] = amplifyMeta[AmplifyCategories.NOTIFICATIONS] || {};
+  amplifyMeta[AmplifyCategories.NOTIFICATIONS][resourceName] = {
+    service: AmplifySupportedService.PINPOINT,
     output: pinpointApp,
     lastPushTimeStamp: new Date(),
   };
-}
+};
 
 /**
- *
+ * Delete Pinpoint App
  */
-async function deletePinpointApp(context) {
+export const deletePinpointApp = async (context: $TSContext):Promise<void> => {
   const { amplifyMeta } = context.exeInfo;
-  let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName]);
-  if (!pinpointApp) {
-    pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.AnalyticsCategoryName]);
-  }
+  let pinpointApp : ICategoryMeta|undefined = scanCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.ANALYTICS], undefined);
   if (pinpointApp) {
     await authHelper.deleteRolePolicy(context);
-    pinpointApp = await deleteApp(context, pinpointApp.Id);
-    removeCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName], pinpointApp.Id);
-    removeCategoryMetaForPinpoint(amplifyMeta[constants.AnalyticsCategoryName], pinpointApp.Id);
+    pinpointApp = await deleteApp(context, pinpointApp.Id) as ICategoryMeta;
+    removeCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.NOTIFICATIONS], pinpointApp.Id);
+    removeCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.ANALYTICS], pinpointApp.Id);
   }
+};
+
+interface ICategoryMeta {
+  Id: string,
+  Name: string,
+  Region: string,
+  regulatedResourceName? : string
 }
 
 /**
- *
+ * Scan AmplifyMeta for given category
  */
-function scanCategoryMetaForPinpoint(categoryMeta, options) {
-  let result;
+const scanCategoryMetaForPinpoint = (categoryMeta: $TSAny, options: $TSAny): ICategoryMeta|undefined => {
+  let result:ICategoryMeta|undefined;
   if (categoryMeta) {
-    let resourceName;
     const resources = Object.keys(categoryMeta);
-    for (let i = 0; i < resources.length; i++) {
-      resourceName = resources[i];
+    for (const resourceName of resources) {
       const serviceMeta = categoryMeta[resourceName];
-      if (serviceMeta.service === constants.PinpointName && serviceMeta.output && serviceMeta.output.Id) {
+      if (serviceMeta.service === AmplifySupportedService.PINPOINT && serviceMeta.output && serviceMeta.output.Id) {
         result = {
           Id: serviceMeta.output.Id,
+          Name: serviceMeta.output.Name || serviceMeta.output.appName,
+          Region: serviceMeta.output.Region,
         };
-        result.Name = serviceMeta.output.Name || serviceMeta.output.appName;
-        result.Region = serviceMeta.output.Region;
 
         if (options && options.isRegulatingResourceName) {
           const regulatedResourceName = generateResourceName(result.Name, options.envName);
@@ -182,17 +177,15 @@ function scanCategoryMetaForPinpoint(categoryMeta, options) {
             delete categoryMeta[resourceName];
           }
         }
-
         break;
       }
     }
   }
 
   return result;
-}
+};
 
-function removeCategoryMetaForPinpoint(categoryMeta, pinpointAppId) {
-  let result;
+const removeCategoryMetaForPinpoint = (categoryMeta: $TSAny, pinpointAppId: string):void => {
   if (categoryMeta) {
     const services = Object.keys(categoryMeta);
     for (let i = 0; i < services.length; i++) {
@@ -202,19 +195,19 @@ function removeCategoryMetaForPinpoint(categoryMeta, pinpointAppId) {
       }
     }
   }
-  return result;
-}
+};
 
-async function createApp(context, pinpointAppName) {
+const createApp = async (context : $TSContext, pinpointAppName : string) : Promise<$TSAny> => {
   const params = {
     CreateApplicationRequest: {
       Name: pinpointAppName,
     },
   };
-  const pinpointClient = await getPinpointClient(context, 'create');
+  const envName: string = stateManager.getCurrentEnvName() as string; // throws exception if env is not configured
+  const pinpointClient = await getPinpointClient(context, 'create', envName);
   spinner.start('Creating Pinpoint app.');
   return new Promise((resolve, reject) => {
-    pinpointClient.createApp(params, (err, data) => {
+    pinpointClient.createApp(params, (err: string, data: $TSAny) => {
       if (err) {
         spinner.fail('Pinpoint project creation error');
         reject(err);
@@ -225,16 +218,17 @@ async function createApp(context, pinpointAppName) {
       }
     });
   });
-}
+};
 
-async function deleteApp(context, pinpointAppId) {
+const deleteApp = async (context : $TSContext, pinpointAppId : string) : Promise<$TSAny> => {
   const params = {
     ApplicationId: pinpointAppId,
   };
-  const pinpointClient = await getPinpointClient(context, 'delete');
+  const envName: string = stateManager.getCurrentEnvName() as string; // throws exception if env is not configured
+  const pinpointClient = await getPinpointClient(context, 'delete', envName);
   spinner.start('Deleting Pinpoint app.');
   return new Promise((resolve, reject) => {
-    pinpointClient.deleteApp(params, (err, data) => {
+    pinpointClient.deleteApp(params, (err: $TSAny, data: $TSAny) => {
       if (err && err.code === 'NotFoundException') {
         spinner.succeed(`Project with ID '${params.ApplicationId}' was already deleted from the cloud.`);
         resolve({
@@ -250,17 +244,14 @@ async function deleteApp(context, pinpointAppId) {
       }
     });
   });
-}
+};
 
 /**
- *
+ * Open the AWS console in the browser for the given service.
  */
-function console(context) {
+export const console = (context: $TSContext):void => {
   const { amplifyMeta } = context.exeInfo;
-  let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName]);
-  if (!pinpointApp) {
-    pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.AnalyticsCategoryName]);
-  }
+  const pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.ANALYTICS], undefined);
   if (pinpointApp) {
     const { Id, Region } = pinpointApp;
     const consoleUrl = `https://${Region}.console.aws.amazon.com/pinpoint/home/?region=${Region}#/apps/${Id}/settings`;
@@ -268,29 +259,29 @@ function console(context) {
   } else {
     context.print.error('Neither notifications nor analytics is enabled in the cloud.');
   }
-}
+};
 
 /**
- *
+ * Get Pinpoint client from cloudformation
  */
-async function getPinpointClient(context, action, envName) {
+export const getPinpointClient = async (context : $TSContext, action: string, envName: string):Promise<$TSAny> => {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugins[providerName]);
-  return provider.getConfiguredPinpointClient(context, constants.CategoryName, action, envName);
-}
+  return provider.getConfiguredPinpointClient(context, AmplifyCategories.NOTIFICATIONS, action, envName);
+};
 
 /**
- *
+ * Check if Analytics has been enabled
  */
-function isAnalyticsAdded(context) {
+export const isAnalyticsAdded = (context: $TSContext):boolean => {
   const { amplifyMeta } = context.exeInfo;
   let result = false;
-  const pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.AnalyticsCategoryName]);
+  const pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.ANALYTICS], undefined);
   if (pinpointApp) {
     result = true;
   }
   return result;
-}
+};
 
 module.exports = {
   getPinpointApp,
