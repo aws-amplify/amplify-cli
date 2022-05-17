@@ -178,7 +178,7 @@ export class UsageData implements IUsageData {
 
     // stop all currently running timers
     Array.from(this.codePathTimers.keys()).forEach(this.internalStopCodePathTimer);
-
+    
     const payload = new UsageDataPayload(
       this.sessionUuid,
       this.installationUuid,
@@ -192,6 +192,9 @@ export class UsageData implements IUsageData {
       Object.fromEntries(this.codePathDurations),
       this.flow.getFlowReport() as IFlowReport,
     );
+    
+    await this.send(payload);
+
     return payload;
   }
 
