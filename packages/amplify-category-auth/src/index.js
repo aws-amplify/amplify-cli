@@ -17,7 +17,9 @@ const path = require('path');
 const sequential = require('promise-sequential');
 
 const { validateAddAuthRequest, validateUpdateAuthRequest, validateImportAuthRequest } = require('amplify-util-headless-input');
-const { stateManager, AmplifySupportedService, JSONUtilities } = require('amplify-cli-core');
+const {
+  stateManager, AmplifySupportedService, JSONUtilities, FeatureFlags,
+} = require('amplify-cli-core');
 const { printer } = require('amplify-prompts');
 const defaults = require('./provider-utils/awscloudformation/assets/cognito-defaults');
 const { getAuthResourceName } = require('./utils/getAuthResourceName');
@@ -376,6 +378,10 @@ async function initEnv(context) {
   const authTasks = tasks.map(authResource => {
     const { resourceName } = authResource;
     return async () => {
+      const isNewEnv = context.exeInfo?.isNewEnv;
+      if (isNewEnv && FeatureFlags.getBoolean('project.overrides')) {
+        await checkAuthResourceMigration(context, resourceName, true);
+      }
       const config = await updateConfigOnEnvInit(context, 'auth', resourceName);
       context.amplify.saveEnvResourceParameters(context, 'auth', resourceName, config);
       await syncOAuthSecretsToCloud(context, resourceName, config);

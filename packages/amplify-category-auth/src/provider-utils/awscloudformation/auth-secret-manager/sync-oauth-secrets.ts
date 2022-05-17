@@ -1,11 +1,14 @@
 import {
-  $TSContext, $TSObject,
+  $TSContext, $TSObject, AmplifyCategories, stateManager,
 } from 'amplify-cli-core';
 import _ from 'lodash';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
 import { getOAuthObjectFromCognito } from '../utils/get-oauth-secrets-from-cognito';
 import { OAuthSecretsStateManager } from './auth-secret-manager';
-import { removeAppIdForAuthInTeamProvider, setAppIdForAuthInTeamProvider, setEmptyCredsForAuthInTeamProvider } from './tpi-utils';
+import {
+  removeAppIdForAuthInTeamProvider, removeEmptyCredsForAuthInTeamProvider,
+  setAppIdForAuthInTeamProvider, setEmptyCredsForAuthInTeamProvider,
+} from './tpi-utils';
 
 /**
  * if secrets is defined , function stores the OAuth secret into parameter store with
@@ -40,12 +43,18 @@ export const syncOAuthSecretsToCloud = async (context: $TSContext, authResourceN
           }
         }
         setAppIdForAuthInTeamProvider(authResourceName);
+        removeEmptyCredsForAuthInTeamProvider(authResourceName);
       } else {
         removeAppIdForAuthInTeamProvider(authResourceName);
       }
     } else {
       // to support projects before ext migration
-      setEmptyCredsForAuthInTeamProvider(authResourceName);
+      const authParameters = stateManager.getResourceParametersJson(undefined, AmplifyCategories.AUTH, authResourceName);
+      console.log(authParameters);
+      removeAppIdForAuthInTeamProvider(authResourceName);
+      if (authParameters.hostedUI && !_.isEmpty(authParameters.authProvidersUserPool)) {
+        setEmptyCredsForAuthInTeamProvider(authResourceName);
+      }
     }
   }
   return oAuthSecrets;
