@@ -106,6 +106,7 @@ async function configureChannel(context, channelName) {
 
     return true;
   }
+  return false;
 }
 
 /**
