@@ -1,11 +1,10 @@
 import { $TSAny } from 'amplify-cli-core';
 import {
-  addAuthWithDefault,
   addAuthWithMaxOptions,
   amplifyPushAuth,
   createNewProjectDir,
   deleteProject,
-  deleteProjectDir, getProjectMeta, updateAuthSignInSignOutUrl,
+  deleteProjectDir, getProjectMeta, updateAuthAddAdminQueries,
 } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import { join } from 'path';
@@ -46,7 +45,7 @@ describe('amplify auth migration', () => {
       service: 'cognito',
     };
     // eslint-disable-next-line spellcheck/spell-checker
-    await updateAuthSignInSignOutUrl(projectRoot, { testingWithLatestCodebase: true, overrides: overridesObj });
+    await updateAuthAddAdminQueries(projectRoot, 'testgroup', { testingWithLatestCodebase: true, overrides: overridesObj });
     await expect(amplifyPushAuth(projectRoot, true)).resolves.not.toThrowError();
   });
 });
