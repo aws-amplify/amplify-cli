@@ -2,6 +2,9 @@ const inquirer = require('inquirer');
 const p12decoder = require('./p12decoder');
 const validateFilePath = require('./validateFilepath');
 
+/**
+ *
+ */
 async function run(channelInput) {
   let certificateConfig;
   if (channelInput) {

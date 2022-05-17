@@ -1,3 +1,6 @@
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
+/* eslint-disable func-style */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 const ora = require('ora');
 const inquirer = require('inquirer');
 const { open } = require('amplify-cli-core');
@@ -8,6 +11,9 @@ const authHelper = require('./auth-helper');
 const providerName = 'awscloudformation';
 const spinner = ora('');
 
+/**
+ *
+ */
 function getPinpointApp(context) {
   const { amplifyMeta } = context.exeInfo;
   let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName]);
@@ -17,6 +23,9 @@ function getPinpointApp(context) {
   return pinpointApp;
 }
 
+/**
+ *
+ */
 async function ensurePinpointApp(context, pinpointNotificationsMeta) {
   let pinpointApp;
   let resourceName;
@@ -24,9 +33,9 @@ async function ensurePinpointApp(context, pinpointNotificationsMeta) {
 
   if (pinpointNotificationsMeta) {
     if (
-      pinpointNotificationsMeta.service === constants.PinpointName &&
-      pinpointNotificationsMeta.output &&
-      pinpointNotificationsMeta.output.Id
+      pinpointNotificationsMeta.service === constants.PinpointName
+      && pinpointNotificationsMeta.output
+      && pinpointNotificationsMeta.output.Id
     ) {
       if (pinpointNotificationsMeta.resourceName) {
         resourceName = pinpointNotificationsMeta.resourceName; //eslint-disable-line
@@ -69,12 +78,12 @@ async function ensurePinpointApp(context, pinpointNotificationsMeta) {
   context.exeInfo.pinpointApp = context.exeInfo.serviceMeta.output;
 }
 
-// rerouce name is consistent cross environments
+// Resource name is consistent cross environments
 function generateResourceName(pinpointAppName, envName) {
   return pinpointAppName.replace(getEnvTagPattern(envName), '');
 }
 
-function generatePinpoinAppName(resourceName, envName) {
+function generatePinpointAppName(resourceName, envName) {
   return resourceName + getEnvTagPattern(envName);
 }
 
@@ -109,7 +118,7 @@ async function createPinpointApp(context, resourceName) {
     }
   }
 
-  const pinpointAppName = generatePinpoinAppName(resourceName, localEnvInfo.envName);
+  const pinpointAppName = generatePinpointAppName(resourceName, localEnvInfo.envName);
   const pinpointApp = await createApp(context, pinpointAppName);
   constructResourceMeta(amplifyMeta, resourceName, pinpointApp);
   context.exeInfo.pinpointApp = pinpointApp; // needed for authHelper.ensureAuth(context);
@@ -130,6 +139,9 @@ function constructResourceMeta(amplifyMeta, resourceName, pinpointApp) {
   };
 }
 
+/**
+ *
+ */
 async function deletePinpointApp(context) {
   const { amplifyMeta } = context.exeInfo;
   let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName]);
@@ -144,6 +156,9 @@ async function deletePinpointApp(context) {
   }
 }
 
+/**
+ *
+ */
 function scanCategoryMetaForPinpoint(categoryMeta, options) {
   let result;
   if (categoryMeta) {
@@ -237,6 +252,9 @@ async function deleteApp(context, pinpointAppId) {
   });
 }
 
+/**
+ *
+ */
 function console(context) {
   const { amplifyMeta } = context.exeInfo;
   let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName]);
@@ -252,12 +270,18 @@ function console(context) {
   }
 }
 
+/**
+ *
+ */
 async function getPinpointClient(context, action, envName) {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugins[providerName]);
   return provider.getConfiguredPinpointClient(context, constants.CategoryName, action, envName);
 }
 
+/**
+ *
+ */
 function isAnalyticsAdded(context) {
   const { amplifyMeta } = context.exeInfo;
   let result = false;
