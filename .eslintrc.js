@@ -79,7 +79,6 @@ module.exports = {
     ],
     '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],
     '@typescript-eslint/no-explicit-any': 'error',
-    '@typescript-eslint/no-useless-constructor': 'error',
     '@typescript-eslint/method-signature-style': ['error', 'property'],
 
     // Some ESLint rules conflict with the corresponding TS rule. These ESLint rules are turned off in favor of the corresponding TS rules
@@ -89,6 +88,8 @@ module.exports = {
     '@typescript-eslint/no-unused-vars': ['error', { vars: 'all', args: 'all', argsIgnorePattern: '^_{2,}[A-Za-z0-9]*$' }],
     'no-shadow': 'off',
     '@typescript-eslint/no-shadow': 'error',
+    'no-useless-constructor': 'off',
+    '@typescript-eslint/no-useless-constructor': 'error',
 
     // Import Rules
     // Extends recommended rules here: https://github.com/import-js/eslint-plugin-import/blob/6c957e7df178d1b81d01cf219d62ba91b4e6d9e8/config/recommended.js
@@ -150,7 +151,6 @@ module.exports = {
     'strict': 'error',
     'spaced-comment': ['error', 'always'],
     'no-new': 'error',
-    'no-useless-constructor': 'off',
     'no-underscore-dangle': 'off',
     'no-template-curly-in-string': 'off',
     'no-plusplus': 'off',
