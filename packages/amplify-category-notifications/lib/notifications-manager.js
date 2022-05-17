@@ -1,3 +1,10 @@
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
+/* eslint-disable import/no-dynamic-require */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable spellcheck/spell-checker */
+/* eslint-disable global-require */
+/* eslint-disable func-style */
+/* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
 const sequential = require('promise-sequential');
 const constants = require('./constants');
@@ -8,12 +15,20 @@ const channelWorkers = {
   FCM: './channel-FCM',
   Email: './channel-Email',
   SMS: './channel-SMS',
+  InAppMsg: './channel-in-app-msg',
+  PushNotification: './channel-push-notification',
 };
 
+/**
+ * Get all available notification channels
+ */
 function getAvailableChannels() {
   return Object.keys(channelWorkers);
 }
 
+/**
+ * Get all the channels which are in use
+ */
 function getEnabledChannels(context) {
   const result = [];
   const { amplifyMeta } = context.exeInfo;
@@ -36,6 +51,9 @@ function getEnabledChannels(context) {
   return result;
 }
 
+/**
+ * Get all notification channels which are not in use
+ */
 function getDisabledChannels(context) {
   const result = [];
   const availableChannels = getAvailableChannels(context);
@@ -45,10 +63,12 @@ function getDisabledChannels(context) {
       result.push(channel);
     }
   });
-
   return result;
 }
 
+/**
+ * Enable the selected notification channel
+ */
 async function enableChannel(context, channelName) {
   if (Object.keys(channelWorkers).indexOf(channelName) > -1) {
     context.exeInfo.pinpointClient = await pintpointHelper.getPinpointClient(context, 'update');
@@ -57,6 +77,9 @@ async function enableChannel(context, channelName) {
   }
 }
 
+/**
+ * Disable the notification channels in use.
+ */
 async function disableChannel(context, channelName) {
   if (Object.keys(channelWorkers).indexOf(channelName) > -1) {
     context.exeInfo.pinpointClient = await pintpointHelper.getPinpointClient(context, 'update');
@@ -65,6 +88,10 @@ async function disableChannel(context, channelName) {
   }
 }
 
+/**
+ * Configure the Pinpoint resources,
+ * Also create the required IAM policy to allow Pinpoint to trigger notifications
+ */
 async function configureChannel(context, channelName) {
   if (Object.keys(channelWorkers).indexOf(channelName) > -1) {
     context.exeInfo.pinpointClient = await pintpointHelper.getPinpointClient(context, 'update');
@@ -81,6 +108,9 @@ async function configureChannel(context, channelName) {
   }
 }
 
+/**
+ * Fetch all the configured channels from pinpoint
+ */
 async function pullAllChannels(context, pinpointApp) {
   const pullTasks = [];
   context.exeInfo.pinpointClient = await pintpointHelper.getPinpointClient(context, 'update');

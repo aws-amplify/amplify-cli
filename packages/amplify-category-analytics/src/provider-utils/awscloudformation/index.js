@@ -1,14 +1,31 @@
+/* eslint-disable spellcheck/spell-checker */
+/* eslint-disable import/no-dynamic-require */
+/* eslint-disable func-style */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
+/* eslint-disable global-require */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { NotImplementedError, exitOnNextTick } from 'amplify-cli-core';
-function addResource(context, category, service) {
+
+/**
+ * Add Analytics resource walkthrough
+ * @param {*} context - CLI constext
+ * @param {*} category - Analytics
+ * @param {*} service - Pinpoint/Kinesis
+ * @returns resourceName
+ */
+export function addResource(context, category, service) {
   const serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
-
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { addWalkthrough } = require(serviceWalkthroughSrc);
-
   return addWalkthrough(context, defaultValuesFilename, serviceMetadata);
 }
 
+/**
+ *
+ */
 function updateResource(context, category, service) {
   const serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
@@ -21,10 +38,12 @@ function updateResource(context, category, service) {
     context.usageData.emitError(new NotImplementedError(message));
     exitOnNextTick(0);
   }
-
   return updateWalkthrough(context, defaultValuesFilename, serviceMetadata);
 }
 
+/**
+ *
+ */
 function getPermissionPolicies(context, service, resourceName, crudOptions) {
   const serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   const { serviceWalkthroughFilename } = serviceMetadata;
