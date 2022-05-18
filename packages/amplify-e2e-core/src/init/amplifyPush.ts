@@ -32,98 +32,90 @@ export type LayerPushSettings = {
 /**
  * Function to test amplify push with verbose status
  */
-export function amplifyPush(cwd: string, testingWithLatestCodebase = false): Promise<void> {
-  return new Promise((resolve, reject) => {
-    // Test detailed status
-    spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
-      .wait(/.*/)
-      .run((err: Error) => {
-        if (err) {
-          reject(err);
-        }
-      });
-    // Test amplify push
-    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
-      .wait('Are you sure you want to continue?')
-      .sendConfirmYes()
-      .wait('Do you want to generate code for your newly created GraphQL API')
-      .sendConfirmNo()
-      .wait(/.*/)
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
+export const amplifyPush = (cwd: string, testingWithLatestCodebase = false): Promise<void> => new Promise((resolve, reject) => {
+  // Test detailed status
+  spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    .wait(/.*/)
+    .run((err: Error) => {
+      if (err) {
+        reject(err);
+      }
+    });
+  // Test amplify push
+  spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    .wait('Are you sure you want to continue?')
+    .sendConfirmYes()
+    .wait('Do you want to generate code for your newly created GraphQL API')
+    .sendConfirmNo()
+    .wait(/.*/)
+    .run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
+});
 
 /**
  * Function to test amplify push with codegen for graphql API
  */
-export function amplifyPushGraphQlWithCognitoPrompt(cwd: string, testingWithLatestCodebase = false): Promise<void> {
-  return new Promise((resolve, reject) => {
-    // Test detailed status
-    spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
-      .wait(/.*/)
-      .run((err: Error) => {
-        if (err) {
-          reject(err);
-        }
-      });
-    // Test amplify push
-    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
-      .wait('Are you sure you want to continue?')
-      .sendConfirmYes()
-      .wait(/.*Do you want to use the default authentication and security configuration.*/)
-      .sendCarriageReturn()
-      .wait(/.*How do you want users to be able to sign in.*/)
-      .sendCarriageReturn()
-      .wait(/.*Do you want to configure advanced settings.*/)
-      .sendCarriageReturn()
-      .wait('Do you want to generate code for your newly created GraphQL API')
-      .sendConfirmNo()
-      .wait(/.*/)
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
+export const amplifyPushGraphQlWithCognitoPrompt = (cwd: string, testingWithLatestCodebase = false): Promise<void> => new Promise((resolve, reject) => {
+  // Test detailed status
+  spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    .wait(/.*/)
+    .run((err: Error) => {
+      if (err) {
+        reject(err);
+      }
+    });
+  // Test amplify push
+  spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    .wait('Are you sure you want to continue?')
+    .sendConfirmYes()
+    .wait(/.*Do you want to use the default authentication and security configuration.*/)
+    .sendCarriageReturn()
+    .wait(/.*How do you want users to be able to sign in.*/)
+    .sendCarriageReturn()
+    .wait(/.*Do you want to configure advanced settings.*/)
+    .sendCarriageReturn()
+    .wait('Do you want to generate code for your newly created GraphQL API')
+    .sendConfirmNo()
+    .wait(/.*/)
+    .run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
+});
 
 /**
  * Function to test amplify push with force push flag --force
  */
-export function amplifyPushForce(cwd: string, testingWithLatestCodebase = false): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['push', '--force'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
-      .wait('Are you sure you want to continue?')
-      .sendConfirmYes()
-      .wait(/.*/)
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
+export const amplifyPushForce = (cwd: string, testingWithLatestCodebase = false): Promise<void> => new Promise((resolve, reject) => {
+  spawn(getCLIPath(testingWithLatestCodebase), ['push', '--force'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    .wait('Are you sure you want to continue?')
+    .sendConfirmYes()
+    .wait(/.*/)
+    .run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
+});
 
 /**
  * Function to test amplify push with --force and --yes flag
  */
-export function amplifyPushForceWithYesFlag(cwd: string, testingWithLatestCodebase = false): Promise<void> {
-  return spawn(getCLIPath(testingWithLatestCodebase), ['push', '--force', '--yes'], {
-    cwd,
-    stripColors: true,
-    noOutputTimeout: pushTimeoutMS,
-  }).runAsync();
-}
+export const amplifyPushForceWithYesFlag = (cwd: string, testingWithLatestCodebase = false): Promise<void> => spawn(getCLIPath(testingWithLatestCodebase), ['push', '--force', '--yes'], {
+  cwd,
+  stripColors: true,
+  noOutputTimeout: pushTimeoutMS,
+}).runAsync();
 
 /**
  * * Used to stop an iterative deployment
@@ -232,21 +224,19 @@ export function amplifyPushUpdate(
 /**
  * Function to test amplify push
  */
-export function amplifyPushAuth(cwd: string, testingWithLatestCodebase = false): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
-      .wait('Are you sure you want to continue?')
-      .sendConfirmYes()
-      .wait(/.*/)
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
+export const amplifyPushAuth = (cwd: string, testingWithLatestCodebase = false): Promise<void> => new Promise((resolve, reject) => {
+  spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    .wait('Are you sure you want to continue?')
+    .sendConfirmYes()
+    .wait(/.*/)
+    .run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
+});
 
 /**
  * amplify push command for pushing functions
@@ -295,7 +285,7 @@ export function amplifyPushUpdateForDependentModel(
  * Function to test amplify push when deploying a layer
  * * this function expects a single layer's content to be modified
  */
-export function amplifyPushLayer(cwd: string, settings: LayerPushSettings, testingWithLatestCodebase = false): Promise<void> {
+export const amplifyPushLayer = (cwd: string, settings: LayerPushSettings, testingWithLatestCodebase = false): Promise<void> => {
   const defaultSettings: LayerPushSettings = {
     acceptSuggestedLayerVersionConfigurations: true,
     migrateLegacyLayer: false,
@@ -314,7 +304,7 @@ export function amplifyPushLayer(cwd: string, settings: LayerPushSettings, testi
 
     if (settings.migrateLegacyLayer === true) {
       chain
-        .wait('⚠️  Amplify updated the way Lambda layers work to better support team workflows and additional features.')
+        .wait('Amplify updated the way Lambda layers work to better support team workflows and additional features.')
         .wait('Continue?')
         .sendConfirmYes();
     }
@@ -353,107 +343,95 @@ export function amplifyPushLayer(cwd: string, settings: LayerPushSettings, testi
       }
     });
   });
-}
+};
 
 /**
  * Function to test amplify push with iterativeRollback flag option
  */
-export function amplifyPushIterativeRollback(cwd: string, testingWithLatestCodebase = false) {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['push', '--iterative-rollback'], { cwd, stripColors: true })
-      .wait('Are you sure you want to continue?')
-      .sendConfirmYes()
-      .run((err: Error) => {
-        if (!err) {
-          resolve({});
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
+export const amplifyPushIterativeRollback = (cwd: string, testingWithLatestCodebase = false) => new Promise((resolve, reject) => {
+  spawn(getCLIPath(testingWithLatestCodebase), ['push', '--iterative-rollback'], { cwd, stripColors: true })
+    .wait('Are you sure you want to continue?')
+    .sendConfirmYes()
+    .run((err: Error) => {
+      if (!err) {
+        resolve({});
+      } else {
+        reject(err);
+      }
+    });
+});
 
 /**
  * Function to test amplify push with missing environment variable
  */
-export function amplifyPushMissingEnvVar(cwd: string, newEnvVarValue: string) {
-  return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
-      .wait('Enter the missing environment variable value of')
-      .sendLine(newEnvVarValue)
-      .wait('Are you sure you want to continue?')
-      .sendConfirmYes()
-      .run(err => (err ? reject(err) : resolve()));
-  });
-}
+export const amplifyPushMissingEnvVar = (cwd: string, newEnvVarValue: string) => new Promise<void>((resolve, reject) => {
+  spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
+    .wait('Enter the missing environment variable value of')
+    .sendLine(newEnvVarValue)
+    .wait('Are you sure you want to continue?')
+    .sendConfirmYes()
+    .run(err => (err ? reject(err) : resolve()));
+});
 
 /**
  * Function to test amplify push with missing function secrets
  */
-export function amplifyPushMissingFuncSecret(cwd: string, newSecretValue: string) {
-  return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
-      .wait('does not have a value in this environment. Specify one now:')
-      .sendLine(newSecretValue)
-      .wait('Are you sure you want to continue?')
-      .sendConfirmYes()
-      .run(err => (err ? reject(err) : resolve()));
-  });
-}
+export const amplifyPushMissingFuncSecret = (cwd: string, newSecretValue: string) => new Promise<void>((resolve, reject) => {
+  spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
+    .wait('does not have a value in this environment. Specify one now:')
+    .sendLine(newSecretValue)
+    .wait('Are you sure you want to continue?')
+    .sendConfirmYes()
+    .run(err => (err ? reject(err) : resolve()));
+});
 
 /**
  * Function to test amplify push with no changes in the resources
  */
-export function amplifyPushWithNoChanges(cwd: string, testingWithLatestCodebase = false): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
-      .wait('No changes detected')
-      .run((err: Error) => (err ? reject(err) : resolve()));
-  });
-}
+export const amplifyPushWithNoChanges = (cwd: string, testingWithLatestCodebase = false): Promise<void> => new Promise((resolve, reject) => {
+  spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    .wait('No changes detected')
+    .run((err: Error) => (err ? reject(err) : resolve()));
+});
 
 /**
  * Function to test amplify push with destructive updates on the API models
  */
-export function amplifyPushDestructiveApiUpdate(cwd: string, includeForce: boolean) {
-  return new Promise<void>((resolve, reject) => {
-    const args = ['push', '--yes'];
-    if (includeForce) {
-      args.push('--force');
-    }
-    const chain = spawn(getCLIPath(), args, { cwd, stripColors: true });
-    if (includeForce) {
-      chain.wait('All resources are updated in the cloud').run(err => (err ? reject(err) : resolve()));
-    } else {
-      chain.wait('If this is intended, rerun the command with').run(err => (err ? resolve(err) : reject())); // in this case, we expect the CLI to error out
-    }
-  });
-}
+export const amplifyPushDestructiveApiUpdate = (cwd: string, includeForce: boolean) => new Promise<void>((resolve, reject) => {
+  const args = ['push', '--yes'];
+  if (includeForce) {
+    args.push('--force');
+  }
+  const chain = spawn(getCLIPath(), args, { cwd, stripColors: true });
+  if (includeForce) {
+    chain.wait('All resources are updated in the cloud').run(err => (err ? reject(err) : resolve()));
+  } else {
+    chain.wait('If this is intended, rerun the command with').run(err => (err ? resolve(err) : reject())); // in this case, we expect the CLI to error out
+  }
+});
 
 /**
  * Function to test amplify push with overrides functionality
  */
-export function amplifyPushOverride(cwd: string, testingWithLatestCodebase = false): Promise<void> {
-  return new Promise((resolve, reject) => {
-    // Test detailed status
-    spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
-      .wait(/.*/)
-      .run((err: Error) => {
-        if (err) {
-          reject(err);
-        }
-      });
-    // Test amplify push
-    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
-      .wait('Are you sure you want to continue?')
-      .sendConfirmYes()
-      .wait(/.*/)
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
+export const amplifyPushOverride = (cwd: string, testingWithLatestCodebase = false): Promise<void> => new Promise((resolve, reject) => {
+  // Test detailed status
+  spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    .wait(/.*/)
+    .run((err: Error) => {
+      if (err) {
+        reject(err);
+      }
+    });
+  // Test amplify push
+  spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    .wait('Are you sure you want to continue?')
+    .sendConfirmYes()
+    .wait(/.*/)
+    .run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
+});
