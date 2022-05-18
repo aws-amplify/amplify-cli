@@ -1,11 +1,12 @@
-const inquirer = require('inquirer');
-const p8decoder = require('./p8decoder');
-const validateFilePath = require('./validateFilepath');
+import { $TSAny } from 'amplify-cli-core';
+import inquirer from 'inquirer';
+import { run as runP8Decoder } from './p8decoder';
+import { validateFilePath } from './validateFilepath';
 
 /**
- *
+ * APNs Key config run function
  */
-async function run(channelInput) {
+export const run = async (channelInput: $TSAny) : Promise<$TSAny> => {
   let keyConfig;
   if (channelInput) {
     keyConfig = channelInput;
@@ -36,11 +37,11 @@ async function run(channelInput) {
     keyConfig = await inquirer.prompt(questions);
   }
 
-  keyConfig.TokenKey = await p8decoder.run(keyConfig.P8FilePath);
+  keyConfig.TokenKey = runP8Decoder(keyConfig.P8FilePath);
   delete keyConfig.P8FilePath;
 
   return keyConfig;
-}
+};
 
 module.exports = {
   run,
