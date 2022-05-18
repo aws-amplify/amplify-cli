@@ -52,13 +52,15 @@ export const AmplifySupportedService = {
 export const overriddenCategories = [AmplifyCategories.AUTH, AmplifyCategories.STORAGE, AmplifyCategories.CUSTOM, AmplifyCategories.API];
 
 /**
- *
+ * Amplify Resource data queried from amplify-meta
  */
-export type IAmplifyResource = {
+export interface IAmplifyResource {
   category: string;
   resourceName: string;
   service: string;
-};
+  id?: string;
+  region?: string;
+}
 
 export const AMPLIFY_DOCS_URL = 'https://docs.amplify.aws';
 export const AWS_DOCS_URL = 'https://docs.aws.amazon.com/';
