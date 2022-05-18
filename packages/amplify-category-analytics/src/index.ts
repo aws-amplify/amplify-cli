@@ -1,26 +1,31 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
-/* eslint-disable func-style */
 /* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable prefer-arrow/prefer-arrow-functions */
 
 import { $TSAny, $TSContext } from 'amplify-cli-core';
 
 /* eslint-disable spellcheck/spell-checker */
-const path = require('path');
-const inquirer = require('inquirer');
-const pinpointHelper = require('./lib/pinpoint-helper');
-const kinesisHelper = require('./lib/kinesis-helper');
-const { migrate } = require('./provider-utils/awscloudformation/service-walkthroughs/pinpoint-walkthrough');
+import * as path from 'path';
+import inquirer, { QuestionCollection } from 'inquirer';
+import {
+  analyticsAPICreateResource, analyticsAPIGetResources, AnalyticsError,
+  analyticsResourceToggleNotificationChannel,
+} from './analytics-resource-api';
+import pinpointHelper from './lib/pinpoint-helper';
+import kinesisHelper from './lib/kinesis-helper';
+import * as pinpointWalkthrough from './provider-utils/awscloudformation/service-walkthroughs/pinpoint-walkthrough';
 
 const category = 'analytics';
-export * from './analytics-resource-api';
+export {
+  analyticsAPIGetResources, analyticsAPICreateResource, analyticsResourceToggleNotificationChannel,
+  AnalyticsError,
+} from './analytics-resource-api';
 
 /**
  * Command to open AWS console for kinesis/pinpoint
+ * @param context amplfy cli context
  */
-async function console(context: $TSContext) {
+export const analyticsConsole = async (context: $TSContext) : Promise<void> => {
   const hasKinesisResource = kinesisHelper.hasResource(context);
   const hasPinpointResource = pinpointHelper.hasResource(context);
 
@@ -34,7 +39,7 @@ async function console(context: $TSContext) {
       required: true,
     };
 
-    const result = await inquirer.prompt(question);
+    const result = await inquirer.prompt(question as QuestionCollection<{ [x: string]: unknown; }>);
     selectedResource = result.resource;
   } else if (hasKinesisResource) {
     selectedResource = 'kinesis';
@@ -54,12 +59,14 @@ async function console(context: $TSContext) {
     default:
       break;
   }
-}
+};
 
 /**
- * Get Permission policies
+ * Get Permission policies for CloudFormation
+ * @param context cli context
+ * @param resourceOpsMapping - get permission policies for each analytics resource
  */
-async function getPermissionPolicies(context: $TSContext, resourceOpsMapping: { [x: string]: $TSAny; }) {
+export const getPermissionPolicies = async (context: $TSContext, resourceOpsMapping: { [x: string]: $TSAny; }): Promise<$TSAny> => {
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
   const permissionPolicies: $TSAny[] = [];
@@ -87,13 +94,13 @@ async function getPermissionPolicies(context: $TSContext, resourceOpsMapping: { 
     }
   });
   return { permissionPolicies, resourceAttributes };
-}
+};
 
 /**
  * Execute the Amplify CLI command
  * @param context - Amplify CLI context
  */
-async function executeAmplifyCommand(context: $TSContext) {
+export const executeAmplifyCommand = async (context: $TSContext) : Promise<$TSAny> => {
   let commandPath = path.normalize(path.join(__dirname, 'commands'));
   if (context.input.command === 'help') {
     commandPath = path.join(commandPath, category);
@@ -103,20 +110,26 @@ async function executeAmplifyCommand(context: $TSContext) {
 
   const commandModule = require(commandPath);
   await commandModule.run(context);
-}
+};
 
 /**
  *  Placeholder for Amplify events
+ *  @param context amplify cli context
+ *  @param args event handler arguments
  */
-async function handleAmplifyEvent(context: $TSContext, args: $TSAny): Promise<void> {
+export const handleAmplifyEvent = async (context: $TSContext, args: $TSAny): Promise<void> => {
   context.print.info(`${category} handleAmplifyEvent to be implemented`);
   context.print.info(`Received event args ${args}`);
-}
+};
 
 module.exports = {
-  console,
-  migrate,
+  console: analyticsConsole,
+  migrate: pinpointWalkthrough.migrate,
   getPermissionPolicies,
   executeAmplifyCommand,
   handleAmplifyEvent,
+  analyticsAPIGetResources,
+  analyticsAPICreateResource,
+  analyticsResourceToggleNotificationChannel,
+  AnalyticsError,
 };
