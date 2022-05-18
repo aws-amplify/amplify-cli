@@ -1,13 +1,12 @@
 import {
-  $TSContext, $TSObject, AmplifyCategories, stateManager,
+  $TSContext, $TSObject,
 } from 'amplify-cli-core';
 import _ from 'lodash';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
 import { getOAuthObjectFromCognito } from '../utils/get-oauth-secrets-from-cognito';
 import { OAuthSecretsStateManager } from './auth-secret-manager';
 import {
-  removeAppIdForAuthInTeamProvider, removeEmptyCredsForAuthInTeamProvider,
-  setAppIdForAuthInTeamProvider, setEmptyCredsForAuthInTeamProvider,
+  removeAppIdForAuthInTeamProvider, setAppIdForAuthInTeamProvider,
 } from './tpi-utils';
 
 /**
@@ -20,7 +19,7 @@ export const syncOAuthSecretsToCloud = async (context: $TSContext, authResourceN
 // check if its imported auth and check if auth is migrated
   const { imported } = context.amplify.getImportedAuthProperties(context);
   const cliState = new AuthInputState(authResourceName);
-  let oAuthSecrets;
+  let oAuthSecretsString;
   if (!imported) {
     if (cliState.cliInputFileExists()) {
       const authCliInputs = cliState.getCLIInputPayload();
@@ -29,33 +28,35 @@ export const syncOAuthSecretsToCloud = async (context: $TSContext, authResourceN
       const { hostedUI, userPoolName } = authCliInputs.cognitoConfig;
       if (!_.isEmpty(authProviders) && hostedUI) {
         if (!_.isEmpty(secrets)) {
-          oAuthSecrets = secrets?.hostedUIProviderCreds;
-          await oAuthSecretsStateManager.setOAuthSecrets(oAuthSecrets, authResourceName);
+          await oAuthSecretsStateManager.setOAuthSecrets(secrets?.hostedUIProviderCreds, authResourceName);
         } else {
           // check if parameter is set in the parameter store,
           // if not then fetch the secrets from cognito and insert in parameter store
-          oAuthSecrets = await oAuthSecretsStateManager.getOAuthSecrets(authResourceName);
+          const hasOauthSecrets = await oAuthSecretsStateManager.hasOAuthSecrets(authResourceName);
           // eslint-disable-next-line max-depth
-          if (_.isEmpty(oAuthSecrets)) {
+          if (!hasOauthSecrets) {
             // data is present in deployent secrets , which can be fetched from cognito
-            oAuthSecrets = await getOAuthObjectFromCognito(context, userPoolName!);
+            const oAuthSecrets = await getOAuthObjectFromCognito(context, userPoolName!);
             await oAuthSecretsStateManager.setOAuthSecrets(oAuthSecrets, authResourceName);
           }
         }
         setAppIdForAuthInTeamProvider(authResourceName);
-        removeEmptyCredsForAuthInTeamProvider(authResourceName);
+        oAuthSecretsString = await oAuthSecretsStateManager.getOAuthSecrets(authResourceName);
       } else {
         removeAppIdForAuthInTeamProvider(authResourceName);
       }
-    } else {
-      // to support projects before ext migration
-      const authParameters = stateManager.getResourceParametersJson(undefined, AmplifyCategories.AUTH, authResourceName);
-      console.log(authParameters);
-      removeAppIdForAuthInTeamProvider(authResourceName);
-      if (authParameters.hostedUI && !_.isEmpty(authParameters.authProvidersUserPool)) {
-        setEmptyCredsForAuthInTeamProvider(authResourceName);
-      }
     }
   }
-  return oAuthSecrets;
+  return oAuthSecretsString;
+};
+
+/**
+ * removes OAuth secret from parameter store
+ */
+export const removeOAuthSecretFromCloud = async (context: $TSContext, resourceName: string): Promise<void> => {
+  const oAuthSecretsStateManager = await OAuthSecretsStateManager.getInstance(context);
+  const hasOauthSecrets = await oAuthSecretsStateManager.hasOAuthSecrets(resourceName);
+  if (hasOauthSecrets) {
+    oAuthSecretsStateManager.removeOAuthSecrets(resourceName);
+  }
 };

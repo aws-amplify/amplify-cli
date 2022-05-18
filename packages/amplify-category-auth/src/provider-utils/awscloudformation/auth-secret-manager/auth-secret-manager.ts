@@ -35,25 +35,58 @@ export class OAuthSecretsStateManager {
   }
 
   /**
-   * get the specified OAuth secrets from parameter store
+   * checks if the specified OAuth secrets exists in parameter store
    */
-  getOAuthSecrets = async (resourceName: string): Promise<string | undefined> => {
+  hasOAuthSecrets = async (resourceName: string): Promise<boolean> => {
     const { envName } = stateManager.getLocalEnvInfo();
     const secretName = getFullyQualifiedSecretName(oAuthObjSecretKey, resourceName, envName);
-    let secretValue;
     try {
+      await this.ssmClient
+        .getParameter({
+          Name: secretName,
+          WithDecryption: true,
+        })
+        .promise();
+    } catch (err) {
+      return false;
+    }
+    return true;
+  }
+
+    /**
+   * get the specified OAuth secrets from parameter store
+   */
+    getOAuthSecrets = async (resourceName: string): Promise<string | undefined> => {
+      const { envName } = stateManager.getLocalEnvInfo();
+      const secretName = getFullyQualifiedSecretName(oAuthObjSecretKey, resourceName, envName);
       const parameter = await this.ssmClient
         .getParameter({
           Name: secretName,
           WithDecryption: true,
         })
         .promise();
-      secretValue = parameter.Parameter?.Value;
-    } catch (err) {
-      return undefined;
+      return parameter.Parameter?.Value;
     }
-    return secretValue;
-  }
+
+  /**
+   * remove the specified OAuth secrets from parameter store
+   */
+  removeOAuthSecrets = async (resourceName: string): Promise<void> => {
+    const { envName } = stateManager.getLocalEnvInfo();
+    const secretName = getFullyQualifiedSecretName(oAuthObjSecretKey, resourceName, envName);
+    try {
+      await this.ssmClient
+        .deleteParameter({
+          Name: secretName,
+        })
+        .promise();
+    } catch (err) {
+      // parameter doesn't exist status code
+      if (err.statusCode !== 400) {
+        throw err;
+      }
+    }
+  };
 }
 
 const getSSMClient = async (context: $TSContext): Promise<aws.SSM> => {

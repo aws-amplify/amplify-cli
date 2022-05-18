@@ -35,9 +35,11 @@ pathManagerMock.getBackendDirPath.mockReturnValue(path.join('test', 'path'));
 
 const setOAuthSecretsMock = jest.fn();
 const getOAuthSecretsMock = jest.fn();
+const hasOAuthSecretsMock = jest.fn();
 OAuthSecretsStateManagerMock.getInstance.mockResolvedValue(({
   setOAuthSecrets: setOAuthSecretsMock,
   getOAuthSecrets: getOAuthSecretsMock,
+  hasOAuthSecrets: hasOAuthSecretsMock,
 } as unknown) as OAuthSecretsStateManager);
 
 const inputPayload1 = {
@@ -163,10 +165,7 @@ describe('sync oAuth Secrets', () => {
         '[{"ProviderName":"Facebook","client_id":"sdcsdc","client_secret":"bfdsvsr"},{"ProviderName":"Google","client_id":"avearver","client_secret":"vcvereger"},{"ProviderName":"LoginWithAmazon","client_id":"vercvdsavcer","client_secret":"revfdsavrtv"},{"ProviderName":"SignInWithApple","client_id":"vfdvergver","team_id":"ervervre","key_id":"vfdavervfer","private_key":"vaveb"}]',
     };
     const resourceName = 'mockResource';
-    expect(await syncOAuthSecretsToCloud(contextStubTyped, resourceName, oauthObjSecret)).toMatchInlineSnapshot(
-      // eslint-disable-next-line spellcheck/spell-checker
-      '"[{\\"ProviderName\\":\\"Facebook\\",\\"client_id\\":\\"sdcsdc\\",\\"client_secret\\":\\"bfdsvsr\\"},{\\"ProviderName\\":\\"Google\\",\\"client_id\\":\\"avearver\\",\\"client_secret\\":\\"vcvereger\\"},{\\"ProviderName\\":\\"LoginWithAmazon\\",\\"client_id\\":\\"vercvdsavcer\\",\\"client_secret\\":\\"revfdsavrtv\\"},{\\"ProviderName\\":\\"SignInWithApple\\",\\"client_id\\":\\"vfdvergver\\",\\"team_id\\":\\"ervervre\\",\\"key_id\\":\\"vfdavervfer\\",\\"private_key\\":\\"vaveb\\"}]"',
-    );
+    await syncOAuthSecretsToCloud(contextStubTyped, resourceName, oauthObjSecret);
     expect(stateManagerMock.setTeamProviderInfo.mock.calls[0][1]).toMatchInlineSnapshot(`
       Object {
         "test": Object {
@@ -188,7 +187,7 @@ describe('sync oAuth Secrets', () => {
 
   it('update secret from parameter store', async () => {
     const resourceName = 'mockResource';
-    expect(await syncOAuthSecretsToCloud(contextStubTyped, resourceName)).toMatchInlineSnapshot('"secretValue"');
+    await syncOAuthSecretsToCloud(contextStubTyped, resourceName);
     expect(stateManagerMock.setTeamProviderInfo.mock.calls[0][1]).toMatchInlineSnapshot(`
       Object {
         "test": Object {
@@ -218,7 +217,7 @@ describe('sync oAuth Secrets', () => {
         },
       },
     });
-    expect(await syncOAuthSecretsToCloud(contextStubTyped, resourceName)).toMatchInlineSnapshot('"secretValue"');
+    await syncOAuthSecretsToCloud(contextStubTyped, resourceName);
     expect(stateManagerMock.setTeamProviderInfo.mock.calls[0][1]).toMatchInlineSnapshot(`
       Object {
         "test": Object {
@@ -247,7 +246,7 @@ describe('sync oAuth Secrets', () => {
     stateManagerMock.getTeamProviderInfo.mockReset();
     stateManagerMock.getTeamProviderInfo.mockReturnValue({});
     stateManagerMock.setTeamProviderInfo.mockReset();
-    expect(await syncOAuthSecretsToCloud(contextStubTyped, resourceName)).toMatchInlineSnapshot('undefined');
+    await syncOAuthSecretsToCloud(contextStubTyped, resourceName);
     expect(stateManagerMock.setTeamProviderInfo.mock.calls[0][1]).toMatchInlineSnapshot('Object {}');
   });
 
@@ -257,12 +256,11 @@ describe('sync oAuth Secrets', () => {
     getImportedAuthPropertiesMock.mockReset();
     getImportedAuthPropertiesMock.mockReturnValue({ imported: true });
     stateManagerMock.setTeamProviderInfo.mockReset();
-    expect(await syncOAuthSecretsToCloud(contextStubTyped, resourceName, oauthObjSecret)).toMatchInlineSnapshot('undefined');
+    await syncOAuthSecretsToCloud(contextStubTyped, resourceName, oauthObjSecret);
     expect(stateManagerMock.setTeamProviderInfo).not.toBeCalled();
   });
 
   it('returns undefined if auth is not migrated', async () => {
-    const oauthObjSecret = {};
     const resourceName = 'mockResource';
     getImportedAuthPropertiesMock.mockReset();
     getImportedAuthPropertiesMock.mockReturnValue({ imported: false });
@@ -270,19 +268,7 @@ describe('sync oAuth Secrets', () => {
     cliInputFileExistsMock.mockReturnValue(false);
     stateManagerMock.getTeamProviderInfo.mockReset();
     stateManagerMock.getTeamProviderInfo.mockReturnValue({});
-    expect(await syncOAuthSecretsToCloud(contextStubTyped, resourceName, oauthObjSecret)).toMatchInlineSnapshot('undefined');
-    expect(stateManagerMock.setTeamProviderInfo.mock.calls[0][1]).toMatchInlineSnapshot(`
-      Object {
-        "test": Object {
-          "categories": Object {
-            "auth": Object {
-              "mockResource": Object {
-                "hostedUIProviderCreds": "[]",
-              },
-            },
-          },
-        },
-      }
-    `);
+    await syncOAuthSecretsToCloud(contextStubTyped, resourceName);
+    expect(stateManagerMock.setTeamProviderInfo).not.toBeCalled();
   });
 });

@@ -378,10 +378,6 @@ async function initEnv(context) {
   const authTasks = tasks.map(authResource => {
     const { resourceName } = authResource;
     return async () => {
-      const isNewEnv = context.exeInfo?.isNewEnv;
-      if (isNewEnv && FeatureFlags.getBoolean('project.overrides')) {
-        await checkAuthResourceMigration(context, resourceName, true);
-      }
       const config = await updateConfigOnEnvInit(context, 'auth', resourceName);
       context.amplify.saveEnvResourceParameters(context, 'auth', resourceName, config);
       await syncOAuthSecretsToCloud(context, resourceName, config);
