@@ -9,12 +9,13 @@
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "keywords": [
     "amplify",
     "aws"
   ],
- "scripts": {
+  "scripts": {
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "test": "jest",
@@ -33,12 +34,23 @@
     "mockirer": "^2.0.1"
   },
   "jest": {
-    "coveragePathIgnorePatterns": [
-      "/node_modules/"
+    "testURL": "http://localhost",
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
     ],
     "collectCoverage": true,
-    "collectCoverageFrom": [
-      "lib/**/*.js"
+    "coverageReporters": [
+      "json",
+      "html"
     ]
   }
 }

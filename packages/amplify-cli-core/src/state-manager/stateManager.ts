@@ -104,6 +104,8 @@ export class StateManager {
     return JSONUtilities.readJson<CustomIAMPolicies>(filePath, { throwIfNotExist: false }) || [];
   };
 
+  getCurrentRegion = (projectPath?: string):string | undefined => this.getMeta(projectPath).providers.awscloudformation.Region;
+
   getCurrentEnvName = (projectPath?: string): string | undefined => this.getLocalEnvInfo(projectPath, { throwIfNotExist: false })?.envName;
 
   localEnvInfoExists = (projectPath?: string): boolean => this.doesExist(pathManager.getLocalEnvFilePath, projectPath);
