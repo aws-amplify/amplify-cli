@@ -1,7 +1,7 @@
 import { Stopwatch } from '../stopwatch';
 
-describe('list', () => {
-  it('prints list items at info level', async () => {
+describe('stopwatch test', () => {
+  it('test stopwatch start and pause', async () => {
     const stopwatch = new Stopwatch();
     stopwatch.start();
     await new Promise((resolve, __reject) => { setTimeout(resolve, 300); });
