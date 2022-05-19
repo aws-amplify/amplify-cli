@@ -54,9 +54,21 @@ export const syncOAuthSecretsToCloud = async (context: $TSContext, authResourceN
  * removes OAuth secret from parameter store
  */
 export const removeOAuthSecretFromCloud = async (context: $TSContext, resourceName: string): Promise<void> => {
-  const oAuthSecretsStateManager = await OAuthSecretsStateManager.getInstance(context);
-  const hasOauthSecrets = await oAuthSecretsStateManager.hasOAuthSecrets(resourceName);
-  if (hasOauthSecrets) {
-    oAuthSecretsStateManager.removeOAuthSecrets(resourceName);
+  // check if its imported auth and check if auth is migrated
+  const { imported } = context.amplify.getImportedAuthProperties(context);
+  const cliState = new AuthInputState(resourceName);
+  if (!imported) {
+    if (cliState.cliInputFileExists()) {
+      const authCliInputs = cliState.getCLIInputPayload();
+      const oAuthSecretsStateManager = await OAuthSecretsStateManager.getInstance(context);
+      const authProviders = authCliInputs.cognitoConfig.authProvidersUserPool;
+      const { hostedUI } = authCliInputs.cognitoConfig;
+      if (!_.isEmpty(authProviders) && hostedUI) {
+        const hasOauthSecrets = await oAuthSecretsStateManager.hasOAuthSecrets(resourceName);
+        if (hasOauthSecrets) {
+          await oAuthSecretsStateManager.removeOAuthSecrets(resourceName);
+        }
+      }
+    }
   }
 };

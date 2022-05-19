@@ -18,7 +18,7 @@ const sequential = require('promise-sequential');
 
 const { validateAddAuthRequest, validateUpdateAuthRequest, validateImportAuthRequest } = require('amplify-util-headless-input');
 const {
-  stateManager, AmplifySupportedService, JSONUtilities, FeatureFlags,
+  stateManager, AmplifySupportedService, JSONUtilities,
 } = require('amplify-cli-core');
 const { printer } = require('amplify-prompts');
 const defaults = require('./provider-utils/awscloudformation/assets/cognito-defaults');

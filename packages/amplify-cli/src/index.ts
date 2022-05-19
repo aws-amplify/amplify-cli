@@ -9,7 +9,6 @@ import {
   JSONValidationError,
   pathManager,
   stateManager,
-  TeamProviderInfoMigrateError,
   executeHooks,
   HooksMeta,
 } from 'amplify-cli-core';

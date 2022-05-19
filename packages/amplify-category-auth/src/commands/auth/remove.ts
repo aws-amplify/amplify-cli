@@ -19,11 +19,15 @@ export const run = async (context: $TSContext): Promise<void> => {
     printer.info(messages.dependenciesExists);
   }
   const authResourceName = Object.keys(meta.auth).filter(resourceKey => meta.auth[resourceKey].service === AmplifySupportedService.COGNITO);
+  const authResource = Object.keys(meta.auth);
 
   try {
-    // remove oAuth secret from Parameter if present
+    // remove oAuth secret from Parameter if only cognito reosurce is present
+    // if there is a cognito userPoolGroup resource, then it will be deleted in first iteration
+    if (authResource.length === 1) {
+      await removeOAuthSecretFromCloud(context, authResourceName[0]);
+    }
     const resource = await amplify.removeResource(context, category, resourceName);
-    await removeOAuthSecretFromCloud(context, resourceName);
     if (resource?.service === AmplifySupportedService.COGNITOUSERPOOLGROUPS) {
       // update cli input here
       const cliState = new AuthInputState(authResourceName[0]);

@@ -11,8 +11,6 @@ import { printer } from 'amplify-prompts';
 import _ from 'lodash';
 import { category } from '../..';
 import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
-import { oAuthObjSecretKey } from '../../provider-utils/awscloudformation/auth-secret-manager/secret-name';
-import { syncOAuthSecretsToCloud } from '../../provider-utils/awscloudformation/auth-secret-manager/sync-oauth-secrets';
 import * as providerController from '../../provider-utils/awscloudformation/index';
 import { checkAuthResourceMigration } from '../../provider-utils/awscloudformation/utils/check-for-auth-migration';
 import { getSupportedServices } from '../../provider-utils/supported-services';

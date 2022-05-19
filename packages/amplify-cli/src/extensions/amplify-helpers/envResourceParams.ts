@@ -1,12 +1,10 @@
 import {
-  $TSAny, $TSContext, $TSObject, removeFromDeploymentSecrets, stateManager,
+  $TSAny, $TSContext, $TSObject, stateManager,
 } from 'amplify-cli-core';
 import _ from 'lodash';
 import { getEnvInfo } from './get-env-info';
-import { getRootStackId } from './get-root-stack-id';
 
 const CATEGORIES = 'categories';
-const hostedUIProviderCredsField = 'hostedUIProviderCreds';
 
 const isMigrationContext = (context: $TSContext): boolean => 'migrationInfo' in context;
 
@@ -73,7 +71,7 @@ export const saveEnvResourceParameters = (context: $TSContext, category: string,
   const teamProviderInfo = getApplicableTeamProviderInfo(context);
   const currentEnv = getCurrentEnvName(context);
   const resources = getOrCreateSubObject(teamProviderInfo, [currentEnv, CATEGORIES, category]);
-  const { hostedUIProviderCreds, ...otherParameters } = parameters;
+  const { otherParameters } = parameters;
   resources[resource] = _.assign(resources[resource], otherParameters);
 
   if (!isMigrationContext(context)) {

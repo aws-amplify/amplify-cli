@@ -32,6 +32,7 @@ exports.handler = async(event, context) => {
           responseData = await deleteIdentityProvider(provider,userPoolId);
         }
       };
+      console.log(responseData);
       await response.send(event, context, response.SUCCESS, {});
     }
   } catch (err) {
@@ -45,7 +46,7 @@ const getRequestParams = (providerName,userPoolId, hostedUIProviderMeta, hostedU
   const providerMeta = hostedUIProviderMeta[providerMetaIndex];
   const providerCredsIndex = hostedUIProviderCreds.findIndex(provider => provider.ProviderName === providerName);
   const providerCreds = hostedUIProviderCreds[providerCredsIndex];
-  const requestParams = {
+  let  requestParams = {
     ProviderName: providerMeta.ProviderName,
     UserPoolId: userPoolId,
     AttributeMapping: providerMeta.AttributeMapping,
