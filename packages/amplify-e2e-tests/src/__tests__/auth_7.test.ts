@@ -4,7 +4,7 @@ import {
   amplifyPushAuth,
   headlessAuthImport,
   createNewProjectDir,
-  deleteProjectDir
+  deleteProjectDir,
 } from 'amplify-e2e-core';
 import { ImportAuthRequest } from 'amplify-headless-interface';
 import _ from 'lodash';
@@ -34,7 +34,7 @@ describe('headless auth', () => {
     deleteProjectDir(projRoot);
   });
 
-  describe(' import', () => {
+  describe('import', () => {
     let ogProjectSettings: { name: string };
     let ogProjectRoot: string;
 
@@ -44,7 +44,7 @@ describe('headless auth', () => {
         name: ogProjectPrefix,
       };
       ogProjectRoot = await createNewProjectDir(ogProjectSettings.name);
-      await initJSProjectWithProfile(ogProjectRoot, ogProjectSettings);
+      await initJSProjectWithProfile(ogProjectRoot, { ...ogProjectSettings, disableAmplifyAppCreation: false });
     });
 
     afterEach(async () => {
@@ -55,7 +55,7 @@ describe('headless auth', () => {
     test.each([
       ['userpool only', false],
       ['userpool with identitypool', true],
-    ])(' cognito userpool %s', async (_: string, withIdentityPool: boolean) => {
+    ])('cognito userpool %s', async (_: string, withIdentityPool: boolean) => {
       const ogProjectDetails = await setupOgProjectWithAuth(ogProjectRoot, ogProjectSettings, withIdentityPool);
 
       const importAuthRequest: ImportAuthRequest = {
@@ -72,7 +72,7 @@ describe('headless auth', () => {
       await headlessAuthImport(projRoot, importAuthRequest);
       await amplifyPushAuth(projRoot);
 
-      let projectDetails = getAuthProjectDetails(projRoot);
+      const projectDetails = getAuthProjectDetails(projRoot);
       expectAuthProjectDetailsMatch(projectDetails, ogProjectDetails);
       expectLocalAndCloudMetaFilesMatching(projRoot);
 

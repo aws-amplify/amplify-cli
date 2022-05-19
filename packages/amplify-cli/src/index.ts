@@ -9,7 +9,6 @@ import {
   JSONValidationError,
   pathManager,
   stateManager,
-  TeamProviderInfoMigrateError,
   executeHooks,
   HooksMeta,
 } from 'amplify-cli-core';
@@ -31,7 +30,6 @@ import { getPluginPlatform, scan } from './plugin-manager';
 import { checkProjectConfigVersion } from './project-config-version-check';
 import { rewireDeprecatedCommands } from './rewireDeprecatedCommands';
 import { ensureMobileHubCommandCompatibility } from './utils/mobilehub-support';
-import { migrateTeamProviderInfo } from './utils/team-provider-migrate';
 import { deleteOldVersion } from './utils/win-utils';
 import { notify } from './version-notifier';
 import { getAmplifyVersion } from './extensions/amplify-helpers/get-amplify-version';
@@ -180,11 +178,6 @@ export const run = async (startTime: number): Promise<number | undefined> => {
     await attachUsageData(context, startTime);
 
     prompter.setFlowData(context.usageData);
-
-    if (!(await migrateTeamProviderInfo(context))) {
-      context.usageData.emitError(new TeamProviderInfoMigrateError());
-      return 1;
-    }
 
     errorHandler = boundErrorHandler.bind(context);
 

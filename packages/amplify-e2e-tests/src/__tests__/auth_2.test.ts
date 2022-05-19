@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import {
   initJSProjectWithProfile,
   deleteProject,
@@ -6,15 +7,12 @@ import {
   validateNodeModulesDirRemoval,
   updateFunction,
   addAuthwithUserPoolGroupsViaAPIWithTrigger,
-} from 'amplify-e2e-core';
-import { addAuthWithDefaultSocial, addAuthWithGroupTrigger, addAuthWithRecaptchaTrigger, addAuthViaAPIWithTrigger } from 'amplify-e2e-core';
-import {
+  addAuthWithDefaultSocial, addAuthWithGroupTrigger, addAuthWithRecaptchaTrigger, addAuthViaAPIWithTrigger,
   createNewProjectDir,
   deleteProjectDir,
   getProjectMeta,
   getUserPool,
   getUserPoolClients,
-  isDeploymentSecretForEnvExists,
   getLambdaFunction,
   removeAuthWithDefault,
 } from 'amplify-e2e-core';
@@ -24,23 +22,21 @@ const defaultsSettings = {
 };
 
 describe('amplify add auth...', () => {
-  let projRoot: string;
+  let projectRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('auth');
+    projectRoot = await createNewProjectDir('auth');
   });
 
   afterEach(async () => {
-    await deleteProject(projRoot);
-    deleteProjectDir(projRoot);
+    await deleteProject(projectRoot);
+    deleteProjectDir(projectRoot);
   });
 
   it('...should init a project and add auth with defaultSocial', async () => {
-    await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithDefaultSocial(projRoot, {});
-    expect(isDeploymentSecretForEnvExists(projRoot, 'integtest')).toBeTruthy();
-    await amplifyPushAuth(projRoot);
-    const meta = getProjectMeta(projRoot);
-    expect(isDeploymentSecretForEnvExists(projRoot, 'integtest')).toBeFalsy();
+    await initJSProjectWithProfile(projectRoot, { ...defaultsSettings, disableAmplifyAppCreation: false });
+    await addAuthWithDefaultSocial(projectRoot, {});
+    await amplifyPushAuth(projectRoot);
+    const meta = getProjectMeta(projectRoot);
     const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
     const id = authMeta.output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
@@ -49,25 +45,25 @@ describe('amplify add auth...', () => {
 
     expect(userPool.UserPool).toBeDefined();
     expect(clients).toHaveLength(2);
-    validateNodeModulesDirRemoval(projRoot);
+    validateNodeModulesDirRemoval(projectRoot);
     expect(clients[0].UserPoolClient.CallbackURLs[0]).toEqual('https://www.google.com/');
     expect(clients[0].UserPoolClient.LogoutURLs[0]).toEqual('https://www.nytimes.com/');
     expect(clients[0].UserPoolClient.SupportedIdentityProviders).toHaveLength(5);
   });
 
   it('...should init a project and add auth with defaultSocial and then remove federation', async () => {
-    await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithDefaultSocial(projRoot, {});
-    await amplifyPushAuth(projRoot);
-    await removeAuthWithDefault(projRoot);
-    await amplifyPushAuth(projRoot);
+    await initJSProjectWithProfile(projectRoot, { ...defaultsSettings, disableAmplifyAppCreation: false });
+    await addAuthWithDefaultSocial(projectRoot, {});
+    await amplifyPushAuth(projectRoot);
+    await removeAuthWithDefault(projectRoot);
+    await amplifyPushAuth(projectRoot);
   });
 
   it('...should init a project and add auth a PostConfirmation: add-to-group trigger', async () => {
-    await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithGroupTrigger(projRoot, {});
-    await amplifyPushAuth(projRoot);
-    const meta = getProjectMeta(projRoot);
+    await initJSProjectWithProfile(projectRoot, defaultsSettings);
+    await addAuthWithGroupTrigger(projectRoot, {});
+    await amplifyPushAuth(projectRoot);
+    const meta = getProjectMeta(projectRoot);
 
     const functionName = `${Object.keys(meta.auth)[0]}PostConfirmation-integtest`;
 
@@ -78,7 +74,7 @@ describe('amplify add auth...', () => {
     const clients = await getUserPoolClients(id, clientIds, meta.providers.awscloudformation.Region);
 
     const lambdaFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
-    validateNodeModulesDirRemoval(projRoot);
+    validateNodeModulesDirRemoval(projectRoot);
     expect(userPool.UserPool).toBeDefined();
     expect(clients).toHaveLength(2);
     expect(lambdaFunction).toBeDefined();
@@ -86,10 +82,10 @@ describe('amplify add auth...', () => {
   });
 
   it('...should allow the user to add auth via API category, with a trigger', async () => {
-    await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthViaAPIWithTrigger(projRoot, { transformerVersion: 1 });
-    await amplifyPush(projRoot);
-    const meta = getProjectMeta(projRoot);
+    await initJSProjectWithProfile(projectRoot, defaultsSettings);
+    await addAuthViaAPIWithTrigger(projectRoot, { transformerVersion: 1 });
+    await amplifyPush(projectRoot);
+    const meta = getProjectMeta(projectRoot);
 
     const functionName = `${Object.keys(meta.auth)[0]}PostConfirmation-integtest`;
     const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
@@ -101,17 +97,17 @@ describe('amplify add auth...', () => {
     const lambdaFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
     expect(userPool.UserPool).toBeDefined();
     expect(userPool.UserPool.AliasAttributes).not.toBeDefined();
-    validateNodeModulesDirRemoval(projRoot);
+    validateNodeModulesDirRemoval(projectRoot);
     expect(clients).toHaveLength(2);
     expect(lambdaFunction).toBeDefined();
     expect(lambdaFunction.Configuration.Environment.Variables.GROUP).toEqual('mygroup');
   });
 
   it('...should allow the user to add auth via API category, with a trigger and function dependsOn API', async () => {
-    await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthwithUserPoolGroupsViaAPIWithTrigger(projRoot, { transformerVersion: 1 });
+    await initJSProjectWithProfile(projectRoot, defaultsSettings);
+    await addAuthwithUserPoolGroupsViaAPIWithTrigger(projectRoot, { transformerVersion: 1 });
     await updateFunction(
-      projRoot,
+      projectRoot,
       {
         functionTemplate: 'Hello World',
         additionalPermissions: {
@@ -124,8 +120,8 @@ describe('amplify add auth...', () => {
       },
       'nodejs',
     );
-    await amplifyPush(projRoot);
-    const meta = getProjectMeta(projRoot);
+    await amplifyPush(projectRoot);
+    const meta = getProjectMeta(projectRoot);
     const authKey = Object.keys(meta.auth).find(key => meta.auth[key].service === 'Cognito');
     const functionName = `${authKey}PostConfirmation-integtest`;
     const authMeta = meta.auth[authKey];
@@ -137,17 +133,17 @@ describe('amplify add auth...', () => {
     expect(userPool.UserPool).toBeDefined();
     expect(Object.keys(userPool.UserPool.LambdaConfig)[0]).toBe('PostConfirmation');
     expect(Object.values(userPool.UserPool.LambdaConfig)[0]).toBe(meta.function[functionName.split('-')[0]].output.Arn);
-    validateNodeModulesDirRemoval(projRoot);
+    validateNodeModulesDirRemoval(projectRoot);
     expect(clients).toHaveLength(2);
     expect(lambdaFunction).toBeDefined();
     expect(lambdaFunction.Configuration.Environment.Variables.GROUP).toEqual('mygroup');
   });
 
   it('...should init a project and add 3 custom auth flow triggers for Google reCaptcha', async () => {
-    await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithRecaptchaTrigger(projRoot, {});
-    await amplifyPushAuth(projRoot);
-    const meta = getProjectMeta(projRoot);
+    await initJSProjectWithProfile(projectRoot, defaultsSettings);
+    await addAuthWithRecaptchaTrigger(projectRoot, {});
+    await amplifyPushAuth(projectRoot);
+    const meta = getProjectMeta(projectRoot);
 
     const createFunctionName = `${Object.keys(meta.auth)[0]}CreateAuthChallenge-integtest`;
     const defineFunctionName = `${Object.keys(meta.auth)[0]}DefineAuthChallenge-integtest`;
@@ -164,7 +160,7 @@ describe('amplify add auth...', () => {
     const verifyFunction = await getLambdaFunction(verifyFunctionName, meta.providers.awscloudformation.Region);
 
     expect(userPool.UserPool).toBeDefined();
-    validateNodeModulesDirRemoval(projRoot);
+    validateNodeModulesDirRemoval(projectRoot);
     expect(clients).toHaveLength(2);
     expect(createFunction).toBeDefined();
     expect(defineFunction).toBeDefined();

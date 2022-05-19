@@ -1,12 +1,10 @@
-import _ from 'lodash';
 import {
-  $TSContext, $TSObject, stateManager, mergeDeploymentSecrets, removeFromDeploymentSecrets, $TSAny,
+  $TSAny, $TSContext, $TSObject, stateManager,
 } from 'amplify-cli-core';
+import _ from 'lodash';
 import { getEnvInfo } from './get-env-info';
-import { getRootStackId } from './get-root-stack-id';
 
 const CATEGORIES = 'categories';
-const hostedUIProviderCredsField = 'hostedUIProviderCreds';
 
 const isMigrationContext = (context: $TSContext): boolean => 'migrationInfo' in context;
 
@@ -78,67 +76,17 @@ export const saveEnvResourceParameters = (context: $TSContext, category: string,
 
   if (!isMigrationContext(context)) {
     stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
-    // write hostedUIProviderCreds to deploymentSecrets
-    const deploymentSecrets = stateManager.getDeploymentSecrets();
-    const rootStackId = getRootStackId();
-    if (hostedUIProviderCreds) {
-      stateManager.setDeploymentSecrets(
-        mergeDeploymentSecrets({
-          currentDeploymentSecrets: deploymentSecrets,
-          rootStackId,
-          category,
-          envName: currentEnv,
-          keyName: hostedUIProviderCredsField,
-          value: hostedUIProviderCreds,
-          resource,
-        }),
-      );
-    } else {
-      stateManager.setDeploymentSecrets(
-        removeFromDeploymentSecrets({
-          currentDeploymentSecrets: deploymentSecrets,
-          rootStackId,
-          category,
-          resource,
-          envName: currentEnv,
-          keyName: hostedUIProviderCredsField,
-        }),
-      );
-    }
   }
 };
 
 /**
- * Load resource params from TPI and deployment secrets
+ * load env specific parameter for a resource
  */
-export const loadEnvResourceParameters = (context: $TSContext, category: string, resource: string): $TSAny => {
+export const loadEnvResourceParameters = (context: $TSContext, category: string, resource: string): $TSObject => {
   const envParameters = {
-    ...loadEnvResourceParametersFromDeploymentSecrets(context, category, resource),
     ...loadEnvResourceParametersFromTeamProviderInfo(context, category, resource),
   };
   return envParameters;
-};
-
-const loadEnvResourceParametersFromDeploymentSecrets = (
-  context: $TSContext, category: string, resource: string,
-): Record<string, string> => {
-  try {
-    const currentEnv = getCurrentEnvName(context);
-    const deploymentSecrets = stateManager.getDeploymentSecrets();
-    const rootStackId = getRootStackId();
-    const deploymentSecretByAppId = _.find(deploymentSecrets.appSecrets, appSecret => appSecret.rootStackId === rootStackId);
-    if (deploymentSecretByAppId) {
-      return _.get(deploymentSecretByAppId.environments, [currentEnv, category, resource]);
-    }
-    const parameters = stateManager.getResourceParametersJson(undefined, category, resource);
-    // set empty default if no hostedUIProviderCreds found
-    if (parameters && parameters.hostedUI) {
-      return _.set({}, hostedUIProviderCredsField, '[]');
-    }
-  } catch (e) {
-    // swallow error
-  }
-  return {};
 };
 
 const loadEnvResourceParametersFromTeamProviderInfo = (context: $TSContext, category: string, resource: string): Record<string, string> => {
@@ -161,29 +109,5 @@ export const removeResourceParameters = (context: $TSContext, category: string, 
 
   if (!isMigrationContext(context)) {
     stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
-    removeDeploymentSecrets(context, category, resource);
-  }
-};
-
-/**
- * removes deployment secrets
- * called after remove and push
- */
-export const removeDeploymentSecrets = (context: $TSContext, category: string, resource: string): void => {
-  const currentEnv = getCurrentEnvName(context);
-  const deploymentSecrets = stateManager.getDeploymentSecrets();
-  const rootStackId = getRootStackId();
-
-  if (!isMigrationContext(context)) {
-    stateManager.setDeploymentSecrets(
-      removeFromDeploymentSecrets({
-        currentDeploymentSecrets: deploymentSecrets,
-        rootStackId,
-        envName: currentEnv,
-        category,
-        resource,
-        keyName: hostedUIProviderCredsField,
-      }),
-    );
   }
 };

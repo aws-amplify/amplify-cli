@@ -1,5 +1,5 @@
-const ddbSimulator = require('..');
 const fs = require('fs-extra');
+const ddbSimulator = require('..');
 
 jest.mock('amplify-cli-core', () => ({
   pathManager: {
@@ -41,8 +41,7 @@ describe('emulator operations', () => {
     if (fs.existsSync(dbPath)) {
       try {
         fs.removeSync(dbPath);
-      }
-      catch(err) {
+      } catch (err) {
         console.log(err);
       }
     }

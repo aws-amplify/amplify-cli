@@ -30,6 +30,7 @@ export const AmplifyCategories = {
   PREDICTIONS: 'predictions',
   ANALYTICS: 'analytics',
   CUSTOM: 'custom',
+  AWSCLOUDFORMATION: 'awscloudformation'
 };
 
 export const AmplifySupportedService = {
