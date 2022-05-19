@@ -71,7 +71,7 @@ export const saveEnvResourceParameters = (context: $TSContext, category: string,
   const teamProviderInfo = getApplicableTeamProviderInfo(context);
   const currentEnv = getCurrentEnvName(context);
   const resources = getOrCreateSubObject(teamProviderInfo, [currentEnv, CATEGORIES, category]);
-  const { otherParameters } = parameters;
+  const { hostedUIProviderCreds, ...otherParameters } = parameters;
   resources[resource] = _.assign(resources[resource], otherParameters);
 
   if (!isMigrationContext(context)) {
