@@ -6,7 +6,6 @@ import {
   addAuthWithMaxOptions,
   addAuthUserPoolOnly,
   getBackendAmplifyMeta,
-,
   createNewProjectDir,
   deleteProjectDir,
   getProjectMeta,
