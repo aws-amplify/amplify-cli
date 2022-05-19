@@ -161,5 +161,7 @@
   "xamznone",
   "xcode",
   "yaml",
-  "yyyymmddhhmmss"
+  "yyyymmddhhmmss",
+  "ulid",
+  "urlencoded"
 ]
