@@ -61,8 +61,6 @@ export const run = async (context: $TSContext) => {
   await checkAuthResourceMigration(context, resourceName, true);
   const providerPlugin = context.amplify.getPluginInstance(context, servicesMetadata.Cognito.provider);
   context.updatingAuth = providerPlugin.loadResourceParameters(context, 'auth', resourceName);
-  const oAuthSecrets = syncOAuthSecretsToCloud(context, resourceName);
-  context.updatingAuth = _.set(context.updatingAuth, oAuthObjSecretKey, oAuthSecrets);
 
   try {
     const result = await amplify.serviceSelectionPrompt(context, category, getSupportedServices());

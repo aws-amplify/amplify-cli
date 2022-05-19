@@ -12,9 +12,8 @@ import {
   initIosProjectWithProfile,
   getAwsAndroidConfig,
   initAndroidProjectWithProfile,
+  addAuthWithDefault, runAmplifyAuthConsole, removeAuthWithDefault, createNewProjectDir, deleteProjectDir, getProjectMeta, getUserPool,
 } from 'amplify-e2e-core';
-import { addAuthWithDefault, runAmplifyAuthConsole, removeAuthWithDefault } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getUserPool } from 'amplify-e2e-core';
 
 const defaultsSettings = {
   name: 'authTest',
@@ -32,7 +31,7 @@ describe('amplify add auth...', () => {
   });
 
   it('...should init a project and add auth with defaults and then remove auth and add another auth and push', async () => {
-    await initJSProjectWithProfile(projRoot, defaultsSettings);
+    await initJSProjectWithProfile(projRoot, { ...defaultsSettings, disableAmplifyAppCreation: false });
     await addAuthWithDefault(projRoot, {});
     await amplifyPushAuth(projRoot);
     await removeAuthWithDefault(projRoot);
@@ -52,7 +51,7 @@ describe('amplify add auth...', () => {
   });
 
   it('...should init a project and add auth with defaults and then remove auth and add another auth and push', async () => {
-    await initFlutterProjectWithProfile(projRoot, defaultsSettings);
+    await initFlutterProjectWithProfile(projRoot, { ...defaultsSettings, disableAmplifyAppCreation: false });
     await addAuthWithDefault(projRoot, {});
     await amplifyPushAuth(projRoot);
     await removeAuthWithDefault(projRoot);

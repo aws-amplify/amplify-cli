@@ -1,14 +1,12 @@
 import {
   initJSProjectWithProfile, deleteProject, amplifyPushAuth,
-} from 'amplify-e2e-core';
-import {
+
   addAuthWithDefault,
   removeAuthWithDefault,
   addAuthWithMaxOptions,
   addAuthUserPoolOnly,
   getBackendAmplifyMeta,
-} from 'amplify-e2e-core';
-import {
+,
   createNewProjectDir,
   deleteProjectDir,
   getProjectMeta,
@@ -34,7 +32,7 @@ describe('amplify add auth...', () => {
   });
 
   it('...should init a project and add auth with defaults and push, then remove auth and push should clean up trust relationship conditions', async () => {
-    await initJSProjectWithProfile(projRoot, defaultsSettings);
+    await initJSProjectWithProfile(projRoot, { ...defaultsSettings, disableAmplifyAppCreation: false });
     await addAuthWithDefault(projRoot, {});
     await amplifyPushAuth(projRoot);
 
@@ -54,7 +52,7 @@ describe('amplify add auth...', () => {
   });
 
   it('...should init a project with only user pool and no identity pool', async () => {
-    await initJSProjectWithProfile(projRoot, { ...defaultsSettings, disableAmplifyAppCreation: false }); 
+    await initJSProjectWithProfile(projRoot, { ...defaultsSettings, disableAmplifyAppCreation: false });
     await addAuthUserPoolOnly(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
