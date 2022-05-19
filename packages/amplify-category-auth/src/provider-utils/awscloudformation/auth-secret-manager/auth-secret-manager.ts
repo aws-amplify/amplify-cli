@@ -19,8 +19,8 @@ export class OAuthSecretsStateManager {
   }
 
   /**
- * Set OAuth secret in parameter
- */
+   * Set OAuth secret in parameter
+   */
   setOAuthSecrets = async (hostedUISecretObj: string, resourceName: string): Promise<void> => {
     const { envName } = stateManager.getLocalEnvInfo();
     const secretName = getFullyQualifiedSecretName(oAuthObjSecretKey, resourceName, envName);
@@ -53,20 +53,20 @@ export class OAuthSecretsStateManager {
     return true;
   }
 
-    /**
+  /**
    * get the specified OAuth secrets from parameter store
    */
-    getOAuthSecrets = async (resourceName: string): Promise<string | undefined> => {
-      const { envName } = stateManager.getLocalEnvInfo();
-      const secretName = getFullyQualifiedSecretName(oAuthObjSecretKey, resourceName, envName);
-      const parameter = await this.ssmClient
-        .getParameter({
-          Name: secretName,
-          WithDecryption: true,
-        })
-        .promise();
-      return parameter.Parameter?.Value;
-    }
+  getOAuthSecrets = async (resourceName: string): Promise<string | undefined> => {
+    const { envName } = stateManager.getLocalEnvInfo();
+    const secretName = getFullyQualifiedSecretName(oAuthObjSecretKey, resourceName, envName);
+    const parameter = await this.ssmClient
+      .getParameter({
+        Name: secretName,
+        WithDecryption: true,
+      })
+      .promise();
+    return parameter.Parameter?.Value;
+  }
 
   /**
    * remove the specified OAuth secrets from parameter store

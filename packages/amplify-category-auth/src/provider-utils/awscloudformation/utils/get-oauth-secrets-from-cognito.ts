@@ -8,7 +8,7 @@ import { createOAuthCredentials } from '../import';
 /**
  * get oAuth secrets from cognito
  */
-export const getOAuthObjectFromCognito = async (context: $TSContext, userPoolName : string): Promise<string> => {
+export const getOAuthObjectFromCognito = async (context: $TSContext, userPoolName: string): Promise<string> => {
   const { envName } = stateManager.getLocalEnvInfo();
   const envUserPoolName = `${userPoolName}-${envName}`;
   const cognito = await context.amplify.invokePluginMethod(context, AmplifyCategories.AWSCLOUDFORMATION, undefined, 'createCognitoUserPoolService', [

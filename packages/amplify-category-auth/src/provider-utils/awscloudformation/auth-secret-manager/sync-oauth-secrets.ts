@@ -10,7 +10,7 @@ import {
 } from './tpi-utils';
 
 /**
- * if secrets is defined , function stores the OAuth secret into parameter store with
+ * if secrets is defined, function stores the OAuth secret into parameter store with
  * Key /amplify/{app-id}/{env}/{authResourceName}_HostedUIProviderCreds
  * else fetches it from cognito to store in parameter store
  */
