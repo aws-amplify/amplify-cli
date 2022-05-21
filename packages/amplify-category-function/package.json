@@ -22,6 +22,7 @@
     "aws"
   ],
   "dependencies": {
+    "@aws-amplify/amplify-environment-parameters": "1.0.0",
     "amplify-cli-core": "2.7.0",
     "amplify-function-plugin-interface": "1.9.5",
     "amplify-prompts": "2.1.0",

@@ -1,0 +1,47 @@
+{
+  "name": "@aws-amplify/amplify-environment-parameters",
+  "version": "1.0.0",
+  "description": "Amplify CLI environment parameter manager",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-environment-parameters"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "keywords": [
+    "amplify",
+    "aws"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
+    "test": "jest"
+  },
+  "dependencies": {
+    "amplify-cli-core": "2.7.0",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.1113.0"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testURL": "http://localhost",
+    "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  }
+}

@@ -1,3 +1,4 @@
+import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import {
   $TSAny, $TSContext, pathManager, stateManager,
 } from 'amplify-cli-core';
@@ -218,7 +219,7 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
 
   if (isNewEnv) {
     const yesFlagSet = _.get(context, ['parameters', 'options', 'yes'], false);
-    await askEnvironmentVariableCarryOut(context, sourceEnv, context.exeInfo.localEnvInfo.projectPath, yesFlagSet);
+    await askEnvironmentVariableCarryOut(context, sourceEnv, yesFlagSet);
     await cloneSecretsOnEnvInitHandler(context, sourceEnv, envName);
   }
 };
@@ -296,6 +297,7 @@ export const isMockable = (context: $TSContext, resourceName: string): IsMockabl
  * Main entry point for function subcommand
  */
 export const executeAmplifyCommand = async (context: $TSContext): Promise<void> => {
+  await ensureEnvParamManager();
   let commandPath = path.normalize(path.join(__dirname, 'commands'));
   if (context.input.command === 'help') {
     commandPath = path.join(commandPath, categoryName);

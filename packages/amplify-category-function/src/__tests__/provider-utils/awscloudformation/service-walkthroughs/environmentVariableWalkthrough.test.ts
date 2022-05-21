@@ -7,7 +7,7 @@ jest.mock('inquirer', () => ({
 }));
 
 jest.mock('../../../../provider-utils/awscloudformation/utils/environmentVariablesHelper', () => ({
-  getStoredEnvironmentVariables: jest.fn().mockReturnValue({}),
+  getStoredEnvironmentVariables: jest.fn().mockResolvedValue({}),
 }));
 
 describe('askEnvironmentVariableQuestions', () => {
