@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@2.1.0...@aws-amplify/amplify-category-api@2.1.1-beta.0) (2022-05-23)
+
+
+### Bug Fixes
+
+* opensearch instance type check during push ([#10389](https://github.com/aws-amplify/amplify-cli/issues/10389)) ([bbb6586](https://github.com/aws-amplify/amplify-cli/commit/bbb658617ba5ea5186bdc68b81961342505b4430))
+
+
+
+
+
 # [2.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@2.0.4...@aws-amplify/amplify-category-api@2.1.0) (2022-05-10)
 
 

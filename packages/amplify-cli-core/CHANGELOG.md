@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.8.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.7.0...amplify-cli-core@2.8.0-beta.0) (2022-05-23)
+
+
+### Features
+
+* move oauth secrets to parameter store ([#10413](https://github.com/aws-amplify/amplify-cli/issues/10413)) ([16db2ce](https://github.com/aws-amplify/amplify-cli/commit/16db2ceb5da4e02e90e6b0bc1bb27412fd765b50))
+
+
+
+
+
 # [2.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.6.0...amplify-cli-core@2.7.0) (2022-05-10)
 
 

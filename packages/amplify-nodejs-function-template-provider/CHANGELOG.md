@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.4.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.3.15...amplify-nodejs-function-template-provider@2.4.0-beta.0) (2022-05-23)
+
+
+### Features
+
+* **amplify-nodejs-function-template-provider:** make function name lower case in package.json ([#9868](https://github.com/aws-amplify/amplify-cli/issues/9868)) ([51b6d32](https://github.com/aws-amplify/amplify-cli/commit/51b6d321c2a5dc9c49fbd837f590f69551ee8a4b))
+
+
+
+
+
 ## [2.3.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.3.14...amplify-nodejs-function-template-provider@2.3.15) (2022-05-10)
 
 **Note:** Version bump only for package amplify-nodejs-function-template-provider

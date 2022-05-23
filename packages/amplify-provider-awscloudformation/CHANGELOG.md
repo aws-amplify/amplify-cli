@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.2.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.1.4...amplify-provider-awscloudformation@6.2.0-beta.0) (2022-05-23)
+
+
+### Features
+
+* move oauth secrets to parameter store ([#10413](https://github.com/aws-amplify/amplify-cli/issues/10413)) ([16db2ce](https://github.com/aws-amplify/amplify-cli/commit/16db2ceb5da4e02e90e6b0bc1bb27412fd765b50))
+
+
+### Reverts
+
+* Revert "Revert "chore: wrap getTransformerFactory behind a single API (#10373)" (#10390)" (#10391) ([2612585](https://github.com/aws-amplify/amplify-cli/commit/2612585b1f84cd39ec81f54917d93b06c9d129d5)), closes [#10373](https://github.com/aws-amplify/amplify-cli/issues/10373) [#10390](https://github.com/aws-amplify/amplify-cli/issues/10390) [#10391](https://github.com/aws-amplify/amplify-cli/issues/10391)
+
+
+
+
+
 ## [6.1.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.1.3...amplify-provider-awscloudformation@6.1.4) (2022-05-10)
 
 
