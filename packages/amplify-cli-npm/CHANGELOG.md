@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.3.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@8.2.0...@aws-amplify/cli@8.3.0-beta.1) (2022-05-23)
+
+
+### Features
+
+* alias cloudfront ([#10398](https://github.com/aws-amplify/amplify-cli/issues/10398)) ([b147498](https://github.com/aws-amplify/amplify-cli/commit/b147498968462795e8d467ccda8e504b1c860240))
+* minor bump for amplify-cli-npm ([#10433](https://github.com/aws-amplify/amplify-cli/issues/10433)) ([1b789bf](https://github.com/aws-amplify/amplify-cli/commit/1b789bfa5e84ac3cf9c7e9b55e456bb01f07aafc))
+
+
+
+
+
 # [8.3.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@8.2.0...@aws-amplify/cli@8.3.0-beta.0) (2022-05-23)
 
 

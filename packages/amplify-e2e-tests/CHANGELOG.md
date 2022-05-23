@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.9.1...amplify-e2e-tests@3.10.0-beta.1) (2022-05-23)
+
+
+### Features
+
+* move oauth secrets to parameter store ([#10413](https://github.com/aws-amplify/amplify-cli/issues/10413)) ([16db2ce](https://github.com/aws-amplify/amplify-cli/commit/16db2ceb5da4e02e90e6b0bc1bb27412fd765b50))
+
+
+
+
+
 # [3.10.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.9.1...amplify-e2e-tests@3.10.0-beta.0) (2022-05-23)
 
 

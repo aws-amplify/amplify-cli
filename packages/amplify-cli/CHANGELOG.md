@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.3.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.2.0...@aws-amplify/cli-internal@8.3.0-beta.1) (2022-05-23)
+
+
+### Bug Fixes
+
+* typo in amplify plugin verify flow ([#10424](https://github.com/aws-amplify/amplify-cli/issues/10424)) ([f8b9406](https://github.com/aws-amplify/amplify-cli/commit/f8b94065c2faaee9d6275ca526094005c2f737f4))
+
+
+### Features
+
+* move oauth secrets to parameter store ([#10413](https://github.com/aws-amplify/amplify-cli/issues/10413)) ([16db2ce](https://github.com/aws-amplify/amplify-cli/commit/16db2ceb5da4e02e90e6b0bc1bb27412fd765b50))
+
+
+### Reverts
+
+* Revert "refactor: plugin platform code cleanup (#10384)" (#10403) ([b2998d7](https://github.com/aws-amplify/amplify-cli/commit/b2998d75f83bd75788f1665c3b1f61a4766d13ea)), closes [#10384](https://github.com/aws-amplify/amplify-cli/issues/10384) [#10403](https://github.com/aws-amplify/amplify-cli/issues/10403)
+
+
+
+
+
 # [8.3.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.2.0...@aws-amplify/cli-internal@8.3.0-beta.0) (2022-05-23)
 
 
