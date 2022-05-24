@@ -28,6 +28,7 @@
     "jest": "jest"
   },
   "dependencies": {
+    "@aws-amplify/amplify-environment-parameters": "1.0.0",
     "@hapi/topo": "^5.0.0",
     "amplify-appsync-simulator": "2.3.13",
     "amplify-category-function": "4.0.4",

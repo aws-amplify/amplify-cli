@@ -125,6 +125,10 @@ export class PathManager {
 
   getGitIgnoreFilePath = (projectPath?: string): string => this.constructPath(projectPath, [PathConstants.GitIgnoreFileName]);
 
+  /**
+   * Returns the full path to the `team-provider-info.json` file
+   * @deprecated Use envParamManager from amplify-environment-parameters
+   */
   getTeamProviderInfoFilePath = (projectPath?: string): string => this.constructPath(
     projectPath, [PathConstants.AmplifyDirName, PathConstants.TeamProviderInfoFileName],
   );

@@ -10,6 +10,7 @@ const ValidationError = require('../error/validation-error').default;
 const clientFactory = require('../utils/client-factory');
 const ora = require('ora');
 const tableUtis = require('../utils/table-utils');
+const {ensureEnvParamManager} = require('@aws-amplify/amplify-environment-parameters');
 
 const HELP_INFO_PLACE_HOLDER =
   'Manual deployment allows you to publish your web app to the Amplify Console without connecting a Git provider. Continuous deployment allows you to publish changes on every code commit by connecting your GitHub, Bitbucket, GitLab, or AWS CodeCommit repositories.';
@@ -55,7 +56,7 @@ async function initEnv(context) {
   const backendConfig = utils.getBackendInfoConfig(context);
 
   if (!backendConfig || !backendConfig[category] || !backendConfig[category][resource]) {
-    const consoleConfig = configUtils.loadConsoleConfigFromTeamProviderinfo(context);
+    const consoleConfig = configUtils.loadConsoleConfigFromTeamProviderinfo();
     if (!consoleConfig) {
       // hosting is not enabled for current env
       return;
@@ -69,13 +70,8 @@ async function initEnv(context) {
       await configUtils.deleteConsoleConfigFromCurrMeta(context);
     }
   } else {
-    const teamProviderInfo = utils.getTeamProviderInfo(context);
-    const currEnv = utils.getCurrEnv(context);
-    if (
-      teamProviderInfo[currEnv][categories] &&
-      teamProviderInfo[currEnv][categories][category] &&
-      teamProviderInfo[currEnv][categories][category][resource]
-    ) {
+    const resourceParamManager = (await ensureEnvParamManager()).instance.getResourceParamManager(category, resource);
+    if (resourceParamManager.hasAnyParams()) {
       return;
     }
 

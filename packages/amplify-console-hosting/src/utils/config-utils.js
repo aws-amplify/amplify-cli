@@ -9,6 +9,7 @@ const utils = require('../utils/amplify-context-utils');
 const clientFactory = require('../utils/client-factory');
 const consolePathManager = require('../utils/path-manager');
 const buildUtils = require('./build-utils');
+const { getEnvParamManager } = require('@aws-amplify/amplify-environment-parameters');
 
 function initCFNTemplate(context, templateFilePath) {
   const templateContent = context.amplify.readJsonFile(templateFilePath);
@@ -164,17 +165,7 @@ function initBackendConfig(context, category, resourceName, type) {
 }
 
 function loadConsoleConfigFromTeamProviderinfo(context) {
-  const categories = constants.CATEGORIES;
-  const category = constants.CATEGORY;
-  const resource = constants.CONSOLE_RESOURCE_NAME;
-  const teamProviderInfo = utils.getTeamProviderInfo(context);
-  const currEnv = utils.getCurrEnv(context);
-
-  return (
-    teamProviderInfo[currEnv][categories] &&
-    teamProviderInfo[currEnv][categories][category] &&
-    teamProviderInfo[currEnv][categories][category][resource]
-  );
+  return getEnvParamManager().getResourceParamManager(constants.CATEGORY, constants.CONSOLE_RESOURCE_NAME).hasAnyParams();
 }
 
 async function storeCurrentCloudBackend(context) {

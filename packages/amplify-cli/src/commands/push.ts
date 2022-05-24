@@ -8,7 +8,7 @@ import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-p
 import { showTroubleshootingURL } from './help';
 
 /**
- * Download and unzip deployment bucket contents to #current-cloud-backend so amplfiy status shows correct state
+ * Download and unzip deployment bucket contents to #current-cloud-backend so amplify status shows correct state
  */
 const syncCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
   context.exeInfo.restoreBackend = false;

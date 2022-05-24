@@ -39,6 +39,7 @@ import {
 } from 'amplify-cli-core';
 import ora from 'ora';
 import { Fn } from 'cloudform-types';
+import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters/src';
 import { S3 } from './aws-utils/aws-s3';
 import Cloudformation from './aws-utils/aws-cfn';
 import { formUserAgentParam } from './aws-utils/user-agent';
@@ -695,17 +696,11 @@ const prepareResource = async (context: $TSContext, resource: $TSAny) => {
 };
 
 const storeS3BucketInfo = (category: string, deploymentBucketName: string, envName: string, resourceName: string, s3Key: string) => {
-  const projectPath = pathManager.findProjectRoot();
-  const amplifyMeta = stateManager.getMeta(projectPath);
-  const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
-
-  const tpiResourceParams: $TSAny = _.get(teamProviderInfo, [envName, 'categories', category, resourceName], {});
-  _.assign(tpiResourceParams, { deploymentBucketName, s3Key });
-  _.set(teamProviderInfo, [envName, 'categories', category, resourceName], tpiResourceParams);
+  const amplifyMeta = stateManager.getMeta();
+  getEnvParamManager(envName).getResourceParamManager(category, resourceName).setParams({ deploymentBucketName, s3Key });
 
   _.set(amplifyMeta, [category, resourceName, 's3Bucket'], { deploymentBucketName, s3Key });
   stateManager.setMeta(projectPath, amplifyMeta);
-  stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
 };
 
 const updateCloudFormationNestedStack = async (

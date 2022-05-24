@@ -80,6 +80,11 @@ export class StateManager {
 
   teamProviderInfoExists = (projectPath?: string): boolean => this.doesExist(pathManager.getTeamProviderInfoFilePath, projectPath);
 
+  /**
+   * Returns the contents of the `team-provider-info.json` file
+   *
+   * @deprecated Use envParamManager from amplify-engironment-parameters
+   */
   getTeamProviderInfo = (projectPath?: string, options?: GetOptions<$TSTeamProviderInfo>): $TSTeamProviderInfo => {
     const filePath = pathManager.getTeamProviderInfoFilePath(projectPath);
     const mergedOptions = {
