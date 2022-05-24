@@ -522,7 +522,6 @@ const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
  * entry point for amplify events
  */
 async function handleAmplifyEvent(context, args) {
-  context.print.info(`Received event args ${args}`);
   switch (args.event) {
     case 'PrePush':
       await prePushHandler(context);
