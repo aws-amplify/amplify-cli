@@ -57,6 +57,10 @@ class EnvironmentParameterManager {
     });
   }
 
+  deleteResource(category: string, resource: string): void {
+    delete this.resourceParamManagers[getResourceKey(category, resource)];
+  }
+
   getResourceParamManager(category: string, resource: string): ResourceParameterManager {
     const resourceKey = getResourceKey(category, resource);
     if (!this.resourceParamManagers[resourceKey]) {
@@ -65,7 +69,7 @@ class EnvironmentParameterManager {
     return this.resourceParamManagers[resourceKey];
   }
 
-  save(): void {
+  private save(): void {
     const tpiContent = stateManager.getTeamProviderInfo();
     tpiContent[this.envName].categories = this.serializeTPICategories();
     stateManager.setTeamProviderInfo(undefined, tpiContent);

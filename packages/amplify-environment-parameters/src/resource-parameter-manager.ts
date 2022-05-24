@@ -16,6 +16,16 @@ export class ResourceParameterManager {
     this.params[name] = value;
   }
 
+  /**
+   * Set the given parameters. This will only add / update parameters present in the input. It will not remove any existing parameters.
+   * (see setAllParams)
+   */
+  setParams(params: Record<string, string>): void {
+    Object.entries(params).forEach(([key, value]) => {
+      this.params[key] = value;
+    });
+  }
+
   // eslint-disable-next-line jsdoc/require-jsdoc
   deleteParam(name: string): void {
     delete this.params[name];
@@ -29,9 +39,23 @@ export class ResourceParameterManager {
   }
 
   /**
-   * Set all parameters associated with the resource. Any existing parameters not included in the input will be removed.
+   * Set the resource parameters equal to the given parameters. This will remove any parameters that are not present in the input.
    */
   setAllParams(params: Record<string, string>): void {
     this.params = { ...params };
+  }
+
+  /**
+   * Whether the given parameter is defined
+   */
+  hasParam(name: string): boolean {
+    return !!this.params[name];
+  }
+
+  /**
+   * Whether this resource manager has any parameters defined
+   */
+  hasAnyParams(): boolean {
+    return Object.keys(this.params).length > 0;
   }
 }

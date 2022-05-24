@@ -176,8 +176,8 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
 
   // Need to fetch metadata from #current-cloud-backend, since amplifyMeta
   // gets regenerated in initialize-env.ts in the amplify-cli package
+  const envParamManager = (await ensureEnvParamManager()).instance;
   const projectPath = pathManager.findProjectRoot();
-  const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
   const currentAmplifyMeta = stateManager.getCurrentMeta(projectPath);
   const amplifyMeta = stateManager.getMeta(projectPath);
   const changedResources = [...resourcesToBeCreated, ...resourcesToBeDeleted, ...resourcesToBeUpdated];
@@ -186,34 +186,36 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
     .filter(r => !changedResources.includes(r))
     .forEach(r => {
       const { resourceName }: { resourceName: string } = r;
+      const resourceParamManager = envParamManager.getResourceParamManager(categoryName, resourceName);
 
       const s3Bucket = _.get(currentAmplifyMeta, [categoryName, resourceName, 's3Bucket'], undefined);
       if (s3Bucket) {
-        const tpiResourceParams = _.get(teamProviderInfo, [envName, 'categories', categoryName, resourceName], {});
-        _.assign(tpiResourceParams, s3Bucket);
-        _.set(teamProviderInfo, [envName, 'categories', categoryName, resourceName], tpiResourceParams);
+        resourceParamManager.setParams(s3Bucket);
         _.set(amplifyMeta, [categoryName, resourceName, 's3Bucket'], s3Bucket);
       }
 
       // if the function has secrets, set the appId key in team-provider-info
       if (getLocalFunctionSecretNames(resourceName, { fromCurrentCloudBackend: true }).length > 0) {
-        _.set(teamProviderInfo, [envName, 'categories', categoryName, resourceName, secretsPathAmplifyAppIdKey], getAppId());
+        resourceParamManager.setParam(secretsPathAmplifyAppIdKey, getAppId());
       }
     });
+  const sourceEnvParamManager = (await ensureEnvParamManager(sourceEnv)).instance;
   resourcesToBeCreated.forEach(resource => {
     const { resourceName, service } = resource;
+    const sourceEnvResourceParamManager = sourceEnvParamManager.getResourceParamManager(categoryName, resourceName);
+    const currentEnvResourceParamManager = envParamManager.getResourceParamManager(categoryName, resourceName);
+
     if (service === ServiceName.LambdaFunction) {
       if (sourceEnv && isNewEnv) {
-        const groupName = _.get(teamProviderInfo, [sourceEnv, 'categories', categoryName, resourceName, 'GROUP']);
+        const groupName = sourceEnvResourceParamManager.getParam('GROUP');
         if (groupName) {
-          _.set(teamProviderInfo, [envName, 'categories', categoryName, resourceName, 'GROUP'], groupName);
+          currentEnvResourceParamManager.setParam('GROUP', groupName);
         }
       }
     }
   });
 
   stateManager.setMeta(projectPath, amplifyMeta);
-  stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
 
   await sequential(functionTasks);
 

@@ -1,9 +1,14 @@
 import { getProjectMeta } from './get-project-meta';
 
-export function getAmplifyAppId() {
+/**
+ * Get the Amplify App ID from `amplify-meta.json`
+ */
+export const getAmplifyAppId = (): string => {
   const meta = getProjectMeta();
 
-  if (meta.providers && meta.providers.awscloudformation) {
-    return meta.providers.awscloudformation.AmplifyAppId;
+  const appId = meta?.providers?.awscloudformation?.AmplifyAppId;
+  if (!appId) {
+    throw new Error('Amplify App ID not found in `amplify-meta.json`');
   }
-}
+  return appId;
+};

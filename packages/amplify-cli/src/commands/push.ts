@@ -7,9 +7,9 @@ import { notifyFieldAuthSecurityChange, notifySecurityEnhancement } from '../ext
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 import { showTroubleshootingURL } from './help';
 
-// The following code pulls the latest backend to #current-cloud-backend
-// so the amplify status is correctly shown to the user before the user confirms
-// to push his local developments
+/**
+ * Download and unzip deployment bucket contents to #current-cloud-backend so amplfiy status shows correct state
+ */
 const syncCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
   context.exeInfo.restoreBackend = false;
 

@@ -1,3 +1,4 @@
+import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { mergeTypeDefs } from '@graphql-tools/merge';
 import {
   $TSAny, $TSContext, exitOnNextTick, FeatureFlags, pathManager, ResourceDoesNotExistError, stateManager,
@@ -11,12 +12,10 @@ import {
   RelationalDBTemplateGenerator,
 } from 'graphql-relational-schema-transformer';
 import inquirer from 'inquirer';
-import _ from 'lodash';
 import * as path from 'path';
 import { supportedDataSources } from '../../provider-utils/supported-datasources';
 
 const subcommand = 'add-graphql-datasource';
-const categories = 'categories';
 const category = 'api';
 const providerName = 'awscloudformation';
 
@@ -44,20 +43,14 @@ export const run = async (context: $TSContext): Promise<void> => {
     const { resourceName, databaseName } = answers;
 
     /**
-     * Write the new env specific datasource information into
-     * the team-provider-info file
+     * Write the new env specific datasource information to the resource param manager
      */
-    const currentEnv = context.amplify.getEnvInfo().envName;
-    const teamProviderInfo = stateManager.getTeamProviderInfo();
-
-    _.set(teamProviderInfo, [currentEnv, categories, category, resourceName], {
+    (await ensureEnvParamManager()).instance.getResourceParamManager(category, resourceName).setAllParams({
       rdsRegion: answers.region,
       rdsClusterIdentifier: answers.dbClusterArn,
       rdsSecretStoreArn: answers.secretStoreArn,
       rdsDatabaseName: answers.databaseName,
     });
-
-    stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
 
     const backendConfig = stateManager.getBackendConfig();
 

@@ -1,13 +1,13 @@
 import {
   $TSContext, stateManager, EnvironmentDoesNotExistError, AppIdMismatchError,
 } from 'amplify-cli-core';
-import _ from 'lodash';
 import { pullBackend } from '../pull-backend';
 import { preDeployPullBackend } from '../pre-deployment-pull';
 import { attachBackend } from '../attach-backend';
 import { constructInputParams } from '../amplify-service-helper';
 import { run as envCheckout } from './env/checkout';
 import { showTroubleshootingURL } from './help';
+import { getAmplifyAppId } from '../extensions/amplify-helpers/get-amplify-appId';
 
 /**
  * Entry point for pull command
@@ -28,12 +28,11 @@ export const run = async (context: $TSContext): Promise<void> => {
 
   if (stateManager.currentMetaFileExists(projectPath)) {
     const { appId: inputAppId, envName: inputEnvName } = inputParams.amplify;
-    const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
     const { envName } = stateManager.getLocalEnvInfo(projectPath);
 
-    const appId = _.get(teamProviderInfo, [envName, 'awscloudformation', 'AmplifyAppId'], false);
+    const appId = getAmplifyAppId();
 
-    const localEnvNames = Object.keys(teamProviderInfo);
+    const localEnvNames = Object.keys(stateManager.getLocalAWSInfo(undefined, { throwIfNotExist: false }) || {});
 
     if (inputAppId && appId && inputAppId !== appId) {
       context.print.error('Amplify appId mismatch.');

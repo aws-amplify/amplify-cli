@@ -10,6 +10,7 @@ import {
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { validateAddApiRequest, validateUpdateApiRequest } from 'amplify-util-headless-input';
+import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { run } from './commands/api/console';
@@ -42,7 +43,6 @@ export { getGitHubOwnerRepoFromPath } from './provider-utils/awscloudformation/u
 export * from './graphql-transformer';
 
 const category = AmplifyCategories.API;
-const categories = 'categories';
 
 /**
  * Open the AppSync/API Gateway AWS console
@@ -106,8 +106,6 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
   const rdsSecretStoreArn = 'rdsSecretStoreArn';
   const rdsDatabaseName = 'rdsDatabaseName';
 
-  const { amplify } = context;
-
   /**
    * Check if we need to do the walkthrough, by looking to see if previous environments have
    * configured an RDS datasource
@@ -153,17 +151,10 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
   }
 
   /**
-   * Check team provider info to ensure it hasn't already been created for current env
+   * Check resource param info to ensure it hasn't already been created for current env
    */
-  const currentEnv = amplify.getEnvInfo().envName;
-  const teamProviderInfo = stateManager.getTeamProviderInfo();
-  if (
-    teamProviderInfo[currentEnv][categories]
-    && teamProviderInfo[currentEnv][categories][category]
-    && teamProviderInfo[currentEnv][categories][category][resourceName]
-    && teamProviderInfo[currentEnv][categories][category][resourceName]
-    && teamProviderInfo[currentEnv][categories][category][resourceName][rdsRegion]
-  ) {
+  const resourceParamManager = (await ensureEnvParamManager()).instance.getResourceParamManager(category, resourceName);
+  if (resourceParamManager.getAllParams()) {
     return;
   }
 
@@ -171,25 +162,10 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
   await providerController
     .addDatasource(context, category, datasource)
     .then(answers => {
-      /**
-       * Write the new answers to the team provider info
-       */
-      if (!teamProviderInfo[currentEnv][categories]) {
-        teamProviderInfo[currentEnv][categories] = {};
-      }
-      if (!teamProviderInfo[currentEnv][categories][category]) {
-        teamProviderInfo[currentEnv][categories][category] = {};
-      }
-      if (!teamProviderInfo[currentEnv][categories][category][resourceName]) {
-        teamProviderInfo[currentEnv][categories][category][resourceName] = {};
-      }
-
-      teamProviderInfo[currentEnv][categories][category][resourceName][rdsRegion] = answers.region;
-      teamProviderInfo[currentEnv][categories][category][resourceName][rdsClusterIdentifier] = answers.dbClusterArn;
-      teamProviderInfo[currentEnv][categories][category][resourceName][rdsSecretStoreArn] = answers.secretStoreArn;
-      teamProviderInfo[currentEnv][categories][category][resourceName][rdsDatabaseName] = answers.databaseName;
-
-      stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
+      resourceParamManager.setParam(rdsRegion, answers.region);
+      resourceParamManager.setParam(rdsClusterIdentifier, answers.dbClusterArn);
+      resourceParamManager.setParam(rdsSecretStoreArn, answers.secretStoreArn);
+      resourceParamManager.setParam(rdsDatabaseName, answers.databaseName);
     })
     .then(() => {
       context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { forceCompile: true });
@@ -282,7 +258,7 @@ export const executeAmplifyHeadlessCommand = async (context: $TSContext, headles
 /**
  * Not yet implemented
  */
-export const handleAmplifyEvent = async (_: $TSContext, args): Promise<void> => {
+export const handleAmplifyEvent = async (__: $TSContext, args): Promise<void> => {
   printer.info(`${category} handleAmplifyEvent to be implemented`);
   printer.info(`Received event args ${args}`);
 };

@@ -1,3 +1,4 @@
+import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import {
   $TSAny, $TSContext, AmplifyCategories, ServiceSelection, stateManager,
 } from 'amplify-cli-core';
@@ -328,13 +329,14 @@ export const importedDynamoDBEnvInit = async (
     // Check to see if we have a source environment set (in case of env add), and ask customer if the want to import the same resource
     // from the existing environment or import a different one. Check if all the values are having some value that can be validated and
     // if not fall back to full service walkthrough.
-    const sourceEnvParams = getSourceEnvParameters(context.exeInfo.sourceEnvName, AmplifyCategories.STORAGE, resourceName);
+    const resourceParamManager = (await ensureEnvParamManager(context.exeInfo.sourceEnvName)).instance
+      .getResourceParamManager(AmplifyCategories.STORAGE, resourceName);
 
-    if (sourceEnvParams) {
+    if (resourceParamManager.hasAnyParams()) {
       const { importExisting } = await Enquirer.prompt<{ importExisting: boolean }>({
         name: 'importExisting',
         type: 'confirm',
-        message: importMessages.ImportPreviousTable(resourceName, sourceEnvParams.tableName, context.exeInfo.sourceEnvName),
+        message: importMessages.ImportPreviousTable(resourceName, resourceParamManager.getParam('tableName')!, context.exeInfo.sourceEnvName),
         footer: importMessages.ImportPreviousResourceFooter,
         initial: true,
         format: (e: $TSAny) => (e ? 'Yes' : 'No'),
@@ -348,14 +350,14 @@ export const importedDynamoDBEnvInit = async (
 
       // Copy over the required input arguments to currentEnvSpecificParameters
       /* eslint-disable no-param-reassign */
-      currentEnvSpecificParameters.tableName = sourceEnvParams.tableName;
-      currentEnvSpecificParameters.region = sourceEnvParams.region;
-      currentEnvSpecificParameters.arn = sourceEnvParams.arn;
-      currentEnvSpecificParameters.streamArn = sourceEnvParams.streamArn;
-      currentEnvSpecificParameters.partitionKeyName = sourceEnvParams.partitionKeyName;
-      currentEnvSpecificParameters.partitionKeyType = sourceEnvParams.partitionKeyType;
-      currentEnvSpecificParameters.sortKeyName = sourceEnvParams.sortKeyName;
-      currentEnvSpecificParameters.sortKeyType = sourceEnvParams.sortKeyType;
+      currentEnvSpecificParameters.tableName = resourceParamManager.getParam('tableName')!;
+      currentEnvSpecificParameters.region = resourceParamManager.getParam('region')!;
+      currentEnvSpecificParameters.arn = resourceParamManager.getParam('arn');
+      currentEnvSpecificParameters.streamArn = resourceParamManager.getParam('streamArn');
+      currentEnvSpecificParameters.partitionKeyName = resourceParamManager.getParam('partitionKeyName');
+      currentEnvSpecificParameters.partitionKeyType = resourceParamManager.getParam('partitionKeyType');
+      currentEnvSpecificParameters.sortKeyName = resourceParamManager.getParam('sortKeyName');
+      currentEnvSpecificParameters.sortKeyType = resourceParamManager.getParam('sortKeyType');
       /* eslint-enable */
     }
   }
@@ -478,22 +480,4 @@ const ensureHeadlessParameters = (
   };
 
   return envSpecificParameters;
-};
-
-const getSourceEnvParameters = (
-  envName: string,
-  categoryName: string,
-  resourceName: string,
-): DynamoDBEnvSpecificResourceParameters | undefined => {
-  const teamProviderInfo = stateManager.getTeamProviderInfo(undefined, {
-    throwIfNotExist: false,
-  });
-
-  if (teamProviderInfo) {
-    const envParameters = _.get(teamProviderInfo, [envName, 'categories', categoryName, resourceName], undefined);
-
-    return envParameters;
-  }
-
-  return undefined;
 };

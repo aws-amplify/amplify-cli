@@ -13,6 +13,7 @@ import {
 import Enquirer from 'enquirer';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
+import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { importMessages } from './messages';
 import {
   AuthParameters,
@@ -1009,13 +1010,13 @@ export const importedAuthEnvInit = async (
     // Check to see if we have a source environment set (in case of env add), and ask customer if the want to import the same resource
     // from the existing environment or import a different one. Check if all the values are having some value that can be validated and
     // if not fall back to full service walkthrough.
-    const sourceEnvParams = getSourceEnvParameters(context.exeInfo.sourceEnvName, 'auth', resourceName);
+    const resourceParamManager = (await ensureEnvParamManager(context.exeInfo.sourceEnvName)).instance.getResourceParamManager('auth', resourceName);
 
-    if (sourceEnvParams) {
+    if (resourceParamManager.hasAnyParams()) {
       const { importExisting } = await Enquirer.prompt<{ importExisting: boolean }>({
         name: 'importExisting',
         type: 'confirm',
-        message: importMessages.Questions.ImportPreviousResource(resourceName, sourceEnvParams.userPoolId, context.exeInfo.sourceEnvName),
+        message: importMessages.Questions.ImportPreviousResource(resourceName, resourceParamManager.getParam('userPoolId')!, context.exeInfo.sourceEnvName),
         footer: importMessages.ImportPreviousResourceFooter,
         initial: true,
         format: (e: $TSAny) => (e ? 'Yes' : 'No'),
@@ -1029,12 +1030,12 @@ export const importedAuthEnvInit = async (
 
       // Copy over the required input arguments to currentEnvSpecificParameters
       /* eslint-disable no-param-reassign */
-      currentEnvSpecificParameters.userPoolId = sourceEnvParams.userPoolId;
-      currentEnvSpecificParameters.webClientId = sourceEnvParams.webClientId;
-      currentEnvSpecificParameters.nativeClientId = sourceEnvParams.nativeClientId;
+      currentEnvSpecificParameters.userPoolId = resourceParamManager.getParam('userPoolId')!;
+      currentEnvSpecificParameters.webClientId = resourceParamManager.getParam('webClientId')!;
+      currentEnvSpecificParameters.nativeClientId = resourceParamManager.getParam('nativeClientId')!;
 
       if (resourceParameters.authSelections === 'identityPoolAndUserPool') {
-        currentEnvSpecificParameters.identityPoolId = sourceEnvParams.identityPoolId;
+        currentEnvSpecificParameters.identityPoolId = resourceParamManager.getParam('identityPoolId');
       }
       /* eslint-enable */
     }
@@ -1366,18 +1367,4 @@ const ensureHeadlessParameters = (
   }
 
   return envSpecificParameters;
-};
-
-const getSourceEnvParameters = (envName: string, categoryName: string, resourceName: string): EnvSpecificResourceParameters | undefined => {
-  const teamProviderInfo = stateManager.getTeamProviderInfo(undefined, {
-    throwIfNotExist: false,
-  });
-
-  if (teamProviderInfo) {
-    const envParameters = _.get(teamProviderInfo, [envName, 'categories', categoryName, resourceName], undefined);
-
-    return envParameters;
-  }
-
-  return undefined;
 };
