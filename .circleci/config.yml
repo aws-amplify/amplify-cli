@@ -2,6 +2,24 @@
 version: 2.1
 
 jobs:
+  run-nightly_e2e_tests:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - run:
+          name: Run scheduled workflow
+          command: |
+            curl --location --request POST 'https://circleci.com/api/v2/project/gh/aws-amplify/amplify-cli/pipeline' \
+            --header 'Content-Type: application/json' \
+            -u "${CCI_CONTINUATION_TOKEN}:" \
+            --data-raw '{
+              "branch": "master",
+                "parameters": {
+                  "setup": true,
+                  "nightly_console_integration_tests": false,
+                  "e2e_resource_cleanup": false
+              }
+            }'
   run-nightly_console_integration_tests:
     docker:
       - image: cimg/base:stable
@@ -60,6 +78,16 @@ workflows:
                 - nightly-jobs
     jobs:
       - run-e2e_resource_cleanup
+  trigger_nightly_e2e_tests:
+    triggers:
+      - schedule:
+          cron: 0 14 * * *
+          filters:
+            branches:
+              only:
+                - nightly-jobs
+    jobs:
+      - run-nightly_e2e_tests
   run_on_push:
     jobs:
       - run-nightly_console_integration_tests:
