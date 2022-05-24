@@ -16,7 +16,7 @@ export const projectHasAuth = (context: $TSContext): boolean => {
       const commandVerb = context?.input?.command && context.input.command !== 'update' ? context.input.command : 'import';
       printer.warn(
         'Auth has already been imported to this project and cannot be modified from the CLI. ' +
-          `To modify, run "amplify remove auth" to unlink the imported auth resource. Then run "amplify ${commandVerb} auth".`,
+          `To modify, run "amplify remove auth" to un-link the imported auth resource. Then run "amplify ${commandVerb} auth".`,
       );
     } else {
       printer.warn(messages.authExists);
@@ -26,6 +26,4 @@ export const projectHasAuth = (context: $TSContext): boolean => {
   return false;
 };
 
-const checkAuthIsImported = (authResources: [string, $TSObject][]): boolean => {
-  return authResources.filter(([_, resource]) => resource?.serviceType === 'imported').length > 0;
-};
+const checkAuthIsImported = (authResources: [string, $TSObject][]): boolean => authResources.filter(([_, resource]) => resource?.serviceType === 'imported').length > 0;

@@ -1,8 +1,8 @@
-import { executeAmplifyHeadlessCommand } from '../../../src';
 import { ImportAuthRequest } from 'amplify-headless-interface';
-import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
 import { printer } from 'amplify-prompts';
 import { stateManager } from 'amplify-cli-core';
+import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
+import { executeAmplifyHeadlessCommand } from '../..';
 
 jest.mock('amplify-prompts', () => ({
   printer: {
@@ -137,9 +137,9 @@ describe('import auth headless', () => {
       input: {
         command: 'import',
       },
-      usageData : {
-        pushHeadlessFlow : jest.fn()
-      }
+      usageData: {
+        pushHeadlessFlow: jest.fn(),
+      },
     };
   });
 
@@ -189,7 +189,7 @@ describe('import auth headless', () => {
     await executeAmplifyHeadlessCommand(mockContext, headlessPayloadString);
 
     expect(printer.warn).toBeCalledWith(
-      'Auth has already been imported to this project and cannot be modified from the CLI. To modify, run "amplify remove auth" to unlink the imported auth resource. Then run "amplify import auth".',
+      'Auth has already been imported to this project and cannot be modified from the CLI. To modify, run "amplify remove auth" to un-link the imported auth resource. Then run "amplify import auth".',
     );
   });
 
@@ -209,11 +209,11 @@ describe('import auth headless', () => {
 
       fail('should throw error');
     } catch (e) {
-      expect(e.message).toBe(`The previously configured Cognito User Pool: '' (user-pool-123) cannot be found.`);
+      expect(e.message).toBe('The previously configured Cognito User Pool: \'\' (user-pool-123) cannot be found.');
     }
   });
 
-  it('should throw web clients not found exception ', async () => {
+  it('should throw web clients not found exception', async () => {
     stateManager_mock.getMeta = jest.fn().mockReturnValue({
       providers: {
         awscloudformation: {},
@@ -239,7 +239,7 @@ describe('import auth headless', () => {
         awscloudformation: {},
       },
     });
-    const INVALID_USER_POOL_ID = USER_POOL_ID + '-invalid';
+    const INVALID_USER_POOL_ID = `${USER_POOL_ID}-invalid`;
     const invalidHeadlessPayload = {
       ...headlessPayload,
       userPoolId: INVALID_USER_POOL_ID,

@@ -894,7 +894,7 @@ const createEnvSpecificResourceParameters = (
   return envSpecificResourceParameters;
 };
 
-const createOAuthCredentials = (identityProviders: IdentityProviderType[]): string => {
+export const createOAuthCredentials = (identityProviders: IdentityProviderType[]): string => {
   const credentials = identityProviders.map(idp => {
     if (idp.ProviderName === 'SignInWithApple') {
       return {
