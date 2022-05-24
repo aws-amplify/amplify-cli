@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@2.2.29...amplify-dynamodb-simulator@2.3.0) (2022-05-24)
+
+
+### Features
+
+* move oauth secrets to parameter store ([#10413](https://github.com/aws-amplify/amplify-cli/issues/10413)) ([16db2ce](https://github.com/aws-amplify/amplify-cli/commit/16db2ceb5da4e02e90e6b0bc1bb27412fd765b50))
+
+
+
+
+
 ## [2.2.29](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@2.2.28...amplify-dynamodb-simulator@2.2.29) (2022-05-10)
 
 **Note:** Version bump only for package amplify-dynamodb-simulator
