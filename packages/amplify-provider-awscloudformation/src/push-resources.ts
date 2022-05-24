@@ -700,7 +700,7 @@ const storeS3BucketInfo = (category: string, deploymentBucketName: string, envNa
   getEnvParamManager(envName).getResourceParamManager(category, resourceName).setParams({ deploymentBucketName, s3Key });
 
   _.set(amplifyMeta, [category, resourceName, 's3Bucket'], { deploymentBucketName, s3Key });
-  stateManager.setMeta(projectPath, amplifyMeta);
+  stateManager.setMeta(undefined, amplifyMeta);
 };
 
 const updateCloudFormationNestedStack = async (

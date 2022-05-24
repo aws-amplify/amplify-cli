@@ -164,7 +164,7 @@ function initBackendConfig(context, category, resourceName, type) {
   fs.writeFileSync(backendConfigFilePath, JSON.stringify(backendConfig, null, 4));
 }
 
-function loadConsoleConfigFromTeamProviderinfo(context) {
+function loadConsoleConfigFromTeamProviderinfo() {
   return getEnvParamManager().getResourceParamManager(constants.CATEGORY, constants.CONSOLE_RESOURCE_NAME).hasAnyParams();
 }
 

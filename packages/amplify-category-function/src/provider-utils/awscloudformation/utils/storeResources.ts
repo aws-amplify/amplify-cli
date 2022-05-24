@@ -124,7 +124,7 @@ export const saveMutableState = async (
 export const saveCFNParameters = (
   // eslint-disable-next-line spellcheck/spell-checker
   parameters: Partial<Pick<FunctionParameters, 'cloudwatchRule' | 'resourceName'>> | FunctionTriggerParameters,
-): Promise<void> => {
+): void => {
   if ('trigger' in parameters) {
     const params = {
       modules: parameters.modules.join(),

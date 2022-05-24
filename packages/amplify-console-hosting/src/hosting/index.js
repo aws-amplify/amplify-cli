@@ -50,7 +50,6 @@ async function publish(context, doSkipBuild, doSkipPush) {
 }
 
 async function initEnv(context) {
-  const categories = constants.CATEGORIES;
   const category = constants.CATEGORY;
   const resource = constants.CONSOLE_RESOURCE_NAME;
   const backendConfig = utils.getBackendInfoConfig(context);
