@@ -1,7 +1,9 @@
+/* eslint-disable spellcheck/spell-checker */
 /* eslint-disable max-lines-per-function */
 import { $TSContext, stateManager, pathManager } from 'amplify-cli-core';
 import { mocked } from 'ts-jest';
 import path from 'path';
+import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { syncOAuthSecretsToCloud } from '../../../../provider-utils/awscloudformation/auth-secret-manager/sync-oauth-secrets';
 import { OAuthSecretsStateManager } from '../../../../provider-utils/awscloudformation/auth-secret-manager/auth-secret-manager';
 import { getAppId } from '../../../../provider-utils/awscloudformation/utils/get-app-id';
@@ -134,7 +136,7 @@ const getCLIInputPayloadMock = jest.fn().mockReturnValue(inputPayload1);
 const cliInputFileExistsMock = jest.fn().mockReturnValue('true');
 
 jest.mock('../../../../provider-utils/awscloudformation/auth-secret-manager/secret-name', () => ({
-  ...(jest.requireActual('../../../../provider-utils/awscloudformation/auth-secret-manager/secret-name') as {}),
+  ...(jest.requireActual('../../../../provider-utils/awscloudformation/auth-secret-manager/secret-name') as Record<string, unknown>),
   getAppId: jest.fn().mockReturnValue('mockAmplifyAppId'),
 }));
 
@@ -166,19 +168,9 @@ describe('sync oAuth Secrets', () => {
     };
     const resourceName = 'mockResource';
     await syncOAuthSecretsToCloud(contextStubTyped, resourceName, oauthObjSecret);
-    expect(stateManagerMock.setTeamProviderInfo.mock.calls[0][1]).toMatchInlineSnapshot(`
-      Object {
-        "test": Object {
-          "categories": Object {
-            "auth": Object {
-              "mockResource": Object {
-                "oAuthSecretsPathAmplifyAppId": "amplifyAppId",
-              },
-            },
-          },
-        },
-      }
-    `);
+    expect(getEnvParamManager().getResourceParamManager('auth', 'mockResource').getAllParams()).toEqual({
+      oAuthSecretsPathAmplifyAppId: 'amplifyAppId',
+    });
     expect(setOAuthSecretsMock.mock.calls[0][0]).toMatchInlineSnapshot(
       // eslint-disable-next-line spellcheck/spell-checker
       '"[{\\"ProviderName\\":\\"Facebook\\",\\"client_id\\":\\"sdcsdc\\",\\"client_secret\\":\\"bfdsvsr\\"},{\\"ProviderName\\":\\"Google\\",\\"client_id\\":\\"avearver\\",\\"client_secret\\":\\"vcvereger\\"},{\\"ProviderName\\":\\"LoginWithAmazon\\",\\"client_id\\":\\"vercvdsavcer\\",\\"client_secret\\":\\"revfdsavrtv\\"},{\\"ProviderName\\":\\"SignInWithApple\\",\\"client_id\\":\\"vfdvergver\\",\\"team_id\\":\\"ervervre\\",\\"key_id\\":\\"vfdavervfer\\",\\"private_key\\":\\"vaveb\\"}]"',
@@ -188,19 +180,9 @@ describe('sync oAuth Secrets', () => {
   it('update secret from parameter store', async () => {
     const resourceName = 'mockResource';
     await syncOAuthSecretsToCloud(contextStubTyped, resourceName);
-    expect(stateManagerMock.setTeamProviderInfo.mock.calls[0][1]).toMatchInlineSnapshot(`
-      Object {
-        "test": Object {
-          "categories": Object {
-            "auth": Object {
-              "mockResource": Object {
-                "oAuthSecretsPathAmplifyAppId": "amplifyAppId",
-              },
-            },
-          },
-        },
-      }
-    `);
+    expect(getEnvParamManager().getResourceParamManager('auth', 'mockResource').getAllParams()).toEqual({
+      oAuthSecretsPathAmplifyAppId: 'amplifyAppId',
+    });
   });
 
   it('update secret from cognito if not present in parameter store', async () => {
@@ -218,19 +200,9 @@ describe('sync oAuth Secrets', () => {
       },
     });
     await syncOAuthSecretsToCloud(contextStubTyped, resourceName);
-    expect(stateManagerMock.setTeamProviderInfo.mock.calls[0][1]).toMatchInlineSnapshot(`
-      Object {
-        "test": Object {
-          "categories": Object {
-            "auth": Object {
-              "mockResource": Object {
-                "oAuthSecretsPathAmplifyAppId": "amplifyAppId",
-              },
-            },
-          },
-        },
-      }
-    `);
+    expect(getEnvParamManager().getResourceParamManager('auth', 'mockResource').getAllParams()).toEqual({
+      oAuthSecretsPathAmplifyAppId: 'amplifyAppId',
+    });
   });
 
   it('removes appId if no userPool providers present', async () => {
@@ -247,7 +219,7 @@ describe('sync oAuth Secrets', () => {
     stateManagerMock.getTeamProviderInfo.mockReturnValue({});
     stateManagerMock.setTeamProviderInfo.mockReset();
     await syncOAuthSecretsToCloud(contextStubTyped, resourceName);
-    expect(stateManagerMock.setTeamProviderInfo.mock.calls[0][1]).toMatchInlineSnapshot('Object {}');
+    expect(getEnvParamManager().getResourceParamManager('auth', 'mockResource').getAllParams()).toEqual({});
   });
 
   it('returns undefined if the auth is imported', async () => {

@@ -45,7 +45,8 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@types/folder-hash": "^4.0.1"
+    "@types/folder-hash": "^4.0.1",
+    "ts-jest": "^26.4.4"
   },
   "jest": {
     "collectCoverage": true,

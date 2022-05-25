@@ -1,3 +1,4 @@
+import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import {
   $TSContext, $TSObject,
 } from 'amplify-cli-core';
@@ -26,6 +27,7 @@ export const syncOAuthSecretsToCloud = async (context: $TSContext, authResourceN
       const oAuthSecretsStateManager = await OAuthSecretsStateManager.getInstance(context);
       const authProviders = authCliInputs.cognitoConfig.authProvidersUserPool;
       const { hostedUI, userPoolName } = authCliInputs.cognitoConfig;
+      await ensureEnvParamManager();
       if (!_.isEmpty(authProviders) && hostedUI) {
         if (!_.isEmpty(secrets)) {
           await oAuthSecretsStateManager.setOAuthSecrets(secrets?.hostedUIProviderCreds, authResourceName);

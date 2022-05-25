@@ -27,5 +27,5 @@ export const loadEnvResourceParameters = (
  * Remove env specific resource param from TPI and/or deployment secrets
  */
 export const removeResourceParameters = (__: $TSContext, category: string, resource: string): void => {
-  getEnvParamManager().deleteResource(category, resource);
+  getEnvParamManager().removeResourceParamManager(category, resource);
 };

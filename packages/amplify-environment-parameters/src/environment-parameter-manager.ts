@@ -37,27 +37,23 @@ export const getEnvParamManager = (envName: string = stateManager.getLocalEnvInf
 class EnvironmentParameterManager {
   private resourceParamManagers: Record<string, ResourceParameterManager> = {};
   constructor(private readonly envName: string) {}
+  /**
+   * For now this method is synchronous but it will eventually be async and load params from the service.
+   * This is why it's not part of the class constructor
+   */
   async init(): Promise<void> {
-    // if no tpi file exists
-    //    read parameter state from service API
-    // else
-    //    read parameter state from TPI file
-    //    remove current env state from file
-
-    // read in the TPI contents with status = SET so the values will be persisted to SSM on exit
-    const { categories } = stateManager.getTeamProviderInfo()?.[this.envName];
+    // read in the TPI contents
+    const categories = stateManager.getTeamProviderInfo()?.[this.envName]?.categories || {};
     Object.entries(categories as Record<string, unknown>).forEach(([category, resources]) => {
       Object.entries(resources as Record<string, Record<string, string>>).forEach(([resource, parameters]) => {
         this.getResourceParamManager(category, resource).setAllParams(parameters);
       });
     });
 
-    process.on('exit', () => {
-      this.save();
-    });
+    process.on('beforeExit', () => this.save());
   }
 
-  deleteResource(category: string, resource: string): void {
+  removeResourceParamManager(category: string, resource: string): void {
     delete this.resourceParamManagers[getResourceKey(category, resource)];
   }
 
@@ -69,11 +65,10 @@ class EnvironmentParameterManager {
     return this.resourceParamManagers[resourceKey];
   }
 
-  private save(): void {
+  save(): void {
     const tpiContent = stateManager.getTeamProviderInfo();
     tpiContent[this.envName].categories = this.serializeTPICategories();
     stateManager.setTeamProviderInfo(undefined, tpiContent);
-    console.log(JSON.stringify(tpiContent, undefined, 2));
   }
 
   private serializeTPICategories(): Record<string, unknown> {

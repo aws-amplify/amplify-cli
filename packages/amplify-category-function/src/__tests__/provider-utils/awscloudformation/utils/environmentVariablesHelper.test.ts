@@ -1,27 +1,54 @@
 import {
+  stateManager, JSONUtilities, $TSContext, pathManager,
+} from 'amplify-cli-core';
+import { prompter } from 'amplify-prompts';
+import {
   ensureEnvironmentVariableValues,
   getStoredEnvironmentVariables,
   saveEnvironmentVariables,
 } from '../../../../provider-utils/awscloudformation/utils/environmentVariablesHelper';
 
-import { stateManager, pathManager, JSONUtilities, $TSContext } from 'amplify-cli-core';
-import { prompter } from 'amplify-prompts';
-
 jest.mock('amplify-cli-core');
 jest.mock('amplify-prompts');
 
-const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
-const pathManager_mock = pathManager as jest.Mocked<typeof pathManager>;
-const JSONUtilities_mock = JSONUtilities as jest.Mocked<typeof JSONUtilities>;
-const prompter_mock = prompter as jest.Mocked<typeof prompter>;
+const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
+const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
+const JSONUtilitiesMock = JSONUtilities as jest.Mocked<typeof JSONUtilities>;
+const prompterMock = prompter as jest.Mocked<typeof prompter>;
 
-stateManager_mock.getLocalEnvInfo.mockReturnValue({ envName: 'testenv' });
+pathManagerMock.findProjectRoot.mockReturnValue('');
+pathManagerMock.getBackendDirPath.mockReturnValue('');
+pathManagerMock.getTeamProviderInfoFilePath.mockReturnValue('');
 
-pathManager_mock.findProjectRoot.mockReturnValue('');
-pathManager_mock.getBackendDirPath.mockReturnValue('');
-pathManager_mock.getTeamProviderInfoFilePath.mockReturnValue('');
+const envName = 'testEnv';
 
-beforeEach(() => jest.clearAllMocks());
+stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName });
+stateManagerMock.getTeamProviderInfo.mockReturnValue({
+  [envName]: {
+    categories: {
+      function: {
+        testFunc: {
+          envVarOne: 'testVal1',
+        },
+      },
+    },
+  },
+});
+
+stateManagerMock.getBackendConfig.mockReturnValue({
+  function: {
+    testFunc: {},
+  },
+});
+
+let ensureEnvParamManager;
+let getEnvParamManager;
+
+beforeEach(async () => {
+  ({ ensureEnvParamManager, getEnvParamManager } = await import('@aws-amplify/amplify-environment-parameters'));
+  await ensureEnvParamManager(envName);
+  jest.clearAllMocks();
+});
 
 describe('getStoredEnvironmentVariables', () => {
   it('does not throw error', () => {
@@ -39,19 +66,7 @@ describe('deleteEnvironmentVariable', () => {
 
 describe('ensureEnvironmentVariableValues', () => {
   it('appends to existing env vars', async () => {
-    stateManager_mock.getTeamProviderInfo.mockReturnValue({
-      testenv: {
-        categories: {
-          function: {
-            testfunc: {
-              envVarOne: 'testval1',
-            },
-          },
-        },
-      },
-    });
-
-    JSONUtilities_mock.readJson.mockReturnValueOnce({
+    JSONUtilitiesMock.readJson.mockReturnValueOnce({
       environmentVariableList: [
         {
           cloudFormationParameterName: 'envVarOne',
@@ -68,11 +83,11 @@ describe('ensureEnvironmentVariableValues', () => {
       ],
     });
 
-    prompter_mock.input.mockResolvedValueOnce('testVal2').mockResolvedValueOnce('testVal3');
+    prompterMock.input.mockResolvedValueOnce('testVal2').mockResolvedValueOnce('testVal3');
 
     await ensureEnvironmentVariableValues({ usageData: { emitError: jest.fn() } } as $TSContext);
-    expect(stateManager_mock.setTeamProviderInfo.mock.calls[0][1].testenv.categories.function.testfunc).toEqual({
-      envVarOne: 'testval1',
+    expect(getEnvParamManager().getResourceParamManager('function', 'testFunc').getAllParams()).toEqual({
+      envVarOne: 'testVal1',
       envVarTwo: 'testVal2',
       envVarThree: 'testVal3',
     });
