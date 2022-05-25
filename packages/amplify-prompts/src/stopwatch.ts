@@ -2,11 +2,9 @@
  * Class to record duration of interactions
  */
 export class Stopwatch {
-    private _currentState : StopwatchState = StopwatchState.IDLE
     private _slices: Slice [] = []
 
     start = (): void => {
-      this._currentState = StopwatchState.RUNNING;
       const now = Date.now();
       this._slices.push({
         start: now,
@@ -17,7 +15,6 @@ export class Stopwatch {
      * stops the time and reset
      */
     stop = () : void => {
-      this._currentState = StopwatchState.IDLE;
       this._slices.length = 0;
     }
 
@@ -25,21 +22,12 @@ export class Stopwatch {
      * pauses the time call start to resume
      */
     pause = (): void => {
-      if (this._currentState === StopwatchState.IDLE) {
-        throw new Error('Cannot pause no timer running');
+      const latestSlice = this._slices[this._slices.length - 1];
+      if (!latestSlice) {
+        return;
       }
 
-      if (this._currentState === StopwatchState.PAUSED) {
-        throw new Error('Cannot pause already paused');
-      }
-
-      this._currentState = StopwatchState.PAUSED;
-      if (this._slices.length < 1) {
-        throw new Error('no time started');
-      }
-      const latestItem = this._slices[this._slices.length - 1];
-
-      latestItem.stop = Date.now();
+      latestSlice.stop = Date.now();
     }
 
     /**
@@ -52,9 +40,4 @@ export class Stopwatch {
 type Slice = {
     start: number;
     stop?: number;
-}
-enum StopwatchState {
-    IDLE,
-    RUNNING,
-    PAUSED,
 }
