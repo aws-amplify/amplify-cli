@@ -1,7 +1,13 @@
 import {
   addApiWithBlankSchema, addFunction,
   amplifyPush,
-  amplifyPushFunction, createNewProjectDir, deleteProject, deleteProjectDir, initJSProjectWithProfile, updateApiSchema,
+  amplifyPushFunction,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  generateRandomShortId,
+  initJSProjectWithProfile,
+  updateApiSchema,
 } from 'amplify-e2e-core';
 
 describe('test function deploy when other resources are present', () => {
@@ -24,8 +30,7 @@ describe('test function deploy when other resources are present', () => {
     await addApiWithBlankSchema(projectRoot, { apiName });
     await updateApiSchema(projectRoot, apiName, 'simple_model.graphql');
     await amplifyPush(projectRoot);
-    const random = Math.floor(Math.random() * 10000);
-    const fnName = `integtestFn${random}`;
+    const fnName = `integtestFn${generateRandomShortId()}`;
     await addFunction(projectRoot, {
       name: fnName,
       functionTemplate: 'Hello World',
