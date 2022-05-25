@@ -10,7 +10,7 @@ import { addResource } from './provider-utils/awscloudformation/index';
  * then only return resources matching the service.
  * @returns Array of resources in Analytics category (IAmplifyResource type)
  */
-export const analyticsAPIGetResources = (resourceProviderServiceName?: string): Array<IAmplifyResource> | undefined => {
+export const analyticsAPIGetResources = (resourceProviderServiceName?: string): Array<IAmplifyResource> => {
   const resourceList: Array<IAmplifyResource> = [];
   const amplifyMeta = stateManager.getMeta();
   if (amplifyMeta[AmplifyCategories.ANALYTICS]) {
@@ -30,7 +30,7 @@ export const analyticsAPIGetResources = (resourceProviderServiceName?: string): 
       }
     });
   }
-  return resourceList.length ? resourceList : undefined;
+  return resourceList;
 };
 
 /**
@@ -40,9 +40,9 @@ export const analyticsAPIGetResources = (resourceProviderServiceName?: string): 
  * @returns Created amplify resource
  */
 export const analyticsAPICreateResource = async (context: $TSContext, resourceProviderServiceName: string): Promise<IAmplifyResource> => {
-  const resources = analyticsAPIGetResources(resourceProviderServiceName);
-  if (resources) {
-    console.log(`SACPCDEBUG : analyticsAPICreateResource : ${resourceProviderServiceName} resource found ${JSON.stringify(resources[0], null, 2)}`);
+  const resources : Array<IAmplifyResource> = analyticsAPIGetResources(resourceProviderServiceName);
+  if (resources.length > 0) {
+    console.log(`SACPCDEBUG : analyticsAPICreateResource :1: ${resourceProviderServiceName} resource found ${JSON.stringify(resources[0], null, 2)}`);
     return resources[0];
   }
   // start add walkthrough for given service.

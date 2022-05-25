@@ -10,6 +10,7 @@ import {
   $TSAny, $TSContext, open, AmplifySupportedService, AmplifyCategories, stateManager, IAmplifyResource,
 } from 'amplify-cli-core';
 import {
+  invokeAnalyticsAPICreateResource,
   invokeAnalyticsAPIGetResources,
 } from './analytics-resource-api';
 
@@ -60,7 +61,6 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
       resourceName = pinpointNotificationsMeta.resourceName; //eslint-disable-line
     }
   }
-  console.log('SACPCDEBUG: : ensurePinpointApp :1: Checking in Notifications category ');
   // Scan for Pinpoint resource in Notifications category
   if (!pinpointApp) {
     const scanOptions : $TSAny = {
@@ -72,7 +72,6 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
       resourceName = scanOptions.regulatedResourceName;
     }
   }
-  console.log('SACPCDEBUG: : ensurePinpointApp :2: Checking in Analytics category ');
   // Scan for Pinpoint resource in Analytics category
   if (!pinpointApp) {
     pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.ANALYTICS], undefined);
@@ -82,22 +81,25 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
     }
   }
   // Scan for Pinpoint resource which is only locally created but not yet pushed to the cloud
-  const resources: IAmplifyResource[] = await invokeAnalyticsAPIGetResources(context, AmplifySupportedService.PINPOINT);
-  if (resources.length > 0) {
-    resourceName = generateResourceName(resources[0].resourceName, envName);
-    // create resource in backend-config
-    context.exeInfo.backendConfig = NotificationsDB.addPartialNotificationsBackendConfig(resourceName);
+  if (!pinpointApp) {
+    const resources: IAmplifyResource[] = await invokeAnalyticsAPIGetResources(context, AmplifySupportedService.PINPOINT);
+    if (resources.length > 0) {
+      resourceName = generateResourceName(resources[0].resourceName, envName);
+    } else {
+      // Create the Pinpoint resource if not yet created
+      context.print.info('Notifications requires a Pinpoint analytics resource, creating.....');
+      const resourceResult = await invokeAnalyticsAPICreateResource(context, AmplifySupportedService.PINPOINT);
+      resourceName = resourceResult.resourceName;
+    }
+    const postCreateAmplifyMeta = await stateManager.getMeta();
     const pinpointRegion = NotificationsDB.getPinpointRegionMapping(context);
     // create resource in amplify-meta
-    pinpointApp = NotificationsDB.addPartialNotificationsAmplifyMeta(amplifyMeta, resourceName, pinpointRegion);
+    pinpointApp = NotificationsDB.addPartialNotificationsAmplifyMeta(postCreateAmplifyMeta, resourceName, pinpointRegion);
+    context.exeInfo.amplifyMeta = postCreateAmplifyMeta;
+    // create resource in backend-config
+    context.exeInfo.backendConfig = NotificationsDB.addPartialNotificationsBackendConfig(resourceName);
   }
 
-  // Create the Pinpoint resource if not yet created
-  if (!pinpointApp) {
-    context.print.info('');
-    console.log('SACPCDEBUG: : ensurePinpointApp :3: No Pinpoint resource found... Creating... ');
-    resourceName = await createPinpointApp(context, resourceName);
-  }
   context.exeInfo.serviceMeta = context.exeInfo.amplifyMeta[AmplifyCategories.NOTIFICATIONS][resourceName];
   context.exeInfo.pinpointApp = context.exeInfo.serviceMeta.output;
 };

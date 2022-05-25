@@ -1,3 +1,6 @@
+/**
+ *  API to update Notifications category state in the state-db ( backend-config, frontend-config, teams-provider, amplify-meta)
+ */
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
@@ -9,12 +12,14 @@ import { ICategoryMeta } from './notifications-amplify-meta-types';
 import { NotificationsResourceBackendConfig } from './notifications-backend-config-types';
 
 const PROVIDER_NAME = 'awscloudformation';
+
+
 /**
  * Create a new Pinpoint resource in backend-config for Notifications category.
  * @param pinpointResourceName Name of the pinpoint resource from Analytics
  * @returns backendConfig for reference
  */
-export const addPartialNotificationsBackendConfig = (pinpointResourceName: string): $TSAny => {
+export const addPartialNotificationsBackendConfig = (pinpointResourceName: string):$TSAny => {
   const projectPath = pathManager.findProjectRoot();
   const backendConfig = stateManager.getBackendConfig(projectPath);
   const resourceConfig : NotificationsResourceBackendConfig = {
@@ -22,8 +27,14 @@ export const addPartialNotificationsBackendConfig = (pinpointResourceName: strin
     channels: [],
     channelConfig: {},
   };
-  backendConfig[AmplifyCategories.NOTIFICATIONS] = { [pinpointResourceName]: resourceConfig };
-  stateManager.setBackendConfig(projectPath, backendConfig);
+
+  if (!backendConfig[AmplifyCategories.NOTIFICATIONS] || !backendConfig[AmplifyCategories.NOTIFICATIONS][pinpointResourceName]) {
+    backendConfig[AmplifyCategories.NOTIFICATIONS] = {
+      [pinpointResourceName]: resourceConfig,
+    };
+    stateManager.setBackendConfig(projectPath, backendConfig);
+    console.log('SACPCDEBUG: Saved BackendConfig : ', JSON.stringify(backendConfig, null, 2));
+  }
   return backendConfig;
 };
 
@@ -40,7 +51,7 @@ export const addPartialNotificationsAmplifyMeta = (amplifyMeta: $TSMeta, resourc
     Region: pinpointRegion,
     Name: resourceName,
   };
-    // save partial results in Amplify-meta. Identify related values will be placed after amplify push
+  // save partial results in Amplify-meta. Identify related values will be placed after amplify push
   constructResourceMeta(amplifyMeta, resourceName, partialPinpointApp);
   return partialPinpointApp;
 };
@@ -51,13 +62,17 @@ export const addPartialNotificationsAmplifyMeta = (amplifyMeta: $TSMeta, resourc
  * @param resourceName Pinpoint resource for notifications
  * @param pinpointApp Pinpoint resource metadata base class
  */
-export const constructResourceMeta = (amplifyMeta : $TSAny, resourceName: string, pinpointApp: Partial<ICategoryMeta>):void => {
-  amplifyMeta[AmplifyCategories.NOTIFICATIONS] = amplifyMeta[AmplifyCategories.NOTIFICATIONS] || {};
+export const constructResourceMeta = (amplifyMeta : $TSMeta, resourceName: string, pinpointApp: Partial<ICategoryMeta>):void => {
+  if (!amplifyMeta[AmplifyCategories.NOTIFICATIONS]) {
+    amplifyMeta[AmplifyCategories.NOTIFICATIONS] = { [resourceName]: {} };
+  }
   amplifyMeta[AmplifyCategories.NOTIFICATIONS][resourceName] = {
     service: AmplifySupportedService.PINPOINT,
     output: pinpointApp,
     lastPushTimeStamp: new Date(),
+    ...amplifyMeta[AmplifyCategories.NOTIFICATIONS][resourceName],
   };
+  return amplifyMeta;
 };
 
 /**

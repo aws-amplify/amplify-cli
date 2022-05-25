@@ -3,6 +3,7 @@ import { $TSContext, AmplifyCategories } from 'amplify-cli-core';
 import { ensurePinpointApp } from '../../pinpoint-helper';
 import { getAvailableChannels, getDisabledChannelsFromAmplifyMeta, enableChannel } from '../../notifications-manager';
 import { writeData } from '../../multi-env-manager';
+import { IChannelAPIResponse } from '../../notifications-api-types';
 
 export const name = 'add';
 export const alias = 'enable';
@@ -47,12 +48,10 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
     }
 
     if (channelName) {
-      console.log(`SACPCDEBUG:NOTIFICATIONS:Add:1: Calling Ensure Pinpoint App: ${channelName}`);
       await ensurePinpointApp(context, undefined);
-      console.log(`SACPCDEBUG:NOTIFICATIONS:Add:2: Calling Enable Pinpoint App: ${channelName}`);
-      await enableChannel(context, channelName);
+      const channelAPIResponse : IChannelAPIResponse|undefined = await enableChannel(context, channelName);
       console.log(`SACPCDEBUG:NOTIFICATIONS:Add:3: Calling Write Data: ${channelName}`);
-      await writeData(context);
+      await writeData(context, channelAPIResponse);
     }
   } else {
     context.print.info('All the available notification channels have already been enabled.');

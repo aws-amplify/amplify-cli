@@ -3,6 +3,7 @@ import { $TSContext } from 'amplify-cli-core';
 import * as pinpointHelper from '../../pinpoint-helper';
 import * as notificationManager from '../../notifications-manager';
 import * as multiEnvManager from '../../multi-env-manager';
+import { IChannelAPIResponse } from '../../notifications-api-types';
 
 /**
  * Configuration walkthrough for Notifications resources
@@ -26,8 +27,9 @@ export const run = async (context:$TSContext): Promise<$TSContext> => {
   }
 
   await pinpointHelper.ensurePinpointApp(context, undefined);
-  if (await notificationManager.configureChannel(context, channelName)) {
-    await multiEnvManager.writeData(context);
+  const channelAPIResponse : IChannelAPIResponse|undefined = await notificationManager.configureChannel(context, channelName);
+  if (channelAPIResponse) {
+    await multiEnvManager.writeData(context, channelAPIResponse);
   }
 
   return context;
