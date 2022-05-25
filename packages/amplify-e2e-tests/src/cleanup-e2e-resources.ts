@@ -20,8 +20,6 @@ const AWS_REGIONS_TO_RUN_TESTS = [
   'ap-southeast-2',
 ];
 
-const reportPath = path.normalize(path.join(__dirname, '..', 'amplify-e2e-reports', 'stale-resources.json'));
-
 const MULTI_JOB_APP = '<Amplify App reused by multiple apps>';
 const ORPHAN = '<orphan>';
 const UNKNOWN = '<unknown>';
@@ -388,7 +386,8 @@ const deleteCfnStack = async (stackName: string, region: string, resourceToRetai
   await cfnClient.waitFor('stackDeleteComplete', { StackName: stackName }).promise();
 };
 
-const generateReport = (jobs: _.Dictionary<ReportEntry>): void => {
+const generateReport = (jobs: _.Dictionary<ReportEntry>, resourceType: string): void => {
+  const reportPath = path.normalize(path.join(__dirname, '..', 'amplify-e2e-reports', `${resourceType}-stale-resources.json`));
   fs.ensureFileSync(reportPath);
   fs.writeFileSync(reportPath, JSON.stringify(jobs, null, 4));
 };
@@ -440,17 +439,29 @@ const cleanup = async (): Promise<void> => {
 
     // Kick off all GET/LIST requests, then yield for them all.
     const appPromises = AWS_REGIONS_TO_RUN_TESTS.map(region => getAmplifyApps(region));
-    const stackPromises = AWS_REGIONS_TO_RUN_TESTS.map(region => getStacks(region));
-    const bucketPromise = getS3Buckets();
-
     const apps = (await Promise.all(appPromises)).flat();
+
+    const amplifyAppsResources = mergeResourcesByCCIJob(apps, [], []);
+    const amplifyAppsStaleResources = _.pickBy(amplifyAppsResources, filterPredicate);
+    generateReport(amplifyAppsStaleResources, 'apps');
+    await deleteResources(amplifyAppsStaleResources);
+
+    const stackPromises = AWS_REGIONS_TO_RUN_TESTS.map(region => getStacks(region));
     const stacks = (await Promise.all(stackPromises)).flat();
+
+    const stacksResources = mergeResourcesByCCIJob([], stacks, []);
+    const stacksStaleResources = _.pickBy(stacksResources, filterPredicate);
+    generateReport(stacksStaleResources, 'stacks');
+    await deleteResources(stacksStaleResources);
+
+    const bucketPromise = getS3Buckets();
     const buckets = await bucketPromise;
 
-    const allResources = mergeResourcesByCCIJob(apps, stacks, buckets);
-    const staleResources = _.pickBy(allResources, filterPredicate);
-    generateReport(staleResources);
-    await deleteResources(staleResources);
+    const bucketsResources = mergeResourcesByCCIJob([], [], buckets);
+    const bucketsStaleResources = _.pickBy(bucketsResources, filterPredicate);
+    generateReport(bucketsStaleResources, 'buckets');
+    await deleteResources(bucketsStaleResources);
+
     console.log('Cleanup done!');
   }
 };
