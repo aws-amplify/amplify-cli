@@ -9,6 +9,9 @@ import {
   $TSAny, $TSContext, AmplifyCategories, AmplifySupportedService, stateManager,
 } from 'amplify-cli-core';
 import * as pinpointHelper from './pinpoint-helper';
+import {
+  IChannelAPIResponse, NotificationsChannelAPIModule,
+} from './notifications-api-types';
 
 const channelWorkers: Record<string, string> = {
   APNS: './channel-APNS',
@@ -122,24 +125,27 @@ export const getDisabledChannelsFromBackendConfig = ():Array<string> => {
 /**
  * Enable the selected notification channel
  */
-export const enableChannel = async (context:$TSContext, channelName:string): Promise<void> => {
+export const enableChannel = async (context:$TSContext, channelName:string): Promise<IChannelAPIResponse|undefined> => {
   const envName: string = stateManager.getCurrentEnvName() as string; // throws exception if env is not configured
   if (channelName in channelWorkers) {
     context.exeInfo.pinpointClient = await pinpointHelper.getPinpointClient(context, 'update', envName);
-    const channelWorker = require(path.join(__dirname, channelWorkers[channelName]));
-    await channelWorker.enable(context);
+    const channelActionHandler:NotificationsChannelAPIModule = require(path.join(__dirname, channelWorkers[channelName]));
+    const enableChannelResponse = await channelActionHandler.enable(context);
+    return enableChannelResponse;
   }
+  throw new Error(`Enable failed: invalid notification channel ${channelName}`);
 };
 
 /**
  * Disable the notification channels in use.
  */
-export const disableChannel = async (context : $TSContext, channelName: string): Promise<void> => {
+export const disableChannel = async (context : $TSContext, channelName: string): Promise<IChannelAPIResponse|undefined> => {
   const envName: string = stateManager.getCurrentEnvName() as string; // throws exception if env is not configured
   if (Object.keys(channelWorkers).indexOf(channelName) > -1) {
     context.exeInfo.pinpointClient = await pinpointHelper.getPinpointClient(context, 'update', envName);
-    const channelWorker = require(path.join(__dirname, channelWorkers[channelName]));
-    await channelWorker.disable(context);
+    const channelActionHandler:NotificationsChannelAPIModule = require(path.join(__dirname, channelWorkers[channelName]));
+    const enableChannelResponse = await channelActionHandler.disable(context);
+    return enableChannelResponse;
   }
 };
 
@@ -147,33 +153,34 @@ export const disableChannel = async (context : $TSContext, channelName: string):
  * Configure the Pinpoint resources,
  * Also create the required IAM policy to allow Pinpoint to trigger notifications
  */
-export const configureChannel = async (context: $TSContext, channelName: string):Promise<boolean> => {
+export const configureChannel = async (context: $TSContext, channelName: string):Promise<IChannelAPIResponse|undefined> => {
   const envName: string = stateManager.getCurrentEnvName() as string; // throws exception if env is not configured
 
   if (channelName in channelWorkers) {
     context.exeInfo.pinpointClient = await pinpointHelper.getPinpointClient(context, 'update', envName);
     if (context.exeInfo.serviceMeta.mobileHubMigrated === true) {
       context.print.error('No resources to update.');
-      return false;
+      return undefined;
     }
 
-    const channelWorker = require(path.join(__dirname, channelWorkers[channelName]));
-    await channelWorker.configure(context);
-    return true;
+    const channelActionHandler:NotificationsChannelAPIModule = require(path.join(__dirname, channelWorkers[channelName]));
+    const enableChannelResponse = await channelActionHandler.configure(context);
+    return enableChannelResponse;
   }
-  return false;
+  return undefined;
 };
 
 /**
  * Fetch all the configured channels from pinpoint
  */
-export const pullAllChannels = async (context: $TSContext, pinpointApp: string):Promise<$TSAny> => {
+export const pullAllChannels = async (context: $TSContext, pinpointAppName: string):Promise<Array<IChannelAPIResponse>> => {
   const envName: string = stateManager.getCurrentEnvName() as string; // throws exception if env is not configured
   const pullTasks: Array<$TSAny> = [];
   context.exeInfo.pinpointClient = await pinpointHelper.getPinpointClient(context, 'update', envName);
   Object.keys(channelWorkers).forEach(channelName => {
-    const channelWorker = require(path.join(__dirname, channelWorkers[channelName]));
-    pullTasks.push(() => channelWorker.pull(context, pinpointApp));
+    const channelActionHandler:NotificationsChannelAPIModule = require(path.join(__dirname, channelWorkers[channelName]));
+    pullTasks.push(() => channelActionHandler.pull(context, pinpointAppName));
   });
-  await sequential(pullTasks);
+  const pullChannelsResponseList : Array<IChannelAPIResponse> = await sequential(pullTasks);
+  return pullChannelsResponseList;
 };

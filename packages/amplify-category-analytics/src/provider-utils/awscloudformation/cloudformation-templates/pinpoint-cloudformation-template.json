@@ -76,11 +76,15 @@
       ]
     },
     "ShouldEnablePinpointInAppMessaging": {
-      "Fn::Equals": [
+      "Fn::Not": [
         {
-          "Ref": "pinpointInAppMsgPolicyName"
-        },
-        "NONE"
+          "Fn::Equals": [
+            {
+              "Ref": "pinpointInAppMsgPolicyName"
+            },
+            "NONE"
+          ]
+        }
       ]
     }
   },
@@ -548,70 +552,26 @@
           "Version": "2012-10-17",
           "Statement": [
             {
-              "Sid": "AmplifyCLIInAppMessaging0",
               "Effect": "Allow",
               "Action": [
                 "mobiletargeting:GetInAppMessages"
               ],
               "Resource": [
                 {
-                  "Fn::If": [
-                    "ShouldCreatePinpointApp",
-                    {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "arn:aws:mobiletargeting:*:",
-                          {
-                            "Fn::Select": [
-                              "4",
-                              {
-                                "Fn::Split": [
-                                  ":",
-                                  {
-                                    "Ref": "authRoleArn"
-                                  }
-                                ]
-                              }
-                            ]
-                          },
-                          ":apps/",
-                          {
-                            "Fn::GetAtt": [
-                              "PinpointFunctionOutputs",
-                              "Id"
-                            ]
-                          },
-                          "*"
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::Sub": "arn:aws:mobiletargeting:*:${AWS::AccountId}:apps/"
+                      },
+                      {
+                        "Fn::GetAtt": [
+                          "PinpointFunctionOutputs",
+                          "Id"
                         ]
-                      ]
-                    },
-                    {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "arn:aws:mobiletargeting:*:",
-                          {
-                            "Fn::Select": [
-                              "4",
-                              {
-                                "Fn::Split": [
-                                  ":",
-                                  {
-                                    "Ref": "authRoleArn"
-                                  }
-                                ]
-                              }
-                            ]
-                          },
-                          ":apps/",
-                          {
-                            "Ref": "appId"
-                          },
-                          "*"
-                        ]
-                      ]
-                    }
+                      },
+                      "*"
+                    ]
                   ]
                 }
               ]

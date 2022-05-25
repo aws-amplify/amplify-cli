@@ -3,6 +3,7 @@ import { $TSContext } from 'amplify-cli-core';
 import * as pinpointHelper from '../../pinpoint-helper';
 import * as notificationManager from '../../notifications-manager';
 import * as multiEnvManager from '../../multi-env-manager';
+import { IChannelAPIResponse } from '../../notifications-api-types';
 
 const PinpointApp = 'The Pinpoint application';
 const Cancel = 'Cancel';
@@ -48,8 +49,8 @@ export const run = async (context:$TSContext):Promise<$TSContext> => {
     if (channelName && channelName !== Cancel) {
       if (channelName !== PinpointApp) {
         await pinpointHelper.ensurePinpointApp(context, undefined);
-        await notificationManager.disableChannel(context, channelName);
-        await multiEnvManager.writeData(context);
+        const channelAPIResponse : IChannelAPIResponse|undefined = await notificationManager.disableChannel(context, channelName);
+        await multiEnvManager.writeData(context, channelAPIResponse);
       } else if (pinpointHelper.isAnalyticsAdded(context)) {
         context.print.error('Execution aborted.');
         context.print.info('You have an analytics resource in your backend tied to the Amazon Pinpoint resource');
@@ -64,7 +65,7 @@ export const run = async (context:$TSContext):Promise<$TSContext> => {
         if (answer.deletePinpointApp) {
           await pinpointHelper.deletePinpointApp(context);
           context.print.info('The Pinpoint application has been successfully deleted.');
-          await multiEnvManager.writeData(context);
+          await multiEnvManager.writeData(context, undefined);
         }
       }
     }
