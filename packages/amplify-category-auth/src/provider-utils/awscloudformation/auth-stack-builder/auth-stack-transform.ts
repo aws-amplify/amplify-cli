@@ -168,7 +168,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       useEnabledMfas: FeatureFlags.getBoolean('auth.useenabledmfas'),
       dependsOn: [],
     };
-    if (this._cliInputs.cognitoConfig.hostedUI && this._cliInputs.cognitoConfig.authProvidersUserPool) {
+    if (this._cliInputs.cognitoConfig.hostedUI && !_.isEmpty(this._cliInputs.cognitoConfig.authProvidersUserPool)) {
       cognitoStackProps.oAuthSecretsPathAmplifyAppId = getAppId();
     }
 
