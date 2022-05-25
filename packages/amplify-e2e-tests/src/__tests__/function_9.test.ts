@@ -21,6 +21,7 @@ import {
   addFeatureFlag,
   updateApiSchema,
   createRandomName,
+  generateRandomShortId,
 } from 'amplify-e2e-core';
 import fs from 'fs-extra';
 import path from 'path';
@@ -42,9 +43,8 @@ describe('nodejs', () => {
 
     it('environment vars comment should update on permission update', async () => {
       await initJSProjectWithProfile(projRoot, {});
-      const random = Math.floor(Math.random() * 10000);
-      const funcName = `nodetestfn${random}`;
-      const ddbName = `nodetestddb`;
+      const funcName = `nodetestfn${generateRandomShortId()}`;
+      const ddbName = 'nodetestddb';
 
       await addFunction(
         projRoot,
@@ -82,7 +82,7 @@ describe('nodejs', () => {
       await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
       await updateApiSchema(projRoot, appName, 'two-model-schema.graphql');
 
-      const random = Math.floor(Math.random() * 10000);
+      const random = generateRandomShortId();
       const fnName = `integtestfn${random}`;
       const ddbName = `ddbTable${random}`;
 
@@ -149,7 +149,7 @@ describe('nodejs', () => {
       await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
       await updateApiSchema(projRoot, appName, 'two-model-schema.graphql');
 
-      const random = Math.floor(Math.random() * 10000);
+      const random = generateRandomShortId();
       const fnName = `integtestfn${random}`;
       const ddbName = `ddbTable${random}`;
 
@@ -198,8 +198,7 @@ describe('nodejs', () => {
     });
 
     it('should be able to query AppSync with minimal permissions with featureFlag', async () => {
-      const random = Math.floor(Math.random() * 10000);
-      const fnName = `apienvvar${random}`;
+      const fnName = `apienvvar${generateRandomShortId()}`;
       const createTodo = `
       mutation CreateTodo($input: CreateTodoInput!) {
         createTodo(input: $input) {
@@ -241,9 +240,7 @@ describe('nodejs', () => {
       const lambdaCFN = readJsonFile(
         path.join(projRoot, 'amplify', 'backend', 'function', fnName, `${fnName}-cloudformation-template.json`),
       );
-      const urlKey = Object.keys(lambdaCFN.Resources.LambdaFunction.Properties.Environment.Variables).filter(value =>
-        value.endsWith('GRAPHQLAPIENDPOINTOUTPUT'),
-      )[0];
+      const urlKey = Object.keys(lambdaCFN.Resources.LambdaFunction.Properties.Environment.Variables).filter(value => value.endsWith('GRAPHQLAPIENDPOINTOUTPUT'))[0];
       const payloadObj = { urlKey, mutation: createTodo, variables: { input: { name: 'todo', description: 'sampleDesc' } } };
       const fnResponse = await invokeFunction(functionName, JSON.stringify(payloadObj), region);
 
@@ -258,8 +255,7 @@ describe('nodejs', () => {
 
     it('should be able to query AppSync with minimal permissions with featureFlag for function and vNext GraphQL API', async () => {
       const appName = 'functiongqlvnext';
-      const random = Math.floor(Math.random() * 10000);
-      const fnName = `apienvvar${random}`;
+      const fnName = `apienvvar${generateRandomShortId()}`;
       const createTodo = `
         mutation CreateTodo($input: CreateTodoInput!) {
           createTodo(input: $input) {
@@ -301,9 +297,7 @@ describe('nodejs', () => {
       const lambdaCFN = readJsonFile(
         path.join(projRoot, 'amplify', 'backend', 'function', fnName, `${fnName}-cloudformation-template.json`),
       );
-      const urlKey = Object.keys(lambdaCFN.Resources.LambdaFunction.Properties.Environment.Variables).filter(value =>
-        value.endsWith('GRAPHQLAPIENDPOINTOUTPUT'),
-      )[0];
+      const urlKey = Object.keys(lambdaCFN.Resources.LambdaFunction.Properties.Environment.Variables).filter(value => value.endsWith('GRAPHQLAPIENDPOINTOUTPUT'))[0];
       const payloadObj = { urlKey, mutation: createTodo, variables: { input: { name: 'todo', description: 'sampleDesc' } } };
       const fnResponse = await invokeFunction(functionName, JSON.stringify(payloadObj), region);
 
@@ -317,8 +311,7 @@ describe('nodejs', () => {
     });
 
     it('should be able to make console calls with feature flag turned off', async () => {
-      const random = Math.floor(Math.random() * 10000);
-      const fnName = `apienvvar${random}`;
+      const fnName = `apienvvar${generateRandomShortId()}`;
       await initJSProjectWithProfile(projRoot, {});
       await addApi(projRoot, {
         IAM: {},
@@ -348,9 +341,7 @@ describe('nodejs', () => {
       const lambdaCFN = readJsonFile(
         path.join(projRoot, 'amplify', 'backend', 'function', fnName, `${fnName}-cloudformation-template.json`),
       );
-      const idKey = Object.keys(lambdaCFN.Resources.LambdaFunction.Properties.Environment.Variables).filter(value =>
-        value.endsWith('GRAPHQLAPIIDOUTPUT'),
-      )[0];
+      const idKey = Object.keys(lambdaCFN.Resources.LambdaFunction.Properties.Environment.Variables).filter(value => value.endsWith('GRAPHQLAPIIDOUTPUT'))[0];
       const fnResponse = await invokeFunction(functionName, JSON.stringify({ idKey }), region);
 
       expect(fnResponse.StatusCode).toBe(200);
@@ -367,8 +358,7 @@ describe('nodejs', () => {
       await addApiWithoutSchema(projRoot);
       await updateApiSchema(projRoot, appName, 'simple_model.graphql');
 
-      const random = Math.floor(Math.random() * 10000);
-      const fnName = `integtestfn${random}`;
+      const fnName = `integtestfn${generateRandomShortId()}`;
 
       await addFunction(
         projRoot,
