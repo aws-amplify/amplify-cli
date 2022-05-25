@@ -32,6 +32,14 @@ export class NoUsageData implements IUsageData, IFlowData {
       { version: "", category: "", cmd: "", executable: "", input: { argv: [] }, isHeadless: true, optionFlowData: [], runtime:"", subCmd: "", timestamp: "" },
     );
   }
+  
+  /**
+   *  Noop implementation of calculatePushNormalizationFactor
+   */
+  calculatePushNormalizationFactor(__events: { StackId: string; PhysicalResourceId: string; }[], __stackId: string): void {
+    /* noop */
+  }
+
   /**
    * Noop implementation of emitError
    */
@@ -69,10 +77,10 @@ export class NoUsageData implements IUsageData, IFlowData {
   stopCodePathTimer(): void { /* noop */ }
 
   /**
-   * Noop function 
+   * Noop function
    */
   // eslint-disable-next-line class-methods-use-this
-  pushInteractiveFlow = (_prompt: string, _input: unknown): void => {
+  pushInteractiveFlow = (__prompt: string, __input: unknown): void => {
     /* noop */
   }
 
@@ -80,15 +88,15 @@ export class NoUsageData implements IUsageData, IFlowData {
    * Noop function
    */
   // eslint-disable-next-line class-methods-use-this
-  pushHeadlessFlow = (_headlessFlowDataString: string, _input: ICommandInput): void => {
+  pushHeadlessFlow = (__headlessFlowDataString: string, __input: ICommandInput): void => {
     /* noop */
   }
 
   /**
    * Noop function to set isHeadless flag in flowLogger
-   * @param _headless 
+   * @param _headless
    */
-  setIsHeadless = (_headless: boolean): void => {
+  setIsHeadless = (__headless: boolean): void => {
     /* noop */
   }
 

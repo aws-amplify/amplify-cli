@@ -125,6 +125,7 @@
   "stderr",
   "stdin",
   "stdout",
+  "stringified",
   "subcommand",
   "sumerian",
   "tablename",
