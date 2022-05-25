@@ -256,6 +256,8 @@ export const updateUserPoolGroups = async (context: $TSContext, resourceName: st
       groupName,
       precedence: index + 1,
     }));
+    // underlying logic takes previous user-pool precedece files object (amplifygenerated/ Cx overided)
+    // and updates with new settings keeping custom policies intact
     const updatedUserPoolList: UserPoolGroupMetadata[] = [];
     currentUserPoolGroupPrecedenceList.forEach(group1 => {
       prevUserPoolGroupPrecedenceList.forEach(group2 => {

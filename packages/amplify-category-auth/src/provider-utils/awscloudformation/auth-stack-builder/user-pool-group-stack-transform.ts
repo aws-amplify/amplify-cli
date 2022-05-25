@@ -223,7 +223,7 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
       if (group.customPolicies) {
         group.customPolicies.forEach((policyItr: $TSAny) => {
           const policy = policyItr;
-          if (policy.PolicyDocument && policy.PolicyDocument.Statement) {
+          if (policy?.PolicyDocument?.Statement) {
             policy.PolicyDocument.Statement.forEach((statementItr: { Resource: string | string[] | $TSObject; }) => {
               const statement = statementItr;
               if (statement.Resource.includes('${env}')) {
