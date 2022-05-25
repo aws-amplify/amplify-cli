@@ -23,6 +23,25 @@ jest.mock('amplify-cli-core', () => ({
         {
           groupName: 'adminMock',
           precedence: 2,
+          customPolicies: [
+            {
+              PolicyName: 'analytics-pinpoint-policy',
+              PolicyDocument: {
+                Version: '2012-10-17',
+                Statement: [
+                  {
+                    Effect: 'Allow',
+                    Action: [
+                      'mockActions',
+                    ],
+                    Resource: [
+                      'mockArn',
+                    ],
+                  },
+                ],
+              },
+            },
+          ],
         },
       ]),
   },
@@ -50,7 +69,7 @@ const contextStub = {};
 
 const contextStubTyped = contextStub as unknown as $TSContext;
 describe('Check UserPool Group Template', () => {
-  it('Generated root stack template during Push one group', async () => {
+  it('Generated userpool group stack template during Push one group', async () => {
     // CFN transform for UserPool Group stack
 
     const resourceName = 'mockResource';
@@ -59,7 +78,7 @@ describe('Check UserPool Group Template', () => {
     expect(mockTemplate).toMatchSnapshot();
   });
 
-  it('Generated root stack template during Push with two groups', async () => {
+  it('Generated userpool group stack template during Push with two groups', async () => {
     // CFN transform for UserPool Group stack
 
     const resourceName = 'mockResource';

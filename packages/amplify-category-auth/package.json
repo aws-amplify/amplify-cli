@@ -34,6 +34,7 @@
     "@aws-cdk/core": "~1.124.0",
     "amplify-cli-core": "2.8.0",
     "amplify-headless-interface": "1.14.3",
+    "amplify-prompts": "2.1.0",
     "amplify-util-headless-input": "1.9.4",
     "amplify-util-import": "2.2.30",
     "aws-cdk": "~1.124.0",

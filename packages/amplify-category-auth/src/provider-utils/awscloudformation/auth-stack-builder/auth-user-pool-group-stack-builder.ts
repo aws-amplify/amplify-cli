@@ -186,7 +186,7 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
           },
         });
         if (group.customPolicies && group.customPolicies.length > 0) {
-          this.userPoolGroupRole[`${group.groupName}`].addPropertyOverride('Policies', JSON.stringify(group.customPolicies, null, 4));
+          this.userPoolGroupRole[`${group.groupName}`].addPropertyOverride('Policies', group.customPolicies);
         }
       }
     });

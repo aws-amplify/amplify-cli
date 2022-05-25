@@ -13,7 +13,10 @@ import { copySync, ensureDirSync, existsSync } from 'fs-extra';
 import { get } from 'lodash';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
-import { adminAuthAssetRoot, cfnTemplateRoot, privateKeys, triggerRoot } from '../constants';
+import { UserPoolGroupMetadata } from '../auth-stack-builder/user-pool-group-stack-transform';
+import {
+  adminAuthAssetRoot, cfnTemplateRoot, privateKeys, triggerRoot,
+} from '../constants';
 import { CognitoConfiguration } from '../service-walkthrough-types/awsCognito-user-input-types';
 import { AuthTriggerConfig, AuthTriggerConnection } from '../service-walkthrough-types/cognito-user-input-types';
 import { generateUserPoolGroupStackTemplate } from './generate-user-pool-group-stack-template';
@@ -81,12 +84,15 @@ export const copyCfnTemplate = async (context: $TSContext, category: string, opt
     },
   ];
 
-  const privateParams = Object.assign({}, options);
+  const privateParams = { ...options };
   privateKeys.forEach(p => delete privateParams[p]);
 
   return await context.amplify.copyBatch(context, copyJobs, privateParams, true);
 };
 
+/**
+ * save auth resource parameters
+ */
 export const saveResourceParameters = (
   context: $TSContext,
   providerName: string,
@@ -96,12 +102,15 @@ export const saveResourceParameters = (
   envSpecificParams: $TSAny[] = [],
 ) => {
   const provider = context.amplify.getPluginInstance(context, providerName);
-  let privateParams = Object.assign({}, params);
+  let privateParams = { ...params };
   privateKeys.forEach(p => delete privateParams[p]);
   privateParams = removeDeprecatedProps(privateParams);
   provider.saveResourceParameters(context, category, resource, privateParams, envSpecificParams);
 };
 
+/**
+ * removes extra parameters from auth cfn
+ */
 export const removeDeprecatedProps = (props: $TSObject) => {
   [
     'authRoleName',
@@ -177,6 +186,9 @@ const lambdaTriggers = async (coreAnswers: $TSObject, context: $TSContext, previ
   coreAnswers.dependsOn = context.amplify.dependsOnBlock(context, dependsOnKeys, 'Cognito');
 };
 
+/**
+ * Creates Userpool groups
+ */
 export const createUserPoolGroups = async (context: $TSContext, resourceName: string, userPoolGroupList?: string[]) => {
   if (userPoolGroupList && userPoolGroupList.length > 0) {
     const userPoolGroupPrecedenceList = [];
@@ -233,16 +245,32 @@ export const createUserPoolGroups = async (context: $TSContext, resourceName: st
   }
 };
 
-export const updateUserPoolGroups = async (context: $TSContext, resourceName: string, userPoolGroupList?: string[]) => {
+/**
+ * Updates UserPool Groups
+ */
+export const updateUserPoolGroups = async (context: $TSContext, resourceName: string, userPoolGroupList?: string[]): Promise<void> => {
   if (userPoolGroupList && userPoolGroupList.length > 0) {
-    const userPoolGroupPrecedenceList = userPoolGroupList.map((groupName: string, index: number) => ({
+    const userPoolGroupFolder = path.join(pathManager.getBackendDirPath(), AmplifyCategories.AUTH, 'userPoolGroups');
+    const prevUserPoolGroupPrecedenceList = JSONUtilities.readJson<UserPoolGroupMetadata[]>(path.join(userPoolGroupFolder, 'user-pool-group-precedence.json'), { throwIfNotExist: false }) ?? [];
+    const currentUserPoolGroupPrecedenceList = userPoolGroupList.map((groupName: string, index: number) => ({
       groupName,
       precedence: index + 1,
     }));
+    // underlying logic takes previous user-pool precedece files object (amplifygenerated/ Cx overided)
+    // and updates with new settings keeping custom policies intact
+    const updatedUserPoolList: UserPoolGroupMetadata[] = [];
+    currentUserPoolGroupPrecedenceList.forEach(group1 => {
+      prevUserPoolGroupPrecedenceList.forEach(group2 => {
+        const newGroup = group1;
+        const oldGroup = group2;
+        if (newGroup.groupName === oldGroup.groupName) {
+          updatedUserPoolList.push({ ...oldGroup, ...newGroup });
+        }
+      });
+    });
 
-    const userPoolGroupFolder = path.join(pathManager.getBackendDirPath(), AmplifyCategories.AUTH, 'userPoolGroups');
     ensureDirSync(userPoolGroupFolder);
-    JSONUtilities.writeJson(path.join(userPoolGroupFolder, 'user-pool-group-precedence.json'), userPoolGroupPrecedenceList);
+    JSONUtilities.writeJson(path.join(userPoolGroupFolder, 'user-pool-group-precedence.json'), updatedUserPoolList);
 
     context.amplify.updateamplifyMetaAfterResourceUpdate(AmplifyCategories.AUTH, 'userPoolGroups', 'userPoolGroups', {
       service: 'Cognito-UserPool-Groups',
