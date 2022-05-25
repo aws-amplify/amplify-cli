@@ -32,6 +32,7 @@
   "decrypt",
   "defs",
   "dict",
+  "diffable",
   "dotenv",
   "durations",
   "dynamodb",
