@@ -120,6 +120,8 @@ describe('test usageData', () => {
     ];
     UsageData.Instance.calculatePushNormalizationFactor(events, 'arn:aws:cloudformation:us-east-1:1231212312123:stack/amplify-cfnupdatestack-dev-211605/8f3203d0-dadd-11ec-8998-0a4143e12911');
     /* eslint-enable spellcheck/spell-checker */
+
+    expect((UsageData.Instance as unknown as any).pushNormalizationFactor).toEqual(3);
   });
 
   it('errors if starting a duplicate timer', () => {
