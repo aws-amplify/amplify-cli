@@ -5,6 +5,7 @@ import {
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
+  generateRandomShortId,
   getCategoryParameters,
   getParameters,
   getProjectMeta,
@@ -33,8 +34,7 @@ describe('function secret value', () => {
   it('configures secret that is accessible in the cloud', async () => {
     // add func with secret
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false });
-    const random = Math.floor(Math.random() * 10000);
-    const funcName = `secretsTest${random}`;
+    const funcName = `secretsTest${generateRandomShortId()}`;
     await addFunction(
       projRoot,
       {
@@ -69,8 +69,7 @@ describe('function secret value', () => {
   it('removes secrets immediately when func not pushed', async () => {
     // add func w/ secret
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false });
-    const random = Math.floor(Math.random() * 10000);
-    const funcName = `secretsTest${random}`;
+    const funcName = `secretsTest${generateRandomShortId()}`;
     await addFunction(
       projRoot,
       {
@@ -107,8 +106,7 @@ describe('function secret value', () => {
   it('removes secrets immediately when unpushed function is removed from project', async () => {
     // add func w/ secret
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false });
-    const random = Math.floor(Math.random() * 10000);
-    const funcName = `secretsTest${random}`;
+    const funcName = `secretsTest${generateRandomShortId()}`;
     await addFunction(
       projRoot,
       {
@@ -135,8 +133,7 @@ describe('function secret value', () => {
   it('removes secrets on push when func is already pushed', async () => {
     // add func w/ secret
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false });
-    const random = Math.floor(Math.random() * 10000);
-    const funcName = `secretsTest${random}`;
+    const funcName = `secretsTest${generateRandomShortId()}`;
     await addFunction(
       projRoot,
       {
@@ -180,8 +177,7 @@ describe('function secret value', () => {
   it('removes secrets on push when pushed function is removed', async () => {
     // add func w/ secret
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false });
-    const random = Math.floor(Math.random() * 10000);
-    const funcName = `secretsTest${random}`;
+    const funcName = `secretsTest${generateRandomShortId()}`;
     await addFunction(
       projRoot,
       {
@@ -216,8 +212,7 @@ describe('function secret value', () => {
   it('removes / copies secrets when env removed / added, respectively', async () => {
     // add func w/ secret
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false });
-    const random = Math.floor(Math.random() * 10000);
-    const funcName = `secretsTest${random}`;
+    const funcName = `secretsTest${generateRandomShortId()}`;
     await addFunction(
       projRoot,
       {
@@ -250,8 +245,7 @@ describe('function secret value', () => {
   it('prompts for missing secrets and removes unused secrets on push', async () => {
     // add func w/ secret
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false });
-    const random = Math.floor(Math.random() * 10000);
-    const funcName = `secretsTest${random}`;
+    const funcName = `secretsTest${generateRandomShortId()}`;
     await addFunction(
       projRoot,
       {

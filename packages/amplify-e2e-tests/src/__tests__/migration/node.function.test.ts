@@ -11,6 +11,7 @@ import {
   addAuthWithDefault,
   createNewProjectDir,
   deleteProjectDir,
+  generateRandomShortId,
 } from 'amplify-e2e-core';
 
 describe('nodejs version migration tests', () => {
@@ -28,8 +29,7 @@ describe('nodejs version migration tests', () => {
   it('init a project and add simple function and migrate node version', async () => {
     await initJSProjectWithProfile(projectRoot, {});
 
-    const random = Math.floor(Math.random() * 10000);
-    const functionName = `nodefunction${random}`;
+    const functionName = `nodefunction${generateRandomShortId()}`;
 
     await addAuthWithDefault(projectRoot);
     await addFunction(projectRoot, { functionTemplate: 'Hello World', name: functionName }, 'nodejs');

@@ -11,6 +11,7 @@
 /* eslint-disable import/no-dynamic-require */
 /* eslint-disable spellcheck/spell-checker */
 /* eslint-disable @typescript-eslint/no-var-requires */
+
 const category = 'auth';
 
 const path = require('path');
@@ -92,6 +93,12 @@ async function transformCategoryStack(context, resource) {
   if (resource.service === AmplifySupportedService.COGNITO) {
     if (canResourceBeTransformed(resource.resourceName)) {
       await generateAuthStackTemplate(context, resource.resourceName);
+    }
+  }
+  if (resource.service === AmplifySupportedService.COGNITOUSERPOOLGROUPS) {
+    const authResourceName = await getAuthResourceName(context);
+    if (canResourceBeTransformed(authResourceName)) {
+      await generateAuthStackTemplate(context, authResourceName);
     }
   }
 }
@@ -522,7 +529,6 @@ const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
  * entry point for amplify events
  */
 async function handleAmplifyEvent(context, args) {
-  context.print.info(`Received event args ${args}`);
   switch (args.event) {
     case 'PrePush':
       await prePushHandler(context);

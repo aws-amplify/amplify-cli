@@ -17,6 +17,7 @@
   "bool",
   "buildspec",
   "callout",
+  "camelcase",
   "cfn",
   "circleci",
   "cloudformation",

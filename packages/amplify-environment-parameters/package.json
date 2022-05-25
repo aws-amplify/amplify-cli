@@ -22,7 +22,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "amplify-cli-core": "2.7.0",
+    "amplify-cli-core": "2.8.0",
     "lodash": "^4.17.21"
   },
   "devDependencies": {

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Check UserPool Group Template Generated root stack template during Push one group 1`] = `
+exports[`Check UserPool Group Template Generated userpool group stack template during Push one group 1`] = `
 Object {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Conditions": Object {
@@ -319,7 +319,7 @@ exports.handler = (event, context) => {
 }
 `;
 
-exports[`Check UserPool Group Template Generated root stack template during Push with two groups 1`] = `
+exports[`Check UserPool Group Template Generated userpool group stack template during Push with two groups 1`] = `
 Object {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Conditions": Object {
@@ -620,6 +620,25 @@ exports.handler = (event, context) => {
           ],
           "Version": "2012-10-17",
         },
+        "Policies": Array [
+          Object {
+            "PolicyDocument": Object {
+              "Statement": Array [
+                Object {
+                  "Action": Array [
+                    "mockActions",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": Array [
+                    "mockArn",
+                  ],
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "analytics-pinpoint-policy",
+          },
+        ],
         "RoleName": Object {
           "Fn::Join": Array [
             "",
