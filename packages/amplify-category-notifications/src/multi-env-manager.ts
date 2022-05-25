@@ -13,6 +13,7 @@ import {
   scanCategoryMetaForPinpoint,
 } from './pinpoint-helper';
 import * as notificationManager from './notifications-manager';
+import { ChannelAction, IChannelAPIResponse } from './notifications-api-types';
 
 /**
  * Create Pinpoint resource in Analytics, Create Pinpoint Meta for Notifications category and
@@ -27,7 +28,7 @@ export const initEnv = async (context: $TSContext):Promise<$TSAny> => {
   if (pinpointNotificationsMeta) {
     // remove this line after init and init-push are separated.
     await pushChanges(context, pinpointNotificationsMeta);
-    await writeData(context);
+    await writeData(context, undefined);
   }
   return pinpointNotificationsMeta;
 };
@@ -262,73 +263,117 @@ const getPinpointResourceNameFromBackendConfig = (backendConfig: $TSAny): string
 };
 
 /**
- * Updates notification channel for pinpoint resource in backendConfig
- * @param channelName Name of Pinpoint notification channel to toggle
+ * Enables notification channel for pinpoint resource in backendConfig
+ * @param channelName Name of Pinpoint notification channel to enable
  */
-export const toggleChannelBackendConfig = async (channelName: string):Promise<void> => {
-  const backendConfig = await stateManager.getBackendConfig();
+export const enableChannelBackendConfig = async (channelName: string):Promise<$TSAny> => {
+  const projectPath = pathManager.findProjectRoot();
+  const backendConfig = stateManager.getBackendConfig(projectPath);
   const pinpointResourceName = getPinpointResourceNameFromBackendConfig(backendConfig);
-  console.log('SACPCDEBUG: toggleChannelBackendConfig : pinpoint name: ', pinpointResourceName, JSON.stringify(backendConfig, null, 2));
   // if exists , then remove , else add
-  if (!backendConfig[AmplifyCategories.NOTIFICATIONS]) {
+  if (!backendConfig[AmplifyCategories.NOTIFICATIONS] || !backendConfig[AmplifyCategories.NOTIFICATIONS][pinpointResourceName]) {
     backendConfig[AmplifyCategories.NOTIFICATIONS] = {
       [pinpointResourceName]: { Service: AmplifySupportedService.PINPOINT, channels: [channelName] },
     };
   } else if (!backendConfig[AmplifyCategories.NOTIFICATIONS][pinpointResourceName].channels) {
     backendConfig[AmplifyCategories.NOTIFICATIONS][pinpointResourceName].channels = [channelName];
-  } else if (backendConfig[AmplifyCategories.NOTIFICATIONS][pinpointResourceName].channels.includes(channelName)) {
-    // remove from list
-    const { channels } = backendConfig[AmplifyCategories.NOTIFICATIONS][pinpointResourceName];
-    backendConfig[AmplifyCategories.NOTIFICATIONS][pinpointResourceName].channels = channels.filter((ch: string) => ch !== channelName);
-    console.log(`SACPCDEBUG: toggleChannelBackendConfig : Removed ${channelName} pinpoint name: `, pinpointResourceName);
-  } else {
+  } else if (!backendConfig[AmplifyCategories.NOTIFICATIONS][pinpointResourceName].channels.includes(channelName)) {
     // add to list
     backendConfig[AmplifyCategories.NOTIFICATIONS][pinpointResourceName].channels.push(channelName);
-    console.log(`SACPCDEBUG: toggleChannelBackendConfig : Added to ${backendConfig[AmplifyCategories.NOTIFICATIONS][pinpointResourceName]} Channels:`,
-      backendConfig[AmplifyCategories.NOTIFICATIONS][pinpointResourceName].channels);
   }
-  console.log(`SACPCDEBUG: toggleChannelBackendConfig : Added ${channelName} Channels:`,
-    backendConfig[AmplifyCategories.NOTIFICATIONS]);
-  stateManager.setBackendConfig(undefined, backendConfig);
+  stateManager.setBackendConfig(projectPath, backendConfig);
+  return backendConfig;
+};
+
+/**
+ * Disables notification channel for pinpoint resource in backendConfig
+ * @param channelName Name of Pinpoint notification channel to disable
+ */
+export const disableChannelBackendConfig = async (channelName: string):Promise<$TSAny> => {
+  const projectPath = pathManager.findProjectRoot();
+  const backendConfig = stateManager.getBackendConfig(projectPath);
+  const pinpointResourceName = getPinpointResourceNameFromBackendConfig(backendConfig);
+  // remove from list
+  if (backendConfig[AmplifyCategories.NOTIFICATIONS] && backendConfig[AmplifyCategories.NOTIFICATIONS][pinpointResourceName]?.length) {
+    const { channels } = backendConfig[AmplifyCategories.NOTIFICATIONS][pinpointResourceName];
+    backendConfig[AmplifyCategories.NOTIFICATIONS][pinpointResourceName].channels = channels.filter((ch: string) => ch !== channelName);
+    console.log(`SACPCDEBUG: disableChannelBackendConfig : Removed ${channelName} pinpoint name: `, pinpointResourceName);
+    stateManager.setBackendConfig(projectPath, backendConfig);
+    return backendConfig;
+  }
+};
+
+/**
+ * use the API response to update the backend config
+ * @param channelAPIResponse Notifications channel API response
+ */
+export const updateNotificationsChannelBackendConfig = async (channelAPIResponse: IChannelAPIResponse):Promise<$TSAny> => {
+  let updatedBackendConfig:$TSAny;
+  switch (channelAPIResponse.action) {
+    case ChannelAction.ENABLE:
+      // save in backend-config db
+      updatedBackendConfig = await enableChannelBackendConfig(channelAPIResponse.channel);
+      // save in amplify-meta db after amplify push
+      // save in teams-provider db from amplify-meta db
+      break;
+    case ChannelAction.DISABLE:
+      updatedBackendConfig = await disableChannelBackendConfig(channelAPIResponse.channel);
+      break;
+    case ChannelAction.CONFIGURE:
+      throw new Error('Action not currently supported');
+      break;
+    case ChannelAction.PULL:
+      throw new Error('Action not currently supported');
+      break;
+    default:
+      throw new Error('Action not currently supported');
+  }
+  return updatedBackendConfig;
 };
 
 /**
  * write TeamProviderInfo, BackendConfig and AmplifyMeta files
  * @param context amplify-cli context
  */
-export const writeData = async (context: $TSContext):Promise<void> => {
-  const amplifyMeta = stateManager.getMeta();
-  const categoryMeta = amplifyMeta[AmplifyCategories.NOTIFICATIONS];
-  let pinpointMeta;
-  if (categoryMeta) {
-    const availableChannels = notificationManager.getAvailableChannels();
-    const enabledChannels: Array<string> = [];
-    const resources = Object.keys(categoryMeta);
-    for (let i = 0; i < resources.length; i++) {
-      const serviceMeta = categoryMeta[resources[i]];
-      if (serviceMeta.service === AmplifySupportedService.PINPOINT && serviceMeta.output && serviceMeta.output.Id) {
-        availableChannels.forEach(channel => {
-          if (serviceMeta.output[channel] && serviceMeta.output[channel].Enabled) {
-            enabledChannels.push(channel);
-          }
-        });
-        pinpointMeta = {
-          serviceName: resources[i],
-          service: serviceMeta.service,
-          channels: enabledChannels,
-          Name: serviceMeta.output.Name,
-          Id: serviceMeta.output.Id,
-          Region: serviceMeta.output.Region,
-        };
-        break;
+export const writeData = async (context: $TSContext, channelAPIResponse: IChannelAPIResponse | undefined):Promise<void> => {
+  if (!channelAPIResponse) {
+    const amplifyMeta = stateManager.getMeta();
+    const categoryMeta = amplifyMeta[AmplifyCategories.NOTIFICATIONS];
+    let pinpointMeta;
+    if (categoryMeta) {
+      const availableChannels = notificationManager.getAvailableChannels();
+      const enabledChannels: Array<string> = [];
+      const resources = Object.keys(categoryMeta);
+      for (let i = 0; i < resources.length; i++) {
+        const serviceMeta = categoryMeta[resources[i]];
+        if (serviceMeta.service === AmplifySupportedService.PINPOINT && serviceMeta.output && serviceMeta.output.Id) {
+          availableChannels.forEach(channel => {
+            if (serviceMeta.output[channel] && serviceMeta.output[channel].Enabled) {
+              enabledChannels.push(channel);
+            }
+          });
+          pinpointMeta = {
+            serviceName: resources[i],
+            service: serviceMeta.service,
+            channels: enabledChannels,
+            Name: serviceMeta.output.Name,
+            Id: serviceMeta.output.Id,
+            Region: serviceMeta.output.Region,
+          };
+          break;
+        }
       }
     }
+    await ensureEnvParamManager();
+    writeTeamProviderInfo(pinpointMeta); // update Pinpoint data
+    writeBackendConfig(context, pinpointMeta, context.amplify.pathManager.getBackendConfigFilePath());
+    writeAmplifyMeta(context, categoryMeta, context.amplify.pathManager.getAmplifyMetaFilePath());
+    await context.amplify.onCategoryOutputsChange(context, undefined, undefined);
+  } else {
+    // Team provider info and backend config are updated after push
+    // SACPCTBD: Do we need to check if pinpoint application ID already exists and if so update meta ?
+    await updateNotificationsChannelBackendConfig(channelAPIResponse);
   }
-  await ensureEnvParamManager();
-  writeTeamProviderInfo(pinpointMeta); // update Pinpoint data
-  writeBackendConfig(context, pinpointMeta, context.amplify.pathManager.getBackendConfigFilePath());
-  writeAmplifyMeta(context, categoryMeta, context.amplify.pathManager.getAmplifyMetaFilePath());
-  await context.amplify.onCategoryOutputsChange(context, undefined, undefined);
   /** SACPCDEBUG - disable updating Amplify-meta for notifications - only update params in analytics.
   writeBackendConfig(context, pinpointMeta, context.amplify.pathManager.getCurrentBackendConfigFilePath());
   writeAmplifyMeta(context, categoryMeta, context.amplify.pathManager.getAmplifyMetaFilePath());
@@ -462,7 +507,8 @@ const fillTeamProviderInfo = (context: $TSContext, migrationInfo: $TSAny):void =
 module.exports = {
   initEnv,
   deletePinpointAppForEnv,
-  toggleChannelBackendConfig,
+  enableChannelBackendConfig,
+  disableChannelBackendConfig,
   writeData,
   migrate,
 };

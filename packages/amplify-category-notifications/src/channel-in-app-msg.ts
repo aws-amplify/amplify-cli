@@ -5,7 +5,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 import {
-  $TSAny, $TSContext, AmplifySupportedService,
+  $TSAny, $TSContext, AmplifySupportedService, stateManager,
 } from 'amplify-cli-core';
 
 /* eslint-disable @typescript-eslint/no-var-requires */
@@ -15,7 +15,8 @@ import { isChannelEnabledNotificationsBackendConfig } from './notifications-stat
 import {
   AnalyticsCapabilityAPIResponse, invokeAnalyticsResourceToggleNotificationChannel, NotificationChannels,
 } from './analytics-resource-api';
-import { toggleChannelBackendConfig } from './multi-env-manager';
+import { disableChannelBackendConfig, enableChannelBackendConfig } from './multi-env-manager';
+import { IChannelAPIResponse, ChannelAction } from './notifications-api-types';
 
 const channelName = 'InAppMsg';
 const spinner = ora('');
@@ -26,8 +27,6 @@ const spinner = ora('');
  */
 export const configure = async (context: $TSContext) => {
   console.log(`SACPCDEBUG: channel-in-app-msg: config : ${JSON.stringify(context.exeInfo.serviceMeta, null, 2)}`);
-  // const isChannelEnabled = context.exeInfo.serviceMeta.output[channelName] && context.exeInfo.serviceMeta.output[channelName].Enabled;
-
   if (isChannelEnabledNotificationsBackendConfig(channelName)) {
     context.print.info(`The ${channelName} channel is currently enabled`);
     const answer = await inquirer.prompt({
@@ -50,7 +49,7 @@ export const configure = async (context: $TSContext) => {
       console.log('SACPCDEBUG: channel-in-app-msg: config : Calling Enable-InAppMessaging');
       await enable(context);
     }
-    await toggleChannelBackendConfig(channelName); //save configuration in backend-config.json
+    console.log('SACPCDEBUG: Enable: Validating BackendConfig:multi-env-manager ', JSON.stringify(stateManager.getBackendConfig(), null, 2));
   }
 };
 
@@ -59,24 +58,26 @@ export const configure = async (context: $TSContext) => {
  * @param {*} context amplify cli context
  * @returns Analytics API response
  */
-export const enable = async (context: $TSContext): Promise<AnalyticsCapabilityAPIResponse> => {
+export const enable = async (context: $TSContext): Promise<IChannelAPIResponse> => {
   spinner.start('Updating In-App messaging channel.');
   //TBD: add the PINPOINT resource id - right now its assumed to be a single resource
-  const enableInAppMsgResponse : AnalyticsCapabilityAPIResponse = await invokeAnalyticsResourceToggleNotificationChannel(context,
+  const enableInAppMsgAPIResponse : AnalyticsCapabilityAPIResponse = await invokeAnalyticsResourceToggleNotificationChannel(context,
     AmplifySupportedService.PINPOINT,
     NotificationChannels.IN_APP_MSG,
     true);
-  if (enableInAppMsgResponse.status) {
+  if (enableInAppMsgAPIResponse.status) {
     spinner.succeed(`The ${channelName} channel has been successfully enabled.`);
     // context.exeInfo.serviceMeta.output[channelName] = analyticsAPIResponse.response.channelName;
     // TBD: Analytics API should respond with a resourceID ( pinpointResourceName+shortID)
-    console.log('SACPCDEBUG: channel-in-app-msg: analytics API Enable response : ', JSON.stringify(enableInAppMsgResponse, null, 2));
-    await toggleChannelBackendConfig(channelName);
   } else {
-    console.log('SACPCDEBUG: channel-in-app-msg: analytics API Enable ERROR : ', JSON.stringify(enableInAppMsgResponse, null, 2));
-    spinner.fail(`update channel error: ${enableInAppMsgResponse.reasonMsg as string}`);
+    spinner.fail(`update channel error: ${enableInAppMsgAPIResponse.reasonMsg as string}`);
   }
-  return enableInAppMsgResponse;
+  const enableChannelInAppMsgResponse : IChannelAPIResponse = {
+    action: ChannelAction.ENABLE,
+    channel: channelName,
+    response: enableInAppMsgAPIResponse,
+  };
+  return enableChannelInAppMsgResponse;
 };
 
 /**
@@ -85,12 +86,13 @@ export const enable = async (context: $TSContext): Promise<AnalyticsCapabilityAP
  * @returns Analytics API response
  */
 export const disable = async (context: $TSContext):Promise<$TSAny> => {
+  spinner.start('Updating In-App messaging channel.');
   const disableInAppMsgResponse : AnalyticsCapabilityAPIResponse = await invokeAnalyticsResourceToggleNotificationChannel(context,
     AmplifySupportedService.PINPOINT,
     NotificationChannels.IN_APP_MSG,
     false /*disable*/);
-  spinner.start('Updating In-App messaging channel.');
   if (disableInAppMsgResponse.status) {
+    await disableChannelBackendConfig(channelName);
     spinner.succeed(`The ${channelName} channel has been disabled.`);
     //context.exeInfo.serviceMeta.output[channelName] = analyticsAPIResponse.response.channelName;
   } else {
