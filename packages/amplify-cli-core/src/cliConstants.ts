@@ -1,3 +1,5 @@
+import { $TSAny } from '.';
+
 /* eslint-disable spellcheck/spell-checker */
 export const SecretFileMode = 0o600; // file permissions for -rw-------
 export const CLISubCommands = {
@@ -58,9 +60,46 @@ export interface IAmplifyResource {
   category: string;
   resourceName: string;
   service: string;
+}
+
+/**
+ * Notification Channels supported in Amplify
+ */
+export enum NotificationChannels {
+  APNS = 'APNS',
+  FCM = 'FCM',
+  EMAIL = 'Email',
+  SMS = 'SMS',
+  IN_APP_MSG = 'InAppMsg',
+  PUSH_NOTIFICATION = 'PushNotification'
+}
+
+/**
+ * Notifications category metadata
+ */
+export interface INotificationsResourceMeta {
+  Id : string, // unique identifier for AWS service resource allocated for Notifications
+  Name : string, // region specific logical identifier for AWS service resource
+  Region : string, // Region in which Notifications resource is deployed.
+  ResourceName: string, // Logical name of Notficiations App.
+  output : $TSAny,
+  mobileHubMigrated?:boolean
+}
+
+/**
+ * Amplify Analytics Resource data queried from amplify-meta
+ */
+export interface IAnalyticsResource extends IAmplifyResource {
   id?: string;
   region?: string;
+  output?: $TSAny; // cloudformation deployment outputs - indicates resource deployed
 }
+
+/**
+ * Amplify Notifications Resource data queried from amplify-meta
+ * note:- assigned to analytics until output for each notifications type is not added
+ */
+export type INotificationsResource = IAnalyticsResource
 
 export const AMPLIFY_DOCS_URL = 'https://docs.amplify.aws';
 export const AWS_DOCS_URL = 'https://docs.aws.amazon.com/';

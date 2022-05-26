@@ -14,6 +14,8 @@ import {
 } from './pinpoint-helper';
 import * as notificationManager from './notifications-manager';
 import { ChannelAction, IChannelAPIResponse } from './notifications-api-types';
+import { NotificationsDB } from './notifications-backend-cfg-api';
+import { INotificationsResourceBackendConfig } from './notifications-backend-config-types';
 
 /**
  * Create Pinpoint resource in Analytics, Create Pinpoint Meta for Notifications category and
@@ -187,7 +189,7 @@ export const deletePinpointAppForEnv = async (context: $TSContext, envName: stri
 };
 
 const pushChanges = async (context: $TSContext, pinpointNotificationsMeta: $TSAny):Promise<void> => {
-  const availableChannels = notificationManager.getAvailableChannels();
+  const availableChannels = NotificationsDB.getAvailableChannels();
   let pinpointInputParams : $TSAny;
   if (
     context.exeInfo
@@ -320,13 +322,10 @@ export const updateNotificationsChannelBackendConfig = async (channelAPIResponse
       updatedBackendConfig = await disableChannelBackendConfig(channelAPIResponse.channel);
       break;
     case ChannelAction.CONFIGURE:
-      throw new Error('Action not currently supported');
-      break;
     case ChannelAction.PULL:
-      throw new Error('Action not currently supported');
-      break;
     default:
-      throw new Error('Action not currently supported');
+      throw new Error(`Action ${channelAPIResponse.action} not currently supported`);
+      break;
   }
   return updatedBackendConfig;
 };
@@ -337,15 +336,14 @@ export const updateNotificationsChannelBackendConfig = async (channelAPIResponse
  */
 export const writeData = async (context: $TSContext, channelAPIResponse: IChannelAPIResponse | undefined):Promise<void> => {
   if (!channelAPIResponse) {
-    const amplifyMeta = stateManager.getMeta();
-    const categoryMeta = amplifyMeta[AmplifyCategories.NOTIFICATIONS];
+    const categoryMeta = context.exeInfo.amplifyMeta[AmplifyCategories.NOTIFICATIONS];
     let pinpointMeta;
     if (categoryMeta) {
-      const availableChannels = notificationManager.getAvailableChannels();
+      const availableChannels = NotificationsDB.getAvailableChannels();
       const enabledChannels: Array<string> = [];
-      const resources = Object.keys(categoryMeta);
-      for (let i = 0; i < resources.length; i++) {
-        const serviceMeta = categoryMeta[resources[i]];
+      const resourceNames = Object.keys(categoryMeta);
+      for (const resourceName of resourceNames) {
+        const serviceMeta = categoryMeta[resourceName];
         if (serviceMeta.service === AmplifySupportedService.PINPOINT && serviceMeta.output && serviceMeta.output.Id) {
           availableChannels.forEach(channel => {
             if (serviceMeta.output[channel] && serviceMeta.output[channel].Enabled) {
@@ -353,7 +351,7 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
             }
           });
           pinpointMeta = {
-            serviceName: resources[i],
+            serviceName: resourceName,
             service: serviceMeta.service,
             channels: enabledChannels,
             Name: serviceMeta.output.Name,
@@ -370,15 +368,55 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
     writeAmplifyMeta(context, categoryMeta, context.amplify.pathManager.getAmplifyMetaFilePath());
     await context.amplify.onCategoryOutputsChange(context, undefined, undefined);
   } else {
+    const availableChannels = NotificationsDB.getAvailableChannels();
+    let enabledChannels: Array<string> = [];
+    const categoryMeta = context.exeInfo.amplifyMeta[AmplifyCategories.NOTIFICATIONS];
+    const categoryBackend = context.exeInfo.backendConfig[AmplifyCategories.NOTIFICATIONS];
+    let pinpointMeta;
+    let pinpointConfig : INotificationsResourceBackendConfig|undefined;
+    for (const serviceName of Object.keys(categoryBackend)) {
+      const serviceMeta = categoryMeta[serviceName];
+      if (serviceMeta.service === AmplifySupportedService.PINPOINT && serviceMeta.output && serviceMeta.output.Id) {
+        enabledChannels = availableChannels.filter(channel => (serviceMeta.output[channel] && serviceMeta.output[channel].Enabled));
+      }
+      pinpointMeta = {
+        serviceName,
+        service: serviceMeta.service,
+        channels: enabledChannels,
+        Name: serviceMeta.output.Name,
+        Id: serviceMeta.output.Id,
+        Region: serviceMeta.output.Region,
+      };
+      pinpointConfig = {
+        serviceName,
+        service: categoryBackend[serviceName].service,
+        channels: categoryBackend[serviceName].channels,
+        channelConfig: categoryBackend[serviceName].channelConfig,
+      };
+      break;
+    }
+
     // Team provider info and backend config are updated after push
     // SACPCTBD: Do we need to check if pinpoint application ID already exists and if so update meta ?
-    await updateNotificationsChannelBackendConfig(channelAPIResponse);
+    // await updateNotificationsChannelBackendConfig(channelAPIResponse); // should be in-core
+    if (channelAPIResponse) {
+      NotificationsDB.updateChannelAPIResponse(context, channelAPIResponse);
+    }
+    console.log('SACPCDEBUG:[writeData]:1: save pinpoint meta in team-provider: ', JSON.stringify(pinpointMeta, null, 2));
+    writeTeamProviderInfo(pinpointMeta, context); // update Pinpoint data
+    if (pinpointConfig) {
+      console.log('SACPCDEBUG:[writeData]:2: save pinpoint config in backend: ', JSON.stringify(pinpointConfig, null, 2));
+      writeBackendConfig(context, pinpointConfig, context.amplify.pathManager.getBackendConfigFilePath());
+    }
+    console.log('SACPCDEBUG:[writeData]:3: save category-meta in amplify-meta: ', JSON.stringify(categoryMeta, null, 2));
+    writeAmplifyMeta(context, categoryMeta, context.amplify.pathManager.getAmplifyMetaFilePath());
+    await context.amplify.onCategoryOutputsChange(context, undefined, undefined);
   }
   /** SACPCDEBUG - disable updating Amplify-meta for notifications - only update params in analytics.
   writeBackendConfig(context, pinpointMeta, context.amplify.pathManager.getCurrentBackendConfigFilePath());
   writeAmplifyMeta(context, categoryMeta, context.amplify.pathManager.getAmplifyMetaFilePath());
   writeAmplifyMeta(context, categoryMeta, context.amplify.pathManager.getCurrentAmplifyMetaFilePath());
-  await context.amplify.storeCurrentCloudBackend();
+  await context.amplify.storeCurrentCloudBackend(); //SACPCDEBUG? why do we need this here ? we must do this only in push
   await context.amplify.onCategoryOutputsChange(context, undefined, undefined);
   **/
 };
@@ -463,7 +501,7 @@ const extractMigrationInfo = (context:$TSContext):$TSAny => {
     migrationInfo.Name = migrationInfo.output.Name;
     migrationInfo.Region = migrationInfo.output.Region;
     migrationInfo.channels = [];
-    const availableChannels = notificationManager.getAvailableChannels();
+    const availableChannels = NotificationsDB.getAvailableChannels();
     availableChannels.forEach(channel => {
       if (migrationInfo.output[channel] && migrationInfo.output[channel].Enabled) {
         migrationInfo.channels.push(channel);

@@ -11,7 +11,7 @@ export interface ICategoryMeta {
   regulatedResourceName? : string
 }
 
-interface ChannelResourceMeta {
+interface IChannelResourceMeta {
     ApplicationId: string, // Pinpoint Physical ID
     CreationDate: string, // Date-Time
     Enabled : boolean, // Channel is enabled
@@ -25,7 +25,7 @@ interface ChannelResourceMeta {
 /**
    * Email channel data type for Pinpoint notifications in Amplify-Meta
    */
-export interface IEmailChannelResourceMeta extends ChannelResourceMeta, backendConfigTypes.IEmailChannelBackendConfig{
+export interface IEmailChannelResourceMeta extends IChannelResourceMeta, backendConfigTypes.IEmailChannelBackendConfig{
     Identity: string, // SES ARN for verified email
     RoleArn : string, // IAM role Auth/UnAuth with access to SMS
   }
@@ -33,11 +33,16 @@ export interface IEmailChannelResourceMeta extends ChannelResourceMeta, backendC
   /**
    * SMS channel data type for Pinpoint notifications in Amplify-Meta
    */
-  interface ISMSChannelResourceMeta extends ChannelResourceMeta, backendConfigTypes.ISMSChannelBackendConfig {
+  interface ISMSChannelResourceMeta extends IChannelResourceMeta, backendConfigTypes.ISMSChannelBackendConfig {
   }
   /**
+   * InAppMsg channel data type for Pinpoint in-app functionality in Amplify-Meta
+   */
+   type IInAppMsgChannelResourceMeta = IChannelResourceMeta
+
+/**
    * Union of all valid notification channel meta
    * Notifications category will save this data in the amplify-meta.json
    * note:- This type can contain confidential information as its not saved with code.
    */
-export type NotificationsChannelMeta = IEmailChannelResourceMeta | ISMSChannelResourceMeta;
+export type NotificationsChannelMeta = IEmailChannelResourceMeta | ISMSChannelResourceMeta | IInAppMsgChannelResourceMeta;

@@ -6,7 +6,7 @@
  */
 
 import {
-  $TSContext, IAmplifyResource,
+  $TSContext, IAmplifyResource, IAnalyticsResource,
 } from 'amplify-cli-core';
 
 /**
@@ -15,7 +15,7 @@ import {
 * @returns Array of resources in Analytics category (IAmplifyResource type)
 */
 export const invokeAnalyticsAPIGetResources = async (context: $TSContext, resourceProviderServiceName?: string):
-  Promise<Array<IAmplifyResource>> => {
+  Promise<Array<IAnalyticsResource>> => {
   const analyticsResources = (await context.amplify.invokePluginMethod(context,
     'analytics', undefined,
     'analyticsAPIGetResources', [resourceProviderServiceName])) as Array<IAmplifyResource>;

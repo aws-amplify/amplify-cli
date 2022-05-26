@@ -5,7 +5,6 @@
 /* eslint-disable max-depth */
 
 import ora from 'ora';
-import * as inquirer from 'inquirer';
 import {
   $TSAny, $TSContext, open, AmplifySupportedService, AmplifyCategories, stateManager, IAmplifyResource,
 } from 'amplify-cli-core';
@@ -16,7 +15,9 @@ import {
 
 import * as authHelper from './auth-helper';
 import { ICategoryMeta } from './notifications-amplify-meta-types';
-import * as NotificationsDB from './notifications-state-db-api';
+import { NotificationsDB } from './notifications-backend-cfg-api';
+import { NotificationsMeta } from './notifications-meta-api';
+import { PinpointName } from './pinpoint-name';
 
 const providerName = 'awscloudformation';
 const spinner = ora('');
@@ -33,14 +34,15 @@ export const getPinpointApp = (context: $TSContext):ICategoryMeta|undefined => {
 /**
  * Ensure Pinpoint app exists
  */
-export const ensurePinpointApp = async (context: $TSContext, pinpointNotificationsMeta: $TSAny): Promise<void> => {
+export const ensurePinpointApp = async (context: $TSContext, pinpointNotificationsMeta: $TSAny): Promise<$TSContext> => {
   let pinpointApp : Partial<ICategoryMeta>|undefined;
   let resourceName;
   const amplifyMeta = stateManager.getMeta();
+  const backendConfig = stateManager.getBackendConfig();
   const envName = stateManager.getCurrentEnvName();
   if (!envName) {
     console.log('Current ENV not configured!!');
-    return;
+    return context;
   }
 
   if (pinpointNotificationsMeta) {
@@ -52,11 +54,11 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
       if (pinpointNotificationsMeta.resourceName) {
         resourceName = pinpointNotificationsMeta.resourceName; //eslint-disable-line
       } else {
-        resourceName = generateResourceName(pinpointNotificationsMeta.Name, envName);
+        resourceName = PinpointName.extractResourceName(pinpointNotificationsMeta.Name, envName);
       }
 
       pinpointApp = pinpointNotificationsMeta.output;
-      NotificationsDB.constructResourceMeta(amplifyMeta, resourceName, pinpointApp as ICategoryMeta);
+      NotificationsMeta.constructResourceMeta(amplifyMeta, resourceName, pinpointApp as ICategoryMeta);
     } else {
       resourceName = pinpointNotificationsMeta.resourceName; //eslint-disable-line
     }
@@ -72,82 +74,36 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
       resourceName = scanOptions.regulatedResourceName;
     }
   }
-  // Scan for Pinpoint resource in Analytics category
+  // Sync Pinpoint resource from Analytics
   if (!pinpointApp) {
     pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.ANALYTICS], undefined);
     if (pinpointApp?.Name) {
-      resourceName = generateResourceName(pinpointApp.Name, envName);
-      NotificationsDB.constructResourceMeta(amplifyMeta, resourceName, pinpointApp);
+      resourceName = PinpointName.extractResourceName(pinpointApp.Name, envName);
+      context.exeInfo.amplifyMeta = NotificationsMeta.constructResourceMeta(amplifyMeta, resourceName, pinpointApp);
+      // create updated version of backend-config with notifications resource configuration
+      context.exeInfo.backendConfig = await NotificationsDB.addPartialNotificationsBackendConfig(resourceName);
     }
   }
   // Scan for Pinpoint resource which is only locally created but not yet pushed to the cloud
   if (!pinpointApp) {
     const resources: IAmplifyResource[] = await invokeAnalyticsAPIGetResources(context, AmplifySupportedService.PINPOINT);
     if (resources.length > 0) {
-      resourceName = generateResourceName(resources[0].resourceName, envName);
+      resourceName = PinpointName.extractResourceName(resources[0].resourceName, envName);
     } else {
       // Create the Pinpoint resource if not yet created
       context.print.info('Notifications requires a Pinpoint analytics resource, creating.....');
       const resourceResult = await invokeAnalyticsAPICreateResource(context, AmplifySupportedService.PINPOINT);
       resourceName = resourceResult.resourceName;
     }
-    const postCreateAmplifyMeta = await stateManager.getMeta();
-    const pinpointRegion = NotificationsDB.getPinpointRegionMapping(context);
-    // create resource in amplify-meta
-    pinpointApp = NotificationsDB.addPartialNotificationsAmplifyMeta(postCreateAmplifyMeta, resourceName, pinpointRegion);
-    context.exeInfo.amplifyMeta = postCreateAmplifyMeta;
-    // create resource in backend-config
-    context.exeInfo.backendConfig = NotificationsDB.addPartialNotificationsBackendConfig(resourceName);
+    // create updated version of amplify-meta with notifications resource
+    context.exeInfo.amplifyMeta = await NotificationsMeta.addPartialNotificationsAppMeta(context, resourceName);
+    // create updated version of backend-config with notifications resource configuration
+    context.exeInfo.backendConfig = await NotificationsDB.addPartialNotificationsBackendConfig(resourceName);
   }
-
+ 
   context.exeInfo.serviceMeta = context.exeInfo.amplifyMeta[AmplifyCategories.NOTIFICATIONS][resourceName];
   context.exeInfo.pinpointApp = context.exeInfo.serviceMeta.output;
-};
-
-// Resource name is consistent cross environments
-const generateResourceName = (pinpointAppName: string, envName: string):string => pinpointAppName.replace(getEnvTagPattern(envName), '');
-
-const generatePinpointAppName = (resourceName : string, envName: string):string => resourceName + getEnvTagPattern(envName);
-
-const getEnvTagPattern = (envName: string) : string => (envName === 'NONE' ? '' : `-${envName}`);
-
-const createPinpointApp = async (context : $TSContext, resourceName: string) : Promise<string> => {
-  const { projectConfig, amplifyMeta, localEnvInfo } = context.exeInfo;
-
-  context.print.info('An Amazon Pinpoint project will be created for notifications.');
-  // If resourceName is not available then go through Notifications resource walkthrough
-  if (!resourceName) {
-    resourceName = projectConfig.projectName + context.amplify.makeId(5);
-    if (!context.exeInfo.inputParams || !context.exeInfo.inputParams.yes) {
-      const answer = await inquirer.prompt({
-        name: 'resourceNameInput',
-        type: 'input',
-        message: 'Provide your pinpoint resource name: ',
-        default: resourceName,
-        validate: name => {
-          let result = false;
-          let message = '';
-          if (name && name.length > 0) {
-            result = true;
-          } else {
-            message = 'Your pinpoint resource name can not be empty.';
-          }
-          return result || message;
-        },
-      });
-      resourceName = answer.resourceNameInput;
-    }
-  }
-
-  const pinpointAppName = generatePinpointAppName(resourceName, localEnvInfo.envName);
-  const pinpointApp:ICategoryMeta = await createApp(context, pinpointAppName) as ICategoryMeta;
-  NotificationsDB.constructResourceMeta(amplifyMeta, resourceName, pinpointApp);
-  context.exeInfo.pinpointApp = pinpointApp; // needed for authHelper.ensureAuth(context);
-
-  context.print.info('');
-  await authHelper.ensureAuth(context, resourceName);
-  context.print.info('');
-  return resourceName;
+  return context; // must have amplify-meta and backend-config updated
 };
 
 /**
@@ -183,7 +139,7 @@ export const scanCategoryMetaForPinpoint = (categoryMeta: $TSAny, options: $TSAn
         };
 
         if (options && options.isRegulatingResourceName) {
-          const regulatedResourceName = generateResourceName(result.Name, options.envName);
+          const regulatedResourceName = PinpointName.extractResourceName(result.Name, options.envName);
           options.regulatedResourceName = regulatedResourceName;
           if (resourceName !== regulatedResourceName) {
             categoryMeta[regulatedResourceName] = serviceMeta;
@@ -208,29 +164,6 @@ const removeCategoryMetaForPinpoint = (categoryMeta: $TSAny, pinpointAppId: stri
       }
     }
   }
-};
-
-const createApp = async (context : $TSContext, pinpointAppName : string) : Promise<$TSAny> => {
-  const params = {
-    CreateApplicationRequest: {
-      Name: pinpointAppName,
-    },
-  };
-  const envName: string = stateManager.getCurrentEnvName() as string; // throws exception if env is not configured
-  const pinpointClient = await getPinpointClient(context, 'create', envName);
-  spinner.start('Creating Pinpoint app.');
-  return new Promise((resolve, reject) => {
-    pinpointClient.createApp(params, (err: string, data: $TSAny) => {
-      if (err) {
-        spinner.fail('Pinpoint project creation error');
-        reject(err);
-      } else {
-        spinner.succeed(`Successfully created Pinpoint project: ${data.ApplicationResponse.Name}`);
-        data.ApplicationResponse.Region = pinpointClient.config.region;
-        resolve(data.ApplicationResponse);
-      }
-    });
-  });
 };
 
 const deleteApp = async (context : $TSContext, pinpointAppId : string) : Promise<$TSAny> => {
