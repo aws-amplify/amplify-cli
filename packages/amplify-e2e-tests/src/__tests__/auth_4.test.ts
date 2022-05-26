@@ -6,16 +6,14 @@ import {
   deleteProject,
   amplifyPushAuth,
   addFeatureFlag,
-} from 'amplify-e2e-core';
-import {
+
   addAuthWithRecaptchaTrigger,
   addAuthWithCustomTrigger,
   addAuthWithSignInSignOutUrl,
   updateAuthWithoutCustomTrigger,
   updateAuthRemoveRecaptchaTrigger,
   updateAuthSignInSignOutUrl,
-} from 'amplify-e2e-core';
-import {
+,
   createNewProjectDir,
   deleteProjectDir,
   getProjectMeta,
@@ -52,7 +50,9 @@ describe('amplify updating auth...', () => {
     };
     await initAndroidProjectWithProfile(projRoot, { ...defaultsSettings, disableAmplifyAppCreation: false });
     await addAuthWithSignInSignOutUrl(projRoot, settings);
+    await amplifyPushAuth(projRoot);
     await updateAuthSignInSignOutUrl(projRoot, settings);
+    await expect(amplifyPushAuth(projRoot, true)).resolves.not.toThrowError();
   });
 
   it('...should init a project and add auth with a custom trigger, and then update to remove the custom js while leaving the other js', async () => {
