@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.3.1-delta-table-cpk.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.3.0...@aws-amplify/cli-internal@8.3.1-delta-table-cpk.0) (2022-05-26)
+
+
+### Bug Fixes
+
+* **graphql:** resolve model codegen issue on first push for datastore enabled api ([#10450](https://github.com/aws-amplify/amplify-cli/issues/10450)) ([a8d8b94](https://github.com/aws-amplify/amplify-cli/commit/a8d8b9406f21ddec1dec72de1acb745fea2d0881))
+
+
+
+
+
 # [8.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.2.0...@aws-amplify/cli-internal@8.3.0) (2022-05-24)
 
 

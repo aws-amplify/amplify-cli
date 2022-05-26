@@ -1,6 +1,6 @@
 {
   "name": "amplify-provider-awscloudformation",
-  "version": "6.2.0",
+  "version": "6.2.1-delta-table-cpk.0",
   "description": "AWS CloudFormation Provider",
   "repository": {
     "type": "git",
