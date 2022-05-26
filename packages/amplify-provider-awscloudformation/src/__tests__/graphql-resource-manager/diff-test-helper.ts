@@ -20,7 +20,7 @@ export const getDiffedProject = (
   });
 
   const currentProj = addTableToRoot ? makeProjWithTableOnRoot(table1) : makeProj('Post', table1);
-  const nextProj = addTableToRoot ? makeProjWithTableOnRoot(table1) : makeProj('Post', table2);
+  const nextProj = addTableToRoot ? makeProjWithTableOnRoot(table2) : makeProj('Post', table2);
 
   const diffedValue = getDiffs(currentProj, nextProj);
   return { current: currentProj, next: nextProj, diff: diffedValue };
