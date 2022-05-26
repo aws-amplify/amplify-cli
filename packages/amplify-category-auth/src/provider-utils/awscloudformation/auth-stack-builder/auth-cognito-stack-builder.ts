@@ -479,7 +479,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       if (props.hostedUIDomainName) {
         this.createHostedUICustomResource();
       }
-      if (props.hostedUIProviderMeta) {
+      if (props.hostedUIProviderMeta && props.hostedUI && !_.isEmpty(props.authProvidersUserPool)) {
         this.createHostedUIProviderCustomResource();
       }
       if (props.oAuthMetadata) {
@@ -885,7 +885,9 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     });
 
     this.oAuthCustomResource.node.addDependency(this.hostedUICustomResourceInputs!.node!.defaultChild!);
-    this.oAuthCustomResource.node.addDependency(this.hostedUIProvidersCustomResourceInputs!.node!.defaultChild!);
+    if(this.hostedUIProvidersCustomResourceInputs){
+      this.oAuthCustomResource.node.addDependency(this.hostedUIProvidersCustomResourceInputs!.node!.defaultChild!);
+    }
 
     // userPool client lambda policy
     /**
