@@ -4,6 +4,7 @@ import * as pinpointHelper from '../../pinpoint-helper';
 import * as notificationManager from '../../notifications-manager';
 import * as multiEnvManager from '../../multi-env-manager';
 import { IChannelAPIResponse } from '../../notifications-api-types';
+import { NotificationsDB } from '../../notifications-backend-cfg-api';
 
 /**
  * Configuration walkthrough for Notifications resources
@@ -12,7 +13,7 @@ import { IChannelAPIResponse } from '../../notifications-api-types';
  */
 export const run = async (context:$TSContext): Promise<$TSContext> => {
   context.exeInfo = context.amplify.getProjectDetails();
-  const availableChannels = notificationManager.getAvailableChannels();
+  const availableChannels = NotificationsDB.getAvailableChannels();
   let channelName = context.parameters.first;
 
   if (!channelName || !availableChannels.includes(channelName)) {

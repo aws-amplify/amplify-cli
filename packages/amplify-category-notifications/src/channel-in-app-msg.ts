@@ -11,11 +11,11 @@ import {
 /* eslint-disable @typescript-eslint/no-var-requires */
 import * as inquirer from 'inquirer';
 import ora from 'ora';
-import { isChannelEnabledNotificationsBackendConfig } from './notifications-state-db-api';
+import { NotificationsDB } from './notifications-backend-cfg-api';
 import {
   AnalyticsCapabilityAPIResponse, invokeAnalyticsResourceToggleNotificationChannel, NotificationChannels,
 } from './analytics-resource-api';
-import { disableChannelBackendConfig, enableChannelBackendConfig } from './multi-env-manager';
+import { disableChannelBackendConfig } from './multi-env-manager';
 import { IChannelAPIResponse, ChannelAction } from './notifications-api-types';
 
 const channelName = 'InAppMsg';
@@ -25,9 +25,9 @@ const spinner = ora('');
  * Configure Pinpoint with configs and IAM roles
  * @param {*} context amplify cli context
  */
-export const configure = async (context: $TSContext) => {
+export const configure = async (context: $TSContext) : Promise<$TSContext> => {
   console.log(`SACPCDEBUG: channel-in-app-msg: config : ${JSON.stringify(context.exeInfo.serviceMeta, null, 2)}`);
-  if (isChannelEnabledNotificationsBackendConfig(channelName)) {
+  if (await NotificationsDB.isChannelEnabledNotificationsBackendConfig(channelName)) {
     context.print.info(`The ${channelName} channel is currently enabled`);
     const answer = await inquirer.prompt({
       name: 'disableChannel',
@@ -51,6 +51,7 @@ export const configure = async (context: $TSContext) => {
     }
     console.log('SACPCDEBUG: Enable: Validating BackendConfig:multi-env-manager ', JSON.stringify(stateManager.getBackendConfig(), null, 2));
   }
+  return context;
 };
 
 /**
