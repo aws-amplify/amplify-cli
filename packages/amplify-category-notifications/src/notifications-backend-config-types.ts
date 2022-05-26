@@ -20,13 +20,21 @@ export interface IEmailChannelBackendConfig {
    * Notifications category will save this data in the backend-configs.json
    * note:- This type should not contain any confidential information.
    */
-export type NotificationsChannelBackendConfig = IEmailChannelBackendConfig | ISMSChannelBackendConfig;
+export type INotificationsChannelBackendConfig = IEmailChannelBackendConfig | ISMSChannelBackendConfig;
 
 /**
  * Structure of the Notifications category configuration in backend-config.json
  */
-export interface NotificationsResourceBackendConfig {
+export interface INotificationsResourceBackendConfigValue {
+
     service: string,
     channels: Array<string>
-    channelConfig: Record<string, NotificationsChannelBackendConfig>
- }
+    channelConfig: Record<string, INotificationsChannelBackendConfig>
+}
+
+/**
+ * Normalized structure of the Notifications category configuration in backend-config.json
+ */
+export interface INotificationsResourceBackendConfig extends INotificationsResourceBackendConfigValue {
+   serviceName: string,
+}

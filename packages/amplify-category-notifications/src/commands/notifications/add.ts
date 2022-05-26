@@ -1,9 +1,11 @@
 import { prompt } from 'inquirer';
 import { $TSContext, AmplifyCategories } from 'amplify-cli-core';
 import { ensurePinpointApp } from '../../pinpoint-helper';
-import { getAvailableChannels, getDisabledChannelsFromAmplifyMeta, enableChannel } from '../../notifications-manager';
+import { enableChannel } from '../../notifications-manager';
 import { writeData } from '../../multi-env-manager';
 import { IChannelAPIResponse } from '../../notifications-api-types';
+import { NotificationsMeta } from '../../notifications-meta-api';
+import { NotificationsDB } from '../../notifications-backend-cfg-api';
 
 export const name = 'add';
 export const alias = 'enable';
@@ -15,21 +17,13 @@ export const alias = 'enable';
 export const run = async (context: $TSContext): Promise<$TSContext> => {
   context.exeInfo = context.amplify.getProjectDetails();
 
-  const categoryMeta = context.exeInfo.amplifyMeta[AmplifyCategories.NOTIFICATIONS];
-  if (categoryMeta) {
-    const services = Object.keys(categoryMeta);
-    for (let i = 0; i < services.length; i++) {
-      const serviceMeta = categoryMeta[services[i]];
-
-      if (serviceMeta.mobileHubMigrated === true) {
-        context.print.error('Notifications is migrated from Mobile Hub and channels cannot be added with Amplify CLI.');
-        return context;
-      }
-    }
+  if (await NotificationsMeta.checkMigratedFromMobileHub(context.exeInfo.amplifyMeta)) {
+    context.print.error('Notifications is migrated from Mobile Hub and channels cannot be added with Amplify CLI.');
+    return context;
   }
 
-  const availableChannels = getAvailableChannels();
-  const disabledChannels = getDisabledChannelsFromAmplifyMeta();
+  const availableChannels: Array<string> = NotificationsDB.getAvailableChannels();
+  const disabledChannels : Array<string> = await NotificationsMeta.getDisabledChannelsFromAmplifyMeta();
 
   let channelName = context.parameters.first;
   if (disabledChannels.length > 0) {
@@ -48,9 +42,14 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
     }
 
     if (channelName) {
-      await ensurePinpointApp(context, undefined);
+      // eslint-disable-next-line no-param-reassign
+      context = await ensurePinpointApp(context, undefined);
       const channelAPIResponse : IChannelAPIResponse|undefined = await enableChannel(context, channelName);
-      console.log(`SACPCDEBUG:NOTIFICATIONS:Add:3: Calling Write Data: ${channelName}`);
+      if (channelAPIResponse) {
+        NotificationsDB.updateChannelAPIResponse(context, channelAPIResponse);
+      }
+      console.log(`SACPCDEBUG:NOTIFICATIONS:Add:3: Calling Write Data: ${channelName} `,
+        JSON.stringify(context.exeInfo.backendConfig[AmplifyCategories.NOTIFICATIONS], null, 2));
       await writeData(context, channelAPIResponse);
     }
   } else {

@@ -1,4 +1,5 @@
 import { $TSContext } from 'amplify-cli-core';
+import { NotificationsDB } from '../../notifications-backend-cfg-api';
 import * as notificationManager from '../../notifications-manager';
 
 /**
@@ -6,8 +7,8 @@ import * as notificationManager from '../../notifications-manager';
  */
 const run = async (context:$TSContext):Promise<void> => {
   context.exeInfo = context.amplify.getProjectDetails();
-  const enabledChannels = notificationManager.getEnabledChannelsFromBackendConfig();
-  const disableChannels = notificationManager.getDisabledChannelsFromBackendConfig();
+  const enabledChannels = await NotificationsDB.getEnabledChannelsFromBackendConfig();
+  const disableChannels = await NotificationsDB.getDisabledChannelsFromBackendConfig();
 
   const tableOptions = [['Channel', 'Status']];
   for (let i = 0; i < enabledChannels.length; i++) {

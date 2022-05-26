@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable spellcheck/spell-checker */
 import {
-  AmplifyCategories, AmplifySupportedService, stateManager, IAmplifyResource, pathManager, $TSContext,
+  AmplifyCategories, AmplifySupportedService, stateManager, IAmplifyResource, pathManager, $TSContext, IAnalyticsResource,
 } from 'amplify-cli-core';
 import { addResource } from './provider-utils/awscloudformation/index';
 
@@ -10,8 +10,8 @@ import { addResource } from './provider-utils/awscloudformation/index';
  * then only return resources matching the service.
  * @returns Array of resources in Analytics category (IAmplifyResource type)
  */
-export const analyticsAPIGetResources = (resourceProviderServiceName?: string): Array<IAmplifyResource> => {
-  const resourceList: Array<IAmplifyResource> = [];
+export const analyticsAPIGetResources = (resourceProviderServiceName?: string): Array<IAnalyticsResource> => {
+  const resourceList: Array<IAnalyticsResource> = [];
   const amplifyMeta = stateManager.getMeta();
   if (amplifyMeta[AmplifyCategories.ANALYTICS]) {
     const categoryResources = amplifyMeta[AmplifyCategories.ANALYTICS];
@@ -26,6 +26,7 @@ export const analyticsAPIGetResources = (resourceProviderServiceName?: string): 
           service: categoryResources[resource].service,
           region: categoryResources[resource]?.output?.Region,
           id: categoryResources[resource]?.output?.Id,
+          output: categoryResources[resource]?.output,
         });
       }
     });
