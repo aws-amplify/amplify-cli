@@ -65,6 +65,10 @@ class EnvironmentParameterManager {
     return this.resourceParamManagers[resourceKey];
   }
 
+  hasResourceParamManager(category: string, resource: string): boolean {
+    return !!this.resourceParamManagers[getResourceKey(category, resource)];
+  }
+
   save(): void {
     const tpiContent = stateManager.getTeamProviderInfo();
     tpiContent[this.envName].categories = this.serializeTPICategories();

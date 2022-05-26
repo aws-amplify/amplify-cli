@@ -1,18 +1,24 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { ViewResourceTableParams, CLIParams, $TSAny, $TSContext, pathManager, stateManager, ApiCategoryFacade } from 'amplify-cli-core';
+import {
+  ViewResourceTableParams, CLIParams, $TSAny, $TSContext, pathManager, stateManager, ApiCategoryFacade,
+} from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 
-export const run = async (context: $TSContext) => {
+/**
+ * Entry point for status command
+ */
+export const run = async (context: $TSContext): Promise<void> => {
   const cliParams: CLIParams = {
     cliCommand: context?.input?.command,
+    // eslint-disable-next-line spellcheck/spell-checker
     cliSubcommands: context?.input?.subCommands,
     cliOptions: context?.input?.options,
   };
 
   const view = new ViewResourceTableParams(cliParams);
   if (context?.input?.subCommands?.includes('help')) {
-    context.print.info(view.getStyledHelp());
+    printer.info(view.getStyledHelp());
   } else if (cliParams.cliOptions?.api && cliParams.cliOptions?.acm) {
     try {
       if (typeof cliParams.cliOptions?.acm !== 'string') {
@@ -36,7 +42,8 @@ export const run = async (context: $TSContext) => {
   }
 };
 
-async function showAmplifyConsoleHostingStatus(context) {
+const showAmplifyConsoleHostingStatus = async (context: $TSContext): Promise<void> => {
+  // eslint-disable-next-line spellcheck/spell-checker
   const pluginInfo = context.amplify.getCategoryPluginInfo(context, 'hosting', 'amplifyhosting');
   if (pluginInfo && pluginInfo.packageLocation) {
     const { status } = await import(pluginInfo.packageLocation);
@@ -44,9 +51,9 @@ async function showAmplifyConsoleHostingStatus(context) {
       await status(context);
     }
   }
-}
+};
 
-async function showApiAuthAcm(context) {
+const showApiAuthAcm = async (context): Promise<void> => {
   const providerPlugin = await import(context.amplify.getProviderPlugins(context)?.awscloudformation);
   const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
 
@@ -56,7 +63,7 @@ async function showApiAuthAcm(context) {
   }
 
   const apiNames = Object.entries(stateManager.getMeta()?.api || {})
-    .filter(([_, apiResource]) => (apiResource as $TSAny).service === 'AppSync')
+    .filter(([__, apiResource]) => (apiResource as $TSAny).service === 'AppSync')
     .map(([name]) => name);
 
   if (apiNames.length === 0) {
@@ -85,7 +92,7 @@ async function showApiAuthAcm(context) {
     if (error.name) {
       printer.error(`${error.name}: ${error.message?.trim()}`);
     } else {
-      printer.error(`An error has occured during schema compilation: ${error.message?.trim()}`);
+      printer.error(`An error has occurred during schema compilation: ${error.message?.trim()}`);
     }
 
     return;
@@ -99,4 +106,4 @@ async function showApiAuthAcm(context) {
   const { showACM } = await import('../extensions/amplify-helpers/show-auth-acm');
 
   showACM(schema, cliOptions.acm);
-}
+};

@@ -4,7 +4,7 @@ import { $TSContext, $TSObject } from 'amplify-cli-core';
 /**
  * Save environment-specific resource params
  */
-export const saveEnvResourceParameters = (__: $TSContext, category: string, resource: string, parameters?: $TSObject): void => {
+export const saveEnvResourceParameters = (__: $TSContext | undefined, category: string, resource: string, parameters?: $TSObject): void => {
   if (!parameters) {
     return;
   }
@@ -20,12 +20,12 @@ export const saveEnvResourceParameters = (__: $TSContext, category: string, reso
  * @deprecated use getEnvParamManager directly
  */
 export const loadEnvResourceParameters = (
-  __: $TSContext, category: string, resource: string,
+  __: $TSContext | undefined, category: string, resource: string,
 ): $TSObject => getEnvParamManager().getResourceParamManager(category, resource).getAllParams();
 
 /**
  * Remove env specific resource param from TPI and/or deployment secrets
  */
-export const removeResourceParameters = (__: $TSContext, category: string, resource: string): void => {
+export const removeResourceParameters = (__: $TSContext | undefined, category: string, resource: string): void => {
   getEnvParamManager().removeResourceParamManager(category, resource);
 };

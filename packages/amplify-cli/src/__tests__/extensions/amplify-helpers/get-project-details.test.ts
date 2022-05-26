@@ -1,5 +1,5 @@
-import { getProjectDetails } from '../../../extensions/amplify-helpers/get-project-details';
 import { stateManager } from 'amplify-cli-core';
+import { getProjectDetails } from '../../../extensions/amplify-helpers/get-project-details';
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 
@@ -17,8 +17,6 @@ jest.mock('amplify-cli-core', () => ({
         awscloudformation: {},
       },
     }),
-    teamProviderInfoExists: jest.fn(),
-    getTeamProviderInfo: jest.fn().mockReturnValue({ production: 'test', develop: 'test', staging: 'test' }),
   },
 }));
 
@@ -44,7 +42,6 @@ describe('getProjectDetails', () => {
   });
   it('should return correctly if there is not amplify-meta.json and team-provider.json', () => {
     stateManagerMock.metaFileExists.mockReturnValue(false);
-    stateManagerMock.teamProviderInfoExists.mockReturnValue(false);
 
     const response = getProjectDetails();
     expect(response).toStrictEqual({
@@ -53,15 +50,12 @@ describe('getProjectDetails', () => {
       localEnvInfo: {
         envName: 'test',
       },
-      teamProviderInfo: {},
     });
   });
   it('should return correctly if amplify-meta.json and team-provider-info.json exist', () => {
     stateManagerMock.metaFileExists.mockReturnValue(true);
-    stateManagerMock.teamProviderInfoExists.mockReturnValue(true);
     const response = getProjectDetails();
     expect(stateManagerMock.getMeta.mock.calls.length).toBe(1);
-    expect(stateManagerMock.getTeamProviderInfo.mock.calls.length).toBe(1);
     expect(response).toStrictEqual({
       amplifyMeta: {
         providers: {
@@ -72,7 +66,6 @@ describe('getProjectDetails', () => {
       localEnvInfo: {
         envName: 'test',
       },
-      teamProviderInfo: { develop: 'test', production: 'test', staging: 'test' },
     });
   });
 });
