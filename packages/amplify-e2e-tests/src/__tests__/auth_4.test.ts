@@ -13,7 +13,6 @@ import {
   updateAuthWithoutCustomTrigger,
   updateAuthRemoveRecaptchaTrigger,
   updateAuthSignInSignOutUrl,
-,
   createNewProjectDir,
   deleteProjectDir,
   getProjectMeta,
@@ -52,7 +51,7 @@ describe('amplify updating auth...', () => {
     await addAuthWithSignInSignOutUrl(projRoot, settings);
     await amplifyPushAuth(projRoot);
     await updateAuthSignInSignOutUrl(projRoot, settings);
-    await expect(amplifyPushAuth(projRoot, true)).resolves.not.toThrowError();
+    await amplifyPushAuth(projRoot);
   });
 
   it('...should init a project and add auth with a custom trigger, and then update to remove the custom js while leaving the other js', async () => {
