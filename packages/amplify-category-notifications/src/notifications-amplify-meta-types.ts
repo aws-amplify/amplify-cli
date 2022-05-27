@@ -36,7 +36,7 @@ export interface IEmailChannelResourceMeta extends IChannelResourceMeta, backend
   interface ISMSChannelResourceMeta extends IChannelResourceMeta, backendConfigTypes.ISMSChannelBackendConfig {
   }
   /**
-   * InAppMsg channel data type for Pinpoint in-app functionality in Amplify-Meta
+   * InAppMessaging channel data type for Pinpoint in-app functionality in Amplify-Meta
    */
    type IInAppMsgChannelResourceMeta = IChannelResourceMeta
 

@@ -39,7 +39,7 @@
     "env": {
       "Type": "String"
     },
-    "pinpointInAppMsgPolicyName": {
+    "pinpointInAppMessagingPolicyName": {
       "Type": "String",
       "Default": "NONE"
     }
@@ -80,7 +80,7 @@
         {
           "Fn::Equals": [
             {
-              "Ref": "pinpointInAppMsgPolicyName"
+              "Ref": "pinpointInAppMessagingPolicyName"
             },
             "NONE"
           ]
@@ -538,7 +538,7 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyName": {
-          "Ref": "pinpointInAppMsgPolicyName"
+          "Ref": "pinpointInAppMessagingPolicyName"
         },
         "Roles": [
           {
