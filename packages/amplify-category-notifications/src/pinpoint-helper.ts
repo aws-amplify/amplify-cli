@@ -6,7 +6,7 @@
 
 import ora from 'ora';
 import {
-  $TSAny, $TSContext, open, AmplifySupportedService, AmplifyCategories, stateManager, IAmplifyResource,
+  $TSAny, $TSContext, open, AmplifySupportedService, AmplifyCategories, stateManager, IAmplifyResource, IAnalyticsResource,
 } from 'amplify-cli-core';
 import {
   invokeAnalyticsAPICreateResource,
@@ -38,7 +38,6 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
   let pinpointApp : Partial<ICategoryMeta>|undefined;
   let resourceName;
   const amplifyMeta = stateManager.getMeta();
-  const backendConfig = stateManager.getBackendConfig();
   const envName = stateManager.getCurrentEnvName();
   if (!envName) {
     console.log('Current ENV not configured!!');
@@ -86,7 +85,7 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
   }
   // Scan for Pinpoint resource which is only locally created but not yet pushed to the cloud
   if (!pinpointApp) {
-    const resources: IAmplifyResource[] = await invokeAnalyticsAPIGetResources(context, AmplifySupportedService.PINPOINT);
+    const resources: IAnalyticsResource[] = await invokeAnalyticsAPIGetResources(context, AmplifySupportedService.PINPOINT);
     if (resources.length > 0) {
       resourceName = PinpointName.extractResourceName(resources[0].resourceName, envName);
     } else {
@@ -100,7 +99,7 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
     // create updated version of backend-config with notifications resource configuration
     context.exeInfo.backendConfig = await NotificationsDB.addPartialNotificationsBackendConfig(resourceName);
   }
- 
+
   context.exeInfo.serviceMeta = context.exeInfo.amplifyMeta[AmplifyCategories.NOTIFICATIONS][resourceName];
   context.exeInfo.pinpointApp = context.exeInfo.serviceMeta.output;
   return context; // must have amplify-meta and backend-config updated

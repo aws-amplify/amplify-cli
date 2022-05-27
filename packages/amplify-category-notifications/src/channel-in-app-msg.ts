@@ -99,7 +99,12 @@ export const disable = async (context: $TSContext):Promise<$TSAny> => {
   } else {
     spinner.fail('update channel error');
   }
-  return disableInAppMsgResponse;
+  const disableChannelInAppMsgResponse : IChannelAPIResponse = {
+    action: ChannelAction.DISABLE,
+    channel: channelName,
+    response: disableInAppMsgResponse,
+  };
+  return disableChannelInAppMsgResponse;
 };
 
 /**

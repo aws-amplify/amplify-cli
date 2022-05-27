@@ -2,7 +2,7 @@
 import * as fs from 'fs-extra';
 import sequential from 'promise-sequential';
 import {
-  $TSAny, $TSContext, stateManager, AmplifyCategories, AmplifySupportedService, pathManager,
+  $TSAny, $TSContext, stateManager, AmplifyCategories, AmplifySupportedService, pathManager, IAnalyticsResource,
 } from 'amplify-cli-core';
 import _ from 'lodash';
 import { ensureEnvParamManager, getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
@@ -16,6 +16,7 @@ import * as notificationManager from './notifications-manager';
 import { ChannelAction, IChannelAPIResponse } from './notifications-api-types';
 import { NotificationsDB } from './notifications-backend-cfg-api';
 import { INotificationsResourceBackendConfig } from './notifications-backend-config-types';
+import { invokeAnalyticsAPIGetResources } from './analytics-resource-api';
 
 /**
  * Create Pinpoint resource in Analytics, Create Pinpoint Meta for Notifications category and
@@ -376,8 +377,14 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
     let pinpointConfig : INotificationsResourceBackendConfig|undefined;
     for (const serviceName of Object.keys(categoryBackend)) {
       const serviceMeta = categoryMeta[serviceName];
-      if (serviceMeta.service === AmplifySupportedService.PINPOINT && serviceMeta.output && serviceMeta.output.Id) {
-        enabledChannels = availableChannels.filter(channel => (serviceMeta.output[channel] && serviceMeta.output[channel].Enabled));
+      if (serviceMeta.service === AmplifySupportedService.PINPOINT) {
+        if (serviceMeta.output && serviceMeta.output.Id) {
+          enabledChannels = availableChannels.filter(channel => (serviceMeta.output[channel] && serviceMeta.output[channel].Enabled)
+          || categoryBackend[serviceMeta]?.channels?.includes(channel));
+        } else {
+          // Pinpoint resource is not deployed.
+          enabledChannels = [...categoryBackend[serviceName].channels];
+        }
       }
       pinpointMeta = {
         serviceName,
@@ -400,7 +407,7 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
     // SACPCTBD: Do we need to check if pinpoint application ID already exists and if so update meta ?
     // await updateNotificationsChannelBackendConfig(channelAPIResponse); // should be in-core
     if (channelAPIResponse) {
-      NotificationsDB.updateChannelAPIResponse(context, channelAPIResponse);
+      await NotificationsDB.updateChannelAPIResponse(context, channelAPIResponse);
     }
     console.log('SACPCDEBUG:[writeData]:1: save pinpoint meta in team-provider: ', JSON.stringify(pinpointMeta, null, 2));
     writeTeamProviderInfo(pinpointMeta, context); // update Pinpoint data

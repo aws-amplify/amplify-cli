@@ -6,10 +6,11 @@
 /* eslint-disable import/no-dynamic-require */
 /* eslint-disable no-param-reassign */
 import {
-  $TSAny, pathManager, stateManager, AmplifySupportedService, AmplifyCategories, $TSContext,
+  $TSAny, pathManager, stateManager, AmplifySupportedService, AmplifyCategories, $TSContext, INotificationsResourceMeta,
 } from 'amplify-cli-core';
 import { ChannelAction, IChannelAPIResponse } from './notifications-api-types';
 import { INotificationsResourceBackendConfig, INotificationsResourceBackendConfigValue } from './notifications-backend-config-types';
+import { NotificationsMeta } from './notifications-meta-api';
 
 const PROVIDER_NAME = 'awscloudformation';
 
@@ -32,18 +33,22 @@ export class NotificationsDB {
   };
 
   public static updateChannelAPIResponse = async (context : $TSContext, channelAPIResponse: IChannelAPIResponse):Promise<$TSContext> => {
-    console.log('SACPCDEBUG: UpdateChannelAPIResponse : ', JSON.stringify(channelAPIResponse, null, 2));
     const notificationConfig = await NotificationsDB.getNotificationsAppConfig(context.exeInfo.backendConfig);
+    console.log('SACPCDEBUG: UpdateChannelAPIResponse : ', JSON.stringify(channelAPIResponse, null, 2));
     if (notificationConfig) {
       switch (channelAPIResponse.action) {
         case ChannelAction.ENABLE:
           if (notificationConfig.channels && !notificationConfig.channels.includes(channelAPIResponse.channel)) {
             notificationConfig.channels.push(channelAPIResponse.channel);
+            context.exeInfo.amplifyMeta = await NotificationsMeta.toggleNotificationsChannelAppMeta(channelAPIResponse.channel, true,
+              context.exeInfo.amplifyMeta);
           }
           break;
         case ChannelAction.DISABLE:
           if (notificationConfig.channels && notificationConfig.channels.includes(channelAPIResponse.channel)) {
             notificationConfig.channels = notificationConfig.channels.filter(channelName => channelName !== channelAPIResponse.channel);
+            context.exeInfo.amplifyMeta = await NotificationsMeta.toggleNotificationsChannelAppMeta(channelAPIResponse.channel, false,
+              context.exeInfo.amplifyMeta);
           }
           break;
         case ChannelAction.CONFIGURE:
@@ -54,10 +59,12 @@ export class NotificationsDB {
           console.log(`Error: Channel action ${channelAPIResponse.action} not supported`);
           break;
       }
-    }
-    if (notificationConfig) {
       context.exeInfo.backendConfig[AmplifyCategories.NOTIFICATIONS][notificationConfig?.serviceName] = notificationConfig;
     }
+    console.log('SACPCDEBUG: UpdateChannelAPIResponse : context.exeInfo.backendConfig : ',
+      JSON.stringify(context.exeInfo.backendConfig, null, 2));
+    console.log('SACPCDEBUG: UpdateChannelAPIResponse : context.exeInfo.amplifyMeta : ',
+      JSON.stringify(context.exeInfo.amplifyMeta, null, 2));
     return context;
   }
 
@@ -146,13 +153,14 @@ public static getDisabledChannelsFromBackendConfig = async (availableChannels?: 
      channelConfig: {},
    };
 
-   if (!backendConfig[AmplifyCategories.NOTIFICATIONS] || !backendConfig[AmplifyCategories.NOTIFICATIONS][pinpointResourceName]) {
+   if (!backendConfig[AmplifyCategories.NOTIFICATIONS]
+       || !backendConfig[AmplifyCategories.NOTIFICATIONS][pinpointResourceName]) {
      backendConfig[AmplifyCategories.NOTIFICATIONS] = {
        [pinpointResourceName]: resourceConfig,
      };
      // TBD: Remove this - state is saved at the end
      //  stateManager.setBackendConfig(projectPath, backendConfig);
-     //  console.log('SACPCDEBUG: Saved BackendConfig : ', JSON.stringify(backendConfig, null, 2));
+     console.log('SACPCDEBUG:[InMemory] Saved BackendConfig : ', JSON.stringify(backendConfig, null, 2));
    }
    return backendConfig;
  };

@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { prompt } from 'inquirer';
 import { $TSContext, AmplifyCategories } from 'amplify-cli-core';
 import { ensurePinpointApp } from '../../pinpoint-helper';
@@ -46,7 +47,7 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
       context = await ensurePinpointApp(context, undefined);
       const channelAPIResponse : IChannelAPIResponse|undefined = await enableChannel(context, channelName);
       if (channelAPIResponse) {
-        NotificationsDB.updateChannelAPIResponse(context, channelAPIResponse);
+        await NotificationsDB.updateChannelAPIResponse(context, channelAPIResponse);
       }
       console.log(`SACPCDEBUG:NOTIFICATIONS:Add:3: Calling Write Data: ${channelName} `,
         JSON.stringify(context.exeInfo.backendConfig[AmplifyCategories.NOTIFICATIONS], null, 2));
