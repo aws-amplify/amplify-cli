@@ -257,6 +257,10 @@ export class GraphQLResourceManager {
       const changeSteps = getGSIDiffs(gsiChange.currentTable, gsiChange.nextTable);
       const { stackName } = gsiChange;
       const { tableName } = gsiChange;
+      if (stackName === ROOT_LEVEL) {
+        // eslint-disable-next-line no-continue
+        continue;
+      }
       for (const changeStep of changeSteps) {
         const ddbResource = this.templateState.getLatest(stackName) || this.getStack(stackName, currentState);
         let gsiRecord;
