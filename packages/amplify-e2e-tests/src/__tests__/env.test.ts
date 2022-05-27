@@ -26,9 +26,7 @@ import {
 
 async function validate(meta: any) {
   expect(meta.providers.awscloudformation).toBeDefined();
-  const {
-    AuthRoleArn: authRoleArn, DeploymentBucketName: bucketName, Region: region, StackId: stackId,
-  } = meta.providers.awscloudformation;
+  const { AuthRoleArn: authRoleArn, DeploymentBucketName: bucketName, Region: region, StackId: stackId } = meta.providers.awscloudformation;
 
   expect(authRoleArn).toBeDefined();
   expect(region).toBeDefined();
@@ -163,7 +161,7 @@ describe('environment commands with HostedUI params', () => {
   let projRoot: string;
   beforeAll(async () => {
     projRoot = await createNewProjectDir('env-test');
-    await initJSProjectWithProfile(projRoot, { envName: 'enva', disableAmplifyAppCreation: false});
+    await initJSProjectWithProfile(projRoot, { envName: 'enva' });
     await addAuthWithDefaultSocial(projRoot, {});
     await amplifyPushAuth(projRoot);
   });

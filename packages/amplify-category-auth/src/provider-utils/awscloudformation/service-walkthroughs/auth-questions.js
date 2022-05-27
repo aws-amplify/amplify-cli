@@ -7,13 +7,9 @@ const { Sort } = require('enquirer');
 // const { parseTriggerSelections } = require('../utils/trigger-flow-auth-helper');
 const { extractApplePrivateKey } = require('../utils/extract-apple-private-key');
 const { authProviders, attributeProviderMap, capabilities } = require('../assets/string-maps');
-const { syncOAuthSecretsToCloud } = require('../auth-secret-manager/sync-oauth-secrets');
 
 const category = 'auth';
 
-/**
- * service walkthrough for interactive auth flow
- */
 async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFilename, serviceMetadata, coreAnswers = {}) {
   const { inputs } = serviceMetadata;
   const { amplify } = context;
@@ -24,7 +20,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
   let userPoolGroupList = context.amplify.getUserPoolGroupList(context);
   let adminQueryGroup;
 
-  await handleUpdates(context, coreAnswers);
+  handleUpdates(context, coreAnswers);
 
   // QUESTION LOOP
   let j = 0;
@@ -83,9 +79,9 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
         if the input has an 'iterator' value, we generate a loop which uses the iterator value as a
         key to find the array of values it should splice into.
       */
-      questionObj.iterator
-      && answer[questionObj.key]
-      && answer[questionObj.key].length > 0
+      questionObj.iterator &&
+      answer[questionObj.key] &&
+      answer[questionObj.key].length > 0
     ) {
       const replacementArray = context.updatingAuth[questionObj.iterator];
       for (let t = 0; t < answer[questionObj.key].length; t += 1) {
@@ -376,10 +372,10 @@ async function updateAdminQuery(context, userPoolGroupList) {
   return adminGroup;
 }
 
-/**
-* Create key/value pairs of third party auth providers,
-* where key = name accepted by updateIdentityPool API call and value = id entered by user
- */
+/*
+  Create key/value pairs of third party auth providers,
+  where key = name accepted by updateIdentityPool API call and value = id entered by user
+*/
 function identityPoolProviders(coreAnswers, projectType) {
   coreAnswers.selectedParties = {};
   authProviders.forEach(e => {
@@ -411,11 +407,11 @@ function identityPoolProviders(coreAnswers, projectType) {
   coreAnswers.selectedParties = JSON.stringify(coreAnswers.selectedParties);
 }
 
-/**
- * Format hostedUI providers data per lambda spec
- * hostedUI ProviderMeta is saved in parameters.json.
- * hostedUI providerCreds is saved in parameter store.
- */
+/*
+  Format hosted UI providers data per lambda spec
+  hostedUIProviderMeta is saved in parameters.json.
+  hostedUIproviderCreds is saved in deployment-secrets.
+*/
 function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
   if (coreAnswers.useDefault === 'default') {
     return null;
@@ -464,30 +460,29 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
             key_id: coreAnswers[`${lowerCaseEl}KeyIdUserPool`],
             private_key: coreAnswers[`${lowerCaseEl}PrivateKeyUserPool`],
           };
+        } else {
+          return {
+            ProviderName: el,
+            client_id: coreAnswers[`${lowerCaseEl}AppIdUserPool`],
+            client_secret: coreAnswers[`${lowerCaseEl}AppSecretUserPool`],
+          };
         }
-        return {
-          ProviderName: el,
-          client_id: coreAnswers[`${lowerCaseEl}AppIdUserPool`],
-          client_secret: coreAnswers[`${lowerCaseEl}AppSecretUserPool`],
-        };
       }),
     );
   }
   return res;
 }
 
-/**
- * Format hosted UI oAuth data per lambda spec
- */
+/*
+  Format hosted UI oAuth data per lambda spec
+*/
 function structureOAuthMetadata(coreAnswers, context, defaults, amplify) {
   if (coreAnswers.useDefault === 'default' && context.updatingAuth) {
     delete context.updatingAuth.oAuthMetadata;
     return null;
   }
-  const answers = { ...context.updatingAuth, ...coreAnswers };
-  let {
-    AllowedOAuthFlows, AllowedOAuthScopes, CallbackURLs, LogoutURLs,
-  } = answers;
+  const answers = Object.assign({}, context.updatingAuth, coreAnswers);
+  let { AllowedOAuthFlows, AllowedOAuthScopes, CallbackURLs, LogoutURLs } = answers;
   if (CallbackURLs && coreAnswers.newCallbackURLs) {
     CallbackURLs = CallbackURLs.concat(coreAnswers.newCallbackURLs);
   } else if (coreAnswers.newCallbackURLs) {
@@ -534,9 +529,9 @@ function parseOAuthMetaData(previousAnswers) {
   }
 }
 
-/**
- *   Deserialize oAuthCredentials for CLI update flow
- */
+/*
+  Deserialize oAuthCredentials for CLI update flow
+*/
 function parseOAuthCreds(providers, metadata, envCreds) {
   const providerKeys = {};
   try {
@@ -570,7 +565,7 @@ function parseOAuthCreds(providers, metadata, envCreds) {
 /*
   Handle updates
 */
-async function handleUpdates(context, coreAnswers) {
+function handleUpdates(context, coreAnswers) {
   if (context.updatingAuth && context.updatingAuth.triggers) {
     coreAnswers.triggers = {};
     coreAnswers.triggers = context.updatingAuth.triggers;
@@ -582,9 +577,9 @@ async function handleUpdates(context, coreAnswers) {
 
   if (context.updatingAuth && context.updatingAuth.authProvidersUserPool) {
     const { resourceName, authProvidersUserPool, hostedUIProviderMeta } = context.updatingAuth;
-    const oAuthSecretKey = await syncOAuthSecretsToCloud(context, resourceName);
+    const { hostedUIProviderCreds } = context.amplify.loadEnvResourceParameters(context, 'auth', resourceName);
     /* eslint-disable */
-    const oAuthCreds = parseOAuthCreds(authProvidersUserPool, hostedUIProviderMeta, oAuthSecretKey);
+    const oAuthCreds = parseOAuthCreds(authProvidersUserPool, hostedUIProviderMeta, hostedUIProviderCreds);
     /* eslint-enable */
     context.updatingAuth = Object.assign(context.updatingAuth, oAuthCreds);
   }
@@ -602,9 +597,6 @@ async function lambdaFlow(context, answers) {
   return triggers || answers;
 }
 
-/**
- * fetch IAM policies required for Auth
- */
 function getIAMPolicies(context, resourceName, crudOptions) {
   let policy = {};
   const actions = [];

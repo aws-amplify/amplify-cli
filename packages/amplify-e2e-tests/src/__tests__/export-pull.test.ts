@@ -29,10 +29,10 @@ import {
   initIosProjectWithProfile,
   initJSProjectWithProfile,
 } from 'amplify-e2e-core';
+import { getAWSExportsPath } from '../aws-exports/awsExports';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as _ from 'lodash';
-import { getAWSExportsPath } from '../aws-exports/awsExports';
 
 describe('amplify export pull', () => {
   let projRoot: string;
@@ -46,7 +46,7 @@ describe('amplify export pull', () => {
   });
 
   it('init a js project and compare with export pull', async () => {
-    await initJSProjectWithProfile(projRoot, { envName: 'dev', disableAmplifyAppCreation: false  });
+    await initJSProjectWithProfile(projRoot, { envName: 'dev' });
     await AddandPushCategories();
     const exportsPath = getAWSExportsPath(projRoot);
     const pathToExportGeneratedConfig = await generatePullConfig('javascript');
@@ -54,7 +54,8 @@ describe('amplify export pull', () => {
   });
 
   it('init an ios project and compare with export pull', async () => {
-    await initIosProjectWithProfile(projRoot, { envName: 'dev', disableAmplifyAppCreation: false });
+    await initIosProjectWithProfile(projRoot, { envName: 'dev' });
+
     await AddandPushCategories('ios');
     const awsConfigPath = getAWSConfigIOSPath(projRoot);
     const amplifyConfigPath = getAmplifyConfigIOSPath(projRoot);
@@ -64,7 +65,8 @@ describe('amplify export pull', () => {
   });
 
   it('init an android project and compare with export pull', async () => {
-    await initAndroidProjectWithProfile(projRoot, { envName: 'dev', disableAmplifyAppCreation: false  });
+    await initAndroidProjectWithProfile(projRoot, { envName: 'dev' });
+
     await AddandPushCategories('android');
     const awsConfigPath = getAWSConfigAndroidPath(projRoot);
     const amplifyConfigPath = getAmplifyConfigAndroidPath(projRoot);
@@ -74,7 +76,7 @@ describe('amplify export pull', () => {
   });
 
   it('init a flutter project and compare with export pull', async () => {
-    await initFlutterProjectWithProfile(projRoot, { envName: 'dev', disableAmplifyAppCreation: false   });
+    await initFlutterProjectWithProfile(projRoot, { envName: 'dev' });
     await AddandPushCategories('flutter');
     const amplifyConfigPath = path.join(projRoot, 'lib', 'amplifyconfiguration.dart');
     const pullConfigPath = await generatePullConfig('flutter');
@@ -94,8 +96,9 @@ describe('amplify export pull', () => {
       if (!equal) return false;
       if (typeof object1[key] !== 'object') {
         return object1[key] === object2[key];
+      } else {
+        return recursiveComapre(object1[key], object2[key]);
       }
-      return recursiveComapre(object1[key], object2[key]);
     }, true);
   }
 

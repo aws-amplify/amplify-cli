@@ -63,14 +63,14 @@ describe('auth import userpool only', () => {
   let dummyOGSettings: AddAuthUserPoolOnlyWithOAuthSettings;
 
   let projectRoot: string;
-  let ignoreProjectDeleteErrors = false;
+  let ignoreProjectDeleteErrors: boolean = false;
 
   beforeAll(async () => {
     ogProjectRoot = await createNewProjectDir(ogProjectSettings.name);
     ogShortId = getShortId();
     ogSettings = createUserPoolOnlyWithOAuthSettings(ogProjectSettings.name, ogShortId);
 
-    await initJSProjectWithProfile(ogProjectRoot, { ...ogProjectSettings, disableAmplifyAppCreation: false });
+    await initJSProjectWithProfile(ogProjectRoot, ogProjectSettings);
     await addAuthUserPoolOnlyWithOAuth(ogProjectRoot, ogSettings);
     await amplifyPushAuth(ogProjectRoot);
 
@@ -80,7 +80,7 @@ describe('auth import userpool only', () => {
     dummyOGShortId = getShortId();
     dummyOGSettings = createUserPoolOnlyWithOAuthSettings(dummyOGProjectSettings.name, ogShortId);
 
-    await initJSProjectWithProfile(dummyOGProjectRoot, { ...dummyOGProjectSettings, disableAmplifyAppCreation: false });
+    await initJSProjectWithProfile(dummyOGProjectRoot, dummyOGProjectSettings);
     await addAuthUserPoolOnlyWithOAuth(dummyOGProjectRoot, dummyOGSettings);
     await amplifyPushAuth(dummyOGProjectRoot);
   });

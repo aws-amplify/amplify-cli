@@ -21,7 +21,7 @@ describe('amplify add analytics', () => {
   });
 
   it('add pinpoint for javascript', async () => {
-    await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false });
+    await initJSProjectWithProfile(projRoot, {});
     const rightName = 'myapp';
     await addPinpoint(projRoot, { rightName, wrongName: '$' });
     const pinpointTemplateFilePath = path.join(
