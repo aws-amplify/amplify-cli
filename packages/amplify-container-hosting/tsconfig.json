@@ -13,8 +13,5 @@
     "coverage",
     "src/__tests__",
     "resources"
-  ],
-  "references": [
-    { "path": "../amplify-category-api" }
   ]
 }
