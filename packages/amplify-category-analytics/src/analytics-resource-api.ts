@@ -111,6 +111,8 @@ export const analyticsResourceToggleNotificationChannel = async (_: $TSContext, 
   } else {
     await pinpointAPIDisableNotificationChannel(pinpointResource, channel);
   }
+  // Update amplify-meta.json
+
   response.status = true;
   return response;
 };
@@ -169,7 +171,7 @@ const pinpointAPIEnableNotificationChannel = (pinpointResource: IAmplifyResource
   const pinpointResourceName = pinpointResource.resourceName;
   const projectPath = pathManager.findProjectRoot();
   const pinPointCFNInputParams = stateManager.getResourceParametersJson(projectPath, AmplifyCategories.ANALYTICS, pinpointResourceName);
-  console.log(`SACPCDEBUG: Enable ${notificationChannel} : pinpointAPIEnableNotificationChannel :1: ${JSON.stringify(pinPointCFNInputParams, null, 2)}`);
+  console.log(`SACPCDEBUG:ANALYTICS: Enable ${notificationChannel} : pinpointAPIEnableNotificationChannel :1: ${JSON.stringify(pinPointCFNInputParams, null, 2)}`);
   const uniqueChannelPolicyName = buildPolicyName(notificationChannel, pinPointCFNInputParams.pinpointPolicyName);
   switch (notificationChannel) {
     case NotificationChannels.IN_APP_MSG: {
