@@ -18,7 +18,7 @@ import {
 import { disableChannelBackendConfig } from './multi-env-manager';
 import { IChannelAPIResponse, ChannelAction } from './notifications-api-types';
 
-const channelName = 'InAppMsg';
+const channelName = 'InAppMessaging';
 const spinner = ora('');
 
 /**

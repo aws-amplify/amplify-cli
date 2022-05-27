@@ -337,26 +337,28 @@ export const updateNotificationsChannelBackendConfig = async (channelAPIResponse
  */
 export const writeData = async (context: $TSContext, channelAPIResponse: IChannelAPIResponse | undefined):Promise<void> => {
   if (!channelAPIResponse) {
+    const analyticsMeta = context.exeInfo.amplifyMeta[AmplifyCategories.ANALYTICS];
     const categoryMeta = context.exeInfo.amplifyMeta[AmplifyCategories.NOTIFICATIONS];
     let pinpointMeta;
     if (categoryMeta) {
       const availableChannels = NotificationsDB.getAvailableChannels();
       const enabledChannels: Array<string> = [];
-      const resourceNames = Object.keys(categoryMeta);
-      for (const resourceName of resourceNames) {
-        const serviceMeta = categoryMeta[resourceName];
-        if (serviceMeta.service === AmplifySupportedService.PINPOINT && serviceMeta.output && serviceMeta.output.Id) {
+      const serviceNames = Object.keys(categoryMeta);
+      for (const serviceName of serviceNames) {
+        const serviceMeta = categoryMeta[serviceName];
+        const applicationId = (serviceMeta.output?.Id) || analyticsMeta[serviceName]?.output?.Id;
+        if (serviceMeta.service === AmplifySupportedService.PINPOINT && serviceMeta.output && applicationId) {
           availableChannels.forEach(channel => {
             if (serviceMeta.output[channel] && serviceMeta.output[channel].Enabled) {
               enabledChannels.push(channel);
             }
           });
           pinpointMeta = {
-            serviceName: resourceName,
+            serviceName,
             service: serviceMeta.service,
             channels: enabledChannels,
             Name: serviceMeta.output.Name,
-            Id: serviceMeta.output.Id,
+            Id: applicationId,
             Region: serviceMeta.output.Region,
           };
           break;
@@ -371,6 +373,7 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
   } else {
     const availableChannels = NotificationsDB.getAvailableChannels();
     let enabledChannels: Array<string> = [];
+    const analyticsMeta = context.exeInfo.amplifyMeta[AmplifyCategories.ANALYTICS];
     const categoryMeta = context.exeInfo.amplifyMeta[AmplifyCategories.NOTIFICATIONS];
     const categoryBackend = context.exeInfo.backendConfig[AmplifyCategories.NOTIFICATIONS];
     let pinpointMeta;
@@ -386,12 +389,17 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
           enabledChannels = [...categoryBackend[serviceName].channels];
         }
       }
+      // The applicationId is only generated once Analytics resource is deployed.
+      // Until we find a generalized way to sync updates from provider categories like
+      // Analytics to dependent categories like Notifications, we need to explicitly sync
+      // the applicationId into Notifications.
+      const applicationId = (serviceMeta.output?.Id) || analyticsMeta[serviceName]?.output?.Id;
       pinpointMeta = {
         serviceName,
         service: serviceMeta.service,
         channels: enabledChannels,
         Name: serviceMeta.output.Name,
-        Id: serviceMeta.output.Id,
+        Id: applicationId,
         Region: serviceMeta.output.Region,
       };
       pinpointConfig = {
