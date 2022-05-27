@@ -34,7 +34,6 @@ export class NotificationsDB {
 
   public static updateChannelAPIResponse = async (context : $TSContext, channelAPIResponse: IChannelAPIResponse):Promise<$TSContext> => {
     const notificationConfig = await NotificationsDB.getNotificationsAppConfig(context.exeInfo.backendConfig);
-    console.log('SACPCDEBUG: UpdateChannelAPIResponse : ', JSON.stringify(channelAPIResponse, null, 2));
     if (notificationConfig) {
       switch (channelAPIResponse.action) {
         case ChannelAction.ENABLE:
@@ -52,14 +51,16 @@ export class NotificationsDB {
           }
           break;
         case ChannelAction.CONFIGURE:
+          console.log(`Error: Channel action ${channelAPIResponse.action} not supported`);
           break;
         case ChannelAction.PULL:
+          console.log(`Error: Channel action ${channelAPIResponse.action} not supported`);
           break;
         default:
           console.log(`Error: Channel action ${channelAPIResponse.action} not supported`);
           break;
       }
-      context.exeInfo.backendConfig[AmplifyCategories.NOTIFICATIONS][notificationConfig?.serviceName] = notificationConfig;
+      context.exeInfo.backendConfig[AmplifyCategories.NOTIFICATIONS][notificationConfig.serviceName] = notificationConfig;
     }
     console.log('SACPCDEBUG: UpdateChannelAPIResponse : context.exeInfo.backendConfig : ',
       JSON.stringify(context.exeInfo.backendConfig, null, 2));

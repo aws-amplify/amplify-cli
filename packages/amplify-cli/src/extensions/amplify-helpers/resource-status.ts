@@ -1,15 +1,15 @@
-import _ from 'lodash';
+import { ViewResourceTableParams, $TSAny } from 'amplify-cli-core';
 import { print } from './print';
-import { getEnvInfo } from './get-env-info';
 import { CLOUD_INITIALIZED, getCloudInitStatus } from './get-cloud-init-status';
-import { ViewResourceTableParams } from 'amplify-cli-core';
 import { viewSummaryTable, viewEnvInfo, viewResourceDiffs } from './resource-status-view';
 import { getMultiCategoryStatus, getResourceStatus, getHashForResourceDir } from './resource-status-data';
-import chalk from 'chalk';
 
 export { getResourceStatus, getHashForResourceDir };
 
-export async function showStatusTable(tableViewFilter: ViewResourceTableParams) {
+/**
+ * CLI View function to display resource summary or verbose status
+ */
+export const showStatusTable = async (tableViewFilter: ViewResourceTableParams):Promise<boolean> => {
   const amplifyProjectInitStatus = getCloudInitStatus();
   const {
     resourcesToBeCreated,
@@ -21,32 +21,37 @@ export async function showStatusTable(tableViewFilter: ViewResourceTableParams) 
     tagsUpdated,
   } = await getMultiCategoryStatus(tableViewFilter);
 
-  //1. Display Environment Info
+  // 1. Display Environment Info
   if (amplifyProjectInitStatus === CLOUD_INITIALIZED) {
     viewEnvInfo();
   }
-  //2. Display Summary Table
-  viewSummaryTable({ resourcesToBeUpdated, resourcesToBeCreated, resourcesToBeDeleted, resourcesToBeSynced, allResources });
-  //3. Display Tags Status
+  // 2. Display Summary Table
+  viewSummaryTable({
+    resourcesToBeUpdated, resourcesToBeCreated, resourcesToBeDeleted, resourcesToBeSynced, allResources,
+  });
+  // 3. Display Tags Status
   if (tagsUpdated) {
     print.info('\nTag Changes Detected');
   }
 
-  //4. Display Detailed Diffs (Cfn/NonCfn)
+  // 4. Display Detailed Diffs (Cfn/NonCfn)
   if (tableViewFilter.verbose) {
     await viewResourceDiffs({ resourcesToBeUpdated, resourcesToBeDeleted, resourcesToBeCreated });
   }
 
-  const resourceChanged =
-    resourcesToBeCreated.length + resourcesToBeUpdated.length + resourcesToBeSynced.length + resourcesToBeDeleted.length > 0 || tagsUpdated;
+  const isResourceChanged = resourcesToBeCreated.length + resourcesToBeUpdated.length
+                             + resourcesToBeSynced.length + resourcesToBeDeleted.length > 0 || !!tagsUpdated;
 
-  return resourceChanged;
-}
+  return isResourceChanged;
+};
 
-export async function showResourceTable(category?, resourceName?, filteredResources?) {
+/**
+ * CLI view function for resource summary.
+ */
+export const showResourceTable = async (category?: string, resourceName?:string, filteredResources?:Array<$TSAny>):Promise<boolean> => {
   const amplifyProjectInitStatus = getCloudInitStatus();
 
-  //Prepare state for view
+  // Prepare state for view
   const {
     resourcesToBeCreated,
     resourcesToBeUpdated,
@@ -57,21 +62,23 @@ export async function showResourceTable(category?, resourceName?, filteredResour
     rootStackUpdated,
   } = await getResourceStatus(category, resourceName, undefined, filteredResources);
 
-  //1. Display Environment Info
+  // 1. Display Environment Info
   if (amplifyProjectInitStatus === CLOUD_INITIALIZED) {
     viewEnvInfo();
   }
-  //2. Display Summary Table
-  viewSummaryTable({ resourcesToBeUpdated, resourcesToBeCreated, resourcesToBeDeleted, resourcesToBeSynced, allResources });
-  //3. Display Tags Status
+  // 2. Display Summary Table
+  viewSummaryTable({
+    resourcesToBeUpdated, resourcesToBeCreated, resourcesToBeDeleted, resourcesToBeSynced, allResources,
+  });
+  // 3. Display Tags Status
   if (tagsUpdated) {
     print.info('\nTag Changes Detected');
   }
 
-  const resourceChanged =
-    resourcesToBeCreated.length + resourcesToBeUpdated.length + resourcesToBeSynced.length + resourcesToBeDeleted.length > 0 ||
-    tagsUpdated ||
-    rootStackUpdated;
+  const resourceChanged = resourcesToBeCreated.length + resourcesToBeUpdated.length
+  + resourcesToBeSynced.length + resourcesToBeDeleted.length > 0
+    || !!tagsUpdated
+    || !!rootStackUpdated;
 
   return resourceChanged;
-}
+};

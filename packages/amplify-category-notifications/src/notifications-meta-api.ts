@@ -1,3 +1,4 @@
+/* eslint-disable no-bitwise */
 /* eslint-disable spellcheck/spell-checker */
 /**
  *  API to update Notifications category state in the state-db ( backend-config, frontend-config, teams-provider, amplify-meta)
@@ -7,6 +8,7 @@ import {
 } from 'amplify-cli-core';
 import { ICategoryMeta } from './notifications-amplify-meta-types';
 import { NotificationsDB } from './notifications-backend-cfg-api';
+import { invokeGetLastPushTimeStamp } from './analytics-resource-api';
 
 /**
  * Persistent state management class for Notifications.
@@ -35,11 +37,39 @@ export class NotificationsMeta {
         Enabled: isEnabled,
         ApplicationId: channelOutput.Id,
       };
+
+      // To mark notifications as UPDATED, we need a timestamp in the past.
+      // Any update to Notifications will result in updating the Analytics resource.
+      // syncing the timestamp from analytics.
+      if (!notificationsAppMeta.lastPushTimeStamp) {
+        const analyticsLastPushTimeStamp = await invokeGetLastPushTimeStamp(tmpAmplifyMeta, notificationsAppMeta.ResourceName);
+        if (analyticsLastPushTimeStamp) {
+          notificationsAppMeta.lastPushTimeStamp = analyticsLastPushTimeStamp;
+          notificationsAppMeta.lastPushDirHash = (notificationsAppMeta.lastPushDirHash)
+        || NotificationsMeta.jenkinsOneAtATimeHash(JSON.stringify(notificationsAppMeta));
+        }
+      }
+
       tmpAmplifyMeta[AmplifyCategories.NOTIFICATIONS][notificationsAppMeta.ResourceName] = notificationsAppMeta;
     }
 
     return tmpAmplifyMeta;
   }
+
+  // Move this to library
+  // https://en.wikipedia.org/wiki/Jenkins_hash_function
+  protected static jenkinsOneAtATimeHash = (keyString: string):string => {
+    let hash = 0;
+    for (let charIndex = 0; charIndex < keyString.length; ++charIndex) {
+      hash += keyString.charCodeAt(charIndex);
+      hash += hash << 10;
+      hash ^= hash >> 6;
+    }
+    hash += hash << 3;
+    hash ^= hash >> 11;
+    // 4,294,967,295 is FFFFFFFF, the maximum 32 bit unsigned integer value, used here as a mask.
+    return (((hash + (hash << 15)) & 4294967295) >>> 0).toString(16);
+  };
 
   /**
    * Get Notifications App from 'notifications' category  of amplify-meta.json

@@ -83,7 +83,9 @@ export interface INotificationsResourceMeta {
   Region : string, // Region in which Notifications resource is deployed.
   ResourceName: string, // Logical name of Notificiations App.
   output : Record<string, $TSAny>,
-  mobileHubMigrated?:boolean
+  mobileHubMigrated?:boolean,
+  lastPushTimeStamp?:string,
+  lastPushDirHash?:string, // this is a pseudo field since all notification pushes are through analytics or sdk
 }
 
 /**

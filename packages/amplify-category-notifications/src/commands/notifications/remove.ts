@@ -53,6 +53,9 @@ export const run = async (context:$TSContext): Promise<$TSContext> => {
     if (channelName !== DELETE_PINPOINT_APP) {
       await pinpointHelper.ensurePinpointApp(context, undefined);
       const channelAPIResponse : IChannelAPIResponse|undefined = await notificationManager.disableChannel(context, channelName);
+      if (channelAPIResponse) {
+        await NotificationsDB.updateChannelAPIResponse(context, channelAPIResponse);
+      }
       await multiEnvManager.writeData(context, channelAPIResponse);
     } else if (pinpointHelper.isAnalyticsAdded(context)) {
       context.print.error('Execution aborted.');
