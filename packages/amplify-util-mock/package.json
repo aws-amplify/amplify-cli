@@ -33,7 +33,7 @@
     "amplify-category-function": "4.0.5",
     "amplify-cli-core": "2.8.0",
     "amplify-codegen": "^3.0.0",
-    "amplify-dynamodb-simulator": "2.3.0",
+    "amplify-dynamodb-simulator": "2.3.2",
     "amplify-provider-awscloudformation": "6.2.0",
     "amplify-storage-simulator": "1.6.7",
     "chokidar": "^3.5.3",
