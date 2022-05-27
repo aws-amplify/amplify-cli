@@ -81,8 +81,8 @@ export interface INotificationsResourceMeta {
   Id : string, // unique identifier for AWS service resource allocated for Notifications
   Name : string, // region specific logical identifier for AWS service resource
   Region : string, // Region in which Notifications resource is deployed.
-  ResourceName: string, // Logical name of Notficiations App.
-  output : $TSAny,
+  ResourceName: string, // Logical name of Notificiations App.
+  output : Record<string, $TSAny>,
   mobileHubMigrated?:boolean
 }
 
