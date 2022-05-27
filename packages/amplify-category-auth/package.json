@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-auth",
-  "version": "2.9.0",
+  "version": "2.9.1-delta-table-cpk.0",
   "description": "amplify-cli authentication plugin",
   "repository": {
     "type": "git",

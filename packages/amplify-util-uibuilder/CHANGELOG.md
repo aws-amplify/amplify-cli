@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.26-delta-table-cpk.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.2.25...@aws-amplify/amplify-util-uibuilder@1.2.26-delta-table-cpk.0) (2022-05-26)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
 ## [1.2.25](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.2.24...@aws-amplify/amplify-util-uibuilder@1.2.25) (2022-05-24)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
