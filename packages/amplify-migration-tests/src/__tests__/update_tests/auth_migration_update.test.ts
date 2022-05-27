@@ -1,11 +1,7 @@
-/* eslint-disable jest/expect-expect */
-/* eslint-disable max-lines-per-function */
 import { $TSAny } from 'amplify-cli-core';
 import {
   addAuthWithCustomTrigger,
   addAuthWithDefault,
-  addAuthWithMaxOptions,
-  addFunction,
   amplifyPushAuth,
   createNewProjectDir,
   deleteProject,
@@ -19,15 +15,14 @@ import {
 } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import { join } from 'path';
-import { v4 as uuid } from 'uuid';
-import { allowedVersionsToMigrateFrom, initJSProjectWithProfile, versionCheck } from '../../migration-helpers';
+import { initJSProjectWithProfile, versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
 
 describe('amplify auth migration', () => {
-  let projectRoot: string;
+  let projRoot: string;
 
   beforeAll(async () => {
-    const migrateFromVersion = { v: 'uninitialized' };
-    const migrateToVersion = { v: 'uninitialized' };
+    const migrateFromVersion = { v: 'unintialized' };
+    const migrateToVersion = { v: 'unintialized' };
     await versionCheck(process.cwd(), false, migrateFromVersion);
     await versionCheck(process.cwd(), true, migrateToVersion);
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
@@ -35,24 +30,23 @@ describe('amplify auth migration', () => {
   });
 
   beforeEach(async () => {
-    projectRoot = await createNewProjectDir('auth migration');
-    await initJSProjectWithProfile(projectRoot, { name: 'authMigration', disableAmplifyAppCreation: false });
+    projRoot = await createNewProjectDir('auth migration');
+    await initJSProjectWithProfile(projRoot, { name: 'authMigration' });
   });
   afterEach(async () => {
-    const metaFilePath = join(projectRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
+    const metaFilePath = join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
     if (fs.existsSync(metaFilePath)) {
-      await deleteProject(projectRoot, null, true);
+      await deleteProject(projRoot, null, true);
     }
-    deleteProjectDir(projectRoot);
+    deleteProjectDir(projRoot);
   });
 
   it('...should init a project and add auth with a custom trigger, and then update to remove the custom js while leaving the other js', async () => {
     // init, add and push auth with installed cli
-    await addAuthWithCustomTrigger(projectRoot, {});
-    await amplifyPushAuth(projectRoot);
-    const meta = getProjectMeta(projectRoot);
+    await addAuthWithCustomTrigger(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    const meta = getProjectMeta(projRoot);
 
-    // eslint-disable-next-line spellcheck/spell-checker
     const functionName = `${Object.keys(meta.auth)[0]}PreSignup-integtest`;
 
     const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
@@ -62,61 +56,43 @@ describe('amplify auth migration', () => {
     const clients = await getUserPoolClients(id, clientIds, meta.providers.awscloudformation.Region);
 
     const lambdaFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
-    const dirContents = fs.readdirSync(`${projectRoot}/amplify/backend/function/${Object.keys(meta.auth)[0]}PreSignup/src`);
+    const dirContents = fs.readdirSync(`${projRoot}/amplify/backend/function/${Object.keys(meta.auth)[0]}PreSignup/src`);
     expect(dirContents.includes('custom.js')).toBeTruthy();
     expect(userPool.UserPool).toBeDefined();
     expect(clients).toHaveLength(2);
     expect(lambdaFunction).toBeDefined();
-    // eslint-disable-next-line spellcheck/spell-checker
     expect(lambdaFunction.Configuration.Environment.Variables.MODULES).toEqual('email-filter-denylist,custom');
+
+    // update and push with codebase
     const authResourceName = Object.keys(meta.auth).filter(resourceName => meta.auth[resourceName].service === 'Cognito')[0];
+    // update and push with codebase
     const overridesObj: $TSAny = {
       resourceName: authResourceName,
       category: 'auth',
       service: 'cognito',
     };
-    // eslint-disable-next-line spellcheck/spell-checker
-    await updateAuthWithoutCustomTrigger(projectRoot, { testingWithLatestCodebase: true, overrides: overridesObj });
-    await amplifyPushAuth(projectRoot, true);
+    await updateAuthWithoutCustomTrigger(projRoot, { testingWithLatestCodebase: true, overrides: overridesObj });
+    await amplifyPushAuth(projRoot, true);
     const updatedFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
-    const updatedDirContents = fs.readdirSync(`${projectRoot}/amplify/backend/function/${Object.keys(meta.auth)[0]}PreSignup/src`);
+    const updatedDirContents = fs.readdirSync(`${projRoot}/amplify/backend/function/${Object.keys(meta.auth)[0]}PreSignup/src`);
     expect(updatedDirContents.includes('custom.js')).toBeFalsy();
-    // eslint-disable-next-line spellcheck/spell-checker
     expect(updatedDirContents.includes('email-filter-denylist.js')).toBeTruthy();
-    // eslint-disable-next-line spellcheck/spell-checker
     expect(updatedFunction.Configuration.Environment.Variables.MODULES).toEqual('email-filter-denylist');
   });
 
   it('...should init a project and add auth with default, and then update with latest and push', async () => {
     // add and push auth with installed cli
-    await addAuthWithDefault(projectRoot, {});
-    await amplifyPushAuth(projectRoot);
-    const meta = getProjectMeta(projectRoot);
+    await addAuthWithDefault(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    const meta = getProjectMeta(projRoot);
     const authResourceName = Object.keys(meta.auth).filter(resourceName => meta.auth[resourceName].service === 'Cognito')[0];
+    // update and push with codebase
     const overridesObj: $TSAny = {
       resourceName: authResourceName,
       category: 'auth',
       service: 'cognito',
     };
-    // eslint-disable-next-line spellcheck/spell-checker
-    await updateAuthWithoutTrigger(projectRoot, { testingWithLatestCodebase: true, overrides: overridesObj });
-    await expect(amplifyPushAuth(projectRoot, true)).resolves.not.toThrowError();
-  });
-
-  it('...should init a project and add auth with Max options, and then add function and push', async () => {
-    // add and push auth with installed cli
-    await addAuthWithMaxOptions(projectRoot, {});
-    await amplifyPushAuth(projectRoot);
-    const [shortId] = uuid().split('-');
-    const fnName = `integtestfn${shortId}`;
-    await addFunction(
-      projectRoot,
-      {
-        name: fnName,
-        functionTemplate: 'Hello World',
-      },
-      'nodejs',
-    );
-    await expect(amplifyPushAuth(projectRoot, true)).resolves.not.toThrowError();
+    await updateAuthWithoutTrigger(projRoot, { testingWithLatestCodebase: true, overrides: overridesObj });
+    await amplifyPushAuth(projRoot, true);
   });
 });

@@ -1,15 +1,7 @@
-import { $TSContext, Template } from 'amplify-cli-core';
 import { AmplifyAuthTransform } from '../auth-stack-builder/auth-stack-transform';
+import { $TSContext, Template } from 'amplify-cli-core';
 
-/**
- *  generates cfn template for Auth
- */
-export const generateAuthStackTemplate = async (context: $TSContext, resourceName: string): Promise<Template | undefined> => {
+export const generateAuthStackTemplate = async (context: $TSContext, resourceName: string): Promise<Template> => {
   const authTransform = new AmplifyAuthTransform(resourceName);
-  const template = await authTransform.transform(context);
-  if (template) {
-    return template;
-  }
-
-  throw new Error(`Failed to generate auth CloudFormation template for ${resourceName}.`);
+  return await authTransform.transform(context);
 };

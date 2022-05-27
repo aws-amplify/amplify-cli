@@ -6,13 +6,16 @@ import {
   deleteProject,
   amplifyPushAuth,
   addFeatureFlag,
-
+} from 'amplify-e2e-core';
+import {
   addAuthWithRecaptchaTrigger,
   addAuthWithCustomTrigger,
   addAuthWithSignInSignOutUrl,
   updateAuthWithoutCustomTrigger,
   updateAuthRemoveRecaptchaTrigger,
   updateAuthSignInSignOutUrl,
+} from 'amplify-e2e-core';
+import {
   createNewProjectDir,
   deleteProjectDir,
   getProjectMeta,
@@ -47,11 +50,9 @@ describe('amplify updating auth...', () => {
       updatesigninUrl: 'http://localhost:3003/',
       updatesignoutUrl: 'http://localhost:3004/',
     };
-    await initAndroidProjectWithProfile(projRoot, { ...defaultsSettings, disableAmplifyAppCreation: false });
+    await initAndroidProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithSignInSignOutUrl(projRoot, settings);
-    await amplifyPushAuth(projRoot);
     await updateAuthSignInSignOutUrl(projRoot, settings);
-    await amplifyPushAuth(projRoot);
   });
 
   it('...should init a project and add auth with a custom trigger, and then update to remove the custom js while leaving the other js', async () => {
@@ -102,7 +103,7 @@ describe('amplify updating auth...', () => {
     expect(dirContents.includes('email-filter-denylist-legacy.js')).toBeTruthy();
   });
 
-  it('...should init an android project and add customAuth flag, and remove flag when custom auth triggers are removed upon update', async () => {
+  it('...should init an android project and add customAuth flag, and remove flag when custom auth triggers are removed upon update ', async () => {
     await initAndroidProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithRecaptchaTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);

@@ -25,7 +25,6 @@ type AuthStackMetadata = {
   breakCircularDependency: boolean;
   permissions?: AuthTriggerPermissions[];
   authTriggerConnections?: AuthTriggerConnection[];
-  oAuthSecretsPathAmplifyAppId?: string
 };
 
 export type ServiceQuestionHeadlessResult = ServiceQuestionsBaseResult &

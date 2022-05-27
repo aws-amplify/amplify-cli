@@ -14,14 +14,10 @@
 
 const category = 'auth';
 
+const _ = require('lodash');
 const path = require('path');
 const sequential = require('promise-sequential');
 
-const { validateAddAuthRequest, validateUpdateAuthRequest, validateImportAuthRequest } = require('amplify-util-headless-input');
-const {
-  stateManager, AmplifySupportedService, JSONUtilities,
-} = require('amplify-cli-core');
-const { printer } = require('amplify-prompts');
 const defaults = require('./provider-utils/awscloudformation/assets/cognito-defaults');
 const { getAuthResourceName } = require('./utils/getAuthResourceName');
 const { updateConfigOnEnvInit, migrate } = require('./provider-utils/awscloudformation');
@@ -30,10 +26,12 @@ const { ENV_SPECIFIC_PARAMS } = require('./provider-utils/awscloudformation/cons
 
 const { transformUserPoolGroupSchema } = require('./provider-utils/awscloudformation/utils/transform-user-pool-group');
 const { uploadFiles } = require('./provider-utils/awscloudformation/utils/trigger-file-uploader');
+const { validateAddAuthRequest, validateUpdateAuthRequest, validateImportAuthRequest } = require('amplify-util-headless-input');
 const { getAddAuthRequestAdaptor, getUpdateAuthRequestAdaptor } = require('./provider-utils/awscloudformation/utils/auth-request-adaptors');
 const { getAddAuthHandler, getUpdateAuthHandler } = require('./provider-utils/awscloudformation/handlers/resource-handlers');
 const { projectHasAuth } = require('./provider-utils/awscloudformation/utils/project-has-auth');
 const { attachPrevParamsToContext } = require('./provider-utils/awscloudformation/utils/attach-prev-params-to-context');
+const { stateManager, AmplifySupportedService, JSONUtilities } = require('amplify-cli-core');
 const { headlessImport } = require('./provider-utils/awscloudformation/import');
 const { getFrontendConfig } = require('./provider-utils/awscloudformation/utils/amplify-meta-updaters');
 const { AuthParameters } = require('./provider-utils/awscloudformation/import/types');
@@ -46,16 +44,11 @@ const {
   loadImportedAuthParameters,
 } = require('./provider-utils/awscloudformation/utils/auth-sms-workflow-helper');
 const { AuthInputState } = require('./provider-utils/awscloudformation/auth-inputs-manager/auth-input-state');
+const { printer } = require('amplify-prompts');
 const { privateKeys } = require('./provider-utils/awscloudformation/constants');
 const { checkAuthResourceMigration } = require('./provider-utils/awscloudformation/utils/check-for-auth-migration');
-const { prePushHandler } = require('./events/prePushHandler');
-const { syncOAuthSecretsToCloud } = require('./provider-utils/awscloudformation/auth-secret-manager/sync-oauth-secrets');
 
-/**
- * entry point for add auth command
- * this function is being kept for temporary compatibility.
-
- */
+// this function is being kept for temporary compatability.
 async function add(context, skipNextSteps = false) {
   const { amplify } = context;
   const servicesMetadata = getSupportedServices();
@@ -86,9 +79,6 @@ async function add(context, skipNextSteps = false) {
     });
 }
 
-/**
- * entry point to build transform auth stack
- */
 async function transformCategoryStack(context, resource) {
   if (resource.service === AmplifySupportedService.COGNITO) {
     if (canResourceBeTransformed(resource.resourceName)) {
@@ -108,16 +98,10 @@ function canResourceBeTransformed(resourceName) {
   return resourceInputState.cliInputFileExists();
 }
 
-/**
- * check and migrates auth resource to support overrides
- */
 async function migrateAuthResource(context, resourceName) {
   return checkAuthResourceMigration(context, resourceName, true);
 }
 
-/**
- * enables auth for categories implicitly
- */
 async function externalAuthEnable(context, externalCategory, resourceName, requirements) {
   const { amplify } = context;
   const serviceMetadata = getSupportedServices();
@@ -185,14 +169,14 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
   };
 
   try {
-    authProps = removeDeprecatedProps(authProps);
+    authProps = await removeDeprecatedProps(authProps);
     // replace secret keys from cli inputs to be stored in deployment secrets
 
-    let sharedParams = { ...authProps };
+    let sharedParams = Object.assign({}, authProps);
     privateKeys.forEach(p => delete sharedParams[p]);
     sharedParams = removeDeprecatedProps(sharedParams);
     // extracting env-specific params from parameters object
-    const envSpecificParams = {};
+    let envSpecificParams = {};
     const cliInputs = { ...sharedParams };
     ENV_SPECIFIC_PARAMS.forEach(paramName => {
       if (paramName in authProps) {
@@ -228,7 +212,7 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
     // Update Identity Pool dependency attributes on userpool groups
     const allResources = context.amplify.getProjectMeta();
     if (allResources.auth && allResources.auth.userPoolGroups) {
-      const attributes = ['UserPoolId', 'AppClientIDWeb', 'AppClientID'];
+      let attributes = ['UserPoolId', 'AppClientIDWeb', 'AppClientID'];
       if (authParameters.identityPoolName) {
         attributes.push('IdentityPoolId');
       }
@@ -254,14 +238,13 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
   }
 }
 
-/**
- * We only require the checking of two properties:
- *    - authSelections
- *    - allowUnauthenticatedIdentities
- */
-async function checkRequirements(requirements, context) {
+async function checkRequirements(requirements, context, category, targetResourceName) {
+  // We only require the checking of two properties:
+  // - authSelections
+  // - allowUnauthenticatedIdentities
+
   if (!requirements || !requirements.authSelections) {
-    const error = 'Your plugin has not properly defined it\'s Cognito requirements.';
+    const error = `Your plugin has not properly defined it's Cognito requirements.`;
     return {
       errors: [error],
     };
@@ -304,11 +287,11 @@ async function checkRequirements(requirements, context) {
   // Checks handcoded until refactoring of the requirements system
   // since intersections were not handled correctly.
   if (
-    (requirements.authSelections === 'userPoolOnly'
-      && (authParameters.authSelections === 'userPoolOnly' || authParameters.authSelections === 'identityPoolAndUserPool'))
-    || (requirements.authSelections === 'identityPoolOnly' && authParameters.authSelections === 'identityPoolOnly')
-    || (requirements.authSelections === 'identityPoolOnly' && authParameters.authSelections === 'identityPoolAndUserPool')
-    || (requirements.authSelections === 'identityPoolAndUserPool' && authParameters.authSelections === 'identityPoolAndUserPool')
+    (requirements.authSelections === 'userPoolOnly' &&
+      (authParameters.authSelections === 'userPoolOnly' || authParameters.authSelections === 'identityPoolAndUserPool')) ||
+    (requirements.authSelections === 'identityPoolOnly' && authParameters.authSelections === 'identityPoolOnly') ||
+    (requirements.authSelections === 'identityPoolOnly' && authParameters.authSelections === 'identityPoolAndUserPool') ||
+    (requirements.authSelections === 'identityPoolAndUserPool' && authParameters.authSelections === 'identityPoolAndUserPool')
   ) {
     result.authSelections = true;
   } else {
@@ -317,28 +300,24 @@ async function checkRequirements(requirements, context) {
   }
 
   if (
-    (requirements.allowUnauthenticatedIdentities === true && authParameters.allowUnauthenticatedIdentities === true)
-    // eslint-disable-next-line max-len
-    || !requirements.allowUnauthenticatedIdentities // In this case it does not matter if IDP allows unauth access or not, requirements are met.
+    (requirements.allowUnauthenticatedIdentities === true && authParameters.allowUnauthenticatedIdentities === true) ||
+    !requirements.allowUnauthenticatedIdentities // In this case it does not matter if IDP allows unauth access or not, requirements are met.
   ) {
     result.allowUnauthenticatedIdentities = true;
   } else {
     result.allowUnauthenticatedIdentities = false;
-    result.errors.push('Auth configuration is required to allow unauthenticated users, but it is not configured properly.');
+    result.errors.push(`Auth configuration is required to allow unauthenticated users, but it is not configured properly.`);
   }
 
   result.requirementsMet = result.authSelections && result.allowUnauthenticatedIdentities;
 
   return result;
 }
-/**
- * entry point for init env
- */
+
 async function initEnv(context) {
   const { amplify } = context;
-  const {
-    resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeSynced, resourcesToBeDeleted, allResources,
-  } = await amplify.getResourceStatus('auth');
+  const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeSynced, resourcesToBeDeleted, allResources } =
+    await amplify.getResourceStatus('auth');
   const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
   let toBeCreated = [];
   let toBeUpdated = [];
@@ -387,16 +366,12 @@ async function initEnv(context) {
     return async () => {
       const config = await updateConfigOnEnvInit(context, 'auth', resourceName);
       context.amplify.saveEnvResourceParameters(context, 'auth', resourceName, config);
-      await syncOAuthSecretsToCloud(context, resourceName, config);
     };
   });
 
   await sequential(authTasks);
 }
 
-/**
- * entry point to console command
- */
 async function authConsole(context) {
   const { amplify } = context;
   const amplifyMeta = amplify.getProjectMeta();
@@ -422,9 +397,6 @@ async function authConsole(context) {
     });
 }
 
-/**
- * function to get permission policies for auth category
- */
 async function getPermissionPolicies(context, resourceOpsMapping) {
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
@@ -455,9 +427,6 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
   return { permissionPolicies, resourceAttributes };
 }
 
-/**
- * execute amplify interactive flow for auth commands
- */
 async function executeAmplifyCommand(context) {
   let commandPath = path.normalize(path.join(__dirname, 'commands'));
   if (context.input.command === 'help') {
@@ -484,7 +453,7 @@ const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
       }
       await validateAddAuthRequest(headlessPayload)
         .then(getAddAuthRequestAdaptor(context.amplify.getProjectConfig().frontend))
-        .then(getAddAuthHandler(context));
+        .then(getAddAuthHandler(context))
       return;
     case 'update':
       // migration check for headless update
@@ -504,9 +473,7 @@ const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
       const providerPlugin = context.amplify.getPluginInstance(context, provider);
       const cognito = await providerPlugin.createCognitoUserPoolService(context);
       const identity = await providerPlugin.createIdentityPoolService(context);
-      const {
-        userPoolId, identityPoolId, nativeClientId, webClientId,
-      } = JSONUtilities.parse(headlessPayload);
+      const { userPoolId, identityPoolId, nativeClientId, webClientId } = JSONUtilities.parse(headlessPayload);
       const projectConfig = context.amplify.getProjectConfig();
       const resourceName = projectConfig.projectName.toLowerCase().replace(/[^A-Za-z0-9_]+/g, '_');
       const resourceParams = {
@@ -522,30 +489,19 @@ const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
       return;
     default:
       context.print.error(`Headless mode for ${context.input.command} auth is not implemented yet`);
+      return;
   }
 };
 
-/**
- * entry point for amplify events
- */
 async function handleAmplifyEvent(context, args) {
-  switch (args.event) {
-    case 'PrePush':
-      await prePushHandler(context);
-      break;
-  }
+  context.print.info(`${category} handleAmplifyEvent to be implemented`);
+  context.print.info(`Received event args ${args}`);
 }
 
-/**
- * auth hook legacy support for userPoolGroups
- */
-async function prePushAuthHook() {
-  // await transformUserPoolGroupSchema(context);
+async function prePushAuthHook(context) {
+  //await transformUserPoolGroupSchema(context);
 }
 
-/**
- * entry point for import auth commands
- */
 async function importAuth(context) {
   const { amplify } = context;
   const servicesMetadata = getSupportedServices();
@@ -561,9 +517,6 @@ async function importAuth(context) {
   return providerController.importResource(context, serviceSelection, undefined, undefined, false);
 }
 
-/**
- * checks if sms enabled
- */
 async function isSMSWorkflowEnabled(context, resourceName) {
   const { imported, userPoolId } = context.amplify.getImportedAuthProperties(context);
   let userNameAndMfaConfig;
@@ -583,7 +536,7 @@ module.exports = {
   add,
   migrate,
   initEnv,
-  console: authConsole,
+  console : authConsole,
   getPermissionPolicies,
   executeAmplifyCommand,
   executeAmplifyHeadlessCommand,
