@@ -50,6 +50,7 @@ const AMPLIFY_RESERVED_EXPORT_KEYS = [
   // Pinpoint
   'aws_mobile_analytics_app_id',
   'aws_mobile_analytics_app_region',
+  'Notifications',
 
   // DynamoDB
   'aws_dynamodb_all_tables_region',
@@ -154,9 +155,7 @@ async function getAWSExports(context, amplifyResources, cloudAmplifyResources) {
   const newAWSExports = getAWSExportsObject(amplifyResources);
   const cloudAWSExports = getAWSExportsObject(cloudAmplifyResources);
   const currentAWSExports = await getCurrentAWSExports(context);
-
   const customConfigs = getCustomConfigs(cloudAWSExports, currentAWSExports);
-
   Object.assign(newAWSExports, customConfigs);
   return newAWSExports;
 }
@@ -581,14 +580,31 @@ function getInferConfig(inferResources) {
 }
 
 function getPinpointConfig(pinpointResources) {
-  // There can only be one analytics resource
+  // There can only be one Pinpoint resource, but it could be used in notifications
+  // We will iterate over all Pinpoint resources in amplify-meta until we get the configured
+  // AppId, Region and Channel configuration for that Pinpoint resource
 
-  const pinpointResource = pinpointResources[0];
-
-  return {
-    aws_mobile_analytics_app_id: pinpointResource.output.Id,
-    aws_mobile_analytics_app_region: pinpointResource.output.Region,
+  const firstPinpointResource = pinpointResources[0];
+  const pinpointConfig = {
+    aws_mobile_analytics_app_id: firstPinpointResource.output.Id,
+    aws_mobile_analytics_app_region: firstPinpointResource.output.Region,
   };
+  for (const pinpointResource of pinpointResources) {
+    pinpointConfig.aws_mobile_analytics_app_id = (pinpointConfig.aws_mobile_analytics_app_id) || pinpointResource.output.Id;
+    pinpointConfig.aws_mobile_analytics_app_region = (pinpointConfig.aws_mobile_analytics_app_region) || pinpointResource.output.Region;
+    if ('InAppMessaging' in pinpointResource.output) {
+      pinpointConfig.Notifications = {
+        InAppMessaging: {
+          AWSPinpoint: {
+            appId: pinpointConfig.aws_mobile_analytics_app_id,
+            region: pinpointConfig.aws_mobile_analytics_app_region,
+          },
+        },
+      };
+      break;
+    }
+  }
+  return pinpointConfig;
 }
 
 function getDynamoDBConfig(dynamoDBResources, projectRegion) {
