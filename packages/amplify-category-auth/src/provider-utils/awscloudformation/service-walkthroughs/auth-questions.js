@@ -580,7 +580,7 @@ async function handleUpdates(context, coreAnswers) {
     parseOAuthMetaData(context.updatingAuth);
   }
 
-  if (context.updatingAuth && !_.isEmpty(context.updatingAuth.authProvidersUserPool && context.updatingAuth.hostedUI)) {
+  if (context.updatingAuth && context.updatingAuth.authProvidersUserPool) {
     const { resourceName, authProvidersUserPool, hostedUIProviderMeta } = context.updatingAuth;
     const oAuthSecretKey = await syncOAuthSecretsToCloud(context, resourceName);
     /* eslint-disable */

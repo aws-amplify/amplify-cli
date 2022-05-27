@@ -281,7 +281,5 @@ describe('Check Auth Template', () => {
     const authTransform = new AmplifyAuthTransform(resourceName);
     const mockTemplate = await authTransform.transform(context_stub_typed);
     expect(mockTemplate?.Parameters?.oAuthSecretsPathAmplifyAppId).not.toBeDefined();
-    expect(mockTemplate?.Resources?.hostedUIProvidersCustomResourceInputs).not.toBeDefined();
-    expect(mockTemplate?.Resources?.hostedUIProvidersCustomResource).not.toBeDefined();
   });
 });
