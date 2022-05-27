@@ -52,8 +52,7 @@ function loadResourceParameters(context, category, resource) {
   }
   const envSpecificParams = context.amplify.loadEnvResourceParameters(context, category, resource);
   let resourceParameters = { ...parameters, ...envSpecificParams };
-
-  if (category === 'auth' && parameters && parameters.hostedUI && !_.isEmpty(parameters.authProvidersUserPool) && !resourceParameters[hostedUIProviderCredsField] && !resourceParameters.oAuthSecretsPathAmplifyAppId) {
+  if (category === 'auth' && parameters && parameters.hostedUI && !resourceParameters[hostedUIProviderCredsField] && !resourceParameters.oAuthSecretsPathAmplifyAppId) {
     resourceParameters = _.set(resourceParameters, hostedUIProviderCredsField, '[]');
   }
   return resourceParameters;
