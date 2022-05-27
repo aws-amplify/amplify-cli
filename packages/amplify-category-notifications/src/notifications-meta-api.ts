@@ -15,6 +15,33 @@ import { NotificationsDB } from './notifications-backend-cfg-api';
  */
 export class NotificationsMeta {
   /**
+   * Set NotificationsMeta.output.channel.Enabled to true/false
+   * @param channelName channelName which needs to be enabled/disabled
+   * @param isEnabled true if channel is enabled
+   * @param amplifyMeta In-memory CLI amplifyMeta
+   * @param appName Pinpoint appName
+   * @returns updated amplify meta (with the given channel enabled/disabled)
+   */
+  public static toggleNotificationsChannelAppMeta = async (channelName:string, isEnabled:boolean,
+    amplifyMeta?:$TSMeta, appName?:string): Promise<$TSMeta> => {
+    const tmpAmplifyMeta:$TSMeta = amplifyMeta;
+    const notificationsAppMeta = await NotificationsMeta.getNotificationsAppMeta(amplifyMeta, appName);
+    if (notificationsAppMeta) {
+      const channelOutput = (notificationsAppMeta.output) || {};
+      const channelValue = (channelOutput[channelName]) || {};
+      notificationsAppMeta.output = (notificationsAppMeta.output) || {};
+      notificationsAppMeta.output[channelName] = {
+        ...channelValue,
+        Enabled: isEnabled,
+        ApplicationId: channelOutput.Id,
+      };
+      tmpAmplifyMeta[AmplifyCategories.NOTIFICATIONS][notificationsAppMeta.ResourceName] = notificationsAppMeta;
+    }
+
+    return tmpAmplifyMeta;
+  }
+
+  /**
    * Get Notifications App from 'notifications' category  of amplify-meta.json
    * @param amplifyMeta optionally provide amplify meta
    * @returns Notifications meta partially defined in INotificationsResourceMeta
@@ -70,7 +97,9 @@ export class NotificationsMeta {
    */
 
   public static isNotificationChannelEnabled = (notificationsResourceMeta: INotificationsResourceMeta, channelName: string)
-  :boolean => channelName in notificationsResourceMeta.output && notificationsResourceMeta.output[channelName].Enabled
+  :boolean => notificationsResourceMeta.output
+              && channelName in notificationsResourceMeta.output
+              && notificationsResourceMeta.output[channelName].Enabled
 
 /**
  * Get the enabled channels from the notifications table of amplify-meta.json
@@ -82,6 +111,8 @@ public static getEnabledChannelsFromAppMeta = async (amplifyMeta?: $TSAny): Prom
   const availableChannels = NotificationsDB.getAvailableChannels();
   const notificationsMeta = await NotificationsMeta.getNotificationsAppMeta(tmpAmplifyMeta);
 
+  console.log('SACPCDEBUG:getEnabledChannelsFromAppMeta ',
+    JSON.stringify(availableChannels), JSON.stringify(notificationsMeta, null, 2));
   enabledChannelList = (notificationsMeta)
     ? availableChannels.filter(channel => NotificationsMeta.isNotificationChannelEnabled(notificationsMeta, channel))
     : [];
@@ -128,14 +159,15 @@ public static getEnabledChannelsFromAppMeta = async (amplifyMeta?: $TSAny): Prom
    */
  public static constructPartialNotificationsAppMeta = (amplifyMeta: $TSMeta, resourceName: string,
    pinpointRegion: string|undefined):Partial<ICategoryMeta> => {
+   const envName: string = stateManager.getCurrentEnvName() as string;
    let updatedAmplifyMeta:$TSMeta = amplifyMeta;
-   const partialPinpointApp: Partial<ICategoryMeta> = {
+   const partialPinpointOutput: Partial<ICategoryMeta> = {
      Id: undefined,
      Region: pinpointRegion,
-     Name: resourceName,
+     Name: `${resourceName}-${envName}`,
    };
    // save partial results in Amplify-meta. Identify related values will be placed after amplify push
-   updatedAmplifyMeta = NotificationsMeta.constructResourceMeta(amplifyMeta, resourceName, partialPinpointApp);
+   updatedAmplifyMeta = NotificationsMeta.constructResourceMeta(amplifyMeta, resourceName, partialPinpointOutput);
    return updatedAmplifyMeta;
  };
 
@@ -144,16 +176,16 @@ public static getEnabledChannelsFromAppMeta = async (amplifyMeta?: $TSAny): Prom
  * section in amplifyMeta
  * @param amplifyMeta amplify-meta.json's in-memory state
  * @param resourceName Pinpoint resource for notifications
- * @param pinpointApp Pinpoint resource metadata base class
+ * @param pinpointOutput Pinpoint resource metadata base class
  */
- public static constructResourceMeta = (amplifyMeta : $TSMeta, resourceName: string, pinpointApp: Partial<ICategoryMeta>):void => {
+ public static constructResourceMeta = (amplifyMeta : $TSMeta, resourceName: string, pinpointOutput: Partial<ICategoryMeta>):void => {
    const tmpAmplifyMeta = amplifyMeta;
    if (!tmpAmplifyMeta[AmplifyCategories.NOTIFICATIONS]) {
      tmpAmplifyMeta[AmplifyCategories.NOTIFICATIONS] = { [resourceName]: {} };
    }
    tmpAmplifyMeta[AmplifyCategories.NOTIFICATIONS][resourceName] = {
      service: AmplifySupportedService.PINPOINT,
-     output: pinpointApp,
+     output: pinpointOutput,
      lastPushTimeStamp: new Date(),
      ...tmpAmplifyMeta[AmplifyCategories.NOTIFICATIONS][resourceName],
    };
