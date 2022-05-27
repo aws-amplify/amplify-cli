@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.2.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.2.0...amplify-provider-awscloudformation@6.2.1-beta.0) (2022-05-27)
+
+
+### Bug Fixes
+
+* fixes oauth e2e ([#10482](https://github.com/aws-amplify/amplify-cli/issues/10482)) ([085a7aa](https://github.com/aws-amplify/amplify-cli/commit/085a7aab25b7f9d6b503eb1f6f8a9b64ed0e6e9a))
+
+
+### Reverts
+
+* oauth parameter store change ([#10485](https://github.com/aws-amplify/amplify-cli/issues/10485)) ([896b518](https://github.com/aws-amplify/amplify-cli/commit/896b51833e30daf9997d38c9229ca237ab7deda1))
+
+
+
+
+
 # [6.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.1.4...amplify-provider-awscloudformation@6.2.0) (2022-05-24)
 
 

@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.9.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.9.0...@aws-amplify/amplify-category-auth@2.9.1-beta.0) (2022-05-27)
+
+
+### Bug Fixes
+
+* oauth amplify appId Issue ([#10480](https://github.com/aws-amplify/amplify-cli/issues/10480)) ([649571a](https://github.com/aws-amplify/amplify-cli/commit/649571a3fd7e81e15f41b52fce432b2c1e6c963f))
+* oauth secret key fix when authProviders is empty ([#10474](https://github.com/aws-amplify/amplify-cli/issues/10474)) ([0d8a611](https://github.com/aws-amplify/amplify-cli/commit/0d8a611feca055f3f55518e4e4077ce2847a7039))
+* userpool groups custom policies regression ([#10455](https://github.com/aws-amplify/amplify-cli/issues/10455)) ([9fa8b4d](https://github.com/aws-amplify/amplify-cli/commit/9fa8b4d86c1e8cf0e562d3d6c61b0bd3bae329b4))
+
+
+### Reverts
+
+* oauth parameter store change ([#10485](https://github.com/aws-amplify/amplify-cli/issues/10485)) ([896b518](https://github.com/aws-amplify/amplify-cli/commit/896b51833e30daf9997d38c9229ca237ab7deda1))
+
+
+
+
+
 # [2.9.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.8.0...@aws-amplify/amplify-category-auth@2.9.0) (2022-05-24)
 
 
