@@ -142,6 +142,10 @@ export const getSummaryTableData = ({
   }
   return tableOptions;
 };
+interface IBackendConfigs{
+  currentBackendConfig: $TSAny,
+  backendConfig: $TSAny
+}
 
 /**
  * API: get resources which need to be created/updated/synced/deleted and associated data (tagUpdated)
@@ -157,8 +161,9 @@ export const getResourceStatus = async (
   filteredResources? : Array<$TSAny>,
 ): Promise<resourceStatus.ICategoryStatusCollection> => {
   const { amplifyMeta, currentAmplifyMeta } = getAmplifyMeta();
+  const backendConfigs: IBackendConfigs = getBackendConfig();
   let resourcesToBeCreated: $TSAny = getResourcesToBeCreated(amplifyMeta, currentAmplifyMeta, category, resourceName, filteredResources);
-  let resourcesToBeUpdated: $TSAny = await getResourcesToBeUpdated(amplifyMeta, currentAmplifyMeta,
+  let resourcesToBeUpdated: $TSAny = await getResourcesToBeUpdated(amplifyMeta, currentAmplifyMeta, backendConfigs,
     category, resourceName, filteredResources);
   let resourcesToBeSynced: $TSAny = getResourcesToBeSynced(amplifyMeta, currentAmplifyMeta, category, resourceName, filteredResources);
   let resourcesToBeDeleted: $TSAny = getResourcesToBeDeleted(amplifyMeta, currentAmplifyMeta, category, resourceName, filteredResources);
@@ -319,10 +324,42 @@ export const getResourcesToBeDeleted = (amplifyMeta : $TSAny, currentAmplifyMeta
 };
 
 /**
+ * Compares the contents of the backendConfig files from bckend and #currentCloudBackend
+ */
+const isBackendConfigModifiedSinceLastPush = (categoryName:string, resourceName:string, backendConfigs: IBackendConfigs): boolean => {
+  if ((backendConfigs.backendConfig && backendConfigs.currentBackendConfig)) {
+    const deployedCategoryBackendConfig = (categoryName in backendConfigs.currentBackendConfig)
+    ? backendConfigs.currentBackendConfig[categoryName] : undefined;
+    const categoryBackendConfig = (categoryName in backendConfigs.backendConfig)
+    ? backendConfigs.backendConfig[categoryName] : undefined;
+    const deployedResource = (deployedCategoryBackendConfig) ? deployedCategoryBackendConfig[resourceName] : undefined;
+    const categoryResource = (categoryBackendConfig) ? categoryBackendConfig[resourceName] : undefined;
+    // resource is configured in both backendConfig files, check for equality
+    if (deployedResource && categoryResource) {
+      return (JSON.stringify(deployedResource).normalize() !== JSON.stringify(categoryResource).normalize());
+    }
+      if (categoryResource) {
+        return true;
+      }
+      return false;
+  }
+  // if backend has resource but not deployed
+  if (backendConfigs.backendConfig
+      && backendConfigs.backendConfig[categoryName]
+      && backendConfigs.backendConfig[categoryName][resourceName]) {
+    return true;
+  }
+  // given resource does not exist in both the configs
+  return false;
+};
+
+/**
 * Query metadata and get resources to be updated.
 * Typically a resource to be updated has a different has value in amplify-meta vs #currentBackend/amplify-meta
 */
-export const getResourcesToBeUpdated = async (amplifyMeta : $TSAny, currentAmplifyMeta: $TSAny, category: string|undefined,
+export const getResourcesToBeUpdated = async (amplifyMeta : $TSAny, currentAmplifyMeta: $TSAny,
+                                              backendConfigs: IBackendConfigs,
+                                              category: string|undefined,
   resourceName: string|undefined, filteredResources: Array<$TSAny>|undefined): Promise<$TSAny[]> => {
   let resources: $TSAny[] = [];
 
@@ -354,7 +391,8 @@ export const getResourcesToBeUpdated = async (amplifyMeta : $TSAny, currentAmpli
             resources.push(amplifyMeta[categoryName][resource]);
           }
         } else {
-          const backendModified = await isBackendDirModifiedSinceLastPush(
+          const backendConfigModified = isBackendConfigModifiedSinceLastPush(categoryName, resource, backendConfigs);
+          const backendModified = (backendConfigModified) || await isBackendDirModifiedSinceLastPush(
             resource,
             categoryName,
             currentAmplifyMeta[categoryName][resource]?.lastPushTimeStamp,
@@ -517,6 +555,16 @@ export const getAmplifyMeta = ():$TSAny => {
     };
   }
   throw new NotInitializedError();
+};
+
+/**
+ * API: get amplify backend config
+ */
+export const getBackendConfig = ():$TSAny => {
+    return {
+      backendConfig: stateManager.getBackendConfig(),
+      currentBackendConfig: stateManager.getCurrentBackendConfig(),
+    };
 };
 
 // helper: Check if directory has been modified by comparing hash values

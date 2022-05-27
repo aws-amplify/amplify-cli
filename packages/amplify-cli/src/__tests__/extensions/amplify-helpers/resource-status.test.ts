@@ -740,7 +740,7 @@ describe('resource-status', () => {
 
     it('throws an error when non amplify project', async () => {
       (getCloudInitStatus as jest.MockedFunction<typeof getCloudInitStatus>).mockReturnValue(NON_AMPLIFY_PROJECT);
-      expect(getResourceStatus()).rejects.toThrowError(NotInitializedError);
+      await expect(await getResourceStatus()).rejects.toThrowError(NotInitializedError);
     });
   });
 

@@ -156,6 +156,15 @@ export class StateManager {
     return this.getData<$TSAny>(filePath, mergedOptions);
   };
 
+  getCurrentBackendConfig = (projectPath?: string, options?: GetOptions<$TSAny>): $TSAny => {
+    const filePath = pathManager.getCurrentBackendConfigFilePath(projectPath);
+  const mergedOptions = {
+      throwIfNotExist: true,
+      ...options,
+    };
+    return this.getData<$TSAny>(filePath, mergedOptions);
+  };
+
   getProjectName = (): string => {
     const { projectName } = this.getProjectConfig();
     return projectName;

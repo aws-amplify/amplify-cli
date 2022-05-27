@@ -93,9 +93,7 @@ export const disable = async (context: $TSContext):Promise<$TSAny> => {
     NotificationChannels.IN_APP_MSG,
     false /*disable*/);
   if (disableInAppMsgResponse.status) {
-    await disableChannelBackendConfig(channelName);
     spinner.succeed(`The ${channelName} channel has been disabled.`);
-    //context.exeInfo.serviceMeta.output[channelName] = analyticsAPIResponse.response.channelName;
   } else {
     spinner.fail('update channel error');
   }

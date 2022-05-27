@@ -6,7 +6,7 @@
  */
 
 import {
-  $TSContext, IAmplifyResource, IAnalyticsResource,
+  $TSContext, $TSMeta, AmplifyCategories, IAmplifyResource, IAnalyticsResource,
 } from 'amplify-cli-core';
 
 /**
@@ -50,6 +50,17 @@ export const invokeAnalyticsResourceToggleNotificationChannel = async (context: 
     'analytics', resourceProviderServiceName,
     'analyticsResourceToggleNotificationChannel', [context, resourceProviderServiceName, channel, enableChannel])) as AnalyticsCapabilityAPIResponse;
   return toggleNotificationsResponse;
+};
+
+/**
+ * Get the last pushed time-stamp for the given resource from Analytics amplify-meta
+ * @param amplifyMeta - in-core amplifyMeta
+ * @param analyticsResourceName  - name of the Analytics resource to be queried
+ * @returns timestamp of last push or undefined if not pushed
+ */
+export const invokeGetLastPushTimeStamp = async (amplifyMeta: $TSMeta, analyticsResourceName: string):Promise<string|undefined> => {
+  const analyticsLastPushTimeStamp = amplifyMeta[AmplifyCategories.ANALYTICS][analyticsResourceName].lastPushTimeStamp;
+  return analyticsLastPushTimeStamp;
 };
 
 /**
