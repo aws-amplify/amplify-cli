@@ -1,8 +1,9 @@
 /* eslint-disable jsdoc/require-jsdoc */
-import { $TSAny, JSONUtilities } from 'amplify-cli-core';
-import * as fs from 'fs-extra';
-import * as os from 'os';
 import * as path from 'path';
+import * as os from 'os';
+import * as fs from 'fs-extra';
+import _ from 'lodash';
+import { JSONUtilities, $TSAny } from 'amplify-cli-core';
 
 // eslint-disable-next-line spellcheck/spell-checker
 export const getAWSConfigAndroidPath = (projectRoot: string): string => path.join(projectRoot, 'app', 'src', 'main', 'res', 'raw', 'awsconfiguration.json');
@@ -110,6 +111,19 @@ export const getDeploymentSecrets = (): $TSAny => {
       throwIfNotExist: false,
     }) || { appSecrets: [] }
   );
+};
+
+export const isDeploymentSecretForEnvExists = (projectRoot: string, envName: string): boolean => {
+  const teamProviderInfo = getTeamProviderInfo(projectRoot);
+  const rootStackId = teamProviderInfo[envName].awscloudformation.StackId.split('/')[2];
+  const resource = _.first(Object.keys(teamProviderInfo[envName].categories.auth));
+  const deploymentSecrets = getDeploymentSecrets();
+  const deploymentSecretByAppId = _.find(deploymentSecrets.appSecrets, appSecret => appSecret.rootStackId === rootStackId);
+  if (deploymentSecretByAppId) {
+    const providerCredsPath = [envName, 'auth', resource, 'hostedUIProviderCreds'];
+    return _.has(deploymentSecretByAppId.environments, providerCredsPath);
+  }
+  return false;
 };
 
 export const getParameters = (projectRoot: string, category: string, resourceName: string): $TSAny => {
