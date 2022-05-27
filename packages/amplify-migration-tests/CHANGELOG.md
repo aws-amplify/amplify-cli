@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.5.0...amplify-migration-tests@4.5.1) (2022-05-27)
+
+
+
+## 8.3.1 (2022-05-27)
+
+
+### Reverts
+
+* oauth parameter store change ([#10485](https://github.com/aws-amplify/amplify-cli/issues/10485)) ([896b518](https://github.com/aws-amplify/amplify-cli/commit/896b51833e30daf9997d38c9229ca237ab7deda1))
+
+
+
+
+
 # [4.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.4.32...amplify-migration-tests@4.5.0) (2022-05-24)
 
 

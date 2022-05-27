@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.10.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.10.0...amplify-e2e-tests@3.10.1) (2022-05-27)
+
+
+
+## 8.3.1 (2022-05-27)
+
+
+### Bug Fixes
+
+* oauth amplify appId Issue ([#10480](https://github.com/aws-amplify/amplify-cli/issues/10480)) ([649571a](https://github.com/aws-amplify/amplify-cli/commit/649571a3fd7e81e15f41b52fce432b2c1e6c963f))
+
+
+### Reverts
+
+* oauth parameter store change ([#10485](https://github.com/aws-amplify/amplify-cli/issues/10485)) ([896b518](https://github.com/aws-amplify/amplify-cli/commit/896b51833e30daf9997d38c9229ca237ab7deda1))
+
+
+
+
+
 # [3.10.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.9.1...amplify-e2e-tests@3.10.0) (2022-05-24)
 
 

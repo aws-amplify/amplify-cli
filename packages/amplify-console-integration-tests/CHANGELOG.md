@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.40](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@2.2.39...amplify-console-integration-tests@2.2.40) (2022-05-27)
+
+
+
+## 8.3.1 (2022-05-27)
+
+
+### Reverts
+
+* oauth parameter store change ([#10485](https://github.com/aws-amplify/amplify-console-integration-tests/issues/10485)) ([896b518](https://github.com/aws-amplify/amplify-console-integration-tests/commit/896b51833e30daf9997d38c9229ca237ab7deda1))
+
+
+
+
+
 ## [2.2.39](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@2.2.38...amplify-console-integration-tests@2.2.39) (2022-05-24)
 
 
