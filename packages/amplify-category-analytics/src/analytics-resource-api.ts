@@ -146,7 +146,7 @@ export enum NotificationChannels {
     FCM = 'FCM',
     EMAIL = 'Email',
     SMS = 'SMS',
-    IN_APP_MSG = 'InAppMsg',
+    IN_APP_MSG = 'InAppMessaging',
     PUSH_NOTIFICATION = 'PushNotification'
 }
 

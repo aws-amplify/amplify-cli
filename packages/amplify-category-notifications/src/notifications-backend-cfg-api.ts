@@ -6,7 +6,7 @@
 /* eslint-disable import/no-dynamic-require */
 /* eslint-disable no-param-reassign */
 import {
-  $TSAny, pathManager, stateManager, AmplifySupportedService, AmplifyCategories, $TSContext, INotificationsResourceMeta,
+  $TSAny, pathManager, stateManager, AmplifySupportedService, AmplifyCategories, $TSContext,
 } from 'amplify-cli-core';
 import { ChannelAction, IChannelAPIResponse } from './notifications-api-types';
 import { INotificationsResourceBackendConfig, INotificationsResourceBackendConfigValue } from './notifications-backend-config-types';
@@ -28,7 +28,7 @@ export class NotificationsDB {
     FCM: './channel-FCM',
     Email: './channel-Email',
     SMS: './channel-SMS',
-    InAppMsg: './channel-in-app-msg',
+    InAppMessaging: './channel-in-app-msg',
     PushNotification: './channel-push-notification',
   };
 
@@ -184,7 +184,7 @@ public static getDisabledChannelsFromBackendConfig = async (availableChannels?: 
   /**
  * Query BackendConfig to check if notification channel has be been updated.
  * note: - amplify-meta.json will be updated after deployment
- * @param channelName  Name of the notification channel SMS/InAppMsg etc.
+ * @param channelName  Name of the notification channel SMS/InAppMessaging etc.
  */
    public static isChannelEnabledNotificationsBackendConfig = async (channelName: string): Promise<boolean> => {
      const backendConfig = stateManager.getBackendConfig();
