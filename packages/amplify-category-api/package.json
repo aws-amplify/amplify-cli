@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-api",
-  "version": "2.1.2-delta-table-cpk.0",
+  "version": "2.1.2-delta-table-cpk.1",
   "description": "amplify-cli api plugin",
   "repository": {
     "type": "git",
@@ -83,7 +83,7 @@
     "amplify-cli-core": "2.8.0",
     "amplify-headless-interface": "1.14.3",
     "amplify-prompts": "2.1.0",
-    "amplify-provider-awscloudformation": "6.2.1-delta-table-cpk.0",
+    "amplify-provider-awscloudformation": "6.2.1-delta-table-cpk.1",
     "amplify-util-headless-input": "1.9.4",
     "chalk": "^4.1.1",
     "cloudform": "^4.2.0",

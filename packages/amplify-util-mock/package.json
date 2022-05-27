@@ -1,6 +1,6 @@
 {
   "name": "amplify-util-mock",
-  "version": "4.4.3-delta-table-cpk.0",
+  "version": "4.4.3-delta-table-cpk.1",
   "description": "amplify cli plugin providing local testing",
   "repository": {
     "type": "git",
@@ -34,7 +34,7 @@
     "amplify-cli-core": "2.8.0",
     "amplify-codegen": "^3.0.0",
     "amplify-dynamodb-simulator": "2.3.0",
-    "amplify-provider-awscloudformation": "6.2.1-delta-table-cpk.0",
+    "amplify-provider-awscloudformation": "6.2.1-delta-table-cpk.1",
     "amplify-storage-simulator": "1.6.7",
     "chokidar": "^3.5.3",
     "detect-port": "^1.3.0",

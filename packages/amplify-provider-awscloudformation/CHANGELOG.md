@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.2.1-delta-table-cpk.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.2.1-delta-table-cpk.0...amplify-provider-awscloudformation@6.2.1-delta-table-cpk.1) (2022-05-27)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
 ## [6.2.1-delta-table-cpk.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.2.0...amplify-provider-awscloudformation@6.2.1-delta-table-cpk.0) (2022-05-26)
 
 **Note:** Version bump only for package amplify-provider-awscloudformation
