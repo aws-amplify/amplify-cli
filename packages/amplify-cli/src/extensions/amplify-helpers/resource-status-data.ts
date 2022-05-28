@@ -55,7 +55,7 @@ export const getMultiCategoryStatus = async (inputs: ViewResourceTableParams | u
 };
 
 /**
- * Call the Diff function of each resource
+ * Call the CFN Diff function of each resource
  */
 export const getResourceDiffs = async (resourcesToBeUpdated: Array<$TSAny>, resourcesToBeDeleted:Array<$TSAny>,
   resourcesToBeCreated:Array<$TSAny>): Promise<IResourceDiffCollection> => {

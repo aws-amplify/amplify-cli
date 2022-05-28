@@ -1,29 +1,31 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, IPluginInfo } from 'amplify-cli-core';
 
-export function getCategoryPluginInfo(context: $TSContext, category: string, service?: string) {
-  let categoryPluginInfo;
+/**
+ * Query the PluginPlatform table to fetch info on the given category's plugin API
+ * @param context Amplify CLI context
+ * @param category Category to be queried
+ * @param service Only return plugin info for the supplied service from the Category's plugin info table.
+ * @returns Plugin info for the given category
+ */
+export const getCategoryPluginInfo = (context: $TSContext, category: string, service?: string): IPluginInfo|undefined => {
+  let categoryPluginInfo: IPluginInfo|undefined;
 
-  const pluginInfosForCategory = context.pluginPlatform.plugins[category];
+  const pluginInfoForCategory = context.pluginPlatform.plugins[category];
 
-  if (pluginInfosForCategory.length > 0) {
+  if (pluginInfoForCategory.length > 0) {
     if (service) {
-      let pluginInfosForCategoryAndService = pluginInfosForCategory.filter(pluginInfo => {
-        return pluginInfo.manifest.services && pluginInfo.manifest.services.includes(service);
-      });
+      const pluginInfoForCategoryAndService = pluginInfoForCategory.filter(pluginInfo => pluginInfo.manifest.services
+        && pluginInfo.manifest.services.includes(service));
 
-      if (pluginInfosForCategoryAndService.length > 0) {
-        categoryPluginInfo = pluginInfosForCategoryAndService[0];
-      } else {
-        categoryPluginInfo = pluginInfosForCategory[0];
-      }
+      categoryPluginInfo = (pluginInfoForCategoryAndService.length > 0) ? pluginInfoForCategoryAndService[0] : pluginInfoForCategory[0];
     } else {
-      const overidedPlugin = pluginInfosForCategory.find(plugin => plugin.packageName === `@aws-amplify/amplify-category-${category}`);
-      if (overidedPlugin !== undefined) {
-        return overidedPlugin;
+      const overriddenPlugin = pluginInfoForCategory.find(plugin => plugin.packageName === `@aws-amplify/amplify-category-${category}`);
+      if (overriddenPlugin !== undefined) {
+        return overriddenPlugin;
       }
-      categoryPluginInfo = pluginInfosForCategory[0];
+      // eslint-disable-next-line prefer-destructuring
+      categoryPluginInfo = pluginInfoForCategory[0];
     }
   }
-
   return categoryPluginInfo;
-}
+};
