@@ -4,7 +4,6 @@ import { JavaDecimal } from './decimal';
 import { JavaInteger } from './integer';
 import { JavaString } from './string';
 import { isPlainObject } from 'lodash';
-import { JavaInteger } from './integer';
 
 export function map(value: any, hint?: string) {
   if (value instanceof JavaMap) return value;
