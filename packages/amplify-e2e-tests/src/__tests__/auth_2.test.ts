@@ -87,7 +87,7 @@ describe('amplify add auth...', () => {
 
   it('...should allow the user to add auth via API category, with a trigger', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthViaAPIWithTrigger(projRoot, {});
+    await addAuthViaAPIWithTrigger(projRoot, { transformerVersion: 1 });
     await amplifyPush(projRoot);
     const meta = getProjectMeta(projRoot);
 
@@ -100,6 +100,7 @@ describe('amplify add auth...', () => {
 
     const lambdaFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
     expect(userPool.UserPool).toBeDefined();
+    expect(userPool.UserPool.AliasAttributes).not.toBeDefined();
     validateNodeModulesDirRemoval(projRoot);
     expect(clients).toHaveLength(2);
     expect(lambdaFunction).toBeDefined();
@@ -108,7 +109,7 @@ describe('amplify add auth...', () => {
 
   it('...should allow the user to add auth via API category, with a trigger and function dependsOn API', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthwithUserPoolGroupsViaAPIWithTrigger(projRoot, {});
+    await addAuthwithUserPoolGroupsViaAPIWithTrigger(projRoot, { transformerVersion: 1 });
     await updateFunction(
       projRoot,
       {

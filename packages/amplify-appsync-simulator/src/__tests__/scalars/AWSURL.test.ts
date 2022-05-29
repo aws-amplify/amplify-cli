@@ -15,7 +15,7 @@ describe('AWSURL parse', () => {
     function serialize() {
       scalars.AWSURL.parseValue('invalid-url');
     }
-    expect(serialize).toThrowErrorMatchingSnapshot();
+    expect(serialize).toThrowError('Invalid URL');
   });
 });
 
@@ -32,6 +32,6 @@ describe('AWSURL serialize', () => {
     function serialize() {
       scalars.AWSURL.serialize('invalid-url');
     }
-    expect(serialize).toThrowErrorMatchingSnapshot();
+    expect(serialize).toThrowError('Invalid URL');
   });
 });

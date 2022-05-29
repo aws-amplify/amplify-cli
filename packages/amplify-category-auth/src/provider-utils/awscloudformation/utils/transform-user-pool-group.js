@@ -1,14 +1,10 @@
+const { JSONUtilities, pathManager } = require('amplify-cli-core');
 const path = require('path');
-const fs = require('fs');
-const { cfnTemplateRoot } = require('../constants');
+const { generateUserPoolGroupStackTemplate } = require('./generate-user-pool-group-stack-template');
+const { AuthInputState } = require('../auth-inputs-manager/auth-input-state');
 
 async function transformUserPoolGroupSchema(context) {
-  const resourceDirPath = path.join(
-    context.amplify.pathManager.getBackendDirPath(),
-    'auth',
-    'userPoolGroups',
-    'user-pool-group-precedence.json',
-  );
+  const userPoolPrecedencePath = path.join(pathManager.getBackendDirPath(), 'auth', 'userPoolGroups', 'user-pool-group-precedence.json');
 
   const { allResources } = await context.amplify.getResourceStatus();
   const authResource = allResources.filter(resource => resource.service === 'Cognito');
@@ -21,7 +17,7 @@ async function transformUserPoolGroupSchema(context) {
     throw new Error('Cognito UserPool does not exists');
   }
 
-  const groups = context.amplify.readJsonFile(resourceDirPath);
+  const groups = JSONUtilities.readJson(userPoolPrecedencePath);
 
   // Replace env vars with subs
 
@@ -40,39 +36,7 @@ async function transformUserPoolGroupSchema(context) {
       });
     }
   });
-
-  const copyJobs = [
-    {
-      dir: cfnTemplateRoot,
-      template: 'user-pool-group-template.json.ejs',
-      target: path.join(context.amplify.pathManager.getBackendDirPath(), 'auth', 'userPoolGroups', 'template.json'),
-    },
-  ];
-
-  const authResourceParameters = loadResourceParameters(context, authResourceName);
-
-  const props = {
-    groups,
-    cognitoResourceName: authResourceName,
-    identityPoolName: authResourceParameters.identityPoolName,
-  };
-
-  await context.amplify.copyBatch(context, copyJobs, props, true);
-}
-
-function loadResourceParameters(context, authResourceName) {
-  let parameters = {};
-  let category = 'auth';
-  const backendDirPath = context.amplify.pathManager.getBackendDirPath();
-  const resourceDirPath = path.join(backendDirPath, category, authResourceName);
-  const parametersFilePath = path.join(resourceDirPath, 'parameters.json');
-  if (fs.existsSync(parametersFilePath)) {
-    parameters = context.amplify.readJsonFile(parametersFilePath);
-  } else {
-    throw new Error('Auth resource missing parameters file');
-  }
-
-  return parameters;
+  await generateUserPoolGroupStackTemplate(context, authResourceName);
 }
 
 module.exports = {

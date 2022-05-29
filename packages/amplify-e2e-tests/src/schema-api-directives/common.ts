@@ -1,3 +1,4 @@
+/* eslint-disable */
 import path from 'path';
 import fs from 'fs-extra';
 import _ from 'lodash';
@@ -19,7 +20,7 @@ const USERNAME = 'user1';
 const PASSWORD = 'user1Password';
 
 export async function runTest(projectDir: string, testModule: any) {
-  await addApi(projectDir);
+  await addApi(projectDir, { transformerVersion: 1 });
   updateSchemaInTestProject(projectDir, testModule.schema);
   await amplifyPush(projectDir);
 
@@ -34,6 +35,7 @@ export async function runTest(projectDir: string, testModule: any) {
 export async function runAuthTest(projectDir: string, testModule: any) {
   await addApi(projectDir, {
     'Amazon Cognito User Pool': {},
+    transformerVersion: 1,
   });
   updateSchemaInTestProject(projectDir, testModule.schema);
 
@@ -57,6 +59,7 @@ export async function runMultiAutTest(projectDir: string, testModule: any) {
     'API key': {},
     'Amazon Cognito User Pool': {},
     IAM: {},
+    transformerVersion: 1,
   });
   updateSchemaInTestProject(projectDir, testModule.schema);
 
@@ -96,8 +99,8 @@ export async function testMutations(testModule: any, appSyncClient: any) {
   const mutationTasks = [];
   mutationNames.forEach(mutationName => {
     const mutation = testModule[mutationName];
-    const mutationInput = testModule['input_' + mutationName];
-    const mutationResult = testModule['expected_result_' + mutationName];
+    const mutationInput = testModule[`input_${mutationName}`];
+    const mutationResult = testModule[`expected_result_${mutationName}`];
 
     mutationTasks.push(async () => {
       await testMutation(appSyncClient, mutation, mutationInput, mutationResult);
@@ -158,8 +161,8 @@ export async function testQueries(testModule: any, appSyncClient: any) {
   const queryTasks = [];
   queryNames.forEach(queryName => {
     const query = testModule[queryName];
-    const queryInput = testModule['input_' + queryName];
-    const queryResult = testModule['expected_result_' + queryName];
+    const queryInput = testModule[`input_${queryName}`];
+    const queryResult = testModule[`expected_result_${queryName}`];
 
     queryTasks.push(async () => {
       await testQuery(appSyncClient, query, queryInput, queryResult);
@@ -219,10 +222,10 @@ export async function testSubscriptions(testModule: any, appsyncClient: any) {
   const subscriptionTasks = [];
   subscriptionNames.forEach(subscriptionName => {
     const subscription = testModule[subscriptionName];
-    const subscriptionInput = testModule['input_' + subscriptionName];
-    const subscriptionResult = testModule['expected_result_' + subscriptionName];
-    const mutations = testModule['mutations_' + subscriptionName];
-    const mutationsInput = testModule['input_mutations_' + subscriptionName];
+    const subscriptionInput = testModule[`input_${subscriptionName}`];
+    const subscriptionResult = testModule[`expected_result_${subscriptionName}`];
+    const mutations = testModule[`mutations_${subscriptionName}`];
+    const mutationsInput = testModule[`input_mutations_${subscriptionName}`];
 
     subscriptionTasks.push(async () => {
       await testSubscription(appsyncClient, subscription, mutations, subscriptionResult, subscriptionInput, mutationsInput);
@@ -262,7 +265,7 @@ export async function testSubscription(
         fetchPolicy: 'no-cache',
         variables: mutationInput,
       });
-      await new Promise<void>(res => setTimeout(() => res(), 4000)); //to ensure correct order in received data
+      await new Promise<void>(res => setTimeout(() => res(), 4000)); // to ensure correct order in received data
     });
   }
 
@@ -284,10 +287,9 @@ export async function testSubscription(
   }
 }
 
-/////
 function checkResult(received: any, expected: any): boolean {
   if (!expected) {
-    //the test does not request result check, as long as the mutation/query goes through, it's good
+    // the test does not request result check, as long as the mutation/query goes through, it's good
     return true;
   }
   const queue = [
@@ -307,7 +309,7 @@ function checkResult(received: any, expected: any): boolean {
 
 function checkError(received: any, expected: any): boolean {
   if (!expected) {
-    //the test does not request result check, assume mutation/query should go through, but received error
+    // the test does not request result check, assume mutation/query should go through, but received error
     return false;
   }
   const queue = [
@@ -321,6 +323,7 @@ function checkError(received: any, expected: any): boolean {
 }
 
 const MAX_DEPTH = 50;
+const UUID_REGEX = /[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}/;
 function runCompare(queue: { received: any; expected: any; depth: number }[]): boolean {
   let result = true;
 
@@ -347,6 +350,9 @@ function runCompare(queue: { received: any; expected: any; depth: number }[]): b
       }
     } else if (itemToCompare.expected === '<check-defined>') {
       result = itemToCompare.received !== null && itemToCompare.received !== undefined;
+    } else if (itemToCompare.expected === '<uuid>:<username>') {
+      const [itemPrefix] = itemToCompare.received.split(':');
+      result = itemPrefix.match(UUID_REGEX);
     } else {
       result = itemToCompare.received === itemToCompare.expected;
     }
@@ -364,3 +370,4 @@ export async function runInSequential(tasks: ((v: any) => Promise<any>)[]): Prom
 
   return result;
 }
+/* eslint-enable */

@@ -1,11 +1,16 @@
 import * as fs from 'fs-extra';
 import sequential from 'promise-sequential';
-import { pathManager, stateManager, $TSContext } from 'amplify-cli-core';
+import {
+  pathManager, stateManager, $TSContext, $TSAny,
+} from 'amplify-cli-core';
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
 
-export async function generateFiles(context: $TSContext) {
+/**
+ * Initializes amplify project files
+ */
+export const generateFiles = async (context: $TSContext): Promise<$TSContext> => {
   const { projectPath } = context.exeInfo.localEnvInfo;
 
   const amplifyDirPath = pathManager.getAmplifyDirPath(projectPath);
@@ -19,9 +24,10 @@ export async function generateFiles(context: $TSContext) {
   fs.ensureDirSync(currentBackendDirPath);
 
   const providerPlugins = getProviderPlugins(context);
-  const providerOnSuccessTasks: (() => Promise<any>)[] = [];
+  const providerOnSuccessTasks: (() => Promise<$TSAny>)[] = [];
 
   const frontendPlugins = getFrontendPlugins(context);
+  // eslint-disable-next-line
   const frontendModule = require(frontendPlugins[context.exeInfo.projectConfig.frontend]);
 
   await frontendModule.onInitSuccessful(context);
@@ -30,6 +36,7 @@ export async function generateFiles(context: $TSContext) {
   generateNonRuntimeFiles(context);
 
   context.exeInfo.projectConfig.providers.forEach(provider => {
+    // eslint-disable-next-line
     const providerModule = require(providerPlugins[provider]);
     providerOnSuccessTasks.push(() => providerModule.onInitSuccessful(context));
   });
@@ -41,39 +48,37 @@ export async function generateFiles(context: $TSContext) {
     default: {},
   });
 
-  if (!context.exeInfo.existingLocalEnvInfo?.noUpdateBackend) {
-    await context.amplify.onCategoryOutputsChange(context, currentAmplifyMeta);
-  }
+  await context.amplify.onCategoryOutputsChange(context, currentAmplifyMeta);
 
   return context;
-}
+};
 
-function generateLocalRuntimeFiles(context: $TSContext) {
+const generateLocalRuntimeFiles = (context: $TSContext): void => {
   generateLocalEnvInfoFile(context);
-}
+};
 
-function generateLocalEnvInfoFile(context: $TSContext) {
+const generateLocalEnvInfoFile = (context: $TSContext): void => {
   const { projectPath } = context.exeInfo.localEnvInfo;
 
   stateManager.setLocalEnvInfo(projectPath, context.exeInfo.localEnvInfo);
-}
+};
 
-function generateNonRuntimeFiles(context: $TSContext) {
+const generateNonRuntimeFiles = (context: $TSContext): void => {
   generateProjectConfigFile(context);
   generateBackendConfigFile(context);
   generateTeamProviderInfoFile(context);
   generateGitIgnoreFile(context);
-}
+};
 
-function generateProjectConfigFile(context: $TSContext) {
+const generateProjectConfigFile = (context: $TSContext): void => {
   if (context.exeInfo.isNewProject || context.exeInfo.existingLocalEnvInfo?.noUpdateBackend) {
     const { projectPath } = context.exeInfo.localEnvInfo;
 
     stateManager.setProjectConfig(projectPath, context.exeInfo.projectConfig);
   }
-}
+};
 
-function generateTeamProviderInfoFile(context: $TSContext) {
+const generateTeamProviderInfoFile = (context: $TSContext): $TSAny => {
   const { projectPath, envName } = context.exeInfo.localEnvInfo;
   const { existingTeamProviderInfo, teamProviderInfo } = context.exeInfo;
 
@@ -95,17 +100,18 @@ function generateTeamProviderInfoFile(context: $TSContext) {
   }
 
   stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
-}
+  return undefined;
+};
 
-function generateBackendConfigFile(context: $TSContext) {
+const generateBackendConfigFile = (context: $TSContext): void => {
   const { projectPath } = context.exeInfo.localEnvInfo;
 
   if (!stateManager.backendConfigFileExists(projectPath)) {
     stateManager.setBackendConfig(projectPath, {});
   }
-}
+};
 
-function generateGitIgnoreFile(context: $TSContext) {
+const generateGitIgnoreFile = (context: $TSContext): void => {
   if (context.exeInfo.isNewProject) {
     const { projectPath } = context.exeInfo.localEnvInfo;
 
@@ -113,4 +119,4 @@ function generateGitIgnoreFile(context: $TSContext) {
 
     insertAmplifyIgnore(gitIgnoreFilePath);
   }
-}
+};

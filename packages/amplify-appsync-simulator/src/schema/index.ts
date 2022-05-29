@@ -1,14 +1,9 @@
 import { buildASTSchema, concatAST, DocumentNode, GraphQLObjectType, parse, Source } from 'graphql';
-import { makeExecutableSchema } from 'graphql-tools';
+import { makeExecutableSchema } from '@graphql-tools/schema';
 import { AmplifyAppSyncSimulator } from '..';
 import { AppSyncSimulatorPipelineResolverConfig, AppSyncSimulatorUnitResolverConfig } from '../type-definition';
 import { scalars } from './appsync-scalars';
-import { AwsAuth, AwsSubscribe, protectResolversWithAuthRules } from './directives';
-import { AppSyncSimulatorDirectiveBase } from './directives/directive-base';
-const KNOWN_DIRECTIVES: {
-  name: string;
-  visitor: typeof AppSyncSimulatorDirectiveBase;
-}[] = [];
+import { getDirectiveTypeDefs, transformSchemaWithDirectives } from './directives';
 
 export function generateResolvers(
   schema: Source,
@@ -22,18 +17,8 @@ export function generateResolvers(
     'AppSync-scalar.json',
   );
 
-  const directives = KNOWN_DIRECTIVES.reduce((set, d) => {
-    set.add(d.visitor);
-    return set;
-  }, new Set());
-
-  const directiveAST = [];
-  directives.forEach(d => {
-    directiveAST.push(parse((d as any).typeDefinitions));
-  });
-
-  const documents = [schema, appSyncScalars].map(s => parse(s));
-  const doc = concatAST([...documents, ...directiveAST]);
+  const documents = [schema, appSyncScalars, getDirectiveTypeDefs()].map(s => parse(s));
+  const doc = concatAST([...documents]);
 
   const resolvers = resolversConfig.reduce(
     (acc, resolverConfig) => {
@@ -79,10 +64,6 @@ export function generateResolvers(
     { Subscription: {} },
   );
   const defaultSubscriptions = generateDefaultSubscriptions(doc, resolversConfig, simulatorContext);
-  const schemaDirectives = KNOWN_DIRECTIVES.reduce((sum, d) => {
-    d.visitor.simulatorContext = simulatorContext;
-    return { ...sum, [d.name]: d.visitor };
-  }, {});
 
   if (Object.keys(defaultSubscriptions).length || Object.keys(resolvers.Subscription).length) {
     resolvers.Subscription = {
@@ -94,16 +75,16 @@ export function generateResolvers(
     delete resolvers.Subscription;
   }
 
-  const resolverMapWithAuth = protectResolversWithAuthRules(doc, resolvers, simulatorContext);
-
-  return makeExecutableSchema({
-    typeDefs: doc,
-    resolvers: {
-      ...resolverMapWithAuth,
-      ...scalars,
-    },
-    schemaDirectives,
-  });
+  return transformSchemaWithDirectives(
+    makeExecutableSchema({
+      typeDefs: doc,
+      resolvers: {
+        ...resolvers,
+        ...scalars,
+      },
+    }),
+    simulatorContext,
+  );
 }
 
 function generateDefaultSubscriptions(
@@ -131,16 +112,3 @@ function generateDefaultSubscriptions(
   }
   return {};
 }
-
-export function addDirective(name: string, visitor: typeof AppSyncSimulatorDirectiveBase) {
-  KNOWN_DIRECTIVES.push({
-    name,
-    visitor,
-  });
-}
-
-addDirective('aws_subscribe', AwsSubscribe);
-addDirective('aws_api_key', AwsAuth);
-addDirective('aws_oidc', AwsAuth);
-addDirective('aws_cognito_user_pools', AwsAuth);
-addDirective('aws_auth', AwsAuth);

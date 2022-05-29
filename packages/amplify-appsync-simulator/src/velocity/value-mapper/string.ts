@@ -1,4 +1,5 @@
 import { JavaArray } from './array';
+import { JavaInteger } from './integer';
 
 export class JavaString {
   value: string;
@@ -23,7 +24,7 @@ export class JavaString {
   }
 
   indexOf(val, fromIndex = 0) {
-    return this.value.indexOf(val.toString(), fromIndex);
+    return new JavaInteger(this.value.indexOf(val.toString(), fromIndex));
   }
 
   isEmpty() {
@@ -31,7 +32,7 @@ export class JavaString {
   }
 
   lastIndexOf(val, fromIndex = Infinity) {
-    return this.value.lastIndexOf(val.toString(), fromIndex);
+    return new JavaInteger(this.value.lastIndexOf(val.toString(), fromIndex));
   }
 
   replace(find, replace) {
@@ -104,6 +105,10 @@ export class JavaString {
   }
 
   length() {
-    return this.value && this.value.length;
+    return new JavaInteger(this.value && this.value.length);
+  }
+
+  toJson() {
+    return this.value;
   }
 }

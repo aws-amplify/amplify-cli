@@ -6,16 +6,13 @@ import { JSONUtilities } from './jsonUtilities';
 
 const defaultReadCFNTemplateOptions = { throwIfNotExist: true };
 
-export async function readCFNTemplate(filePath: string): Promise<{ templateFormat: CFNTemplateFormat; cfnTemplate: Template }>;
-export async function readCFNTemplate(
+export function readCFNTemplate(filePath: string): { templateFormat: CFNTemplateFormat; cfnTemplate: Template };
+export function readCFNTemplate(
   filePath: string,
   options: Partial<typeof defaultReadCFNTemplateOptions>,
-): Promise<{ templateFormat: CFNTemplateFormat; cfnTemplate: Template } | undefined>;
+): { templateFormat: CFNTemplateFormat; cfnTemplate: Template } | undefined;
 
-export async function readCFNTemplate(
-  filePath: string,
-  options: Partial<typeof defaultReadCFNTemplateOptions> = defaultReadCFNTemplateOptions,
-) {
+export function readCFNTemplate(filePath: string, options: Partial<typeof defaultReadCFNTemplateOptions> = defaultReadCFNTemplateOptions) {
   options = { ...defaultReadCFNTemplateOptions, ...options };
 
   if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile) {
@@ -24,8 +21,9 @@ export async function readCFNTemplate(
     }
     throw new Error(`No CloudFormation template found at ${filePath}`);
   }
+  //TODO:  somthing wrong with this call , work fine with readFileSync()
+  const fileContent = fs.readFileSync(filePath, 'utf8');
 
-  const fileContent = await fs.readFile(filePath, 'utf8');
   // We use the first character to determine if the content is json or yaml because historically the CLI could
   // have emitted JSON with YML extension, so we can't rely on filename extension.
   const isJson = isJsonFileContent(fileContent);
@@ -61,7 +59,7 @@ export async function writeCFNTemplate(template: object, filePath: string, optio
       throw new Error(`Unexpected CFN template format ${mergedOptions.templateFormat}`);
   }
   await fs.ensureDir(path.parse(filePath).dir);
-  return fs.writeFile(filePath, serializedTemplate);
+  return fs.writeFileSync(filePath, serializedTemplate);
 }
 
 // Register custom tags for yaml parser

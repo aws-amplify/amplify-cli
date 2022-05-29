@@ -1,3 +1,1 @@
-import { getContainers } from "./converter";
-
-export { getContainers };
+export { getContainers } from './converter';

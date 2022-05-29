@@ -1,17 +1,18 @@
 import { nspawn as spawn, getCLIPath } from '..';
+import { EOL } from 'os';
 
 const defaultSettings = {
-  name: '\r',
+  name: EOL,
   envName: 'integtest',
-  editor: '\r',
-  appType: '\r',
-  framework: '\r',
-  srcDir: '\r',
-  distDir: '\r',
-  buildCmd: '\r',
-  startCmd: '\r',
-  useProfile: '\r',
-  profileName: '\r',
+  editor: EOL,
+  appType: EOL,
+  framework: EOL,
+  srcDir: EOL,
+  distDir: EOL,
+  buildCmd: EOL,
+  startCmd: EOL,
+  useProfile: EOL,
+  profileName: EOL,
   appId: '',
 };
 
@@ -38,7 +39,7 @@ export function pullProject(cwd: string, settings: Object): Promise<void> {
       .wait('Start Command:')
       .sendCarriageReturn()
       .wait('Do you plan on modifying this backend?')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Added backend environment config object to your project.')
       .run((err: Error) => {
         if (!err) {

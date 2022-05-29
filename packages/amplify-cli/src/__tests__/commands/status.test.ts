@@ -1,5 +1,3 @@
-import { UnknownArgumentError } from 'amplify-cli-core';
-
 describe('amplify status: ', () => {
   const { run } = require('../../commands/status');
   const runStatusCmd = run;
@@ -11,17 +9,10 @@ describe('amplify status: ', () => {
   });
 
   it('status run method should call context.amplify.showStatusTable', async () => {
-    const cliInput = {
-      command: 'status',
-      subCommands: [],
-      options: {
-        verbose: true,
-      },
-    };
-
     const mockContextNoCLArgs = {
       amplify: {
         showStatusTable: jest.fn(),
+        showGlobalSandboxModeWarning: jest.fn(),
         showHelpfulProviderLinks: jest.fn(),
         getCategoryPluginInfo: jest.fn().mockReturnValue({ packageLocation: mockPath }),
       },
@@ -43,6 +34,7 @@ describe('amplify status: ', () => {
     const mockContextWithVerboseOptionAndCLArgs = {
       amplify: {
         showStatusTable: jest.fn(),
+        showGlobalSandboxModeWarning: jest.fn(),
         showHelpfulProviderLinks: jest.fn(),
         getCategoryPluginInfo: jest.fn().mockReturnValue({ packageLocation: statusPluginInfo }),
       },
@@ -61,6 +53,7 @@ describe('amplify status: ', () => {
     const mockContextWithVerboseOptionWithCategoriesAndCLArgs = {
       amplify: {
         showStatusTable: jest.fn(),
+        showGlobalSandboxModeWarning: jest.fn(),
         showHelpfulProviderLinks: jest.fn(),
         getCategoryPluginInfo: jest.fn().mockReturnValue({ packageLocation: statusPluginInfo }),
       },
@@ -82,6 +75,7 @@ describe('amplify status: ', () => {
     const mockContextWithHelpSubcommandAndCLArgs = {
       amplify: {
         showStatusTable: jest.fn(),
+        showGlobalSandboxModeWarning: jest.fn(),
         showHelpfulProviderLinks: jest.fn(),
         getCategoryPluginInfo: jest.fn().mockReturnValue({ packageLocation: statusPluginInfo }),
       },
@@ -94,5 +88,4 @@ describe('amplify status: ', () => {
     //TBD: to move ViewResourceTableParams into a separate file for mocking instance functions.
     expect(mockContextWithHelpSubcommandAndCLArgs.amplify.showStatusTable.mock.calls.length).toBe(0);
   });
-
 });

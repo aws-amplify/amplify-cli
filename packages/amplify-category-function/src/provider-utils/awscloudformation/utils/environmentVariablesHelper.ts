@@ -1,13 +1,21 @@
 import path from 'path';
 import _ from 'lodash';
-import uuid from 'uuid';
+import * as uuid from 'uuid';
 import inquirer from 'inquirer';
-import { $TSContext, stateManager, pathManager, JSONUtilities, exitOnNextTick } from 'amplify-cli-core';
+import {
+  $TSContext, stateManager, pathManager, JSONUtilities, exitOnNextTick, $TSAny, $TSObject,
+} from 'amplify-cli-core';
+import {
+  formatter, maxLength, printer, prompter,
+} from 'amplify-prompts';
 import { functionParametersFileName } from './constants';
 import { categoryName } from '../../../constants';
 
 export const validKey = new RegExp(/^[a-zA-Z0-9_]+$/);
 
+/**
+ * Gets the environment variables configured for the function
+ */
 export const getStoredEnvironmentVariables = (resourceName: string, currentEnvName?: string): Record<string, string> => {
   const storedList = getStoredList(resourceName);
   const storedReferences = getStoredReferences(resourceName);
@@ -34,22 +42,29 @@ export const getStoredEnvironmentVariables = (resourceName: string, currentEnvNa
   return environmentVariables;
 };
 
-export const saveEnvironmentVariables = (context: $TSContext, resourceName: string, newEnvironmentVariables: Record<string, string>) => {
+/**
+ * Saves environment variables for the function
+ */
+export const saveEnvironmentVariables = (resourceName: string, newEnvironmentVariables: Record<string, string>): void => {
   const currentEnvironmentVariables = getStoredEnvironmentVariables(resourceName);
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   _.each(currentEnvironmentVariables, (_, key) => {
     deleteEnvironmentVariable(resourceName, key);
   });
   _.each(newEnvironmentVariables, (value, key) => {
-    setEnvironmentVariable(context, resourceName, key, value);
+    setEnvironmentVariable(resourceName, key, value);
   });
 };
 
+/**
+ * Walkthrough to move environment variables to new environment
+ */
 export const askEnvironmentVariableCarryOut = async (
   context: $TSContext,
   currentEnvName: string,
   projectPath: string,
   yesFlagSet?: boolean,
-) => {
+): Promise<void> => {
   const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath, {
     throwIfNotExist: false,
     default: {},
@@ -65,8 +80,8 @@ export const askEnvironmentVariableCarryOut = async (
     return;
   }
 
-  const envVarQuestion = async () => {
-    const envVarQuestion: inquirer.ListQuestion = {
+  const envVarQuestion = async (): Promise<void> => {
+    const envVarQ: inquirer.ListQuestion = {
       type: 'list',
       name: 'envVar',
       message: 'You have configured environment variables for functions. How do you want to proceed?',
@@ -81,13 +96,14 @@ export const askEnvironmentVariableCarryOut = async (
         },
       ],
     };
+    // eslint-disable-next-line spellcheck/spell-checker
     if (context.parameters.options.quickstart) return;
-    const { envVar } = yesFlagSet ? { envVar: 'carry' } : await inquirer.prompt(envVarQuestion);
+    const { envVar } = yesFlagSet ? { envVar: 'carry' } : await inquirer.prompt(envVarQ);
     if (envVar === 'carry') return;
     if (envVar === 'update') await envVarSelectFunction();
   };
 
-  const envVarSelectFunction = async () => {
+  const envVarSelectFunction = async (): Promise<void> => {
     const abortKey = uuid.v4();
     const functionNameQuestion: inquirer.ListQuestion = {
       type: 'list',
@@ -108,13 +124,13 @@ export const askEnvironmentVariableCarryOut = async (
     await envVarSelectKey(functionName);
   };
 
-  const envVarSelectKey = async (functionName: string) => {
+  const envVarSelectKey = async (functionName: string): Promise<void> => {
     const envVars = getStoredEnvironmentVariables(functionName, currentEnvName);
     const abortKey = uuid.v4();
     const keyNameQuestion: inquirer.ListQuestion = {
       type: 'list',
       name: 'keyName',
-      message: 'Which function’s environment variables do you want to edit?',
+      message: 'Which function\'s environment variables do you want to edit?',
       choices: Object.keys(envVars)
         .map(name => ({
           name,
@@ -133,7 +149,7 @@ export const askEnvironmentVariableCarryOut = async (
     await envVarUpdateValue(functionName, keyName);
   };
 
-  const envVarUpdateValue = async (functionName: string, keyName: string) => {
+  const envVarUpdateValue = async (functionName: string, keyName: string): Promise<void> => {
     const envVars = getStoredEnvironmentVariables(functionName, currentEnvName);
     const newValueQuestion: inquirer.InputQuestion = {
       type: 'input',
@@ -158,7 +174,10 @@ export const askEnvironmentVariableCarryOut = async (
   });
 };
 
-export const ensureEnvironmentVariableValues = async (context: $TSContext) => {
+/**
+ * Ensure that values are provided for all env vars in the current environment
+ */
+export const ensureEnvironmentVariableValues = async (context: $TSContext): Promise<void> => {
   const yesFlagSet = context?.exeInfo?.inputParams?.yes || context?.input?.options?.yes;
   const currentEnvName = stateManager.getLocalEnvInfo()?.envName;
   const teamProviderInfo = stateManager.getTeamProviderInfo(undefined, {
@@ -170,67 +189,65 @@ export const ensureEnvironmentVariableValues = async (context: $TSContext) => {
   if (functionNames.length === 0) {
     return;
   }
-  let printedMessage = false;
 
-  for (const functionName of functionNames) {
-    const storedList = getStoredList(functionName);
-    const storedKeyValue = getStoredKeyValue(functionName);
-    for (const item of storedList) {
-      const envName = item.environmentVariableName;
-      const keyName = item.cloudFormationParameterName;
-      if (storedKeyValue.hasOwnProperty(keyName)) continue;
-      if (!printedMessage) {
-        if (yesFlagSet) {
-          const errMessage = `An error occurred pushing an env "${currentEnvName}" due to missing environment variable values`;
-          context.print.error(errMessage);
-          await context.usageData.emitError(new Error(errMessage));
-          exitOnNextTick(1);
-        } else {
-          context.print.info('');
-          context.print.info('Some Lambda function environment variables are defined but missing values.');
-          context.print.info('');
-        }
-        printedMessage = true;
-      }
-
-      const newValueQuestion: inquirer.InputQuestion = {
-        type: 'input',
-        name: 'newValue',
-        message: `Enter the missing environment variable value of ${envName} in ${functionName}:`,
-        validate: input => {
-          if (input.length >= 2048) {
-            return 'The value must be 2048 characters or less';
-          }
-          return true;
-        },
+  const functionConfigMissingEnvVars = functionNames
+    .map(funcName => {
+      const storedList = getStoredList(funcName);
+      const keyValues = getStoredKeyValue(funcName);
+      return {
+        funcName,
+        existingKeyValues: keyValues,
+        missingEnvVars: storedList.filter(({ cloudFormationParameterName: keyName }) => !keyValues[keyName]),
       };
-      const { newValue } = await inquirer.prompt(newValueQuestion);
-      setStoredKeyValue(functionName, {
-        ...storedKeyValue,
-        [keyName]: newValue,
+    })
+    .filter(envVars => envVars.missingEnvVars.length);
+
+  if (_.isEmpty(functionConfigMissingEnvVars)) {
+    return;
+  }
+
+  // there are some missing env vars
+
+  if (yesFlagSet) {
+    // in this case, we can't prompt for missing values, so fail gracefully
+    const errMessage = `Cannot push Amplify environment "${currentEnvName}" due to missing Lambda function environment variable values. Rerun 'amplify push' without '--yes' to fix.`;
+    printer.error(errMessage);
+    const missingEnvVarsMessage = functionConfigMissingEnvVars.map(({ missingEnvVars, funcName }) => {
+      const missingEnvVarsString = missingEnvVars.map(missing => missing.environmentVariableName).join(', ');
+      return `Function ${funcName} is missing values for environment variables: ${missingEnvVarsString}`;
+    });
+    formatter.list(missingEnvVarsMessage);
+    await context.usageData.emitError(new Error(errMessage));
+    exitOnNextTick(1);
+  }
+
+  printer.info('Some Lambda function environment variables are missing values in this Amplify environment.');
+
+  // prompt for the missing env vars
+  for (const { funcName, existingKeyValues: keyValues, missingEnvVars } of functionConfigMissingEnvVars) {
+    for (const { cloudFormationParameterName: cfnName, environmentVariableName: envVarName } of missingEnvVars) {
+      const newValue = await prompter.input(`Enter the missing environment variable value of ${envVarName} in ${funcName}:`, {
+        validate: maxLength(2048),
       });
+      keyValues[cfnName] = newValue;
     }
+    setStoredKeyValue(funcName, keyValues);
   }
 };
 
-const setEnvironmentVariable = (
-  context: $TSContext,
-  resourceName: string,
-  newEnvironmentVariableKey: string,
-  newEnvironmentVariableValue: string,
-): void => {
+const setEnvironmentVariable = (resourceName: string, newEnvironmentVariableKey: string, newEnvironmentVariableValue: string): void => {
   const newList = getStoredList(resourceName);
   const newReferences = getStoredReferences(resourceName);
   const newParameters = getStoredParameters(resourceName);
   const newKeyValue = getStoredKeyValue(resourceName);
-  const cameledKey = _.camelCase(newEnvironmentVariableKey);
+  const camelCaseKey = _.camelCase(newEnvironmentVariableKey);
   newList.push({
-    cloudFormationParameterName: cameledKey,
+    cloudFormationParameterName: camelCaseKey,
     environmentVariableName: newEnvironmentVariableKey,
   });
-  newReferences[newEnvironmentVariableKey] = { Ref: cameledKey };
-  newParameters[cameledKey] = { Type: 'String' };
-  newKeyValue[cameledKey] = newEnvironmentVariableValue;
+  newReferences[newEnvironmentVariableKey] = { Ref: camelCaseKey };
+  newParameters[camelCaseKey] = { Type: 'String' };
+  newKeyValue[camelCaseKey] = newEnvironmentVariableValue;
 
   setStoredList(resourceName, newList);
   setStoredReference(resourceName, newReferences);
@@ -243,13 +260,11 @@ const deleteEnvironmentVariable = (resourceName: string, targetedKey: string): v
   const newReferences = getStoredReferences(resourceName);
   const newKeyValue = getStoredKeyValue(resourceName);
   const newParameters = getStoredParameters(resourceName);
-  const cameledKey = _.camelCase(targetedKey);
-  newList = _.filter(newList, item => {
-    return item.cloudFormationParameterName !== cameledKey && item.environmentVariableName !== targetedKey;
-  });
+  const camelCaseKey = _.camelCase(targetedKey);
+  newList = _.filter(newList, item => item.cloudFormationParameterName !== camelCaseKey && item.environmentVariableName !== targetedKey);
   _.unset(newReferences, targetedKey);
-  _.unset(newParameters, cameledKey);
-  _.unset(newKeyValue, cameledKey);
+  _.unset(newParameters, camelCaseKey);
+  _.unset(newKeyValue, camelCaseKey);
 
   setStoredList(resourceName, newList);
   setStoredReference(resourceName, newReferences);
@@ -261,39 +276,39 @@ const getStoredList = (resourceName: string): { cloudFormationParameterName: str
   const projectBackendDirPath = pathManager.getBackendDirPath();
   const resourcePath = path.join(projectBackendDirPath, categoryName, resourceName);
   const functionParameterFilePath = path.join(resourcePath, functionParametersFileName);
-  const functionParameters = (JSONUtilities.readJson(functionParameterFilePath, { throwIfNotExist: false }) as object) || {};
+  const functionParameters = JSONUtilities.readJson<$TSObject>(functionParameterFilePath, { throwIfNotExist: false }) || {};
   return _.get(functionParameters, 'environmentVariableList', []);
 };
 
-const setStoredList = (resourceName: string, newList: object): void => {
+const setStoredList = (resourceName: string, newList: $TSAny): void => {
   const projectBackendDirPath = pathManager.getBackendDirPath();
   const resourcePath = path.join(projectBackendDirPath, categoryName, resourceName);
   const functionParameterFilePath = path.join(resourcePath, functionParametersFileName);
-  const functionParameters = (JSONUtilities.readJson(functionParameterFilePath, { throwIfNotExist: false }) as object) || {};
+  const functionParameters = JSONUtilities.readJson<$TSObject>(functionParameterFilePath, { throwIfNotExist: false }) || {};
   _.set(functionParameters, 'environmentVariableList', newList);
   JSONUtilities.writeJson(functionParameterFilePath, functionParameters);
 };
 
-const getStoredReferences = (resourceName: string): object => {
+const getStoredReferences = (resourceName: string): $TSAny => {
   const projectBackendDirPath = pathManager.getBackendDirPath();
   const resourcePath = path.join(projectBackendDirPath, categoryName, resourceName);
   const cfnFileName = `${resourceName}-cloudformation-template.json`;
   const cfnFilePath = path.join(resourcePath, cfnFileName);
-  const cfnContent = JSONUtilities.readJson(cfnFilePath, { throwIfNotExist: false }) || {};
+  const cfnContent = JSONUtilities.readJson<$TSObject>(cfnFilePath, { throwIfNotExist: false }) || {};
   return _.get(cfnContent, ['Resources', 'LambdaFunction', 'Properties', 'Environment', 'Variables'], {});
 };
 
-const setStoredReference = (resourceName: string, newReferences: object): void => {
+const setStoredReference = (resourceName: string, newReferences: $TSAny): void => {
   const projectBackendDirPath = pathManager.getBackendDirPath();
   const resourcePath = path.join(projectBackendDirPath, categoryName, resourceName);
   const cfnFileName = `${resourceName}-cloudformation-template.json`;
   const cfnFilePath = path.join(resourcePath, cfnFileName);
-  const cfnContent = (JSONUtilities.readJson(cfnFilePath, { throwIfNotExist: false }) as object) || {};
+  const cfnContent = JSONUtilities.readJson<$TSObject>(cfnFilePath, { throwIfNotExist: false }) || {};
   _.set(cfnContent, ['Resources', 'LambdaFunction', 'Properties', 'Environment', 'Variables'], newReferences);
   JSONUtilities.writeJson(cfnFilePath, cfnContent);
 };
 
-const getStoredParameters = (resourceName: string): object => {
+const getStoredParameters = (resourceName: string): $TSAny => {
   const projectBackendDirPath = pathManager.getBackendDirPath();
   const resourcePath = path.join(projectBackendDirPath, categoryName, resourceName);
   const cfnFileName = `${resourceName}-cloudformation-template.json`;
@@ -302,26 +317,26 @@ const getStoredParameters = (resourceName: string): object => {
   return _.get(cfnContent, ['Parameters'], {});
 };
 
-const setStoredParameters = (resourceName: string, newParameters: object): void => {
+const setStoredParameters = (resourceName: string, newParameters: $TSAny): void => {
   const projectBackendDirPath = pathManager.getBackendDirPath();
   const resourcePath = path.join(projectBackendDirPath, categoryName, resourceName);
   const cfnFileName = `${resourceName}-cloudformation-template.json`;
   const cfnFilePath = path.join(resourcePath, cfnFileName);
-  const cfnContent = (JSONUtilities.readJson(cfnFilePath, { throwIfNotExist: false }) as object) || {};
+  const cfnContent = JSONUtilities.readJson<$TSObject>(cfnFilePath, { throwIfNotExist: false }) || {};
   _.set(cfnContent, ['Parameters'], newParameters);
   JSONUtilities.writeJson(cfnFilePath, cfnContent);
 };
 
-const getStoredKeyValue = (resourceName: string, currentEnvName?: string): object => {
+const getStoredKeyValue = (resourceName: string, currentEnvName?: string): $TSAny => {
   const projectPath = pathManager.findProjectRoot();
   const envName = currentEnvName || stateManager.getLocalEnvInfo().envName;
   const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath, { throwIfNotExist: false });
   return _.get(teamProviderInfo, [envName, 'categories', categoryName, resourceName], {});
 };
 
-const setStoredKeyValue = (resourceName: string, newKeyValue: object): void => {
+const setStoredKeyValue = (resourceName: string, newKeyValue: $TSAny): void => {
   const projectPath = pathManager.findProjectRoot();
-  const envName = stateManager.getLocalEnvInfo().envName;
+  const { envName } = stateManager.getLocalEnvInfo(projectPath);
   const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath, { throwIfNotExist: false });
   _.set(teamProviderInfo, [envName, 'categories', categoryName, resourceName], newKeyValue);
   stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);

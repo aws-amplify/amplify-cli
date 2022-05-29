@@ -110,3 +110,14 @@ export type ProcessedLambdaFunction = CloudFormationProcessedResourceResult & {
   handler: string;
   environment: Record<string, string>;
 };
+
+export type ProcessedLambdaEventSource = CloudFormationProcessedResourceResult & {
+  batchSize: number;
+  eventSourceArn: string;
+  functionName: string;
+  startingPosition: string;
+};
+
+export type ProcessedOpenSearchDomain = CloudFormationProcessedResourceResult & {
+  endpoint: string;
+};

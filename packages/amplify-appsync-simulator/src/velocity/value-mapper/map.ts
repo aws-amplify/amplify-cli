@@ -1,4 +1,5 @@
 import { JavaArray } from './array';
+import { JavaInteger } from './integer';
 import { toJSON } from './to-json';
 
 export class JavaMap {
@@ -82,7 +83,7 @@ export class JavaMap {
   }
 
   size() {
-    return this.map.size;
+    return new JavaInteger(this.map.size);
   }
 
   values() {

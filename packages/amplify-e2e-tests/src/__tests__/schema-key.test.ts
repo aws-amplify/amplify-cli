@@ -1,12 +1,14 @@
-import { initJSProjectWithProfile, deleteProject, createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
+import { initJSProjectWithProfile, deleteProject, createNewProjectDir, deleteProjectDir, createRandomName } from 'amplify-e2e-core';
 import { testSchema } from '../schema-api-directives';
 
 describe('api directives @key', () => {
   let projectDir: string;
+  let appName: string;
 
   beforeEach(async () => {
+    appName = createRandomName();
     projectDir = await createNewProjectDir('key');
-    await initJSProjectWithProfile(projectDir, {});
+    await initJSProjectWithProfile(projectDir, { name: appName });
   });
 
   afterEach(async () => {
@@ -30,7 +32,7 @@ describe('api directives @key', () => {
   });
 
   it('key SelectiveSync with key directive', async () => {
-    const testresult = await testSchema(projectDir, 'key', 'howTo4');
+    const testresult = await testSchema(projectDir, 'key', 'howTo4', appName);
     expect(testresult).toBeTruthy();
   });
 });

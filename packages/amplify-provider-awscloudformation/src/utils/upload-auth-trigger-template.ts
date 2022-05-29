@@ -27,7 +27,7 @@ export async function uploadAuthTriggerTemplate(context: $TSContext): Promise<{ 
   }
 
   const resourceDir = path.join(pathManager.getBackendDirPath(), categoryName, cognitoResource.resourceName);
-  const authTriggerCfnFilePath = path.join(resourceDir, AUTH_TRIGGER_TEMPLATE);
+  const authTriggerCfnFilePath = path.join(resourceDir, 'build', AUTH_TRIGGER_TEMPLATE);
   const deploymentBucketName = _.get(amplifyMeta, ['providers', ProviderName, 'DeploymentBucketName']);
 
   // This should not happen, so throw
@@ -43,7 +43,7 @@ export async function uploadAuthTriggerTemplate(context: $TSContext): Promise<{ 
     return defaultResult;
   }
 
-  await uploadTemplateToS3(context, path.join(resourceDir, AUTH_TRIGGER_TEMPLATE), categoryName, '', null);
+  await uploadTemplateToS3(context, authTriggerCfnFilePath, categoryName, '', null);
 
   return {
     AuthTriggerTemplateURL: `https://s3.amazonaws.com/${deploymentBucketName}/amplify-cfn-templates/${S3_UPLOAD_PATH}`,

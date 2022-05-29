@@ -1,5 +1,6 @@
 import { ViewResourceTableParams } from './cliViewAPI';
 import { ServiceSelection } from './serviceSelection';
+import { Tag } from './tags';
 
 export * from './cfnUtilities';
 export * from './cliContext';
@@ -15,6 +16,7 @@ export * from './tags';
 export * from './errors';
 export * from './exitOnNextTick';
 export * from './isPackaged';
+export * from './isCI';
 export * from './cliConstants';
 export * from './deploymentSecretsHelper';
 export * from './deploymentState';
@@ -23,17 +25,28 @@ export * from './banner-message';
 export * from './cliGetCategories';
 export * from './cliRemoveResourcePrompt';
 export * from './cliViewAPI';
+export * from './overrides-manager';
+export * from './hooks';
+export * from './category-interfaces';
+export * from './customPoliciesUtils';
+export * from './utils/doc-links';
+export * from './spinner';
 
 // Temporary types until we can finish full type definition across the whole CLI
 
-// Use it for all 'any's where we can't define the type, but doing a strict TypeScript conversion
-export type $TSAny = any;
+/**
+ *  Use it for all 'any's where we can't define the type, but doing a strict TypeScript conversion
+ */
+export type $TSAny = any; // eslint-disable-line  @typescript-eslint/no-explicit-any
 
-// Use it for all CLI Context class references, it enables a quick way to see what we have on the context
+/**
+ * Use it for all CLI Context class references, it enables a quick way to see what we have on the context
+ */
 export type $TSContext = {
   amplify: AmplifyToolkit;
   /**
-   * @deprecated Use printer from package amplify-prompts instead
+   * Use printer from package amplify-prompts instead
+   * @deprecated
    */
   print: IContextPrint;
   migrationInfo: $TSAny;
@@ -48,58 +61,84 @@ export type $TSContext = {
   newUserInfo?: $TSAny;
   filesystem: IContextFilesystem;
   template: IContextTemplate;
+  updatingAuth: $TSAny;
 };
 
+/**
+ * type for category name
+ */
 export type CategoryName = string;
+
+/**
+ * type for resource name
+ */
 export type ResourceName = string;
 
+/**
+ * User amplify-prompts package instead
+ * @deprecated
+ */
 export type IContextPrint = {
   /**
-   * @deprecated Use printer.info from amplify-prommpts instead
+   * Use printer.info from amplify-prompts instead
+   * @deprecated
    */
   info: (message: string) => void;
   /**
-   * @deprecated Why are you using this? If you really need it, implement it in amplify-prompts printer.ts
+   * Why are you using this? If you really need it, implement it in amplify-prompts printer.ts
+   * @deprecated
    */
   fancy: (message?: string) => void;
   /**
-   * @deprecated Use printer.warn from amplify-prompts instead
+   * Use printer.warn from amplify-prompts instead
+   * @deprecated
    */
   warning: (message: string) => void;
   /**
-   * @deprecated Use printer.error from amplify-prompts instead
+   * Use printer.error from amplify-prompts instead
+   * @deprecated
    */
   error: (message: string) => void;
   /**
-   * @deprecated Use printer.success from amplify-prommpts instead
+   * Use printer.success from amplify-prompts instead
+   * @deprecated
    */
   success: (message: string) => void;
   /**
-   * @deprecated The next time we refactor code that uses this function, refactor the table function into formatter.ts from amplify-prompts and use that instead
+   *  The next time we refactor code that uses this function, refactor the table function into formatter.ts from amplify-prompts and use that instead
+   * @deprecated
    */
   table: (data: string[][], options?: { format?: 'markdown' | 'lean' }) => void;
   /**
-   * @deprecated Use printer.debug from amplify-prompts instead
+   *  Use printer.debug from amplify-prompts instead
+   * @deprecated
    */
   debug: (message: string) => void;
   /**
-   * @deprecated Use printer.info from amplify-prompts and specify color
+   * Use printer.info from amplify-prompts and specify color
+   * @deprecated
    */
   green: (message: string) => void;
   /**
-   * @deprecated Use printer.info from amplify-prompts and specify color
+   * Use printer.info from amplify-prompts and specify color
+   * @deprecated
    */
   yellow: (message: string) => void;
   /**
-   * @deprecated Use printer.info from amplify-prompts and specify color
+   * Use printer.info from amplify-prompts and specify color
+   * @deprecated
    */
   red: (message: string) => void;
   /**
-   * @deprecated Use printer.info from amplify-prompts and specify color
+   * Use printer.info from amplify-prompts and specify color
+   * @deprecated
    */
   blue: (message: string) => void;
 };
 
+/**
+ *
+ */
 export type IContextFilesystem = {
   remove: (targetPath: string) => void;
   read: (targetPath: string, encoding?: string) => $TSAny;
@@ -109,24 +148,36 @@ export type IContextFilesystem = {
   path: (...pathParts: string[]) => string;
 };
 
+/**
+ *
+ */
 export type IContextTemplate = {
-  generate: (opts: { template: string; target: string; props: object; directory: string }) => string;
+  generate: (opts: { template: string; target: string; props: $TSObject; directory: string }) => string;
 };
 
+/**
+ *
+ */
 export type IPluginPlatform = {
   pluginDirectories: string[];
   pluginPrefixes: string[];
   userAddedLocations: string[];
   lastScanTime: Date;
-  maxScanIntervalInSeconds: Number;
+  maxScanIntervalInSeconds: number;
   plugins: IPluginCollection;
   excluded: IPluginCollection;
 };
 
+/**
+ *
+ */
 export type IPluginCollection = {
   [pluginType: string]: IPluginInfo[];
 };
 
+/**
+ *
+ */
 export type IPluginInfo = {
   packageName: string;
   packageVersion: string;
@@ -134,6 +185,9 @@ export type IPluginInfo = {
   manifest: $IPluginManifest;
 };
 
+/**
+ *
+ */
 export type DeploymentSecrets = {
   appSecrets: Array<{
     rootStackId: string;
@@ -165,34 +219,53 @@ export type DeploymentSecrets = {
  *
  * export const getPackageAssetPaths = () => ['resources/binaries', 'resources/jars/myJar.jar'];
  *
- * A binary could then be accessed at path.join(pathManager.getAmplifyPackageLibDirPath('my-fancy-package'), 'resources/binaries', 'myBinary')
+ * A binary could then be accessed at:
+ * path.join(pathManager.getAmplifyPackageLibDirPath('my-fancy-package'), 'resources/binaries', 'myBinary')
+ *
  * Likewise the jar can be retrieved at path.join(pathManager.getAmplifyPackageLibDirPath('my-fancy-package'), 'resources/jars/myJar.jar')
  */
 export type GetPackageAssetPaths = () => Promise<string[]>;
 
+/**
+ *
+ */
 export type $IPluginManifest = $TSAny;
 
-// Use it for all file content read from amplify-meta.json
-export type $TSMeta = any;
+/**
+ * Use it for all file content read from amplify-meta.json
+ */
+export type $TSMeta = $TSAny;
 
-// Use it for all file content read from team-provider-info.json
-export type $TSTeamProviderInfo = any;
+/**
+ * Use it for all file content read from team-provider-info.json
+ */
+export type $TSTeamProviderInfo = $TSAny;
 
-// Use it for all object initializer usages: {}
+/**
+ * Use it for all object initializer usages: {}
+ */
 export type $TSObject = Record<string, $TSAny>;
 
-// There are tons of places where we use these two pieces of information to identify a resource
-// We can use this type to type those instances
+/**
+ * There are tons of places where we use these two pieces of information to identify a resource
+ * We can use this type to type those instances
+ */
 export interface ResourceTuple {
   category: string;
   resourceName: string;
 }
 
+/**
+ * enum for supported Amplify frontends
+ */
 export enum AmplifyFrontend {
   android = 'android',
   ios = 'ios',
   javascript = 'javascript',
 }
+/**
+ * AmplifyProjectConfig interface
+ */
 export interface AmplifyProjectConfig {
   projectName: string;
   version: string;
@@ -200,17 +273,29 @@ export interface AmplifyProjectConfig {
   providers: string[];
 }
 
-export type $TSCopyJob = any;
+/**
+ * higher level context object that could be used in plugins
+ */
+export interface ProviderContext {
+  provider: string;
+  service: string;
+  projectName: string;
+}
+
+/**
+ *
+ */
+export type $TSCopyJob = $TSAny;
 
 // Temporary interface until Context refactor
 interface AmplifyToolkit {
   confirmPrompt: (prompt: string, defaultValue?: boolean) => Promise<boolean>;
   constants: $TSAny;
   constructExeInfo: (context: $TSContext) => $TSAny;
-  copyBatch: (context: $TSContext, jobs: $TSCopyJob[], props: object, force?: boolean, writeParams?: boolean | object) => $TSAny;
-  crudFlow: (role: string, permissionMap?: $TSObject, defaults?: $TSAny[]) => $TSAny;
+  copyBatch: (context: $TSContext, jobs: $TSCopyJob[], props: $TSObject, force?: boolean, writeParams?: boolean | $TSObject) => $TSAny;
+  crudFlow: (role: string, permissionMap?: $TSObject, defaults?: string[]) => Promise<string[]>;
   deleteProject: () => $TSAny;
-  executeProviderUtils: (context: $TSContext, providerName: string, utilName: string, options: $TSAny) => $TSAny;
+  executeProviderUtils: (context: $TSContext, providerName: string, utilName: string, options?: $TSAny) => Promise<$TSAny>;
   getAllEnvs: () => string[];
   getPlugin: () => $TSAny;
   getCategoryPluginInfo: (context: $TSContext, category?: string, service?: string) => $TSAny;
@@ -218,19 +303,30 @@ interface AmplifyToolkit {
   getFrontendPlugins: (context: $TSContext) => $TSAny;
   getEnvDetails: () => $TSAny;
   getEnvInfo: () => $TSAny;
-  getProviderPlugins: (context: $TSContext) => $TSAny;
+  getProviderPlugins: (context: $TSContext) => Record<string, string>;
   getPluginInstance: (context: $TSContext, pluginName: string) => $TSAny;
   getProjectConfig: () => $TSAny;
   getProjectDetails: () => $TSAny;
+
+  /**
+   * Use stateManager.getMeta() from amplify-cli-core
+   * @deprecated
+   */
   getProjectMeta: () => $TSMeta;
   getResourceStatus: (category?: $TSAny, resourceName?: $TSAny, providerName?: $TSAny, filteredResources?: $TSAny) => $TSAny;
   getResourceOutputs: () => $TSAny;
   getWhen: () => $TSAny;
   /**
-   * @deprecated Use validators from amplify-prompts or add a new validator in that module
+   * Use a validator from amplify-prompts or add a new validator in that module
+   * @deprecated
    */
   inputValidation: (input: $TSAny) => (value: $TSAny) => boolean | string;
   listCategories: () => $TSAny;
+
+  /**
+   * use uuid
+   * @deprecated
+   */
   makeId: (n?: number) => string;
   openEditor: (context: $TSContext, target: string, waitToContinue?: boolean) => Promise<void>;
   onCategoryOutputsChange: (context: $TSContext, currentAmplifyMeta: $TSMeta | undefined, amplifyMeta?: $TSMeta) => $TSAny;
@@ -241,23 +337,33 @@ interface AmplifyToolkit {
     category?: string,
     resourceName?: string,
     filteredResources?: { category: string; resourceName: string }[],
+    rebuild?: boolean,
   ) => $TSAny;
   storeCurrentCloudBackend: () => $TSAny;
-  readJsonFile: () => $TSAny;
+
+  /**
+   * use stateManager or JSONUtilities from amplify-cli-core
+   * @deprecated
+   */
+  readJsonFile: (fileName: string) => $TSAny;
   removeDeploymentSecrets: (context: $TSContext, category: string, resource: string) => void;
   removeResource: (
     context: $TSContext,
     category: string,
     resource: string,
-    questionOptions?: $TSAny,
+    questionOptions?: {
+      headless?: boolean;
+      serviceSuffix?: { [serviceName: string]: string };
+      serviceDeletionInfo?: { [serviceName: string]: string };
+    },
     resourceNameCallback?: (resourceName: string) => Promise<void>,
-  ) => $TSAny;
+  ) => Promise<{ service: string; resourceName: string } | undefined>;
   sharedQuestions: () => $TSAny;
   showAllHelp: () => $TSAny;
   showHelp: (header: string, commands: { name: string; description: string }[]) => $TSAny;
   showHelpfulProviderLinks: (context: $TSContext) => $TSAny;
-  showResourceTable: () => $TSAny;
-  showStatusTable: (resourceTableParams: ViewResourceTableParams) => $TSAny; //Enhanced Status with CFN-Diff
+  showResourceTable: (category?: $TSAny, resourceName?: $TSAny, filteredResources?: $TSAny) => Promise<$TSAny>;
+  showStatusTable: (resourceTableParams: ViewResourceTableParams) => Promise<$TSAny>; // Enhanced Status with CFN-Diff
   serviceSelectionPrompt: (
     context: $TSContext,
     category: string,
@@ -285,33 +391,31 @@ interface AmplifyToolkit {
   // buildType is from amplify-function-plugin-interface but can't be imported here because it would create a circular dependency
   updateamplifyMetaAfterBuild: (resource: ResourceTuple, buildType?: string) => void;
   updateAmplifyMetaAfterPackage: (resource: ResourceTuple, zipFilename: string, hash?: { resourceKey: string; hashValue: string }) => void;
-  updateBackendConfigAfterResourceAdd: (category: string, resourceName: string, resourceData: $TSAny) => $TSAny;
-  updateBackendConfigAfterResourceUpdate: () => $TSAny;
-  updateBackendConfigAfterResourceRemove: () => $TSAny;
+  updateBackendConfigAfterResourceAdd: (category: string, resourceName: string, resourceData: $TSObject) => void;
+  updateBackendConfigAfterResourceUpdate: (category: string, resourceName: string, attribute: string, value: $TSAny) => void;
+  updateBackendConfigAfterResourceRemove: (category: string, resourceName: string) => void;
   loadEnvResourceParameters: (context: $TSContext, category: string, resourceName: string) => $TSAny;
   saveEnvResourceParameters: (context: $TSContext, category: string, resourceName: string, envSpecificParams?: $TSObject) => void;
   removeResourceParameters: (context: $TSContext, category: string, resource: string) => void;
   triggerFlow: () => $TSAny;
   addTrigger: () => $TSAny;
   updateTrigger: () => $TSAny;
-  deleteTrigger: () => $TSAny;
-  deleteAllTriggers: () => $TSAny;
+  deleteTrigger: (context: $TSContext, name: string, dir: string) => Promise<void>;
+  deleteAllTriggers: (previouslySaved: $TSAny, resourceName: string, targetDir: string, context: $TSContext) => Promise<void>;
   deleteDeselectedTriggers: () => $TSAny;
-  dependsOnBlock: () => $TSAny;
+  dependsOnBlock: (context: $TSContext, dependsOnKeys: string[], service: string) => $TSAny;
   getTriggerMetadata: () => $TSAny;
-  getTriggerPermissions: () => $TSAny;
+  getTriggerPermissions: (context: $TSContext, triggers: $TSAny, category: string, resourceName: string) => $TSAny;
   getTriggerEnvVariables: () => $TSAny;
   getTriggerEnvInputs: () => $TSAny;
   getUserPoolGroupList: () => $TSAny[];
-  forceRemoveResource: () => $TSAny;
+  forceRemoveResource: (context: $TSContext, categoryName: string, name: string, dir: string) => $TSAny;
   writeObjectAsJson: () => $TSAny;
   hashDir: (dir: string, exclude: string[]) => Promise<string>;
   leaveBreadcrumbs: (category: string, resourceName: string, breadcrumbs: unknown) => void;
   readBreadcrumbs: (category: string, resourceName: string) => $TSAny;
   loadRuntimePlugin: (context: $TSContext, pluginId: string) => Promise<$TSAny>;
-  getImportedAuthProperties: (
-    context: $TSContext,
-  ) => {
+  getImportedAuthProperties: (context: $TSContext) => {
     imported: boolean;
     userPoolId?: string;
     authRoleArn?: string;
@@ -319,5 +423,8 @@ interface AmplifyToolkit {
     unauthRoleArn?: string;
     unauthRoleName?: string;
   };
-  invokePluginMethod: <T>(context: $TSContext, category: string, service: string | undefined, method: string, args: any[]) => Promise<T>;
+  invokePluginMethod: <T>(context: $TSContext, category: string, service: string | undefined, method: string, args: $TSAny[]) => Promise<T>;
+  getTags: (context: $TSContext) => Tag[],
 }
+
+export * from './plugin-facade';

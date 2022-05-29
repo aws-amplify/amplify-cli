@@ -18,10 +18,10 @@ describe('get-frontend-plugins', () => {
             directory: '/home/user/amplify/lib/@aws-amplify/cli/node_modules/amplify-frontend-flutter',
           },
           {
-            name: 'amplify-category-auth',
+            name: '@aws-amplify/amplify-category-auth',
             pluginType: 'category',
             pluginName: 'auth',
-            directory: '/home/user/amplify/lib/@aws-amplify/cli/node_modules/amplify-category-auth',
+            directory: '/home/user/amplify/lib/@aws-amplify/cli/node_modules/@aws-amplify/amplify-category-auth',
           },
         ],
       },
@@ -42,10 +42,10 @@ describe('get-frontend-plugins', () => {
       runtime: {
         plugins: [
           {
-            name: 'amplify-category-auth',
+            name: '@aws-amplify/amplify-category-auth',
             pluginType: 'category',
             pluginName: 'auth',
-            directory: '/home/user/amplify/lib/@aws-amplify/cli/node_modules/amplify-category-auth',
+            directory: '/home/user/amplify/lib/@aws-amplify/cli/node_modules/@aws-amplify/amplify-category-auth',
           },
         ],
       },

@@ -1,26 +1,28 @@
 import {
+  addApiWithoutSchema,
+  addFeatureFlag,
+  addHeadlessApi,
   amplifyPush,
   amplifyPushUpdate,
-  deleteProject,
-  initJSProjectWithProfile,
-  getSchemaPath,
-  addHeadlessApi,
-  updateHeadlessApi,
-  getProjectSchema,
-  removeHeadlessApi,
-  addApiWithSchema,
   createNewProjectDir,
+  deleteProject,
   deleteProjectDir,
   getAppSyncApi,
   getProjectMeta,
+  getProjectSchema,
+  getSchemaPath,
   getTransformConfig,
+  initJSProjectWithProfile,
+  removeHeadlessApi,
+  updateApiSchema,
+  updateHeadlessApi,
 } from 'amplify-e2e-core';
-import path from 'path';
-import { existsSync } from 'fs';
-import { TRANSFORM_CURRENT_VERSION, TRANSFORM_BASE_VERSION, writeTransformerConfiguration } from 'graphql-transformer-core';
 import { AddApiRequest, UpdateApiRequest } from 'amplify-headless-interface';
+import { existsSync } from 'fs';
 import { readFileSync } from 'fs-extra';
+import { TRANSFORM_BASE_VERSION, TRANSFORM_CURRENT_VERSION, writeTransformerConfiguration } from 'graphql-transformer-core';
 import _ from 'lodash';
+import path from 'path';
 
 describe('amplify add api (GraphQL)', () => {
   let projRoot: string;
@@ -39,8 +41,8 @@ describe('amplify add api (GraphQL)', () => {
   it('init a project and add the simple_model api, change transformer version to base version and push', async () => {
     const name = `simplemodelv${TRANSFORM_BASE_VERSION}`;
     await initJSProjectWithProfile(projRoot, { name });
-    await addApiWithSchema(projRoot, 'simple_model.graphql');
-
+    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
+    await updateApiSchema(projRoot, name, 'simple_model.graphql');
     const transformConfig = getTransformConfig(projRoot, name);
     expect(transformConfig).toBeDefined();
     expect(transformConfig.Version).toBeDefined();
@@ -80,6 +82,10 @@ describe('amplify add api (GraphQL)', () => {
   it('creates AppSync API in headless mode', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addHeadlessApi(projRoot, addApiRequest);
+
+    await addFeatureFlag(projRoot, 'graphqltransformer', 'transformerVersion', 1);
+    await addFeatureFlag(projRoot, 'graphqltransformer', 'useExperimentalPipelinedTransformer', false);
+
     await amplifyPush(projRoot);
 
     // verify
@@ -122,9 +128,13 @@ describe('amplify add api (GraphQL)', () => {
   it('updates AppSync API in headless mode', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addHeadlessApi(projRoot, addApiRequest);
+
+    await addFeatureFlag(projRoot, 'graphqltransformer', 'transformerVersion', 1);
+    await addFeatureFlag(projRoot, 'graphqltransformer', 'useExperimentalPipelinedTransformer', false);
+
     await amplifyPush(projRoot);
-    await updateHeadlessApi(projRoot, updateApiRequest);
-    await amplifyPushUpdate(projRoot);
+    await updateHeadlessApi(projRoot, updateApiRequest, true);
+    await amplifyPushUpdate(projRoot, undefined, undefined, true);
 
     // verify
     const meta = getProjectMeta(projRoot);
@@ -147,6 +157,10 @@ describe('amplify add api (GraphQL)', () => {
   it('removes AppSync API in headless mode', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addHeadlessApi(projRoot, addApiRequest);
+
+    await addFeatureFlag(projRoot, 'graphqltransformer', 'transformerVersion', 1);
+    await addFeatureFlag(projRoot, 'graphqltransformer', 'useExperimentalPipelinedTransformer', false);
+
     await amplifyPush(projRoot);
 
     // verify

@@ -1,10 +1,17 @@
+/* eslint-disable jsdoc/require-description */
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
+/* eslint-disable func-style */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import * as path from 'path';
 import chalk from 'chalk';
-import { PluginInfo } from '../domain/plugin-info';
-import { PluginPlatform } from '../domain/plugin-platform';
 import { JSONUtilities, $TSAny } from 'amplify-cli-core';
 import { satisfies } from 'semver';
+import { PluginInfo } from '../domain/plugin-info';
+import { PluginPlatform } from '../domain/plugin-platform';
 
+/**
+ *
+ */
 export type PluginDescription = {
   name: string;
   type: string;
@@ -14,9 +21,12 @@ export type PluginDescription = {
 
 const indent = '    ';
 
+/**
+ *
+ */
 export async function checkPlatformHealth(pluginPlatform: PluginPlatform): Promise<boolean> {
   const activePlugins = pluginPlatform.plugins;
-  const officialPlugins: { [key: string]: PluginDescription | Array<PluginDescription> } = getOfficialPlugins();
+  const officialPlugins = getOfficialPlugins();
   const missingOfficialPlugins: Array<PluginDescription> = [];
   const mismatchedOfficialPlugins: Array<PluginDescription> = [];
 
@@ -32,7 +42,7 @@ export async function checkPlatformHealth(pluginPlatform: PluginPlatform): Promi
       const activeArray = activePlugins[pluginName];
 
       officialArray.forEach((officialPlugin: PluginDescription) => {
-        let matchLevel = 0; //0: missing, 1: found package but failed matching test, 2 found matching package
+        let matchLevel = 0; // 0: missing, 1: found package but failed matching test, 2 found matching package
         for (let i = 0; i < activeArray.length; i++) {
           const activePlugin = activeArray[i];
           if (activePlugin.packageName === officialPlugin.packageName) {
@@ -59,7 +69,9 @@ export async function checkPlatformHealth(pluginPlatform: PluginPlatform): Promi
   if (missingOfficialPlugins.length > 0) {
     console.log(chalk.yellow('The following official plugins are missing or inactive:'));
     missingOfficialPlugins.forEach((pluginDescription: PluginDescription) => {
-      const { name, type, packageName, packageVersion } = pluginDescription;
+      const {
+        name, type, packageName, packageVersion,
+      } = pluginDescription;
       console.log(`${indent}${name}: ${type} | ${packageName}@${packageVersion}`);
     });
   }
@@ -67,7 +79,9 @@ export async function checkPlatformHealth(pluginPlatform: PluginPlatform): Promi
   if (mismatchedOfficialPlugins.length > 0) {
     console.log(chalk.yellow('The following official plugins have mismatched packages:'));
     mismatchedOfficialPlugins.forEach((pluginDescription: PluginDescription) => {
-      const { name, type, packageName, packageVersion } = pluginDescription;
+      const {
+        name, type, packageName, packageVersion,
+      } = pluginDescription;
       console.log('Expected:');
       console.log(`${indent}${name}: ${type} | ${packageName}@${packageVersion}`);
       console.log('Found:');
@@ -91,21 +105,27 @@ function isMatching(pluginDescription: PluginDescription, pluginInfo: PluginInfo
   return result;
 }
 
-export function getOfficialPlugins() {
-  const packageJsonFilePath = path.normalize(path.join(__dirname, '../../package.json'));
+/**
+ *
+ */
+export function getOfficialPlugins(): { [key: string]: PluginDescription | Array<PluginDescription> } {
+  const packageJsonFilePath = path.normalize(path.join(__dirname, '..', '..', 'package.json'));
   const packageJson = JSONUtilities.readJson<$TSAny>(packageJsonFilePath);
   const { officialPlugins } = packageJson.amplify;
 
-  const dependencies: { [key: string]: string } = packageJson.dependencies;
+  const { dependencies } = packageJson;
 
   Object.keys(officialPlugins).forEach((plugin: string) => {
-    const { packageName } = officialPlugins[plugin];
-    if (dependencies[packageName]) {
-      const version = dependencies[packageName];
-      officialPlugins[plugin].packageVersion = version;
-    } else {
-      delete officialPlugins[plugin].packageVersion;
-    }
+    const plugins = Array.isArray(officialPlugins[plugin]) ? officialPlugins[plugin] : [officialPlugins[plugin]];
+    plugins.forEach(officialPlugin => {
+      const { packageName } = officialPlugin;
+      if (dependencies[packageName]) {
+        const version = dependencies[packageName];
+        officialPlugin.packageVersion = version;
+      } else {
+        delete officialPlugin.packageVersion;
+      }
+    });
   });
 
   const coreVersion = packageJson.version;

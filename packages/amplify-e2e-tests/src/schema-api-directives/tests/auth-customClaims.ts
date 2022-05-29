@@ -19,7 +19,7 @@ export async function runTest(projectDir: string, testModule: any) {
   await addAuthWithPreTokenGenerationTrigger(projectDir);
   updateTriggerHandler(projectDir);
   await updateAuthAddUserGroups(projectDir, [GROUPNAME]);
-  await addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectDir);
+  await addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectDir, { transformerVersion: 1 });
   updateSchemaInTestProject(projectDir, testModule.schema);
   await amplifyPush(projectDir);
   const awsconfig = configureAmplify(projectDir);
@@ -73,10 +73,10 @@ exports.handler = async event => {
 };
 `;
 
-export const createPostMutation = ` 
+export const createPostMutation = `
 mutation CreatePost {
   createPost(input: {
-    id: "1", 
+    id: "1",
     postname: "post1",
     content: "post1 content"
   }) {

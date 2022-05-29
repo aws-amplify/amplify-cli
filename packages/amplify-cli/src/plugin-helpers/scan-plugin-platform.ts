@@ -12,6 +12,7 @@ import { twoPluginsAreTheSame } from './compare-plugins';
 import { checkPlatformHealth } from './platform-health-check';
 import isChildPath from '../utils/is-child-path';
 import { JSONUtilities, $TSAny, isPackaged } from 'amplify-cli-core';
+import sequential from 'promise-sequential';
 
 export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promise<PluginPlatform> {
   pluginPlatform = pluginPlatform || readPluginsJsonFile() || new PluginPlatform();
@@ -20,8 +21,6 @@ export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promi
 
   await addCore(pluginPlatform!);
 
-  const sequential = require('promise-sequential');
-
   if (pluginPlatform!.userAddedLocations && pluginPlatform!.userAddedLocations.length > 0) {
     // clean up the userAddedLocation first
     pluginPlatform!.userAddedLocations = pluginPlatform!.userAddedLocations.filter(pluginDirPath => {
@@ -29,8 +28,8 @@ export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promi
       return result;
     });
 
-    const scanUserLocationTasks = pluginPlatform!.userAddedLocations.map(pluginDirPath => async () =>
-      await verifyAndAdd(pluginPlatform!, pluginDirPath),
+    const scanUserLocationTasks = pluginPlatform!.userAddedLocations.map(
+      pluginDirPath => async () => await verifyAndAdd(pluginPlatform!, pluginDirPath),
     );
     await sequential(scanUserLocationTasks);
   }
@@ -44,17 +43,14 @@ export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promi
       directory = normalizePluginDirectory(directory);
       const exists = await fs.pathExists(directory);
       if (exists) {
+        //adding subDir based on amplify-
         const subDirNames = await fs.readdir(directory);
-        if (subDirNames.length > 0) {
-          const scanSubDirTasks = subDirNames.map(subDirName => {
-            return async () => {
-              if (isMatchingNamePattern(pluginPlatform!.pluginPrefixes, subDirName)) {
-                const pluginDirPath = path.join(directory, subDirName);
-                await verifyAndAdd(pluginPlatform!, pluginDirPath);
-              }
-            };
-          });
-          await sequential(scanSubDirTasks);
+        await addPluginPrefixWithMatchingPattern(subDirNames, directory, pluginPlatform!);
+        //ading plugin based on @aws-amplify/amplify-
+        if (subDirNames.includes('@aws-amplify')) {
+          const nameSpacedDir = path.join(directory, '@aws-amplify');
+          const nameSpacedPackages = await fs.readdir(nameSpacedDir);
+          await addPluginPrefixWithMatchingPattern(nameSpacedPackages, nameSpacedDir, pluginPlatform!);
         }
       }
     });
@@ -161,3 +157,17 @@ export function isUnderScanCoverageSync(pluginPlatform: PluginPlatform, pluginDi
 
   return result;
 }
+
+const addPluginPrefixWithMatchingPattern = async (subDirNames: string[], directory: string, pluginPlatform: PluginPlatform) => {
+  if (subDirNames.length > 0) {
+    const scanSubDirTasks = subDirNames.map(subDirName => {
+      return async () => {
+        if (isMatchingNamePattern(pluginPlatform.pluginPrefixes, subDirName)) {
+          const pluginDirPath = path.join(directory, subDirName);
+          await verifyAndAdd(pluginPlatform, pluginDirPath);
+        }
+      };
+    });
+    await sequential(scanSubDirTasks);
+  }
+};

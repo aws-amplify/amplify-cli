@@ -1,8 +1,14 @@
-import _ from 'lodash';
-import { getProjectMeta, getBackendAmplifyMeta, getTeamProviderInfo, getBackendConfig } from 'amplify-e2e-core';
-import { AuthProjectDetails, DynamoDBProjectDetails, readRootStack, StorageProjectDetails } from '.';
+/* eslint-disable jsdoc/require-jsdoc */
+import {
+  getProjectMeta, getBackendAmplifyMeta, getTeamProviderInfo, getBackendConfig,
+} from 'amplify-e2e-core';
+import { AuthParameters } from '@aws-amplify/amplify-category-auth';
+// eslint-disable-next-line import/no-cycle
+import {
+  AuthProjectDetails, DynamoDBProjectDetails, readRootStack, StorageProjectDetails,
+} from '.';
 
-export const expectAuthProjectDetailsMatch = (projectDetails: AuthProjectDetails, ogProjectDetails: AuthProjectDetails) => {
+export const expectAuthProjectDetailsMatch = (projectDetails: AuthProjectDetails, ogProjectDetails: AuthProjectDetails): void => {
   expect(projectDetails.parameters.authSelections).toEqual(ogProjectDetails.parameters.authSelections);
 
   expect(projectDetails.meta.UserPoolId).toEqual(ogProjectDetails.meta.UserPoolId);
@@ -26,14 +32,14 @@ export const expectAuthProjectDetailsMatch = (projectDetails: AuthProjectDetails
   expect(projectDetails.team.nativeClientId).toEqual(ogProjectDetails.team.nativeClientId);
 };
 
-export const expectLocalAndCloudMetaFilesMatching = (projectRoot: string) => {
+export const expectLocalAndCloudMetaFilesMatching = (projectRoot: string): void => {
   const cloudMeta = getProjectMeta(projectRoot);
   const meta = getBackendAmplifyMeta(projectRoot);
 
   expect(cloudMeta).toMatchObject(meta);
 };
 
-export const expectAuthLocalAndOGMetaFilesOutputMatching = (projectRoot: string, ogProjectRoot: string) => {
+export const expectAuthLocalAndOGMetaFilesOutputMatching = (projectRoot: string, ogProjectRoot: string): void => {
   const meta = getBackendAmplifyMeta(projectRoot);
   const ogMeta = getBackendAmplifyMeta(ogProjectRoot);
 
@@ -51,22 +57,25 @@ export const expectAuthLocalAndOGMetaFilesOutputMatching = (projectRoot: string,
   expect(authMeta.output.UserPoolId).toEqual(ogAuthMeta.output.UserPoolId);
 };
 
-export const expectNoAuthInMeta = (projectRoot: string) => {
+export const expectNoAuthInMeta = (projectRoot: string): void => {
   const meta = getBackendAmplifyMeta(projectRoot);
 
   expect(meta.auth).toBeDefined();
   expect(meta.auth).toMatchObject({});
 };
 
-export const expectLocalTeamInfoHasNoCategories = (projectRoot: string) => {
+export const expectLocalTeamInfoHasNoCategories = (projectRoot: string): void => {
   const team = getTeamProviderInfo(projectRoot);
 
+  // eslint-disable-next-line spellcheck/spell-checker
   expect(team.integtest.categories).toBeUndefined();
 };
 
-export const expectApiHasCorrectAuthConfig = (projectRoot: string, projectPrefix: string, userPoolId: string) => {
+// eslint-disable-next-line @typescript-eslint/no-shadow
+export const expectApiHasCorrectAuthConfig = (projectRoot: string, _: string, userPoolId: string): void => {
   const meta = getBackendAmplifyMeta(projectRoot);
 
+  // eslint-disable-next-line spellcheck/spell-checker
   const authConfig = meta.api?.auimpup?.output?.authConfig;
 
   expect(authConfig).toBeDefined();
@@ -76,17 +85,18 @@ export const expectApiHasCorrectAuthConfig = (projectRoot: string, projectPrefix
 
   const rootStack = readRootStack(projectRoot);
 
+  // eslint-disable-next-line spellcheck/spell-checker
   expect(rootStack.Resources?.apiauimpup?.Properties?.Parameters?.AuthCognitoUserPoolId).toEqual(userPoolId);
 };
 
-export const expectLocalAndPulledBackendConfigMatching = (projectRoot: string, projectRootPull: string) => {
+export const expectLocalAndPulledBackendConfigMatching = (projectRoot: string, projectRootPull: string): void => {
   const backendConfig = getBackendConfig(projectRoot);
   const backendConfigPull = getBackendConfig(projectRootPull);
 
   expect(backendConfig).toMatchObject(backendConfigPull);
 };
 
-export const expectStorageProjectDetailsMatch = (projectDetails: StorageProjectDetails, ogProjectDetails: StorageProjectDetails) => {
+export const expectStorageProjectDetailsMatch = (projectDetails: StorageProjectDetails, ogProjectDetails: StorageProjectDetails): void => {
   expect(projectDetails.parameters.resourceName).toEqual(ogProjectDetails.parameters.resourceName);
 
   expect(projectDetails.meta.BucketName).toEqual(ogProjectDetails.meta.BucketName);
@@ -96,22 +106,24 @@ export const expectStorageProjectDetailsMatch = (projectDetails: StorageProjectD
   expect(projectDetails.team.region).toEqual(ogProjectDetails.meta.Region);
 };
 
-export const expectNoStorageInMeta = (projectRoot: string) => {
+export const expectNoStorageInMeta = (projectRoot: string): void => {
   const meta = getBackendAmplifyMeta(projectRoot);
 
   expect(meta.storage).toBeDefined();
   expect(meta.storage).toMatchObject({});
 };
 
-export const expectLocalTeamInfoHasOnlyAuthCategoryAndNoStorage = (projectRoot: string) => {
+export const expectLocalTeamInfoHasOnlyAuthCategoryAndNoStorage = (projectRoot: string): void => {
   const team = getTeamProviderInfo(projectRoot);
 
+  /* eslint-disable spellcheck/spell-checker */
   expect(team.integtest.categories).toBeDefined();
   expect(team.integtest.categories.auth).toBeDefined();
   expect(team.integtest.categories.storage).toBeUndefined();
+  /* eslint-enable spellcheck/spell-checker */
 };
 
-export const expectS3LocalAndOGMetaFilesOutputMatching = (projectRoot: string, ogProjectRoot: string) => {
+export const expectS3LocalAndOGMetaFilesOutputMatching = (projectRoot: string, ogProjectRoot: string): void => {
   const meta = getBackendAmplifyMeta(projectRoot);
   const ogMeta = getBackendAmplifyMeta(ogProjectRoot);
 
@@ -127,7 +139,9 @@ export const expectS3LocalAndOGMetaFilesOutputMatching = (projectRoot: string, o
   expect(storageMeta.output.Region).toEqual(ogStorageMeta.output.Region);
 };
 
-export const expectDynamoDBProjectDetailsMatch = (projectDetails: DynamoDBProjectDetails, ogProjectDetails: DynamoDBProjectDetails) => {
+export const expectDynamoDBProjectDetailsMatch = (
+  projectDetails: DynamoDBProjectDetails, ogProjectDetails: DynamoDBProjectDetails,
+): void => {
   expect(projectDetails.meta.Name).toEqual(ogProjectDetails.meta.Name);
   expect(projectDetails.meta.Region).toEqual(ogProjectDetails.meta.Region);
   expect(projectDetails.meta.PartitionKeyName).toEqual(ogProjectDetails.meta.PartitionKeyName);
@@ -147,7 +161,7 @@ export const expectDynamoDBProjectDetailsMatch = (projectDetails: DynamoDBProjec
   expect(projectDetails.team.streamArn).toEqual(ogProjectDetails.meta.StreamArn);
 };
 
-export const expectDynamoDBLocalAndOGMetaFilesOutputMatching = (projectRoot: string, ogProjectRoot: string) => {
+export const expectDynamoDBLocalAndOGMetaFilesOutputMatching = (projectRoot: string, ogProjectRoot: string): void => {
   const meta = getBackendAmplifyMeta(projectRoot);
   const ogMeta = getBackendAmplifyMeta(ogProjectRoot);
 
@@ -167,4 +181,13 @@ export const expectDynamoDBLocalAndOGMetaFilesOutputMatching = (projectRoot: str
   expect(storageMeta.output.SortKeyType).toEqual(ogStorageMeta.output.SortKeyType);
   expect(storageMeta.output.Arn).toEqual(ogStorageMeta.output.Arn);
   expect(storageMeta.output.StreamArn).toEqual(ogStorageMeta.output.StreamArn);
+};
+
+export const expectAuthParametersMatch = (authParameters: AuthParameters, ogAuthParameters: AuthParameters): void => {
+  expect(authParameters.authProvidersUserPool).toEqual(ogAuthParameters.authProvidersUserPool);
+  expect(authParameters.requiredAttributes).toEqual(ogAuthParameters.requiredAttributes);
+  expect(authParameters.passwordPolicyMinLength).toEqual(ogAuthParameters.passwordPolicyMinLength);
+  expect(authParameters.passwordPolicyCharacters).toEqual(ogAuthParameters.passwordPolicyCharacters);
+  expect(authParameters.mfaConfiguration).toEqual(ogAuthParameters.mfaConfiguration);
+  expect(authParameters.autoVerifiedAttributes).toEqual(ogAuthParameters.autoVerifiedAttributes);
 };

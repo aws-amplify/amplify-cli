@@ -25,14 +25,33 @@ import { S3Service, createS3Service } from './aws-utils/S3Service';
 import { DynamoDBService, createDynamoDBService } from './aws-utils/DynamoDBService';
 import { resolveAppId } from './utils/resolve-appId';
 import { loadConfigurationForEnv } from './configuration-manager';
+import { getLocationSupportedRegion, getLocationRegionMapping } from './aws-utils/aws-location';
 import { SSM } from './aws-utils/aws-ssm';
 import { Lambda } from './aws-utils/aws-lambda';
 import CloudFormation from './aws-utils/aws-cfn';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, ApiCategoryFacade } from 'amplify-cli-core';
+import * as resourceExport from './export-resources';
+import * as exportUpdateMeta from './export-update-amplify-meta';
 
 export { resolveAppId } from './utils/resolve-appId';
 export { loadConfigurationForEnv } from './configuration-manager';
+export { getLocationSupportedRegion, getLocationRegionMapping } from './aws-utils/aws-location';
 import { updateEnv } from './update-env';
+
+import { uploadHooksDirectory } from './utils/hooks-manager';
+
+export const cfnRootStackFileName = 'root-cloudformation-stack.json';
+export { storeRootStackTemplate } from './initializer';
+import { transformResourceWithOverrides } from './override-manager';
+export { transformResourceWithOverrides } from './override-manager';
+import { rootStackFileName } from './push-resources';
+export { rootStackFileName } from './push-resources';
+
+import { compileSchema } from './utility-functions';
+import { LocationService } from './aws-utils/aws-location-service';
+import { hashDirectory } from './upload-appsync-files';
+import { prePushCfnTemplateModifier } from './pre-push-cfn-processor/pre-push-cfn-modifier';
+import { getApiKeyConfig } from './utils/api-key-helpers';
 
 function init(context) {
   return initializer.run(context);
@@ -52,8 +71,16 @@ function onInitSuccessful(context) {
   return initializer.onInitSuccessful(context);
 }
 
-function pushResources(context, resourceList) {
-  return resourcePusher.run(context, resourceList);
+function exportResources(context, resourceList, exportType) {
+  return resourceExport.run(context, resourceList, exportType);
+}
+
+function exportedStackResourcesUpdateMeta(context: $TSContext, stackName: string) {
+  return exportUpdateMeta.run(context, stackName);
+}
+
+function pushResources(context, resourceList, rebuild: boolean) {
+  return resourcePusher.run(context, resourceList, rebuild);
 }
 
 function storeCurrentCloudBackend(context) {
@@ -107,6 +134,10 @@ export async function getConfiguredSSMClient(context) {
   return await SSM.getInstance(context);
 }
 
+export async function getConfiguredLocationServiceClient(context: $TSContext) {
+  return await LocationService.getInstance(context);
+}
+
 async function getLambdaSdk(context: $TSContext) {
   return await new Lambda(context);
 }
@@ -120,6 +151,8 @@ module.exports = {
   adminLoginFlow,
   console: openConsole,
   attachBackend,
+  exportResources,
+  exportedStackResourcesUpdateMeta,
   init,
   initEnv,
   isAmplifyAdminApp,
@@ -156,4 +189,16 @@ module.exports = {
   loadConfigurationForEnv,
   getConfiguredSSMClient,
   updateEnv,
+  uploadHooksDirectory,
+  getLocationSupportedRegion,
+  getLocationRegionMapping,
+  // Keeping for backwards compatibility
+  getTransformerVersion: ApiCategoryFacade.getTransformerVersion,
+  transformResourceWithOverrides,
+  rootStackFileName,
+  compileSchema,
+  getConfiguredLocationServiceClient,
+  hashDirectory,
+  prePushCfnTemplateModifier,
+  getApiKeyConfig,
 };

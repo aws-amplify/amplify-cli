@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { getCLIPath, nspawn as spawn } from 'amplify-e2e-core';
 
 export const importUserPoolOnly = (cwd: string, autoCompletePrefix: string, clientNames?: { web?: string; native?: string }) => {
@@ -102,11 +103,11 @@ export const removeImportedAuthWithDefault = (cwd: string) => {
 export const addS3WithAuthConfigurationMismatchErrorExit = (cwd: string, settings: any) => {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
-      .wait('Please select from one of the below mentioned services')
+      .wait('Select from one of the below mentioned services')
       .sendCarriageReturn()
-      .wait('Please provide a friendly name')
+      .wait('Provide a friendly name')
       .sendCarriageReturn()
-      .wait('Please provide bucket name')
+      .wait('Provide bucket name')
       .sendCarriageReturn()
       .wait('Who should have access')
       .sendCarriageReturn()
@@ -204,7 +205,7 @@ export const headlessPull = (
 export const importS3 = (cwd: string, autoCompletePrefix: string): Promise<void> => {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['storage', 'import'], { cwd, stripColors: true })
-      .wait('Please select from one of the below mentioned services')
+      .wait('Select from one of the below mentioned services')
       .sendCarriageReturn()
       .wait('Select the S3 Bucket you want to import')
       .send(autoCompletePrefix)
@@ -243,14 +244,14 @@ export const removeImportedS3WithDefault = (cwd: string): Promise<void> => {
 export const importDynamoDBTable = (cwd: string, autoCompletePrefix: string): Promise<void> => {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['storage', 'import'], { cwd, stripColors: true })
-      .wait('Please select from one of the below mentioned services')
+      .wait('Select from one of the below mentioned services')
       .sendKeyDown()
       .sendCarriageReturn()
       .wait('Select the DynamoDB Table you want to import')
       .send(autoCompletePrefix)
       .delay(500) // Some delay required for autocomplete and terminal to catch up
       .sendCarriageReturn()
-      .wait(`- This resource can now be accessed from REST APIs (‘amplify add api’) and Functions (‘amplify add function’)`)
+      .wait('- This resource can now be accessed from REST APIs (`amplify add api`) and Functions (`amplify add function`)')
       .sendEof()
       .run((err: Error) => {
         if (!err) {

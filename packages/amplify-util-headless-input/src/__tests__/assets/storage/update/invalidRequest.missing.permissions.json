@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "serviceModification": {
+    "serviceName": "S3",
+    "bucketName": "something",
+    "resourceName": "something",
+    "lambdaTrigger": {
+      "mode": "new",
+      "name": "triggerName"
+    }
+  }
+}

@@ -10,6 +10,7 @@ import {
   deleteProjectDir,
   getAppId,
   initJSProjectWithProfile,
+  addS3StorageWithSettings,
 } from 'amplify-e2e-core';
 import {
   AuthProjectDetails,
@@ -241,7 +242,7 @@ describe('auth import identity pool and userpool', () => {
   it('auth import, storage auth/guest access, push successful', async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
     await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
-    await addS3Storage(projectRoot);
+    await addS3StorageWithSettings(projectRoot, {});
     await amplifyPushAuth(projectRoot);
 
     await amplifyStatus(projectRoot, 'No Change');

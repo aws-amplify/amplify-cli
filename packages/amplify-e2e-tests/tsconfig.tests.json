@@ -13,5 +13,5 @@
     "typeRoots": ["../../node_modules/@types", "node_modules/@types", "./typings"]
   },
   "references": [{ "path": "../amplify-e2e-core" }],
-  "exclude": ["node_modules", "lib", "__tests__"]
+  "exclude": ["node_modules", "lib", "__tests__", "custom-resources", "overrides"]
 }

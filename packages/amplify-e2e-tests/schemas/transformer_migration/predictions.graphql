@@ -1,0 +1,6 @@
+type Query {
+  translateImageText: String @predictions(actions: [identifyText])
+  translateLabels: String @predictions(actions: [identifyLabels])
+  translateThis: String @predictions(actions: [translateText])
+  speakTranslatedText: String @predictions(actions: [translateText, convertTextToSpeech])
+}

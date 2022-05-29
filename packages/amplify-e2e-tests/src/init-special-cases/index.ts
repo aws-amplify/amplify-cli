@@ -56,7 +56,7 @@ async function initWorkflow(cwd: string, settings: { accessKeyId: string; secret
       .wait('Enter a name for the project')
       .sendCarriageReturn()
       .wait('Initialize the project with the above configuration?')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Enter a name for the environment')
       .sendCarriageReturn()
       .wait('Choose your default editor:')
@@ -87,7 +87,7 @@ async function initWorkflow(cwd: string, settings: { accessKeyId: string; secret
 
     singleSelect(chain, settings.region, amplifyRegions);
 
-    chain.wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything').run((err: Error) => {
+    chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
       if (!err) {
         resolve();
       } else {

@@ -1,6 +1,7 @@
 import { $TSContext, $TSObject } from 'amplify-cli-core';
 import { AwsSecrets, loadConfiguration } from '../configuration-manager';
 import aws from './aws.js';
+import * as AWS from 'aws-sdk';
 
 export class SSM {
   private static instance: SSM;

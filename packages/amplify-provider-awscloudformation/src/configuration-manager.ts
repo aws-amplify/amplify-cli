@@ -787,7 +787,7 @@ export async function getAwsConfig(context: $TSContext): Promise<AwsSdkConfig> {
     try {
       resultAWSConfigInfo = await getTempCredsWithAdminTokens(context, appId);
     } catch (err) {
-      context.print.error('Failed to fetch Amplify Admin credentials');
+      context.print.error('Failed to fetch Amplify Studio credentials');
       throw new Error(err);
     }
   }
@@ -900,7 +900,7 @@ async function askAuthType(isAdminAvailable: boolean = false): Promise<AuthFlow>
   ];
 
   if (isAdminAvailable) {
-    choices = [{ name: 'Amplify Admin UI', value: 'admin' }, ...choices];
+    choices = [{ name: 'Amplify Studio', value: 'admin' }, ...choices];
   }
 
   const { authChoice }: { authChoice?: AuthFlow } = await prompt(authTypeQuestion(choices));

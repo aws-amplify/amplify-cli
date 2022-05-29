@@ -6,22 +6,22 @@ NAME
 amplify status --  Shows the state of local resources not yet pushed to the cloud (Create/Update/Delete)
 
 SYNOPSIS
-amplify status [-v|--verbose] [category ...] 
+amplify status [-v|--verbose] [category ...]
 
 DESCRIPTION
 The amplify status command displays the difference between the deployed state and the local state of the application.
-The following options are available: 
+The following options are available:
 
 [category ...]    : (Summary mode) Displays the summary of local state vs deployed state of the application
                     usage:
                     #> amplify status
                     #> amplify status api storage
 
--v [category ...] : (Verbose mode) Displays the cloudformation diff for all resources for the specified category. 
+-v [category ...] : (Verbose mode) Displays the cloudformation diff for all resources for the specified category.
                     If no category is provided, it shows the diff for all categories.
                     usage:
                     #> amplify status -v
                     #> amplify status -v api storage
-                               
-        "
+
+    "
 `;

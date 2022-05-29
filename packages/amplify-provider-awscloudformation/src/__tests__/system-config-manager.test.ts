@@ -1,5 +1,6 @@
 import { $TSContext } from 'amplify-cli-core';
 import fs from 'fs-extra';
+import * as aws from 'aws-sdk';
 import { getProfileCredentials, getProfiledAwsConfig } from '../system-config-manager';
 
 jest.setTimeout(15000);
@@ -32,6 +33,8 @@ describe('profile tests', () => {
     const getProfileCredentials_mock = jest.fn(getProfileCredentials);
     const profile_config = await getProfiledAwsConfig(context_stub, 'fake');
     expect(profile_config).toBeDefined();
+    expect(profile_config.credentialProvider).toBeDefined();
+    expect(profile_config.credentialProvider).toBeInstanceOf(aws.CredentialProviderChain);
     expect(getProfileCredentials_mock).toHaveBeenCalledTimes(0);
   });
 

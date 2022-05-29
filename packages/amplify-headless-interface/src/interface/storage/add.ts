@@ -1,75 +1,34 @@
+import { LambdaTriggerConfig, S3Permissions, S3ServiceConfigurationBase } from './base';
+
 /**
- * Headless mode for add storage is not yet implemented.
- * This interface is subject to change and should not be used.
+ * Service configuration for adding AWS S3 through Amplify
  */
 export interface AddStorageRequest {
   version: 1;
-  serviceConfiguration: S3ServiceConfiguration;
+  serviceConfiguration: AddS3ServiceConfiguration;
 }
 
 /**
  * Service configuration for AWS S3 through Amplify
  */
-export interface S3ServiceConfiguration {
-  /**
-   * Descriminant used to determine the service config type
-   */
-  serviceName: 's3';
+export interface AddS3ServiceConfiguration extends S3ServiceConfigurationBase {
   /**
    * The permissions that should be applied to the bucket
    */
   permissions: S3Permissions;
+
   /**
-   * Globally unique bucket name
+   * Amplify resource name
    */
-  bucketName: string;
+  resourceName?: string;
+
+  /**
+   * Globally unique bucket name - bucket names must be lowercase
+   */
+  bucketName?: string;
+
   /**
    * Optional parameter specifying a lambda that should run when the bucket is modified
    */
   lambdaTrigger?: LambdaTriggerConfig;
-}
-
-/**
- * Permissions that should be applied to the bucket
- */
-export interface S3Permissions {
-  /**
-   * Permissions for authenticated users
-   */
-  auth: CrudOperations[];
-
-  /**
-   * Permissions for unauthenticated users
-   */
-  guest?: CrudOperations[];
-
-  /**
-   * Permissions for Cognito user groups
-   */
-  groups?: PermissionGroups;
-}
-
-/**
- * Permissions for Cognito user groups
- */
-export interface PermissionGroups {
-  /**
-   * Each key is a Cognito user group name and each value is the CRUD opterations permitted for that group
-   */
-  [k: string]: CrudOperations[];
-}
-
-/**
- * Lambda function that runs on bucket change
- */
-export interface LambdaTriggerConfig {
-  mode: 'new' | 'existing';
-  name: string;
-}
-
-export enum CrudOperations {
-  CREATE = 'CREATE',
-  READ = 'READ',
-  UPDATE = 'UPDATE',
-  DELETE = 'DELETE',
 }

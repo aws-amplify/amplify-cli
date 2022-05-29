@@ -10,6 +10,9 @@ export type TemplateModifier = (template: Template) => Promise<void>;
 export type ResourceModifier<T extends Resource> = (resource: T) => Promise<T>;
 
 export const prePushCfnTemplateModifier: TemplateModifier = async template => {
+  if (!template.Resources) {
+    return;
+  }
   for (const [resourceName, resource] of Object.entries(template.Resources)) {
     const modifiers = getResourceModifiers(resource.Type);
     let mutatedResource = _.cloneDeep(resource);

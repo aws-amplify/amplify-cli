@@ -21,6 +21,11 @@ describe('run', () => {
   it('transforms the root stack using the pre-push modifier', async () => {
     // setup
     const context_stub = {
+      pluginPlatform: {
+        plugins: {
+          core: [{ packageVersion: '5.2' }],
+        },
+      },
       exeInfo: {
         isNewEnv: true,
         projectConfig: {
@@ -37,7 +42,7 @@ describe('run', () => {
     };
     CloudFormation_mock.mockImplementation(
       () =>
-        (({
+        ({
           createResourceStack: jest.fn().mockResolvedValue({
             Stacks: [
               {
@@ -45,7 +50,7 @@ describe('run', () => {
               },
             ],
           }),
-        } as unknown) as CloudFormation),
+        } as unknown as CloudFormation),
     );
     amplifyServiceManager_mock.init.mockResolvedValueOnce({} as any);
     JSONUtilities_mock.readJson.mockReturnValueOnce({});

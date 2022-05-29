@@ -1,0 +1,6 @@
+type Todo @model @searchable @auth(rules: [{ allow: public }]) {
+  id: ID!
+  name: String!
+  description: String
+  count: Int
+}

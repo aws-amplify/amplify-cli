@@ -6,7 +6,7 @@ export async function enableAdminUI(appId: string, envName: string, region: stri
   const jobCompletionDetails = await pollUntilDone(setupAdminUIJobDetails.JobId, appId, envName, region, 2 * 1000, 2000 * 1000);
 
   if (jobCompletionDetails.Status === 'FAILED') {
-    throw new Error('Setting up Admin UI failed');
+    throw new Error('Setting up Amplify Studio failed');
   }
 }
 

@@ -32,13 +32,14 @@ export class APITest {
   private ddbEmulator;
   private configOverrideManager: ConfigOverrideManager;
   private apiParameters: object = {};
+  private userOverriddenSlots: string[] = [];
 
   async start(context, port: number = MOCK_API_PORT, wsPort: number = 20003) {
     try {
       context.amplify.addCleanUpTask(async context => {
         await this.stop(context);
       });
-      this.configOverrideManager = ConfigOverrideManager.getInstance(context);
+      this.configOverrideManager = await ConfigOverrideManager.getInstance(context);
       // check java version
       await checkJavaVersion(context);
       this.apiName = await this.getAppSyncAPI(context);
@@ -91,7 +92,8 @@ export class APITest {
     await this.ensureDDBTables(config);
     config = this.configureDDBDataSource(config);
     this.transformerResult = await this.configureLambdaDataSource(context, config);
-    const overriddenTemplates = await this.resolverOverrideManager.sync(this.transformerResult.mappingTemplates);
+    this.userOverriddenSlots = transformerOutput.userOverriddenSlots;
+    const overriddenTemplates = await this.resolverOverrideManager.sync(this.transformerResult.mappingTemplates, this.userOverriddenSlots);
     return { ...this.transformerResult, mappingTemplates: overriddenTemplates };
   }
 
@@ -136,7 +138,7 @@ export class APITest {
 
         if (shouldReload) {
           context.print.info('Mapping template change detected. Reloading...');
-          const mappingTemplates = this.resolverOverrideManager.sync(this.transformerResult.mappingTemplates);
+          const mappingTemplates = this.resolverOverrideManager.sync(this.transformerResult.mappingTemplates, this.userOverriddenSlots);
           await this.appSyncSimulator.reload({
             ...this.transformerResult,
             mappingTemplates,
@@ -177,6 +179,7 @@ export class APITest {
       testMode: true,
     });
   }
+
   private async ensureDDBTables(config) {
     const tables = config.tables.map(t => t.Properties);
     await createAndUpdateTable(this.ddbClient, config);

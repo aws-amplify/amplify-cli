@@ -9,7 +9,7 @@ export async function adminLoginFlow(context: $TSContext, appId: string, envName
   if (!region) {
     const { isAdminApp, region: _region } = await isAmplifyAdminApp(appId);
     if (!isAdminApp) {
-      throw new Error(`Admin UI not enabled for appId: ${appId}`);
+      throw new Error(`Amplify Studio not enabled for appId: ${appId}`);
     }
     region = _region;
   }
@@ -23,17 +23,18 @@ export async function adminLoginFlow(context: $TSContext, appId: string, envName
   const spinner = ora('Continue in browser to log in…\n').start();
   try {
     // spawn express server locally to get credentials
-    const originUrl = adminBackendMap[region].amplifyAdminUrl;
+    // environment variable AMPLIFY_CLI_ADMINUI_BASE_URL is used to set the login url to http://localhost:3000 when developing against beta/gamma endpoints
+    const originUrl = process.env.AMPLIFY_CLI_ADMINUI_BASE_URL ?? adminBackendMap[region]?.amplifyAdminUrl;
     const adminLoginServer = new AdminLoginServer(appId, originUrl, context.print);
     await new Promise<void>(resolve =>
       adminLoginServer.startServer(() => {
         adminLoginServer.shutdown();
-        spinner.succeed('Successfully received Amplify Admin tokens.');
+        spinner.succeed('Successfully received Amplify Studio tokens.');
         resolve();
       }),
     );
   } catch (e) {
     spinner.stop();
-    context.print.error(`Failed to authenticate with Amplify Admin: ${e.message || e}`);
+    context.print.error(`Failed to authenticate with Amplify Studio: ${e.message || e}`);
   }
 }

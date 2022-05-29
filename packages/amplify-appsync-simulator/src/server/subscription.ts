@@ -1,16 +1,16 @@
 import chalk from 'chalk';
 import crypto from 'crypto';
-import e2p from 'event-to-promise';
+import { fromEvent } from 'promise-toolbox';
 import { DocumentNode, ExecutableDefinitionNode, ExecutionResult, FieldNode } from 'graphql';
 import { createServer as createHTTPServer, Server } from 'http';
 import { address as getLocalIpAddress } from 'ip';
 import { AddressInfo } from 'net';
-import portfinder from 'portfinder';
 import { inspect } from 'util';
 import { AmplifyAppSyncSimulator } from '..';
 import { AppSyncSimulatorServerConfig } from '../type-definition';
 import { MQTTServer } from './subscription/mqtt-server';
 import { WebsocketSubscriptionServer } from './subscription/websocket-server/server';
+import getPort from 'get-port';
 
 const MINUTE = 1000 * 60;
 const CONNECTION_TIMEOUT = 2 * MINUTE; // 2 mins
@@ -64,24 +64,21 @@ export class SubscriptionServer {
 
   async start() {
     if (!this.port) {
-      this.port = await portfinder.getPortPromise({
-        startPort: BASE_PORT,
-        stopPort: MAX_PORT,
-      });
+      this.port = await getPort({
+        port: getPort.makeRange(BASE_PORT, MAX_PORT),
+      })
     } else {
       try {
-        await portfinder.getPortPromise({
-          startPort: this.port,
-          stopPort: this.port,
+        await getPort({
           port: this.port,
-        });
+        })
       } catch (e) {
         throw new Error(`Port ${this.port} is already in use. Please kill the program using this port and restart Mock`);
       }
     }
     const server = this.mqttWebSocketServer.listen(this.port);
 
-    return await e2p(server, 'listening').then(() => {
+    return await fromEvent(server, 'listening').then(() => {
       const address = server.address() as AddressInfo;
       this.url = `ws://${getLocalIpAddress()}:${address.port}/`;
       return server;
@@ -178,23 +175,15 @@ export class SubscriptionServer {
   async register(document: DocumentNode, variables: Record<string, any>, context, asyncIterator: AsyncIterableIterator<ExecutionResult>) {
     const connection = context.request.connection;
     const remoteAddress = `${connection.remoteAddress}:${connection.remotePort}`;
-    const clientId = crypto
-      .createHash('MD5')
-      .update(remoteAddress)
-      .digest()
-      .toString('hex');
+    const clientId = crypto.createHash('MD5').update(remoteAddress).digest().toString('hex');
 
     // move next line to a helper function
-    const subscriptionName = ((document.definitions[0] as ExecutableDefinitionNode).selectionSet.selections.find(
-      s => s.kind === 'Field',
-    ) as FieldNode).name.value;
+    const subscriptionName = (
+      (document.definitions[0] as ExecutableDefinitionNode).selectionSet.selections.find(s => s.kind === 'Field') as FieldNode
+    ).name.value;
     const paramHash =
       variables && Object.keys(variables).length
-        ? crypto
-            .createHash('MD5')
-            .update(JSON.stringify(variables))
-            .digest()
-            .toString('hex')
+        ? crypto.createHash('MD5').update(JSON.stringify(variables)).digest().toString('hex')
         : null;
     const topicId = [clientId, subscriptionName, paramHash].join('/');
 
@@ -223,7 +212,7 @@ export class SubscriptionServer {
         setTimeout(() => {
           (asyncIterator as AsyncIterator<ExecutionResult>).return();
           this.mqttIteratorTimeout.delete(clientId);
-        }, CONNECTION_TIMEOUT),
+        }, CONNECTION_TIMEOUT) as any,
       );
     } else {
       // reusing existing subscription. Client unsubscribed to the topic earlier but

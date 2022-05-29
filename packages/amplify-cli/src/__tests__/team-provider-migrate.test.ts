@@ -105,7 +105,7 @@ describe('test migration code', () => {
     const mockGetResourceParameterJson = jest.fn().mockReturnValue({
       authSelections: 'identityPoolAndUserPool',
     });
-    jest.setMock('amplify-category-auth', {
+    jest.setMock('@aws-amplify/amplify-category-auth', {
       externalAuthEnable: jest.fn(),
     });
 

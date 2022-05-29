@@ -1,0 +1,162 @@
+{
+  "Parameters": {
+    "env": {
+      "Type": "String",
+      "Description": "Current Amplify CLI env name"
+    }
+  },
+  "Resources": {
+    "sqsqueueE70CFDBB": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "QueueName": {
+          "Fn::Join": [
+            "-",
+            [
+              "custom-cfn-generated-sqs-queue",
+              {
+                "Ref": "env"
+              }
+            ]
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "sqsqueuePolicyC27BD6E4": {
+      "Type": "AWS::SQS::QueuePolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sqs:SendMessage",
+              "Condition": {
+                "ArnEquals": {
+                  "aws:SourceArn": {
+                    "Ref": "snstopic2C4AE3C1"
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "sns.amazonaws.com"
+              },
+              "Resource": {
+                "Fn::GetAtt": ["sqsqueueE70CFDBB", "Arn"]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Queues": [
+          {
+            "Ref": "sqsqueueE70CFDBB"
+          }
+        ]
+      }
+    },
+    "sqsqueuesnstopic5956E741": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Protocol": "sqs",
+        "TopicArn": {
+          "Ref": "snstopic2C4AE3C1"
+        },
+        "Endpoint": {
+          "Fn::GetAtt": ["sqsqueueE70CFDBB", "Arn"]
+        }
+      }
+    },
+    "snstopic2C4AE3C1": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "TopicName": {
+          "Fn::Join": [
+            "-",
+            [
+              "custom-cfn-generated-sns-topic",
+              {
+                "Ref": "env"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "CustomRole6D8E6809": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "RoleName": {
+          "Fn::Join": [
+            "-",
+            [
+              "custom-cfn-generated-custom-role",
+              {
+                "Ref": "env"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "CustomRoleDefaultPolicyC5C189DF": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "*",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "snstopic2C4AE3C1"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "CustomRoleDefaultPolicyC5C189DF",
+        "Roles": [
+          {
+            "Ref": "CustomRole6D8E6809"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "snsTopicArn": {
+      "Description": "The arn of the SNS topic",
+      "Value": {
+        "Ref": "snstopic2C4AE3C1"
+      }
+    }
+  }
+}

@@ -38,6 +38,10 @@ export async function run(context: $TSContext) {
       name: 'remove',
       description: `Removes ${categoryName} resource from your local backend. The resource is removed from the cloud on the next push command.`,
     },
+    {
+      name: 'override',
+      description: `Generates 'overrides.ts' for ${categoryName} resource in your local backend. The resource properties can be overridden by editing this file. The resource is overridden in the cloud on the next push command. `,
+    },
   ];
 
   context.amplify.showHelp(header, commands);

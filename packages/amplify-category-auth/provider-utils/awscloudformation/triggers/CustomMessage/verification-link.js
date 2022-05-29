@@ -1,3 +1,6 @@
+/**
+ * @type {import('@types/aws-lambda').CustomMessageTriggerHandler}
+ */
 exports.handler = async event => {
   // Define the URL that you want the user to be directed to after verification is complete
   if (event.triggerSource === 'CustomMessage_SignUp') {
@@ -18,7 +21,7 @@ exports.handler = async event => {
       'sa-east-1',
     ];
 
-    const seperator = hyphenRegions.includes(region) ? '-' : '.';
+    const separator = hyphenRegions.includes(region) ? '-' : '.';
 
     const payload = Buffer.from(
       JSON.stringify({
@@ -28,7 +31,7 @@ exports.handler = async event => {
         clientId,
       }),
     ).toString('base64');
-    const bucketUrl = `http://${resourcePrefix}verificationbucket-${process.env.ENV}.s3-website${seperator}${region}.amazonaws.com`;
+    const bucketUrl = `http://${resourcePrefix}verificationbucket-${process.env.ENV}.s3-website${separator}${region}.amazonaws.com`;
     const url = `${bucketUrl}/?data=${payload}&code=${codeParameter}`;
     const message = `${process.env.EMAILMESSAGE}. \n ${url}`;
     event.response.smsMessage = message;

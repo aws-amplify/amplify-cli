@@ -200,6 +200,8 @@ module.exports = function (Velocity, utils) {
           _from,
           function (val, i) {
             if (this._state.break) {
+              // reset break after breaking the loop
+              this._state.break = false;
               return;
             }
             // 构造临时变量
@@ -222,6 +224,8 @@ module.exports = function (Velocity, utils) {
           utils.keys(_from),
           function (key, i) {
             if (this._state.break) {
+              // reset break after breaking the loop
+              this._state.break = false;
               return;
             }
             local[_to] = _from[key];

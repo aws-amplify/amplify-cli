@@ -37,6 +37,7 @@ export async function templateWalkthrough(context: $TSContext, params: Partial<F
     selectionPrompt: 'Choose the function template that you want to use:',
     notFoundMessage: `No ${params.runtime.name} ${params.providerContext.service} templates found`,
     service,
+    defaultSelection: params.template,
   };
   const selections = await getSelectionsFromContributors<FunctionTemplateCondition>(context, selectionOptions);
   const selection = selections[0];
@@ -76,6 +77,7 @@ export async function runtimeWalkthrough(
     notFoundMessage: `No runtimes found for provider ${params.providerContext.provider} and service ${params.providerContext.service}`,
     service,
     runtimeState: runtimeLayers,
+    defaultSelection: params.defaultRuntime,
   };
   // runtime selections
   const selections = await getSelectionsFromContributors<FunctionRuntimeCondition>(context, selectionOptions);
@@ -165,6 +167,8 @@ async function getSelectionsFromContributors<T>(
     }
     context.print.info(singleOptionMsg);
     selection = selections[0].value;
+  } else if (isDefaultDefined(selectionOptions)) {
+    selection = selectionOptions.defaultSelection;
   } else {
     // ask which template to use
     let answer = await inquirer.prompt([
@@ -190,6 +194,11 @@ async function getSelectionsFromContributors<T>(
       pluginId: selectionMap.get(s).pluginId,
     };
   });
+}
+
+function isDefaultDefined(selectionOptions: PluginSelectionOptions<FunctionRuntimeCondition>) {
+  return selectionOptions.defaultSelection &&
+    (selectionOptions.pluginType == 'functionTemplate' || selectionOptions.pluginType == 'functionRuntime');
 }
 
 export async function loadPluginFromFactory(pluginPath: string, expectedFactoryFunction: string, context: $TSContext): Promise<$TSAny> {
@@ -226,6 +235,7 @@ interface PluginSelectionOptions<T extends FunctionRuntimeCondition | FunctionTe
   selectionPrompt: string;
   service: string;
   runtimeState?: string[];
+  defaultSelection?: string;
 }
 
 interface PluginSelection {

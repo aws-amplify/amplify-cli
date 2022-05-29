@@ -1,4 +1,6 @@
-import { $TSAny, $TSContext, pathManager, stateManager } from 'amplify-cli-core';
+import {
+  $TSAny, $TSContext, pathManager, stateManager,
+} from 'amplify-cli-core';
 import { BuildType, FunctionBreadcrumbs, FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
 import _ from 'lodash';
 import * as path from 'path';
@@ -7,8 +9,11 @@ import { categoryName } from './constants';
 import { postEnvRemoveHandler } from './events/postEnvRemoveHandler';
 import { postPushHandler } from './events/postPushHandler';
 import { prePushHandler } from './events/prePushHandler';
+// eslint-disable-next-line import/no-cycle
 import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
 import { cloneSecretsOnEnvInitHandler } from './provider-utils/awscloudformation/secrets/cloneSecretsOnEnvInitHandler';
+import { getLocalFunctionSecretNames } from './provider-utils/awscloudformation/secrets/functionSecretsStateManager';
+import { getAppId, secretsPathAmplifyAppIdKey } from './provider-utils/awscloudformation/secrets/secretName';
 import { buildFunction, buildTypeKeyMap } from './provider-utils/awscloudformation/utils/buildFunction';
 import { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 import { askEnvironmentVariableCarryOut } from './provider-utils/awscloudformation/utils/environmentVariablesHelper';
@@ -17,7 +22,9 @@ import {
   deleteLayerVersionsToBeRemovedByCfn,
 } from './provider-utils/awscloudformation/utils/layerConfiguration';
 import { checkContentChanges } from './provider-utils/awscloudformation/utils/packageLayer';
+// eslint-disable-next-line import/no-cycle
 import { supportedServices } from './provider-utils/supported-services';
+
 export { categoryName as category } from './constants';
 export { askExecRolePermissionsQuestions } from './provider-utils/awscloudformation/service-walkthroughs/execPermissionsWalkthrough';
 export { buildResource } from './provider-utils/awscloudformation/utils/build';
@@ -27,42 +34,61 @@ export { lambdasWithApiDependency } from './provider-utils/awscloudformation/uti
 export { hashLayerResource } from './provider-utils/awscloudformation/utils/layerHelpers';
 export { migrateLegacyLayer } from './provider-utils/awscloudformation/utils/layerMigrationUtils';
 export { packageResource } from './provider-utils/awscloudformation/utils/package';
-export { updateDependentFunctionsCfn } from './provider-utils/awscloudformation/utils/updateDependentFunctionCfn';
+export {
+  updateDependentFunctionsCfn,
+  addAppSyncInvokeMethodPermission,
+} from './provider-utils/awscloudformation/utils/updateDependentFunctionCfn';
+export { loadFunctionParameters } from './provider-utils/awscloudformation/utils/loadFunctionParameters';
 
-export async function add(context, providerName, service, parameters) {
+/**
+ * Entry point for adding function resource
+ */
+export const add = async (context, providerName, service, parameters): Promise<string> => {
   const options = {
     service,
     providerPlugin: providerName,
     build: true,
   };
+  // eslint-disable-next-line
   const providerController = require(`./provider-utils/${providerName}/index`);
   if (!providerController) {
     context.print.error('Provider not configured for this category');
-    return;
+    return undefined;
   }
   return providerController.addResource(context, categoryName, service, options, parameters);
-}
+};
 
-export async function update(context, providerName, service, parameters, resourceToUpdate) {
+/**
+ * Entry point for updating function resource
+ */
+export const update = async (context, providerName, service, parameters, resourceToUpdate): Promise<$TSAny> => {
+  // eslint-disable-next-line
   const providerController = require(`./provider-utils/${providerName}/index`);
   if (!providerController) {
     context.print.error('Provider not configured for this category');
-    return;
+    return undefined;
   }
   return providerController.updateResource(context, categoryName, service, parameters, resourceToUpdate);
-}
+};
 
-export async function console(context) {
+/**
+ * Not implemented
+ */
+export const console = async (context: $TSContext): Promise<void> => {
   context.print.info(`to be implemented: ${categoryName} console`);
-}
+};
 
-export async function migrate(context) {
+/**
+ * Migrate from original function config
+ */
+export const migrate = async (context: $TSContext): Promise<void> => {
   const { projectPath, amplifyMeta } = context.migrationInfo;
   const migrateResourcePromises = [];
   Object.keys(amplifyMeta).forEach(category => {
     if (category === categoryName) {
       Object.keys(amplifyMeta[category]).forEach(resourceName => {
         try {
+          // eslint-disable-next-line
           const providerController = require(`./provider-utils/${amplifyMeta[category][resourceName].providerPlugin}/index`);
           if (providerController) {
             migrateResourcePromises.push(
@@ -80,9 +106,15 @@ export async function migrate(context) {
   });
 
   await Promise.all(migrateResourcePromises);
-}
+};
 
-export async function getPermissionPolicies(context, resourceOpsMapping) {
+/**
+ * Get permissions for depending on functions
+ */
+export const getPermissionPolicies = async (
+  context: $TSContext,
+  resourceOpsMapping: $TSAny,
+): Promise<{ permissionPolicies: $TSAny[]; resourceAttributes: $TSAny[]; }> => {
   const amplifyMeta = context.amplify.getProjectMeta();
   const permissionPolicies = [];
   const resourceAttributes = [];
@@ -91,6 +123,7 @@ export async function getPermissionPolicies(context, resourceOpsMapping) {
     try {
       const providerName = amplifyMeta[categoryName][resourceName].providerPlugin;
       if (providerName) {
+        // eslint-disable-next-line
         const providerController = require(`./provider-utils/${providerName}/index`);
         const { policy, attributes } = providerController.getPermissionPolicies(
           context,
@@ -109,15 +142,20 @@ export async function getPermissionPolicies(context, resourceOpsMapping) {
     }
   });
   return { permissionPolicies, resourceAttributes };
-}
+};
 
-export async function initEnv(context) {
+/**
+ * Initialize new environment with function
+ */
+export const initEnv = async (context: $TSContext): Promise<void> => {
   const { amplify } = context;
   const { envName } = amplify.getEnvInfo();
-  const { allResources, resourcesToBeCreated, resourcesToBeDeleted, resourcesToBeUpdated } = await amplify.getResourceStatus(categoryName);
+  const {
+    allResources, resourcesToBeCreated, resourcesToBeDeleted, resourcesToBeUpdated,
+  } = await amplify.getResourceStatus(categoryName);
 
   // getResourceStatus will add dependencies of other types even when filtering by category, so we need to filter them out here
-  const resourceCategoryFilter = resource => resource.category === categoryName;
+  const resourceCategoryFilter = (resource: {category: string}): boolean => resource.category === categoryName;
 
   resourcesToBeDeleted.filter(resourceCategoryFilter).forEach(functionResource => {
     amplify.removeResourceParameters(context, categoryName, functionResource.resourceName);
@@ -136,7 +174,7 @@ export async function initEnv(context) {
   const isNewEnv = context.exeInfo?.isNewEnv;
 
   // Need to fetch metadata from #current-cloud-backend, since amplifyMeta
-  // gets regenerated in intialize-env.ts in the amplify-cli package
+  // gets regenerated in initialize-env.ts in the amplify-cli package
   const projectPath = pathManager.findProjectRoot();
   const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
   const currentAmplifyMeta = stateManager.getCurrentMeta(projectPath);
@@ -154,6 +192,11 @@ export async function initEnv(context) {
         _.assign(tpiResourceParams, s3Bucket);
         _.set(teamProviderInfo, [envName, 'categories', categoryName, resourceName], tpiResourceParams);
         _.set(amplifyMeta, [categoryName, resourceName, 's3Bucket'], s3Bucket);
+      }
+
+      // if the function has secrets, set the appId key in team-provider-info
+      if (getLocalFunctionSecretNames(resourceName, { fromCurrentCloudBackend: true }).length > 0) {
+        _.set(teamProviderInfo, [envName, 'categories', categoryName, resourceName, secretsPathAmplifyAppIdKey], getAppId());
       }
     });
   resourcesToBeCreated.forEach(resource => {
@@ -178,38 +221,48 @@ export async function initEnv(context) {
     await askEnvironmentVariableCarryOut(context, sourceEnv, context.exeInfo.localEnvInfo.projectPath, yesFlagSet);
     await cloneSecretsOnEnvInitHandler(context, sourceEnv, envName);
   }
-}
+};
 
-// Returns a wrapper around FunctionRuntimeLifecycleManager.invoke() that can be used to invoke the function with only an event
-export async function getInvoker(
+/**
+ * Returns a wrapper around FunctionRuntimeLifecycleManager.invoke() that can be used to invoke the function with only an event
+ */
+export const getInvoker = async (
   context: $TSContext,
   { handler, resourceName, envVars }: InvokerParameters,
-): Promise<({ event: unknown }) => Promise<$TSAny>> {
+): Promise<({ event: unknown }
+) => Promise<$TSAny>> => {
   const resourcePath = path.join(pathManager.getBackendDirPath(), categoryName, resourceName);
   const { pluginId, functionRuntime }: FunctionBreadcrumbs = context.amplify.readBreadcrumbs(categoryName, resourceName);
   const runtimeManager: FunctionRuntimeLifecycleManager = await context.amplify.loadRuntimePlugin(context, pluginId);
 
-  return ({ event }) =>
-    runtimeManager.invoke({
-      handler: handler,
-      event: JSON.stringify(event),
-      runtime: functionRuntime,
-      srcRoot: resourcePath,
-      envVars: envVars,
-    });
-}
+  return ({ event }) => runtimeManager.invoke({
+    handler,
+    event: JSON.stringify(event),
+    runtime: functionRuntime,
+    srcRoot: resourcePath,
+    envVars,
+  });
+};
 
-export function getBuilder(context: $TSContext, resourceName: string, buildType: BuildType): () => Promise<void> {
+/**
+ * Returns a function that can build the lambda function
+ */
+export const getBuilder = (context: $TSContext, resourceName: string, buildType: BuildType): () => Promise<void> => {
   const meta = stateManager.getMeta();
   const lastBuildTimestamp = _.get(meta, [categoryName, resourceName, buildTypeKeyMap[buildType]]);
   const lastBuildType = _.get(meta, [categoryName, resourceName, 'lastBuildType']);
 
   return async () => {
-    await buildFunction(context, { resourceName, buildType, lastBuildTimestamp, lastBuildType });
+    await buildFunction(context, {
+      resourceName, buildType, lastBuildTimestamp, lastBuildType,
+    });
   };
-}
+};
 
-export function isMockable(context: any, resourceName: string): IsMockableResponse {
+/**
+ * Whether or not this function can be mocked
+ */
+export const isMockable = (context: $TSContext, resourceName: string): IsMockableResponse => {
   const resourceValue = _.get(context.amplify.getProjectMeta(), [categoryName, resourceName]);
   if (!resourceValue) {
     return {
@@ -221,9 +274,9 @@ export function isMockable(context: any, resourceName: string): IsMockableRespon
 
   const dependsOnLayers = Array.isArray(dependsOn)
     ? dependsOn
-        .filter(dependency => dependency.category === categoryName)
-        .map(val => _.get(context.amplify.getProjectMeta(), [val.category, val.resourceName]))
-        .filter(val => val.service === ServiceName.LambdaLayer)
+      .filter(dependency => dependency.category === categoryName)
+      .map(val => _.get(context.amplify.getProjectMeta(), [val.category, val.resourceName]))
+      .filter(val => val.service === ServiceName.LambdaLayer)
     : [];
 
   const hasLayer = service === ServiceName.LambdaFunction && Array.isArray(dependsOnLayers) && dependsOnLayers.length !== 0;
@@ -231,15 +284,18 @@ export function isMockable(context: any, resourceName: string): IsMockableRespon
     return {
       isMockable: false,
       reason:
-        'Mocking a function with layers is not supported. ' +
-        'To test in the cloud: run "amplify push" to deploy your function to the cloud ' +
-        'and then run "amplify console function" to test your function in the Lambda console.',
+        'Mocking a function with layers is not supported. '
+        + 'To test in the cloud: run "amplify push" to deploy your function to the cloud '
+        + 'and then run "amplify console function" to test your function in the Lambda console.',
     };
   }
   return supportedServices[service].providerController.isMockable(service);
-}
+};
 
-export async function executeAmplifyCommand(context) {
+/**
+ * Main entry point for function subcommand
+ */
+export const executeAmplifyCommand = async (context: $TSContext): Promise<void> => {
   let commandPath = path.normalize(path.join(__dirname, 'commands'));
   if (context.input.command === 'help') {
     commandPath = path.join(commandPath, categoryName);
@@ -247,11 +303,15 @@ export async function executeAmplifyCommand(context) {
     commandPath = path.join(commandPath, categoryName, context.input.command);
   }
 
+  // eslint-disable-next-line
   const commandModule = require(commandPath);
   await commandModule.run(context);
-}
+};
 
-export async function handleAmplifyEvent(context: $TSContext, args: $TSAny) {
+/**
+ * Main entry point for handling lifecycle events
+ */
+export const handleAmplifyEvent = async (context: $TSContext, args: $TSAny): Promise<void> => {
   switch (args.event) {
     case 'PrePush':
       await prePushHandler(context);
@@ -262,33 +322,46 @@ export async function handleAmplifyEvent(context: $TSContext, args: $TSAny) {
     case 'InternalOnlyPostEnvRemove':
       await postEnvRemoveHandler(context, args?.data?.envName);
       break;
+    default:
+      // other event handlers not implemented
   }
-}
+};
 
-export async function lambdaLayerPrompt(context: $TSContext, resources: Array<$TSAny>): Promise<void> {
+/**
+ * Prompt for lambda layers
+ */
+export const lambdaLayerPrompt = async (context: $TSContext, resources: $TSAny[]): Promise<void> => {
   const lambdaLayerResource = getLambdaLayerResources(resources);
   await checkContentChanges(context, lambdaLayerResource);
-}
+};
 
-function getLambdaLayerResources(resources: Array<$TSAny>) {
-  return resources.filter(r => r.service === ServiceName.LambdaLayer && r.category === categoryName);
-}
+const getLambdaLayerResources = (resources: $TSAny[]): $TSAny[] => resources
+  .filter(r => r.service === ServiceName.LambdaLayer && r.category === categoryName);
 
-export async function postPushCleanup(resource: Array<$TSAny>, envName: string): Promise<void> {
+/**
+ * Lambda layer cleanup
+ */
+export const postPushCleanup = async (resource: $TSAny[], envName: string): Promise<void> => {
   const lambdaLayerResource = getLambdaLayerResources(resource);
-  lambdaLayerResource.forEach(resource => {
-    deleteLayerVersionsToBeRemovedByCfn(resource.resourceName, envName);
-    deleteLayerVersionPermissionsToBeUpdatedInCfn(resource.resourceName, envName);
+  lambdaLayerResource.forEach(llResource => {
+    deleteLayerVersionsToBeRemovedByCfn(llResource.resourceName, envName);
+    deleteLayerVersionPermissionsToBeUpdatedInCfn(llResource.resourceName, envName);
   });
-}
+};
 
 // Object used for internal invocation of lambda functions
+/**
+ * Input to the function invoker
+ */
 export type InvokerParameters = {
   resourceName: string;
   handler: string;
   envVars?: { [key: string]: string };
 };
 
+/**
+ * Response from isMockable
+ */
 export interface IsMockableResponse {
   isMockable: boolean;
   reason?: string;

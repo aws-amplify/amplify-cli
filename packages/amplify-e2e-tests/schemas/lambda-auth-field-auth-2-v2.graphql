@@ -1,0 +1,12 @@
+type Note @model
+  @auth(rules: [
+    { allow: custom }, 
+    { allow: public, provider: iam}
+  ]) {
+  noteId: String! @primaryKey
+  note: String
+    @auth(rules: [
+      { allow: public, provider: iam },
+      { allow: custom, operations: [ read ]}
+    ])
+}

@@ -1,18 +1,12 @@
 {
-    "name": "awscloudformation",
-    "aliases": ["awscfn", "aws"],
-    "type": "provider",
-    "commands": [
-        "configure",
-        "console",
-        "reset-cache",
-        "setupNewUser",
-        "help"
-    ],
-    "commandAliases":{
-        "resetCache": "reset-cache",
-        "setup-new-user": "setupNewUser",
-        "newUser": "setupNewUser",
-        "new-user": "setupNewUser"
-    }
+  "name": "awscloudformation",
+  "aliases": ["awscfn", "aws", "root"],
+  "type": "provider",
+  "commands": ["configure", "console", "reset-cache", "setupNewUser", "help", "override"],
+  "commandAliases": {
+    "resetCache": "reset-cache",
+    "setup-new-user": "setupNewUser",
+    "newUser": "setupNewUser",
+    "new-user": "setupNewUser"
+  }
 }

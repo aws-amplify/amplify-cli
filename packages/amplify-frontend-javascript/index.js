@@ -7,7 +7,7 @@ const configManager = require('./lib/configuration-manager');
 const server = require('./lib/server');
 const publisher = require('./lib/publisher');
 const constants = require('./lib/constants');
-const { createAWSExports, deleteAmplifyConfig } = require('./lib/frontend-config-creator');
+const { createAWSExports, getAWSExports, deleteAmplifyConfig, generateAwsExportsAtPath } = require('./lib/frontend-config-creator');
 
 const pluginName = 'javascript';
 
@@ -23,6 +23,21 @@ function init(context) {
 
 function onInitSuccessful(context) {
   return initializer.onInitSuccessful(context);
+}
+
+/**
+ * This function enables export to write these files to an external path
+ * @param {TSContext} context
+ * @param {metaWithOutput} amplifyResources
+ * @param {cloudMetaWithOuput} amplifyCloudResources
+ * @param {string} exportPath path to where the files need to be written
+ */
+async function createFrontendConfigsAtPath(context, amplifyResources, amplifyCloudResources, exportPath) {
+  const newOutputsForFrontend = amplifyResources.outputsForFrontend;
+  const cloudOutputsForFrontend = amplifyCloudResources.outputsForFrontend;
+
+  const amplifyConfig = await getAWSExports(context, newOutputsForFrontend, cloudOutputsForFrontend);
+  generateAwsExportsAtPath(context, path.join(exportPath, constants.exportsFilename), amplifyConfig);
 }
 
 async function createFrontendConfigs(context, amplifyResources, amplifyCloudResources) {
@@ -87,6 +102,7 @@ module.exports = {
   publish,
   run,
   createFrontendConfigs,
+  createFrontendConfigsAtPath,
   initializeAwsExports,
   executeAmplifyCommand,
   handleAmplifyEvent,

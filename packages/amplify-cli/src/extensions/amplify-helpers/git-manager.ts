@@ -53,7 +53,6 @@ function getGitIgnoreAppendString() {
     `amplify/${LocalLogDirectory}`,
     'amplify/mock-data',
     'amplify/backend/amplify-meta.json',
-    'amplify/backend/awscloudformation',
     'amplify/backend/.temp',
     'build/',
     'dist/',
@@ -66,6 +65,7 @@ function getGitIgnoreAppendString() {
     'amplify-gradle-config.json',
     'amplifytools.xcconfig',
     '.secret-*',
+    '**.sample',
   ];
 
   const toAppend = `${os.EOL + os.EOL + amplifyMark + os.EOL}${ignoreList.join(os.EOL)}${os.EOL + amplifyEndMark + os.EOL}`;

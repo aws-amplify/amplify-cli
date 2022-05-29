@@ -1,9 +1,7 @@
-import * as path from 'path';
 import { Context } from '../domain/context';
-import { JSONUtilities, $TSAny } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
+import { getAmplifyVersion } from '../extensions/amplify-helpers/get-amplify-version';
 
 export const run = (context: Context) => {
-  const pkg = JSONUtilities.readJson<$TSAny>(path.join(__dirname, '..', '..', 'package.json'));
-
-  context.print.info(pkg.version);
+  printer.info(getAmplifyVersion());
 };

@@ -685,8 +685,8 @@ export const query16 = `
 ## 16. Get total product inventory:
 #How this would be done depends on the use case. If one just wants a list of all inventories in all warehouses, one could just run a list inventories on the Inventory model:
 
-query listInventories {
-  listInventories {
+query listInventorys {
+  listInventorys {
     items {
       productID
       warehouseID
@@ -696,7 +696,7 @@ query listInventories {
 }`;
 export const expected_result_query16 = {
   data: {
-    listInventories: {
+    listInventorys: {
       items: [
         {
           productID: 'yeezyboost',

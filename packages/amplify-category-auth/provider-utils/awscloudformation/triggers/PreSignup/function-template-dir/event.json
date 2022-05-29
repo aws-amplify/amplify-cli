@@ -1,8 +1,8 @@
 {
-    "request": {
-      "userAttributes": {
-        "email": "testEmail@domain.com"
-      }
-    },
-    "response": {}
+  "request": {
+    "userAttributes": {
+      "email": "testEmail@domain.com"
+    }
+  },
+  "response": {}
 }

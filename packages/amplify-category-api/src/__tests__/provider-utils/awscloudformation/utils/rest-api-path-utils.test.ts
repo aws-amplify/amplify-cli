@@ -4,7 +4,7 @@ import {
   formatCFNPathParamsForExpressJs,
 } from '../../../../provider-utils/awscloudformation/utils/rest-api-path-utils';
 
-const stubOtherPaths = [{ name: '/other/path' }, { name: '/sub/path' }, { name: '/path/{with}/{params}' }];
+const stubOtherPaths = ['/other/path', '/sub/path', '/path/{with}/{params}'];
 
 test('validatePathName_validPath', () => {
   expect(validatePathName('/some/path')).toBe(true);
@@ -56,9 +56,9 @@ test('checkForPathOverlap_subPathParamsNoMatch', () => {
 });
 
 test('checkForPathOverlap_pathMatch', () => {
-  expect(checkForPathOverlap(stubOtherPaths[0].name, stubOtherPaths)).toEqual({
-    higherOrderPath: stubOtherPaths[0].name,
-    lowerOrderPath: stubOtherPaths[0].name,
+  expect(checkForPathOverlap(stubOtherPaths[0], stubOtherPaths)).toEqual({
+    higherOrderPath: stubOtherPaths[0],
+    lowerOrderPath: stubOtherPaths[0],
   });
 });
 

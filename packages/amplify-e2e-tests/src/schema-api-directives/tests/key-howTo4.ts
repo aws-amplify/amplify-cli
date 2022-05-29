@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { addApiWithSchemaAndConflictDetection, amplifyPush } from 'amplify-e2e-core';
+import { addApiWithBlankSchemaAndConflictDetection, amplifyPush, updateApiSchema } from 'amplify-e2e-core';
 import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../authHelper';
 import { testQueries, testMutations } from '../common';
 
@@ -8,7 +8,7 @@ export const schemaName = 'selective_sync.graphql';
 export const schema = `
 type Comment @model
 @key(name: "byUsername", fields: ["username", "createdAt"], queryField: "commentsByUsername")
-@key(name: "byeditor", fields: ["editor", "createdAt"], queryField: "commentsByeditors")  
+@key(name: "byeditor", fields: ["editor", "createdAt"], queryField: "commentsByeditors")
 {
   id: ID!
   content: String
@@ -269,8 +269,9 @@ export const expected_result_query5 = {
   },
 };
 
-export async function runTest(projectDir: string, testModule: any) {
-  await addApiWithSchemaAndConflictDetection(projectDir, testModule.schemaName);
+export async function runTest(projectDir: string, testModule: any, appName: string) {
+  await addApiWithBlankSchemaAndConflictDetection(projectDir, { transformerVersion: 1 });
+  await updateApiSchema(projectDir, appName, testModule.schemaName);
   await amplifyPush(projectDir);
 
   const awsconfig = configureAmplify(projectDir);

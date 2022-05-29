@@ -10,7 +10,7 @@ export const invokePluginMethod = async <T>(
   const pluginInfo = context.amplify.getCategoryPluginInfo(context, category, service);
 
   if (!pluginInfo) {
-    throw new Error(`Plugin for category: ${category} was not found. Make sure Amplify CLI is properly installed.`);
+    throw new Error(`Plugin for category: ${category} was not found. Make sure Amplify CLI is properly installed (do you need to run \`amplify plugin scan\`?).`);
   }
 
   const plugin: Record<string, any> = await import(pluginInfo.packageLocation);

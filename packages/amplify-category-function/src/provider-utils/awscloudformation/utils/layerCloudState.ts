@@ -1,17 +1,21 @@
 import { $TSContext, exitOnNextTick } from 'amplify-cli-core';
 import ora from 'ora';
 import { LayerCfnLogicalNamePrefix } from './constants';
+// eslint-disable-next-line import/no-cycle
 import { isMultiEnvLayer } from './layerHelpers';
 import { LegacyPermissionEnum } from './layerMigrationUtils';
 import { LayerVersionMetadata, PermissionEnum } from './layerParams';
 
+// eslint-disable-next-line jsdoc/require-jsdoc
 export class LayerCloudState {
   private static instances: Record<string, LayerCloudState> = {};
   private layerVersionsMetadata: LayerVersionMetadata[];
   public latestVersionLogicalId: string;
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor() {}
 
+  // eslint-disable-next-line jsdoc/require-jsdoc
   static getInstance(layerName: string): LayerCloudState {
     if (!LayerCloudState.instances[layerName]) {
       LayerCloudState.instances[layerName] = new LayerCloudState();
@@ -28,7 +32,10 @@ export class LayerCloudState {
       const layerVersionList = await lambdaClient.listLayerVersions(isMultiEnvLayer(layerName) ? `${layerName}-${envName}` : layerName);
       const cfnClient = await providerPlugin.getCloudFormationSdk(context);
       const stackList = await cfnClient.listStackResources();
-      const layerStacks = stackList?.StackResourceSummaries?.filter(stack => stack.LogicalResourceId.includes(layerName));
+      const layerStacks = stackList?.StackResourceSummaries?.filter(
+        // do this because cdk does some rearranging of resources
+        stack => stack.LogicalResourceId.includes(layerName) && stack.ResourceType === 'AWS::CloudFormation::Stack',
+      );
       let detailedLayerStack;
 
       if (layerStacks?.length > 0) {
@@ -42,6 +49,7 @@ export class LayerCloudState {
         let layerLogicalIdSuffix: string;
         detailedLayerStack.forEach(stack => {
           if (stack.ResourceType === 'AWS::Lambda::LayerVersion' && stack.PhysicalResourceId === layerVersion.LayerVersionArn) {
+            // eslint-disable-next-line no-param-reassign
             layerVersion.LogicalName = stack.LogicalResourceId;
             layerLogicalIdSuffix = stack.LogicalResourceId.replace(LayerCfnLogicalNamePrefix.LambdaLayerVersion, '');
           }
@@ -49,9 +57,10 @@ export class LayerCloudState {
 
         detailedLayerStack.forEach(stack => {
           if (
-            stack.ResourceType === 'AWS::Lambda::LayerVersionPermission' &&
-            stack.PhysicalResourceId.split('#')[0] === layerVersion.LayerVersionArn
+            stack.ResourceType === 'AWS::Lambda::LayerVersionPermission'
+            && stack.PhysicalResourceId.split('#')[0] === layerVersion.LayerVersionArn
           ) {
+            // eslint-disable-next-line no-param-reassign
             layerVersion.permissions = layerVersion.permissions || [];
 
             const permissionTypeString = stack.LogicalResourceId.replace(
@@ -87,15 +96,18 @@ export class LayerCloudState {
             if (orgIds.length > 0) {
               layerVersion.permissions.push({
                 type: PermissionEnum.AwsOrg,
+                // eslint-disable-next-line spellcheck/spell-checker
                 orgs: orgIds,
               });
             }
           }
         });
 
+        // eslint-disable-next-line no-param-reassign
         layerVersion.legacyLayer = layerVersion.LogicalName === undefined || layerVersion.LogicalName === 'LambdaLayer';
       });
       this.layerVersionsMetadata = layerVersionList.sort((a: LayerVersionMetadata, b: LayerVersionMetadata) => b.Version - a.Version);
+      this.latestVersionLogicalId = this.layerVersionsMetadata[0].LogicalName;
     } catch (e) {
       spinner.fail();
       const errMessage = `An error occurred fetching the latest layer version metadata for "${layerName}": ${e.message || e}`;
@@ -107,6 +119,7 @@ export class LayerCloudState {
     return this.layerVersionsMetadata;
   }
 
+  // eslint-disable-next-line jsdoc/require-jsdoc
   public async getLayerVersionsFromCloud(context: $TSContext, layerName: string): Promise<LayerVersionMetadata[]> {
     return this.layerVersionsMetadata || this.loadLayerDataFromCloud(context, layerName);
   }

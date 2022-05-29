@@ -1,6 +1,8 @@
 import {
   $TSAny,
   $TSContext,
+  AmplifyCategories,
+  AmplifySupportedService,
   JSONUtilities,
   open,
   PathConstants,
@@ -30,6 +32,7 @@ import {
   saveMutableState,
   updateLayerArtifacts,
 } from './utils/storeResources';
+import { createDefaultCustomPoliciesFile } from 'amplify-cli-core';
 
 /**
  * Entry point for creating a new function
@@ -112,11 +115,18 @@ export async function addFunctionResource(
 
   await createFunctionResources(context, completeParams);
 
+  createDefaultCustomPoliciesFile(category, completeParams.resourceName);
+
   if (!completeParams.skipEdit) {
     await openEditor(context, category, completeParams.resourceName, completeParams.functionTemplate);
   }
 
+  if (completeParams.skipNextSteps) {
+    return completeParams.resourceName;
+  }
   const { print } = context;
+
+  const customPoliciesPath = pathManager.getCustomPoliciesPath(category, completeParams.resourceName);
 
   print.success(`Successfully added resource ${completeParams.resourceName} locally.`);
   print.info('');
@@ -124,10 +134,12 @@ export async function addFunctionResource(
   print.info(`Check out sample function code generated in <project-dir>/amplify/backend/function/${completeParams.resourceName}/src`);
   print.info('"amplify function build" builds all of your functions currently in the project');
   print.info('"amplify mock function <functionName>" runs your function locally');
+  print.info(`To access AWS resources outside of this Amplify app, edit the ${customPoliciesPath}`);
   print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
   print.info(
     '"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud',
   );
+
   return completeParams.resourceName;
 }
 
@@ -405,7 +417,7 @@ export async function updateConfigOnEnvInit(context: $TSContext, resourceName: s
       }
 
       const currentCfnTemplatePath = pathManager.getCurrentCfnTemplatePath(projectPath, categoryName, resourceName);
-      const { cfnTemplate: currentCfnTemplate } = (await readCFNTemplate(currentCfnTemplatePath, { throwIfNotExist: false })) || {};
+      const { cfnTemplate: currentCfnTemplate } = readCFNTemplate(currentCfnTemplatePath, { throwIfNotExist: false }) || {};
       if (currentCfnTemplate !== undefined) {
         await writeCFNTemplate(currentCfnTemplate, pathManager.getResourceCfnTemplatePath(projectPath, categoryName, resourceName));
       }
@@ -421,7 +433,14 @@ async function initTriggerEnvs(context, resourceParams, providerPlugin, envParam
     const currentTrigger = resourceParams.resourceName.replace(parentResourceParams.resourceName, '');
     if (currentTrigger && currentTrigger !== resourceParams.resourceName) {
       const currentEnvVariables = context.amplify.loadEnvResourceParameters(context, categoryName, resourceParams.resourceName);
-      const triggerPath = `${__dirname}/../../../../amplify-category-${resourceParams.parentStack}/provider-utils/${srvcMetaData.provider}/triggers/${currentTrigger}`;
+      const categoryPlugin = context.amplify.getCategoryPluginInfo(context, resourceParams.parentStack);
+      const triggerPath = path.join(
+        categoryPlugin.packageLocation,
+        'provider-utils',
+        `${srvcMetaData.provider}`,
+        'triggers',
+        `${currentTrigger}`,
+      );
       const isEnvCommand = context.input.command === 'env';
 
       if (!isEnvCommand) {

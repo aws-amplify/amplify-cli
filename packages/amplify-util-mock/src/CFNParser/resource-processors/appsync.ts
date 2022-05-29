@@ -34,7 +34,7 @@ export function dynamoDBResourceHandler(resourceName, resource, cfnContext: Clou
 
 export type AppSyncDataSourceProcessedResource = CloudFormationProcessedResourceResult & {
   name: string;
-  type: 'AMAZON_DYNAMODB' | 'AWS_LAMBDA' | 'NONE';
+  type: 'AMAZON_DYNAMODB' | 'AWS_LAMBDA' | 'AMAZON_ELASTICSEARCH' | 'NONE';
   LambdaFunctionArn?: string;
   config?: {
     tableName: string;
@@ -45,7 +45,7 @@ export function appSyncDataSourceHandler(
   resource,
   cfnContext: CloudFormationParseContext,
 ): AppSyncDataSourceProcessedResource {
-  const tableName = resource.Properties.Name;
+  const tableName = resource.Properties?.DynamoDBConfig?.TableName?.Ref || resource.Properties.Name;
   const typeName = resource.Properties.Type;
   const commonProps = {
     cfnExposedAttributes: { DataSourceArn: 'Arn', Name: 'name' },
@@ -76,6 +76,16 @@ export function appSyncDataSourceHandler(
       type: 'AWS_LAMBDA',
       name: resource.Properties.Name,
       LambdaFunctionArn: lambdaArn,
+    };
+  }
+
+  if (typeName === 'AMAZON_ELASTICSEARCH') {
+    console.log(`@searchable mocking is not supported. Search queries will not work as expected.`);
+
+    return {
+      ...commonProps,
+      type: 'AMAZON_ELASTICSEARCH',
+      name: resource.Properties.Name,
     };
   }
 
@@ -244,7 +254,7 @@ export function appSyncFunctionHandler(resourceName, resource, cfnContext: Cloud
   const dataSourceName = parseValue(properties.DataSourceName, cfnContext);
   return {
     ref: `arn:aws:appsync:us-east-1:123456789012:apis/graphqlapiid/functions/${resource.Properties.Name}`,
-    cfnExposedAttributes: { DataSourceName: 'dataSourceName', FunctionArn: 'Ref', FunctionId: 'name', Name: 'name' },
+    cfnExposedAttributes: { DataSourceName: 'dataSourceName', FunctionArn: 'ref', FunctionId: 'name', Name: 'name' },
     name: resource.Properties.Name,
     dataSourceName,
     requestMappingTemplateLocation: requestMappingTemplateLocation,

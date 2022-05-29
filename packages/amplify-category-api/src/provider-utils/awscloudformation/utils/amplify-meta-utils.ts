@@ -1,6 +1,7 @@
+import { $TSAny, $TSMeta, $TSObject, AmplifyCategories, AmplifySupportedService, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
 
-export const authConfigHasApiKey = authConfig => {
+export const authConfigHasApiKey = (authConfig?: $TSAny) => {
   if (!authConfig) {
     return false;
   }
@@ -13,12 +14,11 @@ export const authConfigHasApiKey = authConfig => {
   );
 };
 
-export const checkIfAuthExists = context => {
-  const { amplify } = context;
-  const { amplifyMeta } = amplify.getProjectDetails();
+export const checkIfAuthExists = () => {
+  const amplifyMeta = stateManager.getMeta();
   let authResourceName;
-  const authServiceName = 'Cognito';
-  const authCategoryName = 'auth';
+  const authServiceName = AmplifySupportedService.COGNITO;
+  const authCategoryName = AmplifyCategories.AUTH;
 
   if (amplifyMeta[authCategoryName] && Object.keys(amplifyMeta[authCategoryName]).length > 0) {
     const categoryResources = amplifyMeta[authCategoryName];
@@ -34,15 +34,15 @@ export const checkIfAuthExists = context => {
 
 // some utility functions to extract the AppSync API name and config from amplify-meta
 
-export const getAppSyncAuthConfig = projectMeta => {
+export const getAppSyncAuthConfig = (projectMeta: $TSMeta) => {
   const entry = getAppSyncAmplifyMetaEntry(projectMeta);
   if (entry) {
-    const value = entry[1] as any;
+    const value = entry[1] as $TSAny;
     return value && value.output ? value.output.authConfig : {};
   }
 };
 
-export const getAppSyncResourceName = (projectMeta: any): string | undefined => {
+export const getAppSyncResourceName = (projectMeta: $TSMeta): string | undefined => {
   const entry = getAppSyncAmplifyMetaEntry(projectMeta);
   if (entry) {
     return entry[0];
@@ -51,6 +51,8 @@ export const getAppSyncResourceName = (projectMeta: any): string | undefined => 
 
 // project meta is the contents of amplify-meta.json
 // typically retreived using context.amplify.getProjectMeta()
-const getAppSyncAmplifyMetaEntry = (projectMeta: any) => {
-  return Object.entries(projectMeta.api || {}).find(([, value]) => (value as any).service === 'AppSync');
+const getAppSyncAmplifyMetaEntry = (projectMeta: $TSMeta) => {
+  return Object.entries(projectMeta[AmplifyCategories.API] || {}).find(
+    ([, value]) => (value as $TSObject).service === AmplifySupportedService.APPSYNC,
+  );
 };

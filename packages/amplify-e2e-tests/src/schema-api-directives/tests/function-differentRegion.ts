@@ -26,7 +26,7 @@ export async function runTest(projectDir: string, testModule: any) {
   try {
     const functionName = await setupFunction(functionProjectDirPath, functionRegion);
 
-    await addApi(projectDir);
+    await addApi(projectDir, { transformerVersion: 1 });
     updateSchemaInTestProject(projectDir, testModule.schema);
 
     updateFunctionNameAndRegionInSchema(projectDir, functionName, functionRegion);

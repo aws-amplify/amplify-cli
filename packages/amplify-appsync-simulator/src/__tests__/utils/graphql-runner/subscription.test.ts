@@ -1,5 +1,5 @@
 import { GraphQLSchema, parse } from 'graphql';
-import { makeExecutableSchema } from 'graphql-tools';
+import { makeExecutableSchema } from '@graphql-tools/schema';
 import { AmplifyAppSyncSimulatorAuthenticationType } from '../../../type-definition';
 import { AppSyncGraphQLExecutionContext } from '../../../utils/graphql-runner';
 import { runQueryOrMutation } from '../../../utils/graphql-runner/query-and-mutation';

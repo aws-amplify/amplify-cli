@@ -10,7 +10,7 @@ export function addSampleInteraction(cwd: string, settings: any): Promise<void> 
       .wait('Choose a sample chatbot:')
       .sendCarriageReturn()
       .wait("Please indicate if your use of this bot is subject to the Children's")
-      .sendLine('y')
+      .sendConfirmYes()
       .sendEof()
       .run((err: Error) => {
         if (!err) {

@@ -1,8 +1,0 @@
-{{type}} {{name}} {{>renderArgDeclaration args=args}}{
-    {{body.name}}{{> renderCallArgs args=body.args}} 
-    {{#if body.hasBody}} {
-      {{> renderFields fields=body.fields}}
-      {{> renderFragment fragments=body.fragments}}
-    }
-    {{/if}}
-}

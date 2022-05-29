@@ -11,6 +11,7 @@ import {
   addAuthWithDefault,
   createNewProjectDir,
   deleteProjectDir,
+  generateRandomShortId,
 } from 'amplify-e2e-core';
 
 describe('nodejs version migration tests', () => {
@@ -28,8 +29,7 @@ describe('nodejs version migration tests', () => {
   it('init a project and add simple function and migrate node version', async () => {
     await initJSProjectWithProfile(projectRoot, {});
 
-    const random = Math.floor(Math.random() * 10000);
-    const functionName = `nodefunction${random}`;
+    const functionName = `nodefunction${generateRandomShortId()}`;
 
     await addAuthWithDefault(projectRoot);
     await addFunction(projectRoot, { functionTemplate: 'Hello World', name: functionName }, 'nodejs');
@@ -52,11 +52,12 @@ describe('nodejs version migration tests', () => {
       'backend',
       'auth',
       authResourceName,
-      `${authResourceName}-cloudformation-template.yml`,
+      'build',
+      `${authResourceName}-cloudformation-template.json`,
     );
     let authStackContent = fs.readFileSync(authStackFileName).toString();
 
-    authStackContent = authStackContent.replace('nodejs12.x', 'nodejs10.x');
+    authStackContent = authStackContent.replace('nodejs14.x', 'nodejs10.x');
 
     fs.writeFileSync(authStackFileName, authStackContent, 'utf-8');
 
@@ -83,8 +84,8 @@ describe('nodejs version migration tests', () => {
     functionStackContent = fs.readFileSync(functionStackFileName).toString();
 
     expect(projectConfigContent.indexOf('3.1')).toBeGreaterThan(0);
-    expect(authStackContent.indexOf('nodejs12.x')).toBeGreaterThan(0);
-    expect(functionStackContent.indexOf('nodejs12.x')).toBeGreaterThan(0);
+    expect(authStackContent.indexOf('nodejs14.x')).toBeGreaterThan(0);
+    expect(functionStackContent.indexOf('nodejs14.x')).toBeGreaterThan(0);
   });
 
   function amplifyNodeMigrationAndPush(cwd: string) {
@@ -94,7 +95,7 @@ describe('nodejs version migration tests', () => {
         .sendConfirmYes()
         .wait('Node.js runtime version successfully updated')
         .wait('Are you sure you want to continue?')
-        .sendLine('y')
+        .sendConfirmYes()
         .wait(/.*/)
         .run((err: Error) => {
           if (!err) {

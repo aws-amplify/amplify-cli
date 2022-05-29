@@ -6,7 +6,7 @@ export function signUpAddToGroupAndGetJwtToken(
   username: string,
   email: string,
   groups: string[] = [],
-  tokenType: 'id' | 'access' = 'id'
+  tokenType: 'id' | 'access' = 'id',
 ) {
   const token = {
     sub: v4(),
@@ -19,7 +19,7 @@ export function signUpAddToGroupAndGetJwtToken(
     'cognito:username': username,
     exp: Math.floor(Date.now() / 1000) + 10000,
     iat: Math.floor(Date.now() / 1000),
-    email: 'user1@test.com',
+    email,
   };
   return generateToken(token);
 }

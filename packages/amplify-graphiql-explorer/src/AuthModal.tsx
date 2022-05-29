@@ -24,6 +24,7 @@ type State = {
   isOpen: boolean;
   supportedAuthModes: AUTH_MODE[];
   oidcTokenError: string;
+  iamRole: 'auth' | 'unAuth';
 };
 
 type Props = {
@@ -32,6 +33,7 @@ type Props = {
   selectedAuthMode: AUTH_MODE;
   currentCognitoToken?: string;
   currentOIDCToken?: string;
+  iamRole?: 'Auth' | 'UnAuth';
   apiKey?: string;
 };
 export class AuthModal extends Component<Props, State> {
@@ -49,6 +51,7 @@ export class AuthModal extends Component<Props, State> {
     isOpen: true,
     currentAuthMode: AUTH_MODE.API_KEY,
     oidcTokenError: '',
+    iamRole: 'auth',
   };
 
   constructor(props) {
@@ -90,6 +93,7 @@ export class AuthModal extends Component<Props, State> {
       apiKey: props.apiKey || '',
       supportedAuthModes: this.props.authModes,
       currentAuthMode: props.selectedAuthMode,
+      iamRole: props.iamRole || 'Auth',
     };
 
     this.onClose = this.onClose.bind(this);
@@ -111,6 +115,7 @@ export class AuthModal extends Component<Props, State> {
       OIDCToken: this.state.currentAuthMode === AUTH_MODE.OPENID_CONNECT ? this.state.currentOIDCToken : null,
       // We have no data for IAM to store, so we just store a constant string for now
       iam: this.state.currentAuthMode === AUTH_MODE.AWS_IAM ? 'AWS4-HMAC-SHA256 IAMAuthorized' : null,
+      iamRole: this.state.iamRole,
     };
 
     if (this.props.onClose) {
@@ -143,6 +148,12 @@ export class AuthModal extends Component<Props, State> {
   onAuthModeChange(ev, data) {
     this.setState({
       currentAuthMode: data.value,
+    });
+  }
+
+  onIAMRoleChange(ev, data) {
+    this.setState({
+      iamRole: data.value,
     });
   }
 
@@ -244,7 +255,18 @@ export class AuthModal extends Component<Props, State> {
     } else if (this.state.currentAuthMode === AUTH_MODE.AWS_IAM) {
       formContent = (
         <>
-          <label>IAM authentication mode has no settings.</label>
+          <label>Role:</label>
+          <br />
+          <Dropdown
+            placeholder='Role'
+            selection
+            options={[
+              { value: 'Auth', text: 'Auth' },
+              { value: 'UnAuth', text: 'UnAuth' },
+            ]}
+            value={this.state.iamRole}
+            onChange={this.onIAMRoleChange.bind(this)}
+          />
         </>
       );
     }

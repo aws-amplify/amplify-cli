@@ -9,7 +9,7 @@ import { addSimpleFunction, updateFunctionNameInSchema } from '../functionTester
 export async function runTest(projectDir: string, testModule: any) {
   const function1Name = await addSimpleFunction(projectDir, testModule, 'func1');
   const function2Name = await addSimpleFunction(projectDir, testModule, 'func2');
-  await addApi(projectDir);
+  await addApi(projectDir, { transformerVersion: 1 });
   updateSchemaInTestProject(projectDir, testModule.schema);
   updateFunctionNameInSchema(projectDir, '<function1-name>', function1Name);
   updateFunctionNameInSchema(projectDir, '<function2-name>', function2Name);

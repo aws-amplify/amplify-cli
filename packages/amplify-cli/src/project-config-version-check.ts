@@ -11,7 +11,7 @@ import Resource from 'cloudform-types/types/resource';
 import Lambda from 'cloudform-types/types/lambda';
 
 const previousLambdaRuntimeVersions = ['nodejs8.10', 'nodejs10.x'];
-const lambdaRuntimeVersion = 'nodejs12.x';
+const lambdaRuntimeVersion = 'nodejs14.x';
 
 export async function checkProjectConfigVersion(context: Context): Promise<void> {
   const { constants } = context.amplify;
@@ -104,7 +104,7 @@ async function checkLambdaCustomResourceNodeVersion(context: Context, projectPat
 }
 
 async function checkFileContent(filePath: string): Promise<boolean> {
-  const { cfnTemplate } = await readCFNTemplate(filePath);
+  const { cfnTemplate } = readCFNTemplate(filePath);
 
   const resources = _.get(cfnTemplate, 'Resources', {});
   const lambdaFunctions = _.filter(
@@ -117,7 +117,7 @@ async function checkFileContent(filePath: string): Promise<boolean> {
 }
 
 async function updateFileContent(filePath: string): Promise<void> {
-  const { templateFormat, cfnTemplate } = await readCFNTemplate(filePath);
+  const { templateFormat, cfnTemplate } = readCFNTemplate(filePath);
 
   const resources = _.get(cfnTemplate, 'Resources', {});
   const lambdaFunctions: Lambda.Function[] = _.filter(

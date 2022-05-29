@@ -1,5 +1,5 @@
 import { amplifyAppAndroid, amplifyAppAngular, amplifyAppIos, amplifyAppReact } from '../amplify-app-helpers/amplify-app-setup';
-import { updateApiSchema } from 'amplify-e2e-core';
+import { addFeatureFlag, updateApiSchema } from 'amplify-e2e-core';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
 import { generateModels } from 'amplify-e2e-core';
 
@@ -20,6 +20,10 @@ describe('data store modelgen tests', () => {
   it('should generate models for android project', async () => {
     await amplifyAppAndroid(projRoot);
     updateApiSchema(projRoot, projName, schemaWithAppSyncScalars);
+
+    await addFeatureFlag(projRoot, 'graphqltransformer', 'transformerVersion', 1);
+    await addFeatureFlag(projRoot, 'graphqltransformer', 'useExperimentalPipelinedTransformer', false);
+
     await expect(generateModels(projRoot)).resolves.not.toThrow();
     updateApiSchema(projRoot, projName, schemaWithError);
     await expect(generateModels(projRoot)).rejects.toThrowError();
@@ -28,6 +32,10 @@ describe('data store modelgen tests', () => {
   it('should generate models for iOS project', async () => {
     await amplifyAppIos(projRoot);
     updateApiSchema(projRoot, projName, schemaWithAppSyncScalars);
+
+    await addFeatureFlag(projRoot, 'graphqltransformer', 'transformerVersion', 1);
+    await addFeatureFlag(projRoot, 'graphqltransformer', 'useExperimentalPipelinedTransformer', false);
+
     await expect(generateModels(projRoot)).resolves.not.toThrow();
     updateApiSchema(projRoot, projName, schemaWithError);
     await expect(generateModels(projRoot)).rejects.toThrowError();
@@ -36,6 +44,10 @@ describe('data store modelgen tests', () => {
   it('should generate models for angular project', async () => {
     await amplifyAppAngular(projRoot);
     updateApiSchema(projRoot, projName, schemaWithAppSyncScalars);
+
+    await addFeatureFlag(projRoot, 'graphqltransformer', 'transformerVersion', 1);
+    await addFeatureFlag(projRoot, 'graphqltransformer', 'useExperimentalPipelinedTransformer', false);
+
     await expect(generateModels(projRoot)).resolves.not.toThrow();
     updateApiSchema(projRoot, projName, schemaWithError);
     await expect(generateModels(projRoot)).rejects.toThrowError();
@@ -44,6 +56,10 @@ describe('data store modelgen tests', () => {
   it('should generate models for react project', async () => {
     await amplifyAppReact(projRoot);
     updateApiSchema(projRoot, projName, schemaWithAppSyncScalars);
+
+    await addFeatureFlag(projRoot, 'graphqltransformer', 'transformerVersion', 1);
+    await addFeatureFlag(projRoot, 'graphqltransformer', 'useExperimentalPipelinedTransformer', false);
+
     await expect(generateModels(projRoot)).resolves.not.toThrow();
     updateApiSchema(projRoot, projName, schemaWithError);
     await expect(generateModels(projRoot)).rejects.toThrowError();

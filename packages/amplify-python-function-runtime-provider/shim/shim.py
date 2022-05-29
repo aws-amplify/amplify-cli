@@ -26,6 +26,15 @@ def main(argv):
   lambdaInput = json.loads(sys.stdin.readline().rstrip())
   event = json.loads(lambdaInput["event"]) # event is already serialized by the platform so need to turn it into a dict here before invoking
   context = lambdaInput["context"]
+  if not context:
+    class ContextShim:
+      def __init__(self):
+        self.function_name = handlerName
+        self.memory_limit_in_mb = 128
+        self.invoked_function_arn = "UNDEFINED"
+        self.aws_request_id = "UNDEFINED"
+    context = ContextShim()
+
   
   # execute lambda and return result on stdout
   print('\n') # since we rely on the last line being the result, make sure the handler didn't already write something to the line

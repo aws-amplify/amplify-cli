@@ -11,6 +11,8 @@ import { functionRuntimeContributorFactory } from 'amplify-nodejs-function-runti
 
 const invoke = functionRuntimeContributorFactory({}).invoke;
 
+export * from './graphql-client';
+
 jest.mock('amplify-cli-core', () => ({
   pathManager: {
     getAmplifyPackageLibDirPath: jest.fn().mockReturnValue('../amplify-dynamodb-simulator'),

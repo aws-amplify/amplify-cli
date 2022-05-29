@@ -1,5 +1,5 @@
 import { $TSAny } from 'amplify-cli-core';
-import { lambdaFunctionHandler } from './lambda';
+import { lambdaEventSourceHandler, lambdaFunctionHandler } from './lambda';
 import { CloudFormationResource, ProcessedLambdaFunction } from '../stack/types';
 import { CloudFormationParseContext } from '../types';
 import {
@@ -12,6 +12,7 @@ import {
   dynamoDBResourceHandler,
 } from './appsync';
 import { iamPolicyResourceHandler, iamRoleResourceHandler } from './iam';
+import { openSearchDomainHandler } from './opensearch';
 
 export type CloudFormationResourceProcessorFn = (
   resourceName: string,
@@ -48,4 +49,9 @@ export function registerIAMResourceProcessor(): void {
 
 export function registerLambdaResourceProcessor(): void {
   registerResourceProcessors('AWS::Lambda::Function', lambdaFunctionHandler);
+  registerResourceProcessors('AWS::Lambda::EventSourceMapping', lambdaEventSourceHandler);
+}
+
+export function registerOpenSearchResourceProcessor(): void {
+  registerResourceProcessors('AWS::Elasticsearch::Domain', openSearchDomainHandler);
 }

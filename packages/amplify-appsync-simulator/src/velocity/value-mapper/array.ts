@@ -1,3 +1,4 @@
+import { JavaInteger } from './integer';
 import { toJSON } from './to-json';
 
 export class JavaArray extends Array<any> {
@@ -59,10 +60,21 @@ export class JavaArray extends Array<any> {
   }
 
   size() {
-    return this.length;
+    return new JavaInteger(this.length);
   }
 
   toJSON() {
     return Array.from(this).map(toJSON);
+  }
+
+  indexOf(obj) {
+    const value = obj?.toJSON ? obj.toJSON() : obj;
+    for (let i = 0; i < this.length; i++) {
+      const item = this[i]?.toJson ? this[i]?.toJson() : this[i];
+      if (item === value) {
+        return i;
+      }
+    }
+    return -1;
   }
 }

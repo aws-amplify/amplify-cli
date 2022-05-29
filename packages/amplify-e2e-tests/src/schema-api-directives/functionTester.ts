@@ -1,5 +1,5 @@
 import path from 'path';
-import uuid from 'uuid';
+import { v4 as uuid } from 'uuid';
 import fs from 'fs-extra';
 import { amplifyPush, addFunction, addApi } from 'amplify-e2e-core';
 
@@ -9,7 +9,7 @@ import { updateSchemaInTestProject, testQueries } from './common';
 
 export async function runFunctionTest(projectDir: string, testModule: any) {
   const functionName = await addSimpleFunction(projectDir, testModule, 'func');
-  await addApi(projectDir);
+  await addApi(projectDir, { transformerVersion: 1 });
   updateSchemaInTestProject(projectDir, testModule.schema);
   updateFunctionNameInSchema(projectDir, '<function-name>', functionName);
   await amplifyPush(projectDir);

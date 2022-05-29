@@ -9,6 +9,28 @@ import { $TSAny, $TSContext, JSONUtilities } from 'amplify-cli-core';
 
 const port = 20005; // port for S3
 
+/**
+ * @returns Name of S3 resource or undefined
+ */
+ async function invokeS3GetResourceName(context) {
+   const s3ResourceName = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3GetResourceName', [context]);
+   return s3ResourceName;
+ }
+
+/**
+ * Return the cli-inputs.json
+ * @param context
+ * @param s3ResourceName
+ * @returns
+ */
+ async function invokeS3GetUserInputs(context, s3ResourceName) {
+   const s3UserInputs = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3GetUserInput', [
+     context,
+     s3ResourceName,
+   ]);
+   return s3UserInputs;
+ }
+
 export class StorageTest {
   private storageName: string;
   private storageSimulator: AmplifyStorageSimulator;
@@ -30,17 +52,18 @@ export class StorageTest {
 
     const localEnvFilePath = context.amplify.pathManager.getLocalEnvFilePath();
     const localEnvInfo = context.amplify.readJsonFile(localEnvFilePath);
-    const storageParams = context.amplify.readJsonFile(parametersFilePath);
-    this.bucketName = `${storageParams.bucketName}-${localEnvInfo.envName}`;
-    const route = path.join('/', this.bucketName);
 
-    let localDirS3 = this.createLocalStorage(context, `${storageParams.bucketName}`);
+    const s3ResourceName = await invokeS3GetResourceName(context);
+    const s3UserInputs = await invokeS3GetUserInputs(context, s3ResourceName);
+    this.bucketName = `${s3UserInputs.bucketName}-${localEnvInfo.envName}`;
+    const route = path.join('/', this.bucketName);
+    let localDirS3 = this.createLocalStorage(context, `${s3UserInputs.bucketName}`);
 
     try {
       context.amplify.addCleanUpTask(async context => {
         await this.stop();
       });
-      this.configOverrideManager = ConfigOverrideManager.getInstance(context);
+      this.configOverrideManager = await ConfigOverrideManager.getInstance(context);
       this.storageName = await this.getStorage(context);
       const storageConfig = { port, route, localDirS3 };
       this.storageSimulator = new AmplifyStorageSimulator(storageConfig);
@@ -64,7 +87,7 @@ export class StorageTest {
       const existingStorage = meta.storage;
       let backendPath = context.amplify.pathManager.getBackendDirPath();
       const resourceName = Object.keys(existingStorage)[0];
-      const CFNFilePath = path.join(backendPath, 'storage', resourceName, 's3-cloudformation-template.json');
+      const CFNFilePath = path.join(backendPath, 'storage', resourceName, 'build', 'cloudformation-template.json');
       const storageParams = JSONUtilities.readJson<$TSAny>(CFNFilePath);
       const lambdaConfig =
         storageParams.Resources.S3Bucket.Properties.NotificationConfiguration &&
@@ -73,9 +96,7 @@ export class StorageTest {
       if (lambdaConfig === undefined) {
         return;
       }
-
       // loop over lambda config to check for trigger based on prefix
-
       let triggerName;
       for (let obj of lambdaConfig) {
         let prefix_arr = obj.Filter;

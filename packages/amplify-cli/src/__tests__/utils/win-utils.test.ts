@@ -58,7 +58,8 @@ describe('delete old version', () => {
   });
 
   it('prints warning if old version cannot be deleted', () => {
-    const consoleWarnSpy = jest.spyOn(global.console, 'warn');
+    const consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
+    const consoleLogSpy = jest.spyOn(console, "log").mockImplementation(()=>{});
     fs_mock.removeSync.mockImplementationOnce(() => {
       throw new Error('test error removing old binary');
     });
@@ -68,6 +69,8 @@ describe('delete old version', () => {
       `"Failed to clean up previous CLI installation at [homedir/.amplify/bin/amplify-old.exe]."`,
     );
     expect(consoleWarnSpy.mock.calls[1][0]).toMatchInlineSnapshot(`"Make sure this file is not open anywhere else."`);
+    consoleWarnSpy.mockReset();
+    consoleLogSpy.mockReset();
   });
 });
 

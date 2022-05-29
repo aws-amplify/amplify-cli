@@ -75,9 +75,9 @@ export function addEnvironmentWithImportedAuth(cwd: string, settings: { envName:
   });
 }
 
-export function checkoutEnvironment(cwd: string, settings: { envName: string }): Promise<void> {
+export function checkoutEnvironment(cwd: string, settings: { envName: string, restoreBackend?: boolean }): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['env', 'checkout', settings.envName], { cwd, stripColors: true })
+    spawn(getCLIPath(), ['env', 'checkout', settings.envName, settings.restoreBackend ? '--restore' : ''], { cwd, stripColors: true })
       .wait('Initialized your environment successfully.')
       .run((err: Error) => {
         if (!err) {
@@ -200,7 +200,7 @@ export function addEnvironmentHostedUI(cwd: string, settings: { envName: string 
       .sendLine(APPLE_KEY_ID)
       .wait('Enter your Private Key for your OAuth flow:')
       .sendLine(APPLE_PRIVATE_KEY)
-      .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
+      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -241,7 +241,7 @@ export function removeEnvironment(cwd: string, settings: { envName: string }): P
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'remove', settings.envName], { cwd, stripColors: true })
       .wait(`Are you sure you want to continue?`)
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('Successfully removed environment from your project locally')
       .run((err: Error) => {
         if (!err) {

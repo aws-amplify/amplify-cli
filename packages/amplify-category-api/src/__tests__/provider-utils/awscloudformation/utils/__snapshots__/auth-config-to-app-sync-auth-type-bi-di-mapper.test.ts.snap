@@ -12,6 +12,7 @@ Object {
 exports[`AppSyncAuthType to authConfig maps API_KEY correctly 1`] = `
 Object {
   "apiKeyConfig": Object {
+    "apiKeyExpirationDate": undefined,
     "apiKeyExpirationDays": 120,
     "description": undefined,
   },
@@ -47,6 +48,7 @@ Object {
 
 exports[`authConfig to AppSyncAuthType maps API_KEY auth correctly 1`] = `
 Object {
+  "apiKeyExpirationDate": undefined,
   "expirationTime": 120,
   "keyDescription": "api key description",
   "mode": "API_KEY",

@@ -1,7 +1,7 @@
 {
   "name": "storage",
   "type": "category",
-  "commands": ["add", "import", "console", "push", "remove", "update", "help"],
+  "commands": ["add", "import", "console", "push", "remove", "update", "help", "override"],
   "commandAliases": {
     "configure": "update"
   },

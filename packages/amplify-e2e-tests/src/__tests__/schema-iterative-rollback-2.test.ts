@@ -7,21 +7,26 @@ import {
   amplifyPushIterativeRollback,
   getDDBTable,
   getBackendAmplifyMeta,
-  addApiWithSchema,
+  addApiWithoutSchema,
   addFeatureFlag,
   amplifyPush,
   updateApiSchema,
   getTableResourceId,
   getNestedStackID,
   cancelIterativeAmplifyPush,
+  createRandomName,
 } from 'amplify-e2e-core';
 
 describe('Iterative Rollback - removing two @keys', () => {
   let projectDir: string;
+  let appName: string;
 
   beforeAll(async () => {
+    appName = createRandomName();
     projectDir = await createNewProjectDir('iterativeRollback');
-    await initJSProjectWithProfile(projectDir, {});
+    await initJSProjectWithProfile(projectDir, {
+      name: appName,
+    });
     addFeatureFlag(projectDir, 'graphqltransformer', 'enableiterativegsiupdates', true);
   });
   afterAll(async () => {
@@ -29,15 +34,15 @@ describe('Iterative Rollback - removing two @keys', () => {
     deleteProjectDir(projectDir);
   });
   it('should support rolling back from the 2nd deployment on adding gsis', async () => {
-    const apiName = 'renamekey';
     const initialSchema = path.join('iterative-push', 'multiple-key-delete', 'initial-schema.graphql');
-    await addApiWithSchema(projectDir, initialSchema, { apiName, apiKeyExpirationDays: 7 });
+    await addApiWithoutSchema(projectDir, { apiKeyExpirationDays: 7, transformerVersion: 1 });
+    await updateApiSchema(projectDir, appName, initialSchema);
     await amplifyPush(projectDir);
 
     // get info on table
     const meta = getBackendAmplifyMeta(projectDir);
     const { StackId: stackId, Region: region } = meta.providers.awscloudformation;
-    const { logicalId } = meta.api[apiName].providerMetadata;
+    const { logicalId } = meta.api[appName].providerMetadata;
     const apiID = await getNestedStackID(stackId, region, logicalId);
     const tableName = await getTableResourceId(region, 'Something', apiID);
     let table = await getDDBTable(tableName, region);
@@ -46,7 +51,7 @@ describe('Iterative Rollback - removing two @keys', () => {
     expect(table.Table.GlobalSecondaryIndexes.length).toEqual(2);
 
     const finalSchema = path.join('iterative-push', 'multiple-key-delete', 'final-schema.graphql');
-    updateApiSchema(projectDir, apiName, finalSchema);
+    updateApiSchema(projectDir, appName, finalSchema);
     // cancel iterative push on 2nd deployment
     await cancelIterativeAmplifyPush(projectDir, { current: 2, max: 3 });
 

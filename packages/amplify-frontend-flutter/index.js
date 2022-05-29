@@ -5,7 +5,13 @@ const initializer = require('./lib/initializer');
 const configManager = require('./lib/configuration-manager');
 const projectScanner = require('./lib/project-scanner');
 const constants = require('./lib/constants');
-const { createAmplifyConfig, createAWSConfig, deleteAmplifyConfig } = require('./lib/frontend-config-creator');
+const {
+  createAmplifyConfig,
+  createAWSConfig,
+  deleteAmplifyConfig,
+  getAmplifyConfig,
+  writeToFile,
+} = require('./lib/frontend-config-creator');
 
 const pluginName = 'flutter';
 
@@ -21,6 +27,26 @@ function init(context) {
 
 function onInitSuccessful(context) {
   return initializer.onInitSuccessful(context);
+}
+
+/**
+ * This function enables export to write these files to an external path
+ * @param {TSContext} context
+ * @param {metaWithOutput} amplifyResources
+ * @param {cloudMetaWithOuput} amplifyCloudResources
+ * @param {string} exportPath path to where the files need to be written
+ */
+function createFrontendConfigsAtPath(context, amplifyResources, amplifyCloudResources, exportPath) {
+  const newOutputsForFrontend = amplifyResources.outputsForFrontend;
+  const cloudOutputsForFrontend = amplifyCloudResources.outputsForFrontend;
+
+  const amplifyConfig = getAmplifyConfig(
+    context,
+    newOutputsForFrontend,
+    cloudOutputsForFrontend,
+    path.join(exportPath, constants.amplifyConfigFilename),
+  );
+  writeToFile(exportPath, constants.amplifyConfigFilename, amplifyConfig);
 }
 
 function createFrontendConfigs(context, amplifyResources, amplifyCloudResources) {
@@ -85,6 +111,7 @@ module.exports = {
   displayFrontendDefaults,
   setFrontendDefaults,
   createFrontendConfigs,
+  createFrontendConfigsAtPath,
   executeAmplifyCommand,
   handleAmplifyEvent,
   deleteConfig: deleteAmplifyConfig,

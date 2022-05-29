@@ -99,7 +99,7 @@
                     "description": "If defined, specifies password constraint configuration. Default is minimum length of 8 characters."
                 },
                 "passwordRecovery": {
-                    "description": "If defined, specifies password recovery configiuration. Default is email recovery.",
+                    "description": "DEPRECATED. Use autoVerifiedAttributes in headless schema version 2 instead. If defined, specifies password recovery configuration. Default is email recovery.",
                     "anyOf": [
                         {
                             "$ref": "#/definitions/CognitoEmailPasswordRecoveryConfiguration"

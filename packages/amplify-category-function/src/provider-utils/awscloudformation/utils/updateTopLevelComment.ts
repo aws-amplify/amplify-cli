@@ -1,4 +1,5 @@
 import fs from 'fs-extra';
+import { EOL } from 'os';
 import path from 'path';
 import { categoryName, topLevelCommentPrefix, topLevelCommentSuffix } from '../../../constants';
 import _ from 'lodash';
@@ -16,7 +17,7 @@ export const tryUpdateTopLevelComment = (resourceDirPath: string, envVars: strin
   updateTopLevelComment(sourceFilePath, newComment);
 };
 
-const createTopLevelComment = (envVars: string[]) => `${topLevelCommentPrefix}${envVars.sort().join('\n\t')}${topLevelCommentSuffix}`;
+const createTopLevelComment = (envVars: string[]) => `${topLevelCommentPrefix}${envVars.sort().join(`${EOL}\t`)}${topLevelCommentSuffix}`;
 
 const updateTopLevelComment = (filePath, newComment) => {
   const commentRegex = new RegExp(`${_.escapeRegExp(topLevelCommentPrefix)}[a-zA-Z0-9\\-\\s._=]+${_.escapeRegExp(topLevelCommentSuffix)}`);
@@ -52,9 +53,9 @@ export const tryPrependSecretsUsageExample = async (functionName: string, secret
   await fs.writeFile(sourceFilePath, fileContent);
 };
 
-const secretsUsageHeader = '/*\nUse the following code to retrieve configured secrets from SSM:';
+const secretsUsageHeader = `/*${EOL}Use the following code to retrieve configured secrets from SSM:`;
 
-const secretsUsageFooter = "Parameters will be of the form { Name: 'secretName', Value: 'secretValue', ... }[]\n*/\n";
+const secretsUsageFooter = `Parameters will be of the form { Name: 'secretName', Value: 'secretValue', ... }[]${EOL}*/${EOL}`;
 
 const secretsUsageTemplate = (secretNames: string[]) =>
   `${secretsUsageHeader}

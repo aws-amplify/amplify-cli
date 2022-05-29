@@ -4,7 +4,7 @@ import { CognitoUserPoolConfiguration, CognitoIdentityPoolConfiguration, NoCogni
  * Defines the payload expected by `amplify update auth --headless`
  */
 export interface UpdateAuthRequest {
-  version: 1;
+  version: 2;
   serviceModification: CognitoServiceModification;
 }
 
@@ -58,9 +58,9 @@ export type CognitoUserPoolModification = Pick<
   | 'adminQueries'
   | 'mfa'
   | 'passwordPolicy'
-  | 'passwordRecovery'
   | 'refreshTokenPeriod'
   | 'readAttributes'
   | 'writeAttributes'
+  | 'autoVerifiedAttributes'
 > & { oAuth?: Partial<CognitoOAuthConfiguration> };
 export type CognitoIdentityPoolModification = Pick<CognitoIdentityPoolConfiguration, 'unauthenticatedLogin' | 'identitySocialFederation'>;

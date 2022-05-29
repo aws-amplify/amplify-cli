@@ -1,7 +1,7 @@
+import { $TSAny, $TSObject, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
-import { stateManager } from 'amplify-cli-core';
 
-export function updateBackendConfigAfterResourceAdd(category, resourceName, options) {
+export function updateBackendConfigAfterResourceAdd(category: string, resourceName: string, options: $TSObject) {
   const backendConfig = stateManager.getBackendConfig(undefined, {
     throwIfNotExist: false,
     default: {},
@@ -20,7 +20,7 @@ export function updateBackendConfigAfterResourceAdd(category, resourceName, opti
   stateManager.setBackendConfig(undefined, backendConfig);
 }
 
-export function updateBackendConfigAfterResourceUpdate(category, resourceName, attribute, value) {
+export function updateBackendConfigAfterResourceUpdate(category: string, resourceName: string, attribute: string, value: $TSAny) {
   const backendConfig = stateManager.getBackendConfig(undefined, {
     throwIfNotExist: false,
     default: {},
@@ -31,7 +31,7 @@ export function updateBackendConfigAfterResourceUpdate(category, resourceName, a
   stateManager.setBackendConfig(undefined, backendConfig);
 }
 
-export function updateBackendConfigAfterResourceRemove(category, resourceName) {
+export function updateBackendConfigAfterResourceRemove(category: string, resourceName: string) {
   const backendConfig = stateManager.getBackendConfig(undefined, {
     throwIfNotExist: false,
     default: {},

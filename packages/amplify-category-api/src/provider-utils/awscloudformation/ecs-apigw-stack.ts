@@ -1,13 +1,14 @@
 import * as apigw2 from '@aws-cdk/aws-apigatewayv2';
 import * as cdk from '@aws-cdk/core';
-import { ContainersStack, ContainersStackProps } from "./base-api-stack";
+import { ContainersStack, ContainersStackProps } from './base-api-stack';
 import { API_TYPE } from './service-walkthroughs/containers-walkthrough';
 
-type EcsStackProps = Readonly<ContainersStackProps & {
-  apiType: API_TYPE;
-}>;
+type EcsStackProps = Readonly<
+  ContainersStackProps & {
+    apiType: API_TYPE;
+  }
+>;
 export class EcsStack extends ContainersStack {
-
   constructor(scope: cdk.Construct, id: string, private readonly ecsProps: EcsStackProps) {
     super(scope, id, {
       ...ecsProps,
@@ -33,10 +34,10 @@ export class EcsStack extends ContainersStack {
   }
 
   private apiGateway() {
-    const { envName, apiName } = this.ecsProps
+    const { apiName } = this.ecsProps;
 
     const api = new apigw2.CfnApi(this, 'Api', {
-      name: `${envName}-${apiName}`,
+      name: `${this.envName}-${apiName}`,
       protocolType: 'HTTP',
       corsConfiguration: {
         allowHeaders: ['*'],
@@ -67,12 +68,7 @@ export class EcsStack extends ContainersStack {
       authorizerType: 'JWT',
       jwtConfiguration: {
         audience: [this.appClientId],
-        issuer: cdk.Fn.join('', [
-          'https://cognito-idp.',
-          cdk.Aws.REGION,
-          '.amazonaws.com/',
-          this.userPoolId,
-        ]),
+        issuer: cdk.Fn.join('', ['https://cognito-idp.', cdk.Aws.REGION, '.amazonaws.com/', this.userPoolId]),
       },
       identitySource: ['$request.header.Authorization'],
     });

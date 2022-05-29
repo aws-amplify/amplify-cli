@@ -77,7 +77,12 @@ async function enable(context, successMessage) {
   spinner.start('Updating Email Channel.');
   return new Promise((resolve, reject) => {
     context.exeInfo.pinpointClient.updateEmailChannel(params, (err, data) => {
-      if (err) {
+      if (err && err.code === 'NotFoundException') {
+        spinner.succeed(`Project with ID '${params.ApplicationId}' was already deleted from the cloud.`);
+        resolve({
+          id: params.ApplicationId,
+        });
+      } else if (err) {
         spinner.fail('update channel error');
         reject(err);
       } else {
@@ -112,7 +117,12 @@ async function disable(context) {
   spinner.start('Updating Email Channel.');
   return new Promise((resolve, reject) => {
     context.exeInfo.pinpointClient.updateEmailChannel(params, (err, data) => {
-      if (err) {
+      if (err && err.code === 'NotFoundException') {
+        spinner.succeed(`Project with ID '${params.ApplicationId}' was already deleted from the cloud.`);
+        resolve({
+          id: params.ApplicationId,
+        });
+      } else if (err) {
         spinner.fail('update channel error');
         reject(err);
       } else {

@@ -38,7 +38,7 @@ export class ResolverOverrides {
     return this.updateContentMap(filePath);
   }
 
-  sync(transformerResolvers: { path: string; content: string }[]) {
+  sync(transformerResolvers: { path: string; content: string }[], userOverriddenSlots: string[]) {
     const filesToWrite: Map<string, string> = new Map();
     const filesToDelete: Set<string> = new Set();
     const result: {
@@ -52,7 +52,7 @@ export class ResolverOverrides {
       // deleted from last execution
       if (this.overrides.has(normalizedPath)) {
         const overriddenContent = this.contentMap.get(normalizedPath);
-        if (overriddenContent === resolver.content) {
+        if (overriddenContent === resolver.content && !userOverriddenSlots.includes(path.basename(normalizedPath))) {
           this.overrides.delete(normalizedPath);
         } else {
           r.content = overriddenContent;
@@ -109,6 +109,7 @@ export class ResolverOverrides {
     });
     return result;
   }
+
   /**
    * Stop synchronizing resolver content. This will delete all the resolvers except for
    * the ones which are not overridden

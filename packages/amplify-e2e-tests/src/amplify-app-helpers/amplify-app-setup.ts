@@ -24,8 +24,8 @@ function amplifyAppAndroid(projRoot: string): Promise<void> {
 function amplifyAppIos(projRoot: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(spawnCommand, ['--platform', 'ios'], { cwd: projRoot, stripColors: true })
-      .wait('Amplify setup completed successfully')
       .wait('Successfully created base Amplify Project')
+      .wait('Amplify setup completed successfully')
       .run(function (err) {
         if (!err) {
           resolve();

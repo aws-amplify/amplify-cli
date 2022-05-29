@@ -1,3 +1,5 @@
+// disabling lint until this file is converted to TS
+/* eslint-disable */
 const fs = require('fs-extra');
 const path = require('path');
 const inquirer = require('inquirer');
@@ -180,7 +182,7 @@ async function init(amplifyServiceParams) {
   }
 
   if (needToCreateNewBackendEnv) {
-    context.print.info(`Adding backend environment ${envName} to AWS Amplify Console app: ${amplifyAppId}`);
+    context.print.info(`Adding backend environment ${envName} to AWS Amplify app: ${amplifyAppId}`);
     const createEnvParams = {
       appId: amplifyAppId,
       environmentName: envName,

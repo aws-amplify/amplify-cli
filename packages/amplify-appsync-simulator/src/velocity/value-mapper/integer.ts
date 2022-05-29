@@ -1,20 +1,23 @@
-import { JavaArray } from './array';
-
 export class JavaInteger {
   value: number;
-  constructor(number) {
-    this.value = number;
+
+  constructor(val: number) {
+    this.value = Math.trunc(val);
   }
 
-  parseInt(str) {
-    return new JavaInteger(parseInt(str, 10));
-  }
-
-  toString() {
+  valueOf(): number {
     return this.value;
   }
 
-  toJSON() {
-    return this.toString();
+  parseInt(val: any, radix: any = 10): JavaInteger {
+    return new JavaInteger(Number.parseInt(val, +radix));
+  }
+
+  toJSON(): number {
+    return this.value;
+  }
+
+  toString(): string {
+    return String(this.value);
   }
 }

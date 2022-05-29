@@ -1,14 +1,16 @@
+import {
+  $TSAny, $TSContext, $TSObject, ConfigurationError, exitOnNextTick, stateManager, spinner,
+} from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 import sequential from 'promise-sequential';
-import ora from 'ora';
-import { $TSAny, $TSContext, $TSObject, stateManager, exitOnNextTick, ConfigurationError } from 'amplify-cli-core';
+import { notifyFieldAuthSecurityChange, notifySecurityEnhancement } from '../extensions/amplify-helpers/auth-notifications';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
-
-const spinner = ora('');
+import { showTroubleshootingURL } from './help';
 
 // The following code pulls the latest backend to #current-cloud-backend
 // so the amplify status is correctly shown to the user before the user confirms
 // to push his local developments
-async function syncCurrentCloudBackend(context: $TSContext) {
+const syncCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
   context.exeInfo.restoreBackend = false;
 
   const currentEnv = context.exeInfo.localEnvInfo.envName;
@@ -25,9 +27,13 @@ async function syncCurrentCloudBackend(context: $TSContext) {
     const pullCurrentCloudTasks: (() => Promise<$TSAny>)[] = [];
 
     context.exeInfo.projectConfig.providers.forEach(provider => {
+      // eslint-disable-next-line
       const providerModule = require(providerPlugins[provider]);
       pullCurrentCloudTasks.push(() => providerModule.initEnv(context, amplifyMeta.providers[provider]));
     });
+
+    await notifySecurityEnhancement(context);
+    await notifyFieldAuthSecurityChange(context);
 
     spinner.start(`Fetching updates to backend environment: ${currentEnv} from the cloud.`);
     await sequential(pullCurrentCloudTasks);
@@ -36,9 +42,24 @@ async function syncCurrentCloudBackend(context: $TSContext) {
     spinner.fail(`There was an error pulling the backend environment ${currentEnv}.`);
     throw e;
   }
-}
+};
 
-export const run = async (context: $TSContext) => {
+const pushHooks = async (context: $TSContext): Promise<void> => {
+  context.exeInfo.pushHooks = true;
+  const providerPlugins = getProviderPlugins(context);
+  const pushHooksTasks: (() => Promise<$TSAny>)[] = [];
+  context.exeInfo.projectConfig.providers.forEach(provider => {
+    // eslint-disable-next-line
+    const providerModule = require(providerPlugins[provider]);
+    pushHooksTasks.push(() => providerModule.uploadHooksDirectory(context));
+  });
+  await sequential(pushHooksTasks);
+};
+
+/**
+ * Runs push command
+ */
+export const run = async (context: $TSContext): Promise<$TSAny|void> => {
   try {
     context.amplify.constructExeInfo(context);
     if (context.exeInfo.localEnvInfo.noUpdateBackend) {
@@ -47,14 +68,15 @@ export const run = async (context: $TSContext) => {
     if (context.parameters.options.force) {
       context.exeInfo.forcePush = true;
     }
+    await pushHooks(context);
     await syncCurrentCloudBackend(context);
     return await context.amplify.pushResources(context);
   } catch (e) {
-    if (e.name !== 'InvalidDirectiveError') {
-      const message = e.name === 'GraphQLError' ? e.toString() : e.message;
-      context.print.error(`An error occurred during the push operation: ${message}`);
-    }
+    const message = (e.name === 'GraphQLError' || e.name === 'InvalidMigrationError') ? e.toString() : e.message;
+    printer.error(`An error occurred during the push operation: /\n${message}`);
     await context.usageData.emitError(e);
+    showTroubleshootingURL();
     exitOnNextTick(1);
+    return undefined;
   }
 };

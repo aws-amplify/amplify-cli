@@ -1,4 +1,6 @@
-export const supportedServices = {
+import { $TSAny, FeatureFlags } from 'amplify-cli-core';
+
+const supportedServices = {
   Cognito: {
     inputs: [
       {
@@ -49,7 +51,7 @@ export const supportedServices = {
       },
       {
         key: 'resourceName',
-        question: 'Please provide a friendly name for your resource that will be used to label this category in the project:',
+        question: 'Provide a friendly name for your resource that will be used to label this category in the project:',
         andConditions: [
           {
             preventEdit: 'always',
@@ -69,7 +71,7 @@ export const supportedServices = {
       },
       {
         key: 'identityPoolName',
-        question: 'Please enter a name for your identity pool.',
+        question: 'Enter a name for your identity pool.',
         required: true,
         learnMore:
           'Amazon Cognito identity pools provide temporary AWS credentials for users who are guests (unauthenticated) and for users who have been authenticated and received a token. An identity pool is a store of user identity data specific to your account.\nThe name of the identity pool should be between 1 and 128 characters.',
@@ -258,7 +260,7 @@ export const supportedServices = {
       },
       {
         key: 'userPoolName',
-        question: 'Please provide a name for your user pool:',
+        question: 'Provide a name for your user pool:',
         required: true,
         validation: {
           operator: 'regex',
@@ -280,6 +282,27 @@ export const supportedServices = {
           {
             preventEdit: 'exists',
             key: 'userPoolName',
+          },
+        ],
+      },
+      {
+        key: 'usernameAttributes',
+        question: 'How do you want users to be able to sign in?',
+        required: true,
+        type: 'list',
+        map: 'signInOptions',
+        prefixColor: 'red',
+        prefix: 'Warning: you will not be able to edit these selections.',
+        learnMore:
+          "Selecting 'Email' and/or 'Phone Number' will allow end users to sign-up using these values.  Selecting 'Username' will require a unique username for users.",
+        andConditions: [
+          {
+            key: 'authSelections',
+            value: 'identityPoolOnly',
+            operator: '!=',
+          },
+          {
+            preventEdit: 'always',
           },
         ],
       },
@@ -412,7 +435,7 @@ export const supportedServices = {
       },
       {
         key: 'smsAuthenticationMessage',
-        question: 'Please specify an SMS authentication message:',
+        question: 'Specify an SMS authentication message:',
         required: true,
         type: 'input',
         validation: {
@@ -455,7 +478,7 @@ export const supportedServices = {
       },
       {
         key: 'emailVerificationSubject',
-        question: 'Please specify an email verification subject:',
+        question: 'Specify an email verification subject:',
         required: true,
         type: 'input',
         andConditions: [
@@ -478,7 +501,7 @@ export const supportedServices = {
       },
       {
         key: 'emailVerificationMessage',
-        question: 'Please specify an email verification message:',
+        question: 'Specify an email verification message:',
         required: true,
         type: 'input',
         validation: {
@@ -1234,4 +1257,14 @@ export const supportedServices = {
     stringMapsFilename: 'string-maps.js',
     provider: 'awscloudformation',
   },
+};
+export const getSupportedServices = (): $TSAny => {
+  const keyToRemove = FeatureFlags.getBoolean('auth.forceAliasAttributes') ? 'usernameAttributes' : 'aliasAttributes';
+  const inputs = supportedServices.Cognito.inputs.filter(input => input.key !== keyToRemove);
+  return {
+    Cognito: {
+      ...supportedServices.Cognito,
+      inputs,
+    },
+  };
 };

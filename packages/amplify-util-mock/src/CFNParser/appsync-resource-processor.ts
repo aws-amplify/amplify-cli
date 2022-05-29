@@ -1,5 +1,10 @@
 import { AmplifyAppSyncSimulatorAuthenticationType, AmplifyAppSyncSimulatorConfig } from 'amplify-appsync-simulator';
-import { registerAppSyncResourceProcessor, registerIAMResourceProcessor, registerLambdaResourceProcessor } from './resource-processors';
+import {
+  registerAppSyncResourceProcessor,
+  registerIAMResourceProcessor,
+  registerLambdaResourceProcessor,
+  registerOpenSearchResourceProcessor,
+} from './resource-processors';
 import { AppSyncAPIKeyProcessedResource, AppSyncAPIProcessedResource } from './resource-processors/appsync';
 import { processCloudFormationStack } from './stack/index';
 import { CloudFormationTemplateFetcher, CloudFormationTemplate } from './stack/types';
@@ -111,6 +116,7 @@ export function processTransformerStacks(transformResult, params = {}): AmplifyA
   registerAppSyncResourceProcessor();
   registerIAMResourceProcessor();
   registerLambdaResourceProcessor();
+  registerOpenSearchResourceProcessor();
 
   const rootStack = JSON.parse(JSON.stringify(transformResult.rootStack)); // rootstack is not
   const cfnParams = {

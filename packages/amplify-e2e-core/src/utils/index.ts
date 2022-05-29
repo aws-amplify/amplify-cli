@@ -1,8 +1,10 @@
+/* eslint-disable import/no-cycle */
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as rimraf from 'rimraf';
 import { config } from 'dotenv';
 import execa from 'execa';
+import { v4 as uuid } from 'uuid';
 import { getLayerDirectoryName, LayerDirectoryType } from '..';
 
 export * from './add-circleci-tags';
@@ -22,107 +24,149 @@ export * from './selectors';
 export * from './sleep';
 export * from './transformConfig';
 export * from './admin-ui';
+export * from './hooks';
+export * from './transform-current-project-to-git-pulled-project';
 
 // run dotenv config to update env variable
 config();
 
-export function deleteProjectDir(root: string) {
+/**
+ * delete project directory
+ */
+export const deleteProjectDir = (root: string): void => {
   rimraf.sync(root);
-}
+};
 
-export function deleteAmplifyDir(root: string) {
+/**
+ * delete <project-root>/amplify directory
+ */
+export const deleteAmplifyDir = (root: string): void => {
   rimraf.sync(path.join(root, 'amplify'));
-}
+};
 
-export function loadFunctionTestFile(fileName: string) {
+/**
+ * load test file
+ */
+export const loadFunctionTestFile = (fileName: string): string => {
   const functionPath = getTestFileNamePath(fileName);
   return fs.readFileSync(functionPath, 'utf-8').toString();
-}
+};
 
-export function addNodeDependencies(root: string, functionName: string, dependencies: string[]) {
-  let indexPath = path.join(getPathToFunction(root, functionName), 'src');
+/**
+ * install and save node dependencies
+ */
+export const addNodeDependencies = (root: string, functionName: string, dependencies: string[]): void => {
+  const indexPath = path.join(getPathToFunction(root, functionName), 'src');
   execa.commandSync(`yarn add ${dependencies.join(' ')}`, { cwd: indexPath });
-}
+};
 
-export function overrideFunctionCodeNode(root: string, functionName: string, sourceFileName: string, targetFileName: string = 'index.js') {
+/**
+ * copy node function code from source to target
+ */
+export const overrideFunctionCodeNode = (root: string, functionName: string, sourceFileName: string, targetFileName = 'index.js'): void => {
   const sourcePath = getTestFileNamePath(sourceFileName);
   const targetPath = path.join(getPathToFunction(root, functionName), 'src', targetFileName);
 
   fs.copySync(sourcePath, targetPath);
-}
+};
 
-export function overrideFunctionCodePython(
+/**
+ * copy python function code from source to target
+ */
+export const overrideFunctionCodePython = (
   root: string,
   functionName: string,
   sourceFileName: string,
-  targetFileName: string = 'index.py',
-) {
+  targetFileName = 'index.py',
+): void => {
   const sourcePath = getTestFileNamePath(sourceFileName);
   const targetPath = path.join(getPathToFunction(root, functionName), 'lib', 'python', targetFileName);
 
   fs.copySync(sourcePath, targetPath);
-}
+};
 
-export function overrideFunctionSrcNode(root: string, functionName: string, content: string, targetFileName: string = 'index.js') {
+/**
+ * overwrite node function /src
+ */
+export const overrideFunctionSrcNode = (root: string, functionName: string, content: string, targetFileName = 'index.js'): void => {
   const dirPath = path.join(getPathToFunction(root, functionName), 'src');
   const targetPath = path.join(dirPath, targetFileName);
 
   fs.ensureDirSync(dirPath);
   fs.writeFileSync(targetPath, content);
-}
+};
 
-export function overrideFunctionSrcPython(root: string, functionName: string, content: string, targetFileName: string = 'index.py') {
+/**
+ * overwrite node function /src
+ */
+export const overrideFunctionSrcPython = (root: string, functionName: string, content: string, targetFileName = 'index.py'): void => {
   const dirPath = path.join(getPathToFunction(root, functionName), 'src');
   const targetPath = path.join(dirPath, targetFileName);
 
   fs.ensureDirSync(dirPath);
   fs.writeFileSync(targetPath, content);
-}
+};
 
-export function overrideLayerCodeNode(
+/**
+ * overwrite node layer content
+ */
+export const overrideLayerCodeNode = (
   root: string,
-  projName: string,
+  projectName: string,
   layerName: string,
   content: string,
-  targetFileName: string = 'index.js',
-) {
-  const dirPath = path.join(getPathToLayer(root, { projName, layerName }), 'lib', 'nodejs');
+  targetFileName = 'index.js',
+): void => {
+  const dirPath = path.join(getPathToLayer(root, { projName: projectName, layerName }), 'lib', 'nodejs');
   const targetPath = path.join(dirPath, targetFileName);
 
   fs.ensureDirSync(dirPath);
   fs.writeFileSync(targetPath, content);
-}
+};
 
-export function overrideLayerCodePython(
+/**
+ * overwrite python layer content
+ */
+export const overrideLayerCodePython = (
   root: string,
-  projName: string,
+  projectName: string,
   layerName: string,
   content: string,
-  targetFileName: string = 'index.py',
-) {
-  const dirPath = path.join(getPathToLayer(root, { projName, layerName }), 'lib', 'python');
+  targetFileName = 'index.py',
+): void => {
+  const dirPath = path.join(getPathToLayer(root, { projName: projectName, layerName }), 'lib', 'python');
   const targetPath = path.join(dirPath, targetFileName);
 
   fs.ensureDirSync(dirPath);
   fs.writeFileSync(targetPath, content);
-}
+};
 
-export function addOptFile(root: string, projName: string, layerName: string, content: string, targetFileName: string): void {
-  const dirPath = path.join(getPathToLayer(root, { projName, layerName }), 'opt');
+/**
+ * write target file to layer resource's opt/<targetFileName>
+ */
+export const addOptFile = (root: string, projectName: string, layerName: string, content: string, targetFileName: string): void => {
+  const dirPath = path.join(getPathToLayer(root, { projName: projectName, layerName }), 'opt');
   const targetPath = path.join(dirPath, targetFileName);
 
   fs.ensureDirSync(dirPath);
   fs.writeFileSync(targetPath, content);
-}
+};
 
-export function getFunctionSrcNode(root: string, functionName: string, fileName: string = 'index.js'): string {
+/**
+ * get node function source file
+ */
+export const getFunctionSrcNode = (root: string, functionName: string, fileName = 'index.js'): string => {
   const indexPath = path.join(getPathToFunction(root, functionName), 'src', fileName);
 
   return fs.readFileSync(indexPath).toString();
-}
+};
 
-const getTestFileNamePath = (fileName: string): string =>
-  path.join(__dirname, '..', '..', '..', 'amplify-e2e-tests', 'functions', fileName);
+const getTestFileNamePath = (fileName: string): string => path.join(__dirname, '..', '..', '..', 'amplify-e2e-tests', 'functions', fileName);
 const getPathToFunction = (root: string, funcName: string): string => path.join(root, 'amplify', 'backend', 'function', funcName);
-const getPathToLayer = (root: string, layerProjName: LayerDirectoryType): string =>
-  path.join(root, 'amplify', 'backend', 'function', getLayerDirectoryName(layerProjName));
+const getPathToLayer = (root: string, layerProjectName: LayerDirectoryType): string => path.join(root, 'amplify', 'backend', 'function', getLayerDirectoryName(layerProjectName));
+
+/**
+ * Generate short v4 UUID
+ * @returns short UUID
+ */
+export const generateRandomShortId = (): string => uuid().split('-')[0];

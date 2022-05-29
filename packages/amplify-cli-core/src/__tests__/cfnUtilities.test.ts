@@ -6,7 +6,7 @@ jest.mock('fs-extra');
 const fs_mock = fs as jest.Mocked<typeof fs>;
 
 fs_mock.existsSync.mockReturnValue(true);
-fs_mock.statSync.mockReturnValue(({ isFile: true } as unknown) as fs.Stats);
+fs_mock.statSync.mockReturnValue({ isFile: true } as unknown as fs.Stats);
 
 const testPath = '/this/is/a/test/path.json';
 
@@ -25,31 +25,33 @@ describe('readCFNTemplate', () => {
 
   it('throws if specified file does not exist', async () => {
     fs_mock.existsSync.mockReturnValueOnce(false);
-    await expect(readCFNTemplate(testPath)).rejects.toMatchInlineSnapshot(
-      `[Error: No CloudFormation template found at /this/is/a/test/path.json]`,
-    );
+    fs_mock.readFileSync.mockReturnValue(jsonContent);
+
+    expect(() => {
+      readCFNTemplate(testPath);
+    }).toThrow(`No CloudFormation template found at /this/is/a/test/path.json`);
 
     fs_mock.existsSync.mockReturnValueOnce(true);
-    fs_mock.statSync.mockReturnValueOnce(({ isFile: false } as unknown) as fs.Stats);
+    fs_mock.statSync.mockReturnValueOnce({ isFile: false } as unknown as fs.Stats);
 
-    await expect(readCFNTemplate(testPath)).rejects.toMatchInlineSnapshot(
-      `[Error: No CloudFormation template found at /this/is/a/test/path.json]`,
-    );
+    expect(() => {
+      readCFNTemplate(testPath);
+    }).toThrow(`No CloudFormation template found at /this/is/a/test/path.json`);
   });
 
   it('returns template with json format', async () => {
-    ((fs_mock.readFile as unknown) as jest.MockedFunction<TwoArgReadFile>).mockResolvedValueOnce(jsonContent);
+    fs_mock.readFileSync.mockReturnValueOnce(jsonContent);
 
-    const result = await readCFNTemplate(testPath);
+    const result = readCFNTemplate(testPath);
 
     expect(result.templateFormat).toEqual(CFNTemplateFormat.JSON);
     expect(result.cfnTemplate).toEqual(testTemplate);
   });
 
   it('returns template with yaml format', async () => {
-    ((fs_mock.readFile as unknown) as jest.MockedFunction<TwoArgReadFile>).mockResolvedValueOnce(yamlContent);
+    fs_mock.readFileSync.mockReturnValueOnce(yamlContent);
 
-    const result = await readCFNTemplate(testPath);
+    const result = readCFNTemplate(testPath);
 
     expect(result.templateFormat).toEqual(CFNTemplateFormat.YAML);
     expect(result.cfnTemplate).toEqual(testTemplate);
@@ -60,9 +62,9 @@ describe('readCFNTemplate', () => {
       !GetAtt myResource.output.someProp
     `;
 
-    ((fs_mock.readFile as unknown) as jest.MockedFunction<TwoArgReadFile>).mockResolvedValueOnce(yamlContent);
+    fs_mock.readFileSync.mockReturnValueOnce(yamlContent);
 
-    const result = await readCFNTemplate(testPath);
+    const result = readCFNTemplate(testPath);
 
     expect(result.cfnTemplate).toMatchInlineSnapshot(`
       Object {
@@ -81,9 +83,9 @@ describe('readCFNTemplate', () => {
       someStringKey: "true"
     `;
 
-    ((fs_mock.readFile as unknown) as jest.MockedFunction<TwoArgReadFile>).mockResolvedValueOnce(yamlContent);
+    fs_mock.readFileSync.mockReturnValueOnce(yamlContent);
 
-    const result = await readCFNTemplate(testPath);
+    const result = readCFNTemplate(testPath);
 
     expect(result.cfnTemplate).toEqual({
       someKey: true,
@@ -99,9 +101,9 @@ describe('readCFNTemplate', () => {
       someStringKey: "1.234"
     `;
 
-    ((fs_mock.readFile as unknown) as jest.MockedFunction<TwoArgReadFile>).mockResolvedValueOnce(yamlContent);
+    fs_mock.readFileSync.mockReturnValueOnce(yamlContent);
 
-    const result = await readCFNTemplate(testPath);
+    const result = readCFNTemplate(testPath);
 
     expect(result.cfnTemplate).toEqual({
       someKey: 1,
@@ -123,15 +125,15 @@ describe('writeCFNTemplate', () => {
   it('writes json templates by default', async () => {
     await writeCFNTemplate(testTemplate, testPath);
 
-    expect(fs_mock.writeFile.mock.calls[0][0]).toEqual(testPath);
-    expect(fs_mock.writeFile.mock.calls[0][1]).toEqual(jsonContent);
+    expect(fs_mock.writeFileSync.mock.calls[0][0]).toEqual(testPath);
+    expect(fs_mock.writeFileSync.mock.calls[0][1]).toEqual(jsonContent);
   });
 
   it('writes yaml templates if specified', async () => {
     await writeCFNTemplate(testTemplate, testPath, { templateFormat: CFNTemplateFormat.YAML });
 
-    expect(fs_mock.writeFile.mock.calls[0][0]).toEqual(testPath);
-    expect(fs_mock.writeFile.mock.calls[0][1]).toEqual(yamlContent);
+    expect(fs_mock.writeFileSync.mock.calls[0][0]).toEqual(testPath);
+    expect(fs_mock.writeFileSync.mock.calls[0][1]).toEqual(yamlContent);
   });
 });
 
@@ -194,17 +196,17 @@ describe('roundtrip CFN Templates to object and back', () => {
         Ref1: !Ref SomeOtherValue
     `;
 
-    ((fs_mock.readFile as unknown) as jest.MockedFunction<TwoArgReadFile>).mockResolvedValueOnce(yamlContent);
+    (fs_mock.readFile as unknown as jest.MockedFunction<TwoArgReadFile>).mockResolvedValueOnce(yamlContent);
 
-    const result = await readCFNTemplate(testPath);
+    const result = readCFNTemplate(testPath);
 
     await writeCFNTemplate(result.cfnTemplate, testPath, { templateFormat: CFNTemplateFormat.YAML });
 
-    const writtenYaml = fs_mock.writeFile.mock.calls[0][1];
+    const writtenYaml = fs_mock.writeFileSync.mock.calls[0][1];
 
-    ((fs_mock.readFile as unknown) as jest.MockedFunction<TwoArgReadFile>).mockResolvedValueOnce(writtenYaml);
+    (fs_mock.readFile as unknown as jest.MockedFunction<TwoArgReadFile>).mockResolvedValueOnce(writtenYaml);
 
-    const roundtrippedYaml = await readCFNTemplate(testPath);
+    const roundtrippedYaml = readCFNTemplate(testPath);
 
     expect(result).toMatchObject(roundtrippedYaml);
   });

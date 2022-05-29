@@ -7,6 +7,7 @@ import { updateSchemaInTestProject, testMutations, testQueries } from '../common
 export async function runTest(projectDir: string, testModule: any) {
   await addApi(projectDir, {
     IAM: {},
+    transformerVersion: 1,
   });
   updateSchemaInTestProject(projectDir, testModule.schema);
   await amplifyPush(projectDir);

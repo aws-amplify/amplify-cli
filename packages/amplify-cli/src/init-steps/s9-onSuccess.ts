@@ -1,20 +1,31 @@
 import * as fs from 'fs-extra';
+import { join } from 'path';
 import sequential from 'promise-sequential';
-import { CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager, $TSContext } from 'amplify-cli-core';
+import {
+  CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager, $TSContext, $TSAny,
+} from 'amplify-cli-core';
+import _ from 'lodash';
+import { printer } from 'amplify-prompts';
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
 import { writeReadMeFile } from '../extensions/amplify-helpers/docs-manager';
 import { initializeEnv } from '../initialize-env';
-import _ from 'lodash';
 
-export async function onHeadlessSuccess(context: $TSContext) {
+/**
+ * Executes after headless init
+ */
+export const onHeadlessSuccess = async (context: $TSContext): Promise<void> => {
   const frontendPlugins = getFrontendPlugins(context);
+  // eslint-disable-next-line
   const frontendModule = require(frontendPlugins[context.exeInfo.projectConfig.frontend]);
   await frontendModule.onInitSuccessful(context);
-}
+};
 
-export async function onSuccess(context: $TSContext) {
+/**
+ * Executes at the end of headless init
+ */
+export const onSuccess = async (context: $TSContext): Promise<void> => {
   const { projectPath } = context.exeInfo.localEnvInfo;
 
   const amplifyDirPath = pathManager.getAmplifyDirPath(projectPath);
@@ -22,15 +33,21 @@ export async function onSuccess(context: $TSContext) {
   const backendDirPath = pathManager.getBackendDirPath(projectPath);
   const currentBackendDirPath = pathManager.getCurrentCloudBackendDirPath(projectPath);
 
-  fs.ensureDirSync(amplifyDirPath);
-  fs.ensureDirSync(dotConfigDirPath);
-  fs.ensureDirSync(backendDirPath);
-  fs.ensureDirSync(currentBackendDirPath);
+  if (context.exeInfo.isNewProject) {
+    fs.ensureDirSync(amplifyDirPath);
+    fs.ensureDirSync(dotConfigDirPath);
+    fs.ensureDirSync(backendDirPath);
+    fs.ensureDirSync(currentBackendDirPath);
+  } else {
+    // new env init. cleanup currentCloudBackend dir
+    fs.emptyDirSync(currentBackendDirPath);
+  }
 
   const providerPlugins = getProviderPlugins(context);
-  const providerOnSuccessTasks: (() => Promise<any>)[] = [];
+  const providerOnSuccessTasks: (() => Promise<$TSAny>)[] = [];
 
   const frontendPlugins = getFrontendPlugins(context);
+  // eslint-disable-next-line
   const frontendModule = require(frontendPlugins[context.exeInfo.projectConfig.frontend]);
 
   await frontendModule.onInitSuccessful(context);
@@ -52,6 +69,7 @@ export async function onSuccess(context: $TSContext) {
   }
 
   context.exeInfo.projectConfig.providers.forEach(provider => {
+    // eslint-disable-next-line
     const providerModule = require(providerPlugins[provider]);
     providerOnSuccessTasks.push(() => providerModule.onInitSuccessful(context));
   });
@@ -69,21 +87,33 @@ export async function onSuccess(context: $TSContext) {
   if (!context.parameters.options.app) {
     printWelcomeMessage(context);
   }
-}
 
-function generateLocalRuntimeFiles(context: $TSContext) {
+  const appId = currentAmplifyMeta?.providers?.awscloudformation?.AmplifyAppId;
+
+  if (!appId) {
+    printer.warn('The maximum number of apps that you can create with Amplify in this region has likely been reached:');
+    printer.info('For more information on Amplify Service Quotas, see:');
+    printer.info('https://docs.aws.amazon.com/general/latest/gr/amplify.html#service-quotas-amplify');
+    printer.blankLine();
+  }
+};
+
+const generateLocalRuntimeFiles = (context: $TSContext): void => {
   generateLocalEnvInfoFile(context);
   generateAmplifyMetaFile(context);
   generateLocalTagsFile(context);
-}
+};
 
-export function generateLocalEnvInfoFile(context: $TSContext) {
+/**
+ * Create local env file on env init
+ */
+export const generateLocalEnvInfoFile = (context: $TSContext): void => {
   const { projectPath } = context.exeInfo.localEnvInfo;
 
   stateManager.setLocalEnvInfo(projectPath, context.exeInfo.localEnvInfo);
-}
+};
 
-function generateLocalTagsFile(context: $TSContext) {
+const generateLocalTagsFile = (context: $TSContext): void => {
   if (context.exeInfo.isNewProject) {
     const { projectPath } = context.exeInfo.localEnvInfo;
 
@@ -106,35 +136,39 @@ function generateLocalTagsFile(context: $TSContext) {
 
     stateManager.setProjectFileTags(projectPath, tags);
   }
-}
+};
 
-export function generateAmplifyMetaFile(context: $TSContext) {
+/**
+ * Create amplify-meta.json on env init
+ */
+export const generateAmplifyMetaFile = (context: $TSContext): void => {
   if (context.exeInfo.isNewEnv) {
     const { projectPath } = context.exeInfo.localEnvInfo;
 
     stateManager.setCurrentMeta(projectPath, context.exeInfo.amplifyMeta);
     stateManager.setMeta(projectPath, context.exeInfo.amplifyMeta);
   }
-}
+};
 
-function generateNonRuntimeFiles(context: $TSContext) {
+const generateNonRuntimeFiles = (context: $TSContext): void => {
   generateProjectConfigFile(context);
   generateBackendConfigFile(context);
   generateTeamProviderInfoFile(context);
   generateGitIgnoreFile(context);
   generateReadMeFile(context);
-}
+  generateHooksSampleDirectory(context);
+};
 
-function generateProjectConfigFile(context: $TSContext) {
+const generateProjectConfigFile = (context: $TSContext): void => {
   // won't modify on new env
   if (context.exeInfo.isNewProject) {
     const { projectPath } = context.exeInfo.localEnvInfo;
 
     stateManager.setProjectConfig(projectPath, context.exeInfo.projectConfig);
   }
-}
+};
 
-function generateTeamProviderInfoFile(context: $TSContext) {
+const generateTeamProviderInfoFile = (context: $TSContext): void => {
   const { projectPath } = context.exeInfo.localEnvInfo;
 
   let teamProviderInfo = {};
@@ -151,17 +185,17 @@ function generateTeamProviderInfoFile(context: $TSContext) {
   }
 
   stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
-}
+};
 
-function generateBackendConfigFile(context: $TSContext) {
+const generateBackendConfigFile = (context: $TSContext): void => {
   if (context.exeInfo.isNewProject) {
     const { projectPath } = context.exeInfo.localEnvInfo;
 
     stateManager.setBackendConfig(projectPath, {});
   }
-}
+};
 
-function generateGitIgnoreFile(context: $TSContext) {
+const generateGitIgnoreFile = (context: $TSContext): void => {
   if (context.exeInfo.isNewProject) {
     const { projectPath } = context.exeInfo.localEnvInfo;
 
@@ -169,15 +203,22 @@ function generateGitIgnoreFile(context: $TSContext) {
 
     insertAmplifyIgnore(gitIgnoreFilePath);
   }
-}
+};
 
-function generateReadMeFile(context: $TSContext) {
+const generateReadMeFile = (context: $TSContext): void => {
   const { projectPath } = context.exeInfo.localEnvInfo;
   const readMeFilePath = pathManager.getReadMeFilePath(projectPath);
   writeReadMeFile(readMeFilePath);
-}
+};
 
-function printWelcomeMessage(context: $TSContext) {
+const generateHooksSampleDirectory = (context: $TSContext): void => {
+  const { projectPath } = context.exeInfo.localEnvInfo;
+  const sampleHookScriptsDirPath = join(__dirname, '..', '..', 'resources', 'sample-hooks');
+
+  stateManager.setSampleHooksDir(projectPath, sampleHookScriptsDirPath);
+};
+
+const printWelcomeMessage = (context: $TSContext): void => {
   context.print.info('');
   context.print.success('Your project has been successfully initialized and connected to the cloud!');
   context.print.info('');
@@ -191,6 +232,6 @@ function printWelcomeMessage(context: $TSContext) {
   );
   context.print.info('');
   context.print.success('Pro tip:');
-  context.print.info('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything');
+  context.print.info('Try "amplify add api" to create a backend API and then "amplify push" to deploy everything');
   context.print.info('');
-}
+};

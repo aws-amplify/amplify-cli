@@ -11,7 +11,7 @@ describe('JavaString', () => {
 
   it('length', () => {
     const str1 = new JavaString('foo');
-    expect(str1.length()).toEqual(3);
+    expect(str1.length().valueOf()).toEqual(3);
   });
 
   it('concat', () => {
@@ -39,8 +39,8 @@ describe('JavaString', () => {
 
   it('indexOf', () => {
     const str = new JavaString('Lorem ipsum dolor sit amet, consectetur adipiscing elit');
-    expect(str.indexOf(new JavaString('ipsum'))).toEqual(6);
-    expect(str.indexOf(new JavaString('ipsum'), 10)).toEqual(-1);
+    expect(str.indexOf(new JavaString('ipsum')).valueOf()).toEqual(6);
+    expect(str.indexOf(new JavaString('ipsum'), 10).valueOf()).toEqual(-1);
   });
 
   it('isEmpty', () => {
@@ -53,10 +53,10 @@ describe('JavaString', () => {
 
   it('lastIndexOf', () => {
     const str = new JavaString('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem');
-    expect(str.lastIndexOf(new JavaString('Lorem'))).toEqual(57);
-    expect(str.lastIndexOf(new JavaString('Lorem'), 10)).toEqual(0);
+    expect(str.lastIndexOf(new JavaString('Lorem')).valueOf()).toEqual(57);
+    expect(str.lastIndexOf(new JavaString('Lorem'), 10).valueOf()).toEqual(0);
 
-    expect(str.lastIndexOf(new JavaString('foo'))).toEqual(-1);
+    expect(str.lastIndexOf(new JavaString('foo')).valueOf()).toEqual(-1);
   });
 
   it('matches', () => {

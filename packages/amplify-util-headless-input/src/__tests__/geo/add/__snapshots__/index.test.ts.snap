@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`validate add geo request returns valid payload for map 1`] = `
+Object {
+  "serviceConfiguration": Object {
+    "accessType": "AuthorizedUsers",
+    "mapStyle": "VectorEsriNavigation",
+    "name": "mymapname",
+    "serviceName": "Map",
+    "setAsDefault": true,
+  },
+  "version": 1,
+}
+`;

@@ -220,7 +220,12 @@ async function deleteApp(context, pinpointAppId) {
   spinner.start('Deleting Pinpoint app.');
   return new Promise((resolve, reject) => {
     pinpointClient.deleteApp(params, (err, data) => {
-      if (err) {
+      if (err && err.code === 'NotFoundException') {
+        spinner.succeed(`Project with ID '${params.ApplicationId}' was already deleted from the cloud.`);
+        resolve({
+          Id: params.ApplicationId,
+        });
+      } else if (err) {
         spinner.fail('Pinpoint project deletion error');
         reject(err);
       } else {

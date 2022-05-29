@@ -43,25 +43,13 @@ export async function timeHelper(exp: CronBuilder) {
   const timeQuestion = {
     type: 'datetime',
     name: 'dt',
-    message: 'Select the start time (use arrow keys):',
+    message: 'Select the start time in UTC (use arrow keys):',
     format: ['hh', ':', 'mm', ' ', 'A'],
   };
 
   const timeAnswer = await inquirer.prompt([timeQuestion]);
-  exp.set(
-    'minute',
-    (<dtType>timeAnswer.dt)
-      .getMinutes()
-      .toString()
-      .split(),
-  );
-  exp.set(
-    'hour',
-    (<dtType>timeAnswer.dt)
-      .getHours()
-      .toString()
-      .split(),
-  );
+  exp.set('minute', (<dtType>timeAnswer.dt).getMinutes().toString().split());
+  exp.set('hour', (<dtType>timeAnswer.dt).getHours().toString().split());
   return exp;
 }
 
@@ -98,13 +86,7 @@ export async function monthHelper(exp, context) {
     const suffix = (<dtType>dateAnswer.dt).getDate() === 31 ? 'st' : 'th';
     context.print.warning(`Function won't be invoked on months without the ${(<dtType>dateAnswer.dt).getDate()}${suffix} day`);
   }
-  exp.set(
-    'dayOfTheMonth',
-    (<dtType>dateAnswer.dt)
-      .getDate()
-      .toString()
-      .split(),
-  );
+  exp.set('dayOfTheMonth', (<dtType>dateAnswer.dt).getDate().toString().split());
   return exp;
 }
 
@@ -120,19 +102,7 @@ export async function yearHelper(exp, context) {
     const suffix = (<dtType>dateAnswer.dt).getDate() === 31 ? 'st' : 'th';
     context.print.warning(`Function won't be invoked on months without the ${(<dtType>dateAnswer.dt).getDate()}${suffix} day`);
   }
-  exp.set(
-    'dayOfTheMonth',
-    (<dtType>dateAnswer.dt)
-      .getDate()
-      .toString()
-      .split(),
-  );
-  exp.set(
-    'month',
-    (<dtType>dateAnswer.dt)
-      .getMonth()
-      .toString()
-      .split(),
-  );
+  exp.set('dayOfTheMonth', (<dtType>dateAnswer.dt).getDate().toString().split());
+  exp.set('month', (<dtType>dateAnswer.dt).getMonth().toString().split());
   return exp;
 }

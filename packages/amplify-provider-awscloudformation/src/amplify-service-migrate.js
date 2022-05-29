@@ -99,7 +99,7 @@ async function run(context) {
 
     const { StackName, DeploymentBucketName } = projectDetails.teamProviderInfo[envName][constants.ProviderName];
     if (!backendEnvs.includes(envName)) {
-      context.print.info(`Adding backend environment ${envName} to AWS Amplify Console app: ${amplifyAppId}`);
+      context.print.info(`Adding backend environment ${envName} to AWS Amplify app: ${amplifyAppId}`);
       const createEnvParams = {
         appId: amplifyAppId,
         environmentName: envName,

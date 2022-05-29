@@ -57,7 +57,7 @@ export class StackEventMonitor {
       return;
     }
 
-    this.tickTimer = setTimeout(() => this.tick(), this.options.pollDelay);
+    this.tickTimer = setTimeout(() => this.tick(), this.options.pollDelay) as any;
   }
 
   private async tick() {

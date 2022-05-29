@@ -1,4 +1,7 @@
-import { $TSAny, JSONUtilities } from 'amplify-cli-core';
+/* eslint-disable import/no-cycle */
+import {
+  $TSAny, $TSMeta, $TSObject, JSONUtilities,
+} from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { ExecutionContext, getCLIPath, nspawn as spawn } from '..';
@@ -6,8 +9,15 @@ import { getBackendAmplifyMeta } from '../utils';
 import { getLayerVersion, listVersions } from '../utils/sdk-calls';
 import { multiSelect } from '../utils/selectors';
 
+/**
+ * valid layer runtime choices
+ */
 export type LayerRuntime = 'nodejs' | 'python';
 type LayerRuntimeDisplayName = 'NodeJS' | 'Python';
+
+/**
+ * valid layer permission choices
+ */
 export type LayerPermissionChoice = 'Specific AWS accounts' | 'Specific AWS organization' | 'Public (Anyone on AWS can use this layer)';
 
 export const layerRuntimeChoices: LayerRuntimeDisplayName[] = ['NodeJS', 'Python'];
@@ -19,102 +29,132 @@ export const permissionChoices: LayerPermissionChoice[] = [
 
 const PARAMETERS_FILE_NAME = 'parameters.json';
 
+/**
+ * helper type for constructing the layer resource's path
+ */
 export type LayerDirectoryType = {
   layerName: string;
-  projName: string;
+  projName: string; // TODO change to projectName and remove 'proj' from eslint dictionary
 };
 
-export function validateLayerDir(projRoot: string, layerProjName: LayerDirectoryType, runtimes: LayerRuntime[]): boolean {
-  let layerDir = path.join(projRoot, 'amplify', 'backend', 'function', getLayerDirectoryName(layerProjName));
-  let validDir = fs.pathExistsSync(path.join(layerDir, 'opt'));
+/**
+ * validate layer directory
+ */
+export const validateLayerDir = (projectRoot: string, layerProjectName: LayerDirectoryType, runtimes: LayerRuntime[]): boolean => {
+  const layerDir = path.join(projectRoot, 'amplify', 'backend', 'function', getLayerDirectoryName(layerProjectName));
+  const validDir = fs.pathExistsSync(path.join(layerDir, 'opt'));
   if (runtimes && runtimes.length) {
-    for (let runtime of runtimes) {
-      if (!fs.pathExistsSync(path.join(layerDir, getLayerRuntimeInfo(runtime).path))) {
+    for (const runtime of runtimes) {
+      if (!fs.pathExistsSync(path.join(layerDir, getLayerRuntimeInfo(runtime).runtimePath))) {
         return false;
       }
     }
   }
   return validDir;
-}
+};
 
-export function getLayerDirectoryName({ layerName, projName }: { layerName: string; projName: string }): string {
-  return `${projName}${layerName}`;
-}
+/**
+ * get the name of a layer directory
+ */
+export const getLayerDirectoryName = (
+  { layerName, projName }: { layerName: string; projName: string },
+): string => `${projName}${layerName}`;
 
-export function validatePushedVersion(projRoot: string, layerProjName: LayerDirectoryType, permissions: LayerPermission[]) {
-  const layerData = getLayerConfig(projRoot, getLayerDirectoryName(layerProjName));
+/**
+ * validation helper for layer version
+ */
+export const validatePushedVersion = (projectRoot: string, layerProjectName: LayerDirectoryType, permissions: LayerPermission[]): void => {
+  const layerData = getLayerConfig(projectRoot, getLayerDirectoryName(layerProjectName));
   const storedPermissions: LayerPermission[] = layerData.permissions;
   permissions.forEach(perm => expect(storedPermissions).toContainEqual(perm));
-}
+};
 
-export function expectEphemeralPermissions(
-  projRoot: string,
-  layerProjName: LayerDirectoryType,
+/**
+ * validation helper for ephemeral layer version permissions
+ */
+export const expectEphemeralPermissions = (
+  projectRoot: string,
+  layerProjectName: LayerDirectoryType,
   envName: string,
   version: number,
   permissions: LayerPermission[],
-) {
-  const layerData = getLayerConfig(projRoot, getLayerDirectoryName(layerProjName));
+): void => {
+  const layerData = getLayerConfig(projectRoot, getLayerDirectoryName(layerProjectName));
   const storedPermissions: LayerPermission[] = layerData?.ephemeral?.layerVersionPermissionsToUpdate?.[envName]?.[version];
   permissions.forEach(perm => expect(storedPermissions).toContainEqual(perm));
-}
+};
 
-export function expectEphemeralDataIsUndefined(projRoot: string, layerProjName: LayerDirectoryType) {
-  const layerData = getLayerConfig(projRoot, getLayerDirectoryName(layerProjName));
+/**
+ * validation helper for ephemeral data
+ */
+export const expectEphemeralDataIsUndefined = (projectRoot: string, layerProjectName: LayerDirectoryType): void => {
+  const layerData = getLayerConfig(projectRoot, getLayerDirectoryName(layerProjectName));
   const ephemeralData = layerData?.ephemeral;
 
   expect(ephemeralData).toBeUndefined();
-}
+};
 
-export async function expectDeployedLayerDescription(
-  projRoot: string,
-  layerProjName: LayerDirectoryType,
-  meta: any,
+/**
+ * validation helper for layer version description
+ */
+export const expectDeployedLayerDescription = async (
+  projectRoot: string,
+  layerProjectName: LayerDirectoryType,
+  meta: $TSMeta,
   envName: string,
   layerDescription: string,
-) {
-  const arn = getCurrentLayerArnFromMeta(projRoot, layerProjName);
+): Promise<void> => {
+  const arn = getCurrentLayerArnFromMeta(projectRoot, layerProjectName);
   const region = meta.providers.awscloudformation.Region;
-  const { description } = getLayerRuntimes(projRoot, getLayerDirectoryName(layerProjName));
+  const { description } = getLayerRuntimes(projectRoot, getLayerDirectoryName(layerProjectName));
 
   expect(arn).toBeDefined();
   expect(description).toEqual(layerDescription);
 
-  const { LayerVersions: Versions } = await listVersions(`${getLayerDirectoryName(layerProjName)}-${envName}`, region);
+  const { LayerVersions: Versions } = await listVersions(`${getLayerDirectoryName(layerProjectName)}-${envName}`, region);
 
   expect(Versions).toBeDefined();
   expect(Versions).toHaveLength(1);
   expect(Versions[0].Description).toEqual(layerDescription);
-}
+};
 
-export async function validateLayerMetadata(
-  projRoot: string,
-  layerProjName: LayerDirectoryType,
-  meta: any,
+/**
+ * validation helper for Lambda layers
+ */
+export const validateLayerMetadata = async (
+  projectRoot: string,
+  layerProjectName: LayerDirectoryType,
+  meta: $TSMeta,
   envName: string,
   arns: string[],
-) {
-  const arn = getCurrentLayerArnFromMeta(projRoot, layerProjName);
+): Promise<void> => {
+  const arn = getCurrentLayerArnFromMeta(projectRoot, layerProjectName);
   const region = meta.providers.awscloudformation.Region;
-  const { runtimes } = getLayerRuntimes(projRoot, getLayerDirectoryName(layerProjName));
+  const { runtimes } = getLayerRuntimes(projectRoot, getLayerDirectoryName(layerProjectName));
   const runtimeValues = runtimes;
 
   expect(arn).toBeDefined();
   const cloudData = await getLayerVersion(arn, region);
-  const { LayerVersions: Versions } = await listVersions(`${getLayerDirectoryName(layerProjName)}-${envName}`, region);
+  const { LayerVersions: Versions } = await listVersions(`${getLayerDirectoryName(layerProjectName)}-${envName}`, region);
   const cloudVersions = Versions.map(version => version.LayerVersionArn);
   expect(cloudVersions.map(String).sort()).toEqual(arns.sort());
   expect(cloudData.LayerVersionArn).toEqual(arn);
   expect(cloudData.CompatibleRuntimes).toEqual(runtimeValues);
-}
+};
 
-export function getCurrentLayerArnFromMeta(projroot: string, layerProjName: LayerDirectoryType): string {
-  const meta = getBackendAmplifyMeta(projroot);
-  const layerName = getLayerDirectoryName(layerProjName);
+/**
+ * get arn from amplify-meta.json
+ */
+export const getCurrentLayerArnFromMeta = (projectRoot: string, layerProjectName: LayerDirectoryType): string => {
+  const meta = getBackendAmplifyMeta(projectRoot);
+  const layerName = getLayerDirectoryName(layerProjectName);
   return meta.function[layerName].output.Arn;
-}
+};
 
-export function addLayer(
+/**
+ * add a Lambda layer resource via `amplify add function`
+ */
+export const addLayer = (
   cwd: string,
   settings: {
     layerName: string;
@@ -124,11 +164,12 @@ export function addLayer(
     projName: string;
     runtimes: LayerRuntime[];
   },
-  testingWithLatestCodebase: boolean = false,
-): Promise<void> {
+  testingWithLatestCodebase = false,
+): Promise<void> => {
   const defaultSettings = {
     permissions: [],
   };
+  // eslint-disable-next-line no-param-reassign
   settings = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
     const chain: ExecutionContext = spawn(getCLIPath(testingWithLatestCodebase), ['add', 'function'], { cwd, stripColors: true })
@@ -165,75 +206,85 @@ export function addLayer(
       }
     });
   });
-}
+};
 
-// Assumes first item in list is a layer and removes it
-export function removeLayer(cwd: string, versionsToRemove: number[], allVersions: number[]): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['remove', 'function'], { cwd, stripColors: true })
-      .wait('Choose the resource you would want to remove')
-      .sendCarriageReturn() // first one
-      .wait('When you delete a layer version, you can no longer configure functions to use it.')
-      .wait('However, any function that already uses the layer version continues to have access to it.')
-      .wait('Choose the Layer versions you want to remove.');
-
-    multiSelect(chain, versionsToRemove, allVersions);
-
-    chain
-      .wait('Are you sure you want to delete the resource? This action')
-      .sendConfirmYes()
-      .wait('Successfully removed resource')
-      .sendEof()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
-
-export function removeLayerVersion(
+/**
+ * Remove all layer versions via `amplify remove function`
+ * Assumes first item in list of functions is a layer and removes it
+ */
+export const removeLayer = (
   cwd: string,
-  settings: { removeLegacyOnly?: boolean; removeNoLayerVersions?: boolean },
   versionsToRemove: number[],
   allVersions: number[],
-  testingWithLatestCodebase = false,
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(testingWithLatestCodebase), ['remove', 'function'], { cwd, stripColors: true })
-      .wait('Choose the resource you would want to remove')
-      .sendCarriageReturn() // first one
-      .wait('When you delete a layer version, you can no longer configure functions to use it.')
-      .wait('However, any function that already uses the layer version continues to have access to it.')
-      .wait('Choose the Layer versions you want to remove.');
+): Promise<void> => new Promise((resolve, reject) => {
+  const chain = spawn(getCLIPath(), ['remove', 'function'], { cwd, stripColors: true })
+    .wait('Choose the resource you would want to remove')
+    .sendCarriageReturn() // first one
+    .wait('When you delete a layer version, you can no longer configure functions to use it.')
+    .wait('However, any function that already uses the layer version continues to have access to it.')
+    .wait('Choose the Layer versions you want to remove.');
 
-    multiSelect(chain, versionsToRemove, allVersions);
+  multiSelect(chain, versionsToRemove, allVersions);
 
-    if (settings.removeLegacyOnly) {
-      chain.wait(/Warning: By continuing, these layer versions \[.+\] will be immediately deleted./);
-    }
-
-    if (!settings.removeNoLayerVersions) {
-      chain.wait('All new layer versions created with the Amplify CLI will only be deleted on amplify push.');
-    }
-
-    if (settings.removeLegacyOnly) {
-      chain.wait('✔ Layers deleted');
-    }
-
-    chain.sendEof().run((err: Error) => {
+  chain
+    .wait('Are you sure you want to delete the resource? This action')
+    .sendConfirmYes()
+    .wait('Successfully removed resource')
+    .sendEof()
+    .run((err: Error) => {
       if (!err) {
         resolve();
       } else {
         reject(err);
       }
     });
-  });
-}
+});
 
-export function updateLayer(
+/**
+ * remove layer version via `amplify remove function`
+ * assumes first item in list of functions is a layer and removes it
+ */
+export const removeLayerVersion = (
+  cwd: string,
+  settings: { removeLegacyOnly?: boolean; removeNoLayerVersions?: boolean },
+  versionsToRemove: number[],
+  allVersions: number[],
+  testingWithLatestCodebase = false,
+): Promise<void> => new Promise((resolve, reject) => {
+  const chain = spawn(getCLIPath(testingWithLatestCodebase), ['remove', 'function'], { cwd, stripColors: true })
+    .wait('Choose the resource you would want to remove')
+    .sendCarriageReturn() // first one
+    .wait('When you delete a layer version, you can no longer configure functions to use it.')
+    .wait('However, any function that already uses the layer version continues to have access to it.')
+    .wait('Choose the Layer versions you want to remove.');
+
+  multiSelect(chain, versionsToRemove, allVersions);
+
+  if (settings.removeLegacyOnly) {
+    chain.wait(/Warning: By continuing, these layer versions \[.+\] will be immediately deleted./);
+  }
+
+  if (!settings.removeNoLayerVersions) {
+    chain.wait('All new layer versions created with the Amplify CLI will only be deleted on amplify push.');
+  }
+
+  if (settings.removeLegacyOnly) {
+    chain.wait('✔ Layers deleted');
+  }
+
+  chain.sendEof().run((err: Error) => {
+    if (!err) {
+      resolve();
+    } else {
+      reject(err);
+    }
+  });
+});
+
+/**
+ * update Lambda layer resource via `amplify update function`
+ */
+export const updateLayer = (
   cwd: string,
   settings?: {
     layerName?: string;
@@ -242,138 +293,158 @@ export function updateLayer(
     numLayers?: number;
     versions?: number;
     permissions?: string[];
+    // eslint-disable-next-line spellcheck/spell-checker
     dontChangePermissions?: boolean;
     changePermissionOnFutureVersion?: boolean;
     changePermissionOnLatestVersion?: boolean;
     migrateLegacyLayer?: boolean;
   },
-  testingWithLatestCodebase: boolean = false,
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const chain: ExecutionContext = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'function'], { cwd, stripColors: true })
-    if (settings.numLayers > 1) {
-      chain.wait('Select the Lambda layer to update:').sendCarriageReturn();
-    }
+  testingWithLatestCodebase = false,
+): Promise<void> => new Promise((resolve, reject) => {
+  const chain: ExecutionContext = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'function'], { cwd, stripColors: true });
+  if (settings.numLayers > 1) {
+    chain.wait('Select the Lambda layer to update:').sendCarriageReturn();
+  }
 
-    if (settings.migrateLegacyLayer === true) {
+  if (settings.migrateLegacyLayer === true) {
+    chain
+      .wait('Amplify updated the way Lambda layers work to better support team workflows and additional features.')
+      .wait('Continue?')
+      .sendConfirmYes();
+  }
+
+  chain.wait('Do you want to adjust layer version permissions?');
+
+  // eslint-disable-next-line spellcheck/spell-checker
+  if (settings.dontChangePermissions === true) {
+    chain.sendConfirmNo();
+  } else {
+    chain.sendConfirmYes();
+
+    // Compatibility with existing e2e tests
+    if (settings.versions > 0) {
       chain
-        .wait('⚠️  Amplify updated the way Lambda layers work to better support team workflows and additional features.')
-        .wait('Continue?')
-        .sendConfirmYes();
+        .wait('Select the layer version to update')
+        .sendKeyDown() // Move down from "future layer" option
+        .sendCarriageReturn(); // assumes updating the latest layer version
+    } else if (settings.changePermissionOnFutureVersion === true) {
+      chain.wait('Select the layer version to update').sendCarriageReturn(); // future layer version
+    } else if (settings.changePermissionOnLatestVersion === true) {
+      chain
+        .wait('Select the layer version to update')
+        .sendKeyDown() // Move down from "future layer" option
+        .sendCarriageReturn(); // latest layer version
     }
 
-    chain.wait('Do you want to adjust layer version permissions?');
+    chain.wait('The current AWS account will always have access to this layer.');
 
-    if (settings.dontChangePermissions === true) {
-      chain.sendConfirmNo();
+    multiSelect(chain, settings.permissions, permissionChoices);
+
+    waitForLayerSuccessPrintout(chain, settings, 'updated');
+  }
+
+  chain.run((err: Error) => {
+    if (!err) {
+      resolve();
     } else {
-      chain.sendConfirmYes();
-
-      // Compatibility with existing e2e tests
-      if (settings.versions > 0) {
-        chain
-          .wait('Select the layer version to update')
-          .sendKeyDown() // Move down from "future layer" option
-          .sendCarriageReturn(); // assumes updating the latest layer version
-      } else if (settings.changePermissionOnFutureVersion === true) {
-        chain.wait('Select the layer version to update').sendCarriageReturn(); // future layer version
-      } else if (settings.changePermissionOnLatestVersion === true) {
-        chain
-          .wait('Select the layer version to update')
-          .sendKeyDown() // Move down from "future layer" option
-          .sendCarriageReturn(); // latest layer version
-      }
-
-      chain.wait('The current AWS account will always have access to this layer.');
-
-      multiSelect(chain, settings.permissions, permissionChoices);
-
-      waitForLayerSuccessPrintout(chain, settings, 'updated');
+      reject(err);
     }
-
-    chain.run((err: Error) => {
-      if (!err) {
-        resolve();
-      } else {
-        reject(err);
-      }
-    });
   });
-}
+});
 
-export function updateOptData(projRoot: string, layerProjName: LayerDirectoryType, data: string) {
+/**
+ * append passed in data to opt/data.txt for the given Lambda layer resource
+ */
+export const updateOptData = (projectRoot: string, layerProjectName: LayerDirectoryType, data: string): void => {
   fs.appendFileSync(
-    path.join(projRoot, 'amplify', 'backend', 'function', getLayerDirectoryName(layerProjName), 'opt', 'data.txt'),
+    path.join(projectRoot, 'amplify', 'backend', 'function', getLayerDirectoryName(layerProjectName), 'opt', 'data.txt'),
     data,
     'utf8',
   );
-}
+};
 
-export function addOptData(projRoot: string, layerProjName: LayerDirectoryType, data: string = 'data'): void {
+/**
+ * write passed in data to opt/data.txt for the given Lambda layer resource
+ */
+export const addOptData = (projectRoot: string, layerProjectName: LayerDirectoryType, data = 'data'): void => {
   fs.writeFileSync(
-    path.join(projRoot, 'amplify', 'backend', 'function', getLayerDirectoryName(layerProjName), 'opt', 'data.txt'),
+    path.join(projectRoot, 'amplify', 'backend', 'function', getLayerDirectoryName(layerProjectName), 'opt', 'data.txt'),
     data,
     'utf8',
   );
-}
+};
 
+/* eslint-disable @typescript-eslint/naming-convention */
+/**
+ * layer permission enum
+ */
 export enum LayerPermissionName {
   awsAccounts = 'awsAccounts',
   awsOrg = 'awsOrg',
   private = 'Private',
   public = 'Public',
 }
+/* eslint-enable @typescript-eslint/naming-convention */
 
+/**
+ * layer permission interface
+ */
 export interface LayerPermission {
   type: LayerPermissionName;
   accounts?: string[];
   orgs?: string[];
 }
 
-export function getLayerVersionArnFromCfn(projRoot: string, layerProjName: LayerDirectoryType): string[] {
-  const directoryName = getLayerDirectoryName(layerProjName);
-  const cfn = getLayerCfn(projRoot, directoryName);
+/**
+ * get Lambda layer version arn from the local CloudFormation template
+ */
+export const getLayerVersionArnFromCfn = (projectRoot: string, layerProjectName: LayerDirectoryType): string[] => {
+  const directoryName = getLayerDirectoryName(layerProjectName);
+  const cfn = getLayerCfn(projectRoot, directoryName);
   const versionLogicalNames = Object.keys(cfn.Resources).filter(key => cfn.Resources[key].Type === 'AWS::Lambda::LayerVersion');
   return versionLogicalNames;
-}
+};
 
-function getLayerCfn(projRoot: string, layerDirectoryName: string) {
-  const cfnFilePath = path.join(projRoot, 'amplify', layerDirectoryName, `${layerDirectoryName}-awscloudformation-template.json`);
-  const cfn = JSONUtilities.readJson(cfnFilePath) as $TSAny;
+const getLayerCfn = (projectRoot: string, layerDirectoryName: string): $TSObject => {
+  const cfnFilePath = path.join(projectRoot, 'amplify', layerDirectoryName, `${layerDirectoryName}-awscloudformation-template.json`);
+  const cfn = JSONUtilities.readJson<$TSObject>(cfnFilePath);
   return cfn;
-}
+};
 
-function getLayerConfig(projroot: string, layerName: string): $TSAny {
-  const layerConfigPath = path.join(projroot, 'amplify', 'backend', 'function', layerName, 'layer-configuration.json');
-  const layerConfig = JSONUtilities.readJson(layerConfigPath);
+const getLayerConfig = (projectRoot: string, layerName: string): $TSObject => {
+  const layerConfigPath = path.join(projectRoot, 'amplify', 'backend', 'function', layerName, 'layer-configuration.json');
+  const layerConfig = JSONUtilities.readJson<$TSObject>(layerConfigPath);
   return layerConfig;
-}
+};
 
-function getLayerRuntimes(projRoot: string, layerName: string): $TSAny {
-  const runtimesFilePath = path.join(projRoot, 'amplify', 'backend', 'function', layerName, PARAMETERS_FILE_NAME);
-  return JSONUtilities.readJson(runtimesFilePath);
-}
+const getLayerRuntimes = (projectRoot: string, layerName: string): $TSObject => {
+  const runtimesFilePath = path.join(projectRoot, 'amplify', 'backend', 'function', layerName, PARAMETERS_FILE_NAME);
+  return JSONUtilities.readJson<$TSObject>(runtimesFilePath);
+};
 
-export function getRuntimeDisplayNames(runtimes: LayerRuntime[]) {
-  return runtimes.map(runtime => getLayerRuntimeInfo(runtime).displayName);
-}
+/**
+ * map display names for runtimes
+ */
+export const getRuntimeDisplayNames = (
+  runtimes: LayerRuntime[],
+): string[] => runtimes.map(runtime => getLayerRuntimeInfo(runtime).displayName);
 
-function getLayerRuntimeInfo(runtime: LayerRuntime) {
+const getLayerRuntimeInfo = (runtime: LayerRuntime): { displayName: string, runtimePath: string } => {
   switch (runtime) {
     case 'nodejs':
-      return { displayName: 'NodeJS', path: path.join('lib', runtime) };
+      return { displayName: 'NodeJS', runtimePath: path.join('lib', runtime) };
     case 'python':
-      return { displayName: 'Python', path: path.join('lib', runtime) };
+      return { displayName: 'Python', runtimePath: path.join('lib', runtime) };
     default:
       throw new Error(`Invalid runtime value: ${runtime}`);
   }
-}
+};
 
-function waitForLayerSuccessPrintout(
+const waitForLayerSuccessPrintout = (
   chain: ExecutionContext,
   settings: { layerName?: string; projName?: string; runtimes?: LayerRuntime[] } | $TSAny,
   action: string,
-) {
+): void => {
   chain.wait(`✅ Lambda layer folders & files ${action}:`);
 
   if (settings?.runtimes?.length > 0) {
@@ -384,8 +455,8 @@ function waitForLayerSuccessPrintout(
 
     const runtimes = settings.layerName && settings.projName ? settings.runtimes : [];
     for (const runtime of runtimes) {
-      const { displayName, path } = getLayerRuntimeInfo(runtime);
-      const layerRuntimeDir = `[${displayName}]: amplify/backend/function/${settings.projName + settings.layerName}/${path}`;
+      const { displayName, runtimePath } = getLayerRuntimeInfo(runtime);
+      const layerRuntimeDir = `[${displayName}]: amplify/backend/function/${settings.projName + settings.layerName}/${runtimePath}`;
       chain.wait(layerRuntimeDir);
     }
   }
@@ -395,4 +466,4 @@ function waitForLayerSuccessPrintout(
     .wait('"amplify function update <function-name>" - configure a function with this Lambda layer')
     .wait('"amplify push" - builds all of your local backend resources and provisions them in the cloud')
     .sendEof();
-}
+};

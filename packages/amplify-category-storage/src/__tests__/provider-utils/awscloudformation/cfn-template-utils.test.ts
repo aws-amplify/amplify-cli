@@ -10,13 +10,13 @@ pathManager_mock.getBackendDirPath.mockReturnValue('/test/path');
 
 describe('get existing table column names', () => {
   it('returns empty array when no template exists', async () => {
-    readCFNTemplate_mock.mockResolvedValueOnce(undefined);
+    readCFNTemplate_mock.mockReturnValueOnce(undefined);
     const result = await getExistingTableColumnNames('testResource');
     expect(result).toEqual([]);
   });
 
   it('returns empty array when no table in template', async () => {
-    readCFNTemplate_mock.mockResolvedValueOnce({
+    readCFNTemplate_mock.mockReturnValueOnce({
       cfnTemplate: {
         Resources: {
           NoTablesHere: {
@@ -30,7 +30,7 @@ describe('get existing table column names', () => {
   });
 
   it('returns empty array when table has no attributes', async () => {
-    readCFNTemplate_mock.mockResolvedValueOnce({
+    readCFNTemplate_mock.mockReturnValueOnce({
       cfnTemplate: {
         Resources: {
           TestTable: {
@@ -47,7 +47,7 @@ describe('get existing table column names', () => {
   });
 
   it('returns attribute names when present', async () => {
-    readCFNTemplate_mock.mockResolvedValueOnce({
+    readCFNTemplate_mock.mockReturnValueOnce({
       cfnTemplate: {
         Resources: {
           TestTable: {

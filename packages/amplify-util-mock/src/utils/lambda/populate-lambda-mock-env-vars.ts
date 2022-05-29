@@ -1,28 +1,32 @@
 import { $TSContext, pathManager, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
-import { ProcessedLambdaFunction } from '../../CFNParser/stack/types';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
 import { loadConfigurationForEnv, resolveAppId } from 'amplify-provider-awscloudformation';
+import { ProcessedLambdaFunction } from '../../CFNParser/stack/types';
 
 /**
  * Appends default labmda environment variables to the environment property of the processedLambda
  * (see https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html#configuration-envvars-runtime)
  * Some values are stubbed properly and others have static default values
  */
-export const populateLambdaMockEnvVars = async (context: $TSContext, processedLambda: ProcessedLambdaFunction) => {
+export const populateLambdaMockEnvVars = async (context: $TSContext, processedLambda: ProcessedLambdaFunction): Promise<void> => {
+  // eslint-disable-next-line no-param-reassign
   processedLambda.environment = (
     await Promise.all(
-      [getAwsCredentials, getStaticDefaults, getDynamicDefaults, getDotEnvValues].map(envVarGetter =>
-        envVarGetter(processedLambda, context),
-      ),
+      [getAwsCredentials,
+        getStaticDefaults,
+        getDynamicDefaults,
+        getDotEnvValues,
+      ].map(envVarGetter => envVarGetter(processedLambda, context)),
     )
   ).reduce((acc, it) => ({ ...acc, ...it }), processedLambda.environment);
 };
 
+// eslint-disable-next-line @typescript-eslint/no-shadow
 const getAwsCredentials = async (_, context: $TSContext): Promise<Record<string, string>> => {
   const env = stateManager.getLocalEnvInfo().envName;
-  let appId: string | undefined = undefined;
+  let appId: string | undefined;
   try {
     appId = resolveAppId(context);
   } catch {
@@ -37,13 +41,14 @@ const getAwsCredentials = async (_, context: $TSContext): Promise<Record<string,
 };
 
 const getStaticDefaults = (): Record<string, string> => ({
+  // eslint-disable-next-line spellcheck/spell-checker
   _X_AMZN_TRACE_ID: 'amplify-mock-x-amzn-trace-id',
   AWS_EXECUTION_ENV: 'AWS_Lambda_amplify-mock', // we could do some work to resolve the actual runtime here, but there doesn't seem to be a need at this point
   AWS_LAMBDA_FUNCTION_MEMORY_SIZE: '128', // the default
   AWS_LAMBDA_FUNCTION_VERSION: '1',
   AWS_LAMBDA_INITIALIZATION_TYPE: 'on-demand',
   AWS_LAMBDA_LOG_GROUP_NAME: 'amplify-mock-aws-lambda-log-group-name',
-  AWS_LAMBDA_LOG_GROUP_STREAM_NAME: 'amplify-mock-aws-lambda-log-group-stream-name',
+  AWS_LAMBDA_LOG_STREAM_NAME: 'amplify-mock-aws-lambda-log-stream-name',
   TZ: 'UTC',
 });
 
@@ -73,4 +78,5 @@ const getDotEnvValues = (processedLambda: ProcessedLambdaFunction): Record<strin
   } catch {
     // if there's no .env file, carry on without it
   }
+  return undefined;
 };

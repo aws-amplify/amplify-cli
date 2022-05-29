@@ -1,5 +1,4 @@
 import {
-  addApiWithSchema,
   addFunction,
   addLayer,
   amplifyPush,
@@ -15,29 +14,41 @@ import {
   LayerRuntime,
   loadFunctionTestFile,
   overrideFunctionSrcNode,
+  updateApiSchema,
   updateFunction,
   validateLayerMetadata,
+  addApiWithoutSchema,
+  generateRandomShortId,
 } from 'amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
-import { initJSProjectWithProfile } from '../../migration-helpers';
+import { initJSProjectWithProfile, versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
 
 describe('amplify function migration', () => {
   let projRoot: string;
 
+  beforeAll(async () => {
+    const migrateFromVersion = { v: 'unintialized' };
+    const migrateToVersion = { v: 'unintialized' };
+    await versionCheck(process.cwd(), false, migrateFromVersion);
+    await versionCheck(process.cwd(), true, migrateToVersion);
+    expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
+    expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
+  });
+
   beforeEach(async () => {
     projRoot = await createNewProjectDir('functions');
+    await initJSProjectWithProfile(projRoot, { name: 'functionmigration' });
   });
 
   afterEach(async () => {
-    await deleteProject(projRoot);
+    await deleteProject(projRoot, null, true);
     deleteProjectDir(projRoot);
   });
 
   it('existing lambda updated with additional permissions should be able to scan ddb', async () => {
-    await initJSProjectWithProfile(projRoot, {});
+    const { projectName: appName } = getProjectConfig(projRoot);
 
-    const random = Math.floor(Math.random() * 10000);
-    const fnName = `integtestfn${random}`;
+    const fnName = `integtestfn${generateRandomShortId()}`;
     await addFunction(
       projRoot,
       {
@@ -58,7 +69,9 @@ describe('amplify function migration', () => {
     expect(functionName).toBeDefined();
     expect(region).toBeDefined();
 
-    await addApiWithSchema(projRoot, 'simple_model.graphql');
+    await addApiWithoutSchema(projRoot, { testingWithLatestCodebase: true, transformerVersion: 1 });
+    await updateApiSchema(projRoot, appName, 'simple_model.graphql');
+
     await updateFunction(
       projRoot,
       {
@@ -92,11 +105,9 @@ describe('amplify function migration', () => {
 
   it('Add 2 functions, upgrade cli, add layer, update a function to depend on layer', async () => {
     const [shortId] = uuid().split('-');
-    const function1 = 'function1' + shortId;
-    const function2 = 'function2' + shortId;
+    const function1 = `function1${shortId}`;
+    const function2 = `function2${shortId}`;
     const runtime: LayerRuntime = 'nodejs';
-
-    await initJSProjectWithProfile(projRoot, {});
     const { projectName: projName } = getProjectConfig(projRoot);
 
     await addFunction(projRoot, { name: function1, functionTemplate: 'Hello World' }, runtime, undefined);

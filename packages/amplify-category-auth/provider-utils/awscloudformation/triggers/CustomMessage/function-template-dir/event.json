@@ -1,12 +1,12 @@
 {
-    "region": "us-west-2",
-    "callerContext": {
+  "region": "us-west-2",
+  "callerContext": {
     "clientId": "dummyId"
-    },
-    "userName": "testUser",
-    "triggerSource": "CustomMessage_SignUp",
-    "request": {
+  },
+  "userName": "testUser",
+  "triggerSource": "CustomMessage_SignUp",
+  "request": {
     "codeParameter": "0000"
-    },
-    "response": {}
-  }
+  },
+  "response": {}
+}

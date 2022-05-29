@@ -18,6 +18,7 @@ Object {
     },
     Object {
       "apiKeyConfig": Object {
+        "apiKeyExpirationDate": undefined,
         "apiKeyExpirationDays": undefined,
         "description": undefined,
       },

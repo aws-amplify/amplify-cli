@@ -14,6 +14,7 @@ export type LayerParameters = {
   build: boolean;
   description?: string;
   versionHash?: string;
+  defaultRuntime?: string;
 };
 
 export enum PermissionEnum {

@@ -3,7 +3,7 @@ import express from 'express';
 import { ExecutionResult, parse } from 'graphql';
 import { Server } from 'http';
 import { join } from 'path';
-import { AmplifyAppSyncSimulator } from '..';
+import { AmplifyAppSyncSimulator, AmplifyAppSyncSimulatorAuthenticationType } from '..';
 import { AppSyncSimulatorServerConfig } from '../type-definition';
 import { extractHeader, extractJwtToken, getAuthorizationMode } from '../utils/auth-helpers';
 import { AppSyncGraphQLExecutionContext } from '../utils/graphql-runner';
@@ -12,6 +12,7 @@ import { runQueryOrMutation } from '../utils/graphql-runner/query-and-mutation';
 import { runSubscription, SubscriptionResult } from '../utils/graphql-runner/subscriptions';
 import { AppSyncSimulatorSubscriptionServer } from './websocket-subscription';
 import { SubscriptionServer } from './subscription';
+import { extractIamToken } from '../utils/auth-helpers/helpers';
 
 const MAX_BODY_SIZE = '10mb';
 
@@ -39,7 +40,7 @@ export class OperationServer {
   private handleRequest = async (request: express.Request, response: express.Response) => {
     try {
       const { headers } = request;
-      let requestAuthorizationMode;
+      let requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType;
       try {
         requestAuthorizationMode = getAuthorizationMode(headers, this.simulatorContext.appSyncConfig);
       } catch (e) {
@@ -65,12 +66,15 @@ export class OperationServer {
       const authorization = extractHeader(headers, 'Authorization');
       const jwt = authorization && extractJwtToken(authorization);
       const sourceIp = request.connection.remoteAddress;
+      const iamToken =
+        requestAuthorizationMode === 'AWS_IAM' ? extractIamToken(authorization, this.simulatorContext.appSyncConfig) : undefined;
       const context: AppSyncGraphQLExecutionContext = {
         jwt,
         requestAuthorizationMode,
         sourceIp,
         headers: request.headers,
         appsyncErrors: [],
+        iamToken,
       };
       switch (getOperationType(doc, operationName)) {
         case 'query':

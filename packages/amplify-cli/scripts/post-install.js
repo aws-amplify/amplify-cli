@@ -1,18 +1,7 @@
-require = require('esm')(module, { cache: false });
 const chalk = require('chalk');
 const fs = require('fs-extra');
-const path = require('path');
 const { EOL } = require('os');
 
-// Delete stale ESM cache
-try {
-  const cachePath = path.join(__dirname, '..', 'node_modules', '.cache', 'esm');
-  if (fs.existsSync(cachePath)) {
-    fs.removeSync(cachePath);
-  }
-} catch (e) {
-  // could not delete the cache directory but don't want to fail the installation
-}
 console.log(EOL);
 console.log(chalk.green('----------------------------------------'));
 console.log(chalk.green('Successfully installed the Amplify CLI'));

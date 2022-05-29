@@ -46,7 +46,7 @@ describe('test lambda layer migration flow introduced in v5.0.0', () => {
   });
 
   afterEach(async () => {
-    await deleteProject(projRoot);
+    await deleteProject(projRoot, undefined, true);
     deleteProjectDir(projRoot);
   });
 

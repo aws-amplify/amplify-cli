@@ -10,7 +10,7 @@ export function addCodegen(cwd: string, settings: any): Promise<void> {
       .wait('Enter the file name pattern of graphql queries, mutations and subscriptions')
       .sendCarriageReturn()
       .wait('Do you want to generate/update all possible GraphQL operations')
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('Enter maximum statement depth [increase from default if your schema is deeply')
       .sendCarriageReturn();
     if (settings.ios) {

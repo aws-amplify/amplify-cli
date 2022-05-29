@@ -16,7 +16,7 @@ export function generateToken(decodedToken: string | object): string {
 
 export function parse(token): object {
   const decodedToken = decode(token);
-  return decodedToken;
+  return decodedToken as object;
 }
 
 /**

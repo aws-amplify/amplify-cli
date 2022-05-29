@@ -12,6 +12,7 @@ const OPERATOR_MAP = {
   le: '<=',
   gt: '>',
   ge: '>=',
+  in: 'contains',
 };
 
 const FUNCTION_MAP = {
@@ -96,6 +97,14 @@ export function generateFilterExpression(filter: any, prefix = null, parent = nu
             expressionValues: createExpressionValue(parent, name, value, prefix),
           };
           break;
+        case 'in':
+            const operatorName = OPERATOR_MAP[name];
+            subExpr = {
+              expressions: [`${operatorName}(${filedValueName}, ${fieldName})`],
+              expressionNames: createExpressionName(parent),
+              expressionValues: createExpressionValue(parent, name, value, prefix),
+            };
+            break;
         default:
           subExpr = scopeExpression(generateFilterExpression(value, prefix, name));
       }

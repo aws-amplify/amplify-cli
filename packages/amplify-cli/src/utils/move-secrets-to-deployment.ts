@@ -1,10 +1,14 @@
 import { stateManager, mergeDeploymentSecrets } from 'amplify-cli-core';
 import { getRootStackId } from '../extensions/amplify-helpers/get-root-stack-id';
+
 const hostedUIProviderCredsField = 'hostedUIProviderCreds';
 
+/**
+ * Migrate OAuth secrets from TPI file to deployment-secrets file
+ */
 export const moveSecretsFromTeamProviderToDeployment = (projectPath?: string): void => {
   const { envName } = stateManager.getLocalEnvInfo(projectPath);
-  let teamProviderInfo = stateManager.getTeamProviderInfo();
+  const teamProviderInfo = stateManager.getTeamProviderInfo();
   const envTeamProvider = teamProviderInfo[envName];
   let secrets = stateManager.getDeploymentSecrets();
   Object.keys(envTeamProvider.categories)

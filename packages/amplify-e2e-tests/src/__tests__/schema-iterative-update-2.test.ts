@@ -9,7 +9,7 @@ import {
   updateApiSchema,
   amplifyPushUpdate,
   addApiWithoutSchema,
-  updateApiWithMultiAuth
+  updateApiWithMultiAuth,
 } from 'amplify-e2e-core';
 
 describe('Schema iterative update - add new @models and @key', () => {
@@ -29,7 +29,7 @@ describe('Schema iterative update - add new @models and @key', () => {
     const apiName = 'addkeyandmodel';
 
     const initialSchema = path.join('iterative-push', 'add-one-key-multiple-models', 'initial-schema.graphql');
-    await addApiWithoutSchema(projectDir, { apiName });
+    await addApiWithoutSchema(projectDir, { apiName, transformerVersion: 1 });
     await updateApiWithMultiAuth(projectDir, {});
     updateApiSchema(projectDir, apiName, initialSchema);
     await amplifyPush(projectDir);

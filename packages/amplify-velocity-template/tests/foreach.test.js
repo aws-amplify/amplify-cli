@@ -4,55 +4,55 @@ var Velocity = require('../src/velocity');
 var assert = require('assert');
 var render = Velocity.render;
 
-describe('Loops', function() {
-  it('#foreach', function() {
+describe('Loops', function () {
+  it('#foreach', function () {
     var vm = '#foreach( $product in $allProducts )<li>$product</li>#end';
     var data = { allProducts: ['book', 'phone'] };
     assert.equal('<li>book</li><li>phone</li>', render(vm, data));
   });
 
-  it('#foreach with map', function() {
+  it('#foreach with map', function () {
     var vm = '#foreach($key in $products) name => $products.name #end';
     var data = { products: { name: 'hanwen' } };
     assert.equal(' name => hanwen ', render(vm, data));
   });
 
-  it('#foreach with map hasNext', function() {
+  it('#foreach with map hasNext', function () {
     var vm = '#foreach($product in $products)$product.name#if($foreach.hasNext),#end#end';
     var data = { products: { product1: { name: 'hanwen1' }, product2: { name: 'hanwen2' }, product3: { name: 'hanwen3' } } };
     assert.equal('hanwen1,hanwen2,hanwen3', render(vm, data));
   });
 
-  it('#foreach with map hasNext as method', function() {
+  it('#foreach with map hasNext as method', function () {
     var vm = '#foreach($product in $products)$product.name#if($foreach.hasNext()),#end#end';
     var data = { products: { product1: { name: 'hanwen1' }, product2: { name: 'hanwen2' }, product3: { name: 'hanwen3' } } };
     assert.equal('hanwen1,hanwen2,hanwen3', render(vm, data));
   });
 
-  it('#foreach with map keySet', function() {
+  it('#foreach with map keySet', function () {
     var vm = '#foreach($key in $products.keySet())' + ' $key => $products.get($key) #end';
     var data = { products: { name: 'hanwen' } };
     assert.equal(' name => hanwen ', render(vm, data));
   });
 
-  it('#foreach with nest foreach', function() {
+  it('#foreach with nest foreach', function () {
     var vm = '#foreach($i in [1..2])${velocityCount}' + '#foreach($j in [2..3])${velocityCount}#end#end';
     assert.equal('112212', render(vm));
     var vm = '#foreach($i in [5..2])$i#end';
     assert.equal('5432', render(vm));
   });
 
-  it('#foreach with nest non-empty foreach', function() {
+  it('#foreach with nest non-empty foreach', function () {
     var vm = '#foreach($i in [1..2])' + '[#foreach($j in [1..2])$j#if($foreach.hasNext),#end#end]' + '#if($foreach.hasNext),#end#end';
     assert.equal('[1,2],[1,2]', render(vm));
   });
 
-  it('#foreach with nest empty foreach', function() {
+  it('#foreach with nest empty foreach', function () {
     var vm = '#foreach($i in [1..2])' + '[#foreach($j in [])$j#if($foreach.hasNext),#end#end]' + '#if($foreach.hasNext),#end#end';
     assert.equal('[],[]', render(vm));
   });
 
-  it('#foreach with map entrySet', function() {
+  it('#foreach with map entrySet', function () {
     var vm =
       '' +
       '#set($js_file = {\n' +
@@ -75,7 +75,7 @@ describe('Loops', function() {
 
     var data = {
       staticServer: {
-        getURI: function(url) {
+        getURI: function (url) {
           return '/path' + url;
         },
       },
@@ -84,29 +84,29 @@ describe('Loops', function() {
     assert.equal(ret.trim(), render(vm, data).trim());
   });
 
-  it('#foreach with #macro, $velocityCount should work, #25', function() {
+  it('#foreach with #macro, $velocityCount should work, #25', function () {
     var vm = '#macro(local) #end ' + '#foreach ($one in [1,2,4]) #local() $velocityCount #end';
     var ret = render(vm).replace(/\s+/g, '');
     assert.equal('123', ret);
   });
 
-  it('#break', function() {
+  it('#break', function () {
     var vm = '#foreach($num in [1..6])' + ' #if($foreach.count > 3) #break #end $num #end';
-    assert.equal('  1   2   3     4 ', render(vm));
+    assert.equal('  1   2   3     ', render(vm));
   });
 
-  it('#break for map', function() {
+  it('#break for map', function () {
     var vm = '#foreach($item in $map)' + ' #if($foreach.count > 2) #break #end $item #end';
     var data = { map: { item1: '1', item2: '2', item3: '3', item4: '4' } };
-    assert.equal('  1   2     3 ', render(vm, data));
+    assert.equal('  1   2   ', render(vm, data));
   });
 
-  it('foreach for null', function() {
+  it('foreach for null', function () {
     var vm = '#foreach($num in $bar) #end';
     assert.equal('', render(vm));
   });
 
-  it('support #foreach(${itemData} in ${defaultData})', function() {
+  it('support #foreach(${itemData} in ${defaultData})', function () {
     const vm = `#set($allProducts = [1, 2, 3])
         #foreach(\${product} in \${allProducts}) <li>$product</li> #end`;
     const html = render(vm);
@@ -114,7 +114,7 @@ describe('Loops', function() {
     html.should.containEql('<li>2</li>');
   });
 
-  it('issue 100', function() {
+  it('issue 100', function () {
     const vm = `
       #set($records = [[1], [2], [3]])
       #foreach($rec in $records)

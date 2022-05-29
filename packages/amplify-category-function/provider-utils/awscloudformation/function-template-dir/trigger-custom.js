@@ -1,4 +1,7 @@
-exports.handler = (event, context, callback) => {
+/**
+ * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
+ */
+exports.handler = async (event, context) => {
   // insert code to be executed by your lambda trigger
-  callback(null, event);
+  return event
 };

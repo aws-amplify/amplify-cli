@@ -8,7 +8,7 @@
         "value": "askUser",
         "private": true,
         "question": {
-          "name" : "RECAPTCHASECRET",
+          "name": "RECAPTCHASECRET",
           "type": "input",
           "message": "Enter the Google reCaptcha secret key:"
         }

@@ -12,8 +12,16 @@ import {
   amplifyInitSandbox,
   getProjectSchema,
   amplifyPush,
+  amplifyOverrideRoot,
+  amplifyPushOverride,
+  createNewProjectDir,
+  deleteProjectDir,
+  getEnvVars,
+  getProjectMeta,
 } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir, getEnvVars, getProjectMeta } from 'amplify-e2e-core';
+
+import { addEnvironment } from '../environment/env';
+
 import { JSONUtilities } from 'amplify-cli-core';
 import { SandboxApp } from '../types/SandboxApp';
 
@@ -46,6 +54,16 @@ describe('amplify init', () => {
     await amplifyInitSandbox(projRoot, {});
     const projectSchema = getProjectSchema(projRoot, 'amplifyDatasource');
     expect(projectSchema).toEqual(schemaBody.schema);
+    
+    const awsExportsPath = path.join(projRoot, 'src', 'aws-exports.js');
+    const modelsIndexPath = path.join(projRoot, 'src', 'models', 'index.js');
+    const modelsSchemaPath = path.join(projRoot, 'src', 'models', 'schema.js');
+    expect(
+      fs.existsSync(awsExportsPath) &&
+      fs.existsSync(modelsIndexPath) &&
+      fs.existsSync(modelsSchemaPath)
+    ).toBe(true);
+    
     await amplifyPush(projRoot);
   });
 
@@ -150,5 +168,30 @@ describe('amplify init', () => {
     localEnvData.projectPath = originalPath;
 
     fs.writeFileSync(localEnvPath, JSON.stringify(localEnvData, null, 2));
+  });
+
+  it('should init the project and override root and push', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    const meta = getProjectMeta(projRoot).providers.awscloudformation;
+    expect(meta.Region).toBeDefined();
+    const { AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName } = meta;
+
+    expect(UnauthRoleName).toBeIAMRoleWithArn(UnauthRoleArn);
+    expect(AuthRoleName).toBeIAMRoleWithArn(AuthRoleArn);
+    expect(DeploymentBucketName).toBeAS3Bucket(DeploymentBucketName);
+
+    // override new env
+    await amplifyOverrideRoot(projRoot, { testingWithLatestCodebase: true });
+    const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-root.ts');
+    const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'awscloudformation', 'override.ts');
+    fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
+    await amplifyPushOverride(projRoot);
+    const newEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
+    expect(newEnvMeta.AuthRoleName).toContain('mockRole');
+
+    // create a new env, and the override should remain in place
+    await addEnvironment(projRoot, { envName: 'envb' });
+    const newestEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
+    expect(newestEnvMeta.AuthRoleName).toContain('mockRole');
   });
 });

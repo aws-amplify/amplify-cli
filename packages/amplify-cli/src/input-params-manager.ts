@@ -1,6 +1,6 @@
-import { $TSAny, $TSContext, JSONUtilities } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, JSONUtilities } from 'amplify-cli-core';
 
-export function normalizeInputParams(context: $TSContext) {
+export function normalizeInputParams(context: $TSContext): $TSObject {
   const inputParams = {};
   Object.keys(context.parameters.options).forEach(key => {
     const normalizedKey = normalizeKey(key);
@@ -38,12 +38,14 @@ function normalizeValue(value: string) {
 }
 
 function transform(inputParams: $TSAny) {
+  const headlessAmplify = !!inputParams.amplify;
   inputParams.amplify = inputParams.amplify || {};
   inputParams.providers = inputParams.providers || {};
   inputParams.frontend = inputParams.frontend || {};
 
   inputParams.amplify.providers = Object.keys(inputParams.providers);
   inputParams.amplify.frontend = inputParams.frontend.type || inputParams.frontend.frontend;
+  inputParams.amplify.headless = headlessAmplify;
 
   if (inputParams.amplify.frontend) {
     delete inputParams.frontend.type;

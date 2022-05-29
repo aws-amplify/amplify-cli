@@ -34,6 +34,10 @@ module.exports = {
         name: 'build',
         description: 'Builds all the functions in the project (does an npm install on the functions src directory)',
       },
+      {
+        name: 'console',
+        description: `Opens the web console for the ${categoryName} category`,
+      },
     ];
 
     context.amplify.showHelp(header, commands);

@@ -3,6 +3,337 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@4.0.5...amplify-category-predictions@4.0.6) (2022-05-27)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [4.0.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@4.0.4...amplify-category-predictions@4.0.5) (2022-05-24)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [4.0.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@4.0.3...amplify-category-predictions@4.0.4) (2022-05-10)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [4.0.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@4.0.2...amplify-category-predictions@4.0.3) (2022-04-29)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [4.0.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@4.0.1...amplify-category-predictions@4.0.2) (2022-04-27)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [4.0.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@4.0.0...amplify-category-predictions@4.0.1) (2022-04-11)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+# [4.0.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@3.2.24...amplify-category-predictions@4.0.0) (2022-04-07)
+
+
+### Bug Fixes
+
+* use prompter and handle deletions ([#10122](https://github.com/aws-amplify/amplify-cli/issues/10122)) ([5c0e290](https://github.com/aws-amplify/amplify-cli/commit/5c0e2904e5ac65824642281e732aae4f02904fd0))
+
+
+### BREAKING CHANGES
+
+* package name update requires version bump in order to keep in sync with lerna.
+
+
+
+
+
+## [3.2.24](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@3.2.23...amplify-category-predictions@3.2.24) (2022-03-23)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [3.2.23](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@3.2.22...amplify-category-predictions@3.2.23) (2022-03-14)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [3.2.22](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@3.2.21...amplify-category-predictions@3.2.22) (2022-03-07)
+
+
+### Performance Improvements
+
+* remove ESM loader to speed up CLI execution ([#9873](https://github.com/aws-amplify/amplify-cli/issues/9873)) ([46ada02](https://github.com/aws-amplify/amplify-cli/commit/46ada029a7914b75c356c3ae9dcd782ffa324b2a))
+
+
+
+
+
+## [3.2.21](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@3.2.20...amplify-category-predictions@3.2.21) (2022-02-25)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [3.2.20](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@3.2.19...amplify-category-predictions@3.2.20) (2022-02-15)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [3.2.19](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@3.2.15...amplify-category-predictions@3.2.19) (2022-02-10)
+
+
+
+## 7.6.19 (2022-02-08)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [3.2.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@3.2.14...amplify-category-predictions@3.2.15) (2022-02-03)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [3.2.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@3.2.13...amplify-category-predictions@3.2.14) (2022-01-27)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [3.2.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@3.2.12...amplify-category-predictions@3.2.13) (2022-01-23)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [3.2.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@3.2.10...amplify-category-predictions@3.2.12) (2022-01-10)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Bug Fixes
+
+* update uuid imports ([#9448](https://github.com/aws-amplify/amplify-cli/issues/9448)) ([e1af620](https://github.com/aws-amplify/amplify-cli/commit/e1af6209fcc6943ad26a25df4741ea4567a2d22a))
+
+
+
+
+
+## [3.2.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@3.2.9...amplify-category-predictions@3.2.10) (2021-12-21)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [3.2.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@3.2.8...amplify-category-predictions@3.2.9) (2021-12-17)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [3.2.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@3.2.7...amplify-category-predictions@3.2.8) (2021-12-02)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [3.2.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@3.2.6...amplify-category-predictions@3.2.7) (2021-12-01)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [3.2.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@3.2.5...amplify-category-predictions@3.2.6) (2021-11-26)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [3.2.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@3.2.4...amplify-category-predictions@3.2.5) (2021-11-23)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [3.2.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@3.2.3...amplify-category-predictions@3.2.4) (2021-11-21)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [3.2.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@3.2.2...amplify-category-predictions@3.2.3) (2021-11-20)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [3.2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@3.2.1...amplify-category-predictions@3.2.2) (2021-11-17)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [3.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.9.16...amplify-category-predictions@3.2.1) (2021-11-15)
+
+
+### Bug Fixes
+
+* **amplify-category-predictions:** fix bad import and exit ([#8852](https://github.com/aws-amplify/amplify-cli/issues/8852)) ([b4c2944](https://github.com/aws-amplify/amplify-cli/commit/b4c2944d89f9f82028f78e3d66e49cdc5a657822))
+* ensure FF on stack transform, revert revert ([#8810](https://github.com/aws-amplify/amplify-cli/issues/8810)) ([868952f](https://github.com/aws-amplify/amplify-cli/commit/868952f9552f09aeb2b0b8e036c59954ee3391e0)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+* ext overrides2 storage-headless and predictions ([#8622](https://github.com/aws-amplify/amplify-cli/issues/8622)) ([59e7118](https://github.com/aws-amplify/amplify-cli/commit/59e71184e966ec735724ba501b5b318c1dbd2735))
+* update migration msg, ddb import e2e, lgtm errors ([#8796](https://github.com/aws-amplify/amplify-cli/issues/8796)) ([a2d87ec](https://github.com/aws-amplify/amplify-cli/commit/a2d87eca889ed8b23cfe3cf145c0372b655d4ed9))
+
+
+### Reverts
+
+* Revert "fix: update migration msg, ddb import e2e, lgtm errors (#8796)" (#8799) ([394a32f](https://github.com/aws-amplify/amplify-cli/commit/394a32f7a801bcf845a180bfdaa7d1d95c5962e7)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+
+
+
+
+
+# [3.0.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.9.16...amplify-category-predictions@3.0.0) (2021-11-13)
+
+
+### Bug Fixes
+
+* ensure FF on stack transform, revert revert ([#8810](https://github.com/aws-amplify/amplify-cli/issues/8810)) ([868952f](https://github.com/aws-amplify/amplify-cli/commit/868952f9552f09aeb2b0b8e036c59954ee3391e0)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+* ext overrides2 storage-headless and predictions ([#8622](https://github.com/aws-amplify/amplify-cli/issues/8622)) ([59e7118](https://github.com/aws-amplify/amplify-cli/commit/59e71184e966ec735724ba501b5b318c1dbd2735))
+* update migration msg, ddb import e2e, lgtm errors ([#8796](https://github.com/aws-amplify/amplify-cli/issues/8796)) ([a2d87ec](https://github.com/aws-amplify/amplify-cli/commit/a2d87eca889ed8b23cfe3cf145c0372b655d4ed9))
+
+
+### Reverts
+
+* Revert "fix: update migration msg, ddb import e2e, lgtm errors (#8796)" (#8799) ([394a32f](https://github.com/aws-amplify/amplify-cli/commit/394a32f7a801bcf845a180bfdaa7d1d95c5962e7)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+
+
+
+
+
+## [2.9.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.9.15...amplify-category-predictions@2.9.16) (2021-11-11)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [2.9.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.9.14...amplify-category-predictions@2.9.15) (2021-10-10)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [2.9.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.9.13...amplify-category-predictions@2.9.14) (2021-10-06)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [2.9.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.9.12...amplify-category-predictions@2.9.13) (2021-09-27)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [2.9.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.9.11...amplify-category-predictions@2.9.12) (2021-09-18)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [2.9.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.9.10...amplify-category-predictions@2.9.11) (2021-09-14)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [2.9.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.9.9...amplify-category-predictions@2.9.10) (2021-09-09)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [2.9.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.9.8...amplify-category-predictions@2.9.9) (2021-09-02)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
 ## [2.9.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.9.7...amplify-category-predictions@2.9.8) (2021-08-24)
 
 **Note:** Version bump only for package amplify-category-predictions

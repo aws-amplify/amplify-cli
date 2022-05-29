@@ -1,8 +1,10 @@
 <%= props.topLevelComment %>
 
+/**
+ * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
+ */
 exports.handler = event => {
-  // insert code to be executed by your lambda trigger
-  console.log(JSON.stringify(event, null, 2));
+  console.log(`EVENT: ${JSON.stringify(event)}`);
   let res = '';
   if ('Records' in event) {
     event.Records.forEach(record => {

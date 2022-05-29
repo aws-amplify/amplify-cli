@@ -18,14 +18,19 @@ import {
   AmplifyAppSyncAPIConfig,
   AppSyncSimulatorMappingTemplate,
 } from './type-definition';
-import { filterSubscriptions } from './utils/graphql-runner/subscriptions-filter';
+import { filterSubscriptions } from './utils';
+export { AppSyncGraphQLExecutionContext, JWTToken, IAMToken } from './utils';
 export * from './type-definition';
+export * from './velocity';
 
-const DEFAULT_SCHEMA = `
-type Query {
-  noop: String
-}
-`;
+const DEFAULT_API_CONFIG: Partial<AmplifyAppSyncAPIConfig> = {
+  authRoleName: 'assumed-role/authRole/CognitoIdentityCredentials',
+  unAuthRoleName: 'assumed-role/unAuthRole/CognitoIdentityCredentials',
+  authAccessKeyId: 'ASIAVJKIAM-AuthRole', // when accessKeyId matches assume the authRole. Otherwise, use unAuthRole
+  accountId: '12345678910',
+  apiKey: 'DA-FAKEKEY',
+};
+
 export class AmplifyAppSyncSimulator {
   private resolvers;
   private dataSources: Map<string, AmplifyAppSyncSimulatorDataLoader>;
@@ -67,7 +72,7 @@ export class AmplifyAppSyncSimulator {
     const lastFunctions = this.functions;
     const lastDataSources = this.dataSources;
     try {
-      this._appSyncConfig = config.appSync;
+      this._appSyncConfig = { ...DEFAULT_API_CONFIG, ...config.appSync };
       this.mappingTemplates = (config.mappingTemplates || []).reduce((map, template) => {
         const normalizedTemplate: AppSyncSimulatorMappingTemplate = { content: template.content };
         if (template.path) {

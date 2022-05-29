@@ -1,9 +1,13 @@
-import { prompt } from 'enquirer';
-import { stateManager, open } from 'amplify-cli-core';
+import { stateManager, open, $TSContext } from 'amplify-cli-core';
+import { printer, prompter } from 'amplify-prompts';
+import chalk from 'chalk';
 
 const providerName = 'awscloudformation';
 
-export const run = async context => {
+/**
+ * Entry point for console command
+ */
+export const run = async (context: $TSContext): Promise<void> => {
   let consoleUrl = getDefaultURL();
 
   try {
@@ -24,43 +28,33 @@ export const run = async context => {
       consoleUrl = constructStatusURL(Region, AmplifyAppId, envName);
       const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
       if (await providerPlugin.isAmplifyAdminApp(AmplifyAppId)) {
-        const { choice } = await prompt<{ choice: string }>({
-          type: 'select',
-          name: 'choice',
-          message: 'Which site do you want to open?',
-          choices: [
-            { name: 'Admin', message: 'Amplify admin UI' },
-            { name: 'Console', message: 'Amplify console' },
-          ],
-        });
-        if (choice === 'Admin') {
-          const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
+        const choice = await prompter.pick('Which site do you want to open?', ['Amplify Studio', 'AWS console']);
+        if (choice === 'Amplify Studio') {
           const baseUrl = providerPlugin.adminBackendMap[Region].amplifyAdminUrl;
           consoleUrl = constructAdminURL(baseUrl, AmplifyAppId, envName);
         }
       }
     }
   } catch (e) {
-    context.print.error(e.message);
+    printer.error(e.message);
     context.usageData.emitError(e);
     process.exitCode = 1;
     return;
   }
 
-  context.print.green(consoleUrl);
+  printer.info(chalk.green(consoleUrl));
   open(consoleUrl, { wait: false });
 };
 
-function constructAdminURL(baseUrl: string, appId: string, envName: string) {
-  return `${baseUrl}/admin/${appId}/${envName}/home`;
-}
+const constructAdminURL = (baseUrl: string, appId: string, envName: string): string => `${baseUrl}/admin/${appId}/${envName}/home`;
 
-function constructStatusURL(region, appId, envName) {
-  const prodURL = `https://${region}.console.aws.amazon.com/amplify/home?region=${region}#/${appId}/YmFja2VuZA/${envName}`; // eslint-disable-line
+const constructStatusURL = (region: string, appId: string, envName: string): string => {
+  // eslint-disable-next-line spellcheck/spell-checker
+  const prodURL = `https://${region}.console.aws.amazon.com/amplify/home?region=${region}#/${appId}/YmFja2VuZA/${envName}`;
   return prodURL;
-}
+};
 
-function getDefaultURL() {
-  const prodURL = `https://console.aws.amazon.com/amplify/home#/create`; // eslint-disable-line
+const getDefaultURL = (): string => {
+  const prodURL = 'https://console.aws.amazon.com/amplify/home#/create';
   return prodURL;
-}
+};

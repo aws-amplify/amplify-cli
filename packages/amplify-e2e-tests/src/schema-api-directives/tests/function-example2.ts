@@ -31,7 +31,7 @@ const PASSWORD = 'user1Password';
 export async function runTest(projectDir: string, testModule: any) {
   await addAuthWithDefault(projectDir);
   const functionName = await addFunctionWithAuthAccess(projectDir, testModule, 'func');
-  await addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectDir);
+  await addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectDir, { transformerVersion: 1 });
   updateSchemaInTestProject(projectDir, testModule.schema);
 
   updateFunctionNameInSchema(projectDir, '<function-name>', functionName);

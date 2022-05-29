@@ -19,21 +19,15 @@ const modules = moduleNames.map(name => require(`./${name}`));
  * This async handler iterates over the given modules and awaits them.
  *
  * @see https://docs.aws.amazon.com/lambda/latest/dg/nodejs-handler.html#nodejs-handler-async
- *
- * @param {object} event
- *
- * The event that triggered this Lambda.
- *
- * @returns
- *
- * The handler response.
+ * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
+ * 
  */
-exports.handler = async event => {
+exports.handler = async (event, context) => {
   /**
    * Instead of naively iterating over all handlers, run them concurrently with
    * `await Promise.all(...)`. This would otherwise just be determined by the
    * order of names in the `MODULES` var.
    */
-  await Promise.all(modules.map(module => module.handler(event)));
+  await Promise.all(modules.map(module => module.handler(event, context)));
   return event;
 };
