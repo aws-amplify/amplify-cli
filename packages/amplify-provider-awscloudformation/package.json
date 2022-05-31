@@ -108,7 +108,7 @@
     "xstate": "^4.14.0"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-interfaces": "^1.14.1",
+    "@aws-amplify/graphql-transformer-interfaces": "^1.14.2",
     "@aws-cdk/assertions": "~1.124.0",
     "@types/columnify": "^1.5.0",
     "@types/deep-diff": "^1.0.0",
