@@ -20,7 +20,7 @@ const PROJECT_NAME = 'authTest';
 const defaultSettings = {
   name: PROJECT_NAME,
 };
-describe('zero config auth ', () => {
+describe('zero config auth', () => {
   let projRoot: string;
   beforeEach(async () => {
     projRoot = await createNewProjectDir('zero-config-auth');

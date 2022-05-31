@@ -24,13 +24,15 @@ const { prePushCfnTemplateModifier } = require('./pre-push-cfn-processor/pre-pus
 const logger = fileLogger('attach-backend');
 const { configurePermissionsBoundaryForInit } = require('./permissions-boundary/permissions-boundary');
 const { uploadHooksDirectory } = require('./utils/hooks-manager');
+import { v4 as uuid } from 'uuid';
+
 export async function run(context) {
   await configurationManager.init(context);
   if (!context.exeInfo || context.exeInfo.isNewEnv) {
     context.exeInfo = context.exeInfo || {};
     const { projectName } = context.exeInfo.projectConfig;
     const initTemplateFilePath = path.join(__dirname, '..', 'resources', 'rootStackTemplate.json');
-    const timeStamp = `${moment().format('Hmmss')}`;
+    const timeStamp = process.env.CIRCLECI ? uuid().substring(0, 5) : `${moment().format('Hmmss')}`;
     const { envName = '' } = context.exeInfo.localEnvInfo;
     let stackName = normalizeStackName(`amplify-${projectName}-${envName}-${timeStamp}`);
     const awsConfigInfo = await configurationManager.getAwsConfig(context);

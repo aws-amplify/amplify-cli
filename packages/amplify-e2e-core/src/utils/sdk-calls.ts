@@ -72,8 +72,8 @@ export const getBucketKeys = async (params: S3.ListObjectsRequest) => {
   }
 };
 
-export const deleteS3Bucket = async (bucket: string) => {
-  const s3 = new S3();
+export const deleteS3Bucket = async (bucket: string, providedS3Client: S3 | undefined = undefined) => {
+  const s3 = providedS3Client ? providedS3Client : new S3();
   let continuationToken: Required<Pick<S3.ListObjectVersionsOutput, 'KeyMarker' | 'VersionIdMarker'>> = undefined;
   const objectKeyAndVersion = <S3.ObjectIdentifier[]>[];
   let truncated = false;
