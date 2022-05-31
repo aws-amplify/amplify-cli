@@ -1,5 +1,5 @@
+import { IFlowData } from 'amplify-cli-shared-interfaces';
 import { Input } from '../input';
-import { IFlowData } from 'amplify-cli-shared-interfaces'
 
 /**
  * Base interface for emitting usage data
@@ -20,6 +20,9 @@ interface IUsageMetricsData {
   stopCodePathTimer: (codePath: StoppableTimedCodePath) => void;
 }
 
+/**
+ *
+ */
 export interface IUsageData extends IUsageMetricsData, IFlowData {
 }
 
@@ -52,6 +55,8 @@ export enum ManuallyTimedCodePath {
   // init-specific paths (also called during env checkout and pull)
   INIT_ENV_PLATFORM = 'initEnvPlatform', // time to call awscloudformation provider initEnv. This includes downloading deployment bucket and updating local files
   INIT_ENV_CATEGORIES = 'initEnvCategories', // time to call all of the category's initEnv methods
+
+  PROMPT_TIME = 'promptTime'// total time to takes to answer a prompt
 }
 
 /**

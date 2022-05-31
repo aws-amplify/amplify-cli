@@ -14,12 +14,14 @@ import { IFlowData } from 'amplify-cli-shared-interfaces';
 import { isYes, isInteractiveShell } from './flags';
 import { Validator } from './validators';
 import { printer } from './printer';
+import { Stopwatch } from './stopwatch';
 
 /**
  * Provides methods for collecting interactive customer responses from the shell
  */
 class AmplifyPrompter implements Prompter {
   flowData: IFlowData|undefined; // interactive cli flow data journal
+  stopWatch: Stopwatch;
   constructor(private readonly prompter: typeof prompt = prompt, private readonly print: typeof printer = printer) {
     // construct a shim on top of enquirer to throw an error if it is called when stdin is non-interactive
     // enquirer does not export its PromptOptions type and this package does not depend on amplify-cli-core so using 'any' as the input type
@@ -31,6 +33,7 @@ class AmplifyPrompter implements Prompter {
       throw new Error(`Cannot prompt for [${opts.message}] in a non-interactive shell`);
     }) as typeof prompt;
     this.prompter = prompterShim;
+    this.stopWatch = new Stopwatch();
   }
 
   private throwLoggedError = (message: string, errorMsg : string) : void => {
@@ -42,10 +45,10 @@ class AmplifyPrompter implements Prompter {
     this.flowData = flowData;
   }
 
-  private pushInteractiveFlow = (promptString: string, input: unknown, redact : boolean =  false) => {
-    if ( isInteractiveShell ) {
-      if (this.flowData && input ) {
-        const finalInput = ( redact ) ? "*".repeat((input as string).length) : input;
+  private pushInteractiveFlow = (promptString: string, input: unknown, redact = false) => {
+    if (isInteractiveShell) {
+      if (this.flowData && input) {
+        const finalInput = (redact) ? '*'.repeat((input as string).length) : input;
         this.flowData.pushInteractiveFlow(promptString, finalInput);
       }
     }
@@ -81,6 +84,7 @@ class AmplifyPrompter implements Prompter {
 
   private yesOrNoCommon = async (message: string, initial: boolean): Promise<boolean> => {
     let submitted = false;
+    this.stopWatch.start();
     const { result } = await this.prompter<{ result: boolean }>({
       type: 'confirm',
       name: 'result',
@@ -93,11 +97,10 @@ class AmplifyPrompter implements Prompter {
       },
       initial,
     });
+    this.stopWatch.pause();
     this.pushInteractiveFlow(message, result);
     return result;
   };
-
- 
 
   /**
    * Prompt for an input.
@@ -115,18 +118,18 @@ class AmplifyPrompter implements Prompter {
    */
   input = async <RS extends ReturnSize = 'one', T = string>(message: string, ...options: MaybeOptionalInputOptions<RS, T>): Promise<PromptReturn<RS, T>> => {
     const opts = options?.[0] ?? ({} as InputOptions<RS, T>);
-    const enquirerPromptType : EnquirerPromptType =  'hidden' in opts && opts.hidden ? EnquirerPromptType.INVISIBLE : opts.returnSize === 'many' ? EnquirerPromptType.LIST : EnquirerPromptType.INPUT;
+    const enquirerPromptType : EnquirerPromptType = 'hidden' in opts && opts.hidden ? EnquirerPromptType.INVISIBLE : opts.returnSize === 'many' ? EnquirerPromptType.LIST : EnquirerPromptType.INPUT;
 
     if (isYes) {
       if (opts.initial !== undefined) {
-        this.pushInteractiveFlow(message, opts.initial, enquirerPromptType == EnquirerPromptType.INVISIBLE);
+        this.pushInteractiveFlow(message, opts.initial, enquirerPromptType === EnquirerPromptType.INVISIBLE);
         return opts.initial as PromptReturn<RS, T>;
       }
       this.throwLoggedError(message, `Cannot prompt for [${message}] when '--yes' flag is set`);
     }
 
     const validator = (opts.returnSize === 'many' ? validateEachWith(opts.validate) : opts.validate) as ValidatorCast;
-
+    this.stopWatch.start();
     const { result } = await this.prompter<{ result: RS extends 'many' ? string[] : string }>({
       // eslint-disable-next-line no-nested-ternary
       type: enquirerPromptType,
@@ -139,6 +142,7 @@ class AmplifyPrompter implements Prompter {
       // @ts-ignore
       footer: opts.returnSize === 'many' ? 'Enter a comma-delimited list of values' : undefined,
     });
+    this.stopWatch.pause();
 
     if (typeof opts.transform === 'function') {
       let functionResult;
@@ -147,10 +151,11 @@ class AmplifyPrompter implements Prompter {
       } else {
         functionResult = opts.transform(result as string) as unknown as PromptReturn<RS, T>;
       }
-      this.pushInteractiveFlow(message, functionResult, enquirerPromptType == EnquirerPromptType.INVISIBLE );
+      this.pushInteractiveFlow(message, functionResult, enquirerPromptType == EnquirerPromptType.INVISIBLE);
       return functionResult;
     }
-    this.pushInteractiveFlow(message, result, enquirerPromptType == EnquirerPromptType.INVISIBLE );
+
+    this.pushInteractiveFlow(message, result, enquirerPromptType == EnquirerPromptType.INVISIBLE);
     return result as unknown as PromptReturn<RS, T>;
   };
 
@@ -202,7 +207,7 @@ class AmplifyPrompter implements Prompter {
     actions.ctrl.a = 'a';
 
     let result = genericChoices[0].name as string | string[];
-
+    this.stopWatch.start();
     if (choices.length === 1 && opts.returnSize !== 'many') {
       this.print.info(`Only one option for [${message}]. Selecting [${result}].`);
     } else if ('pickAtLeast' in opts && (opts.pickAtLeast || 0) >= choices.length) {
@@ -280,9 +285,12 @@ class AmplifyPrompter implements Prompter {
       // result is a string
       loggedRet = choiceValueMap.get(result as string) as PromptReturn<RS, T>;
     }
+    this.stopWatch.pause();
     this.pushInteractiveFlow(message, loggedRet);
     return loggedRet;
   };
+
+  getTotalPromptElapsedTime = () : number => this.stopWatch.getElapsedMilliseconds()
 }
 
 export const prompter: Prompter = new AmplifyPrompter();
@@ -294,8 +302,8 @@ export const prompter: Prompter = new AmplifyPrompter();
  * Note that choices are assumed to be unique by the equals function definition
  */
 export const byValues = <T>(selection: T[], equals: EqualsFunction<T> = defaultEquals): MultiFilterFunction<T> => (
-  choices: T[]
-  ) => selection.map(sel => choices.findIndex(choice => equals(choice, sel))).filter(idx => idx >= 0);
+  choices: T[],
+) => selection.map(sel => choices.findIndex(choice => equals(choice, sel))).filter(idx => idx >= 0);
 
 /**
  * Helper function to generate a function that will return an index of a single selection from a list
@@ -349,6 +357,7 @@ type Prompter = {
     ...options: MaybeOptionalPickOptions<RS, T>
   ) => Promise<PromptReturn<RS, T>>;
   setFlowData: (flowData: IFlowData) => void;
+  getTotalPromptElapsedTime: () => number;
 };
 
 // the following types are the building blocks of the method input types
@@ -444,4 +453,4 @@ enum EnquirerPromptType {
     INVISIBLE = 'invisible',
     LIST = 'list',
     INPUT = 'input'
-};
+}
