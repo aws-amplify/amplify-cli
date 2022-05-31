@@ -1,6 +1,6 @@
 {
   "name": "amplify-container-hosting",
-  "version": "2.4.36",
+  "version": "2.4.37-test-api-package-migration-4.0",
   "description": "amplify-cli hosting plugin for containers",
   "repository": {
     "type": "git",

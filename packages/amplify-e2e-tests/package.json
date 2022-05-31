@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "3.10.1",
+  "version": "3.10.2-test-api-package-migration-4.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
     "@aws-amplify/amplify-category-auth": "2.9.1",
     "@aws-amplify/graphql-transformer-core": "test-api-package-migration",
     "amplify-cli-core": "2.8.1",
-    "amplify-e2e-core": "3.2.1",
+    "amplify-e2e-core": "3.2.2-test-api-package-migration-4.0",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-sdk": "^2.1113.0",

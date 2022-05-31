@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-function",
-  "version": "4.0.6",
+  "version": "4.0.7-test-api-package-migration-4.0",
   "description": "amplify-cli function plugin",
   "repository": {
     "type": "git",

@@ -1,6 +1,6 @@
 {
   "name": "amplify-nodejs-function-template-provider",
-  "version": "2.4.1",
+  "version": "2.4.2-test-api-package-migration-4.0",
   "description": "Node JS templates supplied by the Amplify Team",
   "repository": {
     "type": "git",

@@ -1,6 +1,6 @@
 {
   "name": "amplify-provider-awscloudformation",
-  "version": "6.2.1",
+  "version": "6.2.2-test-api-package-migration-4.0",
   "description": "AWS CloudFormation Provider",
   "repository": {
     "type": "git",

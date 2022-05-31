@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0-test-api-package-migration-4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.2.31...amplify-python-function-runtime-provider@2.3.0-test-api-package-migration-4.0) (2022-05-31)
+
+
+### Features
+
+* add mock context to python shim ([ec5967c](https://github.com/aws-amplify/amplify-cli/commit/ec5967c7115a38ee84eb9d088ffe59bffc3b89f5))
+
+
+
+
+
 ## [2.2.31](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.2.30...amplify-python-function-runtime-provider@2.2.31) (2022-05-27)
 
 **Note:** Version bump only for package amplify-python-function-runtime-provider

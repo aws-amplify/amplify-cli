@@ -1,6 +1,6 @@
 {
   "name": "amplify-python-function-runtime-provider",
-  "version": "2.2.31",
+  "version": "2.3.0-test-api-package-migration-4.0",
   "description": "Provides functionality related to functions in Python on AWS",
   "repository": {
     "type": "git",

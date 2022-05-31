@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-util-uibuilder",
-  "version": "1.2.26",
+  "version": "1.2.27-test-api-package-migration-4.0",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -17,7 +17,7 @@
     "@aws-amplify/codegen-ui-react": "^2.2.0",
     "amplify-cli-core": "2.8.1",
     "amplify-prompts": "2.1.0",
-    "amplify-provider-awscloudformation": "6.2.1",
+    "amplify-provider-awscloudformation": "6.2.2-test-api-package-migration-4.0",
     "aws-sdk": "^2.1113.0",
     "ora": "^4.0.3"
   },
