@@ -36,7 +36,7 @@
     iterall "^1.1.3"
     uuid "^3.1.0"
 
-"@aws-amplify/amplify-category-api@test-api-package-migration":
+"@aws-amplify/amplify-category-api@^3.0.0-test-api-package-migration.0", "@aws-amplify/amplify-category-api@test-api-package-migration":
   version "3.0.0-test-api-package-migration.0"
   resolved "https://registry.npmjs.org/@aws-amplify/amplify-category-api/-/amplify-category-api-3.0.0-test-api-package-migration.0.tgz#36312bf011330b07306606a83376ac43930a4d0b"
   integrity sha512-o7AbXWtGXw/tCyalHodh9zMtjq4+T+v3qTJbwpdyW9OJrilzjbCcujz+IU9GmRpFiaUngBVSznk1j7caZeBY3w==
