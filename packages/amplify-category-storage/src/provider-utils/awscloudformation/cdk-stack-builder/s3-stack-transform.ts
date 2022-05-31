@@ -8,7 +8,7 @@ import {
   CLISubCommandType,
   IAmplifyResource,
   JSONUtilities,
-  pathManager
+  pathManager,
 } from 'amplify-cli-core';
 import { formatter, printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
@@ -27,7 +27,7 @@ import { AmplifyBuildParamsPermissions, AmplifyCfnParamType, AmplifyS3ResourceIn
  * @param resource S3 resource to be transformed ( ingest overrides.ts and generate cloudformation )
  */
 export async function transformS3ResourceStack(context: $TSContext, resource: IAmplifyResource): Promise<void> {
-  if (canResourceBeTransformed(resource.resourceName)) {
+  if (canResourceBeTransformed(context, resource.resourceName)) {
     const stackGenerator = new AmplifyS3ResourceStackTransform(resource.resourceName, context);
     await stackGenerator.transform(CLISubCommandType.OVERRIDE);
   }
@@ -47,7 +47,7 @@ export class AmplifyS3ResourceStackTransform {
   constructor(resourceName: string, context: $TSContext) {
     this.app = new App();
     // Validate the cli-inputs.json for the resource
-    this.cliInputsState = new S3InputState(resourceName, undefined);
+    this.cliInputsState = new S3InputState(context, resourceName, undefined);
     this.cliInputs = this.cliInputsState.getCliInputPayload();
     this.context = context;
     this.resourceName = resourceName;
@@ -225,7 +225,7 @@ export class AmplifyS3ResourceStackTransform {
      ** we don't save the dependsOn here. In all other cases, the resource-entry is updated with the new dependsOn entry
      */
     if (commandType !== CLISubCommandType.ADD) {
-      this._saveDependsOnToBackendConfig( );
+      this._saveDependsOnToBackendConfig();
     }
   }
 
@@ -336,17 +336,12 @@ export class AmplifyS3ResourceStackTransform {
   }
 
   //Helper: Save DependsOn entries to amplify-meta
-  _saveDependsOnToBackendConfig( ) {
+  _saveDependsOnToBackendConfig() {
     if (this.resourceTemplateObj) {
       //Get all collated resource dependencies
       const s3DependsOnResources = this.resourceTemplateObj.getS3DependsOn();
-      const dependsOn = [...s3DependsOnResources || []];
-      this.context.amplify.updateamplifyMetaAfterResourceUpdate(
-          AmplifyCategories.STORAGE,
-          this.resourceName,
-          'dependsOn',
-          dependsOn,
-      );
+      const dependsOn = [...(s3DependsOnResources || [])];
+      this.context.amplify.updateamplifyMetaAfterResourceUpdate(AmplifyCategories.STORAGE, this.resourceName, 'dependsOn', dependsOn);
     }
   }
 }

@@ -60,7 +60,7 @@ export const getAddAuthHandler =
 
     // move this function outside of AddHandler
     try {
-      const cliState = new AuthInputState(cognitoCLIInputs.cognitoConfig.resourceName);
+      const cliState = new AuthInputState(context, cognitoCLIInputs.cognitoConfig.resourceName);
       // saving cli-inputs except secrets
       await cliState.saveCLIInputPayload(cognitoCLIInputs);
       // cdk transformation in this function
@@ -148,7 +148,7 @@ export const getUpdateAuthHandler = (context: $TSContext) => async (request: Ser
     cognitoConfig: cliInputs,
   };
   try {
-    const cliState = new AuthInputState(cognitoCLIInputs.cognitoConfig.resourceName);
+    const cliState = new AuthInputState(context, cognitoCLIInputs.cognitoConfig.resourceName);
     const triggers = cognitoCLIInputs.cognitoConfig.triggers;
     // convert triggers to JSON as overided in defaults
     if (triggers && typeof triggers === 'string') {

@@ -8,7 +8,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import Ajv from 'ajv';
 import { printer } from 'amplify-prompts';
-import { $TSAny, JSONUtilities } from '..';
+import { $TSAny, $TSContext, JSONUtilities } from '..';
 
 // Interface types are expected to be exported as "typeName" in the file
 export type TypeDef = {
@@ -105,12 +105,14 @@ export class CLIInputSchemaGenerator {
 
 //Read Schema, Validate and return Typescript object.
 export class CLIInputSchemaValidator {
+  _context: $TSContext;
   _category: string;
   _service: string;
   _schemaFileName: string;
   _ajv: Ajv.Ajv;
 
-  constructor(service: string, category: string, schemaFileName: string) {
+  constructor(context: $TSContext, service: string, category: string, schemaFileName: string) {
+    this._context = context;
     this._category = category;
     this._service = normalizeServiceToFilePrefix(service);
     this._schemaFileName = schemaFileName;
@@ -119,9 +121,11 @@ export class CLIInputSchemaValidator {
 
   async getUserInputSchema() {
     try {
-      return await import(generateSchemaPath(this._category, this._service, this._schemaFileName));
+      return await import(generateSchemaPath(this._context, this._category, this._service, this._schemaFileName));
     } catch {
-      throw new Error(`Schema definition doesn't exist: ${generateSchemaPath(this._category, this._service, this._schemaFileName)}`);
+      throw new Error(
+        `Schema definition doesn't exist: ${generateSchemaPath(this._context, this._category, this._service, this._schemaFileName)}`,
+      );
     }
   }
 
@@ -141,6 +145,7 @@ export class CLIInputSchemaValidator {
   }
 }
 
-const generateSchemaPath = (category: string, service: string, schemaFileName: string): string => {
-  return path.join(`@aws-amplify/amplify-category-${category}`, 'resources', 'schemas', `${service}`, `${schemaFileName}.schema.json`);
+const generateSchemaPath = (context: $TSContext, category: string, service: string, schemaFileName: string): string => {
+  const pluginInfo = context.amplify.getCategoryPluginInfo(context, category);
+  return path.join(pluginInfo.packageLocation, 'resources', 'schemas', `${service}`, `${schemaFileName}.schema.json`);
 };

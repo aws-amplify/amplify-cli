@@ -1,7 +1,7 @@
 import { AmplifyDDBResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
 import * as cdk from '@aws-cdk/core';
 import { App } from '@aws-cdk/core';
-import { $TSAny, buildOverrideDir, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, buildOverrideDir, JSONUtilities, pathManager } from 'amplify-cli-core';
 import { formatter, printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import os from 'os';
@@ -15,6 +15,7 @@ import { getDdbAttrType } from '../cfn-template-utils';
 
 export class DDBStackTransform {
   app: App;
+  _context: $TSContext;
   _cliInputs: DynamoDBCLIInputs;
   _resourceTemplateObj: AmplifyDDBResourceStack | undefined;
   _cliInputsState: DynamoDBInputState;
@@ -22,12 +23,13 @@ export class DDBStackTransform {
   _cfnInputParams!: AmplifyDDBResourceInputParameters;
   _resourceName: string;
 
-  constructor(resourceName: string) {
+  constructor(context: $TSContext, resourceName: string) {
     this.app = new App();
+    this._context = context;
     this._resourceName = resourceName;
 
     // Validate the cli-inputs.json for the resource
-    this._cliInputsState = new DynamoDBInputState(resourceName);
+    this._cliInputsState = new DynamoDBInputState(context, resourceName);
     this._cliInputs = this._cliInputsState.getCliInputPayload();
     this._cliInputsState.isCLIInputsValid();
   }
