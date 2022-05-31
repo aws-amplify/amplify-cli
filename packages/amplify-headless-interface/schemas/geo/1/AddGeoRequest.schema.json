@@ -91,7 +91,10 @@
                 "VectorEsriNavigation",
                 "VectorEsriStreets",
                 "VectorEsriTopographic",
-                "VectorHereBerlin"
+                "RasterEsriImagery",
+                "VectorHereBerlin",
+                "VectorHereExplore",
+                "VectorHereExploreTruck"
             ],
             "type": "string"
         }

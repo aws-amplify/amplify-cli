@@ -109,4 +109,5 @@ describe('Test resource utility functions', () => {
             groupPermissions: groupPermissions
         }).toEqual(geofenceCollectionParams);
     });
+
 });
