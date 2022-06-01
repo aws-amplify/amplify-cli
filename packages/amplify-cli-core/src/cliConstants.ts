@@ -12,7 +12,7 @@ export const CLISubCommands = {
   IMPORT: 'import',
 };
 /**
- *
+ * CLI command types to be implemented across all categories.
  */
 export enum CLISubCommandType {
   ADD = 'add',
@@ -63,6 +63,29 @@ export interface IAmplifyResource {
 }
 
 /**
+ * Plugin API Error codes.
+ */
+export enum PluginAPIError {
+  E_NORES = 'E_NORES', // no resources found for given category/filter
+  E_NO_SVC_PROVIDER = 'E_NO_SVC_PROVIDER', // Given AWS service is not a provider for a given category
+  E_SVC_PROVIDER_NO_CAPABILITY = 'E_SVC_PROVIDER_NO_CAPABILITY', // Provider does not support requested capability
+  E_SVC_PROVIDER_SDK = 'E_SVC_SDK', // Generic error thrown by AWS SDK
+  E_SVC_PROVIDER_CDK = 'E_SVC_CDK', // Generic error thrown by AWS CDK
+}
+
+/**
+ * Plugin API response when client configures a capability ( e.g notifications )
+ */
+export interface IPluginCapabilityAPIResponse {
+  resourceProviderServiceName: string, // Service which provisions capability, subCapability e.g Pinpoint
+  capability: string, // e.g Notifications
+  subCapability?: string, // e.g In-AppMessaging
+  status: boolean, // true - successfully applied, false - failed to apply
+  errorCode?: PluginAPIError,
+  reasonMsg?: string, // In case of error, a user readable error string
+}
+
+/**
  * Notification Channels supported in Amplify
  */
 export enum NotificationChannels {
@@ -82,6 +105,7 @@ export interface INotificationsResourceMeta {
   Name : string, // region specific logical identifier for AWS service resource
   Region : string, // Region in which Notifications resource is deployed.
   ResourceName: string, // Logical name of Notificiations App.
+  Service: string, // AWS Service e.g Pinpoint
   output : Record<string, $TSAny>,
   mobileHubMigrated?:boolean,
   lastPushTimeStamp?:string,

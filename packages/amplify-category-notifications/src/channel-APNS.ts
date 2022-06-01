@@ -3,21 +3,26 @@
 import inquirer, { QuestionCollection } from 'inquirer';
 import ora from 'ora';
 import fs from 'fs-extra';
-import { $TSAny, $TSContext, exitOnNextTick } from 'amplify-cli-core';
+import {
+  $TSAny, $TSContext, exitOnNextTick,
+} from 'amplify-cli-core';
 
 import * as configureKey from './apns-key-config';
 import * as configureCertificate from './apns-cert-config';
+import { ChannelAction, IChannelAPIResponse, ChannelConfigDeploymentType } from './notifications-api-types';
+import { buildPinpointChannelResponseError, buildPinpointChannelResponseSuccess } from './pinpoint-helper';
 
 const channelName = 'APNS';
 const spinner = ora('');
+const deploymentType = ChannelConfigDeploymentType.INLINE;
 
 /**
  * Configure the Pinpoint resource to enable the Apple Push Notifications Messaging channel
  * @param context amplify cli context
  */
-export const configure = async (context:$TSContext): Promise<void> => {
+export const configure = async (context:$TSContext): Promise<IChannelAPIResponse> => {
   const isChannelEnabled = context.exeInfo.serviceMeta.output[channelName] && context.exeInfo.serviceMeta.output[channelName].Enabled;
-
+  let response: IChannelAPIResponse|undefined;
   if (isChannelEnabled) {
     context.print.info(`The ${channelName} channel is currently enabled`);
     const answer = await inquirer.prompt({
@@ -27,10 +32,10 @@ export const configure = async (context:$TSContext): Promise<void> => {
       default: false,
     });
     if (answer.disableChannel) {
-      await disable(context);
+      response = await disable(context);
     } else {
       const successMessage = `The ${channelName} channel has been successfully updated.`;
-      await enable(context, successMessage);
+      response = await enable(context, successMessage);
     }
   } else {
     const answer = await inquirer.prompt({
@@ -40,9 +45,13 @@ export const configure = async (context:$TSContext): Promise<void> => {
       default: true,
     });
     if (answer.enableChannel) {
-      await enable(context, undefined);
+      response = await enable(context, undefined);
     }
   }
+  if (response) {
+    return response;
+  }
+  return buildPinpointChannelResponseSuccess(ChannelAction.CONFIGURE, deploymentType, channelName);
 };
 
 /**
@@ -119,8 +128,8 @@ export const enable = async (context: $TSContext, successMessage: string | undef
     successMessage = `The ${channelName} channel has been successfully enabled.`;
   }
   spinner.succeed(successMessage);
-
-  return data;
+  const successResponse = buildPinpointChannelResponseSuccess(ChannelAction.ENABLE, deploymentType, channelName, data.APNSChannelResponse);
+  return successResponse;
 };
 
 const validateInputParams = (channelInput:$TSAny):$TSAny => {
@@ -179,10 +188,10 @@ export const disable = async (context: $TSContext) : Promise<$TSAny> => {
     spinner.fail(`Failed to update the ${channelName} channel.`);
     throw e;
   }
-
   spinner.succeed(`The ${channelName} channel has been disabled.`);
   context.exeInfo.serviceMeta.output[channelName] = data.APNSChannelResponse;
-  return data;
+  const successResponse = buildPinpointChannelResponseSuccess(ChannelAction.DISABLE, deploymentType, channelName, data.APNSChannelResponse);
+  return successResponse;
 };
 
 /**
@@ -203,12 +212,15 @@ export const pull = async (context:$TSContext, pinpointApp:$TSAny): Promise<$TSA
     .then((data: $TSAny) => {
       spinner.succeed(`Channel information retrieved for ${channelName}`);
       pinpointApp[channelName] = data.APNSChannelResponse;
-      return data.APNSChannelResponse;
+      const successResponse = buildPinpointChannelResponseSuccess(ChannelAction.PULL, deploymentType,
+        channelName, data.APNSChannelResponse);
+      return successResponse;
     })
     .catch((err: $TSAny) => {
       if (err.code === 'NotFoundException') {
         spinner.succeed(`Channel is not setup for ${channelName} `);
-        return err;
+        const errResponse = buildPinpointChannelResponseError(ChannelAction.PULL, deploymentType, channelName, err);
+        return errResponse;
       }
       spinner.stop();
       throw err;

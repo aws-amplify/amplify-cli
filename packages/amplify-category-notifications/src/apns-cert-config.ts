@@ -1,6 +1,6 @@
 import { $TSAny } from 'amplify-cli-core';
 import * as inquirer from 'inquirer';
-import { ICertificateInfo, run as p12DecoderRun } from './p12decoder';
+import { ICertificateInfo, run as p12DecoderRun } from './apns-cert-p12decoder';
 import * as validateFilePath from './validateFilepath';
 
 /**

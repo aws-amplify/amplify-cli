@@ -1,6 +1,6 @@
 import { $TSAny } from 'amplify-cli-core';
 import inquirer from 'inquirer';
-import { run as runP8Decoder } from './p8decoder';
+import { run as runP8Decoder } from './apns-cert-p8decoder';
 import { validateFilePath } from './validateFilepath';
 
 /**

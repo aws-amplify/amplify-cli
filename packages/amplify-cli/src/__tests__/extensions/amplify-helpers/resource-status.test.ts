@@ -1,3 +1,5 @@
+/* eslint-disable spellcheck/spell-checker */
+/* eslint-disable camelcase */
 import { hashElement } from 'folder-hash';
 import * as fs from 'fs-extra';
 import { stateManager } from 'amplify-cli-core';
@@ -12,7 +14,7 @@ import {
   NON_AMPLIFY_PROJECT,
   getCloudInitStatus,
 } from '../../../extensions/amplify-helpers/get-cloud-init-status';
-import { cronJobSetting } from '../../../../../amplify-category-function/lib/provider-utils/awscloudformation/utils/constants';
+import { ICategoryStatusCollection } from '../../../extensions/amplify-helpers/resource-status-diff';
 
 const sample_hash1 = 'testhash1';
 const sample_hash2 = 'testhash2';
@@ -49,7 +51,7 @@ jest.mock('../../../extensions/amplify-helpers/get-env-info', () => ({
 }));
 
 jest.mock('../../../extensions/amplify-helpers/get-cloud-init-status', () => ({
-  ...(jest.requireActual('../../../extensions/amplify-helpers/get-cloud-init-status') as {}),
+  ...(jest.requireActual('../../../extensions/amplify-helpers/get-cloud-init-status') as Record<string, never>),
   getCloudInitStatus: jest.fn(),
 }));
 
@@ -62,13 +64,14 @@ const currentBackendDirPathStub = 'currentBackendDirPathStub';
 const projectRootPath = 'projectRootPath';
 
 jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as {}),
+  ...(jest.requireActual('amplify-cli-core') as Record<string, never>),
   stateManager: {
     getCurrentMeta: jest.fn(),
     getMeta: jest.fn(),
     getProjectTags: jest.fn(),
     getCurrentProjectTags: jest.fn(),
     getBackendConfig: jest.fn(),
+    getCurrentBackendConfig: jest.fn(),
     getProjectConfig: jest.fn(),
   },
   pathManager: {
@@ -82,7 +85,7 @@ jest.mock('amplify-cli-core', () => ({
 }));
 
 jest.mock('amplify-category-function', () => ({
-  ...(jest.requireActual('amplify-category-function') as {}),
+  ...(jest.requireActual('amplify-category-function') as Record<string, never>),
   hashLayerResource: jest.fn(),
 }));
 
@@ -114,6 +117,7 @@ describe('resource-status', () => {
     stateManagerMock.getProjectTags.mockReturnValue([]);
     stateManagerMock.getCurrentProjectTags.mockReturnValue([]);
     stateManagerMock.getBackendConfig.mockReturnValue({});
+    stateManagerMock.getCurrentBackendConfig.mockReturnValue({});
     stateManagerMock.getProjectConfig.mockReturnValue(mockProjectConfig);
 
     (getEnvInfo as jest.MockedFunction<typeof getEnvInfo>).mockReturnValue({ envName: 'test' });
@@ -142,7 +146,7 @@ describe('resource-status', () => {
 
   describe('getResourceStatus', () => {
     it('returns empty arrays excluding allResources when immediately after initialized', async () => {
-      const status = await getResourceStatus();
+      const status: ICategoryStatusCollection = await getResourceStatus();
       expect(status).toEqual({
         allResources: [
           {
