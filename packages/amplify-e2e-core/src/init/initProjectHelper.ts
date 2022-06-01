@@ -328,9 +328,7 @@ export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; acces
       .wait('region');
 
     singleSelect(chain, process.env.CLI_REGION, amplifyRegions);
-    chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
-    .sendYes()
-    .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
+    chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
       if (!err) {
         resolve();
       } else {
@@ -361,8 +359,6 @@ export function initNewEnvWithProfile(cwd: string, s: { envName: string }): Prom
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendCarriageReturn()
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
-      .sendYes()
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
         if (!err) {
@@ -394,8 +390,6 @@ export function updatedInitNewEnvWithProfile(cwd: string, s: { envName: string }
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendCarriageReturn()
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
-      .sendYes()
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
         if (!err) {
@@ -431,8 +425,6 @@ export function amplifyInitSandbox(cwd: string, settings: {}): Promise<void> {
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendLine(s.profileName)
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
-      .sendYes()
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
         if (!err) {

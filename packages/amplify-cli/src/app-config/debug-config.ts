@@ -30,7 +30,7 @@ export class DebugConfig {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  private getCLIJson(throwIfNotExist: boolean = true): $TSAny {
+  private getCLIJson(throwIfNotExist = true): $TSAny {
     const rootPath = pathManager.findProjectRoot();
     if (!rootPath) {
       if (!throwIfNotExist) {
