@@ -1,3 +1,5 @@
+/* eslint-disable import/no-cycle */
+/* eslint-disable spellcheck/spell-checker */
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as glob from 'glob';

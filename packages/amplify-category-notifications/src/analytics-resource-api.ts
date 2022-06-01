@@ -6,7 +6,7 @@
  */
 
 import {
-  $TSContext, $TSMeta, AmplifyCategories, IAmplifyResource, IAnalyticsResource,
+  $TSContext, $TSMeta, AmplifyCategories, IAmplifyResource, IAnalyticsResource, IPluginCapabilityAPIResponse,
 } from 'amplify-cli-core';
 
 /**
@@ -18,7 +18,7 @@ export const invokeAnalyticsAPIGetResources = async (context: $TSContext, resour
   Promise<Array<IAnalyticsResource>> => {
   const analyticsResources = (await context.amplify.invokePluginMethod(context,
     'analytics', undefined,
-    'analyticsAPIGetResources', [resourceProviderServiceName])) as Array<IAmplifyResource>;
+    'analyticsAPIGetResources', [resourceProviderServiceName])) as Array<IAnalyticsResource>;
   return analyticsResources;
 };
 
@@ -45,10 +45,10 @@ export const invokeAnalyticsAPICreateResource = async (context: $TSContext, reso
  * @param enableChannel - True - enable notification/ false - disable notification
  */
 export const invokeAnalyticsResourceToggleNotificationChannel = async (context: $TSContext, resourceProviderServiceName: string,
-  channel: NotificationChannels, enableChannel: boolean): Promise<AnalyticsCapabilityAPIResponse> => {
+  channel: NotificationChannels, enableChannel: boolean): Promise<IPluginCapabilityAPIResponse> => {
   const toggleNotificationsResponse = (await context.amplify.invokePluginMethod(context,
     'analytics', resourceProviderServiceName,
-    'analyticsResourceToggleNotificationChannel', [context, resourceProviderServiceName, channel, enableChannel])) as AnalyticsCapabilityAPIResponse;
+    'analyticsResourceToggleNotificationChannel', [context, resourceProviderServiceName, channel, enableChannel])) as IPluginCapabilityAPIResponse;
   return toggleNotificationsResponse;
 };
 
@@ -73,16 +73,4 @@ export enum NotificationChannels {
   SMS = 'SMS',
   IN_APP_MSG = 'InAppMessaging',
   PUSH_NOTIFICATION = 'PushNotification'
-}
-
-/**
- * Analytics API response when client configures a capability ( e.g notifications )
- */
-export interface AnalyticsCapabilityAPIResponse {
-  resourceProviderServiceName: string, // Pinpoint of Kinesis
-  capability: string, // Notifications
-  subCapability?: string, // In-AppMessaging
-  status: boolean, // true - successfully applied, false - failed to apply
-  errorCode?: string,
-  reasonMsg?: string, // In case of error, a user readable error string
 }

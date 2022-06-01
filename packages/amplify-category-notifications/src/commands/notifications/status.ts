@@ -1,6 +1,5 @@
 import { $TSContext } from 'amplify-cli-core';
 import { NotificationsDB } from '../../notifications-backend-cfg-api';
-import * as notificationManager from '../../notifications-manager';
 
 /**
  *  Print the status of Pinpoint resource  and channels

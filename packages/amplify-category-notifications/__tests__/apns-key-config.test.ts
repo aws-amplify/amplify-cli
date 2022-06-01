@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable spellcheck/spell-checker */
-import * as p8decoder from '../src/p8decoder';
+import * as p8decoder from '../src/apns-cert-p8decoder';
 import * as apnsKeyConfig from '../src/apns-key-config';
 
 const inquirer = require('inquirer');
 const mockirer = require('mockirer');
 
-jest.mock('../src/p8decoder');
+jest.mock('../src/apns-cert-p8decoder');
 describe('apns-key-config', () => {
   const mockBundleId = 'mockBundleId';
   const mockTeamId = 'mockTeamId';

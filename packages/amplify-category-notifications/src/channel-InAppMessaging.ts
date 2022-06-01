@@ -6,6 +6,7 @@
 
 import {
   $TSAny, $TSContext, AmplifySupportedService, stateManager,
+  IPluginCapabilityAPIResponse,
 } from 'amplify-cli-core';
 
 /* eslint-disable @typescript-eslint/no-var-requires */
@@ -13,20 +14,19 @@ import * as inquirer from 'inquirer';
 import ora from 'ora';
 import { NotificationsDB } from './notifications-backend-cfg-api';
 import {
-  AnalyticsCapabilityAPIResponse, invokeAnalyticsResourceToggleNotificationChannel, NotificationChannels,
+  invokeAnalyticsResourceToggleNotificationChannel, NotificationChannels,
 } from './analytics-resource-api';
-import { disableChannelBackendConfig } from './multi-env-manager';
-import { IChannelAPIResponse, ChannelAction } from './notifications-api-types';
+import { IChannelAPIResponse, ChannelAction, ChannelConfigDeploymentType } from './notifications-api-types';
 
 const channelName = 'InAppMessaging';
 const spinner = ora('');
+const deploymentType = ChannelConfigDeploymentType.DEFERRED;
 
 /**
  * Configure Pinpoint with configs and IAM roles
  * @param {*} context amplify cli context
  */
 export const configure = async (context: $TSContext) : Promise<$TSContext> => {
-  console.log(`SACPCDEBUG: channel-in-app-msg: config : ${JSON.stringify(context.exeInfo.serviceMeta, null, 2)}`);
   if (await NotificationsDB.isChannelEnabledNotificationsBackendConfig(channelName)) {
     context.print.info(`The ${channelName} channel is currently enabled`);
     const answer = await inquirer.prompt({
@@ -46,10 +46,8 @@ export const configure = async (context: $TSContext) : Promise<$TSContext> => {
       default: true,
     });
     if (answer.enableChannel) {
-      console.log('SACPCDEBUG: channel-in-app-msg: config : Calling Enable-InAppMessaging');
       await enable(context);
     }
-    console.log('SACPCDEBUG: Enable: Validating BackendConfig:multi-env-manager ', JSON.stringify(stateManager.getBackendConfig(), null, 2));
   }
   return context;
 };
@@ -62,7 +60,7 @@ export const configure = async (context: $TSContext) : Promise<$TSContext> => {
 export const enable = async (context: $TSContext): Promise<IChannelAPIResponse> => {
   spinner.start('Updating In-App messaging channel.');
   //TBD: add the PINPOINT resource id - right now its assumed to be a single resource
-  const enableInAppMsgAPIResponse : AnalyticsCapabilityAPIResponse = await invokeAnalyticsResourceToggleNotificationChannel(context,
+  const enableInAppMsgAPIResponse : IPluginCapabilityAPIResponse = await invokeAnalyticsResourceToggleNotificationChannel(context,
     AmplifySupportedService.PINPOINT,
     NotificationChannels.IN_APP_MSG,
     true);
@@ -75,6 +73,7 @@ export const enable = async (context: $TSContext): Promise<IChannelAPIResponse> 
   }
   const enableChannelInAppMsgResponse : IChannelAPIResponse = {
     action: ChannelAction.ENABLE,
+    deploymentType,
     channel: channelName,
     response: enableInAppMsgAPIResponse,
   };
@@ -88,7 +87,7 @@ export const enable = async (context: $TSContext): Promise<IChannelAPIResponse> 
  */
 export const disable = async (context: $TSContext):Promise<$TSAny> => {
   spinner.start('Updating In-App messaging channel.');
-  const disableInAppMsgResponse : AnalyticsCapabilityAPIResponse = await invokeAnalyticsResourceToggleNotificationChannel(context,
+  const disableInAppMsgResponse : IPluginCapabilityAPIResponse = await invokeAnalyticsResourceToggleNotificationChannel(context,
     AmplifySupportedService.PINPOINT,
     NotificationChannels.IN_APP_MSG,
     false /*disable*/);
@@ -99,6 +98,7 @@ export const disable = async (context: $TSContext):Promise<$TSAny> => {
   }
   const disableChannelInAppMsgResponse : IChannelAPIResponse = {
     action: ChannelAction.DISABLE,
+    deploymentType,
     channel: channelName,
     response: disableInAppMsgResponse,
   };

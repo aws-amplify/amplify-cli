@@ -161,7 +161,7 @@ export const getResourceStatus = async (
   filteredResources? : Array<$TSAny>,
 ): Promise<resourceStatus.ICategoryStatusCollection> => {
   const { amplifyMeta, currentAmplifyMeta } = getAmplifyMeta();
-  const backendConfigs: IBackendConfigs = getBackendConfig();
+  const backendConfigs: IBackendConfigs = getLocalAndDeployedBackendConfig();
   let resourcesToBeCreated: $TSAny = getResourcesToBeCreated(amplifyMeta, currentAmplifyMeta, category, resourceName, filteredResources);
   let resourcesToBeUpdated: $TSAny = await getResourcesToBeUpdated(amplifyMeta, currentAmplifyMeta, backendConfigs,
     category, resourceName, filteredResources);
@@ -560,10 +560,22 @@ export const getAmplifyMeta = ():$TSAny => {
 /**
  * API: get amplify backend config
  */
-export const getBackendConfig = ():$TSAny => {
+export const getLocalAndDeployedBackendConfig = ():IBackendConfigs => {
+    let currentBackendConfig:$TSAny;
+    let backendConfig:$TSAny;
+    try {
+      currentBackendConfig = stateManager.getCurrentBackendConfig();
+    // eslint-disable-next-line no-empty
+    } catch (e) {} // this will fail on iniEnv;
+
+    try {
+      backendConfig = stateManager.getBackendConfig();
+    // eslint-disable-next-line no-empty
+    } catch (e) {} // this will fail on iniEnv;
+
     return {
-      backendConfig: stateManager.getBackendConfig(),
-      currentBackendConfig: stateManager.getCurrentBackendConfig(),
+      backendConfig,
+      currentBackendConfig,
     };
 };
 

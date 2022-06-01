@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable spellcheck/spell-checker */
-import * as p12decoder from '../src/p12decoder';
+import * as p12decoder from '../src/apns-cert-p12decoder';
 import * as apnsCertConfig from '../src/apns-cert-config';
-import { ICertificateInfo } from '../src/p12decoder';
+import { ICertificateInfo } from '../src/apns-cert-p12decoder';
 
 const inquirer = require('inquirer');
 const mockirer = require('mockirer');
 
-jest.mock('../src/p12decoder');
+jest.mock('../src/apns-cert-p12decoder');
 
 describe('apns-cert-config', () => {
   const mockFielPath = 'mock_p12_file_path';

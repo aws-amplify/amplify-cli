@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 /* eslint-disable no-bitwise */
 /* eslint-disable spellcheck/spell-checker */
 /**
@@ -7,7 +8,7 @@ import {
   $TSAny, stateManager, AmplifySupportedService, AmplifyCategories, $TSMeta, $TSContext, INotificationsResourceMeta,
 } from 'amplify-cli-core';
 import { ICategoryMeta } from './notifications-amplify-meta-types';
-import { NotificationsDB } from './notifications-backend-cfg-api';
+import { NotificationsDB as Notifications } from './notifications-backend-cfg-api';
 import { invokeGetLastPushTimeStamp } from './analytics-resource-api';
 
 /**
@@ -27,7 +28,7 @@ export class NotificationsMeta {
   public static toggleNotificationsChannelAppMeta = async (channelName:string, isEnabled:boolean,
     amplifyMeta?:$TSMeta, appName?:string): Promise<$TSMeta> => {
     const tmpAmplifyMeta:$TSMeta = amplifyMeta;
-    const notificationsAppMeta = await NotificationsMeta.getNotificationsAppMeta(amplifyMeta, appName);
+    const notificationsAppMeta = await NotificationsMeta.getNotificationsAppMeta(tmpAmplifyMeta, appName);
     if (notificationsAppMeta) {
       const channelOutput = (notificationsAppMeta.output) || {};
       const channelValue = (channelOutput[channelName]) || {};
@@ -78,15 +79,7 @@ export class NotificationsMeta {
    */
   public static getNotificationsAppMeta = async (amplifyMeta?:$TSMeta, appName?:string): Promise<INotificationsResourceMeta|undefined> => {
     const notificationResourceList = await NotificationsMeta.getNotificationsAppListMeta(amplifyMeta, appName);
-    console.log('SACPCDEBUG:getNotificationsAppMeta : ', JSON.stringify(notificationResourceList, null, 2));
-    if (notificationResourceList.length > 0) {
-      const notificationsApp:INotificationsResourceMeta = {
-        ResourceName: notificationResourceList[0].ResourceName,
-        ...notificationResourceList[0].output,
-      };
-      return notificationsApp;
-    }
-    return undefined;
+    return (notificationResourceList.length > 0) ? notificationResourceList[0] : undefined;
   }
 
    /**
@@ -138,11 +131,8 @@ export class NotificationsMeta {
 public static getEnabledChannelsFromAppMeta = async (amplifyMeta?: $TSAny): Promise<Array<string>> => {
   let enabledChannelList :Array<string> = [];
   const tmpAmplifyMeta = (amplifyMeta) || stateManager.getMeta();
-  const availableChannels = NotificationsDB.getAvailableChannels();
+  const availableChannels = Notifications.ChannelAPI.getAvailableChannels();
   const notificationsMeta = await NotificationsMeta.getNotificationsAppMeta(tmpAmplifyMeta);
-
-  console.log('SACPCDEBUG:getEnabledChannelsFromAppMeta ',
-    JSON.stringify(availableChannels), JSON.stringify(notificationsMeta, null, 2));
   enabledChannelList = (notificationsMeta)
     ? availableChannels.filter(channel => NotificationsMeta.isNotificationChannelEnabled(notificationsMeta, channel))
     : [];
@@ -154,15 +144,15 @@ public static getEnabledChannelsFromAppMeta = async (amplifyMeta?: $TSAny): Prom
  * Get all notification channels which are not in use
  */
  public static getDisabledChannelsFromAmplifyMeta = async (amplifyMeta?: $TSMeta): Promise<Array<string>> => {
-   const result : Array<string> = [];
-   const availableChannels = NotificationsDB.getAvailableChannels();
+   const disabledChannelList : Array<string> = [];
+   const availableChannels = Notifications.ChannelAPI.getAvailableChannels();
    const enabledChannels = await NotificationsMeta.getEnabledChannelsFromAppMeta(amplifyMeta);
    availableChannels.forEach(channel => {
      if (!enabledChannels.includes(channel)) {
-       result.push(channel);
+       disabledChannelList.push(channel);
      }
    });
-   return result;
+   return disabledChannelList;
  };
 
  /**
@@ -174,7 +164,7 @@ public static getEnabledChannelsFromAppMeta = async (amplifyMeta?: $TSAny): Prom
 
  public static addPartialNotificationsAppMeta = async (context: $TSContext, notificationResourceName: string):Promise<$TSMeta> => {
    let updatedAmplifyMeta = await stateManager.getMeta();
-   const pinpointRegion = NotificationsDB.getPinpointRegionMapping(context);
+   const pinpointRegion = Notifications.getPinpointRegionMapping(context);
    // update amplify-meta with notifications metadata
    updatedAmplifyMeta = NotificationsMeta.constructPartialNotificationsAppMeta(updatedAmplifyMeta,
      notificationResourceName, pinpointRegion);
@@ -211,13 +201,16 @@ public static getEnabledChannelsFromAppMeta = async (amplifyMeta?: $TSAny): Prom
  public static constructResourceMeta = (amplifyMeta : $TSMeta, resourceName: string, pinpointOutput: Partial<ICategoryMeta>):void => {
    const tmpAmplifyMeta = amplifyMeta;
    if (!tmpAmplifyMeta[AmplifyCategories.NOTIFICATIONS]) {
-     tmpAmplifyMeta[AmplifyCategories.NOTIFICATIONS] = { [resourceName]: {} };
+     tmpAmplifyMeta[AmplifyCategories.NOTIFICATIONS] = { [resourceName]: { output: {} } };
    }
    tmpAmplifyMeta[AmplifyCategories.NOTIFICATIONS][resourceName] = {
-     service: AmplifySupportedService.PINPOINT,
-     output: pinpointOutput,
-     lastPushTimeStamp: new Date(),
      ...tmpAmplifyMeta[AmplifyCategories.NOTIFICATIONS][resourceName],
+     service: AmplifySupportedService.PINPOINT,
+     output: {
+       ...tmpAmplifyMeta[AmplifyCategories.NOTIFICATIONS][resourceName].output,
+       ...pinpointOutput,
+     },
+     lastPushTimeStamp: new Date(),
    };
    return tmpAmplifyMeta;
  };
@@ -226,18 +219,25 @@ public static getEnabledChannelsFromAppMeta = async (amplifyMeta?: $TSAny): Prom
    * [Internal] Get the Notifications resources from amplify-meta.json
    * @returns List of notifications resources
    */
-    protected static getNotificationsAppListMeta= async (amplifyMeta?:$TSMeta, appName?:string):Promise<Array<$TSAny>> => {
+    protected static getNotificationsAppListMeta= async (amplifyMeta?:$TSMeta, appName?:string)
+    :Promise<Array<INotificationsResourceMeta>> => {
       const tmpMeta = (amplifyMeta) || await stateManager.getMeta();
       const notificationsMeta = tmpMeta[AmplifyCategories.NOTIFICATIONS];
-      const notificationsResourceList: Array<$TSAny> = [];
+      const notificationsResourceList: Array<INotificationsResourceMeta> = [];
       if (notificationsMeta) {
         for (const resourceName of Object.keys(notificationsMeta)) {
-          if (!appName || appName === resourceName) {
+          if ((!appName || appName === resourceName)
+               && (notificationsMeta[resourceName].service === AmplifySupportedService.PINPOINT)) {
             const notificationsResourceMeta :$TSAny = notificationsMeta[resourceName];
             notificationsResourceList.push({
+              Id: notificationsResourceMeta.output.Id,
               ResourceName: resourceName,
-              ...notificationsResourceMeta,
-            });
+              Name: notificationsResourceMeta.output.Name, // {ResourceName}-{env}
+              Service: notificationsResourceMeta.service,
+              Region: notificationsResourceMeta.output.Region, // Region in which Notifications resource is deployed.
+              output: notificationsResourceMeta.output, // TBD: validate output
+              ...notificationsResourceMeta, // TBD: remove if not needed
+            } as INotificationsResourceMeta);
           }
         }
       }

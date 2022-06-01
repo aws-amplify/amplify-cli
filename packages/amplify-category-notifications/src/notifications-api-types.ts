@@ -1,8 +1,7 @@
 /**
  * This file will contain the structures required for headless API
  */
-import { $TSContext } from 'amplify-cli-core';
-import { AnalyticsCapabilityAPIResponse } from './analytics-resource-api';
+import { $TSAny, $TSContext, IPluginCapabilityAPIResponse } from 'amplify-cli-core';
 
 /**
  * Actions performed on a Notifications channel (Pinpoint)
@@ -12,7 +11,16 @@ export enum ChannelAction {
     DISABLE = 'disable',
     CONFIGURE = 'configure',
     PULL = 'pull'
-  }
+}
+/**
+ * Channel config deployment types.
+ * note: INLINE deployment will be phased out after the implementation of
+ * DEFERRED deployment( and rollback ) for SDK deployed resources.
+ */
+export enum ChannelConfigDeploymentType {
+    INLINE = 'INLINE', // channel config is deployed as soon as its configured
+    DEFERRED = 'DEFERRED', // channel config is deployed only on amplify-push
+}
 
 /**
  * Response structure for a Notifications channel API
@@ -20,7 +28,9 @@ export enum ChannelAction {
 export interface IChannelAPIResponse {
     action: ChannelAction,
     channel: string,
-    response: AnalyticsCapabilityAPIResponse,
+    response: IPluginCapabilityAPIResponse,
+    output?: $TSAny, // Channel API response
+    deploymentType: ChannelConfigDeploymentType,
 }
 
 /**

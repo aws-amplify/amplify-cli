@@ -4,7 +4,8 @@ import * as pinpointHelper from '../../pinpoint-helper';
 import * as notificationManager from '../../notifications-manager';
 import * as multiEnvManager from '../../multi-env-manager';
 import { IChannelAPIResponse } from '../../notifications-api-types';
-import { NotificationsDB } from '../../notifications-backend-cfg-api';
+import { NotificationsDB as Notifications } from '../../notifications-backend-cfg-api';
+import { isPinpointAppDeployed } from '../../pinpoint-helper';
 
 /**
  * Configuration walkthrough for Notifications resources
@@ -13,7 +14,7 @@ import { NotificationsDB } from '../../notifications-backend-cfg-api';
  */
 export const run = async (context:$TSContext): Promise<$TSContext> => {
   context.exeInfo = context.amplify.getProjectDetails();
-  const availableChannels = NotificationsDB.getAvailableChannels();
+  const availableChannels = Notifications.ChannelAPI.getAvailableChannels();
   let channelName = context.parameters.first;
 
   if (!channelName || !availableChannels.includes(channelName)) {
@@ -27,12 +28,12 @@ export const run = async (context:$TSContext): Promise<$TSContext> => {
     channelName = answer.selection;
   }
 
-  await pinpointHelper.ensurePinpointApp(context, undefined);
-  const channelAPIResponse : IChannelAPIResponse|undefined = await notificationManager.configureChannel(context, channelName);
-  if (channelAPIResponse) {
+  const pinpointAppStatus = await pinpointHelper.ensurePinpointApp(context, undefined);
+  if (isPinpointAppDeployed(pinpointAppStatus.status)
+  || Notifications.ChannelAPI.isChannelDeploymentDeferred(channelName)) {
+    const channelAPIResponse : IChannelAPIResponse|undefined = await notificationManager.configureChannel(context, channelName);
     await multiEnvManager.writeData(context, channelAPIResponse);
   }
-
   return context;
 };
 
