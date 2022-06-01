@@ -2,19 +2,17 @@ import fs from 'fs-extra';
 import * as path from 'path';
 import { TransformerProjectConfig, DeploymentResources } from '@aws-amplify/graphql-transformer-core';
 import rimraf from 'rimraf';
-import { ProviderName as providerName } from '../constants';
-import { $TSContext, AmplifyCategories, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, AmplifyCategories, CloudformationProviderFacade, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import { CloudFormation, Fn } from 'cloudform';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { pullAllBy, find } from 'lodash';
-import { isAmplifyAdminApp } from '../utils/admin-helpers';
 import { printer } from 'amplify-prompts';
-import { prePushCfnTemplateModifier } from '../pre-push-cfn-processor/pre-push-cfn-modifier';
 
 const PARAMETERS_FILE_NAME = 'parameters.json';
 const CUSTOM_ROLES_FILE_NAME = 'custom-roles.json';
 const AMPLIFY_ADMIN_ROLE = '_Full-access/CognitoIdentityCredentials';
 const AMPLIFY_MANAGE_ROLE = '_Manage-only/CognitoIdentityCredentials';
+const PROVIDER_NAME = 'awscloudformation';
 
 interface CustomRolesConfig {
   adminRoleNames?: Array<string>;
@@ -23,7 +21,7 @@ interface CustomRolesConfig {
 export const getIdentityPoolId = async (ctx: $TSContext): Promise<string | undefined> => {
   const { allResources, resourcesToBeDeleted } = await ctx.amplify.getResourceStatus('auth');
   const authResources = pullAllBy(allResources, resourcesToBeDeleted, 'resourceName');
-  const authResource = find(authResources, { service: 'Cognito', providerPlugin: providerName }) as any;
+  const authResource = find(authResources, { service: 'Cognito', providerPlugin: PROVIDER_NAME }) as any;
   return authResource?.output?.IdentityPoolId;
 };
 
@@ -41,8 +39,8 @@ export const getAdminRoles = async (ctx: $TSContext, apiResourceName: string | u
   //admin ui roles
   try {
     const amplifyMeta = stateManager.getMeta();
-    const appId = amplifyMeta?.providers?.[providerName]?.AmplifyAppId;
-    const res = await isAmplifyAdminApp(appId);
+    const appId = amplifyMeta?.providers?.[PROVIDER_NAME]?.AmplifyAppId;
+    const res = await CloudformationProviderFacade.isAmplifyAdminApp(ctx, appId);
     if (res.userPoolID) {
       adminRoles.push(`${res.userPoolID}${AMPLIFY_ADMIN_ROLE}`, `${res.userPoolID}${AMPLIFY_MANAGE_ROLE}`);
     }
@@ -201,6 +199,7 @@ function overrideUserDefinedStacks(userConfig: TransformerProjectConfig, transfo
  * Writes a deployment to disk at a path.
  */
 export async function writeDeploymentToDisk(
+  context: $TSContext,
   deployment: DeploymentResources,
   directory: string,
   rootStackFileName: string = 'rootStack.json',
@@ -250,7 +249,7 @@ export async function writeDeploymentToDisk(
     if (typeof stackContent === 'string') {
       stackContent = JSON.parse(stackContent);
     }
-    await prePushCfnTemplateModifier(stackContent);
+    await CloudformationProviderFacade.prePushCfnTemplateModifier(context, stackContent);
     fs.writeFileSync(fullStackPath, JSONUtilities.stringify(stackContent, { minify }));
   }
 

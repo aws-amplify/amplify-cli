@@ -3,6 +3,50 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.9.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.9.0...@aws-amplify/amplify-category-auth@2.9.1) (2022-05-27)
+
+
+
+## 8.3.1 (2022-05-27)
+
+
+### Bug Fixes
+
+* oauth amplify appId Issue ([#10480](https://github.com/aws-amplify/amplify-cli/issues/10480)) ([649571a](https://github.com/aws-amplify/amplify-cli/commit/649571a3fd7e81e15f41b52fce432b2c1e6c963f))
+* oauth secret key fix when authProviders is empty ([#10474](https://github.com/aws-amplify/amplify-cli/issues/10474)) ([0d8a611](https://github.com/aws-amplify/amplify-cli/commit/0d8a611feca055f3f55518e4e4077ce2847a7039))
+* userpool groups custom policies regression ([#10455](https://github.com/aws-amplify/amplify-cli/issues/10455)) ([9fa8b4d](https://github.com/aws-amplify/amplify-cli/commit/9fa8b4d86c1e8cf0e562d3d6c61b0bd3bae329b4))
+
+
+### Reverts
+
+* oauth parameter store change ([#10485](https://github.com/aws-amplify/amplify-cli/issues/10485)) ([896b518](https://github.com/aws-amplify/amplify-cli/commit/896b51833e30daf9997d38c9229ca237ab7deda1))
+
+
+
+
+
+# [2.9.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.8.0...@aws-amplify/amplify-category-auth@2.9.0) (2022-05-24)
+
+
+### Features
+
+* move oauth secrets to parameter store ([#10413](https://github.com/aws-amplify/amplify-cli/issues/10413)) ([16db2ce](https://github.com/aws-amplify/amplify-cli/commit/16db2ceb5da4e02e90e6b0bc1bb27412fd765b50))
+
+
+
+
+
+# [2.8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.12...@aws-amplify/amplify-category-auth@2.8.0) (2022-05-10)
+
+
+### Features
+
+* usage flow logging for interactive and non-interactive cli commands ([#10288](https://github.com/aws-amplify/amplify-cli/issues/10288)) ([da391b1](https://github.com/aws-amplify/amplify-cli/commit/da391b146612d8914f72e558e5503d075456c820)), closes [#10293](https://github.com/aws-amplify/amplify-cli/issues/10293)
+
+
+
+
+
 ## [2.7.12](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.7.11...@aws-amplify/amplify-category-auth@2.7.12) (2022-04-29)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-auth

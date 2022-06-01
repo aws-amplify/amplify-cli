@@ -1,6 +1,9 @@
 import { $TSContext, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
-import { GRAPHQL_API_ENDPOINT_OUTPUT, GRAPHQL_API_KEY_OUTPUT, MOCK_API_KEY, MOCK_API_PORT } from '../../api/api';
+// eslint-disable-next-line import/no-cycle
+import {
+  GRAPHQL_API_ENDPOINT_OUTPUT, GRAPHQL_API_KEY_OUTPUT, MOCK_API_KEY, MOCK_API_PORT,
+} from '../../api/api';
 
 /**
  * Loads all parameters that should be passed into the lambda CFN template when resolving values
@@ -10,12 +13,10 @@ import { GRAPHQL_API_ENDPOINT_OUTPUT, GRAPHQL_API_KEY_OUTPUT, MOCK_API_KEY, MOCK
 export const populateCfnParams = (
   print: $TSContext['print'],
   resourceName: string,
-  overrideApiToLocal: boolean = false,
-): Record<string, string> => {
-  return [getCfnPseudoParams, getAmplifyMetaParams, getParametersJsonParams, getTeamProviderParams]
-    .map(paramProvider => paramProvider(print, resourceName, overrideApiToLocal))
-    .reduce((acc, it) => ({ ...acc, ...it }), {});
-};
+  overrideApiToLocal = false,
+): Record<string, string> => [getCfnPseudoParams, getAmplifyMetaParams, getParametersJsonParams, getTeamProviderParams]
+  .map(paramProvider => paramProvider(print, resourceName, overrideApiToLocal))
+  .reduce((acc, it) => ({ ...acc, ...it }), {});
 
 const getCfnPseudoParams = (): Record<string, string> => {
   const env = stateManager.getLocalEnvInfo().envName;
@@ -42,7 +43,7 @@ const getCfnPseudoParams = (): Record<string, string> => {
 const getAmplifyMetaParams = (
   print: $TSContext['print'],
   resourceName: string,
-  overrideApiToLocal: boolean = false,
+  overrideApiToLocal = false,
 ): Record<string, string> => {
   const projectMeta = stateManager.getMeta();
   if (!Array.isArray(projectMeta?.function?.[resourceName]?.dependsOn)) {
@@ -71,6 +72,8 @@ const getAmplifyMetaParams = (
           case GRAPHQL_API_KEY_OUTPUT:
             val = MOCK_API_KEY;
             break;
+          default:
+            // noop
         }
       }
 
@@ -83,14 +86,14 @@ const getAmplifyMetaParams = (
 /**
  * Loads CFN parameters from the parameters.json file for the resource (if present)
  */
-const getParametersJsonParams = (_, resourceName: string): Record<string, string> => {
-  return stateManager.getResourceParametersJson(undefined, 'function', resourceName, { throwIfNotExist: false }) ?? {};
-};
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const getParametersJsonParams = (print, resourceName: string): Record<string, string> => stateManager.getResourceParametersJson(undefined, 'function', resourceName, { throwIfNotExist: false }) ?? {};
 
 /**
  * Loads CFN parameters for the resource in the team-provider-info.json file (if present)
  */
-const getTeamProviderParams = (__, resourceName: string): Record<string, string> => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const getTeamProviderParams = (print, resourceName: string): Record<string, string> => {
   const env = stateManager.getLocalEnvInfo().envName;
   return _.get(stateManager.getTeamProviderInfo(), [env, 'categories', 'function', resourceName], {});
 };

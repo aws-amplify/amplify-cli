@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.4.2...amplify-util-mock@4.4.3) (2022-05-27)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.4.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.4.1...amplify-util-mock@4.4.2) (2022-05-24)
+
+
+### Bug Fixes
+
+* **amplify-util-mock:** fn parameter shadowing lodash ([#10429](https://github.com/aws-amplify/amplify-cli/issues/10429)) ([269bb56](https://github.com/aws-amplify/amplify-cli/commit/269bb56581aadf3ef8794ac49b71d86e795c45cb))
+
+
+
+
+
+## [4.4.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.4.0...amplify-util-mock@4.4.1) (2022-05-10)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
 # [4.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.3.16...amplify-util-mock@4.4.0) (2022-04-29)
 
 

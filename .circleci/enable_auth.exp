@@ -5,8 +5,6 @@ send -- "\r"
 expect "How do you want users to be able to sign in?"
 send -- "\r"
 expect "Do you want to configure advanced settings?"
-send -- "N\r"
+send -- "\r"
 set timeout 70
-expect "Are you sure you want to continue?"
-send -- "Y\r"
 interact

@@ -5,9 +5,8 @@ const AppSync = require('./aws-utils/aws-appsync');
 const { Lex } = require('./aws-utils/aws-lex');
 const Polly = require('./aws-utils/aws-polly');
 const SageMaker = require('./aws-utils/aws-sagemaker');
-const { transformGraphQLSchema } = require('./graphql-transformer');
 const { transformResourceWithOverrides } = require('./override-manager');
-const { getDirectiveDefinitions } = require('./graphql-transformer-factory/directive-definitions');
+const { ApiCategoryFacade } = require('amplify-cli-core');
 const { updateStackForAPIMigration } = require('./push-resources');
 const SecretsManager = require('./aws-utils/aws-secretsmanager');
 const Route53 = require('./aws-utils/aws-route53');
@@ -60,7 +59,7 @@ module.exports = {
       };
     }
 
-    return transformGraphQLSchema(context, optionsWithUpdateHandler);
+    return ApiCategoryFacade.transformGraphQLSchema(context, optionsWithUpdateHandler);
   },
 
   /**
@@ -158,7 +157,7 @@ module.exports = {
     if (!resourceDir) {
       throw new Error('missing resource directory');
     }
-    return getDirectiveDefinitions(context, resourceDir);
+    return ApiCategoryFacade.getDirectiveDefinitions(context, resourceDir);
   },
   getRegions: () => awsRegions.regions,
   getRegionMappings: () => awsRegions.regionMappings,
@@ -276,7 +275,7 @@ module.exports = {
    * @deprecated Use getGraphQLAPIs instead
    */
   getAppSyncAPIs: context => {
-    return this.getGraphQLAPIs(context);
+    return module.exports.getGraphQLAPIs(context);
   },
   getGraphQLAPIs: context => {
     const log = logger('getGraphQLAPIs.appSyncModel.appSync.listGraphqlApis', { maxResults: 25 });
@@ -375,7 +374,7 @@ module.exports = {
    * @deprecated Use getGraphQLApiKeys instead
    */
   getAppSyncApiKeys: (context, options) => {
-    return this.getGraphQLApiKeys(context, options);
+    return module.exports.getGraphQLApiKeys(context, options);
   },
   getGraphQLApiKeys: (context, options) => {
     const awsOptions = {};

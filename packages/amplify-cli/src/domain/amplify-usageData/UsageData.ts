@@ -5,12 +5,19 @@ import { UrlWithStringQuery } from 'url';
 import { JSONUtilities } from 'amplify-cli-core';
 import { pick } from 'lodash';
 import { ICommandInput, IFlowReport } from 'amplify-cli-shared-interfaces';
+import { prompter } from 'amplify-prompts';
 import { Input } from '../input';
 import redactInput from './identifiable-input-regex';
 import { UsageDataPayload, InputOptions } from './UsageDataPayload';
 import { getUrl } from './getUsageDataUrl';
 import {
-  IUsageData, TimedCodePath, ProjectSettings, StartableTimedCodePath, StoppableTimedCodePath, FromStartupTimedCodePaths,
+  IUsageData,
+  TimedCodePath,
+  ProjectSettings,
+  StartableTimedCodePath,
+  StoppableTimedCodePath,
+  FromStartupTimedCodePaths,
+  ManuallyTimedCodePath,
 } from './IUsageData';
 import { Timer } from './Timer';
 import { CLIFlowReport } from './FlowReport';
@@ -113,13 +120,12 @@ export class UsageData implements IUsageData {
     this.internalStopCodePathTimer(codePath);
   }
 
-
   /**
    * Set context is in headless mode
    * @param isHeadless - when set to true assumes context in headless
    */
   setIsHeadless(isHeadless: boolean) {
-      this.flow.setIsHeadless(isHeadless);
+    this.flow.setIsHeadless(isHeadless);
   }
 
   /**
@@ -128,7 +134,7 @@ export class UsageData implements IUsageData {
     * @param input  - CLI input entered by Cx
     */
   pushHeadlessFlow(headlessParameterString: string, input: ICommandInput) {
-      this.flow.pushHeadlessFlow(headlessParameterString, input);
+    this.flow.pushHeadlessFlow(headlessParameterString, input);
   }
 
   /**
@@ -137,21 +143,21 @@ export class UsageData implements IUsageData {
    * @param input  - CLI input entered by Cx
    */
   pushInteractiveFlow(prompt: string, input: unknown): void {
-      this.flow.pushInteractiveFlow(prompt, input);
+    this.flow.pushInteractiveFlow(prompt, input);
   }
 
   /**
    * Get the JSON version of the Flow Report.
    */
   getFlowReport(): IFlowReport {
-      return this.flow.getFlowReport();
+    return this.flow.getFlowReport();
   }
 
   /**
    * Generate a unique searchable
    */
   assignProjectIdentifier(): string | undefined {
-      return this.flow.assignProjectIdentifier();
+    return this.flow.assignProjectIdentifier();
   }
 
   private internalStopCodePathTimer = (codePath: TimedCodePath): void => {
@@ -166,6 +172,10 @@ export class UsageData implements IUsageData {
   private async emit(error: Error | null, state: string): Promise<UsageDataPayload> {
     // initialize the unique project identifier if work space is initialized
     this.flow.assignProjectIdentifier();
+
+    // add prompt time
+    this.codePathDurations.set(ManuallyTimedCodePath.PROMPT_TIME, prompter.getTotalPromptElapsedTime());
+
     // stop all currently running timers
     Array.from(this.codePathTimers.keys()).forEach(this.internalStopCodePathTimer);
 
@@ -187,7 +197,6 @@ export class UsageData implements IUsageData {
 
     return payload;
   }
-
 
   private async send(payload: UsageDataPayload): Promise<void> {
     return new Promise<void>(resolve => {

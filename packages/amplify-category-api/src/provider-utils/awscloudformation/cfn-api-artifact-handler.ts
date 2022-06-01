@@ -314,20 +314,13 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
       };
     }
     // deploy appsync inputs
-    const cliState = new AppsyncApiInputState(serviceConfig.apiName);
+    const cliState = new AppsyncApiInputState(this.context, serviceConfig.apiName);
     await cliState.saveCLIInputPayload(appsyncCLIInputs);
     return appsyncCLIInputs;
   };
 
-  /**
-   * If the resource is migrated, updates cli-inputs.json with the specified updates
-   * If not migrated, this method is a noop (but still returns the schema path)
-   * @param updates The updates to apply
-   * @param apiName The api name
-   * @returns The gqlSchemaPath
-   */
-  private updateAppsyncCLIInputs = async (updates: AppSyncServiceModification, apiName: string): Promise<string> => {
-    const cliState = new AppsyncApiInputState(apiName);
+  private updateAppsyncCLIInputs = async (updates: AppSyncServiceModification, apiName: string) => {
+    const cliState = new AppsyncApiInputState(this.context, apiName);
     const gqlSchemaPath = path.join(this.getResourceDir(apiName), gqlSchemaFilename);
     if (!cliState.cliInputFileExists()) {
       return gqlSchemaPath;

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { getCLIPath, nspawn as spawn } from 'amplify-e2e-core';
 
 export const importUserPoolOnly = (cwd: string, autoCompletePrefix: string, clientNames?: { web?: string; native?: string }) => {
@@ -250,7 +251,7 @@ export const importDynamoDBTable = (cwd: string, autoCompletePrefix: string): Pr
       .send(autoCompletePrefix)
       .delay(500) // Some delay required for autocomplete and terminal to catch up
       .sendCarriageReturn()
-      .wait(`- This resource can now be accessed from REST APIs (‘amplify add api’) and Functions (‘amplify add function’)`)
+      .wait('- This resource can now be accessed from REST APIs (`amplify add api`) and Functions (`amplify add function`)')
       .sendEof()
       .run((err: Error) => {
         if (!err) {

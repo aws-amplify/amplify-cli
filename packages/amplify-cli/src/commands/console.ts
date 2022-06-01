@@ -1,10 +1,13 @@
-import { stateManager, open } from 'amplify-cli-core';
+import { stateManager, open, $TSContext } from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
 import chalk from 'chalk';
 
 const providerName = 'awscloudformation';
 
-export const run = async context => {
+/**
+ * Entry point for console command
+ */
+export const run = async (context: $TSContext): Promise<void> => {
   let consoleUrl = getDefaultURL();
 
   try {
@@ -43,16 +46,15 @@ export const run = async context => {
   open(consoleUrl, { wait: false });
 };
 
-function constructAdminURL(baseUrl: string, appId: string, envName: string) {
-  return `${baseUrl}/admin/${appId}/${envName}/home`;
-}
+const constructAdminURL = (baseUrl: string, appId: string, envName: string): string => `${baseUrl}/admin/${appId}/${envName}/home`;
 
-function constructStatusURL(region: string, appId: string, envName: string) {
-  const prodURL = `https://${region}.console.aws.amazon.com/amplify/home?region=${region}#/${appId}/YmFja2VuZA/${envName}`; // eslint-disable-line
+const constructStatusURL = (region: string, appId: string, envName: string): string => {
+  // eslint-disable-next-line spellcheck/spell-checker
+  const prodURL = `https://${region}.console.aws.amazon.com/amplify/home?region=${region}#/${appId}/YmFja2VuZA/${envName}`;
   return prodURL;
-}
+};
 
-function getDefaultURL() {
-  const prodURL = `https://console.aws.amazon.com/amplify/home#/create`; // eslint-disable-line
+const getDefaultURL = (): string => {
+  const prodURL = 'https://console.aws.amazon.com/amplify/home#/create';
   return prodURL;
-}
+};

@@ -1,11 +1,11 @@
 {
   "name": "amplify-prompts",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "Utility functions for Amplify CLI terminal I/O",
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
-    "clean": "rimraf lib tsconfig.tsbuildinfo",
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "demo": "yarn build && node lib/demo/demo.js",
     "test": "jest --color",
     "watch": "tsc -w"
@@ -26,9 +26,9 @@
   },
   "homepage": "https://github.com/aws-amplify/amplify-cli#readme",
   "dependencies": {
+    "amplify-cli-shared-interfaces": "1.1.0",
     "chalk": "^4.1.1",
-    "enquirer": "^2.3.6",
-    "amplify-cli-shared-interfaces": "1.0.0"
+    "enquirer": "^2.3.6"
   },
   "devDependencies": {
     "rimraf": "^3.0.2"

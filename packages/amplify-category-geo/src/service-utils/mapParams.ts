@@ -17,15 +17,18 @@ export enum EsriMapStyleType {
     Streets = "Streets",
     Topographic = "Topographic",
     DarkGrayCanvas = "DarkGrayCanvas",
-    LightGrayCanvas = "LightGrayCanvas"
+    LightGrayCanvas = "LightGrayCanvas",
+    Imagery = "Imagery"
 }
 
 /**
  * The type of Map styles for HERE data provider
  */
  export enum HereMapStyleType {
-    Berlin = "Berlin"
-}
+   Berlin = "Berlin",
+   Explore = "Explore",
+   ExploreTruck = "ExploreTruck"
+ }
 
 export type MapStyleType = EsriMapStyleType | HereMapStyleType;
 
@@ -38,7 +41,10 @@ export enum MapStyle {
     VectorEsriTopographic = "VectorEsriTopographic",
     VectorEsriDarkGrayCanvas = "VectorEsriDarkGrayCanvas",
     VectorEsriLightGrayCanvas = "VectorEsriLightGrayCanvas",
+    RasterEsriImagery = "RasterEsriImagery",
     VectorHereBerlin = "VectorHereBerlin",
+    VectorHereExplore = "VectorHereExplore",
+    VectorHereExploreTruck = "VectorHereExploreTruck"
 }
 
 /**
@@ -61,8 +67,11 @@ export const convertToCompleteMapParams = (partial: Partial<MapParameters>): Map
  * Constructs the Amazon Location Map Style from available map parameters
  */
 export const getGeoMapStyle = (dataProvider: DataProvider, mapStyleType: MapStyleType) => {
-    if (dataProvider === DataProvider.Here && mapStyleType === HereMapStyleType.Berlin) {
-        return MapStyle.VectorHereBerlin;
+    if (dataProvider === DataProvider.Here) {
+      return `VectorHere${mapStyleType}`;
+    }
+    else if (dataProvider === DataProvider.Esri && mapStyleType === EsriMapStyleType.Imagery) {
+      return MapStyle.RasterEsriImagery;
     }
     return `Vector${dataProvider}${mapStyleType}`;
 };
@@ -82,8 +91,14 @@ export const getMapStyleComponents = (mapStyle: string): Pick<MapParameters, 'da
             return { dataProvider: DataProvider.Esri, mapStyleType: EsriMapStyleType.Streets };
         case MapStyle.VectorEsriTopographic:
             return { dataProvider: DataProvider.Esri, mapStyleType: EsriMapStyleType.Topographic };
+        case MapStyle.RasterEsriImagery:
+            return { dataProvider: DataProvider.Esri, mapStyleType: EsriMapStyleType.Imagery };
         case MapStyle.VectorHereBerlin:
             return { dataProvider: DataProvider.Here, mapStyleType: HereMapStyleType.Berlin };
+        case MapStyle.VectorHereExplore:
+            return { dataProvider: DataProvider.Here, mapStyleType: HereMapStyleType.Explore };
+        case MapStyle.VectorHereExploreTruck:
+            return { dataProvider: DataProvider.Here, mapStyleType: HereMapStyleType.ExploreTruck };
         default:
             throw new Error(`Invalid map style ${mapStyle}`);
     }

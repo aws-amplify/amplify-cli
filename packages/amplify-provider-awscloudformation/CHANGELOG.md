@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.2.0...amplify-provider-awscloudformation@6.2.1) (2022-05-27)
+
+
+
+## 8.3.1 (2022-05-27)
+
+
+### Bug Fixes
+
+* fixes oauth e2e ([#10482](https://github.com/aws-amplify/amplify-cli/issues/10482)) ([085a7aa](https://github.com/aws-amplify/amplify-cli/commit/085a7aab25b7f9d6b503eb1f6f8a9b64ed0e6e9a))
+
+
+### Reverts
+
+* oauth parameter store change ([#10485](https://github.com/aws-amplify/amplify-cli/issues/10485)) ([896b518](https://github.com/aws-amplify/amplify-cli/commit/896b51833e30daf9997d38c9229ca237ab7deda1))
+
+
+
+
+
+# [6.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.1.4...amplify-provider-awscloudformation@6.2.0) (2022-05-24)
+
+
+### Features
+
+* move oauth secrets to parameter store ([#10413](https://github.com/aws-amplify/amplify-cli/issues/10413)) ([16db2ce](https://github.com/aws-amplify/amplify-cli/commit/16db2ceb5da4e02e90e6b0bc1bb27412fd765b50))
+
+
+### Reverts
+
+* Revert "Revert "chore: wrap getTransformerFactory behind a single API (#10373)" (#10390)" (#10391) ([2612585](https://github.com/aws-amplify/amplify-cli/commit/2612585b1f84cd39ec81f54917d93b06c9d129d5)), closes [#10373](https://github.com/aws-amplify/amplify-cli/issues/10373) [#10390](https://github.com/aws-amplify/amplify-cli/issues/10390) [#10391](https://github.com/aws-amplify/amplify-cli/issues/10391)
+
+
+
+
+
+## [6.1.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.1.3...amplify-provider-awscloudformation@6.1.4) (2022-05-10)
+
+
+
+# 8.2.0 (2022-05-10)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** use the right profile with SSO and credential_process ([#9095](https://github.com/aws-amplify/amplify-cli/issues/9095)) ([811f257](https://github.com/aws-amplify/amplify-cli/commit/811f2571c69e67c91fe998a2e141f6fa5fc73a16)), closes [#4488](https://github.com/aws-amplify/amplify-cli/issues/4488)
+* root path handling for REST APIs ([#9842](https://github.com/aws-amplify/amplify-cli/issues/9842)) ([08fb69f](https://github.com/aws-amplify/amplify-cli/commit/08fb69f6237a8e0a98ffdf6d73cb0b030ace583e))
+
+
+### Reverts
+
+* Revert "chore: wrap getTransformerFactory behind a single API (#10373)" (#10390) ([c2629f6](https://github.com/aws-amplify/amplify-cli/commit/c2629f6ac6aba05d205e6a3622a8cfa9f8c2d0bf)), closes [#10373](https://github.com/aws-amplify/amplify-cli/issues/10373) [#10390](https://github.com/aws-amplify/amplify-cli/issues/10390)
+
+
+
+
+
 ## [6.1.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.1.2...amplify-provider-awscloudformation@6.1.3) (2022-04-29)
 
 

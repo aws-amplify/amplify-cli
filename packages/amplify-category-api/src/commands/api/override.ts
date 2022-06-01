@@ -3,6 +3,7 @@ import {
   $TSObject,
   AmplifyCategories,
   AmplifySupportedService,
+  ApiCategoryFacade,
   generateOverrideSkeleton,
   pathManager,
   stateManager,
@@ -57,9 +58,7 @@ export const run = async (context: $TSContext) => {
     /**
      * Below steps checks for TransformerV1 app and updates the FF { useexperimentalpipelinedtransformer , transformerversion}
      */
-    const transformerVersion = await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'getTransformerVersion', [
-      context,
-    ]);
+    const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
     if (transformerVersion === 2 && (await checkAppsyncApiResourceMigration(context, selectedResourceName, false))) {
       await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'compileSchema', [context, { forceCompile: true }]);
       await generateOverrideSkeleton(context, srcPath, destPath);

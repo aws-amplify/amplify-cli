@@ -18,6 +18,7 @@ import {
   updateFunction,
   validateLayerMetadata,
   addApiWithoutSchema,
+  generateRandomShortId,
 } from 'amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
 import { initJSProjectWithProfile, versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
@@ -47,8 +48,7 @@ describe('amplify function migration', () => {
   it('existing lambda updated with additional permissions should be able to scan ddb', async () => {
     const { projectName: appName } = getProjectConfig(projRoot);
 
-    const random = Math.floor(Math.random() * 10000);
-    const fnName = `integtestfn${random}`;
+    const fnName = `integtestfn${generateRandomShortId()}`;
     await addFunction(
       projRoot,
       {
@@ -105,8 +105,8 @@ describe('amplify function migration', () => {
 
   it('Add 2 functions, upgrade cli, add layer, update a function to depend on layer', async () => {
     const [shortId] = uuid().split('-');
-    const function1 = 'function1' + shortId;
-    const function2 = 'function2' + shortId;
+    const function1 = `function1${shortId}`;
+    const function2 = `function2${shortId}`;
     const runtime: LayerRuntime = 'nodejs';
     const { projectName: projName } = getProjectConfig(projRoot);
 

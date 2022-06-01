@@ -1,6 +1,7 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, getBackendAmplifyMeta } from 'amplify-e2e-core';
-import { addFunction, functionMockAssert, functionCloudInvoke } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
+import {
+  initJSProjectWithProfile, deleteProject, amplifyPushAuth, getBackendAmplifyMeta,
+  addFunction, functionMockAssert, functionCloudInvoke, createNewProjectDir, deleteProjectDir, generateRandomShortId,
+} from 'amplify-e2e-core';
 import _ from 'lodash';
 
 describe('go function tests', () => {
@@ -12,8 +13,7 @@ describe('go function tests', () => {
     projRoot = await createNewProjectDir('go-functions');
     await initJSProjectWithProfile(projRoot, {});
 
-    const random = Math.floor(Math.random() * 10000);
-    funcName = `gotestfn${random}`;
+    funcName = `gotestfn${generateRandomShortId()}`;
 
     await addFunction(
       projRoot,
@@ -47,16 +47,16 @@ describe('go function tests', () => {
 });
 
 describe('python function tests', () => {
-  const statusCode: number = 200;
+  const statusCode = 200;
   const headers = {
     'Access-Control-Allow-Headers': '*',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'OPTIONS,POST,GET',
   };
-  const message: string = 'Hello from your new Amplify Python lambda!';
+  const message = 'Hello from your new Amplify Python lambda!';
   const helloWorldSuccessOutput = {
-    statusCode: statusCode,
-    headers: headers,
+    statusCode,
+    headers,
     body: message,
   };
 
@@ -67,8 +67,7 @@ describe('python function tests', () => {
     projRoot = await createNewProjectDir('py-functions');
     await initJSProjectWithProfile(projRoot, {});
 
-    const random = Math.floor(Math.random() * 10000);
-    funcName = `pytestfn${random}`;
+    funcName = `pytestfn${generateRandomShortId()}`;
 
     await addFunction(
       projRoot,
@@ -120,8 +119,7 @@ describe('dotnet function tests', () => {
     projRoot = await createNewProjectDir('dotnet-functions');
     await initJSProjectWithProfile(projRoot, {});
 
-    const random = Math.floor(Math.random() * 10000);
-    funcName = `dotnettestfn${random}`;
+    funcName = `dotnettestfn${generateRandomShortId()}`;
 
     await addFunction(
       projRoot,
@@ -168,8 +166,7 @@ describe('nodejs function tests', () => {
     projRoot = await createNewProjectDir('nodejs-functions');
     await initJSProjectWithProfile(projRoot, {});
 
-    const random = Math.floor(Math.random() * 10000);
-    funcName = `nodejstestfn${random}`;
+    funcName = `nodejstestfn${generateRandomShortId()}`;
 
     await addFunction(
       projRoot,

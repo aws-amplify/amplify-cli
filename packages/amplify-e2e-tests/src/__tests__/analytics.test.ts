@@ -1,6 +1,7 @@
-import { initJSProjectWithProfile, initFlutterProjectWithProfile, amplifyPushUpdate, amplifyStatus, deleteProject } from 'amplify-e2e-core';
-import { addPinpoint, addKinesis, removeAnalytics } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
+import {
+  initJSProjectWithProfile, initFlutterProjectWithProfile, amplifyPushUpdate, amplifyStatus, deleteProject, generateRandomShortId,
+  addPinpoint, addKinesis, removeAnalytics, createNewProjectDir, deleteProjectDir,
+} from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import _ from 'lodash';
@@ -75,9 +76,8 @@ describe('amplify add analytics', () => {
   });
 
   it('add kinesis', async () => {
-    await initJSProjectWithProfile(projRoot, {});
-    const random = Math.floor(Math.random() * 10000);
-    const rightName = `myapp${random}`;
+    await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false });
+    const rightName = `myapp${generateRandomShortId()}`;
     await addKinesis(projRoot, { rightName, wrongName: '$' });
     await amplifyPushUpdate(projRoot);
     expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'analytics', rightName))).toBe(true);

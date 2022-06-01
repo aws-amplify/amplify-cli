@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@3.2.0...amplify-e2e-core@3.2.1) (2022-05-27)
+
+
+
+## 8.3.1 (2022-05-27)
+
+
+### Reverts
+
+* oauth parameter store change ([#10485](https://github.com/aws-amplify/amplify-cli/issues/10485)) ([896b518](https://github.com/aws-amplify/amplify-cli/commit/896b51833e30daf9997d38c9229ca237ab7deda1))
+
+
+
+
+
+# [3.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@3.1.3...amplify-e2e-core@3.2.0) (2022-05-24)
+
+
+
+# 8.3.0 (2022-05-23)
+
+
+### Features
+
+* move oauth secrets to parameter store ([#10413](https://github.com/aws-amplify/amplify-cli/issues/10413)) ([16db2ce](https://github.com/aws-amplify/amplify-cli/commit/16db2ceb5da4e02e90e6b0bc1bb27412fd765b50))
+
+
+
+
+
+## [3.1.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@3.1.2...amplify-e2e-core@3.1.3) (2022-05-10)
+
+**Note:** Version bump only for package amplify-e2e-core
+
+
+
+
+
 ## [3.1.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@3.1.1...amplify-e2e-core@3.1.2) (2022-04-29)
 
 **Note:** Version bump only for package amplify-e2e-core

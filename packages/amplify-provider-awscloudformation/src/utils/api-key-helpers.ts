@@ -44,8 +44,3 @@ export function apiKeyIsActive(): boolean {
 
   return new Date(apiKeyExpirationDate) > today;
 }
-
-export function hasApiKey(): boolean {
-  const apiKeyConfig = getApiKeyConfig();
-  return !!apiKeyConfig && !!apiKeyConfig?.apiKeyExpirationDays;
-}

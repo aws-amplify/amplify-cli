@@ -145,7 +145,12 @@ export class ApigwInputState {
       cliInputs = this.getCliInputPayload();
     }
 
-    const schemaValidator = new CLIInputSchemaValidator(AmplifySupportedService.APIGW, AmplifyCategories.API, 'APIGatewayCLIInputs');
+    const schemaValidator = new CLIInputSchemaValidator(
+      this.context,
+      AmplifySupportedService.APIGW,
+      AmplifyCategories.API,
+      'APIGatewayCLIInputs',
+    );
     schemaValidator.validateInput(JSONUtilities.stringify(cliInputs));
   }
 

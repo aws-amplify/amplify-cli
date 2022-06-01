@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { ViewResourceTableParams, CLIParams, $TSAny, $TSContext, pathManager, stateManager } from 'amplify-cli-core';
+import { ViewResourceTableParams, CLIParams, $TSAny, $TSContext, pathManager, stateManager, ApiCategoryFacade } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 
 export const run = async (context: $TSContext) => {
@@ -48,7 +48,7 @@ async function showAmplifyConsoleHostingStatus(context) {
 
 async function showApiAuthAcm(context) {
   const providerPlugin = await import(context.amplify.getProviderPlugins(context)?.awscloudformation);
-  const transformerVersion = await providerPlugin.getTransformerVersion(context);
+  const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
 
   if (transformerVersion < 2) {
     printer.error('This command requires version two or greater of the GraphQL transformer.');

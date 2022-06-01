@@ -15,6 +15,8 @@ import {
   $TSObject,
   AmplifyCategories,
   AmplifySupportedService,
+  ApiCategoryFacade,
+  CloudformationProviderFacade,
   getGraphQLTransformerAuthDocLink,
   JSONUtilities,
   pathManager,
@@ -23,27 +25,32 @@ import {
 import { printer } from 'amplify-prompts';
 import fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { DiffRule, getSanityCheckRules, loadProject, ProjectRule, sanityCheckProject } from 'graphql-transformer-core';
+import {
+  DiffRule,
+  getSanityCheckRules,
+  loadProject,
+  ProjectRule,
+  sanityCheckProject,
+} from 'graphql-transformer-core';
 import _ from 'lodash';
 import path from 'path';
-import { destructiveUpdatesFlag, ProviderName } from '../constants';
-import { getTransformerFactoryV2 } from '../graphql-transformer-factory/transformer-factory';
-import { getTransformerVersion } from '../graphql-transformer-factory/transformer-version';
 /* eslint-disable-next-line import/no-cycle */
 import { searchablePushChecks } from './api-utils';
-import { hashDirectory } from '../upload-appsync-files';
-import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
-import { isAuthModeUpdated } from '../utils/auth-mode-compare';
-import { schemaHasSandboxModeEnabled, showGlobalSandboxModeWarning, showSandboxModePrompts } from '../utils/sandbox-mode-helpers';
+import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
+import { isAuthModeUpdated } from './auth-mode-compare';
+import { schemaHasSandboxModeEnabled, showGlobalSandboxModeWarning, showSandboxModePrompts } from './sandbox-mode-helpers';
 import { parseUserDefinedSlots } from './user-defined-slots';
 import {
   getAdminRoles, getIdentityPoolId, mergeUserConfigWithTransformOutput, writeDeploymentToDisk,
 } from './utils';
+import { getTransformerFactory } from './transformer-factory';
 
 const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';
 const SCHEMA_DIR_NAME = 'schema';
 const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
+const DESTRUCTIVE_UPDATES_FLAG = 'allow-destructive-graphql-schema-updates';
+const PROVIDER_NAME = 'awscloudformation';
 
 type SanityCheckRules = {
   diffRules: DiffRule[];
@@ -102,7 +109,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
     // There can only be one appsync resource
     if (resources.length > 0) {
       const resource = resources[0];
-      if (resource.providerPlugin !== ProviderName) {
+      if (resource.providerPlugin !== PROVIDER_NAME) {
         return undefined;
       }
       const { category } = resource;
@@ -118,7 +125,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
   if (!previouslyDeployedBackendDir) {
     if (resources.length > 0) {
       const resource = resources[0];
-      if (resource.providerPlugin !== ProviderName) {
+      if (resource.providerPlugin !== PROVIDER_NAME) {
         return undefined;
       }
       const { category } = resource;
@@ -154,7 +161,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
       AmplifyCategories.API,
       AmplifySupportedService.APPSYNC,
       'getAuthConfig',
-      [resources[0].resourceName],
+      [context, resources[0].resourceName],
     );
     // handle case where auth project is not migrated , if Auth not migrated above function will return empty Object
     if (_.isEmpty(authConfig)) {
@@ -190,7 +197,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
   const schemaDirPath = path.normalize(path.join(resourceDir, SCHEMA_DIR_NAME));
   let deploymentRootKey = await getPreviousDeploymentRootKey(previouslyDeployedBackendDir);
   if (!deploymentRootKey) {
-    const deploymentSubKey = await hashDirectory(resourceDir);
+    const deploymentSubKey = await CloudformationProviderFacade.hashDirectory(context, resourceDir);
     deploymentRootKey = `${ROOT_APPSYNC_S3_KEY}/${deploymentSubKey}`;
   }
   const projectBucket = options.dryRun ? 'fake-bucket' : getProjectBucket();
@@ -211,7 +218,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
   const lastDeployedProjectConfig = fs.existsSync(previouslyDeployedBackendDir)
     ? await loadProject(previouslyDeployedBackendDir)
     : undefined;
-  const transformerVersion = await getTransformerVersion(context);
+  const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
   const docLink = getGraphQLTransformerAuthDocLink(transformerVersion);
   const sandboxModeEnabled = schemaHasSandboxModeEnabled(project.schema, docLink);
   const directiveMap = collectDirectivesByTypeNames(project.schema);
@@ -227,7 +234,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
 
   searchablePushChecks(context, directiveMap.types, parameters[ResourceConstants.PARAMETERS.AppSyncApiName]);
 
-  const transformerListFactory = getTransformerFactoryV2(resourceDir);
+  const transformerListFactory = await getTransformerFactory(context, resourceDir);
 
   if (sandboxModeEnabled && options.promptApiKeyCreation) {
     const apiKeyConfig = await showSandboxModePrompts(context);
@@ -243,7 +250,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
   // construct sanityCheckRules
   const ff = new AmplifyCLIFeatureFlagAdapter();
   const isNewAppSyncAPI: boolean = resourcesToBeCreated.some(resource => resource.service === 'AppSync');
-  const allowDestructiveUpdates = context?.input?.options?.[destructiveUpdatesFlag] || context?.input?.options?.force;
+  const allowDestructiveUpdates = context?.input?.options?.[DESTRUCTIVE_UPDATES_FLAG] || context?.input?.options?.force;
   const sanityCheckRules = getSanityCheckRules(isNewAppSyncAPI, ff, allowDestructiveUpdates);
   let resolverConfig = {};
   if (!_.isEmpty(resources)) {
@@ -252,7 +259,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
       AmplifyCategories.API,
       AmplifySupportedService.APPSYNC,
       'getResolverConfig',
-      [resources[0].resourceName],
+      [context, resources[0].resourceName],
     );
   }
 
@@ -287,7 +294,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
     resolverConfig,
   };
 
-  const transformerOutput = await buildAPIProject(buildConfig);
+  const transformerOutput = await buildAPIProject(context, buildConfig);
 
   printer.success(`GraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
 place .graphql files in a directory at ${schemaDirPath}`);
@@ -304,7 +311,7 @@ place .graphql files in a directory at ${schemaDirPath}`);
 
 const getProjectBucket = (): string => {
   const meta: $TSMeta = stateManager.getMeta(undefined, { throwIfNotExist: false });
-  const projectBucket = meta?.providers ? meta.providers[ProviderName].DeploymentBucketName : '';
+  const projectBucket = meta?.providers ? meta.providers[PROVIDER_NAME].DeploymentBucketName : '';
   return projectBucket;
 };
 
@@ -402,7 +409,10 @@ type ProjectOptions<T> = {
 /**
  * buildAPIProject
  */
-const buildAPIProject = async (opts: ProjectOptions<TransformerFactoryArgs>): Promise<DeploymentResources|undefined> => {
+const buildAPIProject = async (
+  context: $TSContext,
+  opts: ProjectOptions<TransformerFactoryArgs>,
+): Promise<DeploymentResources|undefined> => {
   const schema = opts.projectConfig.schema.toString();
   // Skip building the project if the schema is blank
   if (!schema) {
@@ -415,7 +425,7 @@ const buildAPIProject = async (opts: ProjectOptions<TransformerFactoryArgs>): Pr
   const currentCloudLocation = opts.currentCloudBackendDirectory ? path.join(opts.currentCloudBackendDirectory, 'build') : undefined;
 
   if (opts.projectDirectory && !opts.dryRun) {
-    await writeDeploymentToDisk(builtProject, buildLocation, opts.rootStackFileName, opts.buildParameters, opts.minify);
+    await writeDeploymentToDisk(context, builtProject, buildLocation, opts.rootStackFileName, opts.buildParameters, opts.minify);
     await sanityCheckProject(
       currentCloudLocation,
       buildLocation,

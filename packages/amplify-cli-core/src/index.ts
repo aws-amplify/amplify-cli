@@ -30,7 +30,6 @@ export * from './hooks';
 export * from './category-interfaces';
 export * from './customPoliciesUtils';
 export * from './utils/doc-links';
-export * from './utils/gql-transformer-version';
 export * from './spinner';
 
 // Temporary types until we can finish full type definition across the whole CLI
@@ -427,3 +426,5 @@ interface AmplifyToolkit {
   invokePluginMethod: <T>(context: $TSContext, category: string, service: string | undefined, method: string, args: $TSAny[]) => Promise<T>;
   getTags: (context: $TSContext) => Tag[],
 }
+
+export * from './plugin-facade';

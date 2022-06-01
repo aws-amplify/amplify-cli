@@ -1,13 +1,18 @@
+import {
+  $TSContext, stateManager, EnvironmentDoesNotExistError, AppIdMismatchError,
+} from 'amplify-cli-core';
+import _ from 'lodash';
 import { pullBackend } from '../pull-backend';
 import { preDeployPullBackend } from '../pre-deployment-pull';
 import { attachBackend } from '../attach-backend';
 import { constructInputParams } from '../amplify-service-helper';
 import { run as envCheckout } from './env/checkout';
-import { $TSContext, stateManager, EnvironmentDoesNotExistError, AppIdMismatchError } from 'amplify-cli-core';
-import _ from 'lodash';
 import { showTroubleshootingURL } from './help';
 
-export const run = async (context: $TSContext) => {
+/**
+ * Entry point for pull command
+ */
+export const run = async (context: $TSContext): Promise<void> => {
   const inputParams = constructInputParams(context);
   const projectPath = process.cwd();
 
@@ -38,8 +43,8 @@ export const run = async (context: $TSContext) => {
       process.exit(1);
     } else if (!appId) {
       context.print.error(`Environment '${envName}' not found.`);
-      context.print.info(`Try running "amplify env add" to add a new environment.`);
-      context.print.info(`If this backend already exists, try restoring its definition in your team-provider-info.json file.`);
+      context.print.info('Try running "amplify env add" to add a new environment.');
+      context.print.info('If this backend already exists, try restoring its definition in your team-provider-info.json file.');
       await context.usageData.emitError(new EnvironmentDoesNotExistError());
       showTroubleshootingURL();
       process.exit(1);

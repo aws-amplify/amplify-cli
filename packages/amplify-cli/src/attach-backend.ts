@@ -1,6 +1,8 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { pathManager, stateManager, $TSContext, FeatureFlags } from 'amplify-cli-core';
+import {
+  pathManager, stateManager, $TSContext, FeatureFlags,
+} from 'amplify-cli-core';
 import { queryProvider } from './attach-backend-steps/a10-queryProvider';
 import { analyzeProject } from './attach-backend-steps/a20-analyzeProject';
 import { initFrontend } from './attach-backend-steps/a30-initFrontend';
@@ -10,7 +12,10 @@ import { initializeEnv } from './initialize-env';
 
 const backupAmplifyDirName = 'amplify-backup';
 
-export async function attachBackend(context: $TSContext, inputParams) {
+/**
+ * Attach backend to project
+ */
+export const attachBackend = async (context: $TSContext, inputParams): Promise<void> => {
   prepareContext(context, inputParams);
 
   backupAmplifyFolder();
@@ -38,14 +43,15 @@ export async function attachBackend(context: $TSContext, inputParams) {
 
     throw e;
   }
-}
+};
 
-async function onSuccess(context: $TSContext) {
+const onSuccess = async (context: $TSContext): Promise<void> => {
   const { inputParams } = context.exeInfo;
 
   if (inputParams.amplify.noOverride) {
     const projectPath = process.cwd();
     const backupAmplifyDirPath = path.join(projectPath, backupAmplifyDirName);
+    // eslint-disable-next-line spellcheck/spell-checker
     const backupBackendDirPath = path.join(backupAmplifyDirPath, context.amplify.constants.BackendamplifyCLISubDirName);
 
     if (fs.existsSync(backupBackendDirPath)) {
@@ -72,27 +78,25 @@ async function onSuccess(context: $TSContext) {
 
       context.print.info('');
       context.print.success(`Successfully pulled backend environment ${envName} from the cloud.`);
-      context.print.info(`Run 'amplify pull' to sync future upstream changes.`);
+      context.print.info('Run \'amplify pull\' to sync future upstream changes.');
       context.print.info('');
     } else {
       stateManager.setLocalEnvInfo(process.cwd(), { ...context.exeInfo.localEnvInfo, noUpdateBackend: true });
       removeAmplifyFolderStructure(true);
 
       context.print.info('');
-      context.print.success(`Added backend environment config object to your project.`);
-      context.print.info(`Run 'amplify pull' to sync future upstream changes.`);
+      context.print.success('Added backend environment config object to your project.');
+      context.print.info('Run \'amplify pull\' to sync future upstream changes.');
       context.print.info('');
     }
-  } else {
-    if (stateManager.currentMetaFileExists()) {
-      await initializeEnv(context, stateManager.getCurrentMeta());
-    }
+  } else if (stateManager.currentMetaFileExists()) {
+    await initializeEnv(context, stateManager.getCurrentMeta());
   }
 
   removeBackupAmplifyFolder();
-}
+};
 
-function backupAmplifyFolder() {
+const backupAmplifyFolder = (): void => {
   const projectPath = process.cwd();
   const amplifyDirPath = pathManager.getAmplifyDirPath(projectPath);
 
@@ -118,9 +122,9 @@ function backupAmplifyFolder() {
       throw e;
     }
   }
-}
+};
 
-function restoreOriginalAmplifyFolder() {
+const restoreOriginalAmplifyFolder = (): void => {
   const projectPath = process.cwd();
   const backupAmplifyDirPath = path.join(projectPath, backupAmplifyDirName);
 
@@ -130,16 +134,16 @@ function restoreOriginalAmplifyFolder() {
     fs.removeSync(amplifyDirPath);
     fs.moveSync(backupAmplifyDirPath, amplifyDirPath);
   }
-}
+};
 
-function removeBackupAmplifyFolder() {
+const removeBackupAmplifyFolder = (): void => {
   const projectPath = process.cwd();
   const backupAmplifyDirPath = path.join(projectPath, backupAmplifyDirName);
 
   fs.removeSync(backupAmplifyDirPath);
-}
+};
 
-function setupFolderStructure(): void {
+const setupFolderStructure = (): void => {
   const projectPath = process.cwd();
 
   const amplifyDirPath = pathManager.getAmplifyDirPath(projectPath);
@@ -151,9 +155,9 @@ function setupFolderStructure(): void {
   fs.ensureDirSync(dotConfigDirPath);
   fs.ensureDirSync(currentCloudBackendDirPath);
   fs.ensureDirSync(backendDirPath);
-}
+};
 
-function removeAmplifyFolderStructure(partial = false) {
+const removeAmplifyFolderStructure = (partial = false): void => {
   const projectPath = process.cwd();
   if (partial) {
     fs.removeSync(pathManager.getBackendDirPath(projectPath));
@@ -162,9 +166,9 @@ function removeAmplifyFolderStructure(partial = false) {
     const amplifyDirPath = pathManager.getAmplifyDirPath(projectPath);
     fs.removeSync(amplifyDirPath);
   }
-}
+};
 
-function prepareContext(context: $TSContext, inputParams) {
+const prepareContext = (context: $TSContext, inputParams): void => {
   const projectPath = process.cwd();
 
   context.exeInfo = {
@@ -189,11 +193,11 @@ function prepareContext(context: $TSContext, inputParams) {
     }),
   };
   updateContextForNoUpdateBackendProjects(context);
-}
+};
 
-function updateContextForNoUpdateBackendProjects(context) {
+const updateContextForNoUpdateBackendProjects = (context: $TSContext): void => {
   if (context.exeInfo.existingLocalEnvInfo?.noUpdateBackend) {
-    const envName = context.exeInfo.existingLocalEnvInfo.envName;
+    const { envName } = context.exeInfo.existingLocalEnvInfo;
     context.exeInfo.isNewProject = false;
     context.exeInfo.localEnvInfo = context.exeInfo.existingLocalEnvInfo;
     context.exeInfo.projectConfig = context.exeInfo.existingProjectConfig;
@@ -203,17 +207,17 @@ function updateContextForNoUpdateBackendProjects(context) {
     context.exeInfo.inputParams = context.exeInfo.inputParams || {};
     context.exeInfo.inputParams.amplify = context.exeInfo.inputParams.amplify || {};
 
-    context.exeInfo.inputParams.amplify.defaultEditor =
-      context.exeInfo.inputParams.amplify.defaultEditor || context.exeInfo.existingLocalEnvInfo.defaultEditor;
-    context.exeInfo.inputParams.amplify.projectName =
-      context.exeInfo.inputParams.amplify.projectName || context.exeInfo.existingProjectConfig.projectName;
+    context.exeInfo.inputParams.amplify.defaultEditor = context.exeInfo.inputParams.amplify.defaultEditor
+    || context.exeInfo.existingLocalEnvInfo.defaultEditor;
+    context.exeInfo.inputParams.amplify.projectName = context.exeInfo.inputParams.amplify.projectName
+    || context.exeInfo.existingProjectConfig.projectName;
     context.exeInfo.inputParams.amplify.envName = context.exeInfo.inputParams.amplify.envName || envName;
-    context.exeInfo.inputParams.amplify.frontend =
-      context.exeInfo.inputParams.amplify.frontend || context.exeInfo.existingProjectConfig.frontend;
-    context.exeInfo.inputParams.amplify.appId =
-      context.exeInfo.inputParams.amplify.appId || context.exeInfo.existingTeamProviderInfo[envName].awscloudformation?.AmplifyAppId;
-    context.exeInfo.inputParams[context.exeInfo.inputParams.amplify.frontend] =
-      context.exeInfo.inputParams[context.exeInfo.inputParams.amplify.frontend] ||
-      context.exeInfo.existingProjectConfig[context.exeInfo.inputParams.amplify.frontend];
+    context.exeInfo.inputParams.amplify.frontend = context.exeInfo.inputParams.amplify.frontend
+    || context.exeInfo.existingProjectConfig.frontend;
+    context.exeInfo.inputParams.amplify.appId = context.exeInfo.inputParams.amplify.appId
+    || context.exeInfo.existingTeamProviderInfo[envName].awscloudformation?.AmplifyAppId;
+    // eslint-disable-next-line max-len
+    context.exeInfo.inputParams[context.exeInfo.inputParams.amplify.frontend] = context.exeInfo.inputParams[context.exeInfo.inputParams.amplify.frontend]
+      || context.exeInfo.existingProjectConfig[context.exeInfo.inputParams.amplify.frontend];
   }
-}
+};
