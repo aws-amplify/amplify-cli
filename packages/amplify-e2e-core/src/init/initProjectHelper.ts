@@ -26,9 +26,7 @@ const defaultSettings = {
   permissionsBoundaryArn: undefined,
 };
 
-/**
- *
- */
+
 export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof defaultSettings>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   let env;
@@ -98,9 +96,7 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
   });
 }
 
-/**
- *
- */
+
 export function initAndroidProjectWithProfile(cwd: string, settings: Object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
@@ -201,9 +197,7 @@ export function initIosProjectWithProfile(cwd: string, settings: Object): Promis
   });
 }
 
-/**
- *
- */
+
 export function initFlutterProjectWithProfile(cwd: string, settings: Object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
@@ -243,9 +237,7 @@ export function initFlutterProjectWithProfile(cwd: string, settings: Object): Pr
   });
 }
 
-/**
- *
- */
+
 export function initProjectWithAccessKey(
   cwd: string,
   settings: { accessKeyId: string; secretAccessKey: string; region?: string },
@@ -307,9 +299,7 @@ export function initProjectWithAccessKey(
   });
 }
 
-/**
- *
- */
+
 export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; accessKeyId: string; secretAccessKey: string }): Promise<void> {
   addCircleCITags(cwd);
 
@@ -350,9 +340,7 @@ export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; acces
   });
 }
 
-/**
- *
- */
+
 export function initNewEnvWithProfile(cwd: string, s: { envName: string }): Promise<void> {
   addCircleCITags(cwd);
 
@@ -386,9 +374,7 @@ export function initNewEnvWithProfile(cwd: string, s: { envName: string }): Prom
   });
 }
 
-/**
- *
- */
+
 export function updatedInitNewEnvWithProfile(cwd: string, s: { envName: string }): Promise<void> {
   addCircleCITags(cwd);
 
@@ -421,9 +407,7 @@ export function updatedInitNewEnvWithProfile(cwd: string, s: { envName: string }
   });
 }
 
-/**
- *
- */
+
 export function amplifyInitSandbox(cwd: string, settings: {}): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   let env;
@@ -479,9 +463,6 @@ export function amplifyInitYes(cwd: string): Promise<void> {
   });
 }
 
-/**
- *
- */
 export function amplifyVersion(cwd: string, expectedVersion: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['--version'], { cwd, stripColors: true })
@@ -497,9 +478,6 @@ export function amplifyVersion(cwd: string, expectedVersion: string, testingWith
 }
 
 // Can be called only if detects teamprovider change
-/**
- *
- */
 export function amplifyStatusWithMigrate(cwd: string, expectedStatus: string, testingWithLatestCodebase): Promise<void> {
   return new Promise((resolve, reject) => {
     const regex = new RegExp(`.*${expectedStatus}*`);
@@ -518,9 +496,7 @@ export function amplifyStatusWithMigrate(cwd: string, expectedStatus: string, te
   });
 }
 
-/**
- *
- */
+
 export function amplifyStatus(cwd: string, expectedStatus: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
     const regex = new RegExp(`.*${expectedStatus}*`);

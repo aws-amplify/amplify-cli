@@ -33,14 +33,13 @@ export class DebugConfig {
   private getCLIJson(throwIfNotExist: boolean = true): $TSAny {
     const rootPath = pathManager.findProjectRoot();
     if (!rootPath) {
-      if(!throwIfNotExist) {
-        return {}
+      if (!throwIfNotExist) {
+        return {};
       }
       throw new NotInitializedError();
     }
 
-    const cliJson = stateManager.getCLIJSON(rootPath, undefined, { throwIfNotExist });
-    return cliJson;
+    return stateManager.getCLIJSON(rootPath, undefined, { throwIfNotExist });
   }
 
   /**
@@ -103,4 +102,3 @@ export class DebugConfig {
  type DebugConfigType = {
    shareProjectConfig: boolean | undefined
  }
- 
