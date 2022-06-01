@@ -10,7 +10,8 @@ import {
   updateAuthAdminQueriesWithExtMigration,
   getProjectMeta,
 } from 'amplify-e2e-core';
-import { addRestApiOldDx, initJSProjectWithProfile } from '../../../migration-helpers/api';
+import { addRestApiOldDx } from '../../../migration-helpers/api';
+import { initJSProjectWithProfile } from '../../../migration-helpers' ;
 import { v4 as uuid } from 'uuid';
 
 describe('API Gateway CDK migration', () => {
