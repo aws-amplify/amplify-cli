@@ -192,10 +192,26 @@ export class UsageData implements IUsageData {
       Object.fromEntries(this.codePathDurations),
       this.flow.getFlowReport() as IFlowReport,
     );
-
-    await this.send(payload);
-
     return payload;
+  }
+
+  /**
+  * get usage data partial payload to use in reporter
+  */
+  getUsageDataPayload(error: Error | null, state: string): UsageDataPayload {
+    return new UsageDataPayload(
+      this.sessionUuid,
+      this.installationUuid,
+      this.version,
+      this.input,
+      error,
+      state,
+      this.accountId,
+      this.projectSettings,
+      this.inputOptions,
+      Object.fromEntries(this.codePathDurations),
+      this.flow.getFlowReport() as IFlowReport,
+    );
   }
 
   private async send(payload: UsageDataPayload): Promise<void> {

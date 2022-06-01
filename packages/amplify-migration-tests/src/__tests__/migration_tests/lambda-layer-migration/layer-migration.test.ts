@@ -7,7 +7,6 @@ import {
   deleteProject,
   deleteProjectDir,
   getProjectConfig,
-  initJSProjectWithProfile,
   LayerRuntime,
   LayerPermissionChoice,
   removeLayerVersion,
@@ -17,6 +16,7 @@ import {
 import { v4 as uuid } from 'uuid';
 import {
   initJSProjectWithProfileOldDX,
+  initJSProjectWithProfile,
   legacyAddLayer,
   legacyAddOptData,
   legacyUpdateOptData,

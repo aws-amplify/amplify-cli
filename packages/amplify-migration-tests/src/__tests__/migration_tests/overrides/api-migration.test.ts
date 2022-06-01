@@ -12,7 +12,6 @@ import {
   getProjectSchema,
   getSchemaPath,
   getTransformConfig,
-  initJSProjectWithProfile,
   updateApiSchema,
   updateApiWithMultiAuth,
   updateAPIWithResolutionStrategyWithModels,
@@ -22,7 +21,7 @@ import { AddApiRequest, UpdateApiRequest } from 'amplify-headless-interface';
 import * as fs from 'fs-extra';
 import { TRANSFORM_BASE_VERSION, TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import { join } from 'path';
-import { addApiWithoutSchemaOldDx, addApiWithSchemaAndConflictDetectionOldDx } from '../../../migration-helpers';
+import { addApiWithoutSchemaOldDx, addApiWithSchemaAndConflictDetectionOldDx, initJSProjectWithProfile } from '../../../migration-helpers';
 
 describe('api migration update test', () => {
   let projRoot: string;

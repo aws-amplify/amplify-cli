@@ -5,12 +5,13 @@ import {
   CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager, $TSContext, $TSAny,
 } from 'amplify-cli-core';
 import _ from 'lodash';
-import { printer } from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
 import { writeReadMeFile } from '../extensions/amplify-helpers/docs-manager';
 import { initializeEnv } from '../initialize-env';
+import { DebugConfig } from '../app-config/debug-config';
 
 /**
  * Executes after headless init
@@ -66,6 +67,9 @@ export const onSuccess = async (context: $TSContext): Promise<void> => {
     }
 
     await FeatureFlags.ensureDefaultFeatureFlags(true);
+    const result = await prompter.yesOrNo('Help improve Amplify CLI by sharing non sensitive configurations on failures', false);
+    const actualResult = context.exeInfo.inputParams.yes ? undefined : result;
+    DebugConfig.Instance.setAndWriteShareProject(actualResult);
   }
 
   context.exeInfo.projectConfig.providers.forEach(provider => {
@@ -73,7 +77,7 @@ export const onSuccess = async (context: $TSContext): Promise<void> => {
     const providerModule = require(providerPlugins[provider]);
     providerOnSuccessTasks.push(() => providerModule.onInitSuccessful(context));
   });
-
+ 
   await sequential(providerOnSuccessTasks);
 
   // Get current-cloud-backend's amplify-meta
