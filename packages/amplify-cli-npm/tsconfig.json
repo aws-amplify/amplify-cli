@@ -8,6 +8,7 @@
 		"outDir": "./lib",
 		"rootDir": "./",
 		"strict": true,
-		"skipLibCheck": true
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true
 	}
 }
