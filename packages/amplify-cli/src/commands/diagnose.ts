@@ -18,8 +18,7 @@ import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
 import { DebugConfig } from '../app-config/debug-config';
 import { isHeadlessCommand } from '../utils/headless-input-utils';
 import { Context } from '../domain/context';
-
-const report = 'https://yc65ayd1ge.execute-api.us-east-1.amazonaws.com/beta/report';
+import { reporterEndpoint } from './helpers/reporter-apis';
 
 /**
  * Prompts if there is a failure in the CLI
@@ -88,8 +87,10 @@ const zipSend = async (context: Context, skipPrompts: boolean, error: Error | un
   if (canSendReport) {
     spinner.start('Sending zip');
     try {
-      await sendReport(context, fileDestination);
+      const projectId = await sendReport(context, fileDestination);
       spinner.succeed('Done');
+      printer.info(`Project Identifier: ${projectId}`);
+      printer.blankLine();
     } catch (ex) {
       context.usageData.emitError(ex);
       spinner.fail();
@@ -162,7 +163,7 @@ const createZip = async (context: Context, error: Error | undefined): Promise<st
   });
 };
 
-const sendReport = async (context: Context, fileDestination): Promise<void> => {
+const sendReport = async (context: Context, fileDestination): Promise<string> => {
   const ids = hashedProjectIdentifiers();
   const usageDataPayload: UsageDataPayload = context.usageData.getUsageDataPayload(null, '');
 
@@ -173,6 +174,7 @@ const sendReport = async (context: Context, fileDestination): Promise<void> => {
     amplifyCliVersion: usageDataPayload.amplifyCliVersion,
     nodeVersion: usageDataPayload.nodeVersion,
   });
+  return ids.projectEnvIdentifier;
 };
 
 // eslint-disable-next-line spellcheck/spell-checker
@@ -188,6 +190,7 @@ const sendFile = async (
     nodeVersion: string;
   },
 ): Promise<void> => {
+  const report = reporterEndpoint();
   const stream = fs.readFileSync(zipPath);
   const passKey = v4();
   const cipherTextBlob = await encryptBuffer(stream, passKey);
