@@ -1,3 +1,4 @@
+/* eslint-disable spellcheck/spell-checker */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable func-style */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
@@ -570,8 +571,12 @@ function getInferConfig(inferResources) {
   };
 }
 
+function isPinpointChannelEnabled(channelName, pinpointResource) {
+  return pinpointResource?.output?.[channelName]?.Enabled;
+}
+
 function getPinpointConfig(pinpointResources) {
-  // There can only be one Pinpoint resource, but it could be used in notifications
+  // There are legacy projects where we could have multiple Pinpoint resources.
   // We will iterate over all Pinpoint resources in amplify-meta until we get the configured
   // AppId, Region and Channel configuration for that Pinpoint resource
 
@@ -583,7 +588,7 @@ function getPinpointConfig(pinpointResources) {
   for (const pinpointResource of pinpointResources) {
     pinpointConfig.aws_mobile_analytics_app_id = (pinpointConfig.aws_mobile_analytics_app_id) || pinpointResource.output.Id;
     pinpointConfig.aws_mobile_analytics_app_region = (pinpointConfig.aws_mobile_analytics_app_region) || pinpointResource.output.Region;
-    if ('InAppMessaging' in pinpointResource.output) {
+    if (isPinpointChannelEnabled('InAppMessaging', pinpointResource)) {
       pinpointConfig.Notifications = {
         InAppMessaging: {
           AWSPinpoint: {
@@ -690,7 +695,7 @@ function getPlaceIndexConfig(placeIndexResources) {
   return placeIndexConfig;
 }
 
-function getGeofenceCollectionConfig(geofenceCollectionResources) {
+const getGeofenceCollectionConfig = geofenceCollectionResources => {
   let defaultGeofenceCollection = '';
   const geofenceCollectionConfig = {
     items: [],
@@ -704,7 +709,7 @@ function getGeofenceCollectionConfig(geofenceCollectionResources) {
   });
   geofenceCollectionConfig.default = defaultGeofenceCollection;
   return geofenceCollectionConfig;
-}
+};
 
 module.exports = {
   createAWSExports, getAWSExports, createAmplifyConfig, deleteAmplifyConfig, generateAwsExportsAtPath, getAWSExportsObject,

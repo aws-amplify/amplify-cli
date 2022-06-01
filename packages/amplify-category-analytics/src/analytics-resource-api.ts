@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable spellcheck/spell-checker */
 import {
-  AmplifyCategories, AmplifySupportedService, stateManager, IAmplifyResource, pathManager, $TSContext, IAnalyticsResource,
+  AmplifyCategories, AmplifySupportedService, stateManager, IAmplifyResource, pathManager, $TSContext, IAnalyticsResource, PluginAPIError,
 } from 'amplify-cli-core';
 import { addResource } from './provider-utils/awscloudformation/index';
 
@@ -19,7 +19,6 @@ export const analyticsAPIGetResources = (resourceProviderServiceName?: string): 
       // if resourceProviderService is provided, then only return resources provided by that service
       // else return all resources. e.g. Pinpoint, Kinesis
       if (!resourceProviderServiceName || categoryResources[resource].service === resourceProviderServiceName) {
-        console.log(`SACPCDEBUG: Found Resource for ${resourceProviderServiceName} : ${JSON.stringify(categoryResources[resource], null, 2)}`);
         resourceList.push({
           category: AmplifyCategories.ANALYTICS,
           resourceName: resource,
@@ -70,8 +69,8 @@ export const analyticsAPICreateResource = async (context: $TSContext, resourcePr
  * @param enableChannel - True - enable notification/ false - disable notification
  */
 export const analyticsResourceToggleNotificationChannel = async (_: $TSContext, resourceProviderServiceName: string,
-  channel: NotificationChannels, enableChannel: boolean): Promise<AnalyticsCapabilityAPIResponse> => {
-  const response: AnalyticsCapabilityAPIResponse = {
+  channel: NotificationChannels, enableChannel: boolean): Promise<PluginCapabilityAPIResponse> => {
+  const response: PluginCapabilityAPIResponse = {
     resourceProviderServiceName,
     capability: AmplifyCategories.NOTIFICATIONS,
     subCapability: channel,
@@ -80,17 +79,15 @@ export const analyticsResourceToggleNotificationChannel = async (_: $TSContext, 
 
   if (!isSupportAnalytics(resourceProviderServiceName)) {
     response.status = false;
-    response.errorCode = AnalyticsError.E_NO_SVC_PROVIDER;
+    response.errorCode = PluginAPIError.E_NO_SVC_PROVIDER;
     response.reasonMsg = `${resourceProviderServiceName} is not a provider for ${AmplifyCategories.ANALYTICS} category`;
-    console.log('SACPCDEBUG: ToggleNotificationsChannel :1: Error: ', response.reasonMsg);
     return response;
   }
 
   if (!isSupportNotifications(resourceProviderServiceName)) {
     response.status = false;
-    response.errorCode = AnalyticsError.E_PROVIDER_NOSUPPORT_CAPABILITY;
+    response.errorCode = PluginAPIError.E_SVC_PROVIDER_NO_CAPABILITY;
     response.reasonMsg = `${AmplifyCategories.NOTIFICATIONS} not supported on ${AmplifyCategories.ANALYTICS} provider ${resourceProviderServiceName}`;
-    console.log('SACPCDEBUG: ToggleNotificationsChannel :2: Error: ', response.reasonMsg);
     return response;
   }
 
@@ -98,9 +95,8 @@ export const analyticsResourceToggleNotificationChannel = async (_: $TSContext, 
   const resources = analyticsAPIGetResources(resourceProviderServiceName);
   if (!resources) {
     response.status = false;
-    response.errorCode = AnalyticsError.E_NORES;
+    response.errorCode = PluginAPIError.E_NORES;
     response.reasonMsg = `No Resources Found for ${AmplifyCategories.ANALYTICS} category`;
-    console.log('SACPCDEBUG: ToggleNotificationsChannel :3: Error: ', response.reasonMsg);
     return response;
   }
 
@@ -118,25 +114,16 @@ export const analyticsResourceToggleNotificationChannel = async (_: $TSContext, 
 };
 
 /**
- * Analytics API response when client configures a capability ( e.g notifications )
+ * Plugin API response when client configures a capability ( e.g notifications )
  */
-export interface AnalyticsCapabilityAPIResponse {
-    resourceProviderServiceName: string, // Pinpoint of Kinesis
-    capability: string, // Notifications
-    subCapability?: string, // In-AppMessaging
+export interface PluginCapabilityAPIResponse {
+    resourceProviderServiceName: string, // Service which provisions capability, subCapability e.g Pinpoint
+    capability: string, // e.g Notifications
+    subCapability?: string, // e.g In-AppMessaging
     status: boolean, // true - successfully applied, false - failed to apply
-    errorCode?: string,
+    errorCode?: PluginAPIError,
     reasonMsg?: string, // In case of error, a user readable error string
 }
-
-/**
- * Analytics API Error codes.
- */
-export const AnalyticsError = {
-  E_NORES: 'E_NORES', // no resources found for given category/filter
-  E_PROVIDER_NOSUPPORT_CAPABILITY: 'E_PROVIDER_NOSUPPORT_CAPABILITY', // Provider does not support capability
-  E_NO_SVC_PROVIDER: 'E_NO_SVC_PROVIDER', // Given service is not a provider for a given category
-};
 
 /**
  * Notification Channels supported in Amplify
@@ -171,7 +158,6 @@ const pinpointAPIEnableNotificationChannel = (pinpointResource: IAmplifyResource
   const pinpointResourceName = pinpointResource.resourceName;
   const projectPath = pathManager.findProjectRoot();
   const pinPointCFNInputParams = stateManager.getResourceParametersJson(projectPath, AmplifyCategories.ANALYTICS, pinpointResourceName);
-  console.log(`SACPCDEBUG:ANALYTICS: Enable ${notificationChannel} : pinpointAPIEnableNotificationChannel :1: ${JSON.stringify(pinPointCFNInputParams, null, 2)}`);
   const uniqueChannelPolicyName = buildPolicyName(notificationChannel, pinPointCFNInputParams.pinpointPolicyName);
   switch (notificationChannel) {
     case NotificationChannels.IN_APP_MSG: {

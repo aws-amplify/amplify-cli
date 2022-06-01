@@ -277,6 +277,8 @@ export const updateamplifyMetaAfterBuild = ({ category, resourceName }: Resource
 /**
  * Update Amplify Meta with packaging information ( lastPackageTimeStamp, distZipFilename, hash)
  * @param param0 A tuple with category and resourceName
+ * @param param0.category - Name of Amplify category
+ * @param param0.resourceName - Name of Amplify resource
  * @param zipFilename - Name of the distribution zipfile
  * @param hash - hashvalue of the resource
  */

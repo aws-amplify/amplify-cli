@@ -7,7 +7,7 @@ import * as configureKey from '../src/apns-key-config';
 import * as configureCertificate from '../src/apns-cert-config';
 
 import * as channelAPNS from '../src/channel-APNS';
-import { ICertificateInfo } from '../src/p12decoder';
+import { ICertificateInfo } from '../src/apns-cert-p12decoder';
 
 const inquirer = require('inquirer');
 const mockirer = require('mockirer');

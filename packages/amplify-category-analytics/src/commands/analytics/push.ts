@@ -11,7 +11,6 @@ export const run = async (context : $TSContext) : Promise<$TSAny> => {
   const { amplify, parameters } = context;
   const resourceName = parameters.first;
   context.amplify.constructExeInfo(context);
-  console.log(`SACPCDEBUG: Push flow for ${category} resourceName: ${resourceName}`);
   return amplify.pushResources(context, category, resourceName).catch((err:Error) => {
     context.print.info(err.stack as string);
     context.print.error('An error occurred when pushing the analytics resource');

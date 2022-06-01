@@ -149,7 +149,7 @@ export class StateManager {
 
   getCurrentBackendConfig = (projectPath?: string, options?: GetOptions<$TSAny>): $TSAny => {
     const filePath = pathManager.getCurrentBackendConfigFilePath(projectPath);
-  const mergedOptions = {
+    const mergedOptions = {
       throwIfNotExist: true,
       ...options,
     };
