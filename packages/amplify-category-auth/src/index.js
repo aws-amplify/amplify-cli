@@ -81,20 +81,20 @@ async function add(context, skipNextSteps = false) {
 
 async function transformCategoryStack(context, resource) {
   if (resource.service === AmplifySupportedService.COGNITO) {
-    if (canResourceBeTransformed(resource.resourceName)) {
+    if (canResourceBeTransformed(context, resource.resourceName)) {
       await generateAuthStackTemplate(context, resource.resourceName);
     }
   }
   if (resource.service === AmplifySupportedService.COGNITOUSERPOOLGROUPS) {
     const authResourceName = await getAuthResourceName(context);
-    if (canResourceBeTransformed(authResourceName)) {
+    if (canResourceBeTransformed(context, authResourceName)) {
       await generateAuthStackTemplate(context, authResourceName);
     }
   }
 }
 
-function canResourceBeTransformed(resourceName) {
-  const resourceInputState = new AuthInputState(resourceName);
+function canResourceBeTransformed(context, resourceName) {
+  const resourceInputState = new AuthInputState(context, resourceName);
   return resourceInputState.cliInputFileExists();
 }
 
@@ -189,7 +189,7 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
       version: '1',
       cognitoConfig: cliInputs,
     };
-    const cliState = new AuthInputState(cognitoCLIInputs.cognitoConfig.resourceName);
+    const cliState = new AuthInputState(context, cognitoCLIInputs.cognitoConfig.resourceName);
     // saving cli-inputs except secrets
     await cliState.saveCLIInputPayload(cognitoCLIInputs);
     await generateAuthStackTemplate(context, currentAuthName);
