@@ -91,7 +91,6 @@ const zipSend = async (context: Context, skipPrompts: boolean, error: Error | un
       printer.info(`Project Identifier: ${projectId}`);
       printer.blankLine();
     } catch (ex) {
-      console.log(ex);
       context.usageData.emitError(ex);
       spinner.fail();
     }
@@ -213,11 +212,7 @@ const hashedProjectIdentifiers = (): { projectIdentifier: string; projectEnvIden
   const projectConfig = stateManager.getProjectConfig();
   const envName = stateManager.getCurrentEnvName();
   const appId = getAppId();
-  const { projectIdentifier, projectEnvIdentifier } = createHashedIdentifier(projectConfig.projectName, appId, envName);
-  return {
-    projectIdentifier,
-    projectEnvIdentifier,
-  };
+  return createHashedIdentifier(projectConfig.projectName, appId, envName);
 };
 
 const getAppId = (): string => {
