@@ -24,7 +24,7 @@ export const enableChannel = async (context:$TSContext, channelName:string): Pro
     const channelActionHandler:NotificationsChannelAPIModule = require(path.join(__dirname,
       Notifications.ChannelAPI.channelWorkers[channelName]));
     const enableChannelResponse = await channelActionHandler.enable(context);
-    console.log('SACPCDEBUG: EnableChannel Debug : enableChannelResponse: ', enableChannelResponse);
+    // console.log('SACPCDEBUG: EnableChannel Debug : enableChannelResponse: ', enableChannelResponse);
     return enableChannelResponse;
   }
   throw new Error(`Enable failed: invalid notification channel ${channelName}`);

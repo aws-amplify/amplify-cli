@@ -250,7 +250,7 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
   const amplifyMeta = (context.exeInfo.amplifyMeta) || stateManager.getMeta();
   const envName = (appEnvName) || stateManager.getCurrentEnvName();
   const pinpointAppStatus = (appStatus) || await getPinpointAppStatus(context, amplifyMeta, pinpointNotificationsMeta, envName);
-  console.log('SACPCDEBUG: ensurePinpointApp:PinpointAppStatus.app: ', JSON.stringify(pinpointAppStatus.app, null, 2));
+  // console.log('SACPCDEBUG: ensurePinpointApp:PinpointAppStatus.app: ', JSON.stringify(pinpointAppStatus.app, null, 2));
   switch (pinpointAppStatus.status) {
     case IPinpointDeploymentStatus.NO_ENV: {
       console.log('Current ENV not configured!!');
@@ -297,7 +297,7 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
       break;
     }
     case IPinpointDeploymentStatus.APP_IS_CREATED_NOT_DEPLOYED: {
-      console.log('SACPCDEBUG:APP_IS_CREATED_NOT_DEPLOYED: PinpointDeploymentStatus: ', JSON.stringify(pinpointAppStatus.app, null, 2));
+      // console.log('SACPCDEBUG:APP_IS_CREATED_NOT_DEPLOYED: PinpointDeploymentStatus: ', JSON.stringify(pinpointAppStatus.app, null, 2));
       resourceName = pinpointAppStatus.app?.resourceName;
       if (resourceName) {
         // create updated version of amplify-meta with notifications resource
@@ -317,8 +317,8 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
     context.exeInfo.serviceMeta = context.exeInfo.amplifyMeta[AmplifyCategories.NOTIFICATIONS][resourceName];
     context.exeInfo.pinpointApp = context.exeInfo.serviceMeta.output;
 
-    console.log('SACPCDEBUG:APP_IS_DEPLOYED:In-Memory serviceMeta: ', JSON.stringify(context.exeInfo.serviceMeta, null, 2));
-    console.log('SACPCDEBUG:APP_IS_DEPLOYED:In-Memory pinpointApp: ', JSON.stringify(context.exeInfo.serviceMeta.output, null, 2));
+    // console.log('SACPCDEBUG:APP_IS_DEPLOYED:In-Memory serviceMeta: ', JSON.stringify(context.exeInfo.serviceMeta, null, 2));
+    // console.log('SACPCDEBUG:APP_IS_DEPLOYED:In-Memory pinpointApp: ', JSON.stringify(context.exeInfo.serviceMeta.output, null, 2));
   }
 
   pinpointAppStatus.context = context;

@@ -65,7 +65,7 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
           const channelAPIResponse : IChannelAPIResponse|undefined = await enableChannel(context, channelName);
           await writeData(context, channelAPIResponse);
         } catch (e) {
-          console.log('SACPCDEBUG:3-E: Enable Channel Failed!! ', e);
+          console.log('Enable Channel Failed!! ', e);
         }
       }
     }
