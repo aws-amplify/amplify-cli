@@ -42,7 +42,8 @@ export const analyticsAPIGetResources = (resourceProviderServiceName?: string): 
 export const analyticsAPICreateResource = async (context: $TSContext, resourceProviderServiceName: string): Promise<IAmplifyResource> => {
   const resources : Array<IAmplifyResource> = analyticsAPIGetResources(resourceProviderServiceName);
   if (resources.length > 0) {
-    console.log(`SACPCDEBUG : analyticsAPICreateResource :1: ${resourceProviderServiceName} resource found ${JSON.stringify(resources[0], null, 2)}`);
+    // console.log(`SACPCDEBUG : analyticsAPICreateResource :1: ${resourceProviderServiceName} `,
+    // `resource found ${JSON.stringify(resources[0], null, 2)}`);
     return resources[0];
   }
   // start add walkthrough for given service.

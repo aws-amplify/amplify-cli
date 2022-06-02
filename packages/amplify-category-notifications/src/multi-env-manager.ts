@@ -301,7 +301,7 @@ export const disableChannelBackendConfig = async (channelName: string):Promise<$
   if (backendConfig[AmplifyCategories.NOTIFICATIONS] && backendConfig[AmplifyCategories.NOTIFICATIONS][pinpointResourceName]?.length) {
     const { channels } = backendConfig[AmplifyCategories.NOTIFICATIONS][pinpointResourceName];
     backendConfig[AmplifyCategories.NOTIFICATIONS][pinpointResourceName].channels = channels.filter((ch: string) => ch !== channelName);
-    console.log(`SACPCDEBUG: disableChannelBackendConfig : Removed ${channelName} pinpoint name: `, pinpointResourceName);
+    // console.log(`SACPCDEBUG: disableChannelBackendConfig : Removed ${channelName} pinpoint name: `, pinpointResourceName);
     stateManager.setBackendConfig(projectPath, backendConfig);
     return backendConfig;
   }
@@ -356,7 +356,7 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
       Id: applicationId,
       Region: notificationsServiceMeta.Region,
     };
-    console.log('SACPCDEBUG:[writeData]:9: PinpointMeta amplify-meta: ', JSON.stringify(pinpointMeta, null, 2));
+    // console.log('SACPCDEBUG:[writeData]:9: PinpointMeta amplify-meta: ', JSON.stringify(pinpointMeta, null, 2));
 
     // TODO: move writing to files logic to the cli core when those are ready
     await ensureEnvParamManager();
@@ -365,7 +365,7 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
     writeAmplifyMeta(context, categoryMeta, context.amplify.pathManager.getAmplifyMetaFilePath());
     writeBackendConfig(context, pinpointMeta, context.amplify.pathManager.getCurrentBackendConfigFilePath());
     writeAmplifyMeta(context, categoryMeta, context.amplify.pathManager.getCurrentAmplifyMetaFilePath());
-    console.log('SACPCDEBUG: Uploading current Backend');
+    // console.log('SACPCDEBUG: Uploading current Backend');
     await context.amplify.storeCurrentCloudBackend(context);
     await context.amplify.onCategoryOutputsChange(context, undefined, undefined);
   } else {
@@ -400,13 +400,13 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
     if (channelAPIResponse) {
       await Notifications.updateChannelAPIResponse(context, channelAPIResponse);
     }
-    console.log('SACPCDEBUG:[writeData]:1: save pinpoint meta in team-provider: ', JSON.stringify(pinpointMeta, null, 2));
+    // console.log('SACPCDEBUG:[writeData]:1: save pinpoint meta in team-provider: ', JSON.stringify(pinpointMeta, null, 2));
     writeTeamProviderInfo(pinpointMeta, context); // update Pinpoint data
     if (pinpointConfig) {
-      console.log('SACPCDEBUG:[writeData]:2: save pinpoint config in backend: ', JSON.stringify(pinpointConfig, null, 2));
+      // console.log('SACPCDEBUG:[writeData]:2: save pinpoint config in backend: ', JSON.stringify(pinpointConfig, null, 2));
       writeBackendConfig(context, pinpointConfig, context.amplify.pathManager.getBackendConfigFilePath());
     }
-    console.log('SACPCDEBUG:[writeData]:3: save category-meta in amplify-meta: ', JSON.stringify(categoryMeta, null, 2));
+    // console.log('SACPCDEBUG:[writeData]:3: save category-meta in amplify-meta: ', JSON.stringify(categoryMeta, null, 2));
     writeAmplifyMeta(context, categoryMeta, context.amplify.pathManager.getAmplifyMetaFilePath());
     await context.amplify.onCategoryOutputsChange(context, undefined, undefined);
   }
