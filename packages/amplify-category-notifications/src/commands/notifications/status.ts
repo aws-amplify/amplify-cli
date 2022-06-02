@@ -4,6 +4,7 @@ import {
 import chalk from 'chalk';
 import { IChannelAvailability, INotificationsConfigStatus } from '../../notifications-api-types';
 import { NotificationsDB } from '../../notifications-backend-cfg-api';
+import { ChannelAPI } from '../../notifications-backend-cfg-channel-api';
 import { NotificationsMeta } from '../../notifications-meta-api';
 
 const viewStyles = {
@@ -34,11 +35,14 @@ const viewNotificationsAppURL = async (context: $TSContext, appName: string): Pr
 
 const viewDisplayChannelAvailability = async (context: $TSContext, backend:INotificationsConfigStatus): Promise<void> => {
   const tableOptions = [['Channel', 'Status', 'Deployed Status']];
+
   for (const enabledChannel of backend.local.channels.enabledChannels) {
-    tableOptions.push([enabledChannel, viewStyles.enabled('Enabled'), getDeployedStyledStatus(enabledChannel, backend.deployed.channels)]);
+    const channelViewInfo = ChannelAPI.getChannelViewInfo(enabledChannel);
+    tableOptions.push([channelViewInfo.viewName, viewStyles.enabled('Enabled'), getDeployedStyledStatus(enabledChannel, backend.deployed.channels)]);
   }
   for (const disabledChannel of backend.local.channels.disabledChannels) {
-    tableOptions.push([disabledChannel, viewStyles.disabled('Disabled'), getDeployedStyledStatus(disabledChannel, backend.deployed.channels)]);
+    const channelViewInfo = ChannelAPI.getChannelViewInfo(disabledChannel);
+    tableOptions.push([channelViewInfo.viewName, viewStyles.disabled('Disabled'), getDeployedStyledStatus(disabledChannel, backend.deployed.channels)]);
   }
   context.print.table(tableOptions, { format: 'lean' });
 };
