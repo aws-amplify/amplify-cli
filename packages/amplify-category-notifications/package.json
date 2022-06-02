@@ -28,7 +28,8 @@
     "inquirer": "^7.3.3",
     "lodash": "^4.17.21",
     "ora": "^4.0.3",
-    "promise-sequential": "^1.1.1"
+    "promise-sequential": "^1.1.1",
+    "chalk": "5.0.1"
   },
   "devDependencies": {
     "mockirer": "^2.0.1"

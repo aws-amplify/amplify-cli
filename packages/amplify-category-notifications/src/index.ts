@@ -51,7 +51,6 @@ export const executeAmplifyCommand = async (context: $TSContext): Promise<void> 
   } else {
     commandPath = path.join(commandPath, category, context.input.command);
   }
-  console.log(`SACPCDEBUG: executeAmplifyCommand:  ${commandPath}`);
   const commandModule = require(commandPath);
   await commandModule.run(context);
 };

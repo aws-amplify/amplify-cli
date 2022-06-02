@@ -1,4 +1,5 @@
 import * as path from 'path';
+import * as fs from 'fs-extra';
 import {
   ViewResourceTableParams, CLIParams, $TSAny, $TSContext, pathManager, stateManager, ApiCategoryFacade,
 } from 'amplify-cli-core';
@@ -53,7 +54,7 @@ const showAmplifyConsoleHostingStatus = async (context: $TSContext): Promise<voi
   }
 };
 
-const showApiAuthAcm = async (context): Promise<void> => {
+const showApiAuthAcm = async (context: $TSContext) : Promise<void> => {
   const providerPlugin = await import(context.amplify.getProviderPlugins(context)?.awscloudformation);
   const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
 
@@ -94,7 +95,6 @@ const showApiAuthAcm = async (context): Promise<void> => {
     } else {
       printer.error(`An error has occurred during schema compilation: ${error.message?.trim()}`);
     }
-
     return;
   }
 
