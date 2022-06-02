@@ -1,5 +1,5 @@
+import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import {
-  $TSAny,
   $TSContext,
   AmplifyCategories,
   AmplifySupportedService,
@@ -22,13 +22,14 @@ export const alias = ['update'];
 /**
  * entry point to update auth resource
  */
-export const run = async (context: $TSContext) => {
+export const run = async (context: $TSContext): Promise<string | $TSContext | undefined> => {
   const { amplify } = context;
   const servicesMetadata = getSupportedServices();
   const meta = stateManager.getMeta();
   const existingAuth = meta.auth ?? {};
   if (_.isEmpty(existingAuth)) {
-    return printer.warn('Project does not contain auth resources. Add auth using `amplify add auth`.');
+    printer.warn('Project does not contain auth resources. Add auth using `amplify add auth`.');
+    return undefined;
   }
   const authResources = Object.keys(existingAuth);
   for (const authResourceName of authResources) {
@@ -58,6 +59,7 @@ export const run = async (context: $TSContext) => {
   const resourceName = await getAuthResourceName(context);
   await checkAuthResourceMigration(context, resourceName, true);
   const providerPlugin = context.amplify.getPluginInstance(context, servicesMetadata.Cognito.provider);
+  await ensureEnvParamManager();
   context.updatingAuth = providerPlugin.loadResourceParameters(context, 'auth', resourceName);
 
   try {
@@ -69,7 +71,7 @@ export const run = async (context: $TSContext) => {
     };
     if (!providerController) {
       printer.error('Provider not configured for this category');
-      return;
+      return undefined;
     }
     const updateResourceResponse = await providerController.updateResource(context, options);
     printer.success(`Successfully updated resource ${name} locally`);
@@ -81,10 +83,11 @@ export const run = async (context: $TSContext) => {
     );
     printer.blankLine();
     return updateResourceResponse;
-  } catch (err: $TSAny) {
+  } catch (err) {
     printer.info(err.stack);
     printer.error('There was an error adding the auth resource');
     context.usageData.emitError(err);
     process.exitCode = 1;
+    return undefined;
   }
 };

@@ -224,13 +224,13 @@ class CloudFormation {
 
   updateResourceStack(filePath) {
     const cfnFile = path.parse(filePath).base;
-    const projectDetails = this.context.amplify.getProjectDetails();
-    const stackName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].StackName : '';
-    const deploymentBucketName = projectDetails.amplifyMeta.providers
-      ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName
+    const { amplifyMeta } = this.context.amplify.getProjectDetails();
+    const stackName = amplifyMeta.providers ? amplifyMeta.providers[providerName].StackName : '';
+    const deploymentBucketName = amplifyMeta.providers
+      ? amplifyMeta.providers[providerName].DeploymentBucketName
       : '';
-    const authRoleName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].AuthRoleName : '';
-    const unauthRoleName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].UnauthRoleName : '';
+    const authRoleName = amplifyMeta.providers ? amplifyMeta.providers[providerName].AuthRoleName : '';
+    const unauthRoleName = amplifyMeta.providers ? amplifyMeta.providers[providerName].UnauthRoleName : '';
 
     const Tags = this.context.amplify.getTags(this.context);
 
@@ -327,8 +327,7 @@ class CloudFormation {
     const cfnParentStackParams = {
       StackName: parentStackName,
     };
-    const projectDetails = this.context.amplify.getProjectDetails();
-    const { amplifyMeta } = projectDetails;
+    const { amplifyMeta } = this.context.amplify.getProjectDetails();
 
     logger('updateamplifyMetaFileWithStackOutputs.cfn.listStackResources', [cfnParentStackParams])();
 
@@ -490,9 +489,9 @@ class CloudFormation {
   }
 
   deleteResourceStack(envName) {
-    const { teamProviderInfo } = this.context.amplify.getProjectDetails();
-    const teamProvider = teamProviderInfo[envName][providerName];
-    const stackName = teamProvider.StackName;
+    const teamProviderInfo = stateManager.getTeamProviderInfo();
+    const providerInfo = teamProviderInfo?.[envName]?.[providerName];
+    const stackName = providerInfo?.StackName;
     if (!stackName) {
       throw new Error('Stack not defined for the environment.');
     }

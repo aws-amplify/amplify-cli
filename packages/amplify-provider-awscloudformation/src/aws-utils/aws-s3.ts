@@ -6,7 +6,7 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext, stateManager } from 'amplify-cli-core';
 
 import _ from 'lodash';
 
@@ -70,11 +70,12 @@ export class S3 {
    * Populate the uploadState member with the Amplify deployment bucket name
    */
   private populateUploadState(): void {
-    const projectDetails = this.context.amplify.getProjectDetails();
+    const { amplifyMeta } = this.context.amplify.getProjectDetails();
+    const teamProviderInfo = stateManager.getTeamProviderInfo();
     const { envName } = this.context.amplify.getEnvInfo();
-    const projectBucket = projectDetails.amplifyMeta.providers
-      ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName
-      : projectDetails.teamProviderInfo[envName][providerName].DeploymentBucketName;
+    const projectBucket = amplifyMeta.providers
+      ? amplifyMeta.providers[providerName].DeploymentBucketName
+      : teamProviderInfo?.[envName]?.[providerName]?.DeploymentBucketName;
 
     this.uploadState = {
       envName,
@@ -93,9 +94,9 @@ export class S3 {
   private attachBucketToParams(s3Params: $TSAny, envName?: string):$TSAny {
     // eslint-disable-next-line no-prototype-builtins
     if (!s3Params.hasOwnProperty('Bucket')) {
-      const projectDetails = this.context.amplify.getProjectDetails();
       if (!envName) envName = this.context.amplify.getEnvInfo().envName;
-      const projectBucket = projectDetails.teamProviderInfo[envName][providerName].DeploymentBucketName;
+      const teamProviderInfo = stateManager.getTeamProviderInfo();
+      const projectBucket = teamProviderInfo[envName][providerName].DeploymentBucketName;
       s3Params.Bucket = projectBucket;
     }
     return s3Params;

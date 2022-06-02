@@ -289,7 +289,9 @@ const getEnvName = async (context: $TSContext): Promise<string> => {
   return envName;
 };
 
-const isNewEnv = (envName: string): boolean => !Object.keys(stateManager.getLocalAWSInfo()).includes(envName);
+const isNewEnv = (envName: string): boolean => !Object.keys(
+  stateManager.getLocalAWSInfo(process.cwd(), { throwIfNotExist: false, default: {} }),
+).includes(envName);
 
 const isNewProject = (context: $TSContext): boolean => {
   let newProject = true;

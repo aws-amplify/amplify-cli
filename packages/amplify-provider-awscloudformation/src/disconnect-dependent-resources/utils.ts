@@ -5,7 +5,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { CloudFormation } from 'aws-sdk';
 import _ from 'lodash';
-import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters/src';
+import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { S3 } from '../aws-utils/aws-s3';
 import { fileLogger } from '../utils/aws-logger';
 import { getPreviousDeploymentRecord } from '../utils/amplify-resource-state-utils';

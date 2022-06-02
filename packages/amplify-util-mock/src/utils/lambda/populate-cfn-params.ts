@@ -1,4 +1,4 @@
-import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters/src';
+import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { $TSContext, stateManager } from 'amplify-cli-core';
 // eslint-disable-next-line import/no-cycle
 import {

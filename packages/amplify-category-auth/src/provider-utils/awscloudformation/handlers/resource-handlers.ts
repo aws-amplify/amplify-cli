@@ -3,6 +3,7 @@ import {
   $TSAny, $TSContext, $TSObject, stateManager,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
+import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { getSupportedServices } from '../../supported-services';
 import { authProviders } from '../assets/string-maps';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
@@ -28,7 +29,7 @@ import {
  * The consumer returns the resourceName of the generated resource.
  * @param context The amplify context
  */
-export const getAddAuthHandler = (context: $TSContext, skipNextSteps = false) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
+export const getAddAuthHandler = (context: $TSContext) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
   const serviceMetadata = getSupportedServices()[request.serviceName];
   const { defaultValuesFilename, provider } = serviceMetadata;
 
@@ -58,6 +59,7 @@ export const getAddAuthHandler = (context: $TSContext, skipNextSteps = false) =>
     cognitoConfig: cliInputs,
   };
 
+  await ensureEnvParamManager();
   context.amplify.saveEnvResourceParameters(context, category, cognitoCLIInputs.cognitoConfig.resourceName, envSpecificParams);
   // move this function outside of AddHandler
   try {
