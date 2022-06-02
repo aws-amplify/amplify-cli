@@ -35,6 +35,9 @@ export const reportError = async (context: Context, error: Error | undefined): P
   if (DebugConfig.Instance.promptSendReport()) {
     const isHeadless = isHeadlessCommand(context) || _.get(context, ['input', 'options', 'yes'], false);
     sendReport = await prompter.yesOrNo('An unexpected error has occurred, opt in to send an error report to AWS Amplify with non-sensitive project configuration files. Confirm ', false);
+    if (sendReport) {
+      showLearnMore(true);
+    }
     if (!isHeadless) {
       DebugConfig.Instance.setAndWriteShareProject(sendReport);
     }
@@ -45,6 +48,7 @@ export const reportError = async (context: Context, error: Error | undefined): P
     await zipSend(context, true, error);
   }
 };
+
 /**
  * Send an error report with redacted project files to Amplify CLI
  * @param context the amplify context object
@@ -63,7 +67,17 @@ export const run = async (context: Context, error: Error | undefined = undefined
     DebugConfig.Instance.setAndWriteShareProject(true);
     return;
   }
+  showLearnMore(false);
   await zipSend(context, skipPrompts, error);
+};
+
+const showLearnMore = (showOptOut: boolean) => {
+  printer.blankLine();
+  printer.info('Learn more at https://docs.amplify.aws/cli/reference/diagnose/');
+  if (showOptOut) {
+    printer.blankLine();
+    printer.info('This project has been opted in automatically to share non-sensitive project configuration files. you can opt out by running \'amplify diagnose --auto-send-off\'');
+  }
 };
 
 const zipSend = async (context: Context, skipPrompts: boolean, error: Error | undefined): Promise<void> => {
@@ -89,6 +103,7 @@ const zipSend = async (context: Context, skipPrompts: boolean, error: Error | un
     try {
       const projectId = await sendReport(context, fileDestination);
       spinner.succeed('Done');
+      printer.blankLine();
       printer.info(`Project Identifier: ${projectId}`);
       printer.blankLine();
     } catch (ex) {
