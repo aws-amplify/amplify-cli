@@ -39,8 +39,8 @@ export const disableChannel = async (context : $TSContext, channelName: string):
     context.exeInfo.pinpointClient = await pinpointHelper.getPinpointClient(context, 'update', envName);
     const channelActionHandler:NotificationsChannelAPIModule = require(path.join(__dirname,
       Notifications.ChannelAPI.channelWorkers[channelName]));
-    const enableChannelResponse = await channelActionHandler.disable(context);
-    return enableChannelResponse;
+    const disableChannelResponse = await channelActionHandler.disable(context);
+    return disableChannelResponse;
   }
   return undefined;
 };

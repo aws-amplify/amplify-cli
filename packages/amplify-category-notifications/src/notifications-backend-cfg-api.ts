@@ -10,7 +10,9 @@
 import {
   $TSAny, pathManager, stateManager, AmplifySupportedService, AmplifyCategories, $TSContext,
 } from 'amplify-cli-core';
-import { ChannelAction, ChannelConfigDeploymentType, IChannelAPIResponse } from './notifications-api-types';
+import {
+  ChannelAction, ChannelConfigDeploymentType, INotificationsConfigStatus, IChannelAPIResponse, IChannelAvailability,
+} from './notifications-api-types';
 import { INotificationsChannelBackendConfig, INotificationsResourceBackendConfig, INotificationsResourceBackendConfigValue } from './notifications-backend-config-types';
 import { NotificationsMeta } from './notifications-meta-api';
 
@@ -46,7 +48,60 @@ export class ChannelAPI {
   public static isValidChannel = (channelName: string| undefined): boolean => (channelName !== undefined
     && channelName in ChannelAPI.ChannelType);
 
-  /**
+    /**
+     * For a given notifications resource get local and deployed channel availability
+     * @param backendResourceConfig notifications resource info from the backend config
+     * @returns enabled and disabled channels
+     */
+    public static getChannelAvailability = async (backendResourceConfig:INotificationsResourceBackendConfig)
+    : Promise<IChannelAvailability> => {
+      const availableChannels = NotificationsDB.ChannelAPI.getAvailableChannels();
+      const enabledChannels = (await NotificationsDB.getEnabledChannelsFromBackendConfig(backendResourceConfig)) || [];
+      const disabledChannels = (await NotificationsDB.getDisabledChannelsFromBackendConfig(availableChannels, enabledChannels)) || [];
+      const backend : IChannelAvailability = {
+        enabledChannels,
+        disabledChannels,
+      };
+      return backend;
+    };
+
+    /**
+     * Get notifications resource localBackend, deployedBackend and channel availability
+     * most useful in displaying status.
+     * @param context amplify cli context
+     * @returns backendConfig and channel availability for notifications
+     */
+    public static getNotificationConfigStatus = async (context:$TSContext): Promise<INotificationsConfigStatus|undefined> => {
+      const notificationConfig = await NotificationsDB.getNotificationsAppConfig(context.exeInfo.backendConfig);
+
+      // no Notifications resource
+      if (!notificationConfig) {
+        return undefined;
+      }
+      let appInitialized = true;
+      let deployedBackendConfig: $TSAny;
+      try {
+        deployedBackendConfig = (stateManager.getCurrentBackendConfig()) || undefined;
+      } catch (e) {
+        appInitialized = false;
+        deployedBackendConfig = undefined;
+      } // this will fail on iniEnv;
+      const deployedNotificationConfig = await NotificationsDB.getNotificationsAppConfig(deployedBackendConfig);
+      const emptyChannels = { enabledChannels: [], disabledChannels: [] };
+      return {
+        local: {
+          config: notificationConfig,
+          channels: (notificationConfig) ? await ChannelAPI.getChannelAvailability(notificationConfig) : emptyChannels,
+        },
+        deployed: {
+          config: deployedNotificationConfig,
+          channels: (deployedNotificationConfig) ? await ChannelAPI.getChannelAvailability(deployedNotificationConfig) : emptyChannels,
+        },
+        appInitialized,
+      } as INotificationsConfigStatus;
+    };
+
+    /**
    * Returns true if resource is deployed only during amplify push
    * @param validChannelName - a valid channel name
    * @returns true if channel deployment is handled through amplify push
@@ -139,7 +194,6 @@ export class NotificationsDB {
           }
           context.exeInfo.amplifyMeta = await NotificationsMeta.toggleNotificationsChannelAppMeta(channelAPIResponse.channel, false,
             context.exeInfo.amplifyMeta);
-          console.log('SACPCDEBUSSSSSSSSSS: ChannelAction.DISABLE: ', JSON.stringify(channelAPIResponse, null, 2));
           break;
         case ChannelAction.CONFIGURE:
           console.log(`Error: Channel action ${channelAPIResponse.action} not supported`);
@@ -192,18 +246,15 @@ export class NotificationsDB {
  * Get all notifications channel which are not in use in the Backend Config
  * @returns array of channels which are not in use
  */
-public static getDisabledChannelsFromBackendConfig = async (availableChannels?: Array<string>): Promise<Array<string>> => {
-  const result : Array<string> = [];
-  const enabledChannels = await NotificationsDB.getEnabledChannelsFromBackendConfig();
-  const tmpAvailableChannels = (availableChannels) ? ChannelAPI.getAvailableChannels() : availableChannels;
+public static getDisabledChannelsFromBackendConfig = async (availableChannels?: Array<string>,
+  enabledChannels?: Array<string>): Promise<Array<string>> => {
+  let result : Array<string> = [];
+  const tmpEnabledChannels = (enabledChannels) || await NotificationsDB.getEnabledChannelsFromBackendConfig();
+  const tmpAvailableChannels = (availableChannels) || ChannelAPI.getAvailableChannels();
   if (!tmpAvailableChannels) {
     return result;
   }
-  tmpAvailableChannels.forEach(channel => {
-    if (!enabledChannels.includes(channel)) {
-      result.push(channel);
-    }
-  });
+  result = tmpAvailableChannels.filter(channelName => !tmpEnabledChannels.includes(channelName));
   return result;
 };
 
@@ -223,7 +274,7 @@ public static getDisabledChannelsFromBackendConfig = async (availableChannels?: 
  public static addPartialNotificationsBackendConfig = async (pinpointResourceName: string, backendConfig? : $TSAny):Promise<$TSAny> => {
    const projectPath = pathManager.findProjectRoot();
    const tmpBackendConfig = backendConfig || stateManager.getBackendConfig(projectPath);
-   const resourceConfig : INotificationsResourceBackendConfigValue = {
+   const emptyResourceConfig : INotificationsResourceBackendConfigValue = {
      service: AmplifySupportedService.PINPOINT,
      channels: [],
      channelConfig: {},
@@ -231,12 +282,9 @@ public static getDisabledChannelsFromBackendConfig = async (availableChannels?: 
    let notificationsConfig = tmpBackendConfig[AmplifyCategories.NOTIFICATIONS];
 
    notificationsConfig = (notificationsConfig) || {
-     [pinpointResourceName]: resourceConfig,
+     [pinpointResourceName]: emptyResourceConfig,
    };
-   notificationsConfig[pinpointResourceName] = (notificationsConfig[pinpointResourceName]) ? {
-     ...notificationsConfig[pinpointResourceName],
-     ...resourceConfig,
-   } : resourceConfig;
+   notificationsConfig[pinpointResourceName] = (notificationsConfig[pinpointResourceName]) || emptyResourceConfig;
 
    tmpBackendConfig[AmplifyCategories.NOTIFICATIONS] = notificationsConfig;
    return tmpBackendConfig;
@@ -290,8 +338,8 @@ public static getDisabledChannelsFromBackendConfig = async (availableChannels?: 
         if (!appName || appName === resourceName) {
           notificationsConfigList.push(
             {
-              serviceName: resourceName,
               ...(notificationsConfig[resourceName] as INotificationsResourceBackendConfigValue),
+              serviceName: resourceName,
             },
           );
         }

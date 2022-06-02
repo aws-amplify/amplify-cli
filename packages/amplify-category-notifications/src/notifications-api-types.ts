@@ -2,6 +2,7 @@
  * This file will contain the structures required for headless API
  */
 import { $TSAny, $TSContext, IPluginCapabilityAPIResponse } from 'amplify-cli-core';
+import { INotificationsResourceBackendConfig } from './notifications-backend-config-types';
 
 /**
  * Actions performed on a Notifications channel (Pinpoint)
@@ -31,6 +32,31 @@ export interface IChannelAPIResponse {
     response: IPluginCapabilityAPIResponse,
     output?: $TSAny, // Channel API response
     deploymentType: ChannelConfigDeploymentType,
+}
+
+/**
+ * Notification channel names classified by availability (enabled and disabled)
+ */
+export interface IChannelAvailability {
+    enabledChannels: Array<string>,
+    disabledChannels: Array<string>,
+}
+
+/**
+ * Notifications resource config and channel availability
+ */
+export interface INotificationsConfigChannelAvailability {
+    config: INotificationsResourceBackendConfig,
+    channels: IChannelAvailability
+}
+
+/**
+ * local and deployed backend configs for notifications
+ */
+export interface INotificationsConfigStatus {
+    local: INotificationsConfigChannelAvailability,
+    deployed: INotificationsConfigChannelAvailability
+    appInitialized: false
 }
 
 /**
