@@ -5,7 +5,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 import {
-  $TSAny, $TSContext, AmplifySupportedService, stateManager,
+  $TSAny, $TSContext, AmplifySupportedService,
   IPluginCapabilityAPIResponse,
 } from 'amplify-cli-core';
 
