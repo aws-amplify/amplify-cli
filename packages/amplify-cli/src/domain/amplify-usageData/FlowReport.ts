@@ -2,7 +2,10 @@
 import { stateManager } from 'amplify-cli-core';
 import { logger, Redactor } from 'amplify-cli-logger';
 import { IAmplifyLogger } from 'amplify-cli-logger/lib/IAmplifyLogger';
-import { ICommandInput, IFlowData, IFlowReport, IOptionFlowCLIData, IOptionFlowHeadlessData, TypeOptionFlowData } from 'amplify-cli-shared-interfaces';
+import {
+  ICommandInput, IFlowData, IFlowReport, IOptionFlowCLIData, IOptionFlowHeadlessData, TypeOptionFlowData,
+} from 'amplify-cli-shared-interfaces';
+import { createHashedIdentifier } from '../../commands/helpers/encryption-helpers';
 import { Input } from '../input';
 
 /**
@@ -28,7 +31,7 @@ export class CLIFlowReport implements IFlowData {
     const currentTime = Date.now();
     this.logger = logger;
     this.timestamp = currentTime.toString();
-    this.isHeadless = false; //set headless to true if running in headless mode : TBD: can we query this from stateManager?
+    this.isHeadless = false; // set headless to true if running in headless mode : TBD: can we query this from stateManager?
     this.optionFlowData = [];
   }
 
@@ -41,15 +44,18 @@ export class CLIFlowReport implements IFlowData {
         const projectName = stateManager.getProjectName();
         const envName = stateManager.getCurrentEnvName();
         const appId = stateManager.getAppID();
-        this.projectEnvIdentifier = `${projectName}${appId}${envName}`;
-        this.projectIdentifier = `${projectName}${appId}`;
+        const {
+          projectEnvIdentifier,
+          projectIdentifier,
+        } = createHashedIdentifier(projectName, appId, envName);
+        this.projectEnvIdentifier = projectEnvIdentifier;
+        this.projectIdentifier = projectIdentifier;
         return this.projectEnvIdentifier;
       } catch (e) {
         return undefined;
       }
     }
   }
-
 
   /**
    * Set the CLI input args
@@ -101,7 +107,7 @@ export class CLIFlowReport implements IFlowData {
 
   /**
    * This method is to configure when the current flow is headless.
-   * @param isHeadless 
+   * @param isHeadless
    */
   setIsHeadless(isHeadless: boolean): void {
     this.isHeadless = isHeadless;
@@ -123,12 +129,11 @@ export class CLIFlowReport implements IFlowData {
    * @param headlessParameterString - headless parameter string ( serialized but before schema validation )
    */
   pushHeadlessFlow(headlessParameterString: string, cliInput: ICommandInput): void {
-    this.assignProjectIdentifier(); //conditionally initialize the project identifier
+    this.assignProjectIdentifier(); // conditionally initialize the project identifier
     this.setIsHeadless(true);
     this.setInput(cliInput);
     const cleanOption = Redactor(headlessParameterString);
     const timeStampedOption: IOptionFlowHeadlessData = { input: cleanOption, timestamp: new Date().valueOf() }; // attach unix-style timestamp
     this.optionFlowData.push(timeStampedOption);
   }
-
 }

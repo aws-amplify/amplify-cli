@@ -43,3 +43,25 @@ export const encryptKey = async (key: string): Promise<string> => {
     oaepHash: 'sha256',
   }, Buffer.from(key)).toString('base64');
 };
+
+/**
+ * converts projectName, envName and appId to identifiers
+ * @param projectName the name of the project
+ * @param appId the Amplify app Id
+ * @param envName the current Environment name
+ * @returns
+ */
+export const createHashedIdentifier = (projectName: string, appId: string, envName: string | undefined): {
+  projectIdentifier: string,
+  projectEnvIdentifier: string,
+} => {
+  const projectIdentifier = crypto
+    .createHash('md5')
+    .update(`${projectName}-${appId}`)
+    .digest('hex');
+  const projectEnvIdentifier = crypto
+    .createHash('md5')
+    .update(`${projectName}-${appId}-${envName}`)
+    .digest('hex');
+  return { projectIdentifier, projectEnvIdentifier };
+};

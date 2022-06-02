@@ -12,7 +12,14 @@ import { Context } from '../../domain/context';
 jest.mock('uuid');
 jest.mock('amplify-cli-core');
 jest.mock('../../commands/helpers/collect-files');
-jest.mock('../../commands/helpers/encryption-helpers');
+jest.mock('../../commands/helpers/encryption-helpers', () => ({
+  createHashedIdentifier: jest.fn().mockReturnValue({
+    projectIdentifier: 'projectId',
+    projectEnvIdentifier: 'projectId',
+  }),
+  encryptBuffer: jest.fn().mockReturnValue('encryptedString'),
+  encryptKey: jest.fn().mockReturnValue('encryptedKey'),
+}));
 jest.mock('archiver');
 jest.mock('fs-extra');
 jest.mock('amplify-cli-logger', () => ({
@@ -21,19 +28,6 @@ jest.mock('amplify-cli-logger', () => ({
 }));
 
 jest.mock('path');
-jest.mock('crypto', () => ({
-  publicEncrypt: jest.fn().mockReturnValue(Buffer.from([])),
-  createHash: jest.fn().mockReturnValue({
-    update: jest.fn().mockReturnValue({
-      digest: jest.fn().mockReturnValue('projectId'),
-    }),
-  }),
-  randomBytes: jest.fn().mockReturnValue(Buffer.from('RandomBytes')),
-  /* eslint-disable spellcheck/spell-checker*/
-  pbkdf2Sync: jest.fn(),
-  createCipheriv: jest.fn(),
-  /* eslint-enable spellcheck/spell-checker*/
-}));
 jest.mock('node-fetch', () => jest.fn().mockReturnValue({ status: 200 }));
 
 const mockMeta = {
