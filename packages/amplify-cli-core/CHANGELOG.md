@@ -3,11 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [2.8.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.8.0...amplify-cli-core@2.8.1) (2022-05-27)
-
-
-
-## 8.3.1 (2022-05-27)
+## [2.8.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.8.0...amplify-cli-core@2.8.1-beta.0) (2022-05-27)
 
 
 ### Reverts
