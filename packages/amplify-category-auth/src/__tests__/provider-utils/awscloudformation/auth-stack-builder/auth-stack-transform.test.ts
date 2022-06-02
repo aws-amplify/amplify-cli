@@ -1,6 +1,6 @@
+import { AmplifyAuthTransform } from '../../../../provider-utils/awscloudformation/auth-stack-builder';
 import { $TSContext } from 'amplify-cli-core';
 import process from 'process';
-import { AmplifyAuthTransform } from '../../../../provider-utils/awscloudformation/auth-stack-builder';
 
 jest.mock('amplify-cli-core', () => ({
   ...(jest.requireActual('amplify-cli-core') as {}),
@@ -165,16 +165,16 @@ const getCLIInputPayload_mock = jest.fn().mockReturnValueOnce(inputPayload1).moc
 
 const isCLIInputsValid_mock = jest.fn().mockReturnValue('true');
 
-jest.mock('../../../../provider-utils/awscloudformation/utils/get-app-id', () => ({
-  getAppId: jest.fn().mockReturnValue('mockAmplifyAppId'),
-}));
-
-jest.mock('../../../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state.ts', () => ({
-  AuthInputState: jest.fn().mockImplementation(() => ({
-    getCLIInputPayload: getCLIInputPayload_mock,
-    isCLIInputsValid: isCLIInputsValid_mock,
-  })),
-}));
+jest.mock('../../../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state.ts', () => {
+  return {
+    AuthInputState: jest.fn().mockImplementation(() => {
+      return {
+        getCLIInputPayload: getCLIInputPayload_mock,
+        isCLIInputsValid: isCLIInputsValid_mock,
+      };
+    }),
+  };
+});
 
 const mockPolicy1 = {
   policyName: 'AddToGroupCognito',
@@ -231,7 +231,7 @@ describe('Check Auth Template', () => {
     const resourceName = 'mockResource';
     const authTransform = new AmplifyAuthTransform(resourceName);
     const mock_template = await authTransform.transform(context_stub_typed);
-    expect(mock_template?.Resources?.UserPool.Properties.UsernameConfiguration).toEqual({ CaseSensitive: false });
+    expect(mock_template.Resources?.UserPool.Properties.UsernameConfiguration).toEqual({ CaseSensitive: false });
 
     getCLIInputPayload_mock.mockReturnValue({
       cognitoConfig: {
@@ -242,7 +242,7 @@ describe('Check Auth Template', () => {
 
     const authTransform2 = new AmplifyAuthTransform(resourceName);
     const mock_template2 = await authTransform2.transform(context_stub_typed);
-    expect(mock_template2?.Resources?.UserPool.Properties).not.toContain('UsernameConfiguration');
+    expect(mock_template2.Resources?.UserPool.Properties).not.toContain('UsernameConfiguration');
   });
 
   it('should validate cfn parameters if no original', () => {
@@ -266,20 +266,5 @@ describe('Check Auth Template', () => {
     const authTransform = new AmplifyAuthTransform(resourceName);
     authTransform.validateCfnParameters(context_stub_typed, { requiredAttributes: ['email'] }, { requiredAttributes: ['email', 'phone_number'] });
     expect(process.exit).toBeCalledTimes(1);
-  });
-
-  it('should not include appId in tpi when auth providers not present', async () => {
-    const resourceName = 'mockResource';
-    getCLIInputPayload_mock.mockReturnValue({
-      cognitoConfig: {
-        ...inputPayload1.cognitoConfig,
-        authProvidersUserPool: [],
-        hostedUI: true,
-      },
-    });
-
-    const authTransform = new AmplifyAuthTransform(resourceName);
-    const mockTemplate = await authTransform.transform(context_stub_typed);
-    expect(mockTemplate?.Parameters?.oAuthSecretsPathAmplifyAppId).not.toBeDefined();
   });
 });

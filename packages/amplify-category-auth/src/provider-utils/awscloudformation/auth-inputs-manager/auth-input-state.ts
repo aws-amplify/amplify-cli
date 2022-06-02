@@ -21,7 +21,7 @@ export class AuthInputState extends CategoryInputState {
   #service: string; //AWS service for the resource
   #buildFilePath: string;
 
-  constructor(resourceName: string) {
+  constructor(private readonly context: $TSContext, resourceName: string) {
     super(resourceName);
     this.#category = AmplifyCategories.AUTH;
     this.#service = AmplifySupportedService.COGNITO;
@@ -33,7 +33,7 @@ export class AuthInputState extends CategoryInputState {
   }
 
   public async isCLIInputsValid(cliInputs: CognitoCLIInputs = this.getCLIInputPayload()): Promise<boolean> {
-    const schemaValidator = new CLIInputSchemaValidator(this.#service, this.#category, 'CognitoCLIInputs');
+    const schemaValidator = new CLIInputSchemaValidator(this.context, this.#service, this.#category, 'CognitoCLIInputs');
     return schemaValidator.validateInput(JSON.stringify(cliInputs));
   }
 

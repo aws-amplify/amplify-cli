@@ -14,8 +14,6 @@ import {
   getProjectMeta,
   getUserPool,
   getUserPoolClients,
-  initAndroidProjectWithProfile,
-  initJSProjectWithProfile,
   updateAuthRemoveRecaptchaTrigger,
   updateAuthSignInSignOutUrl,
   updateAuthWithoutCustomTrigger,
@@ -26,7 +24,7 @@ import { UpdateAuthRequest } from 'amplify-headless-interface';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as _ from 'lodash';
-import { versionCheck, allowedVersionsToMigrateFrom } from '../../../migration-helpers';
+import { versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfile, initAndroidProjectWithProfile } from '../../../migration-helpers';
 
 const defaultSettings = {
   name: 'authMigration',
@@ -111,7 +109,7 @@ describe('amplify auth migration', () => {
     await amplifyPushAuth(projRoot, true);
   });
 
-  it('...should init an android project and add customAuth flag, and remove flag when custom auth triggers are removed upon update', async () => {
+  it('...should init an android project and add customAuth flag, and remove flag when custom auth triggers are removed upon update ', async () => {
     await initAndroidProjectWithProfile(projRoot, defaultSettings);
     await addAuthWithRecaptchaTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
@@ -135,15 +133,14 @@ describe('amplify auth migration', () => {
   });
 
   it('...should edit signin url on update', async () => {
-    const settings = {
+    let settings = {
       signinUrl: 'http://localhost:3001/',
       signoutUrl: 'http://localhost:3002/',
       updatesigninUrl: 'http://localhost:3003/',
       updatesignoutUrl: 'http://localhost:3004/',
     };
-    await initAndroidProjectWithProfile(projRoot, { ...defaultSettings, disableAmplifyAppCreation: false });
+    await initAndroidProjectWithProfile(projRoot, defaultSettings);
     await addAuthWithSignInSignOutUrl(projRoot, settings);
-
     const amplifyMeta = getBackendAmplifyMeta(projRoot);
     const authResourceName = Object.keys(amplifyMeta.auth).filter(resourceName => amplifyMeta.auth[resourceName].service === 'Cognito')[0];
     // update and push with codebase

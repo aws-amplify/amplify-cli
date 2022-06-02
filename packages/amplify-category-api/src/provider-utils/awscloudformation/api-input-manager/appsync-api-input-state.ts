@@ -1,4 +1,11 @@
-import { AmplifyCategories, AmplifySupportedService, CLIInputSchemaValidator, JSONUtilities, pathManager } from 'amplify-cli-core';
+import {
+  $TSContext,
+  AmplifyCategories,
+  AmplifySupportedService,
+  CLIInputSchemaValidator,
+  JSONUtilities,
+  pathManager,
+} from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { AppSyncCLIInputs } from '../service-walkthrough-types/appsync-user-input-types';
@@ -10,7 +17,7 @@ export class AppsyncApiInputState {
   #service: string; //AWS service for the resource
   #buildFilePath: string;
 
-  constructor(resourceName: string) {
+  constructor(private readonly context: $TSContext, resourceName: string) {
     this.#category = AmplifyCategories.API;
     this.#service = AmplifySupportedService.APPSYNC;
     this.#resourceName = resourceName;
@@ -21,7 +28,7 @@ export class AppsyncApiInputState {
   }
 
   public async isCLIInputsValid(cliInputs: AppSyncCLIInputs = this.getCLIInputPayload()): Promise<boolean> {
-    const schemaValidator = new CLIInputSchemaValidator('appsync', this.#category, 'AppSyncCLIInputs');
+    const schemaValidator = new CLIInputSchemaValidator(this.context, 'appsync', this.#category, 'AppSyncCLIInputs');
     return schemaValidator.validateInput(JSON.stringify(cliInputs));
   }
 

@@ -1,7 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import {
-  initJSProjectWithProfile,
   deleteProject,
   amplifyOverrideRoot,
   createNewProjectDir,
@@ -10,7 +9,7 @@ import {
   amplifyPushOverride,
 } from 'amplify-e2e-core';
 import { JSONUtilities } from 'amplify-cli-core';
-import { versionCheck, allowedVersionsToMigrateFrom } from '../../../migration-helpers';
+import { versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfile } from '../../../migration-helpers';
 
 describe('amplify init', () => {
   let projRoot: string;

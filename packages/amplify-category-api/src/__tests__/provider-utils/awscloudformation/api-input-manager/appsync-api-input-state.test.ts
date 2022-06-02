@@ -1,3 +1,4 @@
+import { $TSContext } from 'amplify-cli-core';
 import { AppsyncApiInputState } from '../../../../provider-utils/awscloudformation/api-input-manager/appsync-api-input-state';
 
 jest.mock('fs-extra');
@@ -35,14 +36,27 @@ jest.mock('amplify-cli-core', () => ({
   },
 }));
 
+const mockContext: $TSContext = {
+  amplify: {
+    getCategoryPluginInfo: (_context: $TSContext, category: string) => {
+      return {
+        packageLocation: `@aws-amplify/amplify-category-${category}`,
+      };
+    },
+  },
+  input: {
+    options: {},
+  },
+} as unknown as $TSContext;
+
 test('Api Input State -> validate cli payload manual payload', async () => {
   const resourceName = 'mockResource';
-  const apiState = new AppsyncApiInputState(resourceName);
+  const apiState = new AppsyncApiInputState(mockContext, resourceName);
   expect(await apiState.isCLIInputsValid()).toBe(true);
 });
 
 test('Api Input State -> validate cli payload manual payload to throw error', async () => {
   const resourceName = 'mockResource';
-  const apiState = new AppsyncApiInputState(resourceName);
+  const apiState = new AppsyncApiInputState(mockContext, resourceName);
   expect(apiState.isCLIInputsValid()).rejects.toThrowError();
 });

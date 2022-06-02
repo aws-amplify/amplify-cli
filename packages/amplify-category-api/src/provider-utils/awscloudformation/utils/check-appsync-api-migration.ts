@@ -4,7 +4,7 @@ import { AppsyncApiInputState } from '../api-input-manager/appsync-api-input-sta
 import { migrateResourceToSupportOverride } from './migrate-api-override-resource';
 
 export const checkAppsyncApiResourceMigration = async (context: $TSContext, apiName: string, isUpdate: boolean): Promise<boolean> => {
-  const cliState = new AppsyncApiInputState(apiName);
+  const cliState = new AppsyncApiInputState(context, apiName);
   if (!cliState.cliInputFileExists()) {
     printer.debug('cli-inputs.json doesnt exist');
     const headlessMigrate = context.input.options?.yes || context.input.options?.forcePush || context.input.options?.headless;

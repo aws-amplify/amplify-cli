@@ -11,9 +11,9 @@ import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-
 import { getSuitableFrontend } from './s1-initFrontend';
 
 /**
- * Pre-init setup
+ *
  */
-export const analyzeProjectHeadless = async (context: $TSContext): Promise<void> => {
+export async function analyzeProjectHeadless(context: $TSContext) {
   const projectPath = process.cwd();
   const projectName = path.basename(projectPath);
   const env = getDefaultEnv(context);
@@ -133,6 +133,7 @@ export const analyzeProject = async (context: $TSContext): Promise<$TSContext> =
 
   setProjectConfig(context, projectName);
   setExeInfo(context, projectPath, defaultEditor, envName);
+
 
   return context;
 };

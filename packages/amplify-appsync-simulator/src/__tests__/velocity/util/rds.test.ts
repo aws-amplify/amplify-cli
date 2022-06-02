@@ -29,3 +29,16 @@ describe('$utils.rds.toJsonString', () => {
     expect(util.rds.toJsonString('')).toEqual('');
   });
 });
+
+describe('$utils.rds.toJsonObject', () => {
+  const mockedOutputFromRdsJsonObject = JSON.parse(mockedOutputFromRdsJsonString);
+  it('should convert rds string to JSON object', () => {
+    expect(util.rds.toJsonObject(mockedInputToRdsJsonString)).toEqual(mockedOutputFromRdsJsonObject);
+  });
+  it('handle input without sqlStatementResults input', () => {
+    expect(util.rds.toJsonObject('{}')).toHaveLength(0);
+  });
+  it('handle invalid input', () => {
+    expect(util.rds.toJsonObject('')).toEqual('');
+  });
+});

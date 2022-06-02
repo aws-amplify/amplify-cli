@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import {
   $TSAny, $TSContext, $TSObject, stateManager,
 } from 'amplify-cli-core';
@@ -15,7 +14,6 @@ import { getAddAuthDefaultsApplier, getUpdateAuthDefaultsApplier } from '../util
 import { doesConfigurationIncludeSMS } from '../utils/auth-sms-workflow-helper';
 import { generateAuthStackTemplate } from '../utils/generate-auth-stack-template';
 import { getPostAddAuthMessagePrinter, getPostUpdateAuthMessagePrinter, printSMSSandboxWarning } from '../utils/message-printer';
-import { syncOAuthSecretsToCloud } from '../auth-secret-manager/sync-oauth-secrets';
 import {
   createUserPoolGroups,
   getResourceSynthesizer,
@@ -29,7 +27,9 @@ import {
  * The consumer returns the resourceName of the generated resource.
  * @param context The amplify context
  */
-export const getAddAuthHandler = (context: $TSContext) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
+export const getAddAuthHandler = (
+  context: $TSContext,
+) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
   const serviceMetadata = getSupportedServices()[request.serviceName];
   const { defaultValuesFilename, provider } = serviceMetadata;
 
@@ -61,13 +61,12 @@ export const getAddAuthHandler = (context: $TSContext) => async (request: Servic
 
   await ensureEnvParamManager();
   context.amplify.saveEnvResourceParameters(context, category, cognitoCLIInputs.cognitoConfig.resourceName, envSpecificParams);
+
   // move this function outside of AddHandler
   try {
-    const cliState = new AuthInputState(cognitoCLIInputs.cognitoConfig.resourceName);
+    const cliState = new AuthInputState(context, cognitoCLIInputs.cognitoConfig.resourceName);
     // saving cli-inputs except secrets
     await cliState.saveCLIInputPayload(cognitoCLIInputs);
-    // saving oauth secrets here
-    await syncOAuthSecretsToCloud(context, cognitoCLIInputs.cognitoConfig.resourceName, envSpecificParams);
     // cdk transformation in this function
     // start auth transform here
     await generateAuthStackTemplate(context, cognitoCLIInputs.cognitoConfig.resourceName);
@@ -92,7 +91,7 @@ export const getAddAuthHandler = (context: $TSContext) => async (request: Servic
 };
 
 /**
- * Factory function that returns a CognitoCLIInputs consumer that handles all update operations of the resource generation logic.
+ * Factory function that returns a CognitoConfiguration consumer and handles updates to the auth resource
  */
 export const getUpdateAuthHandler = (context: $TSContext) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
   const { defaultValuesFilename } = getSupportedServices()[request.serviceName];
@@ -143,7 +142,7 @@ export const getUpdateAuthHandler = (context: $TSContext) => async (request: Ser
   });
   context.amplify.saveEnvResourceParameters(context, category, requestWithDefaults.resourceName, envSpecificParams);
 
-  // handling triggers to be saved  correctly in cli-inputs
+  // handling triggers to be saved correctly in cli-inputs
   await getResourceUpdater(context, cliInputs);
   // saving updated request here
   /**
@@ -156,15 +155,14 @@ export const getUpdateAuthHandler = (context: $TSContext) => async (request: Ser
     cognitoConfig: cliInputs,
   };
   try {
-    const cliState = new AuthInputState(cognitoCLIInputs.cognitoConfig.resourceName);
+    const cliState = new AuthInputState(context, cognitoCLIInputs.cognitoConfig.resourceName);
     const { triggers } = cognitoCLIInputs.cognitoConfig;
+    // convert triggers to JSON as overridden in defaults
     if (triggers && typeof triggers === 'string') {
       cognitoCLIInputs.cognitoConfig.triggers = JSON.parse(triggers);
     }
     // saving cli-inputs except secrets
     await cliState.saveCLIInputPayload(cognitoCLIInputs);
-    // updating OAuth secrets
-    await syncOAuthSecretsToCloud(context, cognitoCLIInputs.cognitoConfig.resourceName, envSpecificParams);
     // remove this when api and functions transform are done
     if (request.updateFlow !== 'updateUserPoolGroups' && request.updateFlow !== 'updateAdminQueries') {
       await generateAuthStackTemplate(context, cognitoCLIInputs.cognitoConfig.resourceName);

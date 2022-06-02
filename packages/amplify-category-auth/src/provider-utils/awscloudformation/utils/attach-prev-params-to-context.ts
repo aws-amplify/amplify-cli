@@ -6,6 +6,6 @@ import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
  */
 export const attachPrevParamsToContext = async (context: any) => {
   const resourceName = await getAuthResourceName(context);
-  const cliState = new AuthInputState(resourceName);
+  const cliState = new AuthInputState(context, resourceName);
   context.updatingAuth = await cliState.loadResourceParameters(context, cliState.getCLIInputPayload());
 };

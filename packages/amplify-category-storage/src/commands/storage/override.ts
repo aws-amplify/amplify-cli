@@ -57,18 +57,18 @@ export const run = async (context: $TSContext) => {
 
   // Make sure to migrate first
   if (amplifyMeta[AmplifyCategories.STORAGE][selectedResourceName].service === AmplifySupportedService.DYNAMODB) {
-    const resourceInputState = new DynamoDBInputState(selectedResourceName);
+    const resourceInputState = new DynamoDBInputState(context, selectedResourceName);
     if (!resourceInputState.cliInputFileExists()) {
       if (await prompter.yesOrNo(getMigrateResourceMessageForOverride(AmplifyCategories.STORAGE, selectedResourceName, false), true)) {
         resourceInputState.migrate();
-        const stackGenerator = new DDBStackTransform(selectedResourceName);
+        const stackGenerator = new DDBStackTransform(context, selectedResourceName);
         await stackGenerator.transform();
       } else {
         return;
       }
     }
   } else if (amplifyMeta[AmplifyCategories.STORAGE][selectedResourceName].service === AmplifySupportedService.S3) {
-    const s3ResourceInputState = new S3InputState(selectedResourceName, undefined);
+    const s3ResourceInputState = new S3InputState(context, selectedResourceName, undefined);
     if (!s3ResourceInputState.cliInputFileExists()) {
       if (await prompter.yesOrNo(getMigrateResourceMessageForOverride(AmplifyCategories.STORAGE, selectedResourceName, false), true)) {
         await s3ResourceInputState.migrate(context); //migrate auth and storage config resources

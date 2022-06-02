@@ -24,6 +24,8 @@ export class CustomPoliciesFormatError extends Error {}
 export class ExportPathValidationError extends Error {}
 export class ExportedStackNotFoundError extends Error {}
 export class ExportedStackNotInValidStateError extends Error {}
+export class DebugConfigValueNotSetError extends Error {}
+export class DiagnoseReportUploadError extends Error {}
 
 export class NotInitializedError extends Error {
   public constructor() {

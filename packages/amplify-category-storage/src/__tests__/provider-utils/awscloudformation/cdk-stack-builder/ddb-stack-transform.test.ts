@@ -1,5 +1,6 @@
 /* These tests test the DDBStackTransform and run the cdk builder tool which is used within this file */
 
+import { $TSContext } from 'amplify-cli-core';
 import { DDBStackTransform } from '../../../../provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform';
 import {
   DynamoDBCLIInputs,
@@ -32,6 +33,23 @@ jest.mock('path', () => ({
 jest.mock('../../../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state');
 
 describe('Test DDB transform generates correct CFN template', () => {
+  let mockContext: $TSContext;
+
+  beforeEach(() => {
+    mockContext = {
+      amplify: {
+        getCategoryPluginInfo: (_context: $TSContext, category: string) => {
+          return {
+            packageLocation: `@aws-amplify/amplify-category-${category}`,
+          };
+        },
+      },
+      input: {
+        options: {},
+      },
+    } as unknown as $TSContext;
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -69,7 +87,7 @@ describe('Test DDB transform generates correct CFN template', () => {
     };
 
     jest.spyOn(DynamoDBInputState.prototype, 'getCliInputPayload').mockImplementation(() => cliInputsJSON);
-    const ddbTransform = new DDBStackTransform(resourceName);
+    const ddbTransform = new DDBStackTransform(mockContext, resourceName);
     await ddbTransform.transform();
     expect(ddbTransform._cfn).toMatchSnapshot();
     expect(ddbTransform._cfnInputParams).toMatchSnapshot();

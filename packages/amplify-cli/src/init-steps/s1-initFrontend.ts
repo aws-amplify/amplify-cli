@@ -3,7 +3,7 @@ import * as inquirer from 'inquirer';
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { normalizeFrontendHandlerName } from '../input-params-manager';
 
-export async function initFrontend(context: $TSContext) {
+export const initFrontend = async (context: $TSContext): Promise<$TSContext> => {
   if (!context.exeInfo.isNewProject) {
     const currentProjectConfig = context.amplify.getProjectConfig();
     Object.assign(currentProjectConfig, context.exeInfo.projectConfig);
@@ -20,7 +20,7 @@ export async function initFrontend(context: $TSContext) {
   await frontendModule.init(context);
 
   return context;
-}
+};
 
 export function getSuitableFrontend(context: $TSContext, frontendPlugins: $TSAny, projectPath: string) {
   let headlessFrontend = context?.exeInfo?.inputParams?.amplify?.frontend;

@@ -9,6 +9,7 @@ import {
   JSONValidationError,
   pathManager,
   stateManager,
+  TeamProviderInfoMigrateError,
   executeHooks,
   HooksMeta,
 } from 'amplify-cli-core';
@@ -30,9 +31,11 @@ import { getPluginPlatform, scan } from './plugin-manager';
 import { checkProjectConfigVersion } from './project-config-version-check';
 import { rewireDeprecatedCommands } from './rewireDeprecatedCommands';
 import { ensureMobileHubCommandCompatibility } from './utils/mobilehub-support';
+import { migrateTeamProviderInfo } from './utils/team-provider-migrate';
 import { deleteOldVersion } from './utils/win-utils';
 import { notify } from './version-notifier';
 import { getAmplifyVersion } from './extensions/amplify-helpers/get-amplify-version';
+import { reportError } from './commands/diagnose';
 
 export { UsageData } from './domain/amplify-usageData';
 
@@ -179,6 +182,11 @@ export const run = async (startTime: number): Promise<number | undefined> => {
 
     prompter.setFlowData(context.usageData);
 
+    if (!(await migrateTeamProviderInfo(context))) {
+      context.usageData.emitError(new TeamProviderInfoMigrateError());
+      return 1;
+    }
+
     errorHandler = boundErrorHandler.bind(context);
 
     process.on('SIGINT', sigIntHandler.bind(context));
@@ -197,9 +205,12 @@ export const run = async (startTime: number): Promise<number | undefined> => {
 
     // Display messages meant for most executions
     await displayBannerMessages(input);
-
-    await executeCommand(context);
-
+    try {
+      await executeCommand(context);
+    } catch (e) {
+      await reportError(context, e);
+      throw e;
+    }
     const exitCode = process.exitCode || 0;
 
     if (exitCode === 0) {

@@ -1,3 +1,4 @@
+import { $TSContext } from 'amplify-cli-core';
 import { getAuthConfig } from '../../../../provider-utils/awscloudformation/utils/get-appsync-auth-config';
 
 const getCLIInputPayload_mock = jest
@@ -46,10 +47,23 @@ jest.mock('../../../../provider-utils/awscloudformation/api-input-manager/appsyn
   };
 });
 
+const mockContext: $TSContext = {
+  amplify: {
+    getCategoryPluginInfo: (_context: $TSContext, category: string) => {
+      return {
+        packageLocation: `@aws-amplify/amplify-category-${category}`,
+      };
+    },
+  },
+  input: {
+    options: {},
+  },
+} as unknown as $TSContext;
+
 test('test function with default auth config', async () => {
-  expect(await getAuthConfig('mockapiResource')).toMatchSnapshot();
+  expect(await getAuthConfig(mockContext, 'mockapiResource')).toMatchSnapshot();
 });
 
 test('test function with default and additional auth config', async () => {
-  expect(await getAuthConfig('mockapiResource')).toMatchSnapshot();
+  expect(await getAuthConfig(mockContext, 'mockapiResource')).toMatchSnapshot();
 });

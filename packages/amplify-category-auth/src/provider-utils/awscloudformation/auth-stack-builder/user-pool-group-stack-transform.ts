@@ -74,7 +74,7 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
    */
   public async transform(context: $TSContext): Promise<Template> {
     // parse Input data
-    const userPoolGroupStackOptions = await this.generateStackProps();
+    const userPoolGroupStackOptions = await this.generateStackProps(context);
 
     // generate cfn Constructs and AmplifyRootStackTemplate object to get overridden
     await this.generateStackResources(userPoolGroupStackOptions);
@@ -213,28 +213,10 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
   /**
    * Object required to generate Stack using cdk
   */
-  private generateStackProps = async (): Promise<AmplifyUserPoolGroupStackOptions> => {
+  private generateStackProps = async (context: $TSContext): Promise<AmplifyUserPoolGroupStackOptions> => {
     const resourceDirPath = path.join(pathManager.getBackendDirPath(), 'auth', 'userPoolGroups', 'user-pool-group-precedence.json');
-    const groups = JSONUtilities.readJson<UserPoolGroupMetadata[]>(resourceDirPath, { throwIfNotExist: true }) ?? [];
-
-    // adding custom policies defined in user-pool-group-precedence.json file
-    groups.forEach(groupItr => {
-      const group = groupItr;
-      if (group.customPolicies) {
-        group.customPolicies.forEach((policyItr: $TSAny) => {
-          const policy = policyItr;
-          if (policy?.PolicyDocument?.Statement) {
-            policy.PolicyDocument.Statement.forEach((statementItr: { Resource: string | string[] | $TSObject; }) => {
-              const statement = statementItr;
-              if (statement.Resource.includes('${env}')) {
-                statement.Resource = { 'Fn::Sub': [statement.Resource, { env: { Ref: 'env' } }] };
-              }
-            });
-          }
-        });
-      }
-    });
-    const cliState = new AuthInputState(this._authResourceName);
+    const groups = JSONUtilities.readJson(resourceDirPath, { throwIfNotExist: true });
+    const cliState = new AuthInputState(context, this._authResourceName);
     this._cliInputs = cliState.getCLIInputPayload();
     const { identityPoolName } = this._cliInputs.cognitoConfig;
     return {

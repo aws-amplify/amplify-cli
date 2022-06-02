@@ -85,10 +85,11 @@ describe('test SIGINT with execute', () => {
       pushInteractiveFlow: jest.fn(),
       getFlowReport: jest.fn(),
       assignProjectIdentifier: jest.fn(),
+      getUsageDataPayload: jest.fn(),
 
     };
     mockContext.projectHasMobileHubResources = false;
-    
+
     mockContext.amplify = jest.createMockFromModule('../domain/amplify-toolkit');
     Object.defineProperty(mockContext.amplify, 'getEnvInfo', { value: jest.fn() });
     jest.setMock('../context-manager', {
@@ -104,6 +105,8 @@ describe('test SIGINT with execute', () => {
         await sleep(2000);
       },
     });
+
+    jest.mock('@aws-amplify/amplify-environment-parameters');
 
     setTimeout(() => {
       process.emit('SIGINT', 'SIGINT');

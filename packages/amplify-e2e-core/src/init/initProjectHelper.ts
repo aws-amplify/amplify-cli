@@ -1,8 +1,10 @@
-import { nspawn as spawn, getCLIPath, singleSelect, addCircleCITags } from '..';
-import { KEY_DOWN_ARROW } from '../utils';
-import { amplifyRegions } from '../configure';
 import { EOL } from 'os';
 import { v4 as uuid } from 'uuid';
+import {
+  nspawn as spawn, getCLIPath, singleSelect, addCircleCITags,
+} from '..';
+import { KEY_DOWN_ARROW } from '../utils';
+import { amplifyRegions } from '../configure';
 
 const defaultSettings = {
   name: EOL,
@@ -24,9 +26,11 @@ const defaultSettings = {
   permissionsBoundaryArn: undefined,
 };
 
+
 export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof defaultSettings>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   let env;
+
   if (s.disableAmplifyAppCreation === true) {
     env = {
       CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
@@ -48,7 +52,9 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
   if (s?.name?.length > 20) console.warn('Project names should not be longer than 20 characters. This may cause tests to break.');
 
   return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), cliArgs, { cwd, stripColors: true, env, disableCIDetection: s.disableCIDetection })
+    const chain = spawn(getCLIPath(), cliArgs, {
+      cwd, stripColors: true, env, disableCIDetection: s.disableCIDetection,
+    })
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
@@ -78,8 +84,9 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
         .wait('Please choose the profile you want to use')
         .sendLine(s.profileName);
     }
-
-    chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
+    chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+    .sendYes()
+    .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
       if (err) {
         reject(err);
       } else {
@@ -89,15 +96,9 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
   });
 }
 
+
 export function initAndroidProjectWithProfile(cwd: string, settings: Object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
-
-  let env;
-  if (s.disableAmplifyAppCreation === true) {
-    env = {
-      CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-    };
-  }
 
   addCircleCITags(cwd);
 
@@ -105,7 +106,9 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Object): Pr
     spawn(getCLIPath(), ['init'], {
       cwd,
       stripColors: true,
-      env,
+      env: {
+        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+      },
     })
       .wait('Enter a name for the project')
       .sendLine(s.name)
@@ -124,6 +127,8 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Object): Pr
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendLine(s.profileName)
+      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+      .sendYes()
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
         if (!err) {
@@ -137,20 +142,20 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Object): Pr
   });
 }
 
+/**
+ *
+ */
 export function createRandomName() {
   const length = 20;
   const regExp = new RegExp('-', 'g');
   return uuid().replace(regExp, '').substring(0, length);
 }
 
+/**
+ *
+ */
 export function initIosProjectWithProfile(cwd: string, settings: Object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
-  let env;
-  if (s.disableAmplifyAppCreation === true) {
-    env = {
-      CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-    };
-  }
 
   addCircleCITags(cwd);
 
@@ -158,7 +163,9 @@ export function initIosProjectWithProfile(cwd: string, settings: Object): Promis
     spawn(getCLIPath(), ['init'], {
       cwd,
       stripColors: true,
-      env,
+      env: {
+        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+      },
     })
       .wait('Enter a name for the project')
       .sendLine(s.name)
@@ -175,6 +182,8 @@ export function initIosProjectWithProfile(cwd: string, settings: Object): Promis
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendLine(s.profileName)
+      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+      .sendYes()
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
         if (!err) {
@@ -188,20 +197,14 @@ export function initIosProjectWithProfile(cwd: string, settings: Object): Promis
   });
 }
 
+
 export function initFlutterProjectWithProfile(cwd: string, settings: Object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
-
-  let env;
-  if (s.disableAmplifyAppCreation === true) {
-    env = {
-      CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-    };
-  }
 
   addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true , env})
+    const chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
@@ -222,8 +225,9 @@ export function initFlutterProjectWithProfile(cwd: string, settings: Object): Pr
       .sendLine(s.profileName);
 
     singleSelect(chain, s.region, amplifyRegions);
-
-    chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
+    chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+    .sendYes()
+    .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
       if (!err) {
         resolve();
       } else {
@@ -232,6 +236,7 @@ export function initFlutterProjectWithProfile(cwd: string, settings: Object): Pr
     });
   });
 }
+
 
 export function initProjectWithAccessKey(
   cwd: string,
@@ -242,7 +247,7 @@ export function initProjectWithAccessKey(
   addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['init'], {
+    const chain = spawn(getCLIPath(), ['init'], {
       cwd,
       stripColors: true,
       env: {
@@ -282,8 +287,9 @@ export function initProjectWithAccessKey(
       .wait('region');
 
     singleSelect(chain, s.region, amplifyRegions);
-
-    chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
+    chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+    .sendYes()
+    .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
       if (!err) {
         resolve();
       } else {
@@ -293,11 +299,12 @@ export function initProjectWithAccessKey(
   });
 }
 
+
 export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; accessKeyId: string; secretAccessKey: string }): Promise<void> {
   addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['init'], {
+    const chain = spawn(getCLIPath(), ['init'], {
       cwd,
       stripColors: true,
       env: {
@@ -321,7 +328,6 @@ export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; acces
       .wait('region');
 
     singleSelect(chain, process.env.CLI_REGION, amplifyRegions);
-
     chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
       if (!err) {
         resolve();
@@ -331,6 +337,7 @@ export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; acces
     });
   });
 }
+
 
 export function initNewEnvWithProfile(cwd: string, s: { envName: string }): Promise<void> {
   addCircleCITags(cwd);
@@ -363,6 +370,7 @@ export function initNewEnvWithProfile(cwd: string, s: { envName: string }): Prom
   });
 }
 
+
 export function updatedInitNewEnvWithProfile(cwd: string, s: { envName: string }): Promise<void> {
   addCircleCITags(cwd);
 
@@ -392,6 +400,7 @@ export function updatedInitNewEnvWithProfile(cwd: string, s: { envName: string }
       });
   });
 }
+
 
 export function amplifyInitSandbox(cwd: string, settings: {}): Promise<void> {
   const s = { ...defaultSettings, ...settings };
@@ -427,6 +436,9 @@ export function amplifyInitSandbox(cwd: string, settings: {}): Promise<void> {
   });
 }
 
+/**
+ *
+ */
 export function amplifyInitYes(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init', '--yes'], {
@@ -435,13 +447,11 @@ export function amplifyInitYes(cwd: string): Promise<void> {
       env: {
         CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
       },
-    }).run((err: Error) =>
-      err
-        ? reject(err)
-        : (() => {
-            resolve();
-          })(),
-    );
+    }).run((err: Error) => (err
+      ? reject(err)
+      : (() => {
+        resolve();
+      })()));
   });
 }
 
@@ -459,10 +469,10 @@ export function amplifyVersion(cwd: string, expectedVersion: string, testingWith
   });
 }
 
-//Can be called only if detects teamprovider change
+// Can be called only if detects teamprovider change
 export function amplifyStatusWithMigrate(cwd: string, expectedStatus: string, testingWithLatestCodebase): Promise<void> {
   return new Promise((resolve, reject) => {
-    let regex = new RegExp(`.*${expectedStatus}*`);
+    const regex = new RegExp(`.*${expectedStatus}*`);
     spawn(getCLIPath(testingWithLatestCodebase), ['status'], { cwd, stripColors: true })
       .wait('Amplify has been upgraded to handle secrets more securely by migrating some values')
       .sendConfirmYes()
@@ -478,9 +488,10 @@ export function amplifyStatusWithMigrate(cwd: string, expectedStatus: string, te
   });
 }
 
+
 export function amplifyStatus(cwd: string, expectedStatus: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
-    let regex = new RegExp(`.*${expectedStatus}*`);
+    const regex = new RegExp(`.*${expectedStatus}*`);
     spawn(getCLIPath(testingWithLatestCodebase), ['status'], { cwd, stripColors: true })
       .wait(regex)
       .sendCarriageReturn()

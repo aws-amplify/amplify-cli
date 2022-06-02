@@ -6,6 +6,8 @@ import sequential from 'promise-sequential';
 import { notifyFieldAuthSecurityChange, notifySecurityEnhancement } from '../extensions/amplify-helpers/auth-notifications';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 import { showTroubleshootingURL } from './help';
+import { reportError } from './diagnose';
+import { Context } from '../domain/context';
 
 /**
  * Download and unzip deployment bucket contents to #current-cloud-backend so amplify status shows correct state
@@ -74,6 +76,7 @@ export const run = async (context: $TSContext): Promise<$TSAny|void> => {
   } catch (e) {
     const message = (e.name === 'GraphQLError' || e.name === 'InvalidMigrationError') ? e.toString() : e.message;
     printer.error(`An error occurred during the push operation: /\n${message}`);
+    await reportError(context as unknown as Context, e);
     await context.usageData.emitError(e);
     showTroubleshootingURL();
     exitOnNextTick(1);

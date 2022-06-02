@@ -37,10 +37,12 @@ export const run = async (context: $TSContext): Promise<string | $TSContext | un
     if (serviceMeta.service === AmplifySupportedService.COGNITO && serviceMeta.mobileHubMigrated === true) {
       printer.error('Auth is migrated from Mobile Hub and cannot be updated with Amplify CLI.');
       return context;
-    } if (serviceMeta.service === AmplifySupportedService.COGNITO && serviceMeta.serviceType === 'imported') {
+    }
+    if (serviceMeta.service === AmplifySupportedService.COGNITO && serviceMeta.serviceType === 'imported') {
       printer.error('Updating imported Auth resource is not supported.');
       return context;
-    } if (serviceMeta.service === AmplifySupportedService.COGNITO && !FeatureFlags.getBoolean('auth.forceAliasAttributes')) {
+    }
+    if (serviceMeta.service === AmplifySupportedService.COGNITO && !FeatureFlags.getBoolean('auth.forceAliasAttributes')) {
       const authAttributes = stateManager.getResourceParametersJson(undefined, AmplifyCategories.AUTH, authResourceName);
       if (authAttributes.aliasAttributes && authAttributes.aliasAttributes.length > 0) {
         const authUpdateWarning = await BannerMessage.getMessage('AMPLIFY_UPDATE_AUTH_ALIAS_ATTRIBUTES_WARNING');
