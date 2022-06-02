@@ -43,6 +43,15 @@ export interface IChannelAvailability {
 }
 
 /**
+ * Notification channel display
+ */
+export interface IChannelViewInfo {
+    channelName: string,
+    viewName : string,
+    help: string,
+}
+
+/**
  * Notifications resource config and channel availability
  */
 export interface INotificationsConfigChannelAvailability {

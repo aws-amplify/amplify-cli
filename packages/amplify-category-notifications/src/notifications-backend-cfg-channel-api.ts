@@ -1,5 +1,7 @@
 import { $TSContext, $TSAny, stateManager } from 'amplify-cli-core';
-import { IChannelAvailability, INotificationsConfigStatus, ChannelConfigDeploymentType } from './notifications-api-types';
+import {
+  IChannelAvailability, INotificationsConfigStatus, ChannelConfigDeploymentType, IChannelViewInfo,
+} from './notifications-api-types';
 // eslint-disable-next-line import/no-cycle
 import { NotificationsDB } from './notifications-backend-cfg-api';
 import { INotificationsResourceBackendConfig, INotificationsChannelBackendConfig } from './notifications-backend-config-types';
@@ -31,8 +33,45 @@ export class ChannelAPI {
        [ChannelAPI.ChannelType.InAppMessaging]: './channel-InAppMessaging',
      };
 
-    public static isValidChannel = (channelName: string| undefined): boolean => (channelName !== undefined
-      && channelName in ChannelAPI.ChannelType);
+     /**
+     * Map of channel-type to view-name
+     */
+      public static channelViewInfo: Record<string, IChannelViewInfo> = {
+        [ChannelAPI.ChannelType.APNS]: {
+          channelName: ChannelAPI.ChannelType.APNS,
+          viewName: 'APNS (Push Notifications)',
+          help: 'Send Apple push notifications to Pinpoint user segments',
+        },
+        [ChannelAPI.ChannelType.FCM]: {
+          channelName: ChannelAPI.ChannelType.FCM,
+          viewName: 'FCM (Push Notifications)',
+          // eslint-disable-next-line spellcheck/spell-checker
+          help: 'Send Firebase Cloud Messaging push notifications to your Pinpoint user segments',
+        },
+        [ChannelAPI.ChannelType.Email]: {
+          channelName: ChannelAPI.ChannelType.Email,
+          viewName: 'Email',
+          // eslint-disable-next-line spellcheck/spell-checker
+          help: 'Send Email messages to your Pinpoint user segments',
+        },
+        [ChannelAPI.ChannelType.SMS]: {
+          channelName: ChannelAPI.ChannelType.SMS,
+          viewName: 'SMS',
+          // eslint-disable-next-line spellcheck/spell-checker
+          help: 'Send SMS messages to your Pinpoint user segments',
+        },
+        [ChannelAPI.ChannelType.InAppMessaging]: {
+          channelName: ChannelAPI.ChannelType.InAppMessaging,
+          viewName: 'In-App Messaging',
+          // eslint-disable-next-line spellcheck/spell-checker
+          help: 'Allow application clients in Pinpoint user segment mobile devices to pull engagement messages from Pinpoint',
+        },
+      };
+
+      public static isValidChannel = (channelName: string| undefined): boolean => (channelName !== undefined
+                                      && channelName in ChannelAPI.ChannelType);
+
+      public static getChannelViewInfo = (channelName: string): IChannelViewInfo => (ChannelAPI.channelViewInfo[channelName]);
 
       /**
        * For a given notifications resource get local and deployed channel availability
