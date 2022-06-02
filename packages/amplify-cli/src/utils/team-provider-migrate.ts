@@ -19,6 +19,9 @@ const hostedUIProviderCredsField = 'hostedUIProviderCreds';
  * return false if TPI does contain secrets and they could not be removed
  */
 export const migrateTeamProviderInfo = async (context: Context): Promise<boolean> => {
+  if (!stateManager.teamProviderInfoExists()) {
+    return true;
+  }
   await ensureEnvParamManager();
   // check if command executed in project root and team provider has secrets
 
