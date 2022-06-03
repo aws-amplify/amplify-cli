@@ -282,7 +282,7 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
     }
     case IPinpointDeploymentStatus.APP_NOT_CREATED: {
       // Create the Pinpoint resource if not yet created
-      context.print.info('Notifications requires a Pinpoint analytics resource, creating.....');
+      context.print.warning('Adding notifications would add a Pinpoint resource from Analytics category if not already added');
       const resourceResult = await invokeAnalyticsAPICreateResource(context, AmplifySupportedService.PINPOINT);
       resourceName = resourceResult.resourceName;
       // create updated version of amplify-meta with notifications resource
@@ -290,7 +290,6 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
       // create updated version of backend-config with notifications resource configuration
       context.exeInfo.backendConfig = await NotificationsDB.addPartialNotificationsBackendConfig(resourceName,
         context.exeInfo.backendConfig);
-      pinpointAppStatus.status = IPinpointDeploymentStatus.APP_IS_CREATED_NOT_DEPLOYED;
       // The Pinpoint resource is locally created, but requires an amplify push for channels to be programmed
       // note:- This is temporary until deployment state-machine supports deferred resource push.
       viewShowAmplifyPushRequired(context);
