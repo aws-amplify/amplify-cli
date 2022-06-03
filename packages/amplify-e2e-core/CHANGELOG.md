@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [3.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@3.2.1...amplify-e2e-core@3.3.0) (2022-06-03)
+# [3.3.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@3.2.1...amplify-e2e-core@3.3.0-beta.0) (2022-06-03)
 
 
 ### Features
@@ -14,11 +14,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [3.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@3.2.0...amplify-e2e-core@3.2.1) (2022-05-27)
-
-
-
-## 8.3.1 (2022-05-27)
+## [3.2.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@3.2.0...amplify-e2e-core@3.2.1-beta.0) (2022-05-27)
 
 
 ### Reverts
