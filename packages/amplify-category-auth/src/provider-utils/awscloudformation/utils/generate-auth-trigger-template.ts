@@ -1,23 +1,27 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { JSONUtilities, pathManager } from 'amplify-cli-core';
+import { $TSAny, JSONUtilities, pathManager } from 'amplify-cli-core';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
-import { AuthTriggerConnection, CognitoStackOptions, AuthTriggerPermissions } from '../service-walkthrough-types/cognito-user-input-types';
 import { CustomResource } from '@aws-cdk/core';
-import { authTriggerAssetFilePath } from '../constants';
 import { v4 as uuid } from 'uuid';
+import _ from 'lodash';
+import { authTriggerAssetFilePath } from '../constants';
+import { AuthTriggerConnection, CognitoStackOptions, AuthTriggerPermissions } from '../service-walkthrough-types/cognito-user-input-types';
 
 type CustomResourceAuthStackProps = Readonly<{
   description: string;
   authTriggerConnections: AuthTriggerConnection[];
-  permissions: AuthTriggerPermissions[];
+  permissions?: AuthTriggerPermissions[];
 }>;
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 
+/**
+ * Class to generate Custom lambda to generate cognito triggers
+ */
 export class CustomResourceAuthStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props: CustomResourceAuthStackProps) {
     super(scope, id, props);
@@ -35,11 +39,13 @@ export class CustomResourceAuthStack extends cdk.Stack {
       type: 'String',
     });
 
-    new cdk.CfnCondition(this, 'ShouldNotCreateEnvResources', {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const cfnEnvCondition = new cdk.CfnCondition(this, 'ShouldNotCreateEnvResources', {
       expression: cdk.Fn.conditionEquals(env, 'NONE'),
     });
 
-    props.authTriggerConnections.forEach(config => {
+    props.authTriggerConnections.forEach(triggerConfig => {
+      const config = triggerConfig;
       const fnName = new cdk.CfnParameter(this, `function${config.lambdaFunctionName}Name`, {
         type: 'String',
       });
@@ -47,67 +53,78 @@ export class CustomResourceAuthStack extends cdk.Stack {
         type: 'String',
       });
       createPermissionToInvokeLambda(this, fnName, userpoolArn, config);
-      const permission = props.permissions.find(permission => config.triggerType === permission.trigger);
-      if (permission !== undefined) {
+      if (!_.isEmpty(props.permissions)) {
         const roleArn = new cdk.CfnParameter(this, `function${config.lambdaFunctionName}LambdaExecutionRole`, {
           type: 'String',
         });
-        createPermissionsForAuthTrigger(this, fnName, roleArn, permission, userpoolArn);
+        const lambdaPermission = props.permissions!.find(permission => config.triggerType === permission.trigger);
+        if (!_.isEmpty(lambdaPermission)) {
+          createPermissionsForAuthTrigger(this, fnName, roleArn, lambdaPermission!, userpoolArn);
+        }
+        config.lambdaFunctionArn = fnArn.valueAsString;
       }
-      config.lambdaFunctionArn = fnArn.valueAsString;
     });
 
     createCustomResource(this, props.authTriggerConnections, userpoolId);
   }
 
-  toCloudFormation() {
+  /**
+   * generates cfn from cdk object
+   */
+  toCloudFormation(): $TSAny {
     prepareApp(this);
     return this._toCloudFormation();
   }
 }
 
-export async function generateNestedAuthTriggerTemplate(category: string, resourceName: string, request: CognitoStackOptions) {
+/**
+ * entry point to generate custom lambda cfn template for cognito triggers
+ */
+// eslint-disable-next-line max-len
+export const generateNestedAuthTriggerTemplate = async (category: string, resourceName: string, request: CognitoStackOptions): Promise<void> => {
   const cfnFileName = 'auth-trigger-cloudformation-template.json';
   const targetDir = path.join(pathManager.getBackendDirPath(), category, resourceName, 'build');
   const authTriggerCfnFilePath = path.join(targetDir, cfnFileName);
   const { authTriggerConnections, permissions } = request;
-  let triggerPermissions: AuthTriggerPermissions[] = [];
-  if (authTriggerConnections) {
-    if (permissions) {
-      triggerPermissions = permissions.map(i => JSONUtilities.parse(i));
-    }
-    const cfnObject = await createCustomResourceforAuthTrigger(JSONUtilities.parse(authTriggerConnections), triggerPermissions);
-    // create policy for auth trigger as auth doesnt depend on function to break circular dependency
-
+  if (!_.isEmpty(authTriggerConnections)) {
+    // eslint-disable-next-line spellcheck/spell-checker
+    const cfnObject = await createCustomResourceforAuthTrigger(authTriggerConnections!, permissions);
     JSONUtilities.writeJson(authTriggerCfnFilePath, cfnObject);
   } else {
-    // delete the custom stack template if the triggers arent defined
+    // delete the custom stack template if the triggers aren't defined
     try {
       fs.unlinkSync(authTriggerCfnFilePath);
     } catch (err) {
       // if its not present do nothing
     }
   }
-}
+};
 
-export async function createCustomResourceforAuthTrigger(
+/**
+ * creates custom resource for cognito triggers
+ */
+// eslint-disable-next-line spellcheck/spell-checker
+export const createCustomResourceforAuthTrigger = async (
   authTriggerConnections: AuthTriggerConnection[],
-  permissions: AuthTriggerPermissions[],
-) {
+  permissions?: AuthTriggerPermissions[],
+): Promise<$TSAny> => {
   if (Array.isArray(authTriggerConnections) && authTriggerConnections.length) {
-    const stack = new CustomResourceAuthStack(undefined as any, 'Amplify', {
+    const stack = new CustomResourceAuthStack(undefined as $TSAny, 'Amplify', {
       description: 'Custom Resource stack for Auth Trigger created using Amplify CLI',
       authTriggerConnections,
       permissions,
     });
     const cfn = stack.toCloudFormation();
     return cfn;
-  } else {
-    throw new Error('Auth Trigger Connections must have value when trigger are selected');
   }
-}
+  throw new Error('Auth Trigger Connections must have value when trigger are selected');
+};
 
-function createCustomResource(stack: cdk.Stack, authTriggerConnections: AuthTriggerConnection[], userpoolId: cdk.CfnParameter) {
+const createCustomResource = (
+  stack: cdk.Stack,
+  authTriggerConnections: AuthTriggerConnection[],
+  userpoolId: cdk.CfnParameter,
+): CustomResource => {
   const triggerCode = fs.readFileSync(authTriggerAssetFilePath, 'utf-8');
   const authTriggerFn = new lambda.Function(stack, 'authTriggerFn', {
     runtime: lambda.Runtime.NODEJS_12_X,
@@ -115,7 +132,7 @@ function createCustomResource(stack: cdk.Stack, authTriggerConnections: AuthTrig
     handler: 'index.handler',
   });
   // reason to add iam::PassRole
-  //AccessDeniedException: User: arn:aws:sts::<ACCOUNT_ID>:assumed-role/amplify-emailcheck-dev-17-authTriggerFnServiceRole-1JAJZTK0HHAHP/amplify-emailcheck-dev-17374-authTriggerFn7FCFA449-SP7WeFmC9mD1 is not authorized to perform: iam:PassRole on resource: arn:aws:iam::ACCOUNT_ID:role/sns533b49c5173740-dev
+  // eslint-disable-next-line max-len
   if (authTriggerFn.role) {
     authTriggerFn.role.addToPrincipalPolicy(
       new iam.PolicyStatement({
@@ -128,36 +145,34 @@ function createCustomResource(stack: cdk.Stack, authTriggerConnections: AuthTrig
 
   // The custom resource that uses the provider to supply value
   // Passing in a nonce parameter to ensure that the custom resource is triggered on every deployment
-  new CustomResource(stack, 'CustomAuthTriggerResource', {
+  return new CustomResource(stack, 'CustomAuthTriggerResource', {
     serviceToken: authTriggerFn.functionArn,
     properties: { userpoolId: userpoolId.valueAsString, lambdaConfig: authTriggerConnections, nonce: uuid() },
     resourceType: 'Custom::CustomAuthTriggerResourceOutputs',
   });
-}
+};
 
-function createPermissionToInvokeLambda(
+const createPermissionToInvokeLambda = (
   stack: cdk.Stack,
   fnName: cdk.CfnParameter,
   userpoolArn: cdk.CfnParameter,
   config: AuthTriggerConnection,
-) {
-  new lambda.CfnPermission(stack, `UserPool${config.triggerType}LambdaInvokePermission`, {
-    action: 'lambda:InvokeFunction',
-    functionName: fnName.valueAsString,
-    principal: 'cognito-idp.amazonaws.com',
-    sourceArn: userpoolArn.valueAsString,
-  });
-}
+): lambda.CfnPermission => new lambda.CfnPermission(stack, `UserPool${config.triggerType}LambdaInvokePermission`, {
+  action: 'lambda:InvokeFunction',
+  functionName: fnName.valueAsString,
+  principal: 'cognito-idp.amazonaws.com',
+  sourceArn: userpoolArn.valueAsString,
+});
 
-function createPermissionsForAuthTrigger(
+const createPermissionsForAuthTrigger = (
   stack: cdk.Stack,
   fnName: cdk.CfnParameter,
   roleArn: cdk.CfnParameter,
   permissions: AuthTriggerPermissions,
   userpoolArn: cdk.CfnParameter,
-) {
+): iam.Policy => {
   const myRole = iam.Role.fromRoleArn(stack, 'LambdaExecutionRole', roleArn.valueAsString);
-  new iam.Policy(stack, `${fnName}${permissions.trigger}${permissions.policyName}`, {
+  return new iam.Policy(stack, `${fnName}${permissions.trigger}${permissions.policyName}`, {
     policyName: permissions.policyName,
     statements: [
       new iam.PolicyStatement({
@@ -168,4 +183,4 @@ function createPermissionsForAuthTrigger(
     ],
     roles: [myRole],
   });
-}
+};

@@ -60,7 +60,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     } else {
       await createUserPoolGroups(context, this._cognitoStackProps.resourceName!, this._cognitoStackProps.userPoolGroupList);
     }
-    // generate customm Auth Trigger for Cognito
+    // generate custom Auth Trigger for Cognito
     if (this._cognitoStackProps.breakCircularDependency) {
       await generateNestedAuthTriggerTemplate(this._category, this.resourceName, this._cognitoStackProps);
     }

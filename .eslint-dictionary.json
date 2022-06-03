@@ -139,6 +139,7 @@
   "uint",
   "unauth",
   "unlink",
+  "unlinksync",
   "updateamplify",
   "urls",
   "userpool",

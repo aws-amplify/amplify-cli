@@ -1740,8 +1740,9 @@ export function updateAuthMFAConfiguration(projectDir: string, settings: any = {
     .sendCarriageReturn()
     .runAsync();
 }
+
 export function updateAuthWithGroupTrigger(cwd: string, settings: any): Promise<void> {
-  spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
+  return spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
     .wait('What do you want to do?')
     .send(KEY_DOWN_ARROW)
     .send(KEY_DOWN_ARROW)

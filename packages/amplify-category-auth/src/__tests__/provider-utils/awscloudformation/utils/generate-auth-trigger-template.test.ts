@@ -2,9 +2,11 @@ import {
   AuthTriggerConnection,
   AuthTriggerPermissions,
   TriggerType,
-} from '../../../../provider-utils/awscloudformation/service-walkthrough-types';
+} from '../../../../provider-utils/awscloudformation/service-walkthrough-types/cognito-user-input-types';
+// eslint-disable-next-line spellcheck/spell-checker
 import { createCustomResourceforAuthTrigger } from '../../../../provider-utils/awscloudformation/utils/generate-auth-trigger-template';
 
+jest.mock('uuid');
 describe('generate Auth Trigger Template', () => {
   it('successfully generate auth Trigger Template', async () => {
     const mockAuthTriggerConnections: AuthTriggerConnection[] = [
@@ -27,6 +29,7 @@ describe('generate Auth Trigger Template', () => {
         },
       },
     ];
+    // eslint-disable-next-line spellcheck/spell-checker
     const cfn = await createCustomResourceforAuthTrigger(mockAuthTriggerConnections, mockAuthTriggerPermissions);
     expect(cfn).toMatchSnapshot();
   });
