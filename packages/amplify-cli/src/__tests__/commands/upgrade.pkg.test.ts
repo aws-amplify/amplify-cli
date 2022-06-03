@@ -135,11 +135,6 @@ describe('run upgrade using packaged CLI', () => {
         "700",
       ]
     `);
-
-    expect(execaMock).toBeCalledWith(
-      `${path.join('homedir', 'bin', 'amplify')}`,
-      ['--version'], expect.anything(),
-    );
   });
 
   it('moves old binary to temp location before downloading on windows', async () => {
