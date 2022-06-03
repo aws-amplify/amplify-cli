@@ -35,7 +35,6 @@ const viewNotificationsAppURL = async (context: $TSContext, appName: string): Pr
 
 const viewDisplayChannelAvailability = async (context: $TSContext, backend:INotificationsConfigStatus): Promise<void> => {
   const tableOptions = [['Channel', 'Status', 'Deployed Status']];
-
   for (const enabledChannel of backend.local.channels.enabledChannels) {
     const channelViewInfo = ChannelAPI.getChannelViewInfo(enabledChannel);
     tableOptions.push([channelViewInfo.viewName, viewStyles.enabled('Enabled'), getDeployedStyledStatus(enabledChannel, backend.deployed.channels)]);
