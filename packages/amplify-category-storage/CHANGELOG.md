@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.3.2...@aws-amplify/amplify-category-storage@3.4.0) (2022-06-03)
+
+
+### Features
+
+* allow 3rd-party plugins to CDK override ([#9601](https://github.com/aws-amplify/amplify-cli/issues/9601)) ([60498c5](https://github.com/aws-amplify/amplify-cli/commit/60498c5fb54dcf15e2fb5b87528540fdcffc0cd1))
+
+
+
+
+
 ## [3.3.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.3.1...@aws-amplify/amplify-category-storage@3.3.2) (2022-05-27)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-storage

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@2.1.0...amplify-prompts@2.2.0) (2022-06-03)
+
+
+### Features
+
+* prompt interaction time ([#10435](https://github.com/aws-amplify/amplify-cli/issues/10435)) ([a064ae2](https://github.com/aws-amplify/amplify-cli/commit/a064ae2e1a3a8d4e84a1fcb3ec9fc8b4491966d6))
+
+
+
+
+
 # [2.1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@2.0.1...amplify-prompts@2.1.0) (2022-05-10)
 
 
