@@ -26,6 +26,7 @@ type AuthStackMetadata = {
   permissions?: AuthTriggerPermissions[];
   authTriggerConnections?: AuthTriggerConnection[];
   userAutoVerifiedAttributeUpdateSettings?: string[];
+  authTriggerPermissions?: AuthTriggerPermissions[];
 };
 
 export type ServiceQuestionHeadlessResult = ServiceQuestionsBaseResult &
@@ -57,7 +58,10 @@ export interface ServiceQuestionsBaseResult {
   usernameCaseSensitive?: boolean;
   useEnabledMfas?: boolean;
   authTriggerConnections?: string;
-  permissions?: string[];
+  verificationBucketName?: string;
+  resourceNameTruncated?: string;
+  sharedId?: string;
+  permissions?: string;
 }
 
 export interface OAuthResult {
@@ -158,18 +162,8 @@ export type AuthTriggerConnection = {
   lambdaFunctionArn?: string;
 };
 
-export type AuthTriggerPermissions = {
-  policyName: string;
-  trigger: string;
-  effect: string;
-  actions: string[];
-  resource: {
-    paramType: string;
-    keys: string[];
-  };
-};
-
 export type AuthTriggerConfig = {
   triggers: $TSObject;
   authTriggerConnections: AuthTriggerConnection[];
+  authTriggerPermissions?: AuthTriggerPermissions[];
 };
