@@ -561,9 +561,21 @@
                   "Fn::Join": [
                     "",
                     [
+                      "arn:aws:mobiletargeting:",
                       {
-                        "Fn::Sub": "arn:aws:mobiletargeting:*:${AWS::AccountId}:apps/"
+                        "Fn::FindInMap": [
+                          "RegionMapping",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "pinpointRegion"
+                        ]
                       },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":apps/",
                       {
                         "Fn::GetAtt": [
                           "PinpointFunctionOutputs",

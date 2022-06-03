@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
-import { $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from 'amplify-cli-core';
 
 const featureName = 'analytics';
 /**
  * Analytics category command router. Invokes functionality for all CLI calls
  * @param context amplify cli context
  */
-export const analyticsRun = async (context:$TSContext): Promise<void> => {
+export const analyticsRun = async (context:$TSContext): Promise<$TSAny> => {
   if (/^win/.test(process.platform)) {
     try {
       const { run } = require(`./${featureName}/${context.parameters.first}`);
@@ -45,6 +45,7 @@ export const analyticsRun = async (context:$TSContext): Promise<void> => {
   context.amplify.showHelp(header, commands);
 
   context.print.info('');
+  return context;
 };
 
 module.exports = {
