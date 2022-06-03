@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.3.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.2.1...amplify-provider-awscloudformation@6.3.0-beta.0) (2022-06-03)
+
+
+### Features
+
+* allow 3rd-party plugins to CDK override ([#9601](https://github.com/aws-amplify/amplify-cli/issues/9601)) ([60498c5](https://github.com/aws-amplify/amplify-cli/commit/60498c5fb54dcf15e2fb5b87528540fdcffc0cd1))
+* diagnose ([#10383](https://github.com/aws-amplify/amplify-cli/issues/10383)) ([6a29bd9](https://github.com/aws-amplify/amplify-cli/commit/6a29bd99886172baf420a95a0d6a7987c9ebd6bd))
+
+
+
+
+
 ## [6.2.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.2.0...amplify-provider-awscloudformation@6.2.1-beta.0) (2022-05-27)
 
 
