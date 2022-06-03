@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [2.2.32](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@2.2.31...amplify-nodejs-function-runtime-provider@2.2.32) (2022-06-03)
+## [2.2.31-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@2.2.31...amplify-nodejs-function-runtime-provider@2.2.31-beta.1) (2022-06-03)
 
 **Note:** Version bump only for package amplify-nodejs-function-runtime-provider
 
@@ -11,7 +11,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [2.2.31](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@2.2.30...amplify-nodejs-function-runtime-provider@2.2.31) (2022-05-27)
+## [2.2.31-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@2.2.30...amplify-nodejs-function-runtime-provider@2.2.31-beta.0) (2022-05-27)
 
 **Note:** Version bump only for package amplify-nodejs-function-runtime-provider
 
