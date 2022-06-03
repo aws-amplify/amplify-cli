@@ -72,7 +72,8 @@ export class ChannelAPI {
                                       && channelName in ChannelAPI.ChannelType);
 
       public static getChannelViewInfo = (channelName: string): IChannelViewInfo => (ChannelAPI.channelViewInfo[channelName]);
-
+      public static getChannelViewName = (channelName: string): string => (ChannelAPI.channelViewInfo[channelName].viewName);
+      public static getChannelViewHelp = (channelName: string): string => (ChannelAPI.channelViewInfo[channelName].help);
       /**
        * For a given notifications resource get local and deployed channel availability
        * @param backendResourceConfig notifications resource info from the backend config
@@ -111,7 +112,8 @@ export class ChannelAPI {
           appInitialized = false;
           deployedBackendConfig = undefined;
         } // this will fail on iniEnv;
-        const deployedNotificationConfig = await NotificationsDB.getNotificationsAppConfig(deployedBackendConfig);
+
+        const deployedNotificationConfig = await NotificationsDB.getCurrentNotificationsAppConfig(deployedBackendConfig);
         const emptyChannels = { enabledChannels: [], disabledChannels: [] };
         return {
           local: {

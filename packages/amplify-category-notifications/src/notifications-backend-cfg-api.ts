@@ -78,6 +78,16 @@ export class NotificationsDB {
      return undefined;
    }
 
+   /**
+   * Get Deployed Notifications App from 'notifications' category  of backend-config.json
+   * @param currentBackendConfig optionally provide backendConfig object read from the file.
+   * @returns Notifications meta partially defined in INotificationsResourceMeta
+   */
+    public static getCurrentNotificationsAppConfig = async (currentBackendConfig?:$TSAny)
+      : Promise<INotificationsResourceBackendConfig|undefined> => (
+      // note:- passing falsy to getNotificationsAppConfig will fetch the BackendConfig. We only want the CurrentBackendConfig.
+      (currentBackendConfig) ? NotificationsDB.getNotificationsAppConfig(currentBackendConfig) : undefined)
+
   /**
   * Get all enabled channels in backend config
   * This is required for Pinpoint resources updated in Analytics CFN but not yet pushed
