@@ -1,4 +1,4 @@
-export const supportedDatasources = {
+export const supportedDataSources = {
   'Aurora Serverless': {
     inputs: [
       {

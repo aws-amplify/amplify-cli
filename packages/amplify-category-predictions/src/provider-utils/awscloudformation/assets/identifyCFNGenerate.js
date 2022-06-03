@@ -1,4 +1,9 @@
-function generateStorageCFNForLambda(storageCFNFile, functionName, prefixForAdminTrigger) {
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable no-param-reassign */
+/**
+ * Adds S3 config to storageCFNFile
+ */
+const generateStorageCFNForLambda = (storageCFNFile, functionName, prefixForAdminTrigger) => {
   // Add reference for the new triggerFunction
   storageCFNFile.Parameters[`function${functionName}Arn`] = {
     Type: 'String',
@@ -143,9 +148,12 @@ function generateStorageCFNForLambda(storageCFNFile, functionName, prefixForAdmi
   };
 
   return storageCFNFile;
-}
+};
 
-function generateStorageCFNForAdditionalLambda(storageCFNFile, functionName, prefixForAdminTrigger) {
+/**
+ * Adds S3 configuration for lambda access
+ */
+const generateStorageCFNForAdditionalLambda = (storageCFNFile, functionName, prefixForAdminTrigger) => {
   storageCFNFile.Parameters[`function${functionName}Arn`] = {
     Type: 'String',
     Default: `function${functionName}Arn`,
@@ -339,9 +347,12 @@ function generateStorageCFNForAdditionalLambda(storageCFNFile, functionName, pre
   });
 
   return storageCFNFile;
-}
+};
 
-function generateLambdaAccessForRekognition(identifyCFNFile, functionName, s3ResourceName) {
+/**
+ * Adds resources to identifyCFNFile for lambda access to rekognition
+ */
+const generateLambdaAccessForRekognition = (identifyCFNFile, functionName, s3ResourceName) => {
   identifyCFNFile.Parameters[`function${functionName}Arn`] = {
     Type: 'String',
     Default: `function${functionName}Arn`,
@@ -527,7 +538,7 @@ function generateLambdaAccessForRekognition(identifyCFNFile, functionName, s3Res
         },
       },
       Handler: 'index.handler',
-      Runtime: 'nodejs12.x',
+      Runtime: 'nodejs14.x',
       Timeout: 300,
       Role: {
         'Fn::GetAtt': ['CollectionsLambdaExecutionRole', 'Arn'],
@@ -572,6 +583,41 @@ function generateLambdaAccessForRekognition(identifyCFNFile, functionName, s3Res
     },
   };
 
+  identifyCFNFile.Resources.LambdaCloudWatchPolicy = {
+    Type: 'AWS::IAM::Policy',
+    Properties: {
+      PolicyName: 'CollectionsLambdaCloudWatchPolicy',
+      Roles: [
+        {
+          Ref: 'CollectionsLambdaExecutionRole',
+        },
+      ],
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Action: [
+              'logs:CreateLogGroup',
+              'logs:CreateLogStream',
+              'logs:PutLogEvents',
+            ],
+            Resource: {
+              'Fn::Sub': [
+                'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${lambdaName}:log-stream:*',
+                {
+                  lambdaName: {
+                    Ref: 'CollectionCreationFunction',
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  };
+
   identifyCFNFile.Resources.CollectionsLambdaExecutionRole = {
     Type: 'AWS::IAM::Role',
     Properties: {
@@ -610,21 +656,6 @@ function generateLambdaAccessForRekognition(identifyCFNFile, functionName, s3Res
         ],
       },
       Policies: [
-        {
-          PolicyName: {
-            Ref: 'resourceName',
-          },
-          PolicyDocument: {
-            Version: '2012-10-17',
-            Statement: [
-              {
-                Effect: 'Allow',
-                Action: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
-                Resource: 'arn:aws:logs:*:*:*',
-              },
-            ],
-          },
-        },
         {
           PolicyName: {
             Ref: 'identifyPolicyName',
@@ -698,14 +729,18 @@ function generateLambdaAccessForRekognition(identifyCFNFile, functionName, s3Res
   };
 
   return identifyCFNFile;
-}
+};
 
-function generateStorageAccessForRekognition(identifyCFNFile, s3ResourceName, prefixForAdminTrigger) {
+/**
+ * Attaches resources to rekognition s3 access to identifyCFNFile
+ */
+const generateStorageAccessForRekognition = (identifyCFNFile, s3ResourceName, prefixForAdminTrigger) => {
   identifyCFNFile.Parameters[`storage${s3ResourceName}BucketName`] = {
     Type: 'String',
     Default: `storage${s3ResourceName}BucketName`,
   };
 
+  // eslint-disable-next-line spellcheck/spell-checker
   identifyCFNFile.Resources.S3AuthPredicitionsAdminProtectedPolicy = {
     Condition: 'CreateAdminAuthProtected',
     Type: 'AWS::IAM::Policy',
@@ -799,6 +834,7 @@ function generateStorageAccessForRekognition(identifyCFNFile, s3ResourceName, pr
       },
     },
   };
+  // eslint-disable-next-line spellcheck/spell-checker
   identifyCFNFile.Resources.S3GuestPredicitionsAdminPublicPolicy = {
     Condition: 'CreateAdminGuestProtected',
     Type: 'AWS::IAM::Policy',
@@ -837,13 +873,14 @@ function generateStorageAccessForRekognition(identifyCFNFile, s3ResourceName, pr
   };
 
   return identifyCFNFile;
-}
+};
 
-function addObjectKeys(original, additional) {
-  return { ...original, ...additional };
-}
+const addObjectKeys = (original, additional) => ({ ...original, ...additional });
 
-function addTextractPolicies(identifyCFNFile) {
+/**
+ * Sets rekognition + textract policies
+ */
+const addTextractPolicies = identifyCFNFile => {
   identifyCFNFile.Resources.IdentifyTextPolicy.Properties.PolicyDocument.Statement[0].Action = [
     'rekognition:DetectText',
     'rekognition:DetectLabel',
@@ -853,15 +890,18 @@ function addTextractPolicies(identifyCFNFile) {
     'textract:StartDocumentTextDetection',
   ];
   return JSON.stringify(identifyCFNFile, null, 4);
-}
+};
 
-function removeTextractPolicies(identifyCFNFile) {
+/**
+ * Sets only rekognition policies
+ */
+const removeTextractPolicies = identifyCFNFile => {
   identifyCFNFile.Resources.IdentifyTextPolicy.Properties.PolicyDocument.Statement[0].Action = [
     'rekognition:DetectText',
     'rekognition:DetectLabel',
   ];
   return JSON.stringify(identifyCFNFile, null, 4);
-}
+};
 
 module.exports = {
   generateStorageAccessForRekognition,

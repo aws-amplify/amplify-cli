@@ -1,10 +1,15 @@
-import { $TSContext, exitOnNextTick, getPackageManager, NonEmptyDirectoryError, pathManager } from 'amplify-cli-core';
+import {
+  $TSContext, exitOnNextTick, getPackageManager, NonEmptyDirectoryError, pathManager,
+} from 'amplify-cli-core';
 import { execSync } from 'child_process';
 import * as fs from 'fs-extra';
 import * as url from 'url';
 import { generateLocalEnvInfoFile } from './s9-onSuccess';
 
-export async function preInitSetup(context: $TSContext) {
+/**
+ * Executes before init
+ */
+export const preInitSetup = async (context: $TSContext): Promise<$TSContext> => {
   if (context.parameters.options.app) {
     // Setting up a sample app
     context.print.warning('Note: Amplify does not have knowledge of the url provided');
@@ -17,15 +22,14 @@ export async function preInitSetup(context: $TSContext) {
     await setLocalEnvDefaults(context);
   }
   return context;
-}
+};
 
 /**
  * Checks whether a url is a valid remote github repository
  *
- * @param repoUrl the url to validated
  * @throws error if url is not a valid remote github url
  */
-async function validateGithubRepo(context: $TSContext, repoUrl: string) {
+const validateGithubRepo = async (context: $TSContext, repoUrl: string): Promise<void> => {
   try {
     url.parse(repoUrl);
 
@@ -35,14 +39,12 @@ async function validateGithubRepo(context: $TSContext, repoUrl: string) {
     await context.usageData.emitError(e);
     exitOnNextTick(1);
   }
-}
+};
 
 /**
  * Clones repo from url to current directory (must be empty)
- *
- * @param repoUrl the url to be cloned
  */
-async function cloneRepo(context: $TSContext, repoUrl: string) {
+const cloneRepo = async (context: $TSContext, repoUrl: string): Promise<void> => {
   const files = fs.readdirSync(process.cwd());
 
   if (files.length > 0) {
@@ -58,29 +60,26 @@ async function cloneRepo(context: $TSContext, repoUrl: string) {
     await context.usageData.emitError(e);
     exitOnNextTick(1);
   }
-}
+};
 
 /**
  * Install package using the correct package manager if package handling file exists
- *
- * @param packageManager either npm or yarn
  */
-async function installPackage() {
+const installPackage = (): void => {
   const packageManager = getPackageManager();
 
   if (packageManager !== null) {
     execSync(`${packageManager.executable} install`, { stdio: 'inherit' });
   }
-}
+};
 
 /**
  * Set the default environment and editor for the local env
- *
- * @param context
  */
-async function setLocalEnvDefaults(context: $TSContext) {
+const setLocalEnvDefaults = async (context: $TSContext): Promise<void> => {
   const projectPath = process.cwd();
   const defaultEditor = 'vscode';
+  // eslint-disable-next-line spellcheck/spell-checker
   const envName = 'sampledev';
   context.print.warning(`Setting default editor to ${defaultEditor}`);
   context.print.warning(`Setting environment to ${envName}`);
@@ -95,17 +94,17 @@ async function setLocalEnvDefaults(context: $TSContext) {
   context.exeInfo.inputParams.amplify.envName = envName;
 
   generateLocalEnvInfoFile(context);
-}
+};
 
 /**
  * After cloning a project, remove the environment specific, perhaps accidentally checked in Amplify state files
  * to make sure further commands will run correctly, like 'amplify delete'
  */
-function cleanAmplifyArtifacts() {
+const cleanAmplifyArtifacts = (): void => {
   const projectPath = process.cwd();
 
   fs.removeSync(pathManager.getAmplifyMetaFilePath(projectPath));
   fs.removeSync(pathManager.getTeamProviderInfoFilePath(projectPath));
   fs.removeSync(pathManager.getLocalAWSInfoFilePath(projectPath));
   fs.removeSync(pathManager.getLocalEnvFilePath(projectPath));
-}
+};

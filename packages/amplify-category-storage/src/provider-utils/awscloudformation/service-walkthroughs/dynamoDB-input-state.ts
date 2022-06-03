@@ -1,5 +1,6 @@
 import {
   $TSAny,
+  $TSContext,
   $TSObject,
   AmplifyCategories,
   AmplifySupportedService,
@@ -21,7 +22,7 @@ export class DynamoDBInputState {
   _service: string; //AWS service for the resource
   buildFilePath: string;
 
-  constructor(resourceName: string) {
+  constructor(private readonly context: $TSContext, resourceName: string) {
     this._category = AmplifyCategories.STORAGE;
     this._service = AmplifySupportedService.DYNAMODB;
     this._resourceName = resourceName;
@@ -53,7 +54,7 @@ export class DynamoDBInputState {
       cliInputs = this.getCliInputPayload();
     }
 
-    const schemaValidator = new CLIInputSchemaValidator(this._service, this._category, 'DynamoDBCLIInputs');
+    const schemaValidator = new CLIInputSchemaValidator(this.context, this._service, this._category, 'DynamoDBCLIInputs');
     schemaValidator.validateInput(JSON.stringify(cliInputs));
   }
 

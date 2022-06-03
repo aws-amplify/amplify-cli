@@ -11,31 +11,41 @@ import {
   AmplifyStackTemplate,
   AmplifyCategoryTransform,
   $TSAny,
+  $TSObject,
 } from 'amplify-cli-core';
-import { AuthStackSynthesizer } from './stack-synthesizer';
 import * as cdk from '@aws-cdk/core';
-import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
 import * as path from 'path';
-import { AmplifyUserPoolGroupStack, AmplifyUserPoolGroupStackOutputs } from './auth-user-pool-group-stack-builder';
 import { printer, formatter } from 'amplify-prompts';
 import _ from 'lodash';
-import { CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
 import * as fs from 'fs-extra';
 import * as vm from 'vm2';
 import os from 'os';
+import { CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
+import { AmplifyUserPoolGroupStack, AmplifyUserPoolGroupStackOutputs } from './auth-user-pool-group-stack-builder';
+import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
+import { AuthStackSynthesizer } from './stack-synthesizer';
 
+/**
+ * UserPool groups metadata
+ */
 export type UserPoolGroupMetadata = {
   groupName: string;
   precedence: number;
-  customPolicies?: any;
+  customPolicies?: $TSAny;
 };
 
+/**
+ * UserPoolGroupStackOptions
+ */
 export type AmplifyUserPoolGroupStackOptions = {
   groups: UserPoolGroupMetadata[];
   identityPoolName?: string;
   cognitoResourceName: string;
 };
 
+/**
+ *  Class Amplify UserPoolGroups
+ */
 export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
   private _app: cdk.App;
   private _userPoolGroupTemplateObj: AmplifyUserPoolGroupStack; // Props to modify Root stack data
@@ -59,6 +69,9 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
     this._service = AmplifySupportedService.COGNITOUSERPOOLGROUPS;
   }
 
+  /**
+   * Entry point to UserPoolGroup cfn generation
+   */
   public async transform(context: $TSContext): Promise<Template> {
     // parse Input data
     const userPoolGroupStackOptions = await this.generateStackProps(context);
@@ -78,11 +91,9 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
   }
 
   /**
-   * Generates CFN REsources for Auth
-   * @returns CFN Template
+   * Generates CFN Resources for Auth
    */
-
-  private generateStackResources = async (props: AmplifyUserPoolGroupStackOptions) => {
+  private generateStackResources = async (props: AmplifyUserPoolGroupStackOptions): Promise<void> => {
     this._userPoolGroupTemplateObj = new AmplifyUserPoolGroupStack(this._app, 'AmplifyUserPoolGroupStack', {
       synthesizer: this._synthesizer,
     });
@@ -158,7 +169,7 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
     // generate resources
     await this._userPoolGroupTemplateObj.generateUserPoolGroupResources(props);
 
-    // generate CFN outputs again to generate same Output Names as cdk doesnt allow resource with same logical names
+    // generate CFN outputs again to generate same Output Names as cdk doesn't allow resource with same logical names
     if (props.identityPoolName) {
       props.groups.forEach(group => {
         this.__userPoolGroupTemplateObjOutputs.addCfnOutput(
@@ -198,16 +209,16 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
       }
     }
   };
+
   /**
-   *
-   * @returns Object required to generate Stack using cdk
-   */
+   * Object required to generate Stack using cdk
+  */
   private generateStackProps = async (context: $TSContext): Promise<AmplifyUserPoolGroupStackOptions> => {
     const resourceDirPath = path.join(pathManager.getBackendDirPath(), 'auth', 'userPoolGroups', 'user-pool-group-precedence.json');
     const groups = JSONUtilities.readJson(resourceDirPath, { throwIfNotExist: true });
-    const cliState = new AuthInputState(this._authResourceName);
+    const cliState = new AuthInputState(context, this._authResourceName);
     this._cliInputs = cliState.getCLIInputPayload();
-    const identityPoolName = this._cliInputs.cognitoConfig.identityPoolName;
+    const { identityPoolName } = this._cliInputs.cognitoConfig;
     return {
       groups: groups as UserPoolGroupMetadata[],
       identityPoolName,
@@ -216,8 +227,7 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
   };
 
   /**
-   *
-   * @returns return CFN templates sunthesized by app
+   * return CFN templates synthesized by app
    */
   public synthesizeTemplates = async (): Promise<Template> => {
     this._app.synth();
@@ -229,23 +239,23 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
     return cfnUserPoolGroupStack;
   };
 
-  public saveBuildFiles = async (context: $TSContext, template: Template): Promise<void> => {
+  public saveBuildFiles = async (__context: $TSContext, template: Template): Promise<void> => {
     const cognitoStackFileName = `${this._resourceName}-cloudformation-template.json`;
-    const cognitostackFilePath = path.join(
+    const cognitoStackFilePath = path.join(
       pathManager.getBackendDirPath(),
       this._category,
       this._resourceName,
       'build',
       cognitoStackFileName,
     );
-    await writeCFNTemplate(template, cognitostackFilePath, {
+    await writeCFNTemplate(template, cognitoStackFilePath, {
       templateFormat: CFNTemplateFormat.JSON,
     });
     // write parameters.json file
-    this.writeBuildFiles(context);
+    this.writeBuildFiles();
   };
 
-  private writeBuildFiles = async (context: $TSContext) => {
+  private writeBuildFiles = (): void => {
     const parametersJSONFilePath = path.join(
       pathManager.getBackendDirPath(),
       this._category,
@@ -263,11 +273,11 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
       },
     };
 
-    //save parameters
-    let parameters = {
+    // save parameters
+    const parameters = {
       ...roles,
     };
-    //save parameters
+    // save parameters
     JSONUtilities.writeJson(parametersJSONFilePath, parameters);
   };
 }

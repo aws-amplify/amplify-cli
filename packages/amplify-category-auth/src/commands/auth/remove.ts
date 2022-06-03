@@ -23,7 +23,7 @@ export const run = async (context: $TSContext) => {
     const resource = await amplify.removeResource(context, category, resourceName);
     if (resource?.service === AmplifySupportedService.COGNITOUSERPOOLGROUPS) {
       // update cli input here
-      const cliState = new AuthInputState(authResourceName[0]);
+      const cliState = new AuthInputState(context, authResourceName[0]);
       const cliInputPayload = cliState.getCLIInputPayload();
       cliInputPayload.cognitoConfig.userPoolGroupList = [];
       await cliState.saveCLIInputPayload(cliInputPayload);

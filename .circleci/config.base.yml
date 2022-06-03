@@ -146,7 +146,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
-            loginToLocalRegistry
             git config user.email not@used.com
             git config user.name "Doesnt Matter"
             setNpmTag
@@ -443,6 +442,7 @@ jobs:
             git clone $AUTH_CLONE_URL
             cd aws-amplify-cypress-auth
             yarn --cache-folder ~/.cache/yarn
+            yarn add cypress@6.8.0 --save
       - run: cd .circleci/ && chmod +x auth.sh
       - run: cd .circleci/ && chmod +x amplify_init.sh
       - run: cd .circleci/ && chmod +x amplify_init.exp
@@ -463,7 +463,6 @@ jobs:
           name: Run cypress tests for auth
           command: |
             cd ../aws-amplify-cypress-auth
-            yarn add cypress@6.8.0 --save
             cp ../repo/cypress.json .
             cp -R ../repo/cypress .
             yarn cypress run --spec $(find . -type f -name 'auth_spec*')
@@ -720,6 +719,7 @@ workflows:
                 - beta
                 - release
                 - /tagged-release\/.*/
+                - /tagged-release-without-e2e-tests\/.*/
                 - /run-e2e\/.*/
           requires:
             - build
@@ -870,6 +870,7 @@ workflows:
             - amplify_migration_tests_non_multi_env_layers
             - amplify_migration_tests_multi_env_layers
             - github_prerelease_install_sanity_check
+            - build_pkg_binaries
           filters:
             branches:
               only:
@@ -942,9 +943,6 @@ commands:
           condition:
             equal: [*windows-e2e-executor, << parameters.os >>]
           steps:
-            - run: nvm install 12.22.5
-            - run: nvm use 12.22.5
-            - run: npm install -g yarn
             - run: yarn --cache-folder ~/.cache/yarn
             - run:
                 shell: powershell.exe

@@ -1,7 +1,10 @@
+import { $TSAny, stateManager } from 'amplify-cli-core';
 import { getEnvInfo } from './get-env-info';
-import { stateManager } from 'amplify-cli-core';
 
-export function getProjectDetails() {
+/**
+ * Gets metadata about the project
+ */
+export const getProjectDetails = (): { projectConfig: $TSAny; amplifyMeta: $TSAny; localEnvInfo: $TSAny; teamProviderInfo: $TSAny; } => {
   const projectConfig = stateManager.getProjectConfig();
 
   let amplifyMeta = {};
@@ -24,4 +27,4 @@ export function getProjectDetails() {
     localEnvInfo,
     teamProviderInfo,
   };
-}
+};

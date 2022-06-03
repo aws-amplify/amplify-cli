@@ -1,5 +1,7 @@
 import { mergeTypeDefs } from '@graphql-tools/merge';
-import { $TSAny, $TSContext, exitOnNextTick, FeatureFlags, pathManager, ResourceDoesNotExistError, stateManager } from 'amplify-cli-core';
+import {
+  $TSAny, $TSContext, exitOnNextTick, FeatureFlags, pathManager, ResourceDoesNotExistError, stateManager,
+} from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import * as graphql from 'graphql';
@@ -11,7 +13,7 @@ import {
 import inquirer from 'inquirer';
 import _ from 'lodash';
 import * as path from 'path';
-import { supportedDatasources } from '../../provider-utils/supported-datasources';
+import { supportedDataSources } from '../../provider-utils/supported-datasources';
 
 const subcommand = 'add-graphql-datasource';
 const categories = 'categories';
@@ -20,11 +22,14 @@ const providerName = 'awscloudformation';
 
 export const name = subcommand;
 
-export const run = async (context: $TSContext) => {
+/**
+ * Entry point for adding RDS data source
+ */
+export const run = async (context: $TSContext): Promise<void> => {
   try {
     const AWS = await getAwsClient(context, 'list');
 
-    const result: $TSAny = await datasourceSelectionPrompt(context, supportedDatasources);
+    const result: $TSAny = await datasourceSelectionPrompt(context, supportedDataSources);
 
     const providerController = await import(path.join('..', '..', 'provider-utils', result.providerName, 'index'));
 
@@ -42,10 +47,10 @@ export const run = async (context: $TSContext) => {
      * Write the new env specific datasource information into
      * the team-provider-info file
      */
-    const currEnv = context.amplify.getEnvInfo().envName;
+    const currentEnv = context.amplify.getEnvInfo().envName;
     const teamProviderInfo = stateManager.getTeamProviderInfo();
 
-    _.set(teamProviderInfo, [currEnv, categories, category, resourceName], {
+    _.set(teamProviderInfo, [currentEnv, categories, category, resourceName], {
       rdsRegion: answers.region,
       rdsClusterIdentifier: answers.dbClusterArn,
       rdsSecretStoreArn: answers.secretStoreArn,
@@ -56,7 +61,7 @@ export const run = async (context: $TSContext) => {
 
     const backendConfig = stateManager.getBackendConfig();
 
-    backendConfig[category][resourceName]['rdsInit'] = true;
+    backendConfig[category][resourceName].rdsInit = true;
 
     stateManager.setBackendConfig(undefined, backendConfig);
 
@@ -73,8 +78,9 @@ export const run = async (context: $TSContext) => {
 
     /**
      * Instantiate a new Relational Schema Transformer and perform
-     * the db instrospection to get the GraphQL Schema and Template Context
+     * the db introspection to get the GraphQL Schema and Template Context
      */
+    // eslint-disable-next-line spellcheck/spell-checker
     const improvePluralizationFlag = FeatureFlags.getBoolean('graphqltransformer.improvePluralization');
     const relationalSchemaTransformer = new RelationalDBSchemaTransformer(dbReader, answers.databaseName, improvePluralizationFlag);
     const graphqlSchemaContext = await relationalSchemaTransformer.introspectDatabaseSchema();
@@ -99,10 +105,10 @@ export const run = async (context: $TSContext) => {
 
     if (fs.existsSync(graphqlSchemaFilePath)) {
       const typesToBeMerged = [rdsGraphQLSchemaDoc];
-      const currGraphQLSchemaDoc = readSchema(graphqlSchemaFilePath);
+      const currentGraphQLSchemaDoc = readSchema(graphqlSchemaFilePath);
 
-      if (currGraphQLSchemaDoc) {
-        typesToBeMerged.unshift(currGraphQLSchemaDoc);
+      if (currentGraphQLSchemaDoc) {
+        typesToBeMerged.unshift(currentGraphQLSchemaDoc);
       } else {
         printer.warn(`Graphql Schema file "${graphqlSchemaFilePath}" is empty.`);
         printer.blankLine();
@@ -159,24 +165,24 @@ export const run = async (context: $TSContext) => {
   }
 };
 
-async function datasourceSelectionPrompt(context: $TSContext, supportedDatasources) {
+// eslint-disable-next-line @typescript-eslint/no-shadow
+const datasourceSelectionPrompt = async (context: $TSContext, supportedDataSources): Promise<unknown> => {
   const options = [];
-  Object.keys(supportedDatasources).forEach(datasource => {
-    const optionName =
-      supportedDatasources[datasource].alias ||
-      `${supportedDatasources[datasource].providerName}:${supportedDatasources[datasource].service}`;
+  Object.keys(supportedDataSources).forEach(datasource => {
+    const optionName = supportedDataSources[datasource].alias
+      || `${supportedDataSources[datasource].providerName}:${supportedDataSources[datasource].service}`;
     options.push({
       name: optionName,
       value: {
-        provider: supportedDatasources[datasource].provider,
+        provider: supportedDataSources[datasource].provider,
         datasource,
-        providerName: supportedDatasources[datasource].provider,
+        providerName: supportedDataSources[datasource].provider,
       },
     });
   });
 
   if (options.length === 0) {
-    const errMessage = `No datasources defined by configured providers for category: ${category}`;
+    const errMessage = `No data sources defined by configured providers for category: ${category}`;
 
     printer.error(errMessage);
 
@@ -197,33 +203,37 @@ async function datasourceSelectionPrompt(context: $TSContext, supportedDatasourc
   const question = [
     {
       name: 'datasource',
-      message: 'Please select from one of the below mentioned datasources',
+      message: 'Please select from one of the below mentioned data sources',
       type: 'list',
       choices: options,
     },
   ];
 
   return inquirer.prompt(question).then(answer => answer.datasource);
-}
+};
 
-async function getAwsClient(context: $TSContext, action: string) {
+const getAwsClient = async (context: $TSContext, action: string): Promise<$TSAny> => {
   const providerPlugins = context.amplify.getProviderPlugins(context);
+  // eslint-disable-next-line
   const provider = require(providerPlugins[providerName]);
 
-  return await provider.getConfiguredAWSClient(context, 'aurora-serverless', action);
-}
+  return provider.getConfiguredAWSClient(context, 'aurora-serverless', action);
+};
 
-export function readSchema(graphqlSchemaFilePath: string) {
+/**
+ * Read the GraphQL schema
+ */
+export const readSchema = (graphqlSchemaFilePath: string): graphql.DocumentNode => {
   const graphqlSchemaRaw = fs.readFileSync(graphqlSchemaFilePath).toString();
 
   if (graphqlSchemaRaw.trim().length === 0) {
     return null;
   }
 
-  let currGraphQLSchemaDoc: graphql.DocumentNode;
+  let currentGraphQLSchemaDoc: graphql.DocumentNode;
 
   try {
-    currGraphQLSchemaDoc = graphql.parse(graphqlSchemaRaw);
+    currentGraphQLSchemaDoc = graphql.parse(graphqlSchemaRaw);
   } catch (err) {
     const relativePathToInput = path.relative(process.cwd(), graphqlSchemaRaw);
 
@@ -234,5 +244,5 @@ export function readSchema(graphqlSchemaFilePath: string) {
     throw error;
   }
 
-  return currGraphQLSchemaDoc;
-}
+  return currentGraphQLSchemaDoc;
+};

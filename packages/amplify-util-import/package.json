@@ -1,12 +1,12 @@
 {
   "name": "amplify-util-import",
-  "version": "2.2.26",
+  "version": "2.2.31",
   "description": "Resource import support package",
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "clean": "rimraf lib tsconfig.tsbuildinfo"
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules"
   },
   "keywords": [
     "aws",
@@ -16,8 +16,8 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "amplify-cli-core": "2.5.2",
-    "aws-sdk": "^2.1084.0"
+    "amplify-cli-core": "2.8.1",
+    "aws-sdk": "^2.1113.0"
   },
   "devDependencies": {
     "@types/node": "^12.12.6"

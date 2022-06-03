@@ -14,8 +14,6 @@ import {
   getProjectMeta,
   getUserPool,
   getUserPoolClients,
-  initAndroidProjectWithProfile,
-  initJSProjectWithProfile,
   updateAuthRemoveRecaptchaTrigger,
   updateAuthSignInSignOutUrl,
   updateAuthWithoutCustomTrigger,
@@ -26,7 +24,7 @@ import { UpdateAuthRequest } from 'amplify-headless-interface';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as _ from 'lodash';
-import { versionCheck, allowedVersionsToMigrateFrom } from '../../../migration-helpers';
+import { versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfile, initAndroidProjectWithProfile } from '../../../migration-helpers';
 
 const defaultSettings = {
   name: 'authMigration',

@@ -54,6 +54,7 @@ packages/amplify-prompts/lib
 packages/amplify-util-import/lib
 packages/amplify-util-headless-input/lib
 packages/amplify-util-uibuilder/lib
+packages/amplify-cli-shared-interfaces/lib
 packages/*/node_modules
 packages/*/package-lock.json
 **/.env
@@ -82,4 +83,5 @@ packages/amplify-container-hosting/lib/
 packages/amplify-category-predictions/lib
 packages/amplify-category-analytics/lib
 packages/amplify-category-interactions/lib/
+packages/amplify-environment-parameters/lib/
 !packages/amplify-graphql-model-transformer/src/__tests__/overrides/build/override.js

@@ -91,7 +91,7 @@ describe('emulator operations', () => {
   });
 
   it('should start on specific port', async () => {
-    const port = await require('portfinder').getPortPromise();
+    const port = await require('get-port')();
     const emu = await ddbSimulator.launch({ port });
     emulators.push(emu);
     expect(emu.port).toBe(port);

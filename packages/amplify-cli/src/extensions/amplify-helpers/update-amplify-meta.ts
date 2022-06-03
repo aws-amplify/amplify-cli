@@ -166,7 +166,7 @@ export function updateamplifyMetaAfterResourceUpdate(category: string, resourceN
 
   const updatedMeta = updateAwsMetaFile(amplifyMetaFilePath, category, resourceName, attribute, value, currentTimestamp);
 
-  if (['dependsOn', 'service'].includes(attribute)) {
+  if (['dependsOn', 'service', 'frontendAuthConfig'].includes(attribute)) {
     updateBackendConfigAfterResourceUpdate(category, resourceName, attribute, value);
   }
 

@@ -1,3 +1,17 @@
+/* eslint-disable no-case-declarations */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable max-len */
+/* eslint-disable func-style */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-param-reassign */
+/* eslint-disable max-lines-per-function */
+/* eslint-disable global-require */
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
+/* eslint-disable consistent-return */
+/* eslint-disable import/no-dynamic-require */
+/* eslint-disable spellcheck/spell-checker */
+/* eslint-disable @typescript-eslint/no-var-requires */
+
 const category = 'auth';
 
 const _ = require('lodash');
@@ -67,14 +81,20 @@ async function add(context, skipNextSteps = false) {
 
 async function transformCategoryStack(context, resource) {
   if (resource.service === AmplifySupportedService.COGNITO) {
-    if (canResourceBeTransformed(resource.resourceName)) {
+    if (canResourceBeTransformed(context, resource.resourceName)) {
       await generateAuthStackTemplate(context, resource.resourceName);
+    }
+  }
+  if (resource.service === AmplifySupportedService.COGNITOUSERPOOLGROUPS) {
+    const authResourceName = await getAuthResourceName(context);
+    if (canResourceBeTransformed(context, authResourceName)) {
+      await generateAuthStackTemplate(context, authResourceName);
     }
   }
 }
 
-function canResourceBeTransformed(resourceName) {
-  const resourceInputState = new AuthInputState(resourceName);
+function canResourceBeTransformed(context, resourceName) {
+  const resourceInputState = new AuthInputState(context, resourceName);
   return resourceInputState.cliInputFileExists();
 }
 
@@ -169,7 +189,7 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
       version: '1',
       cognitoConfig: cliInputs,
     };
-    const cliState = new AuthInputState(cognitoCLIInputs.cognitoConfig.resourceName);
+    const cliState = new AuthInputState(context, cognitoCLIInputs.cognitoConfig.resourceName);
     // saving cli-inputs except secrets
     await cliState.saveCLIInputPayload(cognitoCLIInputs);
     await generateAuthStackTemplate(context, currentAuthName);
@@ -352,7 +372,7 @@ async function initEnv(context) {
   await sequential(authTasks);
 }
 
-async function console(context) {
+async function authConsole(context) {
   const { amplify } = context;
   const amplifyMeta = amplify.getProjectMeta();
 
@@ -425,6 +445,7 @@ async function executeAmplifyCommand(context) {
  * @param {string} headlessPayload The serialized payload from the platform
  */
 const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
+  context.usageData.pushHeadlessFlow(headlessPayload, context.input);
   switch (context.input.command) {
     case 'add':
       if (projectHasAuth(context)) {
@@ -432,7 +453,7 @@ const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
       }
       await validateAddAuthRequest(headlessPayload)
         .then(getAddAuthRequestAdaptor(context.amplify.getProjectConfig().frontend))
-        .then(getAddAuthHandler(context));
+        .then(getAddAuthHandler(context))
       return;
     case 'update':
       // migration check for headless update
@@ -515,7 +536,7 @@ module.exports = {
   add,
   migrate,
   initEnv,
-  console,
+  console : authConsole,
   getPermissionPolicies,
   executeAmplifyCommand,
   executeAmplifyHeadlessCommand,

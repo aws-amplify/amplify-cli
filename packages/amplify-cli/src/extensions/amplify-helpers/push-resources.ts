@@ -12,7 +12,6 @@ import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { showResourceTable } from './resource-status';
 import { isValidGraphQLAuthError, handleValidGraphQLAuthError } from './apply-auth-mode';
 import { ManuallyTimedCodePath } from '../../domain/amplify-usageData/IUsageData';
-
 /**
  * Entry point for pushing resources to the cloud
  */
@@ -103,14 +102,12 @@ export const pushResources = async (
       // Get current-cloud-backend's amplify-meta
       const currentAmplifyMeta = stateManager.getCurrentMeta();
 
-      // eslint-disable-next-line no-await-in-loop
       await providersPush(context, rebuild, category, resourceName, filteredResources);
-      // eslint-disable-next-line no-await-in-loop
+
       await onCategoryOutputsChange(context, currentAmplifyMeta);
     } catch (err) {
       const isAuthError = isValidGraphQLAuthError(err.message);
       if (isAuthError) {
-        // eslint-disable-next-line no-await-in-loop
         retryPush = await handleValidGraphQLAuthError(context, err.message);
       }
       if (!retryPush) {

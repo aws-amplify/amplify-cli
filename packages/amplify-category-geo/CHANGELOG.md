@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.6.1...amplify-category-geo@2.6.2) (2022-05-27)
+
+**Note:** Version bump only for package amplify-category-geo
+
+
+
+
+
+## [2.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.6.0...amplify-category-geo@2.6.1) (2022-05-24)
+
+**Note:** Version bump only for package amplify-category-geo
+
+
+
+
+
+# [2.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.5.2...amplify-category-geo@2.6.0) (2022-05-10)
+
+
+### Features
+
+* usage flow logging for interactive and non-interactive cli commands ([#10288](https://github.com/aws-amplify/amplify-cli/issues/10288)) ([da391b1](https://github.com/aws-amplify/amplify-cli/commit/da391b146612d8914f72e558e5503d075456c820)), closes [#10293](https://github.com/aws-amplify/amplify-cli/issues/10293)
+
+
+
+
+
+## [2.5.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.5.1...amplify-category-geo@2.5.2) (2022-04-29)
+
+**Note:** Version bump only for package amplify-category-geo
+
+
+
+
+
+## [2.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.5.0...amplify-category-geo@2.5.1) (2022-04-27)
+
+
+### Bug Fixes
+
+* **amplify-category-auth,amplify-category-geo:** update backend-config on auth/geo category update ([#9768](https://github.com/aws-amplify/amplify-cli/issues/9768)) ([0e6a99a](https://github.com/aws-amplify/amplify-cli/commit/0e6a99a9dfd7b40004cc8ad6f46cdc1c76158873))
+
+
+
+
+
 # [2.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.4.5...amplify-category-geo@2.5.0) (2022-04-11)
 
 

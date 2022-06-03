@@ -105,7 +105,7 @@ export const initializeEnv = async (
       for (const provider of context.exeInfo.projectConfig.providers) {
         // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
         const providerModule = require(providerPlugins[provider]);
-        // eslint-disable-next-line no-await-in-loop
+
         const resourceDefinition = await context.amplify.getResourceStatus(undefined, undefined, provider);
         providerPushTasks.push(() => providerModule.pushResources(context, resourceDefinition));
       }

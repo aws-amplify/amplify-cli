@@ -3,6 +3,108 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.2.0...amplify-provider-awscloudformation@6.2.1) (2022-05-27)
+
+
+
+## 8.3.1 (2022-05-27)
+
+
+### Bug Fixes
+
+* fixes oauth e2e ([#10482](https://github.com/aws-amplify/amplify-cli/issues/10482)) ([085a7aa](https://github.com/aws-amplify/amplify-cli/commit/085a7aab25b7f9d6b503eb1f6f8a9b64ed0e6e9a))
+
+
+### Reverts
+
+* oauth parameter store change ([#10485](https://github.com/aws-amplify/amplify-cli/issues/10485)) ([896b518](https://github.com/aws-amplify/amplify-cli/commit/896b51833e30daf9997d38c9229ca237ab7deda1))
+
+
+
+
+
+# [6.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.1.4...amplify-provider-awscloudformation@6.2.0) (2022-05-24)
+
+
+### Features
+
+* move oauth secrets to parameter store ([#10413](https://github.com/aws-amplify/amplify-cli/issues/10413)) ([16db2ce](https://github.com/aws-amplify/amplify-cli/commit/16db2ceb5da4e02e90e6b0bc1bb27412fd765b50))
+
+
+### Reverts
+
+* Revert "Revert "chore: wrap getTransformerFactory behind a single API (#10373)" (#10390)" (#10391) ([2612585](https://github.com/aws-amplify/amplify-cli/commit/2612585b1f84cd39ec81f54917d93b06c9d129d5)), closes [#10373](https://github.com/aws-amplify/amplify-cli/issues/10373) [#10390](https://github.com/aws-amplify/amplify-cli/issues/10390) [#10391](https://github.com/aws-amplify/amplify-cli/issues/10391)
+
+
+
+
+
+## [6.1.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.1.3...amplify-provider-awscloudformation@6.1.4) (2022-05-10)
+
+
+
+# 8.2.0 (2022-05-10)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** use the right profile with SSO and credential_process ([#9095](https://github.com/aws-amplify/amplify-cli/issues/9095)) ([811f257](https://github.com/aws-amplify/amplify-cli/commit/811f2571c69e67c91fe998a2e141f6fa5fc73a16)), closes [#4488](https://github.com/aws-amplify/amplify-cli/issues/4488)
+* root path handling for REST APIs ([#9842](https://github.com/aws-amplify/amplify-cli/issues/9842)) ([08fb69f](https://github.com/aws-amplify/amplify-cli/commit/08fb69f6237a8e0a98ffdf6d73cb0b030ace583e))
+
+
+### Reverts
+
+* Revert "chore: wrap getTransformerFactory behind a single API (#10373)" (#10390) ([c2629f6](https://github.com/aws-amplify/amplify-cli/commit/c2629f6ac6aba05d205e6a3622a8cfa9f8c2d0bf)), closes [#10373](https://github.com/aws-amplify/amplify-cli/issues/10373) [#10390](https://github.com/aws-amplify/amplify-cli/issues/10390)
+
+
+
+
+
+## [6.1.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.1.2...amplify-provider-awscloudformation@6.1.3) (2022-04-29)
+
+
+### Bug Fixes
+
+* remove exclusion of build directory on appsync upload ([#10248](https://github.com/aws-amplify/amplify-cli/issues/10248)) ([8ac54a2](https://github.com/aws-amplify/amplify-cli/commit/8ac54a2913c80efd0d42cf7b2c61ae4bd911485b))
+
+
+
+
+
+## [6.1.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.1.1...amplify-provider-awscloudformation@6.1.2) (2022-04-27)
+
+
+### Bug Fixes
+
+* remove unsupported cfn-lint ([#10270](https://github.com/aws-amplify/amplify-cli/issues/10270)) ([9541aa5](https://github.com/aws-amplify/amplify-cli/commit/9541aa5a965206a3d281bd032f06506d5d1e0f15))
+* show mfa prompt ([#9954](https://github.com/aws-amplify/amplify-cli/issues/9954)) ([5176dba](https://github.com/aws-amplify/amplify-cli/commit/5176dba3c41e66471f440e772006b62536b34090))
+* update s3 bucket policies to adhere to best practices ([#10272](https://github.com/aws-amplify/amplify-cli/issues/10272)) ([b156327](https://github.com/aws-amplify/amplify-cli/commit/b156327f3b38a5244530f706612c5368a4ec12f9))
+
+
+### Reverts
+
+* Revert "fix: update s3 bucket policies to adhere to best practices (#10272)" (#10282) ([0909769](https://github.com/aws-amplify/amplify-cli/commit/0909769dc64c83bcb5e91e79156db2f6ec60ac85)), closes [#10272](https://github.com/aws-amplify/amplify-cli/issues/10272) [#10282](https://github.com/aws-amplify/amplify-cli/issues/10282)
+
+
+
+
+
+## [6.1.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.1.0...amplify-provider-awscloudformation@6.1.1) (2022-04-18)
+
+
+
+## 8.0.2 (2022-04-15)
+
+
+### Bug Fixes
+
+* accidental changes to meta file reading and resource status filter ([#10227](https://github.com/aws-amplify/amplify-cli/issues/10227)) ([17b5df0](https://github.com/aws-amplify/amplify-cli/commit/17b5df0f91ac17593578b6ff16f0a9b6b8ac1602))
+* amplify meta file resolution, update yarn.lock ([#10225](https://github.com/aws-amplify/amplify-cli/issues/10225)) ([a253c70](https://github.com/aws-amplify/amplify-cli/commit/a253c706aa62539f42114ad3bd92494c7018f39b))
+
+
+
+
+
 # [6.1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.0.0...amplify-provider-awscloudformation@6.1.0) (2022-04-11)
 
 

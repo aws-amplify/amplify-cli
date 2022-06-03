@@ -1,13 +1,8 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
-import { addFunction, functionBuild, addLambdaTrigger } from 'amplify-e2e-core';
-import { addSimpleDDB } from 'amplify-e2e-core';
-import { addKinesis } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getFunction } from 'amplify-e2e-core';
-import { addApiWithoutSchema, updateApiSchema } from 'amplify-e2e-core';
+import {
+  initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush,
+  addFunction, functionBuild, addLambdaTrigger, addSimpleDDB, addKinesis, createNewProjectDir, deleteProjectDir, getProjectMeta, getFunction, addApiWithoutSchema, updateApiSchema, appsyncGraphQLRequest, getCloudWatchLogs, putKinesisRecords, invokeFunction, getEventSourceMappings, retry, generateRandomShortId,
+} from 'amplify-e2e-core';
 
-import { appsyncGraphQLRequest } from 'amplify-e2e-core';
-import { getCloudWatchLogs, putKinesisRecords, invokeFunction, getEventSourceMappings } from 'amplify-e2e-core';
-import { retry } from 'amplify-e2e-core';
 import _ from 'lodash';
 
 describe('nodejs', () => {
@@ -25,8 +20,7 @@ describe('nodejs', () => {
 
     it('init a project and add simple function and uncomment cors header', async () => {
       await initJSProjectWithProfile(projRoot, {});
-      const random = Math.floor(Math.random() * 10000);
-      const functionName = `testcorsfunction${random}`;
+      const functionName = `testcorsfunction${generateRandomShortId()}`;
       process.env.AMPLIFY_CLI_LAMBDA_CORS_HEADER = 'true';
       await addFunction(projRoot, { functionTemplate: 'Hello World', name: functionName }, 'nodejs');
       await functionBuild(projRoot, {});
@@ -93,7 +87,7 @@ describe('nodejs', () => {
         const resp = (await appsyncGraphQLRequest(appsyncResource, createGraphQLPayload(Math.round(Math.random() * 1000), 'amplify'))) as {
           data: { createTodo: { id: string; content: string } };
         };
-        const id = resp.data.createTodo.id;
+        const { id } = resp.data.createTodo;
         if (!id) {
           return false;
         }
@@ -116,8 +110,7 @@ describe('nodejs', () => {
 
     it('records put into kinesis stream should result in trigger called in minimal kinesis + trigger infra', async () => {
       await initJSProjectWithProfile(projRoot, {});
-      const random = Math.floor(Math.random() * 10000);
-      await addKinesis(projRoot, { rightName: `kinesisintegtest${random}`, wrongName: '$' });
+      await addKinesis(projRoot, { rightName: `kinesisintegtest${generateRandomShortId()}`, wrongName: '$' });
       await addFunction(projRoot, { functionTemplate: 'Lambda trigger', triggerType: 'Kinesis' }, 'nodejs', addLambdaTrigger);
 
       await functionBuild(projRoot, {});
@@ -148,7 +141,7 @@ describe('nodejs', () => {
           return false;
         }
 
-        let eventId = `${resp.Records[0].ShardId}:${resp.Records[0].SequenceNumber}`;
+        const eventId = `${resp.Records[0].ShardId}:${resp.Records[0].SequenceNumber}`;
 
         await retry(
           () => getCloudWatchLogs(meta.providers.awscloudformation.Region, `/aws/lambda/${functionName}`),

@@ -3,6 +3,99 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.3.0...@aws-amplify/cli-internal@8.3.1) (2022-05-27)
+
+
+
+## 8.3.1 (2022-05-27)
+
+
+### Bug Fixes
+
+* **graphql:** resolve model codegen issue on first push for datastore enabled api ([#10450](https://github.com/aws-amplify/amplify-cli/issues/10450)) ([a8d8b94](https://github.com/aws-amplify/amplify-cli/commit/a8d8b9406f21ddec1dec72de1acb745fea2d0881))
+
+
+### Reverts
+
+* oauth parameter store change ([#10485](https://github.com/aws-amplify/amplify-cli/issues/10485)) ([896b518](https://github.com/aws-amplify/amplify-cli/commit/896b51833e30daf9997d38c9229ca237ab7deda1))
+
+
+
+
+
+# [8.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.2.0...@aws-amplify/cli-internal@8.3.0) (2022-05-24)
+
+
+### Bug Fixes
+
+* typo in amplify plugin verify flow ([#10424](https://github.com/aws-amplify/amplify-cli/issues/10424)) ([f8b9406](https://github.com/aws-amplify/amplify-cli/commit/f8b94065c2faaee9d6275ca526094005c2f737f4))
+
+
+### Features
+
+* move oauth secrets to parameter store ([#10413](https://github.com/aws-amplify/amplify-cli/issues/10413)) ([16db2ce](https://github.com/aws-amplify/amplify-cli/commit/16db2ceb5da4e02e90e6b0bc1bb27412fd765b50))
+
+
+### Reverts
+
+* Revert "refactor: plugin platform code cleanup (#10384)" (#10403) ([b2998d7](https://github.com/aws-amplify/amplify-cli/commit/b2998d75f83bd75788f1665c3b1f61a4766d13ea)), closes [#10384](https://github.com/aws-amplify/amplify-cli/issues/10384) [#10403](https://github.com/aws-amplify/amplify-cli/issues/10403)
+
+
+
+
+
+# [8.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.1.0...@aws-amplify/cli-internal@8.2.0) (2022-05-10)
+
+
+### Bug Fixes
+
+* validate that the app limit has not been reached (issue  [#10063](https://github.com/aws-amplify/amplify-cli/issues/10063)) ([#10158](https://github.com/aws-amplify/amplify-cli/issues/10158)) ([6669996](https://github.com/aws-amplify/amplify-cli/commit/6669996cacafbf1ecbbf9023d01cd2511b8fe09e))
+* windows unit test for missing path assertion ([#10294](https://github.com/aws-amplify/amplify-cli/issues/10294)) ([5f63b33](https://github.com/aws-amplify/amplify-cli/commit/5f63b33c419f935f2af36f5377f30acf87e1cb99))
+
+
+### Features
+
+* usage flow logging for interactive and non-interactive cli commands ([#10288](https://github.com/aws-amplify/amplify-cli/issues/10288)) ([da391b1](https://github.com/aws-amplify/amplify-cli/commit/da391b146612d8914f72e558e5503d075456c820)), closes [#10293](https://github.com/aws-amplify/amplify-cli/issues/10293)
+
+
+
+
+
+# [8.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.0.3...@aws-amplify/cli-internal@8.1.0) (2022-04-29)
+
+
+### Features
+
+* dedup appsync functions ([#10289](https://github.com/aws-amplify/amplify-cli/issues/10289)) ([1a5607c](https://github.com/aws-amplify/amplify-cli/commit/1a5607c3e40d3a8144fc5f66a1632d90f061ed99))
+
+
+
+
+
+## [8.0.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.0.2...@aws-amplify/cli-internal@8.0.3) (2022-04-27)
+
+
+### Bug Fixes
+
+* **amplify-category-auth,amplify-category-geo:** update backend-config on auth/geo category update ([#9768](https://github.com/aws-amplify/amplify-cli/issues/9768)) ([0e6a99a](https://github.com/aws-amplify/amplify-cli/commit/0e6a99a9dfd7b40004cc8ad6f46cdc1c76158873))
+* show mfa prompt ([#9954](https://github.com/aws-amplify/amplify-cli/issues/9954)) ([5176dba](https://github.com/aws-amplify/amplify-cli/commit/5176dba3c41e66471f440e772006b62536b34090))
+* use confirmContinue instead of yesOrNo behavior in conversion from inquirer to prompter ([#10217](https://github.com/aws-amplify/amplify-cli/issues/10217)) ([621ffa1](https://github.com/aws-amplify/amplify-cli/commit/621ffa16ccf6b38c628fde2c480a8855c213eeb5))
+
+
+
+
+
+## [8.0.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.0.1...@aws-amplify/cli-internal@8.0.2) (2022-04-18)
+
+
+### Bug Fixes
+
+* **cli:** Fix typo in description for upgrade command ([#10182](https://github.com/aws-amplify/amplify-cli/issues/10182)) ([5f213e0](https://github.com/aws-amplify/amplify-cli/commit/5f213e0b03eb24c97dc1c8a0989e34b5a34e87bd))
+
+
+
+
+
 ## [8.0.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.0.0...@aws-amplify/cli-internal@8.0.1) (2022-04-11)
 
 **Note:** Version bump only for package @aws-amplify/cli-internal

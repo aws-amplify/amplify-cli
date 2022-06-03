@@ -22,6 +22,7 @@ import {
   getFunction,
   loadFunctionTestFile,
   createRandomName,
+  generateRandomShortId,
 } from 'amplify-e2e-core';
 import _ from 'lodash';
 
@@ -39,8 +40,7 @@ describe('nodejs', () => {
 
     it('add lambda with AdminQueries API permissions', async () => {
       await initJSProjectWithProfile(projRoot, {});
-      const random = Math.floor(Math.random() * 10000);
-      const fnName = `integtestfn${random}`;
+      const fnName = `integtestfn${generateRandomShortId()}`;
       await addAuthWithGroupsAndAdminAPI(projRoot, {});
       await addFunction(
         projRoot,
@@ -68,7 +68,7 @@ describe('nodejs', () => {
 
     it('lambda with s3 permissions should be able to call listObjects', async () => {
       await initJSProjectWithProfile(projRoot, {});
-      const random = Math.floor(Math.random() * 10000);
+      const random = generateRandomShortId();
       const fnName = `integtestfn${random}`;
       const s3Name = `integtestfn${random}`;
       const options: AddStorageSettings = {
@@ -92,7 +92,7 @@ describe('nodejs', () => {
         'nodejs',
       );
 
-      let functionCode = loadFunctionTestFile('s3-list-objects.js');
+      const functionCode = loadFunctionTestFile('s3-list-objects.js');
 
       // Update the env var name in function code
       functionCode.replace('{{bucketEnvVar}}', `STORAGE_INTEGTESTFN${random}_BUCKETNAME`);
@@ -116,7 +116,7 @@ describe('nodejs', () => {
         name: 'dynamodbscan',
       });
 
-      const random = Math.floor(Math.random() * 10000);
+      const random = generateRandomShortId();
       const fnName = `integtestfn${random}`;
       const ddbName = `integtestddb${random}`;
 
@@ -185,8 +185,7 @@ describe('nodejs', () => {
         name: appName,
       });
 
-      const random = Math.floor(Math.random() * 10000);
-      const fnName = `integtestfn${random}`;
+      const fnName = `integtestfn${generateRandomShortId()}`;
       await addFunction(
         projRoot,
         {
@@ -246,8 +245,7 @@ describe('nodejs', () => {
       await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
       await updateApiSchema(projRoot, 'modelbackedlambda', 'simple_model.graphql');
 
-      const random = Math.floor(Math.random() * 10000);
-      const fnName = `integtestfn${random}`;
+      const fnName = `integtestfn${generateRandomShortId()}`;
 
       await addFunction(
         projRoot,

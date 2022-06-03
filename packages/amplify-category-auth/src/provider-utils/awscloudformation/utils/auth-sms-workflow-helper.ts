@@ -43,7 +43,7 @@ async function loadResourceParametersLegacyCode(authResourceName: string): Promi
   return userPoolMessageConfig;
 }
 export const loadResourceParameters = async (context: $TSContext, authResourceName: string): Promise<UserPoolMessageConfiguration> => {
-  const cliState = new AuthInputState(authResourceName);
+  const cliState = new AuthInputState(context, authResourceName);
   let userPoolMessageConfig;
   try {
     userPoolMessageConfig = (await cliState.loadResourceParameters(context, cliState.getCLIInputPayload())) as UserPoolMessageConfiguration;

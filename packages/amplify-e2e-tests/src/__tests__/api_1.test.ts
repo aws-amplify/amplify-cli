@@ -23,6 +23,7 @@ import {
   amplifyPushUpdateForDependentModel,
   amplifyPushForce,
   createRandomName,
+  generateRandomShortId,
 } from 'amplify-e2e-core';
 import path from 'path';
 import { existsSync } from 'fs';
@@ -224,11 +225,10 @@ describe('amplify add api (GraphQL)', () => {
   });
 
   it('inits a project with a simple model , add a function and removes the depedent @model', async () => {
-    const random = Math.floor(Math.random() * 10000);
-    const projectName = `blogapp`;
+    const projectName = 'blogapp';
     const nextSchema = 'initial_key_blog.graphql';
     const initialSchema = 'two-model-schema.graphql';
-    const fnName = `integtestfn${random}`;
+    const fnName = `integtestfn${generateRandomShortId()}`;
     await initJSProjectWithProfile(projRoot, { name: projectName });
     await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, projectName, initialSchema);
@@ -276,7 +276,7 @@ describe('amplify add api (GraphQL)', () => {
   });
 
   it('api force push with no changes', async () => {
-    const projectName = `apinochange`;
+    const projectName = 'apinochange';
     await initJSProjectWithProfile(projRoot, { name: projectName });
     await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, projectName, 'two-model-schema.graphql');

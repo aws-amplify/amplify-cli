@@ -17,9 +17,7 @@
 /* eslint-disable no-await-in-loop */
 import _ from 'lodash';
 import * as fs from 'fs-extra';
-import { EOL } from 'os';
 import * as path from 'path';
-import { validateFile } from 'cfn-lint';
 import glob from 'glob';
 import {
   AmplifyCategories,
@@ -37,6 +35,7 @@ import {
   DeploymentStepStatus,
   readCFNTemplate,
   Template,
+  ApiCategoryFacade,
 } from 'amplify-cli-core';
 import ora from 'ora';
 import { Fn } from 'cloudform-types';
@@ -48,10 +47,9 @@ import { uploadAppSyncFiles } from './upload-appsync-files';
 import { prePushGraphQLCodegen, postPushGraphQLCodegen } from './graphql-codegen';
 import { adminModelgen } from './admin-modelgen';
 import { prePushAuthTransform } from './auth-transform';
-import { transformGraphQLSchema } from './transform-graphql-schema';
 import { displayHelpfulURLs } from './display-helpful-urls';
 import { downloadAPIModels } from './download-api-models';
-import { GraphQLResourceManager } from './graphql-transformer';
+import { GraphQLResourceManager } from './graphql-resource-manager';
 import { loadResourceParameters } from './resourceParams';
 import { uploadAuthTriggerFiles } from './upload-auth-trigger-files';
 import archiver from './utils/archiver';
@@ -59,7 +57,6 @@ import amplifyServiceManager from './amplify-service-manager';
 import {
   DeploymentManager, DeploymentStep, DeploymentOp, DeploymentStateManager, runIterativeRollback,
 } from './iterative-deployment';
-import { getGqlUpdatedResource } from './graphql-transformer/utils';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { fileLogger } from './utils/aws-logger';
 import { APIGW_AUTH_STACK_LOGICAL_ID, loadApiCliInputs } from './utils/consolidate-apigw-policies';
@@ -149,8 +146,6 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
       }
     }
 
-    validateCfnTemplates(context, resources);
-
     for (const resource of resources) {
       if (resource.service === ApiServiceNameElasticContainer && resource.category === 'api') {
         const {
@@ -185,7 +180,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     /**
      * calling transform schema here to support old project with out overrides
      */
-    await transformGraphQLSchema(context, {
+    await ApiCategoryFacade.transformGraphQLSchema(context, {
       handleMigration: opts => updateStackForAPIMigration(context, 'api', undefined, opts),
       minify: options.minify,
       promptApiKeyCreation: true,
@@ -211,6 +206,13 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
 
     // Check if iterative updates are enabled or not and generate the required deployment steps if needed.
     if (FeatureFlags.getBoolean('graphQLTransformer.enableIterativeGSIUpdates')) {
+      const getGqlUpdatedResource = (resourcesToCheck: any[]) => resourcesToCheck.find(
+        resourceToCheck => (
+          resourceToCheck?.service === 'AppSync'
+          && resourceToCheck?.providerMetadata?.logicalId
+          && resourceToCheck?.providerPlugin === 'awscloudformation'
+        ),
+      ) || null;
       const gqlResource = getGqlUpdatedResource(rebuild ? resources : resourcesToBeUpdated);
 
       if (gqlResource) {
@@ -493,12 +495,9 @@ export const updateStackForAPIMigration = async (context: $TSContext, category: 
 
   const { isReverting, isCLIMigration } = options;
 
-  let resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
   let projectDetails = context.amplify.getProjectDetails();
 
-  validateCfnTemplates(context, resources);
-
-  resources = allResources.filter((resource: { service: string; }) => resource.service === 'AppSync');
+  const resources = allResources.filter((resource: { service: string; }) => resource.service === 'AppSync');
 
   await uploadAppSyncFiles(context, resources, allResources, {
     useDeprecatedParameters: isReverting,
@@ -603,31 +602,6 @@ export const storeCurrentCloudBackend = async (context: $TSContext) => {
   }
 
   fs.removeSync(tempDir);
-};
-
-const validateCfnTemplates = (context: $TSContext, resourcesToBeUpdated: $TSAny[]) => {
-  for (const { category, resourceName } of resourcesToBeUpdated) {
-    // Turning off the error log for Geo resources as they're considered invalid by cfn-lint
-    if (category === 'geo') {
-      continue;
-    }
-    const backEndDir = pathManager.getBackendDirPath();
-    const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
-    const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
-      cwd: resourceDir,
-      ignore: [parametersJson],
-    });
-
-    for (const cfnFile of cfnFiles) {
-      const filePath = path.normalize(path.join(resourceDir, cfnFile));
-
-      try {
-        validateFile(filePath);
-      } catch (err) {
-        context.print.warning(`Invalid CloudFormation template: ${filePath}${EOL}${err.message}`);
-      }
-    }
-  }
 };
 
 const prepareBuildableResources = async (context: $TSContext, resources: $TSAny[]): Promise<void> => {

@@ -321,7 +321,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
       };
     }
     // deploy appsync inputs
-    const cliState = new AppsyncApiInputState(serviceConfig.apiName);
+    const cliState = new AppsyncApiInputState(this.context, serviceConfig.apiName);
     await cliState.saveCLIInputPayload(appsyncCLIInputs);
     return appsyncCLIInputs;
   };
@@ -334,7 +334,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
    * @returns The gqlSchemaPath
    */
   private updateAppsyncCLIInputs = async (updates: AppSyncServiceModification, apiName: string): Promise<string> => {
-    const cliState = new AppsyncApiInputState(apiName);
+    const cliState = new AppsyncApiInputState(this.context, apiName);
     const gqlSchemaPath = path.join(this.getRelativeResourceDir(apiName), gqlSchemaFilename);
     if (!cliState.cliInputFileExists()) {
       return gqlSchemaPath;

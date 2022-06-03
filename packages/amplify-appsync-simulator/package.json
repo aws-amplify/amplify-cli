@@ -1,6 +1,6 @@
 {
   "name": "amplify-appsync-simulator",
-  "version": "2.3.10",
+  "version": "2.3.13",
   "description": "An AppSync Simulator to test AppSync API.",
   "repository": {
     "type": "git",
@@ -20,7 +20,7 @@
     "copy-assets": "yarn rimraf ./public && yarn copyfiles -u 3 \"../amplify-graphiql-explorer/build/**/*\" ./public",
     "build": "yarn copy-assets && tsc",
     "build-tests": "tsc --build tsconfig.tests.json",
-    "clean": "rimraf ./lib",
+    "clean": "rimraf ./lib tsconfig.tsbuildinfo tsconfig.tests.tsbuildinfo node_modules",
     "watch": "tsc -w",
     "start": "node ./lib/index.js",
     "test": "jest"
@@ -28,12 +28,13 @@
   "dependencies": {
     "@graphql-tools/schema": "^8.3.1",
     "@graphql-tools/utils": "^8.5.1",
-    "amplify-velocity-template": "1.4.7",
-    "aws-sdk": "^2.1084.0",
+    "amplify-velocity-template": "1.4.8",
+    "aws-sdk": "^2.1113.0",
     "chalk": "^4.1.1",
     "cors": "^2.8.5",
     "dataloader": "^2.0.0",
     "express": "^4.17.3",
+    "get-port": "^5.1.1",
     "graphql": "^14.5.8",
     "graphql-iso-date": "^3.6.1",
     "graphql-subscriptions": "^1.1.0",
@@ -48,7 +49,6 @@
     "mqtt-connection": "4.0.0",
     "nanoid": "^3.3.1",
     "pino": "^6.13.0",
-    "portfinder": "^1.0.25",
     "promise-toolbox": "^0.20.0",
     "qlobber": "3.1.0",
     "retimer": "2.0.0",
@@ -63,7 +63,7 @@
     "@types/node": "^12.12.6",
     "@types/pino": "^6.3.11",
     "@types/ws": "^7.4.4",
-    "amplify-graphiql-explorer": "2.4.5",
+    "amplify-graphiql-explorer": "2.4.6",
     "jsonwebtoken": "^8.5.1"
   },
   "jest": {

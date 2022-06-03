@@ -1,14 +1,20 @@
-import { stateManager } from './state-manager';
 import _ from 'lodash';
-import { $TSObject } from '.';
+// eslint-disable-next-line import/no-cycle
+import { stateManager } from './state-manager';
+// eslint-disable-next-line import/no-cycle
+import { $TSAny, $TSObject, $TSTeamProviderInfo } from '.';
 
-let preInitTeamProviderInfo: any;
+let preInitTeamProviderInfo: $TSTeamProviderInfo;
 
+/**
+ * Gets the permission boundary arn for the given environment, or the current environment
+ */
 export const getPermissionsBoundaryArn = (env?: string): string | undefined => {
   try {
     const tpi = preInitTeamProviderInfo ?? stateManager.getTeamProviderInfo();
     // if the pre init team-provider-info only has one env (which should always be the case), default to that one
     if (preInitTeamProviderInfo && Object.keys(preInitTeamProviderInfo).length === 1 && !env) {
+      // eslint-disable-next-line prefer-destructuring, no-param-reassign
       env = Object.keys(preInitTeamProviderInfo)[0];
     }
     return _.get(tpi, teamProviderInfoObjectPath(env)) as string | undefined;
@@ -29,8 +35,8 @@ export const getPermissionsBoundaryArn = (env?: string): string | undefined => {
  * @param teamProviderInfo The team-provider-info object to update
  */
 export const setPermissionsBoundaryArn = (arn?: string, env?: string, teamProviderInfo?: $TSObject): void => {
-  let tpiGetter = () => stateManager.getTeamProviderInfo();
-  let tpiSetter = (tpi: $TSObject) => {
+  let tpiGetter = (): $TSAny => stateManager.getTeamProviderInfo();
+  let tpiSetter = (tpi: $TSObject): void => {
     stateManager.setTeamProviderInfo(undefined, tpi);
     preInitTeamProviderInfo = undefined;
   };
@@ -49,7 +55,7 @@ export const setPermissionsBoundaryArn = (arn?: string, env?: string, teamProvid
   tpiSetter(tpi);
 };
 
-const teamProviderInfoObjectPath = (env?: string) => [
+const teamProviderInfoObjectPath = (env?: string): string[] => [
   env || (stateManager.getLocalEnvInfo().envName as string),
   'awscloudformation',
   'PermissionsBoundaryPolicyArn',

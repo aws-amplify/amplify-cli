@@ -1,6 +1,6 @@
-import { initEnv, isMockable } from '..';
 import sequential from 'promise-sequential';
 import { stateManager } from 'amplify-cli-core';
+import { initEnv, isMockable } from '..';
 import { getLocalFunctionSecretNames } from '../provider-utils/awscloudformation/secrets/functionSecretsStateManager';
 import { getAppId, secretsPathAmplifyAppIdKey } from '../provider-utils/awscloudformation/secrets/secretName';
 
@@ -21,12 +21,12 @@ jest.mock('amplify-cli-core', () => ({
 jest.mock('../provider-utils/awscloudformation/secrets/functionSecretsStateManager');
 jest.mock('../provider-utils/awscloudformation/secrets/secretName');
 
-const getLocalFunctionSecretNames_mock = getLocalFunctionSecretNames as jest.MockedFunction<typeof getLocalFunctionSecretNames>;
-getLocalFunctionSecretNames_mock.mockReturnValue([]);
-const getAppId_mock = getAppId as jest.MockedFunction<typeof getAppId>;
+const getLocalFunctionSecretNamesMock = getLocalFunctionSecretNames as jest.MockedFunction<typeof getLocalFunctionSecretNames>;
+getLocalFunctionSecretNamesMock.mockReturnValue([]);
+const getAppIdMock = getAppId as jest.MockedFunction<typeof getAppId>;
 
-const sequential_mock = sequential as jest.MockedFunction<typeof sequential>;
-const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
+const sequentialMock = sequential as jest.MockedFunction<typeof sequential>;
+const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 
 describe('function category provider', () => {
   beforeEach(() => {
@@ -34,10 +34,10 @@ describe('function category provider', () => {
   });
 
   describe('initialize environment', () => {
-    it('sets secretsPathAmplfiyAppId in team-provider-info if function has secrets configured', async () => {
-      stateManager_mock.getTeamProviderInfo.mockReturnValueOnce({});
-      getLocalFunctionSecretNames_mock.mockReturnValueOnce(['TEST_SECRET']);
-      getAppId_mock.mockReturnValueOnce('testappid');
+    it('sets secretsPathAmplifyAppId in team-provider-info if function has secrets configured', async () => {
+      stateManagerMock.getTeamProviderInfo.mockReturnValueOnce({});
+      getLocalFunctionSecretNamesMock.mockReturnValueOnce(['TEST_SECRET']);
+      getAppIdMock.mockReturnValueOnce('testAppId');
       const contextStub = {
         amplify: {
           removeResourceParameters: jest.fn(),
@@ -54,15 +54,15 @@ describe('function category provider', () => {
             resourcesToBeUpdated: [],
           }),
         },
-      };
+      } as any;
       await initEnv(contextStub);
-      expect(stateManager_mock.setTeamProviderInfo).toBeCalledTimes(1);
-      expect(stateManager_mock.setTeamProviderInfo.mock.calls[0][1]).toMatchObject({
+      expect(stateManagerMock.setTeamProviderInfo).toBeCalledTimes(1);
+      expect(stateManagerMock.setTeamProviderInfo.mock.calls[0][1]).toMatchObject({
         dev: {
           categories: {
             function: {
               testFunction: {
-                [secretsPathAmplifyAppIdKey]: 'testappid',
+                [secretsPathAmplifyAppIdKey]: 'testAppId',
               },
             },
           },
@@ -78,13 +78,13 @@ describe('function category provider', () => {
         },
         {
           category: 'other',
-          resourceName: 'dontIncludeMe',
+          resourceName: 'doNotIncludeMe',
         },
       ];
       const resourcesToBeDeleted = [
         {
           category: 'something',
-          resourceName: 'dontDeleteMe',
+          resourceName: 'doNotDeleteMe',
         },
         {
           category: 'function',
@@ -113,12 +113,12 @@ describe('function category provider', () => {
             resourcesToBeUpdated,
           }),
         },
-      };
+      } as any;
       await initEnv(contextStub);
       expect(contextStub.amplify.removeResourceParameters.mock.calls.length).toBe(1);
       expect(contextStub.amplify.getEnvInfo.mock.calls.length).toBe(1);
-      expect(sequential_mock.mock.calls.length).toBe(1);
-      expect(sequential_mock.mock.calls[0][0].length).toBe(2);
+      expect(sequentialMock.mock.calls.length).toBe(1);
+      expect(sequentialMock.mock.calls[0][0].length).toBe(2);
     });
   });
 });
@@ -136,21 +136,21 @@ describe('mock function', () => {
               dependsOn: [
                 {
                   category: 'function',
-                  resourceName: 'demofunction',
+                  resourceName: 'demoFunction',
                 },
                 {
                   category: 'function',
-                  resourceName: 'demolayer',
+                  resourceName: 'demoLayer',
                 },
               ],
             },
-            demofunction: {
+            demoFunction: {
               build: true,
               providerPlugin: 'awscloudformation',
               service: 'Lambda',
               dependsOn: [],
             },
-            demolayer: {
+            demoLayer: {
               build: true,
               providerPlugin: 'awscloudformation',
               service: 'LambdaLayer',
@@ -159,7 +159,7 @@ describe('mock function', () => {
           },
         }),
       },
-    };
+    } as any;
     const resourceName = 'issue4992d7983625';
     expect(isMockable(contextStub, resourceName)).toMatchSnapshot();
   });
@@ -176,21 +176,21 @@ describe('mock function', () => {
               dependsOn: [
                 {
                   category: 'function',
-                  resourceName: 'demofunction',
+                  resourceName: 'demoFunction',
                 },
                 {
                   category: 'function',
-                  resourceName: 'demolayer',
+                  resourceName: 'demoLayer',
                 },
               ],
             },
-            demofunction: {
+            demoFunction: {
               build: true,
               providerPlugin: 'awscloudformation',
               service: 'Lambda',
               dependsOn: [],
             },
-            demolayer: {
+            demoLayer: {
               build: true,
               providerPlugin: 'awscloudformation',
               service: 'Lambda',
@@ -199,7 +199,7 @@ describe('mock function', () => {
           },
         }),
       },
-    };
+    } as any;
     const resourceName = 'issue4992d7983625';
     expect(isMockable(contextStub, resourceName)).toMatchSnapshot();
   });
@@ -217,7 +217,7 @@ describe('mock function', () => {
           },
         }),
       },
-    };
+    } as any;
     const resourceName = 'issue4992d7983625';
     expect(isMockable(contextStub, resourceName)).toMatchSnapshot();
   });

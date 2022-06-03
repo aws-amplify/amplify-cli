@@ -459,7 +459,7 @@ async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPus
   const localBackendDir = path.normalize(path.join(pathManager.getBackendDirPath(), category, resourceName));
   const cloudBackendDir = path.normalize(path.join(pathManager.getCurrentCloudBackendDirPath(), category, resourceName));
 
-  if (!fs.existsSync(localBackendDir)) {
+  if (!fs.existsSync(localBackendDir) || !fs.existsSync(cloudBackendDir)) {
     return false;
   }
 

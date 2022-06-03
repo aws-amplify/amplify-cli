@@ -3,6 +3,72 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@8.3.0...@aws-amplify/cli@8.3.1) (2022-05-27)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+# [8.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@8.2.0...@aws-amplify/cli@8.3.0) (2022-05-24)
+
+
+### Features
+
+* alias cloudfront ([#10398](https://github.com/aws-amplify/amplify-cli/issues/10398)) ([b147498](https://github.com/aws-amplify/amplify-cli/commit/b147498968462795e8d467ccda8e504b1c860240))
+* minor bump for amplify-cli-npm ([#10433](https://github.com/aws-amplify/amplify-cli/issues/10433)) ([1b789bf](https://github.com/aws-amplify/amplify-cli/commit/1b789bfa5e84ac3cf9c7e9b55e456bb01f07aafc))
+
+
+
+
+
+# [8.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@8.1.0...@aws-amplify/cli@8.2.0) (2022-05-10)
+
+
+### Bug Fixes
+
+* npm package version bump ([#10374](https://github.com/aws-amplify/amplify-cli/issues/10374)) ([c728f51](https://github.com/aws-amplify/amplify-cli/commit/c728f5172907bc720e54e031d789eaaf0ac86f85))
+
+
+### Features
+
+* bump npm package version ([#10375](https://github.com/aws-amplify/amplify-cli/issues/10375)) ([82f05a0](https://github.com/aws-amplify/amplify-cli/commit/82f05a0ad5161d617eb6b5a9ca4f3f0a5efa50b0))
+
+
+
+
+
+# [8.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@8.0.3...@aws-amplify/cli@8.1.0) (2022-04-29)
+
+
+### Features
+
+* dedup appsync functions ([#10289](https://github.com/aws-amplify/amplify-cli/issues/10289)) ([1a5607c](https://github.com/aws-amplify/amplify-cli/commit/1a5607c3e40d3a8144fc5f66a1632d90f061ed99))
+
+
+
+
+
+## [8.0.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@8.0.2...@aws-amplify/cli@8.0.3) (2022-04-27)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [8.0.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@8.0.1...@aws-amplify/cli@8.0.2) (2022-04-18)
+
+
+### Bug Fixes
+
+* remove accidental space from amplify path ([#10224](https://github.com/aws-amplify/amplify-cli/issues/10224)) ([eceab8d](https://github.com/aws-amplify/amplify-cli/commit/eceab8d6810d59f4d1b24e3179caa066ef59a574))
+
+
+
+
+
 ## [8.0.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@8.0.0...@aws-amplify/cli@8.0.1) (2022-04-11)
 
 **Note:** Version bump only for package @aws-amplify/cli

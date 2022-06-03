@@ -3,6 +3,59 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@2.3.0...amplify-dynamodb-simulator@2.3.1) (2022-05-27)
+
+
+
+## 8.3.1 (2022-05-27)
+
+
+### Reverts
+
+* oauth parameter store change ([#10485](https://github.com/aws-amplify/amplify-cli/issues/10485)) ([896b518](https://github.com/aws-amplify/amplify-cli/commit/896b51833e30daf9997d38c9229ca237ab7deda1))
+
+
+
+
+
+# [2.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@2.2.29...amplify-dynamodb-simulator@2.3.0) (2022-05-24)
+
+
+### Features
+
+* move oauth secrets to parameter store ([#10413](https://github.com/aws-amplify/amplify-cli/issues/10413)) ([16db2ce](https://github.com/aws-amplify/amplify-cli/commit/16db2ceb5da4e02e90e6b0bc1bb27412fd765b50))
+
+
+
+
+
+## [2.2.29](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@2.2.28...amplify-dynamodb-simulator@2.2.29) (2022-05-10)
+
+**Note:** Version bump only for package amplify-dynamodb-simulator
+
+
+
+
+
+## [2.2.28](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@2.2.27...amplify-dynamodb-simulator@2.2.28) (2022-04-29)
+
+**Note:** Version bump only for package amplify-dynamodb-simulator
+
+
+
+
+
+## [2.2.27](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@2.2.26...amplify-dynamodb-simulator@2.2.27) (2022-04-27)
+
+
+### Bug Fixes
+
+* removed unsupported portfinder ([#10269](https://github.com/aws-amplify/amplify-cli/issues/10269)) ([33d8a8f](https://github.com/aws-amplify/amplify-cli/commit/33d8a8ffeebbb9f05f9dbcd8afc6b0629bcf3819))
+
+
+
+
+
 ## [2.2.26](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@2.2.25...amplify-dynamodb-simulator@2.2.26) (2022-04-11)
 
 **Note:** Version bump only for package amplify-dynamodb-simulator

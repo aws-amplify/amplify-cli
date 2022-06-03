@@ -1,6 +1,11 @@
-import { $TSContext, JSONUtilities, stateManager, UnknownArgumentError, exitOnNextTick } from 'amplify-cli-core';
+import {
+  $TSContext, JSONUtilities, stateManager, UnknownArgumentError, exitOnNextTick,
+} from 'amplify-cli-core';
 
-export const run = async (context: $TSContext) => {
+/**
+ * Entry point for import command
+ */
+export const run = async (context: $TSContext): Promise<void> => {
   const envName = context.parameters.options.name;
   if (!envName) {
     const errMessage = 'You must pass in the name of the environment using the --name flag';
@@ -14,30 +19,34 @@ export const run = async (context: $TSContext) => {
   try {
     config = JSONUtilities.parse(context.parameters.options.config);
 
-    let awsCF = config.awscloudformation;
+    const awsCF = config.awscloudformation;
 
     if (
       !(
-        config.hasOwnProperty('awscloudformation') &&
-        awsCF.hasOwnProperty('Region') &&
-        awsCF.Region &&
-        awsCF.hasOwnProperty('DeploymentBucketName') &&
-        awsCF.DeploymentBucketName &&
-        awsCF.hasOwnProperty('UnauthRoleName') &&
-        awsCF.UnauthRoleName &&
-        awsCF.hasOwnProperty('StackName') &&
-        awsCF.StackName &&
-        awsCF.hasOwnProperty('StackId') &&
-        awsCF.StackId &&
-        awsCF.hasOwnProperty('AuthRoleName') &&
-        awsCF.AuthRoleName &&
-        awsCF.hasOwnProperty('UnauthRoleArn') &&
-        awsCF.UnauthRoleArn &&
-        awsCF.hasOwnProperty('AuthRoleArn') &&
-        awsCF.AuthRoleArn
+        // eslint-disable-next-line spellcheck/spell-checker
+        /* eslint-disable no-prototype-builtins */
+        config.hasOwnProperty('awscloudformation')
+        && awsCF.hasOwnProperty('Region')
+        && awsCF.Region
+        && awsCF.hasOwnProperty('DeploymentBucketName')
+        && awsCF.DeploymentBucketName
+        && awsCF.hasOwnProperty('UnauthRoleName')
+        && awsCF.UnauthRoleName
+        && awsCF.hasOwnProperty('StackName')
+        && awsCF.StackName
+        && awsCF.hasOwnProperty('StackId')
+        && awsCF.StackId
+        && awsCF.hasOwnProperty('AuthRoleName')
+        && awsCF.AuthRoleName
+        && awsCF.hasOwnProperty('UnauthRoleArn')
+        && awsCF.UnauthRoleArn
+        && awsCF.hasOwnProperty('AuthRoleArn')
+        && awsCF.AuthRoleArn
+      // eslint-disable-next-line spellcheck/spell-checker
+      /* eslint-enable no-prototype-builtins */
       )
     ) {
-      throw 'The provided config was invalid or incomplete';
+      throw new Error('The provided config was invalid or incomplete');
     }
   } catch (e) {
     const errMessage = 'You must pass in the configs of the environment in an object format using the --config flag';
@@ -52,8 +61,7 @@ export const run = async (context: $TSContext) => {
     try {
       awsInfo = JSONUtilities.parse(context.parameters.options.awsInfo);
     } catch (e) {
-      const errMessage =
-        'You must pass in the AWS credential info in an object format for intializating your environment using the --awsInfo flag';
+      const errMessage = 'You must pass in the AWS credential info in an object format for initializing your environment using the --awsInfo flag';
       context.print.error(errMessage);
       context.usageData.emitError(new UnknownArgumentError(errMessage));
       exitOnNextTick(1);
@@ -62,7 +70,7 @@ export const run = async (context: $TSContext) => {
 
   const allEnvs = context.amplify.getEnvDetails();
 
-  const addNewEnvConfig = () => {
+  const addNewEnvConfig = (): void => {
     allEnvs[envName] = config;
     stateManager.setTeamProviderInfo(undefined, allEnvs);
 
@@ -78,6 +86,8 @@ export const run = async (context: $TSContext) => {
     context.print.success('Successfully added environment from your project');
   };
 
+  // eslint-disable-next-line spellcheck/spell-checker
+  // eslint-disable-next-line no-prototype-builtins
   if (allEnvs.hasOwnProperty(envName)) {
     if (context.parameters.options.yes) {
       addNewEnvConfig();

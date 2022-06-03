@@ -6,6 +6,7 @@ import {
   readCFNTemplate,
   buildOverrideDir,
   stateManager,
+  ApiCategoryFacade,
 } from 'amplify-cli-core';
 import { DeploymentResources, PackagedResourceDefinition, ResourceDeployType, StackParameters } from '../../resource-package/types';
 import * as fs from 'fs-extra';
@@ -110,7 +111,6 @@ jest.mock('../../template-description-utils', () => ({
   getDefaultTemplateDescription: jest.fn().mockReturnValue('mock description'),
 }))
 jest.mock('../../download-api-models', () => ({}));
-jest.mock('../../graphql-transformer', () => ({}));
 jest.mock('../../amplify-service-manager', () => ({}));
 jest.mock('../../iterative-deployment', () => ({}));
 jest.mock('../../utils/env-level-constructs', () => ({
@@ -120,9 +120,6 @@ jest.mock('../../utils/consolidate-apigw-policies', () => ({
   consolidateApiGatewayPolicies: mockconsolidateApiGatewayPolicies,
   loadApiCliInputs: jest.fn(),
 }));
-jest.mock('../../transform-graphql-schema', () => ({
-  transformGraphQLSchema: mockTransformGql,
-}));
 
 const mockconsolidateApiGatewayPolicies = jest.fn(() => {
   return {
@@ -131,6 +128,7 @@ const mockconsolidateApiGatewayPolicies = jest.fn(() => {
 });
 const mockdownloadZip = jest.fn();
 const mockTransformGql = jest.fn();
+ApiCategoryFacade.transformGraphQLSchema = mockTransformGql;
 const mockS3Instance = jest.fn();
 
 const mockResource: DeploymentResources = {

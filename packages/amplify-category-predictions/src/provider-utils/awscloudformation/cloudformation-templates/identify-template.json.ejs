@@ -359,7 +359,7 @@
                         }
                     },
                     "Handler": "index.handler",
-                    "Runtime": "nodejs12.x",
+                    "Runtime": "nodejs14.x",
                     "Timeout": 300,
                     "Role": {
                         "Fn::GetAtt": [
@@ -409,6 +409,42 @@
                         }
                 }
             },
+            "CollectionsLambdaCloudWatchPolicy": {
+                "Type": "AWS::IAM::Policy",
+                "Properties": {
+                    "PolicyName": {
+                        "Ref": "resourceName"
+                    },
+                    "Roles": [
+                        {
+                            "Ref": "CollectionsLambdaExecutionRole"
+                        }
+                    ],
+                    "PolicyDocument": {
+                        "Version": "2012-10-17",
+                        "Statement": [
+                            {
+                                "Effect": "Allow",
+                                "Action": [
+                                    "logs:CreateLogGroup",
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                ],
+                                "Resource": {
+                                    "Fn::Sub": [
+                                        "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${lambdaName}:log-stream:*",
+                                        {
+                                            "lambdaName": {
+                                                "Ref": "CollectionCreationFunction"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            },
             "CollectionsLambdaExecutionRole": {
                 "Type": "AWS::IAM::Role",
                 "Properties": {
@@ -452,25 +488,6 @@
                         ]
                     },
                     "Policies": [
-                        {
-                            "PolicyName": {
-                                "Ref": "resourceName"
-                            },
-                            "PolicyDocument": {
-                                "Version": "2012-10-17",
-                                "Statement": [
-                                    {
-                                        "Effect": "Allow",
-                                        "Action": [
-                                            "logs:CreateLogGroup",
-                                            "logs:CreateLogStream",
-                                            "logs:PutLogEvents"
-                                        ],
-                                        "Resource": "arn:aws:logs:*:*:*"
-                                    }
-                                ]
-                            }
-                        },
                         {
                             "PolicyName": {
                                 "Ref": "identifyPolicyName"

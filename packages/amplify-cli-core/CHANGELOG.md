@@ -3,6 +3,70 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.8.0...amplify-cli-core@2.8.1) (2022-05-27)
+
+
+
+## 8.3.1 (2022-05-27)
+
+
+### Reverts
+
+* oauth parameter store change ([#10485](https://github.com/aws-amplify/amplify-cli/issues/10485)) ([896b518](https://github.com/aws-amplify/amplify-cli/commit/896b51833e30daf9997d38c9229ca237ab7deda1))
+
+
+
+
+
+# [2.8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.7.0...amplify-cli-core@2.8.0) (2022-05-24)
+
+
+### Features
+
+* move oauth secrets to parameter store ([#10413](https://github.com/aws-amplify/amplify-cli/issues/10413)) ([16db2ce](https://github.com/aws-amplify/amplify-cli/commit/16db2ceb5da4e02e90e6b0bc1bb27412fd765b50))
+
+
+
+
+
+# [2.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.6.0...amplify-cli-core@2.7.0) (2022-05-10)
+
+
+### Features
+
+* usage flow logging for interactive and non-interactive cli commands ([#10288](https://github.com/aws-amplify/amplify-cli/issues/10288)) ([da391b1](https://github.com/aws-amplify/amplify-cli/commit/da391b146612d8914f72e558e5503d075456c820)), closes [#10293](https://github.com/aws-amplify/amplify-cli/issues/10293)
+
+
+
+
+
+# [2.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.5.3...amplify-cli-core@2.6.0) (2022-04-29)
+
+
+### Features
+
+* dedup appsync functions ([#10289](https://github.com/aws-amplify/amplify-cli/issues/10289)) ([1a5607c](https://github.com/aws-amplify/amplify-cli/commit/1a5607c3e40d3a8144fc5f66a1632d90f061ed99))
+* flip identity claim feature flag ([#10311](https://github.com/aws-amplify/amplify-cli/issues/10311)) ([83c281a](https://github.com/aws-amplify/amplify-cli/commit/83c281a4a4f40d19e7dd954a2bb0a056f9763d39))
+
+
+
+
+
+## [2.5.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.5.2...amplify-cli-core@2.5.3) (2022-04-27)
+
+
+
+## 8.0.3 (2022-04-25)
+
+
+### Bug Fixes
+
+* prevent crash when xdg-open is not available ([#10233](https://github.com/aws-amplify/amplify-cli/issues/10233)) ([56b8d93](https://github.com/aws-amplify/amplify-cli/commit/56b8d934c9e1217e04f4ec8f17647c72a53d3eaf))
+
+
+
+
+
 ## [2.5.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.5.1...amplify-cli-core@2.5.2) (2022-04-11)
 
 **Note:** Version bump only for package amplify-cli-core

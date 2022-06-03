@@ -114,8 +114,8 @@ export async function migrateStorageCategory(context: any) {
 
 export async function transformCategoryStack(context: $TSContext, resource: IAmplifyResource) {
   if (resource.service === AmplifySupportedService.DYNAMODB) {
-    if (canResourceBeTransformed(resource.resourceName)) {
-      const stackGenerator = new DDBStackTransform(resource.resourceName);
+    if (canResourceBeTransformed(context, resource.resourceName)) {
+      const stackGenerator = new DDBStackTransform(context, resource.resourceName);
       await stackGenerator.transform();
     }
   } else if (resource.service === AmplifySupportedService.S3) {
@@ -123,8 +123,8 @@ export async function transformCategoryStack(context: $TSContext, resource: IAmp
   }
 }
 
-export function canResourceBeTransformed(resourceName: string) {
-  const resourceInputState = new DynamoDBInputState(resourceName);
+export function canResourceBeTransformed(context: $TSContext, resourceName: string) {
+  const resourceInputState = new DynamoDBInputState(context, resourceName);
   return resourceInputState.cliInputFileExists();
 }
 
@@ -186,6 +186,7 @@ export async function executeAmplifyCommand(context: any) {
 }
 
 export const executeAmplifyHeadlessCommand = async (context: $TSContext, headlessPayload: string) => {
+  context.usageData.pushHeadlessFlow(headlessPayload, context.input);
   switch (context.input.command) {
     case 'add':
       await headlessAddStorage(context, await validateAddStorageRequest(headlessPayload));

@@ -3,6 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.26](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.2.25...@aws-amplify/amplify-util-uibuilder@1.2.26) (2022-05-27)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+## [1.2.25](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.2.24...@aws-amplify/amplify-util-uibuilder@1.2.25) (2022-05-24)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+## [1.2.24](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.2.23...@aws-amplify/amplify-util-uibuilder@1.2.24) (2022-05-10)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+## [1.2.23](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.2.22...@aws-amplify/amplify-util-uibuilder@1.2.23) (2022-04-29)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+## [1.2.22](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.2.21...@aws-amplify/amplify-util-uibuilder@1.2.22) (2022-04-27)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+## [1.2.21](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.2.20...@aws-amplify/amplify-util-uibuilder@1.2.21) (2022-04-18)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
 ## [1.2.20](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.2.19...@aws-amplify/amplify-util-uibuilder@1.2.20) (2022-04-11)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder

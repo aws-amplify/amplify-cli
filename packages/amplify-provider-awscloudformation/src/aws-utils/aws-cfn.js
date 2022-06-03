@@ -1,3 +1,5 @@
+// disabling lint until this file is converted to TS
+/* eslint-disable */
 const fs = require('fs-extra');
 const path = require('path');
 const _ = require('lodash');
@@ -17,7 +19,7 @@ const { pagedAWSCall } = require('./paged-call');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
 const CFN_POLL_TIME = 5 * 1000; // 5 secs wait to check if  new stacks are created by root stack
-
+let CFNLOG = [];
 const CFN_SUCCESS_STATUS = ['UPDATE_COMPLETE', 'CREATE_COMPLETE', 'DELETE_COMPLETE', 'DELETE_SKIPPED'];
 
 const CNF_ERROR_STATUS = ['CREATE_FAILED', 'DELETE_FAILED', 'UPDATE_FAILED'];
@@ -28,7 +30,7 @@ class CloudFormation {
       if (userAgentAction) {
         userAgentParam = formUserAgentParam(context, userAgentAction);
       }
-
+      
       this.pollQueue = new BottleNeck({ minTime: 100, maxConcurrent: CFN_MAX_CONCURRENT_REQUEST });
       this.pollQueueStacks = [];
       this.stackEvents = [];
@@ -119,7 +121,7 @@ class CloudFormation {
       const { envName = '' } = this.context.amplify.getEnvInfo();
       envRegExp = new RegExp(`(-|_)${envName}`);
     } catch {}
-
+    this.context.exeInfo.cloudformationEvents = CFNLOG;
     const stackTrees = eventsWithFailure
       .filter(stack => stack.ResourceType !== 'AWS::CloudFormation::Stack')
       .map(event => {
@@ -577,6 +579,7 @@ function showEvents(events) {
       columns: COLUMNS,
       showHeaders: false,
     });
+    CFNLOG = CFNLOG.concat(events);
     console.log(formattedEvents);
   }
 }

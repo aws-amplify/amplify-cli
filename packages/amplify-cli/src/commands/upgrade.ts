@@ -1,25 +1,31 @@
-import { $TSContext, isPackaged, pathManager } from 'amplify-cli-core';
+import {
+  $TSContext, isPackaged, pathManager,
+} from 'amplify-cli-core';
 import fetch from 'node-fetch';
 import { gt } from 'semver';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { oldVersionPath } from '../utils/win-constants';
 import chalk from 'chalk';
 import gunzip from 'gunzip-maybe';
 import tar from 'tar-fs';
 import ProgressBar from 'progress';
 import { pipeline } from 'stream';
 import { promisify } from 'util';
+import ora from 'ora';
+import execa from 'execa';
+import { oldVersionPath } from '../utils/win-constants';
 
 const repoOwner = 'aws-amplify';
 const repoName = 'amplify-cli';
 
-const binName = (platform: 'macos' | 'win.exe' | 'linux') => `amplify-pkg-${platform}`;
-const binUrl = (version: string, binName: string) =>
-  `https://github.com/${repoOwner}/${repoName}/releases/download/v${version}/${binName}.tgz`;
+const binName = (platform: 'macos' | 'win.exe' | 'linux'):string => `amplify-pkg-${platform}`;
+const binUrl = (version: string, binaryName: string):string => `https://github.com/${repoOwner}/${repoName}/releases/download/v${version}/${binaryName}.tgz`;
 const latestVersionUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/releases/latest`;
 
-export const run = async (context: $TSContext) => {
+/**
+ * Downloads the latest version of amplify-cli (only if it doesnt match the current version)
+ */
+export const run = async (context: $TSContext): Promise<void> => {
   if (!isPackaged) {
     context.print.warning('"upgrade" is not supported in this installation of Amplify.');
     context.print.info(`Use ${chalk.blueBright('npm i -g @aws-amplify/cli')} instead.`);
@@ -38,7 +44,7 @@ export const run = async (context: $TSContext) => {
   }
 };
 
-const upgradeCli = async (print, version: string) => {
+const upgradeCli = async (print, version: string) : Promise<void> => {
   const isWin = process.platform.startsWith('win');
   const binDir = path.join(pathManager.getHomeDotAmplifyDirPath(), 'bin');
   const binPath = path.join(binDir, isWin ? 'amplify.exe' : 'amplify');
@@ -72,6 +78,17 @@ const upgradeCli = async (print, version: string) => {
   await downloadPromise;
   await fs.move(extractedPath, binPath, { overwrite: true });
   await fs.chmod(binPath, '700');
+  // Load the new version of amplify-cli into memory to optimize subsequent runs and check if it runs without error.
+  const spinner:ora.Ora = ora('Validating downloaded Amplify CLI....');
+  spinner.start();
+  const { stderr } = await execa(binPath, ['--version'], { env: process.env, stdio: 'inherit' });
+  if (stderr) {
+    spinner.stop();
+    throw new Error(`Validation failed for Amplify CLI installed in ${binPath}`);
+  } else {
+    spinner.succeed('Validation succeeded');
+    spinner.stop();
+  }
 };
 
 const getLatestVersion = async (): Promise<string> => {

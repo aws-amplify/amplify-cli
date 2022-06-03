@@ -98,7 +98,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
-            loginToLocalRegistry
             git config user.email not@used.com
             git config user.name "Doesnt Matter"
             yarn publish-to-verdaccio
