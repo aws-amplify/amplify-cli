@@ -6,9 +6,9 @@ import {
   validateNodeModulesDirRemoval,
   updateFunction,
   addAuthwithUserPoolGroupsViaAPIWithTrigger,
-  listUserPoolGroupsForUser,
-} from 'amplify-e2e-core';
-import { addAuthWithDefaultSocial, addAuthWithGroupTrigger, addAuthWithRecaptchaTrigger, addAuthViaAPIWithTrigger } from 'amplify-e2e-core';
+  listUserPoolGroupsForUser
+} from "amplify-e2e-core";
+import { addAuthWithDefaultSocial, addAuthWithGroupTrigger, addAuthWithRecaptchaTrigger, addAuthViaAPIWithTrigger } from "amplify-e2e-core";
 import {
   createNewProjectDir,
   deleteProjectDir,
@@ -18,31 +18,32 @@ import {
   isDeploymentSecretForEnvExists,
   getLambdaFunction,
   removeAuthWithDefault,
-} from 'amplify-e2e-core';
-import { setupUser } from '../schema-api-directives';
+  addUserToUserPool,
+  invokeFunction
+} from "amplify-e2e-core";
 
 const defaultsSettings = {
-  name: 'authTest',
+  name: "authTest"
 };
 
-describe('amplify add auth...', () => {
+describe("amplify add auth...", () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('auth');
+    projRoot = await createNewProjectDir("auth");
   });
 
   afterEach(async () => {
-    // await deleteProject(projRoot);
-    // deleteProjectDir(projRoot);
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
   });
 
-  it('...should init a project and add auth with defaultSocial', async () => {
+  it("...should init a project and add auth with defaultSocial", async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithDefaultSocial(projRoot, {});
-    expect(isDeploymentSecretForEnvExists(projRoot, 'integtest')).toBeTruthy();
+    expect(isDeploymentSecretForEnvExists(projRoot, "integtest")).toBeTruthy();
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
-    expect(isDeploymentSecretForEnvExists(projRoot, 'integtest')).toBeFalsy();
+    expect(isDeploymentSecretForEnvExists(projRoot, "integtest")).toBeFalsy();
     const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
     const id = authMeta.output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
@@ -52,12 +53,12 @@ describe('amplify add auth...', () => {
     expect(userPool.UserPool).toBeDefined();
     expect(clients).toHaveLength(2);
     validateNodeModulesDirRemoval(projRoot);
-    expect(clients[0].UserPoolClient.CallbackURLs[0]).toEqual('https://www.google.com/');
-    expect(clients[0].UserPoolClient.LogoutURLs[0]).toEqual('https://www.nytimes.com/');
+    expect(clients[0].UserPoolClient.CallbackURLs[0]).toEqual("https://www.google.com/");
+    expect(clients[0].UserPoolClient.LogoutURLs[0]).toEqual("https://www.nytimes.com/");
     expect(clients[0].UserPoolClient.SupportedIdentityProviders).toHaveLength(5);
   });
 
-  it('...should init a project and add auth with defaultSocial and then remove federation', async () => {
+  it("...should init a project and add auth with defaultSocial and then remove federation", async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithDefaultSocial(projRoot, {});
     await amplifyPushAuth(projRoot);
@@ -65,7 +66,7 @@ describe('amplify add auth...', () => {
     await amplifyPushAuth(projRoot);
   });
 
-  it('...should init a project and add auth a PostConfirmation: add-to-group trigger', async () => {
+  it("...should init a project and add auth a PostConfirmation: add-to-group trigger", async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithGroupTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
@@ -84,10 +85,10 @@ describe('amplify add auth...', () => {
     expect(userPool.UserPool).toBeDefined();
     expect(clients).toHaveLength(2);
     expect(lambdaFunction).toBeDefined();
-    expect(lambdaFunction.Configuration.Environment.Variables.GROUP).toEqual('mygroup');
+    expect(lambdaFunction.Configuration.Environment.Variables.GROUP).toEqual("mygroup");
   });
 
-  it('...should allow the user to add auth via API category, with a trigger', async () => {
+  it("...should allow the user to add auth via API category, with a trigger", async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthViaAPIWithTrigger(projRoot, { transformerVersion: 1 });
     await amplifyPush(projRoot);
@@ -106,29 +107,29 @@ describe('amplify add auth...', () => {
     validateNodeModulesDirRemoval(projRoot);
     expect(clients).toHaveLength(2);
     expect(lambdaFunction).toBeDefined();
-    expect(lambdaFunction.Configuration.Environment.Variables.GROUP).toEqual('mygroup');
+    expect(lambdaFunction.Configuration.Environment.Variables.GROUP).toEqual("mygroup");
   });
 
-  it.only('...should allow the user to add auth via API category, with a trigger and function dependsOn API', async () => {
+  it("...should allow the user to add auth via API category, with a trigger and function dependsOn API", async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthwithUserPoolGroupsViaAPIWithTrigger(projRoot, { transformerVersion: 1 });
     await updateFunction(
       projRoot,
       {
-        functionTemplate: 'Hello World',
+        functionTemplate: "Hello World",
         additionalPermissions: {
-          permissions: ['storage'],
-          choices: ['function', 'auth', 'api', 'storage'],
-          resources: ['Todo:@model(appsync)'],
-          resourceChoices: ['Todo:@model(appsync)'],
-          operations: ['read'],
-        },
+          permissions: ["storage"],
+          choices: ["function", "auth", "api", "storage"],
+          resources: ["Todo:@model(appsync)"],
+          resourceChoices: ["Todo:@model(appsync)"],
+          operations: ["read"]
+        }
       },
-      'nodejs',
+      "nodejs"
     );
     await amplifyPush(projRoot);
     const meta = getProjectMeta(projRoot);
-    const authKey = Object.keys(meta.auth).find(key => meta.auth[key].service === 'Cognito');
+    const authKey = Object.keys(meta.auth).find(key => meta.auth[key].service === "Cognito");
     const functionName = `${authKey}PostConfirmation-integtest`;
     const authMeta = meta.auth[authKey];
     const id = authMeta.output.UserPoolId;
@@ -136,39 +137,27 @@ describe('amplify add auth...', () => {
     const userPool = await getUserPool(id, region);
     const clientIds = [authMeta.output.AppClientIDWeb, authMeta.output.AppClientID];
     const clients = await getUserPoolClients(id, clientIds, region);
-    console.log(region);
-    // await addUserToUserPool(id, region);
-    // const lambdaEvent = {
-    //   userPoolId: id,
-    //   userName: 'testUser',
-    // };
-    // const result = await invokeFunction(functionName, JSON.stringify(lambdaEvent), region);
-    // expect(result.StatusCode).toBe(200);
-    const user1 = {
-      name: 'testuser1',
-      password: 'testpassword1'
+    await addUserToUserPool(id, region);
+    const lambdaEvent = {
+      userPoolId: id,
+      userName: "testUser"
     };
-    // const user2 = {
-    //   name: 'testuser2',
-    //   password: 'testpassword2'
-    // };
-    console.log(user1);
-    await setupUser(id, user1.name,user1.password);
-    console.log('user setup');
-    //await setupUser(id, user2.name,user2.password);
-    const user1Groups = listUserPoolGroupsForUser(id, user1.name, region);
-    console.log(user1Groups);
-    //const user2Groups = listUserPoolGroupsForUser(id, user2.name, region);
-    expect(user1Groups).toMatchInlineSnapshot();
-    //expect(user2Groups).toMatchInlineSnapshot();
+    const result = await invokeFunction(functionName, JSON.stringify(lambdaEvent), region);
+    expect(result.StatusCode).toBe(200);
+    const user1Groups = await listUserPoolGroupsForUser(id, lambdaEvent.userName, region);
+    expect(user1Groups).toMatchInlineSnapshot(`
+      Array [
+        "mygroup",
+      ]
+    `);
     expect(userPool.UserPool).toBeDefined();
-    expect(Object.keys(userPool.UserPool.LambdaConfig)[0]).toBe('PostConfirmation');
-    expect(Object.values(userPool.UserPool.LambdaConfig)[0]).toBe(meta.function[functionName.split('-')[0]].output.Arn);
+    expect(Object.keys(userPool.UserPool.LambdaConfig)[0]).toBe("PostConfirmation");
+    expect(Object.values(userPool.UserPool.LambdaConfig)[0]).toBe(meta.function[functionName.split("-")[0]].output.Arn);
     validateNodeModulesDirRemoval(projRoot);
     expect(clients).toHaveLength(2);
   });
 
-  it('...should init a project and add 3 custom auth flow triggers for Google reCaptcha', async () => {
+  it("...should init a project and add 3 custom auth flow triggers for Google reCaptcha", async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithRecaptchaTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
@@ -194,6 +183,6 @@ describe('amplify add auth...', () => {
     expect(createFunction).toBeDefined();
     expect(defineFunction).toBeDefined();
     expect(verifyFunction).toBeDefined();
-    expect(verifyFunction.Configuration.Environment.Variables.RECAPTCHASECRET).toEqual('dummykey');
+    expect(verifyFunction.Configuration.Environment.Variables.RECAPTCHASECRET).toEqual("dummykey");
   });
 });

@@ -1,27 +1,20 @@
 {
-  "editor.rulers": [
-    140
-  ],
+  "editor.rulers": [140],
   "files.exclude": {
     "**/.git": true,
     "**/node_modules": true,
     "**/build": true,
     "**/coverage": true
   },
-  "editor.formatOnSave": false,
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact"
-  ],
-  "eslint.alwaysShowStatus": false,
-  "eslint.format.enable": false,
-  "eslint.lintTask.enable": false,
+  "editor.formatOnSave": true,
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "eslint.alwaysShowStatus": true,
+  "eslint.format.enable": true,
+  "eslint.lintTask.enable": true,
   "eslint.packageManager": "yarn",
-  "eslint.quiet": false,
+  "eslint.quiet": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": false
+    "source.fixAll.eslint": true
   },
   "jest.enableInlineErrorMessages": true,
   "jest.showCoverageOnLoad": true,
