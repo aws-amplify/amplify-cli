@@ -183,22 +183,13 @@ export const getUserPoolClients = async (userPoolId: string, clientIds: string[]
 export const addUserToUserPool = async (userPoolId: string, region: string) => {
   const provider = new CognitoIdentityServiceProvider({ region });
   const params = {
-    UserPoolId: userPoolId /* required */,
-    Username: 'testUser' /* required */,
-    UserAttributes: [
-      {
-        Name: 'demoKey' /* required */,
-        Value: 'randomValue',
-      },
-    ],
-    ValidationData: [
-      {
-        Name: 'demoKey' /* required */,
-        Value: 'demoValue',
-      },
-    ],
+    UserPoolId: userPoolId,
+    UserAttributes: [{ Name: 'email', Value: 'username@amazon.com' }],
+    Username: 'testUser',
+    MessageAction: 'SUPPRESS',
+    TemporaryPassword: 'password',
   };
-  const res = await provider.adminCreateUser(params);
+  await provider.adminCreateUser(params).promise();
 };
 
 /**

@@ -11,7 +11,7 @@ import {
   isDeploymentSecretForEnvExists,
   removeAuthWithDefault,
   updateFunction,
-  validateNodeModulesDirRemoval
+  validateNodeModulesDirRemoval,
 } from '@aws-amplify/amplify-e2e-core';
 
 const defaultsSettings = {
@@ -25,8 +25,8 @@ describe('amplify add auth...', () => {
   });
 
   afterEach(async () => {
-    // await deleteProject(projRoot);
-    // deleteProjectDir(projRoot);
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
   });
 
   it('...should init a project and add auth with defaultSocial', async () => {
@@ -106,7 +106,7 @@ describe('amplify add auth...', () => {
     expect(lambdaFunction.Configuration.Environment.Variables.GROUP).toEqual('mygroup');
   });
 
-  it.only('...should allow the user to add auth via API category, with a trigger and function dependsOn API', async () => {
+  it('...should allow the user to add auth via API category, with a trigger and function dependsOn API', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthwithUserPoolGroupsViaAPIWithTrigger(projRoot, { transformerVersion: 1 });
     await updateFunction(
@@ -133,31 +133,19 @@ describe('amplify add auth...', () => {
     const userPool = await getUserPool(id, region);
     const clientIds = [authMeta.output.AppClientIDWeb, authMeta.output.AppClientID];
     const clients = await getUserPoolClients(id, clientIds, region);
-    console.log(region);
-    // await addUserToUserPool(id, region);
-    // const lambdaEvent = {
-    //   userPoolId: id,
-    //   userName: 'testUser',
-    // };
-    // const result = await invokeFunction(functionName, JSON.stringify(lambdaEvent), region);
-    // expect(result.StatusCode).toBe(200);
-    const user1 = {
-      name: 'testuser1',
-      password: 'testpassword1'
+    await addUserToUserPool(id, region);
+    const lambdaEvent = {
+      userPoolId: id,
+      userName: 'testUser',
     };
-    // const user2 = {
-    //   name: 'testuser2',
-    //   password: 'testpassword2'
-    // };
-    console.log(user1);
-    await setupUser(id, user1.name,user1.password);
-    console.log('user setup');
-    //await setupUser(id, user2.name,user2.password);
-    const user1Groups = listUserPoolGroupsForUser(id, user1.name, region);
-    console.log(user1Groups);
-    //const user2Groups = listUserPoolGroupsForUser(id, user2.name, region);
-    expect(user1Groups).toMatchInlineSnapshot();
-    //expect(user2Groups).toMatchInlineSnapshot();
+    const result = await invokeFunction(functionName, JSON.stringify(lambdaEvent), region);
+    expect(result.StatusCode).toBe(200);
+    const user1Groups = await listUserPoolGroupsForUser(id, lambdaEvent.userName, region);
+    expect(user1Groups).toMatchInlineSnapshot(`
+      Array [
+        "mygroup",
+      ]
+    `);
     expect(userPool.UserPool).toBeDefined();
     expect(Object.keys(userPool.UserPool.LambdaConfig)[0]).toBe('PostConfirmation');
     expect(Object.values(userPool.UserPool.LambdaConfig)[0]).toBe(meta.function[functionName.split('-')[0]].output.Arn);
