@@ -1,16 +1,24 @@
+/* eslint-disable max-classes-per-file */
 import * as cdk from '@aws-cdk/core';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as iam from '@aws-cdk/aws-iam';
 import { AmplifyRootStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 import { IStackSynthesizer, ISynthesisSession } from '@aws-cdk/core';
+import { $TSAny } from 'amplify-cli-core';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'Root Stack for AWS Amplify CLI';
 
+/**
+ * Properties to the AmplifyRootStack constructor
+ */
 export type AmplifyRootStackProps = {
   synthesizer: IStackSynthesizer;
 };
 
+/**
+ * CDK construct for the environment root stack
+ */
 export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTemplate {
   _scope: cdk.Construct;
   deploymentBucket: s3.CfnBucket;
@@ -26,12 +34,11 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
   }
 
   /**
-   *
-   * @param props :cdk.CfnOutputProps
-   * @param logicalId: : lodicalId of the Resource
+   * Add an output to the stack
    */
   addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void {
     try {
+      // eslint-disable-next-line no-new
       new cdk.CfnOutput(this, logicalId, props);
     } catch (error) {
       throw new Error(error);
@@ -39,12 +46,11 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
   }
 
   /**
-   *
-   * @param props
-   * @param logicalId
+   * Add a mapping to the stack
    */
   addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void {
     try {
+      // eslint-disable-next-line no-new
       new cdk.CfnMapping(this, logicalId, props);
     } catch (error) {
       throw new Error(error);
@@ -52,24 +58,23 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
   }
 
   /**
-   *
-   * @param props
-   * @param logicalId
+   * Add a condition to the stack
    */
   addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void {
     try {
+      // eslint-disable-next-line no-new
       new cdk.CfnCondition(this, logicalId, props);
     } catch (error) {
       throw new Error(error);
     }
   }
+
   /**
-   *
-   * @param props
-   * @param logicalId
+   * Add a resource to the stack
    */
   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void {
     try {
+      // eslint-disable-next-line no-new
       new cdk.CfnResource(this, logicalId, props);
     } catch (error) {
       throw new Error(error);
@@ -77,9 +82,7 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
   }
 
   /**
-   *
-   * @param props
-   * @param logicalId
+   * Add CFN parameter to root stack
    */
   addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
     try {
@@ -92,20 +95,50 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
     }
   }
 
+  /**
+   * Get CFN parameter by logical id
+   */
   getCfnParameter(logicalId: string): cdk.CfnParameter {
     if (this._cfnParameterMap.has(logicalId)) {
       return this._cfnParameterMap.get(logicalId);
-    } else {
-      throw new Error(`Cfn Parameter with LogicalId ${logicalId} doesnt exist`);
     }
+    throw new Error(`Cfn Parameter with LogicalId ${logicalId} doesn't exist`);
   }
 
-  generateRootStackResources = async () => {
+  /**
+   * Populates the root stack with default resources
+   */
+  async generateRootStackResources(): Promise<void> {
+    const bucketName = this._cfnParameterMap.get('DeploymentBucketName').valueAsString;
     this.deploymentBucket = new s3.CfnBucket(this, 'DeploymentBucket', {
-      bucketName: this._cfnParameterMap.get('DeploymentBucketName').valueAsString,
+      bucketName,
+      publicAccessBlockConfiguration: s3.BlockPublicAccess.BLOCK_ALL,
     });
 
     this.deploymentBucket.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
+
+    // eslint-disable-next-line no-new
+    new s3.CfnBucketPolicy(this, 'DeploymentBucketBlockHTTP', {
+      bucket: bucketName,
+      policyDocument: {
+        Statement: [
+          {
+            Action: 's3:*',
+            Effect: 'Deny',
+            Principal: '*',
+            Resource: [
+              `arn:aws:s3:::${bucketName}/*`,
+              `arn:aws:s3:::${bucketName}`,
+            ],
+            Condition: {
+              Bool: {
+                'aws:SecureTransport': false,
+              },
+            },
+          },
+        ],
+      },
+    });
 
     this.authRole = new iam.CfnRole(this, 'AuthRole', {
       roleName: this._cfnParameterMap.get('AuthRoleName').valueAsString,
@@ -140,51 +173,67 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
         ],
       },
     });
-  };
+  }
 
   // add Function for Custom Resource in Root stack
   /**
-   *
-   * @param _
-   * @returns
+   * Synthesizes the template into a JSON string
    */
-  public renderCloudFormationTemplate = (_: ISynthesisSession): string => {
-    return JSON.stringify(this._toCloudFormation(), undefined, 2);
-  };
+  public renderCloudFormationTemplate = (_: ISynthesisSession): string => JSON.stringify(this._toCloudFormation(), undefined, 2);
 }
 
 /**
- * additional class to merge CFN parameters and CFN outputs as cdk doesnt allow same logical ID of constructs in same stack
+ * Additional class to merge CFN parameters and CFN outputs as cdk doesn't allow same logical ID of constructs in same stack
  */
 export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootStackTemplate {
-  constructor(scope: cdk.Construct, id: string, props: AmplifyRootStackProps) {
-    super(scope, id, props);
-  }
   deploymentBucket?: s3.CfnBucket;
   authRole?: iam.CfnRole;
   unauthRole?: iam.CfnRole;
 
-  addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
+  /**
+   * Method not implemented
+   */
+  // eslint-disable-next-line class-methods-use-this
+  addCfnParameter(/* _props: cdk.CfnConditionProps, _logicalId: string */): void {
     throw new Error('Method not implemented.');
   }
+
+  /**
+   * Adds an output to the stack
+   */
   addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void {
     try {
+      // eslint-disable-next-line no-new
       new cdk.CfnOutput(this, logicalId, props);
     } catch (error) {
       throw new Error(error);
     }
   }
-  addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void {
-    throw new Error('Method not implemented.');
-  }
-  addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void {
-    throw new Error('Method not implemented.');
-  }
-  addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void {
+
+  /**
+   * Method not implemented
+   */
+  // eslint-disable-next-line class-methods-use-this
+  addCfnMapping(): void {
     throw new Error('Method not implemented.');
   }
 
-  public renderCloudFormationTemplate = (_: ISynthesisSession): string => {
-    return JSON.stringify((this as any)._toCloudFormation(), undefined, 2);
-  };
+  /**
+   * Method not implemented
+   */
+  // eslint-disable-next-line class-methods-use-this
+  addCfnCondition(/* _props: cdk.CfnConditionProps, _logicalId: string */): void {
+    throw new Error('Method not implemented.');
+  }
+
+  /**
+   * Method not implemented
+   */
+  // eslint-disable-next-line class-methods-use-this
+  addCfnResource(/* _props: cdk.CfnResourceProps, _logicalId: string */): void {
+    throw new Error('Method not implemented.');
+  }
+
+  public renderCloudFormationTemplate =
+    (_: ISynthesisSession): string => JSON.stringify((this as $TSAny)._toCloudFormation(), undefined, 2);
 }
