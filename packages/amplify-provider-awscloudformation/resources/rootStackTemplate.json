@@ -23,12 +23,6 @@
       "Properties": {
         "BucketName": {
           "Ref": "DeploymentBucketName"
-        },
-        "PublicAccessBlockConfiguration": {
-          "BlockPublicAcls": true,
-          "BlockPublicPolicy": true,
-          "IgnorePublicAcls": true,
-          "RestrictPublicBuckets": true
         }
       }
     },

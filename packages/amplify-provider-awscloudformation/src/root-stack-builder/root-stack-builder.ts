@@ -112,7 +112,6 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
     const bucketName = this._cfnParameterMap.get('DeploymentBucketName').valueAsString;
     this.deploymentBucket = new s3.CfnBucket(this, 'DeploymentBucket', {
       bucketName,
-      publicAccessBlockConfiguration: s3.BlockPublicAccess.BLOCK_ALL,
     });
 
     this.deploymentBucket.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
@@ -179,7 +178,7 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
   /**
    * Synthesizes the template into a JSON string
    */
-  public renderCloudFormationTemplate = (_: ISynthesisSession): string => JSON.stringify(this._toCloudFormation(), undefined, 2);
+  public renderCloudFormationTemplate = (__: ISynthesisSession): string => JSON.stringify(this._toCloudFormation(), undefined, 2);
 }
 
 /**
@@ -235,5 +234,5 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
   }
 
   public renderCloudFormationTemplate =
-    (_: ISynthesisSession): string => JSON.stringify((this as $TSAny)._toCloudFormation(), undefined, 2);
+    (__: ISynthesisSession): string => JSON.stringify((this as $TSAny)._toCloudFormation(), undefined, 2);
 }
