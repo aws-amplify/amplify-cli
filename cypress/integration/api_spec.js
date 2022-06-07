@@ -1,6 +1,10 @@
-describe('API test post and get', function() {
+describe('API test post and get', { 
+  retries: {
+      runMode: 2,
+    },
+  }, function() {
   beforeEach(function() {
-    cy.visit('/');
+    cy.visit('/' , { responseTimeout: 20000 });
   });
 
   it('successfully adds data to dynamodb', function() {
