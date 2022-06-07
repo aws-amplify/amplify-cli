@@ -1,5 +1,5 @@
 /* eslint-disable spellcheck/spell-checker */
-import { stateManager } from 'amplify-cli-core';
+import { pathManager, stateManager } from 'amplify-cli-core';
 import { ensureEnvParamManager } from '../environment-parameter-manager';
 
 jest.mock('amplify-cli-core');
@@ -19,6 +19,9 @@ const stubTPI = {
   },
 };
 stateManagerMock.getTeamProviderInfo.mockReturnValue(stubTPI);
+
+const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
+pathManagerMock.findProjectRoot.mockReturnValue('test/project/root');
 
 describe('init', () => {
   it('loads params and registers save on exit listener', async () => {
