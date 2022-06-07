@@ -1,4 +1,9 @@
-describe('withAuthenticator Sign In', function() {
+describe('withAuthenticator Sign In', { 
+  retries: {
+      runMode: 2,
+      openMode: 1,
+    },
+  }, function() {
   beforeEach(function() {
     cy.visit('/');
   });
