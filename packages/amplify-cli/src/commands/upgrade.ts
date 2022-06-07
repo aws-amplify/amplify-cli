@@ -11,8 +11,6 @@ import tar from 'tar-fs';
 import ProgressBar from 'progress';
 import { pipeline } from 'stream';
 import { promisify } from 'util';
-import ora from 'ora';
-import execa from 'execa';
 import { oldVersionPath } from '../utils/win-constants';
 
 const repoOwner = 'aws-amplify';
@@ -78,17 +76,6 @@ const upgradeCli = async (print, version: string) : Promise<void> => {
   await downloadPromise;
   await fs.move(extractedPath, binPath, { overwrite: true });
   await fs.chmod(binPath, '700');
-  // Load the new version of amplify-cli into memory to optimize subsequent runs and check if it runs without error.
-  const spinner:ora.Ora = ora('Validating downloaded Amplify CLI....');
-  spinner.start();
-  const { stderr } = await execa(binPath, ['--version'], { env: process.env, stdio: 'inherit' });
-  if (stderr) {
-    spinner.stop();
-    throw new Error(`Validation failed for Amplify CLI installed in ${binPath}`);
-  } else {
-    spinner.succeed('Validation succeeded');
-    spinner.stop();
-  }
 };
 
 const getLatestVersion = async (): Promise<string> => {

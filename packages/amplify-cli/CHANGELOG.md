@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.3.1...@aws-amplify/cli-internal@8.4.0) (2022-06-03)
+
+
+### Features
+
+* diagnose ([#10383](https://github.com/aws-amplify/amplify-cli/issues/10383)) ([6a29bd9](https://github.com/aws-amplify/amplify-cli/commit/6a29bd99886172baf420a95a0d6a7987c9ebd6bd))
+* prompt interaction time ([#10435](https://github.com/aws-amplify/amplify-cli/issues/10435)) ([a064ae2](https://github.com/aws-amplify/amplify-cli/commit/a064ae2e1a3a8d4e84a1fcb3ec9fc8b4491966d6))
+
+
+
+
+
 ## [8.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.3.0...@aws-amplify/cli-internal@8.3.1) (2022-05-27)
 
 

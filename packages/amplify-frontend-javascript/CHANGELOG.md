@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.4.6...amplify-frontend-javascript@3.5.0) (2022-06-03)
+
+
+### Features
+
+* **category-geo:** add two new map styles ([#10115](https://github.com/aws-amplify/amplify-cli/issues/10115)) ([9845573](https://github.com/aws-amplify/amplify-cli/commit/9845573ab01429a783103e38ccf69137454aa35b))
+
+
+
+
+
 ## [3.4.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.4.5...amplify-frontend-javascript@3.4.6) (2022-05-27)
 
 **Note:** Version bump only for package amplify-frontend-javascript

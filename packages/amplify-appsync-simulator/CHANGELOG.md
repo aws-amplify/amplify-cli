@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.13...amplify-appsync-simulator@2.4.0) (2022-06-03)
+
+
+### Features
+
+* **amplify-appsync-simulator:** implement `$utils.rds.toJsonObject` ([#8021](https://github.com/aws-amplify/amplify-cli/issues/8021)) ([ff65dbc](https://github.com/aws-amplify/amplify-cli/commit/ff65dbc45f26ada836354cd9c7abff2620aa0146))
+
+
+
+
+
 ## [2.3.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.12...amplify-appsync-simulator@2.3.13) (2022-05-10)
 
 **Note:** Version bump only for package amplify-appsync-simulator

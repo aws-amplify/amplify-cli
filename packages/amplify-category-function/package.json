@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-function",
-  "version": "4.0.6",
+  "version": "4.0.7",
   "description": "amplify-cli function plugin",
   "repository": {
     "type": "git",
@@ -23,9 +23,9 @@
   ],
   "dependencies": {
     "@aws-amplify/amplify-environment-parameters": "1.0.0",
-    "amplify-cli-core": "2.8.1",
+    "amplify-cli-core": "2.9.0",
     "amplify-function-plugin-interface": "1.9.5",
-    "amplify-prompts": "2.1.0",
+    "amplify-prompts": "2.2.0",
     "archiver": "^5.3.0",
     "aws-sdk": "^2.1113.0",
     "chalk": "^4.1.1",
@@ -34,7 +34,7 @@
     "folder-hash": "^4.0.2",
     "fs-extra": "^8.1.0",
     "globby": "^11.0.3",
-    "graphql-transformer-core": "^7.5.2",
+    "graphql-transformer-core": "^7.5.3",
     "inquirer": "^7.3.3",
     "inquirer-datepicker": "^2.0.0",
     "jstreemap": "^1.28.2",

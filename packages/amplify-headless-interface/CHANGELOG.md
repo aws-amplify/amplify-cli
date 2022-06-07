@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.15.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.14.3...amplify-headless-interface@1.15.0) (2022-06-03)
+
+
+### Features
+
+* **category-geo:** add two new map styles ([#10115](https://github.com/aws-amplify/amplify-cli/issues/10115)) ([9845573](https://github.com/aws-amplify/amplify-cli/commit/9845573ab01429a783103e38ccf69137454aa35b))
+
+
+
+
+
 ## [1.14.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.14.2...amplify-headless-interface@1.14.3) (2022-05-10)
 
 **Note:** Version bump only for package amplify-headless-interface

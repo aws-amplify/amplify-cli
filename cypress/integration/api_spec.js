@@ -1,4 +1,10 @@
-describe('API test post and get', function() {
+describe('API test post and get', { 
+  // Configure retry attempts for `cypress run` (will run a total pf 3 times)
+  // retries added as the test is getting response greater than default responseTimeout = 30s on first try 
+  retries: {
+      runMode: 2,
+    },
+  }, function() {
   beforeEach(function() {
     cy.visit('/');
   });
