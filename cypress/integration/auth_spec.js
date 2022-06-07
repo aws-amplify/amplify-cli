@@ -1,10 +1,12 @@
 describe('withAuthenticator Sign In', { 
+  // Configure retry attempts for `cypress run` (will run a total pf 3 times)
+  // retries added as the test is getting response greater than default responseTimeout = 30s on first try 
   retries: {
       runMode: 2,
     },
   }, function() {
   beforeEach(function() {
-    cy.visit('/' , { responseTimeout: 20000 });
+    cy.visit('/');
   });
 
   it('throws error when user is not signed up', function() {
