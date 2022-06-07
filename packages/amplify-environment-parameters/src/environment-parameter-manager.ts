@@ -1,4 +1,4 @@
-import { stateManager } from 'amplify-cli-core';
+import { pathManager, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
 import { ResourceParameterManager } from './resource-parameter-manager';
 
@@ -70,6 +70,10 @@ class EnvironmentParameterManager {
   }
 
   save(): void {
+    if (!pathManager.findProjectRoot()) {
+      // assume that the project is deleted if we cannot find a project root
+      return;
+    }
     const tpiContent = stateManager.getTeamProviderInfo();
     tpiContent[this.envName].categories = this.serializeTPICategories();
     stateManager.setTeamProviderInfo(undefined, tpiContent);
