@@ -12,7 +12,7 @@ const buildDir = 'build';
  * @param filePath the original template path
  * @returns The file path of the modified template
  */
-export async function preProcessCFNTemplate(filePath: string): Promise<string> {
+export const preProcessCFNTemplate = async (filePath: string): Promise<string> => {
   const { templateFormat, cfnTemplate } = readCFNTemplate(filePath);
 
   await prePushCfnTemplateModifier(cfnTemplate);
@@ -22,10 +22,22 @@ export async function preProcessCFNTemplate(filePath: string): Promise<string> {
 
   await writeCFNTemplate(cfnTemplate, newPath, { templateFormat });
   return newPath;
-}
+};
 
-//get data from custom polcies file and write custom policies to CFN template
-export async function writeCustomPoliciesToCFNTemplate(resourceName: string, service: string, cfnFile: string, category: string) {
+/**
+ *  get data from custom policies file and write custom policies to CFN template
+ * @param resourceName name of the resource
+ * @param service service name of the resource
+ * @param cfnFile the file path
+ * @param category name of the category
+ * @returns void
+ */
+export const writeCustomPoliciesToCFNTemplate = async (
+  resourceName: string,
+  service: string,
+  cfnFile: string,
+  category: string,
+): Promise<void> => {
   if (!(category === 'api' && service === 'ElasticContainer') && !(category === 'function' && service === 'Lambda')) {
     return;
   }

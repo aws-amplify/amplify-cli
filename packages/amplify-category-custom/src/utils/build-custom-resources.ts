@@ -1,4 +1,7 @@
-import { $TSContext, getPackageManager, pathManager, ResourceTuple } from 'amplify-cli-core';
+import {
+  $TSAny,
+  $TSContext, getPackageManager, pathManager, ResourceTuple,
+} from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import execa from 'execa';
 import * as fs from 'fs-extra';
@@ -15,8 +18,12 @@ type ResourceMeta = ResourceTuple & {
   service: string;
   build: boolean;
 };
-
-export async function buildCustomResources(context: $TSContext, resourceName?: string) {
+/**
+ * builds custom resources
+ * @param context object
+ * @param resourceName resource name to build
+ */
+export const buildCustomResources = async (context: $TSContext, resourceName?: string): Promise<void> => {
   const spinner = ora('Building custom resources');
   try {
     spinner.start();
@@ -25,7 +32,7 @@ export async function buildCustomResources(context: $TSContext, resourceName?: s
     for await (const resource of resourcesToBuild) {
       await buildResource(context, resource);
     }
-  } catch (err: any) {
+  } catch (err: $TSAny) {
     printer.error('There was an error building the custom resources');
     printer.error(err.stack);
     spinner.stop();
@@ -33,13 +40,16 @@ export async function buildCustomResources(context: $TSContext, resourceName?: s
     process.exitCode = 1;
   }
   spinner.stop();
-}
-
-const getSelectedResources = async (context: $TSContext, resourceName?: string) => {
-  return (await context.amplify.getResourceStatus(categoryName, resourceName)).allResources as ResourceMeta[];
 };
 
-export async function generateDependentResourcesType(context: $TSContext) {
+const getSelectedResources = async (context: $TSContext, resourceName?: string) :
+  Promise<ResourceMeta[]> => (await context.amplify.getResourceStatus(categoryName, resourceName)).allResources as ResourceMeta[];
+
+/**
+ *  generates dependent resource type
+ * @param context object
+ */
+export const generateDependentResourcesType = async (context: $TSContext): Promise<void> => {
   const resourceDirPath = path.join(pathManager.getBackendDirPath(), TYPES_DIR_NAME);
 
   const copyJobs = [
@@ -57,9 +67,9 @@ export async function generateDependentResourcesType(context: $TSContext) {
   };
 
   await context.amplify.copyBatch(context, copyJobs, params, true);
-}
+};
 
-async function buildResource(context: $TSContext, resource: ResourceMeta) {
+const buildResource = async (context: $TSContext, resource: ResourceMeta): Promise<void> => {
   const targetDir = path.resolve(path.join(pathManager.getBackendDirPath(), categoryName, resource.resourceName));
 
   // generate dynamic types for Amplify resources
@@ -77,8 +87,8 @@ async function buildResource(context: $TSContext, resource: ResourceMeta) {
       stdio: 'pipe',
       encoding: 'utf-8',
     });
-  } catch (error: any) {
-    if ((error as any).code === 'ENOENT') {
+  } catch (error: $TSAny) {
+    if ((error as $TSAny).code === 'ENOENT') {
       throw new Error(`Packaging overrides failed. Could not find ${packageManager} executable in the PATH.`);
     } else {
       throw new Error(`Packaging overrides failed with the error \n${error.message}`);
@@ -99,10 +109,10 @@ async function buildResource(context: $TSContext, resource: ResourceMeta) {
       stdio: 'pipe',
       encoding: 'utf-8',
     });
-  } catch (error: any) {
+  } catch (error: $TSAny) {
     printer.error(`Failed building resource ${resource.resourceName}`);
     throw error;
   }
 
   await generateCloudFormationFromCDK(resource.resourceName);
-}
+};
