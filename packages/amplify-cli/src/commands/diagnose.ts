@@ -5,7 +5,6 @@ import archiver from 'archiver';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import fetch from 'node-fetch';
-import * as crypto from 'crypto';
 import { Redactor, stringMasker } from 'amplify-cli-logger';
 import columnify from 'columnify';
 import * as _ from 'lodash';
@@ -13,7 +12,7 @@ import os from 'os';
 import { v4 } from 'uuid';
 import { prompter, printer } from 'amplify-prompts';
 import { collectFiles } from './helpers/collect-files';
-import { encryptBuffer, encryptKey } from './helpers/encryption-helpers';
+import { encryptBuffer, encryptKey, createHashedIdentifier } from './helpers/encryption-helpers';
 import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
 import { DebugConfig } from '../app-config/debug-config';
 import { isHeadlessCommand } from '../utils/headless-input-utils';
@@ -213,18 +212,7 @@ const hashedProjectIdentifiers = (): { projectIdentifier: string; projectEnvIden
   const projectConfig = stateManager.getProjectConfig();
   const envName = stateManager.getCurrentEnvName();
   const appId = getAppId();
-  const projectIdentifier = crypto
-    .createHash('md5')
-    .update(`${projectConfig.projectName}-${appId}`)
-    .digest('hex');
-  const projectEnvIdentifier = crypto
-    .createHash('md5')
-    .update(`${projectConfig.projectName}-${appId}-${envName}`)
-    .digest('hex');
-  return {
-    projectIdentifier,
-    projectEnvIdentifier,
-  };
+  return createHashedIdentifier(projectConfig.projectName, appId, envName);
 };
 
 const getAppId = (): string => {
