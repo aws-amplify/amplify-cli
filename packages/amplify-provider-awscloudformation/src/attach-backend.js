@@ -83,6 +83,7 @@ async function run(context) {
 
   context.exeInfo.projectConfig.projectName = amplifyApp.name;
   context.exeInfo.localEnvInfo.envName = backendEnv.environmentName;
+  _.set(context, ['exeInfo', 'teamProviderInfo', backendEnv.environmentName], currentAmplifyMeta.providers);
 }
 
 async function ensureAmplifyMeta(context, amplifyApp, awsConfigInfo) {
