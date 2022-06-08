@@ -1,3 +1,5 @@
+// TODO remove
+/* eslint-disable */
 import ora from 'ora';
 import chalk from 'chalk';
 import { FeatureFlags } from 'amplify-cli-core';
@@ -40,6 +42,10 @@ export async function deleteProject(context) {
         spinner.succeed('Project already deleted in the cloud.');
       } else {
         spinner.fail('Project delete failed.');
+        // TODO remove before merging
+        // debug logging
+        console.log(ex.message);
+        console.log(ex.stack);
         throw ex;
       }
     }
