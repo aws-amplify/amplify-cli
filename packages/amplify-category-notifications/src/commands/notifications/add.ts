@@ -1,7 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { prompt } from 'inquirer';
 import { $TSContext } from 'amplify-cli-core';
-import chalk from 'chalk';
 import {
   ensurePinpointApp, isPinpointAppDeployed,
 } from '../../pinpoint-helper';
@@ -21,7 +20,7 @@ const viewQuestionAskNotificationChannelToBeEnabled = async (context:$TSContext,
     const answer = await prompt({
       name: 'selection',
       type: 'list',
-      message: 'Choose the push notification channel to enable.',
+      message: 'Choose the notification channel to enable.',
       choices: disabledChannels,
       default: disabledChannels[0],
     });
@@ -37,7 +36,7 @@ const viewShowAllChannelsEnabledWarning = async (context: $TSContext) :Promise<v
   context.print.info('All the available notification channels have already been enabled.');
 };
 const viewShowDeferredModeInstructions = async (context: $TSContext): Promise<void> => {
-  context.print.info(`Run ${chalk.yellow('amplify push')} to update channel in the cloud`);
+  context.print.warning('Run "amplify push" to update the channel in the cloud');
 };
 
 /**

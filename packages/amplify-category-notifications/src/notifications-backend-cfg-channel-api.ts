@@ -1,11 +1,11 @@
 import { $TSContext, $TSAny, stateManager } from 'amplify-cli-core';
+import * as path from 'path';
 import {
   IChannelAvailability, INotificationsConfigStatus, ChannelConfigDeploymentType, IChannelViewInfo,
 } from './notifications-api-types';
 // eslint-disable-next-line import/no-cycle
 import { NotificationsDB } from './notifications-backend-cfg-api';
 import { INotificationsResourceBackendConfig, INotificationsChannelBackendConfig } from './notifications-backend-config-types';
-
 /**
  * API to update Notification Channel config state
  * All functions are idempotent (no side effects)
@@ -23,48 +23,69 @@ export class ChannelAPI {
     }
 
     /**
-     * Map of channel-type to channel-code
+     * Get path to the channel handler from channel-type.
+     * !! Its important that the channel handler's module path
+     * is relative to the path of this file.
      */
-     public static channelWorkers: Record<string, string> = {
-       [ChannelAPI.ChannelType.APNS]: './channel-APNS',
-       [ChannelAPI.ChannelType.FCM]: './channel-FCM',
-       [ChannelAPI.ChannelType.Email]: './channel-Email',
-       [ChannelAPI.ChannelType.SMS]: './channel-SMS',
-       [ChannelAPI.ChannelType.InAppMessaging]: './channel-InAppMessaging',
-     };
+    public static getChannelHandlerPath = (channelName: string): string => `${path.join(__dirname, ChannelAPI.channelViewInfo[channelName].module)}`
 
-     /**
-     * Map of channel-type to view-name
+    public static getChannelViewName = (channelName: string): string => ChannelAPI.channelViewInfo[channelName].viewName;
+
+    public static getChannelNameFromView = (channelViewString: string): string => {
+      for (const channelName of Object.keys(ChannelAPI.ChannelType)) {
+        if (ChannelAPI.channelViewInfo[channelName].viewName === channelViewString) {
+          return channelName;
+        }
+      }
+      throw new Error(`No channel name found for view ${channelViewString}`);
+    };
+
+    /**
+     * Map of channel-type to channel-info. This map will be extended when new notification
+     * channels are enabled.
+     * note:-
+     * All channels with INLINE deployment type would eventually be converted to DEFERRED
+     * once CustomLambda callout uses CloudFormation/CDK
      */
       public static channelViewInfo: Record<string, IChannelViewInfo> = {
         [ChannelAPI.ChannelType.APNS]: {
           channelName: ChannelAPI.ChannelType.APNS,
-          viewName: 'APNS (Push Notifications)',
+          viewName: 'APNS (Apple Push Notifications)',
           help: 'Send Apple push notifications to Pinpoint user segments',
+          module: './channel-APNS',
+          deploymentType: ChannelConfigDeploymentType.INLINE,
         },
         [ChannelAPI.ChannelType.FCM]: {
           channelName: ChannelAPI.ChannelType.FCM,
-          viewName: 'FCM (Push Notifications)',
+          viewName: 'FCM (FireBase Push Notifications)',
           // eslint-disable-next-line spellcheck/spell-checker
           help: 'Send Firebase Cloud Messaging push notifications to your Pinpoint user segments',
+          module: './channel-FCM',
+          deploymentType: ChannelConfigDeploymentType.INLINE,
         },
         [ChannelAPI.ChannelType.Email]: {
           channelName: ChannelAPI.ChannelType.Email,
           viewName: 'Email',
           // eslint-disable-next-line spellcheck/spell-checker
           help: 'Send Email messages to your Pinpoint user segments',
+          module: './channel-Email',
+          deploymentType: ChannelConfigDeploymentType.INLINE,
         },
         [ChannelAPI.ChannelType.SMS]: {
           channelName: ChannelAPI.ChannelType.SMS,
           viewName: 'SMS',
           // eslint-disable-next-line spellcheck/spell-checker
           help: 'Send SMS messages to your Pinpoint user segments',
+          module: './channel-SMS',
+          deploymentType: ChannelConfigDeploymentType.INLINE,
         },
         [ChannelAPI.ChannelType.InAppMessaging]: {
           channelName: ChannelAPI.ChannelType.InAppMessaging,
           viewName: 'In-App Messaging',
           // eslint-disable-next-line spellcheck/spell-checker
           help: 'Allow application clients in Pinpoint user segment mobile devices to pull engagement messages from Pinpoint',
+          module: './channel-InAppMessaging',
+          deploymentType: ChannelConfigDeploymentType.DEFERRED,
         },
       };
 
@@ -152,7 +173,7 @@ export class ChannelAPI {
     /**
    * Get all available notification channels
    */
-   public static getAvailableChannels = ():Array<string> => Object.keys(ChannelAPI.channelWorkers);
+   public static getAvailableChannels = ():Array<string> => Object.keys(ChannelAPI.ChannelType);
 
    /**
     * Get all notifications channels enabled in the backend-config
