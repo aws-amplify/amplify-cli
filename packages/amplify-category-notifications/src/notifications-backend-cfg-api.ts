@@ -206,4 +206,18 @@ public static getDisabledChannelsFromBackendConfig = async (availableChannels?: 
       }
       return notificationsConfigList;
     }
+
+    /**
+   * Remove the Notifications category from BackendConfig
+   * @param context amplify cli context
+   * @returns amplify cli context (with no Notifications category in BackendConfig)
+   */
+  public static removeNotificationsAppConfig = async (context: $TSContext) : Promise<$TSContext> => {
+    const backendConfig = (context.exeInfo.backendConfig) || stateManager.getBackendConfig();
+    if (AmplifyCategories.NOTIFICATIONS in backendConfig) {
+      delete backendConfig[AmplifyCategories.NOTIFICATIONS];
+    }
+    context.exeInfo.backendConfig = backendConfig;
+    return context;
+  }
 }

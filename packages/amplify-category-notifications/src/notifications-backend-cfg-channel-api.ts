@@ -154,6 +154,17 @@ export class ChannelAPI {
    */
    public static getAvailableChannels = ():Array<string> => Object.keys(ChannelAPI.channelWorkers);
 
+   /**
+    * Get all notifications channels enabled in the backend-config
+    * @param context amplify cli context
+    * @returns array of enabledChannels
+    */
+   public static getEnabledChannels = async (context: $TSContext): Promise<Array<string>> => {
+     const notificationConfig = await NotificationsDB.getNotificationsAppConfig(context.exeInfo.backendConfig);
+     const enabledChannels = (await NotificationsDB.getEnabledChannelsFromBackendConfig(notificationConfig)) || [];
+     return enabledChannels;
+   }
+
    public static getChannelDeploymentType =
    (channelName: string): ChannelConfigDeploymentType => ((channelName === ChannelAPI.ChannelType.InAppMessaging)
      ? ChannelConfigDeploymentType.DEFERRED

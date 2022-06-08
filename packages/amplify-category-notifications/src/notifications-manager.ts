@@ -12,7 +12,8 @@ import * as pinpointHelper from './pinpoint-helper';
 import {
   IChannelAPIResponse, NotificationsChannelAPIModule,
 } from './notifications-api-types';
-import { NotificationsDB as Notifications } from './notifications-backend-cfg-api';
+import { NotificationsDB as Notifications, NotificationsDB } from './notifications-backend-cfg-api';
+import { NotificationsMeta } from './notifications-meta-api';
 
 /**
  * Enable the selected notification channel
@@ -43,6 +44,40 @@ export const disableChannel = async (context : $TSContext, channelName: string):
     return disableChannelResponse;
   }
   return undefined;
+};
+
+/**
+ * Disable all notifications channels in use
+ * @param context amplify-cli context
+ * @returns Array of Channel API responses
+ */
+export const disableAllChannels = async (context: $TSContext): Promise<Array<IChannelAPIResponse>> => {
+  const enabledChannels : Array<string> = await Notifications.ChannelAPI.getEnabledChannels(context);
+  const responseArray : Array<IChannelAPIResponse> = [];
+
+  // sequentially disable each channel - since persistant context gets updated
+  for (const channelName of enabledChannels) {
+    const channelAPIResponse = await disableChannel(context, channelName);
+    if (channelAPIResponse) {
+      responseArray.push(channelAPIResponse);
+    }
+  }
+  return responseArray;
+};
+
+/**
+ * Call this to remove the notifications category only after all channels have been disabled.
+ * @param context Amplify CLI context
+ */
+export const removeEmptyNotificationsApp = async (context: $TSContext): Promise<$TSContext> => {
+  let updatedContext = context;
+  const enabledChannels : Array<string> = await Notifications.ChannelAPI.getEnabledChannels(context);
+  if (enabledChannels.length > 0) {
+    throw new Error(`Cannot remove notifications app, please all channels( [${enabledChannels}] ) and retry`);
+  }
+  updatedContext = await NotificationsMeta.removeNotificationsAppMeta(updatedContext);
+  updatedContext = await NotificationsDB.removeNotificationsAppConfig(updatedContext);
+  return updatedContext;
 };
 
 /**
