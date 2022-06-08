@@ -1,12 +1,13 @@
 /* eslint-disable no-param-reassign */
 import { prompt } from 'inquirer';
 import { $TSContext } from 'amplify-cli-core';
+import chalk from 'chalk';
 import {
   ensurePinpointApp, isPinpointAppDeployed,
 } from '../../pinpoint-helper';
 import { enableChannel } from '../../notifications-manager';
 import { writeData } from '../../multi-env-manager';
-import { IChannelAPIResponse } from '../../notifications-api-types';
+import { ChannelConfigDeploymentType, IChannelAPIResponse } from '../../notifications-api-types';
 import { NotificationsMeta } from '../../notifications-meta-api';
 import { NotificationsDB as Notifications } from '../../notifications-backend-cfg-api';
 
@@ -35,6 +36,9 @@ const viewQuestionAskNotificationChannelToBeEnabled = async (context:$TSContext,
 const viewShowAllChannelsEnabledWarning = async (context: $TSContext) :Promise<void> => {
   context.print.info('All the available notification channels have already been enabled.');
 };
+const viewShowDeferredModeInstructions = async (context: $TSContext): Promise<void> => {
+  context.print.info(`Run ${chalk.yellow('amplify push')} to update channel in the cloud`);
+};
 
 /**
  * Run function for amplify cli add
@@ -54,23 +58,26 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
 
   let channelName = context.parameters.first;
 
-  if (disabledChannels.length > 0) {
-    channelName = await viewQuestionAskNotificationChannelToBeEnabled(context, availableChannels, disabledChannels, channelName);
-    if (Notifications.ChannelAPI.isValidChannel(channelName)) {
-      // eslint-disable-next-line no-param-reassign
-      const pinpointAppStatus = await ensurePinpointApp(context, undefined);
-      context = pinpointAppStatus.context;
-      if (isPinpointAppDeployed(pinpointAppStatus.status) || Notifications.ChannelAPI.isChannelDeploymentDeferred(channelName)) {
-        try {
-          const channelAPIResponse : IChannelAPIResponse|undefined = await enableChannel(context, channelName);
-          await writeData(context, channelAPIResponse);
-        } catch (e) {
-          console.log('Enable Channel Failed!! ', e);
+  if (disabledChannels.length <= 0) {
+    await viewShowAllChannelsEnabledWarning(context);
+    return context;
+  }
+  channelName = await viewQuestionAskNotificationChannelToBeEnabled(context, availableChannels, disabledChannels, channelName);
+  if (Notifications.ChannelAPI.isValidChannel(channelName)) {
+    const pinpointAppStatus = await ensurePinpointApp(context, undefined);
+    context = pinpointAppStatus.context;
+    if (isPinpointAppDeployed(pinpointAppStatus.status) || Notifications.ChannelAPI.isChannelDeploymentDeferred(channelName)) {
+      try {
+        const channelAPIResponse : IChannelAPIResponse|undefined = await enableChannel(context, channelName);
+        await writeData(context, channelAPIResponse);
+        if (channelAPIResponse?.deploymentType === ChannelConfigDeploymentType.DEFERRED) {
+          await viewShowDeferredModeInstructions(context);
         }
+      } catch (e) {
+        console.log('Enable Channel Failed!! ', e);
       }
     }
-  } else {
-    await viewShowAllChannelsEnabledWarning(context);
   }
+
   return context;
 };

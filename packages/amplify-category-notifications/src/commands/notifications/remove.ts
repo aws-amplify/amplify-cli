@@ -1,5 +1,6 @@
 import inquirer from 'inquirer';
 import { $TSContext, AmplifyCategories, stateManager } from 'amplify-cli-core';
+import chalk from 'chalk';
 import * as pinpointHelper from '../../pinpoint-helper';
 import * as notificationManager from '../../notifications-manager';
 import * as multiEnvManager from '../../multi-env-manager';
@@ -8,8 +9,22 @@ import { NotificationsDB } from '../../notifications-backend-cfg-api';
 import { NotificationsMeta } from '../../notifications-meta-api';
 import { getPinpointAppStatus, isPinpointAppDeployed, isPinpointAppOwnedByNotifications } from '../../pinpoint-helper';
 
-const DELETE_PINPOINT_APP = 'The Pinpoint application';
 const CANCEL = 'Cancel';
+
+/**
+ * Runs delete for all channels and then removes the Notifications category config from backendConfig.
+ * @param context amplify cli context
+ * @returns updated amplify cli context
+ */
+const deleteNotificationsApp = async (context:$TSContext): Promise<$TSContext> => {
+  const channelAPIResponseList:IChannelAPIResponse[] = await notificationManager.disableAllChannels(context);
+  for (const channelAPIResponse of channelAPIResponseList) {
+    await multiEnvManager.writeData(context, channelAPIResponse);
+  }
+  await notificationManager.removeEmptyNotificationsApp(context);
+  await multiEnvManager.writeData(context, undefined);
+  return context;
+};
 
 /**
  * Remove walkthrough for notifications resource
@@ -20,8 +35,8 @@ export const run = async (context:$TSContext): Promise<$TSContext> => {
   context.exeInfo = context.amplify.getProjectDetails();
   const envName = stateManager.getCurrentEnvName();
   const notificationsMeta = context.exeInfo.amplifyMeta[AmplifyCategories.NOTIFICATIONS];
-  const pinpointAppConfig = await NotificationsDB.getNotificationsAppConfig();
-  if (!pinpointAppConfig) {
+  const notificationConfig = await NotificationsDB.getNotificationsAppConfig(context.exeInfo.backendConfig);
+  if (!notificationConfig) {
     context.print.error('Notifications have not been added to your project.');
     return context;
   }
@@ -31,10 +46,9 @@ export const run = async (context:$TSContext): Promise<$TSContext> => {
     return context;
   }
   const availableChannels = NotificationsDB.ChannelAPI.getAvailableChannels();
-  const enabledChannels = await NotificationsDB.getEnabledChannelsFromBackendConfig();
-
-  enabledChannels.push(DELETE_PINPOINT_APP); // Delete the entire PinpointApp
-  enabledChannels.push(CANCEL);
+  const enabledChannels = await NotificationsDB.getEnabledChannelsFromBackendConfig(notificationConfig);
+  const DELETE_PINPOINT_APP = `Pinpoint Application: ${chalk.blue(notificationConfig.serviceName)}`;
+  const optionChannels = [...enabledChannels, DELETE_PINPOINT_APP, CANCEL];
 
   let channelName = context.parameters.first;
 
@@ -43,11 +57,11 @@ export const run = async (context:$TSContext): Promise<$TSContext> => {
       name: 'selection',
       type: 'list',
       message: 'Choose what to remove.',
-      choices: enabledChannels,
-      default: enabledChannels[0],
+      choices: optionChannels,
+      default: optionChannels[0],
     });
     channelName = answer.selection;
-  } else if (!enabledChannels.includes(channelName)) {
+  } else if (!optionChannels.includes(channelName)) {
     context.print.info(`The ${channelName} channel has NOT been enabled.`);
     channelName = undefined;
   }
@@ -76,10 +90,12 @@ export const run = async (context:$TSContext): Promise<$TSContext> => {
         await multiEnvManager.writeData(context, undefined);
       }
     } else {
-      // TBD: remove Notifications references from backend-config and amplify-meta
+      await pinpointHelper.ensurePinpointApp(context, notificationsMeta, pinpointAppStatus, envName);
+      context.print.info('Disabling all notifications from the Pinpoint resource');
+      await deleteNotificationsApp(context);
       // Pinpoint App is not owned by Notifications
-      context.print.error('Execution aborted.');
-      context.print.info(`This Amazon Pinpoint resource ${pinpointAppStatus.app?.resourceName}  is provisioned through analytics`);
+      context.print.success('All notifications have been disabled');
+      context.print.info(`${DELETE_PINPOINT_APP} is provisioned through analytics`);
       context.print.info('It must be removed from analytics');
     }
   }

@@ -82,6 +82,20 @@ export class NotificationsMeta {
     return (notificationResourceList.length > 0) ? notificationResourceList[0] : undefined;
   }
 
+  /**
+   * Remove the Notifications category from AmplifyMeta
+   * @param context amplify meta
+   * @returns amplify cli context (with no Notifications category in AmplifyMeta)
+   */
+  public static removeNotificationsAppMeta = async (context: $TSContext) : Promise<$TSContext> => {
+    const amplifyMeta = (context.exeInfo.amplifyMeta) || stateManager.getMeta();
+    if (AmplifyCategories.NOTIFICATIONS in amplifyMeta) {
+      delete amplifyMeta[AmplifyCategories.NOTIFICATIONS];
+    }
+    context.exeInfo.amplifyMeta = amplifyMeta;
+    return context;
+  }
+
    /**
     * Check if Notifications is migrated from mobile-hub
     * @param amplifyMeta optionally provide amplifyMeta
