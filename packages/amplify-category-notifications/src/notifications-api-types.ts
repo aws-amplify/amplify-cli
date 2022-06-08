@@ -44,11 +44,18 @@ export interface IChannelAvailability {
 
 /**
  * Notification channel display
+ * @param channelName - Name of the notification channel
+ * @param viewName - Name to be displayed
+ * @param help - Help info for the channel
+ * @param module - Name of the file in which the channel action handlers are implemented
+ * @param deploymentType - INLINE or DEFERRED
  */
 export interface IChannelViewInfo {
     channelName: string,
     viewName : string,
     help: string,
+    module: string,
+    deploymentType: ChannelConfigDeploymentType,
 }
 
 /**
