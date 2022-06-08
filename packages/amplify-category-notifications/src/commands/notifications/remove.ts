@@ -96,7 +96,7 @@ export const run = async (context:$TSContext): Promise<$TSContext> => {
       // Pinpoint App is not owned by Notifications
       context.print.success('All notifications have been disabled');
       context.print.info(`${DELETE_PINPOINT_APP} is provisioned through analytics`);
-      context.print.info('It must be removed from analytics');
+      context.print.info(`Run "amplify analytics remove" and select ${DELETE_PINPOINT_APP} to remove the Pinpoint resource`);
     }
   }
   return context;
