@@ -1,3 +1,5 @@
+// Disable lint until this file is converted to TS
+/* eslint-disable */
 const aws = require('aws-sdk');
 const fs = require('fs-extra');
 const path = require('path');
@@ -81,7 +83,6 @@ async function run(context) {
 
   context.exeInfo.projectConfig.projectName = amplifyApp.name;
   context.exeInfo.localEnvInfo.envName = backendEnv.environmentName;
-  context.exeInfo.teamProviderInfo[backendEnv.environmentName] = currentAmplifyMeta.providers;
 }
 
 async function ensureAmplifyMeta(context, amplifyApp, awsConfigInfo) {
