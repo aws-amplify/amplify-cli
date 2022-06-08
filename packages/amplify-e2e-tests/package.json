@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-category-auth": "2.10.0",
-    "@aws-amplify/graphql-transformer-core": "^0.17.3",
+    "@aws-amplify/graphql-transformer-core": "0.17.4-sub-username-identity-claim.2",
     "amplify-cli-core": "2.9.0",
     "amplify-e2e-core": "3.3.0",
     "aws-amplify": "^4.2.8",
@@ -39,7 +39,7 @@
     "glob": "^8.0.3",
     "graphql-schema-diff": "^2.2.0",
     "graphql-tag": "^2.10.1",
-    "graphql-transformer-core": "^7.5.3",
+    "graphql-transformer-core": "7.5.4-sub-username-identity-claim.2",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
     "rimraf": "^3.0.0",
