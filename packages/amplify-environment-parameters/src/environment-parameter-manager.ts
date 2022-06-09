@@ -34,7 +34,7 @@ export const getEnvParamManager = (envName: string = stateManager.getLocalEnvInf
 /**
  * Class for interfacing with environment-specific parameters
  */
-class EnvironmentParameterManager {
+class EnvironmentParameterManager implements IEnvironmentParameterManager {
   private resourceParamManagers: Record<string, ResourceParameterManager> = {};
   constructor(private readonly envName: string) {}
   /**
@@ -58,6 +58,9 @@ class EnvironmentParameterManager {
   }
 
   getResourceParamManager(category: string, resource: string): ResourceParameterManager {
+    if (!category || !resource) {
+      throw new Error('category and resource must be specified to getResourceParamManager');
+    }
     const resourceKey = getResourceKey(category, resource);
     if (!this.resourceParamManagers[resourceKey]) {
       this.resourceParamManagers[resourceKey] = new ResourceParameterManager();
@@ -75,7 +78,12 @@ class EnvironmentParameterManager {
       return;
     }
     const tpiContent = stateManager.getTeamProviderInfo();
-    tpiContent[this.envName].categories = this.serializeTPICategories();
+    const categoriesContent = this.serializeTPICategories();
+    if (Object.keys(categoriesContent).length === 0) {
+      delete tpiContent[this.envName].categories;
+    } else {
+      tpiContent[this.envName].categories = this.serializeTPICategories();
+    }
     stateManager.setTeamProviderInfo(undefined, tpiContent);
   }
 
@@ -94,3 +102,14 @@ const splitResourceKey = (key: string): readonly [string, string] => {
   const [category, resourceName] = key.split('_');
   return [category, resourceName];
 };
+
+/**
+ * Interface for environment parameter managers
+ */
+export type IEnvironmentParameterManager = {
+  init: () => Promise<void>;
+  removeResourceParamManager: (category: string, resource: string) => void;
+  hasResourceParamManager: (category: string, resource: string) => boolean;
+  getResourceParamManager: (category: string, resource: string) => ResourceParameterManager;
+  save: () => void;
+}

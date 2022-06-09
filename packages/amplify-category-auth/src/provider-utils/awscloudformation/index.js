@@ -1,45 +1,52 @@
+// TODO enable eslint after converting to TS
+/* eslint-disable */
 const inquirer = require('inquirer');
 const _ = require('lodash');
 const { stateManager, open } = require('amplify-cli-core');
+const { ensureEnvParamManager } = require('@aws-amplify/amplify-environment-parameters');
 const { getAuthResourceName } = require('../../utils/getAuthResourceName');
 const { copyCfnTemplate, saveResourceParameters } = require('./utils/synthesize-resources');
-const { ENV_SPECIFIC_PARAMS, AmplifyAdmin, UserPool, IdentityPool, BothPools, privateKeys } = require('./constants');
+const {
+  ENV_SPECIFIC_PARAMS, AmplifyAdmin, UserPool, IdentityPool, BothPools, privateKeys,
+} = require('./constants');
 const { getAddAuthHandler, getUpdateAuthHandler } = require('./handlers/resource-handlers');
 const { getSupportedServices } = require('../supported-services');
 const { importResource, importedAuthEnvInit } = require('./import');
-const { AuthInputState } = require('./auth-inputs-manager/auth-input-state');
 
-function serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata) {
+const serviceQuestions = (context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata) => {
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { serviceWalkthrough } = require(serviceWalkthroughSrc);
   return serviceWalkthrough(context, defaultValuesFilename, stringMapsFilename, serviceMetadata);
-}
+};
 
-async function addResource(context, service, skipNextSteps = false) {
+const addResource = async (context, service, skipNextSteps = false) => {
   const serviceMetadata = getSupportedServices()[service];
   const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename } = serviceMetadata;
   return getAddAuthHandler(
     context,
     skipNextSteps,
   )(await serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata));
-}
+};
 
-async function updateResource(context, { service }) {
+const updateResource = async (context, { service }) => {
   const serviceMetadata = getSupportedServices()[service];
   const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename } = serviceMetadata;
   return getUpdateAuthHandler(context)(
     await serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata),
   );
-}
+};
 
-async function updateConfigOnEnvInit(context, category, service) {
+const updateConfigOnEnvInit = async (context, category, service) => {
   const srvcMetaData = getSupportedServices().Cognito;
-  const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, provider } = srvcMetaData;
+  const {
+    defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, provider,
+  } = srvcMetaData;
 
   const providerPlugin = context.amplify.getPluginInstance(context, provider);
   // previously selected answers
   const resourceParams = providerPlugin.loadResourceParameters(context, 'auth', service);
   // ask only env specific questions
+  await ensureEnvParamManager();
   let currentEnvSpecificValues = context.amplify.loadEnvResourceParameters(context, category, service);
 
   const resource = _.get(context.exeInfo, ['amplifyMeta', category, service]);
@@ -147,9 +154,8 @@ async function updateConfigOnEnvInit(context, category, service) {
   if (hostedUIProviderMeta) {
     currentEnvSpecificValues = getOAuthProviderKeys(currentEnvSpecificValues, resourceParams);
   }
-  const isPullingOrEnv =
-    context.input.command === 'pull' ||
-    (context.input.command === 'env' && context.input.subCommands && !context.input.subCommands.includes('add'));
+  const isPullingOrEnv = context.input.command === 'pull'
+    || (context.input.command === 'env' && context.input.subCommands && !context.input.subCommands.includes('add'));
   // don't ask for env_specific params when checking out env or pulling
   srvcMetaData.inputs = srvcMetaData.inputs.filter(
     input => ENV_SPECIFIC_PARAMS.includes(input.key) && !Object.keys(currentEnvSpecificValues).includes(input.key) && !isPullingOrEnv,
@@ -173,9 +179,9 @@ async function updateConfigOnEnvInit(context, category, service) {
   });
 
   return envParams;
-}
+};
 
-async function migrate(context) {
+const migrate = async context => {
   const category = 'auth';
   const { amplify } = context;
   const existingAuth = context.migrationInfo.amplifyMeta.auth || {};
@@ -196,13 +202,11 @@ async function migrate(context) {
   });
   await copyCfnTemplate(context, category, props, cfnFilename);
   saveResourceParameters(context, provider, category, resourceName, { ...roles, ...props }, ENV_SPECIFIC_PARAMS);
-}
+};
 
-function isInHeadlessMode(context) {
-  return context.exeInfo.inputParams.yes;
-}
+const isInHeadlessMode = context => context.exeInfo.inputParams.yes;
 
-function getHeadlessParams(context) {
+const getHeadlessParams = context => {
   const { inputParams } = context.exeInfo;
   try {
     // If the input given is a string validate it using JSON parse
@@ -211,9 +215,9 @@ function getHeadlessParams(context) {
   } catch (err) {
     throw new Error(`Failed to parse auth headless parameters: ${err}`);
   }
-}
+};
 
-function getOAuthProviderKeys(currentEnvSpecificValues, resourceParams) {
+const getOAuthProviderKeys = (currentEnvSpecificValues, resourceParams) => {
   const oAuthProviders = JSON.parse(resourceParams.hostedUIProviderMeta).map(h => h.ProviderName);
   const { hostedUIProviderCreds = '[]' } = currentEnvSpecificValues;
   const configuredProviders = JSON.parse(hostedUIProviderCreds).map(h => h.ProviderName);
@@ -231,9 +235,9 @@ function getOAuthProviderKeys(currentEnvSpecificValues, resourceParams) {
     }
   });
   return currentEnvSpecificValues;
-}
+};
 
-function formatCredsforEnvParams(currentEnvSpecificValues, result, resourceParams) {
+const formatCredsforEnvParams = (currentEnvSpecificValues, result, resourceParams) => {
   const partialParams = {};
   if (currentEnvSpecificValues.hostedUIProviderCreds && result.hostedUIProviderCreds) {
     partialParams.hostedUIProviderCreds = [];
@@ -254,9 +258,9 @@ function formatCredsforEnvParams(currentEnvSpecificValues, result, resourceParam
     partialParams.hostedUIProviderCreds = result.hostedUIProviderCreds;
   }
   return partialParams;
-}
+};
 
-function parseCredsForHeadless(mergedValues, envParams) {
+const parseCredsForHeadless = (mergedValues, envParams) => {
   const oAuthProviders = JSON.parse(mergedValues.hostedUIProviderMeta).map(h => h.ProviderName);
   envParams.hostedUIProviderCreds = JSON.stringify(
     oAuthProviders.map(provider => {
@@ -269,13 +273,12 @@ function parseCredsForHeadless(mergedValues, envParams) {
           key_id: mergedValues[`${lowerCaseProvider}KeyIdUserPool`],
           private_key: mergedValues[`${lowerCaseProvider}PrivateKeyUserPool`],
         };
-      } else {
-        return {
-          ProviderName: provider,
-          client_id: mergedValues[`${lowerCaseProvider}AppIdUserPool`],
-          client_secret: mergedValues[`${lowerCaseProvider}AppSecretUserPool`],
-        };
       }
+      return {
+        ProviderName: provider,
+        client_id: mergedValues[`${lowerCaseProvider}AppIdUserPool`],
+        client_secret: mergedValues[`${lowerCaseProvider}AppSecretUserPool`],
+      };
     }),
   );
   oAuthProviders.forEach(provider => {
@@ -290,9 +293,9 @@ function parseCredsForHeadless(mergedValues, envParams) {
       delete envParams[`${lowerCaseProvider}AppSecretUserPool`];
     }
   });
-}
+};
 
-function getRequiredParamsForHeadlessInit(projectType, previousValues) {
+const getRequiredParamsForHeadlessInit = (projectType, previousValues) => {
   const requiredParams = [];
 
   if (previousValues.thirdPartyAuth) {
@@ -332,9 +335,9 @@ function getRequiredParamsForHeadlessInit(projectType, previousValues) {
     }
   }
   return requiredParams;
-}
+};
 
-async function console(context, amplifyMeta) {
+const console = async (context, amplifyMeta) => {
   const cognitoOutput = getCognitoOutput(amplifyMeta);
   if (cognitoOutput) {
     const { AmplifyAppId, Region } = amplifyMeta.providers.awscloudformation;
@@ -392,9 +395,9 @@ async function console(context, amplifyMeta) {
   } else {
     context.print.error('Amazon Cognito resources have NOT been created for your project.');
   }
-}
+};
 
-function getCognitoOutput(amplifyMeta) {
+const getCognitoOutput = amplifyMeta => {
   let cognitoOutput;
   const categoryMeta = amplifyMeta.auth;
   const services = Object.keys(categoryMeta);
@@ -406,32 +409,32 @@ function getCognitoOutput(amplifyMeta) {
     }
   }
   return cognitoOutput;
-}
+};
 
-async function openAdminUI(context, appId, region) {
+const openAdminUI = async (context, appId, region) => {
   const { envName } = context.amplify.getEnvInfo();
   const providerPlugin = require(context.amplify.getProviderPlugins(context).awscloudformation);
   const baseUrl = providerPlugin.adminBackendMap[region].amplifyAdminUrl;
   const adminUrl = `${baseUrl}/admin/${appId}/${envName}/auth`;
   await open(adminUrl, { wait: false });
   context.print.success(adminUrl);
-}
+};
 
-async function openUserPoolConsole(context, region, userPoolId) {
+const openUserPoolConsole = async (context, region, userPoolId) => {
   const userPoolConsoleUrl = `https://${region}.console.aws.amazon.com/cognito/users/?region=${region}#/pool/${userPoolId}/details`;
   await open(userPoolConsoleUrl, { wait: false });
   context.print.info('User Pool console:');
   context.print.success(userPoolConsoleUrl);
-}
+};
 
-async function openIdentityPoolConsole(context, region, identityPoolId) {
+const openIdentityPoolConsole = async (context, region, identityPoolId) => {
   const identityPoolConsoleUrl = `https://${region}.console.aws.amazon.com/cognito/pool/?region=${region}&id=${identityPoolId}`;
   await open(identityPoolConsoleUrl, { wait: false });
   context.print.info('Identity Pool console:');
   context.print.success(identityPoolConsoleUrl);
-}
+};
 
-function getPermissionPolicies(context, service, resourceName, crudOptions) {
+const getPermissionPolicies = (context, service, resourceName, crudOptions) => {
   const { serviceWalkthroughFilename } = getSupportedServices()[service];
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { getIAMPolicies } = require(serviceWalkthroughSrc);
@@ -442,7 +445,7 @@ function getPermissionPolicies(context, service, resourceName, crudOptions) {
   }
 
   return getIAMPolicies(context, resourceName, crudOptions);
-}
+};
 
 module.exports = {
   addResource,

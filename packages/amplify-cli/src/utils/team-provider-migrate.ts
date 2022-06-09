@@ -1,7 +1,7 @@
 import { externalAuthEnable } from '@aws-amplify/amplify-category-auth';
 import { ensureEnvParamManager, getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import {
-  $TSAny, mergeDeploymentSecrets, PathConstants, pathManager, stateManager,
+  mergeDeploymentSecrets, PathConstants, pathManager, stateManager,
 } from 'amplify-cli-core';
 import chalk from 'chalk';
 import { Context } from '../domain/context';
@@ -58,9 +58,12 @@ const isInvalidEnvOrPulling = (context: Context): boolean => {
   return false;
 };
 
-const authResourceNameHasSecrets = (): $TSAny | undefined => {
+const authResourceNameHasSecrets = (): string | undefined => {
   const backendConfig = stateManager.getBackendConfig();
   const authResourceName = Object.keys(backendConfig?.auth || {})[0];
+  if (!authResourceName) {
+    return undefined;
+  }
   if (getEnvParamManager().getResourceParamManager('auth', authResourceName).hasParam(hostedUIProviderCredsField)) {
     return authResourceName;
   }

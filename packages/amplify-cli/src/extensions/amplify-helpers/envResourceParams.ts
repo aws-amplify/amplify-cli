@@ -51,6 +51,8 @@ export const saveEnvResourceParameters = (__: $TSContext | undefined, category: 
 
 /**
  * Load resource params from environment parameter manager and deployment secrets
+ *
+ * @deprecated use @aws-amplify/amplify-environment-parameters
  */
 export const loadEnvResourceParameters = (__: $TSContext | undefined, category: string, resource: string): $TSAny => {
   const envParameters = {

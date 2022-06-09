@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 import { ViewResourceTableParams } from './cliViewAPI';
 import { ServiceSelection } from './serviceSelection';
 import { Tag } from './tags';
@@ -59,6 +60,7 @@ export type $TSContext = {
   runtime: $TSAny;
   pluginPlatform: IPluginPlatform;
   newUserInfo?: $TSAny;
+  // eslint-disable-next-line spellcheck/spell-checker
   filesystem: IContextFilesystem;
   template: IContextTemplate;
   updatingAuth: $TSAny;
@@ -105,7 +107,8 @@ export type IContextPrint = {
    */
   success: (message: string) => void;
   /**
-   *  The next time we refactor code that uses this function, refactor the table function into formatter.ts from amplify-prompts and use that instead
+   * The next time we refactor code that uses this function, refactor the table function into formatter.ts from amplify-prompts and use
+   * that instead
    * @deprecated
    */
   table: (data: string[][], options?: { format?: 'markdown' | 'lean' }) => void;
@@ -137,8 +140,11 @@ export type IContextPrint = {
 };
 
 /**
+ * DO NOT USE. Use fs-extra.
  *
+ * @deprecated FS wrapper attached to the context object
  */
+// eslint-disable-next-line spellcheck/spell-checker
 export type IContextFilesystem = {
   remove: (targetPath: string) => void;
   read: (targetPath: string, encoding?: string) => $TSAny;
@@ -148,16 +154,12 @@ export type IContextFilesystem = {
   path: (...pathParts: string[]) => string;
 };
 
-/**
- *
- */
+// eslint-disable-next-line
 export type IContextTemplate = {
   generate: (opts: { template: string; target: string; props: $TSObject; directory: string }) => string;
 };
 
-/**
- *
- */
+// eslint-disable-next-line
 export type IPluginPlatform = {
   pluginDirectories: string[];
   pluginPrefixes: string[];
@@ -168,16 +170,12 @@ export type IPluginPlatform = {
   excluded: IPluginCollection;
 };
 
-/**
- *
- */
+// eslint-disable-next-line
 export type IPluginCollection = {
   [pluginType: string]: IPluginInfo[];
 };
 
-/**
- *
- */
+// eslint-disable-next-line
 export type IPluginInfo = {
   packageName: string;
   packageVersion: string;
@@ -186,7 +184,7 @@ export type IPluginInfo = {
 };
 
 /**
- *
+ * Describes the shape of the deployment secrets file
  */
 export type DeploymentSecrets = {
   appSecrets: Array<{
@@ -227,7 +225,7 @@ export type DeploymentSecrets = {
 export type GetPackageAssetPaths = () => Promise<string[]>;
 
 /**
- *
+ * Placeholder type for the plugin manifest object
  */
 export type $IPluginManifest = $TSAny;
 
@@ -255,14 +253,17 @@ export interface ResourceTuple {
   resourceName: string;
 }
 
+/* eslint-disable @typescript-eslint/naming-convention */
 /**
- * enum for supported Amplify frontends
+ * enum for supported Amplify frontend
  */
 export enum AmplifyFrontend {
   android = 'android',
   ios = 'ios',
   javascript = 'javascript',
 }
+/* eslint-enable */
+
 /**
  * AmplifyProjectConfig interface
  */
@@ -283,7 +284,7 @@ export interface ProviderContext {
 }
 
 /**
- *
+ * Placeholder type for the context copyJob method
  */
 export type $TSCopyJob = $TSAny;
 
@@ -386,6 +387,7 @@ interface AmplifyToolkit {
     overwriteObjectIfExists?: boolean,
   ) => void;
   updateamplifyMetaAfterResourceDelete: (category: string, resourceName: string) => void;
+  // eslint-disable-next-line spellcheck/spell-checker
   updateProvideramplifyMeta: (providerName: string, options: $TSObject) => void;
   updateamplifyMetaAfterPush: (resources: $TSObject[]) => void;
   // buildType is from amplify-function-plugin-interface but can't be imported here because it would create a circular dependency
@@ -394,6 +396,10 @@ interface AmplifyToolkit {
   updateBackendConfigAfterResourceAdd: (category: string, resourceName: string, resourceData: $TSObject) => void;
   updateBackendConfigAfterResourceUpdate: (category: string, resourceName: string, attribute: string, value: $TSAny) => void;
   updateBackendConfigAfterResourceRemove: (category: string, resourceName: string) => void;
+  /**
+   * DO NOT USE. Loads resource parameters from the team-provider-info file.
+   * @deprecated use @aws-amplify/amplify-environment-parameters instead
+   */
   loadEnvResourceParameters: (context: $TSContext, category: string, resourceName: string) => $TSAny;
   saveEnvResourceParameters: (context: $TSContext, category: string, resourceName: string, envSpecificParams?: $TSObject) => void;
   removeResourceParameters: (context: $TSContext, category: string, resource: string) => void;
@@ -427,4 +433,5 @@ interface AmplifyToolkit {
   getTags: (context: $TSContext) => Tag[],
 }
 
+// eslint-disable-next-line import/no-cycle
 export * from './plugin-facade';
