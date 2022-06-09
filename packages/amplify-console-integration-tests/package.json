@@ -1,6 +1,6 @@
 {
   "name": "amplify-console-integration-tests",
-  "version": "2.2.42-sub-username-identity-claim.2",
+  "version": "2.2.42-sub-username-identity-claim.3",
   "description": "",
   "repository": {
     "type": "git",
@@ -22,8 +22,8 @@
   },
   "dependencies": {
     "@types/ini": "^1.3.30",
-    "amplify-cli-core": "2.10.0-sub-username-identity-claim.2",
-    "amplify-e2e-core": "3.4.0-sub-username-identity-claim.2",
+    "amplify-cli-core": "2.10.0-sub-username-identity-claim.3",
+    "amplify-e2e-core": "3.4.0-sub-username-identity-claim.3",
     "aws-sdk": "^2.1113.0",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
