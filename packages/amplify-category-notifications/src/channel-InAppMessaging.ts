@@ -7,6 +7,7 @@
 import {
   $TSAny, $TSContext, AmplifySupportedService,
   IPluginCapabilityAPIResponse,
+  NotificationChannels,
 } from 'amplify-cli-core';
 
 /* eslint-disable @typescript-eslint/no-var-requires */
@@ -14,7 +15,7 @@ import * as inquirer from 'inquirer';
 import ora from 'ora';
 import { NotificationsDB } from './notifications-backend-cfg-api';
 import {
-  invokeAnalyticsResourceToggleNotificationChannel, NotificationChannels,
+  invokeAnalyticsResourceToggleNotificationChannel,
 } from './analytics-resource-api';
 import { IChannelAPIResponse, ChannelAction, ChannelConfigDeploymentType } from './notifications-api-types';
 import { ChannelAPI } from './notifications-backend-cfg-channel-api';
