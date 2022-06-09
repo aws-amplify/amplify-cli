@@ -771,7 +771,8 @@ describe("@model @primaryIndex @index auth", () => {
       { allow: owner, ownerField: "parent", operations: [read] },
       { allow: owner, ownerField: "child", operations: [read] }
     ]){
-      parent: ID! @primaryKey(sortKeyFields: ["child"]) @index(name: "byParent", queryField: "byParent")
+      id: ID!
+      parent: ID! @primaryKey(sortKeyFields: ["id"]) @index(name: "byParent", queryField: "byParent")
       child: ID! @index(name: "byChild", queryField: "byChild")
       createdAt: AWSDateTime
       updatedAt: AWSDateTime
@@ -791,10 +792,22 @@ describe("@model @primaryIndex @index auth", () => {
     expect(listAuthVTLRequest.stash.authFilter).toEqual(
       expect.objectContaining({
         or: expect.arrayContaining([
-          expect.objectContaining({ child: { in: [ownerRequest.jwt.sub, "user1", `${ownerRequest.jwt.sub}::user1`] } }),
-          expect.objectContaining({ parent: { in: [ownerRequest.jwt.sub, "user1", `${ownerRequest.jwt.sub}::user1`] } })
-        ])
-      })
+          {
+            child: {
+              eq: ownerRequest.jwt.sub,
+            },
+          }, {
+            child: {
+              eq: 'user1',
+            },
+          }, {
+            child: {
+              eq: `${ownerRequest.jwt.sub}::user1`,
+            },
+          },
+          expect.objectContaining({ parent: { in: [ownerRequest.jwt.sub, 'user1', `${ownerRequest.jwt.sub}::user1`] } }),
+        ]),
+      }),
     );
 
     // should still change model query expression if the partition key is provided
@@ -821,31 +834,17 @@ describe("@model @primaryIndex @index auth", () => {
       requestParameters: ownerRequest
     });
     expect(listAuthVTLRequest.hadException).toEqual(false);
-    expect(listAuthVTLRequest.stash.authFilter).not.toBeDefined();
+    expect(listAuthVTLRequest.stash.authFilter).toBeDefined();
     // the $ctx.args.parent is not resolving in mock vtl engine
     // not an issue in the service the index e2e tests this scenario
     /* eslint-disable jest/no-interpolation-in-snapshots */
     expect(listAuthVTLRequest.stash.modelQueryExpression).toMatchInlineSnapshot(`
       Object {
-        "expression": "#parent = :parent AND #child = :child",
+        "expression": "#parent = :parent",
         "expressionNames": Object {
-          "#child": "child",
           "#parent": "parent",
         },
         "expressionValues": Object {
-          ":child": Object {
-            "L": Array [
-              Object {
-                "S": "${ownerRequest.jwt.sub}",
-              },
-              Object {
-                "S": "user1",
-              },
-              Object {
-                "S": "${ownerRequest.jwt.sub}::user1",
-              },
-            ],
-          },
           ":parent": Object {
             "S": "$ctx.args.parent",
           },
