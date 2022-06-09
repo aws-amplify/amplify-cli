@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0-sub-username-identity-claim.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.2.42...amplify-graphql-migration-tests@2.3.0-sub-username-identity-claim.5) (2022-06-09)
+
+
+### Features
+
+* bump api cat and flip ff ([ffd5770](https://github.com/aws-amplify/amplify-cli/commit/ffd5770a7e2487d2235671f8c65947659096747f))
+
+
+
+
+
 # [2.3.0-sub-username-identity-claim.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.2.42...amplify-graphql-migration-tests@2.3.0-sub-username-identity-claim.4) (2022-06-09)
 
 
