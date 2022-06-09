@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable spellcheck/spell-checker */
 import {
-  AmplifyCategories, AmplifySupportedService, stateManager, IAmplifyResource, pathManager, $TSContext, IAnalyticsResource, PluginAPIError,
+  AmplifyCategories, AmplifySupportedService, stateManager, IAmplifyResource,
+  pathManager, $TSContext, IAnalyticsResource, PluginAPIError, NotificationChannels, IPluginCapabilityAPIResponse,
 } from 'amplify-cli-core';
 import { addResource } from './provider-utils/awscloudformation/index';
 
@@ -10,7 +10,7 @@ import { addResource } from './provider-utils/awscloudformation/index';
  * then only return resources matching the service.
  * @returns Array of resources in Analytics category (IAmplifyResource type)
  */
-export const analyticsAPIGetResources = (resourceProviderServiceName?: string): Array<IAnalyticsResource> => {
+export const analyticsPluginAPIGetResources = (resourceProviderServiceName?: string): Array<IAnalyticsResource> => {
   const resourceList: Array<IAnalyticsResource> = [];
   const amplifyMeta = stateManager.getMeta();
   if (amplifyMeta[AmplifyCategories.ANALYTICS]) {
@@ -39,10 +39,11 @@ export const analyticsAPIGetResources = (resourceProviderServiceName?: string): 
  * @param resourceProviderServiceName AWS service which provides the Analytics category.
  * @returns Created amplify resource
  */
-export const analyticsAPICreateResource = async (context: $TSContext, resourceProviderServiceName: string): Promise<IAmplifyResource> => {
-  const resources : Array<IAmplifyResource> = analyticsAPIGetResources(resourceProviderServiceName);
+export const analyticsPluginAPICreateResource = async (context: $TSContext, resourceProviderServiceName: string)
+: Promise<IAmplifyResource> => {
+  const resources : Array<IAmplifyResource> = analyticsPluginAPIGetResources(resourceProviderServiceName);
   if (resources.length > 0) {
-    // console.log(`SACPCDEBUG : analyticsAPICreateResource :1: ${resourceProviderServiceName} `,
+    // console.log(`SACPCDEBUG : analyticsPluginAPICreateResource :1: ${resourceProviderServiceName} `,
     // `resource found ${JSON.stringify(resources[0], null, 2)}`);
     return resources[0];
   }
@@ -69,9 +70,10 @@ export const analyticsAPICreateResource = async (context: $TSContext, resourcePr
  * @param channel - Notification channel to be toggled
  * @param enableChannel - True - enable notification/ false - disable notification
  */
-export const analyticsResourceToggleNotificationChannel = async (_: $TSContext, resourceProviderServiceName: string,
-  channel: NotificationChannels, enableChannel: boolean): Promise<PluginCapabilityAPIResponse> => {
-  const response: PluginCapabilityAPIResponse = {
+export const analyticsPluginAPIToggleNotificationChannel = async (_: $TSContext, resourceProviderServiceName: string,
+  channel: NotificationChannels, enableChannel: boolean): Promise<IPluginCapabilityAPIResponse> => {
+  const response: IPluginCapabilityAPIResponse = {
+    pluginName: AmplifyCategories.ANALYTICS,
     resourceProviderServiceName,
     capability: AmplifyCategories.NOTIFICATIONS,
     subCapability: channel,
@@ -93,7 +95,7 @@ export const analyticsResourceToggleNotificationChannel = async (_: $TSContext, 
   }
 
   // Get all resources belonging to the Analytics category and support Notifications capability
-  const resources = analyticsAPIGetResources(resourceProviderServiceName);
+  const resources = analyticsPluginAPIGetResources(resourceProviderServiceName);
   if (!resources) {
     response.status = false;
     response.errorCode = PluginAPIError.E_NORES;
@@ -113,30 +115,6 @@ export const analyticsResourceToggleNotificationChannel = async (_: $TSContext, 
   response.status = true;
   return response;
 };
-
-/**
- * Plugin API response when client configures a capability ( e.g notifications )
- */
-export interface PluginCapabilityAPIResponse {
-    resourceProviderServiceName: string, // Service which provisions capability, subCapability e.g Pinpoint
-    capability: string, // e.g Notifications
-    subCapability?: string, // e.g In-AppMessaging
-    status: boolean, // true - successfully applied, false - failed to apply
-    errorCode?: PluginAPIError,
-    reasonMsg?: string, // In case of error, a user readable error string
-}
-
-/**
- * Notification Channels supported in Amplify
- */
-export enum NotificationChannels {
-    APNS = 'APNS',
-    FCM = 'FCM',
-    EMAIL = 'Email',
-    SMS = 'SMS',
-    IN_APP_MSG = 'InAppMessaging',
-    PUSH_NOTIFICATION = 'PushNotification'
-}
 
 /**
  * Build the Notification channel's IAM policy name using the same shortID as the pinpoint policy name

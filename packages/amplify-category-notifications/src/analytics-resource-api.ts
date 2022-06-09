@@ -6,7 +6,8 @@
  */
 
 import {
-  $TSContext, $TSMeta, AmplifyCategories, IAmplifyResource, IAnalyticsResource, IPluginCapabilityAPIResponse,
+  $TSContext, $TSMeta, AmplifyCategories, IAmplifyResource, IAnalyticsResource,
+  IPluginCapabilityAPIResponse, NotificationChannels,
 } from 'amplify-cli-core';
 
 /**
@@ -18,7 +19,7 @@ export const invokeAnalyticsAPIGetResources = async (context: $TSContext, resour
   Promise<Array<IAnalyticsResource>> => {
   const analyticsResources = (await context.amplify.invokePluginMethod(context,
     'analytics', undefined,
-    'analyticsAPIGetResources', [resourceProviderServiceName])) as Array<IAnalyticsResource>;
+    'analyticsPluginAPIGetResources', [resourceProviderServiceName])) as Array<IAnalyticsResource>;
   return analyticsResources;
 };
 
@@ -32,7 +33,7 @@ export const invokeAnalyticsAPICreateResource = async (context: $TSContext, reso
   Promise<IAmplifyResource> => {
   const analyticsResource = (await context.amplify.invokePluginMethod(context,
     'analytics', undefined,
-    'analyticsAPICreateResource', [context, resourceProviderServiceName])) as IAmplifyResource;
+    'analyticsPluginAPICreateResource', [context, resourceProviderServiceName])) as IAmplifyResource;
   return analyticsResource;
 };
 
@@ -48,7 +49,7 @@ export const invokeAnalyticsResourceToggleNotificationChannel = async (context: 
   channel: NotificationChannels, enableChannel: boolean): Promise<IPluginCapabilityAPIResponse> => {
   const toggleNotificationsResponse = (await context.amplify.invokePluginMethod(context,
     'analytics', resourceProviderServiceName,
-    'analyticsResourceToggleNotificationChannel', [context, resourceProviderServiceName, channel, enableChannel])) as IPluginCapabilityAPIResponse;
+    'analyticsPluginAPIToggleNotificationChannel', [context, resourceProviderServiceName, channel, enableChannel])) as IPluginCapabilityAPIResponse;
   return toggleNotificationsResponse;
 };
 
@@ -62,15 +63,3 @@ export const invokeGetLastPushTimeStamp = async (amplifyMeta: $TSMeta, analytics
   const analyticsLastPushTimeStamp = amplifyMeta[AmplifyCategories.ANALYTICS][analyticsResourceName].lastPushTimeStamp;
   return analyticsLastPushTimeStamp;
 };
-
-/**
- * Notification Channels supported on Amplify Analytics category resources
- */
-export enum NotificationChannels {
-  APNS = 'APNS',
-  FCM = 'FCM',
-  EMAIL = 'Email',
-  SMS = 'SMS',
-  IN_APP_MSG = 'InAppMessaging',
-  PUSH_NOTIFICATION = 'PushNotification'
-}

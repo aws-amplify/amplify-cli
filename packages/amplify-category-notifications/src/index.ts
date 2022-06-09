@@ -6,6 +6,12 @@ import { $TSAny, $TSContext } from 'amplify-cli-core';
 import * as path from 'path';
 import * as pinpointHelper from './pinpoint-helper';
 import * as multiEnvManager from './multi-env-manager';
+import { notificationsPluginAPIGetResource, notificationsPluginAPIRemoveApp } from './notifications-resource-api';
+
+export {
+  notificationsPluginAPIGetResource,
+  notificationsPluginAPIRemoveApp,
+} from './notifications-resource-api';
 
 const category = 'notifications';
 
@@ -70,4 +76,6 @@ module.exports = {
   migrate,
   executeAmplifyCommand,
   handleAmplifyEvent,
+  notificationsPluginAPIGetResource,
+  notificationsPluginAPIRemoveApp,
 };

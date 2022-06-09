@@ -29,17 +29,6 @@ export class ChannelAPI {
      */
     public static getChannelHandlerPath = (channelName: string): string => `${path.join(__dirname, ChannelAPI.channelViewInfo[channelName].module)}`
 
-    public static getChannelViewName = (channelName: string): string => ChannelAPI.channelViewInfo[channelName].viewName;
-
-    public static getChannelNameFromView = (channelViewString: string): string => {
-      for (const channelName of Object.keys(ChannelAPI.ChannelType)) {
-        if (ChannelAPI.channelViewInfo[channelName].viewName === channelViewString) {
-          return channelName;
-        }
-      }
-      throw new Error(`No channel name found for view ${channelViewString}`);
-    };
-
     /**
      * Map of channel-type to channel-info. This map will be extended when new notification
      * channels are enabled.
@@ -93,8 +82,18 @@ export class ChannelAPI {
                                       && channelName in ChannelAPI.ChannelType);
 
       public static getChannelViewInfo = (channelName: string): IChannelViewInfo => (ChannelAPI.channelViewInfo[channelName]);
-      public static getChannelViewName = (channelName: string): string => (ChannelAPI.channelViewInfo[channelName].viewName);
       public static getChannelViewHelp = (channelName: string): string => (ChannelAPI.channelViewInfo[channelName].help);
+      public static getChannelViewName = (channelName: string): string => ChannelAPI.channelViewInfo[channelName].viewName;
+
+      public static getChannelNameFromView = (channelViewString: string): string => {
+        for (const channelName of Object.keys(ChannelAPI.ChannelType)) {
+          if (ChannelAPI.channelViewInfo[channelName].viewName === channelViewString) {
+            return channelName;
+          }
+        }
+        throw new Error(`No channel name found for view ${channelViewString}`);
+      };
+
       /**
        * For a given notifications resource get local and deployed channel availability
        * @param backendResourceConfig notifications resource info from the backend config

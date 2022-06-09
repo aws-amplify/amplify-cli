@@ -67,6 +67,7 @@ export interface IAmplifyResource {
  */
 export enum PluginAPIError {
   E_NORES = 'E_NORES', // no resources found for given category/filter
+  E_UNKNOWN = 'E_UNKNOWN', // unknown error.The downstream API needs to be refactored to return a more specific error code.
   E_NO_SVC_PROVIDER = 'E_NO_SVC_PROVIDER', // Given AWS service is not a provider for a given category
   E_SVC_PROVIDER_NO_CAPABILITY = 'E_SVC_PROVIDER_NO_CAPABILITY', // Provider does not support requested capability
   E_SVC_PROVIDER_SDK = 'E_SVC_SDK', // Generic error thrown by AWS SDK
@@ -74,15 +75,23 @@ export enum PluginAPIError {
 }
 
 /**
- * Plugin API response when client configures a capability ( e.g notifications )
+ * Generic response structure for Plugin API response.
+ * This could be extended to return specific API response
  */
-export interface IPluginCapabilityAPIResponse {
+export interface IPluginAPIResponse {
+  pluginName:string,
   resourceProviderServiceName: string, // Service which provisions capability, subCapability e.g Pinpoint
-  capability: string, // e.g Notifications
-  subCapability?: string, // e.g In-AppMessaging
   status: boolean, // true - successfully applied, false - failed to apply
   errorCode?: PluginAPIError,
   reasonMsg?: string, // In case of error, a user readable error string
+}
+
+/**
+ * Plugin API response when client configures a capability ( e.g notifications )
+ */
+export interface IPluginCapabilityAPIResponse extends IPluginAPIResponse {
+  capability: string, // e.g Notifications
+  subCapability?: string, // e.g In-AppMessaging
 }
 
 /**

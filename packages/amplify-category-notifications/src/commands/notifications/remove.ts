@@ -8,6 +8,7 @@ import { IChannelAPIResponse } from '../../notifications-api-types';
 import { NotificationsDB } from '../../notifications-backend-cfg-api';
 import { NotificationsMeta } from '../../notifications-meta-api';
 import { getPinpointAppStatus, isPinpointAppDeployed, isPinpointAppOwnedByNotifications } from '../../pinpoint-helper';
+import { notificationsAPIRemoveApp } from '../../notifications-resource-api';
 
 const CANCEL = 'Cancel';
 
@@ -16,15 +17,15 @@ const CANCEL = 'Cancel';
  * @param context amplify cli context
  * @returns updated amplify cli context
  */
-const deleteNotificationsApp = async (context:$TSContext): Promise<$TSContext> => {
-  const channelAPIResponseList:IChannelAPIResponse[] = await notificationManager.disableAllChannels(context);
-  for (const channelAPIResponse of channelAPIResponseList) {
-    await multiEnvManager.writeData(context, channelAPIResponse);
-  }
-  await notificationManager.removeEmptyNotificationsApp(context);
-  await multiEnvManager.writeData(context, undefined);
-  return context;
-};
+// const deleteNotificationsApp = async (context:$TSContext): Promise<$TSContext> => {
+//   const channelAPIResponseList:IChannelAPIResponse[] = await notificationManager.disableAllChannels(context);
+//   for (const channelAPIResponse of channelAPIResponseList) {
+//     await multiEnvManager.writeData(context, channelAPIResponse);
+//   }
+//   await notificationManager.removeEmptyNotificationsApp(context);
+//   await multiEnvManager.writeData(context, undefined);
+//   return context;
+// };
 
 /**
  * Remove walkthrough for notifications resource
@@ -92,7 +93,7 @@ export const run = async (context:$TSContext): Promise<$TSContext> => {
     } else {
       await pinpointHelper.ensurePinpointApp(context, notificationsMeta, pinpointAppStatus, envName);
       context.print.info('Disabling all notifications from the Pinpoint resource');
-      await deleteNotificationsApp(context);
+      await notificationsAPIRemoveApp(context);
       // Pinpoint App is not owned by Notifications
       context.print.success('All notifications have been disabled');
       context.print.info(`${DELETE_PINPOINT_APP} is provisioned through analytics`);

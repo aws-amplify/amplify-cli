@@ -87,7 +87,7 @@ export const disable = async (context: $TSContext) : Promise<$TSAny> => {
 
   spinner.start('Updating SMS channel.');
   return new Promise((resolve, reject) => {
-    context.exeInfo.pinpointClient.updateSmsChannel(params, (err:$TSAny, data:$TSAny) => {
+    context.exeInfo.pinpointClient.updateSmsChannel(params, (err:Error|string, data:$TSAny) => {
       if (err) {
         spinner.fail('update channel error');
         const errResponse = buildPinpointChannelResponseError(ChannelAction.DISABLE, deploymentType, channelName, err);
