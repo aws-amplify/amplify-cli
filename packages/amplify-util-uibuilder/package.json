@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-util-uibuilder",
-  "version": "1.2.28-sub-username-identity-claim.1",
+  "version": "1.2.28-sub-username-identity-claim.2",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -15,9 +15,9 @@
   "dependencies": {
     "@aws-amplify/codegen-ui": "^2.2.0",
     "@aws-amplify/codegen-ui-react": "^2.2.0",
-    "amplify-cli-core": "2.10.0-sub-username-identity-claim.1",
+    "amplify-cli-core": "2.10.0-sub-username-identity-claim.2",
     "amplify-prompts": "2.2.0",
-    "amplify-provider-awscloudformation": "6.4.0-sub-username-identity-claim.1",
+    "amplify-provider-awscloudformation": "6.4.0-sub-username-identity-claim.2",
     "aws-sdk": "^2.1113.0",
     "ora": "^4.0.3"
   },

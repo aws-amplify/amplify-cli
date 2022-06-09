@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.4.0-sub-username-identity-claim.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.3.33...@aws-amplify/amplify-category-custom@2.4.0-sub-username-identity-claim.2) (2022-06-09)
+
+
+### Features
+
+* implemented push normalization ([#10469](https://github.com/aws-amplify/amplify-cli/issues/10469)) ([e70d6c9](https://github.com/aws-amplify/amplify-cli/commit/e70d6c95cd9826a9d2785607341e8e1432306a30))
+
+
+
+
+
 # [2.4.0-sub-username-identity-claim.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.3.33...@aws-amplify/amplify-category-custom@2.4.0-sub-username-identity-claim.1) (2022-06-09)
 
 

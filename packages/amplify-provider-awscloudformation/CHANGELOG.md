@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.4.0-sub-username-identity-claim.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.3.0...amplify-provider-awscloudformation@6.4.0-sub-username-identity-claim.2) (2022-06-09)
+
+
+### Features
+
+* allow login via admin ui on safari ([#10407](https://github.com/aws-amplify/amplify-cli/issues/10407)) ([f6f563c](https://github.com/aws-amplify/amplify-cli/commit/f6f563ceb32a17db8307d1fb7d4f31f115ed2761))
+* bump api cat and flip ff ([6db45f0](https://github.com/aws-amplify/amplify-cli/commit/6db45f05faddb23a1ae946c0af1f64f42342f259))
+* implemented push normalization ([#10469](https://github.com/aws-amplify/amplify-cli/issues/10469)) ([e70d6c9](https://github.com/aws-amplify/amplify-cli/commit/e70d6c95cd9826a9d2785607341e8e1432306a30))
+
+
+
+
+
 # [6.4.0-sub-username-identity-claim.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.3.0...amplify-provider-awscloudformation@6.4.0-sub-username-identity-claim.1) (2022-06-09)
 
 
