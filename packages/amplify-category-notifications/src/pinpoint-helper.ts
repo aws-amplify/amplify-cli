@@ -1,10 +1,3 @@
-/* eslint-disable max-depth */
-/* eslint-disable arrow-body-style */
-/* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable global-require */
-/* eslint-disable import/no-dynamic-require */
-/* eslint-disable no-param-reassign */
-
 import ora from 'ora';
 import {
   $TSAny, $TSContext, open, AmplifySupportedService, AmplifyCategories, stateManager, IAnalyticsResource, PluginAPIError,
@@ -56,10 +49,9 @@ export interface IPinpointAppStatus {
 /**
  * Given a pinpoint resource deployment state returns true if channel can be programmed
  */
-export const isPinpointAppDeployed = (pinpointStatus: IPinpointDeploymentStatus): boolean => {
-  return ((pinpointStatus === IPinpointDeploymentStatus.APP_IS_DEPLOYED)
+export const isPinpointAppDeployed = (pinpointStatus: IPinpointDeploymentStatus): boolean => (
+  (pinpointStatus === IPinpointDeploymentStatus.APP_IS_DEPLOYED)
    || (pinpointStatus === IPinpointDeploymentStatus.APP_IS_DEPLOYED_CUSTOM));
-};
 
 /**
  * Only legacy apps where PinpointApp is allocated through
@@ -67,9 +59,8 @@ export const isPinpointAppDeployed = (pinpointStatus: IPinpointDeploymentStatus)
  * @param pinpointStatus deployment state of the PinpointApp
  * @returns true if owned by Notifications
  */
-export const isPinpointAppOwnedByNotifications = (pinpointStatus: IPinpointDeploymentStatus): boolean => {
-  return (pinpointStatus === IPinpointDeploymentStatus.APP_IS_DEPLOYED_CUSTOM);
-};
+export const isPinpointAppOwnedByNotifications = (pinpointStatus: IPinpointDeploymentStatus): boolean => (
+  pinpointStatus === IPinpointDeploymentStatus.APP_IS_DEPLOYED_CUSTOM);
 
 /**
  * Helper: convert generic exception to reason message
@@ -77,7 +68,7 @@ export const isPinpointAppOwnedByNotifications = (pinpointStatus: IPinpointDeplo
  * @param error Error thrown by the library function
  * @returns error message extracted from Error
  */
-const getErrorMessage = (error: unknown) : string => {
+const getErrorMessage = (error: Error|string) : string => {
   if (error instanceof Error) {
     return error.message;
   }
@@ -123,6 +114,7 @@ export const buildPinpointChannelResponseSuccess = (action: ChannelAction,
   channel: channelName,
   deploymentType,
   response: {
+    pluginName: AmplifyCategories.NOTIFICATIONS,
     resourceProviderServiceName: AmplifySupportedService.PINPOINT,
     capability: AmplifyCategories.NOTIFICATIONS, // Notifications
     subCapability: channelName, // e.g SMS
@@ -141,11 +133,12 @@ export const buildPinpointChannelResponseSuccess = (action: ChannelAction,
  * @returns Channel API response
  */
 export const buildPinpointChannelResponseError = (action: ChannelAction,
-  deploymentType: ChannelConfigDeploymentType, channelName: string, err: Error): IChannelAPIResponse => ({
+  deploymentType: ChannelConfigDeploymentType, channelName: string, err: Error|string): IChannelAPIResponse => ({
   action,
   deploymentType,
   channel: channelName,
   response: {
+    pluginName: AmplifyCategories.NOTIFICATIONS,
     resourceProviderServiceName: AmplifySupportedService.PINPOINT,
     capability: AmplifyCategories.NOTIFICATIONS, // Notifications
     subCapability: channelName, // e.g SMS
@@ -180,7 +173,7 @@ export const getPinpointAppStatusNotifications = (notificationsMeta: $TSAny,
 };
 
 /**
- * Check if PinpointApp is created in Analytics and Notifications.
+ * Check if PinpointApp is created in Analytics and/or Notifications.
  */
 export const getPinpointAppStatus = async (context: $TSContext, amplifyMeta: $TSAny,
   pinpointNotificationsMeta: $TSAny, envName: string|undefined): Promise<IPinpointAppStatus> => {
@@ -339,7 +332,7 @@ export const deletePinpointApp = async (context: $TSContext):Promise<void> => {
 };
 
 /**
- * Scan AmplifyMeta for given category
+ * Scan AmplifyMeta for given category (Legacy - needs refactor)
  * @param categoryMeta - CategoryMeta is updated if CLI is regulating pinpoint resource name
  * @param options - amplify cli options
  */
@@ -358,9 +351,13 @@ export const scanCategoryMetaForPinpoint = (categoryMeta: $TSAny, options: $TSAn
 
         if (options && options.isRegulatingResourceName) {
           const regulatedResourceName = PinpointName.extractResourceName(result.Name, options.envName);
+          // eslint-disable-next-line no-param-reassign
           options.regulatedResourceName = regulatedResourceName;
+          // eslint-disable-next-line max-depth
           if (resourceName !== regulatedResourceName) {
+            // eslint-disable-next-line no-param-reassign
             categoryMeta[regulatedResourceName] = serviceMeta;
+            // eslint-disable-next-line no-param-reassign
             delete categoryMeta[resourceName];
           }
         }
@@ -378,6 +375,7 @@ const removeCategoryMetaForPinpoint = (categoryMeta: $TSAny, pinpointAppId: stri
     for (let i = 0; i < services.length; i++) {
       const serviceMeta = categoryMeta[services[i]];
       if (serviceMeta.service === 'Pinpoint' && serviceMeta.output && serviceMeta.output.Id === pinpointAppId) {
+        // eslint-disable-next-line no-param-reassign
         delete categoryMeta[services[i]];
       }
     }
@@ -403,6 +401,7 @@ const deleteApp = async (context : $TSContext, pinpointAppId : string) : Promise
         reject(err);
       } else {
         spinner.succeed(`Successfully deleted Pinpoint project: ${data.ApplicationResponse.Name}`);
+        // eslint-disable-next-line no-param-reassign
         data.ApplicationResponse.Region = pinpointClient.config.region;
         resolve(data.ApplicationResponse);
       }
@@ -430,7 +429,7 @@ export const channelInAppConsole = (context: $TSContext):void => {
  */
 export const getPinpointClient = async (context : $TSContext, action: string, envName: string):Promise<$TSAny> => {
   const providerPlugins = context.amplify.getProviderPlugins(context);
-  const provider = require(providerPlugins[providerName]);
+  const provider = await import(providerPlugins[providerName]);
   return provider.getConfiguredPinpointClient(context, AmplifyCategories.NOTIFICATIONS, action, envName);
 };
 

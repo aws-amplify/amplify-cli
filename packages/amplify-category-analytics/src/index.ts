@@ -8,8 +8,8 @@ import { $TSAny, $TSContext } from 'amplify-cli-core';
 import * as path from 'path';
 import inquirer, { QuestionCollection } from 'inquirer';
 import {
-  analyticsAPICreateResource, analyticsAPIGetResources,
-  analyticsResourceToggleNotificationChannel,
+  analyticsPluginAPICreateResource, analyticsPluginAPIGetResources,
+  analyticsPluginAPIToggleNotificationChannel,
 } from './analytics-resource-api';
 import pinpointHelper from './lib/pinpoint-helper';
 import kinesisHelper from './lib/kinesis-helper';
@@ -17,7 +17,7 @@ import * as pinpointWalkthrough from './provider-utils/awscloudformation/service
 
 const category = 'analytics';
 export {
-  analyticsAPIGetResources, analyticsAPICreateResource, analyticsResourceToggleNotificationChannel,
+  analyticsPluginAPIGetResources, analyticsPluginAPICreateResource, analyticsPluginAPIToggleNotificationChannel,
 } from './analytics-resource-api';
 
 /**
@@ -127,7 +127,7 @@ module.exports = {
   getPermissionPolicies,
   executeAmplifyCommand,
   handleAmplifyEvent,
-  analyticsAPIGetResources,
-  analyticsAPICreateResource,
-  analyticsResourceToggleNotificationChannel,
+  analyticsPluginAPIGetResources,
+  analyticsPluginAPICreateResource,
+  analyticsPluginAPIToggleNotificationChannel,
 };
