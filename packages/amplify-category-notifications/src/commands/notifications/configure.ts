@@ -14,25 +14,30 @@ import { isPinpointAppDeployed } from '../../pinpoint-helper';
  */
 export const run = async (context:$TSContext): Promise<$TSContext> => {
   context.exeInfo = context.amplify.getProjectDetails();
-  const availableChannels = Notifications.ChannelAPI.getAvailableChannels();
-  let channelName = context.parameters.first;
+  const availableChannelViewNames = Notifications.ChannelAPI.getAvailableChannelViewNames();
+  const channelName = context.parameters.first;
+  let channelViewName = (channelName) ? Notifications.ChannelAPI.getChannelViewName(channelName) : undefined;
 
-  if (!channelName || !availableChannels.includes(channelName)) {
+  if (!channelViewName || !availableChannelViewNames.includes(channelViewName)) {
     const answer = await inquirer.prompt({
       name: 'selection',
       type: 'list',
-      message: 'Choose the push notification channel to configure.',
-      choices: availableChannels,
-      default: availableChannels[0],
+      message: 'Choose the notification channel to configure.',
+      choices: availableChannelViewNames,
+      default: availableChannelViewNames[0],
     });
-    channelName = answer.selection;
+    channelViewName = answer.selection;
   }
-
-  const pinpointAppStatus = await pinpointHelper.ensurePinpointApp(context, undefined);
-  if (isPinpointAppDeployed(pinpointAppStatus.status)
-  || Notifications.ChannelAPI.isChannelDeploymentDeferred(channelName)) {
-    const channelAPIResponse : IChannelAPIResponse|undefined = await notificationManager.configureChannel(context, channelName);
-    await multiEnvManager.writeData(context, channelAPIResponse);
+  if (channelViewName) {
+    const selectedChannel = Notifications.ChannelAPI.getChannelNameFromView(channelViewName);
+    const pinpointAppStatus = await pinpointHelper.ensurePinpointApp(context, undefined);
+    if (isPinpointAppDeployed(pinpointAppStatus.status)
+    || Notifications.ChannelAPI.isChannelDeploymentDeferred(selectedChannel)) {
+      const channelAPIResponse : IChannelAPIResponse|undefined = await notificationManager.configureChannel(context, selectedChannel);
+      await multiEnvManager.writeData(context, channelAPIResponse);
+    }
+  } else {
+    throw new Error(`Update failure: Invalid Channel selected ${channelViewName}`);
   }
   return context;
 };

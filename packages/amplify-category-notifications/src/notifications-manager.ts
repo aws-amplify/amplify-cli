@@ -86,8 +86,8 @@ export const configureChannel = async (context: $TSContext, channelName: string)
     }
 
     const channelActionHandler:NotificationsChannelAPIModule = await import(Notifications.ChannelAPI.getChannelHandlerPath(channelName));
-    const enableChannelResponse = await channelActionHandler.configure(context);
-    return enableChannelResponse;
+    const configChannelResponse = await channelActionHandler.configure(context);
+    return configChannelResponse;
   }
   return undefined;
 };

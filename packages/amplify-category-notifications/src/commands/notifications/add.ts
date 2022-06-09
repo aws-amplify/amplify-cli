@@ -8,27 +8,39 @@ import { enableChannel } from '../../notifications-manager';
 import { writeData } from '../../multi-env-manager';
 import { ChannelConfigDeploymentType, IChannelAPIResponse } from '../../notifications-api-types';
 import { NotificationsMeta } from '../../notifications-meta-api';
-import { NotificationsDB as Notifications } from '../../notifications-backend-cfg-api';
+import { NotificationsDB as Notifications, NotificationsDB } from '../../notifications-backend-cfg-api';
 
 export const name = 'add';
 export const alias = 'enable';
 
+/**
+ * Display question to select notification channel to be enabled
+ * @param context amplify cli context
+ * @param availableChannels all channels supported in Amplify notifications
+ * @param disabledChannels channels which have been already programmed
+ * @param selectedChannel previously selected channel
+ * @returns user selected channel name
+ */
 const viewQuestionAskNotificationChannelToBeEnabled = async (context:$TSContext, availableChannels: Array<string>,
   disabledChannels:Array<string>, selectedChannel: string|undefined):Promise<string|undefined> => {
-  let channelName = selectedChannel;
-  if (!channelName || !availableChannels.includes(channelName)) {
+  let channelViewName = (selectedChannel) ? NotificationsDB.ChannelAPI.getChannelViewName(selectedChannel) : undefined;
+  const availableChannelViewNames = availableChannels.map(channelName => NotificationsDB.ChannelAPI.getChannelViewName(channelName));
+  const disabledChannelViewNames = disabledChannels.map(channelName => NotificationsDB.ChannelAPI.getChannelViewName(channelName));
+
+  if (!channelViewName || !availableChannelViewNames.includes(channelViewName)) {
     const answer = await prompt({
       name: 'selection',
       type: 'list',
       message: 'Choose the notification channel to enable.',
-      choices: disabledChannels,
-      default: disabledChannels[0],
+      choices: disabledChannelViewNames,
+      default: disabledChannelViewNames[0],
     });
-    channelName = answer.selection;
-  } else if (!disabledChannels.includes(channelName)) {
-    context.print.info(`The ${channelName} channel has already been enabled.`);
-    channelName = undefined;
+    channelViewName = answer.selection;
+  } else if (!disabledChannelViewNames.includes(channelViewName)) {
+    context.print.info(`The ${channelViewName} channel has already been enabled.`);
+    channelViewName = undefined;
   }
+  const channelName = (channelViewName) ? NotificationsDB.ChannelAPI.getChannelNameFromView(channelViewName) : undefined;
   return channelName;
 };
 
