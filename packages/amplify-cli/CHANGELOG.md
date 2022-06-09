@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.5.0-sub-username-identity-claim-2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.4.0...@aws-amplify/cli-internal@8.5.0-sub-username-identity-claim-2.0) (2022-06-09)
+
+
+### Bug Fixes
+
+* create same identifier for flow data and reporter ([#10516](https://github.com/aws-amplify/amplify-cli/issues/10516)) ([ccd212e](https://github.com/aws-amplify/amplify-cli/commit/ccd212eaef9890c03435ad5244f16ccc4db4fe22))
+* revert running amplify version on install ([#10529](https://github.com/aws-amplify/amplify-cli/issues/10529)) ([1539b24](https://github.com/aws-amplify/amplify-cli/commit/1539b246b04ae7f68dc83522c3ff4df96e602c08))
+
+
+### Features
+
+* bump api cat and flip ff ([6db45f0](https://github.com/aws-amplify/amplify-cli/commit/6db45f05faddb23a1ae946c0af1f64f42342f259))
+* implemented push normalization ([#10469](https://github.com/aws-amplify/amplify-cli/issues/10469)) ([e70d6c9](https://github.com/aws-amplify/amplify-cli/commit/e70d6c95cd9826a9d2785607341e8e1432306a30))
+
+
+
+
+
 # [8.5.0-sub-username-identity-claim.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.4.0...@aws-amplify/cli-internal@8.5.0-sub-username-identity-claim.3) (2022-06-09)
 
 

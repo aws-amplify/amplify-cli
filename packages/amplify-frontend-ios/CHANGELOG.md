@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.7-sub-username-identity-claim-2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@3.4.6...amplify-frontend-ios@3.4.7-sub-username-identity-claim-2.0) (2022-06-09)
+
+**Note:** Version bump only for package amplify-frontend-ios
+
+
+
+
+
 ## [3.4.7-sub-username-identity-claim.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@3.4.6...amplify-frontend-ios@3.4.7-sub-username-identity-claim.3) (2022-06-09)
 
 **Note:** Version bump only for package amplify-frontend-ios

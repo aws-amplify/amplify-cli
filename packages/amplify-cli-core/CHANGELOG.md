@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.10.0-sub-username-identity-claim-2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.9.0...amplify-cli-core@2.10.0-sub-username-identity-claim-2.0) (2022-06-09)
+
+
+### Features
+
+* bump api cat and flip ff ([6db45f0](https://github.com/aws-amplify/amplify-cli/commit/6db45f05faddb23a1ae946c0af1f64f42342f259))
+
+
+
+
+
 # [2.10.0-sub-username-identity-claim.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.9.0...amplify-cli-core@2.10.0-sub-username-identity-claim.3) (2022-06-09)
 
 
