@@ -631,6 +631,12 @@ export class FeatureFlags {
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: false,
       },
+      {
+        name: 'enableAutoIndexQueryNames',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: false,
+      },
     ]);
 
     this.registerFlag('frontend-ios', [
