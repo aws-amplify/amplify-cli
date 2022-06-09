@@ -96,7 +96,7 @@ export const enable = async (context: $TSContext, successMessage: string | undef
     exitOnNextTick(1);
   }
 
-  spinner.start('Updating APNS Channel.');
+  spinner.start('Enabling APNS Channel.');
 
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
@@ -120,7 +120,7 @@ export const enable = async (context: $TSContext, successMessage: string | undef
     await context.exeInfo.pinpointClient.updateApnsSandboxChannel(sandboxParams).promise();
     context.exeInfo.serviceMeta.output[channelName] = data.APNSChannelResponse;
   } catch (e) {
-    spinner.fail(`Failed to update the ${channelName} channel.`);
+    spinner.fail(`Failed to enable the ${channelName} channel.`);
     throw e;
   }
 
@@ -178,7 +178,7 @@ export const disable = async (context: $TSContext) : Promise<$TSAny> => {
     },
   };
 
-  spinner.start('Updating APNS Channel.');
+  spinner.start('Disabling APNS Channel.');
 
   let data;
   try {

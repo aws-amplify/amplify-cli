@@ -75,11 +75,11 @@ export const enable = async (context: $TSContext, successMessage: string | undef
     },
   };
 
-  spinner.start('Updating FCM channel.');
+  spinner.start('Enabling FCM channel.');
   return new Promise((resolve, reject) => {
     context.exeInfo.pinpointClient.updateGcmChannel(params, (err: $TSAny, data: $TSAny) => {
       if (err) {
-        spinner.fail('update channel error');
+        spinner.fail('enable channel error');
         const errResponse = buildPinpointChannelResponseError(ChannelAction.ENABLE, deploymentType,
           channelName, err);
         reject(errResponse);
@@ -137,11 +137,11 @@ export const disable = async (context: $TSContext): Promise<$TSAny> => {
     },
   };
 
-  spinner.start('Updating FCM channel.');
+  spinner.start('Disabling FCM channel.');
   return new Promise((resolve, reject) => {
     context.exeInfo.pinpointClient.updateGcmChannel(params, (err: $TSAny, data:$TSAny) => {
       if (err) {
-        spinner.fail('update channel error');
+        spinner.fail('disable channel error');
         const errResponse = buildPinpointChannelResponseError(ChannelAction.DISABLE, deploymentType,
           channelName, err);
         reject(errResponse);

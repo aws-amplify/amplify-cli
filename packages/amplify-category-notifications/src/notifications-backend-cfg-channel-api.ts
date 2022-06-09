@@ -17,9 +17,9 @@ export class ChannelAPI {
     public static ChannelType: Record<string, string> = {
       APNS: 'APNS',
       FCM: 'FCM',
+      InAppMessaging: 'InAppMessaging',
       Email: 'Email',
       SMS: 'SMS',
-      InAppMessaging: 'InAppMessaging',
     }
 
     /**
@@ -39,18 +39,26 @@ export class ChannelAPI {
       public static channelViewInfo: Record<string, IChannelViewInfo> = {
         [ChannelAPI.ChannelType.APNS]: {
           channelName: ChannelAPI.ChannelType.APNS,
-          viewName: 'APNS (Apple Push Notifications)',
+          viewName: 'APNS |  Apple Push Notifications   ',
           help: 'Send Apple push notifications to Pinpoint user segments',
           module: './channel-APNS',
           deploymentType: ChannelConfigDeploymentType.INLINE,
         },
         [ChannelAPI.ChannelType.FCM]: {
           channelName: ChannelAPI.ChannelType.FCM,
-          viewName: 'FCM (FireBase Push Notifications)',
+          viewName: 'FCM  | » Firebase Push Notifications ',
           // eslint-disable-next-line spellcheck/spell-checker
           help: 'Send Firebase Cloud Messaging push notifications to your Pinpoint user segments',
           module: './channel-FCM',
           deploymentType: ChannelConfigDeploymentType.INLINE,
+        },
+        [ChannelAPI.ChannelType.InAppMessaging]: {
+          channelName: ChannelAPI.ChannelType.InAppMessaging,
+          viewName: 'In-App Messaging',
+          // eslint-disable-next-line spellcheck/spell-checker
+          help: 'Allow application clients in Pinpoint user segment mobile devices to pull engagement messages from Pinpoint',
+          module: './channel-InAppMessaging',
+          deploymentType: ChannelConfigDeploymentType.DEFERRED,
         },
         [ChannelAPI.ChannelType.Email]: {
           channelName: ChannelAPI.ChannelType.Email,
@@ -68,23 +76,31 @@ export class ChannelAPI {
           module: './channel-SMS',
           deploymentType: ChannelConfigDeploymentType.INLINE,
         },
-        [ChannelAPI.ChannelType.InAppMessaging]: {
-          channelName: ChannelAPI.ChannelType.InAppMessaging,
-          viewName: 'In-App Messaging',
-          // eslint-disable-next-line spellcheck/spell-checker
-          help: 'Allow application clients in Pinpoint user segment mobile devices to pull engagement messages from Pinpoint',
-          module: './channel-InAppMessaging',
-          deploymentType: ChannelConfigDeploymentType.DEFERRED,
-        },
       };
 
       public static isValidChannel = (channelName: string| undefined): boolean => (channelName !== undefined
                                       && channelName in ChannelAPI.ChannelType);
 
       public static getChannelViewInfo = (channelName: string): IChannelViewInfo => (ChannelAPI.channelViewInfo[channelName]);
+
+      /**
+       * Given a channelName display the help string for it.
+       * @param channelName  notifications channel for which help needs to be displayed
+       * @returns help string for the channel name
+       */
       public static getChannelViewHelp = (channelName: string): string => (ChannelAPI.channelViewInfo[channelName].help);
+
+      /**
+       * Given a channelName return the user friendly channel name to be displayed
+       * @param channelName  notifications channel for which user friendly string needs to be returned.
+       */
       public static getChannelViewName = (channelName: string): string => ChannelAPI.channelViewInfo[channelName].viewName;
 
+      /**
+       * Given a user friendly channel name, return the channelName which it maps to.
+       * @param channelViewString user friendly channel name e.g (Apple Push Notifications)
+       * @returns channel name (e.g APN)
+       */
       public static getChannelNameFromView = (channelViewString: string): string => {
         for (const channelName of Object.keys(ChannelAPI.ChannelType)) {
           if (ChannelAPI.channelViewInfo[channelName].viewName === channelViewString) {
@@ -175,6 +191,23 @@ export class ChannelAPI {
    public static getAvailableChannels = ():Array<string> => Object.keys(ChannelAPI.ChannelType);
 
    /**
+    * Get user friendly names for all available notification channels
+    * @returns user friendly channel names
+    */
+    public static getAvailableChannelViewNames = ():Array<string> => Object.keys(ChannelAPI.ChannelType).map(ChannelAPI.getChannelViewName);
+
+    /**
+     * Get user friendly channel names
+     * @param notificationConfig from the BackendConfig
+     * @returns array of user friendly channel names
+     */
+    public static getEnabledChannelViewNames = async (notificationConfig:INotificationsResourceBackendConfig):Promise<string[]> => {
+      const enabledChannels = await NotificationsDB.getEnabledChannelsFromBackendConfig(notificationConfig);
+      const enabledChannelViewNames = enabledChannels.map(ChannelAPI.getChannelViewName);
+      return enabledChannelViewNames;
+    }
+
+    /**
     * Get all notifications channels enabled in the backend-config
     * @param context amplify cli context
     * @returns array of enabledChannels

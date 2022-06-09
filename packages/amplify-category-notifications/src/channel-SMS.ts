@@ -53,11 +53,11 @@ export const enable = async (context:$TSContext):Promise<$TSAny> => {
     },
   };
 
-  spinner.start('Updating SMS channel.');
+  spinner.start('Enabling SMS channel.');
   return new Promise((resolve, reject) => {
     context.exeInfo.pinpointClient.updateSmsChannel(params, (err:$TSAny, data:$TSAny) => {
       if (err) {
-        spinner.fail('update channel error');
+        spinner.fail('enable channel error');
         const enableChannelErrorResponse = buildPinpointChannelResponseError(ChannelAction.ENABLE, deploymentType,
           channelName, err);
         reject(enableChannelErrorResponse);
@@ -85,11 +85,11 @@ export const disable = async (context: $TSContext) : Promise<$TSAny> => {
     },
   };
 
-  spinner.start('Updating SMS channel.');
+  spinner.start('Disabling SMS channel.');
   return new Promise((resolve, reject) => {
     context.exeInfo.pinpointClient.updateSmsChannel(params, (err:Error|string, data:$TSAny) => {
       if (err) {
-        spinner.fail('update channel error');
+        spinner.fail('disable channel error');
         const errResponse = buildPinpointChannelResponseError(ChannelAction.DISABLE, deploymentType, channelName, err);
         reject(errResponse);
       } else {

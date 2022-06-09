@@ -94,7 +94,7 @@ const enable = async (context:$TSContext, successMessage: string|undefined):Prom
     },
   };
 
-  spinner.start('Updating Email Channel.');
+  spinner.start('Enabling Email Channel.');
   return new Promise((resolve, reject) => {
     context.exeInfo.pinpointClient.updateEmailChannel(params, (err : $TSAny, data: $TSAny) => {
       if (err && err.code === 'NotFoundException') {
@@ -104,7 +104,7 @@ const enable = async (context:$TSContext, successMessage: string|undefined):Prom
         });
         resolve(successResponse);
       } else if (err) {
-        spinner.fail('update channel error');
+        spinner.fail('enable channel error');
         const errorResponse = buildPinpointChannelResponseError(ChannelAction.ENABLE, deploymentType, channelName, err);
         reject(errorResponse);
       } else {
@@ -143,7 +143,7 @@ export const disable = async (context:$TSContext) : Promise<$TSAny> => {
       Identity: channelOutput.Identity,
     },
   };
-  spinner.start('Updating Email Channel.');
+  spinner.start('Disabling Email Channel.');
   return new Promise((resolve, reject) => {
     context.exeInfo.pinpointClient.updateEmailChannel(params, (err:$TSAny, data:$TSAny) => {
       if (err && err.code === 'NotFoundException') {
@@ -153,7 +153,7 @@ export const disable = async (context:$TSContext) : Promise<$TSAny> => {
         });
         resolve(successResponse);
       } else if (err) {
-        spinner.fail('update channel error');
+        spinner.fail('disable channel error');
         const errorResponse = buildPinpointChannelResponseError(ChannelAction.DISABLE, deploymentType, channelName, err);
         reject(errorResponse);
       } else {
