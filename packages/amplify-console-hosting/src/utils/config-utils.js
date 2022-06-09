@@ -2,7 +2,7 @@
 /* eslint-disable */
 const fs = require('fs-extra');
 const path = require('path');
-const { pathManager, PathConstants } = require('amplify-cli-core');
+const { pathManager, PathConstants, stateManager } = require('amplify-cli-core');
 const glob = require('glob');
 const constants = require('../constants/plugin-constants');
 const utils = require('../utils/amplify-context-utils');
@@ -189,25 +189,21 @@ async function storeCurrentCloudBackend(context) {
     });
 
     await buildUtils.zipFile(currentCloudBackendDir, zipFilePath, cliJSONFiles);
-    await uploadFile(s3, zipFilePath, zipFilename, context);
-    await uploadFile(s3, amplifyMetaFilePath, 'amplify-meta.json', context);
-    await uploadFile(s3, backendConfigFilePath, 'backend-config.json', context);
+    await uploadFile(s3, zipFilePath, zipFilename);
+    await uploadFile(s3, amplifyMetaFilePath, 'amplify-meta.json');
+    await uploadFile(s3, backendConfigFilePath, 'backend-config.json');
   } finally {
     fs.removeSync(tempDir);
   }
 }
 
-async function uploadFile(s3, filePath, key, context) {
-  const projectDetails = context.amplify.getProjectDetails();
-  const { envName } = context.amplify.getEnvInfo();
+async function uploadFile(s3, filePath, key) {
   if (fs.existsSync(filePath)) {
     const s3Params = {
       Body: fs.createReadStream(filePath),
       Key: key,
     };
-    const projectBucket = projectDetails.amplifyMeta.providers
-      ? projectDetails.amplifyMeta.providers[constants.PROVIDER].DeploymentBucketName
-      : projectDetails.teamProviderInfo[envName][constants.PROVIDER].DeploymentBucketName;
+    const projectBucket = stateManager.getMeta().providers[constants.PROVIDER].DeploymentBucketName
     s3Params.Bucket = projectBucket;
     await s3.putObject(s3Params).promise();
     return projectBucket;

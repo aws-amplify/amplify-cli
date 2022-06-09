@@ -75,6 +75,7 @@ export const initializeEnv = async (
       await sequential(initializationTasks);
     } catch (e) {
       printer.error(`Could not initialize '${currentEnv}': ${e.message}`);
+      printer.info(e.stack);
       context.usageData.emitError(e);
       process.exit(1);
     } finally {
