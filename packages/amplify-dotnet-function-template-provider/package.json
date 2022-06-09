@@ -1,6 +1,6 @@
 {
   "name": "amplify-dotnet-function-template-provider",
-  "version": "2.2.36",
+  "version": "2.3.0-sub-username-identity-claim.3",
   "description": ".NET Core templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules"
   },
   "dependencies": {
-    "amplify-cli-core": "2.9.0",
+    "amplify-cli-core": "2.10.0-sub-username-identity-claim.3",
     "amplify-function-plugin-interface": "1.9.5",
     "graphql-transformer-core": "7.5.4-sub-username-identity-claim.2"
   },
