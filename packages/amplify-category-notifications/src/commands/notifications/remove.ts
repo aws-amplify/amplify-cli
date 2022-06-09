@@ -13,21 +13,6 @@ import { notificationsAPIRemoveApp } from '../../notifications-resource-api';
 const CANCEL = 'Cancel';
 
 /**
- * Runs delete for all channels and then removes the Notifications category config from backendConfig.
- * @param context amplify cli context
- * @returns updated amplify cli context
- */
-// const deleteNotificationsApp = async (context:$TSContext): Promise<$TSContext> => {
-//   const channelAPIResponseList:IChannelAPIResponse[] = await notificationManager.disableAllChannels(context);
-//   for (const channelAPIResponse of channelAPIResponseList) {
-//     await multiEnvManager.writeData(context, channelAPIResponse);
-//   }
-//   await notificationManager.removeEmptyNotificationsApp(context);
-//   await multiEnvManager.writeData(context, undefined);
-//   return context;
-// };
-
-/**
  * Remove walkthrough for notifications resource
  * @param context amplify cli context
  * @returns amplify cli context with updated notifications metadata
@@ -46,36 +31,39 @@ export const run = async (context:$TSContext): Promise<$TSContext> => {
     context.print.error('Notifications is migrated from Mobile Hub and channels cannot be added with Amplify CLI.');
     return context;
   }
-  const availableChannels = NotificationsDB.ChannelAPI.getAvailableChannels();
-  const enabledChannels = await NotificationsDB.getEnabledChannelsFromBackendConfig(notificationConfig);
-  const DELETE_PINPOINT_APP = `Pinpoint Application: ${chalk.blue(notificationConfig.serviceName)}`;
-  const optionChannels = [...enabledChannels, DELETE_PINPOINT_APP, CANCEL];
 
-  let channelName = context.parameters.first;
+  const availableChannelViewNames = NotificationsDB.ChannelAPI.getAvailableChannelViewNames();
+  const enabledChannelViewNames = await NotificationsDB.ChannelAPI.getEnabledChannelViewNames(notificationConfig);
+  const PinpointAppViewName = `Pinpoint application: ${chalk.cyan.bold(notificationConfig.serviceName)}`;
+  const optionChannelViewNames = [...enabledChannelViewNames, PinpointAppViewName, CANCEL];
 
-  if (!channelName || !availableChannels.includes(channelName)) {
+  const channelName = context.parameters.first;
+  let channelViewName = (channelName) ? NotificationsDB.ChannelAPI.getChannelViewName(channelName) : undefined;
+
+  if (!channelViewName || !availableChannelViewNames.includes(channelViewName)) {
     const answer = await inquirer.prompt({
       name: 'selection',
       type: 'list',
       message: 'Choose what to remove.',
-      choices: optionChannels,
-      default: optionChannels[0],
+      choices: optionChannelViewNames,
+      default: optionChannelViewNames[0],
     });
-    channelName = answer.selection;
-  } else if (!optionChannels.includes(channelName)) {
-    context.print.info(`The ${channelName} channel has NOT been enabled.`);
-    channelName = undefined;
+    channelViewName = answer.selection;
+  } else if (!optionChannelViewNames.includes(channelViewName)) {
+    context.print.info(`The ${channelViewName} channel has NOT been enabled.`);
+    channelViewName = undefined;
   }
 
-  if (channelName && channelName !== CANCEL) {
+  if (channelViewName && channelViewName !== CANCEL) {
     const pinpointAppStatus = await getPinpointAppStatus(context, context.exeInfo.amplifyMeta,
       notificationsMeta, envName);
-    if (channelName !== DELETE_PINPOINT_APP) {
+    if (channelViewName !== PinpointAppViewName) {
+      const selectedChannelName = NotificationsDB.ChannelAPI.getChannelNameFromView(channelViewName);
       // a channel can only be disabled if the PinpointApp exists
       await pinpointHelper.ensurePinpointApp(context, undefined, pinpointAppStatus, envName);
       if (isPinpointAppDeployed(pinpointAppStatus.status)
-      || NotificationsDB.ChannelAPI.isChannelDeploymentDeferred(channelName)) {
-        const channelAPIResponse : IChannelAPIResponse|undefined = await notificationManager.disableChannel(context, channelName);
+      || NotificationsDB.ChannelAPI.isChannelDeploymentDeferred(selectedChannelName)) {
+        const channelAPIResponse : IChannelAPIResponse|undefined = await notificationManager.disableChannel(context, selectedChannelName);
         await multiEnvManager.writeData(context, channelAPIResponse);
       }
     } else if (isPinpointAppOwnedByNotifications(pinpointAppStatus.status)) {
@@ -96,8 +84,8 @@ export const run = async (context:$TSContext): Promise<$TSContext> => {
       await notificationsAPIRemoveApp(context);
       // Pinpoint App is not owned by Notifications
       context.print.success('All notifications have been disabled');
-      context.print.info(`${DELETE_PINPOINT_APP} is provisioned through analytics`);
-      context.print.info(`Run "amplify analytics remove" and select ${DELETE_PINPOINT_APP} to remove the Pinpoint resource`);
+      context.print.warning(`${PinpointAppViewName} is provisioned through analytics`);
+      context.print.warning(`Next step: Run "amplify analytics remove" and select the ${PinpointAppViewName} to remove`);
     }
   }
   return context;

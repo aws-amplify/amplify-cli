@@ -222,17 +222,6 @@ const getPinpointAppFromAnalyticsOutput = (analyticsMeta: IAnalyticsResource): P
   return pinpointApp;
 };
 
-// /**
-//  * Call this to remove the notifications category only after all channels have been disabled.
-//  * @param context Amplify CLI context
-//  */
-// export const removeEmptyNotificationsApp = async (context: $TSContext ): Promise<boolean> =>{
-//   const amplifyMeta = (context.exeInfo.amplifyMeta) || stateManager.getMeta();
-//   const backendConfig = (context.exeInfo.amplifyMeta) || stateManager.getBackendConfig();
-//   context.exeInfo.amplifyMeta = NotificationsMeta.removeNotifications(amplifyMeta);
-//   context.exeInfo.backendConfig = NotificationsDB.removeNotifications(backendConfig);
-// }
-
 /**
  * Ensure Pinpoint app exists
  */

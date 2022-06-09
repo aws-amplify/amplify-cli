@@ -46,7 +46,7 @@ export class NotificationsDB {
             context.exeInfo.amplifyMeta);
           break;
         case ChannelAction.CONFIGURE:
-          console.log(`Error: Channel action ${channelAPIResponse.action} not supported`);
+          // no-op - configure calls enable or disable
           break;
         case ChannelAction.PULL:
           console.log(`Error: Channel action ${channelAPIResponse.action} not supported`);
