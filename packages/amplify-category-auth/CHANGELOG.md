@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.10.1-sub-username-identity-claim.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.10.0...@aws-amplify/amplify-category-auth@2.10.1-sub-username-identity-claim.4) (2022-06-09)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
 ## [2.10.1-sub-username-identity-claim.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.10.0...@aws-amplify/amplify-category-auth@2.10.1-sub-username-identity-claim.3) (2022-06-09)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-auth

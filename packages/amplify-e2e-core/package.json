@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-core",
-  "version": "3.4.0-sub-username-identity-claim.3",
+  "version": "3.4.0-sub-username-identity-claim.4",
   "description": "",
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
     "clean": "rimraf ./lib tsconfig.tsbuildinfo"
   },
   "dependencies": {
-    "amplify-cli-core": "2.10.0-sub-username-identity-claim.3",
+    "amplify-cli-core": "2.10.0-sub-username-identity-claim.4",
     "amplify-headless-interface": "1.15.0",
     "chalk": "^4.1.1",
     "dotenv": "^8.2.0",
