@@ -1,16 +1,17 @@
-import { $TSContext, $TSAny, stateManager } from 'amplify-cli-core';
+import {
+  $TSContext, $TSAny, stateManager, AmplifyCategories, AmplifySupportedService,
+} from 'amplify-cli-core';
 import * as path from 'path';
 import {
   IChannelAvailability, INotificationsConfigStatus, ChannelConfigDeploymentType, IChannelViewInfo,
-} from './notifications-api-types';
-// eslint-disable-next-line import/no-cycle
-import { NotificationsDB } from './notifications-backend-cfg-api';
-import { INotificationsResourceBackendConfig, INotificationsChannelBackendConfig } from './notifications-backend-config-types';
+} from './channel-types';
+import { NotificationsCfg } from './notifications-backend-cfg-api';
+import { INotificationsResourceBackendConfig, INotificationsChannelBackendConfig } from './notifications-backend-cfg-types';
 /**
  * API to update Notification Channel config state
  * All functions are idempotent (no side effects)
  */
-export class ChannelAPI {
+export class ChannelCfg {
     /**
      * Channel names
      */
@@ -27,7 +28,7 @@ export class ChannelAPI {
      * !! Its important that the channel handler's module path
      * is relative to the path of this file.
      */
-    public static getChannelHandlerPath = (channelName: string): string => `${path.join(__dirname, ChannelAPI.channelViewInfo[channelName].module)}`
+    public static getChannelHandlerPath = (channelName: string): string => `${path.join(__dirname, ChannelCfg.channelViewInfo[channelName].module)}`
 
     /**
      * Map of channel-type to channel-info. This map will be extended when new notification
@@ -37,39 +38,39 @@ export class ChannelAPI {
      * once CustomLambda callout uses CloudFormation/CDK
      */
       public static channelViewInfo: Record<string, IChannelViewInfo> = {
-        [ChannelAPI.ChannelType.APNS]: {
-          channelName: ChannelAPI.ChannelType.APNS,
+        [ChannelCfg.ChannelType.APNS]: {
+          channelName: ChannelCfg.ChannelType.APNS,
           viewName: 'APNS |  Apple Push Notifications   ',
           help: 'Send Apple push notifications to Pinpoint user segments',
           module: './channel-APNS',
           deploymentType: ChannelConfigDeploymentType.INLINE,
         },
-        [ChannelAPI.ChannelType.FCM]: {
-          channelName: ChannelAPI.ChannelType.FCM,
+        [ChannelCfg.ChannelType.FCM]: {
+          channelName: ChannelCfg.ChannelType.FCM,
           viewName: 'FCM  | » Firebase Push Notifications ',
           // eslint-disable-next-line spellcheck/spell-checker
           help: 'Send Firebase Cloud Messaging push notifications to your Pinpoint user segments',
           module: './channel-FCM',
           deploymentType: ChannelConfigDeploymentType.INLINE,
         },
-        [ChannelAPI.ChannelType.InAppMessaging]: {
-          channelName: ChannelAPI.ChannelType.InAppMessaging,
+        [ChannelCfg.ChannelType.InAppMessaging]: {
+          channelName: ChannelCfg.ChannelType.InAppMessaging,
           viewName: 'In-App Messaging',
           // eslint-disable-next-line spellcheck/spell-checker
           help: 'Allow application clients in Pinpoint user segment mobile devices to pull engagement messages from Pinpoint',
           module: './channel-InAppMessaging',
           deploymentType: ChannelConfigDeploymentType.DEFERRED,
         },
-        [ChannelAPI.ChannelType.Email]: {
-          channelName: ChannelAPI.ChannelType.Email,
+        [ChannelCfg.ChannelType.Email]: {
+          channelName: ChannelCfg.ChannelType.Email,
           viewName: 'Email',
           // eslint-disable-next-line spellcheck/spell-checker
           help: 'Send Email messages to your Pinpoint user segments',
           module: './channel-Email',
           deploymentType: ChannelConfigDeploymentType.INLINE,
         },
-        [ChannelAPI.ChannelType.SMS]: {
-          channelName: ChannelAPI.ChannelType.SMS,
+        [ChannelCfg.ChannelType.SMS]: {
+          channelName: ChannelCfg.ChannelType.SMS,
           viewName: 'SMS',
           // eslint-disable-next-line spellcheck/spell-checker
           help: 'Send SMS messages to your Pinpoint user segments',
@@ -79,22 +80,22 @@ export class ChannelAPI {
       };
 
       public static isValidChannel = (channelName: string| undefined): boolean => (channelName !== undefined
-                                      && channelName in ChannelAPI.ChannelType);
+                                      && channelName in ChannelCfg.ChannelType);
 
-      public static getChannelViewInfo = (channelName: string): IChannelViewInfo => (ChannelAPI.channelViewInfo[channelName]);
+      public static getChannelViewInfo = (channelName: string): IChannelViewInfo => (ChannelCfg.channelViewInfo[channelName]);
 
       /**
        * Given a channelName display the help string for it.
        * @param channelName  notifications channel for which help needs to be displayed
        * @returns help string for the channel name
        */
-      public static getChannelViewHelp = (channelName: string): string => (ChannelAPI.channelViewInfo[channelName].help);
+      public static getChannelViewHelp = (channelName: string): string => (ChannelCfg.channelViewInfo[channelName].help);
 
       /**
        * Given a channelName return the user friendly channel name to be displayed
        * @param channelName  notifications channel for which user friendly string needs to be returned.
        */
-      public static getChannelViewName = (channelName: string): string => ChannelAPI.channelViewInfo[channelName].viewName;
+      public static getChannelViewName = (channelName: string): string => ChannelCfg.channelViewInfo[channelName].viewName;
 
       /**
        * Given a user friendly channel name, return the channelName which it maps to.
@@ -102,8 +103,8 @@ export class ChannelAPI {
        * @returns channel name (e.g APN)
        */
       public static getChannelNameFromView = (channelViewString: string): string => {
-        for (const channelName of Object.keys(ChannelAPI.ChannelType)) {
-          if (ChannelAPI.channelViewInfo[channelName].viewName === channelViewString) {
+        for (const channelName of Object.keys(ChannelCfg.ChannelType)) {
+          if (ChannelCfg.channelViewInfo[channelName].viewName === channelViewString) {
             return channelName;
           }
         }
@@ -117,9 +118,9 @@ export class ChannelAPI {
        */
       public static getChannelAvailability = async (backendResourceConfig:INotificationsResourceBackendConfig)
       : Promise<IChannelAvailability> => {
-        const availableChannels = ChannelAPI.getAvailableChannels();
-        const enabledChannels = (await NotificationsDB.getEnabledChannelsFromBackendConfig(backendResourceConfig)) || [];
-        const disabledChannels = (await NotificationsDB.getDisabledChannelsFromBackendConfig(availableChannels, enabledChannels)) || [];
+        const availableChannels = ChannelCfg.getAvailableChannels();
+        const enabledChannels = (await ChannelCfg.getEnabledChannelsFromBackendConfig(backendResourceConfig)) || [];
+        const disabledChannels = (await ChannelCfg.getDisabledChannelsFromBackendConfig(availableChannels, enabledChannels)) || [];
         const backend : IChannelAvailability = {
           enabledChannels,
           disabledChannels,
@@ -128,40 +129,19 @@ export class ChannelAPI {
       };
 
       /**
-       * Get notifications resource localBackend, deployedBackend and channel availability
-       * most useful in displaying status.
-       * @param context amplify cli context
-       * @returns backendConfig and channel availability for notifications
+       * Get all notifications channel which are not in use in the Backend Config
+       * @returns array of channels which are not in use
        */
-      public static getNotificationConfigStatus = async (context:$TSContext): Promise<INotificationsConfigStatus|undefined> => {
-        const notificationConfig = await NotificationsDB.getNotificationsAppConfig(context.exeInfo.backendConfig);
-
-        // no Notifications resource
-        if (!notificationConfig) {
-          return undefined;
+      public static getDisabledChannelsFromBackendConfig = async (availableChannels?: Array<string>,
+        enabledChannels?: Array<string>): Promise<Array<string>> => {
+        let result : Array<string> = [];
+        const tmpEnabledChannels = (enabledChannels) || await ChannelCfg.getEnabledChannelsFromBackendConfig();
+        const tmpAvailableChannels = (availableChannels) || ChannelCfg.getAvailableChannels();
+        if (!tmpAvailableChannels) {
+          return result;
         }
-        let appInitialized = true;
-        let deployedBackendConfig: $TSAny;
-        try {
-          deployedBackendConfig = (stateManager.getCurrentBackendConfig()) || undefined;
-        } catch (e) {
-          appInitialized = false;
-          deployedBackendConfig = undefined;
-        } // this will fail on iniEnv;
-
-        const deployedNotificationConfig = await NotificationsDB.getCurrentNotificationsAppConfig(deployedBackendConfig);
-        const emptyChannels = { enabledChannels: [], disabledChannels: [] };
-        return {
-          local: {
-            config: notificationConfig,
-            channels: (notificationConfig) ? await ChannelAPI.getChannelAvailability(notificationConfig) : emptyChannels,
-          },
-          deployed: {
-            config: deployedNotificationConfig,
-            channels: (deployedNotificationConfig) ? await ChannelAPI.getChannelAvailability(deployedNotificationConfig) : emptyChannels,
-          },
-          appInitialized,
-        } as INotificationsConfigStatus;
+        result = tmpAvailableChannels.filter(channelName => !tmpEnabledChannels.includes(channelName));
+        return result;
       };
 
       /**
@@ -170,7 +150,7 @@ export class ChannelAPI {
      * @returns true if channel deployment is handled through amplify push
      */
       public static isChannelDeploymentDeferred = (validChannelName: string): boolean => (
-        ChannelAPI.getChannelDeploymentType(validChannelName) === ChannelConfigDeploymentType.DEFERRED
+        ChannelCfg.getChannelDeploymentType(validChannelName) === ChannelConfigDeploymentType.DEFERRED
       )
 
       /**
@@ -186,15 +166,34 @@ export class ChannelAPI {
     :Array<string> => resourceBackendConfig.channels
 
     /**
+   * Query BackendConfig to check if notification channel has be been updated.
+   * note: - amplify-meta.json will be updated after deployment
+   * @param channelName  Name of the notification channel SMS/InAppMessaging etc.
+   */
+   public static isChannelEnabledNotificationsBackendConfig = async (channelName: string): Promise<boolean> => {
+     const backendConfig = stateManager.getBackendConfig();
+     const notificationResources = backendConfig[AmplifyCategories.NOTIFICATIONS];
+     if (!notificationResources) {
+       return false;
+     }
+     for (const resourceName of Object.keys(notificationResources)) {
+       if (notificationResources[resourceName].service === AmplifySupportedService.PINPOINT) {
+         return notificationResources[resourceName].channels && notificationResources[resourceName].channels.includes(channelName);
+       }
+     }
+     return false;
+   };
+
+   /**
    * Get all available notification channels
    */
-   public static getAvailableChannels = ():Array<string> => Object.keys(ChannelAPI.ChannelType);
+   public static getAvailableChannels = ():Array<string> => Object.keys(ChannelCfg.ChannelType);
 
    /**
     * Get user friendly names for all available notification channels
     * @returns user friendly channel names
     */
-    public static getAvailableChannelViewNames = ():Array<string> => Object.keys(ChannelAPI.ChannelType).map(ChannelAPI.getChannelViewName);
+    public static getAvailableChannelViewNames = ():Array<string> => Object.keys(ChannelCfg.ChannelType).map(ChannelCfg.getChannelViewName);
 
     /**
      * Get user friendly channel names
@@ -202,8 +201,8 @@ export class ChannelAPI {
      * @returns array of user friendly channel names
      */
     public static getEnabledChannelViewNames = async (notificationConfig:INotificationsResourceBackendConfig):Promise<string[]> => {
-      const enabledChannels = await NotificationsDB.getEnabledChannelsFromBackendConfig(notificationConfig);
-      const enabledChannelViewNames = enabledChannels.map(ChannelAPI.getChannelViewName);
+      const enabledChannels = await ChannelCfg.getEnabledChannelsFromBackendConfig(notificationConfig);
+      const enabledChannelViewNames = enabledChannels.map(ChannelCfg.getChannelViewName);
       return enabledChannelViewNames;
     }
 
@@ -213,13 +212,27 @@ export class ChannelAPI {
     * @returns array of enabledChannels
     */
    public static getEnabledChannels = async (context: $TSContext): Promise<Array<string>> => {
-     const notificationConfig = await NotificationsDB.getNotificationsAppConfig(context.exeInfo.backendConfig);
-     const enabledChannels = (await NotificationsDB.getEnabledChannelsFromBackendConfig(notificationConfig)) || [];
+     const notificationConfig = await NotificationsCfg.getNotificationsAppConfig(context.exeInfo.backendConfig);
+     const enabledChannels = (await ChannelCfg.getEnabledChannelsFromBackendConfig(notificationConfig)) || [];
      return enabledChannels;
    }
 
+  /**
+  * Get all enabled channels in backend config
+  * This is required for Pinpoint resources updated in Analytics CFN but not yet pushed
+  */
+  public static getEnabledChannelsFromBackendConfig = async (notificationsConfig?: INotificationsResourceBackendConfig)
+  :Promise<Array<string>> => {
+    const tmpNotificationsCfg = (notificationsConfig) || await NotificationsCfg.getNotificationsAppConfig();
+    let enabledChannels: Array<string> = [];
+    if (tmpNotificationsCfg) {
+      enabledChannels = ChannelCfg.getNotificationChannelEnabledInBackendConfig(tmpNotificationsCfg);
+    }
+    return enabledChannels;
+  };
+
    public static getChannelDeploymentType =
-   (channelName: string): ChannelConfigDeploymentType => ((channelName === ChannelAPI.ChannelType.InAppMessaging)
+   (channelName: string): ChannelConfigDeploymentType => ((channelName === ChannelCfg.ChannelType.InAppMessaging)
      ? ChannelConfigDeploymentType.DEFERRED
      : ChannelConfigDeploymentType.INLINE)
 

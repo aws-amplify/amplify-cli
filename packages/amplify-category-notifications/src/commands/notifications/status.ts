@@ -2,10 +2,8 @@ import {
   $TSContext,
 } from 'amplify-cli-core';
 import chalk from 'chalk';
-import { IChannelAvailability, INotificationsConfigStatus } from '../../notifications-api-types';
-import { NotificationsDB } from '../../notifications-backend-cfg-api';
-import { ChannelAPI } from '../../notifications-backend-cfg-channel-api';
-import { NotificationsMeta } from '../../notifications-meta-api';
+import { IChannelAvailability, INotificationsConfigStatus } from '../../channel-types';
+import { Notifications } from '../../notifications-api';
 
 const viewStyles = {
   enabled: chalk.bold.green,
@@ -26,7 +24,7 @@ const getDeployedStyledStatus = (deployedChannel: string, deployedChannels: ICha
 };
 
 const viewNotificationsAppURL = async (context: $TSContext, appName: string): Promise<void> => {
-  const meta = await NotificationsMeta.getNotificationsAppMeta(context.exeInfo.amplifyMeta, appName);
+  const meta = await Notifications.Meta.getNotificationsAppMeta(context.exeInfo.amplifyMeta, appName);
   if (meta?.Id) {
     const consoleUrl = `https://${meta.Region}.console.aws.amazon.com/pinpoint/home/?region=${meta.Region}#/apps/${meta.Id}/notifications`;
     context.print.info(`\nPinpoint App: ${viewStyles.underline(viewStyles.url(consoleUrl))}`);
@@ -36,11 +34,11 @@ const viewNotificationsAppURL = async (context: $TSContext, appName: string): Pr
 const viewDisplayChannelAvailability = async (context: $TSContext, backend:INotificationsConfigStatus): Promise<void> => {
   const tableOptions = [['Channel', 'Status', 'Deployed Status']];
   for (const enabledChannel of backend.local.channels.enabledChannels) {
-    const channelViewInfo = ChannelAPI.getChannelViewInfo(enabledChannel);
+    const channelViewInfo = Notifications.ChannelCfg.getChannelViewInfo(enabledChannel);
     tableOptions.push([channelViewInfo.viewName, viewStyles.enabled('Enabled'), getDeployedStyledStatus(enabledChannel, backend.deployed.channels)]);
   }
   for (const disabledChannel of backend.local.channels.disabledChannels) {
-    const channelViewInfo = ChannelAPI.getChannelViewInfo(disabledChannel);
+    const channelViewInfo = Notifications.ChannelCfg.getChannelViewInfo(disabledChannel);
     tableOptions.push([channelViewInfo.viewName, viewStyles.disabled('Disabled'), getDeployedStyledStatus(disabledChannel, backend.deployed.channels)]);
   }
   context.print.table(tableOptions, { format: 'lean' });
@@ -55,7 +53,7 @@ const viewDisplayNotificationsResourceInfo = async (context: $TSContext, backend
  */
 export const run = async (context:$TSContext):Promise<void> => {
   context.exeInfo = context.amplify.getProjectDetails();
-  const backend: INotificationsConfigStatus|undefined = await NotificationsDB.ChannelAPI.getNotificationConfigStatus(context);
+  const backend: INotificationsConfigStatus|undefined = await Notifications.getNotificationConfigStatus(context);
   if (backend) {
     await viewDisplayNotificationsResourceInfo(context, backend);
     await viewNotificationsAppURL(context, backend.local.config.serviceName);

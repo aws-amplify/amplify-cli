@@ -1,8 +1,8 @@
 /**
- * This file will contain the structures required for headless API
+ * Channel Action handler API
  */
 import { $TSAny, $TSContext, IPluginCapabilityAPIResponse } from 'amplify-cli-core';
-import { INotificationsResourceBackendConfig } from './notifications-backend-config-types';
+import { INotificationsResourceBackendConfig } from './notifications-backend-cfg-types';
 
 /**
  * Actions performed on a Notifications channel (Pinpoint)

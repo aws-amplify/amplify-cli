@@ -6,9 +6,9 @@ import {
 } from '../../pinpoint-helper';
 import { enableChannel } from '../../notifications-manager';
 import { writeData } from '../../multi-env-manager';
-import { ChannelConfigDeploymentType, IChannelAPIResponse } from '../../notifications-api-types';
-import { NotificationsMeta } from '../../notifications-meta-api';
-import { NotificationsDB as Notifications, NotificationsDB } from '../../notifications-backend-cfg-api';
+import { ChannelConfigDeploymentType, IChannelAPIResponse } from '../../channel-types';
+import { NotificationsMeta } from '../../notifications-amplify-meta-api';
+import { Notifications } from '../../notifications-api';
 
 export const name = 'add';
 export const alias = 'enable';
@@ -23,9 +23,9 @@ export const alias = 'enable';
  */
 const viewQuestionAskNotificationChannelToBeEnabled = async (context:$TSContext, availableChannels: Array<string>,
   disabledChannels:Array<string>, selectedChannel: string|undefined):Promise<string|undefined> => {
-  let channelViewName = (selectedChannel) ? NotificationsDB.ChannelAPI.getChannelViewName(selectedChannel) : undefined;
-  const availableChannelViewNames = availableChannels.map(channelName => NotificationsDB.ChannelAPI.getChannelViewName(channelName));
-  const disabledChannelViewNames = disabledChannels.map(channelName => NotificationsDB.ChannelAPI.getChannelViewName(channelName));
+  let channelViewName = (selectedChannel) ? Notifications.ChannelCfg.getChannelViewName(selectedChannel) : undefined;
+  const availableChannelViewNames = availableChannels.map(channelName => Notifications.ChannelCfg.getChannelViewName(channelName));
+  const disabledChannelViewNames = disabledChannels.map(channelName => Notifications.ChannelCfg.getChannelViewName(channelName));
 
   if (!channelViewName || !availableChannelViewNames.includes(channelViewName)) {
     const answer = await prompt({
@@ -40,7 +40,7 @@ const viewQuestionAskNotificationChannelToBeEnabled = async (context:$TSContext,
     context.print.info(`The ${channelViewName} channel has already been enabled.`);
     channelViewName = undefined;
   }
-  const channelName = (channelViewName) ? NotificationsDB.ChannelAPI.getChannelNameFromView(channelViewName) : undefined;
+  const channelName = (channelViewName) ? Notifications.ChannelCfg.getChannelNameFromView(channelViewName) : undefined;
   return channelName;
 };
 
@@ -64,7 +64,7 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
     return context;
   }
 
-  const availableChannels: Array<string> = Notifications.ChannelAPI.getAvailableChannels();
+  const availableChannels: Array<string> = Notifications.ChannelCfg.getAvailableChannels();
   const disabledChannels : Array<string> = await NotificationsMeta.getDisabledChannelsFromAmplifyMeta();
 
   let channelName = context.parameters.first;
@@ -74,10 +74,10 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
     return context;
   }
   channelName = await viewQuestionAskNotificationChannelToBeEnabled(context, availableChannels, disabledChannels, channelName);
-  if (Notifications.ChannelAPI.isValidChannel(channelName)) {
+  if (Notifications.ChannelCfg.isValidChannel(channelName)) {
     const pinpointAppStatus = await ensurePinpointApp(context, undefined);
     context = pinpointAppStatus.context;
-    if (isPinpointAppDeployed(pinpointAppStatus.status) || Notifications.ChannelAPI.isChannelDeploymentDeferred(channelName)) {
+    if (isPinpointAppDeployed(pinpointAppStatus.status) || Notifications.ChannelCfg.isChannelDeploymentDeferred(channelName)) {
       try {
         const channelAPIResponse : IChannelAPIResponse|undefined = await enableChannel(context, channelName);
         await writeData(context, channelAPIResponse);

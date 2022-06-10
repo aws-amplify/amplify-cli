@@ -13,9 +13,8 @@ import {
   scanCategoryMetaForPinpoint,
 } from './pinpoint-helper';
 import * as notificationManager from './notifications-manager';
-import { ChannelConfigDeploymentType, IChannelAPIResponse } from './notifications-api-types';
-import { NotificationsDB as Notifications } from './notifications-backend-cfg-api';
-import { NotificationsMeta } from './notifications-meta-api';
+import { ChannelConfigDeploymentType, IChannelAPIResponse } from './channel-types';
+import { Notifications } from './notifications-api';
 
 /**
  * Create Pinpoint resource in Analytics, Create Pinpoint Meta for Notifications category and
@@ -190,7 +189,7 @@ export const deletePinpointAppForEnv = async (context: $TSContext, envName: stri
 };
 
 const pushChanges = async (context: $TSContext, pinpointNotificationsMeta: $TSAny):Promise<void> => {
-  const availableChannels = Notifications.ChannelAPI.getAvailableChannels();
+  const availableChannels = Notifications.ChannelCfg.getAvailableChannels();
   let pinpointInputParams : $TSAny;
   if (
     context.exeInfo
@@ -276,8 +275,8 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
     }
     const analyticsMeta = context.exeInfo.amplifyMeta[AmplifyCategories.ANALYTICS];
     const categoryMeta = context.exeInfo.amplifyMeta[AmplifyCategories.NOTIFICATIONS];
-    const notificationsServiceMeta = await NotificationsMeta.getNotificationsAppMeta(context.exeInfo.amplifyMeta);
-    const enabledChannels: Array<string> = await NotificationsMeta.getEnabledChannelsFromAppMeta(context.exeInfo.amplifyMeta);
+    const notificationsServiceMeta = await Notifications.Meta.getNotificationsAppMeta(context.exeInfo.amplifyMeta);
+    const enabledChannels: Array<string> = await Notifications.Meta.getEnabledChannelsFromAppMeta(context.exeInfo.amplifyMeta);
     // This normalization will be removed once all notifications are deployed through CFN
     let pinpointMeta:IPinpointMeta | undefined;
     if (notificationsServiceMeta) {
@@ -308,8 +307,8 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
     await Notifications.updateChannelAPIResponse(context, channelAPIResponse);
     const analyticsMeta = context.exeInfo.amplifyMeta[AmplifyCategories.ANALYTICS];
     const categoryMeta = context.exeInfo.amplifyMeta[AmplifyCategories.NOTIFICATIONS];
-    const notificationsServiceMeta = await NotificationsMeta.getNotificationsAppMeta(context.exeInfo.amplifyMeta);
-    const enabledChannels: Array<string> = await NotificationsMeta.getEnabledChannelsFromAppMeta(context.exeInfo.amplifyMeta);
+    const notificationsServiceMeta = await Notifications.Meta.getNotificationsAppMeta(context.exeInfo.amplifyMeta);
+    const enabledChannels: Array<string> = await Notifications.Meta.getEnabledChannelsFromAppMeta(context.exeInfo.amplifyMeta);
 
     if (!notificationsServiceMeta) {
       throw new Error('WriteData: Failure: Amplify Meta not found for Notifications..');
@@ -319,7 +318,7 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
     // Analytics to dependent categories like Notifications, we need to explicitly sync
     // the applicationId into Notifications.
     const applicationId = (notificationsServiceMeta.Id) || analyticsMeta[notificationsServiceMeta?.ResourceName]?.output?.Id;
-    const pinpointConfig = await Notifications.getNotificationsAppConfig(context.exeInfo.backendConfig);
+    const pinpointConfig = await Notifications.Cfg.getNotificationsAppConfig(context.exeInfo.backendConfig);
     const pinpointMeta = {
       serviceName: notificationsServiceMeta.ResourceName,
       service: notificationsServiceMeta.Service, // TBD: standardize this
@@ -426,7 +425,7 @@ const extractMigrationInfo = (context:$TSContext):$TSAny => {
     migrationInfo.Name = migrationInfo.output.Name;
     migrationInfo.Region = migrationInfo.output.Region;
     migrationInfo.channels = [];
-    const availableChannels = Notifications.ChannelAPI.getAvailableChannels();
+    const availableChannels = Notifications.ChannelCfg.getAvailableChannels();
     availableChannels.forEach(channel => {
       if (migrationInfo.output[channel] && migrationInfo.output[channel].Enabled) {
         migrationInfo.channels.push(channel);

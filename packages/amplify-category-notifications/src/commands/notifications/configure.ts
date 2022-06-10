@@ -3,8 +3,8 @@ import { $TSContext } from 'amplify-cli-core';
 import * as pinpointHelper from '../../pinpoint-helper';
 import * as notificationManager from '../../notifications-manager';
 import * as multiEnvManager from '../../multi-env-manager';
-import { IChannelAPIResponse } from '../../notifications-api-types';
-import { NotificationsDB as Notifications } from '../../notifications-backend-cfg-api';
+import { IChannelAPIResponse } from '../../channel-types';
+import { Notifications } from '../../notifications-api';
 import { isPinpointAppDeployed } from '../../pinpoint-helper';
 
 /**
@@ -14,9 +14,9 @@ import { isPinpointAppDeployed } from '../../pinpoint-helper';
  */
 export const run = async (context:$TSContext): Promise<$TSContext> => {
   context.exeInfo = context.amplify.getProjectDetails();
-  const availableChannelViewNames = Notifications.ChannelAPI.getAvailableChannelViewNames();
+  const availableChannelViewNames = Notifications.ChannelCfg.getAvailableChannelViewNames();
   const channelName = context.parameters.first;
-  let channelViewName = (channelName) ? Notifications.ChannelAPI.getChannelViewName(channelName) : undefined;
+  let channelViewName = (channelName) ? Notifications.ChannelCfg.getChannelViewName(channelName) : undefined;
 
   if (!channelViewName || !availableChannelViewNames.includes(channelViewName)) {
     const answer = await inquirer.prompt({
@@ -29,10 +29,10 @@ export const run = async (context:$TSContext): Promise<$TSContext> => {
     channelViewName = answer.selection;
   }
   if (channelViewName) {
-    const selectedChannel = Notifications.ChannelAPI.getChannelNameFromView(channelViewName);
+    const selectedChannel = Notifications.ChannelCfg.getChannelNameFromView(channelViewName);
     const pinpointAppStatus = await pinpointHelper.ensurePinpointApp(context, undefined);
     if (isPinpointAppDeployed(pinpointAppStatus.status)
-    || Notifications.ChannelAPI.isChannelDeploymentDeferred(selectedChannel)) {
+    || Notifications.ChannelCfg.isChannelDeploymentDeferred(selectedChannel)) {
       const channelAPIResponse : IChannelAPIResponse|undefined = await notificationManager.configureChannel(context, selectedChannel);
       await multiEnvManager.writeData(context, channelAPIResponse);
     }

@@ -1,5 +1,6 @@
 [
   "amazonaws",
+  "amplifymeta",
   "apigw",
   "apis",
   "appsync",
@@ -49,6 +50,7 @@
   "extentions",
   "facebook",
   "filesystem",
+  "firebase",
   "foreach",
   "formatter",
   "frontend",
@@ -74,6 +76,7 @@
   "jsdoc",
   "jwks",
   "keyless",
+  "kinesis",
   "lerna",
   "linux",
   "lockfile",
