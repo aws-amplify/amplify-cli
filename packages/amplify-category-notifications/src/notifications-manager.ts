@@ -5,18 +5,17 @@ import {
 import * as pinpointHelper from './pinpoint-helper';
 import {
   IChannelAPIResponse, NotificationsChannelAPIModule,
-} from './notifications-api-types';
-import { NotificationsDB as Notifications, NotificationsDB } from './notifications-backend-cfg-api';
-import { NotificationsMeta } from './notifications-meta-api';
+} from './channel-types';
+import { Notifications } from './notifications-api';
 
 /**
  * Enable the selected notification channel
  */
 export const enableChannel = async (context:$TSContext, channelName:string): Promise<IChannelAPIResponse|undefined> => {
   const envName: string = stateManager.getCurrentEnvName() as string; // throws exception if env is not configured
-  if (Notifications.ChannelAPI.isValidChannel(channelName)) {
+  if (Notifications.ChannelCfg.isValidChannel(channelName)) {
     context.exeInfo.pinpointClient = await pinpointHelper.getPinpointClient(context, 'update', envName);
-    const channelActionHandler:NotificationsChannelAPIModule = await import(Notifications.ChannelAPI.getChannelHandlerPath(channelName));
+    const channelActionHandler:NotificationsChannelAPIModule = await import(Notifications.ChannelCfg.getChannelHandlerPath(channelName));
     const enableChannelResponse = await channelActionHandler.enable(context);
     return enableChannelResponse;
   }
@@ -28,9 +27,9 @@ export const enableChannel = async (context:$TSContext, channelName:string): Pro
  */
 export const disableChannel = async (context : $TSContext, channelName: string): Promise<IChannelAPIResponse|undefined> => {
   const envName: string = stateManager.getCurrentEnvName() as string; // throws exception if env is not configured
-  if (Notifications.ChannelAPI.isValidChannel(channelName)) {
+  if (Notifications.ChannelCfg.isValidChannel(channelName)) {
     context.exeInfo.pinpointClient = await pinpointHelper.getPinpointClient(context, 'update', envName);
-    const channelActionHandler:NotificationsChannelAPIModule = await import(Notifications.ChannelAPI.getChannelHandlerPath(channelName));
+    const channelActionHandler:NotificationsChannelAPIModule = await import(Notifications.ChannelCfg.getChannelHandlerPath(channelName));
     const disableChannelResponse = await channelActionHandler.disable(context);
     return disableChannelResponse;
   }
@@ -43,7 +42,7 @@ export const disableChannel = async (context : $TSContext, channelName: string):
  * @returns Array of Channel API responses
  */
 export const disableAllChannels = async (context: $TSContext): Promise<Array<IChannelAPIResponse>> => {
-  const enabledChannels : Array<string> = await Notifications.ChannelAPI.getEnabledChannels(context);
+  const enabledChannels : Array<string> = await Notifications.ChannelCfg.getEnabledChannels(context);
   const responseArray : Array<IChannelAPIResponse> = [];
 
   // sequentially disable each channel - since persistent context gets updated
@@ -62,12 +61,12 @@ export const disableAllChannels = async (context: $TSContext): Promise<Array<ICh
  */
 export const removeEmptyNotificationsApp = async (context: $TSContext): Promise<$TSContext> => {
   let updatedContext = context;
-  const enabledChannels : Array<string> = await Notifications.ChannelAPI.getEnabledChannels(context);
+  const enabledChannels : Array<string> = await Notifications.ChannelCfg.getEnabledChannels(context);
   if (enabledChannels.length > 0) {
     throw new Error(`Cannot remove notifications app, please all channels( [${enabledChannels}] ) and retry`);
   }
-  updatedContext = await NotificationsMeta.removeNotificationsAppMeta(updatedContext);
-  updatedContext = await NotificationsDB.removeNotificationsAppConfig(updatedContext);
+  updatedContext = await Notifications.Meta.removeNotificationsAppMeta(updatedContext);
+  updatedContext = await Notifications.Cfg.removeNotificationsAppConfig(updatedContext);
   return updatedContext;
 };
 
@@ -78,14 +77,14 @@ export const removeEmptyNotificationsApp = async (context: $TSContext): Promise<
 export const configureChannel = async (context: $TSContext, channelName: string):Promise<IChannelAPIResponse|undefined> => {
   const envName: string = stateManager.getCurrentEnvName() as string; // throws exception if env is not configured
 
-  if (channelName in Notifications.ChannelAPI.ChannelType) {
+  if (channelName in Notifications.ChannelCfg.ChannelType) {
     context.exeInfo.pinpointClient = await pinpointHelper.getPinpointClient(context, 'update', envName);
     if (context.exeInfo.serviceMeta.mobileHubMigrated === true) {
       context.print.error('No resources to update.');
       return undefined;
     }
 
-    const channelActionHandler:NotificationsChannelAPIModule = await import(Notifications.ChannelAPI.getChannelHandlerPath(channelName));
+    const channelActionHandler:NotificationsChannelAPIModule = await import(Notifications.ChannelCfg.getChannelHandlerPath(channelName));
     const configChannelResponse = await channelActionHandler.configure(context);
     return configChannelResponse;
   }
@@ -100,8 +99,8 @@ export const pullAllChannels = async (context: $TSContext, pinpointAppName: stri
   const pullTasks: Array<$TSAny> = [];
   context.exeInfo.pinpointClient = await pinpointHelper.getPinpointClient(context, 'update', envName);
 
-  for (const channelName of Object.keys(Notifications.ChannelAPI.ChannelType)) {
-    const channelActionHandler:NotificationsChannelAPIModule = await import(Notifications.ChannelAPI.getChannelHandlerPath(channelName));
+  for (const channelName of Object.keys(Notifications.ChannelCfg.ChannelType)) {
+    const channelActionHandler:NotificationsChannelAPIModule = await import(Notifications.ChannelCfg.getChannelHandlerPath(channelName));
     pullTasks.push(() => channelActionHandler.pull(context, pinpointAppName));
   }
   const pullChannelsResponseList : Array<IChannelAPIResponse> = await sequential(pullTasks);

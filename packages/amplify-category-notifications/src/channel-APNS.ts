@@ -9,7 +9,7 @@ import {
 
 import * as configureKey from './apns-key-config';
 import * as configureCertificate from './apns-cert-config';
-import { ChannelAction, IChannelAPIResponse, ChannelConfigDeploymentType } from './notifications-api-types';
+import { ChannelAction, IChannelAPIResponse, ChannelConfigDeploymentType } from './channel-types';
 import { buildPinpointChannelResponseError, buildPinpointChannelResponseSuccess } from './pinpoint-helper';
 
 const channelName = 'APNS';

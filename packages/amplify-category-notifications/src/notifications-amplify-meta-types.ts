@@ -1,4 +1,4 @@
-import * as backendConfigTypes from './notifications-backend-config-types';
+import * as backendConfigTypes from './notifications-backend-cfg-types';
 
 /**
  * Pinpoint app data type.

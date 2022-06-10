@@ -1,15 +1,12 @@
-/* eslint-disable import/no-cycle */
-/* eslint-disable no-bitwise */
-/* eslint-disable spellcheck/spell-checker */
 /**
  *  API to update Notifications category state in the state-db ( backend-config, frontend-config, teams-provider, amplify-meta)
  */
 import {
-  $TSAny, stateManager, AmplifySupportedService, AmplifyCategories, $TSMeta, $TSContext, INotificationsResourceMeta,
+  $TSAny, stateManager, AmplifySupportedService, AmplifyCategories, $TSMeta, $TSContext, INotificationsResourceMeta, pathManager,
 } from 'amplify-cli-core';
 import { ICategoryMeta } from './notifications-amplify-meta-types';
-import { NotificationsDB as Notifications } from './notifications-backend-cfg-api';
-import { invokeGetLastPushTimeStamp } from './analytics-resource-api';
+import { invokeGetLastPushTimeStamp } from './plugin-client-api-analytics';
+import { ChannelCfg } from './notifications-backend-cfg-channel-api';
 
 /**
  * Persistent state management class for Notifications.
@@ -47,7 +44,7 @@ export class NotificationsMeta {
         if (analyticsLastPushTimeStamp) {
           notificationsAppMeta.lastPushTimeStamp = analyticsLastPushTimeStamp;
           notificationsAppMeta.lastPushDirHash = (notificationsAppMeta.lastPushDirHash)
-        || NotificationsMeta.jenkinsOneAtATimeHash(JSON.stringify(notificationsAppMeta));
+        || NotificationsMeta.oneAtATimeJenkinsHash(JSON.stringify(notificationsAppMeta));
         }
       }
 
@@ -59,7 +56,7 @@ export class NotificationsMeta {
 
   // Move this to library
   // https://en.wikipedia.org/wiki/Jenkins_hash_function
-  protected static jenkinsOneAtATimeHash = (keyString: string):string => {
+  protected static oneAtATimeJenkinsHash = (keyString: string):string => {
     let hash = 0;
     for (let charIndex = 0; charIndex < keyString.length; ++charIndex) {
       hash += keyString.charCodeAt(charIndex);
@@ -71,6 +68,8 @@ export class NotificationsMeta {
     // 4,294,967,295 is FFFFFFFF, the maximum 32 bit unsigned integer value, used here as a mask.
     return (((hash + (hash << 15)) & 4294967295) >>> 0).toString(16);
   };
+
+  protected static PINPOINT_PROVIDER_NAME = 'awscloudformation';
 
   /**
    * Get Notifications App from 'notifications' category  of amplify-meta.json
@@ -97,9 +96,9 @@ export class NotificationsMeta {
   }
 
    /**
-    * Check if Notifications is migrated from mobile-hub
+    * Check if Notifications is migrated from AWS Mobile Hub
     * @param amplifyMeta optionally provide amplifyMeta
-    * @returns true if Notifications is migrated from Mobilehub
+    * @returns true if Notifications is migrated from AWS Mobile Hub
     */
    public static checkMigratedFromMobileHub = async (amplifyMeta?:$TSMeta): Promise<boolean> => {
      const notificationAppMeta: INotificationsResourceMeta|undefined = await NotificationsMeta.getNotificationsAppMeta(amplifyMeta);
@@ -107,9 +106,10 @@ export class NotificationsMeta {
    }
 
    /**
-    * This is the legacy logic to check mobile-hub ( re-enable if any older file-types are discovered to be supported )
+    * This is the legacy logic to check AWS Mobile Hub.
+    * note: This needs to be re-enabled if any older file-types are discovered to be supported.
     * @param amplifyMeta optionally provide amplifyMeta
-    * @returns true if Notifications is migrated from Mobilehub
+    * @returns true if Notifications is migrated from AWS Mobile Hub
     */
    public static checkMigratedFromMobileHubLegacy = async (amplifyMeta?:$TSMeta): Promise<boolean> => {
      const tmpMeta = (amplifyMeta) || await stateManager.getMeta();
@@ -145,7 +145,7 @@ export class NotificationsMeta {
 public static getEnabledChannelsFromAppMeta = async (amplifyMeta?: $TSAny): Promise<Array<string>> => {
   let enabledChannelList :Array<string> = [];
   const tmpAmplifyMeta = (amplifyMeta) || stateManager.getMeta();
-  const availableChannels = Notifications.ChannelAPI.getAvailableChannels();
+  const availableChannels = ChannelCfg.getAvailableChannels();
   const notificationsMeta = await NotificationsMeta.getNotificationsAppMeta(tmpAmplifyMeta);
   enabledChannelList = (notificationsMeta)
     ? availableChannels.filter(channel => NotificationsMeta.isNotificationChannelEnabled(notificationsMeta, channel))
@@ -159,7 +159,7 @@ public static getEnabledChannelsFromAppMeta = async (amplifyMeta?: $TSAny): Prom
  */
  public static getDisabledChannelsFromAmplifyMeta = async (amplifyMeta?: $TSMeta): Promise<Array<string>> => {
    const disabledChannelList : Array<string> = [];
-   const availableChannels = Notifications.ChannelAPI.getAvailableChannels();
+   const availableChannels = ChannelCfg.getAvailableChannels();
    const enabledChannels = await NotificationsMeta.getEnabledChannelsFromAppMeta(amplifyMeta);
    availableChannels.forEach(channel => {
      if (!enabledChannels.includes(channel)) {
@@ -170,6 +170,22 @@ public static getEnabledChannelsFromAppMeta = async (amplifyMeta?: $TSAny): Prom
  };
 
  /**
+ * Given the application region, get the closest pinpoint region
+ * @param context  application context
+ * @returns pinpoint region
+ */
+public static getPinpointRegionMapping = async (context: $TSContext): Promise<string|undefined> => {
+  const projectPath = pathManager.findProjectRoot();
+  const applicationRegion = stateManager.getCurrentRegion(projectPath);
+  if (!applicationRegion) {
+    throw Error(`Invalid Region for project at ${projectPath}`);
+  }
+  const providerPlugin = await import(context.amplify.getProviderPlugins(context)[NotificationsMeta.PINPOINT_PROVIDER_NAME]);
+  const regionMapping: Record<string, string> = providerPlugin.getPinpointRegionMapping();
+  return (applicationRegion in regionMapping) ? regionMapping[applicationRegion] : undefined;
+};
+
+/**
    * Create partial Notifications resource in Amplify Meta. The fields will be populated in post-push state
    * @param context
    * @param notificationResourceName
@@ -178,7 +194,7 @@ public static getEnabledChannelsFromAppMeta = async (amplifyMeta?: $TSAny): Prom
 
  public static addPartialNotificationsAppMeta = async (context: $TSContext, notificationResourceName: string):Promise<$TSMeta> => {
    let updatedAmplifyMeta = await stateManager.getMeta();
-   const pinpointRegion = Notifications.getPinpointRegionMapping(context);
+   const pinpointRegion = await NotificationsMeta.getPinpointRegionMapping(context);
    // update amplify-meta with notifications metadata
    updatedAmplifyMeta = NotificationsMeta.constructPartialNotificationsAppMeta(updatedAmplifyMeta,
      notificationResourceName, pinpointRegion);

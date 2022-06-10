@@ -8,7 +8,7 @@ import { $TSAny, $TSContext } from 'amplify-cli-core';
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import inquirer from 'inquirer';
 import ora from 'ora';
-import { ChannelAction, ChannelConfigDeploymentType } from './notifications-api-types';
+import { ChannelAction, ChannelConfigDeploymentType } from './channel-types';
 import { buildPinpointChannelResponseError, buildPinpointChannelResponseSuccess } from './pinpoint-helper';
 
 const channelName = 'Email';

@@ -13,15 +13,15 @@ import {
 /* eslint-disable @typescript-eslint/no-var-requires */
 import * as inquirer from 'inquirer';
 import ora from 'ora';
-import { NotificationsDB } from './notifications-backend-cfg-api';
+import { Notifications } from './notifications-api';
 import {
   invokeAnalyticsResourceToggleNotificationChannel,
-} from './analytics-resource-api';
-import { IChannelAPIResponse, ChannelAction, ChannelConfigDeploymentType } from './notifications-api-types';
-import { ChannelAPI } from './notifications-backend-cfg-channel-api';
+} from './plugin-client-api-analytics';
+import { IChannelAPIResponse, ChannelAction, ChannelConfigDeploymentType } from './channel-types';
+import { ChannelCfg } from './notifications-backend-cfg-channel-api';
 
 const channelName = 'InAppMessaging';
-const channelViewName = ChannelAPI.getChannelViewName(channelName);
+const channelViewName = ChannelCfg.getChannelViewName(channelName);
 const spinner = ora('');
 const deploymentType = ChannelConfigDeploymentType.DEFERRED;
 
@@ -33,7 +33,7 @@ const NOOP_CFG_RESPONSE: IChannelAPIResponse = {
     resourceProviderServiceName: AmplifySupportedService.PINPOINT,
     status: true,
     capability: AmplifyCategories.NOTIFICATIONS,
-    subCapability: ChannelAPI.ChannelType.InAppMessaging,
+    subCapability: ChannelCfg.ChannelType.InAppMessaging,
   },
   deploymentType: ChannelConfigDeploymentType.DEFERRED,
 };
@@ -43,7 +43,7 @@ const NOOP_CFG_RESPONSE: IChannelAPIResponse = {
  * @param {*} context amplify cli context
  */
 export const configure = async (context: $TSContext) : Promise<IChannelAPIResponse> => {
-  if (await NotificationsDB.isChannelEnabledNotificationsBackendConfig(channelName)) {
+  if (await Notifications.ChannelCfg.isChannelEnabledNotificationsBackendConfig(channelName)) {
     context.print.info(`The ${channelViewName} channel is currently enabled`);
     const answer = await inquirer.prompt({
       name: 'disableChannel',
@@ -76,14 +76,14 @@ export const configure = async (context: $TSContext) : Promise<IChannelAPIRespon
  * @returns Analytics API response
  */
 export const enable = async (context: $TSContext): Promise<IChannelAPIResponse> => {
-  spinner.start(`Enabling ${ChannelAPI.getChannelViewName(channelName)} channel.`);
+  spinner.start(`Enabling ${ChannelCfg.getChannelViewName(channelName)} channel.`);
   //TBD: add the PINPOINT resource id - right now its assumed to be a single resource
   const enableInAppMsgAPIResponse : IPluginCapabilityAPIResponse = await invokeAnalyticsResourceToggleNotificationChannel(context,
     AmplifySupportedService.PINPOINT,
     NotificationChannels.IN_APP_MSG,
     true);
   if (enableInAppMsgAPIResponse.status) {
-    spinner.succeed(`The ${ChannelAPI.getChannelViewName(channelName)} channel has been successfully enabled.`);
+    spinner.succeed(`The ${ChannelCfg.getChannelViewName(channelName)} channel has been successfully enabled.`);
   } else {
     spinner.fail(`Enable channel error: ${enableInAppMsgAPIResponse.reasonMsg as string}`);
   }
@@ -108,7 +108,7 @@ export const disable = async (context: $TSContext):Promise<IChannelAPIResponse> 
     NotificationChannels.IN_APP_MSG,
     false /*disable*/);
   if (disableInAppMsgResponse.status) {
-    spinner.succeed(`The ${ChannelAPI.getChannelViewName(channelName)} channel has been disabled.`);
+    spinner.succeed(`The ${ChannelCfg.getChannelViewName(channelName)} channel has been disabled.`);
   } else {
     spinner.fail('Disable channel error');
   }
@@ -130,18 +130,18 @@ export const pull = async (context: $TSContext, pinpointApp:$TSAny):Promise<$TSA
   const params = {
     ApplicationId: pinpointApp.Id,
   };
-  spinner.start(`Retrieving channel information for ${ChannelAPI.getChannelViewName(channelName)}.`);
+  spinner.start(`Retrieving channel information for ${ChannelCfg.getChannelViewName(channelName)}.`);
   return context.exeInfo.pinpointClient
     .getSmsChannel(params)
     .promise()
     .then((data:$TSAny) => {
-      spinner.succeed(`Channel information retrieved for ${ChannelAPI.getChannelViewName(channelName)}`);
+      spinner.succeed(`Channel information retrieved for ${ChannelCfg.getChannelViewName(channelName)}`);
       pinpointApp[channelName] = data.SMSChannelResponse;
       return data.SMSChannelResponse;
     })
     .catch((err:$TSAny) => {
       if (err.code === 'NotFoundException') {
-        spinner.succeed(`Channel is not setup for ${ChannelAPI.getChannelViewName(channelName)} `);
+        spinner.succeed(`Channel is not setup for ${ChannelCfg.getChannelViewName(channelName)} `);
         return err;
       }
       spinner.stop();

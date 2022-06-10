@@ -2,7 +2,7 @@
 import { $TSAny, $TSContext } from 'amplify-cli-core';
 import inquirer from 'inquirer';
 import ora from 'ora';
-import { ChannelAction, ChannelConfigDeploymentType, IChannelAPIResponse } from './notifications-api-types';
+import { ChannelAction, ChannelConfigDeploymentType, IChannelAPIResponse } from './channel-types';
 import { buildPinpointChannelResponseError, buildPinpointChannelResponseSuccess } from './pinpoint-helper';
 
 const channelName = 'FCM';
