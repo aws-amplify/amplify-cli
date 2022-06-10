@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters/src/environment-parameter-manager';
+import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import {
   $TSAny, $TSContext, exitOnNextTick, JSONUtilities, NotImplementedError, stateManager,
 } from 'amplify-cli-core';

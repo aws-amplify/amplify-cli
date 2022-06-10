@@ -146,7 +146,7 @@ export const pullHooks = async (context: $TSContext): Promise<void> => {
 
 const deleteHooksFromS3 = async (context: $TSContext): Promise<void> => {
   const envName: string = context.amplify?.getEnvInfo()?.envName;
-  const projectBucket: string = stateManager.getMeta()?.[ProviderName]?.DeploymentBucketName;
+  const projectBucket: string = stateManager.getMeta()?.providers?.[ProviderName]?.DeploymentBucketName;
 
   if (!envName || !projectBucket) {
     return;
