@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.4.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@8.4.0...@aws-amplify/cli@8.4.0-beta.1) (2022-06-10)
+
+
+### Features
+
+* no op commit ([#10553](https://github.com/aws-amplify/amplify-cli/issues/10553)) ([4e16f6b](https://github.com/aws-amplify/amplify-cli/commit/4e16f6b5d0c488a9357c3dbca11095bd6c4419b5))
+* no op commit to sync package ([c9371ab](https://github.com/aws-amplify/amplify-cli/commit/c9371ab4588fa5d8abaf6b22100b316450ee9a27))
+
+
+
+
+
 # [8.4.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@8.3.1...@aws-amplify/cli@8.4.0-beta.0) (2022-06-03)
 
 
