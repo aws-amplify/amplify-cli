@@ -1,4 +1,3 @@
-/* eslint-disable spellcheck/spell-checker */
 /**
  * wrapper functions to invoke functions exported by
  * analytics category. (primarily pinpoint api used by predictions for notifications)

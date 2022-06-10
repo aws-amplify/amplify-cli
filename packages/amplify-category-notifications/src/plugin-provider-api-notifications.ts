@@ -3,9 +3,9 @@ import {
 } from 'amplify-cli-core';
 import * as notificationManager from './notifications-manager';
 import * as multiEnvManager from './multi-env-manager';
-import { NotificationsDB } from './notifications-backend-cfg-api';
-import { NotificationsMeta } from './notifications-meta-api';
-import { IChannelAPIResponse } from './notifications-api-types';
+import { NotificationsCfg } from './notifications-backend-cfg-api';
+import { NotificationsMeta } from './notifications-amplify-meta-api';
+import { IChannelAPIResponse } from './channel-types';
 
 /**
  * Get Notifications Resource Info
@@ -13,7 +13,7 @@ import { IChannelAPIResponse } from './notifications-api-types';
  */
 export const notificationsPluginAPIGetResource = async (context: $TSContext): Promise<INotificationsResource|undefined> => {
   context.exeInfo = (context.exeInfo) || context.amplify.getProjectDetails();
-  const notificationsBackendConfig = await NotificationsDB.getNotificationsAppConfig(context.exeInfo.backendConfig);
+  const notificationsBackendConfig = await NotificationsCfg.getNotificationsAppConfig(context.exeInfo.backendConfig);
   const notificationsMeta = await NotificationsMeta.getNotificationsAppMeta(context.exeInfo.amplifyMeta);
   const response : INotificationsResource | undefined = (notificationsBackendConfig) ? ({
     id: notificationsMeta?.Id,

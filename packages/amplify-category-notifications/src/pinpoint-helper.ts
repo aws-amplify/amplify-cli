@@ -1,18 +1,16 @@
 import ora from 'ora';
 import {
-  $TSAny, $TSContext, open, AmplifySupportedService, AmplifyCategories, stateManager, IAnalyticsResource, PluginAPIError,
+  $TSAny, $TSContext, open, AmplifySupportedService, AmplifyCategories, stateManager, IAnalyticsResource, PluginAPIError, pathManager,
 } from 'amplify-cli-core';
 import {
   invokeAnalyticsAPICreateResource,
   invokeAnalyticsAPIGetResources,
-} from './analytics-resource-api';
+} from './plugin-client-api-analytics';
 
 import * as authHelper from './auth-helper';
 import { ICategoryMeta } from './notifications-amplify-meta-types';
-import { NotificationsDB } from './notifications-backend-cfg-api';
-import { NotificationsMeta } from './notifications-meta-api';
-import { PinpointName } from './pinpoint-name';
-import { ChannelAction, ChannelConfigDeploymentType, IChannelAPIResponse } from './notifications-api-types';
+import { Notifications } from './notifications-api';
+import { ChannelAction, ChannelConfigDeploymentType, IChannelAPIResponse } from './channel-types';
 
 const providerName = 'awscloudformation';
 const spinner = ora('');
@@ -245,7 +243,7 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
         pinpointApp = pinpointAppStatus.app?.output;
         resourceName = pinpointAppStatus.app?.resourceName;
         // Update pinpointApp into Notifications amplifyMeta (in-core)
-        NotificationsMeta.constructResourceMeta(amplifyMeta, resourceName, pinpointApp as ICategoryMeta);
+        Notifications.Meta.constructResourceMeta(amplifyMeta, resourceName, pinpointApp as ICategoryMeta);
       }
       break;
     }
@@ -255,9 +253,9 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
         pinpointApp = getPinpointAppFromAnalyticsOutput(pinpointAppStatus.app);
         resourceName = pinpointAppStatus.app.resourceName as string;
         // create updated version of amplify-meta with notifications resource
-        context.exeInfo.amplifyMeta = NotificationsMeta.constructResourceMeta(amplifyMeta, resourceName, pinpointApp);
+        context.exeInfo.amplifyMeta = Notifications.Meta.constructResourceMeta(amplifyMeta, resourceName, pinpointApp);
         // create updated version of backend-config with notifications resource configuration
-        context.exeInfo.backendConfig = await NotificationsDB.addPartialNotificationsBackendConfig(resourceName,
+        context.exeInfo.backendConfig = await Notifications.Cfg.addPartialNotificationsBackendConfig(resourceName,
           context.exeInfo.backendConfig);
       }
       break;
@@ -268,9 +266,9 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
       const resourceResult = await invokeAnalyticsAPICreateResource(context, AmplifySupportedService.PINPOINT);
       resourceName = resourceResult.resourceName;
       // create updated version of amplify-meta with notifications resource
-      context.exeInfo.amplifyMeta = await NotificationsMeta.addPartialNotificationsAppMeta(context, resourceName);
+      context.exeInfo.amplifyMeta = await Notifications.Meta.addPartialNotificationsAppMeta(context, resourceName);
       // create updated version of backend-config with notifications resource configuration
-      context.exeInfo.backendConfig = await NotificationsDB.addPartialNotificationsBackendConfig(resourceName,
+      context.exeInfo.backendConfig = await Notifications.Cfg.addPartialNotificationsBackendConfig(resourceName,
         context.exeInfo.backendConfig);
       // The Pinpoint resource is locally created, but requires an amplify push for channels to be programmed
       // note:- This is temporary until deployment state-machine supports deferred resource push.
@@ -282,9 +280,9 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
       resourceName = pinpointAppStatus.app?.resourceName;
       if (resourceName) {
         // create updated version of amplify-meta with notifications resource
-        context.exeInfo.amplifyMeta = await NotificationsMeta.addPartialNotificationsAppMeta(context, resourceName);
+        context.exeInfo.amplifyMeta = await Notifications.Meta.addPartialNotificationsAppMeta(context, resourceName);
         // create updated version of backend-config with notifications resource configuration
-        context.exeInfo.backendConfig = await NotificationsDB.addPartialNotificationsBackendConfig(resourceName,
+        context.exeInfo.backendConfig = await Notifications.Cfg.addPartialNotificationsBackendConfig(resourceName,
           context.exeInfo.backendConfig);
       }
       viewShowAmplifyPushRequired(context);
@@ -435,6 +433,35 @@ export const isAnalyticsAdded = (context: $TSContext):boolean => {
   return result;
 };
 
+/**
+ * Utility functions to generate PinpointAppName and extract PinpointResourceName
+ */
+const PinpointName = {
+  /**
+   * Removes envTagPattern from PinpointAppName.
+   * @param pinpointAppName is the Pinpoint app name of the form 'resourceName + envTagPattern' in amplify-meta.json
+   * @param envName amplify env in which application is deployed
+   * @returns 'resourceName' Removes envTagPattern from PinpointAppName
+   */
+  extractResourceName: (pinpointAppName: string, envName: string):string => pinpointAppName.replace(PinpointName.getEnvTagPattern(envName), ''),
+
+  /**
+   * PinpointAppName = ResourceName+EnvTag for use in amplify-meta.json
+   * @param resourceName is the Pinpoint resource name in backend-config.json
+   * @param envName amplify env in which application is deployed
+   * @returns 'resourceName+envTag' : Appends envTagPattern to ResourceName
+   */
+  generatePinpointAppName: (resourceName : string, envName: string):string => {
+    const pinpointAppName = resourceName + PinpointName.getEnvTagPattern(envName);
+    return pinpointAppName;
+  },
+
+  /**
+   * Given the environment name, get the tag pattern
+   */
+  getEnvTagPattern: (envName: string) : string => (envName === 'NONE' ? '' : `-${envName}`),
+};
+
 module.exports = {
   getPinpointApp,
   getPinpointAppStatus,
@@ -446,7 +473,8 @@ module.exports = {
   deletePinpointApp,
   getPinpointClient,
   isAnalyticsAdded,
-  isNotificationChannelEnabled: NotificationsDB.isChannelEnabledNotificationsBackendConfig,
+  isNotificationChannelEnabled: Notifications.ChannelCfg.isChannelEnabledNotificationsBackendConfig,
   scanCategoryMetaForPinpoint,
   console: channelInAppConsole,
+  PinpointName,
 };
