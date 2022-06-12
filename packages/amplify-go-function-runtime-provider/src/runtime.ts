@@ -12,8 +12,12 @@ import archiver from 'archiver';
 import fs from 'fs-extra';
 import glob from 'glob';
 import path from 'path';
-import { SemVer, coerce, gte, lt } from 'semver';
-import { BIN_LOCAL, BIN, SRC, MAIN_BINARY, DIST, MAIN_BINARY_WIN } from './constants';
+import {
+  SemVer, coerce, gte, lt,
+} from 'semver';
+import {
+  BIN_LOCAL, BIN, SRC, MAIN_BINARY, DIST, MAIN_BINARY_WIN,
+} from './constants';
 
 const executableName = 'go';
 const minimumVersion = <SemVer>coerce('1.0');
@@ -21,6 +25,9 @@ const maximumVersion = <SemVer>coerce('2.0');
 
 let executablePath: string | null;
 
+/**
+ *
+ */
 export const executeCommand = (
   args: string[],
   streamStdio: boolean,
@@ -63,6 +70,9 @@ const isBuildStale = (resourceDir: string, lastBuildTimeStamp: Date, outDir: str
   return !!fileUpdatedAfterLastBuild;
 };
 
+/**
+ *
+ */
 export const buildResource = async ({ buildType, srcRoot, lastBuildTimeStamp }: BuildRequest): Promise<BuildResult> => {
   let rebuilt = false;
 
@@ -107,6 +117,9 @@ export const buildResource = async ({ buildType, srcRoot, lastBuildTimeStamp }: 
   };
 };
 
+/**
+ *
+ */
 export const checkDependencies = async (_runtimeValue: string): Promise<CheckDependenciesResult> => {
   // Check if go is in the path
   executablePath = which.sync(executableName, {
@@ -149,6 +162,9 @@ export const checkDependencies = async (_runtimeValue: string): Promise<CheckDep
   };
 };
 
+/**
+ *
+ */
 export const packageResource = async (request: PackageRequest, context: any): Promise<PackageResult> => {
   // check if repackaging is needed
   if (!request.lastPackageTimeStamp || request.lastBuildTimeStamp > request.lastPackageTimeStamp) {
@@ -161,8 +177,14 @@ export const packageResource = async (request: PackageRequest, context: any): Pr
 };
 
 const winZip = async (src: string, dest: string, print: any) => {
-  // get lambda zip tool
-  await execa(executableName, ['get', '-u', 'github.com/aws/aws-lambda-go/cmd/build-lambda-zip']);
+  // get lambda zip tool with the fix of https://go.dev/doc/go-get-install-deprecation
+  try {
+  // for golang version above > 1.17
+    await execa(executableName, ['install', '-u', 'github.com/aws/aws-lambda-go/cmd/build-lambda-zip']);
+  } catch (error: unknown) {
+  // for golang version below < 1.17
+    await execa(executableName, ['get', '-u', 'github.com/aws/aws-lambda-go/cmd/build-lambda-zip']);
+  }
   const goPath = process.env.GOPATH;
   if (!goPath) {
     throw new Error('Could not determine GOPATH. Make sure it is set.');
