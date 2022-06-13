@@ -777,82 +777,11 @@ describe("@model @primaryIndex @index auth", () => {
       updatedAt: AWSDateTime
     }`;
 
-    const out = transformer.transform(validSchema);
-    expect(out).toBeDefined();
-
-    // should expect no errors and there should be an auth filter
-    const listAuthRequestTemplate = out.resolvers["Query.listFamilyMembers.auth.1.req.vtl"];
-    expect(listAuthRequestTemplate).toBeDefined();
-    let listAuthVTLRequest = vtlTemplate.render(listAuthRequestTemplate, {
-      context: {},
-      requestParameters: ownerRequest
-    });
-    expect(listAuthVTLRequest.hadException).toEqual(false);
-    expect(listAuthVTLRequest.stash.authFilter).toEqual(
-      expect.objectContaining({
-        or: expect.arrayContaining([
-          expect.objectContaining({ child: { in: [ownerRequest.jwt.sub, "user1", `${ownerRequest.jwt.sub}::user1`] } }),
-          expect.objectContaining({ parent: { in: [ownerRequest.jwt.sub, "user1", `${ownerRequest.jwt.sub}::user1`] } })
-        ])
-      })
+    expect(() => {
+      transformer.transform(validSchema);
+    }).toThrow(
+      "The primary key's sort key type 'child' cannot be used as an owner @auth field too. Please use another field for the sort key.",
     );
-
-    // should still change model query expression if the partition key is provided
-    // adding the modelQueryExpression and arg to simulate partition key being added
-    listAuthVTLRequest = vtlTemplate.render(listAuthRequestTemplate, {
-      context: {
-        arguments: {
-          parent: "user10"
-        },
-        stash: {
-          modelQueryExpression: {
-            expression: "#parent = :parent",
-            expressionNames: {
-              "#parent": "parent"
-            },
-            expressionValues: {
-              ":parent": {
-                S: "$ctx.args.parent"
-              }
-            }
-          }
-        }
-      },
-      requestParameters: ownerRequest
-    });
-    expect(listAuthVTLRequest.hadException).toEqual(false);
-    expect(listAuthVTLRequest.stash.authFilter).not.toBeDefined();
-    // the $ctx.args.parent is not resolving in mock vtl engine
-    // not an issue in the service the index e2e tests this scenario
-    /* eslint-disable jest/no-interpolation-in-snapshots */
-    expect(listAuthVTLRequest.stash.modelQueryExpression).toMatchInlineSnapshot(`
-      Object {
-        "expression": "#parent = :parent AND #child = :child",
-        "expressionNames": Object {
-          "#child": "child",
-          "#parent": "parent",
-        },
-        "expressionValues": Object {
-          ":child": Object {
-            "L": Array [
-              Object {
-                "S": "${ownerRequest.jwt.sub}",
-              },
-              Object {
-                "S": "user1",
-              },
-              Object {
-                "S": "${ownerRequest.jwt.sub}::user1",
-              },
-            ],
-          },
-          ":parent": Object {
-            "S": "$ctx.args.parent",
-          },
-        },
-      }
-    `);
-    /* eslint-enable */
   });
 });
 
