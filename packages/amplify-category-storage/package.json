@@ -27,9 +27,9 @@
   },
   "dependencies": {
     "@aws-amplify/cli-extensibility-helper": "2.3.32",
-    "@aws-cdk/aws-dynamodb": "~1.124.0",
-    "@aws-cdk/aws-s3": "~1.124.0",
-    "@aws-cdk/core": "~1.124.0",
+    "@aws-cdk/aws-dynamodb": "^1.159",
+    "@aws-cdk/aws-s3": "^1.159",
+    "@aws-cdk/core": "^1.159",
     "amplify-cli-core": "2.11.0",
     "amplify-headless-interface": "1.15.0",
     "amplify-prompts": "2.2.0",
