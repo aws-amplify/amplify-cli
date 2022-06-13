@@ -4,6 +4,7 @@ import {
   ModelOperation,
   MODEL_OPERATIONS,
   DEFAULT_GROUPS_FIELD,
+  DEFAULT_GROUP_CLAIM,
   DEFAULT_OWNER_FIELD,
   getAuthDirectiveRules,
 } from '@aws-amplify/graphql-auth-transformer';
@@ -72,7 +73,8 @@ function convertModelRulesToRoles(acm: AccessControlMatrix, authRules: AuthRule[
         case 'userPools':
           if (rule.allow === 'groups') {
             let groupsField = rule.groupsField || DEFAULT_GROUPS_FIELD;
-            roleName = `${rule.provider}:dynamicGroup:${groupsField}`;
+            let groupsClaim = rule.groupClaim || DEFAULT_GROUP_CLAIM;
+            roleName = `${rule.provider}:dynamicGroup:${groupsClaim}:${groupsField}`;
           } else if (rule.allow === 'owner') {
             let ownerField = rule.ownerField || DEFAULT_OWNER_FIELD;
             roleName = `${rule.provider}:owner:${ownerField}`;
