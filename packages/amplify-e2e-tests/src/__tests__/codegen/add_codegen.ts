@@ -1,4 +1,3 @@
-/* eslint-disable spellcheck/spell-checker */
 import {
   addApiWithoutSchema,
   createNewProjectDir,
@@ -45,7 +44,6 @@ describe('amplify codegen add', () => {
     const proj1Name = createRandomName();
     await initJSProjectWithProfile(projRoot, { name: proj1Name });
     await addApiWithoutSchema(projRoot);
-    // await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, proj1Name, 'simple_model.graphql');
     await amplifyPush(projRoot);
 
