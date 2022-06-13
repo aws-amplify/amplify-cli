@@ -23,7 +23,7 @@ export type AmplifyAuthCognitoStackProps = {
 /**
  * CDK stack that contains the UserPool Group resources
  */
-export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserPoolGroupStackTemplate, AmplifyStackTemplate {
+export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserPoolGroupStackTemplate {
   _scope: cdk.Construct;
   private _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
   private _cfnConditionMap: Map<string, cdk.CfnCondition> = new Map();
@@ -309,7 +309,7 @@ const getCfnParamsLogicalId = (cognitoResourceName: string, cfnParamName: string
 /**
  * additional class to merge CFN parameters and CFN outputs as cdk doesn't allow same logical ID of constructs in same stack
  */
-export class AmplifyUserPoolGroupStackOutputs extends cdk.Stack implements AmplifyStackTemplate {
+export class AmplifyUserPoolGroupStackOutputs extends cdk.Stack {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(scope: cdk.Construct, id: string, props: AmplifyAuthCognitoStackProps) {
     super(scope, id, props);

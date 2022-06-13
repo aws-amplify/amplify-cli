@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import {
   AmplifyCategories,
   AmplifySupportedService,
@@ -14,21 +15,24 @@ import {
   stateManager,
   $TSAny,
 } from 'amplify-cli-core';
-import { AmplifyAuthCognitoStack } from './auth-cognito-stack-builder';
-import { AuthStackSynthesizer } from './stack-synthesizer';
 import * as cdk from '@aws-cdk/core';
-import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
-import { CognitoStackOptions, AuthTriggerConnection, AuthTriggerPermissions } from '../service-walkthrough-types/cognito-user-input-types';
 import _ from 'lodash';
 import * as path from 'path';
 import { printer, formatter } from 'amplify-prompts';
-import { generateNestedAuthTriggerTemplate } from '../utils/generate-auth-trigger-template';
-import { createUserPoolGroups, updateUserPoolGroups } from '../utils/synthesize-resources';
-import { AttributeType, CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
 import * as vm from 'vm2';
 import * as fs from 'fs-extra';
 import os from 'os';
+import { AmplifyAuthCognitoStack } from './auth-cognito-stack-builder';
+import { AuthStackSynthesizer } from './stack-synthesizer';
+import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
+import { CognitoStackOptions, AuthTriggerConnection, AuthTriggerPermissions } from '../service-walkthrough-types/cognito-user-input-types';
+import { generateNestedAuthTriggerTemplate } from '../utils/generate-auth-trigger-template';
+import { createUserPoolGroups, updateUserPoolGroups } from '../utils/synthesize-resources';
+import { AttributeType, CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
 
+/**
+ *
+ */
 export class AmplifyAuthTransform extends AmplifyCategoryTransform {
   private _app: cdk.App;
   private _category: string;
@@ -47,6 +51,9 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     this._authTemplateObj = new AmplifyAuthCognitoStack(this._app, 'AmplifyAuthCongitoStack', { synthesizer: this._synthesizer });
   }
 
+  /**
+   *
+   */
   public async transform(context: $TSContext): Promise<Template> {
     // parse Input data
     // validating cli-inputs
@@ -60,12 +67,11 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     } else {
       await createUserPoolGroups(context, this._cognitoStackProps.resourceName!, this._cognitoStackProps.userPoolGroupList);
     }
-    // generate customm Auth Trigger for Cognito
+    // generate custom Auth Trigger for Cognito
     if (this._cognitoStackProps.breakCircularDependency) {
       await generateNestedAuthTriggerTemplate(this._category, this.resourceName, this._cognitoStackProps);
     }
     // this will also include lambda triggers and adminQueries once api and function transform are done
-
     await this.generateStackResources(this._cognitoStackProps);
 
     // apply override on Amplify Object having CDK Constructs for Auth Stack
@@ -80,8 +86,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
   }
 
   /**
-   * Generates CFN REsources for Auth
-   * @returns CFN Template
+   * Generates CFN Resources for Auth
    */
 
   private async generateStackResources(props: CognitoStackOptions) {
@@ -94,7 +99,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
 
     this._authTemplateObj.generateCognitoStackResources(props);
 
-    //generate Output
+    // generate Output
     this.generateCfnOutputs(props);
   }
 
@@ -133,9 +138,10 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       }
     }
   };
+
   /**
    *
-   * @returns Object required to generate Stack using cdk
+   * @returns Object required to generate stack using cdk
    */
   private generateStackProps = async (context: $TSContext): Promise<CognitoStackOptions> => {
     // roles to append to cognito stacks
@@ -148,13 +154,23 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       },
     };
 
-    let cognitoStackProps = {
+    let cognitoStackProps: CognitoStackOptions = {
       ...this._cliInputs.cognitoConfig,
       ...roles,
       breakCircularDependency: FeatureFlags.getBoolean('auth.breakcirculardependency'),
       useEnabledMfas: FeatureFlags.getBoolean('auth.useenabledmfas'),
       dependsOn: [],
     };
+
+    /**
+     * Reason: All attributes in AttributesRequireVerificationBeforeUpdate must exist in AutoVerifiedAttributes
+     */
+    if (!_.isEmpty(this._cliInputs.cognitoConfig.autoVerifiedAttributes)) {
+      cognitoStackProps = {
+        ...cognitoStackProps,
+        userAutoVerifiedAttributeUpdateSettings: this._cliInputs.cognitoConfig.autoVerifiedAttributes,
+      };
+    }
 
     // get env secrets
     const teamProviderobj = context.amplify.loadEnvResourceParameters(context, this._category, this.resourceName);
@@ -182,7 +198,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       // Auth lambda config for Triggers
       const authTriggerConnections: AuthTriggerConnection[] = [];
       keys.forEach(key => {
-        let config: AuthTriggerConnection = {
+        const config: AuthTriggerConnection = {
           triggerType: key === 'PreSignup' ? 'PreSignUp' : key,
           lambdaFunctionName: `${this.resourceName}${key}`,
         };
@@ -240,8 +256,8 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       },
     };
 
-    //save parameters
-    let parameters = {
+    // save parameters
+    let parameters: CognitoStackOptions = {
       ...this._cliInputs.cognitoConfig,
       ...roles,
       breakCircularDependency: this._cognitoStackProps.breakCircularDependency,
@@ -249,13 +265,23 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       dependsOn: [], // to support undefined meta in update,
     };
 
+    /**
+     * Reason: All attributes in AttributesRequireVerificationBeforeUpdate must exist in AutoVerifiedAttributes
+     */
+    if (!_.isEmpty(this._cliInputs.cognitoConfig.autoVerifiedAttributes)) {
+      parameters = {
+        ...parameters,
+        userAutoVerifiedAttributeUpdateSettings: this._cliInputs.cognitoConfig.autoVerifiedAttributes,
+      };
+    }
+
     // convert triggers to JSON
     if (this._cognitoStackProps.triggers && !_.isEmpty(this._cognitoStackProps.triggers)) {
       this._cognitoStackProps.triggers = JSON.stringify(this._cognitoStackProps.triggers);
       // convert permissions
       const triggerPermissions = this._cognitoStackProps.permissions!.map(i => JSON.stringify(i));
       // convert dependsOn
-      const dependsOn = this._cognitoStackProps.dependsOn;
+      const { dependsOn } = this._cognitoStackProps;
       // convert auth trigger connections
       const authTriggerConnections = this._cognitoStackProps.authTriggerConnections!.map(obj => {
         const modifiedObj = _.omit(obj, ['lambdaFunctionArn']);
@@ -273,10 +299,13 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
 
     this.validateCfnParameters(context, oldParameters, parameters);
 
-    //save parameters
+    // save parameters
     JSONUtilities.writeJson(parametersJSONFilePath, parameters);
   };
 
+  /**
+   *
+   */
   public validateCfnParameters(context: $TSContext, oldParameters: $TSAny, parametersJson: $TSAny) {
     // There was a bug between v7.3.0 and v7.6.9 where Cognito resources were being created with incorrect `requiredAttributes` parameter
     // Since `requiredAttributes` is immutable, we must adjust this or CloudFormation step will fail
@@ -302,11 +331,10 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
   }
 
   private generateCfnOutputs = (props: CognitoStackOptions) => {
-    const configureSMS =
-      (props.autoVerifiedAttributes && props.autoVerifiedAttributes.includes('phone_number')) ||
-      (props.mfaConfiguration != 'OFF' && props.mfaTypes && props.mfaTypes.includes('SMS Text Message')) ||
-      (props.requiredAttributes && props.requiredAttributes.includes('phone_number')) ||
-      (props.usernameAttributes && props.usernameAttributes.includes(AttributeType.PHONE_NUMBER));
+    const configureSMS = (props.autoVerifiedAttributes && props.autoVerifiedAttributes.includes('phone_number'))
+      || (props.mfaConfiguration != 'OFF' && props.mfaTypes && props.mfaTypes.includes('SMS Text Message'))
+      || (props.requiredAttributes && props.requiredAttributes.includes('phone_number'))
+      || (props.usernameAttributes && props.usernameAttributes.includes(AttributeType.PHONE_NUMBER));
 
     if (props.authSelections === 'identityPoolAndUserPool' || props.authSelections == 'identityPoolOnly') {
       this._authTemplateObj.addCfnOutput(
@@ -470,7 +498,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     );
 
     if (!_.isEmpty(props.dependsOn)) {
-      const dependsOn = props.dependsOn;
+      const { dependsOn } = props;
       dependsOn?.forEach(param => {
         param.attributes.forEach(attribute => {
           this._authTemplateObj.addCfnParameter(
