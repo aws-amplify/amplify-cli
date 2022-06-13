@@ -36,7 +36,7 @@ describe('amplify codegen add', () => {
     await initJSProjectWithProfile(projRoot, { name: projName });
     await addApiWithoutSchema(projRoot);
     await updateApiSchema(projRoot, projName, 'simple_model.graphql');
-    await addCodegen(projRoot, {});
+    await expect(addCodegen(projRoot, {})).resolves.not.toThrow();
   });
 
   it('allows adding codegen to a project without an api using an api id', async () => {
@@ -54,6 +54,6 @@ describe('amplify codegen add', () => {
     // Setup Project 2
     const proj2Name = createRandomName();
     await initJSProjectWithProfile(projRootExternalApi, { name: proj2Name });
-    await addCodegen(projRootExternalApi, { apiId: GraphQLAPIIdOutput });
+    await expect(addCodegen(projRootExternalApi, { apiId: GraphQLAPIIdOutput })).resolves.not.toThrow();
   });
 });
