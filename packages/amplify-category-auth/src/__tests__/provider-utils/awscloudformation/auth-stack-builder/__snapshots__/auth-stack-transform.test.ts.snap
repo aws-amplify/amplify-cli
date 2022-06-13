@@ -158,6 +158,9 @@ Object {
     "useEnabledMfas": Object {
       "Type": "String",
     },
+    "userAutoVerifiedAttributeUpdateSettings": Object {
+      "Type": "CommaDelimitedList",
+    },
     "userPoolGroupList": Object {
       "Type": "CommaDelimitedList",
     },
@@ -307,6 +310,11 @@ Object {
             "Required": true,
           },
         ],
+        "UserAttributeUpdateSettings": Object {
+          "AttributesRequireVerificationBeforeUpdate": Array [
+            "email",
+          ],
+        },
         "UserPoolName": Object {
           "Fn::If": Array [
             "ShouldNotCreateEnvResources",
@@ -865,6 +873,9 @@ Object {
     },
     "useEnabledMfas": Object {
       "Type": "String",
+    },
+    "userAutoVerifiedAttributeUpdateSettings": Object {
+      "Type": "CommaDelimitedList",
     },
     "userPoolGroups": Object {
       "Type": "String",
@@ -1939,6 +1950,11 @@ exports.handler = (event, context, callback) => {
         },
         "SmsVerificationMessage": Object {
           "Ref": "smsVerificationMessage",
+        },
+        "UserAttributeUpdateSettings": Object {
+          "AttributesRequireVerificationBeforeUpdate": Array [
+            "email",
+          ],
         },
         "UserPoolName": Object {
           "Fn::If": Array [
