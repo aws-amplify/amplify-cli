@@ -1,5 +1,5 @@
 import { hashLayerResource, ServiceName as FunctionServiceName } from 'amplify-category-function';
-import { NotInitializedError, pathManager, stateManager, ViewResourceTableParams } from 'amplify-cli-core';
+import { AmplifyCategories, NotInitializedError, pathManager, stateManager, ViewResourceTableParams } from 'amplify-cli-core';
 import { hashElement, HashElementOptions } from 'folder-hash';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
@@ -151,11 +151,13 @@ export function getAllResources(amplifyMeta, category, resourceName, filteredRes
 
   Object.keys(amplifyMeta).forEach(categoryName => {
     const categoryItem = amplifyMeta[categoryName];
-    Object.keys(categoryItem).forEach(resource => {
-      amplifyMeta[categoryName][resource].resourceName = resource;
-      amplifyMeta[categoryName][resource].category = categoryName;
-      resources.push(amplifyMeta[categoryName][resource]);
-    });
+    if(Object.keys(categoryItem)[0] !== AmplifyCategories.AWSCLOUDFORMATION){
+      Object.keys(categoryItem).forEach(resource => {
+        amplifyMeta[categoryName][resource].resourceName = resource;
+        amplifyMeta[categoryName][resource].category = categoryName;
+        resources.push(amplifyMeta[categoryName][resource]);
+      });
+    }
   });
 
   resources = filterResources(resources, filteredResources);
