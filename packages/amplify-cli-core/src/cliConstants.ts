@@ -23,6 +23,7 @@ export const AmplifyCategories = {
   STORAGE: 'storage',
   API: 'api',
   AUTH: 'auth',
+  AWSCLOUDFORMATION: 'awscloudformation',
   FUNCTION: 'function',
   HOSTING: 'hosting',
   INTERACTIONS: 'interactions',
