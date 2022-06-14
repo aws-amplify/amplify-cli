@@ -7,7 +7,7 @@ import { AdminAuthConfig, AwsSdkConfig, CognitoAccessToken, CognitoIdToken } fro
 
 export const adminVerifyUrl = (appId: string, envName: string, region: string): string => {
   const baseUrl = process.env.AMPLIFY_CLI_ADMINUI_BASE_URL ?? adminBackendMap[region]?.amplifyAdminUrl;
-  return `${baseUrl}/admin/${appId}/${envName}/verify/?loginVersion=1`;
+  return `${baseUrl}/admin/${appId}/${envName}/verify/`;
 };
 
 export function doAdminTokensExist(appId: string): boolean {
