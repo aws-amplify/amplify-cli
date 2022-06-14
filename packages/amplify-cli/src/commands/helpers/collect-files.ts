@@ -81,7 +81,6 @@ export const collectFiles = (resources: { category: string, resourceName: string
   // backend config file
   const backendConfigFile = pathManager.getBackendConfigFilePath(rootPath)
   if(fs.existsSync(backendConfigFile)) {
-    console.log(backendConfigFile);
     filePaths.push({
       filePath: backendConfigFile,
       redact: false,
