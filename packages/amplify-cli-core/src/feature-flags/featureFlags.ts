@@ -643,6 +643,12 @@ export class FeatureFlags {
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: false,
       },
+      {
+        name: 'shouldDeepMergeDirectiveConfigDefaults',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: false,
+      },
     ]);
 
     this.registerFlag('frontend-ios', [
