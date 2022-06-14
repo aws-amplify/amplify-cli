@@ -637,12 +637,6 @@ export class FeatureFlags {
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: false,
       },
-      {
-        name: 'respectPrimaryKeyAttributesOnConnectionField',
-        type: 'boolean',
-        defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: false,
-      },
     ]);
 
     this.registerFlag('frontend-ios', [
