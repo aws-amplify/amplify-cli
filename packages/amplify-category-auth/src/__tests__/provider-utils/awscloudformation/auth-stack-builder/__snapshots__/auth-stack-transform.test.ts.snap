@@ -158,9 +158,6 @@ Object {
     "useEnabledMfas": Object {
       "Type": "String",
     },
-    "userAutoVerifiedAttributeUpdateSettings": Object {
-      "Type": "CommaDelimitedList",
-    },
     "userPoolGroupList": Object {
       "Type": "CommaDelimitedList",
     },
@@ -873,9 +870,6 @@ Object {
     },
     "useEnabledMfas": Object {
       "Type": "String",
-    },
-    "userAutoVerifiedAttributeUpdateSettings": Object {
-      "Type": "CommaDelimitedList",
     },
     "userPoolGroups": Object {
       "Type": "String",

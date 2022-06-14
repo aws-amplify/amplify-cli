@@ -427,8 +427,11 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
 
       if (autoVerifiedAttributes && autoVerifiedAttributes.length > 0) {
         this.userPool!.autoVerifiedAttributes = autoVerifiedAttributes;
+    /**
+     * Reason: All attributes in AttributesRequireVerificationBeforeUpdate must exist in AutoVerifiedAttributes
+     */
         this.userPool!.userAttributeUpdateSettings = {
-          attributesRequireVerificationBeforeUpdate:  props.userAutoVerifiedAttributeUpdateSettings!,
+          attributesRequireVerificationBeforeUpdate:  autoVerifiedAttributes,
         }
       }
 

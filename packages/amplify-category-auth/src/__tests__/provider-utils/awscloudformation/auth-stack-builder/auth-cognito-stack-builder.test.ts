@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable max-lines-per-function */
-import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import { FeatureFlags } from 'amplify-cli-core';
 import { AmplifyAuthCognitoStack } from '../../../../provider-utils/awscloudformation/auth-stack-builder/auth-cognito-stack-builder';
 import { AuthStackSynthesizer } from '../../../../provider-utils/awscloudformation/auth-stack-builder/stack-synthesizer';
-import { AttributeType } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/awsCognito-user-input-types';
 import { CognitoStackOptions } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/cognito-user-input-types';
+import { AttributeType } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/awsCognito-user-input-types';
 
 describe('generateCognitoStackResources', () => {
   const props: CognitoStackOptions = {
@@ -110,7 +111,7 @@ describe('generateCognitoStackResources', () => {
     });
     const updatedProps: CognitoStackOptions = {
       ...props,
-      userAutoVerifiedAttributeUpdateSettings: [AttributeType.PHONE_NUMBER],
+      autoVerifiedAttributes: [AttributeType.PHONE_NUMBER],
     };
     cognitoStack.generateCognitoStackResources(updatedProps);
     expect(cognitoStack.userPool?.userAttributeUpdateSettings).toMatchInlineSnapshot(`
@@ -129,7 +130,7 @@ describe('generateCognitoStackResources', () => {
     });
     const updatedProps: CognitoStackOptions = {
       ...props,
-      userAutoVerifiedAttributeUpdateSettings: [AttributeType.EMAIL],
+      autoVerifiedAttributes: [AttributeType.EMAIL],
     };
     cognitoStack.generateCognitoStackResources(updatedProps);
     expect(cognitoStack.userPool?.userAttributeUpdateSettings).toMatchInlineSnapshot(`
