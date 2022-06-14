@@ -1,6 +1,7 @@
 import { $TSContext, IAmplifyResource } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
+import _ from 'lodash';
 /**
  * Command to transform CFN with overrides
  */
@@ -45,20 +46,12 @@ export const run = async (context: $TSContext) => {
 
 export const getResources = async (context: $TSContext): Promise<IAmplifyResource[]> => {
   const resources: IAmplifyResource[] = [];
-  const { resourcesToBeCreated, resourcesToBeUpdated } = await context.amplify.getResourceStatus();
-  resourcesToBeCreated.forEach((resourceCreated: IAmplifyResource) => {
+  const { allResources } = await context.amplify.getResourceStatus();
+  allResources.forEach((resourceCreated: IAmplifyResource) => {
     resources.push({
       service: resourceCreated.service,
       category: resourceCreated.category,
       resourceName: resourceCreated.resourceName,
-    });
-  });
-
-  resourcesToBeUpdated.forEach((resourceUpdated: IAmplifyResource) => {
-    resources.push({
-      service: resourceUpdated.service,
-      category: resourceUpdated.category,
-      resourceName: resourceUpdated.resourceName,
     });
   });
   return resources;
