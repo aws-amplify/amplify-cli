@@ -268,12 +268,12 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     /**
      * Reason: All attributes in AttributesRequireVerificationBeforeUpdate must exist in AutoVerifiedAttributes
      */
-    if (!_.isEmpty(this._cliInputs.cognitoConfig.autoVerifiedAttributes)) {
-      parameters = {
-        ...parameters,
-        userAutoVerifiedAttributeUpdateSettings: this._cliInputs.cognitoConfig.autoVerifiedAttributes,
-      };
-    }
+    // if (!_.isEmpty(this._cliInputs.cognitoConfig.autoVerifiedAttributes)) {
+    //   parameters = {
+    //     ...parameters,
+    //     userAutoVerifiedAttributeUpdateSettings: this._cliInputs.cognitoConfig.autoVerifiedAttributes,
+    //   };
+    // }
 
     // convert triggers to JSON
     if (this._cognitoStackProps.triggers && !_.isEmpty(this._cognitoStackProps.triggers)) {
@@ -547,12 +547,14 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
         );
       }
       if (Array.isArray(value)) {
-        this._authTemplateObj.addCfnParameter(
-          {
-            type: 'CommaDelimitedList',
-          },
-          `${key}`,
-        );
+        if (key !== 'userAutoVerifiedAttributeUpdateSettings') {
+          this._authTemplateObj.addCfnParameter(
+            {
+              type: 'CommaDelimitedList',
+            },
+            `${key}`,
+          );
+        }
       }
     }
 
