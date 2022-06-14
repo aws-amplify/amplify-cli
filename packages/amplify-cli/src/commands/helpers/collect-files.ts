@@ -61,22 +61,32 @@ export const collectFiles = (resources: { category: string, resourceName: string
     return arr;
   }, filePaths);
   // add root stack
-  filePaths.push({
-    filePath: path.join(pathManager.getRootStackBuildDirPath(rootPath), rootStackFileName),
-    redact: false,
-  });
+  const rootstackPath = path.join(pathManager.getRootStackBuildDirPath(rootPath), rootStackFileName);
+  if(fs.existsSync(rootstackPath)) {
+    filePaths.push({
+      filePath: rootstackPath,
+      redact: false,
+    });
+  }
 
   // cli json file
-  filePaths.push({
-    filePath: pathManager.getCLIJSONFilePath(rootPath),
-    redact: false,
-  });
+  const cliJsonFile = pathManager.getCLIJSONFilePath(rootPath);
+  if(fs.existsSync(cliJsonFile)) {
+    filePaths.push({
+      filePath: cliJsonFile,
+      redact: false,
+    });
+  }
 
   // backend config file
-  filePaths.push({
-    filePath: pathManager.getBackendConfigFilePath(rootPath),
-    redact: false,
-  });
+  const backendConfigFile = pathManager.getBackendConfigFilePath(rootPath)
+  if(fs.existsSync(backendConfigFile)) {
+    console.log(backendConfigFile);
+    filePaths.push({
+      filePath: backendConfigFile,
+      redact: false,
+    });
+  }
 
   return filePaths;
 };
