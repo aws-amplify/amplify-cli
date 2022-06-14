@@ -180,7 +180,7 @@ const winZip = async (src: string, dest: string, print: any) => {
   // get lambda zip tool with the fix of https://go.dev/doc/go-get-install-deprecation
   try {
   // for golang version above > 1.17
-    await execa(executableName, ['install', '-u', 'github.com/aws/aws-lambda-go/cmd/build-lambda-zip']);
+    await execa(executableName, ['install', 'github.com/aws/aws-lambda-go/cmd/build-lambda-zip']);
   } catch (error: unknown) {
   // for golang version below < 1.17
     await execa(executableName, ['get', '-u', 'github.com/aws/aws-lambda-go/cmd/build-lambda-zip']);
