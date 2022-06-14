@@ -23,7 +23,7 @@ executors:
     docker:
       - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
-    resource_class: large
+    resource_class: xlarge
     environment:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
@@ -31,7 +31,7 @@ executors:
 # our defined job, and its steps
 jobs:
   setup:
-    executor: 'linux'
+    executor: "linux"
     steps:
       - checkout # checkout code
       - run: # run a command
@@ -68,7 +68,7 @@ jobs:
                   - image: >-
                       public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
                 working_directory: ~/repo
-                resource_class: large
+                resource_class: xlarge
                 environment:
                   AMPLIFY_DIR: /home/circleci/repo/out
                   AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
@@ -81,7 +81,7 @@ jobs:
     docker:
       - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
-    resource_class: large
+    resource_class: xlarge
     environment:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
