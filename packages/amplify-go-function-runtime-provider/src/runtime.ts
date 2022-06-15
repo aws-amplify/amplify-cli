@@ -162,9 +162,6 @@ export const checkDependencies = async (_runtimeValue: string): Promise<CheckDep
   };
 };
 
-/**
- *
- */
 export const packageResource = async (request: PackageRequest, context: any): Promise<PackageResult> => {
   // check if repackaging is needed
   if (!request.lastPackageTimeStamp || request.lastBuildTimeStamp > request.lastPackageTimeStamp) {
