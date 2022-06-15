@@ -1,4 +1,3 @@
-import { $TSContext } from 'amplify-cli-core';
 import { AdminLoginServer } from '../../utils/admin-login-server';
 import { printer } from 'amplify-prompts';
 
