@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.4.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.4.0...amplify-provider-awscloudformation@6.4.1-beta.0) (2022-06-15)
+
+
+### Reverts
+
+* Revert "feat: allow login via admin ui on safari (#10407)" (#10602) ([16104ea](https://github.com/aws-amplify/amplify-cli/commit/16104ea72313382cea2c5c5a16231a22c5cba344)), closes [#10407](https://github.com/aws-amplify/amplify-cli/issues/10407) [#10602](https://github.com/aws-amplify/amplify-cli/issues/10602)
+* Revert "chore: block insecure traffic to deployment bucket (#10533)" (#10591) ([8d7b710](https://github.com/aws-amplify/amplify-cli/commit/8d7b710dba29d8678c6e44264f3fce7a0be634af)), closes [#10533](https://github.com/aws-amplify/amplify-cli/issues/10533) [#10591](https://github.com/aws-amplify/amplify-cli/issues/10591)
+* Revert "Revert "chore: block insecure traffic to deployment bucket (#10533)" (#10584)" (#10588) ([9418956](https://github.com/aws-amplify/amplify-cli/commit/941895688473458415154c76ff52c70dd2c85fe3)), closes [#10533](https://github.com/aws-amplify/amplify-cli/issues/10533) [#10584](https://github.com/aws-amplify/amplify-cli/issues/10584) [#10588](https://github.com/aws-amplify/amplify-cli/issues/10588)
+* Revert "chore: block insecure traffic to deployment bucket (#10533)" (#10584) ([ef44565](https://github.com/aws-amplify/amplify-cli/commit/ef44565695293bff78593b8dff3d158cde66bb78)), closes [#10533](https://github.com/aws-amplify/amplify-cli/issues/10533) [#10584](https://github.com/aws-amplify/amplify-cli/issues/10584)
+
+
+
+
+
 # [6.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.3.0...amplify-provider-awscloudformation@6.4.0) (2022-06-13)
 
 
