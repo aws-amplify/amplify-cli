@@ -1,5 +1,7 @@
 import { hashElement } from 'folder-hash';
 import * as fs from 'fs-extra';
+import { stateManager } from 'amplify-cli-core';
+import { hashLayerResource } from 'amplify-category-function';
 import { NotInitializedError } from '../../../../../amplify-cli-core/lib';
 import { print } from '../../../extensions/amplify-helpers/print';
 import { getEnvInfo } from '../../../extensions/amplify-helpers/get-env-info';
@@ -10,8 +12,6 @@ import {
   NON_AMPLIFY_PROJECT,
   getCloudInitStatus,
 } from '../../../extensions/amplify-helpers/get-cloud-init-status';
-import { stateManager } from 'amplify-cli-core';
-import { hashLayerResource } from 'amplify-category-function';
 import { cronJobSetting } from '../../../../../amplify-category-function/lib/provider-utils/awscloudformation/utils/constants';
 
 const sample_hash1 = 'testhash1';
@@ -31,6 +31,7 @@ jest.mock('chalk', () => ({
   red: jest.fn().mockImplementation(input => input),
   blue: jest.fn().mockImplementation(input => input),
   gray: jest.fn().mockImplementation(input => input),
+  grey: jest.fn().mockImplementation(input => input),
   bgRgb: jest.fn().mockImplementation(input => input),
   blueBright: jest.fn().mockImplementation(input => input),
   greenBright: jest.fn().mockImplementation(input => input),
