@@ -25,9 +25,6 @@ const maximumVersion = <SemVer>coerce('2.0');
 
 let executablePath: string | null;
 
-/**
- *
- */
 export const executeCommand = (
   args: string[],
   streamStdio: boolean,
