@@ -1,21 +1,25 @@
 import { $TSContext, stateManager } from 'amplify-cli-core';
 import { CognitoIdentity } from 'aws-sdk';
-import bodyParser from 'body-parser';
+import bodyParser from 'body-parser';  // eslint-disable-line
 import cors from 'cors';
-import express from 'express';
+import express from 'express';  // eslint-disable-line
 import http from 'http';
 import * as jose from 'jose';
 import _ from 'lodash';
 import * as assert from 'assert';
 
 import { AdminAuthPayload, CognitoIdToken, CognitoAccessToken } from './auth-types';
+import { Printer } from 'amplify-prompts';
 
+/**
+ * Admin login server class
+ */
 export class AdminLoginServer {
   private app: express.Application;
   private appId: string;
   private port = 4242; // placeholder
   private server: http.Server;
-  private print: $TSContext['print'];
+  private print: Printer;
   private host = '0.0.0.0'; // using this ip address for the host forces express to listen on IPV4 even if IPV6 is available
 
   private corsOptions: {
@@ -24,11 +28,11 @@ export class AdminLoginServer {
     allowedHeaders: string;
   };
 
-  constructor(appId: string, originUrl: string, print: $TSContext['print']) {
+  constructor(appId: string, originUrl: string, print: Printer) {
     this.appId = appId;
     this.corsOptions = {
       origin: [originUrl],
-      methods: ['POST', 'OPTIONS'],
+      methods: ['GET', 'POST', 'OPTIONS'],
       allowedHeaders: 'Content-Type',
     };
     this.print = print;
@@ -37,22 +41,25 @@ export class AdminLoginServer {
     this.app.use(bodyParser.json());
   }
 
-  public async startServer(callback: () => void) {
+  /**
+   * Sets up express server to listen for tokens
+   */
+  public async startServer(callback: () => void): Promise<void> {
     await this.setupRoute(callback);
     // Need to specify hostname for WSL
     this.server = this.app.listen(this.getPort(), this.getHost());
   }
 
-  private getHost() {
+  private getHost(): string {
     return this.host;
   }
 
   // TODO: scan for available ports across a range like mock
-  private getPort() {
+  private getPort(): number {
     return this.port;
   }
 
-  private async getIdentityId(idToken: CognitoIdToken, IdentityPoolId: string, region: string): Promise<string> {
+  private async getIdentityId(idToken: CognitoIdToken, IdentityPoolId: string, region: string): Promise<string> { // eslint-disable-line
     const cognitoIdentity = new CognitoIdentity({ region });
     const login = idToken.payload.iss.replace('https://', '');
     const logins = {
@@ -70,12 +77,12 @@ export class AdminLoginServer {
     return IdentityId;
   }
 
-  private async setupRoute(callback) {
-    this.app.post('/amplifyadmin/', async (req, res) => {
+  private async setupRoute(callback): Promise<void> {
+    this.app.post('/amplifyadmin/', async (req, res) => { // eslint-disable-line
       if (!req.body || req.body.error) {
         this.shutdown();
         if (req.body.error === 'CANCELLED') {
-          this.print.info('Login cancelled');
+          this.print.info('Login canceled');
           process.exit(0);
         }
         throw new Error('Failed to receive expected authentication tokens.');
@@ -90,20 +97,23 @@ export class AdminLoginServer {
       }
       callback();
     });
+    this.app.get('/ping', async (_, res) => { // eslint-disable-line
+      res.send({ success: true });
+    });
   }
 
-  private async validateTokens(
+  private async validateTokens( // eslint-disable-line
     tokens: {
       accessToken: CognitoAccessToken;
       idToken: CognitoIdToken;
     },
-  ) {
+  ): Promise<boolean> {
     const issuer: string = tokens.idToken.payload.iss;
     const audience: string = tokens.idToken.payload.aud;
 
     const N_JWKS = jose.createRemoteJWKSet(new URL(`${issuer}/.well-known/jwks.json`));
 
-    const { payload: decodedJwtId } = await jose.jwtVerify(tokens.idToken.jwtToken, N_JWKS, { issuer, audience })
+    const { payload: decodedJwtId } = await jose.jwtVerify(tokens.idToken.jwtToken, N_JWKS, { issuer, audience });
     if (Array.isArray(decodedJwtId.aud) && decodedJwtId.aud.length > 1) {
       assert.strictEqual(decodedJwtId.azp, audience); // checking mandatory presence as per the ID Token profile
     }
@@ -111,17 +121,20 @@ export class AdminLoginServer {
     assert.ok('iat' in decodedJwtId); // checking mandatory presence
     assert.ok('exp' in decodedJwtId); // checking mandatory presence, when present it was already validated
 
-    const { payload: decodedJwtAccess } = await jose.jwtVerify(tokens.accessToken.jwtToken, N_JWKS)
+    const { payload: decodedJwtAccess } = await jose.jwtVerify(tokens.accessToken.jwtToken, N_JWKS);
 
     return _.isEqual(decodedJwtId, tokens.idToken.payload) && _.isEqual(decodedJwtAccess, tokens.accessToken.payload);
   }
 
-  private async storeTokens(payload: AdminAuthPayload, appId: string) {
+  /**
+   * Stores tokens received by server
+   */
+  public async storeTokens(payload: AdminAuthPayload, appId: string): Promise<void> {
     const areTokensValid = await this.validateTokens(
       {
         idToken: payload.idToken,
         accessToken: payload.accessToken,
-      }
+      },
     );
     if (areTokensValid) {
       const IdentityId = await this.getIdentityId(payload.idToken, payload.IdentityPoolId, payload.region);
@@ -130,7 +143,10 @@ export class AdminLoginServer {
     }
   }
 
-  shutdown() {
+  /**
+   * Shuts down the server
+   */
+  shutdown(): void {
     this.server.close();
   }
 }
