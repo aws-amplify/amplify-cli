@@ -4,10 +4,7 @@
   },
   "features": {
     "graphQLTransformer": {
-      "customTransformerVersion": "it-is-a-string",
-      "foo": "unknown",
-      "bar": "unknown",
-      "disabled": false
+      "unknownFlagThatIsTurnedOff": false
     }
   }
 }
