@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.29-fix-safari-login.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.2.28...@aws-amplify/amplify-util-uibuilder@1.2.29-fix-safari-login.0) (2022-06-16)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
 ## [1.2.28](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.2.27...@aws-amplify/amplify-util-uibuilder@1.2.28) (2022-06-13)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
