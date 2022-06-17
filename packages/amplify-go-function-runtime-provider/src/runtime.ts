@@ -67,9 +67,6 @@ const isBuildStale = (resourceDir: string, lastBuildTimeStamp: Date, outDir: str
   return !!fileUpdatedAfterLastBuild;
 };
 
-/**
- *
- */
 export const buildResource = async ({ buildType, srcRoot, lastBuildTimeStamp }: BuildRequest): Promise<BuildResult> => {
   let rebuilt = false;
 
@@ -114,9 +111,6 @@ export const buildResource = async ({ buildType, srcRoot, lastBuildTimeStamp }: 
   };
 };
 
-/**
- *
- */
 export const checkDependencies = async (_runtimeValue: string): Promise<CheckDependenciesResult> => {
   // Check if go is in the path
   executablePath = which.sync(executableName, {
