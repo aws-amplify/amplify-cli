@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.2-identityclaimTest.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.6.1...amplify-migration-tests@4.6.2-identityclaimTest.0) (2022-06-17)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
 ## [4.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.6.0...amplify-migration-tests@4.6.1) (2022-06-13)
 
 
