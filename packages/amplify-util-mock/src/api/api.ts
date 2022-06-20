@@ -1,6 +1,7 @@
 import * as fs from 'fs-extra';
 import * as dynamoEmulator from 'amplify-dynamodb-simulator';
 import { AmplifyAppSyncSimulator, AmplifyAppSyncSimulatorConfig } from 'amplify-appsync-simulator';
+import { $TSContext, $TSAny } from 'amplify-cli-core';
 import { add, generate, isCodegenConfigured, switchToSDLSchema } from 'amplify-codegen';
 import * as path from 'path';
 import * as chokidar from 'chokidar';
@@ -12,10 +13,14 @@ import { processAppSyncResources } from '../CFNParser';
 import { ResolverOverrides } from './resolver-overrides';
 import { ConfigOverrideManager } from '../utils/config-override';
 import { configureDDBDataSource, createAndUpdateTable } from '../utils/dynamo-db';
+import { describeTables } from '../utils/dynamo-db/utils';
+import { findLambdaTriggers } from '../utils/lambda/find-lambda-triggers';
 import { getMockConfig } from '../utils/mock-config-file';
 import { getInvoker } from 'amplify-category-function';
 import { lambdaArnToConfig } from './lambda-arn-to-config';
 import { timeConstrainedInvoker } from '../func';
+import { lambdaTriggerHandler } from './lambda-trigger-handler';
+import { TableDescription } from 'aws-sdk/clients/dynamodb';
 
 export const GRAPHQL_API_ENDPOINT_OUTPUT = 'GraphQLAPIEndpointOutput';
 export const GRAPHQL_API_KEY_OUTPUT = 'GraphQLAPIKeyOutput';
@@ -61,6 +66,7 @@ export class APITest {
       await this.generateCode(context, appSyncConfig);
 
       context.print.info(`AppSync Mock endpoint is running at ${this.appSyncSimulator.url}`);
+      await this.startDDBListeners(context, appSyncConfig);
     } catch (e) {
       context.print.error(`Failed to start API Mock endpoint ${e}`);
     }
@@ -149,6 +155,7 @@ export class APITest {
         const config: AmplifyAppSyncSimulatorConfig = await this.runTransformer(context, this.apiParameters);
         await this.appSyncSimulator.reload(config);
         await this.generateCode(context, config);
+        await this.startDDBListeners(context, config);
       } else if (filePath.includes(parameterFilePath)) {
         const apiParameters = await this.loadAPIParameters(context);
         if (JSON.stringify(apiParameters) !== JSON.stringify(this.apiParameters)) {
@@ -163,6 +170,7 @@ export class APITest {
         const config = await this.runTransformer(context, this.apiParameters);
         await this.appSyncSimulator.reload(config);
         await this.generateCode(context, config);
+        await this.startDDBListeners(context, config);
       }
     } catch (e) {
       context.print.info(`Reloading failed with error\n${e}`);
@@ -183,6 +191,30 @@ export class APITest {
   private async ensureDDBTables(config) {
     const tables = config.tables.map(t => t.Properties);
     await createAndUpdateTable(this.ddbClient, config);
+  }
+
+  private async startDDBListeners(context: $TSContext, config: AmplifyAppSyncSimulatorConfig): Promise<void> {
+    const tables = config?.tables?.map( (t: $TSAny) => t?.Properties?.TableName);
+    if(tables && tables.length > 0) {
+      const tableLambdaTriggers: {[index: string]: string[];} = await findLambdaTriggers(context, tables);
+      const tableStreamArns: {[index: string]: TableDescription;} = await describeTables(this.ddbClient, tables);
+      const allListeners = [];
+      Object.entries(tableLambdaTriggers).forEach(([tableName, lambdaTriggers]) => {
+        if(lambdaTriggers && lambdaTriggers.length > 0) {
+          lambdaTriggers.forEach( (lambdaTriggerName: string) => {
+            allListeners.push(
+              lambdaTriggerHandler(
+                context, 
+                tableStreamArns[tableName].LatestStreamArn, 
+                lambdaTriggerName, 
+                this.ddbEmulator.url
+              )
+            );
+          });
+        }
+      });
+      await Promise.all(allListeners);
+    }
   }
 
   private async configureLambdaDataSource(context, config) {
