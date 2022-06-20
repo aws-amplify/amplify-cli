@@ -23,9 +23,9 @@
     "access": "public"
   },
   "scripts": {
+    "build": "tsc",
     "test": "jest",
     "postinstall": "node scripts/post-install.js",
-    "build": "tsc",
     "watch": "tsc -w",
     "clean": "rimraf ./lib tsconfig.tsbuildinfo"
   },

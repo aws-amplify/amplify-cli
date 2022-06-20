@@ -21,10 +21,10 @@
     "access": "public"
   },
   "scripts": {
+    "build": "tsc",
     "postinstall": "node ./lib/install.js || echo \"failed to install amplify binary\"",
     "prepublishOnly": "rimraf ./lib && tsc",
-    "run": "ts-node ./run.ts",
-    "build": "tsc"
+    "run": "ts-node ./run.ts"
   },
   "engines": {
     "node": ">=12.0.0"
