@@ -12,7 +12,7 @@ import { timeConstrainedInvoker } from '../func';
  * @param data Data to be passed to the local lambda function invocation.
  */
 export const invokeLambda = async (context: $TSContext, functionName: string, data: $TSAny): Promise<void> => {
-    const lambdaConfig = await loadLambdaConfig(context, functionName);
+    const lambdaConfig = await loadLambdaConfig(context, functionName, true);
       if (!lambdaConfig?.handler) {
         throw new Error(`Could not parse handler for ${functionName} from cloudformation file`);
       }

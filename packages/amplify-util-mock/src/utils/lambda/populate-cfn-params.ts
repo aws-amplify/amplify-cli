@@ -57,12 +57,6 @@ const getAmplifyMetaParams = (
   return dependencies.reduce((acc, dependency) => {
     dependency.attributes.forEach(attribute => {
       let val = projectMeta?.[dependency.category]?.[dependency.resourceName]?.output?.[attribute];
-      if (!val) {
-        print.warning(
-          `No output found for attribute '${attribute}' on resource '${dependency.resourceName}' in category '${dependency.category}'`,
-        );
-        print.warning('This attribute will be undefined in the mock environment until you run `amplify push`');
-      }
 
       if (overrideApiToLocal) {
         switch (attribute) {
@@ -75,6 +69,13 @@ const getAmplifyMetaParams = (
           default:
             // noop
         }
+      }
+
+      if (!val) {
+        print.warning(
+          `No output found for attribute '${attribute}' on resource '${dependency.resourceName}' in category '${dependency.category}'`,
+        );
+        print.warning('This attribute will be undefined in the mock environment until you run `amplify push`');
       }
 
       acc[dependency.category + dependency.resourceName + attribute] = val;
