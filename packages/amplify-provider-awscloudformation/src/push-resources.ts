@@ -95,17 +95,6 @@ const deploymentInProgressErrorMessage = (context: $TSContext) => {
   context.print.error('"amplify push --force" to re-deploy');
 };
 
-// The following list of files are required depended on by the Studio UI and must be accessible
-// from the root of the deployment bucket so the #current-cloud-backend.zip file doesn't need
-// to be unpacked to retrieve metadata.
-const amplifyStudioFiles = [
-  'amplify-meta.json',
-  'schema.graphql',
-  'transform.conf.json',
-  'backend-config.json',
-  'parameters.json',
-];
-
 /**
  *
  */
@@ -570,6 +559,7 @@ export const updateStackForAPIMigration = async (context: $TSContext, category: 
  *
  */
 export const storeCurrentCloudBackend = async (context: $TSContext) => {
+  const amplifyDirPath = pathManager.getAmplifyDirPath();
   const zipFilename = '#current-cloud-backend.zip';
   const backendDir = pathManager.getBackendDirPath();
   const tempDir = path.join(backendDir, '.temp');
@@ -586,7 +576,7 @@ export const storeCurrentCloudBackend = async (context: $TSContext) => {
   }
 
   const cliJSONFiles = glob.sync(PathConstants.CLIJSONFileNameGlob, {
-    cwd: pathManager.getAmplifyDirPath(),
+    cwd: amplifyDirPath,
     absolute: true,
   });
 
@@ -596,21 +586,42 @@ export const storeCurrentCloudBackend = async (context: $TSContext) => {
 
   const s3 = await S3.getInstance(context);
 
-  const listOfFilesToUpload = amplifyStudioFiles.map(baseName => path.join(currentCloudBackendDir, baseName));
-  listOfFilesToUpload.push(...cliJSONFiles, result.zipFilePath);
+  // TODO: Create a studio-manifest file and don't use a nested folder
 
-  const s3ParamsList = listOfFilesToUpload
-    .filter(fs.existsSync)
-    .map(filepath => ({
-      Body: fs.createReadStream(filepath),
-      Key: path.basename(filepath),
+  // The following list of files are depended on by the Studio UI and must be accessible from
+  // the deployment bucket so ManageOnly users can retrieve metadata without having access to
+  // the entire zip file.
+  const s3ParamsList = [
+    'amplify-meta.json',
+    'schema.graphql',
+    'transform.conf.json',
+    'backend-config.json',
+    'parameters.json',
+  ]
+    .flatMap(baseName => glob.sync(`**/${baseName}`, { cwd: currentCloudBackendDir }))
+    .map(filePath => ({
+      Body: fs.createReadStream(path.join(currentCloudBackendDir, filePath)),
+      Key: `studio-backend/${filePath}`,
     }));
 
-  log = logger('storeCurrentcoudBackend.s3.uploadFile', [{ Key: result.zipFilePath }]);
+  // Add the cli.json files to the studio backend directory
+  cliJSONFiles.forEach(filePath => {
+    s3ParamsList.push({
+      Body: fs.createReadStream(filePath),
+      Key: `studio-backend/${path.basename(filePath)}`,
+    });
+  });
+
+  // Add the #current-cloud-backend.zip to the list of uploads
+  s3ParamsList.push({
+    Body: fs.createReadStream(result.zipFilePath),
+    Key: zipFilename,
+  });
+
+  log = logger('storeCurrentcoudBackend.s3.uploadFile', [{ Key: zipFilename }]);
   log();
   try {
-    const promises = s3ParamsList.map(params => s3.uploadFile(params));
-    await Promise.all(promises);
+    await Promise.all(s3ParamsList.map(params => s3.uploadFile(params)));
   } catch (error) {
     log(error);
     throw error;
