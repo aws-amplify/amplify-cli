@@ -85,10 +85,11 @@ describe('test SIGINT with execute', () => {
       pushInteractiveFlow: jest.fn(),
       getFlowReport: jest.fn(),
       assignProjectIdentifier: jest.fn(),
-
+      getUsageDataPayload: jest.fn(),
+      calculatePushNormalizationFactor: jest.fn(),
     };
     mockContext.projectHasMobileHubResources = false;
-    
+
     mockContext.amplify = jest.createMockFromModule('../domain/amplify-toolkit');
     Object.defineProperty(mockContext.amplify, 'getEnvInfo', { value: jest.fn() });
     jest.setMock('../context-manager', {

@@ -25,7 +25,6 @@ module.exports = {
     '<rootDir>/packages/amplify-app',
     '<rootDir>/packages/amplify-appsync-simulator',
     '<rootDir>/packages/amplify-category-analytics',
-    '<rootDir>/packages/amplify-category-api',
     '<rootDir>/packages/amplify-category-auth',
     '<rootDir>/packages/amplify-category-geo',
     '<rootDir>/packages/amplify-category-function',

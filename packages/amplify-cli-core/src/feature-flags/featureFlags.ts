@@ -622,11 +622,23 @@ export class FeatureFlags {
       {
         name: 'useSubUsernameForDefaultIdentityClaim',
         type: 'boolean',
-        defaultValueForExistingProjects: false,
+        defaultValueForExistingProjects: true,
         defaultValueForNewProjects: true,
       },
       {
         name: 'useFieldNameForPrimaryKeyConnectionField',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: false,
+      },
+      {
+        name: 'enableAutoIndexQueryNames',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: false,
+      },
+      {
+        name: 'respectPrimaryKeyAttributesOnConnectionField',
         type: 'boolean',
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: false,

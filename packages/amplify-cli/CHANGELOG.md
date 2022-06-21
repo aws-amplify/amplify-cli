@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.5.0...@aws-amplify/cli-internal@8.5.1) (2022-06-15)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
+
+
+
+
+
+# [8.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.4.0...@aws-amplify/cli-internal@8.5.0) (2022-06-13)
+
+
+
+# 8.5.0 (2022-06-10)
+
+
+### Bug Fixes
+
+* create same identifier for flow data and reporter ([#10516](https://github.com/aws-amplify/amplify-cli/issues/10516)) ([ccd212e](https://github.com/aws-amplify/amplify-cli/commit/ccd212eaef9890c03435ad5244f16ccc4db4fe22))
+* headless diagnose prompt ([#10557](https://github.com/aws-amplify/amplify-cli/issues/10557)) ([b4ca7fd](https://github.com/aws-amplify/amplify-cli/commit/b4ca7fd24debc1a67aace6eabcd2ee35f20bde11))
+* revert running amplify version on install ([#10529](https://github.com/aws-amplify/amplify-cli/issues/10529)) ([1539b24](https://github.com/aws-amplify/amplify-cli/commit/1539b246b04ae7f68dc83522c3ff4df96e602c08))
+
+
+### Features
+
+* implemented push normalization ([#10469](https://github.com/aws-amplify/amplify-cli/issues/10469)) ([e70d6c9](https://github.com/aws-amplify/amplify-cli/commit/e70d6c95cd9826a9d2785607341e8e1432306a30))
+
+
+
+
+
+# [8.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.3.1...@aws-amplify/cli-internal@8.4.0) (2022-06-03)
+
+
+### Features
+
+* diagnose ([#10383](https://github.com/aws-amplify/amplify-cli/issues/10383)) ([6a29bd9](https://github.com/aws-amplify/amplify-cli/commit/6a29bd99886172baf420a95a0d6a7987c9ebd6bd))
+* prompt interaction time ([#10435](https://github.com/aws-amplify/amplify-cli/issues/10435)) ([a064ae2](https://github.com/aws-amplify/amplify-cli/commit/a064ae2e1a3a8d4e84a1fcb3ec9fc8b4491966d6))
+
+
+
+
+
 ## [8.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.3.0...@aws-amplify/cli-internal@8.3.1) (2022-05-27)
 
 

@@ -4,7 +4,6 @@ import {
   deleteProject,
   deleteProjectDir,
   getCLIInputs,
-  initJSProjectWithProfile,
   updateRestApi,
   addAuthWithDefault,
   updateAuthAddAdminQueries,
@@ -12,6 +11,7 @@ import {
   getProjectMeta,
 } from 'amplify-e2e-core';
 import { addRestApiOldDx } from '../../../migration-helpers/api';
+import { initJSProjectWithProfile } from '../../../migration-helpers' ;
 import { v4 as uuid } from 'uuid';
 
 describe('API Gateway CDK migration', () => {

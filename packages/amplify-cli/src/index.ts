@@ -35,6 +35,7 @@ import { migrateTeamProviderInfo } from './utils/team-provider-migrate';
 import { deleteOldVersion } from './utils/win-utils';
 import { notify } from './version-notifier';
 import { getAmplifyVersion } from './extensions/amplify-helpers/get-amplify-version';
+import { reportError } from './commands/diagnose';
 
 export { UsageData } from './domain/amplify-usageData';
 
@@ -204,9 +205,13 @@ export const run = async (startTime: number): Promise<number | undefined> => {
 
     // Display messages meant for most executions
     await displayBannerMessages(input);
-
-    await executeCommand(context);
-
+    try{
+      await executeCommand(context);
+    }
+    catch(e){
+      await reportError(context, e);
+      throw e;
+    }
     const exitCode = process.exitCode || 0;
 
     if (exitCode === 0) {

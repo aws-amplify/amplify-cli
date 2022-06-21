@@ -6,6 +6,7 @@
     "configure",
     "console",
     "delete",
+    "diagnose",
     "env",
     "export",
     "help",
@@ -21,7 +22,8 @@
     "uninstall",
     "upgrade",
     "version",
-    "build"
+    "build",
+    "report"
   ],
   "commandAliases": {
     "h": "help",

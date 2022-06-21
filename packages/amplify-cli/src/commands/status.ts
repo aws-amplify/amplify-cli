@@ -2,7 +2,6 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { ViewResourceTableParams, CLIParams, $TSAny, $TSContext, pathManager, stateManager, ApiCategoryFacade } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-
 export const run = async (context: $TSContext) => {
   const cliParams: CLIParams = {
     cliCommand: context?.input?.command,

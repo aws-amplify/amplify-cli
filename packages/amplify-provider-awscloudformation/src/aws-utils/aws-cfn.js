@@ -19,7 +19,7 @@ const { pagedAWSCall } = require('./paged-call');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
 const CFN_POLL_TIME = 5 * 1000; // 5 secs wait to check if  new stacks are created by root stack
-
+let CFNLOG = [];
 const CFN_SUCCESS_STATUS = ['UPDATE_COMPLETE', 'CREATE_COMPLETE', 'DELETE_COMPLETE', 'DELETE_SKIPPED'];
 
 const CNF_ERROR_STATUS = ['CREATE_FAILED', 'DELETE_FAILED', 'UPDATE_FAILED'];
@@ -30,7 +30,7 @@ class CloudFormation {
       if (userAgentAction) {
         userAgentParam = formUserAgentParam(context, userAgentAction);
       }
-
+      
       this.pollQueue = new BottleNeck({ minTime: 100, maxConcurrent: CFN_MAX_CONCURRENT_REQUEST });
       this.pollQueueStacks = [];
       this.stackEvents = [];
@@ -121,7 +121,7 @@ class CloudFormation {
       const { envName = '' } = this.context.amplify.getEnvInfo();
       envRegExp = new RegExp(`(-|_)${envName}`);
     } catch {}
-
+    this.context.exeInfo.cloudformationEvents = CFNLOG;
     const stackTrees = eventsWithFailure
       .filter(stack => stack.ResourceType !== 'AWS::CloudFormation::Stack')
       .map(event => {
@@ -225,7 +225,11 @@ class CloudFormation {
   updateResourceStack(filePath) {
     const cfnFile = path.parse(filePath).base;
     const projectDetails = this.context.amplify.getProjectDetails();
-    const stackName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].StackName : '';
+    const providerMeta = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName] : {};
+
+    const stackName = providerMeta.StackName  || '';
+    const stackId = providerMeta.StackId || '';
+
     const deploymentBucketName = projectDetails.amplifyMeta.providers
       ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName
       : '';
@@ -301,6 +305,7 @@ class CloudFormation {
                   if (completeErr) {
                     this.collectStackErrors(cfnParentStackParams.StackName).then(() => reject(completeErr));
                   } else {
+                    self.context.usageData.calculatePushNormalizationFactor(this.stackEvents, stackId);
                     return self.updateamplifyMetaFileWithStackOutputs(stackName).then(() => resolve());
                   }
                 });
@@ -579,6 +584,7 @@ function showEvents(events) {
       columns: COLUMNS,
       showHeaders: false,
     });
+    CFNLOG = CFNLOG.concat(events);
     console.log(formattedEvents);
   }
 }

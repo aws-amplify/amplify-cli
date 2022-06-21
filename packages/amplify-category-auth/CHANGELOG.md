@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.10.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.10.0...@aws-amplify/amplify-category-auth@2.10.1) (2022-06-13)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
+# [2.10.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.9.1...@aws-amplify/amplify-category-auth@2.10.0) (2022-06-03)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** fixes auth init state initialization ([#10503](https://github.com/aws-amplify/amplify-cli/issues/10503)) ([855dad2](https://github.com/aws-amplify/amplify-cli/commit/855dad209958dc69fae30a90c05f077c2c32e933))
+
+
+### Features
+
+* allow 3rd-party plugins to CDK override ([#9601](https://github.com/aws-amplify/amplify-cli/issues/9601)) ([60498c5](https://github.com/aws-amplify/amplify-cli/commit/60498c5fb54dcf15e2fb5b87528540fdcffc0cd1))
+
+
+
+
+
 ## [2.9.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.9.0...@aws-amplify/amplify-category-auth@2.9.1) (2022-05-27)
 
 

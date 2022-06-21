@@ -36,7 +36,7 @@ export async function scaffoldProjectHeadless(context: $TSContext) {
     throw new Error(`project-config.json template not found for frontend: ${frontend}`);
   }
 
-  projectConfigFile['projectName'] = projectName;
+  projectConfigFile.projectName = projectName;
   JSONUtilities.writeJson(pathManager.getProjectConfigFilePath(projectPath), projectConfigFile);
 
   // copy backend folder
@@ -46,9 +46,7 @@ export async function scaffoldProjectHeadless(context: $TSContext) {
 
   // Initialize feature flags
   const contextEnvironmentProvider = new CLIContextEnvironmentProvider({
-    getEnvInfo: () => {
-      return context.exeInfo.localEnvInfo;
-    },
+    getEnvInfo: () => context.exeInfo.localEnvInfo,
   });
 
   if (!FeatureFlags.isInitialized()) {
