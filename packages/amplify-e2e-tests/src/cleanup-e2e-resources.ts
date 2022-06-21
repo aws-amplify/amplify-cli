@@ -59,6 +59,11 @@ type S3BucketInfo = {
   cciInfo?: CircleCIJobDetails;
 };
 
+type IamRoleInfo = {
+  name: string;
+  cciInfo?: CircleCIJobDetails;
+};
+
 type ReportEntry = {
   jobId?: string;
   workflowId?: string;
@@ -67,6 +72,7 @@ type ReportEntry = {
   amplifyApps: Record<string, AmplifyAppInfo>;
   stacks: Record<string, StackInfo>;
   buckets: Record<string, S3BucketInfo>;
+  roles: Record<string, IamRoleInfo>;
 };
 
 type JobFilterPredicate = (job: ReportEntry) => boolean;
@@ -85,10 +91,48 @@ type AWSAccountInfo = {
   sessionToken: string;
 };
 
+const TEST_REGEX = /!RotateE2eAwsToken-e2eTestContextRole|test/;
+const STALE_DURATION_MS = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
+
+/**
+ * We define a resource as viable for deletion if it matches TEST_REGEX in the name, and if it is > STALE_DURATION_MS old.
+ */
+const testBucketStalenessFilter = (resource: aws.S3.Bucket): boolean => {
+  const isTestResource = resource.Name.match(TEST_REGEX);
+  const isStaleResource = (Date.now() - resource.CreationDate.getMilliseconds()) > STALE_DURATION_MS;
+  return isTestResource && isStaleResource;
+};
+
+const testRoleStalenessFilter = (resource: aws.IAM.Role): boolean => {
+  const isTestResource = resource.RoleName.match(TEST_REGEX);
+  const isStaleResource = (Date.now() - resource.CreateDate.getMilliseconds()) > STALE_DURATION_MS;
+  return isTestResource && isStaleResource;
+};
+
+/**
+ * Get all S3 buckets in the account, and filter down to the ones we consider stale.
+ */
+const getOrphanS3TestBuckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> => {
+  const s3Client = new aws.S3(getAWSConfig(account));
+  const listBucketResponse = await s3Client.listBuckets().promise();
+  const staleBuckets = listBucketResponse.Buckets.filter(testBucketStalenessFilter);
+  return staleBuckets.map(it => ({ name: it.Name }));
+};
+
+/**
+ * Get all iam roles in the account, and filter down to the ones we consider stale.
+ */
+const getOrphanTestIamRoles = async (account: AWSAccountInfo): Promise<IamRoleInfo[]> => {
+  const iamClient = new aws.IAM(getAWSConfig(account));
+  const listRoleResponse = await iamClient.listRoles().promise();
+  const staleRoles = listRoleResponse.Roles.filter(testRoleStalenessFilter);
+  return staleRoles.map(it => ({ name: it.RoleName }));
+};
+
 /**
  * Get the relevant AWS config object for a given account and region.
  */
-const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccountInfo, region?: string): any => ({
+const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccountInfo, region?: string): unknown => ({
   credentials: {
     accessKeyId,
     secretAccessKey,
@@ -101,6 +145,7 @@ const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccount
 /**
  * Returns a list of Amplify Apps in the region. The apps includes information about the CircleCI build that created the app
  * This is determined by looking at tags of the backend environments that are associated with the Apps
+ * @param account aws account to query for amplify Apps
  * @param region aws region to query for amplify Apps
  * @returns Promise<AmplifyAppInfo[]> a list of Amplify Apps in the region with build info
  */
@@ -147,6 +192,7 @@ const getJobId = (tags: aws.CloudFormation.Tags = []): number | undefined => {
  * deletion failures
  *
  * @param stackName name of the stack
+ * @param account account
  * @param region region
  * @returns stack details
  */
@@ -285,6 +331,8 @@ const mergeResourcesByCCIJob = (
   amplifyApp: AmplifyAppInfo[],
   cfnStacks: StackInfo[],
   s3Buckets: S3BucketInfo[],
+  orphanS3Buckets: S3BucketInfo[],
+  orphanIamRoles: IamRoleInfo[],
 ): Record<string, ReportEntry> => {
   const result: Record<string, ReportEntry> = {};
 
@@ -335,6 +383,26 @@ const mergeResourcesByCCIJob = (
     buckets: src,
   }));
 
+  const orphanBuckets = {
+    [ORPHAN]: orphanS3Buckets,
+  };
+
+  _.mergeWith(result, orphanBuckets, (val, src, key) => ({
+    ...val,
+    jobId: key,
+    buckets: src,
+  }));
+
+  const orphanIamRolesGroup = {
+    [ORPHAN]: orphanIamRoles,
+  };
+
+  _.mergeWith(result, orphanIamRolesGroup, (val, src, key) => ({
+    ...val,
+    jobId: key,
+    roles: src,
+  }));
+
   return result;
 };
 
@@ -350,6 +418,21 @@ const deleteAmplifyApp = async (account: AWSAccountInfo, accountIndex: number, a
     await amplifyClient.deleteApp({ appId }).promise();
   } catch (e) {
     console.log(`[ACCOUNT ${accountIndex}] Deleting Amplify App ${appId} failed with the following error`, e);
+  }
+};
+
+const deleteIamRoles = async (account: AWSAccountInfo, accountIndex: number, roles: IamRoleInfo[]): Promise<void> => {
+  await Promise.all(roles.map(role => deleteIamRole(account, accountIndex, role)));
+};
+
+const deleteIamRole = async (account: AWSAccountInfo, accountIndex: number, role: IamRoleInfo): Promise<void> => {
+  const { name } = role;
+  try {
+    console.log(`[ACCOUNT ${accountIndex}] Deleting Iam Role ${name}`);
+    const iamClient = new aws.IAM(getAWSConfig(account));
+    iamClient.deleteRole({ RoleName: name });
+  } catch (e) {
+    console.log(`[ACCOUNT ${accountIndex}] Deleting iam role ${name} failed with error ${e.message}`);
   }
 };
 
@@ -411,6 +494,10 @@ const deleteResources = async (
 
     if (resources.buckets) {
       await deleteBuckets(account, accountIndex, Object.values(resources.buckets));
+    }
+
+    if (resources.roles) {
+      await deleteIamRoles(account, accountIndex, Object.values(resources.roles));
     }
   }
 };
@@ -499,13 +586,18 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const appPromises = AWS_REGIONS_TO_RUN_TESTS.map(region => getAmplifyApps(account, region));
   const stackPromises = AWS_REGIONS_TO_RUN_TESTS.map(region => getStacks(account, region));
   const bucketPromise = getS3Buckets(account);
+  const orphanBucketPromise = getOrphanS3TestBuckets(account);
+  const orphanIamRolesPromise = getOrphanTestIamRoles(account);
 
   const apps = (await Promise.all(appPromises)).flat();
   const stacks = (await Promise.all(stackPromises)).flat();
   const buckets = await bucketPromise;
+  const orphanBuckets = await orphanBucketPromise;
+  const orphanIamRoles = await orphanIamRolesPromise;
 
-  const allResources = mergeResourcesByCCIJob(apps, stacks, buckets);
+  const allResources = mergeResourcesByCCIJob(apps, stacks, buckets, orphanBuckets, orphanIamRoles);
   const staleResources = _.pickBy(allResources, filterPredicate);
+
   generateReport(staleResources);
   await deleteResources(account, accountIndex, staleResources);
   console.log(`[ACCOUNT ${accountIndex}] Cleanup done!`);
