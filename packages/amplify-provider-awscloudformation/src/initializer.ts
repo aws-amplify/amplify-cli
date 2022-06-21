@@ -127,6 +127,9 @@ export async function run(context) {
       cloneCLIJSONForNewEnvironment(context);
 
       spinner.succeed('Successfully created initial AWS cloud resources for deployments.');
+      
+      const amplifyLogo = '                              ____\r\n                              \\   \\\r\n                               \\   \\\r\n                          \/\\    \\   \\\r\n                         \/  \\    \\   \\\r\n                         \\   \\    \\   \\\r\n                          \\   \\    \\   \\\r\n                      \/\\   \\   \\    \\   \\\r\n                     \/  \\   \\   \\    \\   \\\r\n                    \/   \/    \\   \\    \\   \\\r\n                   \/   \/      \\   \\    \\   \\\r\n                  \/   \/        \\   \\    \\   \\\r\n                 \/   \/          \\   \\    \\   \\\r\n                \/   \/            \\   \\    \\   \\\r\n               \/   \/              \\   \\    \\   \\\r\n              \/   \/                \\   \\    \\   \\\r\n             \/   \/                  \\   \\    \\   \\\r\n            \/   \/_________________   \\   \\    \\   \\\r\n           \/                      \\   \\   \\    \\   \\\r\n          \/________________________\\   \\___\\    \\___\\\r\n        ___      _____     _              _ _  __\r\n       \/_\\ \\    \/ \/ __|   \/_\\  _ __  _ __| (_)\/ _|_  _\r\n      \/ _ \\ \\\/\\\/ \/\\__ \\  \/ _ \\| \'  \\| \'_ \\ | |  _| || |\r\n     \/_\/ \\_\\_\/\\_\/ |___\/ \/_\/ \\_\\_|_|_| .__\/_|_|_|  \\_, |\r\n                                    |_|           |__\/  ';
+      console.log('\x1b[38;2;255;153;0m%s\x1b[0m', amplifyLogo);
 
       return context;
     } catch (e) {
