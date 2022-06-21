@@ -1,0 +1,17 @@
+on:
+  workflow_dispatch:
+  schedule: 
+  - cron: "0 * * * *"
+  
+jobs:
+  sync_upstream:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync and merge upstream repository with your current repository
+        uses: dabreadman/sync-upstream-repo@v1.3.0
+        with:
+          upstream_repo: https://github.com/aws-amplify/amplify-cli
+          upstream_branch: master
+          downstream_branch: master
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
