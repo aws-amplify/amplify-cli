@@ -649,6 +649,12 @@ export class FeatureFlags {
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: false,
       },
+      {
+        name: 'populateOwnerFieldForStaticGroupAuth',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: false,
+      }
     ]);
 
     this.registerFlag('frontend-ios', [
