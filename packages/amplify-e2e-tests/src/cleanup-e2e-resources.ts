@@ -426,13 +426,39 @@ const deleteIamRoles = async (account: AWSAccountInfo, accountIndex: number, rol
 };
 
 const deleteIamRole = async (account: AWSAccountInfo, accountIndex: number, role: IamRoleInfo): Promise<void> => {
-  const { name } = role;
+  const { name: roleName } = role;
   try {
-    console.log(`[ACCOUNT ${accountIndex}] Deleting Iam Role ${name}`);
+    console.log(`[ACCOUNT ${accountIndex}] Deleting Iam Role ${roleName}`);
     const iamClient = new aws.IAM(getAWSConfig(account));
-    iamClient.deleteRole({ RoleName: name });
+    await deleteRolePolicies(account, accountIndex, roleName);
+    await iamClient.deleteRole({ RoleName: roleName }).promise();
   } catch (e) {
-    console.log(`[ACCOUNT ${accountIndex}] Deleting iam role ${name} failed with error ${e.message}`);
+    console.log(`[ACCOUNT ${accountIndex}] Deleting iam role ${roleName} failed with error ${e.message}`);
+  }
+};
+
+const deleteRolePolicies = async (
+  account: AWSAccountInfo,
+  accountIndex: number,
+  roleName: string,
+): Promise<void> => {
+  const iamClient = new aws.IAM(getAWSConfig(account));
+  const rolePolicies = await iamClient.listRolePolicies({ RoleName: roleName }).promise();
+  await Promise.all(rolePolicies.PolicyNames.map(policy => deleteIamRolePolicy(account, accountIndex, roleName, policy)));
+};
+
+const deleteIamRolePolicy = async (
+  account: AWSAccountInfo,
+  accountIndex: number,
+  roleName: string,
+  policyName: string,
+): Promise<void> => {
+  try {
+    console.log(`[ACCOUNT ${accountIndex}] Deleting Iam Role Policy ${policyName}`);
+    const iamClient = new aws.IAM(getAWSConfig(account));
+    await iamClient.deleteRolePolicy({ RoleName: roleName, PolicyName: policyName }).promise();
+  } catch (e) {
+    console.log(`[ACCOUNT ${accountIndex}] Deleting iam role policy ${policyName} failed with error ${e.message}`);
   }
 };
 

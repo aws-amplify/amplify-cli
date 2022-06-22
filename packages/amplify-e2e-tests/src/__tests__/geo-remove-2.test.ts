@@ -1,24 +1,21 @@
 import {
+  addAuthWithDefault,
+  addGeofenceCollectionWithDefault,
+  addMapWithDefault,
+  addPlaceIndexWithDefault,
+  amplifyPushUpdate,
+  amplifyPushWithoutCodegen,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
-  initJSProjectWithProfile,
-  addAuthWithDefault,
-  addMapWithDefault,
-  addPlaceIndexWithDefault,
-  getProjectMeta,
-  amplifyPushWithoutCodegen,
-  removeMap,
-  amplifyPushUpdate,
-  removePlaceIndex,
-  removeFirstDefaultMap,
-  removeFirstDefaultPlaceIndex,
   generateResourceIdsInOrder,
   getGeoJSConfiguration,
+  getProjectMeta,
+  initJSProjectWithProfile,
+  removeFirstDefaultGeofenceCollection,
+  removeFirstDefaultMap,
+  removeFirstDefaultPlaceIndex,
   updateAuthAddUserGroups,
-  addGeofenceCollectionWithDefault,
-  removeGeofenceCollection,
-  removeFirstDefaultGeofenceCollection
 } from 'amplify-e2e-core';
 import { existsSync } from 'fs';
 import path from 'path';
@@ -38,59 +35,6 @@ describe('amplify geo remove', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('init a project with default auth config and the map resource, then remove the map', async () => {
-    await initJSProjectWithProfile(projRoot, {});
-    await addAuthWithDefault(projRoot);
-    await addMapWithDefault(projRoot, { isFirstGeoResource: true });
-    await amplifyPushWithoutCodegen(projRoot);
-
-    const oldMeta = getProjectMeta(projRoot);
-    const mapId = Object.keys(oldMeta.geo).filter(key => oldMeta.geo[key].service === 'Map')[0];
-    //remove map
-    await removeMap(projRoot);
-    await amplifyPushUpdate(projRoot);
-    const newMeta = getProjectMeta(projRoot);
-    expect(newMeta.geo[mapId]).toBeUndefined();
-    const awsExport: any = getAWSExports(projRoot).default;
-    expect(awsExport.geo).toBeUndefined();
-  });
-
-  it('init a project with default auth config and the place index resource, then remove the place index', async () => {
-    await initJSProjectWithProfile(projRoot, {});
-    await addAuthWithDefault(projRoot);
-    await addPlaceIndexWithDefault(projRoot, { isFirstGeoResource: true });
-    await amplifyPushWithoutCodegen(projRoot);
-
-    const oldMeta = getProjectMeta(projRoot);
-    const placeIndexId = Object.keys(oldMeta.geo).filter(key => oldMeta.geo[key].service === 'PlaceIndex')[0];
-    //remove place index
-    await removePlaceIndex(projRoot);
-    await amplifyPushUpdate(projRoot);
-    const newMeta = getProjectMeta(projRoot);
-    expect(newMeta.geo[placeIndexId]).toBeUndefined();
-    const awsExport: any = getAWSExports(projRoot).default;
-    expect(awsExport.geo).toBeUndefined();
-  });
-
-  it('init a project with default auth config and the geofence collection resource, then remove the geofence collection', async () => {
-    await initJSProjectWithProfile(projRoot, {});
-    await addAuthWithDefault(projRoot);
-    const cognitoGroups = ['admin', 'admin1'];
-    await updateAuthAddUserGroups(projRoot, cognitoGroups);
-    await addGeofenceCollectionWithDefault(projRoot, cognitoGroups);
-    await amplifyPushWithoutCodegen(projRoot);
-
-    const oldMeta = getProjectMeta(projRoot);
-    const collectionId = Object.keys(oldMeta.geo).filter(key => oldMeta.geo[key].service === 'GeofenceCollection')[0];
-    //remove geofence collection
-    await removeGeofenceCollection(projRoot);
-    await amplifyPushUpdate(projRoot);
-    const newMeta = getProjectMeta(projRoot);
-    expect(newMeta.geo[collectionId]).toBeUndefined();
-    const awsExport: any = getAWSExports(projRoot).default;
-    expect(awsExport.geo).toBeUndefined();
-  });
-
   it('init a project with default auth config and multiple map resources, then remove the default map', async () => {
     const [map1Id, map2Id, map3Id] = generateResourceIdsInOrder(3);
     await initJSProjectWithProfile(projRoot, {});
@@ -105,7 +49,7 @@ describe('amplify geo remove', () => {
     const map1Name = oldMeta.geo[map1Id].output.Name;
     const map2Name = oldMeta.geo[map2Id].output.Name;
     const region = oldMeta.geo[map1Id].output.Region;
-    //remove map
+    // remove map
     await removeFirstDefaultMap(projRoot);
     await amplifyPushUpdate(projRoot);
     const newMeta = getProjectMeta(projRoot);
@@ -132,7 +76,7 @@ describe('amplify geo remove', () => {
     const index1Name = oldMeta.geo[index1Id].output.Name;
     const index2Name = oldMeta.geo[index2Id].output.Name;
     const region = oldMeta.geo[index1Id].output.Region;
-    //remove place index
+    // remove place index
     await removeFirstDefaultPlaceIndex(projRoot);
     await amplifyPushUpdate(projRoot);
     const newMeta = getProjectMeta(projRoot);
@@ -162,7 +106,7 @@ describe('amplify geo remove', () => {
     const collection2Name = oldMeta.geo[collection2Id].output.Name;
     const region = oldMeta.geo[collection1Id].output.Region;
 
-    //remove geofence collection
+    // remove geofence collection
     await removeFirstDefaultGeofenceCollection(projRoot);
     await amplifyPushUpdate(projRoot);
     const newMeta = getProjectMeta(projRoot);
