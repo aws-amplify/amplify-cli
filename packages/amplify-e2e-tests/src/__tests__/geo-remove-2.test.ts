@@ -1,6 +1,5 @@
 import {
   addAuthWithDefault,
-  addGeofenceCollectionWithDefault,
   addMapWithDefault,
   addPlaceIndexWithDefault,
   amplifyPushUpdate,
@@ -12,10 +11,8 @@ import {
   getGeoJSConfiguration,
   getProjectMeta,
   initJSProjectWithProfile,
-  removeFirstDefaultGeofenceCollection,
   removeFirstDefaultMap,
   removeFirstDefaultPlaceIndex,
-  updateAuthAddUserGroups,
 } from 'amplify-e2e-core';
 import { existsSync } from 'fs';
 import path from 'path';
@@ -86,36 +83,6 @@ describe('amplify geo remove', () => {
     expect(getGeoJSConfiguration(awsExport).search_indices.items).toContain(index2Name);
     expect(getGeoJSConfiguration(awsExport).search_indices.items).not.toContain(index1Name);
     expect(getGeoJSConfiguration(awsExport).search_indices.default).toEqual(index2Name);
-    expect(getGeoJSConfiguration(awsExport).region).toEqual(region);
-  });
-
-  it('init a project with default auth config and multiple geofence collection resources, then remove the default geofence collection', async () => {
-    const [collection1Id, collection2Id, collection3Id] = generateResourceIdsInOrder(3);
-    await initJSProjectWithProfile(projRoot, {});
-    await addAuthWithDefault(projRoot);
-    const cognitoGroups = ['admin', 'admin1'];
-    await updateAuthAddUserGroups(projRoot, cognitoGroups);
-    await addGeofenceCollectionWithDefault(projRoot, cognitoGroups, { resourceName: collection1Id });
-    await addGeofenceCollectionWithDefault(projRoot, cognitoGroups, { resourceName: collection2Id, isAdditional: true, isDefault: false });
-    await addGeofenceCollectionWithDefault(projRoot, cognitoGroups, { resourceName: collection3Id, isAdditional: true, isDefault: false });
-    await amplifyPushWithoutCodegen(projRoot);
-    const oldMeta = getProjectMeta(projRoot);
-    expect(oldMeta.geo[collection1Id].isDefault).toBe(true);
-    expect(oldMeta.geo[collection2Id].isDefault).toBe(false);
-    const collection1Name = oldMeta.geo[collection1Id].output.Name;
-    const collection2Name = oldMeta.geo[collection2Id].output.Name;
-    const region = oldMeta.geo[collection1Id].output.Region;
-
-    // remove geofence collection
-    await removeFirstDefaultGeofenceCollection(projRoot);
-    await amplifyPushUpdate(projRoot);
-    const newMeta = getProjectMeta(projRoot);
-    expect(newMeta.geo[collection1Id]).toBeUndefined();
-    expect(newMeta.geo[collection2Id].isDefault).toBe(true);
-    const awsExport: any = getAWSExports(projRoot).default;
-    expect(getGeoJSConfiguration(awsExport).geofenceCollections.items).toContain(collection2Name);
-    expect(getGeoJSConfiguration(awsExport).geofenceCollections.items).not.toContain(collection1Name);
-    expect(getGeoJSConfiguration(awsExport).geofenceCollections.default).toEqual(collection2Name);
     expect(getGeoJSConfiguration(awsExport).region).toEqual(region);
   });
 });

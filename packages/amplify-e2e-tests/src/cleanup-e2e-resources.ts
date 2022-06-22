@@ -91,20 +91,29 @@ type AWSAccountInfo = {
   sessionToken: string;
 };
 
-const TEST_REGEX = /!RotateE2eAwsToken-e2eTestContextRole|test/;
-const STALE_DURATION_MS = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
+const BUCKET_TEST_REGEX = /test/;
+const IAM_TEST_REGEX = /!RotateE2eAwsToken-e2eTestContextRole|-integtest$|^amplify-|^eu-|^us-|^ap-/;
+const STALE_DURATION_MS = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
+
+/*
+ * Exit on expired token as all future requests will fail.
+ */
+const handleExpiredTokenException = (): void => {
+  console.log('Token expired. Exiting...');
+  process.exit();
+};
 
 /**
  * We define a resource as viable for deletion if it matches TEST_REGEX in the name, and if it is > STALE_DURATION_MS old.
  */
 const testBucketStalenessFilter = (resource: aws.S3.Bucket): boolean => {
-  const isTestResource = resource.Name.match(TEST_REGEX);
+  const isTestResource = resource.Name.match(BUCKET_TEST_REGEX);
   const isStaleResource = (Date.now() - resource.CreationDate.getMilliseconds()) > STALE_DURATION_MS;
   return isTestResource && isStaleResource;
 };
 
 const testRoleStalenessFilter = (resource: aws.IAM.Role): boolean => {
-  const isTestResource = resource.RoleName.match(TEST_REGEX);
+  const isTestResource = resource.RoleName.match(IAM_TEST_REGEX);
   const isStaleResource = (Date.now() - resource.CreateDate.getMilliseconds()) > STALE_DURATION_MS;
   return isTestResource && isStaleResource;
 };
@@ -124,7 +133,7 @@ const getOrphanS3TestBuckets = async (account: AWSAccountInfo): Promise<S3Bucket
  */
 const getOrphanTestIamRoles = async (account: AWSAccountInfo): Promise<IamRoleInfo[]> => {
   const iamClient = new aws.IAM(getAWSConfig(account));
-  const listRoleResponse = await iamClient.listRoles().promise();
+  const listRoleResponse = await iamClient.listRoles({ MaxItems: 1000 }).promise();
   const staleRoles = listRoleResponse.Roles.filter(testRoleStalenessFilter);
   return staleRoles.map(it => ({ name: it.RoleName }));
 };
@@ -418,6 +427,9 @@ const deleteAmplifyApp = async (account: AWSAccountInfo, accountIndex: number, a
     await amplifyClient.deleteApp({ appId }).promise();
   } catch (e) {
     console.log(`[ACCOUNT ${accountIndex}] Deleting Amplify App ${appId} failed with the following error`, e);
+    if (e.code === 'ExpiredTokenException') {
+      handleExpiredTokenException();
+    }
   }
 };
 
@@ -430,10 +442,42 @@ const deleteIamRole = async (account: AWSAccountInfo, accountIndex: number, role
   try {
     console.log(`[ACCOUNT ${accountIndex}] Deleting Iam Role ${roleName}`);
     const iamClient = new aws.IAM(getAWSConfig(account));
+    await deleteAttachedRolePolicies(account, accountIndex, roleName);
     await deleteRolePolicies(account, accountIndex, roleName);
     await iamClient.deleteRole({ RoleName: roleName }).promise();
   } catch (e) {
     console.log(`[ACCOUNT ${accountIndex}] Deleting iam role ${roleName} failed with error ${e.message}`);
+    if (e.code === 'ExpiredTokenException') {
+      handleExpiredTokenException();
+    }
+  }
+};
+
+const deleteAttachedRolePolicies = async (
+  account: AWSAccountInfo,
+  accountIndex: number,
+  roleName: string,
+): Promise<void> => {
+  const iamClient = new aws.IAM(getAWSConfig(account));
+  const rolePolicies = await iamClient.listAttachedRolePolicies({ RoleName: roleName }).promise();
+  await Promise.all(rolePolicies.AttachedPolicies.map(policy => detachIamAttachedRolePolicy(account, accountIndex, roleName, policy)));
+};
+
+const detachIamAttachedRolePolicy = async (
+  account: AWSAccountInfo,
+  accountIndex: number,
+  roleName: string,
+  policy: aws.IAM.AttachedPolicy,
+): Promise<void> => {
+  try {
+    console.log(`[ACCOUNT ${accountIndex}] Detach Iam Attached Role Policy ${policy.PolicyName}`);
+    const iamClient = new aws.IAM(getAWSConfig(account));
+    await iamClient.detachRolePolicy({ RoleName: roleName, PolicyArn: policy.PolicyArn }).promise();
+  } catch (e) {
+    console.log(`[ACCOUNT ${accountIndex}] Detach iam role policy ${policy.PolicyName} failed with error ${e.message}`);
+    if (e.code === 'ExpiredTokenException') {
+      handleExpiredTokenException();
+    }
   }
 };
 
@@ -459,6 +503,9 @@ const deleteIamRolePolicy = async (
     await iamClient.deleteRolePolicy({ RoleName: roleName, PolicyName: policyName }).promise();
   } catch (e) {
     console.log(`[ACCOUNT ${accountIndex}] Deleting iam role policy ${policyName} failed with error ${e.message}`);
+    if (e.code === 'ExpiredTokenException') {
+      handleExpiredTokenException();
+    }
   }
 };
 
@@ -474,6 +521,9 @@ const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucke
     await deleteS3Bucket(name, s3);
   } catch (e) {
     console.log(`[ACCOUNT ${accountIndex}] Deleting bucket ${name} failed with error ${e.message}`);
+    if (e.code === 'ExpiredTokenException') {
+      handleExpiredTokenException();
+    }
   }
 };
 
@@ -491,6 +541,9 @@ const deleteCfnStack = async (account: AWSAccountInfo, accountIndex: number, sta
     await cfnClient.waitFor('stackDeleteComplete', { StackName: stackName }).promise();
   } catch (e) {
     console.log(`Deleting CloudFormation stack ${stackName} failed with error ${e.message}`);
+    if (e.code === 'ExpiredTokenException') {
+      handleExpiredTokenException();
+    }
   }
 };
 

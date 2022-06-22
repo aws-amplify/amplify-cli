@@ -129,7 +129,7 @@ describe('amplify add api (GraphQL)', () => {
   });
 
   it('init a project with a simple model and then migrates the api', async () => {
-    const projectName = `blogApp${generateRandomShortId()}`;
+    const projectName = `blogapp${generateRandomShortId()}`;
     const initialSchema = 'initial_key_blog.graphql';
     const nextSchema = 'next_key_blog.graphql';
     await initJSProjectWithProfile(projRoot, { name: projectName });
@@ -138,7 +138,8 @@ describe('amplify add api (GraphQL)', () => {
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema);
     await amplifyPushUpdate(projRoot);
-    const { output } = getProjectMeta(projRoot).api[projectName];
+    const meta = getProjectMeta(projRoot);
+    const { output } = meta.api[projectName];
     const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
 
     expect(GraphQLAPIIdOutput).toBeDefined();
