@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [9.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.5.1...@aws-amplify/cli-internal@9.0.0) (2022-06-22)
+
+
+
+# 9.0.0 (2022-06-21)
+
+
+* feat!: breaking change (#10628) ([7fadbf5](https://github.com/aws-amplify/amplify-cli/commit/7fadbf53b8dc89d768779fb588971f5c5b6e70d7)), closes [#10628](https://github.com/aws-amplify/amplify-cli/issues/10628)
+
+
+### BREAKING CHANGES
+
+* this is a breaking change
+
+
+
+
+
 ## [8.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.5.0...@aws-amplify/cli-internal@8.5.1) (2022-06-15)
 
 **Note:** Version bump only for package @aws-amplify/cli-internal

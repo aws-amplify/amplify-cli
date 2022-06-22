@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.10.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.9.1...amplify-cli-core@2.10.0) (2022-06-22)
+
+
+### Features
+
+* flip feature flag to change default identity claim ([#10580](https://github.com/aws-amplify/amplify-cli/issues/10580)) ([f8df80d](https://github.com/aws-amplify/amplify-cli/commit/f8df80dd5218b4e1442e92bf27019d9eb1941b84))
+
+
+### Reverts
+
+* Revert "Revert "chore: add FF for primary key connection field attributes (#10556)" (#10603)" (#10617) ([15115a6](https://github.com/aws-amplify/amplify-cli/commit/15115a6592fe691b9cbf59bb6df6309e7801d31a)), closes [#10556](https://github.com/aws-amplify/amplify-cli/issues/10556) [#10603](https://github.com/aws-amplify/amplify-cli/issues/10603) [#10617](https://github.com/aws-amplify/amplify-cli/issues/10617)
+* Revert "chore: add FF for primary key connection field attributes (#10556)" (#10603) ([8644039](https://github.com/aws-amplify/amplify-cli/commit/86440397aa87db163159067c357ac204d24b4731)), closes [#10556](https://github.com/aws-amplify/amplify-cli/issues/10556) [#10603](https://github.com/aws-amplify/amplify-cli/issues/10603)
+
+
+
+
+
 ## [2.9.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.9.0...amplify-cli-core@2.9.1) (2022-06-13)
 
 
