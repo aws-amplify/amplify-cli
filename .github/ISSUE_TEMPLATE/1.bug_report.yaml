@@ -150,6 +150,12 @@ body:
         </details>
   - type: textarea
     attributes:
+      label: Project Identifier
+      description: |
+        You can send your project configurations by running `amplify diagnose --send-report` and share the Project Identifier. 
+        Learn more at https://docs.amplify.aws/cli/reference/diagnose/
+  - type: textarea
+    attributes:
       label: Log output
       description: |
         For example, error messages, or stack traces.
