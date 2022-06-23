@@ -191,12 +191,8 @@ export const deletePinpointAppForEnv = async (context: $TSContext, envName: stri
 const pushChanges = async (context: $TSContext, pinpointNotificationsMeta: $TSAny):Promise<void> => {
   const availableChannels = Notifications.ChannelCfg.getAvailableChannels();
   let pinpointInputParams : $TSAny;
-  if (
-    context.exeInfo
-    && context.exeInfo.inputParams
-    && context.exeInfo.inputParams.categories
-    && context.exeInfo.inputParams.categories[AmplifyCategories.NOTIFICATIONS]
-    && context.exeInfo.inputParams.categories[AmplifyCategories.NOTIFICATIONS][AmplifySupportedService.PINPOINT]
+  if (context?.exeInfo?.inputParams?.categories[AmplifyCategories.NOTIFICATIONS]
+      && context.exeInfo.inputParams.categories[AmplifyCategories.NOTIFICATIONS][AmplifySupportedService.PINPOINT]
   ) {
     pinpointInputParams = context.exeInfo.inputParams.categories[AmplifyCategories.NOTIFICATIONS][AmplifySupportedService.PINPOINT];
     context.exeInfo.pinpointInputParams = pinpointInputParams;
