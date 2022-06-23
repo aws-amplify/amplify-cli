@@ -17,6 +17,16 @@ const spinner = ora('');
 const deploymentType = ChannelConfigDeploymentType.INLINE;
 
 /**
+ * helper function to build and throw error for APNS channel configuration.
+ * @param err - Reason code for the APNS channel configuration.
+ * @returns
+ */
+const throwNormalizedError = (action: ChannelAction, err : string|Error):IChannelAPIResponse => {
+  const errResponse = buildPinpointChannelResponseError(action, deploymentType, channelName, err);
+  throw errResponse;
+};
+
+/**
  * Configure the Pinpoint resource to enable the Apple Push Notifications Messaging channel
  * @param context amplify cli context
  */
@@ -63,7 +73,7 @@ export const enable = async (context: $TSContext, successMessage: string | undef
   let channelInput;
   let answers;
   if (context.exeInfo.pinpointInputParams && context.exeInfo.pinpointInputParams[channelName]) {
-    channelInput = validateInputParams(context.exeInfo.pinpointInputParams[channelName]);
+    channelInput = validateInputParams(ChannelAction.ENABLE, context.exeInfo.pinpointInputParams[channelName]);
     answers = {
       DefaultAuthenticationMethod: channelInput.DefaultAuthenticationMethod,
     };
@@ -121,7 +131,7 @@ export const enable = async (context: $TSContext, successMessage: string | undef
     context.exeInfo.serviceMeta.output[channelName] = data.APNSChannelResponse;
   } catch (e) {
     spinner.fail(`Failed to enable the ${channelName} channel.`);
-    throw e;
+    throwNormalizedError(ChannelAction.ENABLE, e);
   }
 
   if (!successMessage) {
@@ -132,28 +142,28 @@ export const enable = async (context: $TSContext, successMessage: string | undef
   return successResponse;
 };
 
-const validateInputParams = (channelInput:$TSAny):$TSAny => {
+const validateInputParams = (action:ChannelAction, channelInput:$TSAny):$TSAny => {
   if (channelInput.DefaultAuthenticationMethod) {
     const authMethod = channelInput.DefaultAuthenticationMethod;
     if (authMethod === 'Certificate') {
       if (!channelInput.P12FilePath) {
-        throw new Error('P12FilePath is missing for the APNS channel');
+        throwNormalizedError(action, 'P12FilePath is missing for the APNS channel');
       } else if (!fs.existsSync(channelInput.P12FilePath)) {
-        throw new Error(`P12 file ${channelInput.P12FilePath} can NOT be found for the APNS channel`);
+        throwNormalizedError(action, `P12 file ${channelInput.P12FilePath} can NOT be found for the APNS channel`);
       }
     } else if (authMethod === 'Key') {
       if (!channelInput.BundleId || !channelInput.TeamId || !channelInput.TokenKeyId) {
-        throw new Error('Missing BundleId, TeamId or TokenKeyId for the APNS channel');
+        throwNormalizedError(action, 'Missing BundleId, TeamId or TokenKeyId for the APNS channel');
       } else if (!channelInput.P8FilePath) {
-        throw new Error('P8FilePath is missing for the APNS channel');
+        throwNormalizedError(action, 'P8FilePath is missing for the APNS channel');
       } else if (!fs.existsSync(channelInput.P8FilePath)) {
-        throw new Error(`P8 file ${channelInput.P8FilePath} can NOT be found for the APNS channel`);
+        throwNormalizedError(action, `P8 file ${channelInput.P8FilePath} can NOT be found for the APNS channel`);
       }
     } else {
-      throw new Error(`DefaultAuthenticationMethod ${authMethod} is unrecognized for the APNS channel`);
+      throwNormalizedError(action, `DefaultAuthenticationMethod ${authMethod} is unrecognized for the APNS channel`);
     }
   } else {
-    throw new Error('DefaultAuthenticationMethod is missing for the APNS channel');
+    throwNormalizedError(action, 'DefaultAuthenticationMethod is missing for the APNS channel');
   }
   return channelInput;
 };
@@ -186,7 +196,7 @@ export const disable = async (context: $TSContext) : Promise<$TSAny> => {
     await context.exeInfo.pinpointClient.updateApnsSandboxChannel(sandboxParams).promise();
   } catch (e) {
     spinner.fail(`Failed to update the ${channelName} channel.`);
-    throw e;
+    throwNormalizedError(ChannelAction.DISABLE, e);
   }
   spinner.succeed(`The ${channelName} channel has been disabled.`);
   context.exeInfo.serviceMeta.output[channelName] = data.APNSChannelResponse;
@@ -223,7 +233,7 @@ export const pull = async (context:$TSContext, pinpointApp:$TSAny): Promise<$TSA
         return errResponse;
       }
       spinner.stop();
-      throw err;
+      throwNormalizedError(ChannelAction.PULL, err);
     });
 };
 
