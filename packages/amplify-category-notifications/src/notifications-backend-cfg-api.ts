@@ -77,14 +77,19 @@ export class NotificationsCfg {
       const tmpBackendConfig = (backendConfig) || stateManager.getBackendConfig();
       const notificationsConfig = tmpBackendConfig[AmplifyCategories.NOTIFICATIONS];
       const notificationsConfigList: Array<INotificationsResourceBackendConfig> = [];
-      for (const resourceName of Object.keys(notificationsConfig)) {
-        if (!appName || appName === resourceName) {
-          notificationsConfigList.push(
-            {
-              ...(notificationsConfig[resourceName] as INotificationsResourceBackendConfigValue),
-              serviceName: resourceName,
-            },
-          );
+      if (notificationsConfig) {
+        for (const resourceName of Object.keys(notificationsConfig)) {
+          // !appName => get all resources,
+          // appName === resourceName => get only the Pinpoint resource used by Notifications
+          // and ignore other resources.
+          if (!appName || appName === resourceName) {
+            notificationsConfigList.push(
+              {
+                ...(notificationsConfig[resourceName] as INotificationsResourceBackendConfigValue),
+                serviceName: resourceName,
+              },
+            );
+          }
         }
       }
       return notificationsConfigList;
