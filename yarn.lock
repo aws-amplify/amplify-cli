@@ -672,6 +672,19 @@
     "@aws-cdk/core" "1.124.0"
     constructs "^3.3.69"
 
+"@aws-cdk/aws-apigatewayv2@~1.159.0":
+  version "1.159.0"
+  resolved "https://registry.yarnpkg.com/@aws-cdk/aws-apigatewayv2/-/aws-apigatewayv2-1.159.0.tgz#e3cee89b9540d3395f00eb0838a2d5c82030c2ee"
+  integrity sha512-UHxMACZCIqy4U1mldRzLzXLK0T2GxoU+CR+V4ovbg10gnzT/P+4cCvvnxn4U3bVGruxxwc0v4inebxm4NIMotw==
+  dependencies:
+    "@aws-cdk/aws-certificatemanager" "1.159.0"
+    "@aws-cdk/aws-cloudwatch" "1.159.0"
+    "@aws-cdk/aws-ec2" "1.159.0"
+    "@aws-cdk/aws-iam" "1.159.0"
+    "@aws-cdk/aws-s3" "1.159.0"
+    "@aws-cdk/core" "1.159.0"
+    constructs "^3.3.69"
+
 "@aws-cdk/aws-applicationautoscaling@1.124.0", "@aws-cdk/aws-applicationautoscaling@~1.124.0":
   version "1.124.0"
   resolved "https://registry.npmjs.org/@aws-cdk/aws-applicationautoscaling/-/aws-applicationautoscaling-1.124.0.tgz#aed80d55fb0908d90113d45e8ea65352d039976d"
@@ -873,6 +886,32 @@
     "@aws-cdk/aws-sns-subscriptions" "1.124.0"
     "@aws-cdk/aws-stepfunctions" "1.124.0"
     "@aws-cdk/core" "1.124.0"
+    case "1.6.3"
+    constructs "^3.3.69"
+
+"@aws-cdk/aws-codepipeline-actions@~1.159.0":
+  version "1.159.0"
+  resolved "https://registry.yarnpkg.com/@aws-cdk/aws-codepipeline-actions/-/aws-codepipeline-actions-1.159.0.tgz#ab8be22c38c9adc072d7bb948eafaeaeba9fdf14"
+  integrity sha512-RFr2/TJ5uqJWnYrmWdZyDU3zi2OvLTdCqng93sDf6vsVLSZcGZth30o7JY0LL4Ugv/3M/tgKyBACllwk6xJ2xg==
+  dependencies:
+    "@aws-cdk/aws-cloudformation" "1.159.0"
+    "@aws-cdk/aws-codebuild" "1.159.0"
+    "@aws-cdk/aws-codecommit" "1.159.0"
+    "@aws-cdk/aws-codedeploy" "1.159.0"
+    "@aws-cdk/aws-codepipeline" "1.159.0"
+    "@aws-cdk/aws-ec2" "1.159.0"
+    "@aws-cdk/aws-ecr" "1.159.0"
+    "@aws-cdk/aws-ecs" "1.159.0"
+    "@aws-cdk/aws-events" "1.159.0"
+    "@aws-cdk/aws-events-targets" "1.159.0"
+    "@aws-cdk/aws-iam" "1.159.0"
+    "@aws-cdk/aws-kms" "1.159.0"
+    "@aws-cdk/aws-lambda" "1.159.0"
+    "@aws-cdk/aws-s3" "1.159.0"
+    "@aws-cdk/aws-sns" "1.159.0"
+    "@aws-cdk/aws-sns-subscriptions" "1.159.0"
+    "@aws-cdk/aws-stepfunctions" "1.159.0"
+    "@aws-cdk/core" "1.159.0"
     case "1.6.3"
     constructs "^3.3.69"
 

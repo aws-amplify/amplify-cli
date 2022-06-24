@@ -5,17 +5,6 @@ machine:
   environment:
     PATH: '${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin'
 
-parameters:
-  nightly_console_integration_tests:
-    type: boolean
-    default: false
-  e2e_resource_cleanup:
-    type: boolean
-    default: false
-  setup:
-    type: boolean
-    default: true
-
 executors:
   w: &windows-e2e-executor
     machine:
