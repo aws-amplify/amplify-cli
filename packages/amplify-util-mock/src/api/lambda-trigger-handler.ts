@@ -2,6 +2,7 @@ import { $TSContext } from 'amplify-cli-core';
 import { DynamoDBStreams, Endpoint } from 'aws-sdk';
 import { invokeLambda } from './lambda-invoke';
 import { isMockable } from 'amplify-category-function';
+import { printer } from 'amplify-prompts';
 
 /**
  * Asynchronous function that handles invoking the given lambda trigger function
@@ -11,11 +12,11 @@ import { isMockable } from 'amplify-category-function';
  * @param lambdaTriggerName Lambda function to trigger
  * @param localDynamoDBEndpoint Local DDB endpoint that was provisioned
  */
-export const lambdaTriggerHandler = async (
+export const ddbLambdaTriggerHandler = async (
     context: $TSContext,
-    streamArn: string,
-    lambdaTriggerName: string,
-    localDynamoDBEndpoint: Endpoint
+    streamArn?: string,
+    lambdaTriggerName?: string,
+    localDynamoDBEndpoint?: Endpoint
 ): Promise<void> => {
     if (!lambdaTriggerName) {
         throw new Error('Name of the lambda trigger function must be specified');
@@ -35,11 +36,11 @@ export const lambdaTriggerHandler = async (
 
     const streams = getDDBStreamsClient(localDynamoDBEndpoint);
 
-    await pollForRecords(context, streamArn, streams, lambdaTriggerName);
+    await pollDDBStreamAndInvokeLamba(context, streamArn, streams, lambdaTriggerName);
 }
 
 /**
- * Shards are ephemeral and last for ~15 mins. This method fetches the latest Shard iterator.
+ * Shards are ephemeral and last for ~15 mins after creation. This method fetches the latest Shard iterator.
  * @param streamArn DDB stream ARN
  * @param streams DDB streams client
  * @returns latest active shard iterator
@@ -53,12 +54,10 @@ export const getLatestShardIterator = async (streamArn: string, streams: DynamoD
         throw new Error(`Local DynamoDB stream with ARN ${streamArn} cannot be found`);
     }
 
+    // Get the latest active shard
     const { ShardId: shardId } =
         stream.StreamDescription.Shards.filter(
-        x =>
-            x.SequenceNumberRange &&
-            x.SequenceNumberRange.StartingSequenceNumber &&
-            !x.SequenceNumberRange.EndingSequenceNumber
+            currentShard => isShardActive(currentShard)
         )[0] || {}
 
     if (!shardId) {
@@ -69,11 +68,24 @@ export const getLatestShardIterator = async (streamArn: string, streams: DynamoD
         .getShardIterator({
             StreamArn: streamArn,
             ShardId: shardId,
-            ShardIteratorType: 'LATEST'
+            ShardIteratorType: DDBStreamsShardIteratorType.LATEST
         })
         .promise();
     
     return start;
+}
+
+enum DDBStreamsShardIteratorType {
+    TRIM_HORIZON = 'TRIM_HORIZON',
+    LATEST = 'LATEST',
+    AT_SEQUENCE_NUMBER = 'AT_SEQUENCE_NUMBER',
+    AFTER_SEQUENCE_NUMBER = 'AFTER_SEQUENCE_NUMBER'
+}
+
+const isShardActive = (shard: DynamoDBStreams.Shard): boolean => {
+    return shard.SequenceNumberRange &&
+        shard.SequenceNumberRange.StartingSequenceNumber &&
+        !shard.SequenceNumberRange.EndingSequenceNumber
 }
 
 /**
@@ -83,13 +95,17 @@ export const getLatestShardIterator = async (streamArn: string, streams: DynamoD
  * @param streams DDB streams client
  * @returns latest available records from stream
  */
-export const getStreamRecords = async (shardIterator: string, streamArn: string, streams: DynamoDBStreams) => {
+export const getStreamRecords = async (
+    shardIterator: string, 
+    streamArn: string, 
+    streams: DynamoDBStreams
+    ) => {
     const shardIteratorCopy = shardIterator;
     try {
         const data = await streams.getRecords({ ShardIterator: shardIteratorCopy }).promise();
         return { data: data, shardIterator: shardIteratorCopy };
     } catch (error) {
-        console.log('Re-Trying with a new shard');
+        printer.info('Re-Trying with a new shard');
         const latestShardIterator = await getLatestShardIterator(streamArn, streams);
         const data = await streams.getRecords({ ShardIterator: latestShardIterator }).promise();
         return { data: data, shardIterator: latestShardIterator };
@@ -100,7 +116,7 @@ export const getStreamRecords = async (shardIterator: string, streamArn: string,
  * Checks if there are any new DDB records available 
  * via stream to be processed in the trigger
  */
-export const pollForRecords = async(context: $TSContext, streamArn: string, streams: DynamoDBStreams, lambdaTriggerName: string) => {
+export const pollDDBStreamAndInvokeLamba = async(context: $TSContext, streamArn: string, streams: DynamoDBStreams, lambdaTriggerName: string) => {
     let shardIterator = await getLatestShardIterator(streamArn, streams);
     while (shardIterator) {
         await getStreamRecords(shardIterator, streamArn, streams).then( async (result) => {
@@ -120,7 +136,7 @@ export const pollForRecords = async(context: $TSContext, streamArn: string, stre
     }
 }
 
-export const getDDBStreamsClient = (localDynamoDBEndpoint: Endpoint) => {
+export const getDDBStreamsClient = (localDynamoDBEndpoint: Endpoint): DynamoDBStreams => {
     const MOCK_REGION = 'us-fake-1';
     const MOCK_ACCESS_KEY = 'fake';
     const MOCK_SECRET_ACCESS_KEY = 'fake';

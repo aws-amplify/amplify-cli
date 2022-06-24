@@ -5,6 +5,7 @@ import { $TSContext, $TSAny } from 'amplify-cli-core';
 import { add, generate, isCodegenConfigured, switchToSDLSchema } from 'amplify-codegen';
 import * as path from 'path';
 import * as chokidar from 'chokidar';
+import _ from 'lodash';
 
 import { getAmplifyMeta, getMockDataDirectory } from '../utils';
 import { checkJavaVersion } from '../utils/index';
@@ -19,7 +20,7 @@ import { getMockConfig } from '../utils/mock-config-file';
 import { getInvoker } from 'amplify-category-function';
 import { lambdaArnToConfig } from './lambda-arn-to-config';
 import { timeConstrainedInvoker } from '../func';
-import { lambdaTriggerHandler } from './lambda-trigger-handler';
+import { ddbLambdaTriggerHandler } from './lambda-trigger-handler';
 import { TableDescription } from 'aws-sdk/clients/dynamodb';
 
 export const GRAPHQL_API_ENDPOINT_OUTPUT = 'GraphQLAPIEndpointOutput';
@@ -200,10 +201,10 @@ export class APITest {
       const tableStreamArns: {[index: string]: TableDescription;} = await describeTables(this.ddbClient, tables);
       const allListeners = [];
       Object.entries(tableLambdaTriggers).forEach(([tableName, lambdaTriggers]) => {
-        if(lambdaTriggers && lambdaTriggers.length > 0) {
+        if(!(_.isEmpty(lambdaTriggers))) {
           lambdaTriggers.forEach( (lambdaTriggerName: string) => {
             allListeners.push(
-              lambdaTriggerHandler(
+              ddbLambdaTriggerHandler(
                 context, 
                 tableStreamArns[tableName].LatestStreamArn, 
                 lambdaTriggerName, 

@@ -1,4 +1,5 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
+import { stateManager } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 import _ from 'lodash';
 // eslint-disable-next-line import/no-cycle
 import {
@@ -11,11 +12,10 @@ import {
  * Iterates through a list of parameter getters. If multiple getters return the same key, the latter will overwrite the former
  */
 export const populateCfnParams = (
-  print: $TSContext['print'],
   resourceName: string,
   overrideApiToLocal = false,
 ): Record<string, string> => [getCfnPseudoParams, getAmplifyMetaParams, getParametersJsonParams, getTeamProviderParams]
-  .map(paramProvider => paramProvider(print, resourceName, overrideApiToLocal))
+  .map(paramProvider => paramProvider(resourceName, overrideApiToLocal))
   .reduce((acc, it) => ({ ...acc, ...it }), {});
 
 const getCfnPseudoParams = (): Record<string, string> => {
@@ -41,7 +41,6 @@ const getCfnPseudoParams = (): Record<string, string> => {
  * Loads CFN parameters by matching the dependsOn field of the resource with the CFN outputs of other resources in the project
  */
 const getAmplifyMetaParams = (
-  print: $TSContext['print'],
   resourceName: string,
   overrideApiToLocal = false,
 ): Record<string, string> => {
@@ -72,10 +71,10 @@ const getAmplifyMetaParams = (
       }
 
       if (!val) {
-        print.warning(
+        printer.warn(
           `No output found for attribute '${attribute}' on resource '${dependency.resourceName}' in category '${dependency.category}'`,
         );
-        print.warning('This attribute will be undefined in the mock environment until you run `amplify push`');
+        printer.warn('This attribute will be undefined in the mock environment until you run `amplify push`');
       }
 
       acc[dependency.category + dependency.resourceName + attribute] = val;
@@ -88,13 +87,13 @@ const getAmplifyMetaParams = (
  * Loads CFN parameters from the parameters.json file for the resource (if present)
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const getParametersJsonParams = (print, resourceName: string): Record<string, string> => stateManager.getResourceParametersJson(undefined, 'function', resourceName, { throwIfNotExist: false }) ?? {};
+const getParametersJsonParams = (resourceName: string): Record<string, string> => stateManager.getResourceParametersJson(undefined, 'function', resourceName, { throwIfNotExist: false }) ?? {};
 
 /**
  * Loads CFN parameters for the resource in the team-provider-info.json file (if present)
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const getTeamProviderParams = (print, resourceName: string): Record<string, string> => {
+const getTeamProviderParams = (resourceName: string): Record<string, string> => {
   const env = stateManager.getLocalEnvInfo().envName;
   return _.get(stateManager.getTeamProviderInfo(), [env, 'categories', 'function', resourceName], {});
 };

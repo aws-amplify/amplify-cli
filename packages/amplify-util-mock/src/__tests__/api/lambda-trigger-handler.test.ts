@@ -24,7 +24,7 @@ describe('Lambda Trigger Handler', () => {
 
   it('throws error if lambda trigger name is not specified', async () => {
     try {
-        await lambdaTriggerHandlers.lambdaTriggerHandler(
+        await lambdaTriggerHandlers.ddbLambdaTriggerHandler(
             mockContext,
             mockStreamArn,
             null,
@@ -39,7 +39,7 @@ describe('Lambda Trigger Handler', () => {
 
   it('throws error if stream Arn is not specified', async () => {
     try {
-        await lambdaTriggerHandlers.lambdaTriggerHandler(
+        await lambdaTriggerHandlers.ddbLambdaTriggerHandler(
             mockContext,
             null,
             mockTriggerName,
@@ -54,7 +54,7 @@ describe('Lambda Trigger Handler', () => {
 
   it('throws error if dynamoDB local endpoint is not specified', async () => {
     try {
-        await lambdaTriggerHandlers.lambdaTriggerHandler(
+        await lambdaTriggerHandlers.ddbLambdaTriggerHandler(
             mockContext,
             mockStreamArn,
             mockTriggerName,
@@ -73,7 +73,7 @@ describe('Lambda Trigger Handler', () => {
         reason: 'Mocking a function with layers is not supported.'
     });
     try {
-        await lambdaTriggerHandlers.lambdaTriggerHandler(
+        await lambdaTriggerHandlers.ddbLambdaTriggerHandler(
             mockContext,
             mockStreamArn,
             mockTriggerName,
@@ -87,8 +87,8 @@ describe('Lambda Trigger Handler', () => {
   });
 
   it('Polls for records from given DDB stream', async () => {
-    const pollForRecordsMock = jest.spyOn(lambdaTriggerHandlers, 'pollForRecords').mockResolvedValueOnce();
-    await lambdaTriggerHandlers.lambdaTriggerHandler(
+    const pollForRecordsMock = jest.spyOn(lambdaTriggerHandlers, 'pollDDBStreamAndInvokeLamba').mockResolvedValueOnce();
+    await lambdaTriggerHandlers.ddbLambdaTriggerHandler(
         mockContext,
         mockStreamArn,
         mockTriggerName,
@@ -112,7 +112,7 @@ describe('Lambda Trigger Handler', () => {
         shardIterator: null // to prevent continuously running loop
     });
     invokeLambdaMock.mockResolvedValueOnce();
-    await lambdaTriggerHandlers.lambdaTriggerHandler(
+    await lambdaTriggerHandlers.ddbLambdaTriggerHandler(
         mockContext,
         mockStreamArn,
         mockTriggerName,

@@ -3,6 +3,7 @@ import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
 import { BuildType } from 'amplify-function-plugin-interface';
 import { getInvoker, getBuilder } from 'amplify-category-function';
 import { timeConstrainedInvoker } from '../func';
+import { printer } from 'amplify-prompts';
 
 /**
  * Utility method to invoke the lambda function locally. 
@@ -19,18 +20,20 @@ export const invokeLambda = async (context: $TSContext, functionName: string, da
       // Ensuring latest function changes are built
       await getBuilder(context, functionName, BuildType.DEV)();
       const invoker = await getInvoker(context, { resourceName: functionName, handler: lambdaConfig.handler, envVars: lambdaConfig.environment });
-      context.print.blue('Starting execution...');
+      printer.info('Starting execution...');
       try {
         const result = await timeConstrainedInvoker(invoker({ event: data }), context?.input?.options);
-        const stringResult =
-          typeof result === 'object' ? JSON.stringify(result, undefined, 2) : typeof result === 'undefined' ? 'undefined' : result;
-        context.print.success('Result:');
-        context.print.info(typeof result === 'undefined' ? '' : stringResult);
+        const stringResult = stringifyResult(result);
+        printer.success('Result:');
+        printer.info(stringResult);
       } catch (err) {
-        context.print.error(`${functionName} failed with the following error:`);
-        context.print.info(err);
+        printer.error(`${functionName} failed with the following error:`);
+        printer.info(err);
       } finally {
-        context.print.blue('Finished execution.');
+        printer.info('Finished execution.');
       }
+}
 
+const stringifyResult = (result: $TSAny) => {
+  return typeof result === 'object' ? JSON.stringify(result, undefined, 2) : typeof result === 'undefined' ? '' : result;
 }
