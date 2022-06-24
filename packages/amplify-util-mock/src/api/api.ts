@@ -13,7 +13,7 @@ import { runTransformer } from './run-graphql-transformer';
 import { processAppSyncResources } from '../CFNParser';
 import { ResolverOverrides } from './resolver-overrides';
 import { ConfigOverrideManager } from '../utils/config-override';
-import { configureDDBDataSource, createAndUpdateTable } from '../utils/dynamo-db';
+import { configureDDBDataSource, createAndUpdateTable, MockDynamoDBConfig } from '../utils/dynamo-db';
 import { describeTables } from '../utils/dynamo-db/utils';
 import { findLambdaTriggers } from '../utils/lambda/find-lambda-triggers';
 import { getMockConfig } from '../utils/mock-config-file';
@@ -67,7 +67,7 @@ export class APITest {
       await this.generateCode(context, appSyncConfig);
 
       context.print.info(`AppSync Mock endpoint is running at ${this.appSyncSimulator.url}`);
-      await this.startDDBListeners(context, appSyncConfig);
+      await this.startDDBListeners(context, appSyncConfig, false);
     } catch (e) {
       context.print.error(`Failed to start API Mock endpoint ${e}`);
     }
@@ -96,7 +96,7 @@ export class APITest {
   private async runTransformer(context, parameters = {}) {
     const { transformerOutput } = await runTransformer(context);
     let config: any = processAppSyncResources(transformerOutput, parameters);
-    await this.ensureDDBTables(config);
+    config = await this.ensureDDBTables(config);
     config = this.configureDDBDataSource(config);
     this.transformerResult = await this.configureLambdaDataSource(context, config);
     this.userOverriddenSlots = transformerOutput.userOverriddenSlots;
@@ -156,7 +156,7 @@ export class APITest {
         const config: AmplifyAppSyncSimulatorConfig = await this.runTransformer(context, this.apiParameters);
         await this.appSyncSimulator.reload(config);
         await this.generateCode(context, config);
-        await this.startDDBListeners(context, config);
+        await this.startDDBListeners(context, config, true);
       } else if (filePath.includes(parameterFilePath)) {
         const apiParameters = await this.loadAPIParameters(context);
         if (JSON.stringify(apiParameters) !== JSON.stringify(this.apiParameters)) {
@@ -171,7 +171,7 @@ export class APITest {
         const config = await this.runTransformer(context, this.apiParameters);
         await this.appSyncSimulator.reload(config);
         await this.generateCode(context, config);
-        await this.startDDBListeners(context, config);
+        await this.startDDBListeners(context, config, true);
       }
     } catch (e) {
       context.print.info(`Reloading failed with error\n${e}`);
@@ -191,14 +191,18 @@ export class APITest {
 
   private async ensureDDBTables(config) {
     const tables = config.tables.map(t => t.Properties);
-    await createAndUpdateTable(this.ddbClient, config);
+    return await createAndUpdateTable(this.ddbClient, config);
   }
 
-  private async startDDBListeners(context: $TSContext, config: AmplifyAppSyncSimulatorConfig): Promise<void> {
-    const tables = config?.tables?.map( (t: $TSAny) => t?.Properties?.TableName);
-    if(tables && tables.length > 0) {
-      const tableLambdaTriggers: {[index: string]: string[];} = await findLambdaTriggers(context, tables);
-      const tableStreamArns: {[index: string]: TableDescription;} = await describeTables(this.ddbClient, tables);
+  private async startDDBListeners(context: $TSContext, config: $TSAny, onlyNewTables: boolean): Promise<void> {
+    let tables = config?.tables;
+    if (onlyNewTables) {
+      tables = config?.tables?.filter(table => table?.isNewlyAdded);
+    }
+    const tableNames = tables?.map( (t: $TSAny) => t?.Properties?.TableName);
+    if(!(_.isEmpty(tableNames))) {
+      const tableLambdaTriggers: {[index: string]: string[];} = await findLambdaTriggers(context, tableNames);
+      const tableStreamArns: {[index: string]: TableDescription;} = await describeTables(this.ddbClient, tableNames);
       const allListeners = [];
       Object.entries(tableLambdaTriggers).forEach(([tableName, lambdaTriggers]) => {
         if(!(_.isEmpty(lambdaTriggers))) {
