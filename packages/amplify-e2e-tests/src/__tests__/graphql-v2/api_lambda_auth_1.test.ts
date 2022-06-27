@@ -1,5 +1,4 @@
 import {
-  addFeatureFlag,
   checkIfBucketExists,
   createNewProjectDir,
   deleteProject,
@@ -14,7 +13,6 @@ import {
 import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { addEnvironment, checkoutEnvironment, listEnvironment } from '../../environment/env';
-const providerName = 'awscloudformation';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -46,9 +44,10 @@ describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
 
     expect(meta.function).toBeDefined();
     let seenAtLeastOneFunc = false;
-    for (let key of Object.keys(meta.function)) {
-      const { service, build, lastBuildTimeStamp, lastPackageTimeStamp, distZipFilename, lastPushTimeStamp, lastPushDirHash } =
-        meta.function[key];
+    for (const key of Object.keys(meta.function)) {
+      const {
+        service, build, lastBuildTimeStamp, lastPackageTimeStamp, distZipFilename, lastPushTimeStamp, lastPushDirHash,
+      } = meta.function[key];
       expect(service).toBe('Lambda');
       expect(build).toBeTruthy();
       expect(lastBuildTimeStamp).toBeDefined();
@@ -92,11 +91,11 @@ describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
 
     meta = getProjectMeta(projRoot);
     region = meta.providers.awscloudformation.Region;
-    output = meta.api[projName]['output'];
-    GraphQLAPIIdOutput = output['GraphQLAPIIdOutput'];
-    GraphQLAPIEndpointOutput = output['GraphQLAPIEndpointOutput'];
-    GraphQLAPIKeyOutput = output['GraphQLAPIKeyOutput'];
-    graphqlApi = (await getAppSyncApi(GraphQLAPIIdOutput, region))['graphqlApi'];
+    output = meta.api[projName].output;
+    GraphQLAPIIdOutput = output.GraphQLAPIIdOutput;
+    GraphQLAPIEndpointOutput = output.GraphQLAPIEndpointOutput;
+    GraphQLAPIKeyOutput = output.GraphQLAPIKeyOutput;
+    graphqlApi = (await getAppSyncApi(GraphQLAPIIdOutput, region)).graphqlApi;
 
     expect(GraphQLAPIIdOutput).toBeDefined();
     expect(GraphQLAPIEndpointOutput).toBeDefined();
@@ -193,152 +192,5 @@ describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
     expect(updateResultData.updateNote.noteId).toEqual(createResultData.createNote.noteId);
     expect(updateResultData.updateNote.note).not.toEqual(createResultData.createNote.note);
     expect(updateResultData.updateNote.note).toEqual(updateInput.input.note);
-  });
-
-  it('lambda auth must fail when missing read access on a field or invalid token', async () => {
-    const envName = 'devtest';
-    const projName = 'lambdaauthmodeerr';
-    await initJSProjectWithProfile(projRoot, { name: projName, envName });
-    await addApiWithAllAuthModes(projRoot);
-    await updateApiSchema(projRoot, projName, 'lambda-auth-field-auth-1-v2.graphql');
-    await amplifyPush(projRoot);
-
-    const meta = getProjectMeta(projRoot);
-    const region = meta.providers.awscloudformation.Region;
-    const { output } = meta.api.lambdaauthmodeerr;
-    const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
-    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, region);
-
-    expect(GraphQLAPIIdOutput).toBeDefined();
-    expect(GraphQLAPIEndpointOutput).toBeDefined();
-    expect(GraphQLAPIKeyOutput).toBeDefined();
-
-    expect(graphqlApi).toBeDefined();
-    expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
-
-    const url = GraphQLAPIEndpointOutput as string;
-    const apiKey = GraphQLAPIKeyOutput as string;
-
-    const appSyncClient = new AWSAppSyncClient({
-      url,
-      region,
-      disableOffline: true,
-      auth: {
-        type: AUTH_TYPE.AWS_LAMBDA,
-        token: 'custom-authorized',
-      },
-    });
-
-    const createMutation = /* GraphQL */ `
-      mutation CreateNote($input: CreateNoteInput!, $condition: ModelNoteConditionInput) {
-        createNote(input: $input, condition: $condition) {
-          noteId
-        }
-      }
-    `;
-    const createInput = {
-      input: {
-        noteId: '1',
-        note: 'initial note',
-      },
-    };
-    const createResult: any = await appSyncClient.mutate({
-      mutation: gql(createMutation),
-      fetchPolicy: 'no-cache',
-      variables: createInput,
-    });
-
-    const listNotesQuery = /* GraphQL */ `
-      query ListNotes {
-        listNotes {
-          items {
-            noteId
-            note
-          }
-        }
-      }
-    `;
-
-    await expect(
-      appSyncClient.query({
-        query: gql(listNotesQuery),
-        fetchPolicy: 'no-cache',
-      }),
-    ).rejects.toThrow(`GraphQL error: Not Authorized to access note on type String`);
-
-    const appSyncInvalidClient = new AWSAppSyncClient({
-      url,
-      region,
-      disableOffline: true,
-      auth: {
-        type: AUTH_TYPE.AWS_LAMBDA,
-        token: 'invalid-token',
-      },
-    });
-
-    await expect(
-      appSyncInvalidClient.query({
-        query: gql(listNotesQuery),
-        fetchPolicy: 'no-cache',
-      }),
-    ).rejects.toThrow(`Network error: Response not successful: Received status code 401`);
-  });
-
-  it('lambda auth with no create access', async () => {
-    const envName = 'devtest';
-    const projName = 'lambdaauth2';
-    await initJSProjectWithProfile(projRoot, { name: projName, envName });
-    await addApiWithAllAuthModes(projRoot);
-    await updateApiSchema(projRoot, projName, 'lambda-auth-field-auth-2-v2.graphql');
-    await amplifyPush(projRoot);
-
-    const meta = getProjectMeta(projRoot);
-    const region = meta.providers.awscloudformation.Region;
-    const { output } = meta.api.lambdaauth2;
-    const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
-    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, region);
-
-    expect(GraphQLAPIIdOutput).toBeDefined();
-    expect(GraphQLAPIEndpointOutput).toBeDefined();
-    expect(GraphQLAPIKeyOutput).toBeDefined();
-
-    expect(graphqlApi).toBeDefined();
-    expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
-
-    const url = GraphQLAPIEndpointOutput as string;
-    const appSyncClient = new AWSAppSyncClient({
-      url,
-      region,
-      disableOffline: true,
-      auth: {
-        type: AUTH_TYPE.AWS_LAMBDA,
-        token: 'custom-authorized',
-      },
-    });
-
-    const createMutation = /* GraphQL */ `
-      mutation CreateNote($input: CreateNoteInput!, $condition: ModelNoteConditionInput) {
-        createNote(input: $input, condition: $condition) {
-          noteId
-          note
-          createdAt
-          updatedAt
-        }
-      }
-    `;
-    const createInput = {
-      input: {
-        noteId: '1',
-        note: 'initial note',
-      },
-    };
-
-    await expect(
-      appSyncClient.mutate({
-        mutation: gql(createMutation),
-        fetchPolicy: 'no-cache',
-        variables: createInput,
-      }),
-    ).rejects.toThrow(`GraphQL error: Unauthorized on [note]`);
   });
 });

@@ -18,6 +18,7 @@ import { v4 as uuid } from 'uuid';
 import fetch from 'node-fetch';
 
 const [shortId] = uuid().split('-');
+// eslint-disable-next-line spellcheck/spell-checker
 const projName = `apigwtest${shortId}`;
 
 describe('API Gateway e2e tests', () => {
@@ -77,7 +78,8 @@ describe('API Gateway e2e tests', () => {
   });
 
   it('adds rest api and verify the default 4xx response', async () => {
-    const apiName = 'integtest';
+    // eslint-disable-next-line spellcheck/spell-checker
+    const apiName = `integtest${shortId}`;
     await addRestApi(projRoot, {
       apiName,
     });
@@ -92,6 +94,7 @@ describe('API Gateway e2e tests', () => {
     expect(res.headers.get('access-control-allow-headers')).toEqual('Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token');
     expect(res.headers.get('access-control-allow-methods')).toEqual('DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT');
     expect(res.headers.get('access-control-allow-origin')).toEqual('*');
+    // eslint-disable-next-line spellcheck/spell-checker
     expect(res.headers.get('access-control-expose-headers')).toEqual('Date,X-Amzn-ErrorType');
   });
 
