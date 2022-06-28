@@ -17,7 +17,6 @@ import { isCI } from 'ci-info';
 import { EventEmitter } from 'events';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-
 import { formatter, printer, prompter } from 'amplify-prompts';
 import { logInput } from './conditional-local-logging-init';
 import { attachUsageData, constructContext } from './context-manager';
@@ -205,10 +204,9 @@ export const run = async (startTime: number): Promise<number | undefined> => {
 
     // Display messages meant for most executions
     await displayBannerMessages(input);
-    try{
+    try {
       await executeCommand(context);
-    }
-    catch(e){
+    } catch (e) {
       await reportError(context, e);
       throw e;
     }
