@@ -1,21 +1,41 @@
-export type FeatureFlagsEntry = Record<string, Record<string, {}>>;
+/* eslint-disable-next-line import/no-cycle */
+import { $TSAny } from '../types';
 
+/**
+ * Collection of feature flags input
+ */
+export type FeatureFlagsEntry = Record<string, Record<string, $TSAny>>;
+
+/**
+ * All feature flags present for the project
+ */
 export type FeatureFlagConfiguration = {
   project: FeatureFlagsEntry;
   environments: Record<string, FeatureFlagsEntry>;
 };
 
-export type FeatureFlagType = 'number' | 'string' | 'boolean';
+/**
+ * Allowed Feature flag types
+ *
+ * New feature flags should be a boolean
+ */
+export type FeatureFlagType = 'boolean' | 'number';
 
-export type FeatureFlagRegistration = StringFeatureFlag | NumberFeatureFlag | BooleanFeatureFlag;
+/**
+ * Feature flags are registered in the registerFlags function of the FeatureFlags class
+ *
+ * type: 'boolean' | 'number'
+ * name: string
+ * defaultValueForExistingProjects: boolean | number
+ * defaultValueForNewProjects: boolean | number
+ */
+export type FeatureFlagRegistration = NumberFeatureFlag | BooleanFeatureFlag;
 
-export type StringFeatureFlag = {
-  type: 'string';
-  name: string;
-  defaultValueForExistingProjects: string;
-  defaultValueForNewProjects: string;
-};
-
+/**
+ * Number Feature flag registration
+ *
+ * @deprecated due to complexity of ignoring an unknown number Feature Flag
+ */
 export type NumberFeatureFlag = {
   type: 'number';
   name: string;
@@ -23,6 +43,9 @@ export type NumberFeatureFlag = {
   defaultValueForNewProjects: number;
 };
 
+/**
+ * Boolean Feature flag registration
+ */
 export type BooleanFeatureFlag = {
   type: 'boolean';
   name: string;
