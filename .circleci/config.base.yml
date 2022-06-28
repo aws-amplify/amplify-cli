@@ -888,6 +888,12 @@ workflows:
             - e2e-test-context
           requires:
             - build
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/.*/
 
       - cleanup_resources_after_e2e_runs:
           context:
@@ -895,6 +901,12 @@ workflows:
             - e2e-test-context
           requires:
             - wait_for_all
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/.*/
 
       - deploy:
           context:
