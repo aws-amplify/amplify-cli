@@ -50,7 +50,8 @@ async function getAdminAppState(appId: string, region: string) {
   // environment variable AMPLIFY_CLI_APPSTATE_BASE_URL useful for development against beta/gamma appstate endpoints
   const appStateBaseUrl = process.env.AMPLIFY_CLI_APPSTATE_BASE_URL ?? adminBackendMap[region].appStateUrl;
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
-  const res = await fetch(`${appStateBaseUrl}/AppState/?appId=${appId}`, { agent: proxyAgent(httpProxy) });
+  const fetchOptions = httpProxy ? { agent: proxyAgent(httpProxy) } : {};
+  const res = await fetch(`${appStateBaseUrl}/AppState/?appId=${appId}`, fetchOptions);
   return res.json();
 }
 
