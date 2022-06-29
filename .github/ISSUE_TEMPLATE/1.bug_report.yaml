@@ -21,7 +21,7 @@ body:
           required: true
         - label: I have [searched for duplicate or closed issues](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+).
           required: true
-        - label: I have read the guide for [submitting bug reports](https://github.com/aws-amplify/amplify-cli/blob/master/CONTRIBUTING.md#bug-reports).
+        - label: I have read the guide for [submitting bug reports](https://github.com/aws-amplify/amplify-cli/blob/dev/CONTRIBUTING.md#bug-reports).
           required: true
         - label: I have done my best to include a minimal, self-contained set of instructions for consistently reproducing the issue.
           required: true

@@ -1,6 +1,6 @@
 <!--
 Please make sure to read the Pull Request Guidelines:
-https://github.com/aws-amplify/amplify-cli/blob/master/CONTRIBUTING.md#pull-requests
+https://github.com/aws-amplify/amplify-cli/blob/dev/CONTRIBUTING.md#pull-requests
 -->
 
 #### Description of changes
@@ -22,7 +22,7 @@ the requirements below.
 
 - [ ] PR description included
 - [ ] `yarn test` passes
-- [ ] Tests are [changed or added](https://github.com/aws-amplify/amplify-cli/blob/master/CONTRIBUTING.md#tests)
+- [ ] Tests are [changed or added](https://github.com/aws-amplify/amplify-cli/blob/dev/CONTRIBUTING.md#tests)
 - [ ] Relevant documentation is changed or added (and PR referenced)
 - [ ] New AWS SDK calls or CloudFormation actions have been added to relevant test and service IAM policies
 
