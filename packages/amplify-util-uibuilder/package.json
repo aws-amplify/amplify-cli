@@ -17,7 +17,9 @@
     "@aws-amplify/codegen-ui-react": "^2.2.0",
     "amplify-cli-core": "2.11.0",
     "amplify-prompts": "2.2.0",
-    "amplify-provider-awscloudformation": "6.4.3",
+<<<<<<< HEAD
+=======
+>>>>>>> bedc27d8d (chore: remove unused dependencies based on depcheck report (#10666))
     "aws-sdk": "^2.1113.0",
     "ora": "^4.0.3"
   },

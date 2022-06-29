@@ -16,7 +16,9 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "amplify-cli-core": "2.11.0",
+<<<<<<< HEAD
+=======
+>>>>>>> bedc27d8d (chore: remove unused dependencies based on depcheck report (#10666))
     "aws-sdk": "^2.1113.0"
   },
   "devDependencies": {

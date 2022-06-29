@@ -25,14 +25,14 @@
     "setup-profile": "ts-node ./src/configure_tests.ts"
   },
   "dependencies": {
+<<<<<<< HEAD
     "amplify-e2e-core": "3.3.3",
-    "aws-sdk": "^2.1113.0",
-    "dotenv": "^8.2.0",
-    "esm": "^3.2.25",
+=======
+    "amplify-e2e-core": "3.3.2",
+>>>>>>> bedc27d8d (chore: remove unused dependencies based on depcheck report (#10666))
     "fs-extra": "^8.1.0",
     "graphql-transformer-core": "^7.6.2",
     "lodash": "^4.17.21",
-    "rimraf": "^3.0.0",
     "uuid": "^8.3.2"
   },
   "jest": {
