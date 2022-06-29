@@ -17,7 +17,6 @@
     "@aws-amplify/codegen-ui-react": "^2.2.0",
     "amplify-cli-core": "2.10.0",
     "amplify-prompts": "2.2.0",
-    "amplify-provider-awscloudformation": "6.4.2",
     "aws-sdk": "^2.1113.0",
     "ora": "^4.0.3"
   },
