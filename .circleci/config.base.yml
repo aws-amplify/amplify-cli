@@ -663,6 +663,7 @@ workflows:
             branches:
               only:
                 - master
+                - dev
     jobs:
       - build
       - publish_to_local_registry:
@@ -690,6 +691,7 @@ workflows:
             branches:
               only:
                 - master
+                - dev
     jobs:
       - build
       - cleanup_resources:
@@ -723,6 +725,7 @@ workflows:
             branches:
               only:
                 - master
+                - dev
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
           requires:
@@ -734,6 +737,7 @@ workflows:
             branches:
               only:
                 - master
+                - dev
                 - beta
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
@@ -744,6 +748,7 @@ workflows:
             branches:
               only:
                 - master
+                - dev
                 - beta
                 - release
                 - /tagged-release\/.*/
@@ -766,6 +771,7 @@ workflows:
             branches:
               only:
                 - master
+                - dev
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
       - cleanup_resources:
@@ -778,6 +784,7 @@ workflows:
             branches:
               only:
                 - master
+                - dev
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
       - amplify_e2e_tests_pkg:
@@ -789,6 +796,7 @@ workflows:
             branches:
               only:
                 - master
+                - dev
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
           requires:
@@ -802,6 +810,7 @@ workflows:
             branches:
               only:
                 - master
+                - dev
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
           requires:
@@ -817,6 +826,7 @@ workflows:
             branches:
               only:
                 - master
+                - dev
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
           requires:
@@ -832,6 +842,7 @@ workflows:
             branches:
               only:
                 - master
+                - dev
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
           requires:
@@ -847,6 +858,7 @@ workflows:
             branches:
               only:
                 - master
+                - dev
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
           requires:
@@ -892,6 +904,7 @@ workflows:
             branches:
               only:
                 - master
+                - dev
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
 
@@ -905,6 +918,7 @@ workflows:
             branches:
               only:
                 - master
+                - dev
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
 
@@ -933,6 +947,7 @@ workflows:
               only:
                 - release
                 - master
+                - dev
                 - beta
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
