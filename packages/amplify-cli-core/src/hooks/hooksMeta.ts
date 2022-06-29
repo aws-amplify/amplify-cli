@@ -1,5 +1,5 @@
 import { HookEvent, DataParameter, EventPrefix, HooksVerb, HooksNoun, ErrorParameter } from './hooksTypes';
-import { suppportedEvents, supportedEnvEvents } from './hooksConstants';
+import { supportedEvents, supportedEnvEvents } from './hooksConstants';
 import { stateManager } from '../state-manager';
 import _ from 'lodash';
 
@@ -129,9 +129,9 @@ export class HooksMeta {
       command = 'mock';
     }
 
-    if (suppportedEvents.hasOwnProperty(command)) {
+    if (supportedEvents.hasOwnProperty(command)) {
       this.hookEvent.command = command;
-      if (suppportedEvents?.[command as HooksVerb]?.includes(subCommand as HooksNoun)) {
+      if (supportedEvents?.[command as HooksVerb]?.includes(subCommand as HooksNoun)) {
         this.hookEvent.subCommand = subCommand;
       }
     }

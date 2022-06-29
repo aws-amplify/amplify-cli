@@ -15,7 +15,6 @@ const { resolveAppId } = require('./utils/resolve-appId');
 const { adminLoginFlow } = require('./admin-login');
 const { fileLogger } = require('./utils/aws-logger');
 const logger = fileLogger('attach-backend');
-const { downloadHooks } = require('./utils/hooks-manager');
 
 async function run(context) {
   let appId;
@@ -76,7 +75,6 @@ async function run(context) {
   const backendEnv = await getBackendEnv(context, amplifyClient, amplifyApp);
 
   await downloadBackend(context, backendEnv, awsConfigInfo);
-  await downloadHooks(context, backendEnv, awsConfigInfo);
   const currentAmplifyMeta = await ensureAmplifyMeta(context, amplifyApp, awsConfigInfo);
 
   context.exeInfo.projectConfig.projectName = amplifyApp.name;

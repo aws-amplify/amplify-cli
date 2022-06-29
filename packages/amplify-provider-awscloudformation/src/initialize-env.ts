@@ -24,7 +24,6 @@ import { S3 } from './aws-utils/aws-s3';
 import { buildOverridesEnabledResources } from './build-override-enabled-resources';
 import { S3BackendZipFileName } from './constants';
 import { fileLogger } from './utils/aws-logger';
-import { pullHooks } from './utils/hooks-manager';
 import { downloadZip, extractZip } from './zip-util';
 
 const logger = fileLogger('initialize-env');
@@ -74,11 +73,6 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
     }
 
     fs.removeSync(tempDir);
-
-    // pull hooks directory
-    if (!context.exeInfo.pushHooks) {
-      await pullHooks(context);
-    }
 
     logger('run.cfn.updateamplifyMetaFileWithStackOutputs', [{ StackName: providerMetadata.StackName }])();
     await cfnItem.updateamplifyMetaFileWithStackOutputs(providerMetadata.StackName);
