@@ -81,7 +81,7 @@ workflows:
   trigger_nightly_e2e_tests:
     triggers:
       - schedule:
-          cron: 0 14 * * *
+          cron: 0 6 * * *
           filters:
             branches:
               only:
