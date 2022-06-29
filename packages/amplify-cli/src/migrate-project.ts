@@ -117,7 +117,7 @@ const migrateFrom0To1 = async (context: $TSContext, projectPath, projectConfig):
     spinner.succeed('Migrated your project successfully.');
 
     context.print.warning(
-      "If you have added functions or interactions category to your project, please check the 'Auto-migration' section at https://github.com/aws-amplify/docs/blob/master/cli/migrate.md",
+      "If you have added functions or interactions category to your project, please check the 'Auto-migration' section at https://github.com/aws-amplify/docs/blob/dev/cli/migrate.md",
     );
 
     // Run the `amplify push` flow

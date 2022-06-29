@@ -5,20 +5,19 @@ import {
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
+  generateRandomShortId,
   initJSProjectWithProfile,
-  getProjectMeta,
-  modifyRestAPI,
   retry,
 } from 'amplify-e2e-core';
 import fetch from 'node-fetch';
 import { getAWSExports } from '../aws-exports/awsExports';
 
-async function setupAmplifyProject(cwd: string) {
+const setupAmplifyProject = async (cwd: string): Promise<void> => {
   await amplifyConfigureProject({
     cwd,
     enableContainers: true,
   });
-}
+};
 
 describe('amplify api add', () => {
   let projRoot: string;
@@ -31,10 +30,10 @@ describe('amplify api add', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('init project, enable containers and add multicontainer api', async () => {
+  it('init project, enable containers and add multi-container api', async () => {
     const envName = 'devtest';
-    const apiName = 'containersimpletest';
-    await initJSProjectWithProfile(projRoot, { name: 'multicontainer', envName });
+    const apiName = `containersimpletest${generateRandomShortId()}`;
+    await initJSProjectWithProfile(projRoot, { name: `multict${generateRandomShortId()}`, envName });
     await setupAmplifyProject(projRoot);
     await addRestContainerApi(projRoot, { apiName });
     await amplifyPushWithoutCodegen(projRoot);
@@ -59,18 +58,5 @@ describe('amplify api add', () => {
       },
     );
     expect(result).toEqual(expected);
-  });
-
-  it('init project, enable containers and add multicontainer api push, edit and push', async () => {
-    const envName = 'devtest';
-    const apiName = 'containermodifyapi';
-    await initJSProjectWithProfile(projRoot, { name: 'multicontainer', envName });
-    await setupAmplifyProject(projRoot);
-    await addRestContainerApi(projRoot, { apiName });
-    await amplifyPushWithoutCodegen(projRoot);
-    const meta = await getProjectMeta(projRoot);
-    const api = Object.keys(meta.api)[0];
-    modifyRestAPI(projRoot, api);
-    await amplifyPushWithoutCodegen(projRoot);
   });
 });
