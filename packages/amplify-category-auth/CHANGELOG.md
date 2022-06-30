@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.10.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.10.2...@aws-amplify/amplify-category-auth@2.10.3) (2022-06-30)
+
+
+### Bug Fixes
+
+* update user pool groups flow ([#10641](https://github.com/aws-amplify/amplify-cli/issues/10641)) ([651531d](https://github.com/aws-amplify/amplify-cli/commit/651531d5379ea3c712aee2fecb7329dcba826ecb))
+
+
+
+
+
 ## [2.10.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.10.1...@aws-amplify/amplify-category-auth@2.10.2) (2022-06-22)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-auth
