@@ -24,13 +24,8 @@
     "watch": "tsc --watch"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@aws-amplify/amplify-category-custom": "2.4.2",
     "@aws-amplify/cli-extensibility-helper": "2.3.32",
-=======
-    "@aws-amplify/amplify-category-custom": "2.4.1",
-    "@aws-amplify/cli-extensibility-helper": "2.3.31",
->>>>>>> bedc27d8d (chore: remove unused dependencies based on depcheck report (#10666))
     "@aws-amplify/graphql-transformer-interfaces": "^1.14.4",
     "@aws-cdk/assert": "~1.124.0",
     "@aws-cdk/aws-apigatewayv2": "~1.124.0",
@@ -56,11 +51,7 @@
     "@aws-cdk/aws-sqs": "~1.124.0",
     "@aws-cdk/core": "~1.124.0",
     "@aws-cdk/region-info": "~1.124.0",
-<<<<<<< HEAD
     "amplify-cli-core": "2.11.0",
-=======
-    "amplify-cli-core": "2.10.0",
->>>>>>> bedc27d8d (chore: remove unused dependencies based on depcheck report (#10666))
     "amplify-cli-logger": "1.2.0",
     "amplify-codegen": "^3.0.0",
     "amplify-prompts": "2.2.0",
