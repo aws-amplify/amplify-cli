@@ -655,52 +655,6 @@ jobs:
 
 workflows:
   version: 2
-  nightly_console_integration_tests:
-    triggers:
-      - schedule:
-          cron: '0 14 * * *'
-          filters:
-            branches:
-              only:
-                - master
-                - dev
-    jobs:
-      - build
-      - publish_to_local_registry:
-          requires:
-            - build
-      - build_pkg_binaries:
-          context:
-            - e2e-auth-credentials
-            - e2e-test-context
-            - amplify-s3-upload
-          requires:
-            - publish_to_local_registry
-      - amplify_console_integration_tests:
-          context:
-            - console-e2e-test
-            - e2e-auth-credentials
-            - e2e-test-context
-          requires:
-            - build_pkg_binaries
-  e2e_resource_cleanup:
-    triggers:
-      - schedule:
-          cron: '45 0,12 * * *'
-          filters:
-            branches:
-              only:
-                - master
-                - dev
-    jobs:
-      - build
-      - cleanup_resources:
-          context:
-            - cleanup-resources
-            - e2e-test-context
-          requires:
-            - build
-
   build_test_deploy:
     jobs:
       - build:
