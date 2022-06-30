@@ -574,10 +574,10 @@ const uploadStudioBackendFiles = async (s3: S3, bucketName: string) => {
     'parameters.json',
   ]
     .flatMap(baseName => glob.sync(`**/${baseName}`, { cwd: amplifyDirPath }))
-    .filter(filePath => !filePath.startsWith('backend/'))
+    .filter(filePath => !filePath.startsWith('backend'))
     .map(filePath => ({
       Body: fs.createReadStream(path.join(amplifyDirPath, filePath)),
-      Key: path.join(studioBackendDirName, filePath.replace('#current-cloud-backend/', '')),
+      Key: path.join(studioBackendDirName, filePath.replace('#current-cloud-backend', '')),
     }));
   await Promise.all(uploadFileParams.map(params => s3.uploadFile(params)));
 };
