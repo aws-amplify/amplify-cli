@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "3.11.3",
+  "version": "3.11.4",
   "description": "",
   "repository": {
     "type": "git",
@@ -23,10 +23,10 @@
     "clean-e2e-resources": "ts-node ./src/cleanup-e2e-resources.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-auth": "2.10.2",
+    "@aws-amplify/amplify-category-auth": "2.10.3",
     "@aws-amplify/graphql-transformer-core": "^0.17.6",
-    "amplify-cli-core": "2.10.0",
-    "amplify-e2e-core": "3.3.2",
+    "amplify-cli-core": "2.11.0",
+    "amplify-e2e-core": "3.3.3",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-sdk": "^2.1113.0",
