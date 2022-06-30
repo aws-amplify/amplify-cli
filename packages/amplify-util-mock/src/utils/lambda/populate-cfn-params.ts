@@ -1,5 +1,6 @@
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import { $TSContext, stateManager } from 'amplify-cli-core';
+import { stateManager } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 // eslint-disable-next-line import/no-cycle
 import {
   GRAPHQL_API_ENDPOINT_OUTPUT, GRAPHQL_API_KEY_OUTPUT, MOCK_API_KEY, MOCK_API_PORT,
@@ -11,11 +12,10 @@ import {
  * Iterates through a list of parameter getters. If multiple getters return the same key, the latter will overwrite the former
  */
 export const populateCfnParams = (
-  print: $TSContext['print'],
   resourceName: string,
   overrideApiToLocal = false,
 ): Record<string, string> => [getCfnPseudoParams, getAmplifyMetaParams, getParametersJsonParams, getResourceEnvParams]
-  .map(paramProvider => paramProvider(print, resourceName, overrideApiToLocal))
+  .map(paramProvider => paramProvider(resourceName, overrideApiToLocal))
   .reduce((acc, it) => ({ ...acc, ...it }), {});
 
 const getCfnPseudoParams = (): Record<string, string> => {
@@ -43,7 +43,6 @@ const getCfnPseudoParams = (): Record<string, string> => {
  * Loads CFN parameters by matching the dependsOn field of the resource with the CFN outputs of other resources in the project
  */
 const getAmplifyMetaParams = (
-  print: $TSContext['print'],
   resourceName: string,
   overrideApiToLocal = false,
 ): Record<string, string> => {
@@ -59,12 +58,6 @@ const getAmplifyMetaParams = (
   return dependencies.reduce((acc, dependency) => {
     dependency.attributes.forEach(attribute => {
       let val = projectMeta?.[dependency.category]?.[dependency.resourceName]?.output?.[attribute];
-      if (!val) {
-        print.warning(
-          `No output found for attribute '${attribute}' on resource '${dependency.resourceName}' in category '${dependency.category}'`,
-        );
-        print.warning('This attribute will be undefined in the mock environment until you run `amplify push`');
-      }
 
       if (overrideApiToLocal) {
         switch (attribute) {
@@ -79,6 +72,13 @@ const getAmplifyMetaParams = (
         }
       }
 
+      if (!val) {
+        printer.warn(
+          `No output found for attribute '${attribute}' on resource '${dependency.resourceName}' in category '${dependency.category}'`,
+        );
+        printer.warn('This attribute will be undefined in the mock environment until you run `amplify push`');
+      }
+
       acc[dependency.category + dependency.resourceName + attribute] = val;
     });
     return acc;
@@ -89,9 +89,9 @@ const getAmplifyMetaParams = (
  * Loads CFN parameters from the parameters.json file for the resource (if present)
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const getParametersJsonParams = (print, resourceName: string): Record<string, string> => stateManager.getResourceParametersJson(undefined, 'function', resourceName, { throwIfNotExist: false }) ?? {};
+const getParametersJsonParams = (resourceName: string): Record<string, string> => stateManager.getResourceParametersJson(undefined, 'function', resourceName, { throwIfNotExist: false }) ?? {};
 
 /**
  * Loads CFN parameters for the resource in the team-provider-info.json file (if present)
  */
-const getResourceEnvParams = (__, resourceName: string): Record<string, string> => getEnvParamManager().getResourceParamManager('function', resourceName).getAllParams();
+const getResourceEnvParams = (resourceName: string): Record<string, string> => getEnvParamManager().getResourceParamManager('function', resourceName).getAllParams();

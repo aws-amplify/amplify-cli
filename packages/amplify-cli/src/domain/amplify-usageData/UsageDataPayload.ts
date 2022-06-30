@@ -27,6 +27,7 @@ export class UsageDataPayload {
   projectSetting: ProjectSettings;
   codePathDurations: Partial<Record<TimedCodePath, number>>;
   flowReport: IFlowReport;
+  pushNormalizationFactor = 1;
   constructor(
     sessionUuid: string,
     installationUuid: string,

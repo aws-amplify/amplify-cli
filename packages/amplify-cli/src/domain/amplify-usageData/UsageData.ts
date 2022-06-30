@@ -38,7 +38,7 @@ export class UsageData implements IUsageData {
   codePathTimers = new Map<TimedCodePath, Timer>();
   codePathDurations = new Map<TimedCodePath, number>();
   flow: CLIFlowReport = new CLIFlowReport();
-
+  pushNormalizationFactor = 1;
   private static instance: UsageData;
 
   private constructor() {
@@ -124,7 +124,7 @@ export class UsageData implements IUsageData {
    * Set context is in headless mode
    * @param isHeadless - when set to true assumes context in headless
    */
-  setIsHeadless(isHeadless: boolean) {
+  setIsHeadless(isHeadless: boolean): void {
     this.flow.setIsHeadless(isHeadless);
   }
 
@@ -133,7 +133,7 @@ export class UsageData implements IUsageData {
     * @param headlessParameterString - Stringified headless parameter string
     * @param input  - CLI input entered by Cx
     */
-  pushHeadlessFlow(headlessParameterString: string, input: ICommandInput) {
+  pushHeadlessFlow(headlessParameterString: string, input: ICommandInput): void {
     this.flow.pushHeadlessFlow(headlessParameterString, input);
   }
 
@@ -158,6 +158,27 @@ export class UsageData implements IUsageData {
    */
   assignProjectIdentifier(): string | undefined {
     return this.flow.assignProjectIdentifier();
+  }
+
+  /**
+   * Calculates all the leaves that were updated
+   * @param events CloudFormation Stack Events
+   */
+  calculatePushNormalizationFactor(events: { StackId: string, PhysicalResourceId: string } [], StackId: string) : void {
+    const cfnStackStack = [StackId];
+    let count = 0;
+    while (cfnStackStack.length !== 0) {
+      const head = cfnStackStack.pop();
+      const children = events.filter(r => r.StackId === head && r.PhysicalResourceId !== head)
+        .map(r => r.PhysicalResourceId)
+        .reduce((set, val) => set.add(val), new Set<string>());
+      if (children.size > 0) {
+        cfnStackStack.push(...children.values());
+      } else {
+        count++;
+      }
+    }
+    this.pushNormalizationFactor = count;
   }
 
   private internalStopCodePathTimer = (codePath: TimedCodePath): void => {
@@ -192,6 +213,9 @@ export class UsageData implements IUsageData {
       Object.fromEntries(this.codePathDurations),
       this.flow.getFlowReport() as IFlowReport,
     );
+    payload.pushNormalizationFactor = this.pushNormalizationFactor;
+    await this.send(payload);
+
     return payload;
   }
 

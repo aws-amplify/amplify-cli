@@ -5,7 +5,6 @@ import archiver from 'archiver';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import fetch from 'node-fetch';
-import * as crypto from 'crypto';
 import { Redactor, stringMasker } from 'amplify-cli-logger';
 import columnify from 'columnify';
 import * as _ from 'lodash';
@@ -13,7 +12,7 @@ import os from 'os';
 import { v4 } from 'uuid';
 import { prompter, printer } from 'amplify-prompts';
 import { collectFiles } from './helpers/collect-files';
-import { encryptBuffer, encryptKey } from './helpers/encryption-helpers';
+import { encryptBuffer, encryptKey, createHashedIdentifier } from './helpers/encryption-helpers';
 import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
 import { DebugConfig } from '../app-config/debug-config';
 import { isHeadlessCommand } from '../utils/headless-input-utils';
@@ -32,9 +31,14 @@ export const reportError = async (context: Context, error: Error | undefined): P
   if (!rootPath) {
     return;
   }
-  if (DebugConfig.Instance.promptSendReport()) {
-    const isHeadless = isHeadlessCommand(context) || _.get(context, ['input', 'options', 'yes'], false);
+  const isHeadless = isHeadlessCommand(context) || _.get(context, ['input', 'options', 'yes'], false);
+
+  // if it's headless or already has been prompted earlier don't prompt just check the config
+  if (!isHeadless && DebugConfig.Instance.promptSendReport()) {
     sendReport = await prompter.yesOrNo('An unexpected error has occurred, opt in to send an error report to AWS Amplify with non-sensitive project configuration files. Confirm ', false);
+    if (sendReport) {
+      showLearnMore(true);
+    }
     if (!isHeadless) {
       DebugConfig.Instance.setAndWriteShareProject(sendReport);
     }
@@ -45,6 +49,7 @@ export const reportError = async (context: Context, error: Error | undefined): P
     await zipSend(context, true, error);
   }
 };
+
 /**
  * Send an error report with redacted project files to Amplify CLI
  * @param context the amplify context object
@@ -63,7 +68,17 @@ export const run = async (context: Context, error: Error | undefined = undefined
     DebugConfig.Instance.setAndWriteShareProject(true);
     return;
   }
+  showLearnMore(false);
   await zipSend(context, skipPrompts, error);
+};
+
+const showLearnMore = (showOptOut: boolean) => {
+  printer.blankLine();
+  printer.info('Learn more at https://docs.amplify.aws/cli/reference/diagnose/');
+  if (showOptOut) {
+    printer.blankLine();
+    printer.info('This project has been opted in automatically to share non-sensitive project configuration files. you can opt out by running \'amplify diagnose --auto-send-off\'');
+  }
 };
 
 const zipSend = async (context: Context, skipPrompts: boolean, error: Error | undefined): Promise<void> => {
@@ -89,6 +104,7 @@ const zipSend = async (context: Context, skipPrompts: boolean, error: Error | un
     try {
       const projectId = await sendReport(context, fileDestination);
       spinner.succeed('Done');
+      printer.blankLine();
       printer.info(`Project Identifier: ${projectId}`);
       printer.blankLine();
     } catch (ex) {
@@ -213,18 +229,7 @@ const hashedProjectIdentifiers = (): { projectIdentifier: string; projectEnvIden
   const projectConfig = stateManager.getProjectConfig();
   const envName = stateManager.getCurrentEnvName();
   const appId = getAppId();
-  const projectIdentifier = crypto
-    .createHash('md5')
-    .update(`${projectConfig.projectName}-${appId}`)
-    .digest('hex');
-  const projectEnvIdentifier = crypto
-    .createHash('md5')
-    .update(`${projectConfig.projectName}-${appId}-${envName}`)
-    .digest('hex');
-  return {
-    projectIdentifier,
-    projectEnvIdentifier,
-  };
+  return createHashedIdentifier(projectConfig.projectName, appId, envName);
 };
 
 const getAppId = (): string => {

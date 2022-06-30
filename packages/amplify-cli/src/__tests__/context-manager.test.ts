@@ -54,6 +54,7 @@ describe('test attachUsageData', () => {
     getFlowReport: jest.fn(),
     assignProjectIdentifier: jest.fn(),
     getUsageDataPayload: jest.fn(),
+    calculatePushNormalizationFactor: jest.fn(),
   };
 
   const stateManagerMocked = stateManager as jest.Mocked<typeof stateManager>;

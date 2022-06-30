@@ -66,7 +66,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSAny[], exp
     printer.info(
       'Install the "Amplify Exported Backend" CDK Construct by running "npm i @aws-amplify/cdk-exported-backend" in your CDK app',
     );
-    printer.info('For more information: docs.amplify.aws/cli/usage/export-to-cdk');
+    printer.info('For more information: https://docs.amplify.aws/cli/usage/export-to-cdk');
     printer.blankLine();
   } catch (ex) {
     revertToBackup(amplifyExportFolder);

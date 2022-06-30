@@ -224,10 +224,14 @@ class CloudFormation {
 
   updateResourceStack(filePath) {
     const cfnFile = path.parse(filePath).base;
-    const { amplifyMeta } = this.context.amplify.getProjectDetails();
-    const stackName = amplifyMeta.providers ? amplifyMeta.providers[providerName].StackName : '';
-    const deploymentBucketName = amplifyMeta.providers
-      ? amplifyMeta.providers[providerName].DeploymentBucketName
+    const projectDetails = this.context.amplify.getProjectDetails();
+    const providerMeta = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName] : {};
+
+    const stackName = providerMeta.StackName  || '';
+    const stackId = providerMeta.StackId || '';
+
+    const deploymentBucketName = projectDetails.amplifyMeta.providers
+      ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName
       : '';
     const authRoleName = amplifyMeta.providers ? amplifyMeta.providers[providerName].AuthRoleName : '';
     const unauthRoleName = amplifyMeta.providers ? amplifyMeta.providers[providerName].UnauthRoleName : '';
@@ -301,6 +305,7 @@ class CloudFormation {
                   if (completeErr) {
                     this.collectStackErrors(cfnParentStackParams.StackName).then(() => reject(completeErr));
                   } else {
+                    self.context.usageData.calculatePushNormalizationFactor(this.stackEvents, stackId);
                     return self.updateamplifyMetaFileWithStackOutputs(stackName).then(() => resolve());
                   }
                 });

@@ -57,7 +57,9 @@ module.exports = {
 
     // Disables double quote error when using single quotes within string for readability
     // https://eslint.org/docs/rules/quotes#avoidescape
-    'quotes': ['error', 'single', { 'avoidEscape': true }],
+    // Allows String template literals like `foo`
+    // https://eslint.org/docs/rules/quotes#allowtemplateliterals
+    'quotes': ['error', 'single', { 'avoidEscape': true, 'allowTemplateLiterals': true }],
 
     // Typescript rules
     // Extends recommended rules here: https://www.npmjs.com/package/@typescript-eslint/eslint-plugin

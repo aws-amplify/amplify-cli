@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@2.4.6...amplify-graphiql-explorer@2.4.7) (2022-06-15)
+
+
+### Bug Fixes
+
+* explicitly assign buffer to global.buffer ([#10308](https://github.com/aws-amplify/amplify-cli/issues/10308)) ([3cc7e76](https://github.com/aws-amplify/amplify-cli/commit/3cc7e76eb4def4ecfb1448436a796551e83fcbb5))
+
+
+### Reverts
+
+* Revert "Revert "fix: explicitly assign buffer to global.buffer (#10308)" (#10314)" (#10576) ([d41c7a8](https://github.com/aws-amplify/amplify-cli/commit/d41c7a8cfc085039c40539bd542d72ef3bf40b2a)), closes [#10308](https://github.com/aws-amplify/amplify-cli/issues/10308) [#10314](https://github.com/aws-amplify/amplify-cli/issues/10314) [#10576](https://github.com/aws-amplify/amplify-cli/issues/10576)
+* Revert "fix: explicitly assign buffer to global.buffer (#10308)" (#10314) ([1854235](https://github.com/aws-amplify/amplify-cli/commit/1854235ea2070a39796eee2bba41d6cf8c9ed051)), closes [#10308](https://github.com/aws-amplify/amplify-cli/issues/10308) [#10314](https://github.com/aws-amplify/amplify-cli/issues/10314)
+
+
+
+
+
 ## [2.4.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@2.4.5...amplify-graphiql-explorer@2.4.6) (2022-04-27)
 
 **Note:** Version bump only for package amplify-graphiql-explorer
