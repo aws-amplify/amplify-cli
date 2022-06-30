@@ -224,14 +224,14 @@ class CloudFormation {
 
   updateResourceStack(filePath) {
     const cfnFile = path.parse(filePath).base;
-    const projectDetails = this.context.amplify.getProjectDetails();
-    const providerMeta = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName] : {};
+    const { amplifyMeta } = this.context.amplify.getProjectDetails();
+    const providerMeta = amplifyMeta.providers ? amplifyMeta.providers[providerName] : {};
 
     const stackName = providerMeta.StackName  || '';
     const stackId = providerMeta.StackId || '';
 
-    const deploymentBucketName = projectDetails.amplifyMeta.providers
-      ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName
+    const deploymentBucketName = amplifyMeta.providers
+      ? amplifyMeta.providers[providerName].DeploymentBucketName
       : '';
     const authRoleName = amplifyMeta.providers ? amplifyMeta.providers[providerName].AuthRoleName : '';
     const unauthRoleName = amplifyMeta.providers ? amplifyMeta.providers[providerName].UnauthRoleName : '';
