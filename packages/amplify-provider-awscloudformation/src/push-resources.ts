@@ -557,7 +557,7 @@ export const updateStackForAPIMigration = async (context: $TSContext, category: 
 
 /**
  * Publish files that Amplify Studio depends on outside the zip file so that can read
- * without sreaming from the zip.
+ * without streaming from the zip.
  */
 const uploadStudioBackendFiles = async (s3: S3, bucketName: string) => {
   const amplifyDirPath = pathManager.getAmplifyDirPath();
