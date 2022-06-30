@@ -43,10 +43,10 @@ const updateConfigOnEnvInit = async (context, category, service) => {
   } = srvcMetaData;
 
   const providerPlugin = context.amplify.getPluginInstance(context, provider);
+  await ensureEnvParamManager();
   // previously selected answers
   const resourceParams = providerPlugin.loadResourceParameters(context, 'auth', service);
   // ask only env specific questions
-  await ensureEnvParamManager();
   let currentEnvSpecificValues = context.amplify.loadEnvResourceParameters(context, category, service);
 
   const resource = _.get(context.exeInfo, ['amplifyMeta', category, service]);

@@ -66,10 +66,11 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: strin
   const { provider } = serviceMetadata;
 
   const providerPlugin = context.amplify.getPluginInstance(context, provider);
+  await ensureEnvParamManager();
+
   // previously selected answers
   const resourceParams = providerPlugin.loadResourceParameters(context, category, resourceName);
   // ask only env specific questions
-  await ensureEnvParamManager();
   const currentEnvSpecificValues = context.amplify.loadEnvResourceParameters(context, category, resourceName);
 
   const resource = _.get(context.exeInfo, ['amplifyMeta', category, resourceName]);
