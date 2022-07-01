@@ -6,6 +6,7 @@ import * as multiEnvManager from './multi-env-manager';
 import { NotificationsCfg } from './notifications-backend-cfg-api';
 import { NotificationsMeta } from './notifications-amplify-meta-api';
 import { IChannelAPIResponse } from './channel-types';
+import { Notifications } from './notifications-api';
 
 /**
  * Get Notifications Resource Info
@@ -67,4 +68,14 @@ export const notificationsAPIRemoveApp = async (context:$TSContext): Promise<$TS
   await notificationManager.removeEmptyNotificationsApp(context);
   await multiEnvManager.writeData(context, undefined);
   return context;
+};
+
+/**
+ * Returns all the allowed channels for the Notifications App.
+ * @param _context amplify cli context
+ * @returns Names of all available notifications channels
+ */
+export const notificationsAPIGetAvailableChannelNames = async (_context:$TSContext): Promise<string[]> => {
+  const availableChannels = Notifications.ChannelCfg.getAvailableChannels();
+  return availableChannels;
 };

@@ -256,14 +256,13 @@ public static getPinpointRegionMapping = async (context: $TSContext): Promise<st
       const notificationsResourceList: Array<INotificationsResourceMeta> = [];
       if (notificationsMeta) {
         for (const resourceName of Object.keys(notificationsMeta)) {
-          if ((!appName || appName === resourceName)
-               && (notificationsMeta[resourceName].service === AmplifySupportedService.PINPOINT)) {
+          if ((!appName || appName === resourceName)) {
             const notificationsResourceMeta :$TSAny = notificationsMeta[resourceName];
             notificationsResourceList.push({
               Id: notificationsResourceMeta.output.Id,
               ResourceName: resourceName,
               Name: notificationsResourceMeta.output.Name, // {ResourceName}-{env}
-              Service: notificationsResourceMeta.service,
+              service: (notificationsResourceMeta.service) || AmplifySupportedService.PINPOINT,
               Region: notificationsResourceMeta.output.Region, // Region in which Notifications resource is deployed.
               output: notificationsResourceMeta.output, // TBD: validate output
               ...notificationsResourceMeta, // TBD: remove if not needed

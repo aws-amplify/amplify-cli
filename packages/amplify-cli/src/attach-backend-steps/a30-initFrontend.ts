@@ -1,14 +1,17 @@
 import * as inquirer from 'inquirer';
+import { ListQuestion } from 'inquirer';
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { normalizeFrontendHandlerName } from '../input-params-manager';
-import { ListQuestion } from 'inquirer';
 
+/**
+ *
+ */
 export async function initFrontend(context) {
   if (
-    context.exeInfo.inputParams &&
-    context.exeInfo.inputParams.yes &&
-    context.exeInfo.existingProjectConfig &&
-    context.exeInfo.existingProjectConfig.frontend
+    context.exeInfo.inputParams
+    && context.exeInfo.inputParams.yes
+    && context.exeInfo.existingProjectConfig
+    && context.exeInfo.existingProjectConfig.frontend
   ) {
     context.exeInfo.projectConfig = context.exeInfo.existingProjectConfig;
   } else {
@@ -31,7 +34,6 @@ export async function initFrontend(context) {
     const frontendModule = require(frontendPlugins[frontend]);
     await frontendModule.init(context);
   }
-
   return context;
 }
 

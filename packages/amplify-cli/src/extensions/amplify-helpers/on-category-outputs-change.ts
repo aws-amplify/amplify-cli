@@ -1,10 +1,13 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { getResourceOutputs } from './get-resource-outputs';
 import sequential from 'promise-sequential';
 import { stateManager } from 'amplify-cli-core';
 import { AuthParameters, getFrontendConfig } from '@aws-amplify/amplify-category-auth';
+import { getResourceOutputs } from './get-resource-outputs';
 
+/**
+ *
+ */
 export async function onCategoryOutputsChange(context, cloudAmplifyMeta?, localMeta?) {
   if (!cloudAmplifyMeta) {
     cloudAmplifyMeta = stateManager.getCurrentMeta(undefined, {
@@ -68,6 +71,9 @@ function attachContextExtensions(context, packageLocation) {
 // projects created before 5.2.0 didn't populate frontend config in amplify-meta.json
 // this method ensures frontend config settings are added to amplify meta on pull as they exist in parameters.json
 // https://app.asana.com/0/1200585422384147/1200740448709567/f
+/**
+ *
+ */
 export function ensureAmplifyMetaFrontendConfig(amplifyMeta?) {
   if (!amplifyMeta) {
     amplifyMeta = stateManager.getMeta();
@@ -75,9 +81,7 @@ export function ensureAmplifyMetaFrontendConfig(amplifyMeta?) {
 
   if (!amplifyMeta.auth) return;
 
-  const authResourceName = Object.keys(amplifyMeta.auth).find((key: any) => {
-    return amplifyMeta.auth[key].service === 'Cognito';
-  });
+  const authResourceName = Object.keys(amplifyMeta.auth).find((key: any) => amplifyMeta.auth[key].service === 'Cognito');
 
   if (!authResourceName) return;
 

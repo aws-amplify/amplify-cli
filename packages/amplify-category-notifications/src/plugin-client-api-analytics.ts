@@ -62,3 +62,15 @@ export const invokeGetLastPushTimeStamp = async (amplifyMeta: $TSMeta, analytics
   const analyticsLastPushTimeStamp = amplifyMeta[AmplifyCategories.ANALYTICS][analyticsResourceName].lastPushTimeStamp;
   return analyticsLastPushTimeStamp;
 };
+
+/**
+ * Push the analytics resource to create the Pinpoint resource.
+ * @param context amplify CLI context
+ * @param analyticsResourceName - Pinpoint resource name
+ * @returns amplify push analytics response.
+ */
+export const invokeAnalyticsPush = async (context: $TSContext, analyticsResourceName: string): Promise<IPluginCapabilityAPIResponse> => {
+  const pushResponse = (await context.amplify.invokePluginMethod(context,
+    'analytics', analyticsResourceName, 'analyticsPluginAPIPush', [context])) as IPluginCapabilityAPIResponse;
+  return pushResponse;
+};

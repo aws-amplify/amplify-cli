@@ -38,3 +38,8 @@ export interface INotificationsResourceBackendConfigValue {
 export interface INotificationsResourceBackendConfig extends INotificationsResourceBackendConfigValue {
    serviceName: string,
 }
+
+/**
+ * Structure of the Notifications category configuration in backend-config.json
+*/
+export type INotificationsServiceBackendConfig = Record<string, INotificationsResourceBackendConfigValue>;

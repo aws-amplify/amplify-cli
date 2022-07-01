@@ -18,10 +18,11 @@ const deploymentType = ChannelConfigDeploymentType.INLINE;
 
 /**
  * helper function to build and throw error for APNS channel configuration.
+ * @param action - Enable, Disable, Update
  * @param err - Reason code for the APNS channel configuration.
- * @returns
+ * @returns void
  */
-const throwNormalizedError = (action: ChannelAction, err : string|Error):IChannelAPIResponse => {
+const throwNormalizedError = (action: ChannelAction, err : string|Error):void => {
   const errResponse = buildPinpointChannelResponseError(action, deploymentType, channelName, err);
   throw errResponse;
 };
@@ -226,7 +227,8 @@ export const pull = async (context:$TSContext, pinpointApp:$TSAny): Promise<$TSA
         channelName, data.APNSChannelResponse);
       return successResponse;
     })
-    .catch((err: $TSAny) => {
+    // eslint-disable-next-line consistent-return
+    .catch((err: $TSAny): IChannelAPIResponse|undefined => {
       if (err.code === 'NotFoundException') {
         spinner.succeed(`Channel is not setup for ${channelName} `);
         const errResponse = buildPinpointChannelResponseError(ChannelAction.PULL, deploymentType, channelName, err);
