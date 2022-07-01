@@ -376,7 +376,7 @@ export class FeatureFlags {
           }
         });
 
-        if (schemaValidate.errors.length > 0) {
+        if (unknownFlags.length > 0 || otherErrors.length > 0) {
           throw new JSONValidationError('Invalid feature flag configuration', unknownFlags, otherErrors);
         }
       }
@@ -649,7 +649,7 @@ export class FeatureFlags {
         type: 'boolean',
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: false,
-      }
+      },
     ]);
 
     this.registerFlag('frontend-ios', [
