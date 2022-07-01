@@ -1,5 +1,5 @@
 import {
-  $TSContext, AmplifyCategories, INotificationsResource, IPluginAPIResponse,
+  $TSContext, AmplifyCategories, IAnalyticsResource, INotificationsResource, IPluginAPIResponse,
 } from 'amplify-cli-core';
 
 /**
@@ -31,4 +31,15 @@ export const invokeNotificationsAPIRecursiveRemoveApp = async (context: $TSConte
 export const checkResourceInUseByNotifications = async (context: $TSContext, resourceName: string): Promise<boolean> => {
   const notificationsResource = await invokeNotificationsAPIGetResource(context);
   return (notificationsResource?.resourceName === resourceName);
+};
+
+/**
+ * Returns all the channel names allowed in the Notifications category
+ * @param context amplify cli context
+ * @returns array of allowed channel names
+ */
+export const invokeNotificationsAPIGetAvailableChannelNames = async (context: $TSContext): Promise<string[]> => {
+  const channelNames = (await context.amplify.invokePluginMethod(context, AmplifyCategories.NOTIFICATIONS, undefined,
+    'notificationsAPIGetAvailableChannelNames', [context])) as string[];
+  return channelNames;
 };

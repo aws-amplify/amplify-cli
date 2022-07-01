@@ -8,6 +8,7 @@ import {
   $TSAny, $TSContext, AmplifyCategories, AmplifySupportedService,
   IPluginCapabilityAPIResponse,
   NotificationChannels,
+  stateManager,
 } from 'amplify-cli-core';
 
 /* eslint-disable @typescript-eslint/no-var-requires */
@@ -19,6 +20,13 @@ import {
 } from './plugin-client-api-analytics';
 import { IChannelAPIResponse, ChannelAction, ChannelConfigDeploymentType } from './channel-types';
 import { ChannelCfg } from './notifications-backend-cfg-channel-api';
+import {
+  buildPinpointChannelResponseError,
+  buildPinpointChannelResponseSuccess,
+  ensurePinpointApp,
+  getPinpointAppStatusFromMeta, IPinpointAppStatus, IPinpointDeploymentStatus,
+} from './pinpoint-helper';
+import { ICategoryMeta } from './notifications-amplify-meta-types';
 
 const channelName = 'InAppMessaging';
 const channelViewName = ChannelCfg.getChannelViewName(channelName);
@@ -71,17 +79,54 @@ export const configure = async (context: $TSContext) : Promise<IChannelAPIRespon
 };
 
 /**
+ * Inline enable for In-App-Messaging channel
+ * @param _context amplify cli context
+ * @param pinpointAppStatus Pinpoint app status
+ */
+export const invokeInlineEnableInAppMessagingChannel = (_context: $TSContext, _pinpointAppStatus:IPinpointAppStatus)
+: Promise<IPluginCapabilityAPIResponse> => {
+  // console.log('Enabling In-App Messaging channel In-line');
+  // const output : NotificationsChannelMeta = {
+  //   ApplicationId: pinpointAppStatus.app?.id, // Pinpoint Physical ID
+  //   CreationDate: new Date().toISOString(), // Date-Time
+  //   Enabled: true,
+  //   Id: pinpointAppStatus.app?.id,
+  //   LastModifiedDate: new Date().toISOString(), // Timestamp of when was this channel last updated
+  //   IsArchived: false,
+  //   Platform: ChannelCfg.ChannelType.InAppMessaging, // Set to EMAIL/SMS - unused
+  //   Version: 0, // Increments when channel is updated
+  // };
+
+  // const apiResponse : IChannelAPIResponse = buildPinpointChannelResponseSuccess(ChannelAction.ENABLE,
+  //   ChannelConfigDeploymentType.INLINE, ChannelCfg.ChannelType.InAppMessaging, output);
+  throw new Error('Inline enable not supported for In-App Messaging channel');
+
+  //create IAM role and apply on pinpoint app using sdk
+};
+
+/**
  * Enable InAPPMessaging channel
  * @param {*} context amplify cli context
  * @returns Analytics API response
  */
 export const enable = async (context: $TSContext): Promise<IChannelAPIResponse> => {
   spinner.start(`Enabling ${ChannelCfg.getChannelViewName(channelName)} channel.`);
-  //TBD: add the PINPOINT resource id - right now its assumed to be a single resource
-  const enableInAppMsgAPIResponse : IPluginCapabilityAPIResponse = await invokeAnalyticsResourceToggleNotificationChannel(context,
-    AmplifySupportedService.PINPOINT,
-    NotificationChannels.IN_APP_MSG,
-    true);
+  //get the pinpoint resource state - if custom deploy - fallback to in-line deployment
+  const envName = stateManager.getCurrentEnvName();
+  const notificationsMeta = await Notifications.Meta.getNotificationsAppMeta(context.exeInfo.amplifyMeta);
+  const pinpointAppStatus: IPinpointAppStatus = await getPinpointAppStatusFromMeta(context, notificationsMeta, envName);
+  let enableInAppMsgAPIResponse : IPluginCapabilityAPIResponse;
+
+  if (pinpointAppStatus.status === IPinpointDeploymentStatus.APP_IS_DEPLOYED_CUSTOM) {
+    enableInAppMsgAPIResponse = await invokeInlineEnableInAppMessagingChannel(context, pinpointAppStatus);
+  } else {
+    //TBD: add the PINPOINT resource id - right now its assumed to be a single resource
+    enableInAppMsgAPIResponse = await invokeAnalyticsResourceToggleNotificationChannel(context,
+      AmplifySupportedService.PINPOINT,
+      NotificationChannels.IN_APP_MSG,
+      true);
+  }
+
   if (enableInAppMsgAPIResponse.status) {
     spinner.succeed(`The ${ChannelCfg.getChannelViewName(channelName)} channel has been successfully enabled.`);
   } else {
@@ -122,31 +167,35 @@ export const disable = async (context: $TSContext):Promise<IChannelAPIResponse> 
 };
 
 /**
- * Pull walkthrough for InAPPMessaging channel
+ * Pull currently deployed InAPPMessaging channel info from Pinpoint.
  * @param {*} context amplify cli context
  * @returns Analytics API response
  */
-export const pull = async (context: $TSContext, pinpointApp:$TSAny):Promise<$TSAny> => {
-  const params = {
-    ApplicationId: pinpointApp.Id,
-  };
+export const pull = async (context:$TSContext, pinpointApp:$TSAny):Promise<$TSAny> => {
+  const currentAmplifyMeta = stateManager.getCurrentMeta();
+  const currentBackendCfg = stateManager.getCurrentBackendConfig();
   spinner.start(`Retrieving channel information for ${ChannelCfg.getChannelViewName(channelName)}.`);
-  return context.exeInfo.pinpointClient
-    .getSmsChannel(params)
-    .promise()
-    .then((data:$TSAny) => {
-      spinner.succeed(`Channel information retrieved for ${ChannelCfg.getChannelViewName(channelName)}`);
-      pinpointApp[channelName] = data.SMSChannelResponse;
-      return data.SMSChannelResponse;
-    })
-    .catch((err:$TSAny) => {
-      if (err.code === 'NotFoundException') {
-        spinner.succeed(`Channel is not setup for ${ChannelCfg.getChannelViewName(channelName)} `);
-        return err;
-      }
-      spinner.stop();
-      throw err;
-    });
+  const notificationsMeta = await Notifications.Meta.getNotificationsAppMeta(currentAmplifyMeta);
+  let channelMeta = (notificationsMeta?.output?.channels) ? notificationsMeta.output.channels[channelName] : undefined;
+  if (!channelMeta) {
+    const backendConfig = await Notifications.Cfg.getNotificationsAppConfig(currentBackendCfg);
+    if (backendConfig && backendConfig.channels && backendConfig.channels.includes(channelName)) {
+      channelMeta = {
+        Enabled: true,
+        ApplicationId: pinpointApp.Id,
+        Name: pinpointApp.Name,
+      };
+    } else {
+      spinner.fail(`Channel ${ChannelCfg.getChannelViewName(channelName)} not found.`);
+      const errResponse = buildPinpointChannelResponseError(ChannelAction.PULL, deploymentType,
+        channelName, `${channelName} not found in the notifications metadata`);
+      return errResponse;
+    }
+  }
+  spinner.succeed(`Channel information retrieved for ${ChannelCfg.getChannelViewName(channelName)}`);
+  pinpointApp[channelName] = channelMeta;
+  const successResponse = buildPinpointChannelResponseSuccess(ChannelAction.PULL, deploymentType, channelName, channelMeta);
+  return successResponse;
 };
 
 module.exports = {

@@ -80,7 +80,8 @@ export interface INotificationsConfigStatus {
  */
 export type NotificationsChannelActionHandler = {
      description: 'Notifications-API: NotificationsChannel API Handler function';
-     (context: $TSContext, pinpointAppName?:string): Promise<IChannelAPIResponse|undefined>;
+     (context: $TSContext, pinpointAppName?:string)
+     : Promise<IChannelAPIResponse|undefined>;
   };
 
 /**

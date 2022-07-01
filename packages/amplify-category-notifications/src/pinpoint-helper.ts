@@ -1,10 +1,12 @@
 import ora from 'ora';
 import {
-  $TSAny, $TSContext, open, AmplifySupportedService, AmplifyCategories, stateManager, IAnalyticsResource, PluginAPIError, pathManager,
+  $TSAny, $TSContext, open, AmplifySupportedService, AmplifyCategories, stateManager,
+  IAnalyticsResource, PluginAPIError, INotificationsResourceMeta, $TSMeta,
 } from 'amplify-cli-core';
 import {
   invokeAnalyticsAPICreateResource,
   invokeAnalyticsAPIGetResources,
+  invokeAnalyticsPush,
 } from './plugin-client-api-analytics';
 
 import * as authHelper from './auth-helper';
@@ -52,6 +54,20 @@ export const isPinpointAppDeployed = (pinpointStatus: IPinpointDeploymentStatus)
    || (pinpointStatus === IPinpointDeploymentStatus.APP_IS_DEPLOYED_CUSTOM));
 
 /**
+ * Given the Pinpoint App Status and channelName return true if channel requires the Pinpoint resource to be deployed.
+ * In-App-Messaging is deployed through and update to the the Analytics category CloudFormation.
+ * note: - TBD!!:  in legacy deployments even In-App-Messaging is deployed in-line
+ * isChannelDeploymentDeferred needs to be changed to check if environment is configured for legacy deployment.
+ */
+export const isPinpointDeploymentRequired = (channelName: string, pinpointAppStatus : IPinpointAppStatus): boolean => {
+  if (!isPinpointAppDeployed(pinpointAppStatus.status)
+         && !Notifications.ChannelCfg.isChannelDeploymentDeferred(channelName)) {
+    return true;
+  }
+  return false;
+};
+
+/**
  * Only legacy apps where PinpointApp is allocated through
  * Notifications will return true.
  * @param pinpointStatus deployment state of the PinpointApp
@@ -66,7 +82,7 @@ export const isPinpointAppOwnedByNotifications = (pinpointStatus: IPinpointDeplo
  * @param error Error thrown by the library function
  * @returns error message extracted from Error
  */
-const getErrorMessage = (error: Error|string) : string => {
+export const getErrorMessage = (error: Error|string) : string => {
   if (error instanceof Error) {
     return error.message;
   }
@@ -204,13 +220,40 @@ export const getPinpointAppStatus = async (context: $TSContext, amplifyMeta: $TS
 
 /**
  * Display 'amplify push' required prompt.
+ * @param pinpointStatus - deployment status of the pinpoint app
  * @param context amplify cli context
  */
-export const viewShowAmplifyPushRequired = (context: $TSContext):void => {
-  context.print.info('Run "amplify push" to deploy the Pinpoint resource and then retry...');
+export const viewShowAmplifyPushRequired = (pinpointStatus:IPinpointDeploymentStatus, context: $TSContext):void => {
+  let pinpointStatusMessage = '';
+  switch (pinpointStatus) {
+    case IPinpointDeploymentStatus.APP_NOT_CREATED:
+      pinpointStatusMessage = 'Pinpoint resource is not created';
+      break;
+    case IPinpointDeploymentStatus.APP_IS_CREATED_NOT_DEPLOYED:
+      pinpointStatusMessage = 'Pinpoint resource is only locally created';
+      break;
+    case IPinpointDeploymentStatus.APP_IS_DEPLOYED_CUSTOM:
+      pinpointStatusMessage = 'Pinpoint resource is created outside of Amplify';
+      break;
+    case IPinpointDeploymentStatus.NO_ENV:
+      pinpointStatusMessage = 'Pinpoint resource status is unknown';
+      break;
+    default:
+      pinpointStatusMessage = 'Pinpoint resource is not initialized in this environment';
+  }
+  context.print.warning(pinpointStatusMessage);
+  if ((pinpointStatus === IPinpointDeploymentStatus.APP_IS_CREATED_NOT_DEPLOYED)
+      || (pinpointStatus === IPinpointDeploymentStatus.APP_NOT_CREATED)) {
+    context.print.warning('Run "amplify push" to deploy the Pinpoint resource and then retry...');
+  }
 };
 
-const getPinpointAppFromAnalyticsOutput = (analyticsMeta: IAnalyticsResource): Partial<ICategoryMeta> => {
+/**
+ * Get the PinpointApp from the Analytics resource.
+ * @param analyticsMeta
+ * @returns PinpointApp metadata
+ */
+export const getPinpointAppFromAnalyticsOutput = (analyticsMeta: IAnalyticsResource): Partial<ICategoryMeta> => {
   const pinpointApp: Partial<ICategoryMeta> = {
     Id: analyticsMeta.id,
     Name: analyticsMeta.output.appName,
@@ -221,6 +264,64 @@ const getPinpointAppFromAnalyticsOutput = (analyticsMeta: IAnalyticsResource): P
 };
 
 /**
+ * Get PinpointApp from Analytics output and update context.
+ */
+export const updateContextFromAnalyticsOutput = async (context: $TSContext, amplifyMeta: $TSMeta, pinpointAppStatus: IPinpointAppStatus)
+: Promise<Partial<ICategoryMeta>|undefined> => {
+  if (pinpointAppStatus.app?.output && pinpointAppStatus.app?.resourceName) {
+    const pinpointApp = getPinpointAppFromAnalyticsOutput(pinpointAppStatus.app);
+    const resourceName = pinpointAppStatus.app.resourceName as string;
+    // create updated version of amplify-meta with notifications resource
+    context.exeInfo.amplifyMeta = Notifications.Meta.constructResourceMeta(amplifyMeta, resourceName, pinpointApp);
+    // create updated version of backend-config with notifications resource configuration
+    context.exeInfo.backendConfig = await Notifications.Cfg.addPartialNotificationsBackendConfig(resourceName,
+      context.exeInfo.backendConfig);
+    return pinpointApp;
+  }
+  return undefined;
+};
+
+/**
+ * Create the PinpointApp through Analytics API.
+ * @param context amplify cli context
+ */
+export const createAnalyticsPinpointApp = async (context: $TSContext):Promise<void> => {
+  const pushResponse = await invokeAnalyticsPush(context, AmplifySupportedService.PINPOINT);
+  if (!pushResponse.status) {
+    throw new Error(`Failed to create Pinpoint resource for the given environment: ${pushResponse.reasonMsg}`);
+  }
+};
+
+/**
+ * Get the PinpointApp's deployment status from amplify-meta.json.
+ * @param context amplify cli context
+ * @param pinpointNotificationsMeta pinpoint notifications meta
+ * @param appEnvName Application's environment name
+ * @returns Pinpoint deployment status
+ */
+export const getPinpointAppStatusFromMeta = async (context: $TSContext,
+  pinpointNotificationsMeta: INotificationsResourceMeta|undefined, appEnvName:string|undefined)
+: Promise<IPinpointAppStatus> => {
+  const amplifyMeta = (context.exeInfo.amplifyMeta) || stateManager.getMeta();
+  const envName = (appEnvName) || stateManager.getCurrentEnvName();
+  const pinpointAppStatus = await getPinpointAppStatus(context, amplifyMeta, pinpointNotificationsMeta, envName);
+  return pinpointAppStatus;
+};
+
+/**
+ * Push Auth and Pinpoint resources to the cloud.
+ */
+export const pushAuthAndAnalyticsPinpointResources = async (context: $TSContext, pinpointAppStatus:IPinpointAppStatus)
+:Promise<IPinpointAppStatus> => {
+  await createAnalyticsPinpointApp(context);
+  const updatedPinpointAppStatus = {
+    ...pinpointAppStatus,
+    status: IPinpointDeploymentStatus.APP_IS_DEPLOYED,
+  };
+  return updatedPinpointAppStatus;
+};
+
+/**
  * Ensure Pinpoint app exists
  */
 export const ensurePinpointApp = async (context: $TSContext, pinpointNotificationsMeta: $TSAny,
@@ -228,9 +329,8 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
   let pinpointApp : Partial<ICategoryMeta>|undefined;
   let resourceName;
   const amplifyMeta = (context.exeInfo.amplifyMeta) || stateManager.getMeta();
-  const envName = (appEnvName) || stateManager.getCurrentEnvName();
+  const envName = (appEnvName) || context.exeInfo.localEnvInfo.envName || stateManager.getCurrentEnvName();
   const pinpointAppStatus = (appStatus) || await getPinpointAppStatus(context, amplifyMeta, pinpointNotificationsMeta, envName);
-  // console.log('SACPCDEBUG: ensurePinpointApp:PinpointAppStatus.app: ', JSON.stringify(pinpointAppStatus.app, null, 2));
   switch (pinpointAppStatus.status) {
     case IPinpointDeploymentStatus.NO_ENV: {
       console.log('Current ENV not configured!!');
@@ -248,16 +348,34 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
       break;
     }
     case IPinpointDeploymentStatus.APP_IS_DEPLOYED: {
-      // Sync Pinpoint resource from Analytics
-      if (pinpointAppStatus.app?.output && pinpointAppStatus.app?.resourceName) {
-        pinpointApp = getPinpointAppFromAnalyticsOutput(pinpointAppStatus.app);
-        resourceName = pinpointAppStatus.app.resourceName as string;
-        // create updated version of amplify-meta with notifications resource
+      if (pinpointNotificationsMeta?.output) {
+        pinpointApp = pinpointNotificationsMeta?.output as ICategoryMeta;
+        pinpointApp.regulatedResourceName = PinpointName.extractResourceName(pinpointNotificationsMeta.Name, envName);
+        resourceName = pinpointApp.regulatedResourceName; // Pinpoint name - envName;
+        // Update pinpointApp into Notifications amplifyMeta (in-core)
         context.exeInfo.amplifyMeta = Notifications.Meta.constructResourceMeta(amplifyMeta, resourceName, pinpointApp);
-        // create updated version of backend-config with notifications resource configuration
-        context.exeInfo.backendConfig = await Notifications.Cfg.addPartialNotificationsBackendConfig(resourceName,
-          context.exeInfo.backendConfig);
+      } else {
+        // Pinpoint App is deployed but channels are not configured.
+        // Sync Pinpoint resource from Analytics
+        pinpointApp = await updateContextFromAnalyticsOutput(context, amplifyMeta, pinpointAppStatus);
+        resourceName = pinpointAppStatus?.app?.resourceName;
+        if (!resourceName) {
+          throw new Error(`Pinpoint resource name is not found in amplify-meta.json : ${pinpointAppStatus?.app}`);
+        }
+        // Update pinpointApp into Notifications amplifyMeta (in-core)
+        context.exeInfo.amplifyMeta = Notifications.Meta.constructResourceMeta(amplifyMeta, resourceName, pinpointApp as ICategoryMeta);
       }
+      context.exeInfo.backendConfig = await Notifications.Cfg.addPartialNotificationsBackendConfig(resourceName,
+        context.exeInfo.backendConfig);
+      // if (pinpointAppStatus.app?.output && pinpointAppStatus.app?.resourceName) {
+      //   pinpointApp = getPinpointAppFromAnalyticsOutput(pinpointAppStatus.app);
+      //   resourceName = pinpointAppStatus.app.resourceName as string;
+      //   // create updated version of amplify-meta with notifications resource
+      //   context.exeInfo.amplifyMeta = Notifications.Meta.constructResourceMeta(amplifyMeta, resourceName, pinpointApp);
+      //   // create updated version of backend-config with notifications resource configuration
+      //   context.exeInfo.backendConfig = await Notifications.Cfg.addPartialNotificationsBackendConfig(resourceName,
+      //     context.exeInfo.backendConfig);
+      // }
       break;
     }
     case IPinpointDeploymentStatus.APP_NOT_CREATED: {
@@ -272,11 +390,10 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
         context.exeInfo.backendConfig);
       // The Pinpoint resource is locally created, but requires an amplify push for channels to be programmed
       // note:- This is temporary until deployment state-machine supports deferred resource push.
-      viewShowAmplifyPushRequired(context);
+      // viewShowAmplifyPushRequired(pinpointAppStatus.status, context);
       break;
     }
     case IPinpointDeploymentStatus.APP_IS_CREATED_NOT_DEPLOYED: {
-      // console.log('SACPCDEBUG:APP_IS_CREATED_NOT_DEPLOYED: PinpointDeploymentStatus: ', JSON.stringify(pinpointAppStatus.app, null, 2));
       resourceName = pinpointAppStatus.app?.resourceName;
       if (resourceName) {
         // create updated version of amplify-meta with notifications resource
@@ -285,7 +402,7 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
         context.exeInfo.backendConfig = await Notifications.Cfg.addPartialNotificationsBackendConfig(resourceName,
           context.exeInfo.backendConfig);
       }
-      viewShowAmplifyPushRequired(context);
+      // viewShowAmplifyPushRequired(pinpointAppStatus.status, context);
       break;
     }
     default:
@@ -295,9 +412,6 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
   if (resourceName && context.exeInfo.amplifyMeta[AmplifyCategories.NOTIFICATIONS]) {
     context.exeInfo.serviceMeta = context.exeInfo.amplifyMeta[AmplifyCategories.NOTIFICATIONS][resourceName];
     context.exeInfo.pinpointApp = context.exeInfo.serviceMeta.output;
-
-    // console.log('SACPCDEBUG:APP_IS_DEPLOYED:In-Memory serviceMeta: ', JSON.stringify(context.exeInfo.serviceMeta, null, 2));
-    // console.log('SACPCDEBUG:APP_IS_DEPLOYED:In-Memory pinpointApp: ', JSON.stringify(context.exeInfo.serviceMeta.output, null, 2));
   }
 
   pinpointAppStatus.context = context;
@@ -476,5 +590,10 @@ module.exports = {
   isNotificationChannelEnabled: Notifications.ChannelCfg.isChannelEnabledNotificationsBackendConfig,
   scanCategoryMetaForPinpoint,
   console: channelInAppConsole,
+  channelInAppConsole,
   PinpointName,
+  getPinpointAppStatusFromMeta,
+  updateContextFromAnalyticsOutput,
+  getPinpointAppFromAnalyticsOutput,
+  isPinpointDeploymentRequired,
 };

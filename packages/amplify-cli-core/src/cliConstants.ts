@@ -72,6 +72,7 @@ export enum PluginAPIError {
   E_SVC_PROVIDER_NO_CAPABILITY = 'E_SVC_PROVIDER_NO_CAPABILITY', // Provider does not support requested capability
   E_SVC_PROVIDER_SDK = 'E_SVC_SDK', // Generic error thrown by AWS SDK
   E_SVC_PROVIDER_CDK = 'E_SVC_CDK', // Generic error thrown by AWS CDK
+  E_PUSH_FAILED = 'E_PUSH_FAILED', // Resource Push failed
 }
 
 /**
@@ -114,7 +115,7 @@ export interface INotificationsResourceMeta {
   Name : string, // region specific logical identifier for AWS service resource
   Region : string, // Region in which Notifications resource is deployed.
   ResourceName: string, // Logical name of Notificiations App.
-  Service: string, // AWS Service e.g Pinpoint
+  service: string, // AWS Service e.g Pinpoint (small s for legacy support)
   output : Record<string, $TSAny>,
   mobileHubMigrated?:boolean,
   lastPushTimeStamp?:string,
@@ -132,9 +133,14 @@ export interface IAnalyticsResource extends IAmplifyResource {
 
 /**
  * Amplify Notifications Resource data queried from amplify-meta
- * note:- assigned to analytics until output for each notifications type is not added
+ * note:- assigned to analytics until output for each notifications type is added
  */
 export type INotificationsResource = IAnalyticsResource
+
+/**
+ * Amplify Auth Resource data queried from amplify-meta
+ */
+export type IAuthResource = IAmplifyResource
 
 export const AMPLIFY_DOCS_URL = 'https://docs.amplify.aws';
 export const AWS_DOCS_URL = 'https://docs.aws.amazon.com/';

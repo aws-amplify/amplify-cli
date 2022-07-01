@@ -1,7 +1,7 @@
 import {
   $TSAny, $TSContext, AmplifyCategories, IPluginAPIResponse,
 } from 'amplify-cli-core';
-import { checkResourceInUseByNotifications, invokeNotificationsAPIRecursiveRemoveApp } from '../../notifications-resource-api';
+import { checkResourceInUseByNotifications, invokeNotificationsAPIRecursiveRemoveApp } from '../../plugin-client-api-notifications';
 
 const subcommand = 'remove';
 const category = 'analytics';

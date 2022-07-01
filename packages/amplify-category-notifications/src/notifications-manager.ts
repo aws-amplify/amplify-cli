@@ -7,25 +7,28 @@ import {
   IChannelAPIResponse, NotificationsChannelAPIModule,
 } from './channel-types';
 import { Notifications } from './notifications-api';
+import { getPinpointAppStatusFromMeta } from './pinpoint-helper';
 
 /**
  * Enable the selected notification channel
  */
-export const enableChannel = async (context:$TSContext, channelName:string): Promise<IChannelAPIResponse|undefined> => {
+export const enableChannel = async (context:$TSContext, channelName:string)
+: Promise<IChannelAPIResponse|undefined> => {
   const envName: string = stateManager.getCurrentEnvName() as string; // throws exception if env is not configured
-  if (Notifications.ChannelCfg.isValidChannel(channelName)) {
-    context.exeInfo.pinpointClient = await pinpointHelper.getPinpointClient(context, 'update', envName);
-    const channelActionHandler:NotificationsChannelAPIModule = await import(Notifications.ChannelCfg.getChannelHandlerPath(channelName));
-    const enableChannelResponse = await channelActionHandler.enable(context);
-    return enableChannelResponse;
+  if (!Notifications.ChannelCfg.isValidChannel(channelName)) {
+    throw new Error(`Enable failed: invalid notification channel ${channelName}`);
   }
-  throw new Error(`Enable failed: invalid notification channel ${channelName}`);
+  context.exeInfo.pinpointClient = await pinpointHelper.getPinpointClient(context, 'update', envName);
+  const channelActionHandler:NotificationsChannelAPIModule = await import(Notifications.ChannelCfg.getChannelHandlerPath(channelName));
+  const enableChannelResponse = await channelActionHandler.enable(context);
+  return enableChannelResponse;
 };
 
 /**
  * Disable the notification channels in use.
  */
-export const disableChannel = async (context : $TSContext, channelName: string): Promise<IChannelAPIResponse|undefined> => {
+export const disableChannel = async (context : $TSContext, channelName: string)
+: Promise<IChannelAPIResponse|undefined> => {
   const envName: string = stateManager.getCurrentEnvName() as string; // throws exception if env is not configured
   if (Notifications.ChannelCfg.isValidChannel(channelName)) {
     context.exeInfo.pinpointClient = await pinpointHelper.getPinpointClient(context, 'update', envName);
@@ -41,10 +44,10 @@ export const disableChannel = async (context : $TSContext, channelName: string):
  * @param context amplify-cli context
  * @returns Array of Channel API responses
  */
-export const disableAllChannels = async (context: $TSContext): Promise<Array<IChannelAPIResponse>> => {
+export const disableAllChannels = async (context: $TSContext)
+: Promise<Array<IChannelAPIResponse>> => {
   const enabledChannels : Array<string> = await Notifications.ChannelCfg.getEnabledChannels(context);
   const responseArray : Array<IChannelAPIResponse> = [];
-
   // sequentially disable each channel - since persistent context gets updated
   for (const channelName of enabledChannels) {
     const channelAPIResponse = await disableChannel(context, channelName);
@@ -76,6 +79,8 @@ export const removeEmptyNotificationsApp = async (context: $TSContext): Promise<
  */
 export const configureChannel = async (context: $TSContext, channelName: string):Promise<IChannelAPIResponse|undefined> => {
   const envName: string = stateManager.getCurrentEnvName() as string; // throws exception if env is not configured
+  const notificationsMeta = await Notifications.Meta.getNotificationsAppMeta(context.exeInfo.amplifyMeta);
+  const pinpointAppStatus = await getPinpointAppStatusFromMeta(context, notificationsMeta, envName);
 
   if (channelName in Notifications.ChannelCfg.ChannelType) {
     context.exeInfo.pinpointClient = await pinpointHelper.getPinpointClient(context, 'update', envName);
@@ -85,7 +90,7 @@ export const configureChannel = async (context: $TSContext, channelName: string)
     }
 
     const channelActionHandler:NotificationsChannelAPIModule = await import(Notifications.ChannelCfg.getChannelHandlerPath(channelName));
-    const configChannelResponse = await channelActionHandler.configure(context);
+    const configChannelResponse = await channelActionHandler.configure(context, pinpointAppStatus.status);
     return configChannelResponse;
   }
   return undefined;
@@ -94,14 +99,14 @@ export const configureChannel = async (context: $TSContext, channelName: string)
 /**
  * Fetch all the configured channels from pinpoint
  */
-export const pullAllChannels = async (context: $TSContext, pinpointAppName: string):Promise<Array<IChannelAPIResponse>> => {
+export const pullAllChannels = async (context: $TSContext, pinpointApp: $TSAny):Promise<Array<IChannelAPIResponse>> => {
   const envName: string = stateManager.getCurrentEnvName() as string; // throws exception if env is not configured
   const pullTasks: Array<$TSAny> = [];
   context.exeInfo.pinpointClient = await pinpointHelper.getPinpointClient(context, 'update', envName);
 
   for (const channelName of Object.keys(Notifications.ChannelCfg.ChannelType)) {
     const channelActionHandler:NotificationsChannelAPIModule = await import(Notifications.ChannelCfg.getChannelHandlerPath(channelName));
-    pullTasks.push(() => channelActionHandler.pull(context, pinpointAppName));
+    pullTasks.push(() => channelActionHandler.pull(context, pinpointApp));
   }
   const pullChannelsResponseList : Array<IChannelAPIResponse> = await sequential(pullTasks);
   return pullChannelsResponseList;
