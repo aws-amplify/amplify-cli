@@ -79,25 +79,8 @@ const generateProjectConfigFile = (context: $TSContext): void => {
 };
 
 const generateTeamProviderInfoFile = (context: $TSContext): $TSAny => {
-  const { projectPath, envName } = context.exeInfo.localEnvInfo;
-  const { existingTeamProviderInfo, teamProviderInfo } = context.exeInfo;
-
-  if (context.exeInfo.existingLocalEnvInfo?.noUpdateBackend) {
-    return stateManager.setTeamProviderInfo(projectPath, existingTeamProviderInfo);
-  }
-
-  if (existingTeamProviderInfo) {
-    if (existingTeamProviderInfo[envName]) {
-      if (existingTeamProviderInfo[envName].categories) {
-        teamProviderInfo[envName] = teamProviderInfo[envName] || {};
-        teamProviderInfo[envName].categories = existingTeamProviderInfo[envName].categories;
-      }
-
-      delete existingTeamProviderInfo[envName];
-    }
-
-    Object.assign(teamProviderInfo, existingTeamProviderInfo);
-  }
+  const { projectPath } = context.exeInfo.localEnvInfo;
+  const { teamProviderInfo } = context.exeInfo;
 
   stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
   return undefined;
