@@ -22,10 +22,10 @@ export const migrateTeamProviderInfo = async (context: Context): Promise<boolean
   if (!stateManager.teamProviderInfoExists()) {
     return true;
   }
-  await ensureEnvParamManager();
   // check if command executed in project root and team provider has secrets
 
   if (!isInvalidEnvOrPulling(context) && pathManager.findProjectRoot()) {
+    await ensureEnvParamManager();
     const authResourceName = authResourceNameHasSecrets();
 
     if (!authResourceName) {
@@ -59,7 +59,7 @@ const isInvalidEnvOrPulling = (context: Context): boolean => {
 };
 
 const authResourceNameHasSecrets = (): string | undefined => {
-  const backendConfig = stateManager.getBackendConfig();
+  const backendConfig = stateManager.getBackendConfig(undefined, { throwIfNotExist: false });
   const authResourceName = Object.keys(backendConfig?.auth || {})[0];
   if (!authResourceName) {
     return undefined;
