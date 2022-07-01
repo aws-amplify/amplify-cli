@@ -77,6 +77,8 @@ import { transformRootStack } from './override-manager';
 import { prePushTemplateDescriptionHandler } from './template-description-utils';
 import { buildOverridesEnabledResources } from './build-override-enabled-resources';
 
+import { invokePostPushAnalyticsUpdate } from './plugin-client-api-analytics';
+
 const logger = fileLogger('push-resources');
 
 // keep in sync with ServiceName in amplify-category-api, but probably it will not change
@@ -436,6 +438,12 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     if (resources.concat(resourcesToBeDeleted).filter((r: { service: string; }) => r.service === AmplifySupportedService.LAMBDA_LAYER).length > 0) {
       await postPushLambdaLayerCleanup(context, resources, projectDetails.localEnvInfo.envName);
       await context.amplify.updateamplifyMetaAfterPush(resources);
+    }
+    // Generate frontend resources for any notifications channels enabled on analytics resources.
+    const analyticsResources = resourcesToBeCreated.filter((r: { category: string; }) => r.category === AmplifyCategories.ANALYTICS);
+    if (analyticsResources && analyticsResources.length > 0) {
+      context = await invokePostPushAnalyticsUpdate(context);
+      context.amplify.updateamplifyMetaAfterPush(analyticsResources);
     }
 
     // Store current cloud backend in S3 deployment bcuket

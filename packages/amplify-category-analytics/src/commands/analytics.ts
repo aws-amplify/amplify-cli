@@ -2,6 +2,9 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
 import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { run as analyticsPush } from './analytics/push';
+
+export { run as analyticsPush } from './analytics/push';
 
 const featureName = 'analytics';
 /**
@@ -51,4 +54,5 @@ export const analyticsRun = async (context:$TSContext): Promise<$TSAny> => {
 module.exports = {
   name: featureName,
   run: analyticsRun,
+  analyticsPush,
 };

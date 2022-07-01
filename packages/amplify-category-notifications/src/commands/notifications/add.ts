@@ -1,8 +1,8 @@
 /* eslint-disable no-param-reassign */
 import { prompt } from 'inquirer';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, spinner } from 'amplify-cli-core';
 import {
-  ensurePinpointApp, isPinpointAppDeployed,
+  ensurePinpointApp, isPinpointAppDeployed, isPinpointDeploymentRequired, pushAuthAndAnalyticsPinpointResources,
 } from '../../pinpoint-helper';
 import { enableChannel } from '../../notifications-manager';
 import { writeData } from '../../multi-env-manager';
@@ -44,11 +44,40 @@ const viewQuestionAskNotificationChannelToBeEnabled = async (context:$TSContext,
   return channelName;
 };
 
-const viewShowAllChannelsEnabledWarning = async (context: $TSContext) :Promise<void> => {
+/**
+ * Display warning all channels have been enabled
+ */
+export const viewShowAllChannelsEnabledWarning = async (context: $TSContext) :Promise<void> => {
   context.print.info('All the available notification channels have already been enabled.');
 };
-const viewShowDeferredModeInstructions = async (context: $TSContext): Promise<void> => {
+/**
+ * Display warning that amplify push is required to enable the channel
+ */
+export const viewShowDeferredModeInstructions = async (context: $TSContext): Promise<void> => {
   context.print.warning('Run "amplify push" to update the channel in the cloud');
+};
+
+/**
+ * Display status that Auth and Pinpoint resources are being deployed to the cloud
+ */
+export const viewShowInlineModeInstructionsStart = async (channelName: string): Promise<void> => {
+  spinner.start(`Channel ${channelName} requires a Pinpoint resource in the cloud. Proceeding to deploy Auth and Pinpoint resources...`);
+};
+
+/**
+ * Display status that Auth and Pinpoint resources have been successfully deployed to the cloud
+ */
+export const viewShowInlineModeInstructionsStop = async (channelName: string): Promise<void> => {
+  spinner.succeed(`Channel ${channelName}: Auth and Pinpoint resources deployed successfully...`);
+};
+
+/**
+ * Display error message that Auth and Pinpoint resources failed to be deployed to the cloud
+ * @param channelName name of the channel to be enabled
+ * @param err Error thrown by the pinpoint helper
+ */
+export const viewShowInlineModeInstructionsFail = async (channelName: string, err: Error|string): Promise<void> => {
+  spinner.fail(`Channel ${channelName}: Auth and Pinpoint resources deployment failed with Error ${err}`);
 };
 
 /**
@@ -75,8 +104,23 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
   }
   channelName = await viewQuestionAskNotificationChannelToBeEnabled(context, availableChannels, disabledChannels, channelName);
   if (Notifications.ChannelCfg.isValidChannel(channelName)) {
-    const pinpointAppStatus = await ensurePinpointApp(context, undefined);
+    let pinpointAppStatus = await ensurePinpointApp(context, undefined);
     context = pinpointAppStatus.context;
+    // In-line deployment now requires an amplify-push to create the Pinpoint resource
+    if (isPinpointDeploymentRequired(channelName, pinpointAppStatus)) {
+      await viewShowInlineModeInstructionsStart(channelName);
+      try {
+        // updates the pinpoint app status
+        pinpointAppStatus = await pushAuthAndAnalyticsPinpointResources(context, pinpointAppStatus);
+        await viewShowInlineModeInstructionsStop(channelName);
+      } catch (err) {
+        // if the push fails, the user will be prompted to deploy the resource manually
+        await viewShowInlineModeInstructionsFail(channelName, err);
+        throw new Error('Failed to deploy Auth and Pinpoint resources. Please deploy them manually.');
+      }
+      context = pinpointAppStatus.context;
+    }
+
     if (isPinpointAppDeployed(pinpointAppStatus.status) || Notifications.ChannelCfg.isChannelDeploymentDeferred(channelName)) {
       try {
         const channelAPIResponse : IChannelAPIResponse|undefined = await enableChannel(context, channelName);

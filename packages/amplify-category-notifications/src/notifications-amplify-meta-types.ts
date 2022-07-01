@@ -11,6 +11,33 @@ export interface ICategoryMeta {
   regulatedResourceName? : string
 }
 
+/**
+ *  Channel specific metadata for notifications metadata (output section of Notifications amplify-meta)
+ */
+export type IChannelMeta = Record<string, NotificationsChannelMeta>
+
+/**
+ * Output section of notifications resource meta.
+ * ICategoryMeta defines the Pinpoint resource
+ * Channel Meta stores the channel specific output received from the Pinpoint API response.
+ */
+export type IPinpointAppOutput = ICategoryMeta & IChannelMeta;
+
+/**
+ *  Notifications resource meta data.
+ *  { notifications : { Id, Name, Region, regulatedResourceName, output : { channelName : { Enabled : true } } } }
+ */
+export type IPinpointAppMeta = ICategoryMeta & IPinpointAppOutput;
+
+/**
+ * Notifications section of Amplify Meta
+ * note:- some fields have been duplicated to support older schemas.
+ */
+export interface INotificationsMeta extends ICategoryMeta {
+  ResourceName: string, // legacy structure to store the resource name (without env)
+  output: Record<string, NotificationsChannelMeta>
+  lastPushTimeStamp: string,
+}
 interface IChannelResourceMeta {
     ApplicationId: string, // Pinpoint Physical ID
     CreationDate: string, // Date-Time

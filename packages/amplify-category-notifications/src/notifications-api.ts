@@ -1,10 +1,13 @@
 import {
-  $TSAny, $TSContext, AmplifyCategories, stateManager,
+  $TSAny, $TSContext, AmplifyCategories, AmplifySupportedService, INotificationsResource, INotificationsResourceMeta, stateManager,
 } from 'amplify-cli-core';
 import { ChannelCfg } from './notifications-backend-cfg-channel-api';
 import { NotificationsMeta } from './notifications-amplify-meta-api';
 import { NotificationsCfg } from './notifications-backend-cfg-api';
 import { IChannelAPIResponse, ChannelAction, INotificationsConfigStatus } from './channel-types';
+import { ICategoryMeta } from './notifications-amplify-meta-types';
+import { INotificationsResourceBackendConfig, INotificationsResourceBackendConfigValue } from './notifications-backend-cfg-types';
+import { PinpointName } from './pinpoint-name';
 
 /**
  * Notifications Persistent state management API.
@@ -16,6 +19,38 @@ export class Notifications {
     public static ChannelCfg = ChannelCfg;
     public static Cfg = NotificationsCfg;
     public static Meta = NotificationsMeta;
+
+    private static _buildPartialChannelMeta(channelNames: Array<string>): Record<string, $TSAny>|undefined {
+      const partialOutput : Record<string, $TSAny> = {};
+      for (const channelName of channelNames) {
+        partialOutput[channelName] = { Enabled: true };
+      }
+      return Object.keys(partialOutput).length > 0 ? partialOutput : undefined;
+    }
+
+    /**
+     * configures name, regulatedName (without env)
+     * @param envName - Name of the environment to be used for the notifications.
+     * @param cfg Pinpoint resource config in BackendConfig for the environment.
+     * @returns Pinpoint resource meta to be stored in amplify-meta.
+     */
+    public static generateMetaFromConfig(envName: string, cfg:$TSAny):Partial<INotificationsResourceMeta> {
+      const outputRecords: Record<string, $TSAny>|undefined = (cfg?.channels?.length && cfg.channels.length > 0)
+        ? Notifications._buildPartialChannelMeta(cfg.channels) : undefined;
+      if (cfg.resourceName === undefined) {
+        throw new Error('Pinpoint resource name is missing in the backend config');
+      }
+      const notificationsMeta: Partial<INotificationsResourceMeta> = {
+        Name: PinpointName.generatePinpointAppName(cfg.resourceName, envName), // Env specific resource name
+        ResourceName: cfg.resourceName, // Logical name of Notifications App.
+        service: (cfg.service) || AmplifySupportedService.PINPOINT, // AWS Service e.g Pinpoint
+      };
+      if (outputRecords) {
+        notificationsMeta.output = outputRecords;
+      }
+      return notificationsMeta;
+    }
+
     public static updateChannelAPIResponse = async (context : $TSContext, channelAPIResponse: IChannelAPIResponse):Promise<$TSContext> => {
       let notificationConfig = await Notifications.Cfg.getNotificationsAppConfig(context.exeInfo.backendConfig);
       if (notificationConfig) {
@@ -46,10 +81,6 @@ export class Notifications {
         }
         context.exeInfo.backendConfig[AmplifyCategories.NOTIFICATIONS][notificationConfig.serviceName] = notificationConfig;
       }
-      // console.log('SACPCDEBUG: UpdateChannelAPIResponse : context.exeInfo.backendConfig : ',
-      //  JSON.stringify(context.exeInfo.backendConfig[AmplifyCategories.NOTIFICATIONS], null, 2));
-      // console.log('SACPCDEBUG: UpdateChannelAPIResponse : context.exeInfo.amplifyMeta.notifications : ',
-      //  JSON.stringify(context.exeInfo.amplifyMeta[AmplifyCategories.NOTIFICATIONS], null, 2));
       return context;
     };
 

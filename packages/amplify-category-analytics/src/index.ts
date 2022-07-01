@@ -10,6 +10,8 @@ import inquirer, { QuestionCollection } from 'inquirer';
 import {
   analyticsPluginAPICreateResource, analyticsPluginAPIGetResources,
   analyticsPluginAPIToggleNotificationChannel,
+  analyticsPluginAPIPush,
+  analyticsPluginAPIPostPush,
 } from './analytics-resource-api';
 import pinpointHelper from './lib/pinpoint-helper';
 import kinesisHelper from './lib/kinesis-helper';
@@ -18,6 +20,7 @@ import * as pinpointWalkthrough from './provider-utils/awscloudformation/service
 const category = 'analytics';
 export {
   analyticsPluginAPIGetResources, analyticsPluginAPICreateResource, analyticsPluginAPIToggleNotificationChannel,
+  analyticsPluginAPIPostPush, analyticsPluginAPIPush,
 } from './analytics-resource-api';
 
 /**
@@ -130,4 +133,6 @@ module.exports = {
   analyticsPluginAPIGetResources,
   analyticsPluginAPICreateResource,
   analyticsPluginAPIToggleNotificationChannel,
+  analyticsPluginAPIPush,
+  analyticsPluginAPIPostPush,
 };

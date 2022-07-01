@@ -39,6 +39,9 @@ const { privateKeys } = require('./provider-utils/awscloudformation/constants');
 const { checkAuthResourceMigration } = require('./provider-utils/awscloudformation/utils/check-for-auth-migration');
 
 // this function is being kept for temporary compatability.
+/**
+ *
+ */
 async function add(context, skipNextSteps = false) {
   const { amplify } = context;
   const servicesMetadata = getSupportedServices();
@@ -69,6 +72,9 @@ async function add(context, skipNextSteps = false) {
     });
 }
 
+/**
+ *
+ */
 async function transformCategoryStack(context, resource) {
   if (resource.service === AmplifySupportedService.COGNITO) {
     if (canResourceBeTransformed(context, resource.resourceName)) {
@@ -88,10 +94,16 @@ function canResourceBeTransformed(context, resourceName) {
   return resourceInputState.cliInputFileExists();
 }
 
+/**
+ *
+ */
 async function migrateAuthResource(context, resourceName) {
   return checkAuthResourceMigration(context, resourceName, true);
 }
 
+/**
+ *
+ */
 async function externalAuthEnable(context, externalCategory, resourceName, requirements) {
   const { amplify } = context;
   const serviceMetadata = getSupportedServices();
@@ -226,6 +238,9 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
   }
 }
 
+/**
+ *
+ */
 async function checkRequirements(requirements, context, category, targetResourceName) {
   // We only require the checking of two properties:
   // - authSelections
@@ -302,6 +317,9 @@ async function checkRequirements(requirements, context, category, targetResource
   return result;
 }
 
+/**
+ *
+ */
 async function initEnv(context) {
   const { amplify } = context;
   const {
@@ -363,6 +381,9 @@ async function initEnv(context) {
   await sequential(authTasks);
 }
 
+/**
+ *
+ */
 async function authConsole(context) {
   const { amplify } = context;
   const amplifyMeta = amplify.getProjectMeta();
@@ -388,6 +409,9 @@ async function authConsole(context) {
     });
 }
 
+/**
+ *
+ */
 async function getPermissionPolicies(context, resourceOpsMapping) {
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
@@ -418,6 +442,9 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
   return { permissionPolicies, resourceAttributes };
 }
 
+/**
+ *
+ */
 async function executeAmplifyCommand(context) {
   let commandPath = path.normalize(path.join(__dirname, 'commands'));
   if (context.input.command === 'help') {
@@ -429,6 +456,19 @@ async function executeAmplifyCommand(context) {
   const commandModule = require(commandPath);
   await commandModule.run(context);
 }
+
+/**
+ * Execute auth Push command with force yes
+ * @param {Object} context - The amplify context.
+ */
+const authPush = async context => {
+  const commandPath = path.normalize(path.join(__dirname, 'commands', category, 'push'));
+  const commandModule = require(commandPath);
+  context.exeInfo = (context.exeInfo) || {};
+  context.exeInfo.inputParams = (context.exeInfo.inputParams) || {};
+  context.exeInfo.inputParams.yes = true; // force yes to avoid prompts
+  await commandModule.run(context);
+};
 
 /**
  * Entry point for headless commands
@@ -485,15 +525,24 @@ const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
   }
 };
 
+/**
+ *
+ */
 async function handleAmplifyEvent(context, args) {
   context.print.info(`${category} handleAmplifyEvent to be implemented`);
   context.print.info(`Received event args ${args}`);
 }
 
+/**
+ *
+ */
 async function prePushAuthHook(context) {
   // await transformUserPoolGroupSchema(context);
 }
 
+/**
+ *
+ */
 async function importAuth(context) {
   const { amplify } = context;
   const servicesMetadata = getSupportedServices();
@@ -509,6 +558,9 @@ async function importAuth(context) {
   return providerController.importResource(context, serviceSelection, undefined, undefined, false);
 }
 
+/**
+ *
+ */
 async function isSMSWorkflowEnabled(context, resourceName) {
   const { imported, userPoolId } = context.amplify.getImportedAuthProperties(context);
   let userNameAndMfaConfig;
@@ -544,4 +596,5 @@ module.exports = {
   AmplifyAuthTransform,
   AmplifyUserPoolGroupTransform,
   transformCategoryStack,
+  authPluginAPIPush: authPush,
 };

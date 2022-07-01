@@ -1,9 +1,9 @@
 import {
-  $TSContext, $TSAny, stateManager, AmplifyCategories, AmplifySupportedService,
+  $TSContext, stateManager, AmplifyCategories, AmplifySupportedService,
 } from 'amplify-cli-core';
 import * as path from 'path';
 import {
-  IChannelAvailability, INotificationsConfigStatus, ChannelConfigDeploymentType, IChannelViewInfo,
+  IChannelAvailability, ChannelConfigDeploymentType, IChannelViewInfo,
 } from './channel-types';
 import { NotificationsCfg } from './notifications-backend-cfg-api';
 import { INotificationsResourceBackendConfig, INotificationsChannelBackendConfig } from './notifications-backend-cfg-types';
@@ -84,76 +84,85 @@ export class ChannelCfg {
 
       public static getChannelViewInfo = (channelName: string): IChannelViewInfo => (ChannelCfg.channelViewInfo[channelName]);
 
-      /**
-       * Given a channelName display the help string for it.
-       * @param channelName  notifications channel for which help needs to be displayed
-       * @returns help string for the channel name
-       */
-      public static getChannelViewHelp = (channelName: string): string => (ChannelCfg.channelViewInfo[channelName].help);
-
-      /**
-       * Given a channelName return the user friendly channel name to be displayed
-       * @param channelName  notifications channel for which user friendly string needs to be returned.
-       */
-      public static getChannelViewName = (channelName: string): string => ChannelCfg.channelViewInfo[channelName].viewName;
-
-      /**
-       * Given a user friendly channel name, return the channelName which it maps to.
-       * @param channelViewString user friendly channel name e.g (Apple Push Notifications)
-       * @returns channel name (e.g APN)
-       */
-      public static getChannelNameFromView = (channelViewString: string): string => {
-        for (const channelName of Object.keys(ChannelCfg.ChannelType)) {
-          if (ChannelCfg.channelViewInfo[channelName].viewName === channelViewString) {
-            return channelName;
-          }
-        }
-        throw new Error(`No channel name found for view ${channelViewString}`);
-      };
-
-      /**
-       * For a given notifications resource get local and deployed channel availability
-       * @param backendResourceConfig notifications resource info from the backend config
-       * @returns enabled and disabled channels
-       */
-      public static getChannelAvailability = async (backendResourceConfig:INotificationsResourceBackendConfig)
-      : Promise<IChannelAvailability> => {
-        const availableChannels = ChannelCfg.getAvailableChannels();
-        const enabledChannels = (await ChannelCfg.getEnabledChannelsFromBackendConfig(backendResourceConfig)) || [];
-        const disabledChannels = (await ChannelCfg.getDisabledChannelsFromBackendConfig(availableChannels, enabledChannels)) || [];
-        const backend : IChannelAvailability = {
-          enabledChannels,
-          disabledChannels,
-        };
-        return backend;
-      };
-
-      /**
-       * Get all notifications channel which are not in use in the Backend Config
-       * @returns array of channels which are not in use
-       */
-      public static getDisabledChannelsFromBackendConfig = async (availableChannels?: Array<string>,
-        enabledChannels?: Array<string>): Promise<Array<string>> => {
-        let result : Array<string> = [];
-        const tmpEnabledChannels = (enabledChannels) || await ChannelCfg.getEnabledChannelsFromBackendConfig();
-        const tmpAvailableChannels = (availableChannels) || ChannelCfg.getAvailableChannels();
-        if (!tmpAvailableChannels) {
-          return result;
-        }
-        result = tmpAvailableChannels.filter(channelName => !tmpEnabledChannels.includes(channelName));
-        return result;
-      };
-
-      /**
-     * Returns true if resource is deployed only during amplify push
-     * @param validChannelName - a valid channel name
-     * @returns true if channel deployment is handled through amplify push
+    /**
+     * Given a channelName display the help string for it.
+     * @param channelName  notifications channel for which help needs to be displayed
+     * @returns help string for the channel name
      */
-      public static isChannelDeploymentDeferred = (validChannelName: string): boolean => (
-        ChannelCfg.getChannelDeploymentType(validChannelName) === ChannelConfigDeploymentType.DEFERRED
+    public static getChannelViewHelp = (channelName: string): string => (ChannelCfg.channelViewInfo[channelName].help);
+
+    /**
+     * Given a channelName return the user friendly channel name to be displayed
+     * @param channelName  notifications channel for which user friendly string needs to be returned.
+     */
+    public static getChannelViewName = (channelName: string): string => ChannelCfg.channelViewInfo[channelName].viewName;
+
+    /**
+     * Given a user friendly channel name, return the channelName which it maps to.
+     * @param channelViewString user friendly channel name e.g (Apple Push Notifications)
+     * @returns channel name (e.g APN)
+     */
+    public static getChannelNameFromView = (channelViewString: string): string => {
+      for (const channelName of Object.keys(ChannelCfg.ChannelType)) {
+        if (ChannelCfg.channelViewInfo[channelName].viewName === channelViewString) {
+          return channelName;
+        }
+      }
+      throw new Error(`No channel name found for view ${channelViewString}`);
+    };
+
+    /**
+     * For a given notifications resource get local and deployed channel availability
+     * @param backendResourceConfig notifications resource info from the backend config
+     * @returns enabled and disabled channels
+     */
+    public static getChannelAvailability = async (backendResourceConfig:INotificationsResourceBackendConfig)
+    : Promise<IChannelAvailability> => {
+      const availableChannels = ChannelCfg.getAvailableChannels();
+      const enabledChannels = (await ChannelCfg.getEnabledChannelsFromBackendConfig(backendResourceConfig)) || [];
+      const disabledChannels = (await ChannelCfg.getDisabledChannelsFromBackendConfig(availableChannels, enabledChannels)) || [];
+      const backend : IChannelAvailability = {
+        enabledChannels,
+        disabledChannels,
+      };
+      return backend;
+    };
+
+    /**
+     * Get all notifications channel which are not in use in the Backend Config
+     * @returns array of channels which are not in use
+     */
+    public static getDisabledChannelsFromBackendConfig = async (availableChannels?: Array<string>,
+      enabledChannels?: Array<string>): Promise<Array<string>> => {
+      let result : Array<string> = [];
+      const tmpEnabledChannels = (enabledChannels) || await ChannelCfg.getEnabledChannelsFromBackendConfig();
+      const tmpAvailableChannels = (availableChannels) || ChannelCfg.getAvailableChannels();
+      if (!tmpAvailableChannels) {
+        return result;
+      }
+      result = tmpAvailableChannels.filter(channelName => !tmpEnabledChannels.includes(channelName));
+      return result;
+    };
+
+    /**
+   * Returns true if resource is deployed only during amplify push
+   * @param validChannelName - a valid channel name
+   * @returns true if channel deployment is handled through amplify push
+   */
+    public static isChannelDeploymentDeferred = (validChannelName: string): boolean => (
+      ChannelCfg.getChannelDeploymentType(validChannelName) === ChannelConfigDeploymentType.DEFERRED
+    )
+
+    /**
+   * Returns true if resource is deployed during the amplify cli execution
+   * @param validChannelName - a valid channel name
+   * @returns true if channel deployment is handled at the time of amplify cli execution
+   */
+      public static isChannelDeploymentInline = (validChannelName: string): boolean => (
+        ChannelCfg.getChannelDeploymentType(validChannelName) === ChannelConfigDeploymentType.INLINE
       )
 
-      /**
+    /**
    * Check if notification channel has been added to the backend-config
    * @param resourceBackendConfig - Backend config for the given pinpoint resource from backend-config.json
    * @param channel - Notification channel to be checked for.

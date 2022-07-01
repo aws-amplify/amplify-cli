@@ -1,10 +1,13 @@
-import { stateManager } from 'amplify-cli-core';
+/* eslint-disable no-param-reassign */
+import { $TSAny, $TSMeta, AmplifyCategories, stateManager } from 'amplify-cli-core';
 
-export function getResourceOutputs(amplifyMeta) {
+/**
+ *
+ */
+export const getResourceOutputs = (amplifyMeta: $TSMeta) => {
   if (!amplifyMeta) {
     amplifyMeta = stateManager.getMeta();
   }
-
   // Build the provider object
   const outputsByProvider: { serviceResourceMapping?; awscloudformation? } = {};
   const outputsByCategory = {};
@@ -25,9 +28,11 @@ export function getResourceOutputs(amplifyMeta) {
   if (amplifyMeta) {
     Object.keys(amplifyMeta).forEach(category => {
       const categoryMeta = amplifyMeta[category];
+      const isVirtualCategory = checkIfVirtualCategory(category);
       Object.keys(categoryMeta).forEach(resourceName => {
         const resourceMeta = categoryMeta[resourceName];
-        if (resourceMeta.output && resourceMeta.lastPushTimeStamp) {
+
+        if (resourceMeta.output && (resourceMeta.lastPushTimeStamp || isVirtualCategory)) {
           const { providerPlugin } = resourceMeta;
           if (!outputsByProvider[providerPlugin]) {
             outputsByProvider[providerPlugin] = {
@@ -69,3 +74,16 @@ export function getResourceOutputs(amplifyMeta) {
   }
   return { outputsByProvider, outputsByCategory, outputsForFrontend };
 }
+
+/**
+ * A virtual category is a category where its resource is allocated and managed by a different plugin.
+ * e.g. Notifications category only manages channel configuration on a Pinpoint resource managed by the Analytics category.
+ * @param category amplify category
+ */
+const checkIfVirtualCategory = (category: string): boolean => {
+  const virtualCategoryTable = [AmplifyCategories.NOTIFICATIONS];
+  if (virtualCategoryTable.includes(category)) {
+    return true;
+  }
+  return false;
+};
