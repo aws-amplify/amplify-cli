@@ -421,7 +421,7 @@ describe('feature flags', () => {
       // Set current cwd to projectPath for .env to work correctly
       process.chdir(projectPath);
 
-      await FeatureFlags.initialize(envProvider, undefined, getTestFlags());
+      await expect(FeatureFlags.initialize(envProvider, undefined, getTestFlags())).resolves.not.toThrow();
     });
 
     const getTestFlags = (): Record<string, FeatureFlagRegistration[]> => ({
