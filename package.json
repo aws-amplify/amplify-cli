@@ -6,7 +6,7 @@
     "check-node-memory": "node ./scripts/check_node_memory.js",
     "addwords": "node ./scripts/add-to-dict.js",
     "test-changed": "nx affected --target=test",
-    "test": "nx run-many --targePt=test --all",
+    "test": "nx run-many --target=test --all",
     "test-ci": "nx run-many --target=test --all --parallel=1 -- --ci -i",
     "e2e": "nx run e2e",
     "cloud-e2e": "CURR_BRANCH=$(git branch | awk '/\\*/{printf \"%s\", $2}') && UPSTREAM_BRANCH=run-e2e/$USER/$CURR_BRANCH && git push $(git remote -v | grep aws-amplify/amplify-cli | head -n1 | awk '{print $1;}') $CURR_BRANCH:$UPSTREAM_BRANCH --no-verify --force-with-lease && echo \"\n\n 🏃 E2E test are running at:\nhttps://app.circleci.com/pipelines/github/aws-amplify/amplify-cli?branch=$UPSTREAM_BRANCH\"",
