@@ -188,7 +188,7 @@ jobs:
           paths:
             - ~/repo/.amplify-pkg-version
 
-  build_pkg_binaries:
+  build_release_pkg_binaries:
     <<: *linux-e2e-executor
     steps:
       - attach_workspace:
@@ -205,9 +205,34 @@ jobs:
             setNpmRegistryUrlToLocal
             changeNpmGlobalPath
             yarn yarn-use-bash
-            yarn pkg-all
+            yarn pkg-release-required
             unsetNpmRegistryUrl
-            uploadPkgCli
+            uploadNonTestReleaseCli
+      - save_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ~/repo/out
+
+  build_test_pkg_binaries:
+    <<: *linux-e2e-executor
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+      - restore_cache:
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: Start verdaccio and package CLI
+          command: |
+            source .circleci/local_publish_helpers.sh
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setNpmRegistryUrlToLocal
+            changeNpmGlobalPath
+            yarn yarn-use-bash
+            yarn pkg-test-required
+            unsetNpmRegistryUrl
+            uploadTestPkgCli
       - save_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
           paths:
@@ -534,7 +559,8 @@ jobs:
           name: Upload Pkg Binary
           command: |
             source .circleci/local_publish_helpers.sh
-            uploadPkgCli
+            uploadTestPkgCli
+            uploadNonTestReleaseCli
             ./out/amplify-pkg-linux-x64 --version
       - run:
           name: Authenticate with npm
@@ -670,7 +696,7 @@ workflows:
       - publish_to_local_registry:
           requires:
             - build
-      - build_pkg_binaries:
+      - build_test_pkg_binaries:
           context:
             - e2e-auth-credentials
             - e2e-test-context
@@ -683,7 +709,7 @@ workflows:
             - e2e-auth-credentials
             - e2e-test-context
           requires:
-            - build_pkg_binaries
+            - build_test_pkg_binaries
   e2e_resource_cleanup:
     triggers:
       - schedule:
@@ -710,15 +736,78 @@ workflows:
               os:
                 - l
                 - w
+          filters:
+            branches:
+              ignore:
+                - beta
+                - release
       - lint:
           requires:
             - build
+          filters:
+            branches:
+              ignore:
+                - beta
+                - release
+                - /tagged-release-without-e2e-tests\/.*/
       - test:
           requires:
             - build
+          filters:
+            branches:
+              ignore:
+                - beta
+                - release
+                - /tagged-release-without-e2e-tests\/.*/
       - mock_e2e_tests:
           requires:
             - build
+          filters:
+            branches:
+              ignore:
+                - beta
+                - release
+                - /tagged-release-without-e2e-tests\/.*/
+      - integration_test:
+          context:
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - dev
+                - /tagged-release\/.*/
+                - /run-e2e\/.*/
+          requires:
+            - build
+      - publish_to_local_registry:
+          filters:
+            branches:
+              only:
+                - master
+                - dev
+                - /tagged-release\/.*/
+                - /tagged-release-without-e2e-tests\/.*/
+                - /run-e2e\/.*/
+          requires:
+            - build
+
+      - build_test_pkg_binaries:
+          context:
+            - e2e-auth-credentials
+            - e2e-test-context
+            - amplify-s3-upload
+          requires:
+            - publish_to_local_registry
+
+      - build_release_pkg_binaries:
+          context:
+            - e2e-auth-credentials
+            - e2e-test-context
+            - amplify-s3-upload
+          requires:
+            - publish_to_local_registry
+
       - graphql_e2e_tests:
           context:
             - e2e-test-context
@@ -730,44 +819,12 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
           requires:
-            - build_pkg_binaries
-      - integration_test:
-          context:
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - dev
-                - beta
-                - /tagged-release\/.*/
-                - /run-e2e\/.*/
-          requires:
-            - build
-      - publish_to_local_registry:
-          filters:
-            branches:
-              only:
-                - master
-                - dev
-                - beta
-                - release
-                - /tagged-release\/.*/
-                - /tagged-release-without-e2e-tests\/.*/
-                - /run-e2e\/.*/
-          requires:
-            - build
-      - build_pkg_binaries:
-          context:
-            - e2e-auth-credentials
-            - e2e-test-context
-            - amplify-s3-upload
-          requires:
-            - publish_to_local_registry
+            - build_test_pkg_binaries
+
       - amplify_sudo_install_test:
           context: amplify-ecr-image-pull
           requires:
-            - build_pkg_binaries
+            - build_test_pkg_binaries
           filters:
             branches:
               only:
@@ -775,6 +832,7 @@ workflows:
                 - dev
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
+
       - cleanup_resources:
           context:
               - cleanup-resources
@@ -801,7 +859,7 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
           requires:
-            - build_pkg_binaries
+            - build_test_pkg_binaries
       - amplify_migration_tests_v6:
           context:
             - e2e-auth-credentials
@@ -815,9 +873,7 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
           requires:
-            - build_pkg_binaries
-          # post-steps:
-          #   - run: *clean_e2e_resources
+            - build_test_pkg_binaries
       - amplify_migration_tests_v5:
           context:
             - e2e-auth-credentials
@@ -831,9 +887,7 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
           requires:
-            - build_pkg_binaries
-          # post-steps:
-          #   - run: *clean_e2e_resources
+            - build_test_pkg_binaries
       - amplify_migration_tests_non_multi_env_layers:
           context:
             - e2e-auth-credentials
@@ -847,9 +901,7 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
           requires:
-            - build_pkg_binaries
-          # post-steps:
-          #   - run: *clean_e2e_resources
+            - build_test_pkg_binaries
       - amplify_migration_tests_multi_env_layers:
           context:
             - e2e-auth-credentials
@@ -863,27 +915,27 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
           requires:
-            - build_pkg_binaries
-          # post-steps:
-          #   - run: *clean_e2e_resources
+            - build_test_pkg_binaries
       - amplify_console_integration_tests:
           context:
             - e2e-auth-credentials
             - cleanup-resources
             - console-e2e-test
             - e2e-test-context
-          # post-steps:
-          #   - run: *clean_e2e_resources
           filters:
             branches:
               only:
-                - beta
+                - dev
+                - master
+                - /run-e2e\/.*/
           requires:
-            - build_pkg_binaries
+            - build_test_pkg_binaries
+
       - github_prerelease:
           context: github-publish
           requires:
-            - build_pkg_binaries
+            - build_test_pkg_binaries
+            - build_release_pkg_binaries
           filters:
             branches:
               only:
@@ -895,6 +947,7 @@ workflows:
             branches:
               only:
                 - release
+
       - wait_for_all:
           context:
             - cleanup-resources
@@ -942,14 +995,14 @@ workflows:
             - amplify_migration_tests_non_multi_env_layers
             - amplify_migration_tests_multi_env_layers
             - github_prerelease_install_sanity_check
-            - build_pkg_binaries
+            - build_test_pkg_binaries
+            - build_release_pkg_binaries
           filters:
             branches:
               only:
                 - release
                 - master
                 - dev
-                - beta
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
       - github_release:
