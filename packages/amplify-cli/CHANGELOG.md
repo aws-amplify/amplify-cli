@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [9.2.0-signinUpdate.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@9.0.0...@aws-amplify/cli-internal@9.2.0-signinUpdate.0) (2022-07-05)
+
+
+### Bug Fixes
+
+* build all functions ([2ce7729](https://github.com/aws-amplify/amplify-cli/commit/2ce77296676cf68504750188824a72cb6ee56e1f))
+* cli package unit tests ([acba93e](https://github.com/aws-amplify/amplify-cli/commit/acba93e96e59ed0583a8993d8b1057a0d07ddca1))
+* revert build checks ([935f5de](https://github.com/aws-amplify/amplify-cli/commit/935f5ded9f45800ecfc04fff6e8770583945f3c6))
+
+
+
+# 9.1.0 (2022-06-29)
+
+
+### Features
+
+* no-op commit ([#10660](https://github.com/aws-amplify/amplify-cli/issues/10660)) ([6cd057a](https://github.com/aws-amplify/amplify-cli/commit/6cd057ab611497fdca0a5f62e519002b5efbeb0b))
+
+
+
+
+
 # [9.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@9.0.0...@aws-amplify/cli-internal@9.1.0) (2022-06-30)
 
 

@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.10.4-signinUpdate.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.10.2...@aws-amplify/amplify-category-auth@2.10.4-signinUpdate.0) (2022-07-05)
+
+
+### Bug Fixes
+
+* cli package unit tests ([acba93e](https://github.com/aws-amplify/amplify-cli/commit/acba93e96e59ed0583a8993d8b1057a0d07ddca1))
+* update user pool groups flow ([#10641](https://github.com/aws-amplify/amplify-cli/issues/10641)) ([651531d](https://github.com/aws-amplify/amplify-cli/commit/651531d5379ea3c712aee2fecb7329dcba826ecb))
+* updated attribute in CFN flow ([8a11350](https://github.com/aws-amplify/amplify-cli/commit/8a113509edd10ebe2b04ca4e653bf331613ade1e))
+* updated template ([0e3cd9d](https://github.com/aws-amplify/amplify-cli/commit/0e3cd9d6e2b3318d9b3fc136e42d2ebc53ca7613))
+* updated unit tests ([41dcc05](https://github.com/aws-amplify/amplify-cli/commit/41dcc057b96ac5d6debf2b705ed8a218469cca53))
+
+
+
+
+
 ## [2.10.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.10.2...@aws-amplify/amplify-category-auth@2.10.3) (2022-06-30)
 
 

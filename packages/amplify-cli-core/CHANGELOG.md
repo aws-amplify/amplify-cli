@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.12.0-signinUpdate.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.10.0...amplify-cli-core@2.12.0-signinUpdate.0) (2022-07-05)
+
+
+### Bug Fixes
+
+* build all functions ([2ce7729](https://github.com/aws-amplify/amplify-cli/commit/2ce77296676cf68504750188824a72cb6ee56e1f))
+* ignore false feature flags correctly ([#10678](https://github.com/aws-amplify/amplify-cli/issues/10678)) ([77ec5d9](https://github.com/aws-amplify/amplify-cli/commit/77ec5d93999ee2504b0b404411f2271824628184))
+* revert build checks ([935f5de](https://github.com/aws-amplify/amplify-cli/commit/935f5ded9f45800ecfc04fff6e8770583945f3c6))
+
+
+### Features
+
+* allow unknown feature flags if set to false ([#10612](https://github.com/aws-amplify/amplify-cli/issues/10612)) ([d45991c](https://github.com/aws-amplify/amplify-cli/commit/d45991c347e17ef3d77b105e744125ad2d71197e))
+
+
+
+
+
 # [2.11.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.10.0...amplify-cli-core@2.11.0) (2022-06-30)
 
 
