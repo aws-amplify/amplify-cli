@@ -25,9 +25,6 @@ const maximumVersion = <SemVer>coerce('2.0');
 
 let executablePath: string | null;
 
-/**
- *
- */
 export const executeCommand = (
   args: string[],
   streamStdio: boolean,
@@ -70,9 +67,6 @@ const isBuildStale = (resourceDir: string, lastBuildTimeStamp: Date, outDir: str
   return !!fileUpdatedAfterLastBuild;
 };
 
-/**
- *
- */
 export const buildResource = async ({ buildType, srcRoot, lastBuildTimeStamp }: BuildRequest): Promise<BuildResult> => {
   let rebuilt = false;
 
@@ -117,9 +111,6 @@ export const buildResource = async ({ buildType, srcRoot, lastBuildTimeStamp }: 
   };
 };
 
-/**
- *
- */
 export const getGoVersion = (): SemVer => {
   // Validate go version
   const versionOutput = executeCommand(['version'], false);
@@ -139,9 +130,6 @@ export const getGoVersion = (): SemVer => {
   throw new Error(`Invalid version string: ${versionOutput}`);
 };
 
-/**
- *
- */
 export const checkDependencies = async (_runtimeValue: string): Promise<CheckDependenciesResult> => {
   // Check if go is in the path
   executablePath = which.sync(executableName, {
@@ -169,9 +157,6 @@ export const checkDependencies = async (_runtimeValue: string): Promise<CheckDep
   };
 };
 
-/**
- *
- */
 export const packageResource = async (request: PackageRequest, context: any): Promise<PackageResult> => {
   // check if repackaging is needed
   if (!request.lastPackageTimeStamp || request.lastBuildTimeStamp > request.lastPackageTimeStamp) {
