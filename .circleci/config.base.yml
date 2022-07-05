@@ -799,6 +799,12 @@ workflows:
             - amplify-s3-upload
           requires:
             - publish_to_local_registry
+          filters:
+            branches:
+              only:
+                - master
+                - dev
+                - /run-e2e\/.*/
 
       - build_release_pkg_binaries:
           context:
