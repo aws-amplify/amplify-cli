@@ -53,8 +53,7 @@
   },
   "devDependencies": {
     "cloudform-types": "^4.2.0",
-    "rimraf": "^3.0.2",
-    "ts-jest": "^26.4.4"
+    "rimraf": "^3.0.2"
   },
   "jest": {
     "collectCoverage": true,

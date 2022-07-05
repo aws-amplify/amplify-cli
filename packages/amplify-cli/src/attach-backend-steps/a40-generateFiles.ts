@@ -78,6 +78,11 @@ const generateProjectConfigFile = (context: $TSContext): void => {
   }
 };
 
+/**
+ * Write the initial TPI file to disk
+ *
+ * @deprecated Still creating the TPI file for now, but this will go away in the future
+ */
 const generateTeamProviderInfoFile = (context: $TSContext): $TSAny => {
   const { projectPath } = context.exeInfo.localEnvInfo;
   const { teamProviderInfo } = context.exeInfo;
