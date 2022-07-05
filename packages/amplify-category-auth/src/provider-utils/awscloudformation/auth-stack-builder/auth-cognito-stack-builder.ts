@@ -41,16 +41,11 @@ const authProvidersList: Record<string, string> = {
   'appleid.apple.com': 'appleAppId',
 };
 
-/**
- *
- */
+
 export type AmplifyAuthCognitoStackProps = {
   synthesizer: cdk.IStackSynthesizer;
 };
 
-/**
- *
- */
 export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCognitoStackTemplate {
   private _scope: cdk.Construct;
   private _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
@@ -111,9 +106,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     this.lambdaTriggerPermissions = {};
   }
 
-  /**
-   *
-   */
+
   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void {
     if (!this._cfnResourceMap.has(logicalId)) {
       this._cfnResourceMap.set(logicalId, new cdk.CfnResource(this, logicalId, props));
@@ -122,9 +115,6 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     }
   }
 
-  /**
-   *
-   */
   getCfnOutput(logicalId: string): cdk.CfnOutput {
     if (this._cfnOutputMap.has(logicalId)) {
       return this._cfnOutputMap.get(logicalId)!;
@@ -132,9 +122,6 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     throw new Error(`Cfn Output with LogicalId ${logicalId} doesnt exist`);
   }
 
-  /**
-   *
-   */
   getCfnMapping(logicalId: string): cdk.CfnMapping {
     if (this._cfnMappingMap.has(logicalId)) {
       return this._cfnMappingMap.get(logicalId)!;
@@ -194,9 +181,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     }
   }
 
-  /**
-   *
-   */
+
   getCfnParameter(logicalId: string): cdk.CfnParameter {
     if (this._cfnParameterMap.has(logicalId)) {
       return this._cfnParameterMap.get(logicalId)!;
@@ -204,50 +189,13 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     throw new Error(`Cfn Parameter with LogicalId ${logicalId} doesnt exist`);
   }
 
-  /**
-   *
-   */
+
   getCfnCondition(logicalId: string): cdk.CfnCondition {
     if (this._cfnConditionMap.has(logicalId)) {
       return this._cfnConditionMap.get(logicalId)!;
     }
     throw new Error(`Cfn Condition with LogicalId ${logicalId} doesnt exist`);
   }
-
-  // getDefaultuserAttributeUpdateSettings = (props:CognitoStackOptions) : string[] => {
-  //   const defaultuserAttributeUpdateSettings = [AttributeType.EMAIL];
-  //   if (FeatureFlags.getBoolean('auth.forceAliasAttributes')) {
-  //     let aliasAtrributeSetting =  _.isEmpty(props.aliasAttributes) ? props.requiredAttributes! : props.aliasAttributes!;
-  //     /**
-  //      * covert ["email,phone_number"] ===> ["email" ,"phone_number"]
-  //      */
-  //     if(aliasAtrributeSetting[0] === AttributeType.EMAIL_AND_PHONE_NUMBER){
-  //       aliasAtrributeSetting = aliasAtrributeSetting[0].split(',').map(attribute => attribute.trim());
-  //     }
-  //     return aliasAtrributeSetting ?? defaultuserAttributeUpdateSettings;
-  //   } else {
-  //     let usernameAtrributeSetting =  _.isEmpty(props.usernameAttributes) ? props.requiredAttributes! : props.usernameAttributes!;
-  //     if(usernameAtrributeSetting[0] === AttributeType.EMAIL_AND_PHONE_NUMBER){
-  //       usernameAtrributeSetting = usernameAtrributeSetting[0].split(',').map(attribute => attribute.trim());
-  //     }
-  //     return usernameAtrributeSetting ?? defaultuserAttributeUpdateSettings;
-  //   }
-  // }
-
-  // getUserAttributeUpdateSettings = (props: CognitoStackOptions): string[] => {
-  //   if(!_.isEmpty(props.userAttributeUpdateSettings)) {
-  //     const userAttributeUpdateSettings = props.userAttributeUpdateSettings!;
-  //     if(userAttributeUpdateSettings[0] === AttributeType.EMAIL_AND_PHONE_NUMBER){
-  //       return userAttributeUpdateSettings[0].split(',').map(attribute => attribute.trim());
-  //     }
-  //     else{
-  //       return props.userAttributeUpdateSettings!;
-  //     }
-  //   }
-  //   else{
-  //     return this.getDefaultuserAttributeUpdateSettings(props);
-  //   }
-  // }
 
   generateCognitoStackResources = async (props: CognitoStackOptions) => {
     const autoVerifiedAttributes = props.autoVerifiedAttributes
@@ -615,9 +563,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
    */
   public renderCloudFormationTemplate = (_: cdk.ISynthesisSession): string => JSON.stringify(this._toCloudFormation(), undefined, 2);
 
-  /**
-   *
-   */
+
   createUserPoolClientCustomResource(props: CognitoStackOptions) {
     // iam role
     this.userPoolClientRole = new iam.CfnRole(this, 'UserPoolClientRole', {
@@ -879,9 +825,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     this.hostedUIProvidersCustomResourceInputs.node.addDependency(this.hostedUIProvidersCustomResourceLogPolicy);
   }
 
-  /**
-   *
-   */
+
   createOAuthCustomResource() {
     // lambda function
     this.oAuthCustomResource = new lambda.CfnFunction(this, 'OAuthCustomResource', {
@@ -956,9 +900,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     this.oAuthCustomResourceInputs.node.addDependency(this.oAuthCustomResourceLogPolicy);
   }
 
-  /**
-   *
-   */
+
   createMFACustomResource(props: CognitoStackOptions) {
     // iam role
     this.mfaLambdaRole = new iam.CfnRole(this, 'MFALambdaRole', {
