@@ -1,6 +1,6 @@
 import { join } from 'path';
 import { valid, lte } from 'semver';
-import { getVersionFromArgs, githubTagToSemver, releasesRequest, semverToGithubTag, uploadReleaseFile } from './github-common';
+import { getArgs, githubTagToSemver, releasesRequest, semverToGithubTag, uploadReleaseFile } from './github-common';
 import { readFile } from 'fs-extra';
 import { unifiedChangelogPath } from './constants';
 
@@ -31,7 +31,7 @@ const validateVersion = async (version: string) => {
   }
 };
 
-const createPreRelease = async (version: string) => {
+const createPreRelease = async (version: string, commit: string) => {
   console.log('Creating draft pre-release');
   const { id: releaseId } = await releasesRequest('', {
     method: 'POST',
@@ -41,6 +41,7 @@ const createPreRelease = async (version: string) => {
       body: await readFile(unifiedChangelogPath, 'utf8'),
       draft: true,
       prerelease: true,
+      target_commitish: commit,
     }),
   });
 
@@ -68,9 +69,9 @@ const createPreRelease = async (version: string) => {
 
 const main = async () => {
   try {
-    const version = getVersionFromArgs();
+    const { version, commit } = getArgs();
     await validateVersion(version);
-    await createPreRelease(version);
+    await createPreRelease(version, commit);
     console.log('Done!');
   } catch (ex) {
     console.error(ex);
