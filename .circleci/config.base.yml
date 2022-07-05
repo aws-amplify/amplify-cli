@@ -568,8 +568,9 @@ jobs:
       - run:
           name: Publish Amplify CLI GitHub prerelease
           command: |
+            commit=$(git rev-parse HEAD)
             version=$(cat .amplify-pkg-version)
-            yarn ts-node scripts/github-prerelease.ts $version
+            yarn ts-node scripts/github-prerelease.ts $version $commit
 
   github_prerelease_install_sanity_check:
     <<: *linux-e2e-executor
