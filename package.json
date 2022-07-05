@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "description": "amplify-cli",
   "scripts": {
-    "check-node-memory": "node ./scripts/check_node_memory.js",
     "addwords": "node ./scripts/add-to-dict.js",
     "test-changed": "nx affected --target=test",
     "test": "nx run-many --target=test --all",
