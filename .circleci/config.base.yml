@@ -1073,6 +1073,7 @@ commands:
             - run:
                 shell: powershell.exe
                 command: cp /home/circleci/repo/out/amplify-pkg-win-x64.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps\amplify.exe
+
   run_e2e_tests:
     description: 'Run Amplify E2E tests'
     parameters:
