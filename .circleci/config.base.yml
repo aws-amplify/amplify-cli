@@ -934,7 +934,6 @@ workflows:
       - github_prerelease:
           context: github-publish
           requires:
-            - build_test_pkg_binaries
             - build_release_pkg_binaries
           filters:
             branches:
@@ -995,7 +994,6 @@ workflows:
             - amplify_migration_tests_non_multi_env_layers
             - amplify_migration_tests_multi_env_layers
             - github_prerelease_install_sanity_check
-            - build_test_pkg_binaries
             - build_release_pkg_binaries
           filters:
             branches:
