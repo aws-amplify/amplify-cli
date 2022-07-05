@@ -1,21 +1,21 @@
 {
-    "name": "custom-resource",
-    "version": "1.0.0",
-    "description": "",
-    "scripts": {
-      "build": "tsc",
-      "watch": "tsc -w",
-      "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "dependencies": {
-      "@aws-amplify/cli-extensibility-helper": "^2.0.0",
-      "@aws-cdk/core": "^1.124.0",
-      "@aws-cdk/aws-iam": "^1.124.0",
-      "@aws-cdk/aws-sns-subscriptions": "^1.124.0",
-      "@aws-cdk/aws-sqs": "^1.124.0",
-      "@aws-cdk/aws-sns": "^1.124.0"
-    },
-    "devDependencies": {
-      "typescript": "^4.2.4"
-    }
+  "name": "custom-resource",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@aws-amplify/cli-extensibility-helper": "^2.0.0",
+    "@aws-cdk/core": "^1.159.0",
+    "@aws-cdk/aws-iam": "^1.159.0",
+    "@aws-cdk/aws-sns-subscriptions": "^1.159.0",
+    "@aws-cdk/aws-sqs": "^1.159.0",
+    "@aws-cdk/aws-sns": "^1.159.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.2.4"
+  }
 }
