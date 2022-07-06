@@ -8,6 +8,7 @@ import {
   initJSProjectWithProfile,
   getBackendConfig,
   diagnoseSendReport,
+  diagnoseSendReport_ZipFailed,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -41,7 +42,7 @@ describe('amplify diagnose --send-report', () => {
     deleteProjectDir(projectRoot);
   });
 
-  it('...should update backend-config.json on auth update', async () => {
+  it('...should send zips and verify files', async () => {
     await initJSProjectWithProfile(projectRoot, defaultsSettings);
     await addApiWithoutSchema(projectRoot, { transformerVersion: 2 });
     await addAuthWithDefault(projectRoot, {});
@@ -93,6 +94,11 @@ describe('amplify diagnose --send-report', () => {
     expect(files.sort()).toEqual(filesInZip);
     fs.removeSync(unzippedDir);
     fs.unlinkSync(pathToZip);
+
+    // delete the file and send report again
+    const backendFConfigFilePath: string = path.join(projectRoot, 'amplify', 'backend', 'backend-config.json');
+    fs.unlinkSync(backendFConfigFilePath);
+    diagnoseSendReport_ZipFailed(projectRoot);
   });
 });
 const unzipAndReturnFiles = async (zipPath: string, unzippedDir: string): Promise<string[]> => {
