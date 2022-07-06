@@ -105,9 +105,6 @@ describe('test SIGINT with execute', () => {
         await sleep(2000);
       },
     });
-    jest.setMock('../version-notifier', {
-      notify: jest.fn(),
-    });
 
     setTimeout(() => {
       process.emit('SIGINT', 'SIGINT');
