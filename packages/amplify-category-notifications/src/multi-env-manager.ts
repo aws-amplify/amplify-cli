@@ -530,7 +530,7 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
 
     // TODO: move writing to files logic to the cli core when those are ready
     await ensureEnvParamManager();
-    writeTeamProviderInfo(pinpointMeta, context); // update Pinpoint data
+    writeTeamProviderInfo(pinpointMeta); // update Pinpoint data
     writeBackendConfig(context, pinpointMeta, context.amplify.pathManager.getBackendConfigFilePath());
     writeAmplifyMeta(context, categoryMeta, context.amplify.pathManager.getAmplifyMetaFilePath());
     writeBackendConfig(context, pinpointMeta, context.amplify.pathManager.getCurrentBackendConfigFilePath());
@@ -571,7 +571,7 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
     if (channelAPIResponse) {
       await Notifications.updateChannelAPIResponse(context, channelAPIResponse);
     }
-    writeTeamProviderInfo(pinpointMeta, context); // update Pinpoint data
+    writeTeamProviderInfo(pinpointMeta); // update Pinpoint data
     if (pinpointConfig) {
       writeBackendConfig(context, pinpointConfig, context.amplify.pathManager.getBackendConfigFilePath());
     }
