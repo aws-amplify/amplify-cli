@@ -33,7 +33,7 @@ export const run = async (context:$TSContext): Promise<$TSContext> => {
 
   const availableChannelViewNames = Notifications.ChannelCfg.getAvailableChannelViewNames();
   const enabledChannelViewNames = await Notifications.ChannelCfg.getEnabledChannelViewNames(notificationConfig);
-  const PinpointAppViewName = `Pinpoint application: ${chalk.cyan.bold(notificationConfig.serviceName)}`;
+  const PinpointAppViewName = `All channels on Pinpoint resource : ${chalk.cyan.bold(notificationConfig.serviceName)}`;
   const optionChannelViewNames = [...enabledChannelViewNames, PinpointAppViewName, CANCEL];
 
   const channelName = context.parameters.first;

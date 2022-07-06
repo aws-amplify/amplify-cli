@@ -367,15 +367,6 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
       }
       context.exeInfo.backendConfig = await Notifications.Cfg.addPartialNotificationsBackendConfig(resourceName,
         context.exeInfo.backendConfig);
-      // if (pinpointAppStatus.app?.output && pinpointAppStatus.app?.resourceName) {
-      //   pinpointApp = getPinpointAppFromAnalyticsOutput(pinpointAppStatus.app);
-      //   resourceName = pinpointAppStatus.app.resourceName as string;
-      //   // create updated version of amplify-meta with notifications resource
-      //   context.exeInfo.amplifyMeta = Notifications.Meta.constructResourceMeta(amplifyMeta, resourceName, pinpointApp);
-      //   // create updated version of backend-config with notifications resource configuration
-      //   context.exeInfo.backendConfig = await Notifications.Cfg.addPartialNotificationsBackendConfig(resourceName,
-      //     context.exeInfo.backendConfig);
-      // }
       break;
     }
     case IPinpointDeploymentStatus.APP_NOT_CREATED: {
@@ -596,4 +587,5 @@ module.exports = {
   updateContextFromAnalyticsOutput,
   getPinpointAppFromAnalyticsOutput,
   isPinpointDeploymentRequired,
+  pushAuthAndAnalyticsPinpointResources,
 };

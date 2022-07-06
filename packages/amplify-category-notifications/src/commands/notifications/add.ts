@@ -112,6 +112,7 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
       try {
         // updates the pinpoint app status
         pinpointAppStatus = await pushAuthAndAnalyticsPinpointResources(context, pinpointAppStatus);
+        pinpointAppStatus = await ensurePinpointApp(context, pinpointAppStatus);
         await viewShowInlineModeInstructionsStop(channelName);
       } catch (err) {
         // if the push fails, the user will be prompted to deploy the resource manually
@@ -120,7 +121,7 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
       }
       context = pinpointAppStatus.context;
     }
-
+    // enable the channel
     if (isPinpointAppDeployed(pinpointAppStatus.status) || Notifications.ChannelCfg.isChannelDeploymentDeferred(channelName)) {
       try {
         const channelAPIResponse : IChannelAPIResponse|undefined = await enableChannel(context, channelName);

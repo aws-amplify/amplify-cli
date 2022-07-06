@@ -134,7 +134,7 @@ export const analyticsPluginAPIPush = async (context: $TSContext, resourceProvid
     status: true,
   };
 
-  const resources = analyticsPluginAPIGetResources(resourceProviderServiceName);
+  const resources = analyticsPluginAPIGetResources(resourceProviderServiceName, context);
   if (!resources || resources.length === 0) {
     pushResponse.status = false;
     pushResponse.errorCode = PluginAPIError.E_NORES;
