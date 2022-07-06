@@ -8,19 +8,28 @@ import { Notifications } from '../../notifications-api';
 const viewStyles = {
   enabled: chalk.bold.green,
   disabled: chalk.bold.red,
+  pendingDeployment: chalk.yellowBright,
+  deployed: chalk.cyanBright,
   notDeployed: chalk.dim,
   url: chalk.bold.yellow,
   underline: chalk.blue.underline,
   appName: chalk.bold.yellowBright,
 };
 
-const getDeployedStyledStatus = (deployedChannel: string, deployedChannels: IChannelAvailability): string => {
+const getDeployedStyledStatus = (deployedChannel: string, deployedChannels: IChannelAvailability, configuredState: string): string => {
   if (deployedChannels.enabledChannels.includes(deployedChannel)) {
-    return viewStyles.enabled('Enabled');
+    if (configuredState === 'Enabled') {
+      return viewStyles.deployed('Deployed');
+    }
+    return viewStyles.pendingDeployment('Not Deployed'); // remote state is disabled
   }
-  return (deployedChannels.disabledChannels.includes(deployedChannel))
-    ? viewStyles.disabled('Disabled')
-    : viewStyles.notDeployed('Not Deployed');
+  if (deployedChannels.disabledChannels.includes(deployedChannel)) {
+    if (configuredState === 'Disabled') {
+      return viewStyles.deployed('Deployed');
+    }
+    return viewStyles.pendingDeployment('Not Deployed'); // remote state is enabled
+  }
+  return viewStyles.notDeployed('Not Deployed');
 };
 
 const viewNotificationsAppURL = async (context: $TSContext, appName: string): Promise<void> => {
@@ -32,14 +41,14 @@ const viewNotificationsAppURL = async (context: $TSContext, appName: string): Pr
 };
 
 const viewDisplayChannelAvailability = async (context: $TSContext, backend:INotificationsConfigStatus): Promise<void> => {
-  const tableOptions = [['Channel', 'Status', 'Deployed Status']];
+  const tableOptions = [['Channel', 'Status', 'Deployed/Not Deployed']];
   for (const enabledChannel of backend.local.channels.enabledChannels) {
     const channelViewInfo = Notifications.ChannelCfg.getChannelViewInfo(enabledChannel);
-    tableOptions.push([channelViewInfo.viewName, viewStyles.enabled('Enabled'), getDeployedStyledStatus(enabledChannel, backend.deployed.channels)]);
+    tableOptions.push([channelViewInfo.viewName, viewStyles.enabled('Enabled'), getDeployedStyledStatus(enabledChannel, backend.deployed.channels, 'Enabled')]);
   }
   for (const disabledChannel of backend.local.channels.disabledChannels) {
     const channelViewInfo = Notifications.ChannelCfg.getChannelViewInfo(disabledChannel);
-    tableOptions.push([channelViewInfo.viewName, viewStyles.disabled('Disabled'), getDeployedStyledStatus(disabledChannel, backend.deployed.channels)]);
+    tableOptions.push([channelViewInfo.viewName, viewStyles.disabled('Disabled'), getDeployedStyledStatus(disabledChannel, backend.deployed.channels, 'Disabled')]);
   }
   context.print.table(tableOptions, { format: 'lean' });
 };
