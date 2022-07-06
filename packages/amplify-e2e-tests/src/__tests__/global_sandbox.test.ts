@@ -8,12 +8,12 @@ import {
   apiGqlCompile,
   amplifyPush,
   generateModels,
-} from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
+  createNewProjectDir, deleteProjectDir,
+} from '@aws-amplify/amplify-e2e-core';
 
 describe('global sandbox mode', () => {
   let projectDir: string;
-  let apiName = 'sandbox';
+  const apiName = 'sandbox';
 
   beforeEach(async () => {
     projectDir = await createNewProjectDir('sandbox');

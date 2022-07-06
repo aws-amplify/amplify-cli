@@ -10,7 +10,7 @@ import {
   get,
   getProjectMeta,
   initJSProjectWithProfile,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import { JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';

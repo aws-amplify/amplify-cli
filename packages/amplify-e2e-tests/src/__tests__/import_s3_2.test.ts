@@ -10,7 +10,7 @@ import {
   getAppId,
   getTeamProviderInfo,
   initJSProjectWithProfile,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import { addEnvironmentWithImportedAuth, checkoutEnvironment, removeEnvironment } from '../environment/env';
 import {
   createStorageSettings,
@@ -56,7 +56,7 @@ describe('s3 import', () => {
   let dummyOGSettings: AddStorageSettings;
 
   let projectRoot: string;
-  let ignoreProjectDeleteErrors: boolean = false;
+  let ignoreProjectDeleteErrors = false;
 
   beforeAll(async () => {
     ogProjectRoot = await createNewProjectDir(ogProjectSettings.name);
@@ -198,7 +198,7 @@ describe('s3 import', () => {
 
     await amplifyPushAuth(projectRoot);
 
-    let projectDetails = getStorageProjectDetails(projectRoot);
+    const projectDetails = getStorageProjectDetails(projectRoot);
 
     const appId = getAppId(projectRoot);
     expect(appId).toBeDefined();

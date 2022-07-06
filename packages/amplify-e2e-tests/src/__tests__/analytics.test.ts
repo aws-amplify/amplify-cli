@@ -1,7 +1,7 @@
 import {
   initJSProjectWithProfile, initFlutterProjectWithProfile, amplifyPushUpdate, amplifyStatus, deleteProject, generateRandomShortId,
   addPinpoint, addKinesis, removeAnalytics, createNewProjectDir, deleteProjectDir,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import _ from 'lodash';

@@ -2,7 +2,7 @@ import {
   getBackendAmplifyMeta, getAppId, amplifyPull, createNewProjectDir, deleteProject, deleteProjectDir, initJSProjectWithProfile,
 
   getNpxPath, getNpmPath, myIconComponent, formCheckoutComponent,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import { spawnSync, spawn } from 'child_process';
 import { AmplifyUIBuilder } from 'aws-sdk';
 import fs from 'fs-extra';

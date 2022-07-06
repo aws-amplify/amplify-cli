@@ -1,4 +1,4 @@
-import { amplifyConfigure as configure, isCI, installAmplifyCLI, injectSessionToken } from 'amplify-e2e-core';
+import { amplifyConfigure as configure, isCI, installAmplifyCLI, injectSessionToken } from '@aws-amplify/amplify-e2e-core';
 
 /*
  *  Migration tests must be run without publishing to local registry

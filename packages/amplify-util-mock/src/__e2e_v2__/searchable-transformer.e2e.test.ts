@@ -2,7 +2,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { deploy, launchDDBLocal, logDebug, GraphQLClient, terminateDDB } from '../__e2e__/utils';
-import { AmplifyAppSyncSimulator } from 'amplify-appsync-simulator';
+import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
 
 jest.setTimeout(2000000);
 

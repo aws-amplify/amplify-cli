@@ -13,7 +13,7 @@ import {
   amplifyPull,
   getProjectMeta,
   sleep,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import S3 from 'aws-sdk/clients/s3';
 import { DeploymentState, DeploymentStatus, JSONUtilities } from 'amplify-cli-core';
 
@@ -77,7 +77,7 @@ describe('Schema iterative update - locking', () => {
     let retry = 0;
     const maxRetries = 3;
     const retryDelay = 3000;
-    const stateFileName: string = 'deployment-state.json';
+    const stateFileName = 'deployment-state.json';
 
     while (retry < maxRetries || !lockFileExists) {
       try {
