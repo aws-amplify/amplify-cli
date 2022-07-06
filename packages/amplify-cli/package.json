@@ -99,7 +99,7 @@
     "semver": "^7.3.5",
     "tar-fs": "^2.1.1",
     "treeify": "^1.1.0",
-    "update-notifier": "^6.0.2",
+    "update-notifier": "^5.1.0",
     "uuid": "^8.3.2",
     "which": "^2.0.2"
   },
@@ -118,7 +118,7 @@
     "@types/promise-sequential": "^1.1.0",
     "@types/tar-fs": "^2.0.0",
     "@types/treeify": "^1.0.0",
-    "@types/update-notifier": "^6.0.1",
+    "@types/update-notifier": "^5.1.0",
     "amplify-function-plugin-interface": "1.9.5",
     "cloudform-types": "^4.2.0",
     "nock": "^12.0.3",
