@@ -32,7 +32,7 @@
     "amplify-appsync-simulator": "2.4.1",
     "amplify-category-function": "4.0.10",
     "amplify-cli-core": "2.11.0",
-    "amplify-codegen": "^3.0.0",
+    "amplify-codegen": "^3.0.1",
     "amplify-dynamodb-simulator": "2.3.5",
     "amplify-prompts": "2.2.0",
     "amplify-provider-awscloudformation": "6.4.3",
