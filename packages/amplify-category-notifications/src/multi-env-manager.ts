@@ -103,6 +103,13 @@ const getAnalyticsResourcesFromMeta = (amplifyMeta :$TSMeta, supportedServiceNam
   }
   return resourceList;
 };
+/**
+ * Utility function to check if amplify-cli is in pull mode or not.
+ * @param context amplify cli context
+ * @returns true if amplify-pull or env add/checkout commands are executed.
+ */
+export const isAmplifyCLIPulling = (context: $TSContext):boolean => (context?.input?.command) && (context.input.command === 'pull'
+|| (context.input.command === 'env' && context.input.subCommands[0] === 'pull'));
 
 /**
  * Get Pinpoint resource metadata from Analytics category metadata
@@ -445,17 +452,20 @@ const pushChanges = async (context: $TSContext, pinpointNotificationsMeta: $TSAn
     pinpointNotificationsMeta);
   // if any enabled channel requires a pinpoint app to be deployed then
   // deploy it and save state before attempting to enable the channel
-  for (const channelName of channelsToEnable) {
-    try {
-      await checkAndCreatePinpointApp(context, channelName, pinpointAppStatus);
-    } catch (err) {
-      printer.info(`Please run "amplify push" to deploy the ${channelName} channel.`);
-    }
-  }
+  // for (const channelName of channelsToEnable) {
+  //   try {
+  //     await checkAndCreatePinpointApp(context, channelName, pinpointAppStatus);
+  //   } catch (err) {
+  //     printer.info(`Please run "amplify push" to deploy the ${channelName} channel.`);
+  //   }
+  // }
 
   channelsToEnable.forEach(channel => tasks.push(async () => {
-    const result = await notificationManager.enableChannel(context, channel);
-    results.push(result);
+    try {
+      const result = await notificationManager.enableChannel(context, channel);
+      results.push(result);
+    // eslint-disable-next-line no-empty
+    } catch (err) {}
   }));
   channelsToDisable.forEach(channel => tasks.push(async () => {
     const result = await notificationManager.disableChannel(context, channel);
@@ -697,4 +707,5 @@ module.exports = {
   deletePinpointAppForEnv,
   writeData,
   migrate,
+  isAmplifyCLIPulling,
 };

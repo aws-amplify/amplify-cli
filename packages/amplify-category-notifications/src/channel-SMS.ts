@@ -5,6 +5,7 @@ import inquirer from 'inquirer';
 import ora from 'ora';
 import { ChannelAction, ChannelConfigDeploymentType } from './channel-types';
 import { buildPinpointChannelResponseError, buildPinpointChannelResponseSuccess } from './pinpoint-helper';
+import { isAmplifyCLIPulling } from './multi-env-manager';
 
 const channelName = 'SMS';
 const spinner = ora('');
@@ -57,7 +58,9 @@ export const enable = async (context:$TSContext):Promise<$TSAny> => {
   return new Promise((resolve, reject) => {
     context.exeInfo.pinpointClient.updateSmsChannel(params, (err:$TSAny, data:$TSAny) => {
       if (err) {
-        spinner.fail('enable channel error');
+        if (!isAmplifyCLIPulling(context)) {
+          spinner.fail('enable channel error');
+        }
         const enableChannelErrorResponse = buildPinpointChannelResponseError(ChannelAction.ENABLE, deploymentType,
           channelName, err);
         reject(enableChannelErrorResponse);

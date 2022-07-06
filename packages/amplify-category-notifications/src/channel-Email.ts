@@ -9,6 +9,7 @@ import { $TSAny, $TSContext } from 'amplify-cli-core';
 import inquirer from 'inquirer';
 import ora from 'ora';
 import { ChannelAction, ChannelConfigDeploymentType } from './channel-types';
+import { isAmplifyCLIPulling } from './multi-env-manager';
 import { buildPinpointChannelResponseError, buildPinpointChannelResponseSuccess } from './pinpoint-helper';
 
 const channelName = 'Email';
@@ -104,7 +105,9 @@ const enable = async (context:$TSContext, successMessage: string|undefined):Prom
         });
         resolve(successResponse);
       } else if (err) {
-        spinner.fail('enable channel error');
+        if (!isAmplifyCLIPulling(context)) {
+          spinner.fail('enable channel error');
+        }
         const errorResponse = buildPinpointChannelResponseError(ChannelAction.ENABLE, deploymentType, channelName, err);
         reject(errorResponse);
       } else {

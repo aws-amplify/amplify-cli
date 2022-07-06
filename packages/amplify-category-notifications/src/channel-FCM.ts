@@ -3,6 +3,7 @@ import { $TSAny, $TSContext } from 'amplify-cli-core';
 import inquirer from 'inquirer';
 import ora from 'ora';
 import { ChannelAction, ChannelConfigDeploymentType, IChannelAPIResponse } from './channel-types';
+import { isAmplifyCLIPulling } from './multi-env-manager';
 import { buildPinpointChannelResponseError, buildPinpointChannelResponseSuccess } from './pinpoint-helper';
 
 const channelName = 'FCM';
@@ -79,7 +80,9 @@ export const enable = async (context: $TSContext, successMessage: string | undef
   return new Promise((resolve, reject) => {
     context.exeInfo.pinpointClient.updateGcmChannel(params, (err: $TSAny, data: $TSAny) => {
       if (err) {
-        spinner.fail('enable channel error');
+        if (!isAmplifyCLIPulling(context)) {
+          spinner.fail('enable channel error');
+        }
         const errResponse = buildPinpointChannelResponseError(ChannelAction.ENABLE, deploymentType,
           channelName, err);
         reject(errResponse);
