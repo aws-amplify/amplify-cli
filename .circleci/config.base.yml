@@ -597,10 +597,21 @@ jobs:
       - restore_cache:
           key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
       - run:
+          name: Update 'main' branch to match release
+          command: |
+            commit=$(git rev-parse HEAD)
+            version=$(cat .amplify-pkg-version)
+            git push origin release:main -f
+      - run:
+          name: Create branch with release commit
+          command: |
+            git checkout -b release-$version origin/dev
+            git cherry-pick $commit
+            git push origin release-$version
+      - run:
           name: Publish Amplify CLI GitHub release
           command: |
-            version=$(cat .amplify-pkg-version)
-            yarn ts-node scripts/github-release.ts $version
+            yarn ts-node scripts/github-release.ts $version $commit
   cleanup_resources:
     <<: *linux-e2e-executor
     steps:
