@@ -53,8 +53,8 @@
   "jest": {
     "verbose": false,
     "preset": "ts-jest",
-    "testRunner": "amplify-e2e-core/runner",
-    "testEnvironment": "amplify-e2e-core/environment",
+    "testRunner": "@aws-amplify/amplify-e2e-core/runner",
+    "testEnvironment": "@aws-amplify/amplify-e2e-core/environment",
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
@@ -75,7 +75,7 @@
       "default",
       "jest-junit",
       [
-        "amplify-e2e-core/reporter",
+        "@aws-amplify/amplify-e2e-core/reporter",
         {
           "publicPath": "./amplify-e2e-reports",
           "filename": "index.html",
@@ -83,7 +83,7 @@
         }
       ],
       [
-        "amplify-e2e-core/failed-test-reporter",
+        "@aws-amplify/amplify-e2e-core/failed-test-reporter",
         {
           "reportPath": "./amplify-e2e-reports/amplify-e2e-failed-test.txt"
         }
