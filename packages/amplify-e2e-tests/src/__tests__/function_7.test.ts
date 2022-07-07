@@ -7,7 +7,6 @@ import {
   deleteProjectDir,
   generateRandomShortId,
   getCategoryParameters,
-  getParameters,
   getProjectMeta,
   getSSMParameters,
   initJSProjectWithProfile,
@@ -16,8 +15,8 @@ import {
   removeFunction,
   setCategoryParameters,
   updateFunction,
-} from 'amplify-e2e-core';
-import { addEnvironment, addEnvironmentYes, removeEnvironment } from '../environment/env';
+} from '@aws-amplify/amplify-e2e-core';
+import { addEnvironmentYes, removeEnvironment } from '../environment/env';
 
 describe('function secret value', () => {
   let projRoot: string;

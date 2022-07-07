@@ -16,7 +16,7 @@ import {
   removeHeadlessApi,
   updateApiSchema,
   updateHeadlessApi,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import { AddApiRequest, UpdateApiRequest } from 'amplify-headless-interface';
 import { existsSync } from 'fs';
 import { readFileSync } from 'fs-extra';

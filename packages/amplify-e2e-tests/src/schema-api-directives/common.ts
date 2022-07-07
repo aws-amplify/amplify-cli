@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import _ from 'lodash';
 import gql from 'graphql-tag';
-import { addApi, amplifyPush, updateAuthAddUserGroups } from 'amplify-e2e-core';
+import { addApi, amplifyPush, updateAuthAddUserGroups } from '@aws-amplify/amplify-e2e-core';
 
 import {
   setupUser,

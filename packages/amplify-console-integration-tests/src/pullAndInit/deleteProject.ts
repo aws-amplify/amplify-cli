@@ -1,5 +1,5 @@
 import * as util from '../util';
-import { nspawn as spawn } from 'amplify-e2e-core';
+import { nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
 
 export function headlessDelete(projectRootDirPath: string): Promise<void> {
   return new Promise((resolve, reject) => {

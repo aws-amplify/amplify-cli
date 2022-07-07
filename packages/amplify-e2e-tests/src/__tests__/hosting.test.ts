@@ -1,8 +1,18 @@
-import { amplifyPublishWithoutUpdate, amplifyPublishWithUpdate, createReactTestProject, resetBuildCommand } from 'amplify-e2e-core';
+import {
+  amplifyPublishWithoutUpdate,
+  createReactTestProject,
+  resetBuildCommand,
+  initJSProjectWithProfile,
+  deleteProject,
+  addDEVHosting,
+  removeHosting,
+  amplifyPushWithoutCodegen,
+  extractHostingBucketInfo,
+  deleteS3Bucket,
+  deleteProjectDir,
+  getProjectMeta,
+} from '@aws-amplify/amplify-e2e-core';
 
-import { initJSProjectWithProfile, deleteProject } from 'amplify-e2e-core';
-import { addDEVHosting, removeHosting, amplifyPushWithoutCodegen, extractHostingBucketInfo, deleteS3Bucket } from 'amplify-e2e-core';
-import { deleteProjectDir, getProjectMeta } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 

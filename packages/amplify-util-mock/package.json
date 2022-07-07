@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@hapi/topo": "^5.0.0",
-    "amplify-appsync-simulator": "2.4.1",
+    "@aws-amplify/amplify-appsync-simulator": "2.4.1",
     "amplify-category-function": "4.0.10",
     "amplify-cli-core": "2.11.0",
     "amplify-codegen": "^3.0.0",

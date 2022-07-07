@@ -11,7 +11,7 @@ import {
   getProjectMeta,
   getTeamProviderInfo,
   initJSProjectWithProfile,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import { checkoutEnvironment, removeEnvironment } from '../environment/env';
 import { getShortId } from '../import-helpers';
 
@@ -25,7 +25,7 @@ describe('notification category test', () => {
   };
 
   let projectRoot: string;
-  let ignoreProjectDeleteErrors: boolean = false;
+  let ignoreProjectDeleteErrors = false;
 
   beforeEach(async () => {
     projectRoot = await createNewProjectDir(projectPrefix);

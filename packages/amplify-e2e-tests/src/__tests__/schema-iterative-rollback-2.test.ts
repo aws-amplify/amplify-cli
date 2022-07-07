@@ -15,7 +15,7 @@ import {
   getNestedStackID,
   cancelIterativeAmplifyPush,
   createRandomName,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 
 describe('Iterative Rollback - removing two @keys', () => {
   let projectDir: string;

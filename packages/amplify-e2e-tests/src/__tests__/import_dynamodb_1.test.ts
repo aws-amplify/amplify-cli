@@ -12,7 +12,7 @@ import {
   deleteProjectDir,
   getAppId,
   initJSProjectWithProfile,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import {
@@ -62,7 +62,7 @@ describe('dynamodb import', () => {
   let dummyOGSettings: AddDynamoDBSettings;
 
   let projectRoot: string;
-  let ignoreProjectDeleteErrors: boolean = false;
+  let ignoreProjectDeleteErrors = false;
 
   beforeAll(async () => {
     ogProjectRoot = await createNewProjectDir(ogProjectSettings.name);

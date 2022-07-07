@@ -1,4 +1,4 @@
-import { nspawn as spawn, getCLIPath, singleSelect, createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
+import { nspawn as spawn, getCLIPath, createNewProjectDir, deleteProjectDir } from '@aws-amplify/amplify-e2e-core';
 
 describe('amplify configure', () => {
   let projRoot: string;

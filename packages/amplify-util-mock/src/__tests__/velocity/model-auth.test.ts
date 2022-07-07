@@ -3,7 +3,7 @@ import { IndexTransformer, PrimaryKeyTransformer } from "@aws-amplify/graphql-in
 import { ModelTransformer } from "@aws-amplify/graphql-model-transformer";
 import { GraphQLTransform } from "@aws-amplify/graphql-transformer-core";
 import { AppSyncAuthConfiguration } from "@aws-amplify/graphql-transformer-interfaces";
-import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionContext } from "amplify-appsync-simulator";
+import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionContext } from "@aws-amplify/amplify-appsync-simulator";
 import { VelocityTemplateSimulator, AppSyncVTLContext, getJWTToken } from "../../velocity";
 import { featureFlags } from "./test-helper";
 

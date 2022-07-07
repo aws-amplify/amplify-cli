@@ -1,4 +1,3 @@
-import { $TSAny } from 'amplify-cli-core';
 import {
   addAuthWithDefault,
   createNewProjectDir,
@@ -7,7 +6,7 @@ import {
   getBackendConfig,
   initJSProjectWithProfile,
   updateAuthMFAConfiguration,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 
 const defaultsSettings = {
   name: 'authTest',

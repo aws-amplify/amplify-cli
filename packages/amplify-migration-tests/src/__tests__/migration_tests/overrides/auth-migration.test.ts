@@ -19,7 +19,7 @@ import {
   updateAuthWithoutCustomTrigger,
   updateAuthWithoutTrigger,
   updateHeadlessAuth,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import { UpdateAuthRequest } from 'amplify-headless-interface';
 import * as fs from 'fs-extra';
 import * as path from 'path';

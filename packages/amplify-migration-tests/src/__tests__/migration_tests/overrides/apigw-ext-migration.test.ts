@@ -9,7 +9,7 @@ import {
   updateAuthAddAdminQueries,
   updateAuthAdminQueriesWithExtMigration,
   getProjectMeta,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import { addRestApiOldDx } from '../../../migration-helpers/api';
 import { initJSProjectWithProfile } from '../../../migration-helpers' ;
 import { v4 as uuid } from 'uuid';

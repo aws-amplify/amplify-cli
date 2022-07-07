@@ -33,7 +33,7 @@ import {
   updateFunction,
   updateLayer,
   validatePushedVersion,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
 
 describe('amplify add lambda layer with changes', () => {
@@ -64,7 +64,7 @@ describe('amplify add lambda layer with changes', () => {
     };
     const settingsUpdate = {
       runtimes: [layerRuntime],
-      layerName: layerName,
+      layerName,
       changePermissionOnFutureVersion: true,
       permissions: ['Public (Anyone on AWS can use this layer)'],
       numLayers: 1,
@@ -97,7 +97,7 @@ describe('amplify add lambda layer with changes', () => {
     };
     const settingsUpdate = {
       runtimes: [layerRuntime],
-      layerName: layerName,
+      layerName,
       changePermissionOnLatestVersion: true,
       permissions: ['Public (Anyone on AWS can use this layer)'],
       numLayers: 1,
@@ -141,7 +141,7 @@ describe('amplify add lambda layer with changes', () => {
     };
     const settingsUpdate = {
       runtimes: [layerRuntime],
-      layerName: layerName,
+      layerName,
       dontChangePermissions: true,
       numLayers: 1,
       projName,
@@ -232,7 +232,7 @@ describe('amplify add lambda layer with changes', () => {
     });
 
     const payload = '{}';
-    let response = await functionCloudInvoke(projRoot, { funcName: functionName, payload: payload });
+    let response = await functionCloudInvoke(projRoot, { funcName: functionName, payload });
     expect(JSON.parse(JSON.parse(response.Payload.toString()).body)).toEqual(helloWorldUpperCaseOutput);
 
     // 2. Step
@@ -264,7 +264,7 @@ describe('amplify add lambda layer with changes', () => {
       acceptSuggestedLayerVersionConfigurations: true,
     });
 
-    response = await functionCloudInvoke(projRoot, { funcName: functionName, payload: payload });
+    response = await functionCloudInvoke(projRoot, { funcName: functionName, payload });
 
     expect(JSON.parse(JSON.parse(response.Payload.toString()).body)).toEqual(helloWorldUpperCaseOutput);
 
@@ -294,7 +294,7 @@ describe('amplify add lambda layer with changes', () => {
 
     await amplifyPushAuth(projRoot);
 
-    response = await functionCloudInvoke(projRoot, { funcName: functionName, payload: payload });
+    response = await functionCloudInvoke(projRoot, { funcName: functionName, payload });
 
     expect(JSON.parse(JSON.parse(response.Payload.toString()).body)).toEqual(helloWorldTitleCaseOutput);
   });

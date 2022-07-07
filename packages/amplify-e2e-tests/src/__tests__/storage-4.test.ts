@@ -11,8 +11,10 @@ import {
   initJSProjectWithProfile,
   removeHeadlessStorage,
   updateHeadlessStorage,
-} from 'amplify-e2e-core';
-import { AddStorageRequest, CrudOperation, RemoveStorageRequest, UpdateStorageRequest } from 'amplify-headless-interface';
+} from '@aws-amplify/amplify-e2e-core';
+import {
+  AddStorageRequest, CrudOperation, RemoveStorageRequest, UpdateStorageRequest,
+} from 'amplify-headless-interface';
 import { v4 as uuid } from 'uuid';
 
 async function validateS3Bucket(projRoot: string) {
