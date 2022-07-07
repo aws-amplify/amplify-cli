@@ -2,20 +2,19 @@ import {
   initJSProjectWithProfile,
   deleteProject,
   amplifyPush,
-  addFeatureFlag,
   createRandomName,
   addAuthWithDefault,
-} from 'amplify-e2e-core';
-import { addApiWithoutSchema, apiEnableDataStore, updateApiSchema, getProjectMeta } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
+  addApiWithoutSchema, apiEnableDataStore, updateApiSchema, getProjectMeta, createNewProjectDir, deleteProjectDir,
+} from '@aws-amplify/amplify-e2e-core';
 import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+
 (global as any).fetch = require('node-fetch');
 
 describe('transformer model searchable migration test', () => {
   let projRoot: string;
   let projectName: string;
-  let appSyncClient = undefined;
+  let appSyncClient;
 
   beforeEach(async () => {
     projectName = createRandomName();
@@ -45,7 +44,7 @@ describe('transformer model searchable migration test', () => {
 
   const getAppSyncClientFromProj = (projRoot: string) => {
     const meta = getProjectMeta(projRoot);
-    const region = meta['providers']['awscloudformation']['Region'] as string;
+    const region = meta.providers.awscloudformation.Region as string;
     const { output } = meta.api[projectName];
     const url = output.GraphQLAPIEndpointOutput as string;
     const apiKey = output.GraphQLAPIKeyOutput as string;
@@ -91,13 +90,9 @@ describe('transformer model searchable migration test', () => {
     }
   };
 
-  const createEntry = async (name: string, description: string, count: number) => {
-    return await runMutation(getCreateTodosMutation(name, description, count));
-  };
+  const createEntry = async (name: string, description: string, count: number) => await runMutation(getCreateTodosMutation(name, description, count));
 
-  const searchTodos = async () => {
-    return await runQuery(getTodos());
-  };
+  const searchTodos = async () => await runQuery(getTodos());
 
   function getCreateTodosMutation(name: string, description: string, count: number): string {
     return `mutation {
@@ -147,7 +142,7 @@ describe('transformer model searchable migration test', () => {
       await new Promise(r => setTimeout(r, waitInMilliseconds));
       searchResponse = await searchTodos();
       currentRetryCount += 1;
-      waitInMilliseconds = waitInMilliseconds * 2;
+      waitInMilliseconds *= 2;
     } while (searchResponse.data.searchTodos?.items?.length < expectedCount && currentRetryCount <= maxRetryCount);
   };
 });

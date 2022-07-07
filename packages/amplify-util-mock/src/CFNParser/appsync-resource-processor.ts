@@ -1,4 +1,4 @@
-import { AmplifyAppSyncSimulatorAuthenticationType, AmplifyAppSyncSimulatorConfig } from 'amplify-appsync-simulator';
+import { AmplifyAppSyncSimulatorAuthenticationType, AmplifyAppSyncSimulatorConfig } from '@aws-amplify/amplify-appsync-simulator';
 import {
   registerAppSyncResourceProcessor,
   registerIAMResourceProcessor,

@@ -37,7 +37,7 @@ This section should get you running with **Amplify CLI** and get you familiar wi
 
    > If you are using Yarn v2, run `yarn set version classic` to change to Yarn Classic.
 
-1. Start by [forking](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the _master_ branch of [amplify-cli](https://github.com/aws-amplify/amplify-cli). Then clone it to your machine to work with it locally using one of the following methods:
+1. Start by [forking](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the _dev_ branch of [amplify-cli](https://github.com/aws-amplify/amplify-cli). Then clone it to your machine to work with it locally using one of the following methods:
 
    ```sh
    # HTTPS
@@ -66,13 +66,13 @@ This section should get you running with **Amplify CLI** and get you familiar wi
    yarn setup-dev-win
    ```
 
-> NOTE: Make sure to always [sync your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) with _master_ branch of amplify-cli
+> NOTE: Make sure to always [sync your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) with _dev_ branch of amplify-cli
 
 ### Architecture of the codebase
 
 Amplify CLI is a monorepo built with [Yarn Workspaces](https://yarnpkg.com/features/workspaces) and [Lerna](https://github.com/lerna/lerna). All the categories of Amplify live within the `packages/` directory in the root. Each category inside packages has its own `src/` and `package.json`.
 
-[**Packages inside Amplify CLI Monorepo**](https://github.com/aws-amplify/amplify-cli/tree/master/packages)
+[**Packages inside Amplify CLI Monorepo**](https://github.com/aws-amplify/amplify-cli/tree/dev/packages)
 
 ### Steps towards contributions
 
@@ -100,7 +100,7 @@ Pull requests are welcome!
 
 You should open an issue to discuss your pull request, unless it's a trivial change. It's best to ensure that your proposed change would be accepted so that you don't waste your own time. If you would like to implement support for a significant feature that is not yet available, please talk to us beforehand to avoid any duplication of effort.
 
-Pull requests should generally be opened against **_master_**.
+Pull requests should generally be opened against **_dev_**.
 
 Don't include any build files i.e. `dist/` in your PR. These will be built upon publish to npm and when a release is created on GitHub.
 
@@ -159,7 +159,7 @@ Valid commit types are as follows:
 - `test`
 ### Git Hooks
 
-You will notice the extra actions carried out when you run the `git commit` or `git push` commands on this monorepo, that's because the following git hooks are configured using [husky](https://github.com/typicode/husky/tree/master) (you can see them in the root [package.json](https://github.com/aws-amplify/amplify-cli/blob/f2ac2b27b6b0dbf0c52edbc696c35b71f539c944/package.json#L61) file):
+You will notice the extra actions carried out when you run the `git commit` or `git push` commands on this monorepo, that's because the following git hooks are configured using [husky](https://github.com/typicode/husky/tree/main) (you can see them in the root [package.json](https://github.com/aws-amplify/amplify-cli/blob/f2ac2b27b6b0dbf0c52edbc696c35b71f539c944/package.json#L61) file):
 
 ```json
 "husky": {
@@ -175,11 +175,11 @@ You will notice the extra actions carried out when you run the `git commit` or `
 
 #### "commit-msg" hook:
 
-The "commit-msg" hook ensures the commit message follows the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) convention, so that proper [CHANGELOG.md](https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-cli/CHANGELOG.md) files and package versions are maintained.
+The "commit-msg" hook ensures the commit message follows the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) convention, so that proper [CHANGELOG.md](https://github.com/aws-amplify/amplify-cli/blob/dev/packages/amplify-cli/CHANGELOG.md) files and package versions are maintained.
 
 #### "pre-commit" hook:
 
-The "pre-commit" hook runs the [verify-commit](https://github.com/aws-amplify/amplify-cli/blob/master/scripts/verify-commit.ts) script and runs eslint of changed files.
+The "pre-commit" hook runs the [verify-commit](https://github.com/aws-amplify/amplify-cli/blob/dev/scripts/verify-commit.ts) script and runs eslint of changed files.
 
 #### "pre-push" hook:
 
@@ -218,10 +218,10 @@ Sometimes issues can be solved by doing a clean and fresh build. To start from a
     git clean -fdx
     ```
 
-1.  Reset master branch to that of origin/master:
+1.  Reset dev branch to that of origin/dev:
 
     ```sh
-    git fetch origin && git checkout --track origin/master -B master
+    git fetch origin && git checkout --track origin/dev -B dev
     ```
 
 1.  Then, run the `setup-dev` script:

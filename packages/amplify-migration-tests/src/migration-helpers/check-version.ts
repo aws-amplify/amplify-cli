@@ -1,4 +1,4 @@
-import { getCLIPath, nspawn as spawn } from 'amplify-e2e-core';
+import { getCLIPath, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
 
 export function versionCheck(cwd: string, testingWithLatestCodebase = false, version: { v?: string } = {}): Promise<void> {
   return new Promise((resolve, reject) => {

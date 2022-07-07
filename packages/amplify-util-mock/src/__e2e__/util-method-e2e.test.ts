@@ -1,4 +1,4 @@
-import { AmplifyAppSyncSimulator } from 'amplify-appsync-simulator';
+import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
 import { GraphQLClient } from './utils/graphql-client';

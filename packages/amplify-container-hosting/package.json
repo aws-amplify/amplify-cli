@@ -1,6 +1,6 @@
 {
   "name": "amplify-container-hosting",
-  "version": "2.4.38",
+  "version": "2.4.40",
   "description": "amplify-cli hosting plugin for containers",
   "repository": {
     "type": "git",
@@ -22,19 +22,12 @@
     "test": "jest --coverage --passWithNoTests"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-api": "^3.1.0",
-    "amplify-cli-core": "2.9.1",
-    "chalk": "^4.1.1",
+    "@aws-amplify/amplify-category-api": "^3.1.2",
+    "amplify-cli-core": "2.11.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",
     "mime-types": "^2.1.26",
-    "minimatch": "^3.0.4",
-    "moment": "^2.24.0",
-    "ora": "^4.0.3",
     "promise-sequential": "^1.1.1"
-  },
-  "devDependencies": {
-    "mockirer": "^2.0.1"
   },
   "jest": {
     "collectCoverage": true,

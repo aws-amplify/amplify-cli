@@ -7,7 +7,7 @@ import {
   deleteProjectDir,
   getProjectMeta,
   amplifyPushOverride,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import { JSONUtilities } from 'amplify-cli-core';
 import { versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfile } from '../../../migration-helpers';
 

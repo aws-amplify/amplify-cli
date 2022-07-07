@@ -1,4 +1,4 @@
-'use strict';
+
 
 const fs = require('fs');
 const path = require('path');
@@ -567,6 +567,9 @@ module.exports = function (webpackEnv) {
       ].filter(Boolean),
     },
     plugins: [
+      new webpack.ProvidePlugin({
+        Buffer: ['buffer', 'Buffer'],
+      }),
       new webpack.ProvidePlugin({
         process: 'process/browser',
       }),

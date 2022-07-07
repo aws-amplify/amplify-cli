@@ -22,7 +22,7 @@ import {
   updateApiSchema,
   createRandomName,
   generateRandomShortId,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import fs from 'fs-extra';
 import path from 'path';
 import _ from 'lodash';

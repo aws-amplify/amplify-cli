@@ -3,24 +3,15 @@ import {
   addAuthWithMaxOptions,
   addConvert,
   addDEVHosting,
-  addFunction,
-  addInterpret,
-  addRestApi,
-  addS3Storage,
   addS3StorageWithIdpAuth,
-  addSampleInteraction,
-  addSMSNotification,
   amplifyPush,
-  amplifyPushAuth,
   amplifyPushWithoutCodegen,
-  amplifyPushWithUpdate,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
   exportPullBackend,
   getAmplifyConfigAndroidPath,
   getAmplifyConfigIOSPath,
-  getAmplifyIOSConfig,
   getAWSConfigAndroidPath,
   getAWSConfigIOSPath,
   getBackendAmplifyMeta,
@@ -28,11 +19,11 @@ import {
   initFlutterProjectWithProfile,
   initIosProjectWithProfile,
   initJSProjectWithProfile,
-} from 'amplify-e2e-core';
-import { getAWSExportsPath } from '../aws-exports/awsExports';
+} from '@aws-amplify/amplify-e2e-core';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as _ from 'lodash';
+import { getAWSExportsPath } from '../aws-exports/awsExports';
 
 describe('amplify export pull', () => {
   let projRoot: string;
@@ -96,9 +87,8 @@ describe('amplify export pull', () => {
       if (!equal) return false;
       if (typeof object1[key] !== 'object') {
         return object1[key] === object2[key];
-      } else {
-        return recursiveComapre(object1[key], object2[key]);
       }
+      return recursiveComapre(object1[key], object2[key]);
     }, true);
   }
 

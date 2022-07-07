@@ -9,7 +9,7 @@ import {
   AppSyncGraphQLExecutionContext,
   JWTToken,
   IAMToken,
-} from 'amplify-appsync-simulator';
+} from '@aws-amplify/amplify-appsync-simulator';
 
 const DEFAULT_SCHEMA = `
   type Query {

@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [9.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@9.0.0...@aws-amplify/cli@9.1.0) (2022-06-30)
+
+
+### Features
+
+* allow unknown feature flags if set to false ([#10612](https://github.com/aws-amplify/amplify-cli/issues/10612)) ([d45991c](https://github.com/aws-amplify/amplify-cli/commit/d45991c347e17ef3d77b105e744125ad2d71197e))
+* no-op commit ([#10660](https://github.com/aws-amplify/amplify-cli/issues/10660)) ([6cd057a](https://github.com/aws-amplify/amplify-cli/commit/6cd057ab611497fdca0a5f62e519002b5efbeb0b))
+
+
+
+
+
+# [9.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@8.5.1...@aws-amplify/cli@9.0.0) (2022-06-22)
+
+
+
+# 9.0.0 (2022-06-21)
+
+
+* feat!: breaking change (#10628) ([7fadbf5](https://github.com/aws-amplify/amplify-cli/commit/7fadbf53b8dc89d768779fb588971f5c5b6e70d7)), closes [#10628](https://github.com/aws-amplify/amplify-cli/issues/10628)
+
+
+### BREAKING CHANGES
+
+* this is a breaking change
+
+
+
+
+
+## [8.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@8.5.0...@aws-amplify/cli@8.5.1) (2022-06-15)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
 # [8.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@8.4.0...@aws-amplify/cli@8.5.0) (2022-06-13)
 
 

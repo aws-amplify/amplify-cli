@@ -11,7 +11,7 @@ import {
   getProjectMeta,
   initJSProjectWithProfile,
   removeFunction,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { addEnvironment, checkoutEnvironment } from '../environment/env';
@@ -68,7 +68,7 @@ describe('runtime hooks', () => {
     let S3Keys = await getBucketKeys({ Bucket: meta.DeploymentBucketName, Prefix: 'hooks/' });
     checkForFiles(defaultHookFiles, S3Keys, 'hooks/');
     // check if the inored file in hooks-config.json is recognised and not uploaded
-    expect(S3Keys).not.toContain('hooks/' + ignoredFileName);
+    expect(S3Keys).not.toContain(`hooks/${ignoredFileName}`);
 
     // amplify pull should get all hook scripts in the S3 bucket
     const appId = getAppId(projRoot);
@@ -95,8 +95,8 @@ describe('runtime hooks', () => {
 
     S3Keys = await getBucketKeys({ Bucket: meta.DeploymentBucketName, Prefix: 'hooks/' });
     checkForFiles(defaultHookFiles, S3Keys, 'hooks/');
-    expect(S3Keys).toContain('hooks/' + newFileName);
-    expect(S3Keys).not.toContain('hooks/' + ignoredFileName);
+    expect(S3Keys).toContain(`hooks/${newFileName}`);
+    expect(S3Keys).not.toContain(`hooks/${ignoredFileName}`);
 
     // checkout env should pull and replace hooks directory with hooks for the checked out env
     await checkoutEnvironment(projRoot, { envName: 'enva' });

@@ -1,4 +1,4 @@
-import { nspawn as spawn, getCLIPath, getSocialProviders, isCI } from 'amplify-e2e-core';
+import { nspawn as spawn, getCLIPath, getSocialProviders, isCI } from '@aws-amplify/amplify-e2e-core';
 
 export function addEnvironment(cwd: string, settings: { envName: string; numLayers?: number }): Promise<void> {
   return new Promise((resolve, reject) => {

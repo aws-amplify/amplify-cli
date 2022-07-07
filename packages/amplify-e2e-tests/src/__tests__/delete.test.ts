@@ -23,12 +23,12 @@ import {
   getS3StorageBucketName,
   pinpointAppExist,
   pushToCloud,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
+import * as fs from 'fs-extra';
+import _ from 'lodash';
 import { addEnvironment, checkoutEnvironment, removeEnvironment } from '../environment/env';
 import { addCodegen } from '../codegen/add';
-import * as fs from 'fs-extra';
 import { getAWSExportsPath } from '../aws-exports/awsExports';
-import _ from 'lodash';
 
 describe('amplify delete', () => {
   let projRoot: string;
@@ -105,7 +105,7 @@ describe('amplify delete', () => {
   });
 });
 
-async function testDeletion(projRoot: string, settings: { ios?: Boolean; android?: Boolean }) {
+async function testDeletion(projRoot: string, settings: { ios?: boolean; android?: boolean }) {
   const amplifyMeta = getProjectMeta(projRoot);
   const meta = amplifyMeta.providers.awscloudformation;
   const deploymentBucketName1 = meta.DeploymentBucketName;
@@ -138,13 +138,11 @@ async function testDeletion(projRoot: string, settings: { ios?: Boolean; android
 
 async function putFiles(bucket: string, count = 1001) {
   const s3 = new S3();
-  const s3Params = [...Array(count)].map((_, num) => {
-    return {
-      Bucket: bucket,
-      Body: 'dummy body',
-      Key: `${num}.txt`,
-    };
-  });
+  const s3Params = [...Array(count)].map((_, num) => ({
+    Bucket: bucket,
+    Body: 'dummy body',
+    Key: `${num}.txt`,
+  }));
   await Promise.all(s3Params.map(p => s3.putObject(p).promise()));
 }
 

@@ -24,7 +24,7 @@ export class DebugConfig {
   private constructor() {
     const cliJson = this.getCLIJson(false);
     this.debug = {
-      shareProjectConfig: _.get(cliJson, ['debug', 'shareProjectConfig'])
+      shareProjectConfig: _.get(cliJson, ['debug', 'shareProjectConfig']),
     };
     this.dirty = false;
   }
@@ -60,7 +60,7 @@ export class DebugConfig {
     if (!rootPath) {
       throw new NotInitializedError();
     }
-    const cliJson = this.getCLIJson();
+    const cliJson = this.getCLIJson(false);
     if (!cliJson) {
       return;
     }

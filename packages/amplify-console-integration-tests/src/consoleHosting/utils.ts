@@ -2,7 +2,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { spawnSync } from 'child_process';
 import * as util from '../util';
-import { readJsonFile } from 'amplify-e2e-core';
+import { readJsonFile } from '@aws-amplify/amplify-e2e-core';
 
 import { HOSTING, RESOURCE, TYPE, TYPE_UNKNOWN, CATEGORIES, APPID, PROVIDER } from './constants';
 

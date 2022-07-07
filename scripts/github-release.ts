@@ -1,4 +1,4 @@
-import { getVersionFromArgs, releasesRequest, semverToGithubTag } from './github-common';
+import { getArgs, releasesRequest, semverToGithubTag } from './github-common';
 import { join } from 'path';
 
 /**
@@ -18,7 +18,7 @@ const publishRelease = async (version: string) => {
 };
 
 const main = async () => {
-  const version = getVersionFromArgs();
+  const { version } = getArgs();
   await publishRelease(version);
 };
 
