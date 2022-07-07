@@ -12,20 +12,20 @@ import {
     getMap,
     getPlaceIndex,
     getGeoJSConfiguration
-  } from 'amplify-e2e-core';
+  } from '@aws-amplify/amplify-e2e-core';
   import {
     addEnvironment,
     checkoutEnvironment,
     listEnvironment,
   } from '../environment/env';
   import { getAWSExports } from '../aws-exports/awsExports';
-  
+
   describe('environment commands with geo resources', () => {
     let projRoot: string;
     const map1Id = `map${generateRandomShortId()}`;
     const index1Id = `index${generateRandomShortId()}`;
     let awsExport: any;
-  
+
     beforeAll(async () => {
       projRoot = await createNewProjectDir('env-test');
       //Add default auth, map and index in enva
@@ -41,15 +41,15 @@ import {
       await addAuthWithDefault(projRoot);
       await amplifyPushWithoutCodegen(projRoot);
     });
-  
+
     afterAll(async () => {
       await deleteProject(projRoot);
       deleteProjectDir(projRoot);
     });
-  
+
     //reset local require of exports files
     beforeEach(() => jest.resetModules());
-  
+
     it('should generate correct meta file and exports file in the original environment', async () => {
       await checkoutEnvironment(projRoot, { envName: 'enva', restoreBackend: true });
       //Validate meta file
@@ -93,7 +93,7 @@ import {
       expect(getGeoJSConfiguration(awsExport).maps.default).toEqual(map2Name);
       expect(getGeoJSConfiguration(awsExport).region).toEqual(region);
     });
-  
+
     it('should generate correct meta file and exports file after adding a new index in new environment', async () => {
       await checkoutEnvironment(projRoot, { envName: 'envb', restoreBackend: true });
       const index2Id = `index${generateRandomShortId()}`;

@@ -1,4 +1,4 @@
-import { $TSAny, JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities } from 'amplify-cli-core';
 import {
   addCDKCustomResource,
   addCFNCustomResource,
@@ -9,7 +9,7 @@ import {
   deleteProjectDir,
   getProjectMeta,
   initJSProjectWithProfile,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
@@ -53,7 +53,7 @@ describe('adding custom resources test', () => {
     // check if cfn file is generated in the build dir
     expect(fs.existsSync(cfnFilePath)).toEqual(true);
 
-    let buildCFNFileJSON: any = JSONUtilities.readJson(cfnFilePath);
+    const buildCFNFileJSON: any = JSONUtilities.readJson(cfnFilePath);
 
     // Basic sanity generated CFN file content check
 

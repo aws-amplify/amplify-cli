@@ -1,14 +1,11 @@
 import {
-  addDevContainerHosting,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
-  enableContainerHosting,
   getBackendAmplifyMeta,
   initJSProjectWithProfile,
-  removeHosting,
   amplifyConfigureProject,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 
 import * as fs from 'fs-extra';
 import * as path from 'path';

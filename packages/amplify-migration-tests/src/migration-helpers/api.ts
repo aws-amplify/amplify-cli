@@ -7,7 +7,7 @@ import {
   nspawn as spawn,
   selectRuntime,
   selectTemplate,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import { assign } from 'lodash';
 
 /**

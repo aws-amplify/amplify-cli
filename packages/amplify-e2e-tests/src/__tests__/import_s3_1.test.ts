@@ -14,7 +14,7 @@ import {
   deleteProjectDir,
   getAppId,
   initJSProjectWithProfile,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import { randomizedFunctionName } from '../schema-api-directives/functionTester';
 import {
   expectLocalAndCloudMetaFilesMatching,
@@ -64,7 +64,7 @@ describe('s3 import', () => {
   let dummyOGSettings: AddStorageSettings;
 
   let projectRoot: string;
-  let ignoreProjectDeleteErrors: boolean = false;
+  let ignoreProjectDeleteErrors = false;
 
   beforeAll(async () => {
     ogProjectRoot = await createNewProjectDir(ogProjectSettings.name);

@@ -1,6 +1,6 @@
 import {
   initJSProjectWithProfile, deleteProject, createNewProjectDir, deleteProjectDir,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import { testSchema } from '../schema-api-directives';
 
 describe('api directives @connection', () => {

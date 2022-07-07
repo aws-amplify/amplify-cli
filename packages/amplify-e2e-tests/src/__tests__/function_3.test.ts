@@ -1,7 +1,7 @@
 import {
   initJSProjectWithProfile, deleteProject, amplifyPushAuth, getBackendAmplifyMeta,
   addFunction, functionMockAssert, functionCloudInvoke, createNewProjectDir, deleteProjectDir, generateRandomShortId,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import _ from 'lodash';
 
 describe('go function tests', () => {

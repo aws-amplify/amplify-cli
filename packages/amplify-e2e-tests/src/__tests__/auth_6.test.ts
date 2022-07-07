@@ -12,7 +12,7 @@ import {
   getUserPool,
   initJSProjectWithProfile,
   runAmplifyAuthConsole,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 

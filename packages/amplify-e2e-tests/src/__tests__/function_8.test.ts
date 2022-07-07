@@ -12,18 +12,10 @@ import {
   functionMockAssert,
   getCloudWatchEventRule,
   getFunction,
-  getProjectConfig,
   getProjectMeta,
   initJSProjectWithProfile,
-  LayerOptions,
-  LayerRuntime,
-  loadFunctionTestFile,
-  overrideFunctionSrcNode,
-  overrideFunctionSrcPython,
-  overrideLayerCodeNode,
-  overrideLayerCodePython,
   updateFunction,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
 
 describe('java function tests', () => {
@@ -99,7 +91,9 @@ describe('amplify add/update/remove function based on schedule rule', () => {
     await functionBuild(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
-    const { Arn: functionArn, Name: functionName, Region: region, CloudWatchEventRule: ruleName } = Object.keys(meta.function).map(
+    const {
+      Arn: functionArn, Name: functionName, Region: region, CloudWatchEventRule: ruleName,
+    } = Object.keys(meta.function).map(
       key => meta.function[key],
     )[0].output;
     expect(functionArn).toBeDefined();
@@ -138,7 +132,9 @@ describe('amplify add/update/remove function based on schedule rule', () => {
     );
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
-    const { Arn: functionArn, Name: functionName, Region: region, CloudWatchEventRule: ruleName } = Object.keys(meta.function).map(
+    const {
+      Arn: functionArn, Name: functionName, Region: region, CloudWatchEventRule: ruleName,
+    } = Object.keys(meta.function).map(
       key => meta.function[key],
     )[0].output;
     expect(functionArn).toBeDefined();
@@ -178,7 +174,9 @@ describe('amplify add/update/remove function based on schedule rule', () => {
     );
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
-    const { Arn: functionArn, Name: functionName, Region: region, CloudWatchEventRule: ruleName } = Object.keys(meta.function).map(
+    const {
+      Arn: functionArn, Name: functionName, Region: region, CloudWatchEventRule: ruleName,
+    } = Object.keys(meta.function).map(
       key => meta.function[key],
     )[0].output;
     expect(functionArn).toBeDefined();

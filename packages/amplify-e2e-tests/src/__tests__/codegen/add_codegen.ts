@@ -8,7 +8,7 @@ import {
   amplifyPush,
   updateApiSchema,
   createRandomName,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import * as path from 'path';
 import { existsSync } from 'fs-extra';
 import { addCodegen } from '../../codegen/add';

@@ -6,11 +6,11 @@ import {
   addFeatureFlag,
   createRandomName,
   addAuthWithDefault,
-} from 'amplify-e2e-core';
-import { addApiWithoutSchema, updateApiSchema, getProjectMeta } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
+  addApiWithoutSchema, updateApiSchema, getProjectMeta, createNewProjectDir, deleteProjectDir,
+} from '@aws-amplify/amplify-e2e-core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
+
 (global as any).fetch = require('node-fetch');
 
 describe('transformer model migration test', () => {
@@ -254,7 +254,7 @@ describe('transformer model migration test', () => {
 
   const getAppSyncClientFromProj = (projRoot: string) => {
     const meta = getProjectMeta(projRoot);
-    const region = meta['providers']['awscloudformation']['Region'] as string;
+    const region = meta.providers.awscloudformation.Region as string;
     const { output } = meta.api[projectName];
     const url = output.GraphQLAPIEndpointOutput as string;
     const apiKey = output.GraphQLAPIKeyOutput as string;

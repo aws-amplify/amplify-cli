@@ -1,4 +1,4 @@
-import { nspawn as spawn, KEY_DOWN_ARROW, isCI } from 'amplify-e2e-core';
+import { nspawn as spawn, KEY_DOWN_ARROW, isCI } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 

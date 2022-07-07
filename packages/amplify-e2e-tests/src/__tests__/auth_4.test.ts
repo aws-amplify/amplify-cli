@@ -6,16 +6,12 @@ import {
   deleteProject,
   amplifyPushAuth,
   addFeatureFlag,
-} from 'amplify-e2e-core';
-import {
   addAuthWithRecaptchaTrigger,
   addAuthWithCustomTrigger,
   addAuthWithSignInSignOutUrl,
   updateAuthWithoutCustomTrigger,
   updateAuthRemoveRecaptchaTrigger,
   updateAuthSignInSignOutUrl,
-} from 'amplify-e2e-core';
-import {
   createNewProjectDir,
   deleteProjectDir,
   getProjectMeta,
@@ -25,7 +21,7 @@ import {
   getUserPoolClients,
   getLambdaFunction,
   getFunction,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import _ from 'lodash';
 
 const defaultsSettings = {
@@ -103,7 +99,7 @@ describe('amplify updating auth...', () => {
     expect(dirContents.includes('email-filter-denylist-legacy.js')).toBeTruthy();
   });
 
-  it('...should init an android project and add customAuth flag, and remove flag when custom auth triggers are removed upon update ', async () => {
+  it('...should init an android project and add customAuth flag, and remove flag when custom auth triggers are removed upon update', async () => {
     await initAndroidProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithRecaptchaTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);

@@ -23,7 +23,7 @@ import {
   getS3StorageBucketName,
   pinpointAppExist,
   pushToCloud,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import { addEnvironment, checkoutEnvironment, removeEnvironment } from '../environment/env';

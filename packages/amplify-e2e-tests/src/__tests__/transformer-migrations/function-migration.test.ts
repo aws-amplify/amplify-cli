@@ -7,7 +7,7 @@ import {
   amplifyPush,
   addApi,
   amplifyPushUpdate,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import { addSimpleFunction, updateFunctionNameInSchema } from '../../schema-api-directives/functionTester';
 import { updateSchemaInTestProject, testQueries } from '../../schema-api-directives/common';
 import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../../schema-api-directives/authHelper';
@@ -65,7 +65,7 @@ describe('api directives @function v1 to v2 migration', () => {
     await testQueries(testModule, appSyncClient);
   });
 
-  //schema
+  // schema
   const env = '${env}';
   const schema = `
     #Transformer Version: <transformer-version>
@@ -74,7 +74,7 @@ describe('api directives @function v1 to v2 migration', () => {
     }
   `;
 
-  //functions
+  // functions
   const func1 = `
     exports.handler = async event => {
       return event.arguments.msg + '|processed by worker-function';
@@ -86,7 +86,7 @@ describe('api directives @function v1 to v2 migration', () => {
     };
   `;
 
-  //queries
+  // queries
   const query = `
     query DoSomeWork {
       doSomeWork(msg: "initial mutation message")

@@ -12,7 +12,7 @@ import {
   initJSProjectWithProfile,
   removeFirstDefaultGeofenceCollection,
   updateAuthAddUserGroups,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import { existsSync } from 'fs';
 import path from 'path';
 import { getAWSExports } from '../aws-exports/awsExports';

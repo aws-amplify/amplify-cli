@@ -16,7 +16,7 @@ import {
   updateApiWithMultiAuth,
   updateAPIWithResolutionStrategyWithModels,
   updateHeadlessApi,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import { AddApiRequest, UpdateApiRequest } from 'amplify-headless-interface';
 import * as fs from 'fs-extra';
 import { TRANSFORM_BASE_VERSION, TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';

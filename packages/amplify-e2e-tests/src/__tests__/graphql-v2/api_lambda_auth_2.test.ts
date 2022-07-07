@@ -9,7 +9,7 @@ import {
   updateApiSchema,
   addApiWithAllAuthModes,
   amplifyPush,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 

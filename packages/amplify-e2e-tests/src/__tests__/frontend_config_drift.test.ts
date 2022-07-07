@@ -1,4 +1,6 @@
-import { createNewProjectDir, deleteProject, deleteProjectDir, isCI } from 'amplify-e2e-core';
+import {
+  createNewProjectDir, deleteProject, deleteProjectDir, isCI,
+} from '@aws-amplify/amplify-e2e-core';
 import execa from 'execa';
 import * as path from 'path';
 
