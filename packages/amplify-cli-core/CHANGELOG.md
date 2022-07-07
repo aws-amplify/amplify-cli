@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.12.0-inAppMessaging.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.10.0...amplify-cli-core@2.12.0-inAppMessaging.0) (2022-07-07)
+
+
+### Bug Fixes
+
+* ignore false feature flags correctly ([#10678](https://github.com/aws-amplify/amplify-cli/issues/10678)) ([77ec5d9](https://github.com/aws-amplify/amplify-cli/commit/77ec5d93999ee2504b0b404411f2271824628184))
+* meta-save and backend-config save for crud flows ([91a96ab](https://github.com/aws-amplify/amplify-cli/commit/91a96ab07e292c0c49355cb891246b4fe959ba11))
+* mixed mode notifications with PushNotifications and InAppMessaging ([2316d81](https://github.com/aws-amplify/amplify-cli/commit/2316d81babc4ea52ef61d64538eb6368d35667fa))
+* multi-env and pull bugs ([6e05b2d](https://github.com/aws-amplify/amplify-cli/commit/6e05b2d19ca870cb97483a654e01a0048b4c905b))
+* normalized meta update, fixes amplify status ([a7432a5](https://github.com/aws-amplify/amplify-cli/commit/a7432a51ce24c7de6fce2b1f419a2517ab54cd73))
+* notifications resource 'Updated' state in status ([49d78b7](https://github.com/aws-amplify/amplify-cli/commit/49d78b7976ba5e465915b7c35d1c571cb691cbd0))
+* rebase from dev ([d6b75a1](https://github.com/aws-amplify/amplify-cli/commit/d6b75a127fd298a1268ef850198ac97879e24102))
+* remove analytics gracefully removes notifications before removing pinpoint ([6670d95](https://github.com/aws-amplify/amplify-cli/commit/6670d954c07accf6d44abf5fdc774bbbb1770e20))
+* sync ApplicationId from Analytics backend into Notifications backend and update InAppMsg to InAppMessaging ([62bb925](https://github.com/aws-amplify/amplify-cli/commit/62bb925ffc8d83b9e2f1123f2e2fff63b01a2527))
+
+
+### Features
+
+* allow unknown feature flags if set to false ([#10612](https://github.com/aws-amplify/amplify-cli/issues/10612)) ([d45991c](https://github.com/aws-amplify/amplify-cli/commit/d45991c347e17ef3d77b105e744125ad2d71197e))
+
+
+### Reverts
+
+* Revert "chore: upgrade api category dependencies" ([7e24faf](https://github.com/aws-amplify/amplify-cli/commit/7e24faf472f96eeb34171b7befa49f4b0da3f7ae))
+
+
+
+
+
 # [2.11.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.10.0...amplify-cli-core@2.11.0) (2022-06-30)
 
 

@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.20.0-inAppMessaging.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.19.6...amplify-category-notifications@2.20.0-inAppMessaging.0) (2022-07-07)
+
+
+### Bug Fixes
+
+* APNS channel tests ([b51dc3a](https://github.com/aws-amplify/amplify-cli/commit/b51dc3a8d7ce5aa362a51119ff68e5f820cb198a))
+* channel-FCM tests ([abc1da2](https://github.com/aws-amplify/amplify-cli/commit/abc1da2c89bcd4f7483529b9d5475dd147174433))
+* disabled-notification empty and updated ls notifications ([e1d3d08](https://github.com/aws-amplify/amplify-cli/commit/e1d3d08a913f1bb39c10757028c0d25d08f685aa))
+* Display status table with Channel view names ([9b7db77](https://github.com/aws-amplify/amplify-cli/commit/9b7db774346758fb94ca45a4462a2d4f2ac602d7))
+* dx updates for notifications add ([a7bca8d](https://github.com/aws-amplify/amplify-cli/commit/a7bca8dc6d92f47cc120b56156e6d8a464e7b400))
+* fix all linting errors ([c7435ef](https://github.com/aws-amplify/amplify-cli/commit/c7435ef31d784a46c97f9e51d4cd85bd0f78572e))
+* In-App-Messaging policy not getting created ([c12eb27](https://github.com/aws-amplify/amplify-cli/commit/c12eb277524f73be8e90f35e60fd09bb854f1ceb))
+* incorrect package name ([54ebb43](https://github.com/aws-amplify/amplify-cli/commit/54ebb439a2e0d1eca41cf289ce0d6a89f4f45945))
+* latest version of amplify-cli-core to be used ([492add6](https://github.com/aws-amplify/amplify-cli/commit/492add64c7bac889fe84322a5199a3b593adc7da))
+* meta-save and backend-config save for crud flows ([91a96ab](https://github.com/aws-amplify/amplify-cli/commit/91a96ab07e292c0c49355cb891246b4fe959ba11))
+* mixed mode notifications with PushNotifications and InAppMessaging ([2316d81](https://github.com/aws-amplify/amplify-cli/commit/2316d81babc4ea52ef61d64538eb6368d35667fa))
+* multi-env and pull bugs ([6e05b2d](https://github.com/aws-amplify/amplify-cli/commit/6e05b2d19ca870cb97483a654e01a0048b4c905b))
+* normalized meta update, fixes amplify status ([a7432a5](https://github.com/aws-amplify/amplify-cli/commit/a7432a51ce24c7de6fce2b1f419a2517ab54cd73))
+* notifications resource 'Updated' state in status ([49d78b7](https://github.com/aws-amplify/amplify-cli/commit/49d78b7976ba5e465915b7c35d1c571cb691cbd0))
+* remove analytics gracefully removes notifications before removing pinpoint ([6670d95](https://github.com/aws-amplify/amplify-cli/commit/6670d954c07accf6d44abf5fdc774bbbb1770e20))
+* remove extraneous pinpoint resource creation ([eb51042](https://github.com/aws-amplify/amplify-cli/commit/eb51042fa6e88ff826dc055d2efd210f7e14ba03))
+* remove pinpoint service in notifications and dx ([ef7770d](https://github.com/aws-amplify/amplify-cli/commit/ef7770d0732c261db96ed3bbc7431f2985537cc9))
+* sync ApplicationId from Analytics backend into Notifications backend and update InAppMsg to InAppMessaging ([62bb925](https://github.com/aws-amplify/amplify-cli/commit/62bb925ffc8d83b9e2f1123f2e2fff63b01a2527))
+* update all channel views to use helpful names ([bd0d283](https://github.com/aws-amplify/amplify-cli/commit/bd0d283502cfdcecc36877f9fa49f5678b879546))
+* user friendly names to be used for selection in add/remove/update flows ([a011829](https://github.com/aws-amplify/amplify-cli/commit/a011829aae26411f54641707c7714bf6efd5d11e))
+* when notifications is added on an empty project deployment state auto-transitions to APP_IS_CREATED_NOT_DEPLOYED after creating analytics ([3b647e1](https://github.com/aws-amplify/amplify-cli/commit/3b647e1414f55341ae4d69a3cf28194f87c5fec5))
+
+
+### Features
+
+* mvp inAppMessaging ([5569168](https://github.com/aws-amplify/amplify-cli/commit/5569168d243957cefb22fc3c699058ffea3884ca))
+
+
+
+
+
 ## [2.19.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.19.5...amplify-category-notifications@2.19.6) (2022-02-25)
 
 **Note:** Version bump only for package amplify-category-notifications

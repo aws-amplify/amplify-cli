@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.32-inAppMessaging.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.2.30...@aws-amplify/amplify-util-uibuilder@1.2.32-inAppMessaging.0) (2022-07-07)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
 ## [1.2.31](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.2.30...@aws-amplify/amplify-util-uibuilder@1.2.31) (2022-06-30)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder

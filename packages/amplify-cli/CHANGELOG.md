@@ -3,6 +3,43 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [9.2.0-inAppMessaging.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@9.0.0...@aws-amplify/cli-internal@9.2.0-inAppMessaging.0) (2022-07-07)
+
+
+### Bug Fixes
+
+* disabled-notification empty and updated ls notifications ([e1d3d08](https://github.com/aws-amplify/amplify-cli/commit/e1d3d08a913f1bb39c10757028c0d25d08f685aa))
+* missing file error and swallowing error ([#10590](https://github.com/aws-amplify/amplify-cli/issues/10590)) ([8e469e1](https://github.com/aws-amplify/amplify-cli/commit/8e469e13c6efb62b64d8223e12ebb4732f8f1906))
+* mixed mode notifications with PushNotifications and InAppMessaging ([2316d81](https://github.com/aws-amplify/amplify-cli/commit/2316d81babc4ea52ef61d64538eb6368d35667fa))
+* multi-env and pull bugs ([6e05b2d](https://github.com/aws-amplify/amplify-cli/commit/6e05b2d19ca870cb97483a654e01a0048b4c905b))
+* normalized meta update, fixes amplify status ([a7432a5](https://github.com/aws-amplify/amplify-cli/commit/a7432a51ce24c7de6fce2b1f419a2517ab54cd73))
+* notifications resource 'Updated' state in status ([49d78b7](https://github.com/aws-amplify/amplify-cli/commit/49d78b7976ba5e465915b7c35d1c571cb691cbd0))
+* upgrades updateNotifier package ([#10691](https://github.com/aws-amplify/amplify-cli/issues/10691)) ([e92ae1a](https://github.com/aws-amplify/amplify-cli/commit/e92ae1ab50701462c1d662ad25d851ccc71a66ef))
+
+
+### Features
+
+* mvp inAppMessaging ([5569168](https://github.com/aws-amplify/amplify-cli/commit/5569168d243957cefb22fc3c699058ffea3884ca))
+
+
+### Reverts
+
+* Revert "chore: upgrade api category dependencies" ([7e24faf](https://github.com/aws-amplify/amplify-cli/commit/7e24faf472f96eeb34171b7befa49f4b0da3f7ae))
+* upgrades updateNotifier package ([#10691](https://github.com/aws-amplify/amplify-cli/issues/10691)) ([#10697](https://github.com/aws-amplify/amplify-cli/issues/10697)) ([eb44b2b](https://github.com/aws-amplify/amplify-cli/commit/eb44b2b4e7b76fbe5b89ace3a100c0f4dfed2d27))
+
+
+
+# 9.1.0 (2022-06-29)
+
+
+### Features
+
+* no-op commit ([#10660](https://github.com/aws-amplify/amplify-cli/issues/10660)) ([6cd057a](https://github.com/aws-amplify/amplify-cli/commit/6cd057ab611497fdca0a5f62e519002b5efbeb0b))
+
+
+
+
+
 # [9.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@9.0.0...@aws-amplify/cli-internal@9.1.0) (2022-06-30)
 
 

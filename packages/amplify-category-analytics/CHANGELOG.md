@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.1.0-inAppMessaging.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@4.0.9...amplify-category-analytics@4.1.0-inAppMessaging.0) (2022-07-07)
+
+
+### Bug Fixes
+
+* In-App-Messaging policy not getting created ([c12eb27](https://github.com/aws-amplify/amplify-cli/commit/c12eb277524f73be8e90f35e60fd09bb854f1ceb))
+* mixed mode notifications with PushNotifications and InAppMessaging ([2316d81](https://github.com/aws-amplify/amplify-cli/commit/2316d81babc4ea52ef61d64538eb6368d35667fa))
+* multi-env and pull bugs ([6e05b2d](https://github.com/aws-amplify/amplify-cli/commit/6e05b2d19ca870cb97483a654e01a0048b4c905b))
+* normalized meta update, fixes amplify status ([a7432a5](https://github.com/aws-amplify/amplify-cli/commit/a7432a51ce24c7de6fce2b1f419a2517ab54cd73))
+* reduce scope of in-app-messaging policy to Pinpoint region ([194340f](https://github.com/aws-amplify/amplify-cli/commit/194340fea6dca9827ec7854c93ca81ddb0411842))
+* remove analytics gracefully removes notifications before removing pinpoint ([6670d95](https://github.com/aws-amplify/amplify-cli/commit/6670d954c07accf6d44abf5fdc774bbbb1770e20))
+* sync ApplicationId from Analytics backend into Notifications backend and update InAppMsg to InAppMessaging ([62bb925](https://github.com/aws-amplify/amplify-cli/commit/62bb925ffc8d83b9e2f1123f2e2fff63b01a2527))
+
+
+### Features
+
+* mvp inAppMessaging ([5569168](https://github.com/aws-amplify/amplify-cli/commit/5569168d243957cefb22fc3c699058ffea3884ca))
+
+
+
+
+
 ## [4.0.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@4.0.9...amplify-category-analytics@4.0.10) (2022-06-30)
 
 **Note:** Version bump only for package amplify-category-analytics

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.4-inAppMessaging.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.5.2...amplify-frontend-javascript@3.5.4-inAppMessaging.0) (2022-07-07)
+
+
+### Bug Fixes
+
+* frontend config generation for InAppMessaging ([40be474](https://github.com/aws-amplify/amplify-cli/commit/40be47412a6588d951bec2556ab1b34115d382ac))
+* mixed mode notifications with PushNotifications and InAppMessaging ([2316d81](https://github.com/aws-amplify/amplify-cli/commit/2316d81babc4ea52ef61d64538eb6368d35667fa))
+
+
+
+
+
 ## [3.5.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.5.2...amplify-frontend-javascript@3.5.3) (2022-06-30)
 
 **Note:** Version bump only for package amplify-frontend-javascript
