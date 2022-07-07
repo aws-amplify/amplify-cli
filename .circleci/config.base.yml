@@ -605,7 +605,7 @@ jobs:
           command: |
             commit=$(git rev-parse HEAD)
             version=$(cat .amplify-pkg-version)
-            git push origin release:main -f
+            git push origin release:main --force-with-lease
       - run:
           name: Create branch with release commit
           command: |
