@@ -37,7 +37,7 @@ This section should get you running with **Amplify CLI** and get you familiar wi
 
    > If you are using Yarn v2, run `yarn set version classic` to change to Yarn Classic.
 
-1. Start by [forking](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the _master_ branch of [amplify-cli](https://github.com/aws-amplify/amplify-cli). Then clone it to your machine to work with it locally using one of the following methods:
+1. Start by [forking](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the _dev_ branch of [amplify-cli](https://github.com/aws-amplify/amplify-cli). Then clone it to your machine to work with it locally using one of the following methods:
 
    ```sh
    # HTTPS
