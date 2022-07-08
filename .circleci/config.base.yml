@@ -836,8 +836,6 @@ workflows:
             branches:
               only:
                 - dev
-                - master
-                - /run-e2e\/.*/
           requires:
             - build_pkg_binaries
       - github_prerelease:
