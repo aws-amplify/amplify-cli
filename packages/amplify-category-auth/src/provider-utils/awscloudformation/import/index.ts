@@ -1016,7 +1016,9 @@ export const importedAuthEnvInit = async (
       const { importExisting } = await Enquirer.prompt<{ importExisting: boolean }>({
         name: 'importExisting',
         type: 'confirm',
-        message: importMessages.Questions.ImportPreviousResource(resourceName, resourceParamManager.getParam('userPoolId')!, context.exeInfo.sourceEnvName),
+        message: importMessages.Questions.ImportPreviousResource(
+          resourceName, resourceParamManager.getParam(AuthParam.USER_POOL_ID)!, context.exeInfo.sourceEnvName,
+        ),
         footer: importMessages.ImportPreviousResourceFooter,
         initial: true,
         format: (e: $TSAny) => (e ? 'Yes' : 'No'),
@@ -1030,12 +1032,12 @@ export const importedAuthEnvInit = async (
 
       // Copy over the required input arguments to currentEnvSpecificParameters
       /* eslint-disable no-param-reassign */
-      currentEnvSpecificParameters.userPoolId = resourceParamManager.getParam('userPoolId')!;
-      currentEnvSpecificParameters.webClientId = resourceParamManager.getParam('webClientId')!;
-      currentEnvSpecificParameters.nativeClientId = resourceParamManager.getParam('nativeClientId')!;
+      currentEnvSpecificParameters.userPoolId = resourceParamManager.getParam(AuthParam.USER_POOL_ID)!;
+      currentEnvSpecificParameters.webClientId = resourceParamManager.getParam(AuthParam.WEB_CLIENT_ID)!;
+      currentEnvSpecificParameters.nativeClientId = resourceParamManager.getParam(AuthParam.NATIVE_CLIENT_ID)!;
 
       if (resourceParameters.authSelections === 'identityPoolAndUserPool') {
-        currentEnvSpecificParameters.identityPoolId = resourceParamManager.getParam('identityPoolId');
+        currentEnvSpecificParameters.identityPoolId = resourceParamManager.getParam(AuthParam.IDENTITY_POOL_ID);
       }
       /* eslint-enable */
     }
@@ -1368,3 +1370,10 @@ const ensureHeadlessParameters = (
 
   return envSpecificParameters;
 };
+
+enum AuthParam {
+  USER_POOL_ID = 'userPoolId',
+  WEB_CLIENT_ID = 'webClientId',
+  NATIVE_CLIENT_ID = 'nativeClientId',
+  IDENTITY_POOL_ID = 'identityPoolId',
+}

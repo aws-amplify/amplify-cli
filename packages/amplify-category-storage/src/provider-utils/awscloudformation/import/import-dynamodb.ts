@@ -336,7 +336,9 @@ export const importedDynamoDBEnvInit = async (
       const { importExisting } = await Enquirer.prompt<{ importExisting: boolean }>({
         name: 'importExisting',
         type: 'confirm',
-        message: importMessages.ImportPreviousTable(resourceName, resourceParamManager.getParam('tableName')!, context.exeInfo.sourceEnvName),
+        message: importMessages.ImportPreviousTable(
+          resourceName, resourceParamManager.getParam(DynamoDBParam.TABLE_NAME)!, context.exeInfo.sourceEnvName,
+        ),
         footer: importMessages.ImportPreviousResourceFooter,
         initial: true,
         format: (e: $TSAny) => (e ? 'Yes' : 'No'),
@@ -350,14 +352,14 @@ export const importedDynamoDBEnvInit = async (
 
       // Copy over the required input arguments to currentEnvSpecificParameters
       /* eslint-disable no-param-reassign */
-      currentEnvSpecificParameters.tableName = resourceParamManager.getParam('tableName')!;
-      currentEnvSpecificParameters.region = resourceParamManager.getParam('region')!;
-      currentEnvSpecificParameters.arn = resourceParamManager.getParam('arn');
-      currentEnvSpecificParameters.streamArn = resourceParamManager.getParam('streamArn');
-      currentEnvSpecificParameters.partitionKeyName = resourceParamManager.getParam('partitionKeyName');
-      currentEnvSpecificParameters.partitionKeyType = resourceParamManager.getParam('partitionKeyType');
-      currentEnvSpecificParameters.sortKeyName = resourceParamManager.getParam('sortKeyName');
-      currentEnvSpecificParameters.sortKeyType = resourceParamManager.getParam('sortKeyType');
+      currentEnvSpecificParameters.tableName = resourceParamManager.getParam(DynamoDBParam.TABLE_NAME)!;
+      currentEnvSpecificParameters.region = resourceParamManager.getParam(DynamoDBParam.REGION)!;
+      currentEnvSpecificParameters.arn = resourceParamManager.getParam(DynamoDBParam.ARN);
+      currentEnvSpecificParameters.streamArn = resourceParamManager.getParam(DynamoDBParam.STREAM_ARN);
+      currentEnvSpecificParameters.partitionKeyName = resourceParamManager.getParam(DynamoDBParam.PARTITION_KEY_NAME);
+      currentEnvSpecificParameters.partitionKeyType = resourceParamManager.getParam(DynamoDBParam.PARTITION_KEY_TYPE);
+      currentEnvSpecificParameters.sortKeyName = resourceParamManager.getParam(DynamoDBParam.SORT_KEY_NAME);
+      currentEnvSpecificParameters.sortKeyType = resourceParamManager.getParam(DynamoDBParam.SORT_KEY_TYPE);
       /* eslint-enable */
     }
   }
@@ -481,3 +483,14 @@ const ensureHeadlessParameters = (
 
   return envSpecificParameters;
 };
+
+enum DynamoDBParam {
+  TABLE_NAME = 'tableName',
+  REGION = 'region',
+  ARN = 'arn',
+  STREAM_ARN = 'streamArn',
+  PARTITION_KEY_NAME = 'partitionKeyName',
+  PARTITION_KEY_TYPE = 'partitionKeyType',
+  SORT_KEY_NAME = 'sortKeyName',
+  SORT_KEY_TYPE = 'sortKeyType',
+}
