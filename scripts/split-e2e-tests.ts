@@ -72,7 +72,7 @@ const AWS_REGIONS_TO_RUN_TESTS = [
 
 // Some services (eg. amazon lex) are not available in all regions
 // Tests added to this list will always run in us-west-2
-const FORCE_US_WEST_2 = ['interactions'];
+const FORCE_US_WEST_2 = ['interactions', 'geo'];
 
 const USE_PARENT_ACCOUNT = [
   'api_2',
