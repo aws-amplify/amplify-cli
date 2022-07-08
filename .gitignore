@@ -22,6 +22,7 @@ packages/amplify-cli/amplify/.config/
 packages/amplify-appsync-simulator/public
 packages/amplify-dynamodb-simulator/emulator
 packages/amplify-dynamodb-simulator/__test__/dynamodb-data
+packages/amplify-opensearch-simulator/emulator
 .vscode/*
 .history/*
 !.vscode/settings.json

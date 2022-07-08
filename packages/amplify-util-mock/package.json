@@ -34,6 +34,7 @@
     "amplify-cli-core": "3.3.0",
     "amplify-codegen": "^3.3.1",
     "amplify-dynamodb-simulator": "2.5.0",
+    "amplify-opensearch-simulator": "0.0.1",
     "amplify-prompts": "2.6.0",
     "amplify-provider-awscloudformation": "6.9.0",
     "amplify-storage-simulator": "1.7.0",

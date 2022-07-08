@@ -2,19 +2,35 @@ import { $TSContext, pathManager, stateManager, JSONUtilities, $TSObject } from 
 import * as path from 'path';
 import _ = require('lodash');
 import { ServiceName } from 'amplify-category-function';
+import { getMockSearchableTriggerDirectory } from '../mock-directory';
 
-type LambdaTriggerNames = string[];
-type LambdaTriggersMap = { [index: string] : LambdaTriggerNames};
+type LambdaTriggersMap = { [index: string] : LambdaTrigger[]};
+
+export type LambdaTrigger = {
+  name?: string,
+  config?: LambdaTriggerConfig
+}
+
+export type LambdaTriggerConfig = {
+  handler: string,
+  runtimePluginId: string,
+  runtime: string,
+  directory: string,
+  envVars: $TSObject
+}
 
 /**
  * Checks the function CFN templates for event source mappings that 
  * correspond to the DDB stream of any of the tables
  * @param context The CLI context
  * @param tables List of known tables that each correspond to a '@model' type
- * @returns Map with keys as table names and values as list of lambda function names attached
+ * @returns Map with keys as table names and values as list of lambda triggers attached
  */
- export const findLambdaTriggers = async (context: $TSContext , tables: string[]): Promise<LambdaTriggersMap> => {
+export const findModelLambdaTriggers = async (context: $TSContext , tables: string[]): Promise<LambdaTriggersMap> => {
     const lambdaTriggersMap: LambdaTriggersMap = {};
+    if (_.isEmpty(tables)) {
+      return lambdaTriggersMap;
+    }
     const lambdaNames = getLambdaFunctionNames();
     
     lambdaNames.forEach( (resourceName) => {
@@ -29,14 +45,44 @@ type LambdaTriggersMap = { [index: string] : LambdaTriggerNames};
       
       tablesAttached.forEach( (attachedTable: string) => {
         if (lambdaTriggersMap[attachedTable]) {
-          lambdaTriggersMap[attachedTable].push(resourceName);
+          lambdaTriggersMap[attachedTable].push({ name: resourceName });
         }
         else {
-          lambdaTriggersMap[attachedTable] = [resourceName];
+          lambdaTriggersMap[attachedTable] = [{ name: resourceName }];
         }
       });
     })
     return lambdaTriggersMap;
+}
+
+export const findSearchableLambdaTriggers = async (context: $TSContext , tables: string[], opensearchEndpoint: URL): Promise<{ [index: string] : LambdaTrigger }> => {
+  const lambdaTriggersMap: { [index: string] : LambdaTrigger } = {};
+  if (_.isEmpty(tables)) {
+    return lambdaTriggersMap;
+  }
+
+  tables.forEach ( (table) => {
+    const lambdaTriggerConfig = getOpensearchLambdaTriggerConfig(context, opensearchEndpoint, table);
+    lambdaTriggersMap[table] = { config: lambdaTriggerConfig };
+  });
+
+  return lambdaTriggersMap;
+}
+
+export const getOpensearchLambdaTriggerConfig = (context: $TSContext, opensearchEndpoint: URL, tableName: string): LambdaTriggerConfig => {
+  const mockSearchableTriggerDirectory = getMockSearchableTriggerDirectory(context);
+  return {
+    handler: 'index.handler',
+    runtimePluginId: 'amplify-python-function-runtime-provider',
+    runtime: 'python',
+    directory: mockSearchableTriggerDirectory,
+    envVars: {
+      OPENSEARCH_ENDPOINT: opensearchEndpoint,
+      DEBUG: "1",
+      OPENSEARCH_USE_EXTERNAL_VERSIONING: "false",
+      TABLE_NAME: tableName.substring(0, tableName.lastIndexOf('Table'))
+    }
+  }
 }
 
 const isDDBStreamAttached = (tableName: string, cfnResources: $TSObject): boolean => {
