@@ -1,8 +1,9 @@
 import { $TSContext } from 'amplify-cli-core';
 import { DynamoDBStreams, Endpoint } from 'aws-sdk';
-import { invokeLambda } from './lambda-invoke';
+import { invokeTrigger } from './lambda-invoke';
 import { isMockable } from 'amplify-category-function';
 import { printer } from 'amplify-prompts';
+import { LambdaTrigger } from '../utils/lambda/find-lambda-triggers';
 
 /**
  * Asynchronous function that handles invoking the given lambda trigger function
@@ -15,11 +16,11 @@ import { printer } from 'amplify-prompts';
 export const ddbLambdaTriggerHandler = async (
     context: $TSContext,
     streamArn?: string,
-    lambdaTriggerName?: string,
+    lambdaTrigger?: LambdaTrigger,
     localDynamoDBEndpoint?: Endpoint
 ): Promise<void> => {
-    if (!lambdaTriggerName) {
-        throw new Error('Name of the lambda trigger function must be specified');
+    if (!lambdaTrigger || (!lambdaTrigger?.name && !lambdaTrigger?.config)) {
+        throw new Error('Lambda trigger must be specified');
     }
     if (!streamArn) {
         throw new Error('Stream Arn must be specified');
@@ -28,15 +29,17 @@ export const ddbLambdaTriggerHandler = async (
         throw new Error('Local URL where DDB is running should be specified');
     }
 
-    // Lambda functions with layers are not mockable
-    const mockable = isMockable(context, lambdaTriggerName);
-    if (!mockable.isMockable) {
-        throw new Error(`Unable to mock ${lambdaTriggerName}. ${mockable.reason}`);
+    if (lambdaTrigger?.name) {
+        // Lambda functions with layers are not mockable
+        const mockable = isMockable(context, lambdaTrigger?.name);
+        if (!mockable.isMockable) {
+            throw new Error(`Unable to mock ${lambdaTrigger?.name}. ${mockable.reason}`);
+        }
     }
 
     const streams = getDDBStreamsClient(localDynamoDBEndpoint);
 
-    await pollDDBStreamAndInvokeLamba(context, streamArn, streams, lambdaTriggerName);
+    await pollDDBStreamAndInvokeLamba(context, streamArn, streams, lambdaTrigger);
 }
 
 /**
@@ -116,7 +119,7 @@ export const getStreamRecords = async (
  * Checks if there are any new DDB records available 
  * via stream to be processed in the trigger
  */
-export const pollDDBStreamAndInvokeLamba = async(context: $TSContext, streamArn: string, streams: DynamoDBStreams, lambdaTriggerName: string) => {
+export const pollDDBStreamAndInvokeLamba = async(context: $TSContext, streamArn: string, streams: DynamoDBStreams, lambdaTrigger: LambdaTrigger) => {
     let shardIterator = await getLatestShardIterator(streamArn, streams);
     while (shardIterator) {
         await getStreamRecords(shardIterator, streamArn, streams).then( async (result) => {
@@ -125,7 +128,7 @@ export const pollDDBStreamAndInvokeLamba = async(context: $TSContext, streamArn:
 
             if (data.Records.length) {
                 // when the records are available to be processed, trigger the local lambda
-                await invokeLambda(context, lambdaTriggerName, data).then( () => {
+                await invokeTrigger(context, lambdaTrigger, data).then( () => {
                     shardIterator = data.NextShardIterator;
                 });
             }
