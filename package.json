@@ -46,7 +46,8 @@
     "verdaccio-stop": "kill -9 $(lsof -n -t -iTCP:4873 -sTCP:LISTEN) || true",
     "update-versions": "lerna version --yes --no-commit-hooks --no-push --exact --conventional-commits --no-git-tag-version",
     "commit": "git-cz",
-    "coverage": "codecov || exit 0"
+    "coverage": "codecov || exit 0",
+    "release-rc": "./scripts/release-rc.sh"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-cli/issues"
