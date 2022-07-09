@@ -27,7 +27,7 @@
   "dependencies": {
     "@aws-amplify/amplify-e2e-core": "3.3.3",
     "fs-extra": "^8.1.0",
-    "graphql-transformer-core": "^7.6.2",
+    "graphql-transformer-core": "^7.6.3",
     "lodash": "^4.17.21",
     "uuid": "^8.3.2"
   },
