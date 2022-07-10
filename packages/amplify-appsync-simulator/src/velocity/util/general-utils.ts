@@ -31,7 +31,11 @@ export const generalUtils = {
     return Buffer.from(value, 'base64').toString('ascii');
   },
   parseJson(value) {
-    return JSON.parse(value);
+    try {
+      return JSON.parse(value);
+    } catch (_) {
+      return null;
+    }
   },
   toJson(value) {
     return value !== undefined ? JSON.stringify(value) : JSON.stringify(null);
