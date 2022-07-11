@@ -717,6 +717,7 @@ workflows:
             branches:
               only:
                 - dev
+                - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
           requires:
@@ -728,6 +729,7 @@ workflows:
             branches:
               only:
                 - dev
+                - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
           requires:
@@ -738,6 +740,7 @@ workflows:
               only:
                 - dev
                 - release
+                - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
                 - /run-e2e\/.*/
@@ -758,6 +761,7 @@ workflows:
             branches:
               only:
                 - dev
+                - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
       - cleanup_resources:
@@ -781,6 +785,7 @@ workflows:
             branches:
               only:
                 - dev
+                - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
           requires:
@@ -794,6 +799,7 @@ workflows:
             branches:
               only:
                 - dev
+                - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
           requires:
@@ -807,6 +813,7 @@ workflows:
             branches:
               only:
                 - dev
+                - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
           requires:
@@ -820,6 +827,7 @@ workflows:
             branches:
               only:
                 - dev
+                - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
           requires:
@@ -833,6 +841,7 @@ workflows:
             branches:
               only:
                 - dev
+                - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
           requires:
@@ -874,6 +883,7 @@ workflows:
             branches:
               only:
                 - dev
+                - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
 
@@ -887,6 +897,7 @@ workflows:
             branches:
               only:
                 - dev
+                - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
 
@@ -915,6 +926,7 @@ workflows:
               only:
                 - release
                 - dev
+                - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
       - github_release:
