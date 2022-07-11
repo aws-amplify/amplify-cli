@@ -59,21 +59,6 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
   'auth_5_pkg',
 ];
 
-// Ensure to update packages/amplify-e2e-tests/src/cleanup-e2e-resources.ts is also updated this gets updated
-const AWS_REGIONS_TO_RUN_TESTS = [
-  'us-east-2',
-  'us-west-2',
-  'eu-west-2',
-  'eu-central-1',
-  'ap-northeast-1',
-  'ap-southeast-1',
-  'ap-southeast-2',
-];
-
-// Some services (eg. amazon lex) are not available in all regions
-// Tests added to this list will always run in us-west-2
-const FORCE_US_WEST_2 = ['interactions'];
-
 const USE_PARENT_ACCOUNT = [
   'api_2',
   'api_1',
@@ -254,11 +239,9 @@ function splitTests(
   const job = jobs[jobName];
   const testSuites = getTestFiles(jobRootDir);
 
-  const newJobs = testSuites.reduce((acc, suite, index) => {
+  const newJobs = testSuites.reduce((acc, suite, _) => {
     const newJobName = generateJobName(jobName, suite);
-    const testRegion = FORCE_US_WEST_2.some(job => newJobName.startsWith(job))
-      ? 'us-west-2'
-      : AWS_REGIONS_TO_RUN_TESTS[index % AWS_REGIONS_TO_RUN_TESTS.length];
+    const testRegion = 'us-west-2';
     const newJob = {
       ...job,
       environment: {
