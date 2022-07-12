@@ -1,41 +1,26 @@
+// eslint-disable-next-line import/no-cycle
+import { retry, sleep } from '../utils';
 import { setupAmplifyAdminUI, getAmplifyBackendJobStatus } from '../utils/sdk-calls';
 
-export async function enableAdminUI(appId: string, envName: string, region: string) {
+/**
+ * Kick off Amplify backend provisioning and poll until provisioning complete (or failed)
+ */
+export const enableAdminUI = async (appId: string, envName: string, region: string): Promise<void> => {
   const setupAdminUIJobDetails = await setupAmplifyAdminUI(appId, region);
 
-  const jobCompletionDetails = await pollUntilDone(setupAdminUIJobDetails.JobId, appId, envName, region, 2 * 1000, 2000 * 1000);
+  // try to avoid eventual consistency issues between when the Amplify backend starts provisioning and when we start polling the status
+  await sleep(1000 * 60 * 10); // 10 seconds
 
-  if (jobCompletionDetails.Status === 'FAILED') {
+  try {
+    await retry(
+      () => getAmplifyBackendJobStatus(setupAdminUIJobDetails.JobId, appId, envName, region),
+      jobDetails => jobDetails.Status === 'COMPLETED',
+      {
+        timeoutMS: 1000 * 60 * 60 * 2, // 2 minutes
+      },
+      jobDetails => jobDetails.Status === 'FAILED',
+    );
+  } catch {
     throw new Error('Setting up Amplify Studio failed');
   }
-}
-
-// interval is how often to poll
-// timeout is how long to poll waiting for a result (0 means try forever)
-
-async function pollUntilDone(jobId: string, appId: string, envName: string, region: string, interval: number, timeout: number) {
-  const start = Date.now();
-  while (true) {
-    const jobDetails = await getAmplifyBackendJobStatus(jobId, appId, envName, region);
-
-    if (jobDetails.Status === 'FAILED' || jobDetails.Status === 'COMPLETED') {
-      // we know we're done here, return from here whatever you
-      // want the final resolved value of the promise to be
-      return jobDetails;
-    } else {
-      if (timeout !== 0 && Date.now() - start > timeout) {
-        throw new Error(`Job Timed out for ${jobId}`);
-      } else {
-        // run again with a short delay
-        await delay(interval);
-      }
-    }
-  }
-}
-
-// create a promise that resolves after a short delay
-function delay(t: number) {
-  return new Promise(function (resolve) {
-    setTimeout(resolve, t);
-  });
-}
+};
