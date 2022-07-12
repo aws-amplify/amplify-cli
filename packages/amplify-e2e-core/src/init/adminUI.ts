@@ -1,22 +1,20 @@
 // eslint-disable-next-line import/no-cycle
-import { retry, sleep } from '../utils';
+import { retry } from '../utils';
 import { setupAmplifyAdminUI, getAmplifyBackendJobStatus } from '../utils/sdk-calls';
 
 /**
  * Kick off Amplify backend provisioning and poll until provisioning complete (or failed)
  */
-export const enableAdminUI = async (appId: string, envName: string, region: string): Promise<void> => {
-  const setupAdminUIJobDetails = await setupAmplifyAdminUI(appId, region);
-
-  // try to avoid eventual consistency issues between when the Amplify backend starts provisioning and when we start polling the status
-  await sleep(1000 * 60 * 10); // 10 seconds
+export const enableAdminUI = async (appId: string, __envName: string, region: string): Promise<void> => {
+  const { JobId, BackendEnvironmentName } = await setupAmplifyAdminUI(appId, region);
 
   try {
     await retry(
-      () => getAmplifyBackendJobStatus(setupAdminUIJobDetails.JobId, appId, envName, region),
+      () => getAmplifyBackendJobStatus(JobId, appId, BackendEnvironmentName, region),
       jobDetails => jobDetails.Status === 'COMPLETED',
       {
-        timeoutMS: 1000 * 60 * 60 * 2, // 2 minutes
+        timeoutMS: 1000 * 60 * 5, // 5 minutes
+        stopOnError: false,
       },
       jobDetails => jobDetails.Status === 'FAILED',
     );

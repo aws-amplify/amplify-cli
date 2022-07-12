@@ -39,7 +39,7 @@ export const retry = async <T>(
       if (typeof failurePredicate === 'function' && failurePredicate(result)) {
         throw new Error('Retry-able function execution result matched failure predicate. Stopping retries.');
       }
-      console.warn(`Retry-able function execution did not match success predicate. Result was [${result}]. Retrying...`);
+      console.warn(`Retry-able function execution did not match success predicate. Result was [${JSON.stringify(result)}]. Retrying...`);
     } catch (err) {
       console.warn(`Retry-able function execution failed with [${err.message || err}]`);
       if (stopOnError) {
