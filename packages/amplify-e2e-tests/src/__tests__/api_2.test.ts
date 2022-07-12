@@ -1,4 +1,3 @@
-/* eslint-disable */
 import {
   addApiWithBlankSchemaAndConflictDetection,
   amplifyPush,
@@ -14,17 +13,17 @@ import {
   getTransformConfig,
   initJSProjectWithProfile,
   updateApiSchema,
-  updateAPIWithResolutionStrategyWithModels
+  updateAPIWithResolutionStrategyWithModels,
 } from '@aws-amplify/amplify-e2e-core';
 import AWSAppSyncClient, {
-  AUTH_TYPE
+  AUTH_TYPE,
 } from 'aws-appsync';
 import {
-  existsSync
+  existsSync,
 } from 'fs';
 import gql from 'graphql-tag';
 import {
-  TRANSFORM_CURRENT_VERSION
+  TRANSFORM_CURRENT_VERSION,
 } from 'graphql-transformer-core';
 import _ from 'lodash';
 import * as path from 'path';
@@ -51,6 +50,7 @@ describe('amplify add api (GraphQL)', () => {
   });
 
   it('init a project with conflict detection enabled and a schema with @key, test update mutation', async () => {
+    // eslint-disable-next-line spellcheck/spell-checker
     const name = 'keyconflictdetection';
     await initJSProjectWithProfile(projRoot, { name });
     await addApiWithBlankSchemaAndConflictDetection(projRoot, { transformerVersion: 1 });
@@ -136,6 +136,7 @@ describe('amplify add api (GraphQL)', () => {
   });
 
   it('init a project with conflict detection enabled and toggle disable', async () => {
+    // eslint-disable-next-line spellcheck/spell-checker
     const name = 'conflictdetection';
     await initJSProjectWithProfile(projRoot, { name });
     await addApiWithBlankSchemaAndConflictDetection(projRoot, { transformerVersion: 1 });
@@ -164,7 +165,7 @@ describe('amplify add api (GraphQL)', () => {
     expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
     expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual('AUTOMERGE');
 
-    // remove datastore feature
+    // remove DataStore feature
     await apiDisableDataStore(projRoot, {});
     await amplifyPushUpdate(projRoot);
     const disableDSConfig = getTransformConfig(projRoot, name);
@@ -172,7 +173,8 @@ describe('amplify add api (GraphQL)', () => {
     expect(_.isEmpty(disableDSConfig.ResolverConfig)).toBe(true);
   });
 
-  it('init a project with conflict detection enabled and admin UI enabled to generate datastore models in the cloud', async () => {
+  it('init a project with conflict detection enabled and admin UI enabled to generate DataStore models in the cloud', async () => {
+    // eslint-disable-next-line spellcheck/spell-checker
     const name = 'dsadminui';
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false, name });
 
@@ -185,7 +187,7 @@ describe('amplify add api (GraphQL)', () => {
     const localEnvInfo = getLocalEnvInfo(projRoot);
     const { envName } = localEnvInfo;
 
-    // setupAdminUI
+    // setup Amplify Studio backend
     await enableAdminUI(appId, envName, region);
 
     await addApiWithBlankSchemaAndConflictDetection(projRoot, { transformerVersion: 1 });
@@ -208,6 +210,7 @@ describe('amplify add api (GraphQL)', () => {
   });
 
   it('init a sync enabled project and update conflict resolution strategy', async () => {
+    // eslint-disable-next-line spellcheck/spell-checker
     const name = 'syncenabled';
     await initJSProjectWithProfile(projRoot, { name });
     await addApiWithBlankSchemaAndConflictDetection(projRoot, { transformerVersion: 1 });
@@ -245,5 +248,3 @@ describe('amplify add api (GraphQL)', () => {
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
   });
 });
-
-/* eslint-enable */
