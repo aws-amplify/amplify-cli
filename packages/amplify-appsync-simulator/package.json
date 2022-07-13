@@ -16,6 +16,9 @@
     "aws",
     "simulator"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "copy-assets": "yarn rimraf ./public && yarn copyfiles -u 3 \"../amplify-graphiql-explorer/build/**/*\" ./public",
     "build": "yarn copy-assets && tsc",
