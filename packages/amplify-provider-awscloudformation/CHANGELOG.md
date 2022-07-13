@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.4.4-rc.df0c6f26b.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.4.2...amplify-provider-awscloudformation@6.4.4-rc.df0c6f26b.0) (2022-07-13)
+
+
+### Bug Fixes
+
+* **graphql:** handle gsi change iterative update of delta sync table exists on root template ([#10470](https://github.com/aws-amplify/amplify-cli/issues/10470)) ([d8212d5](https://github.com/aws-amplify/amplify-cli/commit/d8212d50ffd36a47f000988b46a1dbba02c9fa2f))
+* override msg for non-overrides categories ([#10657](https://github.com/aws-amplify/amplify-cli/issues/10657)) ([660f74e](https://github.com/aws-amplify/amplify-cli/commit/660f74e0302b80760f9bc0dd15e1938d330a68ac))
+* use correct region as provided in client call ([#10738](https://github.com/aws-amplify/amplify-cli/issues/10738)) ([8cbbd60](https://github.com/aws-amplify/amplify-cli/commit/8cbbd60cb88cd68765273b92fb48b0649a2a0b34))
+
+
+### Reverts
+
+* Revert "chore: upgrade api category dependencies" ([7e24faf](https://github.com/aws-amplify/amplify-cli/commit/7e24faf472f96eeb34171b7befa49f4b0da3f7ae))
+
+
+
+
+
 ## [6.4.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.4.2...amplify-provider-awscloudformation@6.4.3) (2022-06-30)
 
 

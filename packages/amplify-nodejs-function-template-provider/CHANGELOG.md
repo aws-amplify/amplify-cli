@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.6-rc.df0c6f26b.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.4.4...amplify-nodejs-function-template-provider@2.4.6-rc.df0c6f26b.0) (2022-07-13)
+
+
+### Reverts
+
+* Revert "chore: upgrade api category dependencies" ([7e24faf](https://github.com/aws-amplify/amplify-cli/commit/7e24faf472f96eeb34171b7befa49f4b0da3f7ae))
+
+
+
+
+
 ## [2.4.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@2.4.4...amplify-nodejs-function-template-provider@2.4.5) (2022-06-30)
 
 **Note:** Version bump only for package amplify-nodejs-function-template-provider
