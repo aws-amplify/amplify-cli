@@ -1,21 +1,23 @@
 import * as extractArgsDependency from '../commands/utils/extractArgs';
 import * as listUiBuilderComponentsDependency from '../commands/utils/syncAmplifyUiBuilderComponents';
 import { run } from '../commands/cloneComponentsFromEnv';
-const extractArgsDependency_mock = extractArgsDependency as any;
-const listUiBuilderComponentsDependency_mock = listUiBuilderComponentsDependency as any;
-jest.mock('aws-sdk', () => {
-  return {
-    AmplifyUIBuilder: jest.fn(() => {
-      return {
-        createComponent: () => ({
-          promise: () => true,
-        }),
-      };
-    }),
-  };
-});
+
+const extractArgsDependencyMock = extractArgsDependency as any;
+const listUiBuilderComponentsDependencyMock = listUiBuilderComponentsDependency as any;
+
 jest.mock('../commands/utils/extractArgs');
 jest.mock('../commands/utils/syncAmplifyUiBuilderComponents');
+jest.mock('../clients', () => ({
+  AmplifyClientFactory: {
+    setClientInfo: jest.fn(),
+    amplifyUiBuilder: {
+      createComponent: () => ({
+        promise: () => true,
+      }),
+    },
+    amplifyBackend: jest.fn(),
+  },
+}));
 
 describe('can clone components to new environment', () => {
   let context: any;
@@ -24,14 +26,20 @@ describe('can clone components to new environment', () => {
       amplify: {
         invokePluginMethod: () => true,
       },
+      input: {
+        options: {
+          appId: 'testAppId',
+          envName: 'testEnvName',
+        },
+      },
     };
-    extractArgsDependency_mock.extractArgs = jest.fn().mockImplementation(() => ({
+    extractArgsDependencyMock.extractArgs = jest.fn().mockImplementation(() => ({
       sourceEnvName: 'sourceEnvName',
       newEnvName: 'newEnvName',
       appId: 'appId',
       environmentName: 'environmentName',
     }));
-    listUiBuilderComponentsDependency_mock.listUiBuilderComponents = jest.fn().mockImplementation((context: any, envName: any) => {
+    listUiBuilderComponentsDependencyMock.listUiBuilderComponents = jest.fn().mockImplementation((context: any, envName: any) => {
       if (envName === 'newEnvName') {
         return {
           entities: [],

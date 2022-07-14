@@ -216,21 +216,21 @@
   dependencies:
     "@aws-amplify/core" "4.3.11"
 
-"@aws-amplify/codegen-ui-react@^2.2.0":
-  version "2.2.0"
-  resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui-react/-/codegen-ui-react-2.2.0.tgz#04f289715711bf7c9e31cdebec9532c536077515"
-  integrity sha512-TFiRa1rGZvVh66Wl7pPDoV5GVDbCh0toWoFuNqJluO0btItP1dyyF+244X1YCFnOlwp7qohGtmBMlxnStG4ZRw==
+"@aws-amplify/codegen-ui-react@2.3.0":
+  version "2.3.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui-react/-/codegen-ui-react-2.3.0.tgz#73af267b37df6741675c8b4c66a484b5f347a390"
+  integrity sha512-182YEIBd16LuJCktEj+UiOPR/lxQVUVjK00bty8AV3bODw1KYUKR24EjajGPLV1V+vyB1pa2Izo9xXa/zGFWow==
   dependencies:
-    "@aws-amplify/codegen-ui" "2.2.0"
+    "@aws-amplify/codegen-ui" "2.3.0"
     "@typescript/vfs" "~1.3.5"
     typescript "~4.4.4"
   optionalDependencies:
     prettier "2.3.2"
 
-"@aws-amplify/codegen-ui@2.2.0", "@aws-amplify/codegen-ui@^2.2.0":
-  version "2.2.0"
-  resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui/-/codegen-ui-2.2.0.tgz#4b0f1e21b61b16b93ff671b2b00c669cd5f5c3ee"
-  integrity sha512-pJnRBVV8Ahaw+rU/JYXHc5Id5R/RTrO9UdPqT0eHqd4WH7XN0qzByKsVQ6hQvqYugiBIWuJL0DgPgzhsLCb8pw==
+"@aws-amplify/codegen-ui@2.3.0":
+  version "2.3.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui/-/codegen-ui-2.3.0.tgz#9dd225277c54c92ec43ec5878c175f5cdfb9861f"
+  integrity sha512-uI+SBlWNQ8mPVRBLcK6GPQfHUIO6cmFSbYJD4WjiD6j8V2x2fdSGSLJa7kiey5KC2Iem2s+Z2ImYKj/etspQfQ==
   dependencies:
     yup "^0.32.11"
 
@@ -9918,7 +9918,7 @@ astral-regex@^2.0.0:
 
 async@1.x, async@^2.6.2, async@^2.6.4, async@^3.2.3:
   version "2.6.4"
-  resolved "https://registry.yarnpkg.com/async/-/async-2.6.4.tgz#706b7ff6084664cd7eae713f6f965433b5504221"
+  resolved "https://registry.npmjs.org/async/-/async-2.6.4.tgz#706b7ff6084664cd7eae713f6f965433b5504221"
   integrity sha512-mzo5dfJYwAn29PeiJ0zvwTo04zj8HDJj0Mn8TD7sno7q12prdbnasKJHhkm2c1LgrhlJ0teaea8860oxi51mGA==
   dependencies:
     lodash "^4.17.14"
@@ -12019,7 +12019,7 @@ cross-env@^7.0.3:
 
 cross-fetch@2.2.2, cross-fetch@^2.2.6, cross-fetch@^3.1.5:
   version "2.2.6"
-  resolved "https://registry.yarnpkg.com/cross-fetch/-/cross-fetch-2.2.6.tgz#2ef0bb39a24ac034787965c457368a28730e220a"
+  resolved "https://registry.npmjs.org/cross-fetch/-/cross-fetch-2.2.6.tgz#2ef0bb39a24ac034787965c457368a28730e220a"
   integrity sha512-9JZz+vXCmfKUZ68zAptS7k4Nu8e2qcibe7WVZYps7sAgk5R8GYTc+T1WR0v1rlP9HxgARmOX1UTIJZFytajpNA==
   dependencies:
     node-fetch "^2.6.7"
@@ -23827,7 +23827,7 @@ whatwg-encoding@^1.0.5:
 
 whatwg-fetch@^2.0.4:
   version "2.0.4"
-  resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-2.0.4.tgz#dde6a5df315f9d39991aa17621853d720b85566f"
+  resolved "https://registry.npmjs.org/whatwg-fetch/-/whatwg-fetch-2.0.4.tgz#dde6a5df315f9d39991aa17621853d720b85566f"
   integrity sha512-dcQ1GWpOD/eEQ97k66aiEVpNnapVj90/+R+SXTPYGHpYBBypfKJEQjLrvMZ7YXbKm21gXd4NcuxUTjiv1YtLng==
 
 whatwg-fetch@^3.4.1, whatwg-fetch@^3.6.2:
