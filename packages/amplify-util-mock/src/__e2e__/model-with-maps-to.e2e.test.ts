@@ -30,7 +30,6 @@ beforeAll(async () => {
           return defaultValue;
         },
         getNumber: jest.fn(),
-        getString: jest.fn(),
         getObject: jest.fn(),
       }
     });
