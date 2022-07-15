@@ -9,7 +9,7 @@ import {
   amplifyPush,
   updateApiSchema,
   amplifyPushUpdate,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 
 describe('Schema iterative update - delete', () => {
   let projectDir: string;
@@ -26,7 +26,7 @@ describe('Schema iterative update - delete', () => {
     await deleteProject(projectDir);
     deleteProjectDir(projectDir);
   });
-  it('should support removal of multiple @key directive from a single @model ', async () => {
+  it('should support removal of multiple @key directive from a single @model', async () => {
     const apiName = 'deletekeys';
 
     const initialSchema = path.join('iterative-push', 'multiple-key-delete', 'initial-schema.graphql');

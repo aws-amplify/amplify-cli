@@ -1,8 +1,28 @@
-import { existsSync } from "fs-extra";
-import path from "path";
-import { addAuthWithDefault, addHeadlessGeo, amplifyPushAuth, createNewProjectDir, deleteProject, deleteProjectDir, getMap, getProjectMeta, initJSProjectWithProfile, updateHeadlessGeo } from "amplify-e2e-core";
-import { AccessType, AddGeoRequest, MapStyle, UpdateGeoRequest } from "amplify-headless-interface";
-import { v4 as uuid } from 'uuid';
+import {
+  existsSync,
+} from 'fs-extra';
+import path from 'path';
+import {
+  addAuthWithDefault,
+  addHeadlessGeo,
+  amplifyPushAuth,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  getMap,
+  getProjectMeta,
+  initJSProjectWithProfile,
+  updateHeadlessGeo,
+} from '@aws-amplify/amplify-e2e-core';
+import {
+  AccessType,
+  AddGeoRequest,
+  MapStyle,
+  UpdateGeoRequest,
+} from 'amplify-headless-interface';
+import {
+  v4 as uuid,
+} from 'uuid';
 
 describe('Geo headless tests', () => {
   let projRoot: string;
@@ -24,21 +44,21 @@ describe('Geo headless tests', () => {
       const addGeoRequest: AddGeoRequest = {
         version: 1,
         serviceConfiguration: {
-          serviceName: "Map",
+          serviceName: 'Map',
           name: mapId,
           accessType: AccessType.AuthorizedUsers,
           mapStyle: MapStyle.VectorEsriDarkGrayCanvas,
-          setAsDefault: true
-        }
+          setAsDefault: true,
+        },
       };
       const updateGeoRequest: UpdateGeoRequest = {
         version: 1,
         serviceModification: {
-          serviceName:"Map",
+          serviceName: 'Map',
           name: mapId,
           accessType: AccessType.AuthorizedAndGuestUsers,
-          setAsDefault: true
-        }
+          setAsDefault: true,
+        },
       };
       await initJSProjectWithProfile(projRoot, {});
       await addAuthWithDefault(projRoot);
@@ -56,5 +76,5 @@ describe('Geo headless tests', () => {
       const newMeta = getProjectMeta(projRoot);
       expect(newMeta.geo[mapId].accessType).toBe('AuthorizedAndGuestUsers');
     });
-  })
+  });
 });

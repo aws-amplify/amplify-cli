@@ -5,8 +5,9 @@
   "features": {
     "graphQLTransformer": {
       "customTransformerVersion": "it-is-a-string",
-      "foo": "unknown",
-      "bar": "unknown"
+      "foo": true,
+      "bar": "unknown",
+      "disabled": false
     }
   }
 }

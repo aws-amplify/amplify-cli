@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { readJsonFile } from 'amplify-e2e-core';
+import { readJsonFile } from '@aws-amplify/amplify-e2e-core';
 
 export function verifyPlugin(pluginDirPath: string): boolean {
   if (fs.existsSync(pluginDirPath) && fs.statSync(pluginDirPath).isDirectory()) {

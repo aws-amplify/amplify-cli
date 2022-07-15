@@ -14,12 +14,12 @@ import {
   getGeoJSConfiguration,
   updateAuthAddUserGroups,
   addGeofenceCollectionWithDefault,
-  getGeofenceCollection
-} from 'amplify-e2e-core';
+  getGeofenceCollection,
+} from '@aws-amplify/amplify-e2e-core';
 import { existsSync } from 'fs';
 import path from 'path';
-import { getAWSExports } from '../aws-exports/awsExports';
 import _ from 'lodash';
+import { getAWSExports } from '../aws-exports/awsExports';
 
 describe('amplify geo add', () => {
   let projRoot: string;

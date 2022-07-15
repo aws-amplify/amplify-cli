@@ -12,7 +12,7 @@ import {
   deleteProjectDir,
   getProjectMeta,
   initJSProjectWithProfile,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import {
   addEnvironment,
   addEnvironmentHostedUI,
@@ -26,7 +26,9 @@ import {
 
 async function validate(meta: any) {
   expect(meta.providers.awscloudformation).toBeDefined();
-  const { AuthRoleArn: authRoleArn, DeploymentBucketName: bucketName, Region: region, StackId: stackId } = meta.providers.awscloudformation;
+  const {
+    AuthRoleArn: authRoleArn, DeploymentBucketName: bucketName, Region: region, StackId: stackId,
+  } = meta.providers.awscloudformation;
 
   expect(authRoleArn).toBeDefined();
   expect(region).toBeDefined();

@@ -21,10 +21,6 @@
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules"
   },
   "dependencies": {
-    "amplify-function-plugin-interface": "1.9.5",
-    "lodash": "^4.17.21"
-  },
-  "devDependencies": {
-    "@types/inquirer": "^6.5.0"
+    "amplify-function-plugin-interface": "1.9.5"
   }
 }

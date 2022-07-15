@@ -92,7 +92,7 @@ The Amplify CLI supports the commands shown in the following table.
 
 ## Developing
 
-To set up your local development environment, go to [Local Environment Setup](https://github.com/aws-amplify/amplify-cli/blob/master/CONTRIBUTING.md#local-environment-setup).
+To set up your local development environment, go to [Local Environment Setup](https://github.com/aws-amplify/amplify-cli/blob/dev/CONTRIBUTING.md#local-environment-setup).
 
 To test your category, do the following:
 
@@ -110,4 +110,4 @@ Before pushing code or sending a pull request, do the following:
 
 ## Contributing
 
-We are thankful for any contributions from the community. Look at our [Contribution Guidelines](https://github.com/aws-amplify/amplify-cli/blob/master/CONTRIBUTING.md).
+We are thankful for any contributions from the community. Look at our [Contribution Guidelines](https://github.com/aws-amplify/amplify-cli/blob/dev/CONTRIBUTING.md).

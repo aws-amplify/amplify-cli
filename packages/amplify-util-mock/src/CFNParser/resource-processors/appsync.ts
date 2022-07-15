@@ -19,6 +19,10 @@ export function dynamoDBResourceHandler(resourceName, resource, cfnContext: Clou
       BillingMode: 'PAY_PER_REQUEST',
       KeySchema: resource.Properties.KeySchema,
       AttributeDefinitions: resource.Properties.AttributeDefinitions,
+      StreamSpecification: {
+        StreamEnabled: true,
+        StreamViewType: resource?.Properties?.StreamSpecification?.StreamViewType || 'NEW_AND_OLD_IMAGES'
+      }
     },
   };
 

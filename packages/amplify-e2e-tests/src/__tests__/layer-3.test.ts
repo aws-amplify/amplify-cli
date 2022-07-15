@@ -27,7 +27,7 @@ import {
   validateLayerDir,
   validateLayerMetadata,
   validatePushedVersion,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
 import { addEnvironment, checkoutEnvironment, listEnvironment } from '../environment/env';
 

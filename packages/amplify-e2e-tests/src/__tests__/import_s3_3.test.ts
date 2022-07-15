@@ -9,7 +9,7 @@ import {
   initJSProjectWithProfile,
   importHeadlessStorage,
   removeHeadlessStorage,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import {
   expectLocalAndCloudMetaFilesMatching,
   getShortId,
@@ -30,7 +30,7 @@ describe('headless s3 import', () => {
   };
 
   let projectRoot: string;
-  let ignoreProjectDeleteErrors: boolean = false;
+  let ignoreProjectDeleteErrors = false;
   let bucketNameToImport: string;
   let bucketLocation: string;
 
@@ -59,9 +59,9 @@ describe('headless s3 import', () => {
     // region in every case.
     // https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLocation.html
     if (
-      locationResponse.LocationConstraint === undefined ||
-      locationResponse.LocationConstraint === '' ||
-      locationResponse.LocationConstraint === null
+      locationResponse.LocationConstraint === undefined
+      || locationResponse.LocationConstraint === ''
+      || locationResponse.LocationConstraint === null
     ) {
       bucketLocation = 'us-east-1';
     } else {

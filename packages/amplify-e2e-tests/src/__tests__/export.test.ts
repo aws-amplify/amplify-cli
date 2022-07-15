@@ -9,7 +9,7 @@ import {
   exportBackend,
   getProjectConfig,
   initJSProjectWithProfile,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import * as path from 'path';
 import { JSONUtilities, readCFNTemplate } from 'amplify-cli-core';
 
@@ -42,30 +42,29 @@ describe('amplify export backend', () => {
     const manifest = JSONUtilities.readJson(pathToManifest) as { stackName: string; props: any };
     const buildFolder = path.join(projRoot, 'amplify', 'backend', 'awscloudformation', 'build');
     stackMappings.forEach(mapping => {
-      const template1 = getTemplateForMapping(mapping, buildFolder) 
+      const template1 = getTemplateForMapping(mapping, buildFolder);
       const stack = manifest.props.loadNestedStacks[mapping.category + mapping.resourceName];
       const template2 = readCFNTemplate(path.join(pathToExport, stack.templateFile)).cfnTemplate;
-      matchTemplates(template1, template2);      
+      matchTemplates(template1, template2);
     });
-   
   });
 });
 
 function matchTemplates(template: any, exporttemplate: any) {
   // matches count and parameters
-  expect(Object.keys(template.Parameters)).toEqual(Object.keys(exporttemplate.Parameters))
+  expect(Object.keys(template.Parameters)).toEqual(Object.keys(exporttemplate.Parameters));
 
   // matches the types and counts of resources since logical ids not idempotent
   expect(getTypeCountMap(template.Resources)).toEqual(getTypeCountMap(exporttemplate.Resources));
 
   // matches count and name of outputs
-  expect(Object.keys(template.Outputs)).toEqual(Object.keys(exporttemplate.Outputs))
+  expect(Object.keys(template.Outputs)).toEqual(Object.keys(exporttemplate.Outputs));
 }
 
 function getTypeCountMap(resources: { [key: string] : any }) : Map<string, number> {
   return Object.keys(resources).reduce((map, key) => {
     const resourceType = resources[key].Type;
-    if(map.has(resourceType)){
+    if (map.has(resourceType)) {
       map.set(resourceType, map.get(resourceType) + 1);
     } else {
       map.set(resourceType, 1);
@@ -75,15 +74,13 @@ function getTypeCountMap(resources: { [key: string] : any }) : Map<string, numbe
   }, new Map<string, number>());
 }
 
-function getTemplateForMapping(mapping:  { category: string; resourceName: string; service: string }, buildFolder: string) : any {
+function getTemplateForMapping(mapping: { category: string; resourceName: string; service: string }, buildFolder: string) : any {
   let cfnFileName = 'cloudformation-template.json';
-  if(mapping.service !== 'AppSync' && mapping.service !== 'S3'){
-    cfnFileName = mapping.resourceName + '-' + cfnFileName 
+  if (mapping.service !== 'AppSync' && mapping.service !== 'S3') {
+    cfnFileName = `${mapping.resourceName}-${cfnFileName}`;
   }
-  const templatePath = mapping.category === 'function' ? 
-  path.join(buildFolder, mapping.category, mapping.resourceName, cfnFileName) :
-    path.join(buildFolder, mapping.category, mapping.resourceName, 'build', cfnFileName)
+  const templatePath = mapping.category === 'function'
+    ? path.join(buildFolder, mapping.category, mapping.resourceName, cfnFileName)
+    : path.join(buildFolder, mapping.category, mapping.resourceName, 'build', cfnFileName);
   return readCFNTemplate(templatePath).cfnTemplate;
 }
-
-

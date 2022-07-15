@@ -11,7 +11,7 @@ import {
   getAppId,
   initJSProjectWithProfile,
   addS3StorageWithSettings,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import {
   AuthProjectDetails,
   createIDPAndUserPoolWithOAuthSettings,

@@ -10,8 +10,6 @@ import {
   amplifyPushWithoutCodegen,
   getMap,
   getPlaceIndex,
-  updateMapWithDefault,
-  updatePlaceIndexWithDefault,
   updateSecondMapAsDefault,
   updateSecondPlaceIndexAsDefault,
   generateResourceIdsInOrder,
@@ -19,9 +17,8 @@ import {
   updateAuthAddUserGroups,
   addGeofenceCollectionWithDefault,
   getGeofenceCollection,
-  updateGeofenceCollectionWithDefault,
-  updateSecondGeofenceCollectionAsDefault
-} from 'amplify-e2e-core';
+  updateSecondGeofenceCollectionAsDefault,
+} from '@aws-amplify/amplify-e2e-core';
 import { existsSync } from 'fs';
 import path from 'path';
 import { getAWSExports } from '../aws-exports/awsExports';
@@ -40,70 +37,6 @@ describe('amplify geo update', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('init a project with default auth config, add the map resource and update the auth config', async () => {
-    const [map1Id, map2Id] = generateResourceIdsInOrder(2);
-    await initJSProjectWithProfile(projRoot, {});
-    await addAuthWithDefault(projRoot);
-    await addMapWithDefault(projRoot, { resourceName: map1Id, isFirstGeoResource: true });
-    await addMapWithDefault(projRoot, { resourceName: map2Id, isAdditional: true, isDefault: false });
-    await updateMapWithDefault(projRoot);
-    await amplifyPushWithoutCodegen(projRoot);
-
-    const meta = getProjectMeta(projRoot);
-    const mapName = meta.geo[map1Id].output.Name;
-    const region = meta.geo[map1Id].output.Region;
-    const map = await getMap(mapName, region);
-    expect(map.MapName).toBeDefined();
-    expect(meta.geo[map1Id].accessType).toBe('AuthorizedAndGuestUsers');
-    const awsExport: any = getAWSExports(projRoot).default;
-    expect(getGeoJSConfiguration(awsExport).maps.items[mapName]).toBeDefined();
-    expect(getGeoJSConfiguration(awsExport).maps.default).toEqual(mapName);
-    expect(getGeoJSConfiguration(awsExport).region).toEqual(region);
-  });
-
-  it('init a project with default auth config, add the place index resource and update the auth config', async () => {
-    const [index1Id, index2Id] = generateResourceIdsInOrder(2);
-    await initJSProjectWithProfile(projRoot, {});
-    await addAuthWithDefault(projRoot);
-    await addPlaceIndexWithDefault(projRoot, { resourceName: index1Id, isFirstGeoResource: true });
-    await addPlaceIndexWithDefault(projRoot, { resourceName: index2Id, isAdditional: true, isDefault: false });
-    await updatePlaceIndexWithDefault(projRoot);
-    await amplifyPushWithoutCodegen(projRoot);
-
-    const meta = getProjectMeta(projRoot);
-    const placeIndexName = meta.geo[index1Id].output.Name;
-    const region = meta.geo[index1Id].output.Region;
-    const placeIndex = await getPlaceIndex(placeIndexName, region);
-    expect(placeIndex.IndexName).toBeDefined();
-    expect(meta.geo[index1Id].accessType).toBe('AuthorizedAndGuestUsers');
-    const awsExport: any = getAWSExports(projRoot).default;
-    expect(getGeoJSConfiguration(awsExport).search_indices.items).toContain(placeIndexName);
-    expect(getGeoJSConfiguration(awsExport).search_indices.default).toEqual(placeIndexName);
-    expect(getGeoJSConfiguration(awsExport).region).toEqual(region);
-  });
-
-  it('init a project with default auth config, add the geofence collection resource and update the auth config', async () => {
-    const [collection1Id, collection2Id] = generateResourceIdsInOrder(2);
-    await initJSProjectWithProfile(projRoot, {});
-    await addAuthWithDefault(projRoot);
-    const cognitoGroups = ['admin', 'admin1'];
-    await updateAuthAddUserGroups(projRoot, cognitoGroups);
-    await addGeofenceCollectionWithDefault(projRoot, cognitoGroups, { resourceName: collection1Id });
-    await addGeofenceCollectionWithDefault(projRoot, cognitoGroups, { resourceName: collection2Id, isAdditional: true, isDefault: false });
-    await updateGeofenceCollectionWithDefault(projRoot, cognitoGroups);
-    await amplifyPushWithoutCodegen(projRoot);
-
-    const meta = getProjectMeta(projRoot);
-    const collectionName = meta.geo[collection1Id].output.Name;
-    const region = meta.geo[collection1Id].output.Region;
-    const collection = await getGeofenceCollection(collectionName, region);
-    expect(collection.CollectionName).toBeDefined();
-    const awsExport: any = getAWSExports(projRoot).default;
-    expect(getGeoJSConfiguration(awsExport).geofenceCollections.items).toContain(collectionName);
-    expect(getGeoJSConfiguration(awsExport).geofenceCollections.default).toEqual(collectionName);
-    expect(getGeoJSConfiguration(awsExport).region).toEqual(region);
-  });
-
   it('init a project with default auth config, add multiple map resources and update the default map', async () => {
     const [map1Id, map2Id, map3Id] = generateResourceIdsInOrder(3);
     await initJSProjectWithProfile(projRoot, {});
@@ -114,11 +47,11 @@ describe('amplify geo update', () => {
     await updateSecondMapAsDefault(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
 
-    //check amplify meta file
+    // check amplify meta file
     const meta = getProjectMeta(projRoot);
     expect(meta.geo[map1Id].isDefault).toBe(false);
     expect(meta.geo[map2Id].isDefault).toBe(true);
-    //check if resource is provisioned in cloud
+    // check if resource is provisioned in cloud
     const region = meta.geo[map1Id].output.Region;
     const map1Name = meta.geo[map1Id].output.Name;
     const map2Name = meta.geo[map2Id].output.Name;
@@ -126,7 +59,7 @@ describe('amplify geo update', () => {
     const map2 = await getMap(map2Name, region);
     expect(map1.MapName).toBeDefined();
     expect(map2.MapName).toBeDefined();
-    //check aws export file
+    // check aws export file
     const awsExport: any = getAWSExports(projRoot).default;
     expect(getGeoJSConfiguration(awsExport).maps.items[map1Name]).toBeDefined();
     expect(getGeoJSConfiguration(awsExport).maps.items[map2Name]).toBeDefined();
@@ -144,11 +77,11 @@ describe('amplify geo update', () => {
     await updateSecondPlaceIndexAsDefault(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
 
-    //check amplify meta file
+    // check amplify meta file
     const meta = getProjectMeta(projRoot);
     expect(meta.geo[index1Id].isDefault).toBe(false);
     expect(meta.geo[index2Id].isDefault).toBe(true);
-    //check if resource is provisioned in cloud
+    // check if resource is provisioned in cloud
     const region = meta.geo[index1Id].output.Region;
     const index1Name = meta.geo[index1Id].output.Name;
     const index2Name = meta.geo[index2Id].output.Name;
@@ -156,7 +89,7 @@ describe('amplify geo update', () => {
     const index2 = await getPlaceIndex(index2Name, region);
     expect(index1.IndexName).toBeDefined();
     expect(index2.IndexName).toBeDefined();
-    //check aws export file
+    // check aws export file
     const awsExport: any = getAWSExports(projRoot).default;
     expect(getGeoJSConfiguration(awsExport).search_indices.items).toContain(index1Name);
     expect(getGeoJSConfiguration(awsExport).search_indices.items).toContain(index2Name);
@@ -176,11 +109,11 @@ describe('amplify geo update', () => {
     await updateSecondGeofenceCollectionAsDefault(projRoot, cognitoGroups);
     await amplifyPushWithoutCodegen(projRoot);
 
-    //check amplify meta file
+    // check amplify meta file
     const meta = getProjectMeta(projRoot);
     expect(meta.geo[collection1Id].isDefault).toBe(false);
     expect(meta.geo[collection2Id].isDefault).toBe(true);
-    //check if resource is provisioned in cloud
+    // check if resource is provisioned in cloud
     const region = meta.geo[collection1Id].output.Region;
     const collection1Name = meta.geo[collection1Id].output.Name;
     const collection2Name = meta.geo[collection2Id].output.Name;
@@ -188,7 +121,7 @@ describe('amplify geo update', () => {
     const collection2 = await getGeofenceCollection(collection2Name, region);
     expect(collection1.CollectionName).toBeDefined();
     expect(collection2.CollectionName).toBeDefined();
-    //check aws export file
+    // check aws export file
     const awsExport: any = getAWSExports(projRoot).default;
     expect(getGeoJSConfiguration(awsExport).geofenceCollections.items).toContain(collection1Name);
     expect(getGeoJSConfiguration(awsExport).geofenceCollections.items).toContain(collection2Name);

@@ -32,7 +32,7 @@ export const loadLambdaConfig = async (
   if (!lambdaDef) {
     return;
   }
-  const cfnParams = populateCfnParams(context.print, resourceName, overrideApiToLocal);
+  const cfnParams = populateCfnParams(resourceName, overrideApiToLocal);
   const processedLambda = lambdaFunctionHandler(lambdaDef[0], lambdaDef[1], {
     conditions: CFN_DEFAULT_CONDITIONS,
     params: cfnParams,

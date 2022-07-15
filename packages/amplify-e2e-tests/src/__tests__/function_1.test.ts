@@ -1,7 +1,7 @@
 import {
   initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush,
   addFunction, functionBuild, addLambdaTrigger, addSimpleDDB, addKinesis, createNewProjectDir, deleteProjectDir, getProjectMeta, getFunction, addApiWithoutSchema, updateApiSchema, appsyncGraphQLRequest, getCloudWatchLogs, putKinesisRecords, invokeFunction, getEventSourceMappings, retry, generateRandomShortId,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 
 import _ from 'lodash';
 

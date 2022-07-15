@@ -1,19 +1,17 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from 'amplify-e2e-core';
 import {
+  initJSProjectWithProfile, deleteProject, amplifyPushAuth,
   addAuthWithDefault,
   removeAuthWithDefault,
   addAuthWithMaxOptions,
   addAuthUserPoolOnly,
   getBackendAmplifyMeta,
-} from 'amplify-e2e-core';
-import {
   createNewProjectDir,
   deleteProjectDir,
   getProjectMeta,
   getUserPool,
   getUserPoolClients,
   getLambdaFunction,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import _ from 'lodash';
 
 const defaultsSettings = {
@@ -38,9 +36,7 @@ describe('amplify add auth...', () => {
 
     const amplifyMeta = getBackendAmplifyMeta(projRoot);
     const { AuthRoleName, UnauthRoleName } = amplifyMeta.providers.awscloudformation;
-    const cognitoResource = Object.values(amplifyMeta.auth).find((res: any) => {
-      return res.service === 'Cognito';
-    }) as any;
+    const cognitoResource = Object.values(amplifyMeta.auth).find((res: any) => res.service === 'Cognito') as any;
     const idpId = cognitoResource.output.IdentityPoolId;
 
     expect(AuthRoleName).toHaveValidPolicyConditionMatchingIdpId(idpId);

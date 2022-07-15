@@ -11,7 +11,12 @@ import {
   updateApiWithMultiAuth,
   addApiWithoutSchema,
   updateAuthAddUserGroups,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
+import gql from 'graphql-tag';
+import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { Auth } from 'aws-amplify';
+import moment from 'moment';
+import { IAM } from 'aws-sdk';
 import {
   configureAmplify,
   getUserPoolId,
@@ -22,12 +27,8 @@ import {
   setupUser,
   signInUser,
 } from '../../schema-api-directives';
-import gql from 'graphql-tag';
+
 (global as any).fetch = require('node-fetch');
-import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
-import { Auth } from 'aws-amplify';
-import moment from 'moment';
-import { IAM } from 'aws-sdk';
 
 describe('transformer @auth migration test', () => {
   let projRoot: string;
@@ -80,7 +81,7 @@ describe('transformer @auth migration test', () => {
       awsconfig.aws_appsync_region,
       apiKey,
     );
-    let appSyncClientViaIAM = getConfiguredAppsyncClientIAMAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region);
+    const appSyncClientViaIAM = getConfiguredAppsyncClientIAMAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region);
 
     let createPostMutation = /* GraphQL */ `
       mutation CreatePost {
@@ -114,7 +115,7 @@ describe('transformer @auth migration test', () => {
     expect(createPostPublicResult.errors).toBeUndefined();
     expect(createPostPublicResult.data).toBeDefined();
 
-    let createPostPublicIAMMutation = /* GraphQL */ `
+    const createPostPublicIAMMutation = /* GraphQL */ `
       mutation CreatePostPublicIAM {
         createPostPublicIAM(input: { title: "Created in V1" }) {
           id
@@ -122,7 +123,7 @@ describe('transformer @auth migration test', () => {
       }
     `;
 
-    let createPostPublicIAMResult = await appSyncClientViaIAM.mutate({
+    const createPostPublicIAMResult = await appSyncClientViaIAM.mutate({
       mutation: gql(createPostPublicIAMMutation),
       fetchPolicy: 'no-cache',
     });

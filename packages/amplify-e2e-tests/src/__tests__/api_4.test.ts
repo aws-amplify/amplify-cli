@@ -6,11 +6,11 @@ import {
   deleteProject,
   deleteProjectDir,
   getProjectMeta,
-  getSchemaPath,
   initJSProjectWithProfile,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
+
 (global as any).fetch = require('node-fetch');
 
 describe('multi-key GSI behavior', () => {
@@ -209,7 +209,7 @@ describe('multi-key GSI behavior', () => {
 
   const getAppSyncClientFromProj = (projRoot: string) => {
     const meta = getProjectMeta(projRoot);
-    const region = meta['providers']['awscloudformation']['Region'] as string;
+    const region = meta.providers.awscloudformation.Region as string;
     const { output } = meta.api[projName];
     const url = output.GraphQLAPIEndpointOutput as string;
     const apiKey = output.GraphQLAPIKeyOutput as string;

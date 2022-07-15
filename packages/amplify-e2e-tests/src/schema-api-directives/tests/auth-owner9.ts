@@ -1,7 +1,7 @@
 /* eslint-disable */
 import {
   addApi, amplifyPush, updateAuthAddUserGroups, getAwsAndroidConfig,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import Amplify from 'aws-amplify';
 import {
   signInUser, getConfiguredAppsyncClientCognitoAuth, setupUser, getUserPoolId,

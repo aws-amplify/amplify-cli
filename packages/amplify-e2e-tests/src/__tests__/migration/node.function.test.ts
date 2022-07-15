@@ -12,7 +12,7 @@ import {
   createNewProjectDir,
   deleteProjectDir,
   generateRandomShortId,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 
 describe('nodejs version migration tests', () => {
   let projectRoot: string;
