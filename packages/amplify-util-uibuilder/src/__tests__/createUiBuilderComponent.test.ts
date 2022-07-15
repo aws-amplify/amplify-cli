@@ -1,11 +1,12 @@
-import * as codegen from '@aws-amplify/codegen-ui';
+import * as codegen from '@aws-amplify/codegen-ui'; // eslint-disable-line import/no-extraneous-dependencies
 import {
   generateAmplifyUiBuilderIndexFile,
   createUiBuilderTheme,
   createUiBuilderComponent,
-} from '../commands/utils/createUiBuilderComponent';
+} from '../commands/utils/codegenResources';
+
 jest.mock('@aws-amplify/codegen-ui');
-const codegen_mock = codegen as any;
+const codegenMock = codegen as any;
 const renderSchemaToTemplateMock = jest.fn();
 
 describe('can create a ui builder component', () => {
@@ -41,20 +42,20 @@ describe('can create a ui builder component', () => {
       properties: {},
       variants: [],
     };
-    codegen_mock.StudioTemplateRendererManager = jest.fn().mockImplementation(() => ({
+    codegenMock.StudioTemplateRendererManager = jest.fn().mockImplementation(() => ({
       renderSchemaToTemplate: renderSchemaToTemplateMock,
     }));
   });
-  it('calls the renderManager', async () => {
-    await createUiBuilderComponent(context, schema);
-    expect(new codegen_mock.StudioTemplateRendererManager().renderSchemaToTemplate).toBeCalled();
+  it('calls the renderManager', () => {
+    createUiBuilderComponent(context, schema);
+    expect(new codegenMock.StudioTemplateRendererManager().renderSchemaToTemplate).toBeCalled();
   });
-  it('calls the renderManager for themes', async () => {
-    await createUiBuilderTheme(context, schema);
-    expect(new codegen_mock.StudioTemplateRendererManager().renderSchemaToTemplate).toBeCalled();
+  it('calls the renderManager for themes', () => {
+    createUiBuilderTheme(context, schema);
+    expect(new codegenMock.StudioTemplateRendererManager().renderSchemaToTemplate).toBeCalled();
   });
-  it('calls the renderManager for index file', async () => {
-    await generateAmplifyUiBuilderIndexFile(context, [schema]);
-    expect(new codegen_mock.StudioTemplateRendererManager().renderSchemaToTemplate).toBeCalled();
+  it('calls the renderManager for index file', () => {
+    generateAmplifyUiBuilderIndexFile(context, [schema]);
+    expect(new codegenMock.StudioTemplateRendererManager().renderSchemaToTemplate).toBeCalled();
   });
 });
