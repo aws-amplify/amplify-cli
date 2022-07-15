@@ -13,8 +13,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/codegen-ui": "^2.3.0",
-    "@aws-amplify/codegen-ui-react": "^2.3.0",
+    "@aws-amplify/codegen-ui": "^2.3.1",
+    "@aws-amplify/codegen-ui-react": "^2.3.1",
     "amplify-cli-core": "2.11.0",
     "amplify-prompts": "2.2.0",
     "aws-sdk": "^2.1113.0",
