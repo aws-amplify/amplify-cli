@@ -3,31 +3,51 @@ import * as notifyMissingPackagesDependency from '../commands/utils/notifyMissin
 import * as listUiBuilderComponentsDependency from '../commands/utils/syncAmplifyUiBuilderComponents';
 import * as generateUiBuilderComponentsDependency from '../commands/utils/syncAmplifyUiBuilderComponents';
 import * as generateUiBuilderThemesDependency from '../commands/utils/syncAmplifyUiBuilderComponents';
+import * as syncAmplifyBackendModelsDependency from '../commands/utils/getAmplifyDataSchema';
 import * as listUiBuilderThemesDependency from '../commands/utils/syncAmplifyUiBuilderComponents';
 import * as generateAmplifyUiBuilderIndexFileDependency from '../commands/utils/createUiBuilderComponent';
 import { run } from '../commands/generateComponents';
+
 jest.mock('../commands/utils/syncAmplifyUiBuilderComponents');
 jest.mock('../commands/utils/createUiBuilderComponent');
 jest.mock('../commands/utils/shouldRenderComponents');
 jest.mock('../commands/utils/notifyMissingPackages');
-const shouldRenderComponentsDependency_mock = shouldRenderComponentsDependency as any;
-const notifyMissingPackagesDependency_mock = notifyMissingPackagesDependency as any;
-const listUiBuilderComponentsDependency_mock = listUiBuilderComponentsDependency as any;
-const generateUiBuilderComponentsDependency_mock = generateUiBuilderComponentsDependency as any;
-const generateUiBuilderThemesDependency_mock = generateUiBuilderThemesDependency as any;
-const listUiBuilderThemesDependency_mock = listUiBuilderThemesDependency as any;
-const generateAmplifyUiBuilderIndexFileDependency_mock = generateAmplifyUiBuilderIndexFileDependency as any;
+jest.mock('../clients', () => ({
+  AmplifyClientFactory: {
+    setClientInfo: jest.fn(),
+    amplifyUiBuilder: {
+      createComponent: () => ({
+        promise: () => true,
+      }),
+    },
+    amplifyBackend: jest.fn(),
+  },
+}));
 
-shouldRenderComponentsDependency_mock.shouldRenderComponents = jest.fn().mockImplementation(() => true);
-notifyMissingPackagesDependency_mock.notifyMissingPackages = jest.fn().mockImplementation(() => true);
+const shouldRenderComponentsDependencyMock = shouldRenderComponentsDependency as any;
+const notifyMissingPackagesDependencyMock = notifyMissingPackagesDependency as any;
+const listUiBuilderComponentsDependencyMock = listUiBuilderComponentsDependency as any;
+const generateUiBuilderComponentsDependencyMock = generateUiBuilderComponentsDependency as any;
+const generateUiBuilderThemesDependencyMock = generateUiBuilderThemesDependency as any;
+const syncAmplifyBackendModelsDependencyMock = syncAmplifyBackendModelsDependency as any;
+const listUiBuilderThemesDependencyMock = listUiBuilderThemesDependency as any;
+const generateAmplifyUiBuilderIndexFileDependencyMock = generateAmplifyUiBuilderIndexFileDependency as any;
+
+shouldRenderComponentsDependencyMock.shouldRenderComponents = jest.fn().mockImplementation(() => true);
+notifyMissingPackagesDependencyMock.notifyMissingPackages = jest.fn().mockImplementation(() => true);
 
 describe('can generate components', () => {
   let context: any;
   let schemas: any;
-  let generateUiBuilderComponents: any;
-  let generateUiBuilderThemes: any;
   beforeEach(() => {
-    context = {};
+    context = {
+      input: {
+        options: {
+          appId: 'testAppId',
+          envName: 'testEnvName',
+        },
+      },
+    };
     schemas = {
       entities: [
         {
@@ -38,15 +58,29 @@ describe('can generate components', () => {
         },
       ],
     };
-    listUiBuilderComponentsDependency_mock.listUiBuilderComponents = jest.fn().mockImplementation(() => schemas);
-    listUiBuilderThemesDependency_mock.listUiBuilderThemes = jest.fn().mockImplementation(() => schemas);
-    generateUiBuilderComponentsDependency_mock.generateUiBuilderComponents = jest.fn().mockImplementation(() => schemas.entities);
-    generateUiBuilderThemesDependency_mock.generateUiBuilderThemes = jest.fn().mockImplementation(() => schemas.entities);
-    generateAmplifyUiBuilderIndexFileDependency_mock.generateAmplifyUiBuilderIndexFile = jest.fn().mockImplementation(() => true);
+    listUiBuilderComponentsDependencyMock.listUiBuilderComponents = jest.fn().mockImplementation(() => schemas);
+    listUiBuilderThemesDependencyMock.listUiBuilderThemes = jest.fn().mockImplementation(() => schemas);
+    generateUiBuilderComponentsDependencyMock.generateUiBuilderComponents = jest.fn().mockImplementation(() => schemas.entities);
+    generateUiBuilderThemesDependencyMock.generateUiBuilderThemes = jest.fn().mockImplementation(() => schemas.entities);
+    syncAmplifyBackendModelsDependencyMock.getAmplifyBackendModels = jest.fn().mockImplementation(() => ({
+      models: {
+        Blog: {
+          id: {
+            name: 'id',
+            isArray: false,
+            type: 'ID',
+            isRequired: true,
+            attributes: [],
+          },
+        },
+      },
+    }));
+    generateAmplifyUiBuilderIndexFileDependencyMock.generateAmplifyUiBuilderIndexFile = jest.fn().mockImplementation(() => true);
   });
+
   it('runs generateComponents', async () => {
     await run(context);
-    expect(generateUiBuilderComponentsDependency_mock.generateUiBuilderComponents).toBeCalledTimes(1);
-    expect(generateUiBuilderThemesDependency_mock.generateUiBuilderThemes).toBeCalledTimes(1);
+    expect(generateUiBuilderComponentsDependencyMock.generateUiBuilderComponents).toBeCalledTimes(1);
+    expect(generateUiBuilderThemesDependencyMock.generateUiBuilderThemes).toBeCalledTimes(1);
   });
 });
