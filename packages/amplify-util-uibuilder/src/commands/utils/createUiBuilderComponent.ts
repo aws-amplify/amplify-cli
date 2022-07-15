@@ -1,3 +1,5 @@
+/* eslint-disable spellcheck/spell-checker*/
+// You have a misspelled word: Renderer on Identifier
 import {
   StudioTemplateRendererManager,
   StudioComponent,
@@ -6,6 +8,7 @@ import {
   StudioTemplateRenderer,
   FrameworkOutputManager,
   RenderTextComponentResponse,
+  GenericDataSchema,
 } from '@aws-amplify/codegen-ui';
 import {
   AmplifyRenderer,
@@ -30,15 +33,10 @@ const config = {
 /**
  * Writes component file to the work space
  */
-export const createUiBuilderComponent = (context: $TSContext, schema: StudioComponent): StudioComponent => {
+export const createUiBuilderComponent = (context: $TSContext, schema: StudioComponent, dataSchema?: GenericDataSchema): StudioComponent => {
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
   const rendererFactory = new StudioTemplateRendererFactory(
-    (component: StudioComponent) => new AmplifyRenderer(component as StudioComponent, config) as unknown as StudioTemplateRenderer<
-        unknown,
-        StudioComponent,
-        FrameworkOutputManager<unknown>,
-        RenderTextComponentResponse
-      >,
+    (component: StudioComponent) => new AmplifyRenderer(component as StudioComponent, config, dataSchema),
   );
 
   const outputPathDir = uiBuilderComponentsPath;
@@ -57,7 +55,7 @@ export const createUiBuilderComponent = (context: $TSContext, schema: StudioComp
 export const createUiBuilderTheme = (context: $TSContext, schema: StudioTheme): StudioTheme => {
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
   const rendererFactory = new StudioTemplateRendererFactory(
-    (component: StudioTheme) => new ReactThemeStudioTemplateRenderer(component, config) as unknown as StudioTemplateRenderer<
+    (component: StudioTheme) => (new ReactThemeStudioTemplateRenderer(component, config) as unknown) as StudioTemplateRenderer<
         unknown,
         StudioTheme,
         FrameworkOutputManager<unknown>,
@@ -88,7 +86,7 @@ export const createUiBuilderTheme = (context: $TSContext, schema: StudioTheme): 
 export const generateAmplifyUiBuilderIndexFile = (context: $TSContext, schemas: StudioComponent[]): RenderTextComponentResponse => {
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
   const rendererFactory = new StudioTemplateRendererFactory(
-    (component: StudioComponent[]) => new ReactIndexStudioTemplateRenderer(component, config) as unknown as StudioTemplateRenderer<
+    (component: StudioComponent[]) => (new ReactIndexStudioTemplateRenderer(component, config) as unknown) as StudioTemplateRenderer<
         unknown,
         StudioComponent[],
         FrameworkOutputManager<unknown>,

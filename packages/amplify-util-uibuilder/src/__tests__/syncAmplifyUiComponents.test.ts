@@ -1,19 +1,22 @@
 import { $TSContext } from 'amplify-cli-core';
-import {
-  generateUiBuilderComponents,
-  getEnvName,
-  getAppId,
-  listUiBuilderComponents,
-  listUiBuilderThemes,
-  resolveAppId,
-  generateUiBuilderThemes,
-} from '../commands/utils/syncAmplifyUiBuilderComponents';
-import { getAmplifyUIBuilderService } from '../commands/utils/amplifyUiBuilderService'
 import aws from 'aws-sdk';
 import * as CLICore from 'amplify-cli-core';
+import {
+  generateUiBuilderComponents,
+  listUiBuilderComponents,
+  listUiBuilderThemes,
+  generateUiBuilderThemes,
+} from '../commands/utils/syncAmplifyUiBuilderComponents';
+import {
+  getEnvName,
+  getAppId,
+  resolveAppId,
+} from '../commands/utils/environmentHelpers';
+import { AmplifyClientFactory } from '../clients';
 import * as createUiBuilderComponentDependency from '../commands/utils/createUiBuilderComponent';
+
 const aws_mock = aws as any;
-const createUiBuilderComponentDependency_mock = createUiBuilderComponentDependency as any;
+const createUiBuilderComponentDependencyMock = createUiBuilderComponentDependency as any;
 describe('should sync amplify ui builder components', () => {
   let context: $TSContext | any;
   beforeEach(() => {
@@ -68,8 +71,8 @@ describe('should sync amplify ui builder components', () => {
       })),
     }));
 
-    createUiBuilderComponentDependency_mock.createUiBuilderComponent = jest.fn();
-    createUiBuilderComponentDependency_mock.createUiBuilderTheme = jest.fn();
+    createUiBuilderComponentDependencyMock.createUiBuilderComponent = jest.fn();
+    createUiBuilderComponentDependencyMock.createUiBuilderTheme = jest.fn();
   });
 
   it('pulls components from aws-sdk and passes them to createUiBuilderComponent', () => {
@@ -77,14 +80,14 @@ describe('should sync amplify ui builder components', () => {
   });
 
   it('does not throw an error when createUiBuilderComponent fails', () => {
-    createUiBuilderComponentDependency_mock.createUiBuilderComponent = jest.fn(() => {
+    createUiBuilderComponentDependencyMock.createUiBuilderComponent = jest.fn(() => {
       throw new Error('ahhh!');
     });
     expect(async () => generateUiBuilderComponents(context, [])).not.toThrow();
   });
 
   it('does not throw an error when createUiBuilderThemes fails', () => {
-    createUiBuilderComponentDependency_mock.createUiBuilderComponent = jest.fn(() => {
+    createUiBuilderComponentDependencyMock.createUiBuilderComponent = jest.fn(() => {
       throw new Error('ahhh!');
     });
     expect(async () => generateUiBuilderThemes(context, [])).not.toThrow();
@@ -93,7 +96,8 @@ describe('should sync amplify ui builder components', () => {
   it('can getAmplifyUIBuilderService', async () => {
     process.env.UI_BUILDER_ENDPOINT = 'https://mock-endpoint.com';
     process.env.UI_BUILDER_REGION = 'mock-region';
-    const service = await getAmplifyUIBuilderService(context, 'testEnv', 'testAppId');
+    await AmplifyClientFactory.setClientInfo(context);
+    const service = AmplifyClientFactory.amplifyUiBuilder;
     expect(Object.keys(service)).toContain('exportComponents');
     expect(Object.keys(service)).toContain('exportThemes');
   });
@@ -124,24 +128,24 @@ describe('should sync amplify ui builder components', () => {
     expect(async () => await getAppId(context)).rejects.toThrowError();
   });
   it('can generate ui builder components', async () => {
-    createUiBuilderComponentDependency_mock.createUiBuilderComponent = jest.fn().mockImplementation(() => ({}));
+    createUiBuilderComponentDependencyMock.createUiBuilderComponent = jest.fn().mockImplementation(() => ({}));
     const components = generateUiBuilderComponents(context, [{}, {}]);
     expect(components.every(component => component.resultType === 'SUCCESS')).toBeTruthy();
   });
   it('can handle failed generation generate ui builder components', async () => {
-    createUiBuilderComponentDependency_mock.createUiBuilderComponent = jest.fn().mockImplementation(() => {
+    createUiBuilderComponentDependencyMock.createUiBuilderComponent = jest.fn().mockImplementation(() => {
       throw new Error('ahh!');
     });
     const components = generateUiBuilderComponents(context, [{}, {}]);
     expect(components.every(component => component.resultType === 'FAILURE')).toBeTruthy();
   });
   it('can generate ui builder themes', async () => {
-    createUiBuilderComponentDependency_mock.createUiBuilderTheme = jest.fn().mockImplementation(() => ({}));
+    createUiBuilderComponentDependencyMock.createUiBuilderTheme = jest.fn().mockImplementation(() => ({}));
     const themes = generateUiBuilderThemes(context, [{}, {}]);
     expect(themes.every(theme => theme.resultType === 'SUCCESS')).toBeTruthy();
   });
   it('can handle failed generation generate ui builder themes', async () => {
-    createUiBuilderComponentDependency_mock.createUiBuilderTheme = jest.fn().mockImplementation(() => {
+    createUiBuilderComponentDependencyMock.createUiBuilderTheme = jest.fn().mockImplementation(() => {
       throw new Error('ahh!');
     });
     const themes = generateUiBuilderThemes(context, [{}, {}]);
