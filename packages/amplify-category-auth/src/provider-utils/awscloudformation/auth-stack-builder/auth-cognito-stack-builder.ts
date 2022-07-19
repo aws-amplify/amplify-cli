@@ -7,7 +7,6 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { AmplifyAuthCognitoStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 import _ from 'lodash';
 import * as fs from 'fs-extra';
-import { AmplifyStackTemplate, FeatureFlags } from 'amplify-cli-core';
 import {
   hostedUILambdaFilePath,
   hostedUIProviderLambdaFilePath,
@@ -561,11 +560,8 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     }
   };
 
-  // add Function for Custom Resource in Root stack
   /**
-   *
-   * @param _
-   * @returns
+   *  add Function for Custom Resource in Root stack
    */
   public renderCloudFormationTemplate = (_: cdk.ISynthesisSession): string => JSON.stringify(this._toCloudFormation(), undefined, 2);
 
@@ -668,7 +664,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   }
 
   /**
-   *
+   * Creates custom lambda to update userPool client on Cognito
    */
   createHostedUICustomResource() {
     // lambda function
@@ -749,7 +745,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   }
 
   /**
-   *
+   * Creates Custom lambda resource to update 3rd party providers on userpool
    */
   createHostedUIProviderCustomResource() {
     // lambda function
