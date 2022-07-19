@@ -827,7 +827,9 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     this.hostedUIProvidersCustomResourceInputs.node.addDependency(this.hostedUIProvidersCustomResourceLogPolicy);
   }
 
-
+/**
+ * creates OAuth customResource for Cognito
+ */
   createOAuthCustomResource() {
     // lambda function
     this.oAuthCustomResource = new lambda.CfnFunction(this, 'OAuthCustomResource', {
@@ -902,7 +904,9 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     this.oAuthCustomResourceInputs.node.addDependency(this.oAuthCustomResourceLogPolicy);
   }
 
-
+/**
+ * creates MFA customResource for Cognito
+ */
   createMFACustomResource(props: CognitoStackOptions) {
     // iam role
     this.mfaLambdaRole = new iam.CfnRole(this, 'MFALambdaRole', {
@@ -1052,7 +1056,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   }
 
   /**
-   *
+   * creates OpenId customResource for Cognito
    */
   createOpenIdLambdaCustomResource(props: CognitoStackOptions) {
     // iam role
