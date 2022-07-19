@@ -8,12 +8,12 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@aws-amplify/cli-extensibility-helper": "^2.0.0",
-    "@aws-cdk/core": "^1.159.0",
-    "@aws-cdk/aws-iam": "^1.159.0",
-    "@aws-cdk/aws-sns-subscriptions": "^1.159.0",
-    "@aws-cdk/aws-sqs": "^1.159.0",
-    "@aws-cdk/aws-sns": "^1.159.0"
+    "@aws-amplify/cli-extensibility-helper": "2.3.33-signinUpdate.1",
+    "@aws-cdk/core": "^1.162.0",
+    "@aws-cdk/aws-iam": "^1.162.0",
+    "@aws-cdk/aws-sns-subscriptions": "^1.162.0",
+    "@aws-cdk/aws-sqs": "^1.162.0",
+    "@aws-cdk/aws-sns": "^1.162.0"
   },
   "devDependencies": {
     "typescript": "^4.2.4"
