@@ -11,8 +11,6 @@ import {
   generateUiBuilderThemes,
 } from './utils/syncAmplifyUiBuilderComponents';
 import { generateAmplifyUiBuilderIndexFile } from './utils/createUiBuilderComponent';
-import { getAmplifyDataSchema } from './utils/getAmplifyDataSchema';
-import { AmplifyClientFactory } from '../clients';
 
 /**
  * Pulls ui components from Studio backend and generates the code in the user's file system
@@ -24,20 +22,14 @@ export const run = async (context: $TSContext): Promise<void> => {
   }
   const spinner = ora('');
   try {
-    await AmplifyClientFactory.setClientInfo(context);
-    const [componentSchemas, themeSchemas, dataSchemaResponse] = await Promise.all([
-      listUiBuilderComponents(context),
-      listUiBuilderThemes(context),
-      getAmplifyDataSchema(context),
-    ]);
+    const [componentSchemas, themeSchemas] = await Promise.all([listUiBuilderComponents(context), listUiBuilderThemes(context)]);
     if (componentSchemas.entities.length === 0 && themeSchemas.entities.length === 0) {
       printer.debug('Skipping UI component generation since none are found.');
       return;
     }
-    if (dataSchemaResponse.error) printer.debug(dataSchemaResponse.error.toString());
 
     spinner.start('Generating UI components...');
-    const generatedComponentResults = generateUiBuilderComponents(context, componentSchemas.entities, dataSchemaResponse.dataSchema);
+    const generatedComponentResults = generateUiBuilderComponents(context, componentSchemas.entities);
     const generatedThemeResults = generateUiBuilderThemes(context, themeSchemas.entities);
 
     generateAmplifyUiBuilderIndexFile(context, [
@@ -58,11 +50,7 @@ export const run = async (context: $TSContext): Promise<void> => {
 
     const invalidComponentNames = componentSchemas.entities.filter(component => !component.schemaVersion).map(component => component.name);
     if (invalidComponentNames.length) {
-      printer.warn(
-        `The components ${invalidComponentNames.join(
-          ', ',
-        )} were synced with an older version of Amplify Studio. Please re-sync your components with Figma to get latest features and changes.`, // eslint-disable-line spellcheck/spell-checker
-      );
+      printer.warn(`The components ${invalidComponentNames.join(', ')} were synced with an older version of Amplify Studio. Please re-sync your components with Figma to get latest features and changes.`);
     }
 
     notifyMissingPackages(context);
