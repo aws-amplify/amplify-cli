@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.14-hooks-file-management.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.13...amplify-java-function-template-provider@1.5.14-hooks-file-management.0) (2022-07-19)
+
+**Note:** Version bump only for package amplify-java-function-template-provider
+
+
+
+
+
 ## [1.5.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.12...amplify-java-function-template-provider@1.5.13) (2022-05-10)
 
 **Note:** Version bump only for package amplify-java-function-template-provider
