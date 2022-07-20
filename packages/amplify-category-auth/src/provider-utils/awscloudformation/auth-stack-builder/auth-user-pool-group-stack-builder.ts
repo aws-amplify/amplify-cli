@@ -4,7 +4,6 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { CfnUserPoolGroup } from '@aws-cdk/aws-cognito';
 import { AmplifyUserPoolGroupStackTemplate } from '@aws-amplify/cli-extensibility-helper';
-import { AmplifyStackTemplate } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 // eslint-disable-next-line import/no-cycle
 import { AmplifyUserPoolGroupStackOptions } from './user-pool-group-stack-transform';
@@ -143,7 +142,7 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
   }
 
   // add Function for Custom Resource in Root stack
-  public renderCloudFormationTemplate = (_: cdk.ISynthesisSession): string => JSON.stringify(this._toCloudFormation(), undefined, 2);
+  public renderCloudFormationTemplate = (__: cdk.ISynthesisSession): string => JSON.stringify(this._toCloudFormation(), undefined, 2);
 
   generateUserPoolGroupResources = async (props: AmplifyUserPoolGroupStackOptions): Promise<void> => {
     props.groups.forEach(group => {
@@ -392,5 +391,5 @@ export class AmplifyUserPoolGroupStackOutputs extends cdk.Stack {
   }
 
   public renderCloudFormationTemplate =
-  (_: cdk.ISynthesisSession): string => JSON.stringify(this._toCloudFormation(), undefined, 2);
+  (__: cdk.ISynthesisSession): string => JSON.stringify(this._toCloudFormation(), undefined, 2);
 }
