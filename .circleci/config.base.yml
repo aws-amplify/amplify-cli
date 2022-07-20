@@ -660,15 +660,7 @@ jobs:
 
 workflows:
   version: 2
-  nightly_console_integration_tests:
-    triggers:
-      - schedule:
-          cron: '0 14 * * *'
-          filters:
-            branches:
-              only:
-                - master
-                - dev
+  build_test_deploy:
     jobs:
       - build:
           matrix:
