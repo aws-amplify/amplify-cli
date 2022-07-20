@@ -90,7 +90,6 @@ describe('headless auth', () => {
     expect(mfaConfig.SmsMfaConfiguration).toBeDefined();
     expect(mfaConfig.SmsMfaConfiguration.SmsAuthenticationMessage).toBe('The verification code is {####}');
     expect(userPool.UserPool).toBeDefined();
-    expect(userPool.UserPool.UserAttributeUpdateSettings).toMatchInlineSnapshot();
   });
 
   it('adds auth resource with TOTP only but enable SMS through signUp Attributes', async () => {
@@ -124,7 +123,6 @@ describe('headless auth', () => {
     expect(mfaConfig.SoftwareTokenMfaConfiguration.Enabled).toBeTruthy();
     expect(mfaConfig.SmsMfaConfiguration.SmsConfiguration).toBeDefined();
     expect(userPool.UserPool).toBeDefined();
-    expect(userPool.UserPool.UserAttributeUpdateSettings).toMatchInlineSnapshot();
   });
 
   it('adds auth resource with TOTP only but enables SMS through password recovery', async () => {
