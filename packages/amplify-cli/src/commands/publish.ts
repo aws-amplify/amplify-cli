@@ -32,10 +32,11 @@ export const run = async context => {
     return continueToCheckNext;
   });
 
-  // added extra check for -y flag as in publish frontend deploy is getting stuck in CICD if backend has no changes
-  const didPush = await push(context) || !!context?.exeInfo?.inputParams?.yes;
+  const didPush = await push(context);
 
-  let continueToPublish = didPush;
+  // added extra check for -y flag as in publish frontend deploy is getting stuck in CICD if backend has no changes
+
+  let continueToPublish = didPush || !!context?.exeInfo?.inputParams?.yes;
   if (!continueToPublish && isHostingAlreadyPushed) {
     context.print.info('');
     continueToPublish = await context.amplify.confirmPrompt('Do you still want to publish the frontend?');
