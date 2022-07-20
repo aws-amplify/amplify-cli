@@ -13,7 +13,7 @@ import {
   getProjectMeta,
   getUserPool,
   getMFAConfiguration,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import {
   // eslint-disable-next-line spellcheck/spell-checker
   AddAuthRequest, CognitoUserPoolSigninMethod, CognitoUserProperty, UpdateAuthRequest,
