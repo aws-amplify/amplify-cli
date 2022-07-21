@@ -8,6 +8,7 @@ import { attachBackend } from '../attach-backend';
 import { constructInputParams } from '../amplify-service-helper';
 import { run as envCheckout } from './env/checkout';
 import { showTroubleshootingURL } from './help';
+import { checkForNestedProject } from './helpers/projectUtils';
 
 /**
  * Entry point for pull command
@@ -65,6 +66,7 @@ export const run = async (context: $TSContext): Promise<void> => {
       await pullBackend(context, inputParams);
     }
   } else {
+    checkForNestedProject();
     await attachBackend(context, inputParams);
   }
 };
