@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`resource-status-diff helpers should show the diff between local and remote cloudformation  1`] = `
+exports[`resource-status-diff helpers should show the diff between local and remote cloudformation 1`] = `
 TemplateDiff {
   "conditions": DifferenceCollection {
     "diffs": Object {},

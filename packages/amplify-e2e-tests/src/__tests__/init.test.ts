@@ -200,4 +200,14 @@ describe('amplify init', () => {
     const newestEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(newestEnvMeta.AuthRoleName).toContain('mockRole');
   });
+
+  it('should fail if init is not executed in project root', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    const meta = getProjectMeta(projRoot).providers.awscloudformation;
+    expect(meta.Region).toBeDefined();
+
+    const nestedRoot = path.join(projRoot, 'foo');
+    await fs.ensureDir(nestedRoot);
+    await expect(initJSProjectWithProfile(nestedRoot, {})).rejects.toThrowError('Process exited with non zero exit code 1');
+  });
 });
