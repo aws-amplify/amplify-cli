@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0-rc.88f873875.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.2.30...@aws-amplify/amplify-util-uibuilder@1.3.0-rc.88f873875.0) (2022-07-22)
+
+
+
+# 9.2.0-rc.c36fa71f5.0 (2022-07-19)
+
+
+### Bug Fixes
+
+* **uibuilder:** change recommended ui-react version ([#10766](https://github.com/aws-amplify/amplify-cli/issues/10766)) ([c70cc1f](https://github.com/aws-amplify/amplify-cli/commit/c70cc1f9bbb05501804571dee54bd6ee2ead48db))
+
+
+### Features
+
+* **uibuilder:** nested collections support ([#10763](https://github.com/aws-amplify/amplify-cli/issues/10763)) ([2918eb9](https://github.com/aws-amplify/amplify-cli/commit/2918eb9fd4495f45a90c5de806e347ee1f03520e))
+
+
+### Reverts
+
+* Revert "feat(uibuilder): nested collections support (#10763)" (#10777) ([c36fa71](https://github.com/aws-amplify/amplify-cli/commit/c36fa71f54cdce1fb889560c3254d8f662c03cae)), closes [#10763](https://github.com/aws-amplify/amplify-cli/issues/10763) [#10777](https://github.com/aws-amplify/amplify-cli/issues/10777)
+* Revert "fix(uibuilder): change recommended ui-react version (#10766)" (#10776) ([150e6dc](https://github.com/aws-amplify/amplify-cli/commit/150e6dcaa729afd3f34be8ea90cffedd1976067e)), closes [#10766](https://github.com/aws-amplify/amplify-cli/issues/10766) [#10776](https://github.com/aws-amplify/amplify-cli/issues/10776)
+
+
+
+
+
 ## [1.2.31](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.2.30...@aws-amplify/amplify-util-uibuilder@1.2.31) (2022-06-30)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
