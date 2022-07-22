@@ -5,7 +5,7 @@ git remote update
 rc_sha="$1"
 remote_name="$2"
 
-if [[ $rc_tag == "" ]]; then
+if [[ $rc_sha == "" ]]; then
   echo "Please include the rc sha you wish to release as the first argument"
   exit 1
 fi
