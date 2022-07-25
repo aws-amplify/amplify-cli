@@ -118,8 +118,12 @@ export class StorageTest {
             if (typeof rules.Value === 'string') {
               node = String(rules.Value);
             }
-            // check prefix given  is the prefix of keyname in the event object
-            if (keyName.indexOf(node) === 0) {
+
+            if (rules.Name === 'prefix' && keyName.startsWith(node)) {
+              triggerName = String(obj.Function.Ref).split('function')[1].split('Arn')[0];
+              break;
+            }
+            if (rules.Name === 'suffix' && keyName.endsWith(node)) {
               triggerName = String(obj.Function.Ref).split('function')[1].split('Arn')[0];
               break;
             }
@@ -128,6 +132,10 @@ export class StorageTest {
         if (triggerName !== undefined) {
           break;
         }
+      }
+
+      if (triggerName === undefined) {
+        return;
       }
 
       const config = await loadLambdaConfig(context, triggerName);
