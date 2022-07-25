@@ -347,6 +347,9 @@ Object {
         "RefreshTokenValidity": Object {
           "Ref": "userpoolClientRefreshTokenValidity",
         },
+        "TokenValidityUnits": Object {
+          "RefreshToken": "days",
+        },
         "UserPoolId": Object {
           "Ref": "UserPool",
         },
@@ -553,6 +556,9 @@ exports.handler = (event, context, callback) => {
         "ClientName": "authde2c33facd_app_clientWeb",
         "RefreshTokenValidity": Object {
           "Ref": "userpoolClientRefreshTokenValidity",
+        },
+        "TokenValidityUnits": Object {
+          "RefreshToken": "days",
         },
         "UserPoolId": Object {
           "Ref": "UserPool",
@@ -1983,6 +1989,9 @@ exports.handler = (event, context, callback) => {
         "RefreshTokenValidity": Object {
           "Ref": "userpoolClientRefreshTokenValidity",
         },
+        "TokenValidityUnits": Object {
+          "RefreshToken": "days",
+        },
         "UserPoolId": Object {
           "Ref": "UserPool",
         },
@@ -2195,6 +2204,9 @@ exports.handler = (event, context, callback) => {
         },
         "RefreshTokenValidity": Object {
           "Ref": "userpoolClientRefreshTokenValidity",
+        },
+        "TokenValidityUnits": Object {
+          "RefreshToken": "days",
         },
         "UserPoolId": Object {
           "Ref": "UserPool",

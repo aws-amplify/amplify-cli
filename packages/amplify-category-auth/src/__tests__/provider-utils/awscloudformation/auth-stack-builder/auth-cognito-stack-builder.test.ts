@@ -110,6 +110,8 @@ describe('generateCognitoStackResources', () => {
       }
     cognitoStack.generateCognitoStackResources(props);
     expect(cognitoStack.userPool!.lambdaConfig).toHaveProperty('preSignUp');
+    expect(cognitoStack.userPoolClientWeb!.tokenValidityUnits).toHaveProperty('refreshToken');
+    expect(cognitoStack.userPoolClient!.tokenValidityUnits).toHaveProperty('refreshToken');
     expect(cognitoStack.lambdaConfigPermissions).toHaveProperty('UserPoolPreSignupLambdaInvokePermission');
   });
 });

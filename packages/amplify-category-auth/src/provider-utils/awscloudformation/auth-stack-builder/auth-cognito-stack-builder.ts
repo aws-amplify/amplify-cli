@@ -439,6 +439,9 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       this.userPoolClientWeb = new cognito.CfnUserPoolClient(this, 'UserPoolClientWeb', {
         userPoolId: cdk.Fn.ref('UserPool'),
         clientName: `${props.resourceNameTruncated}_app_clientWeb`,
+        tokenValidityUnits: {
+          refreshToken: 'days',
+        },
       });
       if (props.userpoolClientSetAttributes) {
         this.userPoolClientWeb.readAttributes = this._cfnParameterMap.get('userpoolClientReadAttributes')?.valueAsList;
@@ -450,6 +453,9 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       this.userPoolClient = new cognito.CfnUserPoolClient(this, 'UserPoolClient', {
         userPoolId: cdk.Fn.ref('UserPool'),
         clientName: `${props.resourceNameTruncated}_app_client`,
+        tokenValidityUnits: {
+          refreshToken: 'days',
+        },
       });
       if (props.userpoolClientSetAttributes) {
         this.userPoolClient.readAttributes = this._cfnParameterMap.get('userpoolClientReadAttributes')?.valueAsList;
