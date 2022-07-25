@@ -107,7 +107,7 @@
           "HttpVersion": "http2",
           "Origins": [
             {
-              "DomainName": { "Fn::GetAtt": ["S3Bucket", "DomainName"] },
+              "DomainName": { "Fn::GetAtt": ["S3Bucket", "RegionalDomainName"] },
               "Id": "hostingS3Bucket",
               "S3OriginConfig": {
                 "OriginAccessIdentity": {
