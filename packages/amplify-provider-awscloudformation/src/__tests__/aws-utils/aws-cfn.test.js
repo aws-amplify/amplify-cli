@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+
 jest.mock('columnify');
 
-const CloudFormation = require('../../aws-utils/aws-cfn');
 const columnify = require('columnify');
 const { times } = require('lodash');
+const CloudFormation = require('../../aws-utils/aws-cfn');
 
 describe('CloudFormation', () => {
   test('showNewEvents shows events order by Timestamp', async () => {
@@ -39,5 +41,20 @@ describe('CloudFormation', () => {
       ]
     `);
     expect(columnify.mock.calls[0][1]).toEqual(columns);
+  });
+
+  test('Initialize progress bars should create the current number of progress bars as eventMap', async () => {
+    const eventMap = {
+      projectName: 'test',
+      envName: 'dev',
+      rootStackName: 'root-app',
+      rootResources: ['test-app'],
+      categories: [],
+    };
+    const cfn = await new CloudFormation();
+    cfn.eventMap = eventMap;
+    cfn.progressBar = cfn.initializeProgressBars();
+    expect(cfn.progressBar.getBarCount()).toBe(2);
+    cfn.progressBar.stop();
   });
 });

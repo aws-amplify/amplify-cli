@@ -16,6 +16,9 @@ const { stateManager, pathManager } = require('amplify-cli-core');
 const { fileLogger } = require('../utils/aws-logger');
 const logger = fileLogger('aws-cfn');
 const { pagedAWSCall } = require('./paged-call');
+const { createItemFormatter, createProgressBarFormatter } = require('./aws-cfn-progress-formatter');
+
+const { MultiProgressBar, printer } = require('amplify-prompts');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
 const CFN_POLL_TIME = 5 * 1000; // 5 secs wait to check if  new stacks are created by root stack
@@ -23,8 +26,14 @@ let CFNLOG = [];
 const CFN_SUCCESS_STATUS = ['UPDATE_COMPLETE', 'CREATE_COMPLETE', 'DELETE_COMPLETE', 'DELETE_SKIPPED'];
 
 const CNF_ERROR_STATUS = ['CREATE_FAILED', 'DELETE_FAILED', 'UPDATE_FAILED'];
+
+// These are cascade failures caused because of a root failure. Safe to ignore
+const RESOURCE_CASCADE_FAIL_REASONS = [
+  'Resource creation cancelled',
+  'Resource update cancelled'
+];
 class CloudFormation {
-  constructor(context, userAgentAction, options = {}) {
+  constructor(context, userAgentAction, options = {}, eventMap = {}) {
     return (async () => {
       let userAgentParam;
       if (userAgentAction) {
@@ -47,8 +56,53 @@ class CloudFormation {
 
       this.cfn = new aws.CloudFormation({ ...cred, ...options, ...userAgentOption });
       this.context = context;
+      if (Object.keys(eventMap).length) {
+        this.eventMap = eventMap;
+        this.progressBar = this.initializeProgressBars();
+      }
       return this;
     })();
+  }
+
+  // Initializing the root and individual category bars
+  initializeProgressBars() {
+    const newMultiBar = new MultiProgressBar({
+      progressBarFormatter: createProgressBarFormatter,
+      itemFormatter: createItemFormatter,
+      loneWolf: false,
+      hideCursor: true,
+      barSize: 40,
+      itemCompleteStatus: CFN_SUCCESS_STATUS,
+      itemFailedStatus: CNF_ERROR_STATUS,
+      prefixText: 'Deploying Resources into the Cloud. This might take a few minutes ...',
+      successText: 'Deployment Successfull ...',
+      failureText: 'Deployment Failed ...'
+    });
+    let progressBarsConfigs = [];
+    progressBarsConfigs.push({
+      name: 'projectBar',
+      value: 0,
+      total: 1+this.eventMap['rootResources'].length,
+      payload: {
+        progressName: this.eventMap.projectName,
+        envName: this.eventMap.envName
+      }
+    });
+
+    progressBarsConfigs = this.eventMap['categories'].reduce((prev, curr) => {
+        return prev.concat({
+          name: curr.name,
+          value: 0,
+          total: curr.size,
+          payload: {
+            progressName: curr.name,
+            envName: this.eventMap.envName
+          }
+        })
+    }, progressBarsConfigs);
+
+    newMultiBar.create(progressBarsConfigs)
+    return newMultiBar
   }
 
   createResourceStack(cfnParentStackParams) {
@@ -74,6 +128,9 @@ class CloudFormation {
           if (self.pollForEvents) {
             clearInterval(self.pollForEvents);
           }
+
+          this.progressBar?.stop();
+          
           if (completeErr) {
             context.print.error('\nAn error occurred when creating the CloudFormation stack');
             await this.collectStackErrors(cfnParentStackParams.StackName);
@@ -98,7 +155,7 @@ class CloudFormation {
 
         try {
           const trace = this.generateFailedStackErrorMsgs(failedStacks);
-          console.log(`\n\n${chalk.reset.red.bold('Following resources failed')}\n`);
+          printer.error('Following resources failed');
           trace.forEach(t => {
             console.log(t);
             console.log('\n');
@@ -116,23 +173,20 @@ class CloudFormation {
   }
 
   generateFailedStackErrorMsgs(eventsWithFailure) {
-    let envRegExp = '';
-    try {
-      const { envName = '' } = this.context.amplify.getEnvInfo();
-      envRegExp = new RegExp(`(-|_)${envName}`);
-    } catch {}
     this.context.exeInfo.cloudformationEvents = CFNLOG;
     const stackTrees = eventsWithFailure
       .filter(stack => stack.ResourceType !== 'AWS::CloudFormation::Stack')
+      .filter(stack => this.eventMap['eventToCategories'].has(stack.LogicalResourceId))
+      .filter(stack => !RESOURCE_CASCADE_FAIL_REASONS.includes(stack.ResourceStatusReason))
       .map(event => {
         const err = [];
-        const resourceName = event.PhysicalResourceId.replace(envRegExp, '') || event.LogicalResourceId;
+        const resourceName = event.LogicalResourceId;
         const cfnURL = getCFNConsoleLink(event, this.cfn);
-        err.push(`${chalk.bold('Resource Name:')} ${resourceName} (${event.ResourceType})`);
-        err.push(`${chalk.bold('Event Type:')} ${getStatusToErrorMsg(event.ResourceStatus)}`);
-        err.push(`${chalk.bold('Reason:')} ${event.ResourceStatusReason}`);
+        err.push(`${chalk.red.bold('Resource Name:')} ${resourceName} (${event.ResourceType})`);
+        err.push(`${chalk.red.bold('Event Type:')} ${getStatusToErrorMsg(event.ResourceStatus)}`);
+        err.push(`${chalk.red.bold('Reason:')} ${event.ResourceStatusReason}`);
         if (cfnURL) {
-          err.push(`${chalk.bold('URL:')} ${cfnURL}`);
+          err.push(`${chalk.red.bold('URL:')} ${cfnURL}`);
         }
         return err.join('\n');
       });
@@ -187,8 +241,46 @@ class CloudFormation {
     } else {
       newEvents = events;
     }
-    showEvents(_.uniqBy(newEvents, 'EventId'));
+    if(this.eventMap) {
+      this.showEventProgress(_.uniqBy(newEvents, 'EventId'));
+    }
+    else {
+      showEvents(_.uniqBy(newEvents, 'EventId'));
+    }
+    
     this.stackEvents = [...allShownEvents, ...newEvents];
+  }
+
+  // For each event update the corresponding progress bar
+  showEventProgress(events) {
+    events = events.reverse();
+    if (events.length > 0) {
+      events.forEach(event => {
+        const finishStatus = CFN_SUCCESS_STATUS.includes(event.ResourceStatus);
+        let updateObj = {
+          name: event.LogicalResourceId,
+          payload: {
+            LogicalResourceId: event.LogicalResourceId,
+            ResourceType: event.ResourceType,
+            ResourceStatus: event.ResourceStatus,
+            Timestamp: event.Timestamp
+        }}
+        let item = this.eventMap['rootResources'].find(item => item.key === event.LogicalResourceId)
+        if(event.LogicalResourceId === this.eventMap['rootStackName'] || item) {
+          // If the root resource for a category has already finished, then we do not have to wait for all events under it.
+          if (finishStatus && item && item.category) {
+            this.progressBar.finishBar(item.category)
+          }
+          this.progressBar.updateBar('projectBar', updateObj);
+        }
+        else if(this.eventMap['eventToCategories']){
+          const category = this.eventMap['eventToCategories'].get(event.LogicalResourceId);
+          if (category) {
+            this.progressBar.updateBar(category, updateObj);
+          }
+        }
+      })
+    }
   }
 
   getStackEvents(stackName) {
@@ -301,6 +393,9 @@ class CloudFormation {
                 cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, completeErr => {
                   if (self.pollForEvents) {
                     clearInterval(self.pollForEvents);
+                  }
+                  if (this.progressBar) {
+                    this.progressBar.stop();
                   }
                   if (completeErr) {
                     this.collectStackErrors(cfnParentStackParams.StackName).then(() => reject(completeErr));
@@ -554,6 +649,7 @@ function formatOutputs(outputs) {
 }
 
 function showEvents(events) {
+
   // CFN sorts the events by descending
   events = events.reverse();
 
