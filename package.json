@@ -72,7 +72,7 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "lerna": "^4.0.0",
+    "lerna": "^5.0.0",
     "strip-ansi": "^6.0.0"
   },
   "workspaces": {
