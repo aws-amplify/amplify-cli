@@ -48,7 +48,7 @@ describe('Bar update operations', () => {
       payload: {
         ResourceStatus: 'pending',
         LogicalResourceId: 'id1',
-        TimeStamp: '100',
+        Timestamp: '100',
         ResourceType: 'User',
       },
     });
@@ -68,7 +68,7 @@ describe('Bar update operations', () => {
       payload: {
         ResourceStatus: 'pending',
         LogicalResourceId: 'id1',
-        TimeStamp: '100',
+        Timestamp: '100',
         ResourceType: 'User',
       },
     });
@@ -77,7 +77,7 @@ describe('Bar update operations', () => {
       payload: {
         ResourceStatus: 'finished',
         LogicalResourceId: 'id1',
-        TimeStamp: '100',
+        Timestamp: '100',
         ResourceType: 'User',
       },
     });
@@ -97,7 +97,7 @@ describe('Bar update operations', () => {
       payload: {
         ResourceStatus: 'CREATE_COMPLETE',
         LogicalResourceId: 'id1',
-        TimeStamp: '100',
+        Timestamp: '100',
         ResourceType: 'User',
       },
     });
