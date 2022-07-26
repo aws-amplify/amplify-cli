@@ -134,6 +134,7 @@
   "resolutions": {
     "**/cross-fetch": "^2.2.6",
     "**/glob-parent": "^6.0.2",
+    "**/got": "^11.8.5",
     "**/istanbul/async": "^2.6.4",
     "**/jake/async": "^2.6.4",
     "**/nth-check": "^2.0.1"
