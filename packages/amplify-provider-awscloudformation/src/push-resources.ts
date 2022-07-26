@@ -74,6 +74,7 @@ import { storeRootStackTemplate } from './initializer';
 import { transformRootStack } from './override-manager';
 import { prePushTemplateDescriptionHandler } from './template-description-utils';
 import { buildOverridesEnabledResources } from './build-override-enabled-resources';
+import { Size } from '@aws-cdk/core';
 
 const logger = fileLogger('push-resources');
 
@@ -902,9 +903,9 @@ type EventMap = {
   rootStackName: string,
   envName: string,
   projectName: string,
-  rootResources: string[],
+  rootResources: {key: string, category: string}[],
   eventToCategories: Map<string, string>,
-  categories: string[]
+  categories: {name: string, size: number}[]
 }
 
 /**
@@ -917,7 +918,7 @@ const createEventMap = (
   resourcesToBeCreated: $TSAny,
   resourcesToBeUpdated: $TSAny,
 ): EventMap => {
-  let eventMap;
+  let eventMap : EventMap;
 
   const { envName } = context.amplify.getEnvInfo();
   const { projectName } = context.amplify.getProjectConfig();
