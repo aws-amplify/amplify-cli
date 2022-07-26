@@ -26,7 +26,7 @@ describe('Check item add/update operations', () => {
     bar.addItem('item1', {
       ResourceStatus: 'pending',
       LogicalResourceId: 'id1',
-      TimeStamp: '100',
+      Timestamp: '100',
       ResourceType: 'User',
     });
   });
@@ -42,7 +42,7 @@ describe('Check item add/update operations', () => {
     bar.updateItem('item1', {
       ResourceStatus: 'finished',
       LogicalResourceId: 'id1',
-      TimeStamp: '100',
+      Timestamp: '100',
       ResourceType: 'User',
     });
     const item = bar.getItem('item1');
@@ -74,7 +74,7 @@ describe('Test progressBar status', () => {
     bar.addItem('item1', {
       ResourceStatus: 'CREATE_FAILED',
       LogicalResourceId: 'id1',
-      TimeStamp: '100',
+      Timestamp: '100',
       ResourceType: 'User',
     });
     expect(bar.isFailed()).toBe(true);
