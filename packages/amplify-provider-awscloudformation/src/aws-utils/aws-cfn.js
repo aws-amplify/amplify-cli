@@ -16,7 +16,7 @@ const { stateManager, pathManager } = require('amplify-cli-core');
 const { fileLogger } = require('../utils/aws-logger');
 const logger = fileLogger('aws-cfn');
 const { pagedAWSCall } = require('./paged-call');
-const { createItemFormatter, createProgressBarFormatter } = require('./aws-cfn-progress-formatter');
+const { createItemFormatter, createProgressBarFormatter, initializeProgressBars } = require('./aws-cfn-progress-formatter');
 
 const { MultiProgressBar, printer } = require('amplify-prompts');
 
@@ -58,51 +58,10 @@ class CloudFormation {
       this.context = context;
       if (Object.keys(eventMap).length) {
         this.eventMap = eventMap;
-        this.progressBar = this.initializeProgressBars();
+        this.progressBar = initializeProgressBars(this.eventMap);
       }
       return this;
     })();
-  }
-
-  // Initializing the root and individual category bars
-  initializeProgressBars() {
-    const newMultiBar = new MultiProgressBar({
-      progressBarFormatter: createProgressBarFormatter,
-      itemFormatter: createItemFormatter,
-      loneWolf: false,
-      hideCursor: true,
-      barSize: 40,
-      itemCompleteStatus: CFN_SUCCESS_STATUS,
-      itemFailedStatus: CNF_ERROR_STATUS,
-      prefixText: 'Deploying Resources into the Cloud. This might take a few minutes ...',
-      successText: 'Deployment Successfull ...',
-      failureText: 'Deployment Failed ...'
-    });
-    let progressBarsConfigs = [];
-    progressBarsConfigs.push({
-      name: 'projectBar',
-      value: 0,
-      total: 1+this.eventMap['rootResources'].length,
-      payload: {
-        progressName: this.eventMap.projectName,
-        envName: this.eventMap.envName
-      }
-    });
-
-    progressBarsConfigs = this.eventMap['categories'].reduce((prev, curr) => {
-        return prev.concat({
-          name: curr.name,
-          value: 0,
-          total: curr.size,
-          payload: {
-            progressName: curr.name,
-            envName: this.eventMap.envName
-          }
-        })
-    }, progressBarsConfigs);
-
-    newMultiBar.create(progressBarsConfigs)
-    return newMultiBar
   }
 
   createResourceStack(cfnParentStackParams) {
