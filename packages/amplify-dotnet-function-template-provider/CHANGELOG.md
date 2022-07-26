@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.40-rc.65fd7b9e1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@2.2.38...amplify-dotnet-function-template-provider@2.2.40-rc.65fd7b9e1.0) (2022-07-26)
+
+
+### Reverts
+
+* Revert "chore: upgrade api category dependencies" ([7e24faf](https://github.com/aws-amplify/amplify-cli/commit/7e24faf472f96eeb34171b7befa49f4b0da3f7ae))
+
+
+
+
+
 ## [2.2.39](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@2.2.38...amplify-dotnet-function-template-provider@2.2.39) (2022-06-30)
 
 **Note:** Version bump only for package amplify-dotnet-function-template-provider

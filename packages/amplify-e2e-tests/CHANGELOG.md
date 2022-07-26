@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.11.5-rc.65fd7b9e1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.11.3...amplify-e2e-tests@3.11.5-rc.65fd7b9e1.0) (2022-07-26)
+
+
+### Bug Fixes
+
+* enables -yes flag on amplify publish ([#10774](https://github.com/aws-amplify/amplify-cli/issues/10774)) ([860a0e5](https://github.com/aws-amplify/amplify-cli/commit/860a0e56198a6bcd4c2cc7988a29c80ce1267ec1))
+
+
+
+# 9.2.0-rc.88f873875.0 (2022-07-21)
+
+
+### Bug Fixes
+
+* enforce init command to be executed in project root ([#10744](https://github.com/aws-amplify/amplify-cli/issues/10744)) ([88f8738](https://github.com/aws-amplify/amplify-cli/commit/88f8738757b038bc3b246491cdb709fde30d7f31))
+* missing file error and swallowing error ([#10590](https://github.com/aws-amplify/amplify-cli/issues/10590)) ([8e469e1](https://github.com/aws-amplify/amplify-cli/commit/8e469e13c6efb62b64d8223e12ebb4732f8f1906))
+
+
+### Reverts
+
+* Revert "chore: upgrade api category dependencies" ([7e24faf](https://github.com/aws-amplify/amplify-cli/commit/7e24faf472f96eeb34171b7befa49f4b0da3f7ae))
+
+
+
+
+
 ## [3.11.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.11.3...amplify-e2e-tests@3.11.4) (2022-06-30)
 
 **Note:** Version bump only for package amplify-e2e-tests
