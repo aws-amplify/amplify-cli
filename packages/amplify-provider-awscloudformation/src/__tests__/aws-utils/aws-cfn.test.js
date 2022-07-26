@@ -4,6 +4,7 @@ jest.mock('columnify');
 
 const columnify = require('columnify');
 const { times } = require('lodash');
+const { initializeProgressBars } = require('../../aws-utils/aws-cfn-progress-formatter');
 const CloudFormation = require('../../aws-utils/aws-cfn');
 
 describe('CloudFormation', () => {
@@ -53,7 +54,7 @@ describe('CloudFormation', () => {
     };
     const cfn = await new CloudFormation();
     cfn.eventMap = eventMap;
-    cfn.progressBar = cfn.initializeProgressBars();
+    cfn.progressBar = initializeProgressBars(eventMap);
     expect(cfn.progressBar.getBarCount()).toBe(2);
     cfn.progressBar.stop();
   });
