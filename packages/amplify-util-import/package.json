@@ -1,6 +1,6 @@
 {
   "name": "amplify-util-import",
-  "version": "2.2.35",
+  "version": "2.2.36-rc.87d15cb3e.0",
   "description": "Resource import support package",
   "main": "lib/index.js",
   "scripts": {

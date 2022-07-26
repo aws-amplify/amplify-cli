@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-graphiql-explorer",
-  "version": "2.4.7",
+  "version": "2.5.0-rc.87d15cb3e.0",
   "private": true,
   "dependencies": {
     "@babel/core": "^7.16.0",
