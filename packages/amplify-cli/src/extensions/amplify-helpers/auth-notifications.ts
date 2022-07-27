@@ -13,17 +13,82 @@ async function setNotificationFlag(projectPath: string, flagName: string, value:
     preserveComments: true,
   });
 
-  config.features.graphqltransformer[flagName] = value;
-  stateManager.setCLIJSON(projectPath, config);
-  await FeatureFlags.reloadValues();
+  if (config) {
+    config.features.graphqltransformer[flagName] = value;
+    stateManager.setCLIJSON(projectPath, config);
+    await FeatureFlags.reloadValues();
+  }
 }
 
-export async function notifyFieldAuthSecurityChange(context: $TSContext): Promise<void> {
+export async function notifyFieldAuthSecurityChange(context: $TSContext): Promise<boolean> {
   const flagName = 'showfieldauthnotification';
   const dontShowNotification = !FeatureFlags.getBoolean(`graphqltransformer.${flagName}`);
 
-  if (dontShowNotification) return;
+  if (dontShowNotification) return false;
 
+  const projectPath = pathManager.findProjectRoot() ?? process.cwd();
+  const apiResourceDir = await getApiResourceDir();
+  if (!apiResourceDir) {
+    await setNotificationFlag(projectPath, flagName, false);
+    return false;
+  }
+
+  const project = await readProjectConfiguration(apiResourceDir);
+  const directiveMap = collectDirectivesByType(project.schema);
+  const doc: DocumentNode = parse(project.schema);
+  const fieldDirectives: Set<string> = hasFieldAuthDirectives(doc);
+
+  let schemaModified = false;
+  if (displayAuthNotification(directiveMap, fieldDirectives)) {
+    printer.blankLine();
+    const continueChange = await prompter.yesOrNo(
+      `This version of Amplify CLI introduces additional security enhancements for your GraphQL API. ` +
+        `The changes are applied automatically with this deployment. This change won't impact your client code. Continue?`,
+    );
+
+    if (!continueChange) {
+      await context.usageData.emitSuccess();
+      exitOnNextTick(0);
+    }
+    modifyGraphQLSchema(apiResourceDir);
+    schemaModified = true;
+  }
+  
+  await setNotificationFlag(projectPath, flagName, false);
+  return schemaModified;
+}
+
+export async function notifyListQuerySecurityChange(context: $TSContext): Promise<boolean> {
+  const flagName = 'showlistquerynotification';
+  const dontShowNotification = !FeatureFlags.getBoolean(`graphqltransformer.${flagName}`);
+
+  if (dontShowNotification) return false;
+
+  const projectPath = pathManager.findProjectRoot() ?? process.cwd();
+  const apiResourceDir = await getApiResourceDir();
+  if (!apiResourceDir) {
+    await setNotificationFlag(projectPath, flagName, false);
+    return false;
+  }
+
+  printer.blankLine();
+  const continueChange = await prompter.yesOrNo(
+    `This version of Amplify CLI introduces additional security enhancements for your GraphQL API. ` +
+      `The changes are applied automatically with this deployment. This change won't impact your client code. Continue?`,
+  );
+
+  if (!continueChange) {
+    await context.usageData.emitSuccess();
+    exitOnNextTick(0);
+  }
+
+  modifyGraphQLSchema(apiResourceDir);
+
+  await setNotificationFlag(projectPath, flagName, false);
+  return true;
+}
+
+async function containsGraphQLApi(): Promise<boolean> {
   const projectPath = pathManager.findProjectRoot() ?? process.cwd();
   const meta = stateManager.getMeta(projectPath);
 
@@ -34,38 +99,36 @@ export async function notifyFieldAuthSecurityChange(context: $TSContext): Promis
   const doesNotHaveGqlApi = apiNames.length < 1;
 
   if (doesNotHaveGqlApi) {
-    return await setNotificationFlag(projectPath, flagName, false);
+    return false;
   }
 
   const apiName = apiNames[0];
   const apiResourceDir = pathManager.getResourceDirectoryPath(projectPath, 'api', apiName);
 
   if (!fs.existsSync(apiResourceDir)) {
-    await setNotificationFlag(projectPath, flagName, false);
-    return;
+    return false;
   }
 
-  const project = await readProjectConfiguration(apiResourceDir);
-  const directiveMap = collectDirectivesByType(project.schema);
-  const doc: DocumentNode = parse(project.schema);
-  const fieldDirectives: Set<string> = hasFieldAuthDirectives(doc);
+  return true;
+}
 
-  if (displayAuthNotification(directiveMap, fieldDirectives)) {
-    printer.blankLine();
-    const continueChange = await prompter.yesOrNo(
-      `This version of Amplify CLI introduces additional security enhancements for your GraphQL API. ` +
-        `The changes are applied automatically with this deployment. This change won't impact your client code. Continue`,
-    );
-
-    if (!continueChange) {
-      await context.usageData.emitSuccess();
-      exitOnNextTick(0);
-    }
-
-    modifyGraphQLSchema(apiResourceDir);
+async function getApiResourceDir(): Promise<string | undefined> {
+  const hasGraphQLApi = await containsGraphQLApi();
+  if (!hasGraphQLApi) {
+    return undefined;
   }
 
-  await setNotificationFlag(projectPath, flagName, false);
+  const projectPath = pathManager.findProjectRoot() ?? process.cwd();
+  const meta = stateManager.getMeta(projectPath);
+
+  const apiNames = Object.entries(meta?.api || {})
+    .filter(([_, apiResource]) => (apiResource as $TSAny).service === 'AppSync')
+    .map(([name]) => name);
+
+  const apiName = apiNames[0];
+  const apiResourceDir = pathManager.getResourceDirectoryPath(projectPath, 'api', apiName);
+
+  return apiResourceDir;
 }
 
 async function modifyGraphQLSchema(apiResourceDir: string): Promise<void> {
