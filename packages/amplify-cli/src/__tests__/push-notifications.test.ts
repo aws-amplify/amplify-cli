@@ -1,4 +1,4 @@
-import { notifyFieldAuthSecurityChange, notifySecurityEnhancement } from '../extensions/amplify-helpers/auth-notifications';
+import { notifyFieldAuthSecurityChange, notifyListQuerySecurityChange, notifySecurityEnhancement } from '../extensions/amplify-helpers/auth-notifications';
 import { $TSContext, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
 
 jest.mock('amplify-cli-core');
@@ -15,7 +15,7 @@ describe('push notifications', () => {
     jest.clearAllMocks();
   });
 
-  it('notifyFieldAuthSecurityChange should exit without fail when there is not api resource directory', () => {
+  it('notifyFieldAuthSecurityChange should exit without fail when there is not api resource directory', async () => {
     (<any>FeatureFlags.getBoolean).mockReturnValue(true);
     (<any>pathManager.getResourceDirectoryPath).mockReturnValue('path-to-non-existing-resource-directory');
     (<any>stateManager.getMeta).mockReturnValue({
@@ -29,11 +29,11 @@ describe('push notifications', () => {
       },
     });
     (<any>FeatureFlags.ensureFeatureFlag).mockImplementation(() => {});
-    notifyFieldAuthSecurityChange(contextMock);
+    await notifyFieldAuthSecurityChange(contextMock);
     expect(<any>FeatureFlags.ensureFeatureFlag).toHaveBeenCalledWith('graphqltransformer', 'showfieldauthnotification');
   });
 
-  it('notifySecurityEnhancement should exit without fail when there is not api resource directory', () => {
+  it('notifyListQuerySecurityChange should exit without fail when there is not api resource directory', async () => {
     (<any>FeatureFlags.getBoolean).mockReturnValue(true);
     (<any>pathManager.getResourceDirectoryPath).mockReturnValue('path-to-non-existing-resource-directory');
     (<any>stateManager.getMeta).mockReturnValue({
@@ -47,7 +47,25 @@ describe('push notifications', () => {
       },
     });
     (<any>FeatureFlags.ensureFeatureFlag).mockImplementation(() => {});
-    notifySecurityEnhancement(contextMock);
+    await notifyListQuerySecurityChange(contextMock);
+    expect(<any>FeatureFlags.ensureFeatureFlag).toHaveBeenCalledWith('graphqltransformer', 'showlistquerynotification');
+  });
+
+  it('notifySecurityEnhancement should exit without fail when there is not api resource directory', async () => {
+    (<any>FeatureFlags.getBoolean).mockReturnValue(true);
+    (<any>pathManager.getResourceDirectoryPath).mockReturnValue('path-to-non-existing-resource-directory');
+    (<any>stateManager.getMeta).mockReturnValue({
+      api: {
+        'test-api-dev': {
+          service: 'AppSync',
+          output: {
+            name: 'test-api-dev',
+          },
+        },
+      },
+    });
+    (<any>FeatureFlags.ensureFeatureFlag).mockImplementation(() => {});
+    await notifySecurityEnhancement(contextMock);
     expect(<any>FeatureFlags.ensureFeatureFlag).toHaveBeenCalledWith('graphqltransformer', 'securityEnhancementNotification');
   });
 });
