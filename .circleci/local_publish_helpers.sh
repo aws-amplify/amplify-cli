@@ -38,7 +38,7 @@ function uploadPkgCli {
     export hash=$(git rev-parse HEAD | cut -c 1-12)
     export version=$(./amplify-pkg-linux-x64 --version)
 
-    if [[ "$CIRCLE_BRANCH" == "release" ]] || [[ "$CIRCLE_BRANCH" == "dev" ]] || [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
+    if [[ "$CIRCLE_BRANCH" == "release" ]] || [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
         tar -czvf amplify-pkg-linux-arm64.tgz amplify-pkg-linux-arm64
         tar -czvf amplify-pkg-linux-x64.tgz amplify-pkg-linux-x64
         tar -czvf amplify-pkg-macos-x64.tgz amplify-pkg-macos-x64
@@ -88,7 +88,7 @@ function generatePkgCli {
 
   # Build pkg cli
   cp package.json ../build/node_modules/package.json
-  if [[ "$CIRCLE_BRANCH" == "release" ]] || [[ "$CIRCLE_BRANCH" == "dev" ]] || [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
+  if [[ "$CIRCLE_BRANCH" == "release" ]] || [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
     npx pkg -t node14-macos-x64,node14-linux-x64,node14-linux-arm64,node14-win-x64 ../build/node_modules --out-path ../out
   else
     npx pkg -t node14-linux-x64,node14-win-x64 ../build/node_modules --out-path ../out

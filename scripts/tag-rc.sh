@@ -1,6 +1,7 @@
 #!/bin/bash
 
-if [[ "$CIRCLE_BRANCH" != "dev" ]]; then
+# exit if branch name is not an rc branch
+if ! { [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]]; }; then
   echo "Skipping because this branch is not deploying a release candidate"
   exit 0
 fi
