@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.4.4-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.4.2...amplify-provider-awscloudformation@6.4.4-beta.2) (2022-07-28)
+
+
+### Bug Fixes
+
+* **graphql:** handle gsi change iterative update of delta sync table exists on root template ([#10470](https://github.com/aws-amplify/amplify-cli/issues/10470)) ([d8212d5](https://github.com/aws-amplify/amplify-cli/commit/d8212d50ffd36a47f000988b46a1dbba02c9fa2f))
+
+
+
+
+
+## [6.4.4-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.4.2...amplify-provider-awscloudformation@6.4.4-beta.1) (2022-07-27)
+
+
+### Bug Fixes
+
+* **graphql:** handle gsi change iterative update of delta sync table exists on root template ([#10470](https://github.com/aws-amplify/amplify-cli/issues/10470)) ([d8212d5](https://github.com/aws-amplify/amplify-cli/commit/d8212d50ffd36a47f000988b46a1dbba02c9fa2f))
+
+
+
+
+
+## [6.4.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.4.2...amplify-provider-awscloudformation@6.4.4-beta.0) (2022-07-27)
+
+
+### Bug Fixes
+
+* **graphql:** handle gsi change iterative update of delta sync table exists on root template ([#10470](https://github.com/aws-amplify/amplify-cli/issues/10470)) ([d8212d5](https://github.com/aws-amplify/amplify-cli/commit/d8212d50ffd36a47f000988b46a1dbba02c9fa2f))
+
+
+
+
+
 ## [6.4.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.4.2...amplify-provider-awscloudformation@6.4.3) (2022-06-30)
 
 
