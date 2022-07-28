@@ -21,6 +21,7 @@ describe('api directives @auth batch 15', () => {
       projectDir = await createNewProjectDir('auth1');
       await initIosProjectWithProfile(projectDir, {});
       addFeatureFlag(projectDir, 'graphqlTransformer', 'useSubUsernameForDefaultIdentityClaim', true);
+      addFeatureFlag(projectDir, 'graphqlTransformer', 'showListQueryNotification', false);
     });
 
     it('auth owner10', async () => {
@@ -34,6 +35,7 @@ describe('api directives @auth batch 15', () => {
       projectDir = await createNewProjectDir('auth2');
       await initFlutterProjectWithProfile(projectDir, {});
       addFeatureFlag(projectDir, 'graphqlTransformer', 'useSubUsernameForDefaultIdentityClaim', true);
+      addFeatureFlag(projectDir, 'graphqlTransformer', 'showListQueryNotification', false);
     });
 
     it('auth owner11', async () => {
