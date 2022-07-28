@@ -74,7 +74,6 @@ import { storeRootStackTemplate } from './initializer';
 import { transformRootStack } from './override-manager';
 import { prePushTemplateDescriptionHandler } from './template-description-utils';
 import { buildOverridesEnabledResources } from './build-override-enabled-resources';
-import { Size } from '@aws-cdk/core';
 
 const logger = fileLogger('push-resources');
 

@@ -16,9 +16,9 @@ const { stateManager, pathManager } = require('amplify-cli-core');
 const { fileLogger } = require('../utils/aws-logger');
 const logger = fileLogger('aws-cfn');
 const { pagedAWSCall } = require('./paged-call');
-const { createItemFormatter, createProgressBarFormatter, initializeProgressBars } = require('./aws-cfn-progress-formatter');
+const { initializeProgressBars } = require('./aws-cfn-progress-formatter');
 
-const { MultiProgressBar, printer } = require('amplify-prompts');
+const { printer } = require('amplify-prompts');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
 const CFN_POLL_TIME = 5 * 1000; // 5 secs wait to check if  new stacks are created by root stack
