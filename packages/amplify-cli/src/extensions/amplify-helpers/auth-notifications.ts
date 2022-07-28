@@ -4,6 +4,7 @@ import fs from 'fs-extra';
 import { DirectiveNode, DocumentNode, FieldDefinitionNode, FieldNode, parse } from 'graphql';
 import { collectDirectivesByType, collectDirectivesByTypeNames, readProjectConfiguration } from 'graphql-transformer-core';
 import path from 'path';
+import _ from 'lodash';
 
 async function setNotificationFlag(projectPath: string, flagName: string, value: boolean): Promise<void> {
   await FeatureFlags.ensureFeatureFlag('graphqltransformer', flagName);
@@ -53,27 +54,32 @@ export async function notifyFieldAuthSecurityChange(context: $TSContext): Promis
     modifyGraphQLSchema(apiResourceDir);
     schemaModified = true;
   }
-  
+
   await setNotificationFlag(projectPath, flagName, false);
   return schemaModified;
 }
 
 export async function notifyListQuerySecurityChange(context: $TSContext): Promise<boolean> {
-  const flagName = 'showlistquerynotification';
-  const dontShowNotification = !FeatureFlags.getBoolean(`graphqltransformer.${flagName}`);
-
-  if (dontShowNotification) return false;
-
   const projectPath = pathManager.findProjectRoot() ?? process.cwd();
   const apiResourceDir = await getApiResourceDir();
   if (!apiResourceDir) {
-    await setNotificationFlag(projectPath, flagName, false);
     return false;
   }
-  
+
   const project = await readProjectConfiguration(apiResourceDir);
+
+  const resolversToCheck = _.keys(project.resolvers)
+    .filter(resolverFileName => resolverFileName.startsWith('Query.list') && resolverFileName.endsWith('.req.vtl'))
+    .map(resolverFileName => project.resolvers[resolverFileName]);
+  const listQueryPattern = /#set\( \$filterExpression = \$util\.parseJson\(\$util\.transform\.toDynamoDBFilterExpression\(\$filter\)\) \)\s*(?!\s*#if\( \$util\.isNullOrEmpty\(\$filterExpression\) \))/gm;
+  const resolversAreSecure = resolversToCheck.some(resolver => listQueryPattern.test(resolver));
+
+  if (resolversAreSecure) {
+    return false;
+  }
+
   const doc: DocumentNode = parse(project.schema);
-  
+
   let schemaModified = false;
   if (hasV2AuthDirectives(doc)) {
     printer.blankLine();

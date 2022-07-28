@@ -615,12 +615,6 @@ export class FeatureFlags {
         defaultValueForNewProjects: false,
       },
       {
-        name: 'showListQueryNotification',
-        type: 'boolean',
-        defaultValueForExistingProjects: true,
-        defaultValueForNewProjects: false,
-      },
-      {
         name: 'useSubUsernameForDefaultIdentityClaim',
         type: 'boolean',
         defaultValueForExistingProjects: true,
