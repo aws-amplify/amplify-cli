@@ -70,22 +70,29 @@ export async function notifyListQuerySecurityChange(context: $TSContext): Promis
     await setNotificationFlag(projectPath, flagName, false);
     return false;
   }
+  
+  const project = await readProjectConfiguration(apiResourceDir);
+  const doc: DocumentNode = parse(project.schema);
+  
+  let schemaModified = false;
+  if (hasV2AuthDirectives(doc)) {
+    printer.blankLine();
+    const continueChange = await prompter.yesOrNo(
+      `This version of Amplify CLI introduces additional security enhancements for your GraphQL API. ` +
+        `The changes are applied automatically with this deployment. This change won't impact your client code. Continue?`,
+    );
 
-  printer.blankLine();
-  const continueChange = await prompter.yesOrNo(
-    `This version of Amplify CLI introduces additional security enhancements for your GraphQL API. ` +
-      `The changes are applied automatically with this deployment. This change won't impact your client code. Continue?`,
-  );
+    if (!continueChange) {
+      await context.usageData.emitSuccess();
+      exitOnNextTick(0);
+    }
 
-  if (!continueChange) {
-    await context.usageData.emitSuccess();
-    exitOnNextTick(0);
+    modifyGraphQLSchema(apiResourceDir);
+    schemaModified = true;
   }
 
-  modifyGraphQLSchema(apiResourceDir);
-
   await setNotificationFlag(projectPath, flagName, false);
-  return true;
+  return schemaModified;
 }
 
 async function containsGraphQLApi(): Promise<boolean> {
@@ -207,6 +214,19 @@ export function hasFieldAuthDirectives(doc: DocumentNode): Set<string> {
   });
 
   return haveFieldAuthDir;
+}
+
+export function hasV2AuthDirectives(doc: DocumentNode): boolean {
+  let containsAuthDir = false;
+  const usesTransformerV2 = FeatureFlags.getNumber('graphqltransformer.transformerversion') === 2;
+
+  doc.definitions?.forEach((def: any) => {
+    if (def.directives?.some(dir => dir.name.value === 'auth')) {
+      containsAuthDir = true;
+    }
+  });
+
+  return containsAuthDir && usesTransformerV2;
 }
 
 export async function notifySecurityEnhancement(context) {
