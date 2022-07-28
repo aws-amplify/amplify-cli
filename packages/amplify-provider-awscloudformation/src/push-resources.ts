@@ -459,19 +459,6 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
   }
 };
 
-const canAutoResolveGraphQLAuthError = async (message: string) => {
-  if (
-    message === '@auth directive with \'iam\' provider found, but the project has no IAM authentication provider configured.'
-    || message
-      === '@auth directive with \'userPools\' provider found, but the project has no Cognito User Pools authentication provider configured.'
-    || message === '@auth directive with \'oidc\' provider found, but the project has no OPENID_CONNECT authentication provider configured.'
-    || message === '@auth directive with \'apiKey\' provider found, but the project has no API Key authentication provider configured.'
-    || message === '@auth directive with \'function\' provider found, but the project has no Lambda authentication provider configured.'
-  ) {
-    return true;
-  }
-};
-
 /**
  *
  */
