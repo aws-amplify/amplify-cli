@@ -353,9 +353,8 @@ class CloudFormation {
                   if (self.pollForEvents) {
                     clearInterval(self.pollForEvents);
                   }
-                  if (this.progressBar) {
-                    this.progressBar.stop();
-                  }
+                  this.progressBar?.stop();
+                  
                   if (completeErr) {
                     this.collectStackErrors(cfnParentStackParams.StackName).then(() => reject(completeErr));
                   } else {
