@@ -918,7 +918,7 @@ const createEventMap = (
   resourcesToBeCreated: $TSAny,
   resourcesToBeUpdated: $TSAny,
 ): EventMap => {
-  let eventMap : EventMap;
+  let eventMap = {} as EventMap;
 
   const { envName } = context.amplify.getEnvInfo();
   const { projectName } = context.amplify.getProjectConfig();

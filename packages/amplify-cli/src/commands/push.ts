@@ -1,6 +1,7 @@
 import {
   $TSAny, $TSContext, $TSObject, ConfigurationError, exitOnNextTick, stateManager, spinner,
 } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 import sequential from 'promise-sequential';
 import { notifyFieldAuthSecurityChange, notifyListQuerySecurityChange, notifySecurityEnhancement } from '../extensions/amplify-helpers/auth-notifications';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
@@ -79,6 +80,8 @@ export const run = async (context: $TSContext): Promise<$TSAny|void> => {
     await syncCurrentCloudBackend(context);
     return await context.amplify.pushResources(context);
   } catch (e) {
+    const message = (e.name === 'GraphQLError' || e.name === 'InvalidMigrationError') ? e.toString() : e.message;
+    printer.error(`An error occurred during the push operation: /\n${message}`);
     await reportError(context as unknown as Context, e);
     await context.usageData.emitError(e);
     showTroubleshootingURL();
