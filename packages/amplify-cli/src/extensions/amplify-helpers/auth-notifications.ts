@@ -59,22 +59,40 @@ export async function notifyFieldAuthSecurityChange(context: $TSContext): Promis
   return schemaModified;
 }
 
+export async function loadResolvers(apiResourceDirectory: string): Promise<Record<string, string>> {
+  const resolvers = {};
+
+  const resolverDirectory = path.join(apiResourceDirectory, 'build', 'resolvers');
+  const resolverDirExists = fs.existsSync(resolverDirectory);
+  if (resolverDirExists) {
+    const resolverFiles = await fs.readdir(resolverDirectory);
+    for (const resolverFile of resolverFiles) {
+      if (resolverFile.indexOf('.') === 0) {
+        continue;
+      }
+      const resolverFilePath = path.join(resolverDirectory, resolverFile);
+      resolvers[resolverFile] = await fs.readFile(resolverFilePath, 'utf8');
+    }
+  }
+
+  return resolvers;
+}
+
 export async function notifyListQuerySecurityChange(context: $TSContext): Promise<boolean> {
-  const projectPath = pathManager.findProjectRoot() ?? process.cwd();
   const apiResourceDir = await getApiResourceDir();
   if (!apiResourceDir) {
     return false;
   }
 
   const project = await readProjectConfiguration(apiResourceDir);
+  const resolvers = await loadResolvers(apiResourceDir);
 
-  const resolversToCheck = _.keys(project.resolvers)
-    .filter(resolverFileName => resolverFileName.startsWith('Query.list') && resolverFileName.endsWith('.req.vtl'))
-    .map(resolverFileName => project.resolvers[resolverFileName]);
+  const resolversToCheck = Object.entries(resolvers)
+    .filter(([resolverFileName, _]) => resolverFileName.startsWith('Query.list') && resolverFileName.endsWith('.req.vtl'))
+    .map(([_, resolverCode]) => resolverCode);
   const listQueryPattern = /#set\( \$filterExpression = \$util\.parseJson\(\$util\.transform\.toDynamoDBFilterExpression\(\$filter\)\) \)\s*(?!\s*#if\( \$util\.isNullOrEmpty\(\$filterExpression\) \))/gm;
-  const resolversAreSecure = resolversToCheck.some(resolver => listQueryPattern.test(resolver));
-
-  if (resolversAreSecure) {
+  const resolversToSecure = resolversToCheck.filter(resolver => listQueryPattern.test(resolver));
+  if (resolversToSecure.length === 0) {
     return false;
   }
 
