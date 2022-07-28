@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.12.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.10.0...amplify-cli-core@2.12.0-beta.2) (2022-07-28)
+
+
+### Features
+
+* allow unknown feature flags if set to false ([#10612](https://github.com/aws-amplify/amplify-cli/issues/10612)) ([d45991c](https://github.com/aws-amplify/amplify-cli/commit/d45991c347e17ef3d77b105e744125ad2d71197e))
+
+
+
+
+
 # [2.12.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.10.0...amplify-cli-core@2.12.0-beta.1) (2022-07-27)
 
 
