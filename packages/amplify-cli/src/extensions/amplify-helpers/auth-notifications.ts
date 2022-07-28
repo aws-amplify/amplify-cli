@@ -97,7 +97,6 @@ export async function notifyListQuerySecurityChange(context: $TSContext): Promis
     schemaModified = true;
   }
 
-  await setNotificationFlag(projectPath, flagName, false);
   return schemaModified;
 }
 
