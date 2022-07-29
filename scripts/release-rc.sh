@@ -30,9 +30,9 @@ fi
 
 branch_name="release_rc/$rc_sha"
 
-git checkout -b "$branch_name" "$rc_sha"
-git fetch origin main
-git merge origin/main
+git checkout -B "$branch_name" "$rc_sha"
+git fetch "$remote_name" main
+git merge "$remote_name"/main
 read -p 'Resolve any merge conflicts, then press any key to continue'
 git push "$remote_name" "$branch_name"
 echo "CCI is publishing the release candidate. Check progress at"
