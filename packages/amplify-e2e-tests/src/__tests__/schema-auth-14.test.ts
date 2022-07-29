@@ -21,7 +21,6 @@ describe('api directives @auth batch 14', () => {
       projectDir = await createNewProjectDir('auth1');
       await initJSProjectWithProfile(projectDir, {});
       addFeatureFlag(projectDir, 'graphqlTransformer', 'useSubUsernameForDefaultIdentityClaim', true);
-      addFeatureFlag(projectDir, 'graphqlTransformer', 'showListQueryNotification', false);
     });
 
     it('auth customClaims2', async () => {
@@ -40,7 +39,6 @@ describe('api directives @auth batch 14', () => {
       projectDir = await createNewProjectDir('auth2');
       await initAndroidProjectWithProfile(projectDir, {});
       addFeatureFlag(projectDir, 'graphqlTransformer', 'useSubUsernameForDefaultIdentityClaim', true);
-      addFeatureFlag(projectDir, 'graphqlTransformer', 'showListQueryNotification', false);
     });
 
     it('auth owner9', async () => {
