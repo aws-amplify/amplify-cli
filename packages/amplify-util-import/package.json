@@ -16,6 +16,7 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
+    "amplify-cli-core": "2.11.0",
     "aws-sdk": "^2.1113.0"
   },
   "devDependencies": {
