@@ -875,13 +875,10 @@ const createResourceObject = (resource: string, category: string) : {
   key: category + resource,
 });
 
-const getCategoryResources = (file : string, resourceDir : string, fileSystem: $TSAny) => {
+const getCategoryResources = (file : string, resourceDir : string) => {
   const cloudFormationJsonPath = path.join(resourceDir, file);
-  if (!fileSystem.exists(cloudFormationJsonPath)) {
-    return [];
-  }
-  const categoryCloudFormationTemplate = JSON.parse(fileSystem.read(cloudFormationJsonPath));
-  const categoryResources = Object.keys(categoryCloudFormationTemplate.Resources);
+  const { cfnTemplate } = readCFNTemplate(cloudFormationJsonPath);
+  const categoryResources = Object.keys(cfnTemplate.Resources);
   return categoryResources;
 };
 
@@ -908,8 +905,8 @@ const createEventMap = (
 
   const { envName } = context.amplify.getEnvInfo();
   const { projectName } = context.amplify.getProjectConfig();
-  const rootStackName = projectDetails.teamProviderInfo[envName].awscloudformation.StackName;
-
+  const meta = stateManager.getMeta();
+  const rootStackName = meta.providers.awscloudformation.StackName;
   // Setting up initial configurations.
   eventMap.rootStackName = rootStackName;
   eventMap.envName = envName;
@@ -930,7 +927,7 @@ const createEventMap = (
       eventMap.rootResources.push(createResourceObject(resource, category));
       handleCfnFiles(eventMap,
         category, resource,
-        _.union(resourcesUpdated, resourcesCreated), context.filesystem);
+        _.union(resourcesUpdated, resourcesCreated));
     });
   });
   return eventMap;
@@ -940,13 +937,12 @@ const handleCfnFiles = (
   eventMap : EventMap,
   category: string,
   resource: string,
-  updatedResources: string[],
-  fileSystem: $TSAny,
+  updatedResources: string[]
 ) => {
   // Getting corresponding cfn template files
   const { resourceDir, cfnFiles } = getCfnFiles(category, resource);
   cfnFiles.forEach(file => {
-    const categoryResources = getCategoryResources(file, resourceDir, fileSystem);
+    const categoryResources = getCategoryResources(file, resourceDir);
     // Maping Resource events to categories.
     categoryResources.forEach(res => {
       eventMap.eventToCategories.set(res, `${category}-${resource}`);
