@@ -53,6 +53,12 @@ elif [[ "$CIRCLE_BRANCH" == "release" ]]; then
   git switch main
   git merge release --ff-only
   git push origin main
+
+  # fast forward hotfix to release
+  git fetch origin hotfix
+  git switch hotfix
+  git merge release --ff-only
+  git push origin hotfix
 else
   echo "branch name" "$CIRCLE_BRANCH" "did not match any branch publish rules. Skipping publish"
 fi
