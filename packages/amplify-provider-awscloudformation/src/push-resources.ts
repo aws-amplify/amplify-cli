@@ -875,7 +875,7 @@ const createResourceObject = (resource: string, category: string) : {
   key: category + resource,
 });
 
-const getCategoryResources = (file, fileSystem, resourceDir) => {
+const getCategoryResources = (file : string, resourceDir : string, fileSystem: $TSAny) => {
   const cloudFormationJsonPath = path.join(resourceDir, file);
   if (!fileSystem.exists(cloudFormationJsonPath)) {
     return [];
@@ -928,24 +928,33 @@ const createEventMap = (
     const resources = Object.keys(projectDetails.amplifyMeta[category]);
     resources.forEach(resource => {
       eventMap.rootResources.push(createResourceObject(resource, category));
-
-      // Getting corresponding cfn template files
-      const { resourceDir, cfnFiles } = getCfnFiles(category, resource);
-
-      cfnFiles.forEach(file => {
-        const fileSystem = context.filesystem;
-        const categoryResources = getCategoryResources(file, fileSystem, resourceDir);
-        // Maping Resource events to categories.
-        categoryResources.forEach(res => {
-          eventMap.eventToCategories.set(res, `${category}-${resource}`);
-        });
-        if (resourcesCreated.includes(category) || resourcesUpdated.includes(category)) {
-          eventMap.categories.push({ name: `${category}-${resource}`, size: categoryResources.length });
-        }
-      });
+      handleCfnFiles(eventMap,
+        category, resource,
+        _.union(resourcesUpdated, resourcesCreated), context.filesystem);
     });
   });
   return eventMap;
+};
+
+const handleCfnFiles = (
+  eventMap : EventMap,
+  category: string,
+  resource: string,
+  updatedResources: string[],
+  fileSystem: $TSAny,
+) => {
+  // Getting corresponding cfn template files
+  const { resourceDir, cfnFiles } = getCfnFiles(category, resource);
+  cfnFiles.forEach(file => {
+    const categoryResources = getCategoryResources(file, resourceDir, fileSystem);
+    // Maping Resource events to categories.
+    categoryResources.forEach(res => {
+      eventMap.eventToCategories.set(res, `${category}-${resource}`);
+    });
+    if (updatedResources.includes(category)) {
+      eventMap.categories.push({ name: `${category}-${resource}`, size: categoryResources.length });
+    }
+  });
 };
 
 /**
