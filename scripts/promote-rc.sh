@@ -1,22 +1,24 @@
 #!/bin/bash
+set -e
+
+repo_name="aws-amplify/amplify-cli"
 
 git remote update
 
-rc_tag="$1"
-remote_name="$2"
-
-if [[ $rc_tag == "" ]]; then
-  echo "Please include the rc tag you wish to release as the first argument"
+if [[ -z ${1+x} ]]; then
+  echo "Include the release candidate commit ref you wish to release as the first argument"
   exit 1
 fi
 
-if [[ $remote_name == "" ]]; then
-  echo "Please include the remote name of 'aws-amplify/amplify-cli as the second argument"
+rc_sha=$(git rev-parse --short "$1")
+remote_name=$(git remote -v | grep "$repo_name" | head -n1 | awk '{print $1;}')
+
+if [[ -z ${remote_name+x} ]]; then
+  echo "Could not determine remote name of" "$repo_name" "repository"
   exit 1
 fi
 
-rc_sha="$(git rev-parse --short $rc_tag)"
-branch_name="release_$rc_sha"
-
-git checkout -b "$branch_name" "$rc_tag"
-git push "$remote_name" "$branch_name:release"
+rc_branch="release_rc/$rc_sha"
+git switch "$rc_branch"
+git pull "$remote_name" "$rc_branch"
+git push "$remote_name" "$rc_branch"~1:refs/heads/release
