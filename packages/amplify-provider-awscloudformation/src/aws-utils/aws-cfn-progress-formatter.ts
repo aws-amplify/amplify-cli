@@ -1,8 +1,7 @@
-// disabling lint until this file is converted to TS
-/* eslint-disable */
-const chalk = require('chalk');
-const columnify = require('columnify');
-const { MultiProgressBar } = require('amplify-prompts');
+/* eslint-disable spellcheck/spell-checker */
+import chalk from 'chalk';
+import columnify from 'columnify';
+import { MultiProgressBar } from 'amplify-prompts';
 
 const COLUMNIFY_WIDTH = 20;
 
@@ -29,9 +28,10 @@ type EventMap = {
   eventToCategories: Map<string, string>,
   categories: {name: string, size: number}[]
 }
-
-// Custom Item formatter for progressbar
-const createItemFormatter = (payload: ItemPayload) => {
+/**
+ * Custom item formatter for progress bar
+ */
+const createItemFormatter = (payload: ItemPayload) : string => {
   const e = [{
     logicalResourceId: payload.LogicalResourceId,
     resourceType: payload.ResourceType,
@@ -46,7 +46,7 @@ const createItemFormatter = (payload: ItemPayload) => {
     minWidth: COLUMNIFY_WIDTH,
   });
 
-  if(CFN_SUCCESS_STATUS.includes(payload.ResourceStatus)) {
+  if (CFN_SUCCESS_STATUS.includes(payload.ResourceStatus)) {
     output = chalk.green(output);
   }
   if (CNF_ERROR_STATUS.includes(payload.ResourceStatus)) {
@@ -55,15 +55,19 @@ const createItemFormatter = (payload: ItemPayload) => {
   return output;
 };
 
-// Custom progress bar formatter
-const createProgressBarFormatter = (payload : ProgressPayload) => {
+/**
+ * Custom progress bar formatter
+ */
+const createProgressBarFormatter = (payload : ProgressPayload) : string => {
   const progressNameParts = payload.progressName.split('-');
   const name = progressNameParts.length === 1 ? progressNameParts[0] : `${progressNameParts[0]} ${progressNameParts[1]}`;
   return `Deploying ${name} on env: ${payload.envName}`;
 };
 
-// Initializing the root and individual category bars
-const initializeProgressBars = (eventMap : EventMap) => {
+/**
+ * Initializing the root and individual category bars
+ */
+const initializeProgressBars = (eventMap : EventMap) : MultiProgressBar => {
   const newMultiBar = new MultiProgressBar({
     progressBarFormatter: createProgressBarFormatter,
     itemFormatter: createItemFormatter,
@@ -74,39 +78,40 @@ const initializeProgressBars = (eventMap : EventMap) => {
     itemFailedStatus: CNF_ERROR_STATUS,
     prefixText: 'Deploying Resources into the Cloud. This might take a few minutes ...',
     successText: 'Deployment Successfull ...',
-    failureText: 'Deployment Failed ...'
+    failureText: 'Deployment Failed ...',
+    barCompleteChar: '=',
+    barIncompleteChar: '-',
   });
 
   let progressBarsConfigs = [];
   progressBarsConfigs.push({
     name: 'projectBar',
     value: 0,
-    total: 1+eventMap['rootResources'].length,
+    total: 1 + eventMap.rootResources.length,
     payload: {
       progressName: eventMap.projectName,
-      envName: eventMap.envName
-    }
+      envName: eventMap.envName,
+    },
   });
 
-  progressBarsConfigs = eventMap['categories'].reduce((prev, curr) => {
-      return prev.concat({
-        name: curr.name,
-        value: 0,
-        total: curr.size,
-        payload: {
-          progressName: curr.name,
-          envName: eventMap.envName
-        }
-      })
-  }, progressBarsConfigs);
+  progressBarsConfigs = eventMap.categories.reduce(
+    (prev, curr) => prev.concat({
+      name: curr.name,
+      value: 0,
+      total: curr.size,
+      payload: {
+        progressName: curr.name,
+        envName: eventMap.envName,
+      },
+    }), progressBarsConfigs,
+  );
 
-  newMultiBar.create(progressBarsConfigs)
-  return newMultiBar
-}
+  newMultiBar.create(progressBarsConfigs);
+  return newMultiBar;
+};
 
-
-module.exports = {
+export {
   createItemFormatter,
   createProgressBarFormatter,
-  initializeProgressBars
-}
+  initializeProgressBars,
+};
