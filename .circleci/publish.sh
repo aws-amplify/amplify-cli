@@ -54,8 +54,5 @@ elif [[ "$CIRCLE_BRANCH" == "release" ]]; then
   git merge release --ff-only
   git push origin main
 else
-  yarn publish:$CIRCLE_BRANCH
-fi
-else
-echo "Skipping deploy."
+  echo "branch name" "$CIRCLE_BRANCH" "did not match any branch publish rules. Skipping publish"
 fi
