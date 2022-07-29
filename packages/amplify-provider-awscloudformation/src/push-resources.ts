@@ -929,17 +929,6 @@ const createEventMap = (
     }
   });
 
-  // let categories = Object.keys(projectDetails.amplifyMeta);
-  // categories = categories.filter(category => category !== 'providers');
-  // categories.forEach(category => {
-  //   const resources = Object.keys(projectDetails.amplifyMeta[category]);
-  //   resources.forEach(resource => {
-  //     eventMap.rootResources.push(createResourceObject(resource, category));
-  //     handleCfnFiles(eventMap,
-  //       category, resource,
-  //       _.union(resourcesUpdated, resourcesCreated));
-  //   });
-  // });
   return eventMap;
 };
 
