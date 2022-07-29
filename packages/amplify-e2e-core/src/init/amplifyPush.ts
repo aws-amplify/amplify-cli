@@ -17,7 +17,7 @@
 
 import { getCLIPath, nspawn as spawn } from '..';
 
-const pushTimeoutMS = 1000 * 60 * 20; // 20 minutes;
+const pushTimeoutMS = 1000 * 60 * 60; // 60 minutes;
 
 /**
  * Data structure defined for Layer Push

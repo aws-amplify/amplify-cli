@@ -44,10 +44,12 @@
     "node-fetch": "^2.6.7",
     "rimraf": "^3.0.0",
     "uuid": "^8.3.2",
+    "ws": "^7.5.7",
     "yargs": "^15.1.0"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.149",
+    "@types/ws": "^7.4.4",
     "ts-node": "^8.10.2"
   },
   "jest": {
