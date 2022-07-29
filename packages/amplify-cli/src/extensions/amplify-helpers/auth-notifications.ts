@@ -4,6 +4,7 @@ import fs from 'fs-extra';
 import { DirectiveNode, DocumentNode, FieldDefinitionNode, FieldNode, parse } from 'graphql';
 import { collectDirectivesByType, collectDirectivesByTypeNames, readProjectConfiguration } from 'graphql-transformer-core';
 import path from 'path';
+import _ from 'lodash';
 
 async function setNotificationFlag(projectPath: string, flagName: string, value: boolean): Promise<void> {
   await FeatureFlags.ensureFeatureFlag('graphqltransformer', flagName);
@@ -53,27 +54,50 @@ export async function notifyFieldAuthSecurityChange(context: $TSContext): Promis
     modifyGraphQLSchema(apiResourceDir);
     schemaModified = true;
   }
-  
+
   await setNotificationFlag(projectPath, flagName, false);
   return schemaModified;
 }
 
+export async function loadResolvers(apiResourceDirectory: string): Promise<Record<string, string>> {
+  const resolvers = {};
+
+  const resolverDirectory = path.join(apiResourceDirectory, 'build', 'resolvers');
+  const resolverDirExists = fs.existsSync(resolverDirectory);
+  if (resolverDirExists) {
+    const resolverFiles = await fs.readdir(resolverDirectory);
+    for (const resolverFile of resolverFiles) {
+      if (resolverFile.indexOf('.') === 0) {
+        continue;
+      }
+      const resolverFilePath = path.join(resolverDirectory, resolverFile);
+      resolvers[resolverFile] = await fs.readFile(resolverFilePath, 'utf8');
+    }
+  }
+
+  return resolvers;
+}
+
 export async function notifyListQuerySecurityChange(context: $TSContext): Promise<boolean> {
-  const flagName = 'showlistquerynotification';
-  const dontShowNotification = !FeatureFlags.getBoolean(`graphqltransformer.${flagName}`);
-
-  if (dontShowNotification) return false;
-
-  const projectPath = pathManager.findProjectRoot() ?? process.cwd();
   const apiResourceDir = await getApiResourceDir();
   if (!apiResourceDir) {
-    await setNotificationFlag(projectPath, flagName, false);
     return false;
   }
-  
+
   const project = await readProjectConfiguration(apiResourceDir);
+  const resolvers = await loadResolvers(apiResourceDir);
+
+  const resolversToCheck = Object.entries(resolvers)
+    .filter(([resolverFileName, _]) => resolverFileName.startsWith('Query.list') && resolverFileName.endsWith('.req.vtl'))
+    .map(([_, resolverCode]) => resolverCode);
+  const listQueryPattern = /#set\( \$filterExpression = \$util\.parseJson\(\$util\.transform\.toDynamoDBFilterExpression\(\$filter\)\) \)\s*(?!\s*#if\( \$util\.isNullOrEmpty\(\$filterExpression\) \))/gm;
+  const resolversToSecure = resolversToCheck.filter(resolver => listQueryPattern.test(resolver));
+  if (resolversToSecure.length === 0) {
+    return false;
+  }
+
   const doc: DocumentNode = parse(project.schema);
-  
+
   let schemaModified = false;
   if (hasV2AuthDirectives(doc)) {
     printer.blankLine();
@@ -91,7 +115,6 @@ export async function notifyListQuerySecurityChange(context: $TSContext): Promis
     schemaModified = true;
   }
 
-  await setNotificationFlag(projectPath, flagName, false);
   return schemaModified;
 }
 

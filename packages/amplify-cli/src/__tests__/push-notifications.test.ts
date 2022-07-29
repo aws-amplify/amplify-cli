@@ -34,7 +34,6 @@ describe('push notifications', () => {
   });
 
   it('notifyListQuerySecurityChange should exit without fail when there is not api resource directory', async () => {
-    (<any>FeatureFlags.getBoolean).mockReturnValue(true);
     (<any>pathManager.getResourceDirectoryPath).mockReturnValue('path-to-non-existing-resource-directory');
     (<any>stateManager.getMeta).mockReturnValue({
       api: {
@@ -48,7 +47,6 @@ describe('push notifications', () => {
     });
     (<any>FeatureFlags.ensureFeatureFlag).mockImplementation(() => {});
     await notifyListQuerySecurityChange(contextMock);
-    expect(<any>FeatureFlags.ensureFeatureFlag).toHaveBeenCalledWith('graphqltransformer', 'showlistquerynotification');
   });
 
   it('notifySecurityEnhancement should exit without fail when there is not api resource directory', async () => {
