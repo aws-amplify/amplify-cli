@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.9-rc.c212c3d66.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.4.7...amplify-util-mock@4.4.9-rc.c212c3d66.0) (2022-07-29)
+
+
+### Bug Fixes
+
+* **amplify-util-mock:** add defaults for streamViewType ([#10726](https://github.com/aws-amplify/amplify-cli/issues/10726)) ([ddf4b55](https://github.com/aws-amplify/amplify-cli/commit/ddf4b556e8bb85b65b580674951926e8b72c343f))
+* support AWS::S3::Bucket FilterRule properly in the mock mode ([#10799](https://github.com/aws-amplify/amplify-cli/issues/10799)) ([0273dc0](https://github.com/aws-amplify/amplify-cli/commit/0273dc045218b11e69da36af147d679fdf03a545))
+
+
+### Reverts
+
+* Revert "chore: upgrade api category dependencies" ([7e24faf](https://github.com/aws-amplify/amplify-cli/commit/7e24faf472f96eeb34171b7befa49f4b0da3f7ae))
+
+
+
+
+
 ## [4.4.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.4.7...amplify-util-mock@4.4.8) (2022-06-30)
 
 **Note:** Version bump only for package amplify-util-mock
