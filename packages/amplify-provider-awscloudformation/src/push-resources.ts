@@ -317,7 +317,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
         // Non iterative update
 
         const nestedStack = await formNestedStack(context, context.amplify.getProjectDetails());
-        const eventMap = createEventMap(context, context.amplify.getProjectDetails(), resourcesToBeCreated, resourcesToBeUpdated);
+        const eventMap = createEventMap(context, resourcesToBeCreated, resourcesToBeUpdated);
 
         try {
           await updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated, resourcesToBeUpdated, eventMap);
@@ -511,7 +511,7 @@ export const updateStackForAPIMigration = async (context: $TSContext, category: 
       nestedStack = await formNestedStack(context, projectDetails, category);
     }
 
-    const eventMap = createEventMap(context, context.amplify.getProjectDetails(), resourcesToBeCreated, resourcesToBeUpdated);
+    const eventMap = createEventMap(context, resourcesToBeCreated, resourcesToBeUpdated);
     await updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated, resourcesToBeUpdated, eventMap);
   }
 
@@ -897,7 +897,6 @@ type EventMap = {
  */
 const createEventMap = (
   context: $TSContext,
-  projectDetails: $TSObject,
   resourcesToBeCreated: $TSAny,
   resourcesToBeUpdated: $TSAny,
 ): EventMap => {
@@ -919,17 +918,28 @@ const createEventMap = (
   const resourcesUpdated = getAllUniqueCategories(resourcesToBeUpdated).map(item => `${item}`);
   const resourcesCreated = getAllUniqueCategories(resourcesToBeCreated).map(item => `${item}`);
 
-  let categories = Object.keys(projectDetails.amplifyMeta);
-  categories = categories.filter(category => category !== 'providers');
-  categories.forEach(category => {
-    const resources = Object.keys(projectDetails.amplifyMeta[category]);
-    resources.forEach(resource => {
-      eventMap.rootResources.push(createResourceObject(resource, category));
-      handleCfnFiles(eventMap,
-        category, resource,
-        _.union(resourcesUpdated, resourcesCreated));
-    });
+  Object.keys(meta).forEach(category => {
+    if (category !== 'providers') {
+      Object.keys(meta[category]).forEach(resource => {
+        eventMap.rootResources.push(createResourceObject(resource, category));
+        handleCfnFiles(eventMap,
+          category, resource,
+          _.union(resourcesUpdated, resourcesCreated));
+      });
+    }
   });
+
+  // let categories = Object.keys(projectDetails.amplifyMeta);
+  // categories = categories.filter(category => category !== 'providers');
+  // categories.forEach(category => {
+  //   const resources = Object.keys(projectDetails.amplifyMeta[category]);
+  //   resources.forEach(resource => {
+  //     eventMap.rootResources.push(createResourceObject(resource, category));
+  //     handleCfnFiles(eventMap,
+  //       category, resource,
+  //       _.union(resourcesUpdated, resourcesCreated));
+  //   });
+  // });
   return eventMap;
 };
 
@@ -937,7 +947,7 @@ const handleCfnFiles = (
   eventMap : EventMap,
   category: string,
   resource: string,
-  updatedResources: string[]
+  updatedResources: string[],
 ) => {
   // Getting corresponding cfn template files
   const { resourceDir, cfnFiles } = getCfnFiles(category, resource);
