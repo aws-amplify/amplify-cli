@@ -1,6 +1,14 @@
 #!/bin/bash
 set -e
 
+# This script is used to conclude a CLI release
+
+# It will:
+# 1. Checkout a branch called dev-main-merge that points to the same commit as the HEAD of dev
+# 2. Merge main into this branch (you may need to resolve conflicts)
+# 3. Push the dev-main-merge branch to GitHub (at this point, create a PR and have it approved, but DO NOT MERGE IT)
+# 4. Once the PR is approved, it will fast forward dev to dev-merge-main
+
 repo_name="aws-amplify/amplify-cli"
 
 git remote update
