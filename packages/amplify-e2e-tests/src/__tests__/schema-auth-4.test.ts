@@ -1,4 +1,6 @@
-import { initJSProjectWithProfile, deleteProject, createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
+import {
+  initJSProjectWithProfile, deleteProject, createNewProjectDir, deleteProjectDir,
+} from '@aws-amplify/amplify-e2e-core';
 import { testSchema } from '../schema-api-directives';
 
 describe('api directives @auth batch 4', () => {
@@ -32,5 +34,4 @@ describe('api directives @auth batch 4', () => {
     const testresult = await testSchema(projectDir, 'auth', 'private2');
     expect(testresult).toBeTruthy();
   });
-
 });

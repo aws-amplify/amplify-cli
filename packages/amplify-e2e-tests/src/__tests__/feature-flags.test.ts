@@ -7,8 +7,8 @@ import {
   amplifyPush,
   amplifyPull,
   getAppId,
-} from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
+  createNewProjectDir, deleteProjectDir,
+} from '@aws-amplify/amplify-e2e-core';
 import { pathManager } from 'amplify-cli-core';
 import { addEnvironment } from '../environment/env';
 

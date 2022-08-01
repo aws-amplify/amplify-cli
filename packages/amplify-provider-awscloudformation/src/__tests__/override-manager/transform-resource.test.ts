@@ -50,6 +50,6 @@ describe('transformResourceWithOverrides', () => {
     };
     await transformResourceWithOverrides(mockContext, resource);
 
-    expect(printer.info).toBeCalledWith('Overrides functionality is not implemented for this category');
+    expect(printer.debug).toBeCalledWith('Overrides functionality is not implemented for this category');
   });
 });

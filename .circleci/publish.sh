@@ -16,6 +16,8 @@ if [ -z "$CIRCLE_PULL_REQUEST" ]; then
       fi
       echo "Publishing to NPM with tag $NPM_TAG"
       yarn publish:tag
+  elif [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]]; then
+    yarn publish:rc
   else
     yarn publish:$CIRCLE_BRANCH
   fi

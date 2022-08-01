@@ -13,8 +13,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/codegen-ui": "^2.2.0",
-    "@aws-amplify/codegen-ui-react": "^2.2.0",
+    "@aws-amplify/codegen-ui": "^2.3.2",
+    "@aws-amplify/codegen-ui-react": "^2.3.2",
     "amplify-cli-core": "2.11.0",
     "amplify-prompts": "2.2.0",
     "aws-sdk": "^2.1113.0",
@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
+    "@types/jest": "^26.0.20",
     "@types/semver": "^7.1.0"
   },
   "jest": {
@@ -30,9 +31,16 @@
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
+    "globals": {
+      "window": {},
+      "ts-jest": {
+        "diagnostics": true
+      }
+    },
     "collectCoverage": true,
     "collectCoverageFrom": [
       "src/**/*.ts",
+      "!**/*.test.ts",
       "!**/node_modules/**",
       "!src/__tests__/**",
       "!lib/**"
@@ -43,7 +51,7 @@
     ],
     "testEnvironment": "node",
     "testURL": "http://localhost/",
-    "testRegex": "(src/(__tests__|__e2e__|__e2e_v2__)/.*.test.ts)$",
+    "testRegex": "((src/(__tests__|__e2e__|__e2e_v2__))/.*.test.ts)$",
     "moduleFileExtensions": [
       "ts",
       "tsx",

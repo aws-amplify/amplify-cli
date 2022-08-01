@@ -9,7 +9,7 @@ import {
   getProjectMeta,
   modifyRestAPI,
   generateRandomShortId,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 
 const setupAmplifyProject = async (cwd: string): Promise<void> => {
   await amplifyConfigureProject({

@@ -6,10 +6,11 @@ import {
   updateHeadlessAuth,
   removeHeadlessAuth,
   getCloudBackendConfig,
-} from 'amplify-e2e-core';
-import { addAuthWithDefault, getBackendAmplifyMeta } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getUserPool, getMFAConfiguration } from 'amplify-e2e-core';
-import { AddAuthRequest, CognitoUserPoolSigninMethod, CognitoUserProperty, UpdateAuthRequest } from 'amplify-headless-interface';
+  addAuthWithDefault, getBackendAmplifyMeta, createNewProjectDir, deleteProjectDir, getProjectMeta, getUserPool, getMFAConfiguration,
+} from '@aws-amplify/amplify-e2e-core';
+import {
+  AddAuthRequest, CognitoUserPoolSigninMethod, CognitoUserProperty, UpdateAuthRequest,
+} from 'amplify-headless-interface';
 import _ from 'lodash';
 
 const PROJECT_NAME = 'authTest';

@@ -134,8 +134,8 @@ export async function getConfiguredSSMClient(context) {
   return await SSM.getInstance(context);
 }
 
-export async function getConfiguredLocationServiceClient(context: $TSContext) {
-  return await LocationService.getInstance(context);
+export async function getConfiguredLocationServiceClient(context: $TSContext, options?: {}) {
+  return await LocationService.getInstance(context, options);
 }
 
 async function getLambdaSdk(context: $TSContext) {

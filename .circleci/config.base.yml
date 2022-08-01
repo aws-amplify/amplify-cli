@@ -63,7 +63,7 @@ scan_e2e_test_artifacts: &scan_e2e_test_artifacts
     fi
   when: always
 
-install_cli_from_local_registery: &install_cli_from_local_registery
+install_cli_from_local_registry: &install_cli_from_local_registry
   name: Start verdaccio, install node CLI and amplify-app
   command: |
     source .circleci/local_publish_helpers.sh
@@ -396,7 +396,7 @@ jobs:
           at: ./
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
-      - run: *install_cli_from_local_registery
+      - run: *install_cli_from_local_registry
       - run:
           command: |
             echo "export PATH=~/.npm-global/bin:$PATH" >> $BASH_ENV
@@ -543,6 +543,10 @@ jobs:
           name: Publish Amplify CLI
           command: |
             bash ./.circleci/publish.sh
+      - run:
+          name: Push RC tag
+          command: |
+            bash ./scripts/tag-rc.sh
       - run: *scan_e2e_test_artifacts
   github_prerelease:
     <<: *linux-e2e-executor
@@ -568,8 +572,9 @@ jobs:
       - run:
           name: Publish Amplify CLI GitHub prerelease
           command: |
+            commit=$(git rev-parse HEAD)
             version=$(cat .amplify-pkg-version)
-            yarn ts-node scripts/github-prerelease.ts $version
+            yarn ts-node scripts/github-prerelease.ts $version $commit
 
   github_prerelease_install_sanity_check:
     <<: *linux-e2e-executor
@@ -596,10 +601,21 @@ jobs:
       - restore_cache:
           key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
       - run:
+          name: Update 'main' branch to match release
+          command: |
+            commit=$(git rev-parse HEAD)
+            version=$(cat .amplify-pkg-version)
+            git push origin release:main --force-with-lease
+      - run:
+          name: Create branch with release commit
+          command: |
+            git checkout -b release-$version origin/dev
+            git cherry-pick $commit
+            git push origin release-$version
+      - run:
           name: Publish Amplify CLI GitHub release
           command: |
-            version=$(cat .amplify-pkg-version)
-            yarn ts-node scripts/github-release.ts $version
+            yarn ts-node scripts/github-release.ts $version $commit
   cleanup_resources:
     <<: *linux-e2e-executor
     steps:
@@ -655,52 +671,6 @@ jobs:
 
 workflows:
   version: 2
-  nightly_console_integration_tests:
-    triggers:
-      - schedule:
-          cron: '0 14 * * *'
-          filters:
-            branches:
-              only:
-                - master
-                - dev
-    jobs:
-      - build
-      - publish_to_local_registry:
-          requires:
-            - build
-      - build_pkg_binaries:
-          context:
-            - e2e-auth-credentials
-            - e2e-test-context
-            - amplify-s3-upload
-          requires:
-            - publish_to_local_registry
-      - amplify_console_integration_tests:
-          context:
-            - console-e2e-test
-            - e2e-auth-credentials
-            - e2e-test-context
-          requires:
-            - build_pkg_binaries
-  e2e_resource_cleanup:
-    triggers:
-      - schedule:
-          cron: '45 0,12 * * *'
-          filters:
-            branches:
-              only:
-                - master
-                - dev
-    jobs:
-      - build
-      - cleanup_resources:
-          context:
-            - cleanup-resources
-            - e2e-test-context
-          requires:
-            - build
-
   build_test_deploy:
     jobs:
       - build:
@@ -709,23 +679,47 @@ workflows:
               os:
                 - l
                 - w
+          filters:
+            branches:
+              ignore:
+                - beta
       - lint:
           requires:
             - build
+          filters:
+            branches:
+              ignore:
+                - beta
+                - release
+                - /release_rc\/.*/
+                - /tagged-release-without-e2e-tests\/.*/
       - test:
           requires:
             - build
+          filters:
+            branches:
+              ignore:
+                - beta
+                - release
+                - /release_rc\/.*/
+                - /tagged-release-without-e2e-tests\/.*/
       - mock_e2e_tests:
           requires:
             - build
+          filters:
+            branches:
+              ignore:
+                - beta
+                - release
+                - /tagged-release-without-e2e-tests\/.*/
       - graphql_e2e_tests:
           context:
             - e2e-test-context
           filters:
             branches:
               only:
-                - master
                 - dev
+                - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
           requires:
@@ -736,9 +730,8 @@ workflows:
           filters:
             branches:
               only:
-                - master
                 - dev
-                - beta
+                - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
           requires:
@@ -747,10 +740,10 @@ workflows:
           filters:
             branches:
               only:
-                - master
                 - dev
-                - beta
                 - release
+                - /release_rc\/.*/
+                - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
                 - /run-e2e\/.*/
@@ -770,8 +763,8 @@ workflows:
           filters:
             branches:
               only:
-                - master
                 - dev
+                - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
       - cleanup_resources:
@@ -783,7 +776,6 @@ workflows:
           filters:
             branches:
               only:
-                - master
                 - dev
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
@@ -795,8 +787,8 @@ workflows:
           filters:
             branches:
               only:
-                - master
                 - dev
+                - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
           requires:
@@ -809,14 +801,12 @@ workflows:
           filters:
             branches:
               only:
-                - master
                 - dev
+                - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
           requires:
             - build_pkg_binaries
-          # post-steps:
-          #   - run: *clean_e2e_resources
       - amplify_migration_tests_v5:
           context:
             - e2e-auth-credentials
@@ -825,14 +815,12 @@ workflows:
           filters:
             branches:
               only:
-                - master
                 - dev
+                - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
           requires:
             - build_pkg_binaries
-          # post-steps:
-          #   - run: *clean_e2e_resources
       - amplify_migration_tests_non_multi_env_layers:
           context:
             - e2e-auth-credentials
@@ -841,14 +829,12 @@ workflows:
           filters:
             branches:
               only:
-                - master
                 - dev
+                - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
           requires:
             - build_pkg_binaries
-          # post-steps:
-          #   - run: *clean_e2e_resources
       - amplify_migration_tests_multi_env_layers:
           context:
             - e2e-auth-credentials
@@ -857,26 +843,22 @@ workflows:
           filters:
             branches:
               only:
-                - master
                 - dev
+                - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
           requires:
             - build_pkg_binaries
-          # post-steps:
-          #   - run: *clean_e2e_resources
       - amplify_console_integration_tests:
           context:
             - e2e-auth-credentials
             - cleanup-resources
             - console-e2e-test
             - e2e-test-context
-          # post-steps:
-          #   - run: *clean_e2e_resources
           filters:
             branches:
               only:
-                - beta
+                - dev
           requires:
             - build_pkg_binaries
       - github_prerelease:
@@ -903,8 +885,8 @@ workflows:
           filters:
             branches:
               only:
-                - master
                 - dev
+                - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
 
@@ -917,8 +899,8 @@ workflows:
           filters:
             branches:
               only:
-                - master
                 - dev
+                - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
 
@@ -946,9 +928,8 @@ workflows:
             branches:
               only:
                 - release
-                - master
-                - dev
-                - beta
+                - /release_rc\/.*/
+                - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
       - github_release:

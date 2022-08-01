@@ -24,7 +24,7 @@ export const adminLoginFlow = async (context: $TSContext, appId: string, envName
   const url = adminVerifyUrl(appId, envName, region);
   printer.info(`Opening link: ${url}`);
   await open(url, { wait: false }).catch(e => {
-    printer.error(`Failed to open web browser: ${e.message || e}`);
+    printer.error(`Failed to open web browser: ${e?.message || e}`);
   });
   const spinner = ora('Confirm login in the browser or manually paste in your CLI login key:\n').start();
 
@@ -88,7 +88,7 @@ export const adminLoginFlow = async (context: $TSContext, appId: string, envName
             } catch (e) {
               printer.error('Provided token was invalid.');
               rl.close();
-              reject();
+              reject(new Error('Provided token was invalid.'));
               return;
             }
             finished = true;
@@ -120,6 +120,6 @@ export const adminLoginFlow = async (context: $TSContext, appId: string, envName
     spinner.succeed('Successfully received Amplify Studio tokens.');
   } catch (e) {
     spinner.stop();
-    printer.error(`Failed to authenticate with Amplify Studio: ${e.message || e}`);
+    printer.error(`Failed to authenticate with Amplify Studio: ${e?.message || e}`);
   }
 };

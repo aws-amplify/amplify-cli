@@ -159,6 +159,14 @@ export function amplifyPublishWithoutUpdate(cwd: string): Promise<void> {
   });
 }
 
+/**
+ * executes publish command with yes flag
+ */
+export const amplifyPublishWithoutUpdateWithYesFlag = async (cwd: string): Promise<void> => {
+  const chain = spawn(getCLIPath(), ['publish', '-y'], { cwd, stripColors: true });
+  return chain.runAsync();
+};
+
 export function removeHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['remove', 'hosting'], { cwd, stripColors: true })

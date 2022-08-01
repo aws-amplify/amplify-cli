@@ -2,16 +2,14 @@ import {
   initJSProjectWithProfile,
   deleteProject,
   amplifyPush,
-  amplifyPushUpdate,
-  addFeatureFlag,
   createRandomName,
   addS3AndAuthWithAuthOnlyAccess,
   amplifyPushForce,
-} from 'amplify-e2e-core';
-import { addApiWithoutSchema, updateApiSchema, getProjectMeta } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
+  addApiWithoutSchema, updateApiSchema, getProjectMeta, createNewProjectDir, deleteProjectDir,
+} from '@aws-amplify/amplify-e2e-core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
+
 (global as any).fetch = require('node-fetch');
 
 describe('transformer predictions migration test', () => {
@@ -39,7 +37,7 @@ describe('transformer predictions migration test', () => {
 
     let appSyncClient = getAppSyncClientFromProj(projRoot);
 
-    let translateQuery = /* GraphQL */ `
+    const translateQuery = /* GraphQL */ `
       query TranslateThis {
         translateThis(input: { translateText: { sourceLanguage: "en", targetLanguage: "de", text: "This is a voice test" } })
       }
@@ -56,7 +54,7 @@ describe('transformer predictions migration test', () => {
       /((\bDies\b)|(\bdas\b)|(\bder\b)) ist ein ((\bStimmtest\b)|(\Sprachtest\b))/i,
     );
 
-    let speakQuery = /* GraphQL */ `
+    const speakQuery = /* GraphQL */ `
       query SpeakTranslatedText {
         speakTranslatedText(
           input: {
@@ -108,7 +106,7 @@ describe('transformer predictions migration test', () => {
 
   const getAppSyncClientFromProj = (projRoot: string) => {
     const meta = getProjectMeta(projRoot);
-    const region = meta['providers']['awscloudformation']['Region'] as string;
+    const region = meta.providers.awscloudformation.Region as string;
     const { output } = meta.api[projectName];
     const url = output.GraphQLAPIEndpointOutput as string;
     const apiKey = output.GraphQLAPIKeyOutput as string;

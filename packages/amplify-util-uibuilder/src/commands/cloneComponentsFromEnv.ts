@@ -1,21 +1,25 @@
-import { extractArgs } from './utils/extractArgs';
-import { listUiBuilderComponents } from './utils/syncAmplifyUiBuilderComponents';
 import { printer } from 'amplify-prompts';
 import { $TSContext } from 'amplify-cli-core';
-import { getAmplifyUIBuilderService } from './utils/amplifyUiBuilderService';
+import { extractArgs } from './utils';
+import { AmplifyStudioClient } from '../clients';
 
-export async function run(context: $TSContext) {
+/**
+ * Clones the components from the source to new environment
+ */
+export const run = async (context: $TSContext): Promise<void> => {
   printer.debug('Running create components command in amplify-util-uibuilder');
   const args = extractArgs(context);
   const sourceEnvName = args.sourceEnvName ? args.sourceEnvName : context.exeInfo.sourceEnvName;
   const newEnvName = args.newEnvName ? args.newEnvName : context.exeInfo.localEnvInfo.envName;
+  const appId = args.appId ?? context.exeInfo.teamProviderInfo[sourceEnvName].awscloudformation.AmplifyAppId;
+  const studioClient = await AmplifyStudioClient.setClientInfo(context, sourceEnvName, appId);
 
-  const existingComponents = await listUiBuilderComponents(context, sourceEnvName);
+  const [existingComponents, existingComponentsNewEnv] = await Promise.all([
+    studioClient.listComponents(sourceEnvName), studioClient.listComponents(newEnvName)]);
   if (existingComponents.entities.length === 0) {
     printer.debug(`${existingComponents.entities.length} components exist in source env. Skipping creation of local components.`);
     return;
   }
-  const existingComponentsNewEnv = await listUiBuilderComponents(context, newEnvName);
 
   if (existingComponentsNewEnv.entities.length > 0) {
     printer.debug(
@@ -24,35 +28,28 @@ export async function run(context: $TSContext) {
     return;
   }
 
-  const environmentName = args.environmentName ?? context.exeInfo.localEnvInfo.envName;
-  const appId = args.appId ?? context.exeInfo.teamProviderInfo[environmentName].awscloudformation.AmplifyAppId;
-  const amplifyUIBuilder = await getAmplifyUIBuilderService(context, environmentName, appId);
   const components = existingComponents.entities;
   if (!components.length) {
     printer.debug(`No UIBuilder components found in app ${appId} from env ${sourceEnvName}. Skipping component clone process.`);
     return;
   }
-  const promises = components.map(async (component: any) => {
-    return await amplifyUIBuilder
-      .createComponent({
-        appId,
-        environmentName,
-        componentToCreate: {
-          bindingProperties: component.bindingProperties,
-          children: component.children,
-          componentType: component.componentType,
-          name: component.name,
-          overrides: component.overrides,
-          properties: component.properties,
-          sourceId: component.sourceId,
-          variants: component.variants,
-        },
-      })
-      .promise();
-  });
-  await Promise.all(promises);
+  for (let i = 0; i < components.length; i++) {
+    const {
+      appId: _appId, // eslint-disable-line @typescript-eslint/no-unused-vars
+      environmentName, // eslint-disable-line @typescript-eslint/no-unused-vars
+      id, // eslint-disable-line @typescript-eslint/no-unused-vars
+      createdAt, // eslint-disable-line @typescript-eslint/no-unused-vars
+      modifiedAt, // eslint-disable-line @typescript-eslint/no-unused-vars
+      ...componentCreateData
+    } = components[i];
+    await studioClient.createComponent(
+      componentCreateData,
+      newEnvName,
+      appId,
+    );
+  }
 
   printer.info(
     `Successfully cloned ${components.length} UIBuilder components in app ${appId} from env ${sourceEnvName} to env ${newEnvName}.`,
   );
-}
+};

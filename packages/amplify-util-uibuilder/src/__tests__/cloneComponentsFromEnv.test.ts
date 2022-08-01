@@ -1,49 +1,56 @@
+import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
 import * as extractArgsDependency from '../commands/utils/extractArgs';
-import * as listUiBuilderComponentsDependency from '../commands/utils/syncAmplifyUiBuilderComponents';
 import { run } from '../commands/cloneComponentsFromEnv';
-const extractArgsDependency_mock = extractArgsDependency as any;
-const listUiBuilderComponentsDependency_mock = listUiBuilderComponentsDependency as any;
-jest.mock('aws-sdk', () => {
+
+const extractArgsDependencyMock = extractArgsDependency as any;
+const awsMock = aws as any;
+
+jest.mock('../commands/utils/extractArgs');
+jest.mock('amplify-cli-core');
+
+const mockedComponentExport = jest.fn((envName: string) => {
+  if (envName === 'newEnvName') {
+    return {
+      entities: [],
+    };
+  }
   return {
-    AmplifyUIBuilder: jest.fn(() => {
-      return {
-        createComponent: () => ({
-          promise: () => true,
-        }),
-      };
-    }),
+    entities: [{}],
   };
 });
-jest.mock('../commands/utils/extractArgs');
-jest.mock('../commands/utils/syncAmplifyUiBuilderComponents');
+const mockedComponentCreate = jest.fn(() => ({ entity: {} }));
 
 describe('can clone components to new environment', () => {
   let context: any;
   beforeEach(() => {
     context = {
       amplify: {
-        invokePluginMethod: () => true,
+        invokePluginMethod: () => ({}),
+      },
+      input: {
+        options: {
+          appId: 'testAppId',
+          envName: 'testEnvName',
+        },
       },
     };
-    extractArgsDependency_mock.extractArgs = jest.fn().mockImplementation(() => ({
+    extractArgsDependencyMock.extractArgs = jest.fn().mockImplementation(() => ({
       sourceEnvName: 'sourceEnvName',
       newEnvName: 'newEnvName',
       appId: 'appId',
       environmentName: 'environmentName',
     }));
-    listUiBuilderComponentsDependency_mock.listUiBuilderComponents = jest.fn().mockImplementation((context: any, envName: any) => {
-      if (envName === 'newEnvName') {
-        return {
-          entities: [],
-        };
-      }
-      return {
-        entities: [{}],
-      };
-    });
+    awsMock.AmplifyUIBuilder = jest.fn(() => ({
+      exportComponents: jest.fn(({ environmentName }) => ({
+        promise: () => mockedComponentExport(environmentName),
+      })),
+      createComponent: jest.fn(() => ({ promise: () => mockedComponentCreate() })),
+    }));
   });
+
   it('clones components to a new env', async () => {
     await run(context);
-    expect(listUiBuilderComponentsDependency.listUiBuilderComponents).toBeCalledTimes(2);
+    expect(mockedComponentExport).toBeCalledTimes(2);
+    expect(mockedComponentCreate).toBeCalledTimes(1);
   });
 });

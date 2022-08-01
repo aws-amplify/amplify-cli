@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as dynamoEmulator from 'amplify-dynamodb-simulator';
-import { AmplifyAppSyncSimulator, AmplifyAppSyncSimulatorConfig } from 'amplify-appsync-simulator';
+import { AmplifyAppSyncSimulator, AmplifyAppSyncSimulatorConfig } from '@aws-amplify/amplify-appsync-simulator';
 import { $TSContext, $TSAny } from 'amplify-cli-core';
 import { add, generate, isCodegenConfigured, switchToSDLSchema } from 'amplify-codegen';
 import * as path from 'path';
@@ -69,7 +69,10 @@ export class APITest {
       context.print.info(`AppSync Mock endpoint is running at ${this.appSyncSimulator.url}`);
       await this.startDDBListeners(context, appSyncConfig, false);
     } catch (e) {
-      context.print.error(`Failed to start API Mock endpoint ${e}`);
+      const errMessage = 'Failed to start API Mocking.';
+      context.print.error(errMessage + ' Running cleanup tasks.');
+      await this.stop(context);
+      throw new Error(`${errMessage} Reason: ${e?.message}`);
     }
   }
 

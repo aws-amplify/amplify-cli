@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 import { homedir } from 'os';
 import { NotInitializedError } from '../errors';
 // eslint-disable-next-line import/no-cycle
-import { overriddenCategories } from '..';
+import { overriddenCategories, stateManager } from '..';
 
 export const PathConstants = {
   // in home directory
@@ -284,8 +284,24 @@ export class PathManager {
     if (fs.existsSync(projectPath)) {
       const amplifyDirPath = this.getAmplifyDirPath(projectPath);
       const dotConfigDirPath = this.getDotConfigDirPath(projectPath);
+      const localEnvFilePath = this.getLocalEnvFilePath(projectPath);
+      const currentCloudBackendDirPath = pathManager.getCurrentCloudBackendDirPath(projectPath);
+      const backendDirPath = pathManager.getBackendDirPath(projectPath);
+      const projectConfigPath = pathManager.getProjectConfigFilePath(projectPath);
 
-      return fs.existsSync(amplifyDirPath) && fs.existsSync(dotConfigDirPath);
+      if (fs.existsSync(amplifyDirPath) && fs.existsSync(dotConfigDirPath)) {
+        if (fs.existsSync(currentCloudBackendDirPath) && fs.existsSync(backendDirPath)) {
+          return true;
+        }
+
+        if (fs.existsSync(projectConfigPath)) {
+          return true;
+        }
+
+        if (fs.existsSync(localEnvFilePath)) {
+          return projectPath === stateManager.getLocalEnvInfo(projectPath).projectPath;
+        }
+      }
     }
 
     return false;

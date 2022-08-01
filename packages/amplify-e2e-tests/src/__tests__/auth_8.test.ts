@@ -1,20 +1,17 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import {
-  initJSProjectWithProfile,
-  initFlutterProjectWithProfile,
-  deleteProject,
+  addAuthWithDefault,
   amplifyPushAuth,
-  getAwsIOSConfig,
-  getUserPoolClients,
-  getParameters,
-  setParameters,
-  initIosProjectWithProfile,
-  getAwsAndroidConfig,
-  initAndroidProjectWithProfile,
-} from 'amplify-e2e-core';
-import { addAuthWithDefault, runAmplifyAuthConsole, removeAuthWithDefault } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getUserPool } from 'amplify-e2e-core';
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  getProjectMeta,
+  getUserPool,
+  initFlutterProjectWithProfile,
+  initJSProjectWithProfile,
+  removeAuthWithDefault
+} from '@aws-amplify/amplify-e2e-core';
 
 const defaultsSettings = {
   name: 'authTest',

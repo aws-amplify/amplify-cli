@@ -13,7 +13,7 @@ import {
   getProjectMeta,
   updateDDBWithTriggerMigration,
   updateS3AddTriggerWithAuthOnlyReqMigration,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import { initJSProjectWithProfile, versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
 
 describe('amplify add/update storage(DDB)', () => {
