@@ -3,6 +3,113 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 2.3.0-rc.bd5e33856.0 (2022-08-01)
+
+
+
+## 8.3.1 (2022-05-27)
+
+
+### Reverts
+
+* oauth parameter store change ([#10485](https://github.com/aws-amplify/amplify-console-integration-tests/issues/10485)) ([896b518](https://github.com/aws-amplify/amplify-console-integration-tests/commit/896b51833e30daf9997d38c9229ca237ab7deda1))
+
+
+
+# 8.3.0 (2022-05-23)
+
+
+
+## 7.6.19 (2022-02-08)
+
+
+
+## 7.6.7 (2022-01-10)
+
+
+### Reverts
+
+* Revert "ci: add windows e2e test coverage" ([0560b0f](https://github.com/aws-amplify/amplify-console-integration-tests/commit/0560b0f4a16ce8ce0b7efebb2494c7e2eb8601c8))
+
+
+
+# 5.4.0 (2021-09-02)
+
+
+### Features
+
+* support for sign in with apple ([#7413](https://github.com/aws-amplify/amplify-console-integration-tests/issues/7413)) ([00d6676](https://github.com/aws-amplify/amplify-console-integration-tests/commit/00d6676b4c1d6995cac01956078f7b6ee6186814))
+
+
+### Reverts
+
+* Revert "Revert "ci: add support for e2e token rotation (#7665)" (#7759)" (#7762) ([9ea4c8e](https://github.com/aws-amplify/amplify-console-integration-tests/commit/9ea4c8e115ae62d7c348c3f0d82c89d795eebf46)), closes [#7665](https://github.com/aws-amplify/amplify-console-integration-tests/issues/7665) [#7759](https://github.com/aws-amplify/amplify-console-integration-tests/issues/7759) [#7762](https://github.com/aws-amplify/amplify-console-integration-tests/issues/7762)
+* Revert "ci: add support for e2e token rotation (#7665)" (#7759) ([aadc915](https://github.com/aws-amplify/amplify-console-integration-tests/commit/aadc9155f5c25478c7f317aec77f51290c6b9cfe)), closes [#7665](https://github.com/aws-amplify/amplify-console-integration-tests/issues/7665) [#7759](https://github.com/aws-amplify/amplify-console-integration-tests/issues/7759)
+
+
+
+# 4.52.0 (2021-06-01)
+
+
+### Features
+
+* add support for SMS Sandbox ([#7436](https://github.com/aws-amplify/amplify-console-integration-tests/issues/7436)) ([cdcb626](https://github.com/aws-amplify/amplify-console-integration-tests/commit/cdcb6260c11bbedef5b056fdcd730612d8bb3230))
+
+
+
+## 4.51.1 (2021-05-18)
+
+
+### Features
+
+* Support for Apple Sign In ([#7265](https://github.com/aws-amplify/amplify-console-integration-tests/issues/7265)) ([9f5e659](https://github.com/aws-amplify/amplify-console-integration-tests/commit/9f5e659d63362c7f47eaa147c68d40d5bcc36fcc))
+
+
+
+## 4.50.2 (2021-05-03)
+
+
+
+## 4.50.1 (2021-05-03)
+
+
+### Bug Fixes
+
+* support choosing AWS authentication flow when admin UI is enabled ([#6433](https://github.com/aws-amplify/amplify-console-integration-tests/issues/6433)) ([3bf56a8](https://github.com/aws-amplify/amplify-console-integration-tests/commit/3bf56a8e2e5be67dd861a55807ecc94bd561b4a2))
+
+
+### Features
+
+* remove OAuth prompt from pull and new env ([#6739](https://github.com/aws-amplify/amplify-console-integration-tests/issues/6739)) ([8ff15a6](https://github.com/aws-amplify/amplify-console-integration-tests/commit/8ff15a6ea2c3c687f0344fb4e17547097cd575ea))
+
+
+
+## 4.41.1 (2021-01-08)
+
+
+
+# 4.37.0 (2020-11-27)
+
+
+### Bug Fixes
+
+* team provider migration ([#5733](https://github.com/aws-amplify/amplify-console-integration-tests/issues/5733)) ([d18f795](https://github.com/aws-amplify/amplify-console-integration-tests/commit/d18f795560f0e671f63f1dcbe38931c951794619))
+
+
+
+# 4.32.0-alpha.0 (2020-10-27)
+
+
+### Bug Fixes
+
+* **amplify-console-hosting:** printout more informative message ([#4148](https://github.com/aws-amplify/amplify-console-integration-tests/issues/4148)) ([627a935](https://github.com/aws-amplify/amplify-console-integration-tests/commit/627a93580587d7d132b8bfa8a58e88c9e90f0a16)), closes [#4086](https://github.com/aws-amplify/amplify-console-integration-tests/issues/4086)
+* e2e init and prediction test failures ([#4195](https://github.com/aws-amplify/amplify-console-integration-tests/issues/4195)) ([2ea6a42](https://github.com/aws-amplify/amplify-console-integration-tests/commit/2ea6a42829086d0c6ab10acd77cbbd0fc9320938))
+* refactor amplify.json file handling ([#5282](https://github.com/aws-amplify/amplify-console-integration-tests/issues/5282)) ([a6269f3](https://github.com/aws-amplify/amplify-console-integration-tests/commit/a6269f3177f3242df81e9d7dce0625295bb7a9fc))
+
+
+
+
+
 ## [2.2.44](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@2.2.43...amplify-console-integration-tests@2.2.44) (2022-06-30)
 
 **Note:** Version bump only for package amplify-console-integration-tests
