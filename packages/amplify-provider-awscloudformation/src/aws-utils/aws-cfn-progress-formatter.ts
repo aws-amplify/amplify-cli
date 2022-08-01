@@ -3,10 +3,16 @@ import chalk from 'chalk';
 import columnify from 'columnify';
 import { MultiProgressBar } from 'amplify-prompts';
 
-const COLUMNIFY_WIDTH = 20;
+const COLUMNIFY_WIDTH = 30;
 
-const CFN_SUCCESS_STATUS = ['UPDATE_COMPLETE', 'CREATE_COMPLETE', 'DELETE_COMPLETE', 'DELETE_SKIPPED'];
-const CNF_ERROR_STATUS = ['CREATE_FAILED', 'DELETE_FAILED', 'UPDATE_FAILED'];
+const CFN_SUCCESS_STATUS = [
+  'UPDATE_COMPLETE', 'CREATE_COMPLETE', 'DELETE_COMPLETE',
+  'DELETE_SKIPPED', 'UPDATE_ROLLBACK_COMPLETE', 'ROLLBACK_COMPLETE',
+];
+const CNF_ERROR_STATUS = [
+  'CREATE_FAILED', 'DELETE_FAILED', 'UPDATE_FAILED',
+  'UPDATE_ROLLBACK_FAILED', 'ROLLBACK_FAILED',
+];
 
 type ItemPayload = {
   LogicalResourceId: string,
@@ -58,10 +64,16 @@ const createItemFormatter = (payload: ItemPayload) : string => {
 /**
  * Custom progress bar formatter
  */
-const createProgressBarFormatter = (payload : ProgressPayload) : string => {
+const createProgressBarFormatter = (payload : ProgressPayload,
+  value: number,
+  total: number) : string => {
+  let statusString = 'Deploying';
   const progressNameParts = payload.progressName.split('-');
   const name = progressNameParts.length === 1 ? progressNameParts[0] : `${progressNameParts[0]} ${progressNameParts[1]}`;
-  return `Deploying ${name} on env: ${payload.envName}`;
+  if (total === value) {
+    statusString = 'Deployed';
+  }
+  return `${statusString} ${name}`;
 };
 
 /**
@@ -76,9 +88,9 @@ const initializeProgressBars = (eventMap : EventMap) : MultiProgressBar => {
     barSize: 40,
     itemCompleteStatus: CFN_SUCCESS_STATUS,
     itemFailedStatus: CNF_ERROR_STATUS,
-    prefixText: 'Deploying Resources into the Cloud. This might take a few minutes ...',
-    successText: 'Deployment Successfull ...',
-    failureText: 'Deployment Failed ...',
+    prefixText: `Deploying resources into ${eventMap.envName} environment. This will take a few minutes.`,
+    successText: 'Deployment Completed',
+    failureText: 'Deployment Failed',
     barCompleteChar: '=',
     barIncompleteChar: '-',
   });
@@ -89,7 +101,7 @@ const initializeProgressBars = (eventMap : EventMap) : MultiProgressBar => {
     value: 0,
     total: 1 + eventMap.rootResources.length,
     payload: {
-      progressName: eventMap.projectName,
+      progressName: `root stack-${eventMap.projectName}`,
       envName: eventMap.envName,
     },
   });

@@ -5,7 +5,7 @@ import { AmplifyTerminal as Terminal } from './terminal';
  */
 export type BarOptions = {
     // Custom formatter functions for main progress bar and item's underneath it
-    progressBarFormatter: (payload: ProgressPayload) => string,
+    progressBarFormatter: (payload: ProgressPayload, value: number, total: number) => string,
     itemFormatter: (payload: ItemPayload) => string,
     // Indicates if the progress bar is part of a multiBar or standalone
     loneWolf: boolean,
@@ -92,7 +92,7 @@ export class ProgressBar {
       const bar = this.barCompleteString.slice(0, completeSize)
                 + this.barIncompleteString.slice(0, incompleteSize);
 
-      return ` || ${bar} || ${this.value}/${this.total}`;
+      return ` [ ${bar} ] ${this.value}/${this.total}`;
     }
 
     /**
@@ -100,7 +100,7 @@ export class ProgressBar {
      */
     getRenderStrings() : string[] {
       let finalStrings = [];
-      const progressBar = this.options.progressBarFormatter.call(this, this.payload) + this.createBarString();
+      const progressBar = this.options.progressBarFormatter.call(this, this.payload, this.value, this.total) + this.createBarString();
       finalStrings.push(progressBar);
       finalStrings = this.items.reduce((prev, _current) => prev.concat(`\t${_current.renderString}`), finalStrings);
       return finalStrings;
