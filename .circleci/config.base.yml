@@ -543,10 +543,6 @@ jobs:
           name: Publish Amplify CLI
           command: |
             bash ./.circleci/publish.sh
-      - run:
-          name: Push RC tag
-          command: |
-            bash ./scripts/tag-rc.sh
       - run: *scan_e2e_test_artifacts
   github_prerelease:
     <<: *linux-e2e-executor
