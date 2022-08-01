@@ -114,7 +114,7 @@ class CloudFormation {
 
         try {
           const trace = this.generateFailedStackErrorMsgs(failedStacks);
-          printer.error('Following resources failed');
+          printer.error('The following resources failed to deploy:');
           trace.forEach(t => {
             console.log(t);
             console.log('\n');
@@ -141,11 +141,11 @@ class CloudFormation {
         const err = [];
         const resourceName = event.LogicalResourceId;
         const cfnURL = getCFNConsoleLink(event, this.cfn);
-        err.push(`${chalk.red.bold('Resource Name:')} ${resourceName} (${event.ResourceType})`);
-        err.push(`${chalk.red.bold('Event Type:')} ${getStatusToErrorMsg(event.ResourceStatus)}`);
-        err.push(`${chalk.red.bold('Reason:')} ${event.ResourceStatusReason}`);
+        err.push(`${chalk.red('Resource Name:')} ${resourceName} (${event.ResourceType})`);
+        err.push(`${chalk.red('Event Type:')} ${getStatusToErrorMsg(event.ResourceStatus)}`);
+        err.push(`${chalk.red('Reason:')} ${event.ResourceStatusReason}`);
         if (cfnURL) {
-          err.push(`${chalk.red.bold('URL:')} ${cfnURL}`);
+          err.push(`${chalk.red('URL:')} ${cfnURL}`);
         }
         return err.join('\n');
       });
