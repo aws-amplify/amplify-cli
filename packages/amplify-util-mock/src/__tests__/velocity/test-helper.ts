@@ -7,7 +7,6 @@ export const featureFlags: FeatureFlagProvider = {
     }
     return defaultValue;
   },
-  getString: jest.fn(),
   getNumber: jest.fn(),
   getObject: jest.fn(),
 };

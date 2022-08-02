@@ -27,6 +27,12 @@ export const saveFeatureFlagFile = (projectRoot: string, data: FeatureFlagData) 
  */
 export const addFeatureFlag = (projectRoot: string, section: string, name: string, value: boolean | number): void => {
   const ff = loadFeatureFlags(projectRoot);
-  _.set(ff, ['features', section, name], value);
+  const nameLowerCase = name.toLowerCase();
+  if (_.get(ff, ['features', section, nameLowerCase])) {
+    _.set(ff, ['features', section, nameLowerCase], value);
+  }
+  else {
+    _.set(ff, ['features', section, name], value);
+  }
   saveFeatureFlagFile(projectRoot, ff);
 };

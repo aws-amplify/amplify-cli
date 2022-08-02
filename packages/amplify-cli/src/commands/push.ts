@@ -3,7 +3,7 @@ import {
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import sequential from 'promise-sequential';
-import { notifyFieldAuthSecurityChange, notifySecurityEnhancement } from '../extensions/amplify-helpers/auth-notifications';
+import { notifyFieldAuthSecurityChange, notifyListQuerySecurityChange, notifySecurityEnhancement } from '../extensions/amplify-helpers/auth-notifications';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 import { showTroubleshootingURL } from './help';
 import { reportError } from './diagnose';
@@ -35,7 +35,13 @@ const syncCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
     });
 
     await notifySecurityEnhancement(context);
-    await notifyFieldAuthSecurityChange(context);
+
+    let securityChangeNotified = false;
+    securityChangeNotified = await notifyFieldAuthSecurityChange(context);
+
+    if (!securityChangeNotified) {
+      securityChangeNotified = await notifyListQuerySecurityChange(context);
+    }
 
     spinner.start(`Fetching updates to backend environment: ${currentEnv} from the cloud.`);
     await sequential(pullCurrentCloudTasks);
