@@ -30,6 +30,9 @@
     },
     {
       "path": "../amplify-category-custom"
+    },
+    {
+      "path": "../amplify-cli-shared-interfaces"
     }
   ]
 }

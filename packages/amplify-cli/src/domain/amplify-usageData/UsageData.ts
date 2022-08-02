@@ -1,26 +1,27 @@
 /* eslint-disable class-methods-use-this */
-import { v4 as uuid } from 'uuid';
-import https from 'https';
-import { UrlWithStringQuery } from 'url';
 import { JSONUtilities } from 'amplify-cli-core';
-import { pick } from 'lodash';
 import { ICommandInput, IFlowReport } from 'amplify-cli-shared-interfaces';
 import { prompter } from 'amplify-prompts';
+import https from 'https';
+import { pick } from 'lodash';
+import { UrlWithStringQuery } from 'url';
+import { v4 as uuid } from 'uuid';
 import { Input } from '../input';
-import redactInput from './identifiable-input-regex';
-import { UsageDataPayload, InputOptions } from './UsageDataPayload';
+import { CLIFlowReport } from './FlowReport';
 import { getUrl } from './getUsageDataUrl';
+import redactInput from './identifiable-input-regex';
+import { Timer } from './Timer';
+import { UsageDataPayload } from './UsageDataPayload';
 import {
+  FromStartupTimedCodePaths,
+  InputOptions,
   IUsageData,
-  TimedCodePath,
+  ManuallyTimedCodePath,
   ProjectSettings,
   StartableTimedCodePath,
   StoppableTimedCodePath,
-  FromStartupTimedCodePaths,
-  ManuallyTimedCodePath,
-} from './IUsageData';
-import { Timer } from './Timer';
-import { CLIFlowReport } from './FlowReport';
+  TimedCodePath,
+} from './UsageDataTypes';
 
 /**
  * Singleton class that manages the lifecycle of usage data during a CLI command
@@ -266,7 +267,7 @@ export class UsageData implements IUsageData {
 }
 
 enum WorkflowState {
-  SUCCESSFUL = 'SUCCEEDED',
   ABORTED = 'ABORTED',
   FAILED = 'FAILED',
+  SUCCESSFUL = 'SUCCEEDED',
 }

@@ -1,13 +1,13 @@
-import { IFlowData } from 'amplify-cli-shared-interfaces';
+import { IFlowData, IFlowReport } from 'amplify-cli-shared-interfaces';
 import { Input } from '../input';
-import { UsageDataPayload } from './UsageDataPayload';
+import { SerializableError } from './SerializableError';
 
 /**
  * Base interface for emitting usage data
  */
 interface IUsageMetricsData {
-  emitError: (error: Error) => Promise<void>;
   emitAbort: () => Promise<void>;
+  emitError: (error: Error | null) => Promise<void>;
   emitSuccess: () => Promise<void>;
   init: (
     installationUuid: string,
@@ -17,11 +17,40 @@ interface IUsageMetricsData {
     projectSettings: ProjectSettings,
     processStartTimeStamp: number
   ) => void;
-  getUsageDataPayload: (error: Error | null, state: string) => UsageDataPayload
+  getUsageDataPayload: (error: Error | null, state: string) => IUsageDataPayload
   startCodePathTimer: (codePath: StartableTimedCodePath) => void;
   stopCodePathTimer: (codePath: StoppableTimedCodePath) => void;
   calculatePushNormalizationFactor: (events: { StackId: string, PhysicalResourceId: string } [], StackId: string) => void;
 }
+
+/**
+ * Base interface for usage data payload
+ */
+export interface IUsageDataPayload {
+  sessionUuid: string;
+  installationUuid: string;
+  amplifyCliVersion: string;
+  input: Input | null;
+  inputOptions: InputOptions;
+  timestamp: string;
+  error: SerializableError;
+  payloadVersion: string;
+  osPlatform: string;
+  osRelease: string;
+  nodeVersion: string;
+  state: string;
+  isCi: boolean;
+  accountId: string;
+  projectSetting: ProjectSettings;
+  codePathDurations: Partial<Record<TimedCodePath, number>>;
+  flowReport: IFlowReport;
+  pushNormalizationFactor: number;
+}
+
+/**
+ * Command-line args that were specified to the currently running command
+ */
+export type InputOptions = Record<string, string | boolean>;
 
 /**
  * Interface for UsageData
