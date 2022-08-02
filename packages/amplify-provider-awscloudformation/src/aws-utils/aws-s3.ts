@@ -70,7 +70,7 @@ export class S3 {
    * Populate the uploadState member with the Amplify deployment bucket name
    */
   private populateUploadState(): void {
-    const { amplifyMeta } = stateManager.getMeta();
+    const amplifyMeta = stateManager.getMeta();
     const teamProviderInfo = stateManager.getTeamProviderInfo();
     const { envName } = stateManager.getLocalEnvInfo();
     const projectBucket = amplifyMeta.providers
