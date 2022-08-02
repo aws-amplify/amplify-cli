@@ -44,7 +44,8 @@
     "commit": "git-cz",
     "coverage": "codecov || exit 0",
     "release-rc": "./scripts/release-rc.sh",
-    "promote-rc": "./scripts/promote-rc.sh"
+    "promote-rc": "./scripts/promote-rc.sh",
+    "finish-release": "./scripts/finish-release.sh"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-cli/issues"

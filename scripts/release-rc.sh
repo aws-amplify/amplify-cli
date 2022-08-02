@@ -32,8 +32,12 @@ branch_name="release_rc/$rc_sha"
 
 git checkout -B "$branch_name" "$rc_sha"
 git fetch "$remote_name" main
-git merge "$remote_name"/main
-read -p 'Resolve any merge conflicts, then press any key to continue'
+git merge "$remote_name"/main || merge_exit_code=$? || true
+if [[ $merge_exit_code != 0 ]]; then
+  # could not automatically merge
+  echo "Resolve merge conflicts and resume release candidate publish by running 'kill -CONT $$'"
+  kill -TSTP $$
+fi
 git push "$remote_name" "$branch_name"
-echo "CCI is publishing the release candidate. Check progress at"
+echo "CircleCI is publishing the release candidate. Check progress at"
 echo "https://app.circleci.com/pipelines/github/$repo_name?branch=$branch_name"
