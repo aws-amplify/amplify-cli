@@ -31,7 +31,7 @@ elif [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^r
     npx lerna publish from-git --yes --no-push
     echo "Published packages to verdaccio"
     echo "Exiting without pushing release commit or release tags"
-    exit 1
+    exit 0
   fi
 
   # publish versions that were just computed
