@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.0.9...amplify-category-function@4.0.11) (2022-08-02)
+
+
+### Reverts
+
+* Revert "chore: upgrade api category dependencies" ([7e24faf](https://github.com/aws-amplify/amplify-cli/commit/7e24faf472f96eeb34171b7befa49f4b0da3f7ae))
+
+
+
+# 9.1.0 (2022-06-29)
+
+
+
+
+
 ## [4.0.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.0.9...amplify-category-function@4.0.10) (2022-06-30)
 
 **Note:** Version bump only for package amplify-category-function
