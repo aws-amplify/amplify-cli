@@ -1,12 +1,16 @@
 const fs = require('fs-extra');
 const path = require('path');
-const publishConfig = require('./configure-Publish');
+const publishIgnoreConfig = require('./configure-Publish');
+const publishMetaConfig = require('./configure-Meta');
 
 function scan(context, distributionDirPath, WebsiteConfiguration) {
   let fileList = [];
   if (fs.existsSync(distributionDirPath)) {
-    const ignored = publishConfig.getIgnore(context);
-    fileList = recursiveScan(distributionDirPath, [], ignored, distributionDirPath);
+    const ignored = publishIgnoreConfig.getIgnore(context);
+    const meta = publishMetaConfig.getMeta(context);
+
+    fileList = recursiveScan(distributionDirPath, [], ignored, meta, distributionDirPath);
+
     if (fileList.length === 0) {
       const message = 'The distribution folder is empty';
       context.print.info('');
@@ -40,17 +44,18 @@ function scan(context, distributionDirPath, WebsiteConfiguration) {
   return fileList;
 }
 
-function recursiveScan(dir, filelist, amplifyIgnore, ignoreRoot) {
+function recursiveScan(dir, filelist, amplifyIgnore, amplifyMeta, amplifyRoot) {
   const files = fs.readdirSync(dir);
   filelist = filelist || [];
   files.forEach(file => {
     const filePath = path.join(dir, file);
     if (fs.statSync(filePath).isDirectory()) {
-      if (!publishConfig.isIgnored(filePath, amplifyIgnore, ignoreRoot)) {
-        filelist = recursiveScan(filePath, filelist, amplifyIgnore, ignoreRoot);
+      if (!publishIgnoreConfig.isIgnored(filePath, amplifyIgnore, amplifyRoot)) {
+        filelist = recursiveScan(filePath, filelist, amplifyIgnore, amplifyMeta, amplifyRoot);
       }
-    } else if (!publishConfig.isIgnored(filePath, amplifyIgnore, ignoreRoot)) {
-      filelist.push(filePath);
+    } else if (!publishIgnoreConfig.isIgnored(filePath, amplifyIgnore, amplifyRoot)) {
+      const metaData = publishMetaConfig.getMetaKeyValue(filePath, amplifyMeta, amplifyRoot);
+      filelist.push({ filePath: filePath, meta: metaData });
     }
   });
   return filelist;

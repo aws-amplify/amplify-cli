@@ -6,6 +6,7 @@ const configurables = {
   Website: './helpers/configure-Website',
   CloudFront: './helpers/configure-CloudFront',
   Publish: './helpers/configure-Publish',
+  Metadata: './helpers/configure-Meta',
 };
 
 async function init(context) {

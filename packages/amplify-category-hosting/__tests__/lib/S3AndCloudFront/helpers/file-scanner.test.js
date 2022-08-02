@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const path = require('path');
-const publishConfig = require('../../../../lib/S3AndCloudFront/helpers/configure-Publish');
+const publishIgnoreConfig = require('../../../../lib/S3AndCloudFront/helpers/configure-Publish');
+const publishMetaConfig = require('../../../../lib/S3AndCloudFront/helpers/configure-Meta');
 
 const fileScanner = require('../../../../lib/S3AndCloudFront/helpers/file-scanner');
 
@@ -20,10 +21,17 @@ describe('file-scanner', () => {
   };
 
   beforeAll(() => {
-    publishConfig.isIgnored = jest.fn(() => {
+    publishMetaConfig.getMetaKeyValue = jest.fn(() => {
+      return {};
+    });
+    publishMetaConfig.getMeta = jest.fn(() => {
+      return [];
+    });
+
+    publishIgnoreConfig.isIgnored = jest.fn(() => {
       return false;
     });
-    publishConfig.getIgnore = jest.fn(() => {
+    publishIgnoreConfig.getIgnore = jest.fn(() => {
       return [];
     });
     fs.existsSync = jest.fn();

@@ -2,7 +2,10 @@ jest.mock('mime-types');
 jest.mock('../../../../lib/S3AndCloudFront/helpers/file-scanner', () => {
   return {
     scan: jest.fn(() => {
-      return ['filePath1', 'filePath2'];
+      return [
+        { filePath: 'filePath1', meta: [{ metaKey1: 'metaValue1' }] },
+        { filePath: 'filePath2', meta: [{ metaKey2: 'metaValue2' }] },
+      ];
     }),
   };
 });
