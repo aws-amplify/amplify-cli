@@ -25,6 +25,15 @@ elif [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^r
   # create release commit and release tags
   npx lerna version --preid=rc.$(git rev-parse --short HEAD) --exact --conventional-prerelease --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish rc [ci skip]"
 
+  # if publishing locally to verdaccio
+  if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
+    # publish to verdaccio with no dist tag (default to latest)
+    npx lerna publish from-git --yes --no-push
+    echo "Published packages to verdaccio"
+    echo "Exiting without pushing release commit or release tags"
+    exit 1
+  fi
+
   # publish versions that were just computed
   npx lerna publish from-git --yes --no-push --dist-tag rc
 
@@ -37,7 +46,7 @@ elif [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^r
 # @latest release
 elif [[ "$CIRCLE_BRANCH" == "release" ]]; then
   # create release commit and release tags
-  npx lerna version --exact --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish [ci skip]"
+  npx lerna version --exact --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish latest [ci skip]"
 
   # publish versions that were just computed
   npx lerna publish from-git --yes --no-push
