@@ -404,7 +404,7 @@ export const amplifyPushDestructiveApiUpdate = (cwd: string, includeForce: boole
   }
   const chain = spawn(getCLIPath(), args, { cwd, stripColors: true });
   if (includeForce) {
-    chain.wait('All resources are updated in the cloud').run(err => (err ? reject(err) : resolve()));
+    chain.run(err => (err ? reject(err) : resolve()));
   } else {
     chain.wait('If this is intended, rerun the command with').run(err => (err ? resolve(err) : reject())); // in this case, we expect the CLI to error out
   }
