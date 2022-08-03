@@ -89,8 +89,8 @@ const initializeProgressBars = (eventMap : EventMap) : MultiProgressBar => {
     itemCompleteStatus: CFN_SUCCESS_STATUS,
     itemFailedStatus: CNF_ERROR_STATUS,
     prefixText: `Deploying resources into ${eventMap.envName} environment. This will take a few minutes.`,
-    successText: 'Deployment Completed',
-    failureText: 'Deployment Failed',
+    successText: 'Deployment completed.',
+    failureText: 'Deployment failed.',
     barCompleteChar: '=',
     barIncompleteChar: '-',
   });
