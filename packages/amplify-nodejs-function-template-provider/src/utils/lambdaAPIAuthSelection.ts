@@ -15,8 +15,7 @@ const choices = ["IAM", "API_KEY"];
 export async function lambdaAPIAuthSelection(): Promise<{ selection: string }> {
   printer.info('Select the type of authentication to use for the AppSync Todo Lambda function');
   
-  const selected = await prompter.pick('Pick your favorite Skittle color', choices)
-  printResult("Selected: " + selected);
+  const selected = await prompter.pick('Pick a Auth type', choices)
 
   return {
     selection: selected,

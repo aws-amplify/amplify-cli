@@ -14,7 +14,6 @@ const pathToTemplateFilesIAM = path.join(templateRoot, 'lambda/appsync-todo/iam'
  */
 export async function provideAppSyncTodo(): Promise<FunctionTemplateParameters> {
   const selection = await lambdaAPIAuthSelection();
-  console.log(`selection: ${JSON.stringify(selection)}`);
 
   if (selection.selection === 'IAM') {
     const files = fs.readdirSync(pathToTemplateFilesIAM);
