@@ -11,6 +11,7 @@ const { checkAmplifyServiceIAMPermission } = require('./amplify-service-permissi
 const { stateManager, amplifyFaultWithTroubleshootingLink, AmplifyError } = require('amplify-cli-core');
 const { fileLogger } = require('./utils/aws-logger');
 const { loadConfigurationForEnv } = require('./configuration-manager');
+const { printer } = require('amplify-prompts');
 const logger = fileLogger('amplify-service-manager');
 
 async function init(amplifyServiceParams) {
@@ -128,18 +129,15 @@ async function init(amplifyServiceParams) {
       }
     } catch (e) {
       if (e.code === 'LimitExceededException') {
-        // Do nothing
-      } else if (
-        e.code === 'BadRequestException' &&
-        e.message.includes('Rate exceeded while calling CreateApp, please slow down or try again later.')
-      ) {
-        // Do nothing
+        printer.error('You have reached the Amplify App limit for this account and region')
+        printer.info('Use a different account or region with fewer apps, or request a service limit increase: https://docs.aws.amazon.com/general/latest/gr/amplify.html#service-quotas-amplify')
       } else {
         throw amplifyFaultWithTroubleshootingLink('ProjectInitFault', {
           message: e.message,
           stack: e.stack,
         }, e);
       }
+      throw e;
     }
   }
 
