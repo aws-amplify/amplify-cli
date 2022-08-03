@@ -24,12 +24,22 @@ git checkout -B dev-main-merge
 git fetch "$remote_name" dev
 git reset --hard "$remote_name"/dev
 git fetch "$remote_name" main
-git merge "$remote_name"/main
-read -p 'Resolve any merge conflicts, then press any key to continue'
-git push "$remote_name" dev-main-merge
-read -p 'Open a PR for the dev-main-merge branch against dev and get it approved. DO NOT MERGE THE PR. Press any key once the PR is approved'
+git merge "$remote_name"/main -m "Merge release commit from main to dev" || merge_exit_code=$? || true
+if [[ $merge_exit_code != 0 ]]; then
+  # could not automatically merge
+  echo "Resolve merge conflicts then resume script by running 'kill -CONT $$'"
+  kill -TSTP $$
+  git push "$remote_name" dev-main-merge --force --no-verify
+  compare_link=https://github.com/aws-amplify/amplify-cli/compare/dev...dev-main-merge
+  open "$compare_link"
+  echo "Double check the release merge at the compare link that just opened"
+  echo "(If it did not open, navigate to $compare_link)"
+  echo "If something looks wrong, fix up the merge and run 'git push "$remote_name" dev-main-merge --force --no-verify'"
+  echo "Once the changes look good, run 'kill -CONT $$' to resume this script."
+  kill -TSTP $$
+fi
 git switch dev
 git pull "$remote_name" dev
 git merge dev-main-merge --ff-only
 git push "$remote_name" dev
-echo "Release commit successfully merged onto main!"
+echo "Dev branch successfully fast-forwarded to the release merge commit!"
