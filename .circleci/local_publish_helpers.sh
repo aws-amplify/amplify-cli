@@ -12,24 +12,6 @@ function startLocalRegistry {
     grep -q 'http address' <(tail -f $tmp_registry_log)
 }
 
-function setNpmTag {
-    if [ -z $NPM_TAG ]; then
-        if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
-            if [[ "$CIRCLE_BRANCH" =~ ^tagged-release-without-e2e-tests\/.* ]]; then
-                export NPM_TAG="${CIRCLE_BRANCH/tagged-release-without-e2e-tests\//}"
-            elif [[ "$CIRCLE_BRANCH" =~ ^tagged-release\/.* ]]; then
-                export NPM_TAG="${CIRCLE_BRANCH/tagged-release\//}"
-            fi
-        fi
-        if [[ "$CIRCLE_BRANCH" == "beta" ]]; then
-            export NPM_TAG="beta"
-        fi
-    else
-        echo "NPM tag was already set!"
-    fi
-    echo 'NPM tag is' ${NPM_TAG:-'not set'}
-}
-
 function uploadPkgCli {
     aws configure --profile=s3-uploader set aws_access_key_id $S3_ACCESS_KEY
     aws configure --profile=s3-uploader set aws_secret_access_key $S3_SECRET_ACCESS_KEY

@@ -1,9 +1,12 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { GraphQLClient } from './utils/graphql-client';
-import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
+import {
+  deploy, launchDDBLocal, logDebug, terminateDDB,
+} from './utils/index';
 
 let graphqlClient;
 let server;
@@ -30,9 +33,8 @@ beforeAll(async () => {
           return defaultValue;
         },
         getNumber: jest.fn(),
-        getString: jest.fn(),
         getObject: jest.fn(),
-      }
+      },
     });
     const out = transformer.transform(validSchema);
 
@@ -41,10 +43,10 @@ beforeAll(async () => {
     const result = await deploy(out, ddbClient);
     server = result.simulator;
 
-    const endpoint = server.url + '/graphql';
+    const endpoint = `${server.url}/graphql`;
     logDebug(`Using graphql url: ${endpoint}`);
 
-    const apiKey = result.config.appSync.apiKey;
+    const { apiKey } = result.config.appSync;
     graphqlClient = new GraphQLClient(endpoint, { 'x-api-key': apiKey });
   } catch (e) {
     logDebug(e);
@@ -60,6 +62,7 @@ afterAll(async () => {
     await terminateDDB(ddbEmulator, dbPath);
   } catch (e) {
     console.error(e);
+    // eslint-disable-next-line jest/no-standalone-expect
     expect(true).toEqual(false);
   }
 });
