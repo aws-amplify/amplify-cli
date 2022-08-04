@@ -77,6 +77,11 @@ export class StateManager {
 
   getCurrentProjectTags = (projectPath?: string): Tag[] => ReadTags(pathManager.getCurrentTagFilePath(projectPath));
 
+  /**
+   * Whether or not the `team-provider-info.json` file exists
+   *
+   * @deprecated Use envParamManager from amplify-environment-parameters
+   */
   teamProviderInfoExists = (projectPath?: string): boolean => this.doesExist(pathManager.getTeamProviderInfoFilePath, projectPath);
 
   /**

@@ -55,7 +55,7 @@ async function initEnv(context) {
   const backendConfig = utils.getBackendInfoConfig(context);
 
   if (!backendConfig || !backendConfig[category] || !backendConfig[category][resource]) {
-    const consoleConfig = configUtils.loadConsoleConfigFromTeamProviderinfo();
+    const consoleConfig = await configUtils.loadConsoleConfigFromTeamProviderinfo();
     if (!consoleConfig) {
       // hosting is not enabled for current env
       return;
@@ -63,7 +63,7 @@ async function initEnv(context) {
     // hosting is deleted. But current env config is not cleaned
     const { type } = consoleConfig;
     // clean team provider info
-    configUtils.deleteConsoleConfigFromTeamProviderInfo(context);
+    await configUtils.deleteHostingEnvParams(context);
     // clean #current-backend-env for CICD.
     if (type === constants.TYPE_CICD) {
       await configUtils.deleteConsoleConfigFromCurrMeta(context);

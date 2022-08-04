@@ -1,5 +1,5 @@
 import {
-  $TSAny, $TSContext, $TSObject, ConfigurationError, exitOnNextTick, stateManager, spinner,
+  $TSAny, $TSContext, ConfigurationError, exitOnNextTick, stateManager, spinner,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import sequential from 'promise-sequential';
@@ -18,11 +18,7 @@ const syncCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
   const currentEnv = context.exeInfo.localEnvInfo.envName;
 
   try {
-    const { projectPath } = context.exeInfo.localEnvInfo;
-    const amplifyMeta: $TSObject = {};
-    const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
-
-    amplifyMeta.providers = teamProviderInfo[currentEnv];
+    const amplifyMeta = stateManager.getMeta();
 
     const providerPlugins = getProviderPlugins(context);
 

@@ -9,7 +9,7 @@ const utils = require('../utils/amplify-context-utils');
 const clientFactory = require('../utils/client-factory');
 const consolePathManager = require('../utils/path-manager');
 const buildUtils = require('./build-utils');
-const { getEnvParamManager } = require('@aws-amplify/amplify-environment-parameters');
+const { ensureEnvParamManager } = require('@aws-amplify/amplify-environment-parameters');
 
 function initCFNTemplate(context, templateFilePath) {
   const templateContent = context.amplify.readJsonFile(templateFilePath);
@@ -83,27 +83,13 @@ async function initCurrBackendMeta(context, category, resourceName, type, timeSt
   await storeCurrentCloudBackend(context);
 }
 
-function initTeamProviderInfo(context, category, resourceName, type) {
-  const categories = constants.CATEGORIES;
-
-  const { amplify } = context;
-  const currEnv = amplify.getEnvInfo().envName;
-  const teamProviderInfoFilePath = consolePathManager.getProviderInfoFilePath(context);
-  const teamProviderInfo = amplify.readJsonFile(teamProviderInfoFilePath);
-  if (!teamProviderInfo[currEnv][categories]) {
-    teamProviderInfo[currEnv][categories] = {};
-  }
-
-  if (!teamProviderInfo[currEnv][categories][category]) {
-    teamProviderInfo[currEnv][categories][category] = {};
-  }
-
+async function initHostingEnvParams(context, category, resourceName, type) {
+  const resourceParamManager = (await ensureEnvParamManager()).instance.getResourceParamManager(category, resourceName);
   const appId = utils.getAppIdForCurrEnv(context);
-  teamProviderInfo[currEnv][categories][category][resourceName] = {
+  resourceParamManager.setAllParams({
     appId,
     type,
-  };
-  fs.writeFileSync(teamProviderInfoFilePath, JSON.stringify(teamProviderInfo, null, 4));
+  });
 }
 
 async function deleteConsoleConfigFromCurrMeta(context) {
@@ -124,28 +110,12 @@ async function deleteConsoleConfigFromCurrMeta(context) {
   await storeCurrentCloudBackend(context);
 }
 
-function deleteConsoleConfigFromTeamProviderInfo(context) {
+async function deleteHostingEnvParams(context) {
   const categories = constants.CATEGORIES;
   const category = constants.CATEGORY;
   const resourceName = constants.CONSOLE_RESOURCE_NAME;
 
-  const { amplify } = context;
-  const currEnv = amplify.getEnvInfo().envName;
-  const teamProviderInfoFilePath = consolePathManager.getProviderInfoFilePath(context);
-  const teamProviderInfo = amplify.readJsonFile(teamProviderInfoFilePath);
-  if (!teamProviderInfo[currEnv][categories]) {
-    return;
-  }
-
-  if (!teamProviderInfo[currEnv][categories][category]) {
-    return;
-  }
-
-  if (!teamProviderInfo[currEnv][categories][category][resourceName]) {
-    return;
-  }
-  teamProviderInfo[currEnv][categories][category][resourceName] = undefined;
-  fs.writeFileSync(teamProviderInfoFilePath, JSON.stringify(teamProviderInfo, null, 4));
+  (await ensureEnvParamManager()).instance.removeResourceParamManager(category, resourceName);
 }
 
 function initBackendConfig(context, category, resourceName, type) {
@@ -164,8 +134,8 @@ function initBackendConfig(context, category, resourceName, type) {
   fs.writeFileSync(backendConfigFilePath, JSON.stringify(backendConfig, null, 4));
 }
 
-function loadConsoleConfigFromTeamProviderinfo() {
-  return getEnvParamManager().getResourceParamManager(constants.CATEGORY, constants.CONSOLE_RESOURCE_NAME).hasAnyParams();
+async function loadConsoleConfigFromTeamProviderinfo() {
+  return (await ensureEnvParamManager()).getResourceParamManager(constants.CATEGORY, constants.CONSOLE_RESOURCE_NAME).getAllParams();
 }
 
 async function storeCurrentCloudBackend(context) {
@@ -214,10 +184,9 @@ module.exports = {
   initCFNTemplate,
   initMetaFile,
   initCurrBackendMeta,
-  initTeamProviderInfo,
+  initHostingEnvParams,
   initBackendConfig,
   loadConsoleConfigFromTeamProviderinfo,
-  deleteConsoleConfigFromTeamProviderInfo,
+  deleteHostingEnvParams,
   deleteConsoleConfigFromCurrMeta,
 };
-/* eslint-enable */
