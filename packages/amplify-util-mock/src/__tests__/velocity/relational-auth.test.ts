@@ -4,6 +4,7 @@ import { PrimaryKeyTransformer, IndexTransformer } from '@aws-amplify/graphql-in
 import { HasManyTransformer, HasOneTransformer, BelongsToTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration, FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
+// eslint-disable-next-line import/no-unresolved
 import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionContext } from '@aws-amplify/amplify-appsync-simulator';
 import { VelocityTemplateSimulator, getJWTToken, getIAMToken } from '../../velocity';
 
@@ -14,7 +15,6 @@ const mockFeatureFlags: FeatureFlagProvider = {
     }
     return false;
   },
-  getString: jest.fn(),
   getNumber: jest.fn(),
   getObject: jest.fn(),
 };
