@@ -79,6 +79,13 @@ describe('amplify add auth...', () => {
     const defineFunction = await getLambdaFunction(defineFunctionName, meta.providers.awscloudformation.Region);
 
     expect(userPool.UserPool).toBeDefined();
+    expect(userPool.UserPool.UserAttributeUpdateSettings).toMatchInlineSnapshot(`
+    Object {
+      "AttributesRequireVerificationBeforeUpdate": Array [
+        "email",
+      ],
+    }
+    `);
     expect(clients).toHaveLength(2);
     expect(createFunction).toBeDefined();
     expect(defineFunction).toBeDefined();

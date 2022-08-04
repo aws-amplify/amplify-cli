@@ -43,6 +43,13 @@ describe('amplify add auth...', () => {
     const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     expect(userPool.UserPool).toBeDefined();
+    expect(userPool.UserPool.UserAttributeUpdateSettings).toMatchInlineSnapshot(`
+    Object {
+      "AttributesRequireVerificationBeforeUpdate": Array [
+        "email",
+      ],
+    }
+    `);
   });
 
   it('...should init a project and add auth with defaults, pull project and push again', async () => {
