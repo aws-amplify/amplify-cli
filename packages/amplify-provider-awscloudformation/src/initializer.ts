@@ -7,7 +7,7 @@ import { transformRootStack } from './override-manager';
 import { rootStackFileName } from './push-resources';
 import { getDefaultTemplateDescription } from './template-description-utils';
 import * as vm from 'vm2';
-import { printer, formatter } from 'amplify-prompts';
+import { printer, formatter, AmplifySpinner } from 'amplify-prompts';
 
 const moment = require('moment');
 const path = require('path');
@@ -280,12 +280,15 @@ function storeCurrentCloudBackend(context) {
 
   const zipFilePath = path.normalize(path.join(tempDir, zipFilename));
   let log = null;
+  const spinner = new AmplifySpinner('Saving deployment state.');
 
   return archiver
     .run(currentCloudBackendDir, zipFilePath, undefined, cliJSONFiles)
     .then(result => {
       const s3Key = `${result.zipFilename}`;
+      spinner.start();
       return S3.getInstance(context).then(s3 => {
+        spinner.stop('Deployment bucket fetched.');
         const s3Params = {
           Body: fs.createReadStream(result.zipFilePath),
           Key: s3Key,
@@ -297,6 +300,7 @@ function storeCurrentCloudBackend(context) {
     })
     .catch(ex => {
       log(ex);
+      spinner.stop('Deployment state save failed.', false);
       throw ex;
     })
     .then(() => {

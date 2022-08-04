@@ -21,7 +21,7 @@ export class AmplifySpinner {
       this.frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
       this.prefixText = text;
       this.terminal = new Terminal();
-      this.refreshRate = 300;
+      this.refreshRate = 50;
     }
 
     /**
@@ -31,8 +31,8 @@ export class AmplifySpinner {
       if (this.timer) {
         clearTimeout(this.timer);
       }
-      const lines = [`${this.prefixText} ${chalk.blue(this.frames[this.frameCount])}`];
-      this.frameCount = this.frames.length < this.frameCount ? 0 : this.frameCount + 1;
+      const lines = [`${chalk.blue(this.frames[this.frameCount])} ${this.prefixText}`];
+      this.frameCount = ++this.frameCount % this.frames.length;
       this.terminal.writeLines(lines);
       this.timer = setTimeout(() => this.render(), this.refreshRate);
     }
