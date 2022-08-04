@@ -32,6 +32,7 @@ const nodeJSTemplateChoices = [
   'Hello World',
   'Lambda trigger',
   'Serverless ExpressJS function (Integration with API Gateway)',
+  'AppSync Todo',
 ];
 
 const pythonTemplateChoices = ['Hello World'];
@@ -358,6 +359,11 @@ export const selectTemplate = (chain: ExecutionContext, functionTemplate: string
   moveUp(chain, templateChoices.indexOf('Hello World'));
 
   singleSelect(chain, functionTemplate, templateChoices);
+  
+  if(functionTemplate === 'AppSync Todo'){
+    chain.wait('Pick a Auth type');
+    singleSelect(chain, 'API_KEY', ['API_KEY', 'IAM']);
+  }
 };
 
 export const removeFunction = (cwd: string, funcName: string) =>
