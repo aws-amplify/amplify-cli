@@ -4,7 +4,6 @@ import sequential from 'promise-sequential';
 import {
   CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager, $TSContext, $TSAny,
 } from 'amplify-cli-core';
-import _ from 'lodash';
 import { printer, prompter } from 'amplify-prompts';
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
