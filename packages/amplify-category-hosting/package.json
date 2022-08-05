@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-hosting",
-  "version": "3.2.36",
+  "version": "3.2.37-rc.536fdf2fd.0",
   "description": "amplify-cli hosting plugin",
   "repository": {
     "type": "git",

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-migration-tests",
-  "version": "5.0.0",
+  "version": "5.0.1-rc.536fdf2fd.0",
   "description": "",
   "repository": {
     "type": "git",

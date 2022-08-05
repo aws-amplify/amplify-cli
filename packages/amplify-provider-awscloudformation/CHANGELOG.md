@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.5.1-rc.536fdf2fd.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.5.0...amplify-provider-awscloudformation@6.5.1-rc.536fdf2fd.0) (2022-08-05)
+
+
+### Bug Fixes
+
+* pass httpProxy agent to node-fetch. ([#10620](https://github.com/aws-amplify/amplify-cli/issues/10620)) ([6a22f9a](https://github.com/aws-amplify/amplify-cli/commit/6a22f9a7e2850579330c5212ed57d0e144b0eb23))
+
+
+
+
+
 # [6.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.4.2...amplify-provider-awscloudformation@6.5.0) (2022-08-02)
 
 
