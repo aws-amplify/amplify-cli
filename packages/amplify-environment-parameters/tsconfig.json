@@ -11,6 +11,9 @@
   "references": [
     {
       "path": "../amplify-cli-core"
+    },
+    {
+      "path": "../amplify-provider-awscloudformation"
     }
   ]
 }

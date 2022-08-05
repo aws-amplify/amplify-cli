@@ -77,7 +77,7 @@ export const onSuccess = async (context: $TSContext): Promise<void> => {
     const providerModule = require(providerPlugins[provider]);
     providerOnSuccessTasks.push(() => providerModule.onInitSuccessful(context));
   });
- 
+
   await sequential(providerOnSuccessTasks);
 
   // Get current-cloud-backend's amplify-meta
@@ -157,7 +157,8 @@ export const generateAmplifyMetaFile = (context: $TSContext): void => {
 const generateNonRuntimeFiles = (context: $TSContext): void => {
   generateProjectConfigFile(context);
   generateBackendConfigFile(context);
-  generateTeamProviderInfoFile(context);
+  // TODO this shouldn't be needed anymore as long as context.exeInfo.teamProviderInfo only contains cfn metadata at this point
+  // generateTeamProviderInfoFile(context);
   generateGitIgnoreFile(context);
   generateReadMeFile(context);
   generateHooksSampleDirectory(context);
@@ -172,24 +173,24 @@ const generateProjectConfigFile = (context: $TSContext): void => {
   }
 };
 
-const generateTeamProviderInfoFile = (context: $TSContext): void => {
-  const { projectPath } = context.exeInfo.localEnvInfo;
+// const generateTeamProviderInfoFile = (context: $TSContext): void => {
+//   const { projectPath } = context.exeInfo.localEnvInfo;
 
-  let teamProviderInfo = {};
+//   let teamProviderInfo = {};
 
-  if (stateManager.teamProviderInfoExists(projectPath)) {
-    teamProviderInfo = stateManager.getTeamProviderInfo(projectPath, {
-      throwIfNotExist: false,
-      default: {},
-    });
+//   if (stateManager.teamProviderInfoExists(projectPath)) {
+//     teamProviderInfo = stateManager.getTeamProviderInfo(projectPath, {
+//       throwIfNotExist: false,
+//       default: {},
+//     });
 
-    _.merge(teamProviderInfo, context.exeInfo.teamProviderInfo);
-  } else {
-    ({ teamProviderInfo } = context.exeInfo);
-  }
+//     _.merge(teamProviderInfo, context.exeInfo.teamProviderInfo);
+//   } else {
+//     ({ teamProviderInfo } = context.exeInfo);
+//   }
 
-  stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
-};
+//   stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
+// };
 
 const generateBackendConfigFile = (context: $TSContext): void => {
   if (context.exeInfo.isNewProject) {
