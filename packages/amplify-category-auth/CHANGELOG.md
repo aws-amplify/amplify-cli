@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.11.0-pretty-print.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.10.4...@aws-amplify/amplify-category-auth@2.11.0-pretty-print.0) (2022-08-05)
+
+
+### Features
+
+* introducing spinner while fetching bucket ([77e21ef](https://github.com/aws-amplify/amplify-cli/commit/77e21ef16f30a195cba7f447dde4d4dbde9a0121))
+
+
+
+
+
 ## [2.10.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.10.2...@aws-amplify/amplify-category-auth@2.10.4) (2022-08-02)
 
 

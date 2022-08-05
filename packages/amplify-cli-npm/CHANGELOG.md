@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [9.3.0-pretty-print.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@9.2.0...@aws-amplify/cli@9.3.0-pretty-print.0) (2022-08-05)
+
+
+### Features
+
+* solving test failures e2e ([01a91b1](https://github.com/aws-amplify/amplify-cli/commit/01a91b18a8bee19740fd4357b6b79cec02861cb3))
+
+
+
+
+
 # [9.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@9.0.0...@aws-amplify/cli@9.2.0) (2022-08-02)
 
 

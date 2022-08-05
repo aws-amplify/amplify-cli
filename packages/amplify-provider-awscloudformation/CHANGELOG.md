@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.6.0-pretty-print.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.5.0...amplify-provider-awscloudformation@6.6.0-pretty-print.0) (2022-08-05)
+
+
+### Bug Fixes
+
+* pass httpProxy agent to node-fetch. ([#10620](https://github.com/aws-amplify/amplify-cli/issues/10620)) ([6a22f9a](https://github.com/aws-amplify/amplify-cli/commit/6a22f9a7e2850579330c5212ed57d0e144b0eb23))
+
+
+### Features
+
+* addressing api review suggestions ([bf2206f](https://github.com/aws-amplify/amplify-cli/commit/bf2206f5dc898e5523893d9717aabdfcb7f9b126))
+* addressing review comments ([b18971b](https://github.com/aws-amplify/amplify-cli/commit/b18971b061f0e05b690f693e1478b5e466517c3e))
+* changing tests ([acf623d](https://github.com/aws-amplify/amplify-cli/commit/acf623d340a3379ca11f254dfb552da88a68f0e5))
+* fixing linting errors ([ff4b80b](https://github.com/aws-amplify/amplify-cli/commit/ff4b80ba78a2c4fa345a2bb55c1809da927c7422))
+* further modularization of eventMap ([4011d79](https://github.com/aws-amplify/amplify-cli/commit/4011d7975440755fa309cb1480a32b213281a4fd))
+* introducing spinner while fetching bucket ([77e21ef](https://github.com/aws-amplify/amplify-cli/commit/77e21ef16f30a195cba7f447dde4d4dbde9a0121))
+* js to ts ([7231421](https://github.com/aws-amplify/amplify-cli/commit/723142157769fd912e9abf106c2aec7f3a016124))
+* pretty-print push cfn logs ([d5a66e4](https://github.com/aws-amplify/amplify-cli/commit/d5a66e44500d2ea48fff5d4b0638da317f859466))
+* putting back the error msg at push ([5af8131](https://github.com/aws-amplify/amplify-cli/commit/5af8131cd6f85fe46dbdbed00b16a60201c8d2f1))
+* removing commented code ([851f5e3](https://github.com/aws-amplify/amplify-cli/commit/851f5e31261eea594ca9c25d586d744d9d659b1c))
+* removing dead code ([561ca24](https://github.com/aws-amplify/amplify-cli/commit/561ca24f7e3782612eaa71b7458e5145b4c97df9))
+* solving test failures e2e ([01a91b1](https://github.com/aws-amplify/amplify-cli/commit/01a91b18a8bee19740fd4357b6b79cec02861cb3))
+* stop storing category and resource variables ([0037670](https://github.com/aws-amplify/amplify-cli/commit/00376700482605df85e27487b665fffb312726a5))
+* unresolved review requests ([81bd606](https://github.com/aws-amplify/amplify-cli/commit/81bd606cc582c1e7086ec626b2650f2d1aadaeb7))
+
+
+
+
+
 # [6.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.4.2...amplify-provider-awscloudformation@6.5.0) (2022-08-02)
 
 
