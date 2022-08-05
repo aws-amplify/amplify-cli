@@ -12,21 +12,60 @@ call amplify-backend.getBackend(appId, envName) to fetch amplifyMeta
 */
 
 /**
- * Get environment metadata
+ * Initializes the EnvironmentMetadata object for the current environment to the given meta object
+ *
+ * Throws if EnvironmentMetadata is already initialized for the current environment.
+ *
+ * Intended to be used during init after the root stack deployment succeeds but before `amplify-meta.json` has been created yet
+ * @param meta The contents to set in the `amplify-meta.json` providers block
  */
-export const getEnvironmentMetadata = async (
+export const initEnvMeta = async (meta: Record<string, string>): Promise<void> => {
+  const currentEnv = stateManager.getLocalEnvInfo().envName;
+  if (envMetaManagerMap[currentEnv]) {
+    throw new Error(`EnvironmentMetadata is already initialized for ${currentEnv} environment.`);
+  }
+  // don't need to pass in context because specifying meta will early return before context is ever needed
+  await ensureEnvMetaInternal(undefined as unknown as $TSContext, currentEnv, meta);
+};
+
+/**
+ * Get the environment metadata object for the specified environment. Throw if it is not initialized
+ */
+export const getEnvMeta = (envName: string = stateManager.getLocalEnvInfo().envName): IEnvironmentMetadata => {
+  if (envMetaManagerMap[envName]) {
+    return envMetaManagerMap[envName];
+  }
+  throw new Error(`Environment metadata not initialized for ${envName} environment. Call ensureEnvMeta() to initialize.`);
+};
+
+/**
+ * Get the environment metadata object for the specified environment,
+ * or initialize the metadata object from local files or the cloud if it doesn't exist
+ */
+export const ensureEnvMeta = async (
   context: $TSContext,
   envName: string = stateManager.getLocalEnvInfo().envName,
+): Promise<IEnvironmentMetadata> => ensureEnvMetaInternal(context, envName);
+
+const ensureEnvMetaInternal = async (
+  context: $TSContext,
+  envName: string = stateManager.getLocalEnvInfo().envName,
+  initialMeta?: Record<string, string>,
 ): Promise<IEnvironmentMetadata> => {
   // when adding the first manager into the map, need to add a callback to save on exit
   if (Object.keys(envMetaManagerMap).length === 0) {
     process.on('beforeExit', () => {
       const currentEnv = stateManager.getLocalEnvInfo().envName;
+      // ensure any updates to the current env meta are written to the `amplify-meta.json` file
       envMetaManagerMap[currentEnv]?.save();
-      // save function
     });
   }
   if (envMetaManagerMap[envName]) {
+    return envMetaManagerMap[envName];
+  }
+
+  if (typeof initialMeta === 'object' && Object.keys(initialMeta).length > 0) {
+    envMetaManagerMap[envName] = new EnvironmentMetadata(initialMeta, true);
     return envMetaManagerMap[envName];
   }
 
@@ -80,7 +119,13 @@ class EnvironmentMetadata implements IEnvironmentMetadata {
   private _PermissionsBoundaryPolicyArn: string | undefined;
   private _dirty = false;
 
-  constructor(amplifyMeta: Record<string, unknown>) {
+  /**
+   * Create a new EnvironmentMetadata object
+   *
+   * @param amplifyMeta the metadata to init
+   * @param isDirty whether the given amplifyMeta is in sync with what's on the disc
+   */
+  constructor(amplifyMeta: Record<string, unknown>, isDirty = false) {
     const requiredKeys: (keyof IEnvironmentMetadata)[] = [
       'AuthRoleName',
       'AuthRoleArn',
@@ -116,6 +161,7 @@ class EnvironmentMetadata implements IEnvironmentMetadata {
     this.StackName = validatedAmplifyMeta.StackName;
     this.AmplifyAppId = validatedAmplifyMeta.AmplifyAppId;
     this._PermissionsBoundaryPolicyArn = validatedAmplifyMeta.PermissionsBoundaryPolicyArn;
+    this._dirty = isDirty;
   }
 
   get PermissionsBoundaryPolicyArn(): string | undefined {
@@ -125,6 +171,15 @@ class EnvironmentMetadata implements IEnvironmentMetadata {
   set PermissionsBoundaryPolicyArn(value: string | undefined) {
     this._PermissionsBoundaryPolicyArn = value;
     this._dirty = true;
+  }
+
+  save(): void {
+    if (!this._dirty) {
+      return;
+    }
+    const amplifyMeta = stateManager.getMeta();
+    amplifyMeta.providers.awscloudformation = this.toObject();
+    stateManager.setMeta(undefined, amplifyMeta);
   }
 
   private toObject(): Record<string, string> {
@@ -143,15 +198,6 @@ class EnvironmentMetadata implements IEnvironmentMetadata {
       obj.PermissionsBoundaryPolicyArn = this._PermissionsBoundaryPolicyArn;
     }
     return obj;
-  }
-
-  save(): void {
-    if (!this._dirty) {
-      return;
-    }
-    const amplifyMeta = stateManager.getMeta();
-    amplifyMeta.providers.awscloudformation = this.toObject();
-    stateManager.setMeta(undefined, amplifyMeta);
   }
 }
 
