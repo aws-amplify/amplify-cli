@@ -18,7 +18,11 @@ if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
     exit 1
   fi
   echo "Publishing to NPM with tag $NPM_TAG"
-  npx lerna publish --exact --dist-tag=$NPM_TAG --preid=$NPM_TAG --conventional-commits --conventional-prerelease --message "chore(release): Publish tagged release $NPM_TAG [ci skip]" --yes --include-merged-tags
+  if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
+    npx lerna publish --exact --dist-tag=$NPM_TAG --preid=$NPM_TAG --conventional-commits --conventional-prerelease --no-push --yes --include-merged-tags
+  else
+    npx lerna publish --exact --dist-tag=$NPM_TAG --preid=$NPM_TAG --conventional-commits --conventional-prerelease --message "chore(release): Publish tagged release $NPM_TAG [ci skip]" --yes --include-merged-tags
+  fi
 
 # release candidate
 elif [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]] || [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
