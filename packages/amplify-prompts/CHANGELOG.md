@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0-pretty-print.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@2.2.0...amplify-prompts@2.3.0-pretty-print.0) (2022-08-06)
+
+
+### Features
+
+* addressing api review suggestions ([bf2206f](https://github.com/aws-amplify/amplify-cli/commit/bf2206f5dc898e5523893d9717aabdfcb7f9b126))
+* addressing review comments ([b18971b](https://github.com/aws-amplify/amplify-cli/commit/b18971b061f0e05b690f693e1478b5e466517c3e))
+* fixing test failures ([5d8c24f](https://github.com/aws-amplify/amplify-cli/commit/5d8c24f9df3e87b656ba8e560dddad5289c5622a))
+* introducing spinner while fetching bucket ([77e21ef](https://github.com/aws-amplify/amplify-cli/commit/77e21ef16f30a195cba7f447dde4d4dbde9a0121))
+* pretty-print push cfn logs ([d5a66e4](https://github.com/aws-amplify/amplify-cli/commit/d5a66e44500d2ea48fff5d4b0638da317f859466))
+* updating multibar tests ([71c7916](https://github.com/aws-amplify/amplify-cli/commit/71c79160544382250d69ed28f63940cd33d42ed5))
+
+
+
+
+
 # [2.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@2.1.0...amplify-prompts@2.2.0) (2022-06-03)
 
 

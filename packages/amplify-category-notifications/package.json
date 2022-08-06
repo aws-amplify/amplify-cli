@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-notifications",
-  "version": "2.19.7",
+  "version": "2.19.8-pretty-print.0",
   "description": "amplify-cli notifications plugin",
   "repository": {
     "type": "git",

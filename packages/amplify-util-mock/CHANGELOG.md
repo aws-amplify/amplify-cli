@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.10-pretty-print.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.4.9...amplify-util-mock@4.4.10-pretty-print.0) (2022-08-06)
+
+
+### Bug Fixes
+
+* support AWS::S3::Bucket FilterRule properly in the mock mode ([#10799](https://github.com/aws-amplify/amplify-cli/issues/10799)) ([0273dc0](https://github.com/aws-amplify/amplify-cli/commit/0273dc045218b11e69da36af147d679fdf03a545))
+
+
+
+
+
 ## [4.4.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.4.7...amplify-util-mock@4.4.9) (2022-08-02)
 
 

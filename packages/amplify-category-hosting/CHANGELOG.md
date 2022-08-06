@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.3.0-pretty-print.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@3.2.36...amplify-category-hosting@3.3.0-pretty-print.0) (2022-08-06)
+
+
+### Features
+
+* introducing spinner while fetching bucket ([77e21ef](https://github.com/aws-amplify/amplify-cli/commit/77e21ef16f30a195cba7f447dde4d4dbde9a0121))
+
+
+
+
+
 ## [3.2.36](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@3.2.34...amplify-category-hosting@3.2.36) (2022-08-02)
 
 **Note:** Version bump only for package amplify-category-hosting
