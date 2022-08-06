@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.1.0-pretty-print.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.0.0...@aws-amplify/amplify-e2e-core@4.1.0-pretty-print.1) (2022-08-06)
+
+
+### Features
+
+* removing unnecessary waits in test ([d08ba5d](https://github.com/aws-amplify/amplify-cli/commit/d08ba5d87addcdd9282279afa01382995bb7c968))
+
+
+
+
+
 # [4.1.0-pretty-print.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.0.0...@aws-amplify/amplify-e2e-core@4.1.0-pretty-print.0) (2022-08-06)
 
 

@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [9.3.0-pretty-print.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@9.2.0...@aws-amplify/cli-internal@9.3.0-pretty-print.1) (2022-08-06)
+
+
+### Features
+
+* introducing spinner while fetching bucket ([77e21ef](https://github.com/aws-amplify/amplify-cli/commit/77e21ef16f30a195cba7f447dde4d4dbde9a0121))
+* pretty-print push cfn logs ([d5a66e4](https://github.com/aws-amplify/amplify-cli/commit/d5a66e44500d2ea48fff5d4b0638da317f859466))
+* putting back the error msg at push ([5af8131](https://github.com/aws-amplify/amplify-cli/commit/5af8131cd6f85fe46dbdbed00b16a60201c8d2f1))
+
+
+
+
+
 # [9.3.0-pretty-print.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@9.2.0...@aws-amplify/cli-internal@9.3.0-pretty-print.0) (2022-08-06)
 
 
