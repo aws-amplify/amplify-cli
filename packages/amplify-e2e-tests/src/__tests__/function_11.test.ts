@@ -47,14 +47,6 @@ describe("Lambda AppSync nodejs: ", () => {
     const apiName = Object.keys(beforeMeta.api)[0];
 
     expect(apiName).toBeDefined();
-    
-    // const apikeymeta = getProjectMeta(projRoot);
-    // const { output } = apikeymeta.api[projName];
-    // const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
-
-    // expect(GraphQLAPIIdOutput).toBeDefined();
-    // expect(GraphQLAPIEndpointOutput).toBeDefined();
-    // expect(GraphQLAPIKeyOutput).toBeDefined();
 
     
     await addFunction(
@@ -112,14 +104,6 @@ describe("Lambda AppSync nodejs: ", () => {
  
 
     expect(apiName).toBeDefined();
-    
-    // const apikeymeta = getProjectMeta(projRoot);
-    // const { output } = apikeymeta.api[projName];
-    // const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
-
-    // expect(GraphQLAPIIdOutput).toBeDefined();
-    // expect(GraphQLAPIEndpointOutput).toBeDefined();
-    // expect(GraphQLAPIKeyOutput).toBeDefined();
 
     
     await addFunction(
