@@ -81,6 +81,8 @@ function generatePkgCli {
 
 
   cd ..
+  echo "generated pkg CLI version"
+  ./out/amplify-pkg-linux-x64 --version
 }
 function unsetNpmRegistryUrl {
     # Restore the original NPM and Yarn registry URLs
