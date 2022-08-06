@@ -154,6 +154,7 @@ export type CoreFunctionSettings = {
   secretsConfig?: AddSecretInput | UpdateSecretInput | DeleteSecretInput;
   triggerType?: string;
   eventSource?: string;
+  appSyncAuthType?: string;
 };
 
 const coreFunction = (
@@ -179,7 +180,10 @@ const coreFunction = (
       selectRuntime(chain, runtime);
       const templateChoices = getTemplateChoices(runtime);
       if (templateChoices.length > 1) {
-        selectTemplate(chain, settings.functionTemplate, runtime);
+        if(settings.appSyncAuthType.length > 1){
+          selectTemplate(chain, settings.functionTemplate, runtime, settings.appSyncAuthType);
+        }
+        else selectTemplate(chain, settings.functionTemplate, runtime);
       }
     } else {
       if (settings.layerOptions && settings.layerOptions.layerAndFunctionExist) {
@@ -351,7 +355,7 @@ export const selectRuntime = (chain: ExecutionContext, runtime: FunctionRuntimes
   singleSelect(chain, runtimeName, runtimeChoices);
 };
 
-export const selectTemplate = (chain: ExecutionContext, functionTemplate: string, runtime: FunctionRuntimes) => {
+export const selectTemplate = (chain: ExecutionContext, functionTemplate: string, runtime: FunctionRuntimes, appSyncAuthType?: string) => {
   const templateChoices = getTemplateChoices(runtime);
   chain.wait('Choose the function template that you want to use');
 
@@ -360,10 +364,23 @@ export const selectTemplate = (chain: ExecutionContext, functionTemplate: string
 
   singleSelect(chain, functionTemplate, templateChoices);
   
-  if(functionTemplate === 'AppSync Todo'){
+  if (functionTemplate === 'AppSync Todo' && appSyncAuthType === 'API_KEY') {
     chain.wait('Pick a Auth type');
-    singleSelect(chain, 'API_KEY', ['API_KEY', 'IAM']);
+    chain.sendKeyDown();
+    chain.sendCarriageReturn();
   }
+  else if(functionTemplate === 'AppSync Todo' && appSyncAuthType === 'IAM'){
+    chain.wait('Pick a Auth type');
+    chain.sendCarriageReturn();
+  }
+  // just in case id no auth type present
+  else if(functionTemplate === 'AppSync Todo' && appSyncAuthType === ''){
+    chain.wait('Pick a Auth type');
+    chain.sendKeyDown();
+    chain.sendCarriageReturn();
+  }
+  
+  
 };
 
 export const removeFunction = (cwd: string, funcName: string) =>
