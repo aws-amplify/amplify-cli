@@ -20,29 +20,6 @@ if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
   echo "Publishing to NPM with tag $NPM_TAG"
   npx lerna publish --exact --dist-tag=$NPM_TAG --preid=$NPM_TAG --conventional-commits --conventional-prerelease --message "chore(release): Publish tagged release $NPM_TAG [ci skip]" --yes --include-merged-tags
 
-# release candidate
-elif [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]] || [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
-  # create release commit and release tags
-  npx lerna version --preid=rc.$(git rev-parse --short HEAD) --exact --conventional-prerelease --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish rc [ci skip]"
-
-  # if publishing locally to verdaccio
-  if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
-    # publish to verdaccio with no dist tag (default to latest)
-    npx lerna publish from-git --yes --no-push
-    echo "Published packages to verdaccio"
-    echo "Exiting without pushing release commit or release tags"
-    exit 0
-  fi
-
-  # publish versions that were just computed
-  npx lerna publish from-git --yes --no-push --dist-tag rc
-
-  # push release commit
-  git push origin "$CIRCLE_BRANCH"
-
-  # push release tags
-  git tag --points-at HEAD | xargs git push origin
-
 # @latest release
 elif [[ "$CIRCLE_BRANCH" == "release" ]]; then
   # create release commit and release tags
@@ -68,6 +45,29 @@ elif [[ "$CIRCLE_BRANCH" == "release" ]]; then
   git switch hotfix
   git merge release --ff-only
   git push origin hotfix
+
+# release candidate
+elif [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]] || [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
+  # create release commit and release tags
+  npx lerna version --preid=rc.$(git rev-parse --short HEAD) --exact --conventional-prerelease --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish rc [ci skip]"
+
+  # if publishing locally to verdaccio
+  if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
+    # publish to verdaccio with no dist tag (default to latest)
+    npx lerna publish from-git --yes --no-push
+    echo "Published packages to verdaccio"
+    echo "Exiting without pushing release commit or release tags"
+    exit 0
+  fi
+
+  # publish versions that were just computed
+  npx lerna publish from-git --yes --no-push --dist-tag rc
+
+  # push release commit
+  git push origin "$CIRCLE_BRANCH"
+
+  # push release tags
+  git tag --points-at HEAD | xargs git push origin
 else
   echo "branch name" "$CIRCLE_BRANCH" "did not match any branch publish rules. Skipping publish"
 fi
