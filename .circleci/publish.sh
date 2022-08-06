@@ -28,6 +28,12 @@ elif [[ "$CIRCLE_BRANCH" == "release" ]]; then
   # publish versions that were just computed
   npx lerna publish from-git --yes --no-push
 
+  if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
+    echo "Published packages to verdaccio"
+    echo "Exiting without pushing release commit or release tags"
+    exit 0
+  fi
+
   # push release commit
   git push origin "$CIRCLE_BRANCH"
 
