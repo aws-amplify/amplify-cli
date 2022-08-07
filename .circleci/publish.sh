@@ -20,6 +20,38 @@ if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
   echo "Publishing to NPM with tag $NPM_TAG"
   npx lerna publish --exact --dist-tag=$NPM_TAG --preid=$NPM_TAG --conventional-commits --conventional-prerelease --message "chore(release): Publish tagged release $NPM_TAG [ci skip]" --yes --include-merged-tags
 
+# @latest release
+elif [[ "$CIRCLE_BRANCH" == "release" ]]; then
+  # create release commit and release tags
+  npx lerna version --exact --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish latest [ci skip]"
+
+  # publish versions that were just computed
+  npx lerna publish from-git --yes --no-push
+
+  if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
+    echo "Published packages to verdaccio"
+    echo "Exiting without pushing release commit or release tags"
+    exit 0
+  fi
+
+  # push release commit
+  git push origin "$CIRCLE_BRANCH"
+
+  # push release tags
+  git tag --points-at HEAD | xargs git push origin
+
+  # fast forward main to release
+  git fetch origin main
+  git switch main
+  git merge release --ff-only
+  git push origin main
+
+  # fast forward hotfix to release
+  git fetch origin hotfix
+  git switch hotfix
+  git merge release --ff-only
+  git push origin hotfix
+
 # release candidate
 elif [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]] || [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
   # create release commit and release tags
@@ -42,32 +74,6 @@ elif [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^r
 
   # push release tags
   git tag --points-at HEAD | xargs git push origin
-
-# @latest release
-elif [[ "$CIRCLE_BRANCH" == "release" ]]; then
-  # create release commit and release tags
-  npx lerna version --exact --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish latest [ci skip]"
-
-  # publish versions that were just computed
-  npx lerna publish from-git --yes --no-push
-
-  # push release commit
-  git push origin "$CIRCLE_BRANCH"
-
-  # push release tags
-  git tag --points-at HEAD | xargs git push origin
-
-  # fast forward main to release
-  git fetch origin main
-  git switch main
-  git merge release --ff-only
-  git push origin main
-
-  # fast forward hotfix to release
-  git fetch origin hotfix
-  git switch hotfix
-  git merge release --ff-only
-  git push origin hotfix
 else
   echo "branch name" "$CIRCLE_BRANCH" "did not match any branch publish rules. Skipping publish"
 fi
