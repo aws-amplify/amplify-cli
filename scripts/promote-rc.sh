@@ -2,11 +2,13 @@
 set -e
 
 # This script is for promoting a CLI release candidate to @latest
-# Usage: ./scripts/promote-rc.sh <hash> where <hash> is the commit hash of the change going out. It is the hash in the release candidate version 1.2.3-rc.<hash>.0
+# Usage: ./scripts/promote-rc.sh <hash> where <hash> is the same hash previously used to run `release-rc`.
+# It is the hash in the release candidate version 1.2.3-rc.<hash>.0
 
-# It will
+# It will:
 # pull the latest changes from the release candidate branch
-# push HEAD~1 of the release candidate branch to the release branch. HEAD~1 is used instead of HEAD so that the prerelease version commit is dropped from the latest release
+# push HEAD~1 of the release candidate branch to the release branch.
+#   HEAD~1 is used instead of HEAD so that the prerelease version commit is dropped from the latest release
 
 # This will kick off a CCI workflow that will publish the @latest release
 
@@ -28,6 +30,8 @@ if [[ -z ${remote_name+x} ]]; then
 fi
 
 rc_branch="release_rc/$rc_sha"
-git switch "$rc_branch"
-git pull "$remote_name" "$rc_branch"
+
+git fetch "$remote_name" "$rc_branch"
+git checkout "$rc_branch"
+git reset --hard "$remote_name"/"$rc_branch"
 git push "$remote_name" "$rc_branch"~1:refs/heads/release
