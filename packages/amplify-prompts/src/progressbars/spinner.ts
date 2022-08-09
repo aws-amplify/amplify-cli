@@ -2,8 +2,8 @@
  * This class is created with the hope that one day we will move away from ora
  * and use a re writable block instead.
  */
-import chalk from 'chalk';
-import { AmplifyTerminal as Terminal } from './terminal';
+
+import { AmplifyTerminal as Terminal, StringObj } from './terminal';
 
 /**
  * Amplify spinner instance
@@ -31,7 +31,10 @@ export class AmplifySpinner {
       if (this.timer) {
         clearTimeout(this.timer);
       }
-      const lines = [`${chalk.blue(this.frames[this.frameCount])} ${this.prefixText}`];
+      const lines = [{
+        renderString: `${this.frames[this.frameCount]} ${this.prefixText}`,
+        color: '',
+      }];
       this.frameCount = ++this.frameCount % this.frames.length;
       this.terminal.writeLines(lines);
       this.timer = setTimeout(() => this.render(), this.refreshRate);
@@ -50,11 +53,14 @@ export class AmplifySpinner {
      * Stops the spinner
      */
     stop(text : string | null, success = true) : void {
-      let lines : string[] = [];
-      clearTimeout(this.timer);
       if (text) {
-        lines = success ? [chalk.green(text)] : [chalk.red(text)];
+        const lines : StringObj[] = [{
+          renderString: text,
+          color: success ? 'green' : 'red',
+        }];
+
+        clearTimeout(this.timer);
+        this.terminal.writeLines(lines);
       }
-      this.terminal.writeLines(lines);
     }
 }

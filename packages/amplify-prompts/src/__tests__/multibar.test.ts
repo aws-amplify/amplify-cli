@@ -9,7 +9,7 @@ import {
 
 const options : BarOptions = {
   progressBarFormatter: (payload : ProgressPayload) => payload.progressName,
-  itemFormatter: (payload : ItemPayload) => payload.ResourceStatus,
+  itemFormatter: (payload : ItemPayload) => ({ renderString: payload.ResourceStatus, color: '' }),
   loneWolf: false,
   hideCursor: true,
   barCompleteChar: '=',

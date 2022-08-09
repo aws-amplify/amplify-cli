@@ -1,5 +1,4 @@
 /* eslint-disable spellcheck/spell-checker */
-import chalk from 'chalk';
 import columnify from 'columnify';
 import { MultiProgressBar } from 'amplify-prompts';
 
@@ -37,7 +36,8 @@ type EventMap = {
 /**
  * Custom item formatter for progress bar
  */
-const createItemFormatter = (payload: ItemPayload) : string => {
+const createItemFormatter = (payload: ItemPayload) : { renderString: string, color: string } => {
+  let color = '';
   const e = [{
     logicalResourceId: payload.LogicalResourceId,
     resourceType: payload.ResourceType,
@@ -45,7 +45,7 @@ const createItemFormatter = (payload: ItemPayload) : string => {
     timeStamp: (new Date(payload.Timestamp)).toString(),
   }];
 
-  let output = columnify(e, {
+  const renderString = columnify(e, {
     showHeaders: false,
     truncate: true,
     maxWidth: COLUMNIFY_WIDTH,
@@ -53,12 +53,12 @@ const createItemFormatter = (payload: ItemPayload) : string => {
   });
 
   if (CFN_SUCCESS_STATUS.includes(payload.ResourceStatus)) {
-    output = chalk.green(output);
+    color = 'green';
   }
   if (CNF_ERROR_STATUS.includes(payload.ResourceStatus)) {
-    output = chalk.red(output);
+    color = 'red';
   }
-  return output;
+  return { renderString, color };
 };
 
 /**

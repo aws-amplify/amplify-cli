@@ -1,4 +1,4 @@
-import { AmplifyTerminal as Terminal } from './terminal';
+import { AmplifyTerminal as Terminal, StringObj } from './terminal';
 
 /**
  * Type for Bar configurations options
@@ -6,7 +6,7 @@ import { AmplifyTerminal as Terminal } from './terminal';
 export type BarOptions = {
     // Custom formatter functions for main progress bar and item's underneath it
     progressBarFormatter: (payload: ProgressPayload, value: number, total: number) => string,
-    itemFormatter: (payload: ItemPayload) => string,
+    itemFormatter: (payload: ItemPayload) => { renderString: string, color: string },
     // Indicates if the progress bar is part of a multiBar or standalone
     loneWolf: boolean,
     hideCursor: boolean,
@@ -45,6 +45,7 @@ type Item = {
     name: string,
     status: string,
     renderString: string,
+    color: string,
     finished: boolean
 }
 
@@ -98,11 +99,17 @@ export class ProgressBar {
     /**
      * Render strings are made by concatenating the progress bar strings with the item strings.
      */
-    getRenderStrings() : string[] {
-      let finalStrings = [];
+    getRenderStrings() : StringObj[] {
+      let finalStrings : StringObj[] = [];
       const progressBar = this.options.progressBarFormatter.call(this, this.payload, this.value, this.total) + this.createBarString();
-      finalStrings.push(progressBar);
-      finalStrings = this.items.reduce((prev, _current) => prev.concat(`\t${_current.renderString}`), finalStrings);
+      finalStrings.push({
+        renderString: progressBar,
+        color: '',
+      });
+      finalStrings = this.items.reduce((prev, _current) => prev.concat({
+        renderString: `\t${_current.renderString}`,
+        color: `${_current.color}`,
+      }), finalStrings);
       return finalStrings;
     }
 
@@ -185,12 +192,11 @@ export class ProgressBar {
      * Add a new item
      */
     addItem(name: string, itemPayload: ItemPayload) : void {
-      const renderString = this.options.itemFormatter.call(this, itemPayload);
       const status = itemPayload.ResourceStatus;
       this.items.push({
         name,
         status,
-        renderString,
+        ...this.options.itemFormatter.call(this, itemPayload),
         finished: this.options.itemCompleteStatus.includes(status),
       });
       if (this.options.loneWolf) {
@@ -210,7 +216,7 @@ export class ProgressBar {
             status: newPayload.ResourceStatus,
             // Do not update if item has already finished (CloudFormation nuance)
             finished: item.finished || this.options.itemCompleteStatus.includes(newPayload.ResourceStatus),
-            renderString: this.options.itemFormatter.call(this, newPayload),
+            ...this.options.itemFormatter.call(this, newPayload),
           };
         }
         return obj || item;

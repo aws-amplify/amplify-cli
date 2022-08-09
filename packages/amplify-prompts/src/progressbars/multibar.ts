@@ -2,8 +2,7 @@
  * This class has been made as generic as possible to suit all use cases.
  * But it is not without influence from the nuances of CloudFormation.
 */
-import chalk from 'chalk';
-import { AmplifyTerminal as Terminal } from './terminal';
+import { AmplifyTerminal as Terminal, StringObj } from './terminal';
 import {
   ProgressBar as Bar,
   BarOptions,
@@ -27,7 +26,7 @@ export class MultiProgressBar {
     private timer!: ReturnType<typeof setTimeout>;
     private prefixText : string;
     private updated: boolean;
-    private lastDrawnStrings : string[];
+    private lastDrawnStrings : StringObj[];
 
     constructor(options : BarOptions) {
       this.terminal = new Terminal();
@@ -64,10 +63,10 @@ export class MultiProgressBar {
     /**
      * Writes lines into the re writable block
      */
-    writeLines(prefixText: string) : void {
-      let barStrings : string[] = [];
-      let stringsToRender : string[] = [];
-      if (prefixText.length) {
+    writeLines(prefixText: StringObj) : void {
+      let barStrings : StringObj[] = [];
+      let stringsToRender : StringObj[] = [];
+      if (Object.keys(prefixText).length !== 0) {
         stringsToRender.push(prefixText);
       }
       // Only call on the render strings for the individual bar if an update happened.
@@ -86,13 +85,16 @@ export class MultiProgressBar {
      * Render function which is called repeatedly
      */
     render() : void {
-      let initLine = '';
+      let initLine = {} as StringObj;
       if (this.timer) {
         clearTimeout(this.timer);
       }
       // Init line is prefix text plus spinner
       if (this.prefixText.length) {
-        initLine = `${this.prefixText} ${this.frames[this.frameCount]}`;
+        initLine = {
+          renderString: `${this.prefixText} ${this.frames[this.frameCount]}`,
+          color: '',
+        };
       }
       this.writeLines(initLine);
 
@@ -222,10 +224,16 @@ export class MultiProgressBar {
       clearTimeout(this.timer);
 
       // Change prefix text according to success/failure
-      let initLine : string = chalk.green(this.options.successText || '');
+      let initLine : StringObj = {
+        renderString: this.options.successText || '',
+        color: 'green',
+      };
       for (const { bar } of this.bars) {
         if (bar.isFailed()) {
-          initLine = chalk.red(this.options.failureText || '');
+          initLine = {
+            renderString: this.options.failureText || '',
+            color: 'red',
+          };
           break;
         }
       }

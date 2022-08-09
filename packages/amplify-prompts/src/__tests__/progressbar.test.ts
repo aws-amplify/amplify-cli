@@ -4,7 +4,7 @@ import { ProgressBar as Bar, BarOptions } from '../progressbars/progressbar';
 
 const options : BarOptions = {
   progressBarFormatter: payload => payload.progressName,
-  itemFormatter: payload => payload.ResourceStatus,
+  itemFormatter: payload => ({ renderString: payload.ResourceStatus, color: '' }),
   loneWolf: false,
   hideCursor: true,
   barCompleteChar: '=',
