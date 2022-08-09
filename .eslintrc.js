@@ -254,6 +254,7 @@ module.exports = {
     '/packages/amplify-prompts/lib',
     '/packages/amplify-provider-awscloudformation/lib',
     '/packages/amplify-storage-simulator/lib',
+    '/packages/amplify-auth-simulator/lib',
     '/packages/amplify-ui-tests/lib',
     '/packages/amplify-util-headless-input/lib',
     '/packages/amplify-util-mock/lib',

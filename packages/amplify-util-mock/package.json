@@ -30,6 +30,7 @@
   "dependencies": {
     "@aws-amplify/amplify-appsync-simulator": "2.5.1",
     "@hapi/topo": "^5.0.0",
+    "amplify-auth-simulator": "1.0.0",
     "amplify-category-function": "4.0.11",
     "amplify-cli-core": "2.12.0",
     "amplify-codegen": "^3.0.1",

@@ -2,13 +2,20 @@ import { $TSContext } from 'amplify-cli-core';
 
 export const name = 'help';
 
-export const run = (context: $TSContext) => {
+/**
+ * Show the help mock info
+ */
+export const run = (context: $TSContext):void => {
   const header = `amplify ${name} [subcommand]\nDescription:\nMock resources locally`;
 
   const commands = [
     {
       name: 'storage',
       description: 'Run Storage Mock Endpoint',
+    },
+    {
+      name: 'auth',
+      description: 'Run Auth Mock Endpoint',
     },
     {
       name: 'api',
@@ -20,5 +27,4 @@ export const run = (context: $TSContext) => {
     },
   ];
   context.amplify.showHelp(header, commands);
-  return;
 };

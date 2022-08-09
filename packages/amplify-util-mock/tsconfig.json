@@ -14,8 +14,12 @@
       "path": "../amplify-cli-core"
     },
     {
+      "path": "../amplify-auth-simulator"
+    },
+    {
       "path": "../amplify-storage-simulator"
     },
+    
     {
       "path": "../amplify-provider-awscloudformation"
     },

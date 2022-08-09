@@ -62,6 +62,7 @@ packages/*/package-lock.json
 amplify-integ*/
 console-integ*/
 packages/amplify-storage-simulator/lib
+packages/amplify-auth-simulator/lib
 packages/*-template-provider/lib
 packages/*-runtime-provider/lib
 packages/amplify-function-plugin-interface/lib

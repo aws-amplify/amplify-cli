@@ -24,6 +24,7 @@ module.exports = {
   projects: [
     '<rootDir>/packages/amplify-app',
     '<rootDir>/packages/amplify-appsync-simulator',
+    '<rootDir>/packages/amplify-auth-simulator',
     '<rootDir>/packages/amplify-category-analytics',
     '<rootDir>/packages/amplify-category-auth',
     '<rootDir>/packages/amplify-category-geo',

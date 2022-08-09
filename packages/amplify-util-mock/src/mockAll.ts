@@ -1,9 +1,15 @@
+import { ServiceName as FunctionServiceName } from 'amplify-category-function';
+import { start as startAuthServer } from './auth';
 import { start as startAppSyncServer } from './api';
 import { start as startS3Server } from './storage';
-import { ServiceName as FunctionServiceName } from 'amplify-category-function';
-const MOCK_SUPPORTED_CATEGORY = ['AppSync', 'S3', FunctionServiceName.LambdaFunction];
 
-export async function mockAllCategories(context: any) {
+const MOCK_SUPPORTED_CATEGORY = ['Cognito', 'AppSync', 'S3', FunctionServiceName.LambdaFunction];
+
+/**
+ * Mock all categories
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const mockAllCategories = async (context: any):Promise<void> => {
   const resources = await context.amplify.getResourceStatus();
   const mockableResources = resources.allResources.filter(
     resource => resource.service && MOCK_SUPPORTED_CATEGORY.includes(resource.service),
@@ -32,6 +38,10 @@ export async function mockAllCategories(context: any) {
     }
     // Run the mock servers
     const serverPromises = [];
+    if (mockableResources.find(r => r.service === 'Cognito')) {
+      serverPromises.push(startAuthServer(context));
+    }
+
     if (mockableResources.find(r => r.service === 'AppSync')) {
       serverPromises.push(startAppSyncServer(context));
     }
@@ -42,4 +52,4 @@ export async function mockAllCategories(context: any) {
   } else {
     context.print.info('No resource in project can be mocked locally.');
   }
-}
+};
