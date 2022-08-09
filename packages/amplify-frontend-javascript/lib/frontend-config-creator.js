@@ -11,6 +11,7 @@ const constants = require('./constants');
 const MOCK_RESERVED_EXPORT_KEYS = [
   'aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing',
   'aws_appsync_dangerously_connect_to_http_endpoint_for_testing',
+  'aws_cognito_endpoint',
 ];
 
 // These are the set of keys that are reserved for amplify and customers are not allowed to override
@@ -397,6 +398,9 @@ function getCognitoConfig(cognitoResources, projectRegion) {
     frontendAuthConfig.aws_cognito_mfa_types = cognitoResource.frontendAuthConfig.mfaTypes;
     frontendAuthConfig.aws_cognito_password_protection_settings = cognitoResource.frontendAuthConfig.passwordProtectionSettings;
     frontendAuthConfig.aws_cognito_verification_mechanisms = cognitoResource.frontendAuthConfig.verificationMechanisms;
+  }
+  if (cognitoResource.testMode) {
+    frontendAuthConfig.aws_cognito_endpoint = cognitoResource.output.endpoint;
   }
 
   return {

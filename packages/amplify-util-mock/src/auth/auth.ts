@@ -49,7 +49,7 @@ export class AuthTest {
 
     this.bucketName = `auth-${localEnvInfo.envName}`;
     const route = path.join('/', 'auth');
-    const localDirS3 = createLocalStorage(context, `${this.bucketName}`);
+    const localDir = createLocalStorage(context, `${this.bucketName}`);
 
     try {
       context.amplify.addCleanUpTask(async () => {
@@ -57,7 +57,7 @@ export class AuthTest {
       });
       this.configOverrideManager = await ConfigOverrideManager.getInstance(context);
       this.authName = await getAuth(context);
-      const authConfig = { port, route, localDirS3 };
+      const authConfig = { port, route, localDir };
       this.authSimulator = new AmplifyAuthSimulator(authConfig);
       await this.authSimulator.start();
       console.log('Mock Auth endpoint is running at', this.authSimulator.url);
@@ -100,8 +100,7 @@ export class AuthTest {
         ...authMeta,
         output: {
           ...authMeta.output,
-          BucketName: this.bucketName,
-          Region: this.authRegion,
+          endpoint: localStorageDetails.endpoint,
         },
         testMode: localStorageDetails.testMode,
         lastPushTimeStamp: new Date(),
