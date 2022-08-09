@@ -1,6 +1,6 @@
 import { $TSContext, stateManager } from 'amplify-cli-core';
-import { loadConfigurationForEnv } from 'amplify-provider-awscloudformation';
 import { AmplifyBackend } from 'aws-sdk';
+import type { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
 
 const envMetaManagerMap: Record<string, IEnvironmentMetadata> = {};
 
@@ -77,7 +77,10 @@ const ensureEnvMetaInternal = async (
   // if getting metadata for a different environment,
   // we need to construct an amplify-backend client with that environment's credentials
   // and make a call to getBackend to fetch the metadata
-  const creds = await loadConfigurationForEnv(context, envName);
+  const creds = (await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'loadConfigurationForEnv', [
+    context,
+    envName,
+  ])) as ServiceConfigurationOptions;
   const { AMPLIFY_BACKEND_ENDPOINT, AMPLIFY_BACKEND_REGION } = process.env;
 
   const amplifyBackendClient = new AmplifyBackend({
