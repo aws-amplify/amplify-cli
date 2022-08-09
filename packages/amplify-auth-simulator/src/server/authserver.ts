@@ -58,7 +58,7 @@ export class AuthServer extends EventEmitter {
 
   constructor(private config: AuthSimulatorServerConfig) {
     super();
-    this.localDirectoryPath = config.localDirS3;
+    this.localDirectoryPath = config.localDir;
     this.app = express();
     this.app.use(cors(corsOptions));
     // eslint-disable-next-line spellcheck/spell-checker
@@ -98,6 +98,4 @@ export class AuthServer extends EventEmitter {
       this.connection = null;
     }
   }
-
-  // build event obj for s3 trigger
 }

@@ -7,7 +7,7 @@ import { AuthServer } from './server/authserver';
 export type AuthSimulatorServerConfig = {
   port: number;
   route: string;
-  localDirS3: string;
+  localDir: string;
 };
 
 /**
