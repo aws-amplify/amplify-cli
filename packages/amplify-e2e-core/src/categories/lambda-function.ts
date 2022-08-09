@@ -26,7 +26,7 @@ const goTemplateChoices = ['Hello World'];
 
 const javaTemplateChoices = [
   'Hello World',
-  'AppSync Todo'
+  'AppSync Todo',
   ];
 
 const nodeJSTemplateChoices = [
