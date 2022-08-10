@@ -2,7 +2,7 @@ import _ from 'lodash';
 import ora from 'ora';
 import sequential from 'promise-sequential';
 import {
-  stateManager, $TSAny, $TSMeta, $TSContext, $TSTeamProviderInfo,
+  stateManager, $TSAny, $TSMeta, $TSContext, $TSTeamProviderInfo, exitOnNextTick,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';
@@ -76,10 +76,10 @@ export const initializeEnv = async (
     } catch (e) {
       printer.error(`Could not initialize '${currentEnv}': ${e.message}`);
       context.usageData.emitError(e);
-      process.exit(1);
-    } finally {
       context.usageData.stopCodePathTimer(ManuallyTimedCodePath.INIT_ENV_PLATFORM);
+      exitOnNextTick(1);
     }
+    context.usageData.stopCodePathTimer(ManuallyTimedCodePath.INIT_ENV_PLATFORM);
 
     spinner.succeed(
       isPulling ? `Successfully pulled backend environment ${currentEnv} from the cloud.` : 'Initialized provider successfully.',
