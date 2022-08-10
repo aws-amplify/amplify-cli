@@ -20,14 +20,17 @@ if [[ -z ${remote_name+x} ]]; then
   exit 1
 fi
 
+git checkout dev
+git pull "$remote_name" dev
 git checkout -B dev-main-merge
-git fetch "$remote_name" dev
-git reset --hard "$remote_name"/dev
 git fetch "$remote_name" main
-git merge "$remote_name"/main -m "Merge release commit from main to dev" || merge_exit_code=$? || true
+set +e
+git merge "$remote_name"/main -m "Merge release commit from main to dev"
+merge_exit_code=$?
+set -e
 if [[ $merge_exit_code != 0 ]]; then
   # could not automatically merge
-  echo "Resolve merge conflicts then resume script by running 'kill -CONT $$'"
+  echo "Resolve merge conflicts and commit merge, then resume script by running 'kill -CONT $$'"
   kill -TSTP $$
   git push "$remote_name" dev-main-merge --force --no-verify
   compare_link=https://github.com/aws-amplify/amplify-cli/compare/dev...dev-main-merge
@@ -38,8 +41,8 @@ if [[ $merge_exit_code != 0 ]]; then
   echo "Once the changes look good, run 'kill -CONT $$' to resume this script."
   kill -TSTP $$
 fi
-git switch dev
-git pull "$remote_name" dev
+git checkout dev
 git merge dev-main-merge --ff-only
 git push "$remote_name" dev
+git branch -D dev-main-merge
 echo "Dev branch successfully fast-forwarded to the release merge commit!"

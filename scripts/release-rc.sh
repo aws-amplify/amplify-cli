@@ -32,8 +32,11 @@ branch_name="release_rc/$rc_sha"
 
 git checkout -B "$branch_name" "$rc_sha"
 git fetch "$remote_name" main
-git merge "$remote_name"/main || merge_exit_code=$? || true
-if [[ $merge_exit_code != 0 ]]; then
+set +e
+git merge "$remote_name"/main
+merge_exit_code=$?
+set -e
+if [[ $merge_exit_code -gt 0 ]]; then
   # could not automatically merge
   echo "Resolve merge conflicts and resume release candidate publish by running 'kill -CONT $$'"
   kill -TSTP $$
