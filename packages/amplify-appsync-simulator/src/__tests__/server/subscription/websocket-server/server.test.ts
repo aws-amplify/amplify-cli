@@ -55,6 +55,7 @@ describe('WebsocketSubscriptionServer', () => {
   const SUBSCRIPTION_PATH = '/graphql/realtime';
   let connectionTimeoutDuration: number;
   let keepAlive: number;
+
   beforeEach(async () => {
     jest.resetAllMocks();
     httpServer = createServer();
@@ -76,9 +77,20 @@ describe('WebsocketSubscriptionServer', () => {
     httpServer.listen(serverPort);
     server.start();
   });
+
   afterEach(() => {
-    server.stop();
-    httpServer.close();
+    server?.stop();
+    httpServer?.close();
+  });
+
+  beforeAll(done => {
+    done();
+  });
+
+  afterAll(done => {
+    server?.stop();
+    httpServer?.close();
+    done();
   });
 
   describe('Connect', () => {
