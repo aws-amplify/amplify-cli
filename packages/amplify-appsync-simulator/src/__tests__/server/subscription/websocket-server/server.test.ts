@@ -52,7 +52,7 @@ describe('WebsocketSubscriptionServer', () => {
   const onSubscribeHandler = jest.fn();
   const onConnectHandler = jest.fn();
   let serverPort = 20005;
-  const SUBSCRIPTION_PATH = '/graphql';
+  const SUBSCRIPTION_PATH = '/graphql/realtime';
   let connectionTimeoutDuration: number;
   let keepAlive: number;
   beforeEach(async () => {
