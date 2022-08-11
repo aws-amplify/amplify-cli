@@ -1,10 +1,15 @@
-import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW, getCLIPath, getProjectMeta, getBackendAmplifyMeta, invokeFunction } from '..';
 import { Lambda } from 'aws-sdk';
-import { singleSelect, multiSelect, moveUp, moveDown } from '../utils/selectors';
 import * as glob from 'glob';
 import * as path from 'path';
 import _ from 'lodash';
+import {
+  singleSelect, multiSelect, moveUp, moveDown,
+} from '../utils/selectors';
+import {
+  nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW, getCLIPath, getProjectMeta, getBackendAmplifyMeta, invokeFunction,
+} from '..';
 import { loadFeatureFlags } from '../utils/feature-flags';
+
 type FunctionActions = 'create' | 'update';
 
 type FunctionRuntimes = 'dotnetCore31' | 'go' | 'java' | 'nodejs' | 'python';
@@ -77,12 +82,12 @@ const updateFunctionCore = (cwd: string, chain: ExecutionContext, settings: Core
     settings.additionalPermissions
       ? 'Resource access permissions'
       : settings.schedulePermissions
-      ? 'Scheduled recurring invocation'
-      : settings.layerOptions
-      ? 'Lambda layers configuration'
-      : settings.environmentVariables
-      ? 'Environment variables configuration'
-      : 'Secret values configuration',
+        ? 'Scheduled recurring invocation'
+        : settings.layerOptions
+          ? 'Lambda layers configuration'
+          : settings.environmentVariables
+            ? 'Environment variables configuration'
+            : 'Secret values configuration',
     [
       'Resource access permissions',
       'Scheduled recurring invocation',
@@ -163,116 +168,113 @@ const coreFunction = (
   action: FunctionActions,
   runtime: FunctionRuntimes,
   functionConfigCallback: FunctionCallback,
-) => {
-  return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(settings.testingWithLatestCodebase), [action === 'update' ? 'update' : 'add', 'function'], {
-      cwd,
-      stripColors: true,
-    });
+) => new Promise((resolve, reject) => {
+  const chain = spawn(getCLIPath(settings.testingWithLatestCodebase), [action === 'update' ? 'update' : 'add', 'function'], {
+    cwd,
+    stripColors: true,
+  });
 
-    if (action === 'create') {
-      chain
-        .wait('Select which capability you want to add:')
-        .sendCarriageReturn() // lambda function
-        .wait('Provide an AWS Lambda function name:')
-        .sendLine(settings.name || '');
+  if (action === 'create') {
+    chain
+      .wait('Select which capability you want to add:')
+      .sendCarriageReturn() // lambda function
+      .wait('Provide an AWS Lambda function name:')
+      .sendLine(settings.name || '');
 
-      selectRuntime(chain, runtime);
-      const templateChoices = getTemplateChoices(runtime);
-      if (templateChoices.length > 1) {
-        if(settings?.appSyncAuthType?.length > 1){
-          selectTemplate(chain, settings.functionTemplate, runtime, settings.appSyncAuthType);
-        }
-        else selectTemplate(chain, settings.functionTemplate, runtime);
-      }
-    } else {
-      if (settings.layerOptions && settings.layerOptions.layerAndFunctionExist) {
-        chain.wait('Select which capability you want to update:').sendCarriageReturn(); // lambda function
-      }
-      chain.wait('Select the Lambda function you want to update').sendCarriageReturn(); // assumes only one function configured in the project
+    selectRuntime(chain, runtime);
+    const templateChoices = getTemplateChoices(runtime);
+    if (templateChoices.length > 1) {
+      if (settings?.appSyncAuthType?.length > 1) {
+        selectTemplate(chain, settings.functionTemplate, runtime, settings.appSyncAuthType);
+      } else selectTemplate(chain, settings.functionTemplate, runtime);
     }
-
-    if (functionConfigCallback) {
-      functionConfigCallback(chain, cwd, settings);
+  } else {
+    if (settings.layerOptions && settings.layerOptions.layerAndFunctionExist) {
+      chain.wait('Select which capability you want to update:').sendCarriageReturn(); // lambda function
     }
+    chain.wait('Select the Lambda function you want to update').sendCarriageReturn(); // assumes only one function configured in the project
+  }
 
-    if (settings.expectFailure) {
-      runChain(chain, resolve, reject);
-      return;
-    }
+  if (functionConfigCallback) {
+    functionConfigCallback(chain, cwd, settings);
+  }
 
-    // advanced settings flow
-    if (action === 'create') {
-      chain.wait('Do you want to configure advanced settings?');
+  if (settings.expectFailure) {
+    runChain(chain, resolve, reject);
+    return;
+  }
 
-      if (
-        settings.additionalPermissions ||
-        settings.schedulePermissions ||
-        settings.layerOptions ||
-        settings.environmentVariables ||
-        settings.secretsConfig
-      ) {
-        chain.sendConfirmYes().wait('Do you want to access other resources in this project from your Lambda function?');
-        if (settings.additionalPermissions) {
-          // other permissions flow
-          chain.sendConfirmYes();
-          additionalPermissions(cwd, chain, settings.additionalPermissions);
-        } else {
-          chain.sendConfirmNo();
-        }
+  // advanced settings flow
+  if (action === 'create') {
+    chain.wait('Do you want to configure advanced settings?');
 
-        //scheduling questions
-        chain.wait('Do you want to invoke this function on a recurring schedule?');
-
-        if (settings.schedulePermissions === undefined) {
-          chain.sendConfirmNo();
-        } else {
-          chain.sendConfirmYes();
-          cronWalkthrough(chain, settings, action);
-        }
-
-        // lambda layers question
-        chain.wait('Do you want to enable Lambda layers for this function?');
-        if (settings.layerOptions === undefined) {
-          chain.sendConfirmNo();
-        } else {
-          chain.sendConfirmYes();
-          addLayerWalkthrough(chain, settings.layerOptions);
-        }
-
-        // environment variable question
-        chain.wait('Do you want to configure environment variables for this function?');
-        if (settings.environmentVariables === undefined) {
-          chain.sendConfirmNo();
-        } else {
-          chain.sendConfirmYes();
-          addEnvVarWalkthrough(chain, settings.environmentVariables);
-        }
-
-        // secrets config
-        chain.wait('Do you want to configure secret values this function can access?');
-        if (settings.secretsConfig === undefined) {
-          chain.sendConfirmNo();
-        } else {
-          if (settings.secretsConfig.operation !== 'add') {
-            throw new Error('add walkthrough only supports add secrets operation');
-          }
-          chain.sendConfirmYes();
-          addSecretWalkthrough(chain, settings.secretsConfig);
-        }
+    if (
+      settings.additionalPermissions
+        || settings.schedulePermissions
+        || settings.layerOptions
+        || settings.environmentVariables
+        || settings.secretsConfig
+    ) {
+      chain.sendConfirmYes().wait('Do you want to access other resources in this project from your Lambda function?');
+      if (settings.additionalPermissions) {
+        // other permissions flow
+        chain.sendConfirmYes();
+        additionalPermissions(cwd, chain, settings.additionalPermissions);
       } else {
         chain.sendConfirmNo();
       }
+
+      // scheduling questions
+      chain.wait('Do you want to invoke this function on a recurring schedule?');
+
+      if (settings.schedulePermissions === undefined) {
+        chain.sendConfirmNo();
+      } else {
+        chain.sendConfirmYes();
+        cronWalkthrough(chain, settings, action);
+      }
+
+      // lambda layers question
+      chain.wait('Do you want to enable Lambda layers for this function?');
+      if (settings.layerOptions === undefined) {
+        chain.sendConfirmNo();
+      } else {
+        chain.sendConfirmYes();
+        addLayerWalkthrough(chain, settings.layerOptions);
+      }
+
+      // environment variable question
+      chain.wait('Do you want to configure environment variables for this function?');
+      if (settings.environmentVariables === undefined) {
+        chain.sendConfirmNo();
+      } else {
+        chain.sendConfirmYes();
+        addEnvVarWalkthrough(chain, settings.environmentVariables);
+      }
+
+      // secrets config
+      chain.wait('Do you want to configure secret values this function can access?');
+      if (settings.secretsConfig === undefined) {
+        chain.sendConfirmNo();
+      } else {
+        if (settings.secretsConfig.operation !== 'add') {
+          throw new Error('add walkthrough only supports add secrets operation');
+        }
+        chain.sendConfirmYes();
+        addSecretWalkthrough(chain, settings.secretsConfig);
+      }
     } else {
-      updateFunctionCore(cwd, chain, settings);
+      chain.sendConfirmNo();
     }
+  } else {
+    updateFunctionCore(cwd, chain, settings);
+  }
 
-    // edit function question
-    chain.wait('Do you want to edit the local lambda function now?').sendConfirmNo().sendEof();
+  // edit function question
+  chain.wait('Do you want to edit the local lambda function now?').sendConfirmNo().sendEof();
 
-    runChain(chain, resolve, reject);
-  });
-};
+  runChain(chain, resolve, reject);
+});
 
 const runChain = (chain: ExecutionContext, resolve, reject) => {
   chain.run((err: Error) => {
@@ -289,13 +291,9 @@ export const addFunction = (
   settings: CoreFunctionSettings,
   runtime: FunctionRuntimes,
   functionConfigCallback: FunctionCallback = undefined,
-) => {
-  return coreFunction(cwd, settings, 'create', runtime, functionConfigCallback);
-};
+) => coreFunction(cwd, settings, 'create', runtime, functionConfigCallback);
 
-export const updateFunction = (cwd: string, settings: CoreFunctionSettings, runtime: FunctionRuntimes) => {
-  return coreFunction(cwd, settings, 'update', runtime, undefined);
-};
+export const updateFunction = (cwd: string, settings: CoreFunctionSettings, runtime: FunctionRuntimes) => coreFunction(cwd, settings, 'update', runtime, undefined);
 
 export const addLambdaTrigger = (chain: ExecutionContext, cwd: string, settings: any) => {
   chain = singleSelect(
@@ -329,21 +327,19 @@ export const addLambdaTrigger = (chain: ExecutionContext, cwd: string, settings:
   }
 };
 
-export const functionBuild = (cwd: string, settings: any): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['function', 'build'], { cwd, stripColors: true })
-      .wait('Are you sure you want to continue building the resources?')
-      .sendConfirmYes()
-      .sendEof()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-};
+export const functionBuild = (cwd: string, settings: any): Promise<void> => new Promise((resolve, reject) => {
+  spawn(getCLIPath(), ['function', 'build'], { cwd, stripColors: true })
+    .wait('Are you sure you want to continue building the resources?')
+    .sendConfirmYes()
+    .sendEof()
+    .run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
+});
 
 export const selectRuntime = (chain: ExecutionContext, runtime: FunctionRuntimes) => {
   const runtimeName = getRuntimeDisplayName(runtime);
@@ -363,30 +359,20 @@ export const selectTemplate = (chain: ExecutionContext, functionTemplate: string
   moveUp(chain, templateChoices.indexOf('Hello World'));
 
   singleSelect(chain, functionTemplate, templateChoices);
-  
-  if (functionTemplate === 'AppSync Todo' && appSyncAuthType === 'API_KEY') {
+
+  if (functionTemplate === 'AppSync Todo' && (!appSyncAuthType || appSyncAuthType === 'API_KEY')) {
     chain.wait('Pick a Auth type');
     chain.sendKeyDown();
     chain.sendCarriageReturn();
-  }
-  else if(functionTemplate === 'AppSync Todo' && appSyncAuthType === 'IAM'){
+  } else if (functionTemplate === 'AppSync Todo' && appSyncAuthType === 'IAM') {
     chain.wait('Pick a Auth type');
     chain.sendCarriageReturn();
   }
-  // just in case id no auth type present
-  else if(functionTemplate === 'AppSync Todo' && appSyncAuthType === ''){
-    chain.wait('Pick a Auth type');
-    chain.sendKeyDown();
-    chain.sendCarriageReturn();
-  }
-  
-  
 };
 
-export const removeFunction = (cwd: string, funcName: string) =>
-  new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['remove', 'function', funcName, '--yes'], { cwd, stripColors: true }).run(err => (err ? reject(err) : resolve()));
-  });
+export const removeFunction = (cwd: string, funcName: string) => new Promise<void>((resolve, reject) => {
+  spawn(getCLIPath(), ['remove', 'function', funcName, '--yes'], { cwd, stripColors: true }).run(err => (err ? reject(err) : resolve()));
+});
 
 export interface LayerOptions {
   select?: string[]; // list options to select
@@ -574,19 +560,17 @@ const addCron = (chain: ExecutionContext, settings: any) => {
 export const functionMockAssert = (
   cwd: string,
   settings: { funcName: string; successString: string; eventFile: string; timeout?: number },
-) => {
-  return new Promise<void>((resolve, reject) => {
-    const cliArgs = ['mock', 'function', settings.funcName, '--event', settings.eventFile].concat(
-      settings.timeout ? ['--timeout', settings.timeout.toString()] : [],
-    );
-    spawn(getCLIPath(), cliArgs, { cwd, stripColors: true })
-      .wait('Result:')
-      .wait(settings.successString)
-      .wait('Finished execution.')
-      .sendEof()
-      .run(err => (err ? reject(err) : resolve()));
-  });
-};
+) => new Promise<void>((resolve, reject) => {
+  const cliArgs = ['mock', 'function', settings.funcName, '--event', settings.eventFile].concat(
+    settings.timeout ? ['--timeout', settings.timeout.toString()] : [],
+  );
+  spawn(getCLIPath(), cliArgs, { cwd, stripColors: true })
+    .wait('Result:')
+    .wait(settings.successString)
+    .wait('Finished execution.')
+    .sendEof()
+    .run(err => (err ? reject(err) : resolve()));
+});
 
 export const functionCloudInvoke = async (
   cwd: string,
@@ -640,7 +624,7 @@ const getRuntimeDisplayName = (runtime: FunctionRuntimes) => {
 };
 
 export function validateNodeModulesDirRemoval(projRoot) {
-  let functionDir = path.join(projRoot, 'amplify', '#current-cloud-backend', 'function');
+  const functionDir = path.join(projRoot, 'amplify', '#current-cloud-backend', 'function');
   const nodeModulesDirs = glob.sync('**/node_modules', {
     cwd: functionDir,
     absolute: true,
