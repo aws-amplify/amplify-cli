@@ -48,18 +48,6 @@ const syncCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
   }
 };
 
-const pushHooks = async (context: $TSContext): Promise<void> => {
-  context.exeInfo.pushHooks = true;
-  const providerPlugins = getProviderPlugins(context);
-  const pushHooksTasks: (() => Promise<$TSAny>)[] = [];
-  context.exeInfo.projectConfig.providers.forEach(provider => {
-    // eslint-disable-next-line
-    const providerModule = require(providerPlugins[provider]);
-    pushHooksTasks.push(() => providerModule.uploadHooksDirectory(context));
-  });
-  await sequential(pushHooksTasks);
-};
-
 /**
  * Runs push command
  */
@@ -72,7 +60,6 @@ export const run = async (context: $TSContext): Promise<$TSAny|void> => {
     if (context.parameters.options.force) {
       context.exeInfo.forcePush = true;
     }
-    await pushHooks(context);
     await syncCurrentCloudBackend(context);
     return await context.amplify.pushResources(context);
   } catch (e) {
