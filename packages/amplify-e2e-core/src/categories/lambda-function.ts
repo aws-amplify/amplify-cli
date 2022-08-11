@@ -180,7 +180,7 @@ const coreFunction = (
       selectRuntime(chain, runtime);
       const templateChoices = getTemplateChoices(runtime);
       if (templateChoices.length > 1) {
-        if(settings.appSyncAuthType.length > 1){
+        if(settings.appSyncAuthType != null && settings.appSyncAuthType.length > 1){
           selectTemplate(chain, settings.functionTemplate, runtime, settings.appSyncAuthType);
         }
         else selectTemplate(chain, settings.functionTemplate, runtime);
