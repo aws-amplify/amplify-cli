@@ -117,8 +117,9 @@ const initializeProgressBars = (eventMap : EventMap) : MultiProgressBar => {
       },
     }), progressBarsConfigs,
   );
-
-  newMultiBar.create(progressBarsConfigs);
+  if (newMultiBar.isTTY()) {
+    newMultiBar.create(progressBarsConfigs);
+  }
   return newMultiBar;
 };
 

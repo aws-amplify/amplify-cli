@@ -56,7 +56,7 @@ export class MultiProgressBar {
     /**
      * Checks if the environment is tty
      */
-    private isTTY() : boolean {
+    isTTY() : boolean {
       return this.terminal.isTTY();
     }
 

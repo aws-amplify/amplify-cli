@@ -55,7 +55,9 @@ describe('CloudFormation', () => {
     const cfn = await new CloudFormation();
     cfn.eventMap = eventMap;
     cfn.progressBar = initializeProgressBars(eventMap);
-    expect(cfn.progressBar.getBarCount()).toBe(2);
+    if (cfn.progressBar.isTTY()) {
+      expect(cfn.progressBar.getBarCount()).toBe(2);
+    }
     cfn.progressBar.stop();
   });
 });

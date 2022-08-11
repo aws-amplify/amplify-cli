@@ -200,7 +200,7 @@ class CloudFormation {
     } else {
       newEvents = events;
     }
-    if(this.eventMap) {
+    if(this.eventMap && this.progressBar.isTTY()) {
       this.showEventProgress(_.uniqBy(newEvents, 'EventId'));
     }
     else {
@@ -216,7 +216,7 @@ class CloudFormation {
     if (events.length > 0) {
       events.forEach(event => {
         const finishStatus = CFN_SUCCESS_STATUS.includes(event.ResourceStatus);
-        let updateObj = {
+        const updateObj = {
           name: event.LogicalResourceId,
           payload: {
             LogicalResourceId: event.LogicalResourceId,
@@ -224,7 +224,7 @@ class CloudFormation {
             ResourceStatus: event.ResourceStatus,
             Timestamp: event.Timestamp
         }}
-        let item = this.eventMap['rootResources'].find(item => item.key === event.LogicalResourceId)
+        const item = this.eventMap['rootResources'].find(it => it.key === event.LogicalResourceId)
         if(event.LogicalResourceId === this.eventMap['rootStackName'] || item) {
           // If the root resource for a category has already finished, then we do not have to wait for all events under it.
           if (finishStatus && item && item.category) {
