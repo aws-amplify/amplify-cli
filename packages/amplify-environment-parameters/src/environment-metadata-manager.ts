@@ -54,7 +54,7 @@ const ensureEnvMetaInternal = async (
 ): Promise<IEnvironmentMetadata> => {
   // when adding the first manager into the map, need to add a callback to save on exit
   if (Object.keys(envMetaManagerMap).length === 0) {
-    process.on('beforeExit', () => {
+    process.on('exit', () => {
       const currentEnv = stateManager.getLocalEnvInfo().envName;
       // ensure any updates to the current env meta are written to the `amplify-meta.json` file
       envMetaManagerMap[currentEnv]?.save();
@@ -125,10 +125,16 @@ class EnvironmentMetadata implements IEnvironmentMetadata {
   /**
    * Create a new EnvironmentMetadata object
    *
-   * @param amplifyMeta the metadata to init
+   * @param amplifyMeta the provider metadata to init. Can optionally be nested in providers.awscloudformation in the object
    * @param isDirty whether the given amplifyMeta is in sync with what's on the disc
    */
   constructor(amplifyMeta: Record<string, unknown>, isDirty = false) {
+    let flattenedMeta = amplifyMeta;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (typeof (amplifyMeta as any)?.providers?.awscloudformation === 'object') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      flattenedMeta = (amplifyMeta as any).providers.awscloudformation;
+    }
     const requiredKeys: (keyof IEnvironmentMetadata)[] = [
       'AuthRoleName',
       'AuthRoleArn',
@@ -140,20 +146,20 @@ class EnvironmentMetadata implements IEnvironmentMetadata {
       'StackName',
       'AmplifyAppId',
     ];
-    const amplifyMetaKeys = Object.keys(amplifyMeta);
+    const amplifyMetaKeys = Object.keys(flattenedMeta);
     requiredKeys.forEach(requiredKey => {
       if (!amplifyMetaKeys.includes(requiredKey)) {
         throw new Error(`Tried to initialize EnvironmentMetadata object without required key ${requiredKey}`);
       }
-      if (typeof amplifyMeta[requiredKey] !== 'string') {
+      if (typeof flattenedMeta[requiredKey] !== 'string') {
         throw new Error(`Tried to initialize EnvironmentMetadata object with ${requiredKey} set to a non-string value`);
       }
     });
-    const permissionBoundaryType = typeof amplifyMeta.PermissionsBoundaryPolicyArn;
-    if (permissionBoundaryType !== 'string' || permissionBoundaryType !== undefined) {
+    const permissionBoundaryType = typeof flattenedMeta.PermissionsBoundaryPolicyArn;
+    if (permissionBoundaryType !== 'string' && permissionBoundaryType !== 'undefined') {
       throw new Error(`Tried to initialize EnvironmentMetadata object with PermissionsBoundaryPolicyArn set to a non-string value`);
     }
-    const validatedAmplifyMeta = amplifyMeta as IEnvironmentMetadata;
+    const validatedAmplifyMeta = flattenedMeta as IEnvironmentMetadata;
     this.AuthRoleName = validatedAmplifyMeta.AuthRoleName;
     this.AuthRoleArn = validatedAmplifyMeta.AuthRoleArn;
     this.UnauthRoleArn = validatedAmplifyMeta.UnauthRoleArn;
@@ -180,7 +186,8 @@ class EnvironmentMetadata implements IEnvironmentMetadata {
     if (!this._dirty) {
       return;
     }
-    const amplifyMeta = stateManager.getMeta();
+    const amplifyMeta = stateManager.getMeta(undefined, { throwIfNotExist: false }) || {};
+    amplifyMeta.providers = {};
     amplifyMeta.providers.awscloudformation = this.toObject();
     stateManager.setMeta(undefined, amplifyMeta);
   }

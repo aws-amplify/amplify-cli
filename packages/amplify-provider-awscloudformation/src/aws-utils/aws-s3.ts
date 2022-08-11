@@ -13,11 +13,10 @@ import _ from 'lodash';
 import fs from 'fs-extra';
 import ora from 'ora';
 import { ListObjectVersionsOutput, ListObjectVersionsRequest, ObjectIdentifier } from 'aws-sdk/clients/s3';
+import { getEnvMeta } from '@aws-amplify/amplify-environment-parameters';
 import { pagedAWSCall } from './paged-call';
 import { loadConfiguration } from '../configuration-manager';
 import aws from './aws';
-
-const providerName = require('../constants').ProviderName;
 
 const minChunkSize = 5 * 1024 * 1024; // 5 MB https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3/ManagedUpload.html#minPartSize-property
 const { fileLogger } = require('../utils/aws-logger');
@@ -70,12 +69,8 @@ export class S3 {
    * Populate the uploadState member with the Amplify deployment bucket name
    */
   private populateUploadState(): void {
-    const amplifyMeta = stateManager.getMeta();
-    const teamProviderInfo = stateManager.getTeamProviderInfo();
     const { envName } = stateManager.getLocalEnvInfo();
-    const projectBucket = amplifyMeta.providers
-      ? amplifyMeta.providers[providerName].DeploymentBucketName
-      : teamProviderInfo?.[envName]?.[providerName]?.DeploymentBucketName;
+    const projectBucket = getEnvMeta().DeploymentBucketName;
 
     this.uploadState = {
       envName,
@@ -95,8 +90,7 @@ export class S3 {
     // eslint-disable-next-line no-prototype-builtins
     if (!s3Params.hasOwnProperty('Bucket')) {
       if (!envName) envName = this.context.amplify.getEnvInfo().envName;
-      const teamProviderInfo = stateManager.getTeamProviderInfo();
-      const projectBucket = teamProviderInfo[envName][providerName].DeploymentBucketName;
+      const projectBucket = getEnvMeta().DeploymentBucketName;
       s3Params.Bucket = projectBucket;
     }
     return s3Params;

@@ -43,14 +43,14 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
    */
   async init(): Promise<void> {
     // read in the TPI contents
-    const categories = stateManager.getTeamProviderInfo()?.[this.envName]?.categories || {};
+    const categories = stateManager.getTeamProviderInfo(undefined, { throwIfNotExist: false })?.[this.envName]?.categories || {};
     Object.entries(categories as Record<string, unknown>).forEach(([category, resources]) => {
       Object.entries(resources as Record<string, Record<string, string>>).forEach(([resource, parameters]) => {
         this.getResourceParamManager(category, resource).setAllParams(parameters);
       });
     });
 
-    process.on('beforeExit', () => this.save());
+    process.on('exit', () => this.save());
   }
 
   removeResourceParamManager(category: string, resource: string): void {

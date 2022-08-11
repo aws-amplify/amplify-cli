@@ -5,6 +5,7 @@ import {
   CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager, $TSContext, $TSAny,
 } from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
+import { ensureEnvMeta, initEnvMeta } from '@aws-amplify/amplify-environment-parameters';
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
@@ -52,7 +53,7 @@ export const onSuccess = async (context: $TSContext): Promise<void> => {
 
   await frontendModule.onInitSuccessful(context);
 
-  generateLocalRuntimeFiles(context);
+  await generateLocalRuntimeFiles(context);
   generateNonRuntimeFiles(context);
 
   if (context.exeInfo.isNewProject) {
@@ -101,9 +102,9 @@ export const onSuccess = async (context: $TSContext): Promise<void> => {
   }
 };
 
-const generateLocalRuntimeFiles = (context: $TSContext): void => {
+const generateLocalRuntimeFiles = async (context: $TSContext): Promise<void> => {
   generateLocalEnvInfoFile(context);
-  generateAmplifyMetaFile(context);
+  await generateAmplifyMetaFile(context);
   generateLocalTagsFile(context);
 };
 
@@ -144,13 +145,16 @@ const generateLocalTagsFile = (context: $TSContext): void => {
 /**
  * Create amplify-meta.json on env init
  */
-export const generateAmplifyMetaFile = (context: $TSContext): void => {
+export const generateAmplifyMetaFile = async (context: $TSContext): Promise<void> => {
   if (context.exeInfo.isNewEnv) {
     const { projectPath } = context.exeInfo.localEnvInfo;
 
     stateManager.setCurrentMeta(projectPath, context.exeInfo.amplifyMeta);
-    stateManager.setMeta(projectPath, context.exeInfo.amplifyMeta);
+    // setting meta to empty object here to avoid issues with appending category info during init
+    stateManager.setMeta(undefined, {});
+    await initEnvMeta(context.exeInfo.amplifyMeta);
   }
+  await ensureEnvMeta(context);
 };
 
 const generateNonRuntimeFiles = (context: $TSContext): void => {

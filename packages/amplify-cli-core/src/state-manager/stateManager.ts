@@ -36,6 +36,13 @@ export type ResourceEntry = {
 export class StateManager {
   metaFileExists = (projectPath?: string): boolean => this.doesExist(pathManager.getAmplifyMetaFilePath, projectPath);
 
+  /**
+   * Return the contents of the `amplify-meta.json` file
+   *
+   * @deprecated If interacting with the providers block of the meta file,
+   * use getEnvMeta from @aws-amplify/amplify-environment-parameters instead.
+   * If interacting with the categories part of the file, continuing to use this function is okay for now
+   */
   getMeta = (projectPath?: string, options?: GetOptions<$TSMeta>): $TSMeta => {
     const filePath = pathManager.getAmplifyMetaFilePath(projectPath);
     const mergedOptions = {

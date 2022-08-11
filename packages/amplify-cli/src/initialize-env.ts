@@ -4,7 +4,8 @@ import {
   stateManager, $TSAny, $TSMeta, $TSContext,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-import { ensureEnvParamManager, IEnvironmentParameterManager } from '@aws-amplify/amplify-environment-parameters';
+import { ensureEnvParamManager, IEnvironmentParameterManager, getEnvMeta } from '@aws-amplify/amplify-environment-parameters';
+import { initEnv as providerInitEnv, pushResources } from 'amplify-provider-awscloudformation';
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';
 import { ManuallyTimedCodePath } from './domain/amplify-usageData/IUsageData';
 
@@ -38,7 +39,7 @@ export const initializeEnv = async (
 
     const categoryInitializationTasks: (() => Promise<$TSAny>)[] = [];
 
-    const initializedCategories = Object.keys(stateManager.getMeta());
+    const initializedCategories = Object.keys(stateManager.getBackendConfig(undefined, { throwIfNotExist: false }) || {});
     const categoryPluginInfoList = context.amplify.getAllCategoryPluginInfo(context);
     const availableCategories = Object.keys(categoryPluginInfoList).filter(key => initializedCategories.includes(key));
 
@@ -58,15 +59,10 @@ export const initializeEnv = async (
     });
 
     const providerPlugins = getProviderPlugins(context);
-
-    const initializationTasks: (() => Promise<$TSAny>)[] = [];
-    const providerPushTasks: (() => Promise<$TSAny>)[] = [];
-
-    context.exeInfo.projectConfig.providers.forEach(provider => {
-      // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
-      const providerModule = require(providerPlugins[provider]);
-      initializationTasks.push(() => providerModule.initEnv(context, amplifyMeta.providers[provider]));
-    });
+    const pluginKeys = Object.keys(providerPlugins);
+    if (!(pluginKeys.length === 1 && pluginKeys[0] === 'awscloudformation')) {
+      throw new Error('Amplify no longer supports provider plugins');
+    }
 
     spinner.start(
       isPulling ? `Fetching updates to backend environment: ${currentEnv} from the cloud.` : `Initializing your environment: ${currentEnv}`,
@@ -74,7 +70,7 @@ export const initializeEnv = async (
 
     try {
       context.usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_PLATFORM);
-      await sequential(initializationTasks);
+      await providerInitEnv(context, getEnvMeta());
     } catch (e) {
       printer.error(`Could not initialize '${currentEnv}': ${e.message}`);
       printer.debug(e.stack);
@@ -104,16 +100,8 @@ export const initializeEnv = async (
     }
 
     if (context.exeInfo.forcePush) {
-      // eslint-disable-next-line no-restricted-syntax
-      for (const provider of context.exeInfo.projectConfig.providers) {
-        // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
-        const providerModule = require(providerPlugins[provider]);
-
-        const resourceDefinition = await context.amplify.getResourceStatus(undefined, undefined, provider);
-        providerPushTasks.push(() => providerModule.pushResources(context, resourceDefinition));
-      }
-
-      await sequential(providerPushTasks);
+      const resourceDefinition = await context.amplify.getResourceStatus(undefined, undefined, 'awscloudformation');
+      await pushResources(context, resourceDefinition);
     }
 
     // Generate AWS exports/configuration file
