@@ -318,8 +318,9 @@ export class GraphQLResourceManager {
             diff => {
               const keySchemaModified = diff.kind === 'E' && diff.path.length === 8 && diff.path[5] === 'KeySchema';
               const sortKeyAdded = diff.kind === 'A' && diff.path.length === 6 && diff.path[5] === 'KeySchema' && diff.index === 1;
+              const sortKeyRemoved = diff.kind === 'D' && diff.path.length === 6 && diff.path[5] === 'KeySchema' && diff.index === 1;
               const localSecondaryIndexModified = diff.path.some((pathEntry) => pathEntry === 'LocalSecondaryIndexes');
-              return keySchemaModified || sortKeyAdded || localSecondaryIndexModified;
+              return keySchemaModified || sortKeyAdded || sortKeyRemoved || localSecondaryIndexModified;
             },
           ) // filter diffs with changes that require replacement
           .map(diff => ({
