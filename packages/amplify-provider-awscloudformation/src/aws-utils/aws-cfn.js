@@ -201,8 +201,7 @@ class CloudFormation {
       newEvents = events;
     }
     if(this.eventMap &&
-      this.progressBar.isTTY() &&
-      process.env.USE_PRETTY_PRINT_LOGS === 'true') {
+      this.progressBar.isTTY()) {
       this.showEventProgress(_.uniqBy(newEvents, 'EventId'));
     }
     else {
