@@ -284,17 +284,10 @@ async function getCurrentAWSExports(context) {
   let awsExports = {};
 
   if (fs.existsSync(targetFilePath)) {
-    // if packaged, we can't load an ES6 module because pkg doesn't support it yet
-    // eslint-disable-next-line spellcheck/spell-checker
-    const es5export = 'module.exports = {default: awsmobile};\n';
-    // eslint-disable-next-line spellcheck/spell-checker
-    const es6export = 'export default awsmobile;\n';
-
     const fileContents = fs.readFileSync(targetFilePath, 'utf-8');
-    fs.writeFileSync(targetFilePath, fileContents.replace(es6export, es5export));
-    // eslint-disable-next-line global-require, import/no-dynamic-require
-    awsExports = require(targetFilePath).default;
-    fs.writeFileSync(targetFilePath, fileContents);
+    // trick to force aws-exports.js to be treated as an ES Module
+    // https://nodejs.org/api/esm.html#data-imports
+    awsExports = await import(`data:text/javascript,${encodeURIComponent(fileContents)}`)?.default;
   }
 
   return awsExports;
