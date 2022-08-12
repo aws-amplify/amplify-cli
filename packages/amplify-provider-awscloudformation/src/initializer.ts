@@ -1,17 +1,19 @@
+/* eslint-disable func-style */
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { $TSContext, JSONUtilities, PathConstants, pathManager, stateManager, Template } from 'amplify-cli-core';
 import _ from 'lodash';
 import { transformRootStack } from './override-manager';
 import { rootStackFileName } from './push-resources';
 import { getDefaultTemplateDescription } from './template-description-utils';
 import * as vm from 'vm2';
-import { printer, formatter } from 'amplify-prompts';
+import { printer, formatter, AmplifySpinner } from 'amplify-prompts';
 
 const moment = require('moment');
 const path = require('path');
 const glob = require('glob');
 const archiver = require('./utils/archiver');
 const fs = require('fs-extra');
-const ora = require('ora');
 const sequential = require('promise-sequential');
 const Cloudformation = require('./aws-utils/aws-cfn');
 const { S3 } = require('./aws-utils/aws-s3');
@@ -24,6 +26,14 @@ const { prePushCfnTemplateModifier } = require('./pre-push-cfn-processor/pre-pus
 const logger = fileLogger('attach-backend');
 const { configurePermissionsBoundaryForInit } = require('./permissions-boundary/permissions-boundary');
 import { v4 as uuid } from 'uuid';
+
+type ParamType = {
+  StackName: string,
+  Capabilities: string[],
+  TemplateBody: string,
+  Parameters: {ParameterKey: string, ParameterValue: string}[],
+  Tags: string[],
+};
 
 export async function run(context) {
   await configurationManager.init(context);
@@ -65,7 +75,6 @@ export async function run(context) {
       },
     };
 
-    const noOverrideMsg = '';
     try {
       const backendDir = pathManager.getBackendDirPath();
       const overrideFilePath = path.join(backendDir, 'awscloudformation', 'build', 'override.js');
@@ -115,24 +124,15 @@ export async function run(context) {
       Tags,
     };
 
-    const spinner = ora();
-    spinner.start('Initializing project in the cloud...');
+    const eventMap = createInitEventMap(params, envName, projectName);
+    const cfnItem = await new Cloudformation(context, 'init', awsConfigInfo, eventMap);
+    const stackDescriptionData = await cfnItem.createResourceStack(params);
 
-    try {
-      const cfnItem = await new Cloudformation(context, 'init', awsConfigInfo);
-      const stackDescriptionData = await cfnItem.createResourceStack(params);
+    processStackCreationData(context, amplifyAppId, stackDescriptionData);
+    cloneCLIJSONForNewEnvironment(context);
 
-      processStackCreationData(context, amplifyAppId, stackDescriptionData);
-      cloneCLIJSONForNewEnvironment(context);
-
-      spinner.succeed('Successfully created initial AWS cloud resources for deployments.');
-
-      return context;
-    } catch (e) {
-      spinner.fail('Root stack creation failed');
-      throw e;
-    }
-  } else if (
+    return context;
+  } else if(
     // This part of the code is invoked by the `amplify init --appId xxx` command
     // on projects that are already fully setup by `amplify init` with the Amplify CLI version prior to 4.0.0.
     // It expects all the artifacts in the `amplify/.config` directory, the amplify-meta.json file in both
@@ -148,6 +148,29 @@ export async function run(context) {
   } else {
     setCloudFormationOutputInContext(context, {});
   }
+}
+
+type EventMap = {
+  rootStackName: string,
+  rootResources: {key: string}[],
+  categories: string[],
+  envName: string,
+  projectName: string
+}
+
+function createInitEventMap(params: ParamType, envName: string, projectName: string) : EventMap {
+  return {
+    rootStackName: params.StackName,
+    rootResources: params.Parameters.map(item => {
+      const key = item.ParameterKey;
+      return {
+        key: key.endsWith('Name') ? key.replace(/.{0,4}$/, '') : key,
+      };
+    }),
+    categories: [],
+    envName,
+    projectName,
+  };
 }
 
 function processStackCreationData(context, amplifyAppId, stackDescriptiondata) {
@@ -255,12 +278,15 @@ function storeCurrentCloudBackend(context) {
 
   const zipFilePath = path.normalize(path.join(tempDir, zipFilename));
   let log = null;
+  const spinner = new AmplifySpinner('Saving deployment state.');
 
   return archiver
     .run(currentCloudBackendDir, zipFilePath, undefined, cliJSONFiles)
     .then(result => {
       const s3Key = `${result.zipFilename}`;
+      spinner.start();
       return S3.getInstance(context).then(s3 => {
+        spinner.stop('Deployment bucket fetched.');
         const s3Params = {
           Body: fs.createReadStream(result.zipFilePath),
           Key: s3Key,
@@ -272,6 +298,7 @@ function storeCurrentCloudBackend(context) {
     })
     .catch(ex => {
       log(ex);
+      spinner.stop('Deployment state save failed.', false);
       throw ex;
     })
     .then(() => {

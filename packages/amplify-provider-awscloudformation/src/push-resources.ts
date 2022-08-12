@@ -298,8 +298,6 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
           deployment: finalStep,
           rollback: deploymentSteps[deploymentSteps.length - 1].deployment,
         });
-
-        spinner.start();
         await deploymentManager.deploy(deploymentStateManager);
 
         // delete the intermidiate states as it is ephemeral
@@ -317,12 +315,12 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
         postDeploymentCleanup(s3, cloudformationMeta.DeploymentBucketName);
       } else {
         // Non iterative update
-        spinner.start();
 
         const nestedStack = await formNestedStack(context, context.amplify.getProjectDetails());
+        const eventMap = createEventMap(context, resourcesToBeCreated, resourcesToBeUpdated);
 
         try {
-          await updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated, resourcesToBeUpdated);
+          await updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated, resourcesToBeUpdated, eventMap);
           await storeRootStackTemplate(context, nestedStack);
           // if the only root stack updates, function is called with empty resources . this fn copies amplifyMeta and backend Config to #current-cloud-backend
           context.amplify.updateamplifyMetaAfterPush([]);
@@ -331,8 +329,6 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
             return;
           }
           throw err;
-        } finally {
-          spinner.stop();
         }
       }
       context.usageData.stopCodePathTimer('pushDeployment');
@@ -450,34 +446,16 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
 
     await adminModelgen(context, resources);
 
-    spinner.succeed('All resources are updated in the cloud');
-
     await displayHelpfulURLs(context, resources);
   } catch (error) {
     if (iterativeDeploymentWasInvoked) {
       await deploymentStateManager.failDeployment();
-    }
-    if (!(await canAutoResolveGraphQLAuthError(error.message))) {
-      spinner.fail('An error occurred when pushing the resources to the cloud');
     }
     rollbackLambdaLayers(layerResources);
 
     logger('run', [resourceDefinition])(error);
 
     throw error;
-  }
-};
-
-const canAutoResolveGraphQLAuthError = async (message: string) => {
-  if (
-    message === '@auth directive with \'iam\' provider found, but the project has no IAM authentication provider configured.'
-    || message
-      === '@auth directive with \'userPools\' provider found, but the project has no Cognito User Pools authentication provider configured.'
-    || message === '@auth directive with \'oidc\' provider found, but the project has no OPENID_CONNECT authentication provider configured.'
-    || message === '@auth directive with \'apiKey\' provider found, but the project has no API Key authentication provider configured.'
-    || message === '@auth directive with \'function\' provider found, but the project has no Lambda authentication provider configured.'
-  ) {
-    return true;
   }
 };
 
@@ -515,44 +493,29 @@ export const updateStackForAPIMigration = async (context: $TSContext, category: 
 
   await updateS3Templates(context, resources, projectDetails.amplifyMeta);
 
-  try {
-    if (!isCLIMigration) {
-      spinner.start();
+  projectDetails = context.amplify.getProjectDetails();
+
+  if (resources.length > 0 || resourcesToBeDeleted.length > 0) {
+    // isCLIMigration implies a top level CLI migration is underway.
+    // We do not inject an env in such situations so we pass a resourceName.
+    // When it is an API level migration, we do pass an env so omit the resourceName.
+    let nestedStack: Template;
+
+    if (isReverting && isCLIMigration) {
+      // When this is a CLI migration and we are rolling back, we do not want to inject
+      // an [env] for any templates.
+      nestedStack = await formNestedStack(context, projectDetails, category, resourceName, 'AppSync', true);
+    } else if (isCLIMigration) {
+      nestedStack = await formNestedStack(context, projectDetails, category, resourceName, 'AppSync');
+    } else {
+      nestedStack = await formNestedStack(context, projectDetails, category);
     }
 
-    projectDetails = context.amplify.getProjectDetails();
-
-    if (resources.length > 0 || resourcesToBeDeleted.length > 0) {
-      // isCLIMigration implies a top level CLI migration is underway.
-      // We do not inject an env in such situations so we pass a resourceName.
-      // When it is an API level migration, we do pass an env so omit the resourceName.
-      let nestedStack: Template;
-
-      if (isReverting && isCLIMigration) {
-        // When this is a CLI migration and we are rolling back, we do not want to inject
-        // an [env] for any templates.
-        nestedStack = await formNestedStack(context, projectDetails, category, resourceName, 'AppSync', true);
-      } else if (isCLIMigration) {
-        nestedStack = await formNestedStack(context, projectDetails, category, resourceName, 'AppSync');
-      } else {
-        nestedStack = await formNestedStack(context, projectDetails, category);
-      }
-
-      await updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated, resourcesToBeUpdated);
-    }
-
-    await context.amplify.updateamplifyMetaAfterPush(resources);
-
-    if (!isCLIMigration) {
-      spinner.stop();
-    }
-  } catch (error) {
-    if (!isCLIMigration) {
-      spinner.fail('An error occurred when migrating the API project.');
-    }
-
-    throw error;
+    const eventMap = createEventMap(context, resourcesToBeCreated, resourcesToBeUpdated);
+    await updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated, resourcesToBeUpdated, eventMap);
   }
+
+  context.amplify.updateamplifyMetaAfterPush(resources);
 };
 
 /**
@@ -746,6 +709,7 @@ const updateCloudFormationNestedStack = async (
   nestedStack: $TSAny,
   resourcesToBeCreated: $TSAny,
   resourcesToBeUpdated: $TSAny,
+  eventMap: $TSAny,
 ) => {
   const projectRoot = pathManager.findProjectRoot();
   const backEndDir = pathManager.getBackendDirPath(projectRoot);
@@ -753,7 +717,7 @@ const updateCloudFormationNestedStack = async (
   // deploy preprocess nested stack to disk
   await storeRootStackTemplate(context, nestedStack);
   const transformedStackPath = await preProcessCFNTemplate(rootStackFilePath);
-  const cfnItem = await new Cloudformation(context, generateUserAgentAction(resourcesToBeCreated, resourcesToBeUpdated));
+  const cfnItem = await new Cloudformation(context, generateUserAgentAction(resourcesToBeCreated, resourcesToBeUpdated), {}, eventMap);
   const providerDirectory = path.normalize(path.join(backEndDir, providerName));
 
   const log = logger('updateCloudFormationNestedStack', [providerDirectory, transformedStackPath]);
@@ -901,6 +865,91 @@ export const uploadTemplateToS3 = async (
 
     context.amplify.updateamplifyMetaAfterResourceUpdate(category, resourceName, 'providerMetadata', providerMetadata);
   }
+};
+
+const createResourceObject = (resource: string, category: string) : {
+  category: string,
+  key: string
+} => ({
+  category: `${category}-${resource}`,
+  key: category + resource,
+});
+
+const getCategoryResources = (file : string, resourceDir : string) => {
+  const cloudFormationJsonPath = path.join(resourceDir, file);
+  const { cfnTemplate } = readCFNTemplate(cloudFormationJsonPath);
+  const categoryResources = Object.keys(cfnTemplate.Resources);
+  return categoryResources;
+};
+
+type EventMap = {
+  rootStackName: string,
+  envName: string,
+  projectName: string,
+  rootResources: {key: string, category: string}[],
+  eventToCategories: Map<string, string>,
+  categories: {name: string, size: number}[]
+}
+
+/**
+ Create an event map which will be used to map each incoming CloudFormation event into a category.
+ This is done so as to group events under progress bars for the root project as well as for each category.
+ */
+const createEventMap = (
+  context: $TSContext,
+  resourcesToBeCreated: $TSAny,
+  resourcesToBeUpdated: $TSAny,
+): EventMap => {
+  let eventMap = {} as EventMap;
+
+  const { envName } = context.amplify.getEnvInfo();
+  const { projectName } = context.amplify.getProjectConfig();
+  const meta = stateManager.getMeta();
+  const rootStackName = meta.providers.awscloudformation.StackName;
+  // Setting up initial configurations.
+  eventMap.rootStackName = rootStackName;
+  eventMap.envName = envName;
+  eventMap.projectName = projectName;
+  eventMap.rootResources = [];
+  eventMap.eventToCategories = new Map();
+  eventMap.categories = [];
+
+  // Type script throws an error unless I explicitly convert to string
+  const resourcesUpdated = getAllUniqueCategories(resourcesToBeUpdated).map(item => `${item}`);
+  const resourcesCreated = getAllUniqueCategories(resourcesToBeCreated).map(item => `${item}`);
+
+  Object.keys(meta).forEach(category => {
+    if (category !== 'providers') {
+      Object.keys(meta[category]).forEach(resource => {
+        eventMap.rootResources.push(createResourceObject(resource, category));
+        handleCfnFiles(eventMap,
+          category, resource,
+          _.union(resourcesUpdated, resourcesCreated));
+      });
+    }
+  });
+
+  return eventMap;
+};
+
+const handleCfnFiles = (
+  eventMap : EventMap,
+  category: string,
+  resource: string,
+  updatedResources: string[],
+) => {
+  // Getting corresponding cfn template files
+  const { resourceDir, cfnFiles } = getCfnFiles(category, resource);
+  cfnFiles.forEach(file => {
+    const categoryResources = getCategoryResources(file, resourceDir);
+    // Maping Resource events to categories.
+    categoryResources.forEach(res => {
+      eventMap.eventToCategories.set(res, `${category}-${resource}`);
+    });
+    if (updatedResources.includes(category)) {
+      eventMap.categories.push({ name: `${category}-${resource}`, size: categoryResources.length });
+    }
+  });
 };
 
 /**
