@@ -23,7 +23,10 @@ export const initializeEnv = async (
   try {
     const { projectPath } = context.exeInfo.localEnvInfo;
 
-    const amplifyMeta: $TSMeta = stateManager.getMeta();
+    const amplifyMeta: $TSMeta = { providers: {} };
+    const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
+
+    amplifyMeta.providers.awscloudformation = teamProviderInfo?.[currentEnv]?.awscloudformation;
 
     const envParamManager = (await ensureEnvParamManager(currentEnv)).instance;
 
