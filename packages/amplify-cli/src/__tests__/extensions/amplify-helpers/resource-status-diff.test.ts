@@ -1,12 +1,14 @@
-import { capitalize, globCFNFilePath, ResourceDiff, stackMutationType } from '../../../extensions/amplify-helpers/resource-status-diff';
-import { CLOUD_INITIALIZED } from '../../../extensions/amplify-helpers/get-cloud-init-status';
 import glob from 'glob';
 import path from 'path';
 import * as fs from 'fs-extra';
 import { stateManager, pathManager } from 'amplify-cli-core';
+import { CLOUD_INITIALIZED } from '../../../extensions/amplify-helpers/get-cloud-init-status';
+import {
+  capitalize, globCFNFilePath, ResourceDiff, stackMutationType,
+} from '../../../extensions/amplify-helpers/resource-status-diff';
 import { cronJobSetting } from '../../../../../amplify-category-function/lib/provider-utils/awscloudformation/utils/constants';
 
-//Mock Glob to fetch test cloudformation
+// Mock Glob to fetch test cloudformation
 jest.mock('glob');
 const localBackendDirPathStub = 'localBackendDirPath';
 const currentBackendDirPathStub = 'currentCloudBackendPath';
@@ -24,7 +26,7 @@ const allFiles: string[] = [
 const templateMatchRegex = '.*template.(json|yaml|yml)$';
 globMock.sync.mockImplementation(() => allFiles.filter(fname => fname.match(templateMatchRegex)));
 
-//Mock fs to pass all file-system checks
+// Mock fs to pass all file-system checks
 jest.mock('fs-extra', () => ({
   ...(jest.requireActual('fs-extra') as {}),
   existsSync: jest.fn().mockImplementation(() => true),
@@ -39,6 +41,32 @@ jest.mock('amplify-cli-core', () => ({
   },
 }));
 
+const mockGraphQLAPIMeta = {
+  providers: {
+    awscloudformation: {
+      Region: 'myMockRegion',
+    },
+  },
+  api: {
+    [testApiName]: {
+      service: 'AppSync',
+    },
+  },
+};
+
+// helper to mock common dependencies
+const setMockTestCommonDependencies = () => {
+  jest.mock('amplify-cli-core');
+  const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
+  pathManagerMock.getBackendDirPath = jest.fn().mockImplementation(() => localBackendDirPathStub);
+  pathManagerMock.getCurrentCloudBackendDirPath = jest.fn().mockImplementation(() => currentBackendDirPathStub);
+  pathManagerMock.findProjectRoot = jest.fn().mockImplementation(() => 'stub-project-root');
+
+  const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
+  stateManagerMock.getMeta = jest.fn().mockImplementation(() => mockGraphQLAPIMeta);
+  stateManagerMock.getCurrentMeta = jest.fn().mockImplementation(() => mockGraphQLAPIMeta);
+};
+
 describe('resource-status-diff helpers', () => {
   beforeAll(() => {
     jest.unmock('amplify-cli-core');
@@ -50,7 +78,7 @@ describe('resource-status-diff helpers', () => {
     expect(capitalize(mockInput)).toBe(expectedOutput);
   });
 
-  it('should Glob only cloudformation template files ', async () => {
+  it('should Glob only cloudformation template files', async () => {
     const mockCloudformationTemplateName = 'cloudformation-template.json';
     const stubFileFolder = 'stub-file-folder';
     const expectedGlobOptions = {
@@ -66,57 +94,30 @@ describe('resource-status-diff helpers', () => {
     expect(cfnFilename).toBe(`${stubFileFolder}/${mockCloudformationTemplateName}`);
   });
 
-  it('should search both Build and non Build folders for Cloudformation Templates ', async () => {
-    const mockGraphQLAPIMeta = {
-      providers: {
-        awscloudformation: {
-          Region: 'myMockRegion',
-        },
-      },
-      api: {
-        [testApiName]: {
-          service: 'AppSync',
-        },
-      },
-    };
-
-    //Enable cloud initialized to test updates , but retain all other functions
+  it('should search both Build and non Build folders for Cloudformation Templates', async () => {
+    // Enable cloud initialized to test updates , but retain all other functions
     jest.mock('../../../extensions/amplify-helpers/get-cloud-init-status', () => ({
       ...(jest.requireActual('../../../extensions/amplify-helpers/get-cloud-init-status') as {}),
       getCloudInitStatus: jest.fn().mockImplementation(() => CLOUD_INITIALIZED),
     }));
 
-    //helper to mock common dependencies
-    const setMockTestCommonDependencies = () => {
-      jest.mock('amplify-cli-core');
-      const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
-      pathManagerMock.getBackendDirPath = jest.fn().mockImplementation(() => localBackendDirPathStub);
-      pathManagerMock.getCurrentCloudBackendDirPath = jest.fn().mockImplementation(() => currentBackendDirPathStub);
+    const getMockInputData = () => ({
+      mockDefaultRootCfnTmpltName: 'cloudformation-template.json',
+      mockCategory: 'api',
+      mockResourceName: testApiName,
+      mockProvider: 'awscloudformation',
+      normalizedProvider: 'cloudformation',
+      mockMutationInfo: stackMutationType.UPDATE,
+    });
 
-      const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
-      stateManagerMock.getMeta = jest.fn().mockImplementation(() => mockGraphQLAPIMeta);
-      stateManagerMock.getCurrentMeta = jest.fn().mockImplementation(() => mockGraphQLAPIMeta);
-    };
-
-    const getMockInputData = () => {
-      return {
-        mockDefaultRootCfnTmpltName: 'cloudformation-template.json',
-        mockCategory: 'api',
-        mockResourceName: testApiName,
-        mockProvider: 'awscloudformation',
-        normalizedProvider: 'cloudformation',
-        mockMutationInfo: stackMutationType.UPDATE,
-      };
-    };
-
-    //Test mocks
+    // Test mocks
     setMockTestCommonDependencies();
     const input = getMockInputData();
 
     /** 1. Code-Under-Test - constructor **/
     const resourceDiff = new ResourceDiff(input.mockCategory, input.mockResourceName, input.mockProvider, input.mockMutationInfo);
 
-    //Test Definitions
+    // Test Definitions
     const checkProviderNormalization = () => {
       expect(resourceDiff.provider).toBe(input.normalizedProvider);
     };
@@ -154,33 +155,32 @@ describe('resource-status-diff helpers', () => {
       expect(resourceDiff.resourceFiles.cloudBuildCfnFile).toBe(mockCurrentPostBuildCfnFile);
     };
 
-    //Test Execution
+    // Test Execution
     checkProviderNormalization();
     checkCfnPaths();
   });
 
-  it('should show the diff between local and remote cloudformation ', async () => {
-    const getMockInputData = () => {
-      return {
-        mockDefaultRootCfnTmpltName: 'cloudformation-template.json',
-        mockCategory: 'api',
-        mockResourceName: testApiName,
-        mockProvider: 'awscloudformation',
-        normalizedProvider: 'cloudformation',
-        mockMutationInfo: stackMutationType.UPDATE,
-      };
-    };
+  it('should show the diff between local and remote cloudformation', async () => {
+    const getMockInputData = () => ({
+      mockDefaultRootCfnTmpltName: 'cloudformation-template.json',
+      mockCategory: 'api',
+      mockResourceName: testApiName,
+      mockProvider: 'awscloudformation',
+      normalizedProvider: 'cloudformation',
+      mockMutationInfo: stackMutationType.UPDATE,
+    });
 
+    setMockTestCommonDependencies();
     const input = getMockInputData();
 
     /** 1. Code-Under-Test - constructor **/
     const resourceDiff = new ResourceDiff(input.mockCategory, input.mockResourceName, input.mockProvider, input.mockMutationInfo);
 
     /** 2. Code-Under-Test calculateCfnDiff **/
-    //update sample cloudformation paths in resourceDiff
+    // update sample cloudformation paths in resourceDiff
     const localPath = `${__dirname}/testData/mockLocalCloud/cloudformation-template.json`;
     const cloudPath = `${__dirname}/testData/mockCurrentCloud/cloudformation-template.json`;
-    //override paths to point to reference cloudformation templates
+    // override paths to point to reference cloudformation templates
     resourceDiff.resourceFiles.localBuildCfnFile = localPath;
     resourceDiff.resourceFiles.cloudBuildCfnFile = cloudPath;
     resourceDiff.resourceFiles.localPreBuildCfnFile = localPath;

@@ -1,10 +1,12 @@
-import { Unauthorized, ValidateError, TemplateSentError } from './errors';
+/* eslint-disable no-param-reassign */
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
 import { v4 as autoId } from 'uuid';
+import jsStringEscape from 'js-string-escape';
+import { GraphQLResolveInfo, FieldNode } from 'graphql';
+import { Unauthorized, ValidateError, TemplateSentError } from './errors';
 import { JavaString } from '../value-mapper/string';
 import { JavaArray } from '../value-mapper/array';
 import { JavaMap } from '../value-mapper/map';
-import jsStringEscape from 'js-string-escape';
-import { GraphQLResolveInfo, FieldNode } from 'graphql';
 
 export const generalUtils = {
   errors: [],
@@ -14,10 +16,8 @@ export const generalUtils = {
     return jsStringEscape(value);
   },
   urlEncode(value) {
-    // Stringent in adhering to RFC 3986 ( except the asterisk that appsync ingores to encode )
-    return encodeURIComponent(value).replace(/[!'()]/g, function (c) {
-      return '%' + c.charCodeAt(0).toString(16).toUpperCase();
-    });
+    // Stringent in adhering to RFC 3986 ( except the asterisk that appsync ignores to encode )
+    return encodeURIComponent(value).replace(/[!'()]/g, c => `%${c.charCodeAt(0).toString(16).toUpperCase()}`);
   },
   urlDecode(value) {
     return decodeURIComponent(value);
@@ -31,7 +31,11 @@ export const generalUtils = {
     return Buffer.from(value, 'base64').toString('ascii');
   },
   parseJson(value) {
-    return JSON.parse(value);
+    try {
+      return JSON.parse(value);
+    } catch (_) {
+      return null;
+    }
   },
   toJson(value) {
     return value !== undefined ? JSON.stringify(value) : JSON.stringify(null);
@@ -65,16 +69,16 @@ export const generalUtils = {
     throw error;
   },
   isNull(value) {
-    return value === null || typeof value == 'undefined';
+    return value === null || typeof value === 'undefined';
   },
   isNullOrEmpty(value) {
     if (this.isNull(value)) return true;
 
     if (value instanceof JavaMap) {
-      return Object.keys(value.toJSON()).length == 0;
+      return Object.keys(value.toJSON()).length === 0;
     }
     if (value instanceof JavaArray || value instanceof JavaString) {
-      return value.toJSON().length == 0;
+      return value.toJSON().length === 0;
     }
     return !!value;
   },
@@ -130,16 +134,18 @@ export const generalUtils = {
   },
 };
 
-function filterData(info: GraphQLResolveInfo, data = null): any {
+const filterData = (info: GraphQLResolveInfo, data = null): unknown => {
   if (data instanceof JavaMap) {
-    var filteredData = {};
+    const filteredData = {};
     // filter fields in data based on the query selection set
     info.operation.selectionSet.selections
       .map(selection => selection as FieldNode)
       .find(selection => selection.name.value === info.fieldName)
       .selectionSet.selections.map(fieldNode => (fieldNode as FieldNode).name.value)
-      .forEach(field => (filteredData[field] = data.get(field)));
+      .forEach(field => {
+        filteredData[field] = data.get(field);
+      });
     data = filteredData;
   }
   return data;
-}
+};

@@ -1,7 +1,11 @@
-import { run as push } from './push';
 import { FrontendBuildError } from 'amplify-cli-core';
+import { run as push } from './push';
 import { showTroubleshootingURL } from './help';
 
+/**
+ * Entry point to amplify publish
+ */
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const run = async context => {
   context.amplify.constructExeInfo(context);
   const { amplifyMeta } = context.exeInfo;
@@ -30,7 +34,9 @@ export const run = async context => {
 
   const didPush = await push(context);
 
-  let continueToPublish = didPush;
+  // added extra check for -y flag as in publish frontend deploy is getting stuck in CICD if backend has no changes
+
+  let continueToPublish = didPush || !!context?.exeInfo?.inputParams?.yes;
   if (!continueToPublish && isHostingAlreadyPushed) {
     context.print.info('');
     continueToPublish = await context.amplify.confirmPrompt('Do you still want to publish the frontend?');
@@ -39,6 +45,7 @@ export const run = async context => {
   try {
     if (continueToPublish) {
       const frontendPlugins = context.amplify.getFrontendPlugins(context);
+      // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
       const frontendHandlerModule = require(frontendPlugins[context.exeInfo.projectConfig.frontend]);
       await frontendHandlerModule.publish(context);
     }

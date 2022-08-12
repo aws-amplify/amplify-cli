@@ -201,13 +201,14 @@ export function amplifyPushUpdate(
   waitForText?: RegExp,
   testingWithLatestCodebase = false,
   allowDestructiveUpdates = false,
+  overridePushTimeoutMS = 0,
 ): Promise<void> {
   const args = ['push'];
   if (allowDestructiveUpdates) {
     args.push('--allow-destructive-graphql-schema-updates');
   }
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), args, { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    spawn(getCLIPath(testingWithLatestCodebase), args, { cwd, stripColors: true, noOutputTimeout: overridePushTimeoutMS || pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
       .wait(waitForText || /.*/)

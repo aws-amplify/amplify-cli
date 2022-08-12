@@ -38,8 +38,6 @@ export { loadConfigurationForEnv } from './configuration-manager';
 export { getLocationSupportedRegion, getLocationRegionMapping } from './aws-utils/aws-location';
 import { updateEnv } from './update-env';
 
-import { uploadHooksDirectory } from './utils/hooks-manager';
-
 export const cfnRootStackFileName = 'root-cloudformation-stack.json';
 export { storeRootStackTemplate } from './initializer';
 import { transformResourceWithOverrides } from './override-manager';
@@ -134,8 +132,8 @@ export async function getConfiguredSSMClient(context) {
   return await SSM.getInstance(context);
 }
 
-export async function getConfiguredLocationServiceClient(context: $TSContext) {
-  return await LocationService.getInstance(context);
+export async function getConfiguredLocationServiceClient(context: $TSContext, options?: {}) {
+  return await LocationService.getInstance(context, options);
 }
 
 async function getLambdaSdk(context: $TSContext) {
@@ -189,7 +187,6 @@ module.exports = {
   loadConfigurationForEnv,
   getConfiguredSSMClient,
   updateEnv,
-  uploadHooksDirectory,
   getLocationSupportedRegion,
   getLocationRegionMapping,
   // Keeping for backwards compatibility

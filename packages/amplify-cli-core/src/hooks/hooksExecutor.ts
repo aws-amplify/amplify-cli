@@ -1,18 +1,24 @@
-import { pathManager, stateManager } from '../state-manager';
-import { HooksConfig, HookExtensions, HookFileMeta, HookEvent, DataParameter, ErrorParameter } from './hooksTypes';
-import { defaultSupportedExt, hookFileSeperator } from './hooksConstants';
-import { skipHooks } from './skipHooks';
 import * as which from 'which';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import execa from 'execa';
-import { HooksMeta } from './hooksMeta';
 import _ from 'lodash';
-import { getLogger } from '../logger/index';
 import { EOL } from 'os';
 import { printer } from 'amplify-prompts';
+import { getLogger } from '../logger/index';
+import { HooksMeta } from './hooksMeta';
+import { skipHooks } from './skipHooks';
+import { defaultSupportedExt, hookFileSeparator } from './hooksConstants';
+import {
+  HooksConfig, HookExtensions, HookFileMeta, HookEvent, DataParameter, ErrorParameter,
+} from './hooksTypes';
+import { pathManager, stateManager } from '../state-manager';
+
 const logger = getLogger('amplify-cli-core', 'hooks/hooksExecutioner.ts');
 
+/**
+ * execute hooks present in the hooks directory
+ */
 export const executeHooks = async (hooksMeta: HooksMeta): Promise<void> => {
   if (skipHooks()) {
     return;
@@ -31,7 +37,7 @@ export const executeHooks = async (hooksMeta: HooksMeta): Promise<void> => {
   const executionQueue = [commandHookFileMeta, subCommandHookFileMeta];
 
   if (hooksMeta.getHookEvent().forcePush) {
-    // we want to run push related hoooks when forcePush flag is enabled
+    // we want to run push related hooks when forcePush flag is enabled
     hooksMeta.setEventCommand('push');
     hooksMeta.setEventSubCommand(undefined);
     const { commandHookFileMeta } = getHookFileMetas(hooksDirPath, hooksMeta.getHookEvent(), hooksConfig);
@@ -122,7 +128,7 @@ const getHookFileMetas = (
     .filter(fileMeta => fileMeta.extension && extensionsSupported.hasOwnProperty(fileMeta.extension))
     .map(fileMeta => ({ ...fileMeta, filePath: path.join(hooksDirPath, String(fileMeta.fileName)) }));
 
-  const commandType = HookEvent.eventPrefix ? [HookEvent.eventPrefix, HookEvent.command].join(hookFileSeperator) : HookEvent.command;
+  const commandType = HookEvent.eventPrefix ? [HookEvent.eventPrefix, HookEvent.command].join(hookFileSeparator) : HookEvent.command;
   const commandHooksFiles = allFiles.filter(fileMeta => fileMeta.baseName === commandType);
   const commandHookFileMeta = throwOnDuplicateHooksFiles(commandHooksFiles);
 
@@ -130,8 +136,8 @@ const getHookFileMetas = (
   let subCommandHookFileMeta: HookFileMeta | undefined;
   if (HookEvent.subCommand) {
     const subCommandType = HookEvent.eventPrefix
-      ? [HookEvent.eventPrefix, HookEvent.command, HookEvent.subCommand].join(hookFileSeperator)
-      : [HookEvent.command, HookEvent.subCommand].join(hookFileSeperator);
+      ? [HookEvent.eventPrefix, HookEvent.command, HookEvent.subCommand].join(hookFileSeparator)
+      : [HookEvent.command, HookEvent.subCommand].join(hookFileSeparator);
 
     subCommandHooksFiles = allFiles.filter(fileMeta => fileMeta.baseName === subCommandType);
     subCommandHookFileMeta = throwOnDuplicateHooksFiles(subCommandHooksFiles);
@@ -176,12 +182,10 @@ const getRuntime = (fileMeta: HookFileMeta, hooksConfig: HooksConfig): string | 
     nothrow: true,
   });
   if (!executablePath) {
-    throw new Error(String('hooks runtime not found: ' + runtime));
+    throw new Error(String(`hooks runtime not found: ${runtime}`));
   }
 
   return executablePath;
 };
 
-const getSupportedExtensions = (hooksConfig: HooksConfig): HookExtensions => {
-  return { ...defaultSupportedExt, ...hooksConfig?.extensions };
-};
+const getSupportedExtensions = (hooksConfig: HooksConfig): HookExtensions => ({ ...defaultSupportedExt, ...hooksConfig?.extensions });

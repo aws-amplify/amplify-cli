@@ -1,9 +1,9 @@
 import * as path from 'path';
+import * as execa from 'execa';
+import * as fs from 'fs-extra';
 import { executeHooks, HooksMeta, skipHooksFilePath } from '../../hooks';
 import * as skipHooksModule from '../../hooks/skipHooks';
-import * as execa from 'execa';
 import { pathManager, stateManager } from '../../state-manager';
-import * as fs from 'fs-extra';
 
 const pathToPython3Runtime = 'path/to/python3/runtime';
 const pathToPythonRuntime = 'path/to/python/runtime';
@@ -28,26 +28,26 @@ const testProjectHooksFiles = [
   'pre-push.py',
 ];
 
-const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
-const pathManager_mock = pathManager as jest.Mocked<typeof pathManager>;
+const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
+const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
 
-pathManager_mock.findProjectRoot.mockReturnValue(testProjectRootPath);
-pathManager_mock.getHooksDirPath.mockReturnValue(testProjectHooksDirPath);
-stateManager_mock.getHooksConfigJson.mockReturnValueOnce({ extensions: { py: { runtime: 'python3' } } });
+pathManagerMock.findProjectRoot.mockReturnValue(testProjectRootPath);
+pathManagerMock.getHooksDirPath.mockReturnValue(testProjectHooksDirPath);
+stateManagerMock.getHooksConfigJson.mockReturnValueOnce({ extensions: { py: { runtime: 'python3' } } });
 
 jest.mock('execa');
 jest.mock('../../state-manager');
 jest.mock('which', () => ({
   sync: jest.fn().mockImplementation(runtimeName => {
-    if (runtimeName == 'python3') return pathToPython3Runtime;
-    else if (runtimeName == 'python') return pathToPythonRuntime;
-    else if (runtimeName == 'node') return pathToNodeRuntime;
+    if (runtimeName === 'python3') return pathToPython3Runtime;
+    if (runtimeName === 'python') return pathToPythonRuntime;
+    if (runtimeName === 'node') return pathToNodeRuntime;
   }),
 }));
 jest.mock('fs-extra', () => {
   const actualFs = jest.requireActual('fs-extra');
   return {
-    ...Object.assign({}, actualFs),
+    ...({ ...actualFs }),
     readdirSync: jest.fn().mockImplementation((path, options) => {
       if (path === testProjectHooksDirPath) {
         return testProjectHooksFiles;
@@ -55,8 +55,9 @@ jest.mock('fs-extra', () => {
       return actualFs.readdirSync(path, options);
     }),
     lstatSync: jest.fn().mockImplementation(pathStr => {
-      if (testProjectHooksFiles.includes(path.relative(testProjectHooksDirPath, pathStr)))
+      if (testProjectHooksFiles.includes(path.relative(testProjectHooksDirPath, pathStr))) {
         return { isFile: jest.fn().mockReturnValue(true) };
+      }
       return actualFs.lstatSync(pathStr);
     }),
     existsSync: jest.fn().mockImplementation(path => {
@@ -67,7 +68,7 @@ jest.mock('fs-extra', () => {
 });
 jest.mock('../../hooks/hooksConstants', () => {
   const orgConstants = jest.requireActual('../../hooks/hooksConstants');
-  return { ...Object.assign({}, orgConstants), skipHooksFilePath: path.join(__dirname, '..', 'testFiles', 'skiphooktestfile') };
+  return { ...({ ...orgConstants }), skipHooksFilePath: path.join(__dirname, '..', 'testFiles', 'skiphooktestfile') };
 });
 
 let mockSkipHooks = jest.spyOn(skipHooksModule, 'skipHooks');
@@ -75,7 +76,6 @@ let mockSkipHooks = jest.spyOn(skipHooksModule, 'skipHooks');
 describe('hooksExecutioner tests', () => {
   beforeEach(async () => {
     HooksMeta.getInstance();
-    mockSkipHooks.mockReturnValue(false);
     jest.clearAllMocks();
   });
   afterEach(() => {
@@ -97,7 +97,7 @@ describe('hooksExecutioner tests', () => {
     await executeHooks(HooksMeta.getInstance({ command: 'push', plugin: 'core' }, 'pre'));
     expect(execa).not.toHaveBeenCalledTimes(0);
 
-    // resoring the original state of skip hooks file
+    // restoring the original state of skip hooks file
     if (!orgSkipHooksExist) fs.removeSync(skipHooksFilePath);
     else fs.ensureFileSync(skipHooksFilePath);
     mockSkipHooks = jest.spyOn(skipHooksModule, 'skipHooks');
@@ -138,13 +138,13 @@ describe('hooksExecutioner tests', () => {
   });
 
   test('should determine runtime from hooks-config', async () => {
-    stateManager_mock.getHooksConfigJson.mockReturnValueOnce({ extensions: { py: { runtime: 'python3' } } });
+    stateManagerMock.getHooksConfigJson.mockReturnValueOnce({ extensions: { py: { runtime: 'python3' } } });
     await executeHooks(HooksMeta.getInstance({ command: 'pull', plugin: 'core' }, 'pre'));
     expect(execa).toHaveBeenCalledWith(pathToPython3Runtime, expect.anything(), expect.anything());
   });
 
   test('should determine windows runtime from hooks-config', async () => {
-    stateManager_mock.getHooksConfigJson.mockReturnValueOnce({
+    stateManagerMock.getHooksConfigJson.mockReturnValueOnce({
       extensions: { py: { runtime: 'python3', runtime_windows: 'python' } },
     });
     Object.defineProperty(process, 'platform', { value: 'win32' });
@@ -158,8 +158,8 @@ describe('hooksExecutioner tests', () => {
   });
 
   test('should throw error if duplicate hook scripts are present', async () => {
-    const duplicateErrorThrown = 'found duplicate hook scripts: ' + preStatusNodeFileName + ', ' + preStatusPythonFileName;
-    stateManager_mock.getHooksConfigJson.mockReturnValueOnce({
+    const duplicateErrorThrown = `found duplicate hook scripts: ${preStatusNodeFileName}, ${preStatusPythonFileName}`;
+    stateManagerMock.getHooksConfigJson.mockReturnValueOnce({
       extensions: { py: { runtime: 'python3' } },
     });
     await expect(executeHooks(HooksMeta.getInstance({ command: 'status', plugin: 'core' }, 'pre'))).rejects.toThrow(duplicateErrorThrown);

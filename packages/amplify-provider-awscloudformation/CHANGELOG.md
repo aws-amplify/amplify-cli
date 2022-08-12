@@ -3,6 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.5.0...amplify-provider-awscloudformation@6.5.1) (2022-08-06)
+
+
+### Bug Fixes
+
+* pass httpProxy agent to node-fetch. ([#10620](https://github.com/aws-amplify/amplify-cli/issues/10620)) ([6a22f9a](https://github.com/aws-amplify/amplify-cli/commit/6a22f9a7e2850579330c5212ed57d0e144b0eb23))
+
+
+
+
+
+# [6.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.4.2...amplify-provider-awscloudformation@6.5.0) (2022-08-02)
+
+
+
+# 9.2.0-rc.87d15cb3e.0 (2022-07-23)
+
+
+### Features
+
+* **uibuilder:** nested collections support and codegen dep update ([#10778](https://github.com/aws-amplify/amplify-cli/issues/10778)) ([87d15cb](https://github.com/aws-amplify/amplify-cli/commit/87d15cb3e1c75fbd978c6fc7966e42b42e5d856a))
+
+
+
+# 9.2.0-rc.c36fa71f5.0 (2022-07-19)
+
+
+### Bug Fixes
+
+* **graphql:** handle gsi change iterative update of delta sync table exists on root template ([#10470](https://github.com/aws-amplify/amplify-cli/issues/10470)) ([d8212d5](https://github.com/aws-amplify/amplify-cli/commit/d8212d50ffd36a47f000988b46a1dbba02c9fa2f))
+* override msg for non-overrides categories ([#10657](https://github.com/aws-amplify/amplify-cli/issues/10657)) ([660f74e](https://github.com/aws-amplify/amplify-cli/commit/660f74e0302b80760f9bc0dd15e1938d330a68ac))
+* use correct region as provided in client call ([#10738](https://github.com/aws-amplify/amplify-cli/issues/10738)) ([8cbbd60](https://github.com/aws-amplify/amplify-cli/commit/8cbbd60cb88cd68765273b92fb48b0649a2a0b34))
+
+
+### Features
+
+* **uibuilder:** nested collections support ([#10763](https://github.com/aws-amplify/amplify-cli/issues/10763)) ([2918eb9](https://github.com/aws-amplify/amplify-cli/commit/2918eb9fd4495f45a90c5de806e347ee1f03520e))
+
+
+### Reverts
+
+* Revert "feat(uibuilder): nested collections support (#10763)" (#10777) ([c36fa71](https://github.com/aws-amplify/amplify-cli/commit/c36fa71f54cdce1fb889560c3254d8f662c03cae)), closes [#10763](https://github.com/aws-amplify/amplify-cli/issues/10763) [#10777](https://github.com/aws-amplify/amplify-cli/issues/10777)
+* Revert "chore: upgrade api category dependencies" ([7e24faf](https://github.com/aws-amplify/amplify-cli/commit/7e24faf472f96eeb34171b7befa49f4b0da3f7ae))
+
+
+
+
+
 ## [6.4.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.4.2...amplify-provider-awscloudformation@6.4.3) (2022-06-30)
 
 

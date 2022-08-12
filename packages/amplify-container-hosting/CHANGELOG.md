@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.42](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.4.41...amplify-container-hosting@2.4.42) (2022-08-06)
+
+**Note:** Version bump only for package amplify-container-hosting
+
+
+
+
+
+## [2.4.41](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.4.39...amplify-container-hosting@2.4.41) (2022-08-02)
+
+
+### Reverts
+
+* Revert "chore: upgrade api category dependencies" ([7e24faf](https://github.com/aws-amplify/amplify-cli/commit/7e24faf472f96eeb34171b7befa49f4b0da3f7ae))
+
+
+
+
+
 ## [2.4.40](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.4.39...amplify-container-hosting@2.4.40) (2022-06-30)
 
 **Note:** Version bump only for package amplify-container-hosting

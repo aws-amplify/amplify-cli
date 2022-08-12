@@ -3,7 +3,7 @@ import {
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import sequential from 'promise-sequential';
-import { notifyFieldAuthSecurityChange, notifySecurityEnhancement } from '../extensions/amplify-helpers/auth-notifications';
+import { notifyFieldAuthSecurityChange, notifyListQuerySecurityChange, notifySecurityEnhancement } from '../extensions/amplify-helpers/auth-notifications';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 import { showTroubleshootingURL } from './help';
 import { reportError } from './diagnose';
@@ -35,7 +35,13 @@ const syncCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
     });
 
     await notifySecurityEnhancement(context);
-    await notifyFieldAuthSecurityChange(context);
+
+    let securityChangeNotified = false;
+    securityChangeNotified = await notifyFieldAuthSecurityChange(context);
+
+    if (!securityChangeNotified) {
+      securityChangeNotified = await notifyListQuerySecurityChange(context);
+    }
 
     spinner.start(`Fetching updates to backend environment: ${currentEnv} from the cloud.`);
     await sequential(pullCurrentCloudTasks);
@@ -44,18 +50,6 @@ const syncCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
     spinner.fail(`There was an error pulling the backend environment ${currentEnv}.`);
     throw e;
   }
-};
-
-const pushHooks = async (context: $TSContext): Promise<void> => {
-  context.exeInfo.pushHooks = true;
-  const providerPlugins = getProviderPlugins(context);
-  const pushHooksTasks: (() => Promise<$TSAny>)[] = [];
-  context.exeInfo.projectConfig.providers.forEach(provider => {
-    // eslint-disable-next-line
-    const providerModule = require(providerPlugins[provider]);
-    pushHooksTasks.push(() => providerModule.uploadHooksDirectory(context));
-  });
-  await sequential(pushHooksTasks);
 };
 
 /**
@@ -70,7 +64,6 @@ export const run = async (context: $TSContext): Promise<$TSAny|void> => {
     if (context.parameters.options.force) {
       context.exeInfo.forcePush = true;
     }
-    await pushHooks(context);
     await syncCurrentCloudBackend(context);
     return await context.amplify.pushResources(context);
   } catch (e) {

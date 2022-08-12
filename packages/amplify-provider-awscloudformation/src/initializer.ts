@@ -23,7 +23,6 @@ const { fileLogger } = require('./utils/aws-logger');
 const { prePushCfnTemplateModifier } = require('./pre-push-cfn-processor/pre-push-cfn-modifier');
 const logger = fileLogger('attach-backend');
 const { configurePermissionsBoundaryForInit } = require('./permissions-boundary/permissions-boundary');
-const { uploadHooksDirectory } = require('./utils/hooks-manager');
 import { v4 as uuid } from 'uuid';
 
 export async function run(context) {
@@ -207,7 +206,6 @@ export async function onInitSuccessful(context) {
     await storeRootStackTemplate(context);
     context = await storeCurrentCloudBackend(context);
     await storeArtifactsForAmplifyService(context);
-    await uploadHooksDirectory(context);
   }
   return context;
 }

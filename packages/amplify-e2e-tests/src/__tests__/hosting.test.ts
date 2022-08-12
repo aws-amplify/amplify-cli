@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import {
   amplifyPublishWithoutUpdate,
   createReactTestProject,
@@ -11,8 +12,8 @@ import {
   deleteS3Bucket,
   deleteProjectDir,
   getProjectMeta,
+  amplifyPublishWithoutUpdateWithYesFlag
 } from '@aws-amplify/amplify-e2e-core';
-
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
@@ -34,6 +35,7 @@ describe('amplify add hosting', () => {
     if (hostingBucket) {
       try {
         await deleteS3Bucket(hostingBucket);
+      // eslint-disable-next-line no-empty
       } catch {}
     }
     deleteProjectDir(projRoot);
@@ -50,6 +52,16 @@ describe('amplify add hosting', () => {
     let error;
     try {
       await amplifyPublishWithoutUpdate(projRoot);
+    } catch (err) {
+      error = err;
+    }
+    expect(error).not.toBeDefined();
+  });
+
+  it('publish successfully with yes flag', async () => {
+    let error;
+    try {
+      await amplifyPublishWithoutUpdateWithYesFlag(projRoot);
     } catch (err) {
       error = err;
     }
