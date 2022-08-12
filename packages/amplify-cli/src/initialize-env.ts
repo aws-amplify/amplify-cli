@@ -134,7 +134,10 @@ const mergeCategoryEnvParamsIntoAmplifyMeta = (
   category: string,
   serviceName: string,
 ): void => {
-  if (envParamManager.getResourceParamManager(category, serviceName).hasAnyParams()) {
+  if (
+    envParamManager.hasResourceParamManager(category, serviceName)
+    && envParamManager.getResourceParamManager(category, serviceName).hasAnyParams()
+  ) {
     Object.assign(amplifyMeta[category][serviceName], envParamManager.getResourceParamManager(category, serviceName).getAllParams());
   }
 };
