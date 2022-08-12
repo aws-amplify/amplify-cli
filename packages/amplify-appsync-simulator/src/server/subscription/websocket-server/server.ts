@@ -1,7 +1,6 @@
 import { DocumentNode, parse } from 'graphql';
 import { ExecutionResult, ExecutionResultDataDefault } from 'graphql/execution/execute';
 import { IncomingMessage } from 'http';
-import { URL } from 'url';
 import * as WebSocket from 'ws';
 import { Server as WebSocketServer, ServerOptions } from 'ws';
 import {
@@ -58,7 +57,6 @@ export class WebsocketSubscriptionServer {
   private options: WebsocketSubscriptionServerOptions;
   private connections: Set<ConnectionContext>;
   private webSocketServer: WebSocketServer;
-  private webSocketServerLegacyEndpoint: WebSocketServer;
 
   constructor(options: WebsocketSubscriptionServerOptions, server?: ServerOptions) {
     this.connections = new Set();
@@ -70,25 +68,21 @@ export class WebsocketSubscriptionServer {
 
   attachWebServer(serverOptions: ServerOptions): void {
     this.webSocketServer = new WebSocketServer({ ...serverOptions, path: '/graphql/realtime' });
-    // this.webSocketServerLegacyEndpoint = new WebSocketServer({ ...serverOptions, path: '/graphql' });
   }
 
   start() {
-    if (!this.webSocketServer && !this.webSocketServerLegacyEndpoint) {
+    if (!this.webSocketServer) {
       throw new Error('No server is attached');
     }
     this.webSocketServer.on('connection', this.onSocketConnection);
-    // this.webSocketServerLegacyEndpoint.on('connection', this.onSocketConnection);
   }
 
   stop() {
     this.webSocketServer?.off('connection', this.onSocketConnection);
-    this.webSocketServerLegacyEndpoint?.off('connection', this.onSocketConnection);
     this.connections?.forEach(connection => {
       this.onClose(connection);
     });
     this.webSocketServer?.close();
-    this.webSocketServerLegacyEndpoint?.close();
   }
 
   private onClose = (connectionContext: ConnectionContext): void => {
