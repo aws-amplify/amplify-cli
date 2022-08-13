@@ -113,7 +113,7 @@ export class S3 {
     if (this.uploadState === undefined) {
       this.populateUploadState();
     }
-    const spinner = showSpinner ? ora('Uploading files...') : undefined;
+    const spinner = showSpinner ? ora('Uploading files.') : undefined;
 
     const augmentedS3Params = {
       ...s3Params,
@@ -124,7 +124,7 @@ export class S3 {
     let uploadTask;
     try {
       // eslint-disable-next-line no-unused-expressions
-      showSpinner && spinner.start('Uploading files...');
+      showSpinner && spinner.start('Uploading files.');
       if (
         (s3Params.Body instanceof fs.ReadStream && fs.statSync(s3Params.Body.path).size > minChunkSize)
         || (Buffer.isBuffer(s3Params.Body) && s3Params.Body.length > minChunkSize)

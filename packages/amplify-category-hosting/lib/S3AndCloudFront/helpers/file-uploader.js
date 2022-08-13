@@ -31,7 +31,7 @@ async function run(context, distributionDirPath) {
     uploadFileTasks.push(() => uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath, cloudFrontS3CanonicalUserId));
   });
 
-  const spinner = new Ora('Uploading files...');
+  const spinner = new Ora('Uploading files.');
   try {
     spinner.start();
     await sequential(uploadFileTasks);
