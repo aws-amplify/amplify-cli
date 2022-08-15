@@ -1,11 +1,16 @@
-import { $TSAny, $TSContext, exitOnNextTick, JSONUtilities, NotImplementedError, stateManager } from 'amplify-cli-core';
+/* eslint-disable */
+import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
+import {
+  $TSAny, $TSContext, exitOnNextTick, JSONUtilities, NotImplementedError, stateManager,
+} from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import _ from 'lodash';
 import { importDynamoDB, importedDynamoDBEnvInit } from './import/import-dynamodb';
 import { importedS3EnvInit, importS3 } from './import/import-s3';
+
 export { importResource } from './import';
 
-export async function addResource(context: $TSContext, category: string, service: string, options: $TSAny) {
+export const addResource = async (context: $TSContext, category: string, service: string, options: $TSAny) => {
   const serviceMetadata = ((await import('../supported-services')) as $TSAny).supportedServices[service];
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
@@ -17,7 +22,7 @@ export async function addResource(context: $TSContext, category: string, service
   });
 }
 
-export async function updateResource(context: $TSContext, category: string, service: string) {
+export const updateResource = async (context: $TSContext, category: string, service: string) => {
   const serviceMetadata = ((await import('../supported-services')) as $TSAny).supportedServices[service];
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
@@ -33,7 +38,7 @@ export async function updateResource(context: $TSContext, category: string, serv
   return updateWalkthrough(context, defaultValuesFilename, serviceMetadata);
 }
 
-export async function migrateResource(context: $TSContext, projectPath: string, service: string, resourceName: string) {
+export const migrateResource = async (context: $TSContext, projectPath: string, service: string, resourceName: string) => {
   const serviceMetadata = ((await import('../supported-services')) as $TSAny).supportedServices[service];
   const { serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
@@ -47,7 +52,7 @@ export async function migrateResource(context: $TSContext, projectPath: string, 
   return migrate(context, projectPath, resourceName);
 }
 
-export async function getPermissionPolicies(service: string, resourceName: string, crudOptions: $TSAny) {
+export const getPermissionPolicies = async (service: string, resourceName: string, crudOptions: $TSAny) => {
   const serviceMetadata = ((await import('../supported-services')) as $TSAny).supportedServices[service];
   const { serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
@@ -56,15 +61,17 @@ export async function getPermissionPolicies(service: string, resourceName: strin
   return getIAMPolicies(resourceName, crudOptions);
 }
 
-export async function updateConfigOnEnvInit(context: $TSContext, category: string, resourceName: string, service: string) {
+export const updateConfigOnEnvInit = async (context: $TSContext, category: string, resourceName: string, service: string) => {
   const serviceMetadata = ((await import('../supported-services')) as $TSAny).supportedServices[service];
   const { provider } = serviceMetadata;
 
   const providerPlugin = context.amplify.getPluginInstance(context, provider);
+  await ensureEnvParamManager();
+
   // previously selected answers
   const resourceParams = providerPlugin.loadResourceParameters(context, category, resourceName);
   // ask only env specific questions
-  let currentEnvSpecificValues = context.amplify.loadEnvResourceParameters(context, category, resourceName);
+  const currentEnvSpecificValues = context.amplify.loadEnvResourceParameters(context, category, resourceName);
 
   const resource = _.get(context.exeInfo, ['amplifyMeta', category, resourceName]);
 
@@ -143,11 +150,11 @@ export async function updateConfigOnEnvInit(context: $TSContext, category: strin
   }
 }
 
-function isInHeadlessMode(context: $TSContext) {
+const isInHeadlessMode = (context: $TSContext) => {
   return context.exeInfo.inputParams.yes;
 }
 
-function getHeadlessParams(context: $TSContext) {
+const getHeadlessParams = (context: $TSContext) => {
   const { inputParams } = context.exeInfo;
   try {
     // If the input given is a string validate it using JSON parse

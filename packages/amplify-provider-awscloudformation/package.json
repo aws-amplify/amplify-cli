@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-category-custom": "2.4.3",
+    "@aws-amplify/amplify-environment-parameters": "1.0.0",
     "@aws-amplify/cli-extensibility-helper": "2.3.33",
     "@aws-amplify/graphql-transformer-core": "^0.17.9",
     "@aws-amplify/graphql-transformer-interfaces": "^1.14.6",

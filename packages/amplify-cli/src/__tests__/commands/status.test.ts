@@ -1,4 +1,12 @@
-describe('amplify status: ', () => {
+import { pathManager } from 'amplify-cli-core';
+
+jest.mock('amplify-category-hosting');
+jest.mock('amplify-cli-core');
+
+const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
+pathManagerMock.getBackendDirPath.mockReturnValue('testBackendDirPath');
+describe('amplify status:', () => {
+  // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
   const { run } = require('../../commands/status');
   const runStatusCmd = run;
   const statusPluginInfo = `${process.cwd()}/../amplify-console-hosting`;
@@ -85,7 +93,7 @@ describe('amplify status: ', () => {
       },
     };
     runStatusCmd(mockContextWithHelpSubcommandAndCLArgs);
-    //TBD: to move ViewResourceTableParams into a separate file for mocking instance functions.
+    // TBD: to move ViewResourceTableParams into a separate file for mocking instance functions.
     expect(mockContextWithHelpSubcommandAndCLArgs.amplify.showStatusTable.mock.calls.length).toBe(0);
   });
 });

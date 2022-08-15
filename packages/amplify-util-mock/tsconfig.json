@@ -21,6 +21,9 @@
     },
     {
       "path": "../amplify-nodejs-function-runtime-provider"
+    },
+    {
+      "path": "../amplify-environment-parameters"
     }
   ]
 }

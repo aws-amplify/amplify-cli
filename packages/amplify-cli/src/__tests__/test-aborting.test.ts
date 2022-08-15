@@ -29,6 +29,7 @@ describe('test SIGINT with execute', () => {
         getMeta: jest.fn(),
         projectConfigExists: jest.fn(),
         localEnvInfoExists: jest.fn().mockReturnValue(true),
+        teamProviderInfoExists: jest.fn().mockReturnValue(true),
       },
       FeatureFlags: {
         initialize: jest.fn(),
@@ -105,6 +106,8 @@ describe('test SIGINT with execute', () => {
         await sleep(2000);
       },
     });
+
+    jest.mock('@aws-amplify/amplify-environment-parameters');
 
     setTimeout(() => {
       process.emit('SIGINT', 'SIGINT');

@@ -1,12 +1,12 @@
 import { externalAuthEnable } from '@aws-amplify/amplify-category-auth';
+import { ensureEnvParamManager, getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import {
-  $TSAny, PathConstants, pathManager, stateManager,
+  mergeDeploymentSecrets, PathConstants, pathManager, stateManager,
 } from 'amplify-cli-core';
 import chalk from 'chalk';
-import _ from 'lodash';
 import { Context } from '../domain/context';
+import { getRootStackId } from '../extensions/amplify-helpers/get-root-stack-id';
 import { isYesFlagSet } from './headless-input-utils';
-import { moveSecretsFromTeamProviderToDeployment } from './move-secrets-to-deployment';
 
 const message = `Amplify has been upgraded to handle secrets more securely by migrating some values in ${chalk.red(
   PathConstants.TeamProviderInfoFileName,
@@ -15,14 +15,18 @@ You can create a backup of the ${chalk.red(PathConstants.TeamProviderInfoFileNam
 const hostedUIProviderCredsField = 'hostedUIProviderCreds';
 
 /**
- * return true if the current state of the app does not contain secrets in the team provider info
- * if the state of the app is not without secrets in team-provider-info it return false
+ * return true if TPI does not contain any secrets or secrets successfully removed from TPI
+ * return false if TPI does contain secrets and they could not be removed
  */
 export const migrateTeamProviderInfo = async (context: Context): Promise<boolean> => {
+  if (!stateManager.teamProviderInfoExists()) {
+    return true;
+  }
   // check if command executed in project root and team provider has secrets
 
   if (!isInvalidEnvOrPulling(context) && pathManager.findProjectRoot()) {
-    const authResourceName = teamProviderInfoGetAuthResourceNameHasSecrets();
+    await ensureEnvParamManager();
+    const authResourceName = authResourceNameHasSecrets();
 
     if (!authResourceName) {
       return true;
@@ -31,7 +35,7 @@ export const migrateTeamProviderInfo = async (context: Context): Promise<boolean
     if (isYesFlagSet(context) || (await context.prompt.confirm(message))) {
       const authParams = stateManager.getResourceParametersJson(undefined, 'auth', authResourceName);
 
-      moveSecretsFromTeamProviderToDeployment();
+      moveAuthSecretToDeploymentSecrets(authResourceName);
 
       await externalAuthEnable(context, undefined, undefined, authParams);
     } else {
@@ -54,15 +58,34 @@ const isInvalidEnvOrPulling = (context: Context): boolean => {
   return false;
 };
 
-const teamProviderInfoGetAuthResourceNameHasSecrets = (): $TSAny | undefined => {
-  if (stateManager.teamProviderInfoExists()) {
-    const teamProviderInfo = stateManager.getTeamProviderInfo();
-    const { envName } = stateManager.getLocalEnvInfo();
-    const authResources = _.get(teamProviderInfo, [envName, 'categories', 'auth']);
-
-    if (authResources) {
-      return _.find(Object.keys(authResources), resource => _.has(authResources, [resource, hostedUIProviderCredsField]));
-    }
+const authResourceNameHasSecrets = (): string | undefined => {
+  const backendConfig = stateManager.getBackendConfig(undefined, { throwIfNotExist: false });
+  const authResourceName = Object.keys(backendConfig?.auth || {})[0];
+  if (!authResourceName) {
+    return undefined;
+  }
+  if (getEnvParamManager().getResourceParamManager('auth', authResourceName).hasParam(hostedUIProviderCredsField)) {
+    return authResourceName;
   }
   return undefined;
+};
+
+const moveAuthSecretToDeploymentSecrets = (authResourceName: string): void => {
+  const resourceParamManager = getEnvParamManager().getResourceParamManager('auth', authResourceName);
+  const teamProviderSecrets = resourceParamManager.getParam(hostedUIProviderCredsField)!;
+  const rootStackId = getRootStackId();
+  const { envName } = stateManager.getLocalEnvInfo();
+
+  let secrets = stateManager.getDeploymentSecrets();
+  secrets = mergeDeploymentSecrets({
+    currentDeploymentSecrets: secrets,
+    category: 'auth',
+    rootStackId,
+    envName,
+    resource: authResourceName,
+    keyName: hostedUIProviderCredsField,
+    value: teamProviderSecrets,
+  });
+  stateManager.setDeploymentSecrets(secrets);
+  resourceParamManager.deleteParam(hostedUIProviderCredsField);
 };

@@ -1,15 +1,14 @@
-import _ from 'lodash';
 import ora from 'ora';
 import sequential from 'promise-sequential';
 import {
-  stateManager, $TSAny, $TSMeta, $TSContext, $TSTeamProviderInfo,
+  stateManager, $TSAny, $TSMeta, $TSContext,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
+import { ensureEnvParamManager, IEnvironmentParameterManager } from '@aws-amplify/amplify-environment-parameters';
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';
 import { ManuallyTimedCodePath } from './domain/amplify-usageData/IUsageData';
 
 const spinner = ora('');
-const CATEGORIES = 'categories';
 
 /**
  * Entry point for initializing an environment. Delegates out to plugins initEnv function
@@ -24,14 +23,17 @@ export const initializeEnv = async (
   try {
     const { projectPath } = context.exeInfo.localEnvInfo;
 
-    const amplifyMeta: $TSMeta = {};
+    const amplifyMeta: $TSMeta = { providers: {} };
     const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
 
-    amplifyMeta.providers = _.pick(teamProviderInfo[currentEnv], 'awscloudformation');
+    amplifyMeta.providers.awscloudformation = teamProviderInfo?.[currentEnv]?.awscloudformation;
+
+    const envParamManager = (await ensureEnvParamManager(currentEnv)).instance;
 
     if (!context.exeInfo.restoreBackend) {
-      populateAmplifyMeta(projectPath, amplifyMeta);
-      populateCategoriesMeta(projectPath, amplifyMeta, teamProviderInfo[currentEnv], 'hosting', 'ElasticContainer');
+      mergeBackendConfigIntoAmplifyMeta(projectPath, amplifyMeta);
+      mergeCategoryEnvParamsIntoAmplifyMeta(envParamManager, amplifyMeta, 'hosting', 'ElasticContainer');
+      stateManager.setMeta(projectPath, amplifyMeta);
     }
 
     const categoryInitializationTasks: (() => Promise<$TSAny>)[] = [];
@@ -75,6 +77,7 @@ export const initializeEnv = async (
       await sequential(initializationTasks);
     } catch (e) {
       printer.error(`Could not initialize '${currentEnv}': ${e.message}`);
+      printer.debug(e.stack);
       context.usageData.emitError(e);
       process.exit(1);
     } finally {
@@ -123,21 +126,21 @@ export const initializeEnv = async (
   }
 };
 
-const populateAmplifyMeta = (projectPath: string, amplifyMeta: $TSMeta): void => {
+const mergeBackendConfigIntoAmplifyMeta = (projectPath: string, amplifyMeta: $TSMeta): void => {
   const backendConfig = stateManager.getBackendConfig(projectPath);
   Object.assign(amplifyMeta, backendConfig);
-  stateManager.setMeta(projectPath, amplifyMeta);
 };
 
-const populateCategoriesMeta = (
-  projectPath: string,
+const mergeCategoryEnvParamsIntoAmplifyMeta = (
+  envParamManager: IEnvironmentParameterManager,
   amplifyMeta: $TSMeta,
-  teamProviderInfo: $TSTeamProviderInfo,
   category: string,
   serviceName: string,
 ): void => {
-  if (amplifyMeta[category]?.[serviceName] && teamProviderInfo[CATEGORIES]?.[category]?.[serviceName]) {
-    Object.assign(amplifyMeta[category][serviceName], teamProviderInfo[CATEGORIES][category][serviceName]);
-    stateManager.setMeta(projectPath, amplifyMeta);
+  if (
+    envParamManager.hasResourceParamManager(category, serviceName)
+    && envParamManager.getResourceParamManager(category, serviceName).hasAnyParams()
+  ) {
+    Object.assign(amplifyMeta[category][serviceName], envParamManager.getResourceParamManager(category, serviceName).getAllParams());
   }
 };

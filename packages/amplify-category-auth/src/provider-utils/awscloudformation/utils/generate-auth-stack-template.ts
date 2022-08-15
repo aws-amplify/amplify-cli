@@ -1,7 +1,12 @@
-import { AmplifyAuthTransform } from '../auth-stack-builder/auth-stack-transform';
 import { $TSContext, Template } from 'amplify-cli-core';
+import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
+import { AmplifyAuthTransform } from '../auth-stack-builder/auth-stack-transform';
 
+/**
+ * Creates the auth stack and build artifacts
+ */
 export const generateAuthStackTemplate = async (context: $TSContext, resourceName: string): Promise<Template> => {
+  await ensureEnvParamManager();
   const authTransform = new AmplifyAuthTransform(resourceName);
-  return await authTransform.transform(context);
+  return authTransform.transform(context);
 };
