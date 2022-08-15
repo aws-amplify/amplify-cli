@@ -9,7 +9,11 @@ const notifier = updateNotifier({ pkg }); // defaults to 1 day interval
 const defaultOpts: updateNotifier.NotifyOptions = {
   message: isPackaged ? `Update available:\nRun ${chalk.blueBright('amplify upgrade')} for the latest features and fixes!` : undefined,
 };
-export function notify(notifyOpts?: updateNotifier.NotifyOptions): void {
+
+/**
+ * version notifier
+ */
+export const notify = (notifyOpts?: updateNotifier.NotifyOptions): void => {
   notifyOpts = { ...defaultOpts, ...notifyOpts };
   notifier.notify(notifyOpts);
-}
+};
