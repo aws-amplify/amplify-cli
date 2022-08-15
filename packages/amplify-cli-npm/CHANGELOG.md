@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [9.3.0-rc.aaf221035.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@9.2.1...@aws-amplify/cli@9.3.0-rc.aaf221035.0) (2022-08-15)
+
+
+### Features
+
+* pretty print cloudformation event logs  ([#10720](https://github.com/aws-amplify/amplify-cli/issues/10720)) ([aaf2210](https://github.com/aws-amplify/amplify-cli/commit/aaf22103548a329b3092f52736c28c9b5c5b8b8b))
+
+
+
+
+
 ## [9.2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@9.2.0...@aws-amplify/cli@9.2.1) (2022-08-06)
 
 **Note:** Version bump only for package @aws-amplify/cli
