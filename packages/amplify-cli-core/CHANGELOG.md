@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0-rc.224a2e0e4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.12.0...amplify-cli-core@3.0.0-rc.224a2e0e4.0) (2022-08-15)
+
+
+* feat!: breaking change (#10888) ([224a2e0](https://github.com/aws-amplify/amplify-cli/commit/224a2e0e415da18eb0b4249fb88c2c8755ab9224)), closes [#10888](https://github.com/aws-amplify/amplify-cli/issues/10888)
+
+
+### BREAKING CHANGES
+
+* hooks file management breaking change
+
+
+
+
+
 # [2.12.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.10.0...amplify-cli-core@2.12.0) (2022-08-02)
 
 

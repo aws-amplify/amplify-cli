@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0-rc.224a2e0e4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@2.2.0...amplify-prompts@2.3.0-rc.224a2e0e4.0) (2022-08-15)
+
+
+### Features
+
+* pretty print cloudformation event logs  ([#10720](https://github.com/aws-amplify/amplify-cli/issues/10720)) ([aaf2210](https://github.com/aws-amplify/amplify-cli/commit/aaf22103548a329b3092f52736c28c9b5c5b8b8b))
+
+
+
+
+
 # [2.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@2.1.0...amplify-prompts@2.2.0) (2022-06-03)
 
 
