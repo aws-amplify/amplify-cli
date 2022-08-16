@@ -1,6 +1,10 @@
-import { $TSContext, getPackageManager, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import {
+  $TSContext, getPackageManager, JSONUtilities, pathManager, stateManager,
+} from 'amplify-cli-core';
 import { execSync } from 'child_process';
-import { ensureDir, existsSync, readFileSync, readJSON, readdirSync } from 'fs-extra';
+import {
+  ensureDir, existsSync, readFileSync, readJSON, readdirSync,
+} from 'fs-extra';
 import { sync } from 'which';
 import { preInitSetup } from '../../init-steps/preInitSetup';
 import { analyzeProject } from '../../init-steps/s0-analyzeProject';
@@ -24,7 +28,7 @@ jest.mock('which');
   packageManager: 'yarn',
 });
 
-describe('amplify init: ', () => {
+describe('amplify init:', () => {
   const mockGetProjectConfigFilePath = jest.spyOn(pathManager, 'getProjectConfigFilePath');
   const mockGetAmplifyDirPath = jest.spyOn(pathManager, 'getAmplifyDirPath');
   const mockGetDotConfigDirPath = jest.spyOn(pathManager, 'getDotConfigDirPath');
@@ -32,8 +36,9 @@ describe('amplify init: ', () => {
   const mockGetGitIgnoreFilePath = jest.spyOn(pathManager, 'getGitIgnoreFilePath');
 
   const mockGetProjectConfig = jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'mockProject' });
-  const mockGetLocalEnvInfo = jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ defaultEditor: 'gedit' });
+  const mockGetLocalEnvInfo = jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ defaultEditor: 'VSCode', envName: 'testEnv' });
   const mockGetTeamProviderInfo = jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({});
+  const mockGetLocalAWSInfo = jest.spyOn(stateManager, 'getLocalAWSInfo').mockReturnValue({});
 
   const mockReadJson = jest.spyOn(JSONUtilities, 'readJson').mockReturnValue({});
 
@@ -49,6 +54,7 @@ describe('amplify init: ', () => {
     getProjectConfig: mockGetProjectConfig,
     getLocalEnvInfo: mockGetLocalEnvInfo,
     getTeamProviderInfo: mockGetTeamProviderInfo,
+    getLocalAWSInfo: mockGetLocalAWSInfo,
   };
 
   const mockContext = ({
@@ -93,6 +99,7 @@ describe('amplify init: ', () => {
     stateManager: mockStateManager,
   }));
 
+  // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
   const { run } = require('../../commands/init');
   const initCommand = run;
 
@@ -152,7 +159,7 @@ describe('amplify init: ', () => {
           },
         },
       };
-      const cwd = 'currentdir';
+      const cwd = 'currentDir';
       const spy = jest.spyOn(process, 'cwd');
       spy.mockReturnValue(cwd);
 

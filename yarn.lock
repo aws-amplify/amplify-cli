@@ -181,10 +181,10 @@
     "@aws-amplify/api-graphql" "2.2.18"
     "@aws-amplify/api-rest" "2.0.29"
 
-"@aws-amplify/appsync-modelgen-plugin@2.0.1":
-  version "2.0.1"
-  resolved "https://registry.npmjs.org/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-2.0.1.tgz#b47832bf3fb96041b121ccb2c8a80db06a633854"
-  integrity sha512-TmZu6fbe/fNarUe5dQzxWb80Br/6dtXKNtwcUUbe++yHAV4psUJTYs2sjtq0GsNCeb9AJQ8IeDVFBWWEvFoE/g==
+"@aws-amplify/appsync-modelgen-plugin@2.0.5":
+  version "2.0.5"
+  resolved "https://registry.npmjs.org/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-2.0.5.tgz#4d1360de60976c63c79d21f636bc4b077be6f8a7"
+  integrity sha512-KXnKon7gyHYdd/fRMrIItN/RRsCPbcBFY2lGqjt1kev01ngRneboI8v26ctSp8wyr+J41nbzieYYI690UcpBOg==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^1.18.8"
     "@graphql-codegen/visitor-plugin-common" "^1.22.0"
@@ -303,10 +303,10 @@
     graphql-transformer-common "4.24.0"
     libphonenumber-js "1.9.47"
 
-"@aws-amplify/graphql-docs-generator@3.0.1":
-  version "3.0.1"
-  resolved "https://registry.npmjs.org/@aws-amplify/graphql-docs-generator/-/graphql-docs-generator-3.0.1.tgz#0603cfe45900010ad6b60f0858f59a640c74ef8f"
-  integrity sha512-zlbjtbm/SmLqPfKDBwFYJJF8BA2+8IDzZMpCOcw8VnM8qOTu9IYSGEvAi26zOrCoHlmpInxWHDZhbG8gfd9fkA==
+"@aws-amplify/graphql-docs-generator@3.0.2":
+  version "3.0.2"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-docs-generator/-/graphql-docs-generator-3.0.2.tgz#8784f11010faa83a65890631994fa7d7b43088c8"
+  integrity sha512-URvSlbUo5yiC6ZUe4S/ptCnfS9blfEZYwsAsNrHajC0fw9nFKMU5Ed8N1qGcvuclfMtzsp0pDFgvKpOEkPf78w==
   dependencies:
     graphql "^14.5.8"
     handlebars "4.7.7"
@@ -9683,19 +9683,19 @@ amdefine@>=0.0.4:
   resolved "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
-amplify-codegen@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.npmjs.org/amplify-codegen/-/amplify-codegen-3.0.1.tgz#ac2390bc83a013ee28565f2dcbdf6e9615f10612"
-  integrity sha512-BYCyn8Eh/t/sfWqBh+kiKFEN3Yqhz7E2WBz/QGFBFJkXg4VMo8nIK6AsAmCUQkRqDQDna2iIi3gpjYbXF+2O7A==
+amplify-codegen@^3.0.5:
+  version "3.0.5"
+  resolved "https://registry.npmjs.org/amplify-codegen/-/amplify-codegen-3.0.5.tgz#6fc7eafdc3a3441c39575546ee7eab4de81d415e"
+  integrity sha512-iZj1CuxrrGBnszyEqwquKZCMEDwtbR3NtzsMfX/TOpdMxX720EFNRr3qYbYtmysDCWdwSK48lJcWU6+AsFCtSQ==
   dependencies:
-    "@aws-amplify/appsync-modelgen-plugin" "2.0.1"
-    "@aws-amplify/graphql-docs-generator" "3.0.1"
+    "@aws-amplify/appsync-modelgen-plugin" "2.0.5"
+    "@aws-amplify/graphql-docs-generator" "3.0.2"
     "@aws-amplify/graphql-types-generator" "3.0.0"
     "@graphql-codegen/core" "1.8.3"
     chalk "^3.0.0"
     fs-extra "^8.1.0"
     glob-all "^3.1.0"
-    glob-parent "^5.1.1"
+    glob-parent "^6.0.2"
     graphql "^14.5.8"
     graphql-config "^2.2.1"
     inquirer "^7.3.3"
@@ -10208,7 +10208,7 @@ astral-regex@^2.0.0:
 
 async@1.x, async@^2.6.2, async@^2.6.4, async@^3.2.3:
   version "2.6.4"
-  resolved "https://registry.npmjs.org/async/-/async-2.6.4.tgz#706b7ff6084664cd7eae713f6f965433b5504221"
+  resolved "https://registry.yarnpkg.com/async/-/async-2.6.4.tgz#706b7ff6084664cd7eae713f6f965433b5504221"
   integrity sha512-mzo5dfJYwAn29PeiJ0zvwTo04zj8HDJj0Mn8TD7sno7q12prdbnasKJHhkm2c1LgrhlJ0teaea8860oxi51mGA==
   dependencies:
     lodash "^4.17.14"
@@ -12390,7 +12390,7 @@ cross-env@^7.0.3:
 
 cross-fetch@2.2.2, cross-fetch@^2.2.6, cross-fetch@^3.1.5:
   version "2.2.6"
-  resolved "https://registry.npmjs.org/cross-fetch/-/cross-fetch-2.2.6.tgz#2ef0bb39a24ac034787965c457368a28730e220a"
+  resolved "https://registry.yarnpkg.com/cross-fetch/-/cross-fetch-2.2.6.tgz#2ef0bb39a24ac034787965c457368a28730e220a"
   integrity sha512-9JZz+vXCmfKUZ68zAptS7k4Nu8e2qcibe7WVZYps7sAgk5R8GYTc+T1WR0v1rlP9HxgARmOX1UTIJZFytajpNA==
   dependencies:
     node-fetch "^2.6.7"
@@ -24337,7 +24337,7 @@ whatwg-encoding@^1.0.5:
 
 whatwg-fetch@^2.0.4:
   version "2.0.4"
-  resolved "https://registry.npmjs.org/whatwg-fetch/-/whatwg-fetch-2.0.4.tgz#dde6a5df315f9d39991aa17621853d720b85566f"
+  resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-2.0.4.tgz#dde6a5df315f9d39991aa17621853d720b85566f"
   integrity sha512-dcQ1GWpOD/eEQ97k66aiEVpNnapVj90/+R+SXTPYGHpYBBypfKJEQjLrvMZ7YXbKm21gXd4NcuxUTjiv1YtLng==
 
 whatwg-fetch@^3.4.1, whatwg-fetch@^3.6.2:

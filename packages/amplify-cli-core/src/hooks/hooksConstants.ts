@@ -1,8 +1,8 @@
 import { HookExtensions, HooksNoun, HooksVerb } from './hooksTypes';
 
-export const hookFileSeperator = '-';
+export const hookFileSeparator = '-';
 
-export const suppportedEvents: Record<HooksVerb, HooksNoun[]> = {
+export const supportedEvents: Record<HooksVerb, HooksNoun[]> = {
   add: [
     'notifications',
     'analytics',
@@ -40,4 +40,4 @@ export const supportedEnvEvents: HooksVerb[] = ['add', 'update', 'remove', 'pull
 
 export const defaultSupportedExt: HookExtensions = { js: { runtime: 'node' }, sh: { runtime: 'bash' } };
 
-export const skipHooksFilePath: string = '/opt/amazon';
+export const skipHooksFilePath = '/opt/amazon';

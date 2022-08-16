@@ -30,6 +30,7 @@
   "cors",
   "createCipheriv",
   "creds",
+  "cron",
   "datasource",
   "decrypt",
   "defs",

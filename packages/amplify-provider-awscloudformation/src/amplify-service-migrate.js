@@ -1,3 +1,4 @@
+/* eslint-disable */
 const fs = require('fs-extra');
 const configurationManager = require('./configuration-manager');
 const { getConfiguredAmplifyClient } = require('./aws-utils/aws-amplify');
@@ -97,7 +98,7 @@ async function run(context) {
       backendEnvs = backendEnvs.concat(listEnvResponse.backendEnvironments);
     } while (listEnvResponse.nextToken);
 
-    const { StackName, DeploymentBucketName } = projectDetails.teamProviderInfo[envName][constants.ProviderName];
+    const { StackName, DeploymentBucketName } = projectDetails.amplifyMeta.providers[constants.ProviderName];
     if (!backendEnvs.includes(envName)) {
       context.print.info(`Adding backend environment ${envName} to AWS Amplify app: ${amplifyAppId}`);
       const createEnvParams = {

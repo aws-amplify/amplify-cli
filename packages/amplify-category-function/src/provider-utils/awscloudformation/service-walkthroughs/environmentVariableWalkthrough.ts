@@ -3,11 +3,18 @@ import _ from 'lodash';
 import { validKey, getStoredEnvironmentVariables } from '../utils/environmentVariablesHelper';
 import { getLocalFunctionSecretNames } from '../secrets/functionSecretsStateManager';
 
+/* eslint-disable no-param-reassign */
+/**
+ * Entry point to the env var walkthrough
+ */
 export const askEnvironmentVariableQuestions = async (
   resourceName: string,
-  environmentVariables: Record<string, string> = getStoredEnvironmentVariables(resourceName),
+  environmentVariables?: Record<string, string>,
   skipWalkthrough?: boolean,
-): Promise<object> => {
+): Promise<Record<string, unknown>> => {
+  if (!environmentVariables) {
+    environmentVariables = await getStoredEnvironmentVariables(resourceName);
+  }
   let firstLoop = true;
   for (
     let operation = skipWalkthrough ? 'abort' : await selectEnvironmentVariableQuestion(_.size(environmentVariables) > 0, firstLoop);
@@ -37,6 +44,7 @@ export const askEnvironmentVariableQuestions = async (
         delete environmentVariables[targetedKey];
         break;
       }
+      default:
     }
     firstLoop = false;
   }
@@ -92,7 +100,7 @@ const selectEnvironmentVariableQuestion = async (
 };
 
 const addEnvironmentVariableQuestion = async (
-  environmentVariables: object,
+  environmentVariables: Record<string, string>,
   secretNames: string[],
 ): Promise<{ newEnvironmentVariableKey: string; newEnvironmentVariableValue: string }> => {
   const { newEnvironmentVariableKey, newEnvironmentVariableValue } = await inquirer.prompt([
@@ -124,7 +132,7 @@ const addEnvironmentVariableQuestion = async (
 };
 
 const updateEnvironmentVariableQuestion = async (
-  environmentVariables: object,
+  environmentVariables: Record<string, string>,
   secretNames: string[] = [],
 ): Promise<{ newEnvironmentVariableKey: string; newEnvironmentVariableValue: string; targetedKey: string }> => {
   const { targetedKey } = await inquirer.prompt([
@@ -168,7 +176,7 @@ const updateEnvironmentVariableQuestion = async (
   };
 };
 
-const removeEnvironmentVariableQuestion = async (environmentVariables: object): Promise<string> => {
+const removeEnvironmentVariableQuestion = async (environmentVariables: Record<string, string>): Promise<string> => {
   const { targetedKey } = await inquirer.prompt([
     {
       name: 'targetedKey',
@@ -181,9 +189,9 @@ const removeEnvironmentVariableQuestion = async (environmentVariables: object): 
   return targetedKey;
 };
 
-const envVarValueValidator = (input: string) => {
+const envVarValueValidator = (input: string): true | string => {
   if (input.length < 1 || input.length > 2048) {
-    return 'The valud must be bewteen 1 and 2048 characters long';
+    return 'The value must be between 1 and 2048 characters long';
   }
   return true;
 };
