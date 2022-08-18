@@ -2,7 +2,16 @@ import { StackProgressPrinter } from '../../iterative-deployment/stack-progress-
 import { IStackProgressPrinter } from '../../iterative-deployment/stack-event-monitor';
 import columnify from 'columnify';
 
-const printer: IStackProgressPrinter = new StackProgressPrinter();
+const eventMap = {
+  projectName: 'test',
+  envName: 'dev',
+  rootStackName: 'root-app',
+  rootResources: [{ key: 'test-app', category: 'api' }],
+  categories: [{ name: 'api', size: 2 }],
+  eventToCategories: new Map(),
+};
+
+const printer: IStackProgressPrinter = new StackProgressPrinter(eventMap);
 jest.mock('columnify');
 
 // Make sure that chalk colors are stripped for the test.

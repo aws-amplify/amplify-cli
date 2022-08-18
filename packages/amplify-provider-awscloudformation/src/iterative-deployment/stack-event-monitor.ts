@@ -10,8 +10,11 @@ export interface StackEventMonitorOptions {
 export interface IStackProgressPrinter {
   addActivity: (activity: StackEvent) => void;
   print: () => void;
-  start: () => void;
-  stop: () => void;
+  printEventProgress: () => void;
+  printDefaultLogs: () => void;
+  finishBars: () => void;
+  stopBars: () => void;
+  isRunning: () => boolean;
 }
 
 export class StackEventMonitor {
@@ -29,23 +32,23 @@ export class StackEventMonitor {
   constructor(
     private cfn: aws.CloudFormation,
     private stackName: string,
-    private printer: IStackProgressPrinter,
+    private printerFn: () => void,
+    private addEventActivity: (event) => void,
     options?: StackEventMonitor,
   ) {
     this.options = { pollDelay: 5_000, ...options };
     this.logger = fileLogger('stack-event-monitor');
+    this.printerFn = printerFn;
   }
 
   public start() {
     this.active = true;
-    this.printer.start();
     this.scheduleNextTick();
     return this;
   }
 
   public async stop() {
     this.active = false;
-    this.printer.stop();
     if (this.tickTimer) {
       clearTimeout(this.tickTimer);
     }
@@ -76,9 +79,9 @@ export class StackEventMonitor {
     // We might have been stop()ped while the network call was in progress.
     if (!this.active) {
       return;
-    }
 
-    this.printer.print();
+    }
+    this.printerFn();
     this.scheduleNextTick();
   }
 
@@ -152,7 +155,7 @@ export class StackEventMonitor {
 
     events.reverse();
     for (const event of events) {
-      this.printer.addActivity(event);
+      this.addEventActivity(event);
     }
   }
 
@@ -187,6 +190,6 @@ export class StackEventMonitor {
     await this.readNewEvents();
 
     // Final print
-    this.printer.print();
+    this.printerFn();
   }
 }

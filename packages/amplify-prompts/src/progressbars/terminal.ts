@@ -80,9 +80,11 @@ export class AmplifyTerminal {
       lines.forEach(line => {
         // Truncating to width-2 of terminal
         const { renderString, color } = line;
-        const truncatedLine = renderString.substring(0, Math.min(renderString.length, this.width - BUFFER_LENGTH));
-        const writtenLine = getColoredLine(truncatedLine, color);
-        this.stream.write(`${clearLine()}${writtenLine}${os.EOL}`);
+        let truncatedLine = renderString.substring(0, Math.min(renderString.length, this.width - BUFFER_LENGTH));
+        if (truncatedLine.length) {
+          truncatedLine = getColoredLine(truncatedLine, color);
+        }
+        this.stream.write(`${clearLine()}${truncatedLine}${os.EOL}`);
       });
 
       this.trailingEmptyLines = Math.max(0, this.lastHeight - lines.length);
