@@ -37,7 +37,6 @@ import {
   Template,
   ApiCategoryFacade,
 } from 'amplify-cli-core';
-import ora from 'ora';
 import { Fn } from 'cloudform-types';
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { S3 } from './aws-utils/aws-s3';
@@ -81,8 +80,6 @@ const logger = fileLogger('push-resources');
 // keep in sync with ServiceName in amplify-category-api, but probably it will not change
 const ApiServiceNameElasticContainer = 'ElasticContainer';
 
-const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
-
 const optionalBuildDirectoryName = 'build';
 const cfnTemplateGlobPattern = '*template*.+(yaml|yml|json)';
 const parametersJson = 'parameters.json';
@@ -121,10 +118,11 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     let resources = !!context?.exeInfo?.forcePush || rebuild ? allResources : resourcesToBeCreated.concat(resourcesToBeUpdated);
 
     layerResources = resources.filter((r: { service: string; }) => r.service === AmplifySupportedService.LAMBDA_LAYER);
+    const eventMap = createEventMap(context, resourcesToBeCreated, resourcesToBeUpdated);
 
     if (deploymentStateManager.isDeploymentInProgress() && !deploymentStateManager.isDeploymentFinished()) {
       if (context.exeInfo?.forcePush || context.exeInfo?.iterativeRollback) {
-        await runIterativeRollback(context, cloudformationMeta, deploymentStateManager);
+        await runIterativeRollback(context, cloudformationMeta, deploymentStateManager, eventMap);
         if (context.exeInfo?.iterativeRollback) {
           return;
         }
@@ -271,7 +269,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
       // if there are deploymentSteps, need to do an iterative update
       if (deploymentSteps.length > 0) {
         // create deployment manager
-        const deploymentManager = await DeploymentManager.createInstance(context, cloudformationMeta.DeploymentBucketName, spinner, {
+        const deploymentManager = await DeploymentManager.createInstance(context, cloudformationMeta.DeploymentBucketName, eventMap, {
           userAgent: formUserAgentParam(context, generateUserAgentAction(resourcesToBeCreated, resourcesToBeUpdated)),
         });
 
@@ -318,7 +316,6 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
         // Non iterative update
 
         const nestedStack = await formNestedStack(context, context.amplify.getProjectDetails());
-        const eventMap = createEventMap(context, resourcesToBeCreated, resourcesToBeUpdated);
 
         try {
           await updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated, resourcesToBeUpdated, eventMap);

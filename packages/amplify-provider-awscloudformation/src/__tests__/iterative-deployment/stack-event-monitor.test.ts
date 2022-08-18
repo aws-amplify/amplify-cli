@@ -1,11 +1,10 @@
 import { StackEventMonitor, IStackProgressPrinter } from '../../iterative-deployment/stack-event-monitor';
 import { CloudFormation } from 'aws-sdk';
 
-const stackProgressPrinterStub = ({
-  print: jest.fn(),
-  start: jest.fn(),
-  stop: jest.fn(),
-} as unknown) as IStackProgressPrinter;
+const stackProgressPrinterStub = {
+  printerFn: jest.fn(),
+  addEventActivity: jest.fn(),
+};
 
 const cfn = ({
   describeStackEvents: () => ({
@@ -18,7 +17,8 @@ const cfn = ({
 jest.useFakeTimers();
 
 describe('StackEventMonitor', () => {
-  const monitor = new StackEventMonitor(cfn, 'testStackName', stackProgressPrinterStub);
+  const monitor = new StackEventMonitor(cfn, 'testStackName',
+    stackProgressPrinterStub.printerFn, stackProgressPrinterStub.addEventActivity);
 
   test('start StackEventMonitor', () => {
     monitor.start();
@@ -26,16 +26,11 @@ describe('StackEventMonitor', () => {
     jest.runAllTimers();
     expect(setTimeout).toHaveBeenCalledTimes(1);
     expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 5000);
-    expect(stackProgressPrinterStub.start).toBeCalled();
-    setImmediate(() => {
-      expect(stackProgressPrinterStub.print).toBeCalled();
-    }); // print is called asynchronously by setTimeout, so we need to queue "expect" to run after all tasks are done
   });
 
   test('stop StackEventMonitor', () => {
     monitor.stop();
 
-    expect(stackProgressPrinterStub.stop).toBeCalled();
-    expect(stackProgressPrinterStub.print).toBeCalled();
+    expect(stackProgressPrinterStub.printerFn).toBeCalled();
   });
 });

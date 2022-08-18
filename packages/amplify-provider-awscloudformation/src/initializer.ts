@@ -278,13 +278,13 @@ function storeCurrentCloudBackend(context) {
 
   const zipFilePath = path.normalize(path.join(tempDir, zipFilename));
   let log = null;
-  const spinner = new AmplifySpinner('Saving deployment state.');
+  const spinner = new AmplifySpinner();
 
   return archiver
     .run(currentCloudBackendDir, zipFilePath, undefined, cliJSONFiles)
     .then(result => {
       const s3Key = `${result.zipFilename}`;
-      spinner.start();
+      spinner.start('Saving deployment state.');
       return S3.getInstance(context).then(s3 => {
         spinner.stop('Deployment bucket fetched.');
         const s3Params = {

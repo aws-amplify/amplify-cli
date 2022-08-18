@@ -38,7 +38,7 @@ export type ItemPayload = {
     LogicalResourceId: string,
     ResourceType: string,
     ResourceStatus: string,
-    Timestamp: string,
+    Timestamp: Date | string,
 }
 
 type Item = {

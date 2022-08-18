@@ -3,7 +3,7 @@
  * and use a re writable block instead.
  */
 
-import { AmplifyTerminal as Terminal, StringObj } from './terminal';
+import { AmplifyTerminal, AmplifyTerminal as Terminal, StringObj } from './terminal';
 
 /**
  * Amplify spinner instance
@@ -13,15 +13,15 @@ export class AmplifySpinner {
     private frames : string[];
     private timer!: ReturnType<typeof setTimeout>;
     private prefixText : string;
-    private terminal: Terminal;
+    private terminal: Terminal | null;
     private refreshRate: number;
 
-    constructor(text : string) {
+    constructor() {
       this.frameCount = 0;
       this.frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
-      this.prefixText = text;
-      this.terminal = new Terminal();
+      this.prefixText = '';
       this.refreshRate = 50;
+      this.terminal = null;
     }
 
     /**
@@ -36,31 +36,50 @@ export class AmplifySpinner {
         color: '',
       }];
       this.frameCount = ++this.frameCount % this.frames.length;
-      this.terminal.writeLines(lines);
+      if (this.terminal) {
+        this.terminal.writeLines(lines);
+      }
       this.timer = setTimeout(() => this.render(), this.refreshRate);
     }
 
     /**
      * Starts a spinner and calls render function.
      */
-    start() : void {
-      this.prefixText = this.prefixText.replace('\n', '');
+    start(text: string | null) : void {
+      if (!this.terminal) {
+        this.terminal = new AmplifyTerminal();
+      }
+      this.prefixText = text ? text.replace('\n', '') : this.prefixText;
       this.terminal.cursor(false);
       this.render();
     }
 
     /**
+     * Reset Spinner message
+     */
+    resetMessage(text: string | null) : void {
+      if (!this.terminal) {
+        this.start(text);
+        return;
+      }
+      this.prefixText = text ? text.replace('\n', '') : this.prefixText;
+    }
+
+    /**
      * Stops the spinner
      */
-    stop(text : string | null, success = true) : void {
-      if (text) {
-        const lines : StringObj[] = [{
-          renderString: text,
-          color: success ? 'green' : 'red',
-        }];
-
-        clearTimeout(this.timer);
-        this.terminal.writeLines(lines);
+    stop(text? : string | null, success = true) : void {
+      if (!this.terminal) {
+        return;
       }
+      const lines : StringObj[] = [{
+        renderString: text || '',
+        color: success ? 'green' : 'red',
+      }];
+
+      clearTimeout(this.timer);
+      this.terminal.writeLines(lines);
+      this.terminal.cursor(true);
+      this.terminal = null;
     }
 }

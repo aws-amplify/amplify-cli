@@ -181,6 +181,13 @@ export class MultiProgressBar {
     }
 
     /**
+     * Finish all bars
+     */
+    finishAllBars() : void {
+      this.bars.forEach(bar => this.finishBar(bar.name));
+    }
+
+    /**
      * Creates a set of progress bars under the multi bar
      */
     create(bars: {

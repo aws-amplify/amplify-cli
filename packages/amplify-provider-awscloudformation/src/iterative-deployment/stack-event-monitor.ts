@@ -5,13 +5,16 @@ export interface StackEventMonitorOptions {
   pollDelay: number;
 }
 export interface IStackProgressPrinter {
-  addActivity(activity: StackEvent): void;
-  print(): void;
-  start(): void;
-  stop(): void;
+  addActivity: (activity: StackEvent) => void;
+  print: () => void;
+  printEventProgress: () => void;
+  printDefaultLogs: () => void;
+  finishBars: () => void;
+  stopBars: () => void;
+  isRunning: () => boolean;
 }
 export class StackEventMonitor {
-  private active: boolean = false;
+  private active = false;
   private tickTimer?: NodeJS.Timeout;
   private options: StackEventMonitorOptions;
   private readPromise?: Promise<any>;
@@ -19,29 +22,29 @@ export class StackEventMonitor {
   private activity: Record<string, StackEvent> = {};
   private completedStacks: Set<string> = new Set();
   private stacksBeingMonitored: string[] = [this.stackName];
-  private lastPolledStackIndex: number = 0;
+  private lastPolledStackIndex = 0;
   private logger: Logger;
 
   constructor(
     private cfn: aws.CloudFormation,
     private stackName: string,
-    private printer: IStackProgressPrinter,
+    private printerFn: () => void,
+    private addEventActivity: (event) => void,
     options?: StackEventMonitor,
   ) {
     this.options = { pollDelay: 5_000, ...options };
     this.logger = fileLogger('stack-event-monitor');
+    this.printerFn = printerFn;
   }
 
   public start() {
     this.active = true;
-    this.printer.start();
     this.scheduleNextTick();
     return this;
   }
 
   public async stop() {
     this.active = false;
-    this.printer.stop();
     if (this.tickTimer) {
       clearTimeout(this.tickTimer);
     }
@@ -75,7 +78,7 @@ export class StackEventMonitor {
         return;
       }
 
-      this.printer.print();
+      this.printerFn();
     } catch (e) {
       this.logger('scheduleNextTick', [])(e);
       if (e && e.code !== 'Throttling') e.message = 'Error occurred while monitoring stack:' + e.message;
@@ -153,7 +156,7 @@ export class StackEventMonitor {
 
     events.reverse();
     for (const event of events) {
-      this.printer.addActivity(event);
+      this.addEventActivity(event);
     }
   }
 
@@ -188,6 +191,6 @@ export class StackEventMonitor {
     await this.readNewEvents();
 
     // Final print
-    this.printer.print();
+    this.printerFn();
   }
 }

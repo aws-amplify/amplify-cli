@@ -1,9 +1,7 @@
-import { $TSContext, $TSMeta, DeploymentState, DeploymentStepStatus, IDeploymentStateManager, JSONUtilities } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSMeta, DeploymentState, DeploymentStepStatus, IDeploymentStateManager, JSONUtilities } from 'amplify-cli-core';
 import { DeploymentOp, DeploymentManager } from './deployment-manager';
 import { S3 } from '../aws-utils/aws-s3';
 import { formUserAgentParam } from '../aws-utils/user-agent';
-import ora from 'ora';
-const spinner = ora('');
 
 class IterativeRollbackError extends Error {
   constructor(message: string) {
@@ -41,17 +39,18 @@ const getParentStatePath = (files: string[]): string | null => {
   return longestFilePath.substring(0, i);
 };
 
-export async function runIterativeRollback(
+export const runIterativeRollback = async (
   context: $TSContext,
   cloudformationMeta: $TSMeta,
   deploymentStateManager: IDeploymentStateManager,
-) {
+  eventMap: $TSAny,
+) => {
   const deploymentBucket = cloudformationMeta.DeploymentBucketName;
   const deploymentStatus: DeploymentState = deploymentStateManager.getStatus();
   const deployedSteps = deploymentStatus.steps.slice(0, deploymentStatus.currentStepIndex + 1);
 
   const s3 = await S3.getInstance(context);
-  const deploymentManager = await DeploymentManager.createInstance(context, deploymentBucket, spinner, {
+  const deploymentManager = await DeploymentManager.createInstance(context, deploymentBucket, eventMap, {
     userAgent: formUserAgentParam(context, 'iterative-rollback'),
   });
 
@@ -75,11 +74,9 @@ export async function runIterativeRollback(
       deploymentManager.addRollbackStep(step);
     });
 
-    spinner.start('Iterative Rollback in progress');
     await deploymentManager.rollback(deploymentStateManager);
     // delete parent state file
     const stateS3Dir = getParentStatePath(stateFiles);
     await s3.deleteDirectory(deploymentBucket, stateS3Dir);
-    spinner.succeed('Finished Rollback');
   }
-}
+};
