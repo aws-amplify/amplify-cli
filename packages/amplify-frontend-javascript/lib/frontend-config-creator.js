@@ -274,10 +274,9 @@ function getAWSExportsObject(resources) {
 }
 
 async function getCurrentAWSExports(context) {
-  const { amplify } = context;
-  const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
-  const projectConfig = context.exeInfo ? context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
-  const frontendConfig = projectConfig.config;
+  const { amplify, exeInfo } = context;
+  const projectPath = exeInfo?.localEnvInfo?.projectPath || amplify.getEnvInfo().projectPath;
+  const { config: frontendConfig } = exeInfo?.projectConfig?.[constants.Label] || amplify.getProjectConfig()[constants.Label];
   const srcDirPath = path.join(projectPath, frontendConfig.SourceDir);
 
   const targetFilePath = path.join(srcDirPath, constants.exportsFilename);
@@ -287,7 +286,15 @@ async function getCurrentAWSExports(context) {
     const fileContents = fs.readFileSync(targetFilePath, 'utf-8');
     // trick to force aws-exports.js to be treated as an ES Module
     // https://nodejs.org/api/esm.html#data-imports
-    awsExports = await import(`data:text/javascript,${encodeURIComponent(fileContents)}`)?.default;
+    try {
+      /* eslint-disable-next-line spellcheck/spell-checker */
+      const imported = await import(`data:text/javascript;charset=utf-8,${encodeURIComponent(fileContents)}`)?.default;
+      if (imported) awsExports = imported;
+    } catch (error) {
+      // if file is in CommonJS format, we will receive a ReferenceError
+      // ReferenceError: module is not defined in ES module scope
+      throw new Error('Unable to parse aws-exports.js. Has this file been modified?');
+    }
   }
 
   return awsExports;
@@ -684,5 +691,5 @@ function getGeofenceCollectionConfig(geofenceCollectionResources) {
 }
 
 module.exports = {
-  createAWSExports, getAWSExports, createAmplifyConfig, deleteAmplifyConfig, generateAwsExportsAtPath, getAWSExportsObject,
+  createAWSExports, getAWSExports, getCurrentAWSExports, createAmplifyConfig, deleteAmplifyConfig, generateAwsExportsAtPath, getAWSExportsObject,
 };

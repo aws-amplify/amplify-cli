@@ -2,6 +2,10 @@
   "name": "amplify-frontend-javascript",
   "version": "3.5.4",
   "description": "amplify-cli front-end plugin for JavaScript projects",
+  "scripts": {
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test-watch": "yarn test --watch"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-cli.git",
