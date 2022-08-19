@@ -288,7 +288,7 @@ async function getCurrentAWSExports(context) {
     // https://nodejs.org/api/esm.html#data-imports
     try {
       /* eslint-disable-next-line spellcheck/spell-checker */
-      const imported = await import(`data:text/javascript;charset=utf-8,${encodeURIComponent(fileContents)}`)?.default;
+      const imported = (await import(`data:text/javascript;charset=utf-8,${encodeURIComponent(fileContents)}`))?.default;
       if (imported) awsExports = imported;
     } catch (error) {
       // if file is in CommonJS format, we will receive a ReferenceError
