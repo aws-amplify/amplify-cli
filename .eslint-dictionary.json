@@ -1,5 +1,6 @@
 [
   "amazonaws",
+  "awsmobile",
   "apigw",
   "apis",
   "appsync",
@@ -142,6 +143,8 @@
   "textract",
   "timestamps",
   "totp",
+  "transpile",
+  "transpiled",
   "tsconfig",
   "typename",
   "uibuilder",
