@@ -3,23 +3,10 @@ import express from 'express';
 import cors from 'cors';
 import * as bodyParser from 'body-parser';
 import { fromEvent } from 'promise-toolbox';
-import serveStatic from 'serve-static';
 import { EventEmitter } from 'events';
 // eslint-disable-next-line import/no-cycle
 import { AuthSimulatorServerConfig } from '../index';
 
-// import * as util from './utils';
-
-// const LIST_CONTENT = 'Contents';
-// const LIST_COMMOM_PREFIXES = 'CommonPrefixes';
-// const EVENT_RECORDS = 'Records';
-type ServerResponse =
-{
-test: string;
-} & import('http').ServerResponse
-
-type Response= serveStatic.ServeStaticOptions<ServerResponse>
-type Request = serveStatic.RequestHandler<ServerResponse>
 const corsOptions = {
   maxAge: 20000,
   exposedHeaders: ['x-amz-server-side-encryption', 'x-amz-request-id', 'x-amz-id-2', 'ETag'],
@@ -28,7 +15,7 @@ const corsOptions = {
  * Mock Auth Server
  */
 export class AuthServer extends EventEmitter {
-  private app;
+  private app:express.Application;
   private server;
   private connection;
   private route; // bucket name get from the CFN parser
@@ -36,24 +23,25 @@ export class AuthServer extends EventEmitter {
 
   private localDirectoryPath: string;
 
-  private async handleRequestGet(request:Request, response:Response) :Promise<void> {
-    console.log(request, response);
-  }
-
-  private async handleRequestList(request:Request, response:Response):Promise<void> {
-    console.log(request, response);
-  }
-
-  private async handleRequestDelete(request:Request, response:Response):Promise<void> {
-    console.log(request, response);
-  }
-
-  private async handleRequestPut(request:Request, response:Response):Promise<void> {
-    console.log(request, response);
-  }
-
-  private async handleRequestPost(request:Request, response:Response) :Promise<void> {
-    console.log(request, response);
+  private async handleRequestPost(req, res): Promise<void> {
+    if (req.headers['x-amz-target']) {
+      if (req.headers['x-amz-target'] === 'AWSCognitoIdentityProviderService.GetUser') {
+        res.set('Content-Type', 'application/json');
+        res.send({ userData: { UserAttributes: ['test'] } });
+      } else if (req.headers['x-amz-target'] === 'AWSCognitoIdentityProviderService.InitiateAuth') {
+        res.set('Content-Type', 'application/json');
+        res.send({
+          username: 'test',
+          AuthenticationResult: { IdToken: 'a', AccessToken: 'b', RefreshToken: 'c' },
+          ChallengeParameters: { USER_ID_FOR_SRP: 'test' },
+          UserAttributes: [{ username: 'test' }],
+        });
+      } else {
+        res.send('test2');
+      }
+    } else {
+      res.headers.append('Content-Type', 'text/xml');
+    }
   }
 
   constructor(private config: AuthSimulatorServerConfig) {
@@ -63,8 +51,7 @@ export class AuthServer extends EventEmitter {
     this.app.use(cors(corsOptions));
     // eslint-disable-next-line spellcheck/spell-checker
     this.app.use(bodyParser.raw({ limit: '100mb', type: '*/*' }));
-    //    this.app.use(serveStatic<ServerResponse>(this.localDirectoryPath), this.handleRequestAll.bind(this));
-
+    this.app.post('/', this.handleRequestPost);
     this.server = null;
     this.route = config.route;
   }
@@ -72,7 +59,7 @@ export class AuthServer extends EventEmitter {
   /**
    * Starts the auth mock server
    */
-  start() :void {
+  start(): void {
     if (this.server) {
       throw new Error('Server is already running');
     }
@@ -91,7 +78,7 @@ export class AuthServer extends EventEmitter {
   /**
    * Stops the auth mock server
    */
-  stop() :void {
+  stop(): void {
     if (this.server) {
       this.server.close();
       this.server = null;
