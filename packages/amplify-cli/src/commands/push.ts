@@ -1,5 +1,5 @@
 import {
-  $TSAny, $TSContext, $TSObject, ConfigurationError, exitOnNextTick, stateManager, spinner,
+  $TSAny, $TSContext, ConfigurationError, exitOnNextTick, stateManager, spinner,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import sequential from 'promise-sequential';
@@ -9,20 +9,16 @@ import { showTroubleshootingURL } from './help';
 import { reportError } from './diagnose';
 import { Context } from '../domain/context';
 
-// The following code pulls the latest backend to #current-cloud-backend
-// so the amplify status is correctly shown to the user before the user confirms
-// to push his local developments
+/**
+ * Download and unzip deployment bucket contents to #current-cloud-backend so amplify status shows correct state
+ */
 const syncCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
   context.exeInfo.restoreBackend = false;
 
   const currentEnv = context.exeInfo.localEnvInfo.envName;
 
   try {
-    const { projectPath } = context.exeInfo.localEnvInfo;
-    const amplifyMeta: $TSObject = {};
-    const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
-
-    amplifyMeta.providers = teamProviderInfo[currentEnv];
+    const amplifyMeta = stateManager.getMeta();
 
     const providerPlugins = getProviderPlugins(context);
 
@@ -68,7 +64,7 @@ export const run = async (context: $TSContext): Promise<$TSAny|void> => {
     return await context.amplify.pushResources(context);
   } catch (e) {
     const message = (e.name === 'GraphQLError' || e.name === 'InvalidMigrationError') ? e.toString() : e.message;
-    printer.error(`An error occurred during the push operation: /\n${message}`);
+    printer.error(`An error occurred during the push operation: \n${message}`);
     await reportError(context as unknown as Context, e);
     await context.usageData.emitError(e);
     showTroubleshootingURL();

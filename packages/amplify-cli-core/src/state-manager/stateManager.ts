@@ -1,6 +1,5 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable max-len */
-/* eslint-disable spellcheck/spell-checker */
 /* eslint-disable import/no-cycle */
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -78,8 +77,18 @@ export class StateManager {
 
   getCurrentProjectTags = (projectPath?: string): Tag[] => ReadTags(pathManager.getCurrentTagFilePath(projectPath));
 
+  /**
+   * Whether or not the `team-provider-info.json` file exists
+   *
+   * @deprecated Use envParamManager from amplify-environment-parameters
+   */
   teamProviderInfoExists = (projectPath?: string): boolean => this.doesExist(pathManager.getTeamProviderInfoFilePath, projectPath);
 
+  /**
+   * Returns the contents of the `team-provider-info.json` file
+   *
+   * @deprecated Use envParamManager from amplify-environment-parameters
+   */
   getTeamProviderInfo = (projectPath?: string, options?: GetOptions<$TSTeamProviderInfo>): $TSTeamProviderInfo => {
     const filePath = pathManager.getTeamProviderInfoFilePath(projectPath);
     const mergedOptions = {
@@ -154,7 +163,7 @@ export class StateManager {
     const meta = stateManager.getMeta(undefined, { throwIfNotExist: false });
     const appId = meta?.providers?.awscloudformation?.AmplifyAppId;
     if (!appId) {
-      throw new Error('Could not find an Amplify AppId in the amplfiy-meta.json file. Make sure your project is initialized in the cloud.');
+      throw new Error('Could not find an Amplify AppId in the amplify-meta.json file. Make sure your project is initialized in the cloud.');
     }
     return appId;
   }

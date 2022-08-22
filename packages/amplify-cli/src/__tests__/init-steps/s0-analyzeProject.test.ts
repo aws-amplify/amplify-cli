@@ -1,8 +1,14 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, stateManager } from 'amplify-cli-core';
 import { analyzeProject } from '../../init-steps/s0-analyzeProject';
 import { constructMockPluginPlatform } from '../extensions/amplify-helpers/mock-plugin-platform';
 import { Input } from '../../domain/input';
 import { constructContext } from '../../context-manager';
+
+jest.mock('amplify-cli-core');
+
+const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
+stateManagerMock.getLocalAWSInfo.mockReturnValue({ envA: 'test', envB: 'test' });
+stateManagerMock.getLocalEnvInfo.mockReturnValue({ defaultEditor: 'Visual Studio Code' });
 
 describe('analyzeProject', () => {
   it('recognizes the default editor', async () => {
@@ -36,7 +42,7 @@ describe('analyzeProject', () => {
       },
     };
     mockContext.runtime.plugins.push(...frontendPlugins);
-    const consoleLogSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => { /* noop */ });
     const result = await analyzeProject(mockContext);
     expect(result.exeInfo.localEnvInfo.defaultEditor).toStrictEqual('Visual Studio Code');
     consoleLogSpy.mockClear();

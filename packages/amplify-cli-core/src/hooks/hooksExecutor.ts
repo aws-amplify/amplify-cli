@@ -113,10 +113,10 @@ const execHelper = async (
 
 const getHookFileMetas = (
   hooksDirPath: string,
-  HookEvent: HookEvent,
+  hookEvent: HookEvent,
   hooksConfig: HooksConfig,
 ): { commandHookFileMeta?: HookFileMeta; subCommandHookFileMeta?: HookFileMeta } => {
-  if (!HookEvent.command) {
+  if (!hookEvent.command) {
     return {};
   }
   const extensionsSupported = getSupportedExtensions(hooksConfig);
@@ -128,16 +128,16 @@ const getHookFileMetas = (
     .filter(fileMeta => fileMeta.extension && extensionsSupported.hasOwnProperty(fileMeta.extension))
     .map(fileMeta => ({ ...fileMeta, filePath: path.join(hooksDirPath, String(fileMeta.fileName)) }));
 
-  const commandType = HookEvent.eventPrefix ? [HookEvent.eventPrefix, HookEvent.command].join(hookFileSeparator) : HookEvent.command;
+  const commandType = hookEvent.eventPrefix ? [hookEvent.eventPrefix, hookEvent.command].join(hookFileSeparator) : hookEvent.command;
   const commandHooksFiles = allFiles.filter(fileMeta => fileMeta.baseName === commandType);
   const commandHookFileMeta = throwOnDuplicateHooksFiles(commandHooksFiles);
 
   let subCommandHooksFiles;
   let subCommandHookFileMeta: HookFileMeta | undefined;
-  if (HookEvent.subCommand) {
-    const subCommandType = HookEvent.eventPrefix
-      ? [HookEvent.eventPrefix, HookEvent.command, HookEvent.subCommand].join(hookFileSeparator)
-      : [HookEvent.command, HookEvent.subCommand].join(hookFileSeparator);
+  if (hookEvent.subCommand) {
+    const subCommandType = hookEvent.eventPrefix
+      ? [hookEvent.eventPrefix, hookEvent.command, hookEvent.subCommand].join(hookFileSeparator)
+      : [hookEvent.command, hookEvent.subCommand].join(hookFileSeparator);
 
     subCommandHooksFiles = allFiles.filter(fileMeta => fileMeta.baseName === subCommandType);
     subCommandHookFileMeta = throwOnDuplicateHooksFiles(subCommandHooksFiles);

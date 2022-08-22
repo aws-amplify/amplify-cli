@@ -1,3 +1,4 @@
+/* eslint-disable */
 const enableMod = require('./enable');
 const publshMod = require('./publish');
 const initMod = require('./initEnv');
@@ -12,8 +13,8 @@ async function publish(context, doSkipBuild, doSkipPush) {
   await publshMod.publish(context, doSkipBuild, doSkipPush);
 }
 
-function initEnv(context) {
-  initMod.initEnv(context);
+async function initEnv(context) {
+  await initMod.initEnv(context);
 }
 
 async function serve(context) {

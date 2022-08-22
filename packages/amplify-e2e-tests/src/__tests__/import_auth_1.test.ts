@@ -37,9 +37,9 @@ import { getCognitoResourceName } from '../schema-api-directives/authHelper';
 import { randomizedFunctionName } from '../schema-api-directives/functionTester';
 
 describe('auth import userpool only', () => {
-  const profileName = 'amplify-integ-test-user';
-
+  // eslint-disable-next-line spellcheck/spell-checker
   const projectPrefix = 'auimpup';
+  // eslint-disable-next-line spellcheck/spell-checker
   const ogProjectPrefix = 'ogauimpup';
 
   const projectSettings = {
@@ -51,6 +51,7 @@ describe('auth import userpool only', () => {
   };
 
   const dummyOGProjectSettings = {
+    // eslint-disable-next-line spellcheck/spell-checker
     name: 'dummyog1',
   };
 
@@ -62,7 +63,6 @@ describe('auth import userpool only', () => {
 
   // We need an extra OG project to make sure that autocomplete prompt hits in
   let dummyOGProjectRoot: string;
-  let dummyOGShortId: string;
   let dummyOGSettings: AddAuthUserPoolOnlyWithOAuthSettings;
 
   let projectRoot: string;
@@ -80,7 +80,6 @@ describe('auth import userpool only', () => {
     ogProjectDetails = getOGAuthProjectDetails(ogProjectRoot);
 
     dummyOGProjectRoot = await createNewProjectDir(dummyOGProjectSettings.name);
-    dummyOGShortId = getShortId();
     dummyOGSettings = createUserPoolOnlyWithOAuthSettings(dummyOGProjectSettings.name, ogShortId);
 
     await initJSProjectWithProfile(dummyOGProjectRoot, dummyOGProjectSettings);
@@ -134,6 +133,7 @@ describe('auth import userpool only', () => {
     expectAuthProjectDetailsMatch(projectDetails, ogProjectDetails);
 
     await removeImportedAuthWithDefault(projectRoot);
+    // eslint-disable-next-line spellcheck/spell-checker
     await amplifyStatus(projectRoot, 'Unlink');
 
     await amplifyPushAuth(projectRoot);
@@ -156,6 +156,7 @@ describe('auth import userpool only', () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
     await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
 
+    // eslint-disable-next-line spellcheck/spell-checker
     const functionName = randomizedFunctionName('authimpfunc');
     const authResourceName = getCognitoResourceName(projectRoot);
 
@@ -186,9 +187,9 @@ describe('auth import userpool only', () => {
     const cognitoResourceNameUpperCase = projectDetails.authResourceName.toUpperCase();
     const userPoolIDEnvVarName = `AUTH_${cognitoResourceNameUpperCase}_USERPOOLID`;
 
-    const indexjsContents = fs.readFileSync(amplifyFunctionIndexFilePath).toString();
+    const indexJSContents = fs.readFileSync(amplifyFunctionIndexFilePath).toString();
 
-    expect(indexjsContents.indexOf(userPoolIDEnvVarName)).toBeGreaterThanOrEqual(0);
+    expect(indexJSContents.indexOf(userPoolIDEnvVarName)).toBeGreaterThanOrEqual(0);
 
     // Verify userpool id in root stack
     const rootStack = readRootStack(projectRoot);

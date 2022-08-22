@@ -1,3 +1,5 @@
+// TODO remove
+/* eslint-disable */
 import ora from 'ora';
 import chalk from 'chalk';
 import { FeatureFlags } from 'amplify-cli-core';
@@ -18,7 +20,7 @@ export async function deleteProject(context) {
       await FeatureFlags.removeFeatureFlagConfiguration(true, envNames);
     }
 
-    const spinner = ora('Deleting resources from the cloud. This may take a few minutes...');
+    const spinner = ora('Deleting resources from the cloud. This will take a few minutes.');
 
     try {
       spinner.start();

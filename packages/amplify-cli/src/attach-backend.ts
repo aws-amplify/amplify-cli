@@ -9,6 +9,7 @@ import { initFrontend } from './attach-backend-steps/a30-initFrontend';
 import { generateFiles } from './attach-backend-steps/a40-generateFiles';
 import { postPullCodegen } from './amplify-service-helper';
 import { initializeEnv } from './initialize-env';
+import { getAmplifyAppId } from './extensions/amplify-helpers/get-amplify-appId';
 
 const backupAmplifyDirName = 'amplify-backup';
 
@@ -178,11 +179,7 @@ const prepareContext = (context: $TSContext, inputParams): void => {
     localEnvInfo: {
       projectPath,
     },
-    teamProviderInfo: {},
     existingProjectConfig: stateManager.getProjectConfig(projectPath, {
-      throwIfNotExist: false,
-    }),
-    existingTeamProviderInfo: stateManager.getTeamProviderInfo(projectPath, {
       throwIfNotExist: false,
     }),
     existingLocalEnvInfo: stateManager.getLocalEnvInfo(projectPath, {
@@ -203,7 +200,6 @@ const updateContextForNoUpdateBackendProjects = (context: $TSContext): void => {
     context.exeInfo.projectConfig = context.exeInfo.existingProjectConfig;
     context.exeInfo.awsConfigInfo = context.exeInfo.existingLocalAwsInfo[envName];
     context.exeInfo.awsConfigInfo.config = { ...context.exeInfo.existingLocalAwsInfo[envName] };
-    context.exeInfo.teamProviderInfo = context.exeInfo.existingTeamProviderInfo;
     context.exeInfo.inputParams = context.exeInfo.inputParams || {};
     context.exeInfo.inputParams.amplify = context.exeInfo.inputParams.amplify || {};
 
@@ -214,8 +210,7 @@ const updateContextForNoUpdateBackendProjects = (context: $TSContext): void => {
     context.exeInfo.inputParams.amplify.envName = context.exeInfo.inputParams.amplify.envName || envName;
     context.exeInfo.inputParams.amplify.frontend = context.exeInfo.inputParams.amplify.frontend
     || context.exeInfo.existingProjectConfig.frontend;
-    context.exeInfo.inputParams.amplify.appId = context.exeInfo.inputParams.amplify.appId
-    || context.exeInfo.existingTeamProviderInfo[envName].awscloudformation?.AmplifyAppId;
+    context.exeInfo.inputParams.amplify.appId = context.exeInfo.inputParams.amplify.appId || getAmplifyAppId();
     // eslint-disable-next-line max-len
     context.exeInfo.inputParams[context.exeInfo.inputParams.amplify.frontend] = context.exeInfo.inputParams[context.exeInfo.inputParams.amplify.frontend]
       || context.exeInfo.existingProjectConfig[context.exeInfo.inputParams.amplify.frontend];

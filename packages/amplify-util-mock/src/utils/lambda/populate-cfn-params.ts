@@ -1,6 +1,6 @@
+import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-import _ from 'lodash';
 // eslint-disable-next-line import/no-cycle
 import {
   GRAPHQL_API_ENDPOINT_OUTPUT, GRAPHQL_API_KEY_OUTPUT, MOCK_API_KEY, MOCK_API_PORT,
@@ -14,16 +14,18 @@ import {
 export const populateCfnParams = (
   resourceName: string,
   overrideApiToLocal = false,
-): Record<string, string> => [getCfnPseudoParams, getAmplifyMetaParams, getParametersJsonParams, getTeamProviderParams]
+): Record<string, string> => [getCfnPseudoParams, getAmplifyMetaParams, getParametersJsonParams, getResourceEnvParams]
   .map(paramProvider => paramProvider(resourceName, overrideApiToLocal))
   .reduce((acc, it) => ({ ...acc, ...it }), {});
 
 const getCfnPseudoParams = (): Record<string, string> => {
   const env = stateManager.getLocalEnvInfo().envName;
-  const teamProvider = stateManager.getTeamProviderInfo();
-  const region = _.get(teamProvider, [env, 'awscloudformation', 'Region'], 'us-test-1');
-  const stackId = _.get(teamProvider, [env, 'awscloudformation', 'StackId'], 'fake-stack-id');
-  const stackName = _.get(teamProvider, [env, 'awscloudformation', 'StackName'], 'local-testing');
+  const providerMeta = stateManager.getMeta()?.providers?.awscloudformation;
+
+  const region = providerMeta?.Region || 'us-test-1';
+  const stackId = providerMeta?.StackId || 'fake-stack-id';
+  const stackName = providerMeta?.StackName || 'local-testing';
+
   const accountIdMatcher = /arn:aws:cloudformation:.+:(?<accountId>\d+):stack\/.+/;
   const match = accountIdMatcher.exec(stackId);
   const accountId = match ? match.groups.accountId : '12345678910';
@@ -92,8 +94,4 @@ const getParametersJsonParams = (resourceName: string): Record<string, string> =
 /**
  * Loads CFN parameters for the resource in the team-provider-info.json file (if present)
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const getTeamProviderParams = (resourceName: string): Record<string, string> => {
-  const env = stateManager.getLocalEnvInfo().envName;
-  return _.get(stateManager.getTeamProviderInfo(), [env, 'categories', 'function', resourceName], {});
-};
+const getResourceEnvParams = (resourceName: string): Record<string, string> => getEnvParamManager().getResourceParamManager('function', resourceName).getAllParams();

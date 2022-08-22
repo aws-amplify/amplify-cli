@@ -1,8 +1,4 @@
 #!/bin/bash -e
-if ! [[ -z "$CIRCLE_PULL_REQUEST" ]]; then
-  echo "Skipping deploy on pull request"
-  exit 0
-fi
 git config --global user.email $GITHUB_EMAIL
 git config --global user.name $GITHUB_USER
 if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then

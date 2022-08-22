@@ -144,16 +144,16 @@ Object {
     "env": Object {
       "Type": "String",
     },
-    "functionS3TriggerMockTriggercafe2021Arn": Object {
-      "Default": "functionS3TriggerMockTriggercafe2021Arn",
+    "functionS3TriggerMockTriggerCafe2021Arn": Object {
+      "Default": "functionS3TriggerMockTriggerCafe2021Arn",
       "Type": "String",
     },
-    "functionS3TriggerMockTriggercafe2021LambdaExecutionRole": Object {
-      "Default": "functionS3TriggerMockTriggercafe2021LambdaExecutionRole",
+    "functionS3TriggerMockTriggerCafe2021LambdaExecutionRole": Object {
+      "Default": "functionS3TriggerMockTriggerCafe2021LambdaExecutionRole",
       "Type": "String",
     },
-    "functionS3TriggerMockTriggercafe2021Name": Object {
-      "Default": "functionS3TriggerMockTriggercafe2021Name",
+    "functionS3TriggerMockTriggerCafe2021Name": Object {
+      "Default": "functionS3TriggerMockTriggerCafe2021Name",
       "Type": "String",
     },
     "s3PermissionsAuthenticatedPrivate": Object {
@@ -545,13 +545,13 @@ Object {
             Object {
               "Event": "s3:ObjectCreated:*",
               "Function": Object {
-                "Ref": "functionS3TriggerMockTriggercafe2021Arn",
+                "Ref": "functionS3TriggerMockTriggerCafe2021Arn",
               },
             },
             Object {
               "Event": "s3:ObjectRemoved:*",
               "Function": Object {
-                "Ref": "functionS3TriggerMockTriggercafe2021Arn",
+                "Ref": "functionS3TriggerMockTriggerCafe2021Arn",
               },
             },
           ],
@@ -725,7 +725,7 @@ Object {
         "PolicyName": "amplify-lambda-execution-policy-storage",
         "Roles": Array [
           Object {
-            "Ref": "functionS3TriggerMockTriggercafe2021LambdaExecutionRole",
+            "Ref": "functionS3TriggerMockTriggerCafe2021LambdaExecutionRole",
           },
         ],
       },
@@ -735,7 +735,7 @@ Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
-          "Ref": "functionS3TriggerMockTriggercafe2021Name",
+          "Ref": "functionS3TriggerMockTriggerCafe2021Name",
         },
         "Principal": "s3.amazonaws.com",
         "SourceAccount": Object {

@@ -38,7 +38,7 @@ async function uploadFiles(context) {
       uploadFileTasks.push(async () => await uploadFile(s3Client, bucketName, `${assetPath}/${file}`, file));
     });
 
-    const spinner = new Ora('Uploading files...');
+    const spinner = new Ora('Uploading files.');
     try {
       spinner.start();
       await sequential(uploadFileTasks);

@@ -1,9 +1,9 @@
+import { $TSContext, stateManager } from 'amplify-cli-core';
 import {
   getProviderPlugins,
   getConfiguredProviders,
   executeProviderCommand,
 } from '../../../extensions/amplify-helpers/get-provider-plugins';
-import { $TSContext, stateManager } from 'amplify-cli-core';
 
 jest.mock('amplify-cli-core', () => ({
   stateManager: {
@@ -17,38 +17,41 @@ const mockContext = {
       {
         pluginType: 'provider',
         pluginName: 'fakedPlugin',
-        directory: '../../../../__mocks__/faked-plugin',
+        directory: '../../../__mocks__/faked-plugin',
       },
     ],
   },
 } as $TSContext;
 
-const mock_stateManager = stateManager as jest.Mocked<typeof stateManager>;
+const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
+beforeEach(() => {
+  jest.clearAllMocks();
+});
 
 describe('getProviderPlugins', () => {
   it('should return providerPlugins', () => {
     const providerPlugins = getProviderPlugins(mockContext);
-    expect(providerPlugins).toStrictEqual({ fakedPlugin: '../../../../__mocks__/faked-plugin' });
+    expect(providerPlugins).toStrictEqual({ fakedPlugin: '../../../__mocks__/faked-plugin' });
   });
 });
 
 describe('getConfiguredProviders', () => {
   it('should return configuredProviders', () => {
-    mock_stateManager.getProjectConfig.mockImplementation(() => ({
+    stateManagerMock.getProjectConfig.mockImplementation(() => ({
       providers: ['fakedPlugin'],
     }));
-    expect(getConfiguredProviders(mockContext)).toStrictEqual({ fakedPlugin: '../../../../__mocks__/faked-plugin' });
+    expect(getConfiguredProviders(mockContext)).toStrictEqual({ fakedPlugin: '../../../__mocks__/faked-plugin' });
   });
   it('should throw error when configuredProviders is empty', () => {
-    mock_stateManager.getProjectConfig.mockImplementation(() => {
-      providers: [];
-    });
+    stateManagerMock.getProjectConfig.mockImplementation(() => ({
+      providers: [],
+    }));
     expect(() => {
       getConfiguredProviders(mockContext);
     }).toThrow('No providers are configured for the project');
   });
   it('should throw error when configuredProviders is undefined', () => {
-    mock_stateManager.getProjectConfig.mockImplementation(() => undefined);
+    stateManagerMock.getProjectConfig.mockImplementation(() => undefined);
     expect(() => {
       getConfiguredProviders(mockContext);
     }).toThrow('No providers are configured for the project');
@@ -56,8 +59,10 @@ describe('getConfiguredProviders', () => {
 });
 
 describe('executeProviderCommand', () => {
-  it('should execute the function of plugins', () => {
-    mock_stateManager.getProjectConfig.mockImplementation(() => ({ fakedPlugin: '../../../../__mocks__/faked-plugin' }));
-    expect(executeProviderCommand(mockContext, 'fakedPlugin')).resolves.toEqual({});
+  it('should execute the function of plugins', async () => {
+    stateManagerMock.getProjectConfig.mockReturnValue({ providers: ['fakedPlugin'] });
+    const consoleLogSpy = jest.spyOn(console, 'log');
+    await executeProviderCommand(mockContext, 'fakedPlugin');
+    expect(consoleLogSpy).toHaveBeenLastCalledWith('fakePluginResult');
   });
 });

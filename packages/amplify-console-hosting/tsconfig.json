@@ -6,7 +6,10 @@
     "strict": false, // TODO enable
     "allowJs": true,
     "checkJs": false, // TODO enable till we move everything to TS
-    "lib": ["ESNext", "dom"]
+    "lib": [
+      "ESNext",
+      "dom"
+    ]
   },
   "exclude": [
     "lib",
@@ -15,6 +18,11 @@
     "resources/overrides-resource/override.ts"
   ],
   "references": [
-    { "path": "../amplify-cli-core" }
+    {
+      "path": "../amplify-cli-core"
+    },
+    {
+      "path": "../amplify-environment-parameters"
+    },
   ]
 }

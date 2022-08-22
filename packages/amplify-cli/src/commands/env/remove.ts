@@ -41,7 +41,7 @@ export const run = async (context: $TSContext): Promise<void> => {
 
     const confirmation = await getConfirmation(context, envName);
     if (confirmation.proceed) {
-      const spinner = ora('Deleting resources from the cloud. This may take a few minutes...');
+      const spinner = ora('Deleting resources from the cloud. This will take a few minutes.');
       spinner.start();
       try {
         await removeEnvFromCloud(context, envName, confirmation.deleteS3);

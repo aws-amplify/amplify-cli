@@ -1,5 +1,4 @@
 import { $TSContext, pathManager, stateManager } from 'amplify-cli-core';
-import _ from 'lodash';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
 import { loadConfigurationForEnv, resolveAppId } from 'amplify-provider-awscloudformation';
@@ -24,7 +23,7 @@ export const populateLambdaMockEnvVars = async (context: $TSContext, processedLa
 };
 
 // eslint-disable-next-line @typescript-eslint/no-shadow
-const getAwsCredentials = async (_, context: $TSContext): Promise<Record<string, string>> => {
+const getAwsCredentials = async (__, context: $TSContext): Promise<Record<string, string>> => {
   const env = stateManager.getLocalEnvInfo().envName;
   let appId: string | undefined;
   try {
@@ -53,9 +52,7 @@ const getStaticDefaults = (): Record<string, string> => ({
 });
 
 const getDynamicDefaults = (processedLambda: ProcessedLambdaFunction): Record<string, string> => {
-  const env = stateManager.getLocalEnvInfo().envName;
-  const teamProvider = stateManager.getTeamProviderInfo();
-  const region = _.get(teamProvider, [env, 'awscloudformation', 'Region']);
+  const region = stateManager.getMeta()?.providers?.awscloudformation?.Region || 'us-test-1';
   // This isn't exactly in parity with what the path will be when deployed but we don't have a good mechanism for getting a better value
   const lambdaPath = path.join(pathManager.getBackendDirPath(), 'function', processedLambda.name);
 

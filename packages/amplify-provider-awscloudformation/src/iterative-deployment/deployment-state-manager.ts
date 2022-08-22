@@ -7,6 +7,7 @@ import {
   DeploymentStepStatus,
   IDeploymentStateManager,
   JSONUtilities,
+  stateManager,
 } from 'amplify-cli-core';
 import { S3 } from '../aws-utils/aws-s3';
 import { ProviderName } from '../constants';
@@ -23,11 +24,9 @@ export class DeploymentStateManager implements IDeploymentStateManager {
   private currentState: DeploymentState;
 
   public static createDeploymentStateManager = async (context: $TSContext): Promise<IDeploymentStateManager> => {
-    const projectDetails = context.amplify.getProjectDetails();
+    const amplifyMeta = stateManager.getMeta();
     const { envName } = context.amplify.getEnvInfo();
-    const deploymentBucketName = projectDetails.amplifyMeta.providers
-      ? projectDetails.amplifyMeta.providers[ProviderName].DeploymentBucketName
-      : projectDetails.teamProviderInfo[envName][ProviderName].DeploymentBucketName;
+    const deploymentBucketName = amplifyMeta?.providers?.[ProviderName]?.DeploymentBucketName;
 
     const s3 = await S3.getInstance(context);
     const deploymentStateManager = new DeploymentStateManager(s3, deploymentBucketName, envName);
