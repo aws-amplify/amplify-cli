@@ -1,9 +1,9 @@
 import * as path from 'path';
-import * as fs from 'fs-extra';
 import {
   ViewResourceTableParams, CLIParams, $TSAny, $TSContext, pathManager, stateManager, ApiCategoryFacade,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
+import { readProjectSchema } from 'graphql-transformer-core';
 
 /**
  * Entry point for status command
@@ -100,8 +100,7 @@ const showApiAuthAcm = async (context): Promise<void> => {
 
   const apiName = apiNames[0];
   const apiResourceDir = path.join(pathManager.getBackendDirPath(), 'api', apiName);
-  const schemaPath = path.join(apiResourceDir, 'schema.graphql');
-  const schema = fs.readFileSync(schemaPath, 'utf8');
+  const schema = await readProjectSchema(apiResourceDir);
   const cliOptions = context?.input?.options ?? {};
   const { showACM } = await import('../extensions/amplify-helpers/show-auth-acm');
 
