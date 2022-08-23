@@ -1,6 +1,11 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable import/no-cycle */
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
+/* eslint-disable func-style */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable jsdoc/require-jsdoc */
 import { $TSContext, ApiCategoryFacade } from 'amplify-cli-core';
 import { adminLoginFlow } from './admin-login';
-
 import { adminBackendMap, isAmplifyAdminApp } from './utils/admin-helpers';
 import { CognitoUserPoolService, createCognitoUserPoolService } from './aws-utils/CognitoUserPoolService';
 import { IdentityPoolService, createIdentityPoolService } from './aws-utils/IdentityPoolService';
@@ -15,8 +20,6 @@ import CloudFormation from './aws-utils/aws-cfn';
 import * as resourceExport from './export-resources';
 import * as exportUpdateMeta from './export-update-amplify-meta';
 import { updateEnv } from './update-env';
-
-import { uploadHooksDirectory } from './utils/hooks-manager';
 import { transformResourceWithOverrides } from './override-manager';
 import { rootStackFileName } from './push-resources';
 
@@ -48,91 +51,59 @@ const predictionsRegionMap = require('./aws-predictions-regions');
 export { resolveAppId } from './utils/resolve-appId';
 export { loadConfigurationForEnv } from './configuration-manager';
 export { getLocationSupportedRegion, getLocationRegionMapping } from './aws-utils/aws-location';
-import { updateEnv } from './update-env';
 
 export const cfnRootStackFileName = 'root-cloudformation-stack.json';
 export { storeRootStackTemplate } from './initializer';
 export { transformResourceWithOverrides } from './override-manager';
 export { rootStackFileName } from './push-resources';
 
-/**
- *
- */
 function init(context) {
   return initializer.run(context);
 }
 
-/**
- *
- */
 export function initEnv(context, providerMetadata) {
   return initializeEnv.run(context, providerMetadata);
 }
 
-/**
- *
- */
 async function attachBackend(context) {
   await attachBackendWorker.run(context);
 }
 
 // TODO: Change fn name to afterInit or onInitSuccess
 
-/**
- *
- */
 function onInitSuccessful(context) {
   return initializer.onInitSuccessful(context);
 }
 
-/**
- *
- */
 function exportResources(context, resourceList, exportType) {
   return resourceExport.run(context, resourceList, exportType);
 }
 
-/**
- *
- */
 function exportedStackResourcesUpdateMeta(context: $TSContext, stackName: string) {
   return exportUpdateMeta.run(context, stackName);
 }
 
-/**
- *
- */
 export function pushResources(context, resourceList, rebuild?: boolean) {
   return resourcePusher.run(context, resourceList, rebuild);
 }
 
-/**
- *
- */
 function storeCurrentCloudBackend(context) {
   return resourcePusher.storeCurrentCloudBackend(context);
 }
 
-/**
- *
- */
 function deleteEnv(context, envName, deleteS3) {
   return envRemover.run(context, envName, deleteS3);
 }
 
-/**
- *
- */
 function configure(context) {
   return configManager.configure(context);
 }
 
-/**
- *
- */
 async function getConfiguredAWSClient(context, category, action) {
   await aws.configureWithCreds(context);
+  // eslint-disable-next-line no-param-reassign
   category = category || 'missing';
+  // eslint-disable-next-line no-param-reassign
   action = action || ['missing'];
   const userAgentAction = `${category}:${action[0]}`;
   aws.config.update({
@@ -141,74 +112,44 @@ async function getConfiguredAWSClient(context, category, action) {
   return aws;
 }
 
-/**
- *
- */
 function getConfiguredPinpointClient(context, category, action, envName) {
   return pinpoint.getConfiguredPinpointClient(context, category, action, envName);
 }
 
-/**
- *
- */
 function getPinpointRegionMapping() {
   return pinpoint.getPinpointRegionMapping();
 }
 
-/**
- *
- */
-function getConfiguredAmplifyClient(context, category, action, options = {}) {
+function getConfiguredAmplifyClient(context, __category, __action, options = {}) {
   return amplifyService.getConfiguredAmplifyClient(context, options);
 }
 
-/**
- *
- */
 function showHelpfulLinks(context, resources) {
   return displayHelpfulURLs(context, resources);
 }
 
-/**
- *
- */
 function configureNewUser(context) {
   return setupNewUser.run(context);
 }
 
-/**
- *
- */
 function openConsole(context) {
   return consoleCommand.run(context);
 }
 
-/**
- *
- */
 export async function getConfiguredSSMClient(context) {
-  return await SSM.getInstance(context);
+  return SSM.getInstance(context);
 }
 
-/**
- *
- */
-export async function getConfiguredLocationServiceClient(context: $TSContext, options?: {}) {
-  return await LocationService.getInstance(context, options);
+export async function getConfiguredLocationServiceClient(context: $TSContext, options?: Record<string, unknown>) {
+  return LocationService.getInstance(context, options);
 }
 
-/**
- *
- */
 async function getLambdaSdk(context: $TSContext) {
-  return await new Lambda(context);
+  return new Lambda(context);
 }
 
-/**
- *
- */
 async function getCloudFormationSdk(context: $TSContext) {
-  return await new CloudFormation(context);
+  return new CloudFormation(context);
 }
 
 module.exports = {
@@ -241,6 +182,7 @@ module.exports = {
   loadResourceParameters,
   saveResourceParameters,
   predictionsRegionMap,
+  // eslint-disable-next-line global-require
   ...require('./amplify-plugin-index'),
   CognitoUserPoolService,
   createCognitoUserPoolService,
