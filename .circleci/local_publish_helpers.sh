@@ -119,21 +119,28 @@ function setSudoNpmRegistryUrlToLocal {
 }
 
 function useChildAccountCredentials {
-    if [ -z "$USE_PARENT_ACCOUNT" ]; then
-        export AWS_PAGER=""
-        export ORGANIZATION_SIZE=$(aws organizations list-accounts | jq '.Accounts | length')
-        export CREDS=$(aws sts assume-role --role-arn arn:aws:iam::$(aws organizations list-accounts | jq -c -r ".Accounts [$(($RANDOM % $ORGANIZATION_SIZE))].Id"):role/OrganizationAccountAccessRole --role-session-name testSession$((1 + $RANDOM % 10000)) --duration-seconds 3600)
-        if [ -z $(echo $CREDS | jq -c -r '.AssumedRoleUser.Arn') ]; then
-            echo "Unable to assume child account role. Falling back to parent AWS account"
-        else
-            echo "Using account credentials for $(echo $CREDS | jq -c -r '.AssumedRoleUser.Arn')"
-            export AWS_ACCESS_KEY_ID=$(echo $CREDS | jq -c -r ".Credentials.AccessKeyId")
-            export AWS_SECRET_ACCESS_KEY=$(echo $CREDS | jq -c -r ".Credentials.SecretAccessKey")
-            export AWS_SESSION_TOKEN=$(echo $CREDS | jq -c -r ".Credentials.SessionToken")
-        fi
-    else
-        echo "Using parent account credentials."
+    if [[ ! -z "$USE_PARENT_ACCOUNT" ]]; then
+        echo "Using parent account credentials"
+        exit 0
     fi
+    export AWS_PAGER=""
+    parent_acct=$(aws sts get-caller-identity | jq -cr '.Account')
+    child_accts=$(aws organizations list-accounts | jq -c "[.Accounts[].Id | select(. != \"$parent_acct\")]")
+    org_size=$(echo $child_accts | jq 'length')
+    pick_acct=$(echo $child_accts | jq -cr ".[$RANDOM % $org_size]")
+    session_id=$((1 + $RANDOM % 10000))
+    if [[ -z "$pick_acct" || -z "$session_id" ]]; then
+        echo "Unable to find a child account. Falling back to parent AWS account"
+        exit 0
+    fi
+    creds=$(aws sts assume-role --role-arn arn:aws:iam::${pick_acct}:role/OrganizationAccountAccessRole --role-session-name testSession${session_id} --duration-seconds 3600)
+    if [ -z $(echo $creds | jq -c -r '.AssumedRoleUser.Arn') ]; then
+        echo "Unable to assume child account role. Falling back to parent AWS account"
+    fi
+    echo "Using account credentials for $(echo $creds | jq -c -r '.AssumedRoleUser.Arn')"
+    export AWS_ACCESS_KEY_ID=$(echo $creds | jq -c -r ".Credentials.AccessKeyId")
+    export AWS_SECRET_ACCESS_KEY=$(echo $creds | jq -c -r ".Credentials.SecretAccessKey")
+    export AWS_SESSION_TOKEN=$(echo $creds | jq -c -r ".Credentials.SessionToken")
 }
 
 function retry {
