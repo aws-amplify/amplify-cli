@@ -26,8 +26,8 @@
   "dependencies": {
     "@aws-amplify/amplify-category-custom": "2.4.4-rc.224a2e0e4.0",
     "@aws-amplify/cli-extensibility-helper": "2.3.34-rc.224a2e0e4.0",
-    "@aws-amplify/graphql-transformer-core": "^0.17.9",
-    "@aws-amplify/graphql-transformer-interfaces": "^1.14.6",
+    "@aws-amplify/graphql-transformer-core": "^0.17.11",
+    "@aws-amplify/graphql-transformer-interfaces": "^1.14.7",
     "@aws-cdk/assert": "~1.124.0",
     "@aws-cdk/aws-apigatewayv2": "~1.124.0",
     "@aws-cdk/aws-autoscaling": "~1.124.0",
@@ -91,7 +91,7 @@
     "xstate": "^4.14.0"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-interfaces": "^1.14.6",
+    "@aws-amplify/graphql-transformer-interfaces": "^1.14.7",
     "@aws-cdk/assertions": "~1.124.0",
     "@types/columnify": "^1.5.0",
     "@types/deep-diff": "^1.0.0",

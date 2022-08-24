@@ -22,7 +22,7 @@
     "test": "jest --coverage --passWithNoTests"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-api": "^3.1.7",
+    "@aws-amplify/amplify-category-api": "^4.0.2",
     "amplify-cli-core": "3.0.0-rc.224a2e0e4.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",
