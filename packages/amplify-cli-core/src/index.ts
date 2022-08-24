@@ -19,7 +19,6 @@ export * from './hooks';
 export * from './isCI';
 export * from './isPackaged';
 export * from './jsonUtilities';
-export * from './jsonValidationError';
 export * from './overrides-manager';
 export * from './permissionsBoundaryState';
 export * from './plugin-facade';
@@ -29,4 +28,5 @@ export * from './state-manager';
 export * from './tags';
 export * from './types';
 export * from './utils';
+export * from './errors/amplify-error';
 /* eslint-enable */

@@ -4,7 +4,8 @@
     "strict": true,
     "noImplicitAny": false,
     "rootDir": "src",
-    "outDir": "lib"
+    "outDir": "lib",
+    "forceConsistentCasingInFileNames": true
   },
   "include": [
     "src/**/*"

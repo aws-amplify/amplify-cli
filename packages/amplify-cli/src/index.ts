@@ -6,7 +6,6 @@ import {
   exitOnNextTick,
   FeatureFlags,
   JSONUtilities,
-  JSONValidationError,
   pathManager,
   stateManager,
   TeamProviderInfoMigrateError,
@@ -17,7 +16,7 @@ import { isCI } from 'ci-info';
 import { EventEmitter } from 'events';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { formatter, printer, prompter } from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
 import { logInput } from './conditional-local-logging-init';
 import { attachUsageData, constructContext } from './context-manager';
 import { displayBannerMessages } from './display-banner-messages';
@@ -34,7 +33,7 @@ import { migrateTeamProviderInfo } from './utils/team-provider-migrate';
 import { deleteOldVersion } from './utils/win-utils';
 import { notify } from './version-notifier';
 import { getAmplifyVersion } from './extensions/amplify-helpers/get-amplify-version';
-import { reportError } from './commands/diagnose';
+import { init as initErrorHandler, handleError } from './error-handler/amplify-error-handler';
 
 export { UsageData } from './domain/amplify-usageData';
 
@@ -45,24 +44,8 @@ EventEmitter.defaultMaxListeners = 1000;
 // Change stacktrace limit to max value to capture more details if needed
 Error.stackTraceLimit = Number.MAX_SAFE_INTEGER;
 
-let errorHandler: (e: Error) => void = (): void => { /* noop */ };
-
 process.on('uncaughtException', error => {
-  // Invoke the configured error handler if it is already configured
-  if (errorHandler) {
-    errorHandler(error);
-  } else {
-    // Fall back to pure console logging as we have no context, etc in this case
-    if (error.message) {
-      console.error(error.message);
-    }
-
-    if (error.stack) {
-      console.log(error.stack);
-    }
-
-    exitOnNextTick(1);
-  }
+  handleError(error);
 });
 
 // In this handler we have to re-throw the error otherwise the process hangs there.
@@ -117,7 +100,7 @@ const normalizeStatusCommandOptions = (input: Input): Input => {
 /**
  * Command line entry point
  */
-export const run = async (startTime: number): Promise<number | undefined> => {
+export const run = async (startTime: number): Promise<number> => {
   try {
     deleteOldVersion();
     let pluginPlatform = await getPluginPlatform();
@@ -160,12 +143,14 @@ export const run = async (startTime: number): Promise<number | undefined> => {
         throw new Error(verificationResult.message);
       }
     }
+    const context = constructContext(pluginPlatform, input);
+    await attachUsageData(context, startTime);
+    initErrorHandler(context);
 
     rewireDeprecatedCommands(input);
     logInput(input);
     const hooksMeta = HooksMeta.getInstance(input);
     hooksMeta.setAmplifyVersion(getAmplifyVersion());
-    const context = constructContext(pluginPlatform, input);
 
     // Initialize feature flags
     const contextEnvironmentProvider = new CLIContextEnvironmentProvider({
@@ -176,17 +161,12 @@ export const run = async (startTime: number): Promise<number | undefined> => {
     const useNewDefaults = !stateManager.projectConfigExists(projectPath);
 
     await FeatureFlags.initialize(contextEnvironmentProvider, useNewDefaults);
-
-    await attachUsageData(context, startTime);
-
     prompter.setFlowData(context.usageData);
 
     if (!(await migrateTeamProviderInfo(context))) {
       context.usageData.emitError(new TeamProviderInfoMigrateError());
       return 1;
     }
-
-    errorHandler = boundErrorHandler.bind(context);
 
     process.on('SIGINT', sigIntHandler.bind(context));
 
@@ -204,12 +184,7 @@ export const run = async (startTime: number): Promise<number | undefined> => {
 
     // Display messages meant for most executions
     await displayBannerMessages(input);
-    try {
-      await executeCommand(context);
-    } catch (e) {
-      await reportError(context, e);
-      throw e;
-    }
+    await executeCommand(context);
     const exitCode = process.exitCode || 0;
 
     if (exitCode === 0) {
@@ -224,60 +199,13 @@ export const run = async (startTime: number): Promise<number | undefined> => {
 
     return exitCode;
   } catch (error) {
-    // ToDo: add logging to the core, and log execution errors using the unified core logging.
-    errorHandler(error);
-
-    if (error.name === 'JSONValidationError') {
-      const jsonError = <JSONValidationError>error;
-      let printSummary = false;
-
-      printer.error(error.message);
-
-      if (jsonError.unknownFlags?.length > 0) {
-        printer.blankLine();
-        printer.error(
-          'These feature flags are defined in the "amplify/cli.json" configuration file and are unknown to the currently running Amplify CLI:',
-        );
-        formatter.list(jsonError.unknownFlags);
-        printSummary = true;
-      }
-
-      if (jsonError.otherErrors?.length > 0) {
-        printer.blankLine();
-        printer.error('The following feature flags have validation errors:');
-        formatter.list(jsonError.otherErrors);
-        printSummary = true;
-      }
-
-      if (printSummary) {
-        printer.blankLine();
-        printer.error(
-          'This issue likely happens when the project has been pushed with a newer version of Amplify CLI, try updating to a newer version.',
-        );
-
-        if (isCI) {
-          printer.blankLine();
-          printer.error('Ensure that the CI/CD pipeline is not using an older or pinned down version of Amplify CLI.');
-        }
-
-        printer.blankLine();
-        printer.error('Learn more about feature flags: https://docs.amplify.aws/cli/reference/feature-flags');
-      }
-    } else {
-      if (error.message) {
-        printer.error(error.message);
-      }
-      if (error.stack) {
-        printer.info(error.stack);
-      }
-    }
+    handleError(error);
     await executeHooks(
       HooksMeta.getInstance(undefined, 'post', {
         message: error.message ?? 'undefined error in Amplify process',
         stack: error.stack ?? 'undefined error stack',
       }),
     );
-    exitOnNextTick(1);
     return 1;
   }
 };
@@ -288,12 +216,6 @@ const ensureFilePermissions = (filePath: string): void => {
     fs.chmodSync(filePath, '600');
   }
 };
-
-// This function cannot be converted to an arrow function because it uses 'this' binding
-// eslint-disable-next-line func-style
-function boundErrorHandler(this: Context, e: Error): void {
-  this.usageData.emitError(e);
-}
 
 // This function cannot be converted to an arrow function because it uses 'this' binding
 // eslint-disable-next-line func-style
@@ -314,7 +236,6 @@ async function sigIntHandler(this: Context): Promise<void> {
  * entry from library call
  */
 export const execute = async (input: Input): Promise<number> => {
-  let localErrorHandler: (e: Error) => void = (): void => { /* noop */ };
   try {
     let pluginPlatform = await getPluginPlatform();
     let verificationResult = verifyInput(pluginPlatform, input);
@@ -340,8 +261,7 @@ export const execute = async (input: Input): Promise<number> => {
 
     // AFAICT this execute function is never used. But if it is, in this case we initialize usage data with a starting timestamp of now
     await attachUsageData(context, Date.now());
-
-    localErrorHandler = boundErrorHandler.bind(context);
+    initErrorHandler(context);
 
     process.on('SIGINT', sigIntHandler.bind(context));
 
@@ -355,16 +275,7 @@ export const execute = async (input: Input): Promise<number> => {
 
     return exitCode;
   } catch (e) {
-    localErrorHandler(e);
-
-    if (e.message) {
-      printer.error(e.message);
-    }
-
-    if (e.stack) {
-      printer.info(e.stack);
-    }
-
+    handleError(e);
     return 1;
   }
 };

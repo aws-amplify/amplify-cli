@@ -1,4 +1,6 @@
-import { stateManager, pathManager, NotInitializedError, spinner, DiagnoseReportUploadError } from 'amplify-cli-core';
+import {
+  stateManager, pathManager, NotInitializedError, spinner, DiagnoseReportUploadError,
+} from 'amplify-cli-core';
 import archiver from 'archiver';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -35,7 +37,7 @@ export const reportError = async (context: Context, error: Error | undefined): P
   if (!isHeadless && DebugConfig.Instance.promptSendReport()) {
     sendReport = await prompter.yesOrNo(
       'An unexpected error has occurred, opt in to send an error report to AWS Amplify with non-sensitive project configuration files. Confirm ',
-      false
+      false,
     );
     if (sendReport) {
       showLearnMore(true);
@@ -73,13 +75,13 @@ export const run = async (context: Context, error: Error | undefined = undefined
   await zipSend(context, skipPrompts, error);
 };
 
-const showLearnMore = (showOptOut: boolean) => {
+const showLearnMore = (showOptOut: boolean): void => {
   printer.blankLine();
   printer.info('Learn more at https://docs.amplify.aws/cli/reference/diagnose/');
   if (showOptOut) {
     printer.blankLine();
     printer.info(
-      'This project has been opted in automatically to share non-sensitive project configuration files. you can opt out by running \'amplify diagnose --auto-send-off\''
+      'This project has been opted in automatically to share non-sensitive project configuration files. you can opt out by running \'amplify diagnose --auto-send-off\'',
     );
   }
 };
@@ -112,8 +114,8 @@ const zipSend = async (context: Context, skipPrompts: boolean, error: Error | un
       printer.blankLine();
     }
   } catch (ex) {
-    printer.blankLine()
-    printer.info(ex.message)
+    printer.blankLine();
+    printer.info(ex.message);
     context.usageData.emitError(ex);
     spinner.fail();
   }
@@ -131,7 +133,7 @@ const createZip = async (context: Context, error: Error | undefined): Promise<st
       array.push({
         category: key,
         resourceName: resourceKey,
-        service: backend[key][resourceKey].service
+        service: backend[key][resourceKey].service,
       });
     });
 
@@ -143,28 +145,28 @@ const createZip = async (context: Context, error: Error | undefined): Promise<st
     zipper.append(
       file.redact ? Redactor(fs.readFileSync(file.filePath, { encoding: 'utf-8' })) : fs.readFileSync(file.filePath, { encoding: 'utf-8' }),
       {
-        name: path.relative(rootPath, file.filePath)
-      }
+        name: path.relative(rootPath, file.filePath),
+      },
     );
   });
   if (context.exeInfo && context.exeInfo.cloudformationEvents) {
     const COLUMNS = ['ResourceStatus', 'LogicalResourceId', 'ResourceType', 'Timestamp', 'ResourceStatusReason'];
     const events = context.exeInfo.cloudformationEvents.map(r => ({
       ...r,
-      LogicalResourceId: stringMasker(r.LogicalResourceId)
+      LogicalResourceId: stringMasker(r.LogicalResourceId),
     }));
     const cloudformation = columnify(events, {
       columns: COLUMNS,
-      showHeaders: false
+      showHeaders: false,
     });
     zipper.append(cloudformation, {
-      name: 'cloudformation_log.txt'
+      name: 'cloudformation_log.txt',
     });
   }
 
   if (error) {
     zipper.append(JSON.stringify(error, null, 4), {
-      name: 'error.json'
+      name: 'error.json',
     });
   }
   const { projectName } = stateManager.getProjectConfig();
@@ -193,7 +195,7 @@ const sendReport = async (context: Context, fileDestination): Promise<string> =>
     sessionUuid: usageDataPayload.sessionUuid,
     installationUuid: usageDataPayload.installationUuid,
     amplifyCliVersion: usageDataPayload.amplifyCliVersion,
-    nodeVersion: usageDataPayload.nodeVersion
+    nodeVersion: usageDataPayload.nodeVersion,
   });
   return ids.projectEnvIdentifier;
 };
@@ -209,7 +211,7 @@ const sendFile = async (
     installationUuid: string;
     amplifyCliVersion: string;
     nodeVersion: string;
-  }
+  },
 ): Promise<void> => {
   const report = reporterEndpoint();
   const stream = fs.readFileSync(zipPath);
@@ -221,9 +223,9 @@ const sendFile = async (
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      'content-length': data.length.toString()
+      'content-length': data.length.toString(),
     },
-    body: data
+    body: data,
   });
   if (response.status !== 200) {
     throw new DiagnoseReportUploadError();

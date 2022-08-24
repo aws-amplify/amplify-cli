@@ -8,7 +8,6 @@ import { analyzeProject, analyzeProjectHeadless } from '../init-steps/s0-analyze
 import { initFrontend } from '../init-steps/s1-initFrontend';
 import { initProviders } from '../init-steps/s2-initProviders';
 import { scaffoldProjectHeadless } from '../init-steps/s8-scaffoldHeadless';
-import { onFailure } from '../init-steps/s9-onFailure';
 import { onHeadlessSuccess, onSuccess } from '../init-steps/s9-onSuccess';
 import { checkForNestedProject } from './helpers/projectUtils';
 
@@ -28,18 +27,14 @@ const runStrategy = (quickstart: boolean) => (quickstart
  */
 export const run = async (context: $TSContext): Promise<void> => {
   constructExeInfo(context);
-  const steps = runStrategy(context?.parameters?.options?.quickstart);
-  try {
-    checkForNestedProject();
+  checkForNestedProject();
 
-    for (const step of steps) {
-      await step(context);
-    }
-    if (context.exeInfo.sourceEnvName && context.exeInfo.localEnvInfo.envName) {
-      await raisePostEnvAddEvent(context as unknown as Context, context.exeInfo.sourceEnvName, context.exeInfo.localEnvInfo.envName);
-    }
-  } catch (e) {
-    context.usageData.emitError(e);
-    onFailure(e);
+  const steps = runStrategy(context?.parameters?.options?.quickstart);
+  for (const step of steps) {
+    await step(context);
+  }
+
+  if (context.exeInfo.sourceEnvName && context.exeInfo.localEnvInfo.envName) {
+    await raisePostEnvAddEvent(context as unknown as Context, context.exeInfo.sourceEnvName, context.exeInfo.localEnvInfo.envName);
   }
 };
