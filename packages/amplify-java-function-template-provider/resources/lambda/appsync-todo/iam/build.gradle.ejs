@@ -1,0 +1,40 @@
+apply plugin: 'java'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile (
+        'com.amazonaws:aws-lambda-java-core:1.2.0',
+        'com.amazonaws:aws-lambda-java-events:3.11.0',
+        'commons-lang:commons-lang:2.3',
+        'com.amazonaws:aws-java-sdk-lambda:1.11.106',
+        'com.jayway.jsonpath:json-path:2.4.0',
+        'com.googlecode.json-simple:json-simple:1.1.1',
+        'org.apache.commons:commons-lang3:3.8.1',
+        'com.google.code.gson:gson:2.8.6',
+        'commons-io:commons-io:2.6',
+        'com.fasterxml.jackson.core:jackson-databind:2.12.1',
+        'com.fasterxml.jackson.core:jackson-core:2.12.1',
+        'com.amazonaws:aws-java-sdk-appsync:1.12.255'
+    )
+}
+
+jar.baseName = 'latest_build'
+
+task buildZip(type: Zip) {
+    from compileJava
+    from processResources
+    into('lib') {
+        from configurations.runtimeClasspath
+    }
+    archiveFileName = 'latest_build.zip'
+}
+
+build.dependsOn buildZip
