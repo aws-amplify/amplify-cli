@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphql-migration-tests",
-  "version": "2.2.48-rc.224a2e0e4.0",
+  "version": "2.2.48-rc.be3b74aea.0",
   "description": "Tests migration from v1 to v2 of the Amplify GraphQL transformer",
   "main": "lib/index.js",
   "private": true,

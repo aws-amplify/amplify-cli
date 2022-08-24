@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-function",
-  "version": "4.0.12-rc.224a2e0e4.0",
+  "version": "4.0.12-rc.be3b74aea.0",
   "description": "amplify-cli function plugin",
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
     "aws"
   ],
   "dependencies": {
-    "amplify-cli-core": "3.0.0-rc.224a2e0e4.0",
+    "amplify-cli-core": "3.0.0-rc.be3b74aea.0",
     "amplify-function-plugin-interface": "1.9.5",
     "amplify-prompts": "2.3.0-rc.224a2e0e4.0",
     "archiver": "^5.3.0",
