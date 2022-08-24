@@ -6,8 +6,7 @@ import { SignatureV4 } from '@aws-sdk/signature-v4';
 import { HttpRequest } from '@aws-sdk/protocol-http';
 import { default as fetch, Request } from 'node-fetch';
 
-const ENV_VAR = process.env;
-const GRAPHQL_ENDPOINT = ENV_VAR[Object.keys(ENV_VAR).find(key => key.endsWith('GRAPHQLAPIENDPOINTOUTPUT'))];
+const GRAPHQL_ENDPOINT = process.env.API_<%= props.providerContext.projectName.toUpperCase() %>_GRAPHQLAPIENDPOINTOUTPUT;
 const AWS_REGION = process.env.AWS_REGION || 'us-east-1';
 const { Sha256 } = crypto;
 
@@ -74,18 +73,11 @@ const query = /* GraphQL */ `
 
   return {
     statusCode,
-    <%- props.enableCors ? 
-    `   headers: {
-            \"Access-Control-Allow-Origin\": \"*\",
-            \"Access-Control-Allow-Headers\": \"*\"
-        },`
-    :
-    `//  Uncomment below to enable CORS requests
-    //  headers: {
-    //      "Access-Control-Allow-Origin": "*",
-    //      "Access-Control-Allow-Headers": "*"
-    //  },`
-     %> 
+    //  Uncomment below to enable CORS requests
+    // headers: {
+    //   "Access-Control-Allow-Origin": "*",
+    //   "Access-Control-Allow-Headers": "*"
+    // }, 
     body: JSON.stringify(body)
   };
 };

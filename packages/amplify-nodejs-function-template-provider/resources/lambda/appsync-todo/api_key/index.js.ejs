@@ -2,9 +2,8 @@
 
 import { default as fetch, Request } from 'node-fetch';
 
-const ENV_VAR = process.env;
-const GRAPHQL_API_KEY = ENV_VAR[Object.keys(ENV_VAR).find(key => key.endsWith('GRAPHQLAPIKEYOUTPUT'))];
-const GRAPHQL_ENDPOINT = ENV_VAR[Object.keys(ENV_VAR).find(key => key.endsWith('GRAPHQLAPIENDPOINTOUTPUT'))];
+const GRAPHQL_API_KEY = process.env.API_<%= props.providerContext.projectName.toUpperCase() %>_GRAPHQLAPIKEYOUTPUT;
+const GRAPHQL_ENDPOINT = process.env.API_<%= props.providerContext.projectName.toUpperCase() %>_GRAPHQLAPIENDPOINTOUTPUT;
 
 const query = /* GraphQL */ `
   query LIST_TODOS {
@@ -23,54 +22,47 @@ const query = /* GraphQL */ `
  */
 
 export const handler = async (event) => {
-    console.log(`EVENT: ${JSON.stringify(event)}`);
+  console.log(`EVENT: ${JSON.stringify(event)}`);
   
-    /** @type {import('node-fetch').RequestInit} */
-    const options = {
-      method: 'POST',
-      headers: {
-        'x-api-key': GRAPHQL_API_KEY
-      },
-      body: JSON.stringify({ query })
-    };
-  
-    const request = new Request(GRAPHQL_ENDPOINT, options);
-  
-    let statusCode = 200;
-    let body;
-    let response;
-  
-    try {
-      response = await fetch(request);
-      body = await response.json();
-      if (body.errors) statusCode = 400;
-    } catch (error) {
-      statusCode = 400;
-      body = {
-        errors: [
-          {
-            status: response.status,
-            message: error.message,
-            stack: error.stack
-          }
-        ]
-      };
-    }
-  
-    return {
-      statusCode,
-      <%- props.enableCors ? 
-    `   headers: {
-            \"Access-Control-Allow-Origin\": \"*\",
-            \"Access-Control-Allow-Headers\": \"*\"
-        },`
-    :
-    `//  Uncomment below to enable CORS requests
-    //  headers: {
-    //      "Access-Control-Allow-Origin": "*",
-    //      "Access-Control-Allow-Headers": "*"
-    //  },`
-     %> 
-      body: JSON.stringify(body)
-    };
+  /** @type {import('node-fetch').RequestInit} */
+  const options = {
+    method: 'POST',
+    headers: {
+      'x-api-key': GRAPHQL_API_KEY
+    },
+    body: JSON.stringify({ query })
   };
+  
+  const request = new Request(GRAPHQL_ENDPOINT, options);
+  
+  let statusCode = 200;
+  let body;
+  let response;
+  
+  try {
+    response = await fetch(request);
+    body = await response.json();
+    if (body.errors) statusCode = 400;
+  } catch (error) {
+    statusCode = 400;
+    body = {
+      errors: [
+        {
+          status: response.status,
+          message: error.message,
+          stack: error.stack
+        }
+      ]
+    };
+  }
+  
+  return {
+    statusCode,
+    //  Uncomment below to enable CORS requests
+    // headers: {
+    //   "Access-Control-Allow-Origin": "*",
+    //   "Access-Control-Allow-Headers": "*"
+    // },
+    body: JSON.stringify(body)
+  };
+};
