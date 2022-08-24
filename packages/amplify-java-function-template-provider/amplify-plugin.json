@@ -13,10 +13,6 @@
       {
         "name": "Hello World",
         "value": "hello-world"
-      },
-      {
-        "name": "AppSync Todo",
-        "value": "appsync-todo"
       }
     ]
   }
