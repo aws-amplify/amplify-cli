@@ -135,7 +135,7 @@ function initBackendConfig(context, category, resourceName, type) {
 }
 
 async function loadConsoleConfigFromTeamProviderinfo() {
-  return (await ensureEnvParamManager()).getResourceParamManager(constants.CATEGORY, constants.CONSOLE_RESOURCE_NAME).getAllParams();
+  return (await ensureEnvParamManager()).instance.getResourceParamManager(constants.CATEGORY, constants.CONSOLE_RESOURCE_NAME).getAllParams();
 }
 
 async function storeCurrentCloudBackend(context) {
