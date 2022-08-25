@@ -62,6 +62,7 @@ export type AmplifyErrorOptions = {
  * Amplify error types
  */
 export type AmplifyErrorType =
+  | 'ProjectInitError'
   | 'FeatureFlagsValidationError'
   | 'NotImplementedError'
   | 'UnknownErrorType'

@@ -77,7 +77,7 @@ export const onSuccess = async (context: $TSContext): Promise<void> => {
     const providerModule = require(providerPlugins[provider]);
     providerOnSuccessTasks.push(() => providerModule.onInitSuccessful(context));
   });
- 
+
   await sequential(providerOnSuccessTasks);
 
   // Get current-cloud-backend's amplify-meta
