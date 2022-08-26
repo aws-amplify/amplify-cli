@@ -1,5 +1,5 @@
 import {
-  $TSContext, AmplifyError, getPackageManager, JSONUtilities,
+  $TSContext, AmplifyFault, AmplifyError, getPackageManager, JSONUtilities,
 } from 'amplify-cli-core';
 import { execSync } from 'child_process';
 import _ from 'lodash';
@@ -24,10 +24,12 @@ export const postInitSetup = async (context: $TSContext): Promise<void> => {
       await context.amplify.pushResources(context);
       await runPackage();
     } catch (e) {
-      throw new AmplifyError('ProjectInitError', {
-        message: e.name === 'InvalidDirectiveError' ? 'Invalid directive' : 'An error occurred during the push operation',
+      if (e instanceof AmplifyError) {
+        throw e;
+      }
+      throw new AmplifyFault('ProjectInitFault', {
+        message: 'An error occurred during project initialization',
         details: e.message,
-        classification: 'InvalidProjectConfiguration',
         link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
         stack: e.stack,
       });

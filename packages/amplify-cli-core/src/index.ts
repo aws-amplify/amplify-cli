@@ -29,4 +29,6 @@ export * from './tags';
 export * from './types';
 export * from './utils';
 export * from './errors/amplify-error';
+export * from './errors/amplify-fault';
+export * from './errors/amplify-exception';
 /* eslint-enable */

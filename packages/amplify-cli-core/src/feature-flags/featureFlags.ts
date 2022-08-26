@@ -386,7 +386,6 @@ export class FeatureFlags {
             resolution: `This issue likely happens when the project has been pushed with a newer version of Amplify CLI, try updating to a newer version.${
               isCI ? '\nEnsure that the CI/CD pipeline is not using an older or pinned down version of Amplify CLI.' : ''}`,
             link: 'https://docs.amplify.aws/cli/reference/feature-flags',
-            classification: 'InvalidProjectConfiguration',
           });
         }
       }

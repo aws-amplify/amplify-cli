@@ -6,10 +6,9 @@ import { AmplifyError, pathManager } from 'amplify-cli-core';
 export const checkForNestedProject = (): void => {
   const projectRoot = pathManager.findProjectRoot() ?? process.cwd();
   if (projectRoot !== process.cwd()) {
-    throw new AmplifyError('ProjectInitError', {
+    throw new AmplifyError('NestedProjectInitError', {
       message: 'Creating a nested amplify project is not supported',
       details: `Project root detected in: ${projectRoot}`,
-      classification: 'InvalidProjectConfiguration',
       resolution: 'Please run amplify in the root of your project',
     });
   }

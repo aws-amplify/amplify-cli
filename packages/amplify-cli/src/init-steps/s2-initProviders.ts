@@ -30,7 +30,6 @@ const getProviders = async (context, providerPlugins): Promise<$TSAny> => {
   if (providerPluginList.length === 0) {
     throw new AmplifyError('ProjectInitError', {
       message: 'Found no provider plugins',
-      classification: 'InvalidProjectConfiguration',
       resolution: `Run 'amplify plugin scan' to scan your system for provider plugins.`,
     });
   }

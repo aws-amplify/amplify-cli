@@ -38,7 +38,6 @@ const validateGithubRepo = async (repoUrl: string): Promise<void> => {
     throw new AmplifyError('ProjectInitError', {
       message: 'Invalid remote github url',
       details: e.message,
-      classification: 'InvalidProjectConfiguration',
       link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
       stack: e.stack,
     });
@@ -54,7 +53,6 @@ const cloneRepo = async (repoUrl: string): Promise<void> => {
   if (files.length > 0) {
     throw new AmplifyError('ProjectInitError', {
       message: 'Unable to clone repository',
-      classification: 'InvalidProjectConfiguration',
       resolution: 'Please ensure you run this command in an empty directory',
     });
   }
@@ -65,7 +63,6 @@ const cloneRepo = async (repoUrl: string): Promise<void> => {
     throw new AmplifyError('ProjectInitError', {
       message: 'Unable to clone repository',
       details: e.message,
-      classification: 'InvalidProjectConfiguration',
       link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
       stack: e.stack,
     });

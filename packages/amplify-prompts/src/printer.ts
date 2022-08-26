@@ -23,15 +23,15 @@ export class AmplifyPrinter implements Printer {
   };
 
   success = (line: string): void => {
-    this.writeSilenceableLine(`${!isHeadless ? '✅' : ''} ${chalk.green(line)}`);
+    this.writeSilenceableLine(`${isHeadless ? '' : '✅ '}${chalk.green(line)}`);
   };
 
   warn = (line: string): void => {
-    this.writeLine(`${!isHeadless ? '⚠️' : ''} ${chalk.yellow(line)}`);
+    this.writeLine(`${isHeadless ? '' : '⚠️ '}${chalk.yellow(line)}`);
   };
 
   error = (line: string): void => {
-    this.writeLine(`${!isHeadless ? '🛑' : ''} ${chalk.red(line)}`);
+    this.writeLine(`${isHeadless ? '' : '🛑 '}${chalk.red(line)}`);
   };
 
   private writeSilenceableLine = (line?: string): void => {
@@ -51,7 +51,7 @@ export class AmplifyPrinter implements Printer {
 export const printer: Printer = new AmplifyPrinter();
 
 /**
- * defines a default printer that does nothing
+ * defines the printer type
  */
 export type Printer = {
   debug: (line: string) => void;

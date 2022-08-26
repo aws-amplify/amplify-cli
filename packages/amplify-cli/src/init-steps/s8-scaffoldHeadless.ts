@@ -36,7 +36,6 @@ export const scaffoldProjectHeadless = async (context: $TSContext): Promise<void
   if (!projectConfigFile) {
     throw new AmplifyError('ProjectInitError', {
       message: `project-config.json template not found for frontend: ${frontend}`,
-      classification: 'InvalidProjectConfiguration',
       link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
     });
   }

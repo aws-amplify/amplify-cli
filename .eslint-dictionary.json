@@ -80,6 +80,7 @@
   "macos",
   "matcher",
   "mfas",
+  "migrator",
   "minify",
   "mkdirs",
   "mockable",
