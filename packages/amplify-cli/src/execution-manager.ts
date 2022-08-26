@@ -27,7 +27,7 @@ import {
 import { isHeadlessCommand, readHeadlessPayload } from './utils/headless-input-utils';
 import {
   FromStartupTimedCodePaths, ManuallyTimedCodePath, UntilExitTimedCodePath,
-} from './domain/amplify-usageData/IUsageData';
+} from './domain/amplify-usageData/UsageDataTypes';
 
 /**
  * Execute a CLI command

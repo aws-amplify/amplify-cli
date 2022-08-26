@@ -6,7 +6,7 @@ import {
 import { printer } from 'amplify-prompts';
 import { ensureEnvParamManager, IEnvironmentParameterManager } from '@aws-amplify/amplify-environment-parameters';
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';
-import { ManuallyTimedCodePath } from './domain/amplify-usageData/IUsageData';
+import { ManuallyTimedCodePath } from './domain/amplify-usageData/UsageDataTypes';
 
 const spinner = ora('');
 
