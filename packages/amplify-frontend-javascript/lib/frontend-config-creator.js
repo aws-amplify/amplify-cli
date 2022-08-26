@@ -292,12 +292,12 @@ async function getCurrentAWSExports(context) {
       const { code } = babel.transformSync(fileContents, {
         plugins: [babelTransformEsmToCjs],
       });
-      const m = new Module();
-      m._compile(code, 'aws-exports.js');
+      const mod = new Module();
+      mod._compile(code, 'aws-exports.js');
       // add paths to the module to account for node_module imports in aws-exports.js (should there be any)
-      m.paths = [projectPath];
+      mod.paths = [projectPath];
       // the transpiled result will contain `exports.default`
-      awsExports = m.exports?.default || m.exports;
+      awsExports = mod.exports?.default || mod.exports;
     } catch (error) {
       throw new Error('Unable to parse aws-exports.js. Has this file been modified?');
     }
