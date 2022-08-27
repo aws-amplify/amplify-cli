@@ -92,16 +92,20 @@ function buildArgs(options) {
 }
 
 async function launch(pathToOpenSearchLocal, givenOptions = {}, retry = 0, startTime = Date.now()) { 
-  log.info('launching OpenSearch Emulator with options: ', { retry, givenOptions });
+  if (process.platform.startsWith('win')) {
+    throw new Error('Cannot launch OpenSearch simulator on windows OS');
+  }
+
+  log.info('launching OpenSearch Simulator with options: ', { retry, givenOptions });
   // launch will retry but ensure it will not retry indefinitely.
   if (retry >= maxRetries) {
-    throw new Error('max retries hit for starting opensearch emulator');
+    throw new Error('Max retries hit for starting OpenSearch simulator');
   }
 
   try {
     await ensureOpenSearchLocalExists(pathToOpenSearchLocal);
   } catch (error) {
-    throw new Error('Failed to setup local OpenSearch instance');
+    throw new Error('Failed to setup local OpenSearch simulator');
   }
 
   let { port } = givenOptions;
@@ -117,7 +121,7 @@ async function launch(pathToOpenSearchLocal, givenOptions = {}, retry = 0, start
   const opts = { ...defaultOptions, ...givenOptions, port };
 
   const args = buildArgs(opts);
-  log.info('Spawning OpenSearch Emulator:', { args, cwd: pathToOpenSearchLocal });
+  log.info('Spawning OpenSearch Simulator:', { args, cwd: pathToOpenSearchLocal });
   const openSearchBinPath = await getPathToOpenSearchBinary();
 
   const proc = execa(openSearchBinPath, args, {
@@ -170,7 +174,7 @@ async function launch(pathToOpenSearchLocal, givenOptions = {}, retry = 0, start
           if (stdout.indexOf(opts.port) !== -1) {
             proc.stdout.removeListener('data', readStdoutBuffer);
             proc.stderr.removeListener('data', readStderrBuffer);
-            log.info('OpenSearch Emulator has started but need to verify socket');
+            log.info('OpenSearch Simulator has started but need to verify socket');
             accept(
               waitPort({
                 host: 'localhost',
@@ -186,7 +190,7 @@ async function launch(pathToOpenSearchLocal, givenOptions = {}, retry = 0, start
       waiter.promise.then(startingTimeout),
       new Promise((accept, reject) => {
         prematureExit = () => {
-          log.error('Opensearch Emulator has prematurely exited... need to retry');
+          log.error('Opensearch Simulator has prematurely exited... need to retry');
           const err = new Error('premature exit');
           err.code = 'premature';
           proc.removeListener('exit', prematureExit);
@@ -196,12 +200,12 @@ async function launch(pathToOpenSearchLocal, givenOptions = {}, retry = 0, start
       }),
     ]);
 
-    log.info('Successfully launched OpenSearch Emulator on', {
+    log.info('Successfully launched OpenSearch Simulator on', {
       port,
       time: Date.now() - startTime,
     });
   } catch (err) {
-    // retry starting the emulator after a small "back off" time
+    // retry starting the Simulator after a small "back off" time
     // if we have a premature exit or the port is bound in a different process.
     if (err.code === 'premature' || err.code === 'port_taken') {
       if (givenOptions.port) {
@@ -257,6 +261,7 @@ const ensureOpenSearchLocalExists = async (pathToOpenSearchLocal) => {
   if (verifyResult) {
     const pathToOpenSearchLib = join(pathToOpenSearchLocal, 'opensearchLib');
     await ensureDir(pathToOpenSearchLib);
+    existsSync(pathToOpenSearchLib);
     // Create a Readable stream from the in-memory tar.gz, unzip it, and extract it to 'pathToOpenSearchLib'
     await promisify(pipeline)(Readable.from(opensearchSimulatorGunZippedTarball), gunzip(), tar.extract({ C: pathToOpenSearchLib, stripComponents: 1 }));
     writeFileSync(sigFilePath, latestSig);
@@ -281,5 +286,8 @@ const getPathToOpenSearchBinary = async (pathToOpenSearchLocal) => {
 
 module.exports = {
   launch,
-  getPathToOpenSearchBinary
+  getPathToOpenSearchBinary,
+  ensureOpenSearchLocalExists,
+  openSearchLocalExists,
+  buildArgs
 };
