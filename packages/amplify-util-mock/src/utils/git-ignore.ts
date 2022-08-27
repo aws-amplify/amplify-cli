@@ -1,14 +1,14 @@
 import { $TSContext } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { getMockDataDirectory, getMockSearchableTriggerDirectory } from './mock-directory';
+import { getMockDataDirectory, getMockAPIResourceDirectory } from './mock-directory';
 
 export function addMockDataToGitIgnore(context: $TSContext) {
   addMockDirectoryToGitIgnore(context, getMockDataDirectory(context));
 }
 
-export function addMockSearchableTriggerToGitIgnore(context: $TSContext) {
-  addMockDirectoryToGitIgnore(context, getMockSearchableTriggerDirectory(context));
+export function addMockAPIResourcesToGitIgnore(context: $TSContext) {
+  addMockDirectoryToGitIgnore(context, getMockAPIResourceDirectory(context));
 }
 
 function addMockDirectoryToGitIgnore(context: $TSContext, directory: string) {

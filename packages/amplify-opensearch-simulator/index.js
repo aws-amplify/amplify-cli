@@ -1,10 +1,16 @@
-const path = require('path');
 const { fromEvent } = require('promise-toolbox');
 const waitPort = require('wait-port');
 const detectPort = require('detect-port');
 const log = require('logdown')('opensearch-emulator');
 const execa = require('execa');
-const { pathManager } = require('amplify-cli-core');
+const { ensureDir, writeFileSync, existsSync } = require('fs-extra');
+const gunzip = require('gunzip-maybe');
+const nodefetch = require('node-fetch');
+const { join } = require('path');
+const { pipeline, Readable } = require('stream');
+const tar = require('tar');
+const { promisify } = require('util');
+openpgp = require('openpgp');
 
 // default port that opensearch chooses
 const basePort = 9200;
@@ -12,19 +18,15 @@ const basePort = 9200;
 const defaultOptions = {
   clusterName: 'opensearch-cluster',
   nodeName: 'opensearch-node-local',
-  port: 9200,
+  port: 9200, // default port for opensearch
   type: 'single-node',
   startTimeout: 20 * 1000,
 };
 
-const packageName = 'amplify-opensearch-simulator';
-const relativeEmulatorPath = 'emulator';
-
-const emulatorPath =  path.join(__dirname, relativeEmulatorPath);
 const retryInterval = 20;
 const maxRetries = 5;
 
-class Emulator {
+class OpenSearchEmulator {
   constructor(proc, opts) {
     this.proc = proc;
     this.opts = opts;
@@ -89,11 +91,17 @@ function buildArgs(options) {
   return args;
 }
 
-async function launch(givenOptions = {}, retry = 0, startTime = Date.now()) {
-  log.info('launching', { retry, givenOptions });
+async function launch(pathToOpenSearchLocal, givenOptions = {}, retry = 0, startTime = Date.now()) { 
+  log.info('launching OpenSearch Emulator with options: ', { retry, givenOptions });
   // launch will retry but ensure it will not retry indefinitely.
   if (retry >= maxRetries) {
     throw new Error('max retries hit for starting opensearch emulator');
+  }
+
+  try {
+    await ensureOpenSearchLocalExists(pathToOpenSearchLocal);
+  } catch (error) {
+    throw new Error('Failed to setup local OpenSearch instance');
   }
 
   let { port } = givenOptions;
@@ -109,11 +117,11 @@ async function launch(givenOptions = {}, retry = 0, startTime = Date.now()) {
   const opts = { ...defaultOptions, ...givenOptions, port };
 
   const args = buildArgs(opts);
-  log.info('Spawning Emulator:', { args, cwd: emulatorPath });
-  const openSearchBinPath = path.join('opensearchLib', 'bin', 'opensearch');
+  log.info('Spawning OpenSearch Emulator:', { args, cwd: pathToOpenSearchLocal });
+  const openSearchBinPath = await getPathToOpenSearchBinary();
 
   const proc = execa(openSearchBinPath, args, {
-    cwd: emulatorPath,
+    cwd: pathToOpenSearchLocal,
   });
 
   function startingTimeout() {
@@ -128,12 +136,14 @@ async function launch(givenOptions = {}, retry = 0, startTime = Date.now()) {
   // define this now so we can use it later to remove a listener.
   let prematureExit;
   let waiter;
-  // This is a fairly complex set of logic to retry starting
-  // the emulator if it fails to start. We need this logic due
-  // to possible race conditions between when we find an open
-  // port and bind to it. This situation is particularly common
-  // in jest where each test file is running in it's own process
-  // each competing for the open port.
+  /*
+   This is a fairly complex set of logic, similar to the DynamoDB emulator, 
+   to retry starting the emulator if it fails to start. We need this logic due
+   to possible race conditions between when we find an open
+   port and bind to it. This situation is particularly common
+   in jest where each test file is running in it's own process
+   each competing for the open port.
+  */
   try {
     waiter = wait(opts.startTimeout);
     await Promise.race([
@@ -145,10 +155,10 @@ async function launch(givenOptions = {}, retry = 0, startTime = Date.now()) {
           stderr += buffer.toString();
 
           // Check stderr for any known errors.
-          if (/^Invalid directory for database creation.$/.test(stderr)) {
+          if (/^Invalid directory to start OpenSearch.$/.test(stderr)) {
             proc.stdout.removeListener('data', readStdoutBuffer);
             proc.stderr.removeListener('data', readStderrBuffer);
-            const err = new Error('invalid directory for database creation');
+            const err = new Error('invalid directory to start OpenSearch');
             err.code = 'bad_config';
             reject(err);
           }
@@ -160,7 +170,7 @@ async function launch(givenOptions = {}, retry = 0, startTime = Date.now()) {
           if (stdout.indexOf(opts.port) !== -1) {
             proc.stdout.removeListener('data', readStdoutBuffer);
             proc.stderr.removeListener('data', readStderrBuffer);
-            log.info('Emulator has started but need to verify socket');
+            log.info('OpenSearch Emulator has started but need to verify socket');
             accept(
               waitPort({
                 host: 'localhost',
@@ -176,7 +186,7 @@ async function launch(givenOptions = {}, retry = 0, startTime = Date.now()) {
       waiter.promise.then(startingTimeout),
       new Promise((accept, reject) => {
         prematureExit = () => {
-          log.error('Opensearch Simulator has prematurely exited... need to retry');
+          log.error('Opensearch Emulator has prematurely exited... need to retry');
           const err = new Error('premature exit');
           err.code = 'premature';
           proc.removeListener('exit', prematureExit);
@@ -186,7 +196,7 @@ async function launch(givenOptions = {}, retry = 0, startTime = Date.now()) {
       }),
     ]);
 
-    log.info('Successfully launched emulator on', {
+    log.info('Successfully launched OpenSearch Emulator on', {
       port,
       time: Date.now() - startTime,
     });
@@ -208,20 +218,68 @@ async function launch(givenOptions = {}, retry = 0, startTime = Date.now()) {
     }
   }
 
-  return new Emulator(proc, opts);
+  return new OpenSearchEmulator(proc, opts);
 }
-/*
-function getClient(emu, options = {}) {
-  return new Client({
-    node: emu.url,
-    ...options
+
+const ensureOpenSearchLocalExists = async (pathToOpenSearchLocal) => {
+  if (await openSearchLocalExists(pathToOpenSearchLocal)) {
+    return;
+  }
+  // Download the latest version of OpenSearch supported by AWS ES
+  const supportedOpenSearchVersion = '1.3.0';
+  const opensearchMinLinuxArtifactUrl = `https://artifacts.opensearch.org/releases/core/opensearch/${supportedOpenSearchVersion}/opensearch-min-${supportedOpenSearchVersion}-linux-x64.tar.gz`;
+  const sigFileUrl = `${opensearchMinLinuxArtifactUrl}.sig`;
+  const publicKeyUrl = `https://artifacts.opensearch.org/publickeys/opensearch.pgp`;
+
+  const sigFilePath = join(pathToOpenSearchLocal, `opensearch-min-${supportedOpenSearchVersion}-linux-x64.tar.gz.sig`);
+  const publicKeyPath = join(pathToOpenSearchLocal, 'opensearch.pgp');
+  const tarFilePath = join(pathToOpenSearchLocal, `opensearch-min-${supportedOpenSearchVersion}-linux-x64.tar.gz`);
+
+  await ensureDir(pathToOpenSearchLocal);
+
+  const latestSig = (await nodefetch(sigFileUrl).then(res => res.buffer()));
+
+  const latestPublicKey = (await nodefetch(publicKeyUrl).then(res => res.text()));
+  const opensearchSimulatorGunZippedTarball = await nodefetch(opensearchMinLinuxArtifactUrl).then(res => res.buffer());
+
+  const signature = await openpgp.signature.read(latestSig);
+  const publickey = await openpgp.key.readArmored(latestPublicKey);
+  const message = await openpgp.message.fromBinary(new Uint8Array(opensearchSimulatorGunZippedTarball));
+  const verificationResult = await openpgp.verify({
+    message: message,
+    signature: signature,
+    publicKeys: publickey.keys
   });
+
+  const { verified } = verificationResult.signatures[0];
+  const verifyResult = await verified;
+
+  if (verifyResult) {
+    const pathToOpenSearchLib = join(pathToOpenSearchLocal, 'opensearchLib');
+    await ensureDir(pathToOpenSearchLib);
+    // Create a Readable stream from the in-memory tar.gz, unzip it, and extract it to 'pathToOpenSearchLib'
+    await promisify(pipeline)(Readable.from(opensearchSimulatorGunZippedTarball), gunzip(), tar.extract({ C: pathToOpenSearchLib, stripComponents: 1 }));
+    writeFileSync(sigFilePath, latestSig);
+    writeFileSync(publicKeyPath, latestPublicKey);
+    writeFileSync(tarFilePath, opensearchSimulatorGunZippedTarball);
+  }
+  else {
+    throw new Error('PGP signature of downloaded OpenSearch binary did not match');
+  }
 }
-*/
-const getPackageAssetPaths = async () => [relativeEmulatorPath];
+
+const openSearchLocalExists = async (pathToOpenSearchLocal) => {
+  return existsSync(await getPathToOpenSearchBinary(pathToOpenSearchLocal));
+}
+
+const getPathToOpenSearchBinary = async (pathToOpenSearchLocal) => {
+  if (pathToOpenSearchLocal) {
+    return join(pathToOpenSearchLocal, 'opensearchLib', 'bin', 'opensearch');
+  }
+  return join('opensearchLib', 'bin', 'opensearch');
+}
 
 module.exports = {
   launch,
-  // getClient,
-  getPackageAssetPaths,
+  getPathToOpenSearchBinary
 };
