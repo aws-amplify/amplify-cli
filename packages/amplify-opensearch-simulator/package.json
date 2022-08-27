@@ -1,7 +1,7 @@
 {
-    "name": "amplify-opensearch-simulator",
-    "version": "0.0.1",
-    "description": "Opensearch simulator nodejs wrapper",
+    "name": "@aws-amplify/amplify-opensearch-simulator",
+    "version": "1.0.0",
+    "description": "Opensearch local simulator",
     "repository": {
         "type": "git",
         "url": "https://github.com/aws-amplify/amplify-cli.git",
@@ -16,8 +16,6 @@
         "aws"
     ],
     "scripts": {
-        "build": "node ./scripts/update-opensearch-simulator.js",
-        "clean": "rimraf emulator",
         "test": "jest"
     },
     "dependencies": {

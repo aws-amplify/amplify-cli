@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import * as dynamoEmulator from 'amplify-dynamodb-simulator';
 import { AmplifyAppSyncSimulator, AmplifyAppSyncSimulatorConfig } from '@aws-amplify/amplify-appsync-simulator';
-import * as opensearchEmulator from 'amplify-opensearch-simulator';
+import * as opensearchEmulator from '@aws-amplify/amplify-opensearch-simulator';
 import { $TSContext, $TSAny } from 'amplify-cli-core';
 import { add, generate, isCodegenConfigured, switchToSDLSchema } from 'amplify-codegen';
 import * as path from 'path';
@@ -14,7 +14,7 @@ import { runTransformer } from './run-graphql-transformer';
 import { processAppSyncResources } from '../CFNParser';
 import { ResolverOverrides } from './resolver-overrides';
 import { ConfigOverrideManager } from '../utils/config-override';
-import { configureDDBDataSource, createAndUpdateTable, MockDynamoDBConfig } from '../utils/dynamo-db';
+import { configureDDBDataSource, createAndUpdateTable } from '../utils/dynamo-db';
 import { describeTables } from '../utils/dynamo-db/utils';
 import { findModelLambdaTriggers, findSearchableLambdaTriggers, LambdaTrigger } from '../utils/lambda/find-lambda-triggers';
 import { getMockConfig } from '../utils/mock-config-file';
@@ -24,6 +24,7 @@ import { timeConstrainedInvoker } from '../func';
 import { ddbLambdaTriggerHandler } from './lambda-trigger-handler';
 import { TableDescription } from 'aws-sdk/clients/dynamodb';
 import { querySearchable } from '../utils/opensearch';
+import { getMockSearchableResourceDirectory } from '../utils/mock-directory';
 
 export const GRAPHQL_API_ENDPOINT_OUTPUT = 'GraphQLAPIEndpointOutput';
 export const GRAPHQL_API_KEY_OUTPUT = 'GraphQLAPIKeyOutput';
@@ -66,6 +67,8 @@ export class APITest {
       await this.resolverOverrideManager.start();
       await this.watch(context);
       const appSyncConfig: AmplifyAppSyncSimulatorConfig = await this.runTransformer(context, this.apiParameters);
+      
+      // If any of the model types are searchable, start opensearch local instance
       if (appSyncConfig?.tables?.some( (table: $TSAny) => table?.isSearchable)) {
         this.opensearchURL = await this.startOpensearchLocalServer(context);
       }
@@ -108,8 +111,8 @@ export class APITest {
         this.opensearchURL = null;
       }
     } catch (e) {
-      // failed to stop DDB emulator
-      context.print.error(`Failed to stop Opensearch Local Server ${e.message}`);
+      // failed to stop opensearch emulator
+      context.print.error(`Failed to stop OpenSearch Local Server ${e.message}`);
     }
 
     await this.appSyncSimulator.stop();
@@ -237,7 +240,7 @@ export class APITest {
       const modelLambdaTriggers: {[index: string]: LambdaTrigger[];} = await findModelLambdaTriggers(context, tableNames);
       const searchableLambdaTriggers: {[index: string]: LambdaTrigger;} = await findSearchableLambdaTriggers(context, newlyAddedSearchableTableNames, this.opensearchURL);
       const allLambdaTriggers = modelLambdaTriggers;
-      Object.entries(searchableLambdaTriggers).forEach(([tableName, lambdaTrigger]) => {
+      Object.entries(searchableLambdaTriggers)?.forEach(([tableName, lambdaTrigger]) => {
         if (allLambdaTriggers[tableName]) {
           allLambdaTriggers[tableName].push(lambdaTrigger);
         }
@@ -249,7 +252,7 @@ export class APITest {
       const allTablesWithTriggers = Object.keys(modelLambdaTriggers)?.concat(Object.keys(searchableLambdaTriggers));
       const tableStreamArns: {[index: string]: TableDescription;} = await describeTables(this.ddbClient, allTablesWithTriggers);
       const allListeners = [];
-      Object.entries(allLambdaTriggers).forEach(([tableName, lambdaTriggers]) => {
+      Object.entries(allLambdaTriggers)?.forEach(([tableName, lambdaTriggers]) => {
         if(!(_.isEmpty(lambdaTriggers))) {
           lambdaTriggers.forEach( (lambdaTrigger: LambdaTrigger) => {
             allListeners.push(
@@ -374,20 +377,30 @@ export class APITest {
   }
 
   private async startOpensearchLocalServer(context: $TSContext) {
-    const mockConfig = await getMockConfig(context);
-    await this.createMockSearchableTriggerArtifacts(context);
-    this.opensearchEmulator = await opensearchEmulator.launch({
-      port: null,
-      ...mockConfig,
-    });
-    return this.opensearchEmulator.url;
+    try {
+      const mockConfig = await getMockConfig(context);
+      const mockSearchableResourceDirectory = await this.createMockSearchableArtifacts(context);
+      this.opensearchEmulator = await opensearchEmulator.launch(
+        mockSearchableResourceDirectory, 
+        {
+          port: null, // let the emulator choose the default
+          ...mockConfig,
+        }
+      );
+      return this.opensearchEmulator.url;
+    } catch (error) {
+      throw new Error('Unable to start the local OpenSearch Instance.');
+    }
   }
 
-  private async createMockSearchableTriggerArtifacts(context: $TSContext) {
+  private async createMockSearchableArtifacts(context: $TSContext): Promise<string> {
+    const mockSearchableResourceDirectory = getMockSearchableResourceDirectory(context);
+    await fs.ensureDirSync(mockSearchableResourceDirectory);
     const mockSearchableTriggerDirectory = getMockSearchableTriggerDirectory(context);
     fs.ensureDirSync(mockSearchableTriggerDirectory);
     const searchableLambdaResourceDir = path.resolve(__dirname, '..', '..', 'resources', 'mock-searchable-lambda-trigger');
     fs.copySync(searchableLambdaResourceDir, mockSearchableTriggerDirectory, { overwrite: true });
+    return mockSearchableResourceDirectory;
   }
 
   private async getAPIBackendDirectory(context) {

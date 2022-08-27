@@ -62,14 +62,14 @@ export const findSearchableLambdaTriggers = async (context: $TSContext , tables:
   }
 
   tables.forEach ( (table) => {
-    const lambdaTriggerConfig = getOpensearchLambdaTriggerConfig(context, opensearchEndpoint, table);
+    const lambdaTriggerConfig = getSearchableLambdaTriggerConfig(context, opensearchEndpoint, table);
     lambdaTriggersMap[table] = { config: lambdaTriggerConfig };
   });
 
   return lambdaTriggersMap;
 }
 
-export const getOpensearchLambdaTriggerConfig = (context: $TSContext, opensearchEndpoint: URL, tableName: string): LambdaTriggerConfig => {
+export const getSearchableLambdaTriggerConfig = (context: $TSContext, opensearchEndpoint: URL, tableName: string): LambdaTriggerConfig => {
   const mockSearchableTriggerDirectory = getMockSearchableTriggerDirectory(context);
   return {
     handler: 'index.handler',
