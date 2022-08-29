@@ -147,7 +147,6 @@ export class WebsocketSubscriptionServer {
       socket.on('close', onClose);
       socket.on('error', onClose);
     } catch (e) {
-      console.log(e);
       socket.close(1002); // protocol error
       return;
     }

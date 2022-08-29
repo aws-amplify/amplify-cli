@@ -128,7 +128,6 @@ describe('WebsocketSubscriptionServer', () => {
       await waitForConnection(client);
       client.close();
       expect(onConnectHandler).toHaveBeenCalled();
-      console.log(onConnectHandler.mock.calls[0][1]);
       expect(onConnectHandler.mock.calls[0][1]).toEqual(header);
     });
 
