@@ -10,6 +10,7 @@ import { getOperationType } from '../utils/graphql-runner/helpers';
 import { runQueryOrMutation } from '../utils/graphql-runner/query-and-mutation';
 import { runSubscription } from '../utils/graphql-runner/subscriptions';
 import { extractIamToken } from '../utils/auth-helpers/helpers';
+import { REALTIME_SUBSCRIPTION_PATH } from './index';
 
 const MAX_BODY_SIZE = '10mb';
 
@@ -83,7 +84,7 @@ export class OperationServer {
           if ((subscriptionResult as ExecutionResult).errors) {
             return response.send(subscriptionResult);
           }
-          throw new Error('Subscription request is only supported in realtime url. Send requests to /graphql/realtime path instead');
+          throw new Error(`Subscription request is only supported in realtime url. Send requests to ${REALTIME_SUBSCRIPTION_PATH} path instead`);
           break;
 
         default:

@@ -14,6 +14,7 @@ import {
 } from './message-type-guards';
 import { MESSAGE_TYPES } from './message-types';
 import { decodeHeaderFromQueryParam } from './utils';
+import { REALTIME_SUBSCRIPTION_PATH } from '../../index';
 
 const PROTOCOL = 'graphql-ws';
 const KEEP_ALIVE_TIMEOUT = 4 * 60 * 1000; // Wait time between Keep Alive Message
@@ -67,7 +68,7 @@ export class WebsocketSubscriptionServer {
   }
 
   attachWebServer(serverOptions: ServerOptions): void {
-    this.webSocketServer = new WebSocketServer({ ...serverOptions, path: '/graphql/realtime' });
+    this.webSocketServer = new WebSocketServer({ ...serverOptions, path: REALTIME_SUBSCRIPTION_PATH });
   }
 
   start() {

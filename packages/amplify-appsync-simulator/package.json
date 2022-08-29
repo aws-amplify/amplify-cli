@@ -26,7 +26,7 @@
     "clean": "rimraf ./lib tsconfig.tsbuildinfo tsconfig.tests.tsbuildinfo node_modules",
     "watch": "tsc -w",
     "start": "node ./lib/index.js",
-    "test": "jest --forceExit"
+    "test": "jest"
   },
   "dependencies": {
     "@graphql-tools/schema": "^8.3.1",

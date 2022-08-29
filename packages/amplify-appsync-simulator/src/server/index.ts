@@ -9,6 +9,7 @@ import getPort from 'get-port';
 
 const BASE_PORT = 8900;
 const MAX_PORT = 9999;
+export const REALTIME_SUBSCRIPTION_PATH = '/graphql/realtime';
 
 export class AppSyncSimulatorServer {
   private _operationServer: OperationServer;
@@ -19,7 +20,7 @@ export class AppSyncSimulatorServer {
   constructor(private config: AppSyncSimulatorServerConfig, private simulatorContext: AmplifyAppSyncSimulator) {
     this._operationServer = new OperationServer(config, simulatorContext);
     this._httpServer = createServer(this._operationServer.app);
-    this._realTimeSubscriptionServer = new AppSyncSimulatorSubscriptionServer(simulatorContext, this._httpServer, '/graphql/realtime');
+    this._realTimeSubscriptionServer = new AppSyncSimulatorSubscriptionServer(simulatorContext, this._httpServer, REALTIME_SUBSCRIPTION_PATH);
   }
 
   async start(): Promise<void> {
