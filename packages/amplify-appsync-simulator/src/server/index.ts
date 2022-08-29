@@ -6,10 +6,10 @@ import { fromEvent } from 'promise-toolbox';
 import { address as getLocalIpAddress } from 'ip';
 import { AppSyncSimulatorSubscriptionServer } from './websocket-subscription';
 import getPort from 'get-port';
+import { REALTIME_SUBSCRIPTION_PATH } from './subscription/websocket-server/server';
 
 const BASE_PORT = 8900;
 const MAX_PORT = 9999;
-export const REALTIME_SUBSCRIPTION_PATH = '/graphql/realtime';
 
 export class AppSyncSimulatorServer {
   private _operationServer: OperationServer;

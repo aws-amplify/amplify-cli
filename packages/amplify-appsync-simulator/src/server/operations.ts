@@ -10,7 +10,7 @@ import { getOperationType } from '../utils/graphql-runner/helpers';
 import { runQueryOrMutation } from '../utils/graphql-runner/query-and-mutation';
 import { runSubscription } from '../utils/graphql-runner/subscriptions';
 import { extractIamToken } from '../utils/auth-helpers/helpers';
-import { REALTIME_SUBSCRIPTION_PATH } from './index';
+import { REALTIME_SUBSCRIPTION_PATH } from './subscription/websocket-server/server';
 
 const MAX_BODY_SIZE = '10mb';
 

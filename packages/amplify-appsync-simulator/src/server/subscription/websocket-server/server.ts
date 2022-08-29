@@ -14,8 +14,8 @@ import {
 } from './message-type-guards';
 import { MESSAGE_TYPES } from './message-types';
 import { decodeHeaderFromQueryParam } from './utils';
-import { REALTIME_SUBSCRIPTION_PATH } from '../../index';
 
+export const REALTIME_SUBSCRIPTION_PATH = '/graphql/realtime';
 const PROTOCOL = 'graphql-ws';
 const KEEP_ALIVE_TIMEOUT = 4 * 60 * 1000; // Wait time between Keep Alive Message
 // Max time the client will wait for Keep Alive message before disconnecting. Sent to the client as part of connection ack

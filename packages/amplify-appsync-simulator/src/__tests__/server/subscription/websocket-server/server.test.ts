@@ -4,7 +4,7 @@ import WS from 'ws';
 import getPort from 'get-port';
 import { PubSub } from 'graphql-subscriptions';
 import { parse } from 'graphql';
-import { REALTIME_SUBSCRIPTION_PATH } from '../../../../server/index';
+import { REALTIME_SUBSCRIPTION_PATH } from '../../../../server/subscription/websocket-server/server';
 
 import { WebsocketSubscriptionServer, ConnectionContext } from '../../../../server/subscription/websocket-server/server';
 import { MESSAGE_TYPES } from '../../../../server/subscription/websocket-server/message-types';
