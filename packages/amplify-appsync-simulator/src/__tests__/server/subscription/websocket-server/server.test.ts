@@ -88,7 +88,6 @@ describe('WebsocketSubscriptionServer', () => {
   });
 
   afterAll(done => {
-    httpServer?.close();
     done();
   });
 
