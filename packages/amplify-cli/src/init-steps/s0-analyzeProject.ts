@@ -1,5 +1,5 @@
 import {
-  $TSContext, exitOnNextTick, InvalidEnvironmentNameError, stateManager,
+  $TSContext, AmplifyError, stateManager,
 } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
@@ -11,9 +11,9 @@ import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-
 import { getSuitableFrontend } from './s1-initFrontend';
 
 /**
- *
+ * Analyzes the project
  */
-export async function analyzeProjectHeadless(context: $TSContext) {
+export const analyzeProjectHeadless = async (context: $TSContext): Promise<void> => {
   const projectPath = process.cwd();
   const projectName = path.basename(projectPath);
   const env = getDefaultEnv(context);
@@ -134,7 +134,6 @@ export const analyzeProject = async (context: $TSContext): Promise<$TSContext> =
   setProjectConfig(context, projectName);
   setExeInfo(context, projectPath, defaultEditor, envName);
 
-
   return context;
 };
 
@@ -220,9 +219,10 @@ const getDefaultEnv = (context: $TSContext): string | undefined => {
       defaultEnv = context.exeInfo.inputParams.amplify.envName;
       return defaultEnv;
     }
-    context.print.error(INVALID_ENV_NAME_MSG);
-    context.usageData.emitError(new InvalidEnvironmentNameError(INVALID_ENV_NAME_MSG));
-    exitOnNextTick(1);
+    throw new AmplifyError('EnvironmentNameError', {
+      message: `Invalid environment name: ${context.exeInfo.inputParams.amplify.envName}`,
+      resolution: INVALID_ENV_NAME_MSG,
+    });
   }
 
   if (isNewProject(context) || !context.amplify.getAllEnvs().includes(defaultEnv)) {
@@ -239,13 +239,15 @@ const getEnvName = async (context: $TSContext): Promise<string> => {
       ({ envName } = context.exeInfo.inputParams.amplify);
       return envName;
     }
-    context.print.error(INVALID_ENV_NAME_MSG);
-    await context.usageData.emitError(new InvalidEnvironmentNameError(INVALID_ENV_NAME_MSG));
-    exitOnNextTick(1);
+    throw new AmplifyError('ProjectInitError', {
+      message: `Invalid environment name: ${context.exeInfo.inputParams.amplify.envName}`,
+      resolution: INVALID_ENV_NAME_MSG,
+    });
   } else if (context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
-    context.print.error('Environment name missing');
-    await context.usageData.emitError(new InvalidEnvironmentNameError(INVALID_ENV_NAME_MSG));
-    exitOnNextTick(1);
+    throw new AmplifyError('ProjectInitError', {
+      message: `Invalid environment name: ${context.exeInfo.inputParams.amplify.envName}`,
+      resolution: INVALID_ENV_NAME_MSG,
+    });
   }
 
   const newEnvQuestion = async (): Promise<void> => {

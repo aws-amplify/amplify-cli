@@ -9,7 +9,7 @@ import {
 } from '@aws-amplify/amplify-environment-parameters';
 import { initEnv as providerInitEnv, pushResources } from 'amplify-provider-awscloudformation';
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';
-import { ManuallyTimedCodePath } from './domain/amplify-usageData/IUsageData';
+import { ManuallyTimedCodePath } from './domain/amplify-usageData/UsageDataTypes';
 
 const spinner = ora('');
 
