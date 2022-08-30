@@ -6,7 +6,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { printer, prompter } from 'amplify-prompts';
 import { ensureEnvMeta } from '@aws-amplify/amplify-environment-parameters';
-import { findAppByBackendPredicate, getLocalAppIdsInSameRegionAndAccount } from './utils/get-local-app-ids-in-same-region-and-account';
+import { findAppByBackendPredicate, getLocalAppIdsInSameRegionAndAccount } from './utils/amplify-client-lookups';
 import { S3 } from './aws-utils/aws-s3';
 import { getConfiguredAmplifyClient } from './aws-utils/aws-amplify';
 import { checkAmplifyServiceIAMPermission } from './amplify-service-permission-check';

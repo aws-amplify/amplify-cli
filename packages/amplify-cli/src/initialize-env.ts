@@ -5,7 +5,7 @@ import {
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import {
-  ensureEnvParamManager, IEnvironmentParameterManager, getEnvMeta, ensureEnvMeta,
+  ensureEnvParamManager, IEnvironmentParameterManager, getEnvMeta,
 } from '@aws-amplify/amplify-environment-parameters';
 import { initEnv as providerInitEnv, pushResources } from 'amplify-provider-awscloudformation';
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';
