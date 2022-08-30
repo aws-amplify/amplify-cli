@@ -17,3 +17,8 @@ export const isYes = !!['--yes', '-y'].find(yesFlag => process.argv.includes(yes
  * Set to true if stdin is a TTY (interactive shell)
  */
 export const isInteractiveShell = process.stdin.isTTY;
+
+/**
+ * If this flag is set, printer will trim non ASCI characters from the output.
+ */
+export const isHeadless = process.argv.includes('--headless');

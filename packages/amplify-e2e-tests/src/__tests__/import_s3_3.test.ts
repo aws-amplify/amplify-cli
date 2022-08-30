@@ -115,8 +115,8 @@ describe('headless s3 import', () => {
     );
 
     expect(processResult.exitCode).toBe(1);
-    expect(processResult.stdout).toContain(
-      'Cannot headlessly import storage resource without an existing auth resource. It can be added with "amplify add auth"',
+    expect(processResult.stderr).toContain(
+      'Cannot headlessly import storage resource without an existing auth resource. It can be added with \\"amplify add auth\\"',
     );
   });
 
@@ -152,7 +152,7 @@ describe('headless s3 import', () => {
     );
 
     expect(processResultFail.exitCode).toBe(1);
-    expect(processResultFail.stdout).toContain('Amazon S3 storage was already added to your project');
+    expect(processResultFail.stderr).toContain('Amazon S3 storage was already added to your project');
   });
 
   it('import storage with non-existent bucket`', async () => {
@@ -174,7 +174,7 @@ describe('headless s3 import', () => {
     );
 
     expect(processResult.exitCode).toBe(1);
-    expect(processResult.stdout).toContain(`The specified bucket: "${fakeBucketName}" does not exist.`);
+    expect(processResult.stderr).toContain(`The specified bucket: \\"${fakeBucketName}\\" does not exist.`);
   });
 
   it('import storage successfully and push, remove storage and push`', async () => {

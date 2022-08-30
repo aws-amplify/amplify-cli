@@ -1,6 +1,12 @@
-import { $TSAny, $TSContext, $TSObject, JSONUtilities } from 'amplify-cli-core';
+/* eslint-disable no-param-reassign */
+import {
+  $TSAny, $TSContext, $TSObject, JSONUtilities,
+} from 'amplify-cli-core';
 
-export function normalizeInputParams(context: $TSContext): $TSObject {
+/**
+ * Normalizes the input parameters
+ */
+export const normalizeInputParams = (context: $TSContext): $TSObject => {
   const inputParams = {};
   Object.keys(context.parameters.options).forEach(key => {
     const normalizedKey = normalizeKey(key);
@@ -9,9 +15,9 @@ export function normalizeInputParams(context: $TSContext): $TSObject {
   });
   transform(inputParams);
   return inputParams;
-}
+};
 
-function normalizeKey(key: string) {
+const normalizeKey = (key: string): string => {
   if (['y', 'yes'].includes(key)) {
     key = 'yes';
   }
@@ -25,9 +31,9 @@ function normalizeKey(key: string) {
     key = 'frontend';
   }
   return key;
-}
+};
 
-function normalizeValue(value: string) {
+const normalizeValue = (value: string): string => {
   let normalizedValue = value;
   try {
     normalizedValue = JSONUtilities.parse(value);
@@ -35,9 +41,9 @@ function normalizeValue(value: string) {
     // do nothing, allow plain string as input parameter.
   }
   return normalizedValue;
-}
+};
 
-function transform(inputParams: $TSAny) {
+const transform = (inputParams: $TSAny): void => {
   const headlessAmplify = !!inputParams.amplify;
   inputParams.amplify = inputParams.amplify || {};
   inputParams.providers = inputParams.providers || {};
@@ -59,18 +65,24 @@ function transform(inputParams: $TSAny) {
   }
   delete inputParams.frontend;
   delete inputParams.providers;
-}
+};
 
-export function normalizeProviderName(name: string, providerPluginList?: string[]) {
+/**
+ * check if parameter is a valid provider
+ */
+export const normalizeProviderName = (name: string, providerPluginList?: string[]): string | undefined => {
   if (!providerPluginList || providerPluginList.length < 1) {
     return undefined;
   }
   return providerPluginList.includes(name) ? name : undefined;
-}
+};
 
-export function normalizeFrontendHandlerName(name: string, frontendPluginList?: string[]) {
+/**
+ * check if parameter is a valid frontend
+ */
+export const normalizeFrontendHandlerName = (name: string, frontendPluginList?: string[]): string | undefined => {
   if (!frontendPluginList || frontendPluginList.length < 1) {
     return undefined;
   }
   return frontendPluginList.includes(name) ? name : undefined;
-}
+};

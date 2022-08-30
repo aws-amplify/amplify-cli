@@ -2,6 +2,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import {
   $TSContext,
+  AmplifyError,
   AmplifyProjectConfig,
   CLIContextEnvironmentProvider,
   FeatureFlags,
@@ -14,7 +15,7 @@ import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
 /**
  * Extract amplify project structure with backend-config and project-config
  */
-export async function scaffoldProjectHeadless(context: $TSContext) {
+export const scaffoldProjectHeadless = async (context: $TSContext): Promise<void> => {
   const projectPath = process.cwd();
   const { projectName, frontend } = context.exeInfo.projectConfig;
 
@@ -33,7 +34,10 @@ export async function scaffoldProjectHeadless(context: $TSContext) {
   );
 
   if (!projectConfigFile) {
-    throw new Error(`project-config.json template not found for frontend: ${frontend}`);
+    throw new AmplifyError('ProjectInitError', {
+      message: `project-config.json template not found for frontend: ${frontend}`,
+      link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
+    });
   }
 
   projectConfigFile.projectName = projectName;
@@ -54,4 +58,4 @@ export async function scaffoldProjectHeadless(context: $TSContext) {
   }
 
   await FeatureFlags.ensureDefaultFeatureFlags(true);
-}
+};
