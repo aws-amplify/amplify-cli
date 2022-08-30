@@ -1,40 +1,23 @@
-import chalk from 'chalk';
-import { JSONUtilities, $TSContext, UnknownArgumentError, exitOnNextTick } from 'amplify-cli-core';
+import { $TSContext } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
+import { ensureEnvMeta, listLocalEnvNames } from '@aws-amplify/amplify-environment-parameters';
 import { printEnvInfo } from '../helpers/envUtils';
 
-export const run = async (context: $TSContext) => {
+/**
+ * Prints environment info
+ */
+export const run = async (context: $TSContext): Promise<void> => {
   const envName = context.parameters.options.name;
 
   if (!envName) {
-    const errMessage = 'You must pass in the name of the environment using the --name flag';
-    context.print.error(errMessage);
-    context.usageData.emitError(new UnknownArgumentError(errMessage));
-    exitOnNextTick(1);
+    throw new Error(`Pass in the name of the environment using the --name flag`);
   }
 
-  const allEnvs = context.amplify.getEnvDetails();
-
-  if (context.parameters.options.json) {
-    if (allEnvs[envName]) {
-      context.print.fancy(JSONUtilities.stringify(allEnvs[envName]));
-    } else {
-      context.print.fancy(JSONUtilities.stringify({ error: `No environment found with name: '${envName}'` }));
-    }
-    return;
+  const allEnvs = listLocalEnvNames();
+  if (!allEnvs.includes(envName)) {
+    throw new Error(`Cannot find environment ${envName}. Make sure the environment has been pulled using 'amplify pull'.`);
   }
 
-  let envFound = false;
-
-  Object.keys(allEnvs).forEach(env => {
-    if (env === envName) {
-      envFound = true;
-      context.print.info('');
-      context.print.info(chalk.red(env));
-      printEnvInfo(context, env, allEnvs);
-    }
-  });
-
-  if (!envFound) {
-    context.print.error('No environment found with the corresponding name provided');
-  }
+  printer.info(envName);
+  printEnvInfo(await ensureEnvMeta(context, envName));
 };

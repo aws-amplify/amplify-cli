@@ -2,11 +2,13 @@ import ora from 'ora';
 import {
   FeatureFlags, stateManager, UnknownArgumentError, exitOnNextTick, $TSContext,
 } from 'amplify-cli-core';
+import { deleteEnvParamManager, listLocalEnvNames } from '@aws-amplify/amplify-environment-parameters';
+import { printer } from 'amplify-prompts';
 import { getConfirmation } from '../../extensions/amplify-helpers/delete-project';
 import { removeEnvFromCloud } from '../../extensions/amplify-helpers/remove-env-from-cloud';
 
 /**
- * Entry point for env subcommand
+ * Entry point for env remove subcommand
  */
 export const run = async (context: $TSContext): Promise<void> => {
   const envName = context.parameters.first;
@@ -14,27 +16,18 @@ export const run = async (context: $TSContext): Promise<void> => {
 
   if (!envName) {
     const errMessage = "You must pass in the name of the environment as a part of the 'amplify env remove <env-name>' command";
-    context.print.error(errMessage);
+    printer.error(errMessage);
     await context.usageData.emitError(new UnknownArgumentError(errMessage));
     exitOnNextTick(1);
   }
-  let envFound = false;
-  const allEnvs = context.amplify.getEnvDetails();
 
-  Object.keys(allEnvs).forEach(env => {
-    if (env === envName) {
-      envFound = true;
-      delete allEnvs[env];
-    }
-  });
-
-  if (!envFound) {
-    context.print.error('No environment found with the corresponding name provided');
+  if (!listLocalEnvNames().includes(envName)) {
+    printer.error('No environment found with the corresponding name provided');
   } else {
     if (currentEnv === envName) {
       const errMessage = 'You cannot delete your current environment. Please switch to another environment to delete your current environment';
-      context.print.error(errMessage);
-      context.print.error("If this is your only environment you can use the 'amplify delete' command to delete your project");
+      printer.error(errMessage);
+      printer.info("If this is your only environment you can use the 'amplify delete' command to delete your project");
       await context.usageData.emitError(new UnknownArgumentError(errMessage));
       exitOnNextTick(1);
     }
@@ -52,7 +45,7 @@ export const run = async (context: $TSContext): Promise<void> => {
       spinner.succeed('Successfully removed environment from the cloud');
 
       // Remove from team-provider-info
-      stateManager.setTeamProviderInfo(undefined, allEnvs);
+      deleteEnvParamManager(envName);
 
       // Remove entry from aws-info
       const awsInfo = stateManager.getLocalAWSInfo();
@@ -67,7 +60,7 @@ export const run = async (context: $TSContext): Promise<void> => {
         await FeatureFlags.removeFeatureFlagConfiguration(false, [envName]);
       }
 
-      context.print.success('Successfully removed environment from your project locally');
+      printer.success('Successfully removed environment from your project locally');
     }
   }
 };

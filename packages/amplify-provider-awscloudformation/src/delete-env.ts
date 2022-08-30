@@ -1,11 +1,11 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { stateManager } from 'amplify-cli-core';
+import { ensureEnvMeta } from '@aws-amplify/amplify-environment-parameters';
 import { loadConfigurationForEnv } from './configuration-manager';
 import Cloudformation from './aws-utils/aws-cfn';
 import { S3 } from './aws-utils/aws-s3';
 import { deleteEnv } from './amplify-service-manager';
-import { S3BackendZipFileName, ProviderName } from './constants';
+import { S3BackendZipFileName } from './constants';
 import { downloadZip, extractZip } from './zip-util';
 
 /**
@@ -20,7 +20,7 @@ export const run = async (context, envName, deleteS3): Promise<void> => {
   let storageCategoryBucketName;
 
   if (deleteS3) {
-    deploymentBucketName = stateManager.getTeamProviderInfo()?.[envName]?.[ProviderName]?.DeploymentBucketName;
+    deploymentBucketName = (await ensureEnvMeta(context, envName)).DeploymentBucketName;
     if (await s3.ifBucketExists(deploymentBucketName)) {
       const amplifyDir = context.amplify.pathManager.getAmplifyDirPath();
       const tempDir = path.join(amplifyDir, envName, '.temp');

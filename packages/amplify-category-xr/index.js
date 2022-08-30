@@ -1,6 +1,8 @@
-const xrManager = require('./lib/xr-manager');
+/* eslint-disable */
 const inquirer = require('inquirer');
 const path = require('path');
+const { stateManager } = require('amplify-cli-core');
+const xrManager = require('./lib/xr-manager');
 
 const category = 'xr';
 const SUMERIAN_SERVICE_NAME = 'Sumerian';
@@ -13,7 +15,7 @@ function console(context) {
 async function initEnv(context) {
   const currentEnvInfo = context.amplify.getEnvInfo();
   const thisEnvName = currentEnvInfo.envName;
-  const allEnvs = context.amplify.getEnvDetails();
+  const allEnvs = stateManager.getTeamProviderInfo();
 
   // If the environment already has xr configured, exit
   if (allEnvs[thisEnvName].categories[XR_CATEGORY_NAME]) {

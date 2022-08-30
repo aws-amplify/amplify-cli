@@ -1,3 +1,4 @@
+/* eslint-disable */
 import * as path from 'path';
 import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { Context } from './context';
@@ -15,7 +16,6 @@ export class AmplifyToolkit {
   private _getCategoryPluginInfo: any;
   private _getAllCategoryPluginInfo: any;
   private _getFrontendPlugins: any;
-  private _getEnvDetails: any;
   private _getEnvInfo?: () => $TSAny;
   private _getProviderPlugins: any;
   private _getPluginInstance: any;
@@ -147,10 +147,6 @@ export class AmplifyToolkit {
     this._getProviderPlugins =
       this._getProviderPlugins || require(path.join(this._amplifyHelpersDirPath, 'get-provider-plugins')).getProviderPlugins;
     return this._getProviderPlugins;
-  }
-  get getEnvDetails(): any {
-    this._getEnvDetails = this._getEnvDetails || require(path.join(this._amplifyHelpersDirPath, 'get-env-details')).getEnvDetails;
-    return this._getEnvDetails;
   }
   get getEnvInfo(): () => $TSAny {
     this._getEnvInfo = this._getEnvInfo || require(path.join(this._amplifyHelpersDirPath, 'get-env-info')).getEnvInfo;

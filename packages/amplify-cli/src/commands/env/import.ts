@@ -1,104 +1,85 @@
 import {
-  $TSContext, JSONUtilities, stateManager, UnknownArgumentError, exitOnNextTick,
+  $TSContext, JSONUtilities, stateManager, UnknownArgumentError,
 } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
+import { getConfiguredAmplifyClient } from 'amplify-provider-awscloudformation/src/aws-utils/aws-amplify';
+import { findAppByBackendPredicate } from 'amplify-provider-awscloudformation/src/utils/amplify-client-lookups';
+
+const errorLink = 'See https://docs.amplify.aws/cli/teams/commands/#import-an-environment';
 
 /**
- * Entry point for import command
+ * Entry point for env import
  */
 export const run = async (context: $TSContext): Promise<void> => {
   const envName = context.parameters.options.name;
   if (!envName) {
-    const errMessage = 'You must pass in the name of the environment using the --name flag';
-    context.print.error(errMessage);
-    context.usageData.emitError(new UnknownArgumentError(errMessage));
-    exitOnNextTick(1);
+    throw new Error('The environment name must be specified in --name');
   }
+
+  if (!context.parameters.options.awsInfo) {
+    throw new Error(`AWS credential info must be specified in --awsInfo. ${errorLink}`);
+  }
+
+  let awsInfo: Record<string, unknown>;
+  try {
+    awsInfo = JSONUtilities.parse(context.parameters.options.awsInfo);
+  } catch (e) {
+    throw new UnknownArgumentError(`Could not parse --awsInfo argument. ${errorLink}`);
+  }
+
+  let appIdParam: string | undefined = context.parameters.options.appId;
+  if (appIdParam) {
+    addNewLocalAwsInfo(envName, awsInfo, appIdParam);
+    printer.success(`Successfully added environment from your project`);
+    return;
+  }
+
+  // if we get here, we need to resolve the appId from the old parameters.
+  // The only parameters we care about now are AmplifyAppId and if that`s not present, then StackName
 
   let config;
-
   try {
     config = JSONUtilities.parse(context.parameters.options.config);
-
-    const awsCF = config.awscloudformation;
-
-    if (
-      !(
-        // eslint-disable-next-line spellcheck/spell-checker
-        /* eslint-disable no-prototype-builtins */
-        config.hasOwnProperty('awscloudformation')
-        && awsCF.hasOwnProperty('Region')
-        && awsCF.Region
-        && awsCF.hasOwnProperty('DeploymentBucketName')
-        && awsCF.DeploymentBucketName
-        && awsCF.hasOwnProperty('UnauthRoleName')
-        && awsCF.UnauthRoleName
-        && awsCF.hasOwnProperty('StackName')
-        && awsCF.StackName
-        && awsCF.hasOwnProperty('StackId')
-        && awsCF.StackId
-        && awsCF.hasOwnProperty('AuthRoleName')
-        && awsCF.AuthRoleName
-        && awsCF.hasOwnProperty('UnauthRoleArn')
-        && awsCF.UnauthRoleArn
-        && awsCF.hasOwnProperty('AuthRoleArn')
-        && awsCF.AuthRoleArn
-      // eslint-disable-next-line spellcheck/spell-checker
-      /* eslint-enable no-prototype-builtins */
-      )
-    ) {
-      throw new Error('The provided config was invalid or incomplete');
-    }
   } catch (e) {
-    const errMessage = 'You must pass in the configs of the environment in an object format using the --config flag';
-    context.print.error(errMessage);
-    context.usageData.emitError(new UnknownArgumentError(errMessage));
-    exitOnNextTick(1);
+    throw new UnknownArgumentError(`Could not parse --config argument. ${errorLink}`);
   }
 
-  let awsInfo;
-
-  if (context.parameters.options.awsInfo) {
-    try {
-      awsInfo = JSONUtilities.parse(context.parameters.options.awsInfo);
-    } catch (e) {
-      const errMessage = 'You must pass in the AWS credential info in an object format for initializing your environment using the --awsInfo flag';
-      context.print.error(errMessage);
-      context.usageData.emitError(new UnknownArgumentError(errMessage));
-      exitOnNextTick(1);
-    }
+  appIdParam = config?.awscloudformation?.AmplifyAppId;
+  if (appIdParam) {
+    addNewLocalAwsInfo(envName, awsInfo, appIdParam);
+    printer.success(`Successfully added environment from your project`);
+    return;
   }
 
-  const allEnvs = context.amplify.getEnvDetails();
-
-  const addNewEnvConfig = (): void => {
-    allEnvs[envName] = config;
-    stateManager.setTeamProviderInfo(undefined, allEnvs);
-
-    const envAwsInfo = stateManager.getLocalAWSInfo(undefined, {
-      throwIfNotExist: false,
-      default: {},
-    });
-
-    envAwsInfo[envName] = awsInfo;
-
-    stateManager.setLocalAWSInfo(undefined, envAwsInfo);
-
-    context.print.success('Successfully added environment from your project');
-  };
-
-  // eslint-disable-next-line spellcheck/spell-checker
-  // eslint-disable-next-line no-prototype-builtins
-  if (allEnvs.hasOwnProperty(envName)) {
-    if (context.parameters.options.yes) {
-      addNewEnvConfig();
-    } else if (
-      await context.amplify.confirmPrompt(
-        'We found an environment with the same name. Do you want to overwrite the existing environment config?',
-      )
-    ) {
-      addNewEnvConfig();
-    }
-  } else {
-    addNewEnvConfig();
+  // if app id is not specified in the input, we try to figure it out based on StackName
+  // strategy:
+  // write the localAwsInfo without appId so that the credential loader will configure the client properly
+  // initialize an amplify client for the new imported environment
+  // use amplify-client-lookup.findAppByBackendPredicate to locate appId for given stack name
+  addNewLocalAwsInfo(envName, awsInfo);
+  const amplifyClient = await getConfiguredAmplifyClient(context);
+  if (!amplifyClient) {
+    throw new UnknownArgumentError(`Could not construct Amplify client from specified config. ${errorLink}`);
   }
+  const stackName = config?.awscloudformation?.StackName;
+  appIdParam = (await findAppByBackendPredicate(amplifyClient, backend => backend.stackName === stackName))?.appId;
+
+  if (appIdParam) {
+    addNewLocalAwsInfo(envName, awsInfo, appIdParam);
+    printer.success(`Successfully added environment from your project`);
+    return;
+  }
+
+  throw new UnknownArgumentError(`Could not determine Amplify App Id from the specified config. ${errorLink}`);
+};
+
+const addNewLocalAwsInfo = (envName: string, envAwsInfo: Record<string, unknown>, appId?: string): void => {
+  const localAwsInfo = stateManager.getLocalAWSInfo(undefined, {
+    throwIfNotExist: false,
+    default: {},
+  });
+
+  localAwsInfo[envName] = { ...(appId ? { appId } : undefined), ...envAwsInfo };
+
+  stateManager.setLocalAWSInfo(undefined, localAwsInfo);
 };

@@ -8,23 +8,23 @@ import { getFrontendPlugins } from './get-frontend-plugins';
 import { getPluginInstance } from './get-plugin-instance';
 import { getAmplifyAppId } from './get-amplify-appId';
 import { getAmplifyDirPath } from './path-manager';
+import { listLocalEnvNames } from '@aws-amplify/amplify-environment-parameters';
 
 export async function deleteProject(context) {
   const confirmation = await getConfirmation(context);
 
   if (confirmation.proceed) {
-    const allEnvs = context.amplify.getEnvDetails();
-    const envNames = Object.keys(allEnvs);
+    const allEnvNames = listLocalEnvNames();
 
     if (FeatureFlags.isInitialized()) {
-      await FeatureFlags.removeFeatureFlagConfiguration(true, envNames);
+      await FeatureFlags.removeFeatureFlagConfiguration(true, allEnvNames);
     }
 
     const spinner = ora('Deleting resources from the cloud. This will take a few minutes.');
 
     try {
       spinner.start();
-      await Promise.all(Object.keys(allEnvs).map(env => removeEnvFromCloud(context, env, confirmation.deleteS3)));
+      await Promise.all(allEnvNames.map(env => removeEnvFromCloud(context, env, confirmation.deleteS3)));
       const appId = getAmplifyAppId();
       if (confirmation.deleteAmplifyApp && appId) {
         const awsCloudPlugin = getPluginInstance(context, 'awscloudformation');

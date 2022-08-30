@@ -1,17 +1,16 @@
-export function printEnvInfo(context: any, env: string, allEnvs: object[]) {
-  context.print.info('--------------');
-  Object.keys(allEnvs[env])
-    .filter(provider => provider !== 'nonCFNdata')
-    .filter(provider => provider !== 'categories')
-    .forEach(provider => {
-      context.print.info(`Provider: ${provider}`);
+import { IEnvironmentMetadata } from '@aws-amplify/amplify-environment-parameters';
+import { printer } from 'amplify-prompts';
 
-      Object.keys(allEnvs[env][provider]).forEach(providerAttr => {
-        context.print.info(`${providerAttr}: ${allEnvs[env][provider][providerAttr]}`);
-      });
-
-      context.print.info('--------------');
-      context.print.info('');
-    });
-  context.print.info('');
-}
+/**
+ * Print out the given environment metadata
+ */
+export const printEnvInfo = (envMeta: IEnvironmentMetadata): void => {
+  printer.info('--------------');
+  Object.entries(envMeta).forEach(([key, value]) => {
+    if (typeof value === 'string') {
+      printer.info(`${key}: ${value}`);
+    }
+  });
+  printer.info('--------------');
+  printer.blankLine();
+};

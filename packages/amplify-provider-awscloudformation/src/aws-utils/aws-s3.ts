@@ -90,7 +90,7 @@ export class S3 {
     // eslint-disable-next-line no-prototype-builtins
     if (!s3Params.hasOwnProperty('Bucket')) {
       if (!envName) envName = this.context.amplify.getEnvInfo().envName;
-      const projectBucket = getEnvMeta().DeploymentBucketName;
+      const projectBucket = getEnvMeta(envName).DeploymentBucketName;
       s3Params.Bucket = projectBucket;
     }
     return s3Params;

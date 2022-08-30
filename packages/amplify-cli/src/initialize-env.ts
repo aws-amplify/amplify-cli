@@ -4,7 +4,9 @@ import {
   stateManager, $TSAny, $TSMeta, $TSContext,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-import { ensureEnvParamManager, IEnvironmentParameterManager, getEnvMeta } from '@aws-amplify/amplify-environment-parameters';
+import {
+  ensureEnvParamManager, IEnvironmentParameterManager, getEnvMeta, ensureEnvMeta,
+} from '@aws-amplify/amplify-environment-parameters';
 import { initEnv as providerInitEnv, pushResources } from 'amplify-provider-awscloudformation';
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';
 import { ManuallyTimedCodePath } from './domain/amplify-usageData/IUsageData';
@@ -24,17 +26,13 @@ export const initializeEnv = async (
   try {
     const { projectPath } = context.exeInfo.localEnvInfo;
 
-    const amplifyMeta: $TSMeta = { providers: {} };
-    const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
-
-    amplifyMeta.providers.awscloudformation = teamProviderInfo?.[currentEnv]?.awscloudformation;
-
     const envParamManager = (await ensureEnvParamManager(currentEnv)).instance;
 
+    const categoryMeta = {};
     if (!context.exeInfo.restoreBackend) {
-      mergeBackendConfigIntoAmplifyMeta(projectPath, amplifyMeta);
-      mergeCategoryEnvParamsIntoAmplifyMeta(envParamManager, amplifyMeta, 'hosting', 'ElasticContainer');
-      stateManager.setMeta(projectPath, amplifyMeta);
+      mergeBackendConfigIntoAmplifyMeta(projectPath, categoryMeta);
+      mergeCategoryEnvParamsIntoAmplifyMeta(envParamManager, categoryMeta, 'hosting', 'ElasticContainer');
+      stateManager.setMeta(projectPath, categoryMeta);
     }
 
     const categoryInitializationTasks: (() => Promise<$TSAny>)[] = [];

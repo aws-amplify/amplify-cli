@@ -160,8 +160,6 @@ export const generateAmplifyMetaFile = async (context: $TSContext): Promise<void
 const generateNonRuntimeFiles = (context: $TSContext): void => {
   generateProjectConfigFile(context);
   generateBackendConfigFile(context);
-  // TODO this shouldn't be needed anymore as long as context.exeInfo.teamProviderInfo only contains cfn metadata at this point
-  // generateTeamProviderInfoFile(context);
   generateGitIgnoreFile(context);
   generateReadMeFile(context);
   generateHooksSampleDirectory(context);
@@ -175,25 +173,6 @@ const generateProjectConfigFile = (context: $TSContext): void => {
     stateManager.setProjectConfig(projectPath, context.exeInfo.projectConfig);
   }
 };
-
-// const generateTeamProviderInfoFile = (context: $TSContext): void => {
-//   const { projectPath } = context.exeInfo.localEnvInfo;
-
-//   let teamProviderInfo = {};
-
-//   if (stateManager.teamProviderInfoExists(projectPath)) {
-//     teamProviderInfo = stateManager.getTeamProviderInfo(projectPath, {
-//       throwIfNotExist: false,
-//       default: {},
-//     });
-
-//     _.merge(teamProviderInfo, context.exeInfo.teamProviderInfo);
-//   } else {
-//     ({ teamProviderInfo } = context.exeInfo);
-//   }
-
-//   stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
-// };
 
 const generateBackendConfigFile = (context: $TSContext): void => {
   if (context.exeInfo.isNewProject) {

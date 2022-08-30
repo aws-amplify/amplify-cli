@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { ResourceParameterManager } from './resource-parameter-manager';
 
 const envParamManagerMap: Record<string, EnvironmentParameterManager> = {};
+const registerForDeletion: string[] = [];
 
 /**
  * Returns singleton instance of param manager for the given environment, or initializes one if it doesn't exist
@@ -10,11 +11,15 @@ const envParamManagerMap: Record<string, EnvironmentParameterManager> = {};
 export const ensureEnvParamManager = async (
   envName: string = stateManager.getLocalEnvInfo().envName,
 ): Promise<{instance: EnvironmentParameterManager}> => {
+  if (registerForDeletion.includes(envName)) {
+    throw new Error(`An environment named ${envName} is already pending deletion`);
+  }
   if (!envParamManagerMap[envName]) {
     const envManager = new EnvironmentParameterManager(envName);
     await envManager.init();
     envParamManagerMap[envName] = envManager;
   }
+  // TODO register save listener here for all envs rather than per environment
   return {
     instance: envParamManagerMap[envName],
   };
@@ -29,6 +34,18 @@ export const getEnvParamManager = (envName: string = stateManager.getLocalEnvInf
     return envParamManagerMap[envName];
   }
   throw new Error(`EnvironmentParameterManager for ${envName} environment is not initialized. Use initEnvParamManager first to initialize it`);
+};
+
+/**
+ * Removes an environment from the parameter manager
+ */
+export const deleteEnvParamManager = (envName: string): void => {
+  if (!envParamManagerMap[envName]) {
+    return;
+  }
+  envParamManagerMap[envName].removeSaveListener();
+  registerForDeletion.push(envName);
+  delete envParamManagerMap[envName];
 };
 
 /**
@@ -50,7 +67,11 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
       });
     });
 
-    process.on('exit', () => this.save());
+    process.on('exit', this.save);
+  }
+
+  removeSaveListener(): void {
+    process.removeListener('exit', this.save);
   }
 
   removeResourceParamManager(category: string, resource: string): void {
@@ -72,12 +93,12 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     return !!this.resourceParamManagers[getResourceKey(category, resource)];
   }
 
-  save(): void {
+  private save = (): void => {
     if (!pathManager.findProjectRoot()) {
       // assume that the project is deleted if we cannot find a project root
       return;
     }
-    const tpiContent = stateManager.getTeamProviderInfo();
+    const tpiContent = stateManager.getTeamProviderInfo(undefined, { throwIfNotExist: false, default: {} });
     const categoriesContent = this.serializeTPICategories();
     if (Object.keys(categoriesContent).length === 0) {
       delete tpiContent[this.envName].categories;
@@ -111,5 +132,6 @@ export type IEnvironmentParameterManager = {
   removeResourceParamManager: (category: string, resource: string) => void;
   hasResourceParamManager: (category: string, resource: string) => boolean;
   getResourceParamManager: (category: string, resource: string) => ResourceParameterManager;
-  save: () => void;
+  removeSaveListener: () => void;
+  // save: () => void;
 }

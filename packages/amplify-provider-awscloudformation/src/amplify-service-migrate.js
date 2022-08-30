@@ -7,6 +7,7 @@ const { storeCurrentCloudBackend } = require('./push-resources');
 const constants = require('./constants');
 const { fileLogger } = require('./utils/aws-logger');
 const { stateManager } = require('amplify-cli-core');
+const { ensureEnvMeta } = require('@aws-amplify/amplify-environment-parameters');
 const logger = fileLogger('amplify-service-migrate');
 
 async function run(context) {
@@ -34,9 +35,9 @@ async function run(context) {
   const { amplifyMeta, localEnvInfo } = projectDetails;
   const { envName } = localEnvInfo;
 
-  const teamProviderInfo = stateManager.getTeamProviderInfo();
+  const envMeta = await ensureEnvMeta(context, envName);
 
-  if (teamProviderInfo[envName][constants.ProviderName][constants.AmplifyAppIdLabel]) {
+  if (envMeta.AmplifyAppId) {
     // Migration is not needed if appId is already present in the team provider info
     // This is needed to prevent an Amplify Console build error.
     return;
@@ -135,22 +136,8 @@ async function run(context) {
       }
     }
 
-    // Add the appId to the meta data and team provider info and write the files
-    teamProviderInfo[envName][constants.ProviderName][constants.AmplifyAppIdLabel] = amplifyAppId;
-    amplifyMeta.providers[constants.ProviderName][constants.AmplifyAppIdLabel] = amplifyAppId;
-
-    const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
-    let jsonString = JSON.stringify(amplifyMeta, null, 4);
-    fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
-
-    currentAmplifyMeta.providers[constants.ProviderName][constants.AmplifyAppIdLabel] = amplifyAppId;
-    jsonString = JSON.stringify(currentAmplifyMeta, null, 4);
-    fs.writeFileSync(currentAmplifyMetaFilePath, jsonString, 'utf8');
-
-    const teamProviderInfoFilePath = context.amplify.pathManager.getProviderInfoFilePath();
-    jsonString = JSON.stringify(teamProviderInfo, null, 4);
-    fs.writeFileSync(teamProviderInfoFilePath, jsonString, 'utf8');
-
+    // Add the appId to the env meta
+    envMeta.AmplifyAppId = amplifyAppId;
     await storeCurrentCloudBackend(context);
   }
 }

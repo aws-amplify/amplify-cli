@@ -19,6 +19,7 @@ const { pagedAWSCall } = require('./paged-call');
 const { initializeProgressBars } = require('./aws-cfn-progress-formatter');
 
 const { printer } = require('amplify-prompts');
+const { ensureEnvMeta, getEnvMeta } = require('@aws-amplify/amplify-environment-parameters');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
 const CFN_POLL_TIME = 5 * 1000; // 5 secs wait to check if  new stacks are created by root stack
@@ -547,10 +548,8 @@ class CloudFormation {
     return this.cfn.listStackResources({ StackName: stackId }).promise();
   }
 
-  deleteResourceStack(envName) {
-    const teamProviderInfo = stateManager.getTeamProviderInfo();
-    const providerInfo = teamProviderInfo?.[envName]?.[providerName];
-    const stackName = providerInfo?.StackName;
+  async deleteResourceStack(envName) {
+    const stackName = getEnvMeta(envName).StackName
     if (!stackName) {
       throw new Error('Stack not defined for the environment.');
     }

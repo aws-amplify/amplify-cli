@@ -1,42 +1,32 @@
-import chalk from 'chalk';
-import { JSONUtilities } from 'amplify-cli-core';
+import { $TSContext } from 'amplify-cli-core';
+import { ensureEnvMeta, listLocalEnvNames } from '@aws-amplify/amplify-environment-parameters';
+import { formatter, printer } from 'amplify-prompts';
 import { printEnvInfo } from '../helpers/envUtils';
 
-export const run = async context => {
-  const { envName } = context.amplify.getEnvInfo();
+/**
+ * Prints env info
+ */
+export const run = async (context: $TSContext): Promise<void> => {
+  const { envName: currentEnvName } = context.amplify.getEnvInfo();
+
+  const allEnvNames = listLocalEnvNames();
 
   if (context.parameters.options.details) {
-    const allEnvs = context.amplify.getEnvDetails();
-    if (context.parameters.options.json) {
-      context.print.fancy(JSONUtilities.stringify(allEnvs));
-      return;
-    }
-    Object.keys(allEnvs).forEach(env => {
-      context.print.info('');
-      if (envName === env) {
-        context.print.info(chalk.red(`*${env}*`));
-      } else {
-        context.print.info(chalk.yellow(env));
-      }
-      printEnvInfo(context, env, allEnvs);
-    });
+    printDetailedEnvList(context, allEnvNames, currentEnvName);
   } else {
-    const allEnvs = context.amplify.getAllEnvs();
-    if (context.parameters.options.json) {
-      context.print.fancy(JSONUtilities.stringify({ envs: allEnvs }));
-      return;
-    }
-    const { table } = context.print;
-    const tableOptions = [['Environments']];
-    for (let i = 0; i < allEnvs.length; i += 1) {
-      if (allEnvs[i] === envName) {
-        tableOptions.push([`*${allEnvs[i]}`]);
-      } else {
-        tableOptions.push([allEnvs[i]]);
-      }
-    }
-    context.print.info('');
-    table(tableOptions, { format: 'markdown' });
-    context.print.info('');
+    printShortEnvList(allEnvNames, currentEnvName);
   }
+};
+
+const printDetailedEnvList = async (context: $TSContext, envList: string[], currentEnv: string): Promise<void> => {
+  printer.info('Environments:');
+  for (const envName of envList) {
+    printer.info(envName === currentEnv ? `*${envName}*` : envName);
+    printEnvInfo(await ensureEnvMeta(context, envName));
+  }
+};
+
+const printShortEnvList = (allEnvNames: string[], currentEnv: string): void => {
+  printer.info('Environments:');
+  formatter.list(allEnvNames.map(envName => (envName === currentEnv ? `*${envName}*` : envName)));
 };

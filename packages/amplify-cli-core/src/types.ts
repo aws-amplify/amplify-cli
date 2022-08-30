@@ -275,7 +275,6 @@ export type $TSCopyJob = $TSAny;
   getCategoryPluginInfo: (context: $TSContext, category?: string, service?: string) => $TSAny;
   getAllCategoryPluginInfo: (context: $TSContext) => $TSAny;
   getFrontendPlugins: (context: $TSContext) => $TSAny;
-  getEnvDetails: () => $TSAny;
   getEnvInfo: () => $TSAny;
   getProviderPlugins: (context: $TSContext) => Record<string, string>;
   getPluginInstance: (context: $TSContext, pluginName: string) => $TSAny;

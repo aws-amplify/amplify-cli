@@ -90,7 +90,7 @@ const ensureEnvMetaInternal = async (
   });
 
   // load appId from local-env-info
-  const appId = stateManager.getLocalAWSInfo()?.[envName]?.amplifyAppId;
+  const appId = stateManager.getLocalAWSInfo()?.[envName]?.appId;
   if (!appId) {
     throw new Error(`Could not find Amplify App ID for environment ${envName} in 'local-aws-info.json'. Make sure the environment has been pulled.`);
   }
@@ -105,7 +105,7 @@ const ensureEnvMetaInternal = async (
   if (!response.AmplifyMetaConfig) {
     throw new Error(`AmplifyBackend.getBackend did not return AmplifyMetaConfig for environment ${envName}`);
   }
-  envMetaManagerMap[envName] = new EnvironmentMetadata(JSON.parse(response.AmplifyMetaConfig)?.providers?.awscloudformation);
+  envMetaManagerMap[envName] = new EnvironmentMetadata(JSON.parse(response.AmplifyMetaConfig)?.providers?.awscloudformation, true);
   return envMetaManagerMap[envName];
 };
 
@@ -118,7 +118,7 @@ class EnvironmentMetadata implements IEnvironmentMetadata {
   readonly DeploymentBucketName: string;
   readonly StackName: string;
   readonly StackId: string;
-  readonly AmplifyAppId: string;
+  private _AmplifyAppId: string;
   private _PermissionsBoundaryPolicyArn: string | undefined;
   private _dirty = false;
 
@@ -168,7 +168,7 @@ class EnvironmentMetadata implements IEnvironmentMetadata {
     this.DeploymentBucketName = validatedAmplifyMeta.DeploymentBucketName;
     this.StackId = validatedAmplifyMeta.StackId;
     this.StackName = validatedAmplifyMeta.StackName;
-    this.AmplifyAppId = validatedAmplifyMeta.AmplifyAppId;
+    this._AmplifyAppId = validatedAmplifyMeta.AmplifyAppId;
     this._PermissionsBoundaryPolicyArn = validatedAmplifyMeta.PermissionsBoundaryPolicyArn;
     this._dirty = isDirty;
   }
@@ -179,6 +179,15 @@ class EnvironmentMetadata implements IEnvironmentMetadata {
 
   set PermissionsBoundaryPolicyArn(value: string | undefined) {
     this._PermissionsBoundaryPolicyArn = value;
+    this._dirty = true;
+  }
+
+  get AmplifyAppId(): string {
+    return this._AmplifyAppId;
+  }
+
+  set AmplifyAppId(value: string) {
+    this._AmplifyAppId = value;
     this._dirty = true;
   }
 
@@ -202,7 +211,7 @@ class EnvironmentMetadata implements IEnvironmentMetadata {
       DeploymentBucketName: this.DeploymentBucketName,
       StackName: this.StackName,
       StackId: this.StackId,
-      AmplifyAppId: this.AmplifyAppId,
+      AmplifyAppId: this._AmplifyAppId,
     } as Record<string, string>;
     if (this._PermissionsBoundaryPolicyArn) {
       obj.PermissionsBoundaryPolicyArn = this._PermissionsBoundaryPolicyArn;
@@ -223,7 +232,7 @@ export type IEnvironmentMetadata = {
   readonly DeploymentBucketName: string,
   readonly StackName: string,
   readonly StackId: string,
-  readonly AmplifyAppId: string,
+  AmplifyAppId: string,
   PermissionsBoundaryPolicyArn: string | undefined,
   save: () => void
 }

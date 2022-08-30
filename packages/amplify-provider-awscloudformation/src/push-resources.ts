@@ -54,7 +54,7 @@ import { GraphQLResourceManager } from './graphql-resource-manager';
 import { loadResourceParameters } from './resourceParams';
 import { uploadAuthTriggerFiles } from './upload-auth-trigger-files';
 import archiver from './utils/archiver';
-import amplifyServiceManager from './amplify-service-manager';
+import * as amplifyServiceManager from './amplify-service-manager';
 import {
   DeploymentManager, DeploymentStep, DeploymentOp, DeploymentStateManager, runIterativeRollback,
 } from './iterative-deployment';
