@@ -40,6 +40,7 @@ import {
 import ora from 'ora';
 import { Fn } from 'cloudform-types';
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
+import { printer } from 'amplify-prompts';
 import { S3 } from './aws-utils/aws-s3';
 import Cloudformation from './aws-utils/aws-cfn';
 import { formUserAgentParam } from './aws-utils/user-agent';
@@ -89,11 +90,11 @@ const parametersJson = 'parameters.json';
 export const defaultRootStackFileName = 'rootStackTemplate.json';
 export const rootStackFileName = 'root-cloudformation-stack.json';
 
-const deploymentInProgressErrorMessage = (context: $TSContext) => {
-  context.print.error('A deployment is in progress.');
-  context.print.error('If the prior rollback was aborted, run:');
-  context.print.error('"amplify push --iterative-rollback" to rollback the prior deployment');
-  context.print.error('"amplify push --force" to re-deploy');
+const deploymentInProgressErrorMessage = () => {
+  printer.error('A deployment is in progress.');
+  printer.error('If the prior rollback was aborted, run:');
+  printer.error('"amplify push --iterative-rollback" to rollback the prior deployment');
+  printer.error('"amplify push --force" to re-deploy');
 };
 
 /**
@@ -155,11 +156,13 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
         } = await context.amplify.invokePluginMethod(context, 'api', undefined, 'generateContainersArtifacts', [context, resource]);
         await context.amplify.updateamplifyMetaAfterResourceUpdate('api', resource.resourceName, 'exposedContainer', exposedContainer);
 
-        context.print.info(`\nIn a few moments, you can check image build status for ${resource.resourceName} at the following URL:`);
+        printer.blankLine();
+        printer.info(`In a few moments, you can check image build status for ${resource.resourceName} at the following URL:`);
 
-        context.print.info(`${consoleUrl}\n`);
+        printer.info(`${consoleUrl}`);
+        printer.blankLine();
 
-        context.print.info(
+        printer.info(
           'It may take a few moments for this to appear. If you have trouble with first time deployments, please try refreshing this page after a few moments and watch the CodeBuild Details for debugging information.',
         );
 
@@ -183,7 +186,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
      */
     await ApiCategoryFacade.transformGraphQLSchema(context, {
       handleMigration: opts => updateStackForAPIMigration(context, 'api', undefined, opts),
-      minify: options.minify,
+      minify: options.minify || context.input.options?.minify,
       promptApiKeyCreation: true,
     });
 
@@ -196,7 +199,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     // If there is a deployment already in progress we have to fail the push operation as another
     // push in between could lead non-recoverable stacks and files.
     if (deploymentStateManager.isDeploymentInProgress()) {
-      deploymentInProgressErrorMessage(context);
+      deploymentInProgressErrorMessage();
       return;
     }
 
@@ -240,7 +243,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
           // If start cannot update because a deployment has started between the start of this method and this point
           // we have to return before uploading any artifacts that could fail the other deployment.
           if (!(await deploymentStateManager.startDeployment(deploymentStepStates))) {
-            deploymentInProgressErrorMessage(context);
+            deploymentInProgressErrorMessage();
             return;
           }
         }
@@ -306,7 +309,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
           try {
             fs.removeSync(stateFolder.local);
           } catch (err) {
-            context.print.error(`Could not delete state directory locally: ${err}`);
+            printer.error(`Could not delete state directory locally: ${err}`);
           }
         }
         const s3 = await S3.getInstance(context);
@@ -653,8 +656,8 @@ const prepareResource = async (context: $TSContext, resource: $TSAny) => {
     const errorMessage = cfnFiles.length > 1
       ? 'Only one CloudFormation template is allowed in the resource directory'
       : 'CloudFormation template is missing in the resource directory';
-    context.print.error(errorMessage);
-    context.print.error(resourceDir);
+    printer.error(errorMessage);
+    printer.error(resourceDir);
 
     throw new Error(errorMessage);
   }
@@ -1285,7 +1288,7 @@ export const generateAndUploadRootStack = async (context: $TSContext, destinatio
   // upload the nested stack
   const s3Client = await S3.getInstance(context);
   const s3Params = {
-    Body: Buffer.from(JSONUtilities.stringify(nestedStack)),
+    Body: Buffer.from(JSONUtilities.stringify(nestedStack, { minify: context.input.options?.minify })),
     Key: destinationS3Key,
   };
 
