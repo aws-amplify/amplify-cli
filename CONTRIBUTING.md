@@ -39,6 +39,8 @@ This section should get you running with **Amplify CLI** and get you familiar wi
 
    > Ensure that [Yarn global bin](https://classic.yarnpkg.com/en/docs/cli/global) is added to your PATH. For example, add `export PATH="$(yarn global bin):$PATH"` to your shell profile file on Linux or macOS.
 
+1. Ensure you have [Java](https://adoptopenjdk.net/) installed and `java` command is available in your system. This is required for DynamoDB emulator.
+
 1. Start by [forking](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the _dev_ branch of [amplify-cli](https://github.com/aws-amplify/amplify-cli). Then clone it to your machine to work with it locally using one of the following methods:
 
    ```sh
