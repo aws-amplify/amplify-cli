@@ -1,5 +1,5 @@
 import {
-  stateManager, pathManager, NotInitializedError, spinner, DiagnoseReportUploadError,
+  stateManager, pathManager, spinner, DiagnoseReportUploadError, ProjectNotInitializedError,
 } from 'amplify-cli-core';
 import archiver from 'archiver';
 import * as fs from 'fs-extra';
@@ -124,7 +124,7 @@ const zipSend = async (context: Context, skipPrompts: boolean, error: Error | un
 const createZip = async (context: Context, error: Error | undefined): Promise<string> => {
   const rootPath = pathManager.findProjectRoot();
   if (!rootPath) {
-    throw new NotInitializedError();
+    throw new ProjectNotInitializedError();
   }
   const backend = stateManager.getBackendConfig(rootPath);
   const resources: { category: string; resourceName: string; service: string }[] = [];

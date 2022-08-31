@@ -1,118 +1,192 @@
-import * as path from 'path';
+import { $TSAny, ProjectNotInitializedError } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import { homedir } from 'os';
+import * as path from 'path';
 import { amplifyCLIConstants } from './constants';
-import { NotInitializedError } from 'amplify-cli-core';
 
 /* Helpers */
 
-function projectPathValidate(projectPath) {
-  let isGood = false;
+const projectPathValidate = (projectPath): boolean => {
   if (fs.existsSync(projectPath)) {
     const amplifyDirPath = getAmplifyDirPath(projectPath);
     const infoSubDirPath = getDotConfigDirPath(projectPath);
 
-    isGood = fs.existsSync(amplifyDirPath) && fs.existsSync(infoSubDirPath);
+    return fs.existsSync(amplifyDirPath) && fs.existsSync(infoSubDirPath);
   }
-  return isGood;
-}
 
-export function searchProjectRootPath() {
-  let result;
+  return false;
+};
+
+/**
+ * Get the project root directory path
+ */
+export const searchProjectRootPath = (): $TSAny => {
   let currentPath = process.cwd();
 
   do {
     if (projectPathValidate(currentPath)) {
-      result = currentPath;
-      break;
-    } else {
-      const parentPath = path.dirname(currentPath);
-      if (currentPath === parentPath) {
-        break;
-      } else {
-        currentPath = parentPath;
-      }
+      return currentPath;
     }
+
+    const parentPath = path.dirname(currentPath);
+    if (currentPath === parentPath) {
+      return currentPath;
+    }
+
+    currentPath = parentPath;
+
     /* eslint-disable */
   } while (true); /* eslint-enable */
+};
 
-  return result;
-}
+/**
+ * Get the amplify home dot config directory path
+ */
+export const getHomeDotAmplifyDirPath = (): string => path.join(homedir(), amplifyCLIConstants.DotAmplifyDirName);
 
-export function getHomeDotAmplifyDirPath() {
-  return path.join(homedir(), amplifyCLIConstants.DotAmplifyDirName);
-}
-
-// ///////////////////level 0
-export function getAmplifyDirPath(projectPath?) {
+/**
+ * returns the project amplify directory path
+ */
+export const getAmplifyDirPath = (projectPath?: string): string => {
   if (!projectPath) {
+    // eslint-disable-next-line no-param-reassign
     projectPath = searchProjectRootPath();
   }
   if (projectPath) {
     return path.normalize(path.join(projectPath, amplifyCLIConstants.AmplifyCLIDirName));
   }
-  throw new NotInitializedError();
-}
 
-// ///////////////////level 1
-export function getDotConfigDirPath(projectPath?) {
-  return path.normalize(path.join(getAmplifyDirPath(projectPath), amplifyCLIConstants.DotConfigamplifyCLISubDirName));
-}
+  throw new ProjectNotInitializedError();
+};
 
-export function getBackendDirPath(projectPath?) {
-  return path.normalize(path.join(getAmplifyDirPath(projectPath), amplifyCLIConstants.BackendamplifyCLISubDirName));
-}
+/**
+ * returns the project amplify config sub directory path
+ */
+export const getDotConfigDirPath = (projectPath?: string): string => path.normalize(
+  path.join(
+    getAmplifyDirPath(projectPath),
+    amplifyCLIConstants.DotConfigAmplifyCLISubDirName,
+  ),
+);
 
-export function getCurrentCloudBackendDirPath(projectPath?) {
-  return path.normalize(path.join(getAmplifyDirPath(projectPath), amplifyCLIConstants.CurrentCloudBackendamplifyCLISubDirName));
-}
+/**
+ * returns the project backend directory path
+ */
+export const getBackendDirPath = (projectPath?: string): string => path.normalize(
+  path.join(
+    getAmplifyDirPath(projectPath),
+    amplifyCLIConstants.BackendAmplifyCLISubDirName,
+  ),
+);
 
-export function getAmplifyRcFilePath(projectPath?) {
+/**
+ * returns the project current cloud backend directory path
+ */
+export const getCurrentCloudBackendDirPath = (projectPath?: string): string => path.normalize(
+  path.join(
+    getAmplifyDirPath(projectPath),
+    amplifyCLIConstants.CurrentCloudBackendAmplifyCLISubDirName,
+  ),
+);
+
+// eslint-disable-next-line spellcheck/spell-checker
+/**
+ * returns the project .amplifyrc file path
+ */
+export const getAmplifyRcFilePath = (projectPath?: string) : string => {
   if (!projectPath) {
+    // eslint-disable-next-line no-param-reassign
     projectPath = searchProjectRootPath();
   }
   if (projectPath) {
+    // eslint-disable-next-line spellcheck/spell-checker
     return path.normalize(path.join(projectPath, '.amplifyrc'));
   }
-  throw new NotInitializedError();
-}
 
-export function getGitIgnoreFilePath(projectPath?) {
+  throw new ProjectNotInitializedError();
+};
+
+/**
+ * returns the project .gitignore file path
+ */
+export const getGitIgnoreFilePath = (projectPath?: string): string => {
   if (!projectPath) {
+    // eslint-disable-next-line no-param-reassign
     projectPath = searchProjectRootPath();
   }
   if (projectPath) {
     return path.normalize(path.join(projectPath, '.gitignore'));
   }
-  throw new NotInitializedError();
-}
 
-// ///////////////////level 2
+  throw new ProjectNotInitializedError();
+};
 
-export function getProjectConfigFilePath(projectPath?) {
-  return path.normalize(path.join(getDotConfigDirPath(projectPath), amplifyCLIConstants.ProjectConfigFileName));
-}
+/**
+ * returns the project project-config.json file path
+ */
+export const getProjectConfigFilePath = (projectPath?: string): string => path.normalize(
+  path.join(
+    getDotConfigDirPath(projectPath),
+    amplifyCLIConstants.ProjectConfigFileName,
+  ),
+);
 
-export function getLocalEnvFilePath(projectPath?) {
-  return path.normalize(path.join(getDotConfigDirPath(projectPath), amplifyCLIConstants.LocalEnvFileName));
-}
+/**
+ * returns the project local-env-info.json file path
+ */
+export const getLocalEnvFilePath = (projectPath?: string): string => path.normalize(
+  path.join(
+    getDotConfigDirPath(projectPath),
+    amplifyCLIConstants.LocalEnvFileName,
+  ),
+);
 
-export function getProviderInfoFilePath(projectPath?) {
-  return path.normalize(path.join(getAmplifyDirPath(projectPath), amplifyCLIConstants.ProviderInfoFileName));
-}
+/**
+ * returns the project team-provider-info.json file path
+ */
+export const getProviderInfoFilePath = (projectPath?: string): string => path.normalize(
+  path.join(
+    getAmplifyDirPath(projectPath),
+    amplifyCLIConstants.ProviderInfoFileName,
+  ),
+);
 
-export function getBackendConfigFilePath(projectPath?) {
-  return path.normalize(path.join(getBackendDirPath(projectPath), amplifyCLIConstants.BackendConfigFileName));
-}
+/**
+ * returns the project backend-config.json file path
+ */
+export const getBackendConfigFilePath = (projectPath?: string): string => path.normalize(
+  path.join(
+    getBackendDirPath(projectPath),
+    amplifyCLIConstants.BackendConfigFileName,
+  ),
+);
 
-export function getCurrentBackendConfigFilePath(projectPath?) {
-  return path.normalize(path.join(getCurrentCloudBackendDirPath(projectPath), amplifyCLIConstants.BackendConfigFileName));
-}
+/**
+ * returns the project current backend amplify config sub directory path
+ */
+export const getCurrentBackendConfigFilePath = (projectPath?: string): string => path.normalize(
+  path.join(
+    getCurrentCloudBackendDirPath(projectPath),
+    amplifyCLIConstants.BackendConfigFileName,
+  ),
+);
 
-export function getAmplifyMetaFilePath(projectPath?) {
-  return path.normalize(path.join(getBackendDirPath(projectPath), amplifyCLIConstants.amplifyMetaFileName));
-}
+/**
+ * returns the project amplify meta file path
+ */
+export const getAmplifyMetaFilePath = (projectPath?: string): string => path.normalize(
+  path.join(
+    getBackendDirPath(projectPath),
+    amplifyCLIConstants.amplifyMetaFileName,
+  ),
+);
 
-export function getCurrentAmplifyMetaFilePath(projectPath?) {
-  return path.normalize(path.join(getCurrentCloudBackendDirPath(projectPath), amplifyCLIConstants.amplifyMetaFileName));
-}
+/**
+ * returns the project current backend amplify meta file path
+ */
+export const getCurrentAmplifyMetaFilePath = (projectPath?: string): string => path.normalize(
+  path.join(
+    getCurrentCloudBackendDirPath(projectPath),
+    amplifyCLIConstants.amplifyMetaFileName,
+  ),
+);

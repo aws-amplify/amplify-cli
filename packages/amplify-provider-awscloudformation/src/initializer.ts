@@ -1,29 +1,36 @@
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable import/no-cycle */
+/* eslint-disable func-style */
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
-  $TSContext, $TSObject, JSONUtilities, PathConstants, pathManager, stateManager, Tag, Template,
+  $TSContext, $TSObject, AmplifyError, AMPLIFY_SUPPORT_DOCS, JSONUtilities, PathConstants, pathManager, stateManager, Tag, Template,
 } from 'amplify-cli-core';
 import { AmplifySpinner, printer } from 'amplify-prompts';
-import * as fs from 'fs-extra';
-import glob from 'glob';
 import _ from 'lodash';
-import moment from 'moment';
-import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import * as vm from 'vm2';
-import { S3 } from './aws-utils/aws-s3';
-import { getAwsConfig, init, onInitSuccessful as configManagerInitSuccessful } from './configuration-manager';
-import { transformRootStack } from './override-manager';
-import { rootStackFileName } from './push-resources';
+
+import fs from 'fs-extra';
+import glob from 'glob';
+import moment from 'moment';
+import path from 'path';
+import sequential from 'promise-sequential';
 import { getDefaultTemplateDescription } from './template-description-utils';
+import { rootStackFileName } from './push-resources';
+import { transformRootStack } from './override-manager';
+import amplifyServiceManager from './amplify-service-manager';
+import * as amplifyServiceMigrate from './amplify-service-migrate';
+import Cloudformation from './aws-utils/aws-cfn';
+import { S3 } from './aws-utils/aws-s3';
+import * as configurationManager from './configuration-manager';
+import constants from './constants';
+import { configurePermissionsBoundaryForInit } from './permissions-boundary/permissions-boundary';
+import { prePushCfnTemplateModifier } from './pre-push-cfn-processor/pre-push-cfn-modifier';
+import archiver from './utils/archiver';
 import { fileLogger } from './utils/aws-logger';
 
-const sequential = require('promise-sequential');
-const archiver = require('./utils/archiver');
-const Cloudformation = require('./aws-utils/aws-cfn');
-const constants = require('./constants');
-const amplifyServiceManager = require('./amplify-service-manager');
-const amplifyServiceMigrate = require('./amplify-service-migrate');
-const { prePushCfnTemplateModifier } = require('./pre-push-cfn-processor/pre-push-cfn-modifier');
-const { configurePermissionsBoundaryForInit } = require('./permissions-boundary/permissions-boundary');
+const logger = fileLogger('attach-backend');
 
 type ParamType = {
   StackName: string,
@@ -33,13 +40,11 @@ type ParamType = {
   Tags: Tag[],
 };
 
-const logger = fileLogger('attach-backend');
-
 /**
- * entry point for initializer
+ * initializer entry point
  */
-export const run = async (context: $TSContext): Promise<$TSContext> => {
-  await init(context);
+export const run = async (context: $TSContext): Promise<void> => {
+  await configurationManager.init(context);
   if (!context.exeInfo || context.exeInfo.isNewEnv) {
     context.exeInfo = context.exeInfo || {};
     const { projectName } = context.exeInfo.projectConfig;
@@ -134,11 +139,15 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
 
     processStackCreationData(context, amplifyAppId, stackDescriptionData);
     cloneCLIJSONForNewEnvironment(context);
+<<<<<<< HEAD
 
     return context;
   }
 
   if (
+=======
+  } else if (
+>>>>>>> b0b06c68a (fix: refactor push flow to use amplify error handling framework)
     // This part of the code is invoked by the `amplify init --appId xxx` command
     // on projects that are already fully setup by `amplify init` with the Amplify CLI version prior to 4.0.0.
     // It expects all the artifacts in the `amplify/.config` directory, the amplify-meta.json file in both
@@ -179,11 +188,19 @@ function createInitEventMap(params: ParamType, envName: string, projectName: str
   };
 }
 
+<<<<<<< HEAD
 const processStackCreationData = (context: $TSContext, amplifyAppId: string | undefined, stackDescriptionData: $TSObject): void => {
   const metadata = {};
   if (stackDescriptionData.Stacks && stackDescriptionData.Stacks.length) {
     const { Outputs } = stackDescriptionData.Stacks[0];
     Outputs.forEach((element: $TSObject) => {
+=======
+function processStackCreationData(context, amplifyAppId, stackDescriptionData) {
+  const metadata = {};
+  if (stackDescriptionData.Stacks && stackDescriptionData.Stacks.length) {
+    const { Outputs } = stackDescriptionData.Stacks[0];
+    Outputs.forEach(element => {
+>>>>>>> b0b06c68a (fix: refactor push flow to use amplify error handling framework)
       metadata[element.OutputKey] = element.OutputValue;
     });
     if (amplifyAppId) {
@@ -192,7 +209,10 @@ const processStackCreationData = (context: $TSContext, amplifyAppId: string | un
 
     setCloudFormationOutputInContext(context, metadata);
   } else {
-    throw new Error('No stack data present');
+    throw new AmplifyError('StackNotFoundError', {
+      message: 'No stack data present',
+      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+    });
   }
 };
 
@@ -229,8 +249,11 @@ const cloneCLIJSONForNewEnvironment = (context: $TSContext): void => {
   }
 };
 
-export const onInitSuccessful = async (context: $TSContext): Promise<$TSContext> => {
-  configManagerInitSuccessful(context);
+/**
+ * on success init handler
+ */
+ export const onInitSuccessful = async (context: $TSContext): Promise<$TSContext> => {
+  configurationManager.onInitSuccessful(context);
   if (context.exeInfo.isNewEnv) {
     await storeRootStackTemplate(context);
     await storeCurrentCloudBackend(context);
@@ -239,9 +262,13 @@ export const onInitSuccessful = async (context: $TSContext): Promise<$TSContext>
   return context;
 };
 
+/**
+ * store the root stack template
+ */
 export const storeRootStackTemplate = async (context: $TSContext, template?: Template): Promise<void> => {
   // generate template again as the folder structure was not created when root stack was initialized
   if (template === undefined) {
+    // eslint-disable-next-line no-param-reassign
     template = await transformRootStack(context);
   }
   // apply Modifiers
@@ -284,7 +311,6 @@ const storeCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
   }
 
   const zipFilePath = path.normalize(path.join(tempDir, zipFilename));
-  let log = null;
   const spinner = new AmplifySpinner('Saving deployment state.');
 
   return archiver
@@ -298,15 +324,17 @@ const storeCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
           Body: fs.createReadStream(result.zipFilePath),
           Key: s3Key,
         };
-        log = logger('storeCurrentCloudBackend.s3.uploadFile', [{ Key: s3Key }]);
-        log();
+        logger('storeCurrentCloudBackend.s3.uploadFile', [{ Key: s3Key }])();
         return s3.uploadFile(s3Params);
       });
     })
     .catch(ex => {
-      log(ex);
       spinner.stop('Deployment state save failed.', false);
-      throw ex;
+      throw new AmplifyError('DeploymentError', {
+        message: ex.message,
+        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+        stack: ex.stack,
+      });
     })
     .then(() => {
       fs.removeSync(tempDir);
@@ -330,14 +358,8 @@ const uploadFile = async (s3, filePath: string, key): Promise<void> => {
       Body: fs.createReadStream(filePath),
       Key: key,
     };
-    const log = logger('uploadFile.s3.uploadFile', [{ Key: key }]);
-    try {
-      log();
-      await s3.uploadFile(s3Params);
-    } catch (ex) {
-      log(ex);
-      throw ex;
-    }
+    logger('uploadFile.s3.uploadFile', [{ Key: key }])();
+    await s3.uploadFile(s3Params);
   }
 };
 

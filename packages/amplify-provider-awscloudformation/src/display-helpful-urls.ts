@@ -1,16 +1,21 @@
 // @ts-check
-const chalk = require('chalk');
-const { BannerMessage, stateManager, FeatureFlags, ApiCategoryFacade } = require('amplify-cli-core');
-const { fileLogger } = require('./utils/aws-logger');
-const { SNS } = require('./aws-utils/aws-sns');
-const { printer } = require('amplify-prompts');
+import chalk from 'chalk';
+import {
+  BannerMessage, stateManager, FeatureFlags, ApiCategoryFacade, AmplifyFault, AMPLIFY_SUPPORT_DOCS, $TSAny,
+} from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
+import { fileLogger } from './utils/aws-logger';
+import { SNS } from './aws-utils/aws-sns';
 
 const logger = fileLogger('display-helpful-urls');
 
-async function displayHelpfulURLs(context, resourcesToBeCreated) {
+/**
+ * display helpful urls for the user
+ */
+export const displayHelpfulURLs = async (context, resourcesToBeCreated): Promise<void> => {
   printer.blankLine();
   showPinpointURL(context, resourcesToBeCreated);
-  showGraphQLURL(context, resourcesToBeCreated);
+  showGraphQlUrl(context, resourcesToBeCreated);
   await showGraphQLTransformerVersion(context);
   showRestAPIURL(context, resourcesToBeCreated);
   showHostingURL(context, resourcesToBeCreated);
@@ -20,9 +25,9 @@ async function displayHelpfulURLs(context, resourcesToBeCreated) {
   await showCognitoSandBoxMessage(context, resourcesToBeCreated);
   showGraphQLTransformerMigrationMessage();
   printer.blankLine();
-}
+};
 
-function showPinpointURL(context, resourcesToBeCreated) {
+const showPinpointURL = (context, resourcesToBeCreated): void => {
   const resources = resourcesToBeCreated.filter(resource => resource.service === 'Pinpoint');
   // There can only be one analytics resource
   if (resources.length > 0) {
@@ -36,9 +41,9 @@ function showPinpointURL(context, resourcesToBeCreated) {
     const consoleUrl = `https://${Region}.console.aws.amazon.com/pinpoint/home/?region=${Region}#/apps/${Id}/analytics/overview`;
     context.print.info(chalk`Pinpoint URL to track events {blue.underline ${consoleUrl}}`);
   }
-}
+};
 
-function showGraphQLURL(context, resourcesToBeCreated) {
+const showGraphQlUrl = (context, resourcesToBeCreated) => {
   const resources = resourcesToBeCreated.filter(
     resource => resource.service === 'AppSync' || (resource.service === 'ElasticContainer' && resource.apiType === 'GRAPHQL'),
   );
@@ -49,7 +54,9 @@ function showGraphQLURL(context, resourcesToBeCreated) {
     if (!amplifyMeta[category][resourceName].output) {
       return;
     }
-    const { GraphQLAPIEndpointOutput, securityType, authConfig, GraphQLAPIKeyOutput } = amplifyMeta[category][resourceName].output;
+    const {
+      GraphQLAPIEndpointOutput, securityType, authConfig, GraphQLAPIKeyOutput,
+    } = amplifyMeta[category][resourceName].output;
 
     if (!GraphQLAPIEndpointOutput) {
       return;
@@ -80,9 +87,9 @@ function showGraphQLURL(context, resourcesToBeCreated) {
 
     context.print.info('');
   }
-}
+};
 
-function showRestAPIURL(context, resourcesToBeCreated) {
+const showRestAPIURL = (context, resourcesToBeCreated) => {
   const resources = resourcesToBeCreated.filter(resource => resource.service === 'API Gateway' || resource.service === 'ElasticContainer');
 
   if (resources.length > 0) {
@@ -98,9 +105,9 @@ function showRestAPIURL(context, resourcesToBeCreated) {
       context.print.info(chalk`REST API endpoint: {blue.underline ${RootUrl}}`);
     }
   }
-}
+};
 
-function showContainerHostingInfo(context, resourcesToBeCreated) {
+const showContainerHostingInfo = (context, resourcesToBeCreated) => {
   const resource = resourcesToBeCreated.find(
     resource => resource.category === 'hosting' && resource.service === 'ElasticContainer' && !resource.hostedZoneId,
   );
@@ -123,9 +130,9 @@ function showContainerHostingInfo(context, resourcesToBeCreated) {
 
     context.print.table(tableOptions, { format: 'markdown' });
   }
-}
+};
 
-function showHostingURL(context, resourcesToBeCreated) {
+const showHostingURL = (context, resourcesToBeCreated): void => {
   const resources = resourcesToBeCreated.filter(resource => resource.service === 'S3AndCloudFront');
   // There can only be one appsync resource
   if (resources.length > 0) {
@@ -141,9 +148,9 @@ function showHostingURL(context, resourcesToBeCreated) {
 
     context.print.info(chalk`Hosting endpoint: {blue.underline ${hostingEndpoint}}`);
   }
-}
+};
 
-function showHostedUIURLs(context, resourcesToBeCreated) {
+const showHostedUIURLs = (context, resourcesToBeCreated): void => {
   const resources = resourcesToBeCreated.filter(resource => resource.service === 'Cognito');
 
   if (resources.length > 0) {
@@ -172,30 +179,25 @@ function showHostedUIURLs(context, resourcesToBeCreated) {
       }
     }
   }
-}
+};
 
-async function showCognitoSandBoxMessage(context, resources) {
+const showCognitoSandBoxMessage = async (context, resources): Promise<void> => {
   const cognitoResource = resources.filter(resource => resource.service === 'Cognito');
 
   if (cognitoResource.length > 0) {
-    const log = logger('showCognitoSandBoxMessage', [cognitoResource[0].resourceName]);
-    try {
-      log();
-      const smsWorkflowEnabled = await await context.amplify.invokePluginMethod(context, 'auth', 'cognito', 'isSMSWorkflowEnabled', [
-        context,
-        cognitoResource[0].resourceName,
-      ]);
-      if (smsWorkflowEnabled) {
-        await showSMSSandboxWarning(context);
-      }
-    } catch (e) {
-      log(e);
-      throw e;
+    logger('showCognitoSandBoxMessage', [cognitoResource[0].resourceName])();
+
+    const smsWorkflowEnabled = await await context.amplify.invokePluginMethod(context, 'auth', 'cognito', 'isSMSWorkflowEnabled', [
+      context,
+      cognitoResource[0].resourceName,
+    ]);
+    if (smsWorkflowEnabled) {
+      await showSMSSandboxWarning(context);
     }
   }
-}
+};
 
-async function showRekognitionURLS(context, resourcesToBeCreated) {
+const showRekognitionURLS = async (context, resourcesToBeCreated): Promise<void> => {
   const resource = resourcesToBeCreated.find(resource => {
     if (resource.identifyType && resource.identifyType === 'identifyEntities') {
       return true;
@@ -216,9 +218,12 @@ async function showRekognitionURLS(context, resourcesToBeCreated) {
       true,
     ]);
   }
-}
+};
 
-async function showSMSSandboxWarning(context) {
+/**
+ *  displays sms sandbox warning
+ */
+export const showSMSSandboxWarning = async (context) : Promise<void> => {
   const log = logger('showSMSSandBoxWarning', []);
 
   // This message will be set only after SNS Sandbox  Sandbox API is available and AWS SDK gets updated
@@ -238,10 +243,8 @@ async function showSMSSandboxWarning(context) {
       if (sandboxModeWarning) {
         context.print.warning(sandboxModeWarning);
       }
-    } else {
-      if (productionModeInfo) {
-        context.print.warning(productionModeInfo);
-      }
+    } else if (productionModeInfo) {
+      context.print.warning(productionModeInfo);
     }
   } catch (e) {
     if (e.code === 'AuthorizationError') {
@@ -256,18 +259,21 @@ async function showSMSSandboxWarning(context) {
       // Network error. Sandbox status is for informational purpose and should not stop deployment
       log(e);
     } else {
-      log(e);
-      throw e;
+      throw new AmplifyFault('DeploymentFault', {
+        stack: e.stack,
+        message: e.message,
+        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      });
     }
   }
-}
+};
 
-function showGraphQLTransformerMigrationMessage() {
+const showGraphQLTransformerMigrationMessage = (): void => {
   const hasGraphqlApi = !!Object.entries(stateManager.getMeta().api || {})
-    .filter(([_, apiResource]) => apiResource.service === 'AppSync')
+    .filter(([__, apiResource]) => (apiResource as $TSAny).service === 'AppSync')
     .map(([name]) => name).length;
-  const suppressMessage = FeatureFlags.getBoolean('graphqltransformer.suppressschemamigrationprompt');
-  const usingV2 = FeatureFlags.getNumber('graphqltransformer.transformerversion') === 2;
+  const suppressMessage = FeatureFlags.getBoolean('graphqltransformer.suppressSchemaMigrationPrompt');
+  const usingV2 = FeatureFlags.getNumber('graphqltransformer.transformerVersion') === 2;
   if (!hasGraphqlApi || suppressMessage || usingV2) {
     return;
   }
@@ -277,13 +283,16 @@ function showGraphQLTransformerMigrationMessage() {
   );
   printer.info('For more information, see https://docs.amplify.aws/cli/migration/transformer-migration/');
   printer.info(`To get started, run 'amplify migrate api'`);
-}
+};
 
-async function showGraphQLTransformerVersion(context) {
+/**
+ * prints graphql transformer migration message
+ */
+export const showGraphQLTransformerVersion = async (context): Promise<void> => {
   const meta = stateManager.getMeta();
   const apiObject = (meta && meta.api) || {};
   const hasGraphqlApi = !!Object.entries(apiObject)
-    .filter(([_, apiResource]) => apiResource.service === 'AppSync')
+    .filter(([__, apiResource]) => (apiResource as $TSAny).service === 'AppSync')
     .map(([name]) => name).length;
 
   if (!hasGraphqlApi) {
@@ -291,12 +300,5 @@ async function showGraphQLTransformerVersion(context) {
   }
 
   const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
-
   context.print.info(chalk`GraphQL transformer version: ${transformerVersion}`);
-}
-
-module.exports = {
-  displayHelpfulURLs,
-  showSMSSandboxWarning,
-  showGraphQLTransformerVersion,
 };

@@ -1,11 +1,16 @@
-import { $TSContext, $TSObject, pathManager } from 'amplify-cli-core';
+import {
+  $TSAny, $TSContext, $TSObject, AmplifyError, AMPLIFY_SUPPORT_DOCS, pathManager,
+} from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import extract from 'extract-zip';
 import * as fs from 'fs-extra';
 import sequential from 'promise-sequential';
 import { APIGateway } from './aws-utils/aws-apigw';
 
-export async function downloadAPIModels(context: $TSContext, allResources: $TSObject[]) {
+/**
+ * Download API models from API Gateway
+ */
+export const downloadAPIModels = async (context: $TSContext, allResources: $TSObject[]): Promise<$TSAny[]> => {
   const { amplify } = context;
   const projectConfig = amplify.getProjectConfig();
 
@@ -29,10 +34,11 @@ export async function downloadAPIModels(context: $TSContext, allResources: $TSOb
     }
   }
 
+  // eslint-disable-next-line consistent-return
   return sequential(promises);
-}
+};
 
-async function extractAPIModel(context: $TSContext, resource: $TSObject, framework: string) {
+const extractAPIModel = async (context: $TSContext, resource: $TSObject, framework: string): Promise<void> => {
   const apigw = await APIGateway.getInstance(context);
   const apigwParams = getAPIGWRequestParams(resource, framework);
 
@@ -53,9 +59,9 @@ async function extractAPIModel(context: $TSContext, resource: $TSObject, framewo
   // Copy files to src
   copyFilesToSrc(context, apiName, framework);
   fs.removeSync(tempDir);
-}
+};
 
-function copyFilesToSrc(context: $TSContext, apiName: string, framework: string) {
+const copyFilesToSrc = (context: $TSContext, apiName: string, framework: string): void => {
   const backendDir = pathManager.getBackendDirPath();
   const tempDir = `${backendDir}/.temp`;
 
@@ -83,11 +89,14 @@ function copyFilesToSrc(context: $TSContext, apiName: string, framework: string)
       }
       break;
     default:
-      throw new Error(`Unsupported framework. ${framework}`);
+      throw new AmplifyError('FrameworkNotSupportedError', {
+        message: `Unsupported framework. ${framework}`,
+        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      });
   }
-}
+};
 
-function getAPIGWRequestParams(resource: $TSObject, framework: string) {
+const getAPIGWRequestParams = (resource: $TSObject, framework: string): $TSAny => {
   const apiUrl = resource.output.RootUrl;
   const apiName = resource.output.ApiName;
   const firstSplit = apiUrl.split('/');
@@ -121,6 +130,9 @@ function getAPIGWRequestParams(resource: $TSObject, framework: string) {
       };
 
     default:
-      throw new Error(`Unsupported framework. ${framework}`);
+      throw new AmplifyError('FrameworkNotSupportedError', {
+        message: `Unsupported framework. ${framework}`,
+        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      });
   }
-}
+};

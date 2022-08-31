@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError, AmplifyFault, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
 import { IIdentityPoolService } from 'amplify-util-import';
 import { CognitoIdentity } from 'aws-sdk';
 import { PaginationKey, IdentityPool, IdentityPoolShortDescription, ListIdentityPoolsResponse } from 'aws-sdk/clients/cognitoidentity';
@@ -85,7 +85,10 @@ export class IdentityPoolService implements IIdentityPoolService {
       .promise();
 
     if (!response.Roles || !response.Roles['authenticated'] || !response.Roles['unauthenticated']) {
-      throw new Error(`Cannot import Identity Pool without roles.`);
+      throw new AmplifyError('AuthImportError', {
+        message: `Cannot import Identity Pool without 'authenticated' and 'unauthenticated' roles.`,
+        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      });
     }
 
     return {
@@ -109,7 +112,10 @@ export class IdentityPoolService implements IIdentityPoolService {
 
     // Should not happen anytime
     if (!resourceName) {
-      throw new Error(`Cannot parse arn: '${arn}'.`);
+      throw new AmplifyFault('UnknownFault', {
+        message: `Cannot parse arn: '${arn}'.`,
+        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      });
     }
 
     return resourceName;

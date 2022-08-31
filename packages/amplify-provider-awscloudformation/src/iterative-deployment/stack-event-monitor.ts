@@ -1,6 +1,7 @@
 import { StackEvent } from 'aws-sdk/clients/cloudformation';
 import { fileLogger, Logger } from '../utils/aws-logger';
 import * as aws from 'aws-sdk';
+import { AmplifyFault, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
 export interface StackEventMonitorOptions {
   pollDelay: number;
 }
@@ -65,22 +66,16 @@ export class StackEventMonitor {
       return;
     }
 
-    try {
-      this.readPromise = this.readNewEvents();
-      await this.readPromise;
-      this.readPromise = undefined;
+    this.readPromise = this.readNewEvents();
+    await this.readPromise;
+    this.readPromise = undefined;
 
-      // We might have been stop()ped while the network call was in progress.
-      if (!this.active) {
-        return;
-      }
-
-      this.printer.print();
-    } catch (e) {
-      this.logger('scheduleNextTick', [])(e);
-      if (e && e.code !== 'Throttling') e.message = 'Error occurred while monitoring stack:' + e.message;
-      throw e;
+    // We might have been stop()ped while the network call was in progress.
+    if (!this.active) {
+      return;
     }
+
+    this.printer.print();
     this.scheduleNextTick();
   }
 
@@ -144,10 +139,13 @@ export class StackEventMonitor {
       if (e.code === 'ValidationError' && e.message === `Stack [${this.stackName}] does not exist`) {
         return;
       }
-      if (e.code === 'Throttling') {
+      if (e.code !== 'Throttling') {
         // ignore throttling error
-      } else {
-        throw e;
+        throw new AmplifyFault('NotImplementedFault', {
+          message: e.message,
+          stack: e.stack,
+          link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+        });
       }
     }
 

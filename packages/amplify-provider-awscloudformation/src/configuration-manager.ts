@@ -1,4 +1,4 @@
-import { exitOnNextTick, JSONUtilities, pathManager, stateManager, $TSAny, $TSContext } from 'amplify-cli-core';
+import { exitOnNextTick, JSONUtilities, pathManager, stateManager, $TSAny, $TSContext, AmplifyError, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
 import fs from 'fs-extra';
 import chalk from 'chalk';
 import { prompt } from 'inquirer';
@@ -7,7 +7,7 @@ import path from 'path';
 import proxyAgent from 'proxy-agent';
 import awsRegions from './aws-regions';
 import constants from './constants';
-import setupNewUser from './setup-new-user';
+import * as setupNewUser from './setup-new-user';
 import obfuscateUtil from './utility-obfuscate';
 import * as systemConfigManager from './system-config-manager';
 import { doAdminTokensExist, getTempCredsWithAdminTokens, isAmplifyAdminApp } from './utils/admin-helpers';
@@ -178,8 +178,11 @@ function normalizeInputParams(context: $TSContext) {
         }
       }
       if (errorMessage) {
-        context.print.error('Error in the command line parameter for awscloudformation configuration.');
-        throw new Error(errorMessage);
+        throw new AmplifyError('ConfigurationError', {
+          message: 'Error in the command line parameter for awscloudformation configuration.',
+          details: errorMessage,
+          link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+        });
       }
     }
     context.exeInfo.inputParams[constants.ProviderName] = normalizedInputParams;
@@ -284,7 +287,10 @@ async function create(context: $TSContext) {
   if (awsConfigInfo.configValidated) {
     persistLocalEnvConfig(context);
   } else {
-    throw new Error('Invalid configuration settings');
+    throw new AmplifyError('ConfigurationError', {
+      message: 'Invalid configuration settings.',
+      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+    });
   }
   return context;
 }
@@ -301,7 +307,10 @@ async function update(context: $TSContext) {
   if (awsConfigInfo.configValidated) {
     updateProjectConfig(context);
   } else {
-    throw new Error('Invalid configuration settings');
+    throw new AmplifyError('ConfigurationError', {
+      message: 'Invalid configuration settings.',
+      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+    });
   }
   return context;
 }
@@ -539,29 +548,27 @@ function getConfigForEnv(context: $TSContext, envName: string) {
   const configInfoFilePath = path.join(dotConfigDirPath, constants.LocalAWSInfoFileName);
 
   if (fs.existsSync(configInfoFilePath)) {
-    try {
-      const configInfo = JSONUtilities.readJson(configInfoFilePath)[envName];
-
-      if (configInfo && configInfo.configLevel !== 'general' && configInfo.configLevel !== 'amplifyAdmin') {
-        if (configInfo.useProfile && configInfo.profileName) {
-          projectConfigInfo.config.useProfile = configInfo.useProfile;
-          projectConfigInfo.config.profileName = configInfo.profileName;
-        } else if (configInfo.awsConfigFilePath && fs.existsSync(configInfo.awsConfigFilePath)) {
-          const awsSecrets = JSONUtilities.readJson<AwsSecrets>(configInfo.awsConfigFilePath);
-          projectConfigInfo.config.useProfile = false;
-          projectConfigInfo.config.awsConfigFilePath = configInfo.awsConfigFilePath;
-          projectConfigInfo.config.accessKeyId = awsSecrets.accessKeyId;
-          projectConfigInfo.config.secretAccessKey = awsSecrets.secretAccessKey;
-          projectConfigInfo.config.region = awsSecrets.region;
-        } else {
-          throw new Error(`Corrupt file contents in ${configInfoFilePath}`);
-        }
-        projectConfigInfo.configLevel = 'project';
-      } else if (configInfo) {
-        projectConfigInfo.configLevel = configInfo.configLevel;
+    const configInfo = JSONUtilities.readJson(configInfoFilePath)[envName];
+    if (configInfo && configInfo.configLevel !== 'general' && configInfo.configLevel !== 'amplifyAdmin') {
+      if (configInfo.useProfile && configInfo.profileName) {
+        projectConfigInfo.config.useProfile = configInfo.useProfile;
+        projectConfigInfo.config.profileName = configInfo.profileName;
+      } else if (configInfo.awsConfigFilePath && fs.existsSync(configInfo.awsConfigFilePath)) {
+        const awsSecrets = JSONUtilities.readJson<AwsSecrets>(configInfo.awsConfigFilePath);
+        projectConfigInfo.config.useProfile = false;
+        projectConfigInfo.config.awsConfigFilePath = configInfo.awsConfigFilePath;
+        projectConfigInfo.config.accessKeyId = awsSecrets.accessKeyId;
+        projectConfigInfo.config.secretAccessKey = awsSecrets.secretAccessKey;
+        projectConfigInfo.config.region = awsSecrets.region;
+      } else {
+        throw new AmplifyError('ConfigurationError', {
+          message: `Corrupt file contents in ${configInfoFilePath}`,
+          link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+        });
       }
-    } catch (e) {
-      throw e;
+      projectConfigInfo.configLevel = 'project';
+    } else if (configInfo) {
+      projectConfigInfo.configLevel = configInfo.configLevel;
     }
   }
   return projectConfigInfo;
@@ -603,7 +610,10 @@ function loadConfigFromPath(profilePath: string): AwsSdkConfig {
       return config;
     }
   }
-  throw new Error(`Invalid config ${profilePath}`);
+  throw new AmplifyError('ConfigurationError', {
+    message: `Invalid config ${profilePath}`,
+    link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+  });
 }
 
 export async function loadConfigurationForEnv(context: $TSContext, env: string, appId?: string): Promise<AwsSdkConfig> {
@@ -689,7 +699,10 @@ async function newUserCheck(context: $TSContext) {
       }
     }
     if (context.exeInfo.inputParams.yes) {
-      throw new Error('AWS access credentials can not be found.');
+      throw new AmplifyError('ConfigurationError', {
+        message: 'AWS access credentials can not be found.',
+        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      });
     } else {
       context.print.info('AWS access credentials can not be found.');
       const answer = await prompt([
@@ -787,8 +800,11 @@ export async function getAwsConfig(context: $TSContext): Promise<AwsSdkConfig> {
     try {
       resultAWSConfigInfo = await getTempCredsWithAdminTokens(context, appId);
     } catch (err) {
-      context.print.error('Failed to fetch Amplify Studio credentials');
-      throw new Error(err);
+      throw new AmplifyError('AmplifyStudioLoginError', {
+        message: 'Failed to fetch Amplify Studio credentials',
+        details: err.message,
+        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      });
     }
   }
 

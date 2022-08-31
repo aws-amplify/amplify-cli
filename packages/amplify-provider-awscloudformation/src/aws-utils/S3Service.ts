@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyFault, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
 import { IS3Service } from 'amplify-util-import';
 import S3, { Bucket } from 'aws-sdk/clients/s3';
 import { loadConfiguration } from '../configuration-manager';
@@ -47,7 +47,11 @@ export class S3Service implements IS3Service {
       if (error.code === 'NotFound') {
         return false;
       }
-      throw error;
+      throw new AmplifyFault('UnknownFault', {
+        stack: error.stack,
+        message: error.message,
+        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      });
     }
   }
 
@@ -57,7 +61,7 @@ export class S3Service implements IS3Service {
         Bucket: bucketName,
       })
       .promise();
-    // For us-east-1 buckets the LocationConstraint is always emtpy, we have to return a
+    // For us-east-1 buckets the LocationConstraint is always empty, we have to return a
     // region in every case.
     // https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLocation.html
     if (response.LocationConstraint === undefined || response.LocationConstraint === '' || response.LocationConstraint === null) {

@@ -1,11 +1,8 @@
 import { AmplifyRootStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 import * as cdk from '@aws-cdk/core';
-import {
-  $TSAny, $TSContext, buildOverrideDir, CFNTemplateFormat, pathManager, Template, writeCFNTemplate,
-} from 'amplify-cli-core';
-import { printer, formatter } from 'amplify-prompts';
+import { $TSContext, AmplifyFault, AMPLIFY_SUPPORT_DOCS, buildOverrideDir, CFNTemplateFormat, pathManager, Template, writeCFNTemplate } from 'amplify-cli-core';
+import { formatter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
-import os from 'os';
 import * as path from 'path';
 import * as vm from 'vm2';
 import { AmplifyRootStack, AmplifyRootStackOutputs } from './root-stack-builder';
@@ -51,13 +48,8 @@ export class AmplifyRootStackTransform {
   private applyOverride = async (): Promise<void> => {
     const backendDir = pathManager.getBackendDirPath();
     const overrideFilePath = path.join(backendDir, this._resourceName);
-    let isBuild = false;
-    try {
-      isBuild = await buildOverrideDir(backendDir, overrideFilePath);
-    } catch (error) {
-      printer.error(`Build error : ${error.message}`);
-      throw new Error(error);
-    }
+    const isBuild = await buildOverrideDir(backendDir, overrideFilePath);
+
     // skip if packageManager or override.ts not found
     if (isBuild) {
       const overrideCode: string = await fs.readFile(path.join(overrideFilePath, 'build', 'override.js'), 'utf-8').catch(() => {
@@ -74,14 +66,8 @@ export class AmplifyRootStackTransform {
           external: true,
         },
       });
-      try {
-        sandboxNode.run(overrideCode).override(this._rootTemplateObj as AmplifyRootStackTemplate);
-      } catch (err: $TSAny) {
-        const error = new Error(`Skipping override due to ${err}${os.EOL}`);
-        printer.error(`${error}`);
-        error.stack = undefined;
-        throw error;
-      }
+
+      sandboxNode.run(overrideCode).override(this._rootTemplateObj as AmplifyRootStackTemplate);
     }
   };
 
@@ -219,6 +205,10 @@ export class AmplifyRootStackTransform {
     if (this._rootTemplateObj) {
       return this._rootTemplateObj;
     }
-    throw new Error("Root Stack Template doesn't exist.");
+
+    throw new AmplifyFault('RootStackNotFoundFault', {
+      message: `Root Stack Template doesn't exist.`,
+      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+    });
   }
 }

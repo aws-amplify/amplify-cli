@@ -8,6 +8,8 @@ import {
   IDeploymentStateManager,
   JSONUtilities,
   stateManager,
+  AmplifyError,
+  AMPLIFY_SUPPORT_DOCS,
 } from 'amplify-cli-core';
 import { S3 } from '../aws-utils/aws-s3';
 import { ProviderName } from '../constants';
@@ -97,14 +99,20 @@ export class DeploymentStateManager implements IDeploymentStateManager {
   public startCurrentStep = async (params?: StepStatusParameters): Promise<void> => {
     if (this.direction === 1) {
       if (this.getCurrentStep().status !== DeploymentStepStatus.WAITING_FOR_DEPLOYMENT) {
-        throw new Error(`Cannot start step then the current step is in ${this.getCurrentStep().status} status.`);
+        throw new AmplifyError('DeploymentError', {
+          message: `Cannot start step then the current step is in ${this.getCurrentStep().status} status.`,
+          link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+        });
       }
       const currentStep = this.getCurrentStep();
       currentStep.status = DeploymentStepStatus.DEPLOYING;
       if (params?.previousMetaKey) currentStep.previousMetaKey = params.previousMetaKey;
     } else if (this.direction === -1) {
       if (this.getCurrentStep().status !== DeploymentStepStatus.WAITING_FOR_ROLLBACK) {
-        throw new Error(`Cannot start step then the current step is in ${this.getCurrentStep().status} status.`);
+        throw new AmplifyError('DeploymentError', {
+          message: `Cannot start step then the current step is in ${this.getCurrentStep().status} status.`,
+          link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+        });
       }
       this.getCurrentStep().status = DeploymentStepStatus.ROLLING_BACK;
     }
@@ -114,13 +122,22 @@ export class DeploymentStateManager implements IDeploymentStateManager {
 
   public advanceStep = async (): Promise<void> => {
     if (!this.isDeploymentInProgress()) {
-      throw new Error('Cannot advance a deployment when it was not started.');
+      throw new AmplifyError('DeploymentError', {
+        message: `Cannot advance a deployment when it was not started.`,
+        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      });
     }
 
     if (this.direction === 1 && this.getCurrentStep().status !== DeploymentStepStatus.DEPLOYING) {
-      throw new Error(`Cannot advance step then the current step is in ${this.getCurrentStep().status} status.`);
+      throw new AmplifyError('DeploymentError', {
+        message: `Cannot advance step then the current step is in ${this.getCurrentStep().status} status.`,
+        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      });
     } else if (this.direction === -1 && this.getCurrentStep().status !== DeploymentStepStatus.ROLLING_BACK) {
-      throw new Error(`Cannot advance step then the current step is in ${this.getCurrentStep().status} status.`);
+      throw new AmplifyError('DeploymentError', {
+        message: `Cannot advance step then the current step is in ${this.getCurrentStep().status} status.`,
+        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      });
     }
 
     // Check if we are finishing the deployment or just advancing a step
@@ -159,7 +176,10 @@ export class DeploymentStateManager implements IDeploymentStateManager {
 
   public startRollback = async (): Promise<void> => {
     if (!this.isDeploymentInProgress() || this.direction !== 1) {
-      throw new Error('To rollback a deployment, the deployment must be in progress and not already rolling back.');
+      throw new AmplifyError('DeploymentError', {
+        message: 'To rollback a deployment, the deployment must be in progress and not already rolling back.',
+        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      });
     }
 
     this.direction = -1;

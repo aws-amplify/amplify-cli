@@ -1,5 +1,5 @@
 import { hashLayerResource, ServiceName as FunctionServiceName } from 'amplify-category-function';
-import { NotInitializedError, pathManager, stateManager, ViewResourceTableParams } from 'amplify-cli-core';
+import { pathManager, ProjectNotInitializedError, stateManager, ViewResourceTableParams } from 'amplify-cli-core';
 import { hashElement, HashElementOptions } from 'folder-hash';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
@@ -446,7 +446,7 @@ export function getAmplifyMeta() {
       currentAmplifyMeta: {},
     };
   } else {
-    throw new NotInitializedError();
+    throw new ProjectNotInitializedError();
   }
 }
 

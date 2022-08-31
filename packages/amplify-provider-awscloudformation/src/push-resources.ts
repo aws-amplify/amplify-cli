@@ -36,6 +36,8 @@ import {
   readCFNTemplate,
   Template,
   ApiCategoryFacade,
+  AmplifyError,
+  AMPLIFY_SUPPORT_DOCS,
 } from 'amplify-cli-core';
 import ora from 'ora';
 import { Fn } from 'cloudform-types';
@@ -96,7 +98,7 @@ const deploymentInProgressErrorMessage = () => {
 };
 
 /**
- *
+ * Prepares and pushes resources to the cloud.
  */
 export const run = async (context: $TSContext, resourceDefinition: $TSObject, rebuild = false) => {
   const deploymentStateManager = await DeploymentStateManager.createDeploymentStateManager(context);
@@ -133,11 +135,11 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     await createEnvLevelConstructs(context);
 
     // removing dependent functions if @model{Table} is deleted
-    const apiResourceTobeUpdated = resourcesToBeUpdated.filter((resource: { service: string; }) => resource.service === 'AppSync');
-    if (apiResourceTobeUpdated.length) {
+    const apiResourceToBeUpdated = resourcesToBeUpdated.filter((resource: { service: string; }) => resource.service === 'AppSync');
+    if (apiResourceToBeUpdated.length) {
       const functionResourceToBeUpdated = await ensureValidFunctionModelDependencies(
         context,
-        apiResourceTobeUpdated,
+        apiResourceToBeUpdated,
         allResources as $TSObject[],
       );
       // filter updated function to replace with existing updated ones(in case of duplicates)
@@ -192,7 +194,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     await prepareBuildableResources(context, resources);
     await buildOverridesEnabledResources(context, resources);
 
-    // Removed api transformation to generate resources befoe starting deploy/
+    // Removed api transformation to generate resources before starting deploy/
 
     // If there is a deployment already in progress we have to fail the push operation as another
     // push in between could lead non-recoverable stacks and files.
@@ -221,7 +223,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
         const gqlManager = await GraphQLResourceManager.createInstance(context, gqlResource, cloudformationMeta.StackId, rebuild);
         deploymentSteps = await gqlManager.run();
 
-        // If any models are being replaced, we prepend steps to the iterative deployment to remove references to the replaced table in functions that have a dependeny on the tables
+        // If any models are being replaced, we prepend steps to the iterative deployment to remove references to the replaced table in functions that have a dependency on the tables
         const modelsBeingReplaced = gqlManager.getTablesBeingReplaced().map(meta => meta.stackName); // stackName is the same as the model name
         deploymentSteps = await prependDeploymentStepsToDisconnectFunctionsFromReplacedModelTables(
           context,
@@ -303,7 +305,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
         });
         await deploymentManager.deploy(deploymentStateManager);
 
-        // delete the intermidiate states as it is ephemeral
+        // delete the intermediate states as it is ephemeral
         if (stateFolder.local) {
           try {
             fs.removeSync(stateFolder.local);
@@ -331,7 +333,11 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
           if (err?.name === 'ValidationError' && err?.message === 'No updates are to be performed.') {
             return;
           }
-          throw err;
+          throw new AmplifyError('DeploymentError', {
+            stack: err.stack,
+            message: err.message,
+            link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+          });
         }
       }
       context.usageData.stopCodePathTimer('pushDeployment');
@@ -432,13 +438,13 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
 
     await downloadAPIModels(context, newAPIresources);
 
-    // remove emphemeral Lambda layer state
+    // remove ephemeral Lambda layer state
     if (resources.concat(resourcesToBeDeleted).filter((r: { service: string; }) => r.service === AmplifySupportedService.LAMBDA_LAYER).length > 0) {
       await postPushLambdaLayerCleanup(context, resources, projectDetails.localEnvInfo.envName);
       await context.amplify.updateamplifyMetaAfterPush(resources);
     }
 
-    // Store current cloud backend in S3 deployment bcuket
+    // Store current cloud backend in S3 deployment bucket
     await storeCurrentCloudBackend(context);
     await amplifyServiceManager.storeArtifactsForAmplifyService(context);
 
@@ -455,15 +461,16 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
       await deploymentStateManager.failDeployment();
     }
     rollbackLambdaLayers(layerResources);
-
-    logger('run', [resourceDefinition])(error);
-
-    throw error;
+    throw new AmplifyError('DeploymentError', {
+      stack: error.stack,
+      message: error.message,
+      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+    });
   }
 };
 
 /**
- *
+ * @param {Object} context - the Amplify context
  */
 export const updateStackForAPIMigration = async (context: $TSContext, category: string, resourceName: string, options: $TSAny) => {
   const {
@@ -556,7 +563,7 @@ const uploadStudioBackendFiles = async (s3: S3, bucketName: string) => {
 };
 
 /**
- *
+ * Upload files that Amplify Studio depends on
  */
 export const storeCurrentCloudBackend = async (context: $TSContext) => {
   const zipFilename = '#current-cloud-backend.zip';
@@ -567,6 +574,7 @@ export const storeCurrentCloudBackend = async (context: $TSContext) => {
   if (!fs.existsSync(tempDir)) {
     fs.mkdirSync(tempDir);
   }
+
   // handle tag file
   const tagFilePath = pathManager.getTagFilePath();
   const tagCloudFilePath = pathManager.getCurrentTagFilePath();
@@ -580,11 +588,8 @@ export const storeCurrentCloudBackend = async (context: $TSContext) => {
   });
 
   const zipFilePath = path.normalize(path.join(tempDir, zipFilename));
-  let log = null;
   const result = await archiver.run(currentCloudBackendDir, zipFilePath, undefined, cliJSONFiles);
-
   const s3Key = `${result.zipFilename}`;
-
   const s3 = await S3.getInstance(context);
 
   const s3Params = {
@@ -592,15 +597,9 @@ export const storeCurrentCloudBackend = async (context: $TSContext) => {
     Key: s3Key,
   };
 
-  log = logger('storeCurrentcoudBackend.s3.uploadFile', [{ Key: s3Key }]);
-  log();
-  try {
-    const deploymentBucketName = await s3.uploadFile(s3Params);
-    await uploadStudioBackendFiles(s3, deploymentBucketName);
-  } catch (error) {
-    log(error);
-    throw error;
-  }
+  logger('storeCurrentCloudBackend.s3.uploadFile', [{ Key: s3Key }])();
+  const deploymentBucketName = await s3.uploadFile(s3Params);
+  await uploadStudioBackendFiles(s3, deploymentBucketName);
 
   fs.removeSync(tempDir);
 };
@@ -638,15 +637,8 @@ const prepareResource = async (context: $TSContext, resource: $TSAny) => {
     Body: fs.createReadStream(result.zipFilePath),
     Key: s3Key,
   };
-  const log = logger('packageResources.s3.uploadFile', [{ Key: s3Key }]);
-  log();
-  let s3Bucket: string;
-  try {
-    s3Bucket = await s3.uploadFile(s3Params);
-  } catch (error) {
-    log(error);
-    throw error;
-  }
+  logger('packageResources.s3.uploadFile', [{ Key: s3Key }])();
+  const s3Bucket = await s3.uploadFile(s3Params);
 
   // Update cfn template
   const { category, resourceName }: { category: string; resourceName: string } = resource;
@@ -659,13 +651,11 @@ const prepareResource = async (context: $TSContext, resource: $TSAny) => {
   });
 
   if (cfnFiles.length !== 1) {
-    const errorMessage = cfnFiles.length > 1
-      ? 'Only one CloudFormation template is allowed in the resource directory'
-      : 'CloudFormation template is missing in the resource directory';
-    printer.error(errorMessage);
-    printer.error(resourceDir);
-
-    throw new Error(errorMessage);
+    throw new AmplifyError('CloudFormationTemplateError', {
+      message: cfnFiles.length > 1 ? 'Only one CloudFormation template is allowed in the resource directory' : 'No CloudFormation template found in the resource directory',
+      details: `Resource directory: ${resourceDir}`,
+      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+    });
   }
 
   const cfnFile = cfnFiles[0];
@@ -715,23 +705,13 @@ const updateCloudFormationNestedStack = async (
   resourcesToBeUpdated: $TSAny,
   eventMap: $TSAny,
 ) => {
-  const projectRoot = pathManager.findProjectRoot();
-  const backEndDir = pathManager.getBackendDirPath(projectRoot);
-  const rootStackFilePath = path.join(pathManager.getRootStackBuildDirPath(projectRoot), rootStackFileName);
+  const rootStackFilePath = path.join(pathManager.getRootStackBuildDirPath(pathManager.findProjectRoot()), rootStackFileName);
   // deploy preprocess nested stack to disk
   await storeRootStackTemplate(context, nestedStack);
   const transformedStackPath = await preProcessCFNTemplate(rootStackFilePath);
   const cfnItem = await new Cloudformation(context, generateUserAgentAction(resourcesToBeCreated, resourcesToBeUpdated), {}, eventMap);
-  const providerDirectory = path.normalize(path.join(backEndDir, providerName));
 
-  const log = logger('updateCloudFormationNestedStack', [providerDirectory, transformedStackPath]);
-  try {
-    log();
-    await cfnItem.updateResourceStack(transformedStackPath);
-  } catch (error) {
-    log(error);
-    throw error;
-  }
+  await cfnItem.updateResourceStack(transformedStackPath);
 };
 
 const generateUserAgentAction = (resourcesToBeCreated: $TSAny, resourcesToBeUpdated: $TSAny) => {
@@ -853,14 +833,8 @@ export const uploadTemplateToS3 = async (
     Key: `amplify-cfn-templates/${category}/${cfnFile}`,
   };
 
-  const log = logger('uploadTemplateToS3.s3.uploadFile', [{ Key: s3Params.Key }]);
-  let projectBucket: string;
-  try {
-    projectBucket = await s3.uploadFile(s3Params, false);
-  } catch (error) {
-    log(error);
-    throw error;
-  }
+  logger('uploadTemplateToS3.s3.uploadFile', [{ Key: s3Params.Key }])();
+  const projectBucket = await s3.uploadFile(s3Params, false);
 
   if (amplifyMeta) {
     const templateURL = `https://s3.amazonaws.com/${projectBucket}/amplify-cfn-templates/${category}/${cfnFile}`;
@@ -948,7 +922,7 @@ const handleCfnFiles = (
   const { resourceDir, cfnFiles } = getCfnFiles(category, resource);
   cfnFiles.forEach(file => {
     const categoryResources = getCategoryResources(file, resourceDir);
-    // Maping Resource events to categories.
+    // Mapping Resource events to categories.
     categoryResources.forEach(res => {
       eventMap.eventToCategories.set(res, `${category}-${resource}`);
     });
@@ -974,7 +948,7 @@ export const formNestedStack = async (
   // CFN transform for Root stack
   rootStack = await transformRootStack(context);
 
-  // get the {deploymentBucketName , AuthRoleName , UnAuthRole from overridded data}
+  // get the {deploymentBucketName , AuthRoleName , UnAuthRole from overridden data}
 
   const metaToBeUpdated = {
     DeploymentBucketName: rootStack.Resources.DeploymentBucket.Properties.BucketName,
@@ -992,7 +966,7 @@ export const formNestedStack = async (
   const amplifyMeta = useExistingMeta ? projectDetails.amplifyMeta : stateManager.getMeta(projectPath);
   // update amplify meta with updated root stack Info
   if (Object.keys(metaToBeUpdated).length) {
-    context.amplify.updateProvideramplifyMeta(providerName, metaToBeUpdated);
+    context.amplify.updateProviderAmplifyMeta(providerName, metaToBeUpdated);
     // update teamProviderInfo
     const { envName } = context.amplify.getEnvInfo();
     const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
@@ -1141,19 +1115,20 @@ export const formNestedStack = async (
               const dependentResource = _.get(amplifyMeta, [dependsOn[i].category, dependsOn[i].resourceName], undefined);
 
               if (!dependentResource && dependsOn[i].category) {
-                throw new Error(`Cannot get resource: ${dependsOn[i].resourceName} from '${dependsOn[i].category}' category.`);
+                throw new AmplifyError('PushResourcesError', {
+                  message: `Cannot get resource: ${dependsOn[i].resourceName} from '${dependsOn[i].category}' category.`,
+                  link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+                });
               }
 
               if (dependentResource && dependentResource.serviceType === 'imported') {
                 const outputAttributeValue = _.get(dependentResource, ['output', attribute], undefined);
 
                 if (!outputAttributeValue) {
-                  const error = new Error(
-                    `Cannot read the '${attribute}' dependent attribute value from the output section of resource: '${dependsOn[i].resourceName}'.`,
-                  );
-                  error.stack = undefined;
-
-                  throw error;
+                  throw new AmplifyError('PushResourcesError', {
+                    message: `Cannot read the '${attribute}' dependent attribute value from the output section of resource: '${dependsOn[i].resourceName}'.`,
+                    link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+                  });
                 }
 
                 parameterValue = outputAttributeValue;

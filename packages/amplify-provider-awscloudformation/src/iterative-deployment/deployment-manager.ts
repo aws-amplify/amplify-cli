@@ -1,6 +1,6 @@
 import * as aws from 'aws-sdk';
 
-import { $TSContext, IDeploymentStateManager } from 'amplify-cli-core';
+import { $TSContext, AmplifyError, AMPLIFY_SUPPORT_DOCS, IDeploymentStateManager } from 'amplify-cli-core';
 import {
   DeployMachineContext,
   DeploymentMachineOp,
@@ -65,7 +65,12 @@ export class DeploymentManager {
       assert(cred.region);
       return new DeploymentManager(cred, cred.region, deploymentBucket, spinner, printer, options);
     } catch (e) {
-      throw new Error('Could not load the credentials');
+      throw new AmplifyError('DeploymentError', {
+        message: 'Could not load configuration',
+        stack: e.stack,
+        details: e.message,
+        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      });
     }
   };
 
@@ -313,12 +318,15 @@ export class DeploymentManager {
       const bucketKey = getBucketKey(templatePath, this.deploymentBucket);
       await this.s3Client.headObject({ Bucket: this.deploymentBucket, Key: bucketKey }).promise();
       return true;
-    } catch (e) {
-      if (e.code === 'NotFound') {
-        throw new Error(`The cloudformation template ${templatePath} was not found in deployment bucket ${this.deploymentBucket}`);
-      }
-      this.logger('ensureTemplateExists', [{ templatePath }])(e);
-      throw e;
+    } catch (e) {     
+      throw new AmplifyError('DeploymentError', {
+        message: e.code === 'NotFound' 
+          ? `The cloudformation template ${templatePath} was not found in deployment bucket ${this.deploymentBucket}`
+          : e.message,
+        details: e.message,
+        stack: e.stack,
+        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      });
     }
   };
 
@@ -334,10 +342,13 @@ export class DeploymentManager {
       return gsis ? gsis.every(idx => idx.IndexStatus === 'ACTIVE') : true;
     } catch (err) {
       if (err?.code === 'ResourceNotFoundException') {
-        return true; // in the case of an iterative update that recreates a table, non-existance means the table has been fully removed
+        return true; // in the case of an iterative update that recreates a table, non-existence means the table has been fully removed
       }
-      this.logger('getTableStatus', [{ tableName }])(err);
-      throw err;
+      throw new AmplifyError('DeploymentError', {
+        message: err.message,
+        stack: err.stack,
+        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      });
     }
   };
 

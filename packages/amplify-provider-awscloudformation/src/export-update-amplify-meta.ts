@@ -1,9 +1,14 @@
-import { $TSContext, ExportedStackNotFoundError, ExportedStackNotInValidStateError } from 'amplify-cli-core';
-import Cloudformation from './aws-utils/aws-cfn';
-import { printer } from 'amplify-prompts';
+/* eslint-disable no-continue */
+import {
+  $TSContext, AmplifyError, AMPLIFY_SUPPORT_DOCS,
+} from 'amplify-cli-core';
 import * as _ from 'lodash';
+import Cloudformation from './aws-utils/aws-cfn';
 
-export async function run(context: $TSContext, stackName: string) {
+/**
+ * entry point for the export update amplify meta
+ */
+export const run = async (context: $TSContext, stackName: string): Promise<void> => {
   const cfn = await new Cloudformation(context);
   let rootStack = null;
   let nextToken = null;
@@ -33,14 +38,20 @@ export async function run(context: $TSContext, stackName: string) {
 
   // if stack isn't found mostly because the stack isn't accessible by the credentials
   if (!rootStack) {
-    printer.error(`${stackName} could not be found, are you sure you are using the right credentials?`);
-    throw new ExportedStackNotFoundError(`${stackName} not found`);
+    throw new AmplifyError('StackNotFoundError', {
+      message: `${stackName} could not be found.`,
+      resolution: 'Please check the stack name and credentials.',
+      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+    });
   }
 
   // if the stack is found and is not in valid state
   if (rootStack.StackStatus !== 'UPDATE_COMPLETE' && rootStack.StackStatus !== 'CREATE_COMPLETE') {
-    throw new ExportedStackNotInValidStateError(`${stackName} not in UPDATE_COMPLETE or CREATE_COMPLETE state`);
+    throw new AmplifyError('StackNotFoundError', {
+      message: `${stackName} not in UPDATE_COMPLETE or CREATE_COMPLETE state`,
+      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+    });
   }
 
   await cfn.updateamplifyMetaFileWithStackOutputs(stackName);
-}
+};

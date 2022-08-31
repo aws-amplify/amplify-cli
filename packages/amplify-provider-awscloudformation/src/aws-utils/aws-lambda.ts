@@ -1,5 +1,5 @@
 const aws = require('./aws');
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
 import { Lambda as AwsSdkLambda } from 'aws-sdk';
 import { LayerVersionsListItem, ListLayerVersionsRequest, ListLayerVersionsResponse } from 'aws-sdk/clients/lambda';
 import { AwsSecrets, loadConfiguration } from '../configuration-manager';
@@ -49,7 +49,11 @@ export class Lambda {
           await this.lambda.deleteLayerVersion(params).promise();
         } catch (err) {
           if (err.code !== 'ParameterNotFound') {
-            throw err;
+            throw new AmplifyError('GenericError', {
+              message: err.message,
+              stack: err.stack,
+              link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+            });
           }
         }
       });

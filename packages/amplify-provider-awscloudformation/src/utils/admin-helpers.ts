@@ -1,4 +1,4 @@
-import { stateManager, $TSContext } from 'amplify-cli-core';
+import { stateManager, $TSContext, AmplifyError, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
 import aws from 'aws-sdk';
 import _ from 'lodash';
 import fetch from 'node-fetch';
@@ -13,14 +13,20 @@ export const adminVerifyUrl = (appId: string, envName: string, region: string): 
 
 export function doAdminTokensExist(appId: string): boolean {
   if (!appId) {
-    throw `Failed to check if admin credentials exist: appId is undefined`;
+    throw new AmplifyError('AmplifyStudioError', {
+      message: `Failed to check if admin credentials exist: appId is undefined`,
+      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+    });
   }
   return !!stateManager.getAmplifyAdminConfigEntry(appId);
 }
 
 export async function isAmplifyAdminApp(appId: string): Promise<{ isAdminApp: boolean; region: string; userPoolID: string }> {
   if (!appId) {
-    throw `Failed to check if Amplify Studio is enabled: appId is undefined`;
+    throw new AmplifyError('AmplifyStudioError', {
+      message: `Failed to check if Amplify Studio is enabled: appId is undefined`,
+      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+    });
   }
   let appState = await getAdminAppState(appId, 'us-east-1');
   if (appState.appId && appState.region && appState.region !== 'us-east-1') {

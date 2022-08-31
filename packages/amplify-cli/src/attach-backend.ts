@@ -53,7 +53,7 @@ const onSuccess = async (context: $TSContext): Promise<void> => {
     const projectPath = process.cwd();
     const backupAmplifyDirPath = path.join(projectPath, backupAmplifyDirName);
     // eslint-disable-next-line spellcheck/spell-checker
-    const backupBackendDirPath = path.join(backupAmplifyDirPath, context.amplify.constants.BackendamplifyCLISubDirName);
+    const backupBackendDirPath = path.join(backupAmplifyDirPath, context.amplify.constants.BackendAmplifyCLISubDirName);
 
     if (fs.existsSync(backupBackendDirPath)) {
       const backendDirPath = pathManager.getBackendDirPath(projectPath);

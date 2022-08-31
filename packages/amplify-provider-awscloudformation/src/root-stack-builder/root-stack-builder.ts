@@ -3,7 +3,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as iam from '@aws-cdk/aws-iam';
 import { AmplifyRootStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 import { IStackSynthesizer, ISynthesisSession } from '@aws-cdk/core';
-import { JSONUtilities } from 'amplify-cli-core';
+import { AmplifyError, AmplifyFault, AMPLIFY_SUPPORT_DOCS, JSONUtilities } from 'amplify-cli-core';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'Root Stack for AWS Amplify CLI';
@@ -32,11 +32,7 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
    * @param logicalId: : lodicalId of the Resource
    */
   addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void {
-    try {
-      new cdk.CfnOutput(this, logicalId, props);
-    } catch (error) {
-      throw new Error(error);
-    }
+    new cdk.CfnOutput(this, logicalId, props);
   }
 
   /**
@@ -45,11 +41,7 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
    * @param logicalId
    */
   addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void {
-    try {
-      new cdk.CfnMapping(this, logicalId, props);
-    } catch (error) {
-      throw new Error(error);
-    }
+    new cdk.CfnMapping(this, logicalId, props);
   }
 
   /**
@@ -58,11 +50,7 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
    * @param logicalId
    */
   addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void {
-    try {
-      new cdk.CfnCondition(this, logicalId, props);
-    } catch (error) {
-      throw new Error(error);
-    }
+    new cdk.CfnCondition(this, logicalId, props);
   }
 
   /**
@@ -71,11 +59,7 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
    * @param logicalId
    */
   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void {
-    try {
-      new cdk.CfnResource(this, logicalId, props);
-    } catch (error) {
-      throw new Error(error);
-    }
+    new cdk.CfnResource(this, logicalId, props);
   }
 
   /**
@@ -84,21 +68,19 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
    * @param logicalId
    */
   addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
-    try {
-      if (this._cfnParameterMap.has(logicalId)) {
-        throw new Error('logical Id already Exists');
-      }
-      this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
-    } catch (error) {
-      throw new Error(error);
+    if (this._cfnParameterMap.has(logicalId)) {
+      throw new AmplifyError('DuplicateLogicalIdError', {
+        message: `Logical Id already exists: ${logicalId}.`,
+        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      });
     }
+    this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
   }
 
   getCfnParameter(logicalId: string): cdk.CfnParameter {
     if (this._cfnParameterMap.has(logicalId)) {
       return this._cfnParameterMap.get(logicalId);
     }
-    throw new Error(`Cfn Parameter with LogicalId ${logicalId} doesn't exist`);
   }
 
   generateRootStackResources = async () => {
@@ -164,27 +146,35 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
   unauthRole?: iam.CfnRole;
 
   addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
-    throw new Error('Method not implemented.');
+    throw new AmplifyFault('NotImplementedFault', {
+      message: 'Method not implemented.',
+      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+    });
   }
 
   addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void {
-    try {
-      new cdk.CfnOutput(this, logicalId, props);
-    } catch (error) {
-      throw new Error(error);
-    }
+    new cdk.CfnOutput(this, logicalId, props);
   }
 
   addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void {
-    throw new Error('Method not implemented.');
+    throw new AmplifyFault('NotImplementedFault', {
+      message: 'Method not implemented.',
+      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+    });
   }
 
   addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void {
-    throw new Error('Method not implemented.');
+    throw new AmplifyFault('NotImplementedFault', {
+      message: 'Method not implemented.',
+      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+    });
   }
 
   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void {
-    throw new Error('Method not implemented.');
+    throw new AmplifyFault('NotImplementedFault', {
+      message: 'Method not implemented.',
+      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+    });
   }
 
   public renderCloudFormationTemplate = (__: ISynthesisSession): string => JSONUtilities.stringify(this._toCloudFormation());

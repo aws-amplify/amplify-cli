@@ -1,4 +1,6 @@
-import { convertNumBytes, getFolderSize, pathManager } from 'amplify-cli-core';
+import {
+  AmplifyError, AMPLIFY_SUPPORT_DOCS, convertNumBytes, getFolderSize, pathManager,
+} from 'amplify-cli-core';
 import { LambdaLayer } from 'amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -28,7 +30,7 @@ export const packageFunction: Packager = async (context, resource) => {
     skipHashing: resource.skipHashing,
   };
   const packageResult = await runtimeManager.package(packageRequest);
-  const packageHash = packageResult.packageHash;
+  const { packageHash } = packageResult;
   if (packageHash) {
     await zipPackage(packageResult.zipEntries, destination);
   }
@@ -47,13 +49,16 @@ export const packageFunction: Packager = async (context, resource) => {
   }
 
   if (functionSizeInBytes + layersSizeInBytes > lambdaPackageLimitInMB * 1024 ** 2) {
-    throw new Error(
-      `Total size of Lambda function ${
-        resource.resourceName
-      } plus it's dependent layers exceeds ${lambdaPackageLimitInMB}MB limit. Lambda function is ${convertNumBytes(
-        functionSizeInBytes,
-      ).toMB()}MB. Dependent Lambda layers are ${convertNumBytes(layersSizeInBytes).toMB()}MB.`,
-    );
+    throw new AmplifyError('FunctionTooLargeError', {
+      message: `The function is too large to package.`,
+      details: `
+Total size of Lambda function ${
+  resource.resourceName
+} plus it's dependent layers exceeds ${lambdaPackageLimitInMB}MB limit. Lambda function is ${convertNumBytes(
+  functionSizeInBytes,
+).toMB()}MB. Dependent Lambda layers are ${convertNumBytes(layersSizeInBytes).toMB()}MB.`,
+      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+    });
   }
 
   const zipFilename = packageHash
