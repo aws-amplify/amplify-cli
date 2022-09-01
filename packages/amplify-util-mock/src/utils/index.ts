@@ -45,3 +45,7 @@ function isUnsupportedJavaVersion(stderr: string | null): boolean {
 }
 
 export const _isUnsupportedJavaVersion: (stderr: string | null) => boolean = isUnsupportedJavaVersion;
+
+export const isWindowsPlatform = () => {
+  return process?.platform?.startsWith('win');
+}

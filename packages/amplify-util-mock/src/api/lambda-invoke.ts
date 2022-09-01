@@ -32,7 +32,7 @@ export const invokeTrigger = async (context: $TSContext, trigger: LambdaTrigger,
       !trigger?.config?.handler || 
       !trigger?.config?.runtime ||
       !trigger?.config?.directory) {
-      throw new Error(`Could not parse config for non-function cateogry trigger`);
+      throw new Error(`Could not parse lambda config for non-function category trigger`);
     }
     const runtimeManager: FunctionRuntimeLifecycleManager = await context.amplify.loadRuntimePlugin(context, trigger.config.runtimePluginId);
     // Ensuring latest function changes are built
@@ -42,15 +42,13 @@ export const invokeTrigger = async (context: $TSContext, trigger: LambdaTrigger,
       runtime: trigger.config.runtime
     };
     await runtimeManager.build(buildRequest);
-    if (trigger.config.runtimePluginId) {
-      invoker = ({ event }) => runtimeManager.invoke({
-        handler: trigger.config.handler,
-        event: JSON.stringify(event),
-        runtime: trigger.config.runtime,
-        srcRoot: trigger.config.directory,
-        envVars
-      });
-    }
+    invoker = ({ event }) => runtimeManager.invoke({
+      handler: trigger.config.handler,
+      event: JSON.stringify(event),
+      runtime: trigger.config.runtime,
+      srcRoot: trigger.config.directory,
+      envVars
+    });
   }
   
   printer.info('Starting execution...');

@@ -8,7 +8,7 @@ import * as path from 'path';
 import * as chokidar from 'chokidar';
 import _ from 'lodash';
 
-import { getAmplifyMeta, getMockDataDirectory, getMockSearchableTriggerDirectory } from '../utils';
+import { getAmplifyMeta, getMockDataDirectory, getMockSearchableTriggerDirectory, isWindowsPlatform } from '../utils';
 import { checkJavaVersion } from '../utils/index';
 import { runTransformer } from './run-graphql-transformer';
 import { processAppSyncResources } from '../CFNParser';
@@ -69,7 +69,7 @@ export class APITest {
       const appSyncConfig: AmplifyAppSyncSimulatorConfig = await this.runTransformer(context, this.apiParameters);
       
       // If any of the model types are searchable, start opensearch local instance
-      if (appSyncConfig?.tables?.some( (table: $TSAny) => table?.isSearchable)) {
+      if (appSyncConfig?.tables?.some( (table: $TSAny) => table?.isSearchable) && (!isWindowsPlatform())) {
         this.opensearchURL = await this.startOpensearchLocalServer(context);
       }
       this.appSyncSimulator.init(appSyncConfig);
@@ -249,7 +249,7 @@ export class APITest {
         }
       });
 
-      const allTablesWithTriggers = Object.keys(modelLambdaTriggers)?.concat(Object.keys(searchableLambdaTriggers));
+      const allTablesWithTriggers = Object.keys(allLambdaTriggers);
       const tableStreamArns: {[index: string]: TableDescription;} = await describeTables(this.ddbClient, allTablesWithTriggers);
       const allListeners = [];
       Object.entries(allLambdaTriggers)?.forEach(([tableName, lambdaTriggers]) => {
@@ -305,6 +305,9 @@ export class APITest {
   }
 
   private async configureOpensearchDataSource(config: $TSAny): Promise<$TSAny> {
+    if (!this.opensearchURL) {
+      return config;
+    }
     const opensearchDataSourceType = 'AMAZON_ELASTICSEARCH';
     const opensearchDataSources = config.dataSources.filter(d => d.type === opensearchDataSourceType);
     if (_.isEmpty(opensearchDataSources)) {
