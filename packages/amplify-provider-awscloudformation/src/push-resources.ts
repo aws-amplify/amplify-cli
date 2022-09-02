@@ -809,12 +809,11 @@ const updateS3Templates = async (context: $TSContext, resourcesToBeUpdated: $TSA
   for (const { category, resourceName, service } of resourcesToBeUpdated) {
     const { resourceDir, cfnFiles } = getCfnFiles(category, resourceName);
     for (const cfnFile of cfnFiles) {
-      await writeCustomPoliciesToCFNTemplate(resourceName, service, cfnFile, category);
-      const transformedCFNPath = await preProcessCFNTemplate(path.join(resourceDir, cfnFile));
+      await writeCustomPoliciesToCFNTemplate(resourceName, service, cfnFile, category, { minify: context.input.options?.minify });
+      const transformedCFNPath = await preProcessCFNTemplate(path.join(resourceDir, cfnFile), { minify: context.input.options?.minify });
 
       promises.push(
         uploadTemplateToS3(context, transformedCFNPath, category, resourceName, amplifyMeta),
-        { minify: context.input.options?.minify },
       );
     }
   }
