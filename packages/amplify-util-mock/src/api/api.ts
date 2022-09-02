@@ -40,7 +40,7 @@ export class APITest {
   private apiParameters: object = {};
   private userOverriddenSlots: string[] = [];
 
-  async start(context, port: number = MOCK_API_PORT, wsPort: number = 20003) {
+  async start(context, port: number = MOCK_API_PORT, wsPort: number = MOCK_API_PORT) {
     try {
       context.amplify.addCleanUpTask(async context => {
         await this.stop(context);
