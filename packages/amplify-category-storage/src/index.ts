@@ -1,4 +1,6 @@
-import { $TSAny, $TSContext, AmplifyCategories, AmplifySupportedService, IAmplifyResource } from 'amplify-cli-core';
+import {
+  $TSAny, $TSContext, AmplifyCategories, AmplifySupportedService, IAmplifyResource, stateManager,
+} from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import {
   validateAddStorageRequest,
@@ -25,12 +27,13 @@ import {
   headlessRemoveStorage,
   headlessUpdateStorage,
 } from './provider-utils/awscloudformation/storage-configuration-helpers';
+
 export { categoryName as category } from './constants';
 export {
   S3UserInputs,
   S3UserInputTriggerFunctionParams,
 } from './provider-utils/awscloudformation/service-walkthrough-types/s3-user-input-types';
-//S3-Control-API used by Predictions
+// S3-Control-API used by Predictions
 export {
   s3AddStorageLambdaTrigger,
   s3CreateStorageResource,
@@ -41,8 +44,11 @@ export {
   s3RemoveStorageLambdaTrigger,
 } from './provider-utils/awscloudformation/service-walkthroughs/s3-resource-api';
 
+/**
+ *
+ */
 export async function s3GetBucketUserInputDefault(project: $TSAny, shortId: string, accessType: S3AccessType): Promise<S3UserInputs> {
-  let defaultS3UserInputs = getAllDefaults(project, shortId);
+  const defaultS3UserInputs = getAllDefaults(project, shortId);
   switch (accessType) {
     case S3AccessType.AUTH_ONLY:
       defaultS3UserInputs.authAccess = [S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ, S3PermissionType.DELETE];
@@ -55,10 +61,16 @@ export async function s3GetBucketUserInputDefault(project: $TSAny, shortId: stri
   return defaultS3UserInputs;
 }
 
+/**
+ *
+ */
 export async function getDefaultAuthPermissions() {
   return [S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ, S3PermissionType.DELETE];
 }
 
+/**
+ *
+ */
 export async function add(context: any, providerName: any, service: any) {
   const options = {
     service,
@@ -75,10 +87,41 @@ export async function add(context: any, providerName: any, service: any) {
   return providerController.addResource(context, AmplifyCategories.STORAGE, service, options);
 }
 
-export async function console(context: any) {
-  printer.info(`to be implemented: ${AmplifyCategories.STORAGE} console`);
-}
+/**
+ * Open AWS Management Console for resources of storage category.
+ */
+export const console = async (context: $TSContext): Promise<void> => {
+  const { amplify } = context;
+  const amplifyMeta = stateManager.getMeta();
+  if (!amplifyMeta.storage || Object.keys(amplifyMeta.storage).length === 0) {
+    return printer.error('Storage has NOT been added to this project.');
+  }
 
+  const nameOverrides = {
+    S3: 'S3 bucket - Content (Images, audio, video, etc.)',
+    DynamoDB: 'DynamoDB table - NoSQL Database',
+  };
+
+  const servicesMetadata = ((await import('./provider-utils/supported-services')) as $TSAny).supportedServices;
+
+  const serviceSelection = await amplify.serviceSelectionPrompt(context, categoryName, servicesMetadata, undefined, nameOverrides);
+  try {
+    const providerController = await import(`${__dirname}/provider-utils/${serviceSelection.providerName}/index`);
+    if (!providerController) {
+      printer.error('Provider not configured for this category');
+      return undefined;
+    }
+    return providerController.console(amplifyMeta, serviceSelection.providerName, serviceSelection.service);
+  } catch (err) {
+    printer.info(err.stack);
+    printer.error('There was an error trying to open the storage web console.');
+    throw err;
+  }
+};
+
+/**
+ *
+ */
 export async function migrateStorageCategory(context: any) {
   const { projectPath, amplifyMeta } = context.migrationInfo;
   const migrateResourcePromises: any = [];
@@ -112,6 +155,9 @@ export async function migrateStorageCategory(context: any) {
   await Promise.all(migrateResourcePromises);
 }
 
+/**
+ *
+ */
 export async function transformCategoryStack(context: $TSContext, resource: IAmplifyResource) {
   if (resource.service === AmplifySupportedService.DYNAMODB) {
     if (canResourceBeTransformed(context, resource.resourceName)) {
@@ -123,11 +169,17 @@ export async function transformCategoryStack(context: $TSContext, resource: IAmp
   }
 }
 
+/**
+ *
+ */
 export function canResourceBeTransformed(context: $TSContext, resourceName: string) {
   const resourceInputState = new DynamoDBInputState(context, resourceName);
   return resourceInputState.cliInputFileExists();
 }
 
+/**
+ *
+ */
 export async function getPermissionPolicies(context: any, resourceOpsMapping: any) {
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
@@ -137,14 +189,12 @@ export async function getPermissionPolicies(context: any, resourceOpsMapping: an
 
   for (const resourceName of Object.keys(resourceOpsMapping)) {
     try {
-      const providerPlugin =
-        'providerPlugin' in resourceOpsMapping[resourceName]
-          ? resourceOpsMapping[resourceName].providerPlugin
-          : amplifyMeta[storageCategory][resourceName].providerPlugin;
-      const service =
-        'service' in resourceOpsMapping[resourceName]
-          ? resourceOpsMapping[resourceName].service
-          : amplifyMeta[storageCategory][resourceName].service;
+      const providerPlugin = 'providerPlugin' in resourceOpsMapping[resourceName]
+        ? resourceOpsMapping[resourceName].providerPlugin
+        : amplifyMeta[storageCategory][resourceName].providerPlugin;
+      const service = 'service' in resourceOpsMapping[resourceName]
+        ? resourceOpsMapping[resourceName].service
+        : amplifyMeta[storageCategory][resourceName].service;
 
       if (providerPlugin) {
         const providerController = await import(`./provider-utils/${providerPlugin}`);
@@ -171,6 +221,9 @@ export async function getPermissionPolicies(context: any, resourceOpsMapping: an
   return { permissionPolicies, resourceAttributes };
 }
 
+/**
+ *
+ */
 export async function executeAmplifyCommand(context: any) {
   let commandPath = path.normalize(path.join(__dirname, 'commands'));
 
@@ -185,6 +238,9 @@ export async function executeAmplifyCommand(context: any) {
   await commandModule.run(context);
 }
 
+/**
+ *
+ */
 export const executeAmplifyHeadlessCommand = async (context: $TSContext, headlessPayload: string) => {
   context.usageData.pushHeadlessFlow(headlessPayload, context.input);
   switch (context.input.command) {
@@ -205,11 +261,17 @@ export const executeAmplifyHeadlessCommand = async (context: $TSContext, headles
   }
 };
 
+/**
+ *
+ */
 export async function handleAmplifyEvent(context: $TSContext, args: $TSAny) {
   printer.info(`${categoryName} handleAmplifyEvent to be implemented`);
   printer.info(`Received event args ${args}`);
 }
 
+/**
+ *
+ */
 export async function initEnv(context: any) {
   const { resourcesToBeSynced, allResources } = await context.amplify.getResourceStatus(AmplifyCategories.STORAGE);
   const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
