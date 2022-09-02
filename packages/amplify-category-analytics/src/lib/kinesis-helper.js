@@ -1,10 +1,11 @@
-const { open } = require('amplify-cli-core');
+/* eslint-disable */
+const { open, stateManager } = require('amplify-cli-core');
 const constants = require('./constants');
 
 function console(context) {
   const amplifyMeta = context.amplify.getProjectMeta();
   const { envName } = context.amplify.getEnvInfo();
-  const region = context.amplify.getEnvDetails()[envName].awscloudformation.Region;
+  const region = stateManager.getLocalAWSInfo()?.[envName]?.region;
 
   const kinesisApp = scanCategoryMetaForKinesis(amplifyMeta[constants.CategoryName]);
   if (kinesisApp) {

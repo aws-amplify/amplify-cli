@@ -100,10 +100,14 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     }
     const tpiContent = stateManager.getTeamProviderInfo(undefined, { throwIfNotExist: false, default: {} });
     const categoriesContent = this.serializeTPICategories();
-    if (Object.keys(categoriesContent).length === 0) {
+    if (Object.keys(categoriesContent).length === 0 && !!tpiContent?.[this.envName]?.categories) {
       delete tpiContent[this.envName].categories;
-    } else {
+    } else if (typeof tpiContent[this.envName] === 'object') {
       tpiContent[this.envName].categories = this.serializeTPICategories();
+    } else {
+      tpiContent[this.envName] = {
+        categories: this.serializeTPICategories(),
+      };
     }
     stateManager.setTeamProviderInfo(undefined, tpiContent);
   }

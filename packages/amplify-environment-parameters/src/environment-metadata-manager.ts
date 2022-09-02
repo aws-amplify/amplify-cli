@@ -1,4 +1,4 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
+import { $TSContext, pathManager, stateManager } from 'amplify-cli-core';
 import { AmplifyBackend } from 'aws-sdk';
 import type { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
 
@@ -55,6 +55,9 @@ const ensureEnvMetaInternal = async (
   // when adding the first manager into the map, need to add a callback to save on exit
   if (Object.keys(envMetaManagerMap).length === 0) {
     process.on('exit', () => {
+      if (!pathManager.findProjectRoot()) {
+        return; // in the case of delete, the project root will be gone in which case we don't need to save anything
+      }
       const currentEnv = stateManager.getLocalEnvInfo().envName;
       // ensure any updates to the current env meta are written to the `amplify-meta.json` file
       envMetaManagerMap[currentEnv]?.save();

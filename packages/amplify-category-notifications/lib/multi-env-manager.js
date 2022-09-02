@@ -128,17 +128,10 @@ async function constructPinpointNotificationsMeta(context) {
 }
 
 async function deletePinpointAppForEnv(context, envName) {
+  const paramManager = (await ensureEnvParamManager(envName)).instance;
   let pinpointApp;
-  const teamProviderInfo = context.amplify.getEnvDetails();
-
-  if (
-    teamProviderInfo &&
-    teamProviderInfo[envName] &&
-    teamProviderInfo[envName].categories &&
-    teamProviderInfo[envName].categories[constants.CategoryName] &&
-    teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName]
-  ) {
-    pinpointApp = teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName];
+  if (paramManager.hasResourceParamManager(constants.CategoryName, constants.PinpointName)) {
+    pinpointApp = paramManager.getResourceParamManager(constants.CategoryName, constants.PinpointName).getAllParams();
   }
 
   if (pinpointApp) {

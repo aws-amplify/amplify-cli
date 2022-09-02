@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable jsdoc/require-jsdoc */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { $TSContext, stateManager } from 'amplify-cli-core';
+import { $TSContext, pathManager, stateManager } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { printer, prompter } from 'amplify-prompts';
@@ -70,7 +70,7 @@ export const init = async amplifyServiceParams => {
     }
   }
 
-  if (!amplifyAppId) {
+  if (!amplifyAppId && !!pathManager.findProjectRoot()) {
     // in the "amplify env add" workflow, there might be other envs, new env can be added to existing appId
     const localAppIdCandidates = await getLocalAppIdsInSameRegionAndAccount(amplifyClient);
     amplifyAppId = await selectFromExistingAppId(localAppIdCandidates);
@@ -279,6 +279,9 @@ export const postPushCheck = async (context: $TSContext) => {
 const selectFromExistingAppId = async (
   appIdsInTheSameLocalProjectAndRegion: string[],
 ): Promise<string | undefined> => {
+  if (appIdsInTheSameLocalProjectAndRegion.length === 0) {
+    return undefined;
+  }
   if (appIdsInTheSameLocalProjectAndRegion.length === 1) {
     return appIdsInTheSameLocalProjectAndRegion[0];
   }

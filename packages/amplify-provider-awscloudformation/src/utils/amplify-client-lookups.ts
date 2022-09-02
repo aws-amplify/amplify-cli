@@ -9,6 +9,9 @@ const logger = fileLogger('get-local-app-ids-in-same-region-and-account');
  */
 export const getLocalAppIdsInSameRegionAndAccount = async (amplifyClient: Amplify): Promise<string[]> => {
   const awsInfo = stateManager.getLocalAWSInfo() as Record<string, {appId: string, region: string}>;
+  if (!awsInfo) {
+    return [];
+  }
   const localAppIdsInTheSameLocalProjectAndRegion = Object.values(awsInfo)
     .filter(value => !!value.appId && value.region === amplifyClient.config.region)
     .map(value => value.appId);
