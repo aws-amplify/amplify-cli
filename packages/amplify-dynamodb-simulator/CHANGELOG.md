@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.7-modelIntrospectionCommand.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@2.3.6...amplify-dynamodb-simulator@2.3.7-modelIntrospectionCommand.0) (2022-09-02)
+
+
+### Bug Fixes
+
+* account for extra lines when detecting known dynamodb simulator errors ([#10962](https://github.com/aws-amplify/amplify-cli/issues/10962)) ([023fb97](https://github.com/aws-amplify/amplify-cli/commit/023fb975a3e43525e65f1ee0bd1a7ddbf5ed7da8))
+
+
+
+
+
 ## [2.3.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@2.3.4...amplify-dynamodb-simulator@2.3.6) (2022-08-02)
 
 **Note:** Version bump only for package amplify-dynamodb-simulator

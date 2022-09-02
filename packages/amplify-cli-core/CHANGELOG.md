@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0-modelIntrospectionCommand.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.12.0...amplify-cli-core@3.0.0-modelIntrospectionCommand.0) (2022-09-02)
+
+
+* feat!: breaking change (#10888) ([224a2e0](https://github.com/aws-amplify/amplify-cli/commit/224a2e0e415da18eb0b4249fb88c2c8755ab9224)), closes [#10888](https://github.com/aws-amplify/amplify-cli/issues/10888)
+
+
+### Features
+
+* unified error handling framework ([#10933](https://github.com/aws-amplify/amplify-cli/issues/10933)) ([cc9a422](https://github.com/aws-amplify/amplify-cli/commit/cc9a422793f4ef620a4ed634b6f55e28e3a8a3a2))
+
+
+### BREAKING CHANGES
+
+* hooks file management breaking change
+
+
+
+
+
 # [2.12.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.10.0...amplify-cli-core@2.12.0) (2022-08-02)
 
 

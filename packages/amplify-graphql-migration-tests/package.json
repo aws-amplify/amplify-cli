@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphql-migration-tests",
-  "version": "2.2.47",
+  "version": "2.2.48-modelIntrospectionCommand.0",
   "description": "Tests migration from v1 to v2 of the Amplify GraphQL transformer",
   "main": "lib/index.js",
   "private": true,
@@ -50,7 +50,7 @@
     "@aws-amplify/graphql-transformer-interfaces": "^1.14.6",
     "@aws-amplify/graphql-transformer-migrator": "^1.4.4",
     "@aws-cdk/cloudformation-diff": "~1.124.0",
-    "amplify-prompts": "2.2.0",
+    "amplify-prompts": "2.3.0-modelIntrospectionCommand.0",
     "fs-extra": "^8.1.0",
     "graphql-auth-transformer": "^7.2.43",
     "graphql-connection-transformer": "^5.2.42",

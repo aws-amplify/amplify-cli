@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli",
-  "version": "9.2.1",
+  "version": "10.0.0-modelIntrospectionCommand.0",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
@@ -35,9 +35,8 @@
     "tar-stream": "^2.2.0"
   },
   "devDependencies": {
-    "@aws-amplify/cli-internal": "9.2.1",
+    "@aws-amplify/cli-internal": "10.0.0-modelIntrospectionCommand.0",
     "@types/tar": "^6.1.1",
     "rimraf": "^3.0.2"
   }
 }
-
