@@ -1,4 +1,5 @@
 import { pathManager, readCFNTemplate, writeCFNTemplate, generateCustomPoliciesInTemplate } from 'amplify-cli-core';
+import { bool } from 'aws-sdk/clients/signer';
 import * as path from 'path';
 import { ProviderName as providerName } from '../constants';
 import { prePushCfnTemplateModifier } from './pre-push-cfn-modifier';
@@ -12,7 +13,7 @@ const buildDir = 'build';
  * @param filePath the original template path
  * @returns The file path of the modified template
  */
-export const preProcessCFNTemplate = async (filePath: string): Promise<string> => {
+export const preProcessCFNTemplate = async (filePath: string, options?: { minify?: bool }): Promise<string> => {
   const { templateFormat, cfnTemplate } = readCFNTemplate(filePath);
 
   await prePushCfnTemplateModifier(cfnTemplate);
@@ -20,7 +21,10 @@ export const preProcessCFNTemplate = async (filePath: string): Promise<string> =
   const pathSuffix = filePath.startsWith(backendDir) ? filePath.slice(backendDir.length) : path.parse(filePath).base;
   const newPath = path.join(backendDir, providerName, buildDir, pathSuffix);
 
-  await writeCFNTemplate(cfnTemplate, newPath, { templateFormat });
+  await writeCFNTemplate(cfnTemplate, newPath, {
+    templateFormat,
+    minify: options?.minify,
+  });
   return newPath;
 };
 

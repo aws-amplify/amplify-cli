@@ -39,18 +39,21 @@ export enum CFNTemplateFormat {
 
 export type WriteCFNTemplateOptions = {
   templateFormat?: CFNTemplateFormat;
+  minify?: boolean;
 };
 
 const writeCFNTemplateDefaultOptions: Required<WriteCFNTemplateOptions> = {
   templateFormat: CFNTemplateFormat.JSON,
+  minify: false,
 };
 
 export async function writeCFNTemplate(template: object, filePath: string, options?: WriteCFNTemplateOptions): Promise<void> {
   const mergedOptions = { ...writeCFNTemplateDefaultOptions, ...options };
   let serializedTemplate: string | undefined;
+  const minify = mergedOptions.minify;
   switch (mergedOptions.templateFormat) {
     case CFNTemplateFormat.JSON:
-      serializedTemplate = JSONUtilities.stringify(template);
+      serializedTemplate = minify ? JSON.stringify(template) : JSON.stringify(template, null, 4)
       break;
     case CFNTemplateFormat.YAML:
       serializedTemplate = yaml.dump(template);

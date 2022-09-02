@@ -45,10 +45,13 @@ export async function setDefaultTemplateDescription(
   cfnFilePath: string,
 ) {
   const { templateFormat, cfnTemplate } = readCFNTemplate(cfnFilePath);
-
+  const { parameters: { options } } = context;
   cfnTemplate.Description = getDefaultTemplateDescription(context, category, service);
 
-  await writeCFNTemplate(cfnTemplate, cfnFilePath, { templateFormat });
+  await writeCFNTemplate(cfnTemplate, cfnFilePath, {
+    templateFormat,
+    minify: options['minify'],
+  });
 }
 
 export function getDefaultTemplateDescription(context: $TSContext, category: string, service?: string): string {

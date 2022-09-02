@@ -802,12 +802,14 @@ export const getCfnFiles = (category: string, resourceName: string, options?: gl
 
 const updateS3Templates = async (context: $TSContext, resourcesToBeUpdated: $TSAny, amplifyMeta: $TSMeta) => {
   const promises = [];
-
+  const { parameters: { options } } = context;
   for (const { category, resourceName, service } of resourcesToBeUpdated) {
     const { resourceDir, cfnFiles } = getCfnFiles(category, resourceName);
     for (const cfnFile of cfnFiles) {
       await writeCustomPoliciesToCFNTemplate(resourceName, service, cfnFile, category);
-      const transformedCFNPath = await preProcessCFNTemplate(path.join(resourceDir, cfnFile));
+      const transformedCFNPath = await preProcessCFNTemplate(path.join(resourceDir, cfnFile), {
+        minify: options['minify'],
+      });
 
       promises.push(uploadTemplateToS3(context, transformedCFNPath, category, resourceName, amplifyMeta));
     }
