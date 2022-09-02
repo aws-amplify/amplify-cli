@@ -812,7 +812,10 @@ const updateS3Templates = async (context: $TSContext, resourcesToBeUpdated: $TSA
       await writeCustomPoliciesToCFNTemplate(resourceName, service, cfnFile, category);
       const transformedCFNPath = await preProcessCFNTemplate(path.join(resourceDir, cfnFile));
 
-      promises.push(uploadTemplateToS3(context, transformedCFNPath, category, resourceName, amplifyMeta));
+      promises.push(
+        uploadTemplateToS3(context, transformedCFNPath, category, resourceName, amplifyMeta),
+        { minify: context.input.options?.minify },
+      );
     }
   }
 
