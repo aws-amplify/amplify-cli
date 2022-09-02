@@ -32,7 +32,8 @@ const showCognitoAttributesRequireVerificationBeforeUpdateMessage = async (
   const { resourceName } = stateManager.getResourceFromMeta(amplifyMeta, 'auth', 'Cognito');
   const cloudBackendUserAttrUpdateSettings = await readCfnTemplateUserAttributeSettings(currentCloudBackendDir, resourceName);
   const backendUserAttrUpdateSettings = await readCfnTemplateUserAttributeSettings(localBackendDir, resourceName);
-  const updateNotInCloudBackend = !cloudBackendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate;
+  const updateNotInCloudBackend = !cloudBackendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate
+    || cloudBackendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate[0] !== 'email';
   const updateInLocalBackend: boolean = backendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate.length === 1
     && backendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate[0] === 'email';
 
