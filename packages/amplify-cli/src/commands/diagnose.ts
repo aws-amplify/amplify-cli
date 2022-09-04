@@ -35,7 +35,10 @@ export const reportError = async (context: Context, error: Error | undefined): P
 
   // if it's headless or already has been prompted earlier don't prompt just check the config
   if (!isHeadless && DebugConfig.Instance.promptSendReport()) {
-    sendReport = await prompter.yesOrNo('An unexpected error has occurred, opt in to send an error report to AWS Amplify with non-sensitive project configuration files. Confirm ', false);
+    sendReport = await prompter.yesOrNo(
+      'An unexpected error has occurred, opt in to send an error report to AWS Amplify with non-sensitive project configuration files. Confirm ',
+      false,
+    );
     if (sendReport) {
       showLearnMore(true);
     }
@@ -72,12 +75,14 @@ export const run = async (context: Context, error: Error | undefined = undefined
   await zipSend(context, skipPrompts, error);
 };
 
-const showLearnMore = (showOptOut: boolean) => {
+const showLearnMore = (showOptOut: boolean): void => {
   printer.blankLine();
   printer.info('Learn more at https://docs.amplify.aws/cli/reference/diagnose/');
   if (showOptOut) {
     printer.blankLine();
-    printer.info('This project has been opted in automatically to share non-sensitive project configuration files. you can opt out by running \'amplify diagnose --auto-send-off\'');
+    printer.info(
+      'This project has been opted in automatically to share non-sensitive project configuration files. you can opt out by running \'amplify diagnose --auto-send-off\'',
+    );
   }
 };
 
@@ -89,28 +94,30 @@ const zipSend = async (context: Context, skipPrompts: boolean, error: Error | un
       return;
     }
   }
-  spinner.start('Creating Zip');
-  const fileDestination = await createZip(context, error);
-  spinner.stop();
-  printer.blankLine();
-  printer.success(`Report saved: ${fileDestination}`);
-  printer.blankLine();
-  let canSendReport = true;
-  if (!skipPrompts) {
-    canSendReport = await prompter.yesOrNo('Send Report', false);
-  }
-  if (canSendReport) {
-    spinner.start('Sending zip');
-    try {
+  try {
+    spinner.start('Creating Zip');
+    const fileDestination = await createZip(context, error);
+    spinner.stop();
+    printer.blankLine();
+    printer.success(`Report saved: ${fileDestination}`);
+    printer.blankLine();
+    let canSendReport = true;
+    if (!skipPrompts) {
+      canSendReport = await prompter.yesOrNo('Send Report', false);
+    }
+    if (canSendReport) {
+      spinner.start('Sending zip');
       const projectId = await sendReport(context, fileDestination);
       spinner.succeed('Done');
       printer.blankLine();
       printer.info(`Project Identifier: ${projectId}`);
       printer.blankLine();
-    } catch (ex) {
-      context.usageData.emitError(ex);
-      spinner.fail();
     }
+  } catch (ex) {
+    printer.blankLine();
+    printer.info(ex.message);
+    context.usageData.emitError(ex);
+    spinner.fail();
   }
 };
 

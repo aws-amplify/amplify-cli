@@ -3,6 +3,53 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.47](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.2.46...amplify-graphql-migration-tests@2.2.47) (2022-08-06)
+
+**Note:** Version bump only for package amplify-graphql-migration-tests
+
+
+
+
+
+## [2.2.46](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.2.44...amplify-graphql-migration-tests@2.2.46) (2022-08-02)
+
+
+### Reverts
+
+* Revert "chore: upgrade api category dependencies" ([7e24faf](https://github.com/aws-amplify/amplify-cli/commit/7e24faf472f96eeb34171b7befa49f4b0da3f7ae))
+
+
+
+
+
+## [2.2.45](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.2.44...amplify-graphql-migration-tests@2.2.45) (2022-06-30)
+
+**Note:** Version bump only for package amplify-graphql-migration-tests
+
+
+
+
+
+## [2.2.44](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.2.43...amplify-graphql-migration-tests@2.2.44) (2022-06-22)
+
+**Note:** Version bump only for package amplify-graphql-migration-tests
+
+
+
+
+
+## [2.2.43](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.2.42...amplify-graphql-migration-tests@2.2.43) (2022-06-13)
+
+
+
+# 8.5.0 (2022-06-10)
+
+**Note:** Version bump only for package amplify-graphql-migration-tests
+
+
+
+
+
 ## [2.2.42](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.2.41...amplify-graphql-migration-tests@2.2.42) (2022-06-03)
 
 **Note:** Version bump only for package amplify-graphql-migration-tests

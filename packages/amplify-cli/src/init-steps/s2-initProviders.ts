@@ -1,37 +1,43 @@
+import { $TSAny, AmplifyError } from 'amplify-cli-core';
 import * as inquirer from 'inquirer';
 import sequential from 'promise-sequential';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 import { normalizeProviderName } from '../input-params-manager';
 
-export async function initProviders(context) {
+/**
+ * Initializes the backend providers
+ */
+export const initProviders = async (context): Promise<void> => {
   const providerPlugins = getProviderPlugins(context);
   const providers = await getProviders(context, providerPlugins);
   context.exeInfo.projectConfig.providers = providers;
-  const initializationTasks: (() => Promise<any>)[] = [];
+  const initializationTasks: (() => Promise<$TSAny>)[] = [];
 
   providers.forEach(provider => {
+    // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
     const providerModule = require(providerPlugins[provider]);
     initializationTasks.push(() => providerModule.init(context));
   });
 
   await sequential(initializationTasks);
   return context;
-}
+};
 
-async function getProviders(context, providerPlugins) {
+const getProviders = async (context, providerPlugins): Promise<$TSAny> => {
   let providers: string[] = [];
   const providerPluginList = Object.keys(providerPlugins);
 
   if (providerPluginList.length === 0) {
-    const errorMessage = 'Found no provider plugins';
-    context.print.error(errorMessage);
-    context.print.info("Run 'amplify plugin scan' to scan your system for provider plugins.");
-    throw new Error(errorMessage);
+    throw new AmplifyError('ProjectInitError', {
+      message: 'Found no provider plugins',
+      resolution: `Run 'amplify plugin scan' to scan your system for provider plugins.`,
+    });
   }
 
   const { inputParams } = context.exeInfo;
   if (inputParams && inputParams.amplify && inputParams.amplify.providers) {
     inputParams.amplify.providers.forEach(provider => {
+      // eslint-disable-next-line no-param-reassign
       provider = normalizeProviderName(provider, providerPluginList);
       if (provider) {
         providers.push(provider);
@@ -56,4 +62,4 @@ async function getProviders(context, providerPlugins) {
     }
   }
   return providers;
-}
+};

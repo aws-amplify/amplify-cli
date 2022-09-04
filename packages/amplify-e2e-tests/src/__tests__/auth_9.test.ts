@@ -9,7 +9,7 @@ import {
   getUserPool,
   initJSProjectWithProfile,
   nspawn as spawn,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 
 const defaultsSettings = {

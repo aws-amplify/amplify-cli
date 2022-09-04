@@ -201,13 +201,14 @@ export function amplifyPushUpdate(
   waitForText?: RegExp,
   testingWithLatestCodebase = false,
   allowDestructiveUpdates = false,
+  overridePushTimeoutMS = 0,
 ): Promise<void> {
   const args = ['push'];
   if (allowDestructiveUpdates) {
     args.push('--allow-destructive-graphql-schema-updates');
   }
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), args, { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    spawn(getCLIPath(testingWithLatestCodebase), args, { cwd, stripColors: true, noOutputTimeout: overridePushTimeoutMS || pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
       .wait(waitForText || /.*/)
@@ -404,7 +405,7 @@ export const amplifyPushDestructiveApiUpdate = (cwd: string, includeForce: boole
   }
   const chain = spawn(getCLIPath(), args, { cwd, stripColors: true });
   if (includeForce) {
-    chain.wait('All resources are updated in the cloud').run(err => (err ? reject(err) : resolve()));
+    chain.run(err => (err ? reject(err) : resolve()));
   } else {
     chain.wait('If this is intended, rerun the command with').run(err => (err ? resolve(err) : reject())); // in this case, we expect the CLI to error out
   }

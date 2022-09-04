@@ -1,12 +1,12 @@
 import {
-  $TSContext, JSONUtilities, pathManager, ResourceName, stateManager,
+  $TSContext, JSONUtilities, pathManager, ResourceName,
 } from 'amplify-cli-core';
 import {
   removeSecret, retainSecret, SecretDeltas, SecretName, setSecret,
 } from 'amplify-function-plugin-interface';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import _ from 'lodash';
+import { ensureEnvParamManager, getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { categoryName } from '../../../constants';
 import { prePushMissingSecretsWalkthrough } from '../service-walkthroughs/secretValuesWalkthrough';
 import { getFunctionCloudFormationTemplate, setFunctionCloudFormationTemplate } from '../utils/cloudformationHelpers';
@@ -91,7 +91,8 @@ export class FunctionSecretsStateManager {
       }
     }
     await tryPrependSecretsUsageExample(functionName, Object.keys(getExistingSecrets(secretDeltas)));
-    await setLocalFunctionSecretState(functionName, secretDeltas);
+    await ensureEnvParamManager();
+    setLocalFunctionSecretState(functionName, secretDeltas);
   };
 
   /**
@@ -278,22 +279,11 @@ const setLocalFunctionSecretState = (functionName: string, secretDeltas: SecretD
 };
 
 const setAppIdForFunctionInTeamProvider = (functionName: string): void => {
-  const tpi = stateManager.getTeamProviderInfo(undefined, { throwIfNotExist: false, default: {} });
-  const env = stateManager.getLocalEnvInfo()?.envName as string;
-  let funcTpi = tpi?.[env]?.categories?.[categoryName]?.[functionName];
-  if (!funcTpi) {
-    _.set(tpi, [env, 'categories', categoryName, functionName], {});
-    funcTpi = tpi[env].categories[categoryName][functionName];
-  }
-  _.assign(funcTpi, { [secretsPathAmplifyAppIdKey]: getAppId() });
-  stateManager.setTeamProviderInfo(undefined, tpi);
+  getEnvParamManager().getResourceParamManager(categoryName, functionName).setParam(secretsPathAmplifyAppIdKey, getAppId());
 };
 
 const removeAppIdForFunctionInTeamProvider = (functionName: string): void => {
-  const tpi = stateManager.getTeamProviderInfo(undefined, { throwIfNotExist: false, default: {} });
-  const env = stateManager.getLocalEnvInfo()?.envName as string;
-  _.unset(tpi, [env, 'categories', categoryName, functionName, secretsPathAmplifyAppIdKey]);
-  stateManager.setTeamProviderInfo(undefined, tpi);
+  getEnvParamManager().getResourceParamManager(categoryName, functionName).deleteParam(secretsPathAmplifyAppIdKey);
 };
 
 /**

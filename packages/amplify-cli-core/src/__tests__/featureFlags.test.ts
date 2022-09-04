@@ -1,3 +1,4 @@
+/* eslint-disable spellcheck/spell-checker */
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
@@ -147,11 +148,9 @@ describe('feature flags', () => {
 
     test('initialize feature flag provider successfully', async () => {
       const context: any = {
-        getEnvInfo: (_: boolean): any => {
-          return {
-            envName: 'dev',
-          };
-        },
+        getEnvInfo: (__: boolean): any => ({
+          envName: 'dev',
+        }),
       };
 
       const envProvider: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(context);
@@ -192,11 +191,9 @@ describe('feature flags', () => {
 
     test('initialize feature flag provider fail with json error', async () => {
       const context: any = {
-        getEnvInfo: (_: boolean): any => {
-          return {
-            envName: 'dev',
-          };
-        },
+        getEnvInfo: (__: boolean): any => ({
+          envName: 'dev',
+        }),
       };
 
       const envProvider: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(context);
@@ -214,11 +211,9 @@ describe('feature flags', () => {
 
     test('initialize feature flag provider successfully - overrides 1', async () => {
       const context: any = {
-        getEnvInfo: (_: boolean): any => {
-          return {
-            envName: 'dev',
-          };
-        },
+        getEnvInfo: (__: boolean): any => ({
+          envName: 'dev',
+        }),
       };
 
       const envProvider: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(context);
@@ -242,11 +237,9 @@ describe('feature flags', () => {
 
     test('initialize feature flag provider successfully - overrides 2', async () => {
       const context: any = {
-        getEnvInfo: (_: boolean): any => {
-          return {
-            envName: 'dev',
-          };
-        },
+        getEnvInfo: (__: boolean): any => ({
+          envName: 'dev',
+        }),
       };
 
       const envProvider: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(context);
@@ -270,11 +263,9 @@ describe('feature flags', () => {
 
     test('initialize feature flag provider successfully - overrides 3', async () => {
       const context: any = {
-        getEnvInfo: (_: boolean): any => {
-          return {
-            envName: 'dev',
-          };
-        },
+        getEnvInfo: (__: boolean): any => ({
+          envName: 'dev',
+        }),
       };
 
       const envProvider: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(context);
@@ -298,11 +289,9 @@ describe('feature flags', () => {
 
     test('initialize feature flag provider successfully - overrides 4', async () => {
       const context: any = {
-        getEnvInfo: (_: boolean): any => {
-          return {
-            envName: 'dev',
-          };
-        },
+        getEnvInfo: (__: boolean): any => ({
+          envName: 'dev',
+        }),
       };
 
       const envProvider: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(context);
@@ -326,11 +315,9 @@ describe('feature flags', () => {
 
     test('initialize feature flag provider fail with env error - section', async () => {
       const context: any = {
-        getEnvInfo: (_: boolean): any => {
-          return {
-            envName: 'dev',
-          };
-        },
+        getEnvInfo: (__: boolean): any => ({
+          envName: 'dev',
+        }),
       };
 
       const envProvider: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(context);
@@ -346,11 +333,9 @@ describe('feature flags', () => {
 
     test('initialize feature flag provider fail with env error - value', async () => {
       const context: any = {
-        getEnvInfo: (_: boolean): any => {
-          return {
-            envName: 'dev',
-          };
-        },
+        getEnvInfo: (__: boolean): any => ({
+          envName: 'dev',
+        }),
       };
 
       const envProvider: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(context);
@@ -366,11 +351,9 @@ describe('feature flags', () => {
 
     test('initialize feature flag provider fail with env error - bool', async () => {
       const context: any = {
-        getEnvInfo: (_: boolean): any => {
-          return {
-            envName: 'dev',
-          };
-        },
+        getEnvInfo: (__: boolean): any => ({
+          envName: 'dev',
+        }),
       };
 
       const envProvider: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(context);
@@ -386,11 +369,9 @@ describe('feature flags', () => {
 
     test('initialize feature flag provider fail with env error - number', async () => {
       const context: any = {
-        getEnvInfo: (_: boolean): any => {
-          return {
-            envName: 'dev',
-          };
-        },
+        getEnvInfo: (__: boolean): any => ({
+          envName: 'dev',
+        }),
       };
 
       const envProvider: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(context);
@@ -404,13 +385,11 @@ describe('feature flags', () => {
       }).rejects.toThrowError(`Invalid number value: 'invalid' for 'customtransformerversion' in section 'graphqltransformer'`);
     });
 
-    test('initialize feature flag provider fail unknown flags', async () => {
+    test('initialize feature flag provider fail unknown flags unless false', async () => {
       const context: any = {
-        getEnvInfo: (_: boolean): any => {
-          return {
-            envName: 'dev',
-          };
-        },
+        getEnvInfo: (__: boolean): any => ({
+          envName: 'dev',
+        }),
       };
 
       const envProvider: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(context);
@@ -423,32 +402,52 @@ describe('feature flags', () => {
         await FeatureFlags.initialize(envProvider, undefined, getTestFlags());
       }).rejects.toMatchObject({
         message: 'Invalid feature flag configuration',
-        name: 'JSONValidationError',
-        unknownFlags: ['graphqltransformer.foo', 'graphqltransformer.bar'],
-        otherErrors: ['graphqltransformer.customtransformerversion: should be number'],
+        name: 'FeatureFlagsValidationError',
+        link: 'https://docs.amplify.aws/cli/reference/feature-flags',
+        classification: 'ERROR',
+        details:
+`These feature flags are defined in the "amplify/cli.json" configuration file and are unknown to the currently running Amplify CLI:
+- graphqltransformer.foo,
+- graphqltransformer.bar
+The following feature flags have validation errors:
+- graphqltransformer.customtransformerversion: should be number`,
       });
     });
 
-    const getTestFlags = (): Record<string, FeatureFlagRegistration[]> => {
-      return {
-        graphQLTransformer: [
-          {
-            name: 'customTransformerVersion',
-            type: 'number',
-            defaultValueForExistingProjects: 4,
-            defaultValueForNewProjects: 5,
-          },
-        ],
-        keyTransformer: [
-          {
-            name: 'defaultQuery',
-            type: 'boolean',
-            defaultValueForExistingProjects: false,
-            defaultValueForNewProjects: true,
-          },
-        ],
+    test('initialize feature flag provider with unknown false flag', async () => {
+      const context: any = {
+        getEnvInfo: (__: boolean): any => ({
+          envName: 'dev',
+        }),
       };
-    };
+
+      const envProvider: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(context);
+      const projectPath = path.join(__dirname, 'testFiles', 'testProject-initialize-unknown-flag-false');
+
+      // Set current cwd to projectPath for .env to work correctly
+      process.chdir(projectPath);
+
+      await expect(FeatureFlags.initialize(envProvider, undefined, getTestFlags())).resolves.not.toThrow();
+    });
+
+    const getTestFlags = (): Record<string, FeatureFlagRegistration[]> => ({
+      graphQLTransformer: [
+        {
+          name: 'customTransformerVersion',
+          type: 'number',
+          defaultValueForExistingProjects: 4,
+          defaultValueForNewProjects: 5,
+        },
+      ],
+      keyTransformer: [
+        {
+          name: 'defaultQuery',
+          type: 'boolean',
+          defaultValueForExistingProjects: false,
+          defaultValueForNewProjects: true,
+        },
+      ],
+    });
   });
 
   describe('environment provider tests', () => {
@@ -537,8 +536,8 @@ describe('feature flags', () => {
       }).toThrowError(`Invalid variable name format: '<unknown>'`);
     });
 
-    const setVariables = (values: { [key: string]: any }) => {
-      for (let key of Object.keys(values)) {
+    const setVariables = (values: { [key: string]: any }): void => {
+      for (const key of Object.keys(values)) {
         process.env[key] = values[key];
       }
     };
@@ -549,7 +548,7 @@ describe('feature flags', () => {
       });
 
       await expect(async () => {
-        const _ = await provider.load();
+        await provider.load();
       }).rejects.toThrowError(`Invalid variable name format: '${variableName}'`);
     };
   });
@@ -557,11 +556,9 @@ describe('feature flags', () => {
   describe('file provider tests', () => {
     test('missing projectPath argument', async () => {
       const context: any = {
-        getEnvInfo: (_: boolean): any => {
-          return {
-            envName: 'dev',
-          };
-        },
+        getEnvInfo: (__: boolean): any => ({
+          envName: 'dev',
+        }),
       };
 
       const envProvider: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(context);
@@ -577,11 +574,9 @@ describe('feature flags', () => {
 
     test('reads features when both files exists', async () => {
       const context: any = {
-        getEnvInfo: (_: boolean): any => {
-          return {
-            envName: 'dev',
-          };
-        },
+        getEnvInfo: (__: boolean): any => ({
+          envName: 'dev',
+        }),
       };
 
       const envProvider: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(context);
@@ -609,11 +604,9 @@ describe('feature flags', () => {
 
     test('reads features when no environment file exist', async () => {
       const context: any = {
-        getEnvInfo: (_: boolean): any => {
-          return {
-            envName: 'dev',
-          };
-        },
+        getEnvInfo: (__: boolean): any => ({
+          envName: 'dev',
+        }),
       };
 
       const envProvider: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(context);
@@ -635,11 +628,9 @@ describe('feature flags', () => {
 
     test('reads features when no files exist', async () => {
       const context: any = {
-        getEnvInfo: (_: boolean): any => {
-          return {
-            envName: 'dev',
-          };
-        },
+        getEnvInfo: (__: boolean): any => ({
+          envName: 'dev',
+        }),
       };
 
       const envProvider: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(context);
@@ -657,11 +648,9 @@ describe('feature flags', () => {
 
     test('reads features when only environment file exists', async () => {
       const context: any = {
-        getEnvInfo: (_: boolean): any => {
-          return {
-            envName: 'dev',
-          };
-        },
+        getEnvInfo: (__: boolean): any => ({
+          envName: 'dev',
+        }),
       };
 
       const envProvider: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(context);
@@ -685,9 +674,7 @@ describe('feature flags', () => {
 
     test('reads features when no files exists and env is unavailable', async () => {
       const context: any = {
-        getEnvInfo: (_: boolean): any => {
-          return undefined;
-        },
+        getEnvInfo: (__: boolean): any => undefined,
       };
 
       const envProvider: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(context);

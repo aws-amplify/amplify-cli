@@ -10,7 +10,7 @@ import {
   amplifyPushUpdate,
   addApiWithoutSchema,
   updateApiWithMultiAuth,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 
 describe('Schema iterative update - add new @models and @key', () => {
   let projectDir: string;
@@ -25,7 +25,7 @@ describe('Schema iterative update - add new @models and @key', () => {
     await deleteProject(projectDir);
     deleteProjectDir(projectDir);
   });
-  it('should support adding a new @key to existing @model and adding multiple @models with iam @auth enabled ', async () => {
+  it('should support adding a new @key to existing @model and adding multiple @models with iam @auth enabled', async () => {
     const apiName = 'addkeyandmodel';
 
     const initialSchema = path.join('iterative-push', 'add-one-key-multiple-models', 'initial-schema.graphql');

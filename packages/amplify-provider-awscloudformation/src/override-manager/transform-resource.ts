@@ -1,4 +1,6 @@
-import { $TSContext, FeatureFlags, IAmplifyResource, JSONUtilities, pathManager } from 'amplify-cli-core';
+import {
+  $TSContext, FeatureFlags, IAmplifyResource, JSONUtilities, pathManager,
+} from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import ora from 'ora';
@@ -29,16 +31,15 @@ export async function transformResourceWithOverrides(context: $TSContext, resour
         FeatureFlags.ensureFeatureFlag('project', 'overrides');
         spinner.stop();
         return;
-      } else {
-        printer.info('Overrides functionality is not implemented for this category');
       }
+      printer.debug('Overrides functionality is not implemented for this category');
     } else {
       // old app -> migrate project must transform -> change detected
       // new app -> just initialized project no transform -> no change detected
       // new app -> just pushed project {
       //  overrides enabled : transform -> change detected
       //  override disabled : no transform -> No change detected
-      //}
+      // }
 
       // RootStack deployed to backend/awscloudformation/build
       const projectRoot = pathManager.findProjectRoot();
@@ -46,23 +47,20 @@ export async function transformResourceWithOverrides(context: $TSContext, resour
       fs.ensureDirSync(rootStackBackendBuildDir);
       const rootStackBackendFilePath = path.join(rootStackBackendBuildDir, rootStackFileName);
       if (isMigrateProject()) {
-        //old App
+        // old App
         const template = await transformRootStack(context);
         await prePushCfnTemplateModifier(template);
         JSONUtilities.writeJson(rootStackBackendFilePath, template);
-      } else {
-        if (isRootOverrideFileModifiedSinceLastPush()) {
-          // new App before push
-          const template = await transformRootStack(context);
-          await prePushCfnTemplateModifier(template);
-          JSONUtilities.writeJson(rootStackBackendFilePath, template);
-        }
+      } else if (isRootOverrideFileModifiedSinceLastPush()) {
+        // new App before push
+        const template = await transformRootStack(context);
+        await prePushCfnTemplateModifier(template);
+        JSONUtilities.writeJson(rootStackBackendFilePath, template);
       }
     }
   } catch (err) {
     if (spinner) {
       spinner.stop();
     }
-    return;
   }
 }

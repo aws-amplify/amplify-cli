@@ -162,7 +162,7 @@ async function launch(givenOptions = {}, retry = 0, startTime = Date.now()) {
           stderr += buffer.toString();
 
           // Check stderr for any known errors.
-          if (/^Invalid directory for database creation.$/.test(stderr)) {
+          if (/^Invalid directory for database creation.$/m.test(stderr)) {
             proc.stdout.removeListener('data', readStdoutBuffer);
             proc.stderr.removeListener('data', readStderrBuffer);
             const err = new Error('invalid directory for database creation');

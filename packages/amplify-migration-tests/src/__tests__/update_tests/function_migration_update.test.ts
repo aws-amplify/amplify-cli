@@ -19,7 +19,7 @@ import {
   validateLayerMetadata,
   addApiWithoutSchema,
   generateRandomShortId,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
 import { initJSProjectWithProfile, versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
 

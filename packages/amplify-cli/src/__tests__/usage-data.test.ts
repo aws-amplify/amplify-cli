@@ -5,7 +5,7 @@ import * as uuid from 'uuid';
 import { UsageData } from '../domain/amplify-usageData/UsageData';
 import { getUrl } from '../domain/amplify-usageData/getUsageDataUrl';
 import { Input } from '../domain/input';
-import { ManuallyTimedCodePath } from '../domain/amplify-usageData/IUsageData';
+import { ManuallyTimedCodePath } from '../domain/amplify-usageData/UsageDataTypes';
 import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
 
 const baseOriginalUrl = 'https://cli.amplify';

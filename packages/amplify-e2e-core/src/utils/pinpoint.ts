@@ -156,7 +156,6 @@ export function pushToCloud(cwd: string): Promise<void> {
     spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue')
       .sendCarriageReturn()
-      .wait('All resources are updated in the cloud')
       .wait('Pinpoint URL to track events')
       .run((err: Error) => {
         if (!err) {

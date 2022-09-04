@@ -4,7 +4,4 @@
     "outDir": "./lib",
     "rootDir": "./src",
   },
-  "references": [
-    { "path": "../amplify-cli-core" }
-  ]
 }

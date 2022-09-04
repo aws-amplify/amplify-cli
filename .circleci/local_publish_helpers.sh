@@ -12,24 +12,6 @@ function startLocalRegistry {
     grep -q 'http address' <(tail -f $tmp_registry_log)
 }
 
-function setNpmTag {
-    if [ -z $NPM_TAG ]; then
-        if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
-            if [[ "$CIRCLE_BRANCH" =~ ^tagged-release-without-e2e-tests\/.* ]]; then
-                export NPM_TAG="${CIRCLE_BRANCH/tagged-release-without-e2e-tests\//}"
-            elif [[ "$CIRCLE_BRANCH" =~ ^tagged-release\/.* ]]; then
-                export NPM_TAG="${CIRCLE_BRANCH/tagged-release\//}"
-            fi
-        fi
-        if [[ "$CIRCLE_BRANCH" == "beta" ]]; then
-            export NPM_TAG="beta"
-        fi
-    else
-        echo "NPM tag was already set!"
-    fi
-    echo $NPM_TAG
-}
-
 function uploadPkgCli {
     aws configure --profile=s3-uploader set aws_access_key_id $S3_ACCESS_KEY
     aws configure --profile=s3-uploader set aws_secret_access_key $S3_SECRET_ACCESS_KEY
@@ -38,7 +20,7 @@ function uploadPkgCli {
     export hash=$(git rev-parse HEAD | cut -c 1-12)
     export version=$(./amplify-pkg-linux-x64 --version)
 
-    if [[ "$CIRCLE_BRANCH" == "release" ]] || [[ "$CIRCLE_BRANCH" == "beta" ]] || [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
+    if [[ "$CIRCLE_BRANCH" == "release" ]] || [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
         tar -czvf amplify-pkg-linux-arm64.tgz amplify-pkg-linux-arm64
         tar -czvf amplify-pkg-linux-x64.tgz amplify-pkg-linux-x64
         tar -czvf amplify-pkg-macos-x64.tgz amplify-pkg-macos-x64
@@ -88,10 +70,11 @@ function generatePkgCli {
 
   # Build pkg cli
   cp package.json ../build/node_modules/package.json
-  if [[ "$CIRCLE_BRANCH" == "release" ]] || [[ "$CIRCLE_BRANCH" == "beta" ]] || [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
+  if [[ "$CIRCLE_BRANCH" == "release" ]] || [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
     npx pkg -t node14-macos-x64,node14-linux-x64,node14-linux-arm64,node14-win-x64 ../build/node_modules --out-path ../out
   else
-    npx pkg -t node14-linux-x64,node14-win-x64 ../build/node_modules --out-path ../out
+    npx pkg -t node14-macos-x64,node14-linux-x64,node14-win-x64 ../build/node_modules --out-path ../out
+    mv ../out/amplify-pkg-macos ../out/amplify-pkg-macos-x64
     mv ../out/amplify-pkg-linux ../out/amplify-pkg-linux-x64
     mv ../out/amplify-pkg-win.exe ../out/amplify-pkg-win-x64.exe
   fi
@@ -136,21 +119,28 @@ function setSudoNpmRegistryUrlToLocal {
 }
 
 function useChildAccountCredentials {
-    if [ -z "$USE_PARENT_ACCOUNT" ]; then
-        export AWS_PAGER=""
-        export ORGANIZATION_SIZE=$(aws organizations list-accounts | jq '.Accounts | length')
-        export CREDS=$(aws sts assume-role --role-arn arn:aws:iam::$(aws organizations list-accounts | jq -c -r ".Accounts [$(($RANDOM % $ORGANIZATION_SIZE))].Id"):role/OrganizationAccountAccessRole --role-session-name testSession$((1 + $RANDOM % 10000)) --duration-seconds 3600)
-        if [ -z $(echo $CREDS | jq -c -r '.AssumedRoleUser.Arn') ]; then
-            echo "Unable to assume child account role. Falling back to parent AWS account"
-        else
-            echo "Using account credentials for $(echo $CREDS | jq -c -r '.AssumedRoleUser.Arn')"
-            export AWS_ACCESS_KEY_ID=$(echo $CREDS | jq -c -r ".Credentials.AccessKeyId")
-            export AWS_SECRET_ACCESS_KEY=$(echo $CREDS | jq -c -r ".Credentials.SecretAccessKey")
-            export AWS_SESSION_TOKEN=$(echo $CREDS | jq -c -r ".Credentials.SessionToken")
-        fi
-    else
-        echo "Using parent account credentials."
+    if [[ ! -z "$USE_PARENT_ACCOUNT" ]]; then
+        echo "Using parent account credentials"
+        exit 0
     fi
+    export AWS_PAGER=""
+    parent_acct=$(aws sts get-caller-identity | jq -cr '.Account')
+    child_accts=$(aws organizations list-accounts | jq -c "[.Accounts[].Id | select(. != \"$parent_acct\")]")
+    org_size=$(echo $child_accts | jq 'length')
+    pick_acct=$(echo $child_accts | jq -cr ".[$RANDOM % $org_size]")
+    session_id=$((1 + $RANDOM % 10000))
+    if [[ -z "$pick_acct" || -z "$session_id" ]]; then
+        echo "Unable to find a child account. Falling back to parent AWS account"
+        exit 0
+    fi
+    creds=$(aws sts assume-role --role-arn arn:aws:iam::${pick_acct}:role/OrganizationAccountAccessRole --role-session-name testSession${session_id} --duration-seconds 3600)
+    if [ -z $(echo $creds | jq -c -r '.AssumedRoleUser.Arn') ]; then
+        echo "Unable to assume child account role. Falling back to parent AWS account"
+    fi
+    echo "Using account credentials for $(echo $creds | jq -c -r '.AssumedRoleUser.Arn')"
+    export AWS_ACCESS_KEY_ID=$(echo $creds | jq -c -r ".Credentials.AccessKeyId")
+    export AWS_SECRET_ACCESS_KEY=$(echo $creds | jq -c -r ".Credentials.SecretAccessKey")
+    export AWS_SESSION_TOKEN=$(echo $creds | jq -c -r ".Credentials.SessionToken")
 }
 
 function retry {

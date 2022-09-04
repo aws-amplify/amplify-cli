@@ -11,7 +11,7 @@ import {
   initJSProjectWithProfile,
   transformCurrentProjectToGitPulledProject,
   updatedInitNewEnvWithProfile,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import * as specialCaseInit from '../init-special-cases';
 
 describe('amplify init', () => {

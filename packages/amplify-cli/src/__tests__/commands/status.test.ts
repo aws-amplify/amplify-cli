@@ -1,8 +1,46 @@
-describe('amplify status: ', () => {
+import { stateManager, pathManager } from 'amplify-cli-core';
+import { readProjectSchema } from 'graphql-transformer-core';
+
+jest.mock('amplify-category-hosting');
+jest.mock('amplify-cli-core');
+jest.mock('graphql-transformer-core', () => ({
+  readProjectSchema: jest.fn(async (__: string) => ''),
+}));
+jest.mock('../../extensions/amplify-helpers/show-auth-acm', () => ({
+  showACM: jest.fn(),
+}));
+const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
+pathManagerMock.getBackendDirPath.mockReturnValue('testBackendDirPath');
+
+const testApiName = 'testApiName';
+const mockGraphQLAPIMeta = {
+  providers: {
+    awscloudformation: {
+      Region: 'myMockRegion',
+    },
+  },
+  api: {
+    [testApiName]: {
+      service: 'AppSync',
+    },
+  },
+};
+
+const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
+stateManagerMock.getMeta = jest.fn().mockImplementation(() => mockGraphQLAPIMeta);
+
+const readProjectSchemaMock = readProjectSchema as jest.MockedFunction<typeof readProjectSchema>;
+
+describe('amplify status:', () => {
+  // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
   const { run } = require('../../commands/status');
   const runStatusCmd = run;
   const statusPluginInfo = `${process.cwd()}/../amplify-console-hosting`;
   const mockPath = './';
+
+  afterAll(() => {
+    jest.clearAllMocks();
+  });
 
   it('status run method should exist', () => {
     expect(runStatusCmd).toBeDefined();
@@ -85,7 +123,34 @@ describe('amplify status: ', () => {
       },
     };
     runStatusCmd(mockContextWithHelpSubcommandAndCLArgs);
-    //TBD: to move ViewResourceTableParams into a separate file for mocking instance functions.
+    // TBD: to move ViewResourceTableParams into a separate file for mocking instance functions.
     expect(mockContextWithHelpSubcommandAndCLArgs.amplify.showStatusTable.mock.calls.length).toBe(0);
+  });
+
+  it('status api -acm Table run method should call readProjectSchema', async () => {
+    const mockContextWithVerboseOptionAndCLArgs = {
+      amplify: {
+        getProviderPlugins: jest.fn().mockReturnValue({ awscloudformation: '../../__mocks__/faked-plugin' }),
+        showStatusTable: jest.fn(),
+        showGlobalSandboxModeWarning: jest.fn(),
+        showHelpfulProviderLinks: jest.fn(),
+        getCategoryPluginInfo: jest.fn().mockReturnValue({ packageLocation: statusPluginInfo }),
+      },
+      input: {
+        command: 'status',
+        options: {
+          verbose: true,
+          api: true,
+          acm: 'Team',
+        },
+      },
+    };
+
+    jest.mock('../../../__mocks__/faked-plugin', () => ({
+      compileSchema: jest.fn().mockReturnValue(Promise.resolve({})),
+    }));
+
+    await runStatusCmd(mockContextWithVerboseOptionAndCLArgs);
+    expect(readProjectSchemaMock.mock.calls.length).toBeGreaterThan(0);
   });
 });

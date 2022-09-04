@@ -4,7 +4,7 @@ import {
   AddAuthIdentityPoolAndUserPoolWithOAuthSettings,
   AddStorageSettings,
   AddDynamoDBSettings,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 
 export const createNoOAuthSettings = (projectPrefix: string, shortId: string): AddAuthUserPoolOnlyNoOAuthSettings => {
   return {

@@ -1,6 +1,6 @@
 {
-  "name": "amplify-console-integration-tests",
-  "version": "2.2.41",
+  "name": "@aws-amplify/amplify-console-integration-tests",
+  "version": "2.3.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -21,23 +21,21 @@
     "setup-profile": "ts-node ./src/setup-profile.ts"
   },
   "dependencies": {
+    "@aws-amplify/amplify-e2e-core": "4.0.0",
     "@types/ini": "^1.3.30",
-    "amplify-cli-core": "2.9.0",
-    "amplify-e2e-core": "3.3.0",
+    "amplify-cli-core": "2.12.0",
     "aws-sdk": "^2.1113.0",
     "dotenv": "^8.2.0",
-    "esm": "^3.2.25",
     "fs-extra": "^8.1.0",
     "ini": "^1.3.5",
     "moment": "^2.24.0",
-    "nexpect": "^0.6.0",
     "promise-sequential": "^1.1.1"
   },
   "jest": {
     "verbose": false,
     "preset": "ts-jest",
-    "testRunner": "amplify-e2e-core/runner",
-    "testEnvironment": "amplify-e2e-core/environment",
+    "testRunner": "@aws-amplify/amplify-e2e-core/runner",
+    "testEnvironment": "@aws-amplify/amplify-e2e-core/environment",
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
@@ -58,7 +56,7 @@
       "default",
       "jest-junit",
       [
-        "amplify-e2e-core/reporter",
+        "@aws-amplify/amplify-e2e-core/reporter",
         {
           "publicPath": "./console-integration-reports",
           "filename": "index.html",

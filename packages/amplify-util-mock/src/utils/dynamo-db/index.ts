@@ -3,10 +3,10 @@ import { createTables, describeTables, getUpdateTableInput, updateTables } from 
 import { CreateTableInput } from 'aws-sdk/clients/dynamodb';
 
 export type MockDynamoDBConfig = {
-  tables: { Properties: CreateTableInput }[];
+  tables: { Properties: CreateTableInput, isNewlyAdded: boolean }[];
 };
 
-export async function createAndUpdateTable(dynamoDbClient: DynamoDB, config: MockDynamoDBConfig): Promise<void> {
+export async function createAndUpdateTable(dynamoDbClient: DynamoDB, config: MockDynamoDBConfig): Promise<MockDynamoDBConfig> {
   const tables = config.tables.map(table => table.Properties);
   const existingTables = await dynamoDbClient.listTables().promise();
   const existingTablesWithDetails = await describeTables(dynamoDbClient, existingTables.TableNames);
@@ -25,6 +25,11 @@ export async function createAndUpdateTable(dynamoDbClient: DynamoDB, config: Moc
     return [...acc, ...getUpdateTableInput(createTableInput, existingTableDetail)];
   }, []);
   await updateTables(dynamoDbClient, updateTableInputs);
+
+  config?.tables?.forEach( table => {
+    table.isNewlyAdded = tablesToCreate.map(t => t?.TableName)?.includes(table?.Properties?.TableName);
+  });
+  return config;
 }
 
 export function configureDDBDataSource(config, ddbConfig) {

@@ -5,10 +5,10 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
-import { AuthTriggerConnection, CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
-import { CustomResource } from '@aws-cdk/core';
-import { authTriggerAssetFilePath } from '../constants';
+import { Construct, CustomResource } from '@aws-cdk/core';
 import { v4 as uuid } from 'uuid';
+import { AuthTriggerConnection, CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
+import { authTriggerAssetFilePath } from '../constants';
 
 type CustomResourceAuthStackProps = Readonly<{
   description: string;
@@ -17,6 +17,9 @@ type CustomResourceAuthStackProps = Readonly<{
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 
+/**
+ * CDK stack for custom auth resources
+ */
 export class CustomResourceAuthStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props: CustomResourceAuthStackProps) {
     super(scope, id, props);
@@ -34,6 +37,7 @@ export class CustomResourceAuthStack extends cdk.Stack {
       type: 'String',
     });
 
+    // eslint-disable-next-line no-new
     new cdk.CfnCondition(this, 'ShouldNotCreateEnvResources', {
       expression: cdk.Fn.conditionEquals(env, 'NONE'),
     });
@@ -46,54 +50,65 @@ export class CustomResourceAuthStack extends cdk.Stack {
         type: 'String',
       });
       createPermissionToInvokeLambda(this, fnName, userpoolArn, config);
+      // eslint-disable-next-line no-param-reassign
       config.lambdaFunctionArn = fnArn.valueAsString;
     });
 
     createCustomResource(this, props.authTriggerConnections, userpoolId);
   }
 
-  toCloudFormation() {
+  /**
+   * Generates a CFN template from the CDK stack
+   */
+  toCloudFormation(): Record<string, unknown> {
     prepareApp(this);
     return this._toCloudFormation();
   }
 }
 
-export async function generateNestedAuthTriggerTemplate(category: string, resourceName: string, request: CognitoStackOptions) {
+/**
+ * Creates nested auth trigger CFN template and writes it to the project directory
+ */
+export const generateNestedAuthTriggerTemplate = async (
+  category: string,
+  resourceName: string,
+  request: CognitoStackOptions,
+): Promise<void> => {
   const cfnFileName = 'auth-trigger-cloudformation-template.json';
   const targetDir = path.join(pathManager.getBackendDirPath(), category, resourceName, 'build');
   const authTriggerCfnFilePath = path.join(targetDir, cfnFileName);
   const { authTriggerConnections } = request;
   if (authTriggerConnections) {
-    const cfnObject = await createCustomResourceforAuthTrigger(authTriggerConnections);
+    const cfnObject = await createCustomResourceForAuthTrigger(authTriggerConnections);
     JSONUtilities.writeJson(authTriggerCfnFilePath, cfnObject);
   } else {
-    // delete the custom stack template if the triggers arent defined
+    // delete the custom stack template if the triggers aren't defined
     try {
       fs.unlinkSync(authTriggerCfnFilePath);
     } catch (err) {
       // if its not present do nothing
     }
   }
-}
+};
 
-async function createCustomResourceforAuthTrigger(authTriggerConnections: AuthTriggerConnection[]) {
-  const stack = new CustomResourceAuthStack(undefined as any, 'Amplify', {
+const createCustomResourceForAuthTrigger = (authTriggerConnections: AuthTriggerConnection[]): Record<string, unknown> => {
+  const stack = new CustomResourceAuthStack(undefined as unknown as Construct, 'Amplify', {
     description: 'Custom Resource stack for Auth Trigger created using Amplify CLI',
-    authTriggerConnections: authTriggerConnections,
+    authTriggerConnections,
   });
   const cfn = stack.toCloudFormation();
   return cfn;
-}
+};
 
-function createCustomResource(stack: cdk.Stack, authTriggerConnections: AuthTriggerConnection[], userpoolId: cdk.CfnParameter) {
+const createCustomResource = (stack: cdk.Stack, authTriggerConnections: AuthTriggerConnection[], userpoolId: cdk.CfnParameter): void => {
   const triggerCode = fs.readFileSync(authTriggerAssetFilePath, 'utf-8');
   const authTriggerFn = new lambda.Function(stack, 'authTriggerFn', {
-    runtime: lambda.Runtime.NODEJS_12_X,
+    runtime: lambda.Runtime.NODEJS_14_X,
     code: lambda.Code.fromInline(triggerCode),
     handler: 'index.handler',
   });
   // reason to add iam::PassRole
-  //AccessDeniedException: User: arn:aws:sts::<ACCOUNT_ID>:assumed-role/amplify-emailcheck-dev-17-authTriggerFnServiceRole-1JAJZTK0HHAHP/amplify-emailcheck-dev-17374-authTriggerFn7FCFA449-SP7WeFmC9mD1 is not authorized to perform: iam:PassRole on resource: arn:aws:iam::ACCOUNT_ID:role/sns533b49c5173740-dev
+  // AccessDeniedException: User: <IAM User> is not authorized to perform: iam:PassRole on resource: <auth trigger role>
   if (authTriggerFn.role) {
     authTriggerFn.role.addToPrincipalPolicy(
       new iam.PolicyStatement({
@@ -106,23 +121,25 @@ function createCustomResource(stack: cdk.Stack, authTriggerConnections: AuthTrig
 
   // The custom resource that uses the provider to supply value
   // Passing in a nonce parameter to ensure that the custom resource is triggered on every deployment
+  // eslint-disable-next-line no-new
   new CustomResource(stack, 'CustomAuthTriggerResource', {
     serviceToken: authTriggerFn.functionArn,
     properties: { userpoolId: userpoolId.valueAsString, lambdaConfig: authTriggerConnections, nonce: uuid() },
     resourceType: 'Custom::CustomAuthTriggerResourceOutputs',
   });
-}
+};
 
-function createPermissionToInvokeLambda(
+const createPermissionToInvokeLambda = (
   stack: cdk.Stack,
   fnName: cdk.CfnParameter,
   userpoolArn: cdk.CfnParameter,
   config: AuthTriggerConnection,
-) {
+): void => {
+  // eslint-disable-next-line no-new
   new lambda.CfnPermission(stack, `UserPool${config.triggerType}LambdaInvokePermission`, {
     action: 'lambda:InvokeFunction',
     functionName: fnName.valueAsString,
     principal: 'cognito-idp.amazonaws.com',
     sourceArn: userpoolArn.valueAsString,
   });
-}
+};

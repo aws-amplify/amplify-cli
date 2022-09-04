@@ -45,7 +45,7 @@ export async function pythonPackage(context: any, params: PackageRequest): Promi
       zipEntries.push({
         sourceFolder: path.join(params.srcRoot, 'src'),
         packageFolder: await getPipenvDir(params.srcRoot),
-        ignoreFiles: ['**/dist/**', '**/__pycache__/**'],
+        ignoreFiles: ['**/dist/**', '**/__pycache__/**', '**/test/**', '**/tests/**', 'distutils**', 'pip**', 'pkg_resources**', 'setuptools**', 'src.egg-info/**', 'wheel**', '_virtualenv**', 'easy-install.pth', 'src.egg-link'],
       });
     }
     return Promise.resolve({ packageHash, zipEntries });

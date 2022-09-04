@@ -154,7 +154,7 @@ export const migrateLegacyLayer = async (context: $TSContext, layerName: string)
     description: '',
   });
 
-  migrateAmplifyProjectFiles(layerName, 'legacyLayerMigration', context.amplify.getEnvInfo().envName);
+  migrateAmplifyProjectFiles(layerName, 'legacyLayerMigration');
   writeLayerConfigurationFile(layerName, layerConfiguration);
 
   fs.removeSync(path.join(layerDirPath, LegacyFilename.layerRuntimes));
@@ -197,31 +197,12 @@ export const readLegacyRuntimes = (layerName: string, legacyState: LegacyState):
   return undefined;
 };
 
-/**
- * remove layer from TPI file
- */
-export const removeLayerFromTeamProviderInfo = (projectRoot: string | undefined, envName: string, layerName: string): void => {
-  // eslint-disable-next-line spellcheck/spell-checker
-  const nonCfnDataKey = 'nonCFNdata';
-  const teamProviderInfo = stateManager.getTeamProviderInfo(projectRoot);
-
-  _.unset(teamProviderInfo, [envName, nonCfnDataKey, categoryName, layerName]);
-  if (_.isEmpty(_.get(teamProviderInfo, [envName, nonCfnDataKey, categoryName]))) {
-    _.unset(teamProviderInfo, [envName, nonCfnDataKey, categoryName]);
-    if (_.isEmpty(_.get(teamProviderInfo, [envName, nonCfnDataKey]))) {
-      _.unset(teamProviderInfo, [envName, nonCfnDataKey]);
-    }
-  }
-  stateManager.setTeamProviderInfo(projectRoot, teamProviderInfo);
-};
-
 const readLegacyLayerParametersJson = (
   layerDirPath: string,
 ): LegacyLayerParametersJson => JSONUtilities.readJson<LegacyLayerParametersJson>(path.join(layerDirPath, LegacyFilename.layerParameters));
 
-const migrateAmplifyProjectFiles = (layerName: string, latestLegacyHash: string, envName?: string): void => {
+const migrateAmplifyProjectFiles = (layerName: string, latestLegacyHash: string): void => {
   const projectRoot = pathManager.findProjectRoot();
-  removeLayerFromTeamProviderInfo(projectRoot, envName, layerName);
   const meta = stateManager.getMeta(projectRoot);
 
   if (meta?.[categoryName]?.[layerName]?.[layerVersionMapKey]) {

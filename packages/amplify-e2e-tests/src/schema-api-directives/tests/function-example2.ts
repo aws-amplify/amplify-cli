@@ -7,7 +7,7 @@ import {
   addApiWithCognitoUserPoolAuthTypeWhenAuthExists,
   updateAuthAddUserGroups,
   addAuthWithDefault,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 
 import { updateFunctionNameInSchema } from '../functionTester';
 

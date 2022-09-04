@@ -5,6 +5,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { CloudFormation } from 'aws-sdk';
 import _ from 'lodash';
+import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { S3 } from '../aws-utils/aws-s3';
 import { fileLogger } from '../utils/aws-logger';
 import { getPreviousDeploymentRecord } from '../utils/amplify-resource-state-utils';
@@ -137,10 +138,8 @@ const generateIterativeFuncDeploymentOp = async (
     throwIfNotExist: false,
     default: {},
   });
-  const tpi = stateManager.getTeamProviderInfo(undefined, { throwIfNotExist: false, default: {} });
-  const env = stateManager.getLocalEnvInfo().envName;
-  const tpiCfnParams = tpi?.[env]?.categories?.function?.[functionName] || {};
-  const params = { ...parameters, ...funcCfnParams, ...tpiCfnParams };
+  const funcEnvParams = (await ensureEnvParamManager()).instance.getResourceParamManager('function', functionName).getAllParams();
+  const params = { ...parameters, ...funcCfnParams, ...funcEnvParams };
   const deploymentStep: DeploymentOp = {
     stackTemplatePathOrUrl: getTempFuncTemplateS3Key(functionName),
     parameters: params,

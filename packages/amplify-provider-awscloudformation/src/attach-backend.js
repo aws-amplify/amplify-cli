@@ -1,3 +1,5 @@
+// Disable lint until this file is converted to TS
+/* eslint-disable */
 const aws = require('aws-sdk');
 const fs = require('fs-extra');
 const path = require('path');
@@ -15,7 +17,6 @@ const { resolveAppId } = require('./utils/resolve-appId');
 const { adminLoginFlow } = require('./admin-login');
 const { fileLogger } = require('./utils/aws-logger');
 const logger = fileLogger('attach-backend');
-const { downloadHooks } = require('./utils/hooks-manager');
 
 async function run(context) {
   let appId;
@@ -76,12 +77,11 @@ async function run(context) {
   const backendEnv = await getBackendEnv(context, amplifyClient, amplifyApp);
 
   await downloadBackend(context, backendEnv, awsConfigInfo);
-  await downloadHooks(context, backendEnv, awsConfigInfo);
   const currentAmplifyMeta = await ensureAmplifyMeta(context, amplifyApp, awsConfigInfo);
 
   context.exeInfo.projectConfig.projectName = amplifyApp.name;
   context.exeInfo.localEnvInfo.envName = backendEnv.environmentName;
-  context.exeInfo.teamProviderInfo[backendEnv.environmentName] = currentAmplifyMeta.providers;
+  _.set(context, ['exeInfo', 'teamProviderInfo', backendEnv.environmentName], currentAmplifyMeta.providers);
 }
 
 async function ensureAmplifyMeta(context, amplifyApp, awsConfigInfo) {

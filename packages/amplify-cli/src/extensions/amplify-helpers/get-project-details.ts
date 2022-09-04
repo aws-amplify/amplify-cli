@@ -4,7 +4,7 @@ import { getEnvInfo } from './get-env-info';
 /**
  * Gets metadata about the project
  */
-export const getProjectDetails = (): { projectConfig: $TSAny; amplifyMeta: $TSAny; localEnvInfo: $TSAny; teamProviderInfo: $TSAny; } => {
+export const getProjectDetails = (): { projectConfig: $TSAny; amplifyMeta: $TSAny; localEnvInfo: $TSAny; } => {
   const projectConfig = stateManager.getProjectConfig();
 
   let amplifyMeta = {};
@@ -15,16 +15,9 @@ export const getProjectDetails = (): { projectConfig: $TSAny; amplifyMeta: $TSAn
 
   const localEnvInfo = getEnvInfo();
 
-  let teamProviderInfo = {};
-
-  if (stateManager.teamProviderInfoExists()) {
-    teamProviderInfo = stateManager.getTeamProviderInfo();
-  }
-
   return {
     projectConfig,
     amplifyMeta,
     localEnvInfo,
-    teamProviderInfo,
   };
 };

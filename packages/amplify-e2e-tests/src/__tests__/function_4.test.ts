@@ -2,18 +2,12 @@ import {
   addFunction,
   addLayer,
   addOptData,
-  amplifyPushAuth,
   amplifyPushLayer,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
-  functionBuild,
   functionCloudInvoke,
-  functionMockAssert,
-  getCloudWatchEventRule,
-  getFunction,
   getProjectConfig,
-  getProjectMeta,
   initJSProjectWithProfile,
   LayerOptions,
   LayerRuntime,
@@ -22,8 +16,7 @@ import {
   overrideFunctionSrcPython,
   overrideLayerCodeNode,
   overrideLayerCodePython,
-  updateFunction,
-} from 'amplify-e2e-core';
+} from '@aws-amplify/amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
 
 describe('add function with layers for runtime nodeJS', () => {
@@ -82,7 +75,7 @@ describe('add function with layers for runtime nodeJS', () => {
     });
 
     const payload = '{}';
-    const response = await functionCloudInvoke(projRoot, { funcName: functionName, payload: payload });
+    const response = await functionCloudInvoke(projRoot, { funcName: functionName, payload });
 
     expect(JSON.parse(JSON.parse(response.Payload.toString()).body)).toEqual(helloWorldSuccessOutput);
   });
@@ -133,7 +126,7 @@ describe('add function with layers for runtime nodeJS', () => {
     });
 
     const payload = '{}';
-    const response = await functionCloudInvoke(projRoot, { funcName: functionName, payload: payload });
+    const response = await functionCloudInvoke(projRoot, { funcName: functionName, payload });
 
     expect(JSON.parse(JSON.parse(response.Payload.toString()).body)).toEqual(helloWorldSuccessOutput);
   });
@@ -196,7 +189,7 @@ describe('add function with layers for runtime python', () => {
     });
 
     const payload = '{}';
-    const response = await functionCloudInvoke(projRoot, { funcName: functionName, payload: payload });
+    const response = await functionCloudInvoke(projRoot, { funcName: functionName, payload });
 
     expect(JSON.parse(response.Payload.toString()).body).toMatch(helloWorldSuccessOutput);
   });

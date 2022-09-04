@@ -39,6 +39,7 @@ import {
 } from 'amplify-cli-core';
 import ora from 'ora';
 import { Fn } from 'cloudform-types';
+import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { S3 } from './aws-utils/aws-s3';
 import Cloudformation from './aws-utils/aws-cfn';
 import { formUserAgentParam } from './aws-utils/user-agent';
@@ -298,8 +299,6 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
           deployment: finalStep,
           rollback: deploymentSteps[deploymentSteps.length - 1].deployment,
         });
-
-        spinner.start();
         await deploymentManager.deploy(deploymentStateManager);
 
         // delete the intermidiate states as it is ephemeral
@@ -317,12 +316,12 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
         postDeploymentCleanup(s3, cloudformationMeta.DeploymentBucketName);
       } else {
         // Non iterative update
-        spinner.start();
 
         const nestedStack = await formNestedStack(context, context.amplify.getProjectDetails());
+        const eventMap = createEventMap(context, resourcesToBeCreated, resourcesToBeUpdated);
 
         try {
-          await updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated, resourcesToBeUpdated);
+          await updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated, resourcesToBeUpdated, eventMap);
           await storeRootStackTemplate(context, nestedStack);
           // if the only root stack updates, function is called with empty resources . this fn copies amplifyMeta and backend Config to #current-cloud-backend
           context.amplify.updateamplifyMetaAfterPush([]);
@@ -331,8 +330,6 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
             return;
           }
           throw err;
-        } finally {
-          spinner.stop();
         }
       }
       context.usageData.stopCodePathTimer('pushDeployment');
@@ -450,34 +447,16 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
 
     await adminModelgen(context, resources);
 
-    spinner.succeed('All resources are updated in the cloud');
-
     await displayHelpfulURLs(context, resources);
   } catch (error) {
     if (iterativeDeploymentWasInvoked) {
       await deploymentStateManager.failDeployment();
-    }
-    if (!(await canAutoResolveGraphQLAuthError(error.message))) {
-      spinner.fail('An error occurred when pushing the resources to the cloud');
     }
     rollbackLambdaLayers(layerResources);
 
     logger('run', [resourceDefinition])(error);
 
     throw error;
-  }
-};
-
-const canAutoResolveGraphQLAuthError = async (message: string) => {
-  if (
-    message === '@auth directive with \'iam\' provider found, but the project has no IAM authentication provider configured.'
-    || message
-      === '@auth directive with \'userPools\' provider found, but the project has no Cognito User Pools authentication provider configured.'
-    || message === '@auth directive with \'oidc\' provider found, but the project has no OPENID_CONNECT authentication provider configured.'
-    || message === '@auth directive with \'apiKey\' provider found, but the project has no API Key authentication provider configured.'
-    || message === '@auth directive with \'function\' provider found, but the project has no Lambda authentication provider configured.'
-  ) {
-    return true;
   }
 };
 
@@ -515,44 +494,56 @@ export const updateStackForAPIMigration = async (context: $TSContext, category: 
 
   await updateS3Templates(context, resources, projectDetails.amplifyMeta);
 
-  try {
-    if (!isCLIMigration) {
-      spinner.start();
+  projectDetails = context.amplify.getProjectDetails();
+
+  if (resources.length > 0 || resourcesToBeDeleted.length > 0) {
+    // isCLIMigration implies a top level CLI migration is underway.
+    // We do not inject an env in such situations so we pass a resourceName.
+    // When it is an API level migration, we do pass an env so omit the resourceName.
+    let nestedStack: Template;
+
+    if (isReverting && isCLIMigration) {
+      // When this is a CLI migration and we are rolling back, we do not want to inject
+      // an [env] for any templates.
+      nestedStack = await formNestedStack(context, projectDetails, category, resourceName, 'AppSync', true);
+    } else if (isCLIMigration) {
+      nestedStack = await formNestedStack(context, projectDetails, category, resourceName, 'AppSync');
+    } else {
+      nestedStack = await formNestedStack(context, projectDetails, category);
     }
 
-    projectDetails = context.amplify.getProjectDetails();
-
-    if (resources.length > 0 || resourcesToBeDeleted.length > 0) {
-      // isCLIMigration implies a top level CLI migration is underway.
-      // We do not inject an env in such situations so we pass a resourceName.
-      // When it is an API level migration, we do pass an env so omit the resourceName.
-      let nestedStack: Template;
-
-      if (isReverting && isCLIMigration) {
-        // When this is a CLI migration and we are rolling back, we do not want to inject
-        // an [env] for any templates.
-        nestedStack = await formNestedStack(context, projectDetails, category, resourceName, 'AppSync', true);
-      } else if (isCLIMigration) {
-        nestedStack = await formNestedStack(context, projectDetails, category, resourceName, 'AppSync');
-      } else {
-        nestedStack = await formNestedStack(context, projectDetails, category);
-      }
-
-      await updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated, resourcesToBeUpdated);
-    }
-
-    await context.amplify.updateamplifyMetaAfterPush(resources);
-
-    if (!isCLIMigration) {
-      spinner.stop();
-    }
-  } catch (error) {
-    if (!isCLIMigration) {
-      spinner.fail('An error occurred when migrating the API project.');
-    }
-
-    throw error;
+    const eventMap = createEventMap(context, resourcesToBeCreated, resourcesToBeUpdated);
+    await updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated, resourcesToBeUpdated, eventMap);
   }
+
+  context.amplify.updateamplifyMetaAfterPush(resources);
+};
+
+/**
+ * Publish files that Amplify Studio depends on outside the zip file so that can read
+ * without streaming from the zip.
+ */
+const uploadStudioBackendFiles = async (s3: S3, bucketName: string) => {
+  const amplifyDirPath = pathManager.getAmplifyDirPath();
+  const studioBackendDirName = 'studio-backend';
+  // Delete the contents of the studio backend directory first
+  await s3.deleteDirectory(bucketName, studioBackendDirName);
+  // Create a list of file params to upload to the deployment bucket
+  const uploadFileParams = [
+    'cli.json',
+    'amplify-meta.json',
+    'backend-config.json',
+    'schema.graphql',
+    'transform.conf.json',
+    'parameters.json',
+  ]
+    .flatMap(baseName => glob.sync(`**/${baseName}`, { cwd: amplifyDirPath }))
+    .filter(filePath => !filePath.startsWith('backend'))
+    .map(filePath => ({
+      Body: fs.createReadStream(path.join(amplifyDirPath, filePath)),
+      Key: path.join(studioBackendDirName, filePath.replace('#current-cloud-backend', '')),
+    }));
+  await Promise.all(uploadFileParams.map(params => s3.uploadFile(params)));
 };
 
 /**
@@ -595,7 +586,8 @@ export const storeCurrentCloudBackend = async (context: $TSContext) => {
   log = logger('storeCurrentcoudBackend.s3.uploadFile', [{ Key: s3Key }]);
   log();
   try {
-    await s3.uploadFile(s3Params);
+    const deploymentBucketName = await s3.uploadFile(s3Params);
+    await uploadStudioBackendFiles(s3, deploymentBucketName);
   } catch (error) {
     log(error);
     throw error;
@@ -700,17 +692,11 @@ const prepareResource = async (context: $TSContext, resource: $TSAny) => {
 };
 
 const storeS3BucketInfo = (category: string, deploymentBucketName: string, envName: string, resourceName: string, s3Key: string) => {
-  const projectPath = pathManager.findProjectRoot();
-  const amplifyMeta = stateManager.getMeta(projectPath);
-  const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
-
-  const tpiResourceParams: $TSAny = _.get(teamProviderInfo, [envName, 'categories', category, resourceName], {});
-  _.assign(tpiResourceParams, { deploymentBucketName, s3Key });
-  _.set(teamProviderInfo, [envName, 'categories', category, resourceName], tpiResourceParams);
+  const amplifyMeta = stateManager.getMeta();
+  getEnvParamManager(envName).getResourceParamManager(category, resourceName).setParams({ deploymentBucketName, s3Key });
 
   _.set(amplifyMeta, [category, resourceName, 's3Bucket'], { deploymentBucketName, s3Key });
-  stateManager.setMeta(projectPath, amplifyMeta);
-  stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
+  stateManager.setMeta(undefined, amplifyMeta);
 };
 
 const updateCloudFormationNestedStack = async (
@@ -718,6 +704,7 @@ const updateCloudFormationNestedStack = async (
   nestedStack: $TSAny,
   resourcesToBeCreated: $TSAny,
   resourcesToBeUpdated: $TSAny,
+  eventMap: $TSAny,
 ) => {
   const projectRoot = pathManager.findProjectRoot();
   const backEndDir = pathManager.getBackendDirPath(projectRoot);
@@ -725,7 +712,7 @@ const updateCloudFormationNestedStack = async (
   // deploy preprocess nested stack to disk
   await storeRootStackTemplate(context, nestedStack);
   const transformedStackPath = await preProcessCFNTemplate(rootStackFilePath);
-  const cfnItem = await new Cloudformation(context, generateUserAgentAction(resourcesToBeCreated, resourcesToBeUpdated));
+  const cfnItem = await new Cloudformation(context, generateUserAgentAction(resourcesToBeCreated, resourcesToBeUpdated), {}, eventMap);
   const providerDirectory = path.normalize(path.join(backEndDir, providerName));
 
   const log = logger('updateCloudFormationNestedStack', [providerDirectory, transformedStackPath]);
@@ -873,6 +860,91 @@ export const uploadTemplateToS3 = async (
 
     context.amplify.updateamplifyMetaAfterResourceUpdate(category, resourceName, 'providerMetadata', providerMetadata);
   }
+};
+
+const createResourceObject = (resource: string, category: string) : {
+  category: string,
+  key: string
+} => ({
+  category: `${category}-${resource}`,
+  key: category + resource,
+});
+
+const getCategoryResources = (file : string, resourceDir : string) => {
+  const cloudFormationJsonPath = path.join(resourceDir, file);
+  const { cfnTemplate } = readCFNTemplate(cloudFormationJsonPath);
+  const categoryResources = Object.keys(cfnTemplate.Resources);
+  return categoryResources;
+};
+
+type EventMap = {
+  rootStackName: string,
+  envName: string,
+  projectName: string,
+  rootResources: {key: string, category: string}[],
+  eventToCategories: Map<string, string>,
+  categories: {name: string, size: number}[]
+}
+
+/**
+ Create an event map which will be used to map each incoming CloudFormation event into a category.
+ This is done so as to group events under progress bars for the root project as well as for each category.
+ */
+const createEventMap = (
+  context: $TSContext,
+  resourcesToBeCreated: $TSAny,
+  resourcesToBeUpdated: $TSAny,
+): EventMap => {
+  let eventMap = {} as EventMap;
+
+  const { envName } = context.amplify.getEnvInfo();
+  const { projectName } = context.amplify.getProjectConfig();
+  const meta = stateManager.getMeta();
+  const rootStackName = meta.providers.awscloudformation.StackName;
+  // Setting up initial configurations.
+  eventMap.rootStackName = rootStackName;
+  eventMap.envName = envName;
+  eventMap.projectName = projectName;
+  eventMap.rootResources = [];
+  eventMap.eventToCategories = new Map();
+  eventMap.categories = [];
+
+  // Type script throws an error unless I explicitly convert to string
+  const resourcesUpdated = getAllUniqueCategories(resourcesToBeUpdated).map(item => `${item}`);
+  const resourcesCreated = getAllUniqueCategories(resourcesToBeCreated).map(item => `${item}`);
+
+  Object.keys(meta).forEach(category => {
+    if (category !== 'providers') {
+      Object.keys(meta[category]).forEach(resource => {
+        eventMap.rootResources.push(createResourceObject(resource, category));
+        handleCfnFiles(eventMap,
+          category, resource,
+          _.union(resourcesUpdated, resourcesCreated));
+      });
+    }
+  });
+
+  return eventMap;
+};
+
+const handleCfnFiles = (
+  eventMap : EventMap,
+  category: string,
+  resource: string,
+  updatedResources: string[],
+) => {
+  // Getting corresponding cfn template files
+  const { resourceDir, cfnFiles } = getCfnFiles(category, resource);
+  cfnFiles.forEach(file => {
+    const categoryResources = getCategoryResources(file, resourceDir);
+    // Maping Resource events to categories.
+    categoryResources.forEach(res => {
+      eventMap.eventToCategories.set(res, `${category}-${resource}`);
+    });
+    if (updatedResources.includes(category)) {
+      eventMap.categories.push({ name: `${category}-${resource}`, size: categoryResources.length });
+    }
+  });
 };
 
 /**

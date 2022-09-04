@@ -1,3 +1,4 @@
+/* eslint-disable */
 const fs = require('fs-extra');
 const _ = require('lodash');
 const sequential = require('promise-sequential');
@@ -6,6 +7,7 @@ const pinpointHelper = require('./pinpoint-helper');
 const constants = require('./constants');
 const notificationManager = require('./notifications-manager');
 const { stateManager } = require('amplify-cli-core');
+const { ensureEnvParamManager, getEnvParamManager } = require('@aws-amplify/amplify-environment-parameters');
 
 async function initEnv(context) {
   const pinpointNotificationsMeta = await constructPinpointNotificationsMeta(context);
@@ -254,8 +256,8 @@ async function writeData(context) {
       }
     }
   }
-  // TODO: move writing to files logic to the cli core when those are ready
-  writeTeamProviderInfo(pinpointMeta, context);
+  await ensureEnvParamManager();
+  writeTeamProviderInfo(pinpointMeta);
   writeBackendConfig(context, pinpointMeta, context.amplify.pathManager.getBackendConfigFilePath());
   writeBackendConfig(context, pinpointMeta, context.amplify.pathManager.getCurrentBackendConfigFilePath());
   writeAmplifyMeta(context, categoryMeta, context.amplify.pathManager.getAmplifyMetaFilePath());
@@ -264,24 +266,15 @@ async function writeData(context) {
   await context.amplify.onCategoryOutputsChange(context);
 }
 
-function writeTeamProviderInfo(pinpointMeta, context) {
-  const teamProviderInfoFilepath = context.amplify.pathManager.getProviderInfoFilePath();
-  if (fs.existsSync(teamProviderInfoFilepath)) {
-    const { envName } = context.exeInfo.localEnvInfo;
-    const teamProviderInfo = context.amplify.readJsonFile(teamProviderInfoFilepath);
-    teamProviderInfo[envName] = teamProviderInfo[envName] || {};
-    teamProviderInfo[envName].categories = teamProviderInfo[envName].categories || {};
-    teamProviderInfo[envName].categories[constants.CategoryName] = teamProviderInfo[envName].categories[constants.CategoryName] || {};
-    teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName] = pinpointMeta
-      ? {
-          Name: pinpointMeta.Name,
-          Id: pinpointMeta.Id,
-          Region: pinpointMeta.Region,
-        }
-      : undefined;
-    const jsonString = JSON.stringify(teamProviderInfo, null, 4);
-    fs.writeFileSync(teamProviderInfoFilepath, jsonString, 'utf8');
+function writeTeamProviderInfo(pinpointMeta) {
+  if (!pinpointMeta) {
+    return;
   }
+  getEnvParamManager().getResourceParamManager(constants.CategoryName, constants.PinpointName).setAllParams({
+    Name: pinpointMeta.Name,
+    Id: pinpointMeta.Id,
+    Region: pinpointMeta.Region,
+  });
 }
 
 function writeBackendConfig(context, pinpointMeta, backendConfigFilePath) {

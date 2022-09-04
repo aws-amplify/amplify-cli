@@ -1,12 +1,10 @@
 import { AppSyncSimulatorSubscriptionServer } from '../../server/websocket-subscription';
-
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { parse } from 'graphql';
 import { IncomingMessage, Server, createServer } from 'http';
 import * as WebSocket from 'ws';
-
 import { getAuthorizationMode, extractJwtToken, extractHeader } from '../../utils/auth-helpers';
-import { runSubscription, SubscriptionResult } from '../../utils/graphql-runner/subscriptions';
+import { runSubscription } from '../../utils/graphql-runner/subscriptions';
 import { ConnectionContext, WebsocketSubscriptionServer } from '../../server/subscription/websocket-server/server';
 import { AmplifyAppSyncAPIConfig, AmplifyAppSyncSimulatorAuthenticationType } from '../../type-definition';
 import { PubSub } from 'graphql-subscriptions';

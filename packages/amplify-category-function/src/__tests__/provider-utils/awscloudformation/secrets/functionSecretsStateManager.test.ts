@@ -1,8 +1,9 @@
 import { $TSContext, stateManager, pathManager } from 'amplify-cli-core';
 import { mocked } from 'ts-jest/utils';
+import * as path from 'path';
+import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { FunctionSecretsStateManager } from '../../../../provider-utils/awscloudformation/secrets/functionSecretsStateManager';
 import { getAppId } from '../../../../provider-utils/awscloudformation/secrets/secretName';
-import * as path from 'path';
 import { SSMClientWrapper } from '../../../../provider-utils/awscloudformation/secrets/ssmClientWrapper';
 
 jest.mock('amplify-cli-core');
@@ -12,27 +13,27 @@ jest.mock('../../../../provider-utils/awscloudformation/secrets/secretName');
 jest.mock('../../../../provider-utils/awscloudformation/utils/updateTopLevelComment');
 jest.mock('../../../../provider-utils/awscloudformation/utils/cloudformationHelpers');
 
-const stateManager_mock = mocked(stateManager);
-const pathManager_mock = mocked(pathManager);
-const getAppId_mock = mocked(getAppId);
-const SSMClientWrapper_mock = mocked(SSMClientWrapper);
+const stateManagerMock = mocked(stateManager);
+const pathManagerMock = mocked(pathManager);
+const getAppIdMock = mocked(getAppId);
+const SSMClientWrapperMock = mocked(SSMClientWrapper);
 
-stateManager_mock.getLocalEnvInfo.mockReturnValue({
-  envName: 'testtest',
+stateManagerMock.getLocalEnvInfo.mockReturnValue({
+  envName: 'testTest',
 });
-stateManager_mock.getTeamProviderInfo.mockReturnValue({});
+stateManagerMock.getTeamProviderInfo.mockReturnValue({});
 
-pathManager_mock.getBackendDirPath.mockReturnValue(path.join('test', 'path'));
+pathManagerMock.getBackendDirPath.mockReturnValue(path.join('test', 'path'));
 
-getAppId_mock.mockReturnValue('testappid');
+getAppIdMock.mockReturnValue('testAppId');
 
-SSMClientWrapper_mock.getInstance.mockResolvedValue(({
+SSMClientWrapperMock.getInstance.mockResolvedValue(({
   deleteSecret: jest.fn(),
   setSecret: jest.fn(),
 } as unknown) as SSMClientWrapper);
 
 describe('syncSecretDeltas', () => {
-  const context_stub = ({
+  const contextStub = ({
     parameters: {
       command: 'update',
     },
@@ -40,36 +41,16 @@ describe('syncSecretDeltas', () => {
   beforeEach(jest.clearAllMocks);
 
   it('sets Amplify AppID in team-provider-info if secrets are present', async () => {
-    const functionSecretsStateManager = await FunctionSecretsStateManager.getInstance(context_stub);
+    const functionSecretsStateManager = await FunctionSecretsStateManager.getInstance(contextStub);
     await functionSecretsStateManager.syncSecretDeltas({ TEST_SECRET: { operation: 'retain' } }, 'testFuncName');
-    expect(stateManager_mock.setTeamProviderInfo.mock.calls[0][1]).toMatchInlineSnapshot(`
-      Object {
-        "testtest": Object {
-          "categories": Object {
-            "function": Object {
-              "testFuncName": Object {
-                "secretsPathAmplifyAppId": "testappid",
-              },
-            },
-          },
-        },
-      }
-    `);
+    expect(getEnvParamManager('testTest').getResourceParamManager('function', 'testFuncName').getAllParams()).toEqual({
+      secretsPathAmplifyAppId: 'testAppId',
+    });
   });
 
   it('removes Amplify AppId from team-provider-info if secrets are not present', async () => {
-    const functionSecretsStateManager = await FunctionSecretsStateManager.getInstance(context_stub);
+    const functionSecretsStateManager = await FunctionSecretsStateManager.getInstance(contextStub);
     await functionSecretsStateManager.syncSecretDeltas({ TEST_SECRET: { operation: 'remove' } }, 'testFuncName');
-    expect(stateManager_mock.setTeamProviderInfo.mock.calls[0][1]).toMatchInlineSnapshot(`
-      Object {
-        "testtest": Object {
-          "categories": Object {
-            "function": Object {
-              "testFuncName": Object {},
-            },
-          },
-        },
-      }
-    `);
+    expect(getEnvParamManager('testTest').getResourceParamManager('function', 'testFuncName').getAllParams()).toEqual({});
   });
 });

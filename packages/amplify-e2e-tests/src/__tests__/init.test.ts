@@ -18,11 +18,11 @@ import {
   deleteProjectDir,
   getEnvVars,
   getProjectMeta,
-} from 'amplify-e2e-core';
-
-import { addEnvironment } from '../environment/env';
+} from '@aws-amplify/amplify-e2e-core';
 
 import { JSONUtilities } from 'amplify-cli-core';
+import { addEnvironment } from '../environment/env';
+
 import { SandboxApp } from '../types/SandboxApp';
 
 describe('amplify init', () => {
@@ -54,16 +54,16 @@ describe('amplify init', () => {
     await amplifyInitSandbox(projRoot, {});
     const projectSchema = getProjectSchema(projRoot, 'amplifyDatasource');
     expect(projectSchema).toEqual(schemaBody.schema);
-    
+
     const awsExportsPath = path.join(projRoot, 'src', 'aws-exports.js');
     const modelsIndexPath = path.join(projRoot, 'src', 'models', 'index.js');
     const modelsSchemaPath = path.join(projRoot, 'src', 'models', 'schema.js');
     expect(
-      fs.existsSync(awsExportsPath) &&
-      fs.existsSync(modelsIndexPath) &&
-      fs.existsSync(modelsSchemaPath)
+      fs.existsSync(awsExportsPath)
+      && fs.existsSync(modelsIndexPath)
+      && fs.existsSync(modelsSchemaPath),
     ).toBe(true);
-    
+
     await amplifyPush(projRoot);
   });
 
@@ -71,7 +71,9 @@ describe('amplify init', () => {
     await initJSProjectWithProfile(projRoot, {});
     const meta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(meta.Region).toBeDefined();
-    const { AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName } = meta;
+    const {
+      AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName,
+    } = meta;
 
     expect(UnauthRoleName).toBeIAMRoleWithArn(UnauthRoleArn);
     expect(AuthRoleName).toBeIAMRoleWithArn(AuthRoleArn);
@@ -112,7 +114,9 @@ describe('amplify init', () => {
 
     const meta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(meta.Region).toBeDefined();
-    const { AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName } = meta;
+    const {
+      AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName,
+    } = meta;
 
     expect(UnauthRoleName).toBeIAMRoleWithArn(UnauthRoleArn);
     expect(AuthRoleName).toBeIAMRoleWithArn(AuthRoleArn);
@@ -174,7 +178,9 @@ describe('amplify init', () => {
     await initJSProjectWithProfile(projRoot, {});
     const meta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(meta.Region).toBeDefined();
-    const { AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName } = meta;
+    const {
+      AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName,
+    } = meta;
 
     expect(UnauthRoleName).toBeIAMRoleWithArn(UnauthRoleArn);
     expect(AuthRoleName).toBeIAMRoleWithArn(AuthRoleArn);
@@ -193,5 +199,15 @@ describe('amplify init', () => {
     await addEnvironment(projRoot, { envName: 'envb' });
     const newestEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(newestEnvMeta.AuthRoleName).toContain('mockRole');
+  });
+
+  it('should fail if init is not executed in project root', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    const meta = getProjectMeta(projRoot).providers.awscloudformation;
+    expect(meta.Region).toBeDefined();
+
+    const nestedRoot = path.join(projRoot, 'foo');
+    await fs.ensureDir(nestedRoot);
+    await expect(initJSProjectWithProfile(nestedRoot, {})).rejects.toThrowError('Process exited with non zero exit code 1');
   });
 });

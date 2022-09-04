@@ -1,17 +1,20 @@
 import Ajv, { AdditionalPropertiesParams } from 'ajv';
+import { isCI } from 'ci-info';
 import * as fs from 'fs-extra';
-import * as path from 'path';
-import _ from 'lodash';
 import { JSONSchema7, JSONSchema7Definition } from 'json-schema'; // eslint-disable-line import/no-extraneous-dependencies
+import _ from 'lodash';
+import * as path from 'path';
 import { CLIEnvironmentProvider } from '../cliEnvironmentProvider';
-import { JSONValidationError } from '../jsonValidationError';
-import {
-  FeatureFlagConfiguration, FeatureFlagsEntry, FeatureFlagType, FeatureFlagRegistration,
-} from './featureFlagTypes';
-import { FeatureFlagFileProvider } from './featureFlagFileProvider'; // eslint-disable-line import/no-cycle
-import { FeatureFlagEnvironmentProvider } from './featureFlagEnvironmentProvider';
-import { stateManager, pathManager } from '../state-manager'; // eslint-disable-line import/no-cycle
+import { AmplifyError } from '../errors/amplify-error';
 import { JSONUtilities } from '../jsonUtilities';
+import { pathManager, stateManager } from '../state-manager'; // eslint-disable-line import/no-cycle
+/* eslint-disable import/no-cycle */
+import { FeatureFlagEnvironmentProvider } from './featureFlagEnvironmentProvider';
+import { FeatureFlagFileProvider } from './featureFlagFileProvider'; // eslint-disable-line import/no-cycle
+import {
+  FeatureFlagConfiguration, FeatureFlagRegistration, FeatureFlagsEntry, FeatureFlagType,
+} from './featureFlagTypes';
+/* eslint-enable */
 
 /**
  * Feature flag class for the CLI
@@ -127,12 +130,6 @@ export class FeatureFlags {
     return FeatureFlags.instance.getValue<boolean>(flagName, 'boolean');
   };
 
-  public static getString = (flagName: string): string => {
-    FeatureFlags.ensureInitialized();
-
-    return FeatureFlags.instance.getValue<string>(flagName, 'string');
-  };
-
   public static getNumber = (flagName: string): number => {
     FeatureFlags.ensureInitialized();
 
@@ -234,13 +231,13 @@ export class FeatureFlags {
       throw new Error(`Section '${parts[0]}' is not registered in feature provider`);
     }
 
-    const flagRegistrationEntry = sectionRegistration.find(flag => flag.name === parts[1]);
+    const flagRegistrationEntry = sectionRegistration?.find(flag => flag.name === parts[1]);
 
     if (!flagRegistrationEntry) {
       throw new Error(`Flag '${parts[1]}' within '${parts[0]}' is not registered in feature provider`);
     }
 
-    if (flagRegistrationEntry.type !== type) {
+    if (flagRegistrationEntry?.type !== type) {
       throw new Error(`'${flagName}' is a ${flagRegistrationEntry.type} type, not ${type}`);
     }
 
@@ -248,7 +245,7 @@ export class FeatureFlags {
     value = <T> this.effectiveFlags[parts[0]]?.[parts[1]];
 
     // If there is no value, return the registered defaults for existing projects
-    if (value === undefined) {
+    if (value === undefined && flagRegistrationEntry) {
       if (this.useNewDefaults) {
         value = <T>(flagRegistrationEntry.defaultValueForNewProjects as unknown);
       } else {
@@ -256,13 +253,13 @@ export class FeatureFlags {
       }
     }
 
-    return value;
+    return value ?? false;
   };
 
   private buildJSONSchemaFromRegistrations = (): JSONSchema7 => [...this.registrations.entries()].reduce<JSONSchema7>(
-    (s: JSONSchema7, r: [string, FeatureFlagRegistration[]]) => {
+    (schema: JSONSchema7, r: [string, FeatureFlagRegistration[]]) => {
       // r is a tuple, 0=section, 1=array of registrations for that section
-      const currentSection = <JSONSchema7>(s.properties![r[0].toLowerCase()] ?? {
+      const currentSection = <JSONSchema7>(schema.properties![r[0].toLowerCase()] ?? {
         type: 'object',
         additionalProperties: false,
       });
@@ -278,11 +275,11 @@ export class FeatureFlags {
         return p;
       }, {});
 
-        /* eslint-disable no-param-reassign */
-        s.properties![r[0].toLowerCase()] = currentSection;
-        /* eslint-enable */
+      /* eslint-disable no-param-reassign */
+      schema.properties![r[0].toLowerCase()] = currentSection;
+      /* eslint-enable */
 
-        return s;
+      return schema;
     },
     {
       $schema: 'http://json-schema.org/draft-07/schema#',
@@ -349,10 +346,7 @@ export class FeatureFlags {
     });
     const schemaValidate = ajv.compile(schema);
 
-    /* eslint-disable  @typescript-eslint/no-unused-vars */
-    const validator = (target: string, flags: FeatureFlagsEntry): void => {
-    /* eslint-enable */
-
+    const validator = (flags: FeatureFlagsEntry): void => {
       const valid = schemaValidate(flags);
 
       if (!valid && schemaValidate.errors) {
@@ -362,9 +356,12 @@ export class FeatureFlags {
         schemaValidate.errors.forEach(error => {
           if (error.keyword === 'additionalProperties') {
             const additionalProperty = (<AdditionalPropertiesParams>error.params)?.additionalProperty;
-            let flagName = error.dataPath.length > 0 && error.dataPath[0] === '.' ? `${error.dataPath.slice(1)}.` : '';
+            let flagName: string = error.dataPath.length > 0 && error.dataPath[0] === '.' ? `${error.dataPath.slice(1)}.` : '';
 
             if (additionalProperty) {
+              if (flags[flagName.replace('.', '')][additionalProperty] === false) {
+                return;
+              }
               flagName += additionalProperty;
             }
 
@@ -380,21 +377,31 @@ export class FeatureFlags {
           }
         });
 
-        throw new JSONValidationError('Invalid feature flag configuration', unknownFlags, otherErrors);
+        if (unknownFlags.length > 0 || otherErrors.length > 0) {
+          throw new AmplifyError('FeatureFlagsValidationError', {
+            message: 'Invalid feature flag configuration',
+            details:
+              (unknownFlags.length > 0 ? `These feature flags are defined in the "amplify/cli.json" configuration file and are unknown to the currently running Amplify CLI:\n${unknownFlags.map(el => `- ${el}`).join(',\n')}\n` : '')
+              + (otherErrors.length > 0 ? `The following feature flags have validation errors:\n${otherErrors.map(el => `- ${el}`).join(',\n')}` : ''),
+            resolution: `This issue likely happens when the project has been pushed with a newer version of Amplify CLI, try updating to a newer version.${
+              isCI ? '\nEnsure that the CI/CD pipeline is not using an older or pinned down version of Amplify CLI.' : ''}`,
+            link: 'https://docs.amplify.aws/cli/reference/feature-flags',
+          });
+        }
       }
     };
 
-    const featureFlagsValidator = (type: string, features: FeatureFlagConfiguration): void => {
-      validator(`${type} project`, features.project);
+    const featureFlagsValidator = (features: FeatureFlagConfiguration): void => {
+      validator(features.project);
 
       Object.keys(features.environments).forEach(env => {
-        validator(`${type} environment (${env})`, features.environments[env]);
+        validator(features.environments[env]);
       });
     };
 
     allFlags.forEach(flagItem => {
       // Validate file provider settings
-      featureFlagsValidator(flagItem.name, flagItem.flags);
+      featureFlagsValidator(flagItem.flags);
     });
   };
 
@@ -427,9 +434,6 @@ export class FeatureFlags {
           }
           throw new Error(`Invalid boolean value: '${value}' for '${flagName}' in section '${section}'`);
 
-        case 'string':
-          // no conversion needed
-          return value.toString();
         case 'number': {
           const n = Number.parseInt(value, 10);
           if (!Number.isNaN(n)) {
@@ -622,7 +626,7 @@ export class FeatureFlags {
       {
         name: 'useSubUsernameForDefaultIdentityClaim',
         type: 'boolean',
-        defaultValueForExistingProjects: false,
+        defaultValueForExistingProjects: true,
         defaultValueForNewProjects: true,
       },
       {
@@ -633,6 +637,24 @@ export class FeatureFlags {
       },
       {
         name: 'enableAutoIndexQueryNames',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: false,
+      },
+      {
+        name: 'respectPrimaryKeyAttributesOnConnectionField',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: false,
+      },
+      {
+        name: 'shouldDeepMergeDirectiveConfigDefaults',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: false,
+      },
+      {
+        name: 'populateOwnerFieldForStaticGroupAuth',
         type: 'boolean',
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: false,

@@ -3,6 +3,124 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@9.2.0...@aws-amplify/cli-internal@9.2.1) (2022-08-06)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
+
+
+
+
+
+# [9.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@9.0.0...@aws-amplify/cli-internal@9.2.0) (2022-08-02)
+
+
+
+# 9.2.0-rc.87d15cb3e.0 (2022-07-23)
+
+
+### Bug Fixes
+
+* enables -yes flag on amplify publish ([#10774](https://github.com/aws-amplify/amplify-cli/issues/10774)) ([860a0e5](https://github.com/aws-amplify/amplify-cli/commit/860a0e56198a6bcd4c2cc7988a29c80ce1267ec1))
+
+
+### Features
+
+* **uibuilder:** nested collections support and codegen dep update ([#10778](https://github.com/aws-amplify/amplify-cli/issues/10778)) ([87d15cb](https://github.com/aws-amplify/amplify-cli/commit/87d15cb3e1c75fbd978c6fc7966e42b42e5d856a))
+
+
+
+# 9.2.0-rc.88f873875.0 (2022-07-21)
+
+
+### Bug Fixes
+
+* enforce init command to be executed in project root ([#10744](https://github.com/aws-amplify/amplify-cli/issues/10744)) ([88f8738](https://github.com/aws-amplify/amplify-cli/commit/88f8738757b038bc3b246491cdb709fde30d7f31))
+* missing file error and swallowing error ([#10590](https://github.com/aws-amplify/amplify-cli/issues/10590)) ([8e469e1](https://github.com/aws-amplify/amplify-cli/commit/8e469e13c6efb62b64d8223e12ebb4732f8f1906))
+* upgrades updateNotifier package ([#10691](https://github.com/aws-amplify/amplify-cli/issues/10691)) ([e92ae1a](https://github.com/aws-amplify/amplify-cli/commit/e92ae1ab50701462c1d662ad25d851ccc71a66ef))
+
+
+### Features
+
+* redacted error trace ([#10714](https://github.com/aws-amplify/amplify-cli/issues/10714)) ([aa3cbae](https://github.com/aws-amplify/amplify-cli/commit/aa3cbae79faa4e9f436d4dd35253f42dd7c761bb))
+
+
+### Reverts
+
+* Revert "chore: upgrade api category dependencies" ([7e24faf](https://github.com/aws-amplify/amplify-cli/commit/7e24faf472f96eeb34171b7befa49f4b0da3f7ae))
+* upgrades updateNotifier package ([#10691](https://github.com/aws-amplify/amplify-cli/issues/10691)) ([#10697](https://github.com/aws-amplify/amplify-cli/issues/10697)) ([eb44b2b](https://github.com/aws-amplify/amplify-cli/commit/eb44b2b4e7b76fbe5b89ace3a100c0f4dfed2d27))
+
+
+
+# 9.1.0 (2022-06-29)
+
+
+### Features
+
+* no-op commit ([#10660](https://github.com/aws-amplify/amplify-cli/issues/10660)) ([6cd057a](https://github.com/aws-amplify/amplify-cli/commit/6cd057ab611497fdca0a5f62e519002b5efbeb0b))
+
+
+
+
+
+# [9.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@9.0.0...@aws-amplify/cli-internal@9.1.0) (2022-06-30)
+
+
+### Features
+
+* no-op commit ([#10660](https://github.com/aws-amplify/amplify-cli/issues/10660)) ([6cd057a](https://github.com/aws-amplify/amplify-cli/commit/6cd057ab611497fdca0a5f62e519002b5efbeb0b))
+
+
+
+
+
+# [9.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.5.1...@aws-amplify/cli-internal@9.0.0) (2022-06-22)
+
+
+
+# 9.0.0 (2022-06-21)
+
+
+* feat!: breaking change (#10628) ([7fadbf5](https://github.com/aws-amplify/amplify-cli/commit/7fadbf53b8dc89d768779fb588971f5c5b6e70d7)), closes [#10628](https://github.com/aws-amplify/amplify-cli/issues/10628)
+
+
+### BREAKING CHANGES
+
+* this is a breaking change
+
+
+
+
+
+## [8.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.5.0...@aws-amplify/cli-internal@8.5.1) (2022-06-15)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
+
+
+
+
+
+# [8.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.4.0...@aws-amplify/cli-internal@8.5.0) (2022-06-13)
+
+
+
+# 8.5.0 (2022-06-10)
+
+
+### Bug Fixes
+
+* create same identifier for flow data and reporter ([#10516](https://github.com/aws-amplify/amplify-cli/issues/10516)) ([ccd212e](https://github.com/aws-amplify/amplify-cli/commit/ccd212eaef9890c03435ad5244f16ccc4db4fe22))
+* headless diagnose prompt ([#10557](https://github.com/aws-amplify/amplify-cli/issues/10557)) ([b4ca7fd](https://github.com/aws-amplify/amplify-cli/commit/b4ca7fd24debc1a67aace6eabcd2ee35f20bde11))
+* revert running amplify version on install ([#10529](https://github.com/aws-amplify/amplify-cli/issues/10529)) ([1539b24](https://github.com/aws-amplify/amplify-cli/commit/1539b246b04ae7f68dc83522c3ff4df96e602c08))
+
+
+### Features
+
+* implemented push normalization ([#10469](https://github.com/aws-amplify/amplify-cli/issues/10469)) ([e70d6c9](https://github.com/aws-amplify/amplify-cli/commit/e70d6c95cd9826a9d2785607341e8e1432306a30))
+
+
+
+
+
 # [8.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@8.3.1...@aws-amplify/cli-internal@8.4.0) (2022-06-03)
 
 

@@ -3,6 +3,70 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.4.9...amplify-util-mock@4.4.10) (2022-08-06)
+
+
+### Bug Fixes
+
+* support AWS::S3::Bucket FilterRule properly in the mock mode ([#10799](https://github.com/aws-amplify/amplify-cli/issues/10799)) ([0273dc0](https://github.com/aws-amplify/amplify-cli/commit/0273dc045218b11e69da36af147d679fdf03a545))
+
+
+
+
+
+## [4.4.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.4.7...amplify-util-mock@4.4.9) (2022-08-02)
+
+
+### Bug Fixes
+
+* **amplify-util-mock:** add defaults for streamViewType ([#10726](https://github.com/aws-amplify/amplify-cli/issues/10726)) ([ddf4b55](https://github.com/aws-amplify/amplify-cli/commit/ddf4b556e8bb85b65b580674951926e8b72c343f))
+* lint fixes ([fa19699](https://github.com/aws-amplify/amplify-cli/commit/fa196992e34e07a4a9612fafd6dc947999903bba))
+
+
+### Reverts
+
+* Revert "chore: upgrade api category dependencies" ([7e24faf](https://github.com/aws-amplify/amplify-cli/commit/7e24faf472f96eeb34171b7befa49f4b0da3f7ae))
+
+
+
+
+
+## [4.4.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.4.7...amplify-util-mock@4.4.8) (2022-06-30)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.4.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.4.6...amplify-util-mock@4.4.7) (2022-06-22)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.4.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.4.5...amplify-util-mock@4.4.6) (2022-06-15)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.4.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.4.4...amplify-util-mock@4.4.5) (2022-06-13)
+
+
+
+# 8.5.0 (2022-06-10)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
 ## [4.4.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.4.3...amplify-util-mock@4.4.4) (2022-06-03)
 
 **Note:** Version bump only for package amplify-util-mock

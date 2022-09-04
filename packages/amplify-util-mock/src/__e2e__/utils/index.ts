@@ -1,4 +1,4 @@
-import { AmplifyAppSyncSimulator } from 'amplify-appsync-simulator';
+import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
 import * as dynamoEmulator from 'amplify-dynamodb-simulator';
 import * as fs from 'fs-extra';
 import * as path from 'path';

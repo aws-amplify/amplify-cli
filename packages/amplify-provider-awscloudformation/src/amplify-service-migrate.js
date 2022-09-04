@@ -1,3 +1,4 @@
+/* eslint-disable */
 const fs = require('fs-extra');
 const configurationManager = require('./configuration-manager');
 const { getConfiguredAmplifyClient } = require('./aws-utils/aws-amplify');
@@ -5,6 +6,7 @@ const { checkAmplifyServiceIAMPermission } = require('./amplify-service-permissi
 const { storeCurrentCloudBackend } = require('./push-resources');
 const constants = require('./constants');
 const { fileLogger } = require('./utils/aws-logger');
+const { stateManager } = require('amplify-cli-core');
 const logger = fileLogger('amplify-service-migrate');
 
 async function run(context) {
@@ -29,8 +31,10 @@ async function run(context) {
     return;
   }
 
-  const { amplifyMeta, teamProviderInfo, localEnvInfo } = projectDetails;
+  const { amplifyMeta, localEnvInfo } = projectDetails;
   const { envName } = localEnvInfo;
+
+  const teamProviderInfo = stateManager.getTeamProviderInfo();
 
   if (teamProviderInfo[envName][constants.ProviderName][constants.AmplifyAppIdLabel]) {
     // Migration is not needed if appId is already present in the team provider info
@@ -97,7 +101,7 @@ async function run(context) {
       backendEnvs = backendEnvs.concat(listEnvResponse.backendEnvironments);
     } while (listEnvResponse.nextToken);
 
-    const { StackName, DeploymentBucketName } = projectDetails.teamProviderInfo[envName][constants.ProviderName];
+    const { StackName, DeploymentBucketName } = projectDetails.amplifyMeta.providers[constants.ProviderName];
     if (!backendEnvs.includes(envName)) {
       context.print.info(`Adding backend environment ${envName} to AWS Amplify app: ${amplifyAppId}`);
       const createEnvParams = {

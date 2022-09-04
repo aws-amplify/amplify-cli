@@ -16,13 +16,8 @@ export const run = async (context: $TSContext): Promise<void> => {
       default: {},
     });
 
-    const teamProviderInfo = stateManager.getTeamProviderInfo(undefined, {
-      throwIfNotExist: false,
-      default: {},
-    });
-
     const { envName } = localEnvInfo;
-    const { Region, AmplifyAppId } = teamProviderInfo[envName][providerName];
+    const { Region, AmplifyAppId } = stateManager.getMeta()?.providers?.[providerName];
 
     if (envName && AmplifyAppId) {
       consoleUrl = constructStatusURL(Region, AmplifyAppId, envName);

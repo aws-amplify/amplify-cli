@@ -2,9 +2,6 @@
 # This is based on verdaccio's default config file. It allows all users
 # to do anything, so don't use it on production systems.
 #
-# Look here for more config file examples:
-# https://github.com/verdaccio/verdaccio/tree/master/conf
-#
 
 # path to a directory with all packages
 storage: ../../verdaccio-cache/storage
@@ -29,6 +26,12 @@ uplinks:
       maxFreeSockets: 10
 
 packages:
+  # do NOT proxy our cli-internal package to npm
+  # in our current set up, the requested version should always be present in the local registry
+  # if it is not, something else has gone wrong and we should fail to esure that we don't install an unexpected version
+  '@aws-amplify/cli-internal':
+    access: $all
+    publish: $all
   '@*/*':
     # scoped packages
     access: $all

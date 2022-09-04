@@ -18,3 +18,15 @@ export const diagnoseSendReport = async (cwd: string): Promise<string> => {
     .runAsync();
   return path;
 };
+
+/**
+ * Send failing zipping 
+ * @param cwd current working directory
+ */
+export const diagnoseSendReport_ZipFailed = async (cwd: string): Promise<void> => {
+  await spawn(getCLIPath(), ['diagnose', '--send-report'], { cwd, stripColors: true })
+    .wait('File at path:')
+    .wait(/Creating Zip/)
+    .sendEof()
+    .runAsync();
+};

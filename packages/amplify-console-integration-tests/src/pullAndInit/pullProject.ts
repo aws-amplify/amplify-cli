@@ -1,5 +1,5 @@
 import * as util from '../util';
-import { nspawn as spawn, getSocialProviders } from 'amplify-e2e-core';
+import { nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
 import { EOL } from 'os';
 
 const defaultSettings = {
