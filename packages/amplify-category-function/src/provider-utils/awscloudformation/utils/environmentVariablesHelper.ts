@@ -243,7 +243,7 @@ const setEnvironmentVariable = (resourceName: string, newEnvironmentVariableKey:
     environmentVariableName: newEnvironmentVariableKey,
   });
   newReferences[newEnvironmentVariableKey] = { Ref: camelCaseKey };
-  newParameters[camelCaseKey] = { Type: 'String' };
+  newParameters[camelCaseKey] = { Type: 'String', Default: newEnvironmentVariableValue };
   newKeyValue[camelCaseKey] = newEnvironmentVariableValue;
 
   setStoredList(resourceName, newList);

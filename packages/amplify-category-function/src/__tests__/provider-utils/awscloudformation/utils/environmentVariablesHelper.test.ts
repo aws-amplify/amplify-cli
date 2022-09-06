@@ -93,3 +93,13 @@ describe('ensureEnvironmentVariableValues', () => {
     });
   });
 });
+
+describe('ensureDefaultEnvironmentVariableValue', () => {
+  it('add an environment variable', () => {
+    saveEnvironmentVariables('name', { envKey: 'envValue' });
+    expect(JSONUtilitiesMock.writeJson.mock.calls[2][1].Parameters.envKey).toEqual({
+      Type: 'String',
+      Default: 'envValue',
+    });
+  });
+});

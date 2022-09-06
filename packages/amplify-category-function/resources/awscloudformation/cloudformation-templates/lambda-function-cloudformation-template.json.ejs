@@ -19,7 +19,8 @@
         <% for(var i = 0; Object.keys(props.environmentVariables).length > i; i++) { %>
         ,
         "<%- props.environmentMap[Object.keys(props.environmentVariables)[i]].Ref %>": {
-            "Type": "String"
+            "Type": "String",
+            "Default": "<%= Object.values(props.environmentVariables)[i] %>"
         }
         <% } %>
         <% } %>
