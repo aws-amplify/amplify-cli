@@ -2,8 +2,12 @@ import { $TSContext } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as path from 'path';
 import { categoryName } from '../constants';
+
 export { categoryName as name } from '../constants';
 
+/**
+ *
+ */
 export async function run(context: $TSContext) {
   if (/^win/.test(process.platform)) {
     try {
@@ -41,6 +45,10 @@ export async function run(context: $TSContext) {
     {
       name: 'override',
       description: `Generates 'overrides.ts' for ${categoryName} resource in your local backend. The resource properties can be overridden by editing this file. The resource is overridden in the cloud on the next push command. `,
+    },
+    {
+      name: 'console',
+      description: `Opens the web console for the ${categoryName} category`,
     },
   ];
 
