@@ -35,8 +35,10 @@ const pathManager_mock = pathManager as jest.Mocked<typeof pathManager>;
 pathManager_mock.findProjectRoot = jest.fn().mockReturnValue('projectpath');
 pathManager_mock.getBackendDirPath = jest.fn().mockReturnValue('backend');
 
-const JSONUtilities_mock = JSONUtilities as jest.Mocked<typeof JSONUtilities>;
-JSONUtilities_mock.readJson.mockImplementation((pathToJson: string) => {
+const JSONUtilitiesMock = JSONUtilities as jest.Mocked<typeof JSONUtilities>;
+JSONUtilitiesMock.stringify.mockImplementation((data, __) => JSON.stringify(data, null, 2));
+JSONUtilitiesMock.parse.mockImplementation((data) => JSON.parse(data));
+JSONUtilitiesMock.readJson.mockImplementation((pathToJson: string) => {
   if (pathToJson.includes('function') && pathToJson.includes('amplifyexportestlayer5f16d693')) {
     return lambdaTemplate;
   }
