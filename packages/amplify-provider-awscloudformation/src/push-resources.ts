@@ -543,7 +543,14 @@ const uploadStudioBackendFiles = async (s3: S3, bucketName: string) => {
       Body: fs.createReadStream(path.join(amplifyDirPath, filePath)),
       Key: path.join(studioBackendDirName, filePath.replace('#current-cloud-backend', '')),
     }));
-  await Promise.all(uploadFileParams.map(params => s3.uploadFile(params)));
+
+  const uploadSpinner = ora('Uploading files.');
+  try {
+    uploadSpinner.start();
+    await Promise.all(uploadFileParams.map(params => s3.uploadFile(params, false)));
+  } finally {
+    uploadSpinner.stop();
+  }
 };
 
 /**
