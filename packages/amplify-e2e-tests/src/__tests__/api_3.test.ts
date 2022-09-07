@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import {
   addApiWithoutSchema,
   addFeatureFlag,
@@ -39,10 +40,10 @@ describe('amplify add api (GraphQL)', () => {
   });
 
   it('init a project and add the simple_model api, change transformer version to base version and push', async () => {
-    const name = `simplemodelv${TRANSFORM_BASE_VERSION}`;
+    const name = `simpleModelV${TRANSFORM_BASE_VERSION}`;
     await initJSProjectWithProfile(projRoot, { name });
     await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
-    await updateApiSchema(projRoot, name, 'simple_model.graphql');
+    updateApiSchema(projRoot, name, 'simple_model.graphql');
     const transformConfig = getTransformConfig(projRoot, name);
     expect(transformConfig).toBeDefined();
     expect(transformConfig.Version).toBeDefined();
@@ -83,8 +84,10 @@ describe('amplify add api (GraphQL)', () => {
     await initJSProjectWithProfile(projRoot, {});
     await addHeadlessApi(projRoot, addApiRequest);
 
-    await addFeatureFlag(projRoot, 'graphqltransformer', 'transformerVersion', 1);
-    await addFeatureFlag(projRoot, 'graphqltransformer', 'useExperimentalPipelinedTransformer', false);
+    // eslint-disable-next-line spellcheck/spell-checker
+    addFeatureFlag(projRoot, 'graphqltransformer', 'transformerVersion', 1);
+    // eslint-disable-next-line spellcheck/spell-checker
+    addFeatureFlag(projRoot, 'graphqltransformer', 'useExperimentalPipelinedTransformer', false);
 
     await amplifyPush(projRoot);
 
@@ -129,8 +132,10 @@ describe('amplify add api (GraphQL)', () => {
     await initJSProjectWithProfile(projRoot, {});
     await addHeadlessApi(projRoot, addApiRequest);
 
-    await addFeatureFlag(projRoot, 'graphqltransformer', 'transformerVersion', 1);
-    await addFeatureFlag(projRoot, 'graphqltransformer', 'useExperimentalPipelinedTransformer', false);
+    // eslint-disable-next-line spellcheck/spell-checker
+    addFeatureFlag(projRoot, 'graphqltransformer', 'transformerVersion', 1);
+    // eslint-disable-next-line spellcheck/spell-checker
+    addFeatureFlag(projRoot, 'graphqltransformer', 'useExperimentalPipelinedTransformer', false);
 
     await amplifyPush(projRoot);
     await updateHeadlessApi(projRoot, updateApiRequest, true);
@@ -158,8 +163,10 @@ describe('amplify add api (GraphQL)', () => {
     await initJSProjectWithProfile(projRoot, {});
     await addHeadlessApi(projRoot, addApiRequest);
 
-    await addFeatureFlag(projRoot, 'graphqltransformer', 'transformerVersion', 1);
-    await addFeatureFlag(projRoot, 'graphqltransformer', 'useExperimentalPipelinedTransformer', false);
+    // eslint-disable-next-line spellcheck/spell-checker
+    addFeatureFlag(projRoot, 'graphqltransformer', 'transformerVersion', 1);
+    // eslint-disable-next-line spellcheck/spell-checker
+    addFeatureFlag(projRoot, 'graphqltransformer', 'useExperimentalPipelinedTransformer', false);
 
     await amplifyPush(projRoot);
 
@@ -185,6 +192,7 @@ describe('amplify add api (GraphQL)', () => {
       await getAppSyncApi(GraphQLAPIIdOutput, meta.providers.awscloudformation.Region);
       expect(true).toBe(false); // expecting failure
     } catch (err) {
+      // eslint-disable-next-line jest/no-conditional-expect
       expect(err.message).toBe(`GraphQL API ${GraphQLAPIIdOutput} not found.`);
     }
   });

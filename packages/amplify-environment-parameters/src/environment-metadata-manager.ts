@@ -121,7 +121,10 @@ class EnvironmentMetadata implements IEnvironmentMetadata {
   readonly DeploymentBucketName: string;
   readonly StackName: string;
   readonly StackId: string;
-  private _AmplifyAppId: string;
+  /**
+   * This value should only be undefined in some e2e tests where Amplify app creation is disabled
+   */
+  private _AmplifyAppId: string | undefined;
   private _PermissionsBoundaryPolicyArn: string | undefined;
   private _dirty = false;
 
@@ -147,7 +150,6 @@ class EnvironmentMetadata implements IEnvironmentMetadata {
       'DeploymentBucketName',
       'StackId',
       'StackName',
-      'AmplifyAppId',
     ];
     const amplifyMetaKeys = Object.keys(flattenedMeta);
     requiredKeys.forEach(requiredKey => {
@@ -158,10 +160,18 @@ class EnvironmentMetadata implements IEnvironmentMetadata {
         throw new Error(`Tried to initialize EnvironmentMetadata object with ${requiredKey} set to a non-string value`);
       }
     });
-    const permissionBoundaryType = typeof flattenedMeta.PermissionsBoundaryPolicyArn;
-    if (permissionBoundaryType !== 'string' && permissionBoundaryType !== 'undefined') {
-      throw new Error(`Tried to initialize EnvironmentMetadata object with PermissionsBoundaryPolicyArn set to a non-string value`);
-    }
+
+    const optionalKeys: (keyof IEnvironmentMetadata)[] = [
+      'PermissionsBoundaryPolicyArn',
+      'AmplifyAppId',
+    ];
+
+    optionalKeys.forEach(optionalKey => {
+      const typeOfValue = typeof flattenedMeta[optionalKey];
+      if (typeOfValue !== 'string' && typeOfValue !== 'undefined') {
+        throw new Error(`Tried to initialize EnvironmentMetadata object with ${optionalKey} set to a non-string value`);
+      }
+    });
     const validatedAmplifyMeta = flattenedMeta as IEnvironmentMetadata;
     this.AuthRoleName = validatedAmplifyMeta.AuthRoleName;
     this.AuthRoleArn = validatedAmplifyMeta.AuthRoleArn;
@@ -186,7 +196,7 @@ class EnvironmentMetadata implements IEnvironmentMetadata {
   }
 
   get AmplifyAppId(): string {
-    return this._AmplifyAppId;
+    return this._AmplifyAppId!;
   }
 
   set AmplifyAppId(value: string) {

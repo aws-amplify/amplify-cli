@@ -70,7 +70,7 @@ export class S3 {
    */
   private populateUploadState(): void {
     const { envName } = stateManager.getLocalEnvInfo();
-    const projectBucket = getEnvMeta().DeploymentBucketName;
+    const projectBucket = getEnvMeta(envName).DeploymentBucketName;
 
     this.uploadState = {
       envName,

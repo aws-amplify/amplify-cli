@@ -12,6 +12,7 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
+import { ensureEnvMeta } from '@aws-amplify/amplify-environment-parameters';
 import {
   $TSContext, $TSMeta, JSONUtilities, PathConstants, stateManager,
 } from 'amplify-cli-core';
@@ -37,6 +38,9 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
     const tempDir = path.join(amplifyDir, '.temp');
     const currentCloudBackendDir = context.amplify.pathManager.getCurrentCloudBackendDirPath();
     const backendDir = context.amplify.pathManager.getBackendDirPath();
+
+    const { envName } = stateManager.getLocalEnvInfo();
+    await ensureEnvMeta(context, envName);
 
     const s3 = await S3.getInstance(context);
     const cfnItem = await new Cloudformation(context);
