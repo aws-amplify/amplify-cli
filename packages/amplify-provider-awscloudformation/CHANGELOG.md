@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.6.0-rc.224a2e0e4.0...amplify-provider-awscloudformation@6.6.0) (2022-09-06)
+
+
+
+# 10.0.0-rc.0 (2022-08-24)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+# [6.6.0-rc.224a2e0e4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.5.1...amplify-provider-awscloudformation@6.6.0-rc.224a2e0e4.0) (2022-08-15)
+
+
+### Features
+
+* pretty print cloudformation event logs  ([#10720](https://github.com/aws-amplify/amplify-cli/issues/10720)) ([aaf2210](https://github.com/aws-amplify/amplify-cli/commit/aaf22103548a329b3092f52736c28c9b5c5b8b8b))
+
+
+
+
+
 ## [6.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.5.0...amplify-provider-awscloudformation@6.5.1) (2022-08-06)
 
 

@@ -13,7 +13,7 @@ if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
     echo "Tag name is missing. Name your branch with either tagged-release/<tag-name> or tagged-release-without-e2e-tests/<tag-name>"
     exit 1
   fi
-  
+
   if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
     echo "Publishing to local registry under latest tag"
     npx lerna publish --exact --preid=$NPM_TAG --conventional-commits --conventional-prerelease --no-push --yes --include-merged-tags
@@ -25,7 +25,7 @@ if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
 # @latest release
 elif [[ "$CIRCLE_BRANCH" == "release" ]]; then
   # create release commit and release tags
-  npx lerna version --exact --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish latest [ci skip]"
+  npx lerna version --exact --conventional-commits --conventional-graduate --yes --no-push --include-merged-tags --message "chore(release): Publish latest [ci skip]"
 
   # publish versions that were just computed
   npx lerna publish from-git --yes --no-push
@@ -56,7 +56,7 @@ elif [[ "$CIRCLE_BRANCH" == "release" ]]; then
 
 # release candidate or local publish for testing / building binary
 elif [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]] || [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
-  
+
   # force @aws-amplify/cli-internal to be versioned in case this pipeline run does not have any commits that modify the CLI packages
   if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
     force_publish_local_args="--force-publish '@aws-amplify/cli-internal'"
