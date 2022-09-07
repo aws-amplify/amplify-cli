@@ -13,8 +13,13 @@ type GetEnvironmentNetworkInfoParams = {
   subnetsCount: number;
 };
 
+/**
+ *
+ */
 export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentNetworkInfoParams) {
-  const { stackName, vpcName, vpcCidr, subnetsCount = SUBNETS, subnetMask } = params;
+  const {
+    stackName, vpcName, vpcCidr, subnetsCount = SUBNETS, subnetMask,
+  } = params;
 
   const [, vpcMask] = vpcCidr.split('/');
 
@@ -35,7 +40,7 @@ export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentN
 
     throw new AmplifyError('ConfigurationError', {
       message: `The requested number of subnets exceeds the number of AZs for the region. ${JSONUtilities.stringify({ subnets, azs: AZs })}`,
-      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 
@@ -61,11 +66,11 @@ export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentN
   if (vpcId && !vpc.CidrBlock.endsWith(vpcMask)) {
     throw new AmplifyError('ConfigurationError', {
       message: 'Not the right mask',
-      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 
-  /*****************************************************************************/
+  /** ***************************************************************************/
 
   const { InternetGateways } = await ec2
     .describeInternetGateways({
@@ -85,13 +90,13 @@ export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentN
   if (vpcId && InternetGateways.length === 0) {
     throw new AmplifyError('ConfigurationError', {
       message: `No attached and available Internet Gateway in VPC ${vpcId}`,
-      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 
   const [{ InternetGatewayId: internetGatewayId = undefined } = {}] = InternetGateways;
 
-  /*****************************************************************************/
+  /** ***************************************************************************/
 
   const { Subnets } = await ec2.describeSubnets({ Filters: [{ Name: 'vpc-id', Values: [vpcId] }] }).promise();
 
@@ -148,7 +153,7 @@ export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentN
   if (envCidrs.size < subnetsCount) {
     throw new AmplifyError('ConfigurationError', {
       message: 'Not enough CIDRs available in VPC',
-      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 

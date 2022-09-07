@@ -11,16 +11,16 @@ export const resolveAppId = (context: $TSContext): string => {
     if (meta?.providers?.awscloudformation?.AmplifyAppId) {
       return meta.providers.awscloudformation.AmplifyAppId;
     }
-    throw new AmplifyError('GenericError', {
+    throw new AmplifyError('ProjectAppIdResolveError', {
       message: 'Could not find AmplifyAppId in amplify-meta.json.',
-      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   } else if (context?.exeInfo?.inputParams?.amplify?.appId) {
     return context.exeInfo.inputParams.amplify.appId;
   } else {
-    throw new AmplifyError('GenericError', {
+    throw new AmplifyError('ProjectAppIdResolveError', {
       message: 'Failed to resolve appId.',
-      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 };

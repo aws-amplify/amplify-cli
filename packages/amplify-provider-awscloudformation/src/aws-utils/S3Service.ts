@@ -50,7 +50,7 @@ export class S3Service implements IS3Service {
       throw new AmplifyFault('UnknownFault', {
         stack: error.stack,
         message: error.message,
-        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
   }

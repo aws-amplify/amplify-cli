@@ -392,7 +392,7 @@ class CloudFormation {
       throw new AmplifyFault('ResourceNotReadyFault', {
         message: error.message,
         stack: error.stack,
-        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
   }
@@ -567,7 +567,7 @@ class CloudFormation {
     if (!stackId) {
       throw new AmplifyError('StackNotFoundError', {
         message: `StackId not found in amplify-meta for provider ${providerName}`,
-        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
     // StackName param can be a StackName, StackId, or a PhysicalResourceId
@@ -581,7 +581,7 @@ class CloudFormation {
     if (!stackName) {
       throw new AmplifyError('StackNotFoundError', {
         message: `Stack not defined for the environment.`,
-        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
 

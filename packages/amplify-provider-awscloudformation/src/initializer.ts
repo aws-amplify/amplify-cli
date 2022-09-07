@@ -1,10 +1,19 @@
-/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable import/no-cycle */
 /* eslint-disable func-style */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
-  $TSContext, $TSObject, AmplifyError, AMPLIFY_SUPPORT_DOCS, JSONUtilities, PathConstants, pathManager, stateManager, Tag, Template,
+  $TSContext,
+  $TSObject,
+  AmplifyError,
+  AmplifyFault,
+  AMPLIFY_SUPPORT_DOCS,
+  JSONUtilities,
+  PathConstants,
+  pathManager,
+  stateManager,
+  Tag,
+  Template,
 } from 'amplify-cli-core';
 import { AmplifySpinner, printer } from 'amplify-prompts';
 import _ from 'lodash';
@@ -53,7 +62,7 @@ export const run = async (context: $TSContext): Promise<void> => {
     const timeStamp = process.env.CIRCLECI ? uuid().substring(0, 5) : `${moment().format('Hmmss')}`;
     const { envName = '' } = context.exeInfo.localEnvInfo;
     let stackName = normalizeStackName(`amplify-${projectName}-${envName}-${timeStamp}`);
-    const awsConfigInfo = await getAwsConfig(context);
+    const awsConfigInfo = await configurationManager.getAwsConfig(context);
 
     await configurePermissionsBoundaryForInit(context);
 
@@ -134,20 +143,12 @@ export const run = async (context: $TSContext): Promise<void> => {
     };
 
     const eventMap = createInitEventMap(params, envName, projectName);
-    const cfnItem = await new Cloudformation(context, 'init', awsConfigInfo, eventMap);
+    const cfnItem = new Cloudformation(context, 'init', awsConfigInfo, eventMap);
     const stackDescriptionData = await cfnItem.createResourceStack(params);
 
     processStackCreationData(context, amplifyAppId, stackDescriptionData);
     cloneCLIJSONForNewEnvironment(context);
-<<<<<<< HEAD
-
-    return context;
-  }
-
-  if (
-=======
   } else if (
->>>>>>> b0b06c68a (fix: refactor push flow to use amplify error handling framework)
     // This part of the code is invoked by the `amplify init --appId xxx` command
     // on projects that are already fully setup by `amplify init` with the Amplify CLI version prior to 4.0.0.
     // It expects all the artifacts in the `amplify/.config` directory, the amplify-meta.json file in both
@@ -188,19 +189,11 @@ function createInitEventMap(params: ParamType, envName: string, projectName: str
   };
 }
 
-<<<<<<< HEAD
 const processStackCreationData = (context: $TSContext, amplifyAppId: string | undefined, stackDescriptionData: $TSObject): void => {
   const metadata = {};
   if (stackDescriptionData.Stacks && stackDescriptionData.Stacks.length) {
     const { Outputs } = stackDescriptionData.Stacks[0];
     Outputs.forEach((element: $TSObject) => {
-=======
-function processStackCreationData(context, amplifyAppId, stackDescriptionData) {
-  const metadata = {};
-  if (stackDescriptionData.Stacks && stackDescriptionData.Stacks.length) {
-    const { Outputs } = stackDescriptionData.Stacks[0];
-    Outputs.forEach(element => {
->>>>>>> b0b06c68a (fix: refactor push flow to use amplify error handling framework)
       metadata[element.OutputKey] = element.OutputValue;
     });
     if (amplifyAppId) {
@@ -211,7 +204,7 @@ function processStackCreationData(context, amplifyAppId, stackDescriptionData) {
   } else {
     throw new AmplifyError('StackNotFoundError', {
       message: 'No stack data present',
-      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 };
@@ -252,7 +245,7 @@ const cloneCLIJSONForNewEnvironment = (context: $TSContext): void => {
 /**
  * on success init handler
  */
- export const onInitSuccessful = async (context: $TSContext): Promise<$TSContext> => {
+export const onInitSuccessful = async (context: $TSContext): Promise<$TSContext> => {
   configurationManager.onInitSuccessful(context);
   if (context.exeInfo.isNewEnv) {
     await storeRootStackTemplate(context);
@@ -330,9 +323,9 @@ const storeCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
     })
     .catch(ex => {
       spinner.stop('Deployment state save failed.', false);
-      throw new AmplifyError('DeploymentError', {
+      throw new AmplifyFault('DeploymentFault', {
         message: ex.message,
-        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
         stack: ex.stack,
       });
     })

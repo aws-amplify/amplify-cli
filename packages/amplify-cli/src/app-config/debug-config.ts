@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import {
-  $TSAny, DebugConfigValueNotSetError, ProjectNotInitializedError, pathManager, stateManager,
+  $TSAny, DebugConfigValueNotSetError, projectNotInitializedError, pathManager, stateManager,
 } from 'amplify-cli-core';
 
 /**
@@ -36,7 +36,7 @@ export class DebugConfig {
       if (!throwIfNotExist) {
         return {};
       }
-      throw new ProjectNotInitializedError();
+      throw projectNotInitializedError();
     }
 
     return stateManager.getCLIJSON(rootPath, undefined, { throwIfNotExist });
@@ -58,7 +58,7 @@ export class DebugConfig {
   writeShareProjectConfig(): void {
     const rootPath = pathManager.findProjectRoot();
     if (!rootPath) {
-      throw new ProjectNotInitializedError();
+      throw projectNotInitializedError();
     }
     const cliJson = this.getCLIJson(false);
     if (!cliJson) {

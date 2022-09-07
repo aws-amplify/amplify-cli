@@ -208,7 +208,7 @@ export class AmplifyRootStackTransform {
 
     throw new AmplifyFault('RootStackNotFoundFault', {
       message: `Root Stack Template doesn't exist.`,
-      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 }

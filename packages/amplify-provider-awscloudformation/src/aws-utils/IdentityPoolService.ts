@@ -1,10 +1,17 @@
-import { $TSAny, $TSContext, AmplifyError, AmplifyFault, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
+import {
+  $TSAny, $TSContext, AmplifyError, AmplifyFault, AMPLIFY_SUPPORT_DOCS,
+} from 'amplify-cli-core';
 import { IIdentityPoolService } from 'amplify-util-import';
 import { CognitoIdentity } from 'aws-sdk';
-import { PaginationKey, IdentityPool, IdentityPoolShortDescription, ListIdentityPoolsResponse } from 'aws-sdk/clients/cognitoidentity';
+import {
+  PaginationKey, IdentityPool, IdentityPoolShortDescription, ListIdentityPoolsResponse,
+} from 'aws-sdk/clients/cognitoidentity';
 import { loadConfiguration } from '../configuration-manager';
 import { pagedAWSCall } from './paged-call';
 
+/**
+ *
+ */
 export const createIdentityPoolService = async (context: $TSContext, options: $TSAny): Promise<IdentityPoolService> => {
   let credentials = {};
 
@@ -19,23 +26,27 @@ export const createIdentityPoolService = async (context: $TSContext, options: $T
   return new IdentityPoolService(cognitoIdentity);
 };
 
+/**
+ *
+ */
 export class IdentityPoolService implements IIdentityPoolService {
   private cachedIdentityPoolIds: IdentityPoolShortDescription[] = [];
   private cachedIdentityPoolDetails: IdentityPool[] = [];
 
   public constructor(private cognitoIdentity: CognitoIdentity) {}
 
+  /**
+   *
+   */
   public async listIdentityPools(): Promise<IdentityPoolShortDescription[]> {
     if (this.cachedIdentityPoolIds.length === 0) {
       const result = await pagedAWSCall<ListIdentityPoolsResponse, IdentityPoolShortDescription, PaginationKey>(
-        async (params: CognitoIdentity.Types.ListIdentitiesInput, nextToken: PaginationKey) => {
-          return await this.cognitoIdentity
-            .listIdentityPools({
-              ...params,
-              NextToken: nextToken,
-            })
-            .promise();
-        },
+        async (params: CognitoIdentity.Types.ListIdentitiesInput, nextToken: PaginationKey) => await this.cognitoIdentity
+          .listIdentityPools({
+            ...params,
+            NextToken: nextToken,
+          })
+          .promise(),
         {
           MaxResults: 60,
         },
@@ -49,6 +60,9 @@ export class IdentityPoolService implements IIdentityPoolService {
     return this.cachedIdentityPoolIds;
   }
 
+  /**
+   *
+   */
   public async listIdentityPoolDetails(): Promise<IdentityPool[]> {
     if (this.cachedIdentityPoolDetails.length === 0) {
       const identityPools = await this.listIdentityPools();
@@ -56,13 +70,11 @@ export class IdentityPoolService implements IIdentityPoolService {
       const identityPoolDetails = [];
 
       if (identityPools.length > 0) {
-        const describeIdentityPoolPromises = identityPools.map(idp =>
-          this.cognitoIdentity
-            .describeIdentityPool({
-              IdentityPoolId: idp.IdentityPoolId,
-            })
-            .promise(),
-        );
+        const describeIdentityPoolPromises = identityPools.map(idp => this.cognitoIdentity
+          .describeIdentityPool({
+            IdentityPoolId: idp.IdentityPoolId,
+          })
+          .promise());
 
         const identityPoolDetailResults = await Promise.all(describeIdentityPoolPromises);
 
@@ -75,6 +87,9 @@ export class IdentityPoolService implements IIdentityPoolService {
     return this.cachedIdentityPoolDetails;
   }
 
+  /**
+   *
+   */
   public async getIdentityPoolRoles(
     identityPoolId: string,
   ): Promise<{ authRoleArn: string; authRoleName: string; unauthRoleArn: string; unauthRoleName: string }> {
@@ -84,18 +99,18 @@ export class IdentityPoolService implements IIdentityPoolService {
       })
       .promise();
 
-    if (!response.Roles || !response.Roles['authenticated'] || !response.Roles['unauthenticated']) {
+    if (!response.Roles || !response.Roles.authenticated || !response.Roles.unauthenticated) {
       throw new AmplifyError('AuthImportError', {
         message: `Cannot import Identity Pool without 'authenticated' and 'unauthenticated' roles.`,
-        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
 
     return {
-      authRoleArn: response.Roles['authenticated'],
-      authRoleName: this.getResourceNameFromArn(response.Roles['authenticated']),
-      unauthRoleArn: response.Roles['unauthenticated'],
-      unauthRoleName: this.getResourceNameFromArn(response.Roles['unauthenticated']),
+      authRoleArn: response.Roles.authenticated,
+      authRoleName: this.getResourceNameFromArn(response.Roles.authenticated),
+      unauthRoleArn: response.Roles.unauthenticated,
+      unauthRoleName: this.getResourceNameFromArn(response.Roles.unauthenticated),
     };
   }
 
@@ -114,7 +129,7 @@ export class IdentityPoolService implements IIdentityPoolService {
     if (!resourceName) {
       throw new AmplifyFault('UnknownFault', {
         message: `Cannot parse arn: '${arn}'.`,
-        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
 

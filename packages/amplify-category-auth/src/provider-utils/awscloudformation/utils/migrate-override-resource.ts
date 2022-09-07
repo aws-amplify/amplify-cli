@@ -1,5 +1,5 @@
 import {
-  $TSObject, AmplifyCategories, ProjectNotInitializedError, AmplifyError, AMPLIFY_SUPPORT_DOCS, JSONUtilities, pathManager,
+  $TSObject, AmplifyCategories, projectNotInitializedError, AmplifyError, AMPLIFY_SUPPORT_DOCS, JSONUtilities, pathManager,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as path from 'path';
@@ -32,7 +32,7 @@ export const migrateResourceToSupportOverride = async (resourceName: string): Pr
    *  */
   const projectPath = pathManager.findProjectRoot();
   if (!projectPath) {
-    throw new ProjectNotInitializedError();
+    throw projectNotInitializedError();
   }
   const authResourceDirPath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.AUTH, resourceName);
   const userPoolGroupResourceDirPath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.AUTH, 'userPoolGroups');
@@ -60,7 +60,7 @@ export const migrateResourceToSupportOverride = async (resourceName: string): Pr
       message: `There was an error migrating your project: ${e.message}`,
       details: `Migration operations are rolled back.`,
       stack: e.stack,
-      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   } finally {
     cleanUp(backupAuthResourceFolder);
@@ -68,7 +68,6 @@ export const migrateResourceToSupportOverride = async (resourceName: string): Pr
   }
 };
 
-// eslint-disable-next-line consistent-return
 const backup = (authResourcePath: string, projectPath: string, resourceName: string): string | undefined => {
   if (fs.existsSync(authResourcePath)) {
     const backupAuthResourceDirName = `${resourceName}-BACKUP-${uuid().split('-')[0]}`;
@@ -77,13 +76,15 @@ const backup = (authResourcePath: string, projectPath: string, resourceName: str
     if (fs.existsSync(backupAuthResourceDirPath)) {
       throw new AmplifyError('MigrationError', {
         message: `Backup folder for ${resourceName} already exists.`,
-        resolution: `Please delete the backup folder and try again.`,
+        resolution: `Delete the backup folder and try again.`,
       });
     }
 
     fs.copySync(authResourcePath, backupAuthResourceDirPath);
     return backupAuthResourceDirPath;
   }
+
+  return undefined;
 };
 
 const rollback = (authResourcePath: string, backupAuthResourceDirPath: string): void => {

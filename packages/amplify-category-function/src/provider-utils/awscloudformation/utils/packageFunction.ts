@@ -57,7 +57,7 @@ Total size of Lambda function ${
 } plus it's dependent layers exceeds ${lambdaPackageLimitInMB}MB limit. Lambda function is ${convertNumBytes(
   functionSizeInBytes,
 ).toMB()}MB. Dependent Lambda layers are ${convertNumBytes(layersSizeInBytes).toMB()}MB.`,
-      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 

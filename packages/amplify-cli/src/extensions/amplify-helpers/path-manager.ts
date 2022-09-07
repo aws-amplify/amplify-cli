@@ -1,4 +1,4 @@
-import { $TSAny, ProjectNotInitializedError } from 'amplify-cli-core';
+import { $TSAny, projectNotInitializedError } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import { homedir } from 'os';
 import * as path from 'path';
@@ -56,7 +56,7 @@ export const getAmplifyDirPath = (projectPath?: string): string => {
     return path.normalize(path.join(projectPath, amplifyCLIConstants.AmplifyCLIDirName));
   }
 
-  throw new ProjectNotInitializedError();
+  throw projectNotInitializedError();
 };
 
 /**
@@ -103,7 +103,7 @@ export const getAmplifyRcFilePath = (projectPath?: string) : string => {
     return path.normalize(path.join(projectPath, '.amplifyrc'));
   }
 
-  throw new ProjectNotInitializedError();
+  throw projectNotInitializedError();
 };
 
 /**
@@ -118,7 +118,7 @@ export const getGitIgnoreFilePath = (projectPath?: string): string => {
     return path.normalize(path.join(projectPath, '.gitignore'));
   }
 
-  throw new ProjectNotInitializedError();
+  throw projectNotInitializedError();
 };
 
 /**

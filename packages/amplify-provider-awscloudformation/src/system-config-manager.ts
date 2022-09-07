@@ -108,7 +108,7 @@ export const getProfiledAwsConfig = async (context: $TSContext, profileName: str
   } else {
     throw new AmplifyError('ProfileConfigurationError', {
       message: `Profile configuration is missing for: ${profileName}`,
-      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 
@@ -335,7 +335,7 @@ const validateCredentials = (credentials: $TSAny, profileName: string): void => 
   if (missingKeys.length > 0) {
     throw new AmplifyError('ProfileConfigurationError', {
       message: `Profile configuration for '${profileName}' is invalid: missing ${missingKeys.join(', ')}`,
-      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 };

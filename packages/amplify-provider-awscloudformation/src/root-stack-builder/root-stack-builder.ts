@@ -71,7 +71,7 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
     if (this._cfnParameterMap.has(logicalId)) {
       throw new AmplifyError('DuplicateLogicalIdError', {
         message: `Logical Id already exists: ${logicalId}.`,
-        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
     this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
@@ -148,7 +148,7 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
   addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
     throw new AmplifyFault('NotImplementedFault', {
       message: 'Method not implemented.',
-      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 
@@ -159,21 +159,21 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
   addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void {
     throw new AmplifyFault('NotImplementedFault', {
       message: 'Method not implemented.',
-      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 
   addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void {
     throw new AmplifyFault('NotImplementedFault', {
       message: 'Method not implemented.',
-      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 
   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void {
     throw new AmplifyFault('NotImplementedFault', {
       message: 'Method not implemented.',
-      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 

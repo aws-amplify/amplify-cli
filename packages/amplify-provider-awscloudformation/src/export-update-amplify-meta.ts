@@ -41,7 +41,7 @@ export const run = async (context: $TSContext, stackName: string): Promise<void>
     throw new AmplifyError('StackNotFoundError', {
       message: `${stackName} could not be found.`,
       resolution: 'Please check the stack name and credentials.',
-      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 
@@ -49,7 +49,7 @@ export const run = async (context: $TSContext, stackName: string): Promise<void>
   if (rootStack.StackStatus !== 'UPDATE_COMPLETE' && rootStack.StackStatus !== 'CREATE_COMPLETE') {
     throw new AmplifyError('StackNotFoundError', {
       message: `${stackName} not in UPDATE_COMPLETE or CREATE_COMPLETE state`,
-      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 

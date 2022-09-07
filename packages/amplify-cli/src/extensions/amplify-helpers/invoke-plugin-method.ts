@@ -17,7 +17,7 @@ export const invokePluginMethod = async <T>(
   if (!pluginInfo) {
     throw new AmplifyError('PluginNotFoundError', {
       message: `Plugin for category: ${category} was not found.`,
-      resolution: `Please make sure Amplify CLI is properly installed (do you need to run \`amplify plugin scan\`?).`,
+      resolution: `Make sure Amplify CLI is properly installed. You may need to run \`amplify plugin scan\``,
     });
   }
 
@@ -26,8 +26,8 @@ export const invokePluginMethod = async <T>(
 
   if (!pluginMethod || typeof pluginMethod !== 'function') {
     throw new AmplifyError('PluginMethodNotFoundError', {
-      message: `Method ${method} does not exist or not a function in category plugin: ${category}.`,
-      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      message: `Method ${method} does not exist or is not a function in category plugin: ${category}.`,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 

@@ -2,6 +2,7 @@ import {
   $TSAny,
   $TSContext,
   AmplifyError,
+  AmplifyFault,
   AMPLIFY_SUPPORT_DOCS,
   spinner,
   stateManager,
@@ -23,28 +24,36 @@ const syncCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
   context.exeInfo.restoreBackend = false;
   const currentEnv = context.exeInfo.localEnvInfo.envName;
 
-  const amplifyMeta = stateManager.getMeta();
-  const providerPlugins = getProviderPlugins(context);
-  const pullCurrentCloudTasks: (() => Promise<$TSAny>)[] = [];
+  try {
+    const amplifyMeta = stateManager.getMeta();
+    const providerPlugins = getProviderPlugins(context);
+    const pullCurrentCloudTasks: (() => Promise<$TSAny>)[] = [];
 
-  context.exeInfo.projectConfig.providers.forEach(provider => {
-    // eslint-disable-next-line
-    const providerModule = require(providerPlugins[provider]);
-    pullCurrentCloudTasks.push(() => providerModule.initEnv(context, amplifyMeta.providers[provider]));
-  });
+    context.exeInfo.projectConfig.providers.forEach(provider => {
+      // eslint-disable-next-line
+      const providerModule = require(providerPlugins[provider]);
+      pullCurrentCloudTasks.push(() => providerModule.initEnv(context, amplifyMeta.providers[provider]));
+    });
 
-  await notifySecurityEnhancement(context);
+    await notifySecurityEnhancement(context);
 
-  let securityChangeNotified = false;
-  securityChangeNotified = await notifyFieldAuthSecurityChange(context);
+    let securityChangeNotified = false;
+    securityChangeNotified = await notifyFieldAuthSecurityChange(context);
 
-  if (!securityChangeNotified) {
-    securityChangeNotified = await notifyListQuerySecurityChange(context);
+    if (!securityChangeNotified) {
+      securityChangeNotified = await notifyListQuerySecurityChange(context);
+    }
+
+    spinner.start(`Fetching updates to backend environment: ${currentEnv} from the cloud.`);
+    await sequential(pullCurrentCloudTasks);
+    spinner.succeed(`Successfully pulled backend environment ${currentEnv} from the cloud.`);
+  } catch (e) {
+    spinner.fail(`There was an error pulling the backend environment ${currentEnv}.`);
+    throw new AmplifyFault('BackendPullFault', {
+      message: e.message,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
+    });
   }
-
-  spinner.start(`Fetching updates to backend environment: ${currentEnv} from the cloud.`);
-  await sequential(pullCurrentCloudTasks);
-  spinner.succeed(`Successfully pulled backend environment ${currentEnv} from the cloud.`);
 };
 
 /**
@@ -57,7 +66,7 @@ export const run = async (context: $TSContext): Promise<$TSAny> => {
       'NoUpdateBackendError',
       {
         message: 'The local environment configuration does not allow backend updates.',
-        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       },
     );
   }

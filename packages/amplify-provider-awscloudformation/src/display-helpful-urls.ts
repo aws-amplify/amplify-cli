@@ -39,7 +39,7 @@ const showPinpointURL = (context, resourcesToBeCreated): void => {
     }
     const { Id, Region } = amplifyMeta[category][resourceName].output;
     const consoleUrl = `https://${Region}.console.aws.amazon.com/pinpoint/home/?region=${Region}#/apps/${Id}/analytics/overview`;
-    context.print.info(chalk`Pinpoint URL to track events {blue.underline ${consoleUrl}}`);
+    printer.info(`Pinpoint URL to track events ${chalk.blue.underline(consoleUrl)}`);
   }
 };
 
@@ -74,18 +74,18 @@ const showGraphQlUrl = (context, resourcesToBeCreated) => {
       hasApiKey = !!apiKeyProvider;
     }
 
-    context.print.info(chalk`GraphQL endpoint: {blue.underline ${GraphQLAPIEndpointOutput}}`);
+    printer.info(`GraphQL endpoint: ${chalk.blue.underline(GraphQLAPIEndpointOutput)}`);
     if (hasApiKey) {
       if (GraphQLAPIKeyOutput) {
-        context.print.info(chalk`GraphQL API KEY: {blue.underline ${GraphQLAPIKeyOutput}}`);
+        printer.info(`GraphQL API KEY: ${chalk.blue.underline(GraphQLAPIKeyOutput)}`);
       } else {
-        context.print.warning(
-          chalk`GraphQL API is configured to use API_KEY authentication, but API Key deployment is disabled, don't forget to create one.`,
+        printer.warn(
+          `GraphQL API is configured to use API_KEY authentication, but API Key deployment is disabled, don't forget to create one.`,
         );
       }
     }
 
-    context.print.info('');
+    printer.info('');
   }
 };
 
@@ -102,7 +102,7 @@ const showRestAPIURL = (context, resourcesToBeCreated) => {
     const { RootUrl } = amplifyMeta[category][resourceName].output;
 
     if (RootUrl) {
-      context.print.info(chalk`REST API endpoint: {blue.underline ${RootUrl}}`);
+      printer.info(`REST API endpoint: ${chalk.blue.underline(RootUrl)}`);
     }
   }
 };
@@ -121,7 +121,7 @@ const showContainerHostingInfo = (context, resourcesToBeCreated) => {
       },
     } = resource;
 
-    context.print.info(`Make sure to add the following CNAMEs to your domain’s DNS records:\n`);
+    printer.info(`Make sure to add the following CNAMEs to your domain’s DNS records:\n`);
 
     const tableOptions = [];
     tableOptions.push(['NAME', 'VALUE']);
@@ -146,7 +146,7 @@ const showHostingURL = (context, resourcesToBeCreated): void => {
 
     const hostingEndpoint = CloudFrontSecureURL || WebsiteURL;
 
-    context.print.info(chalk`Hosting endpoint: {blue.underline ${hostingEndpoint}}`);
+    printer.info(`Hosting endpoint: ${chalk.blue.underline(hostingEndpoint)}`);
   }
 };
 
@@ -167,7 +167,7 @@ const showHostedUIURLs = (context, resourcesToBeCreated): void => {
     if (OAuthMetadata) {
       const oAuthMetadata = JSON.parse(OAuthMetadata);
       const hostedUIEndpoint = `https://${HostedUIDomain}.auth.${Region}.amazoncognito.com/`;
-      context.print.info(chalk`Hosted UI Endpoint: {blue.underline ${hostedUIEndpoint}}`);
+      printer.info(`Hosted UI Endpoint: ${chalk.blue.underline(hostedUIEndpoint)}`);
       const redirectURIs = oAuthMetadata.CallbackURLs.concat(oAuthMetadata.LogoutURLs);
       if (redirectURIs.length > 0) {
         const [responseType] = oAuthMetadata.AllowedOAuthFlows;
@@ -175,7 +175,7 @@ const showHostedUIURLs = (context, resourcesToBeCreated): void => {
         const testHostedUIEndpoint = `https://${HostedUIDomain}.auth.${Region}.amazoncognito.com/login?response_type=${
           responseType === 'implicit' ? 'token' : 'code'
         }&client_id=${AppClientIDWeb}&redirect_uri=${redirectURIs[0]}\n`;
-        context.print.info(chalk`Test Your Hosted UI Endpoint: {blue.underline ${testHostedUIEndpoint}}`);
+        printer.info(`Test Your Hosted UI Endpoint: ${chalk.blue.underline(testHostedUIEndpoint)}`);
       }
     }
   }
@@ -187,7 +187,7 @@ const showCognitoSandBoxMessage = async (context, resources): Promise<void> => {
   if (cognitoResource.length > 0) {
     logger('showCognitoSandBoxMessage', [cognitoResource[0].resourceName])();
 
-    const smsWorkflowEnabled = await await context.amplify.invokePluginMethod(context, 'auth', 'cognito', 'isSMSWorkflowEnabled', [
+    const smsWorkflowEnabled = await context.amplify.invokePluginMethod(context, 'auth', 'cognito', 'isSMSWorkflowEnabled', [
       context,
       cognitoResource[0].resourceName,
     ]);
@@ -241,18 +241,18 @@ export const showSMSSandboxWarning = async (context) : Promise<void> => {
 
     if (sandboxStatus) {
       if (sandboxModeWarning) {
-        context.print.warning(sandboxModeWarning);
+        printer.warn(sandboxModeWarning);
       }
     } else if (productionModeInfo) {
-      context.print.warning(productionModeInfo);
+      printer.warn(productionModeInfo);
     }
   } catch (e) {
     if (e.code === 'AuthorizationError') {
       if (smsSandBoxMissingPermissionWarning) {
-        context.print.warning(smsSandBoxMissingPermissionWarning);
+        printer.warn(smsSandBoxMissingPermissionWarning);
       }
     } else if (e instanceof TypeError) {
-      context.print.warning(cliUpdateWarning);
+      printer.warn(cliUpdateWarning);
     } else if (e.code === 'ResourceNotFound') {
       // API is not public yet. Ignore it for now. This error should not occur as `COGNITO_SMS_SANDBOX_UPDATE_WARNING` will not be set
     } else if (e.code === 'UnknownEndpoint') {
@@ -262,7 +262,7 @@ export const showSMSSandboxWarning = async (context) : Promise<void> => {
       throw new AmplifyFault('DeploymentFault', {
         stack: e.stack,
         message: e.message,
-        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
   }
@@ -300,5 +300,5 @@ export const showGraphQLTransformerVersion = async (context): Promise<void> => {
   }
 
   const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
-  context.print.info(chalk`GraphQL transformer version: ${transformerVersion}`);
+  printer.info(`GraphQL transformer version: ${transformerVersion}`);
 };

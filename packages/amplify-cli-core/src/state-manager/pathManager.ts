@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { homedir } from 'os';
 // eslint-disable-next-line import/no-cycle
-import { overriddenCategories, ProjectNotInitializedError, stateManager } from '..';
+import { overriddenCategories, projectNotInitializedError, stateManager } from '..';
 
 export const PathConstants = {
   // in home directory
@@ -276,7 +276,7 @@ export class PathManager {
       return path.normalize(path.join(projectPath, ...segments));
     }
 
-    throw new ProjectNotInitializedError();
+    throw projectNotInitializedError();
   };
 
   private validateProjectPath = (projectPath: string): boolean => {

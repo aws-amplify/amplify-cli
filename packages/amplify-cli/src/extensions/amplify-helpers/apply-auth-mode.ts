@@ -21,10 +21,14 @@ export const handleValidGraphQLAuthError = async (context: $TSContext, message: 
   if (message === errAuthMissingIAM) {
     await addGraphQLAuthRequirement(context, 'AWS_IAM');
     return true;
-  } if (checkIfAuthExists() && message === errAuthMissingUserPools) {
+  }
+
+  if (checkIfAuthExists() && message === errAuthMissingUserPools) {
     await addGraphQLAuthRequirement(context, 'AMAZON_COGNITO_USER_POOLS');
     return true;
-  } if (!context?.parameters?.options?.yes) {
+  }
+
+  if (!context?.parameters?.options?.yes) {
     if (message === errAuthMissingUserPools) {
       await addGraphQLAuthRequirement(context, 'AMAZON_COGNITO_USER_POOLS');
       return true;

@@ -1,3 +1,4 @@
+const { ApiCategoryFacade, AMPLIFY_SUPPORT_DOCS, AmplifyFault } = require('amplify-cli-core');
 const awsRegions = require('./aws-regions');
 const { Lambda } = require('./aws-utils/aws-lambda');
 const DynamoDB = require('./aws-utils/aws-dynamodb');
@@ -6,7 +7,6 @@ const { Lex } = require('./aws-utils/aws-lex');
 const Polly = require('./aws-utils/aws-polly');
 const SageMaker = require('./aws-utils/aws-sagemaker');
 const { transformResourceWithOverrides } = require('./override-manager');
-const { ApiCategoryFacade, AMPLIFY_SUPPORT_DOCS, AmplifyFault } = require('amplify-cli-core');
 const { updateStackForAPIMigration } = require('./push-resources');
 const SecretsManager = require('./aws-utils/aws-secretsmanager');
 const Route53 = require('./aws-utils/aws-route53');
@@ -14,13 +14,18 @@ const { run: archiver } = require('./utils/archiver');
 const ECR = require('./aws-utils/aws-ecr');
 const { pagedAWSCall } = require('./aws-utils/paged-call');
 const { fileLogger } = require('./utils/aws-logger');
+
 const logger = fileLogger('utility-functions');
 const { getAccountId } = require('./amplify-sts');
 
 module.exports = {
-  zipFiles: (context, [srcDir, dstZipFilePath]) => {
-    return archiver(srcDir, dstZipFilePath);
-  },
+  /**
+   *
+   */
+  zipFiles: (context, [srcDir, dstZipFilePath]) => archiver(srcDir, dstZipFilePath),
+  /**
+   *
+   */
   isDomainInZones: async (context, { domain }) => {
     const client = await new Route53(context);
 
@@ -44,6 +49,9 @@ module.exports = {
 
     return zoneFound;
   },
+  /**
+   *
+   */
   compileSchema: async (context, options) => {
     const category = 'api';
     let optionsWithUpdateHandler = { ...options };
@@ -73,8 +81,13 @@ module.exports = {
     await transformResourceWithOverrides(context);
   },
 
+  /**
+   *
+   */
   newSecret: async (context, options) => {
-    const { description, secret, name, version } = options;
+    const {
+      description, secret, name, version,
+    } = options;
     const client = await new SecretsManager(context);
     const response = await client.secretsManager
       .createSecret({
@@ -87,8 +100,13 @@ module.exports = {
 
     return response;
   },
+  /**
+   *
+   */
   updateSecret: async (context, options) => {
-    const { description, secret, name, version } = options;
+    const {
+      description, secret, name, version,
+    } = options;
     const client = await new SecretsManager(context);
     const response = await client.secretsManager
       .updateSecret({
@@ -101,6 +119,9 @@ module.exports = {
 
     return response;
   },
+  /**
+   *
+   */
   upsertSecretValue: async (context, options) => {
     const { name } = options;
     const client = await new SecretsManager(context);
@@ -117,17 +138,19 @@ module.exports = {
         throw new AmplifyFault('ResourceNotFoundFault', {
           message: error.message,
           stack: error.stack,
-          link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+          link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
         });
       }
     }
 
     if (secretArn === undefined) {
       return await module.exports.newSecret(context, options);
-    } else {
-      return await module.exports.putSecretValue(context, options);
     }
+    return await module.exports.putSecretValue(context, options);
   },
+  /**
+   *
+   */
   putSecretValue: async (context, options) => {
     const { name, secret } = options;
     const client = await new SecretsManager(context);
@@ -156,17 +179,26 @@ module.exports = {
     return response;
   },
   getAccountId,
+  /**
+   *
+   */
   getTransformerDirectives: async (context, options) => {
     const { resourceDir } = options;
     if (!resourceDir) {
       throw new AmplifyFault('ResourceNotFoundFault', {
         message: 'Missing resource directory.',
-        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
     return ApiCategoryFacade.getDirectiveDefinitions(context, resourceDir);
   },
+  /**
+   *
+   */
   getRegions: () => awsRegions.regions,
+  /**
+   *
+   */
   getRegionMappings: () => awsRegions.regionMappings,
   /*eslint-disable*/
   staticRoles: context => ({
@@ -176,6 +208,9 @@ module.exports = {
     authRoleArn: context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation.AuthRoleArn,
   }),
   /* eslint-enable */
+  /**
+   *
+   */
   getLambdaFunctions: async context => {
     const lambdaModel = await new Lambda(context);
     let nextMarker;
@@ -199,11 +234,17 @@ module.exports = {
     } while (nextMarker);
     return lambdafunctions;
   },
+  /**
+   *
+   */
   getPollyVoices: async context => {
     const pollyModel = await new Polly(context);
     logger('getPollyVoices.polluModel.polly.describeVoices', [])();
     return pollyModel.polly.describeVoices().promise();
   },
+  /**
+   *
+   */
   getDynamoDBTables: async context => {
     const dynamodbModel = await new DynamoDB(context);
 
@@ -257,9 +298,10 @@ module.exports = {
   /**
    * @deprecated Use getGraphQLAPIs instead
    */
-  getAppSyncAPIs: context => {
-    return module.exports.getGraphQLAPIs(context);
-  },
+  getAppSyncAPIs: context => module.exports.getGraphQLAPIs(context),
+  /**
+   *
+   */
   getGraphQLAPIs: context => {
     logger('getGraphQLAPIs.appSyncModel.appSync.listGraphqlApis', { maxResults: 25 })();
 
@@ -270,6 +312,9 @@ module.exports = {
       })
       .then(result => result.graphqlApis);
   },
+  /**
+   *
+   */
   getIntrospectionSchema: (context, options) => {
     const awsOptions = {};
     if (options.region) {
@@ -289,6 +334,9 @@ module.exports = {
       })
       .then(result => result.schema.toString() || null);
   },
+  /**
+   *
+   */
   getGraphQLApiDetails: (context, options) => {
     const awsOptions = {};
     if (options.region) {
@@ -305,6 +353,9 @@ module.exports = {
         return appSyncModel.appSync.getGraphqlApi({ apiId: options.apiId }).promise();
       });
   },
+  /**
+   *
+   */
   getBuiltInSlotTypes: (context, options) => {
     const params = {
       locale: 'en-US',
@@ -320,6 +371,9 @@ module.exports = {
         return result.lex.getBuiltinSlotTypes(params).promise();
       });
   },
+  /**
+   *
+   */
   getSlotTypes: context => {
     const params = {
       maxResults: 50,
@@ -331,9 +385,10 @@ module.exports = {
   /**
    * @deprecated Use getGraphQLApiKeys instead
    */
-  getAppSyncApiKeys: (context, options) => {
-    return module.exports.getGraphQLApiKeys(context, options);
-  },
+  getAppSyncApiKeys: (context, options) => module.exports.getGraphQLApiKeys(context, options),
+  /**
+   *
+   */
   getGraphQLApiKeys: (context, options) => {
     const awsOptions = {};
     if (options.region) {
@@ -347,11 +402,17 @@ module.exports = {
     return new AppSync(context, awsOptions)
       .then(result => result.appSync.listApiKeys({ apiId: options.apiId }).promise());
   },
+  /**
+   *
+   */
   getEndpoints: async context => {
     const sagemakerModel = await new SageMaker(context);
     logger('getEndpoints.sageMaker.listEndpoints', [])();
     return sagemakerModel.sageMaker.listEndpoints().promise();
   },
+  /**
+   *
+   */
   describeEcrRepositories: async (context, options) => {
     const ecr = await new ECR(context);
 

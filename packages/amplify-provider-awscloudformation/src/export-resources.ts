@@ -74,7 +74,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSAny[], exp
     throw new AmplifyFault('ResourceNotReadyFault', {
       stack: ex.stack,
       message: ex.message,
-      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   } finally {
     removeBackup(amplifyExportFolder);

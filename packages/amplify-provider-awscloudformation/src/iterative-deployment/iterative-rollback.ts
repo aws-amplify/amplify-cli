@@ -23,7 +23,7 @@ const loadDeploymentMeta = async (s3: S3, bucketName: string, metaKey: string): 
 
   throw new AmplifyError('IterativeRollbackError', {
     message: `Could not find deployment meta file: ${metaKey}`,
-    link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+    link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
   });
 };
 
@@ -63,7 +63,7 @@ export const runIterativeRollback = async (
     if (!step.previousMetaKey) {
       throw new AmplifyError('IterativeRollbackError', {
         message: `Cannot iteratively rollback as the following step does not contain a previousMetaKey: ${JSON.stringify(step)}`,
-        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
 

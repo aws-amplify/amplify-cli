@@ -200,7 +200,9 @@ const modifyGraphQLSchemaDirectory = async (schemaDirectoryPath: string): Promis
 
     if (stats.isDirectory() && (await modifyGraphQLSchemaDirectory(fullPath))) {
       return true;
-    } if (stats.isFile()) {
+    }
+
+    if (stats.isFile()) {
       fs.appendFile(fullPath, ' ');
       return true;
     }

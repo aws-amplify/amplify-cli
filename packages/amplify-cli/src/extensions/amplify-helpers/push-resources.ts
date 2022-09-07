@@ -1,5 +1,5 @@
 import {
-  $TSContext, AmplifyError, AmplifyException, AMPLIFY_SUPPORT_DOCS, exitOnNextTick, IAmplifyResource, stateManager,
+  $TSContext, AmplifyError, AmplifyFault, AmplifyException, AMPLIFY_SUPPORT_DOCS, exitOnNextTick, IAmplifyResource, stateManager,
 } from 'amplify-cli-core';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 import { printer } from 'amplify-prompts';
@@ -30,7 +30,7 @@ export const pushResources = async (
     if (context.parameters.options.force) {
       throw new AmplifyError('CommandNotSupportedError', {
         message: '--iterative-rollback and --force are not supported together',
-        resolution: 'Please use --force without --iterative-rollback to iteratively rollback and redeploy.',
+        resolution: 'Use --force without --iterative-rollback to iteratively rollback and redeploy.',
       });
     }
     context.exeInfo.iterativeRollback = true;
@@ -115,11 +115,11 @@ export const pushResources = async (
         if (err instanceof AmplifyException) {
           throw err;
         }
-        throw new AmplifyError('PushResourcesError', {
+        throw new AmplifyFault('PushResourcesFault', {
           message: err.message,
           stack: err.stack,
-          link: isAuthError ? AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url : AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
-          resolution: isAuthError ? 'You defined authorization rules (@auth) but haven\'t enabled their authorization providers on your GraphQL API. Run "amplify update api" to configure your GraphQL API to include the appropriate authorization providers as an authorization mode.' : undefined,
+          link: isAuthError ? AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url : AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
+          resolution: isAuthError ? 'Some @auth rules are defined in the GraphQL schema without enabling the corresponding auth providers. Run `amplify update api` to configure your GraphQL API to include the appropriate auth providers as an authorization mode.' : undefined,
         });
       }
     }

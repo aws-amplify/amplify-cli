@@ -128,7 +128,7 @@ export const run = async (context): Promise<string> => {
   throw new AmplifyError('InputValidationError', {
     message: 'Invalid AWS credentials',
     resolution: 'Please check your AWS credentials',
-    link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+    link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
   });
 };
 

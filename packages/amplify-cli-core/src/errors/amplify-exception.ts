@@ -81,10 +81,10 @@ export type AmplifyErrorType =
   | 'FeatureFlagsValidationError'
   | 'FrameworkNotSupportedError'
   | 'FunctionTooLargeError'
-  | 'GenericError'
   | 'InputValidationError'
   | 'InvalidStackError'
   | 'IterativeRollbackError'
+  | 'LambdaLayerDeleteError'
   | 'MigrationError'
   | 'MissingAmplifyMetaFileError'
   | 'ModelgenError'
@@ -96,6 +96,7 @@ export type AmplifyErrorType =
   | 'PluginMethodNotFoundError'
   | 'PluginNotFoundError'
   | 'ProfileConfigurationError'
+  | 'ProjectAppIdResolveError'
   | 'ProjectInitError'
   | 'ProjectNotFoundError'
   | 'ProjectNotInitializedError'
@@ -108,14 +109,17 @@ export type AmplifyErrorType =
  * Amplify fault types
  */
 export type AmplifyFaultType =
+  | 'BackendPullFault'
   | 'DeploymentFault'
   | 'NotImplementedFault'
   | 'ProjectDeleteFault'
   | 'ProjectInitFault'
+  | 'PushResourcesFault'
   | 'ResourceExportFault'
   | 'ResourceNotFoundFault'
   | 'ResourceNotReadyFault'
   | 'RootStackNotFoundFault'
+  | 'ServiceCallFault'
   | 'TimeoutFault'
   | 'UnknownFault'
   | 'UnknownNodeJSFault';

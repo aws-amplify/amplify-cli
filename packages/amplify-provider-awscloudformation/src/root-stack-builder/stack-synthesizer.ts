@@ -18,7 +18,7 @@ export class RootStackSynthesizer extends LegacyStackSynthesizer {
     } else {
       throw new AmplifyFault('UnknownFault', {
         message: 'Error synthesizing the template. Expected Stack to be either instance of AmplifyRootStack',
-        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
   }
@@ -51,7 +51,7 @@ export class RootStackSynthesizer extends LegacyStackSynthesizer {
 
     throw new AmplifyFault('UnknownFault', {
       message: `Stack ${stackName} is not created`,
-      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   };
 }

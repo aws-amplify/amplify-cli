@@ -75,7 +75,6 @@ const attachContextExtensions = (context, packageLocation): void => {
 /**
  * projects created before 5.2.0 didn't populate frontend config in amplify-meta.json
  * this method ensures frontend config settings are added to amplify meta on pull as they exist in parameters.json
- * https://app.asana.com/0/1200585422384147/1200740448709567/f
  */
 export const ensureAmplifyMetaFrontendConfig = (amplifyMeta?): void => {
   if (!amplifyMeta) {

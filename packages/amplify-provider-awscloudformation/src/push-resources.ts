@@ -38,6 +38,7 @@ import {
   ApiCategoryFacade,
   AmplifyError,
   AMPLIFY_SUPPORT_DOCS,
+  AmplifyFault,
 } from 'amplify-cli-core';
 import ora from 'ora';
 import { Fn } from 'cloudform-types';
@@ -333,10 +334,10 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
           if (err?.name === 'ValidationError' && err?.message === 'No updates are to be performed.') {
             return;
           }
-          throw new AmplifyError('DeploymentError', {
+          throw new AmplifyFault('DeploymentFault', {
             stack: err.stack,
             message: err.message,
-            link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+            link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
           });
         }
       }
@@ -461,16 +462,16 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
       await deploymentStateManager.failDeployment();
     }
     rollbackLambdaLayers(layerResources);
-    throw new AmplifyError('DeploymentError', {
+    throw new AmplifyFault('DeploymentFault', {
       stack: error.stack,
       message: error.message,
-      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 };
 
 /**
- * @param {Object} context - the Amplify context
+ * update the cloudformation stack for the API migration
  */
 export const updateStackForAPIMigration = async (context: $TSContext, category: string, resourceName: string, options: $TSAny) => {
   const {
@@ -654,7 +655,7 @@ const prepareResource = async (context: $TSContext, resource: $TSAny) => {
     throw new AmplifyError('CloudFormationTemplateError', {
       message: cfnFiles.length > 1 ? 'Only one CloudFormation template is allowed in the resource directory' : 'No CloudFormation template found in the resource directory',
       details: `Resource directory: ${resourceDir}`,
-      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 
@@ -1117,7 +1118,7 @@ export const formNestedStack = async (
               if (!dependentResource && dependsOn[i].category) {
                 throw new AmplifyError('PushResourcesError', {
                   message: `Cannot get resource: ${dependsOn[i].resourceName} from '${dependsOn[i].category}' category.`,
-                  link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+                  link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
                 });
               }
 
@@ -1127,7 +1128,7 @@ export const formNestedStack = async (
                 if (!outputAttributeValue) {
                   throw new AmplifyError('PushResourcesError', {
                     message: `Cannot read the '${attribute}' dependent attribute value from the output section of resource: '${dependsOn[i].resourceName}'.`,
-                    link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+                    link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
                   });
                 }
 

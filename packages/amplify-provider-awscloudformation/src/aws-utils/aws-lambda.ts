@@ -1,13 +1,16 @@
-const aws = require('./aws');
 import { $TSAny, $TSContext, AmplifyError, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
 import { Lambda as AwsSdkLambda } from 'aws-sdk';
 import { LayerVersionsListItem, ListLayerVersionsRequest, ListLayerVersionsResponse } from 'aws-sdk/clients/lambda';
 import { AwsSecrets, loadConfiguration } from '../configuration-manager';
 import { fileLogger } from '../utils/aws-logger';
 import { pagedAWSCall } from './paged-call';
+const aws = require('./aws');
 
 const logger = fileLogger('aws-lambda');
 
+/**
+ *
+ */
 export class Lambda {
   private lambda: AwsSdkLambda;
 
@@ -24,6 +27,9 @@ export class Lambda {
     })() as $TSAny;
   }
 
+  /**
+   *
+   */
   async listLayerVersions(layerNameOrArn: string) {
     const startingParams: ListLayerVersionsRequest = { LayerName: layerNameOrArn, MaxItems: 20 };
     const result = await pagedAWSCall<ListLayerVersionsResponse, LayerVersionsListItem, string>(
@@ -39,6 +45,9 @@ export class Lambda {
     return result;
   }
 
+  /**
+   *
+   */
   async deleteLayerVersions(layerNameOrArn: string, versions: number[]) {
     const params = { LayerName: layerNameOrArn, VersionNumber: undefined };
     const deletionPromises = [];
@@ -49,10 +58,10 @@ export class Lambda {
           await this.lambda.deleteLayerVersion(params).promise();
         } catch (err) {
           if (err.code !== 'ParameterNotFound') {
-            throw new AmplifyError('GenericError', {
+            throw new AmplifyError('LambdaLayerDeleteError', {
               message: err.message,
               stack: err.stack,
-              link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+              link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
             });
           }
         }
@@ -63,8 +72,8 @@ export class Lambda {
       await Promise.all(deletionPromises);
     } catch (e) {
       this.context.print.error(
-        'Failed to delete some or all layer versions. Check your internet connection and try again. ' +
-          'If the problem persists, try deleting the versions in the Lambda console.',
+        'Failed to delete some or all layer versions. Check your internet connection and try again. '
+          + 'If the problem persists, try deleting the versions in the Lambda console.',
       );
       e.stack = undefined;
       this.context.print.error(e);

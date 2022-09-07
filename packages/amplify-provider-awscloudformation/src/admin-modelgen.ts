@@ -66,7 +66,7 @@ export const adminModelgen = async (context: $TSContext, resources: $TSAny[]): P
     } else {
       throw new AmplifyError('ModelgenError', {
         message: `Failed to generate models in the cloud.`,
-        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
   } catch (e) {
@@ -105,7 +105,7 @@ const pollUntilDone = async (
     if (timeout !== 0 && Date.now() - start > timeout) {
       throw new AmplifyFault('TimeoutFault', {
         message: `Job Timed out for ${jobId}`,
-        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     } else {
       // run again with a short delay

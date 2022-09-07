@@ -98,7 +98,7 @@ const genericErrorToAmplifyException = (err: Error): AmplifyException => new Amp
   message: err.message,
   resolution: mapGenericErrorToResolution(err),
   stack: err.stack,
-  link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+  link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
 });
 
 const nodeErrorToAmplifyException = (err: NodeJS.ErrnoException): AmplifyException => new AmplifyFault(

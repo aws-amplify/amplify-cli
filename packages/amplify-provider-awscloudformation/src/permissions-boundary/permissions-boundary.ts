@@ -1,4 +1,4 @@
-import { $TSContext, stateManager, getPermissionsBoundaryArn, setPermissionsBoundaryArn, AmplifyError, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
+import { $TSContext, stateManager, getPermissionsBoundaryArn, setPermissionsBoundaryArn, AmplifyError, AMPLIFY_DOCS_URL } from 'amplify-cli-core';
 import { prompt } from 'inquirer';
 import { IAMClient } from '../aws-utils/aws-iam';
 
@@ -63,7 +63,7 @@ const permissionsBoundarySupplier = async (
   if (required && (isYes || !doPrompt)) {
     throw new AmplifyError('InputValidationError', {
       message: 'A permissions boundary ARN must be specified using --permissions-boundary',
-      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      link: `${AMPLIFY_DOCS_URL}/cli/project/permissions-boundary/`,
     });
   }
   if (!doPrompt) {

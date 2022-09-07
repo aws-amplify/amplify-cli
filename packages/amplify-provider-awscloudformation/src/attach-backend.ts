@@ -1,5 +1,3 @@
-// Disable lint until this file is converted to TS
-/* eslint-disable */
 import aws from 'aws-sdk';
 import fs from 'fs-extra';
 import path from 'path';
@@ -36,7 +34,7 @@ export const run = async (context): Promise<void> => {
       if (!envName) {
         throw new AmplifyError('EnvironmentNameError', {
           message: 'Missing --envName <environment name> in parameters.',
-          link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+          link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
         });
       }
       // Admin app, go through login flow
@@ -45,7 +43,7 @@ export const run = async (context): Promise<void> => {
       } catch (e) {
         throw new AmplifyError('AmplifyStudioLoginError', {
           message: `Failed to authenticate: ${e.message || 'Unknown error occurred.'}`,
-          link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+          link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
           stack: e.stack,
         });
       }
@@ -69,7 +67,7 @@ export const run = async (context): Promise<void> => {
     const region = awsConfigInfo && awsConfigInfo.region ? awsConfigInfo.region : '<unknown>';
     throw new AmplifyError('RegionNotAvailableError', {
       message: `Amplify service is not available in the region ${region}`,
-      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 
@@ -77,7 +75,7 @@ export const run = async (context): Promise<void> => {
   if (!hasPermission) {
     throw new AmplifyError('PermissionsError', {
       message: 'Permissions to access Amplify service is required.',
-      link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 
@@ -166,7 +164,7 @@ async function getAmplifyApp(context, amplifyClient) {
         resolution: e.name && e.name === 'NotFoundException'
           ? 'Check that the region of the Amplify App is matching the configured region.'
           : 'Please ensure your local profile matches the AWS account or region in which the Amplify app exists.',
-        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
   }
@@ -216,7 +214,7 @@ async function getAmplifyApp(context, amplifyClient) {
   throw new AmplifyError('ProjectNotFoundError', {
     message: 'No Amplify apps found.',
     resolution: 'Please ensure your local profile matches the AWS account or region in which the Amplify app exists.',
-    link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+    link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
   });
 }
 
@@ -245,7 +243,7 @@ async function getBackendEnv(context, amplifyClient, amplifyApp) {
         message: `Cannot find backend environment ${inputEnvName} in Amplify Console app: ${amplifyApp.name}`,
         stack: e.stack,
         details: e.message,
-        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
   }
@@ -295,7 +293,7 @@ async function getBackendEnv(context, amplifyClient, amplifyApp) {
   }
   throw new AmplifyError('EnvironmentNotInitializedError', {
     message: `Cannot find backend environment in Amplify Console app: ${amplifyApp.name}`,
-    link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+    link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
   });
 }
 

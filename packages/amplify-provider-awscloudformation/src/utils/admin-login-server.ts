@@ -74,7 +74,7 @@ export class AdminLoginServer {
     if (!IdentityId) {
       throw new AmplifyError('AmplifyStudioLoginError', {
         message: 'IdentityId not defined. Amplify CLI was unable to retrieve credentials.',
-        link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
     return IdentityId;
@@ -90,7 +90,7 @@ export class AdminLoginServer {
         }
         throw new AmplifyError('AmplifyStudioLoginError', {
           message: 'Failed to receive expected authentication tokens.',
-          link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+          link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
         });
       }
       try {
@@ -101,7 +101,7 @@ export class AdminLoginServer {
         res.sendStatus(500);
         throw new AmplifyError('AmplifyStudioLoginError', {
           message: `Failed to receive expected authentication tokens. Error: [${err}]`,
-          link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+          link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
         });
       }
       callback();

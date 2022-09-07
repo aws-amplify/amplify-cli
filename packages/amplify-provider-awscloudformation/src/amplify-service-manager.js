@@ -137,7 +137,7 @@ async function init(amplifyServiceParams) {
       } else {
         throw new AmplifyFault('ProjectInitFault', {
           message: e.message,
-          link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+          link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
           stack: e.stack,
         });
       }
@@ -233,7 +233,7 @@ async function deleteEnv(context, envName, awsConfigInfo) {
         } else {
           throw new AmplifyFault('ProjectDeleteFault', {
             message: ex.message,
-            link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+            link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
             stack: ex.stack,
           });
         }
@@ -320,9 +320,9 @@ async function postPushCheck(context) {
         ) {
           // Do nothing
         } else {
-          throw new AmplifyFault('ProjectCreateFault', {
+          throw new AmplifyFault('ProjectInitFault', {
             message: e.message,
-            link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
+            link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
             stack: e.stack,
           });
         }
