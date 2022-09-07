@@ -5,9 +5,21 @@
     "esModuleInterop": true,
     "sourceMap": true,
     "outDir": "lib",
-    "lib": ["es2015", "es2016.array.include", "esnext.asynciterable", "dom"],
+    "composite": true,
+    "rootDir": "./src",
+    "lib": [
+      "es2015",
+      "es2016.array.include",
+      "esnext.asynciterable",
+      "dom"
+    ],
     "declaration": true,
     "skipLibCheck": true,
   },
-  "exclude": ["node_modules", "lib", "**/__mocks__/**/*", "**/__tests__/**/*"]
+  "exclude": [
+    "node_modules",
+    "lib",
+    "**/__mocks__/**/*",
+    "**/__tests__/**/*"
+  ]
 }

@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@3.3.0-rc.224a2e0e4.0...amplify-category-hosting@3.3.0) (2022-09-06)
+
+**Note:** Version bump only for package amplify-category-hosting
+
+
+
+
+
+# [3.3.0-rc.224a2e0e4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@3.2.37...amplify-category-hosting@3.3.0-rc.224a2e0e4.0) (2022-08-15)
+
+
+### Features
+
+* pretty print cloudformation event logs  ([#10720](https://github.com/aws-amplify/amplify-cli/issues/10720)) ([aaf2210](https://github.com/aws-amplify/amplify-cli/commit/aaf22103548a329b3092f52736c28c9b5c5b8b8b))
+
+
+
+
+
 ## [3.2.37](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@3.2.36...amplify-category-hosting@3.2.37) (2022-08-06)
 
 **Note:** Version bump only for package amplify-category-hosting

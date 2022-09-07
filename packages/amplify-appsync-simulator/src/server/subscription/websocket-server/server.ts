@@ -15,6 +15,7 @@ import {
 import { MESSAGE_TYPES } from './message-types';
 import { decodeHeaderFromQueryParam } from './utils';
 
+export const REALTIME_SUBSCRIPTION_PATH = '/graphql/realtime';
 const PROTOCOL = 'graphql-ws';
 const KEEP_ALIVE_TIMEOUT = 4 * 60 * 1000; // Wait time between Keep Alive Message
 // Max time the client will wait for Keep Alive message before disconnecting. Sent to the client as part of connection ack
@@ -67,7 +68,7 @@ export class WebsocketSubscriptionServer {
   }
 
   attachWebServer(serverOptions: ServerOptions): void {
-    this.webSocketServer = new WebSocketServer(serverOptions || {});
+    this.webSocketServer = new WebSocketServer({ ...serverOptions, path: REALTIME_SUBSCRIPTION_PATH });
   }
 
   start() {
@@ -78,13 +79,11 @@ export class WebsocketSubscriptionServer {
   }
 
   stop() {
-    if (this.webSocketServer) {
-      this.webSocketServer.off('connection', this.onSocketConnection);
-      this.connections.forEach(connection => {
-        this.onClose(connection);
-      });
-      this.webSocketServer.close();
-    }
+    this.webSocketServer?.off('connection', this.onSocketConnection);
+    this.connections?.forEach(connection => {
+      this.onClose(connection);
+    });
+    this.webSocketServer?.close();
   }
 
   private onClose = (connectionContext: ConnectionContext): void => {
@@ -148,7 +147,6 @@ export class WebsocketSubscriptionServer {
       socket.on('close', onClose);
       socket.on('error', onClose);
     } catch (e) {
-      console.log(e);
       socket.close(1002); // protocol error
       return;
     }

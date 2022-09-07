@@ -4,8 +4,11 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable jsdoc/require-jsdoc */
 const path = require('path');
+const Module = require('module');
 const fs = require('fs-extra');
 const graphQLConfig = require('graphql-config');
+const babel = require('@babel/core');
+const babelTransformEsmToCjs = require('@babel/plugin-transform-modules-commonjs').default;
 const constants = require('./constants');
 
 const MOCK_RESERVED_EXPORT_KEYS = [
@@ -274,29 +277,35 @@ function getAWSExportsObject(resources) {
 }
 
 async function getCurrentAWSExports(context) {
-  const { amplify } = context;
-  const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
-  const projectConfig = context.exeInfo ? context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
-  const frontendConfig = projectConfig.config;
+  const { amplify, exeInfo } = context;
+  const projectPath = exeInfo?.localEnvInfo?.projectPath || amplify.getEnvInfo().projectPath;
+  const { config: frontendConfig } = exeInfo?.projectConfig?.[constants.Label] || amplify.getProjectConfig()[constants.Label];
   const srcDirPath = path.join(projectPath, frontendConfig.SourceDir);
 
   const targetFilePath = path.join(srcDirPath, constants.exportsFilename);
   let awsExports = {};
 
   if (fs.existsSync(targetFilePath)) {
-    // if packaged, we can't load an ES6 module because pkg doesn't support it yet
-    // eslint-disable-next-line spellcheck/spell-checker
-    const es5export = 'module.exports = {default: awsmobile};\n';
-    // eslint-disable-next-line spellcheck/spell-checker
-    const es6export = 'export default awsmobile;\n';
-
     const fileContents = fs.readFileSync(targetFilePath, 'utf-8');
-    fs.writeFileSync(targetFilePath, fileContents.replace(es6export, es5export));
-    // eslint-disable-next-line global-require, import/no-dynamic-require
-    awsExports = require(targetFilePath).default;
-    fs.writeFileSync(targetFilePath, fileContents);
+    try {
+      // transpile the file contents to CommonJS
+      const { code } = babel.transformSync(fileContents, {
+        plugins: [babelTransformEsmToCjs],
+      });
+      const mod = new Module();
+      mod._compile(code, 'aws-exports.js');
+      // add paths to the module to account for node_module imports in aws-exports.js (should there be any)
+      mod.paths = [projectPath];
+      // the transpiled result will contain `exports.default`
+      awsExports = mod.exports?.default || mod.exports;
+    } catch (error) {
+      throw new Error('Unable to parse aws-exports.js. Has this file been modified?');
+    }
   }
 
+  if (!awsExports) {
+    throw new Error('Unable to find aws-exports.js. Has this file been modified?');
+  }
   return awsExports;
 }
 
@@ -691,5 +700,5 @@ function getGeofenceCollectionConfig(geofenceCollectionResources) {
 }
 
 module.exports = {
-  createAWSExports, getAWSExports, createAmplifyConfig, deleteAmplifyConfig, generateAwsExportsAtPath, getAWSExportsObject,
+  createAWSExports, getAWSExports, getCurrentAWSExports, createAmplifyConfig, deleteAmplifyConfig, generateAwsExportsAtPath, getAWSExportsObject,
 };

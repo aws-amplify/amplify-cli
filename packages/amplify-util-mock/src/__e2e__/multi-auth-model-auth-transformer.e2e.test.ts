@@ -7,6 +7,7 @@ import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core'
 import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
 import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
 import 'isomorphic-fetch';
+import { $TSAny } from 'amplify-cli-core';
 
 jest.setTimeout(2000000);
 
@@ -228,10 +229,12 @@ test(`Test 'public' authStrategy`, async () => {
       mutation: createMutation,
       fetchPolicy: 'no-cache',
     });
-    expect(response.data.createPostPublic.id).toBeDefined();
-    expect(response.data.createPostPublic.title).toEqual('Hello, World!');
 
-    const postId = response.data.createPostPublic.id;
+    const responseData = (response.data) as $TSAny;
+    expect(responseData?.createPostPublic?.id).toBeDefined();
+    expect(responseData?.createPostPublic?.title).toEqual('Hello, World!');
+
+    const postId = responseData?.createPostPublic?.id;
 
     // Authenticate User Pools user must fail
     try {
@@ -276,10 +279,12 @@ test(`Test 'private' authStrategy`, async () => {
       mutation: createMutation,
       fetchPolicy: 'no-cache',
     });
-    expect(response.data.createPostPrivate.id).toBeDefined();
-    expect(response.data.createPostPrivate.title).toEqual('Hello, World!');
 
-    const postId = response.data.createPostPrivate.id;
+    const responseData = (response.data) as $TSAny;
+    expect(responseData?.createPostPrivate?.id).toBeDefined();
+    expect(responseData?.createPostPrivate?.title).toEqual('Hello, World!');
+
+    const postId = responseData?.createPostPrivate.id;
 
     // Authenticate API Key fail
     try {
@@ -377,7 +382,8 @@ describe(`Connection tests with @auth on type`, () => {
         fetchPolicy: 'no-cache',
       });
 
-      postId = response.data.createPostConnection.id;
+      const responseData = (response.data) as $TSAny;
+      postId = responseData?.createPostConnection?.id;
 
       // Add a comment with UserPool - Succeed
       const commentResponse = await USER_POOL_AUTH_CLIENT.mutate({
@@ -388,7 +394,8 @@ describe(`Connection tests with @auth on type`, () => {
         },
       });
 
-      commentId = commentResponse.data.createCommentConnection.id;
+      const commentResponseData = (commentResponse.data) as $TSAny;
+      commentId = commentResponseData?.createCommentConnection?.id;
     } catch (e) {
       console.error(e);
       expect(true).toEqual(false);
