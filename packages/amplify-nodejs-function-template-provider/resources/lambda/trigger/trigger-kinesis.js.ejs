@@ -7,7 +7,7 @@ exports.handler = event => {
   console.log(`EVENT: ${JSON.stringify(event)}`);
   let res = '';
   if ('Records' in event) {
-    event.Records.forEach(record => {
+    for (const record of event.Records) {
       console.log(record.eventID);
       console.log(record.eventName);
       console.log('Kinesis Record: %j', record.kinesis);
