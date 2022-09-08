@@ -1,4 +1,8 @@
+import { printer } from 'amplify-prompts';
 import { deleteProject, getConfirmation } from '../../../extensions/amplify-helpers/delete-project';
+
+const printerMock = printer as jest.Mocked<typeof printer>;
+printerMock.success = jest.fn();
 
 jest.mock('../../../extensions/amplify-helpers/remove-env-from-cloud');
 jest.mock('../../../extensions/amplify-helpers/path-manager');
@@ -31,9 +35,11 @@ jest.mock('../../../extensions/amplify-helpers/get-plugin-instance', () => ({
             throw new Error('listBackendEnvironments error');
           })
           .mockImplementationOnce(() => {
-            const e: any = new Error('listBackendEnvironments error');
-            e.code = 'NotFoundException';
-            throw e;
+            throw {
+              name: 'BucketNotFoundError',
+              message: 'Bucket not found',
+              link: 'https://docs.aws.amazon.com/',
+            };
           }),
       }),
       deleteApp: jest.fn().mockReturnValue({
@@ -83,8 +89,7 @@ describe('getConfirmation', () => {
 });
 
 describe('deleteProject', () => {
-  const success = jest.fn();
-  const context_stub = {
+  const contextStub = {
     input: {
       options: {
         force: true,
@@ -97,20 +102,17 @@ describe('deleteProject', () => {
     filesystem: {
       remove: jest.fn(),
     },
-    print: {
-      success,
-    },
   };
   it('should delete app', async () => {
-    await deleteProject(context_stub);
-    expect(success).toBeCalled();
+    await deleteProject(contextStub);
+    expect(printerMock.success).toBeCalled();
   });
 
   it('throws error when listBackendEnvironments promise rejected', async () => {
-    await expect(deleteProject(context_stub)).rejects.toThrow('listBackendEnvironments error');
+    await expect(deleteProject(contextStub)).rejects.toThrow('listBackendEnvironments error');
   });
 
   it('does not throw not found error when listBackendEnvironments promise rejected', async () => {
-    await expect(deleteProject(context_stub)).resolves.not.toThrow('listBackendEnvironments error');
+    await expect(deleteProject(contextStub)).resolves.not.toThrow('listBackendEnvironments error');
   });
 });

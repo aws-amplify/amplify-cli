@@ -54,6 +54,13 @@ export type AmplifyExceptionOptions = {
 });
 
 /**
+ * Amplify Error partial options object
+ */
+export type PartialAmplifyExceptionOptions = Partial<AmplifyExceptionOptions> & {
+  message: string;
+};
+
+/**
  * Amplify exception types
  */
 export type AmplifyExceptionType = AmplifyErrorType | AmplifyFaultType;
@@ -72,7 +79,6 @@ export type AmplifyErrorType =
   | 'CloudFormationTemplateError'
   | 'CommandNotSupportedError'
   | 'ConfigurationError'
-  | 'DeploymentBucketNotFoundError'
   | 'DeploymentError'
   | 'DeploymentInProgressError'
   | 'DuplicateLogicalIdError'
@@ -121,5 +127,6 @@ export type AmplifyFaultType =
   | 'RootStackNotFoundFault'
   | 'ServiceCallFault'
   | 'TimeoutFault'
+  | 'UnexpectedS3Fault'
   | 'UnknownFault'
   | 'UnknownNodeJSFault';

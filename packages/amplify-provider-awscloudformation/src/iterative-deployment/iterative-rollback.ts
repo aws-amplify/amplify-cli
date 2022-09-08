@@ -1,5 +1,5 @@
 import {
-  $TSContext, $TSMeta, AmplifyError, AMPLIFY_SUPPORT_DOCS, DeploymentState, DeploymentStepStatus, IDeploymentStateManager, JSONUtilities,
+  $TSContext, $TSMeta, amplifyErrorWithTroubleshootingLink, DeploymentState, DeploymentStepStatus, IDeploymentStateManager, JSONUtilities,
 } from 'amplify-cli-core';
 import ora from 'ora';
 import { DeploymentOp, DeploymentManager } from './deployment-manager';
@@ -21,9 +21,8 @@ const loadDeploymentMeta = async (s3: S3, bucketName: string, metaKey: string): 
     return JSONUtilities.parse<DeploymentOp>(metaDeploymentContent);
   }
 
-  throw new AmplifyError('IterativeRollbackError', {
+  throw amplifyErrorWithTroubleshootingLink('IterativeRollbackError', {
     message: `Could not find deployment meta file: ${metaKey}`,
-    link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
   });
 };
 
@@ -61,9 +60,8 @@ export const runIterativeRollback = async (
   const stateFiles: string[] = [];
   for (const step of deployedSteps) {
     if (!step.previousMetaKey) {
-      throw new AmplifyError('IterativeRollbackError', {
+      throw amplifyErrorWithTroubleshootingLink('IterativeRollbackError', {
         message: `Cannot iteratively rollback as the following step does not contain a previousMetaKey: ${JSON.stringify(step)}`,
-        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
 

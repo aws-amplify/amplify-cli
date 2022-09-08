@@ -1,5 +1,5 @@
 import {
-  $TSAny, $TSContext, AmplifyFault, AMPLIFY_SUPPORT_DOCS, JSONUtilities, PathConstants, spinner, stateManager, validateExportDirectoryPath,
+  $TSAny, $TSContext, amplifyFaultWithTroubleshootingLink, JSONUtilities, PathConstants, spinner, stateManager, validateExportDirectoryPath,
 } from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
@@ -71,10 +71,9 @@ export const run = async (context: $TSContext, resourceDefinition: $TSAny[], exp
   } catch (ex) {
     revertToBackup(amplifyExportFolder);
     spinner.fail();
-    throw new AmplifyFault('ResourceNotReadyFault', {
+    throw amplifyFaultWithTroubleshootingLink('ResourceNotReadyFault', {
       stack: ex.stack,
       message: ex.message,
-      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   } finally {
     removeBackup(amplifyExportFolder);

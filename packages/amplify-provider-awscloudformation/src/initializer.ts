@@ -5,9 +5,8 @@
 import {
   $TSContext,
   $TSObject,
-  AmplifyError,
-  AmplifyFault,
-  AMPLIFY_SUPPORT_DOCS,
+  amplifyErrorWithTroubleshootingLink,
+  amplifyFaultWithTroubleshootingLink,
   JSONUtilities,
   PathConstants,
   pathManager,
@@ -143,7 +142,7 @@ export const run = async (context: $TSContext): Promise<void> => {
     };
 
     const eventMap = createInitEventMap(params, envName, projectName);
-    const cfnItem = new Cloudformation(context, 'init', awsConfigInfo, eventMap);
+    const cfnItem = await new Cloudformation(context, 'init', awsConfigInfo, eventMap);
     const stackDescriptionData = await cfnItem.createResourceStack(params);
 
     processStackCreationData(context, amplifyAppId, stackDescriptionData);
@@ -202,9 +201,8 @@ const processStackCreationData = (context: $TSContext, amplifyAppId: string | un
 
     setCloudFormationOutputInContext(context, metadata);
   } else {
-    throw new AmplifyError('StackNotFoundError', {
+    throw amplifyErrorWithTroubleshootingLink('StackNotFoundError', {
       message: 'No stack data present',
-      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 };
@@ -323,9 +321,8 @@ const storeCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
     })
     .catch(ex => {
       spinner.stop('Deployment state save failed.', false);
-      throw new AmplifyFault('DeploymentFault', {
+      throw amplifyFaultWithTroubleshootingLink('DeploymentFault', {
         message: ex.message,
-        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
         stack: ex.stack,
       });
     })

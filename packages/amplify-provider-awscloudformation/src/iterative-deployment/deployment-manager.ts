@@ -1,7 +1,7 @@
 import * as aws from 'aws-sdk';
 
 import {
-  $TSContext, AmplifyError, AmplifyFault, AMPLIFY_SUPPORT_DOCS, IDeploymentStateManager,
+  $TSContext, amplifyFaultWithTroubleshootingLink, amplifyErrorWithTroubleshootingLink, IDeploymentStateManager,
 } from 'amplify-cli-core';
 import { ConfigurationOptions } from 'aws-sdk/lib/config-base';
 import assert from 'assert';
@@ -80,11 +80,10 @@ export class DeploymentManager {
       assert(cred.region);
       return new DeploymentManager(cred, cred.region, deploymentBucket, spinner, printer, options);
     } catch (e) {
-      throw new AmplifyError('DeploymentError', {
+      throw amplifyErrorWithTroubleshootingLink('DeploymentError', {
         message: 'Could not load configuration',
         stack: e.stack,
         details: e.message,
-        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
   };
@@ -334,13 +333,12 @@ export class DeploymentManager {
       await this.s3Client.headObject({ Bucket: this.deploymentBucket, Key: bucketKey }).promise();
       return true;
     } catch (e) {
-      throw new AmplifyError('DeploymentError', {
+      throw amplifyErrorWithTroubleshootingLink('DeploymentError', {
         message: e.code === 'NotFound'
           ? `The cloudformation template ${templatePath} was not found in deployment bucket ${this.deploymentBucket}`
           : e.message,
         details: e.message,
         stack: e.stack,
-        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
   };
@@ -359,10 +357,9 @@ export class DeploymentManager {
       if (err?.code === 'ResourceNotFoundException') {
         return true; // in the case of an iterative update that recreates a table, non-existence means the table has been fully removed
       }
-      throw new AmplifyFault('ServiceCallFault', {
+      throw amplifyFaultWithTroubleshootingLink('ServiceCallFault', {
         message: err.message,
         stack: err.stack,
-        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
   };

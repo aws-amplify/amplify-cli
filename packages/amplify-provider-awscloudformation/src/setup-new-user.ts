@@ -1,4 +1,4 @@
-import { AmplifyError, AMPLIFY_SUPPORT_DOCS, open } from 'amplify-cli-core';
+import { amplifyErrorWithTroubleshootingLink, open } from 'amplify-cli-core';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import isOnWsl from 'is-wsl';
@@ -125,10 +125,9 @@ export const run = async (context): Promise<string> => {
     return profileName;
   }
 
-  throw new AmplifyError('InputValidationError', {
+  throw amplifyErrorWithTroubleshootingLink('InputValidationError', {
     message: 'Invalid AWS credentials',
     resolution: 'Please check your AWS credentials',
-    link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
   });
 };
 

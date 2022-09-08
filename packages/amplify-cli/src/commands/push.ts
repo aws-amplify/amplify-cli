@@ -1,9 +1,8 @@
 import {
   $TSAny,
   $TSContext,
-  AmplifyError,
-  AmplifyFault,
-  AMPLIFY_SUPPORT_DOCS,
+  amplifyErrorWithTroubleshootingLink,
+  amplifyFaultWithTroubleshootingLink,
   spinner,
   stateManager,
 } from 'amplify-cli-core';
@@ -49,10 +48,7 @@ const syncCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
     spinner.succeed(`Successfully pulled backend environment ${currentEnv} from the cloud.`);
   } catch (e) {
     spinner.fail(`There was an error pulling the backend environment ${currentEnv}.`);
-    throw new AmplifyFault('BackendPullFault', {
-      message: e.message,
-      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
-    });
+    throw amplifyFaultWithTroubleshootingLink('BackendPullFault', { message: e.message });
   }
 };
 
@@ -62,13 +58,7 @@ const syncCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
 export const run = async (context: $TSContext): Promise<$TSAny> => {
   context.amplify.constructExeInfo(context);
   if (context.exeInfo.localEnvInfo.noUpdateBackend) {
-    throw new AmplifyError(
-      'NoUpdateBackendError',
-      {
-        message: 'The local environment configuration does not allow backend updates.',
-        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
-      },
-    );
+    throw amplifyErrorWithTroubleshootingLink('NoUpdateBackendError', { message: 'The local environment configuration does not allow backend updates.' });
   }
   if (context.parameters.options.force) {
     context.exeInfo.forcePush = true;

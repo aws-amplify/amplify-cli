@@ -1,4 +1,4 @@
-import { AmplifyError, AMPLIFY_SUPPORT_DOCS, stateManager } from 'amplify-cli-core';
+import { amplifyErrorWithTroubleshootingLink, stateManager } from 'amplify-cli-core';
 import * as assert from 'assert';
 import { CognitoIdentity } from 'aws-sdk';
 import bodyParser from 'body-parser'; // eslint-disable-line
@@ -72,9 +72,8 @@ export class AdminLoginServer {
       })
       .promise();
     if (!IdentityId) {
-      throw new AmplifyError('AmplifyStudioLoginError', {
+      throw amplifyErrorWithTroubleshootingLink('AmplifyStudioLoginError', {
         message: 'IdentityId not defined. Amplify CLI was unable to retrieve credentials.',
-        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
     return IdentityId;
@@ -88,9 +87,8 @@ export class AdminLoginServer {
           this.print.info('Login canceled');
           process.exit(0);
         }
-        throw new AmplifyError('AmplifyStudioLoginError', {
+        throw amplifyErrorWithTroubleshootingLink('AmplifyStudioLoginError', {
           message: 'Failed to receive expected authentication tokens.',
-          link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
         });
       }
       try {
@@ -99,9 +97,8 @@ export class AdminLoginServer {
         res.sendStatus(200);
       } catch (err) {
         res.sendStatus(500);
-        throw new AmplifyError('AmplifyStudioLoginError', {
+        throw amplifyErrorWithTroubleshootingLink('AmplifyStudioLoginError', {
           message: `Failed to receive expected authentication tokens. Error: [${err}]`,
-          link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
         });
       }
       callback();

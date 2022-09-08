@@ -36,9 +36,8 @@ import {
   readCFNTemplate,
   Template,
   ApiCategoryFacade,
-  AmplifyError,
-  AMPLIFY_SUPPORT_DOCS,
-  AmplifyFault,
+  amplifyErrorWithTroubleshootingLink,
+  amplifyFaultWithTroubleshootingLink,
 } from 'amplify-cli-core';
 import ora from 'ora';
 import { Fn } from 'cloudform-types';
@@ -334,10 +333,9 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
           if (err?.name === 'ValidationError' && err?.message === 'No updates are to be performed.') {
             return;
           }
-          throw new AmplifyFault('DeploymentFault', {
+          throw amplifyFaultWithTroubleshootingLink('DeploymentFault', {
             stack: err.stack,
             message: err.message,
-            link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
           });
         }
       }
@@ -462,10 +460,9 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
       await deploymentStateManager.failDeployment();
     }
     rollbackLambdaLayers(layerResources);
-    throw new AmplifyFault('DeploymentFault', {
+    throw amplifyFaultWithTroubleshootingLink('DeploymentFault', {
       stack: error.stack,
       message: error.message,
-      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 };
@@ -652,10 +649,9 @@ const prepareResource = async (context: $TSContext, resource: $TSAny) => {
   });
 
   if (cfnFiles.length !== 1) {
-    throw new AmplifyError('CloudFormationTemplateError', {
+    throw amplifyErrorWithTroubleshootingLink('CloudFormationTemplateError', {
       message: cfnFiles.length > 1 ? 'Only one CloudFormation template is allowed in the resource directory' : 'No CloudFormation template found in the resource directory',
       details: `Resource directory: ${resourceDir}`,
-      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 
@@ -1116,9 +1112,8 @@ export const formNestedStack = async (
               const dependentResource = _.get(amplifyMeta, [dependsOn[i].category, dependsOn[i].resourceName], undefined);
 
               if (!dependentResource && dependsOn[i].category) {
-                throw new AmplifyError('PushResourcesError', {
+                throw amplifyErrorWithTroubleshootingLink('PushResourcesError', {
                   message: `Cannot get resource: ${dependsOn[i].resourceName} from '${dependsOn[i].category}' category.`,
-                  link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
                 });
               }
 
@@ -1126,9 +1121,8 @@ export const formNestedStack = async (
                 const outputAttributeValue = _.get(dependentResource, ['output', attribute], undefined);
 
                 if (!outputAttributeValue) {
-                  throw new AmplifyError('PushResourcesError', {
+                  throw amplifyErrorWithTroubleshootingLink('PushResourcesError', {
                     message: `Cannot read the '${attribute}' dependent attribute value from the output section of resource: '${dependsOn[i].resourceName}'.`,
-                    link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
                   });
                 }
 

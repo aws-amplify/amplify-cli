@@ -8,8 +8,7 @@ import {
   IDeploymentStateManager,
   JSONUtilities,
   stateManager,
-  AmplifyError,
-  AMPLIFY_SUPPORT_DOCS,
+  amplifyErrorWithTroubleshootingLink,
 } from 'amplify-cli-core';
 import { S3 } from '../aws-utils/aws-s3';
 import { ProviderName } from '../constants';
@@ -99,9 +98,8 @@ export class DeploymentStateManager implements IDeploymentStateManager {
   public startCurrentStep = async (params?: StepStatusParameters): Promise<void> => {
     if (this.direction === 1) {
       if (this.getCurrentStep().status !== DeploymentStepStatus.WAITING_FOR_DEPLOYMENT) {
-        throw new AmplifyError('DeploymentError', {
+        throw amplifyErrorWithTroubleshootingLink('DeploymentError', {
           message: `Cannot start step when the current step is in ${this.getCurrentStep().status} status.`,
-          link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
         });
       }
       const currentStep = this.getCurrentStep();
@@ -109,9 +107,8 @@ export class DeploymentStateManager implements IDeploymentStateManager {
       if (params?.previousMetaKey) currentStep.previousMetaKey = params.previousMetaKey;
     } else if (this.direction === -1) {
       if (this.getCurrentStep().status !== DeploymentStepStatus.WAITING_FOR_ROLLBACK) {
-        throw new AmplifyError('DeploymentError', {
+        throw amplifyErrorWithTroubleshootingLink('DeploymentError', {
           message: `Cannot start step when the current step is in ${this.getCurrentStep().status} status.`,
-          link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
         });
       }
       this.getCurrentStep().status = DeploymentStepStatus.ROLLING_BACK;
@@ -122,21 +119,18 @@ export class DeploymentStateManager implements IDeploymentStateManager {
 
   public advanceStep = async (): Promise<void> => {
     if (!this.isDeploymentInProgress()) {
-      throw new AmplifyError('DeploymentError', {
+      throw amplifyErrorWithTroubleshootingLink('DeploymentError', {
         message: `Cannot advance a deployment when it was not started.`,
-        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
 
     if (this.direction === 1 && this.getCurrentStep().status !== DeploymentStepStatus.DEPLOYING) {
-      throw new AmplifyError('DeploymentError', {
-        message: `Cannot start step when the current step is in ${this.getCurrentStep().status} status.`,
-        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
+      throw amplifyErrorWithTroubleshootingLink('DeploymentError', {
+        message: `Cannot advance step when the current step is in ${this.getCurrentStep().status} status.`,
       });
     } else if (this.direction === -1 && this.getCurrentStep().status !== DeploymentStepStatus.ROLLING_BACK) {
-      throw new AmplifyError('DeploymentError', {
-        message: `Cannot start step when the current step is in ${this.getCurrentStep().status} status.`,
-        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
+      throw amplifyErrorWithTroubleshootingLink('DeploymentError', {
+        message: `Cannot advance step when the current step is in ${this.getCurrentStep().status} status.`,
       });
     }
 
@@ -176,9 +170,8 @@ export class DeploymentStateManager implements IDeploymentStateManager {
 
   public startRollback = async (): Promise<void> => {
     if (!this.isDeploymentInProgress() || this.direction !== 1) {
-      throw new AmplifyError('DeploymentError', {
+      throw amplifyErrorWithTroubleshootingLink('DeploymentError', {
         message: 'To rollback a deployment, the deployment must be in progress and not already rolling back.',
-        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
 

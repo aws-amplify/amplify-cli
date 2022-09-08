@@ -8,7 +8,7 @@ const { S3 } = require('./aws-utils/aws-s3');
 const { getConfiguredAmplifyClient } = require('./aws-utils/aws-amplify');
 const { ProviderName, AmplifyAppIdLabel } = require('./constants');
 const { checkAmplifyServiceIAMPermission } = require('./amplify-service-permission-check');
-const { stateManager, AMPLIFY_SUPPORT_DOCS, AmplifyError, AmplifyFault } = require('amplify-cli-core');
+const { stateManager, amplifyFaultWithTroubleshootingLink, AmplifyError } = require('amplify-cli-core');
 const { fileLogger } = require('./utils/aws-logger');
 const { loadConfigurationForEnv } = require('./configuration-manager');
 const logger = fileLogger('amplify-service-manager');
@@ -135,9 +135,8 @@ async function init(amplifyServiceParams) {
       ) {
         // Do nothing
       } else {
-        throw new AmplifyFault('ProjectInitFault', {
+        throw amplifyFaultWithTroubleshootingLink('ProjectInitFault', {
           message: e.message,
-          link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
           stack: e.stack,
         });
       }
@@ -231,9 +230,8 @@ async function deleteEnv(context, envName, awsConfigInfo) {
         if (ex.code === 'NotFoundException') {
           context.print.warning(ex.message);
         } else {
-          throw new AmplifyFault('ProjectDeleteFault', {
+          throw amplifyFaultWithTroubleshootingLink('ProjectDeleteFault', {
             message: ex.message,
-            link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
             stack: ex.stack,
           });
         }
@@ -320,9 +318,8 @@ async function postPushCheck(context) {
         ) {
           // Do nothing
         } else {
-          throw new AmplifyFault('ProjectInitFault', {
+          throw amplifyFaultWithTroubleshootingLink('ProjectInitFault', {
             message: e.message,
-            link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
             stack: e.stack,
           });
         }

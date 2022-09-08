@@ -1,5 +1,10 @@
 import {
-  $TSAny, AmplifyException, AmplifyFault, AmplifyFaultType, AMPLIFY_SUPPORT_DOCS, executeHooks, HooksMeta,
+  $TSAny,
+  AmplifyException,
+  AmplifyFaultType,
+  amplifyFaultWithTroubleshootingLink,
+  executeHooks,
+  HooksMeta,
 } from 'amplify-cli-core';
 import { AmplifyPrinter, printer } from 'amplify-prompts';
 import { logger } from 'amplify-cli-logger';
@@ -88,20 +93,23 @@ const printHeadlessAmplifyException = (amplifyException: AmplifyException): void
   errorPrinter.error(JSON.stringify(amplifyException.toObject()));
 };
 
-const unknownErrorToAmplifyException = (err: unknown): AmplifyException => new AmplifyFault(unknownErrorTypeToAmplifyExceptionType(err), {
-  message: 'message' in (err as $TSAny) ? (err as $TSAny).message : 'Unknown error',
-  resolution: mapUnknownErrorToResolution(err),
-  stack: 'stack' in (err as $TSAny) ? (err as $TSAny).stack : undefined,
-});
+const unknownErrorToAmplifyException = (err: unknown): AmplifyException => amplifyFaultWithTroubleshootingLink(
+  unknownErrorTypeToAmplifyExceptionType(err), {
+    message: 'message' in (err as $TSAny) ? (err as $TSAny).message : 'Unknown error',
+    resolution: mapUnknownErrorToResolution(err),
+    stack: 'stack' in (err as $TSAny) ? (err as $TSAny).stack : undefined,
+  },
+);
 
-const genericErrorToAmplifyException = (err: Error): AmplifyException => new AmplifyFault(genericErrorTypeToAmplifyExceptionType(err), {
-  message: err.message,
-  resolution: mapGenericErrorToResolution(err),
-  stack: err.stack,
-  link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
-});
+const genericErrorToAmplifyException = (err: Error): AmplifyException => amplifyFaultWithTroubleshootingLink(
+  genericErrorTypeToAmplifyExceptionType(err), {
+    message: err.message,
+    resolution: mapGenericErrorToResolution(err),
+    stack: err.stack,
+  },
+);
 
-const nodeErrorToAmplifyException = (err: NodeJS.ErrnoException): AmplifyException => new AmplifyFault(
+const nodeErrorToAmplifyException = (err: NodeJS.ErrnoException): AmplifyException => amplifyFaultWithTroubleshootingLink(
   nodeErrorTypeToAmplifyExceptionType(err), {
     message: err.message,
     resolution: mapNodeErrorToResolution(err),

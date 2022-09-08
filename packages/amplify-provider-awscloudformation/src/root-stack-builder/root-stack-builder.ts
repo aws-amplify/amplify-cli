@@ -3,7 +3,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as iam from '@aws-cdk/aws-iam';
 import { AmplifyRootStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 import { IStackSynthesizer, ISynthesisSession } from '@aws-cdk/core';
-import { AmplifyError, AmplifyFault, AMPLIFY_SUPPORT_DOCS, JSONUtilities } from 'amplify-cli-core';
+import { amplifyErrorWithTroubleshootingLink, amplifyFaultWithTroubleshootingLink, JSONUtilities } from 'amplify-cli-core';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'Root Stack for AWS Amplify CLI';
@@ -69,9 +69,8 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
    */
   addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
     if (this._cfnParameterMap.has(logicalId)) {
-      throw new AmplifyError('DuplicateLogicalIdError', {
+      throw amplifyErrorWithTroubleshootingLink('DuplicateLogicalIdError', {
         message: `Logical Id already exists: ${logicalId}.`,
-        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
     this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
@@ -81,6 +80,9 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
     if (this._cfnParameterMap.has(logicalId)) {
       return this._cfnParameterMap.get(logicalId);
     }
+    throw amplifyErrorWithTroubleshootingLink('ParameterNotFoundError', {
+      message: `Cfn Parameter with LogicalId ${logicalId} doesn't exist`,
+    });
   }
 
   generateRootStackResources = async () => {
@@ -146,9 +148,8 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
   unauthRole?: iam.CfnRole;
 
   addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
-    throw new AmplifyFault('NotImplementedFault', {
+    throw amplifyFaultWithTroubleshootingLink('NotImplementedFault', {
       message: 'Method not implemented.',
-      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 
@@ -157,23 +158,20 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
   }
 
   addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void {
-    throw new AmplifyFault('NotImplementedFault', {
+    throw amplifyFaultWithTroubleshootingLink('NotImplementedFault', {
       message: 'Method not implemented.',
-      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 
   addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void {
-    throw new AmplifyFault('NotImplementedFault', {
+    throw amplifyFaultWithTroubleshootingLink('NotImplementedFault', {
       message: 'Method not implemented.',
-      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 
   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void {
-    throw new AmplifyFault('NotImplementedFault', {
+    throw amplifyFaultWithTroubleshootingLink('NotImplementedFault', {
       message: 'Method not implemented.',
-      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 

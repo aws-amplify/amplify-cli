@@ -12,7 +12,7 @@ const { S3 } = require('./aws-s3');
 const providerName = require('../constants').ProviderName;
 const { formUserAgentParam } = require('./user-agent');
 const configurationManager = require('../configuration-manager');
-const { stateManager, pathManager, AmplifyError, AmplifyFault, AmplifyException, AMPLIFY_SUPPORT_DOCS } = require('amplify-cli-core');
+const { stateManager, pathManager, AmplifyError, AmplifyException, amplifyFaultWithTroubleshootingLink, amplifyErrorWithTroubleshootingLink } = require('amplify-cli-core');
 const { fileLogger } = require('../utils/aws-logger');
 const logger = fileLogger('aws-cfn');
 const { pagedAWSCall } = require('./paged-call');
@@ -389,10 +389,9 @@ class CloudFormation {
         throw error;
       }
 
-      throw new AmplifyFault('ResourceNotReadyFault', {
+      throw amplifyFaultWithTroubleshootingLink('ResourceNotReadyFault', {
         message: error.message,
         stack: error.stack,
-        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
   }
@@ -565,9 +564,8 @@ class CloudFormation {
     const meta = stateManager.getMeta();
     stackId = stackId || _.get(meta, ['providers', providerName, 'StackName'], undefined);
     if (!stackId) {
-      throw new AmplifyError('StackNotFoundError', {
+      throw amplifyErrorWithTroubleshootingLink('StackNotFoundError', {
         message: `StackId not found in amplify-meta for provider ${providerName}`,
-        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
     // StackName param can be a StackName, StackId, or a PhysicalResourceId
@@ -579,9 +577,8 @@ class CloudFormation {
     const providerInfo = teamProviderInfo?.[envName]?.[providerName];
     const stackName = providerInfo?.StackName;
     if (!stackName) {
-      throw new AmplifyError('StackNotFoundError', {
+      throw amplifyErrorWithTroubleshootingLink('StackNotFoundError', {
         message: `Stack not defined for the environment.`,
-        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
 

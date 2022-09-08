@@ -1,5 +1,5 @@
 import fs from 'fs-extra';
-import { AmplifyError, AMPLIFY_SUPPORT_DOCS, stateManager } from 'amplify-cli-core';
+import { amplifyErrorWithTroubleshootingLink, stateManager } from 'amplify-cli-core';
 import * as configurationManager from './configuration-manager';
 import { getConfiguredAmplifyClient } from './aws-utils/aws-amplify';
 import { checkAmplifyServiceIAMPermission } from './amplify-service-permission-check';
@@ -49,19 +49,13 @@ export const run = async (context): Promise<void> => {
   if (!amplifyClient) {
     // This happens when the Amplify service is not available in the region
     const message = `Amplify service is not available in the region ${awsConfigInfo.region ? awsConfigInfo.region : ''}`;
-    throw new AmplifyError('RegionNotAvailableError', {
-      message,
-      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
-    });
+    throw amplifyErrorWithTroubleshootingLink('RegionNotAvailableError', { message });
   }
 
   const hasPermission = await checkAmplifyServiceIAMPermission(context, amplifyClient);
   if (!hasPermission) {
     const message = 'Permissions to access Amplify service is required.';
-    throw new AmplifyError('PermissionsError', {
-      message,
-      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
-    });
+    throw amplifyErrorWithTroubleshootingLink('PermissionsError', { message });
   }
 
   const { inputParams } = context.exeInfo;
@@ -80,9 +74,8 @@ export const run = async (context): Promise<void> => {
         .promise();
       context.print.info(`Amplify AppID found: ${amplifyAppId}. Amplify App name is: ${getAppResult.app.name}`);
     } catch (e) {
-      throw new AmplifyError('ProjectNotFoundError', {
+      throw amplifyErrorWithTroubleshootingLink('ProjectNotFoundError', {
         message: `Amplify AppID: ${amplifyAppId} not found.`,
-        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
         resolution: `Please ensure your local profile matches the AWS account or region in which the Amplify app exists.`,
       });
     }
@@ -131,9 +124,8 @@ export const run = async (context): Promise<void> => {
       logger('run.amplifyClient.getBackendEnvironment', [getEnvParams])();
       const { backendEnvironment } = await amplifyClient.getBackendEnvironment(getEnvParams).promise();
       if (StackName !== backendEnvironment.stackName) {
-        throw new AmplifyError('InvalidStackError', {
+        throw amplifyErrorWithTroubleshootingLink('InvalidStackError', {
           message: `Stack name mismatch for the backend environment ${envName}. Local: ${StackName}, Amplify: ${backendEnvironment.stackName}`,
-          link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
         });
       }
     }

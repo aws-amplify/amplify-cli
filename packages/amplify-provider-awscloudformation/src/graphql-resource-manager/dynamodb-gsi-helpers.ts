@@ -2,7 +2,7 @@ import { AttributeDefinition, GlobalSecondaryIndex, KeySchema } from 'cloudform-
 import { DynamoDB, IntrinsicFunction } from 'cloudform';
 
 import _ from 'lodash';
-import { AmplifyError, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
+import { AmplifyError, amplifyErrorWithTroubleshootingLink, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
 import { GSIRecord } from '../utils/amplify-resource-state-utils';
 
 export const MAX_GSI_PER_TABLE = 20;
@@ -54,9 +54,8 @@ export const addGSI = (index: GSIRecord, table: DynamoDB.Table): DynamoDB.Table 
   const existingIndices = getExistingIndexNames(table);
 
   if (existingIndices.length + 1 > MAX_GSI_PER_TABLE) {
-    throw new AmplifyError('ConfigurationError', {
+    throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
       message: `DynamoDB ${table.Properties.TableName || '{UnNamedTable}'} can have max of ${MAX_GSI_PER_TABLE} GSIs`,
-      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 
@@ -64,9 +63,8 @@ export const addGSI = (index: GSIRecord, table: DynamoDB.Table): DynamoDB.Table 
   assertNotIntrinsicFunction(indexName);
 
   if (existingIndices.includes(indexName)) {
-    throw new AmplifyError('ConfigurationError', {
+    throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
       message: `An index with name ${indexName} already exists`,
-      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
     });
   }
 
@@ -93,7 +91,7 @@ export const removeGSI = (indexName: string, table: DynamoDB.Table): DynamoDB.Ta
   if (!gsis || gsis.length === 0) {
     throw new AmplifyError('ConfigurationError', {
       message: `No GSIs are present in the table`,
-      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
     });
   }
 
@@ -101,7 +99,7 @@ export const removeGSI = (indexName: string, table: DynamoDB.Table): DynamoDB.Ta
   if (!indexNames.includes(indexName)) {
     throw new AmplifyError('ConfigurationError', {
       message: `Table ${table.Properties.TableName || '{UnnamedTable}'} does not contain GSI ${indexName}`,
-      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
     });
   }
 
@@ -140,7 +138,7 @@ export function assertNotIntrinsicFunction<A>(x: A[] | A | IntrinsicFunction): a
   if (x instanceof IntrinsicFunction) {
     throw new AmplifyError('ConfigurationError', {
       message: 'Intrinsic functions are not supported in KeySchema and GlobalSecondaryIndex',
-      link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
     });
   }
 }

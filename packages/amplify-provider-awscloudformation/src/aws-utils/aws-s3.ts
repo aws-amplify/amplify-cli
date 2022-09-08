@@ -7,7 +7,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 import {
-  $TSAny, $TSContext, AmplifyError, AmplifyFault, AMPLIFY_SUPPORT_DOCS, stateManager,
+  $TSAny, $TSContext, AmplifyError, amplifyErrorWithTroubleshootingLink, amplifyFaultWithTroubleshootingLink, stateManager,
 } from 'amplify-cli-core';
 
 import _ from 'lodash';
@@ -186,9 +186,8 @@ export class S3 {
       await this.s3.waitFor('bucketExists', params).promise();
       this.context.print.success('S3 bucket successfully created');
     } else if (throwIfExists) {
-      throw new AmplifyError('BucketAlreadyExistsError', {
+      throw amplifyErrorWithTroubleshootingLink('BucketAlreadyExistsError', {
         message: `Bucket ${bucketName} already exists`,
-        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
     return bucketName;
@@ -344,10 +343,18 @@ export class S3 {
       return true;
     } catch (e) {
       logger('ifBucketExists.s3.headBucket', [{ BucketName: bucketName }])(e);
-      throw new AmplifyFault(e.statusCode === 404 ? 'ServiceCallFault' : 'UnknownFault', {
+
+      if (e.code === 'NotFound') {
+        throw new AmplifyError('BucketNotFoundError', {
+          message: e.message,
+          stack: e.stack,
+          resolution: `Check that bucket name is correct: ${bucketName}`,
+        });
+      }
+
+      throw amplifyFaultWithTroubleshootingLink('UnknownFault', {
         message: e.message,
         stack: e.stack,
-        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
   }
@@ -373,10 +380,9 @@ export class S3 {
         return undefined;
       }
 
-      throw new AmplifyFault('UnknownFault', {
+      throw amplifyFaultWithTroubleshootingLink('UnexpectedS3Fault', {
         message: e.message,
         stack: e.stack,
-        link: AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
       });
     }
   };
