@@ -39,7 +39,7 @@ import {
 } from 'amplify-cli-core';
 import ora from 'ora';
 import { Fn } from 'cloudform-types';
-import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
+import { ensureEnvMeta, getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { printer } from 'amplify-prompts';
 import { S3 } from './aws-utils/aws-s3';
 import Cloudformation from './aws-utils/aws-cfn';
@@ -553,6 +553,7 @@ const uploadStudioBackendFiles = async (s3: S3, bucketName: string) => {
  *
  */
 export const storeCurrentCloudBackend = async (context: $TSContext) => {
+  await ensureEnvMeta(context);
   const zipFilename = '#current-cloud-backend.zip';
   const backendDir = pathManager.getBackendDirPath();
   const tempDir = path.join(backendDir, '.temp');

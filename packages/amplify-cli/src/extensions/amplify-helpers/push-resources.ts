@@ -3,6 +3,7 @@ import {
 } from 'amplify-cli-core';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 import { printer } from 'amplify-prompts';
+import { ensureEnvMeta } from '@aws-amplify/amplify-environment-parameters';
 import { getResources } from '../../commands/build';
 import { initializeEnv } from '../../initialize-env';
 import { getEnvInfo } from './get-env-info';
@@ -49,6 +50,7 @@ export const pushResources = async (
         context.exeInfo.localEnvInfo.envName = envName;
         stateManager.setLocalEnvInfo(context.exeInfo.localEnvInfo.projectPath, context.exeInfo.localEnvInfo);
       }
+      await ensureEnvMeta(context);
       await initializeEnv(context);
     } else {
       const errMessage = "Environment doesn't exist. Please use 'amplify init' to create a new environment";
@@ -59,6 +61,8 @@ export const pushResources = async (
       exitOnNextTick(1);
     }
   }
+
+  await ensureEnvMeta(context);
 
   // building all CFN stacks here to get the resource Changes
   await generateDependentResourcesType(context);

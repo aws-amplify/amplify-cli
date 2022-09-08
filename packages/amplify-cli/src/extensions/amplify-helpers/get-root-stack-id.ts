@@ -1,11 +1,10 @@
-import { stateManager } from 'amplify-cli-core';
+import { getEnvMeta } from '@aws-amplify/amplify-environment-parameters';
 
 /**
  * Gets the root stack id
  */
 export const getRootStackId = (): string => {
-  const amplifyMeta = stateManager.getMeta();
-  const stackId = amplifyMeta?.providers?.awscloudformation?.StackId;
+  const stackId = getEnvMeta().StackId;
   if (typeof stackId === 'string') {
     return stackId.split('/')[2];
   }

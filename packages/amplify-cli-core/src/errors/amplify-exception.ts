@@ -10,21 +10,23 @@ export class AmplifyException extends Error {
   constructor(
     public readonly name: AmplifyExceptionType,
     public readonly classification: AmplifyExceptionClassification,
-    private readonly options: AmplifyExceptionOptions,
+    options: AmplifyExceptionOptions,
   ) {
     super(options.message);
 
     // https://github.com/Microsoft/TypeScript-wiki/blob/main/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
     Object.setPrototypeOf(this, AmplifyException.prototype);
 
-    this.stack ??= options.stack;
+    if (options.stack) {
+      this.stack = options.stack;
+    }
     this.message = options.message;
     this.details = options.details;
     this.resolution = 'resolution' in options ? options.resolution : undefined;
     this.link = 'link' in options ? options.link : undefined;
   }
 
-  toObject = (): object => {
+  toObject = (): Record<string, string | undefined> => {
     const {
       name: errorName, message: errorMessage, details: errorDetails, resolution, link, stack,
     } = this;

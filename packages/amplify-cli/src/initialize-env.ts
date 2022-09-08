@@ -5,7 +5,7 @@ import {
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import {
-  ensureEnvParamManager, IEnvironmentParameterManager, getEnvMeta,
+  ensureEnvParamManager, IEnvironmentParameterManager, ensureEnvMeta,
 } from '@aws-amplify/amplify-environment-parameters';
 import { initEnv as providerInitEnv, pushResources } from 'amplify-provider-awscloudformation';
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';
@@ -68,7 +68,7 @@ export const initializeEnv = async (
 
     try {
       context.usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_PLATFORM);
-      await providerInitEnv(context, getEnvMeta());
+      await providerInitEnv(context, await ensureEnvMeta(context, currentEnv));
     } catch (e) {
       printer.error(`Could not initialize '${currentEnv}': ${e.message}`);
       printer.debug(e.stack);
