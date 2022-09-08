@@ -2,9 +2,10 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import sequential from 'promise-sequential';
 import {
-  stateManager, executeHooks, HooksMeta,
+  stateManager, executeHooks, HooksMeta, $TSContext,
 } from 'amplify-cli-core';
 import { prompter } from 'amplify-prompts';
+import { ensureEnvMeta, ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { twoStringSetsAreEqual, twoStringSetsAreDisjoint } from './utils/set-ops';
 import { Context } from './domain/context';
 import { constants } from './domain/constants';
@@ -34,13 +35,23 @@ import {
  */
 export const executeCommand = async (context: Context): Promise<void> => {
   const pluginCandidates = getPluginsWithNameAndCommand(context.pluginPlatform, context.input.plugin!, context.input.command!);
-
-  if (pluginCandidates.length === 1) {
-    await executePluginModuleCommand(context, pluginCandidates[0]);
-  } else if (pluginCandidates.length > 1) {
-    const selectedPluginInfo = await selectPluginForExecution(context, pluginCandidates);
-    await executePluginModuleCommand(context, selectedPluginInfo);
+  const selectedPluginInfo = pluginCandidates.length === 1
+    ? pluginCandidates[0]
+    : await selectPluginForExecution(context, pluginCandidates);
+  if (commandRequiresInitializedProject(context.input.command!)) {
+    await ensureEnvMeta(context as unknown as $TSContext);
+    await ensureEnvParamManager();
   }
+  await executePluginModuleCommand(context, selectedPluginInfo);
+};
+
+/**
+ * Determine if a command requires an initialized project
+ */
+const commandRequiresInitializedProject = (command: string): boolean => {
+  // defining a list of non-initialized commands because that's a much shorter list than initialized commands
+  const nonInitializedCommands = ['version', 'plugin', 'init', 'pull'];
+  return !nonInitializedCommands.includes(command);
 };
 
 /**
