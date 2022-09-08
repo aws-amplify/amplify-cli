@@ -5,6 +5,7 @@ import { provideCrud } from './providers/crudProvider';
 import { provideServerless } from './providers/serverlessProvider';
 import { provideTrigger } from './providers/triggerProvider';
 import { provideLambdaAuth } from './providers/lambdaAuthProvider';
+import { graphqlRequest } from './providers/graphqlRequestProvider';
 
 export const functionTemplateContributorFactory: FunctionTemplateContributorFactory = context => {
   return {
@@ -24,6 +25,9 @@ export const functionTemplateContributorFactory: FunctionTemplateContributorFact
         }
         case 'lambda-auth': {
           return provideLambdaAuth();
+        }
+        case 'appsync-request': {
+          return graphqlRequest(context);
         }
         default: {
           throw new Error(`Unknown template selection [${request.selection}]`);
