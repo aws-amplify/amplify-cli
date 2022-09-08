@@ -1,17 +1,20 @@
-import { ISynthesisSession, Stack, LegacyStackSynthesizer } from '@aws-cdk/core';
+import { ISynthesisSession, Stack, LegacyStackSynthesizer } from 'aws-cdk-lib';
 import { Template } from 'cloudform-types';
 import { AmplifyAuthCognitoStack } from './auth-cognito-stack-builder';
 import { AmplifyUserPoolGroupStack, AmplifyUserPoolGroupStackOutputs } from './auth-user-pool-group-stack-builder';
 
+/**
+ *
+ */
 export class AuthStackSynthesizer extends LegacyStackSynthesizer {
   private readonly stacks: Map<string, Stack> = new Map();
   private static readonly stackAssets: Map<string, Template> = new Map();
 
   protected synthesizeStackTemplate(stack: Stack, session: ISynthesisSession): void {
     if (
-      stack instanceof AmplifyAuthCognitoStack ||
-      stack instanceof AmplifyUserPoolGroupStack ||
-      stack instanceof AmplifyUserPoolGroupStackOutputs
+      stack instanceof AmplifyAuthCognitoStack
+      || stack instanceof AmplifyUserPoolGroupStack
+      || stack instanceof AmplifyUserPoolGroupStackOutputs
     ) {
       this.addStack(stack);
       const template = stack.renderCloudFormationTemplate(session) as string;
@@ -24,14 +27,23 @@ export class AuthStackSynthesizer extends LegacyStackSynthesizer {
     }
   }
 
+  /**
+   *
+   */
   setStackAsset(templateName: string, template: string): void {
     AuthStackSynthesizer.stackAssets.set(templateName, JSON.parse(template));
   }
 
+  /**
+   *
+   */
   collectStacks(): Map<string, Template> {
     return new Map(AuthStackSynthesizer.stackAssets.entries());
   }
 
+  /**
+   *
+   */
   addStack(stack: Stack) {
     this.stacks.set(stack.node.id, stack);
   }

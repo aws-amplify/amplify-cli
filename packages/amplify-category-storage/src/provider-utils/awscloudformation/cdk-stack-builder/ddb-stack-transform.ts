@@ -1,7 +1,8 @@
 import { AmplifyDDBResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
-import * as cdk from '@aws-cdk/core';
-import { App } from '@aws-cdk/core';
-import { $TSAny, $TSContext, buildOverrideDir, JSONUtilities, pathManager } from 'amplify-cli-core';
+import * as cdk from 'aws-cdk-lib';
+import {
+  $TSAny, $TSContext, buildOverrideDir, JSONUtilities, pathManager,
+} from 'amplify-cli-core';
 import { formatter, printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import os from 'os';
@@ -13,8 +14,11 @@ import { AmplifyDDBResourceStack } from './ddb-stack-builder';
 import { AmplifyDDBResourceInputParameters } from './types';
 import { getDdbAttrType } from '../cfn-template-utils';
 
+/**
+ *
+ */
 export class DDBStackTransform {
-  app: App;
+  app: cdk.App;
   _context: $TSContext;
   _cliInputs: DynamoDBCLIInputs;
   _resourceTemplateObj: AmplifyDDBResourceStack | undefined;
@@ -24,7 +28,7 @@ export class DDBStackTransform {
   _resourceName: string;
 
   constructor(context: $TSContext, resourceName: string) {
-    this.app = new App();
+    this.app = new cdk.App();
     this._context = context;
     this._resourceName = resourceName;
 
@@ -34,6 +38,9 @@ export class DDBStackTransform {
     this._cliInputsState.isCLIInputsValid();
   }
 
+  /**
+   *
+   */
   async transform() {
     // Generate  cloudformation stack from cli-inputs.json
     await this.generateStack();
@@ -48,6 +55,9 @@ export class DDBStackTransform {
     this.saveBuildFiles();
   }
 
+  /**
+   *
+   */
   generateCfnInputParameters() {
     this._cfnInputParams = {
       tableName: this._cliInputs.tableName,
@@ -60,6 +70,9 @@ export class DDBStackTransform {
     }
   }
 
+  /**
+   *
+   */
   async generateStack() {
     this._resourceTemplateObj = new AmplifyDDBResourceStack(this.app, 'AmplifyDDBResourceStack', this._cliInputs);
 
@@ -172,6 +185,9 @@ export class DDBStackTransform {
     );
   }
 
+  /**
+   *
+   */
   async applyOverrides() {
     const backendDir = pathManager.getBackendDirPath();
     const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, 'storage', this._resourceName);
@@ -216,6 +232,9 @@ export class DDBStackTransform {
     }
   }
 
+  /**
+   *
+   */
   saveBuildFiles() {
     if (this._resourceTemplateObj) {
       this._cfn = JSON.parse(this._resourceTemplateObj.renderCloudFormationTemplate());

@@ -1,21 +1,30 @@
-import * as cdk from '@aws-cdk/core';
-import { $TSContext, $TSObject, pathManager, readCFNTemplate, stateManager, writeCFNTemplate } from 'amplify-cli-core';
+import * as cdk from 'aws-cdk-lib';
+import {
+  $TSContext, $TSObject, pathManager, readCFNTemplate, stateManager, writeCFNTemplate,
+} from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import { glob } from 'glob';
 import inquirer, { CheckboxQuestion, DistinctChoice } from 'inquirer';
 import _ from 'lodash';
 import * as path from 'path';
-import { categoryName, customResourceCFNFilenameSuffix } from '../utils/constants';
+import { categoryName, customResourceCFNFilenameSuffix } from './constants';
+
 const AUTH_TRIGGER_TEMPLATE = 'auth-trigger-cloudformation-template.json';
 
 const cfnTemplateGlobPattern = '*template*.+(yaml|yml|json)';
+/**
+ *
+ */
 export interface AmplifyDependentResourceDefinition {
   resourceName: string;
   category: string;
   attributes?: [string?];
 }
 
+/**
+ *
+ */
 export function getResourceCfnOutputAttributes(category: string, resourceName: string): [string?] {
   const resourceDir = pathManager.getResourceDirectoryPath(undefined, category, resourceName);
   const resourceBuildDir = path.join(resourceDir, 'build');
@@ -37,10 +46,9 @@ export function getResourceCfnOutputAttributes(category: string, resourceName: s
       if (cfnFiles.length > 1) {
         printer.warn(`${resourceName} has more than one CloudFormation definitions in the resource folder which isn't permitted.`);
         return [];
-      } else {
-        if (resourceBuildDir && cfnFiles[0]) {
-          cfnFilePath = path.join(resourceBuildDir, cfnFiles[0]);
-        }
+      }
+      if (resourceBuildDir && cfnFiles[0]) {
+        cfnFilePath = path.join(resourceBuildDir, cfnFiles[0]);
       }
     }
   }
@@ -62,10 +70,10 @@ export function getResourceCfnOutputAttributes(category: string, resourceName: s
     const { cfnTemplate } = readCFNTemplate(cfnFilePath);
     if (cfnTemplate && cfnTemplate.Outputs) {
       const allOutputs: $TSObject = cfnTemplate.Outputs;
-      let outputsWithoutConditions: any = {};
+      const outputsWithoutConditions: any = {};
 
       for (const key in allOutputs) {
-        if (!allOutputs[key]['Condition']) {
+        if (!allOutputs[key].Condition) {
           // Filter out outputs which are conditional to avoid deployment failures
           outputsWithoutConditions[key] = allOutputs[key];
         }
@@ -78,13 +86,16 @@ export function getResourceCfnOutputAttributes(category: string, resourceName: s
   return [];
 }
 
+/**
+ *
+ */
 export function getAllResources() {
   const meta = stateManager.getMeta();
   const categories = Object.keys(meta).filter(category => category !== 'providers');
   const allResources: $TSObject = {};
 
   for (const category of categories) {
-    let resourcesList = category in meta ? Object.keys(meta[category]) : [];
+    const resourcesList = category in meta ? Object.keys(meta[category]) : [];
 
     if (_.isEmpty(resourcesList)) {
       continue;
@@ -121,6 +132,9 @@ export function getAllResources() {
 }
 
 // helper function to add dependencies for resources to a CDK stack
+/**
+ *
+ */
 export function addCDKResourceDependency(
   stack: cdk.Stack,
   category: string,
@@ -176,6 +190,9 @@ function addDependsOnToResource(category: string, resourceName: string, dependsO
   stateManager.setMeta(undefined, meta);
 }
 
+/**
+ *
+ */
 export async function addCFNResourceDependency(context: $TSContext, customResourceName: string) {
   const selectResourcesInCategory = (
     choices: DistinctChoice<any>[],
@@ -251,7 +268,7 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
         selectedResources = _.concat(resourcesList);
       }
 
-      for (let resourceName of selectedResources) {
+      for (const resourceName of selectedResources) {
         // In case of some resources they are not in the meta file so check for resource existence as well
         const isMobileHubImportedResource = _.get(amplifyMeta, [selectedCategory, resourceName, 'mobileHubMigrated'], false);
         if (isMobileHubImportedResource) {
@@ -266,7 +283,7 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
 
           const resourceDefinition: AmplifyDependentResourceDefinition = {
             category: selectedCategory,
-            resourceName: resourceName,
+            resourceName,
             attributes: resourceCfnOutputAttributes,
           };
 
@@ -329,7 +346,7 @@ function showUsageInformation(resources: AmplifyDependentResourceDefinition[]) {
 }
 
 function generateInputParametersForDependencies(resources: AmplifyDependentResourceDefinition[]) {
-  let parameters: $TSObject = {};
+  const parameters: $TSObject = {};
 
   for (const resource of resources) {
     for (const attribute of resource.attributes || []) {

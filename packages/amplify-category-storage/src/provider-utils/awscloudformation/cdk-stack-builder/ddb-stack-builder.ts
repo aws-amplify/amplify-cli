@@ -1,18 +1,22 @@
-import * as cdk from '@aws-cdk/core';
-import * as ddb from '@aws-cdk/aws-dynamodb';
-import { DynamoDBCLIInputs, DynamoDBCLIInputsKeyType, FieldType } from '../service-walkthrough-types/dynamoDB-user-input-types';
+import * as cdk from 'aws-cdk-lib';
+import * as ddb from 'aws-cdk-lib/aws-dynamodb';
+import { Construct } from 'constructs';
 import { AmplifyDDBResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
+import { DynamoDBCLIInputs, DynamoDBCLIInputsKeyType, FieldType } from '../service-walkthrough-types/dynamoDB-user-input-types';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'DDB Resource for AWS Amplify CLI';
 
+/**
+ *
+ */
 export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBResourceTemplate {
-  _scope: cdk.Construct;
+  _scope: Construct;
   dynamoDBTable!: ddb.CfnTable;
   _props: DynamoDBCLIInputs;
   _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
 
-  constructor(scope: cdk.Construct, id: string, props: DynamoDBCLIInputs) {
+  constructor(scope: Construct, id: string, props: DynamoDBCLIInputs) {
     super(scope, id, undefined);
     this._scope = scope;
     this._props = props;
@@ -58,6 +62,7 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
       throw new Error(error);
     }
   }
+
   /**
    *
    * @param props
@@ -88,9 +93,9 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
   }
 
   generateStackResources = async () => {
-    let usedAttributes: DynamoDBCLIInputsKeyType[] = [];
-    let keySchema: ddb.CfnTable.KeySchemaProperty[] = [];
-    let globalSecondaryIndexes: ddb.CfnTable.GlobalSecondaryIndexProperty[] = [];
+    const usedAttributes: DynamoDBCLIInputsKeyType[] = [];
+    const keySchema: ddb.CfnTable.KeySchemaProperty[] = [];
+    const globalSecondaryIndexes: ddb.CfnTable.GlobalSecondaryIndexProperty[] = [];
 
     if (this._props.partitionKey) {
       usedAttributes.push(this._props.partitionKey);
@@ -108,7 +113,7 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
     }
     if (this._props.gsi && this._props.gsi.length > 0) {
       this._props.gsi.forEach(gsi => {
-        let gsiIndex = {
+        const gsiIndex = {
           indexName: gsi.name,
           keySchema: [
             {
@@ -154,7 +159,7 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
       'binary-set': 'BS',
     };
 
-    let attributeMapping: ddb.CfnTable.AttributeDefinitionProperty[] = [];
+    const attributeMapping: ddb.CfnTable.AttributeDefinitionProperty[] = [];
 
     usedAttributes.forEach((attr: DynamoDBCLIInputsKeyType) => {
       attributeMapping.push({
@@ -182,7 +187,5 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
     });
   };
 
-  public renderCloudFormationTemplate = (): string => {
-    return JSON.stringify(this._toCloudFormation(), undefined, 2);
-  };
+  public renderCloudFormationTemplate = (): string => JSON.stringify(this._toCloudFormation(), undefined, 2);
 }

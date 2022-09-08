@@ -1,11 +1,13 @@
-import * as cdk from '@aws-cdk/core';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as iam from '@aws-cdk/aws-iam';
-import * as cognito from '@aws-cdk/aws-cognito';
-import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from 'aws-cdk-lib';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as cognito from 'aws-cdk-lib/aws-cognito';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { AmplifyAuthCognitoStackTemplate } from '@aws-amplify/cli-extensibility-helper';
-import { CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
 import _ from 'lodash';
+import * as fs from 'fs-extra';
+import { Construct } from 'constructs';
+import { AmplifyStackTemplate } from 'amplify-cli-core';
 import {
   hostedUILambdaFilePath,
   hostedUIProviderLambdaFilePath,
@@ -14,8 +16,7 @@ import {
   openIdLambdaFilePath,
   userPoolClientLambdaFilePath,
 } from '../constants';
-import * as fs from 'fs-extra';
-import { AmplifyStackTemplate } from 'amplify-cli-core';
+import { CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
 import { AttributeType } from '../service-walkthrough-types/awsCognito-user-input-types';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
@@ -40,12 +41,18 @@ const authProvidersList: Record<string, string> = {
   'appleid.apple.com': 'appleAppId',
 };
 
+/**
+ *
+ */
 export type AmplifyAuthCognitoStackProps = {
   synthesizer: cdk.IStackSynthesizer;
 };
 
+/**
+ *
+ */
 export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCognitoStackTemplate, AmplifyStackTemplate {
-  private _scope: cdk.Construct;
+  private _scope: Construct;
   private _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
   private _cfnConditionMap: Map<string, cdk.CfnCondition> = new Map();
   private _cfnOutputMap: Map<string, cdk.CfnOutput> = new Map();
@@ -81,21 +88,21 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   oAuthCustomResourcePolicy?: iam.CfnPolicy;
   oAuthCustomResourceLogPolicy?: iam.CfnPolicy;
   oAuthCustomResourceInputs?: cdk.CustomResource;
-  //custom resource MFA
+  // custom resource MFA
   mfaLambda?: lambda.CfnFunction;
   mfaLogPolicy?: iam.CfnPolicy;
   mfaLambdaPolicy?: iam.CfnPolicy;
   mfaLambdaInputs?: cdk.CustomResource;
   mfaLambdaRole?: iam.CfnRole;
 
-  //custom resource identity pool - OPenId Lambda Role
+  // custom resource identity pool - OPenId Lambda Role
   openIdLambda?: lambda.CfnFunction;
   openIdLogPolicy?: iam.CfnPolicy;
   openIdLambdaIAMPolicy?: iam.CfnPolicy;
   openIdLambdaInputs?: cdk.CustomResource;
   openIdLambdaRole?: iam.CfnRole;
 
-  constructor(scope: cdk.Construct, id: string, props: AmplifyAuthCognitoStackProps) {
+  constructor(scope: Construct, id: string, props: AmplifyAuthCognitoStackProps) {
     super(scope, id, props);
     this._scope = scope;
     this.templateOptions.templateFormatVersion = CFN_TEMPLATE_FORMAT_VERSION;
@@ -103,6 +110,10 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     this.lambdaConfigPermissions = {};
     this.lambdaTriggerPermissions = {};
   }
+
+  /**
+   *
+   */
   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void {
     if (!this._cfnResourceMap.has(logicalId)) {
       this._cfnResourceMap.set(logicalId, new cdk.CfnResource(this, logicalId, props));
@@ -110,19 +121,25 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       throw new Error(`Cfn Resource with LogicalId ${logicalId} already exists`);
     }
   }
+
+  /**
+   *
+   */
   getCfnOutput(logicalId: string): cdk.CfnOutput {
     if (this._cfnOutputMap.has(logicalId)) {
       return this._cfnOutputMap.get(logicalId)!;
-    } else {
-      throw new Error(`Cfn Output with LogicalId ${logicalId} doesnt exist`);
     }
+    throw new Error(`Cfn Output with LogicalId ${logicalId} doesnt exist`);
   }
+
+  /**
+   *
+   */
   getCfnMapping(logicalId: string): cdk.CfnMapping {
     if (this._cfnMappingMap.has(logicalId)) {
       return this._cfnMappingMap.get(logicalId)!;
-    } else {
-      throw new Error(`Cfn Mapping with LogicalId ${logicalId} doesnt exist`);
     }
+    throw new Error(`Cfn Mapping with LogicalId ${logicalId} doesnt exist`);
   }
 
   /**
@@ -177,33 +194,36 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     }
   }
 
+  /**
+   *
+   */
   getCfnParameter(logicalId: string): cdk.CfnParameter {
     if (this._cfnParameterMap.has(logicalId)) {
       return this._cfnParameterMap.get(logicalId)!;
-    } else {
-      throw new Error(`Cfn Parameter with LogicalId ${logicalId} doesnt exist`);
     }
+    throw new Error(`Cfn Parameter with LogicalId ${logicalId} doesnt exist`);
   }
 
+  /**
+   *
+   */
   getCfnCondition(logicalId: string): cdk.CfnCondition {
     if (this._cfnConditionMap.has(logicalId)) {
       return this._cfnConditionMap.get(logicalId)!;
-    } else {
-      throw new Error(`Cfn Condition with LogicalId ${logicalId} doesnt exist`);
     }
+    throw new Error(`Cfn Condition with LogicalId ${logicalId} doesnt exist`);
   }
 
   generateCognitoStackResources = async (props: CognitoStackOptions) => {
     const autoVerifiedAttributes = props.autoVerifiedAttributes
       ? props.autoVerifiedAttributes
-          .concat(props.aliasAttributes ? props.aliasAttributes : [])
-          .filter((attr, i, aliasAttributeArray) => ['email', 'phone_number'].includes(attr) && aliasAttributeArray.indexOf(attr) === i)
+        .concat(props.aliasAttributes ? props.aliasAttributes : [])
+        .filter((attr, i, aliasAttributeArray) => ['email', 'phone_number'].includes(attr) && aliasAttributeArray.indexOf(attr) === i)
       : [];
-    const configureSMS =
-      (props.autoVerifiedAttributes && props.autoVerifiedAttributes.includes('phone_number')) ||
-      (props.mfaConfiguration != 'OFF' && props.mfaTypes && props.mfaTypes.includes('SMS Text Message')) ||
-      (props.requiredAttributes && props.requiredAttributes.includes('phone_number')) ||
-      (props.usernameAttributes && props.usernameAttributes.includes(AttributeType.PHONE_NUMBER));
+    const configureSMS = (props.autoVerifiedAttributes && props.autoVerifiedAttributes.includes('phone_number'))
+      || (props.mfaConfiguration != 'OFF' && props.mfaTypes && props.mfaTypes.includes('SMS Text Message'))
+      || (props.requiredAttributes && props.requiredAttributes.includes('phone_number'))
+      || (props.usernameAttributes && props.usernameAttributes.includes(AttributeType.PHONE_NUMBER));
 
     if (props.verificationBucketName) {
       this.customMessageConfirmationBucket = new s3.CfnBucket(this, 'CustomMessageConfirmationBucket', {
@@ -301,7 +321,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       }
 
       if (props.requiredAttributes && props.requiredAttributes.length > 0) {
-        let schemaAttributes: cognito.CfnUserPool.SchemaAttributeProperty[] = [];
+        const schemaAttributes: cognito.CfnUserPool.SchemaAttributeProperty[] = [];
         props.requiredAttributes.forEach(attr => {
           schemaAttributes.push({
             name: attr,
@@ -379,7 +399,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         this.userPool.emailVerificationSubject = cdk.Fn.ref('emailVerificationSubject');
       }
 
-      //TODO: change this
+      // TODO: change this
       if (props.usernameAttributes && (props.usernameAttributes[0] as string) !== 'username') {
         this.userPool.usernameAttributes = cdk.Fn.ref('usernameAttributes') as unknown as string[];
       }
@@ -427,7 +447,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
             }
           });
         });
-        //Updating lambda role with permissions to Cognito
+        // Updating lambda role with permissions to Cognito
         if (!_.isEmpty(props.permissions)) {
           this.generateIAMPolicies(props);
         }
@@ -513,13 +533,13 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       }
 
       if (
-        props.authProviders &&
-        !_.isEmpty(props.authProviders) &&
-        !(Object.keys(props.authProviders).length === 1 && props.authProviders[0] === 'accounts.google.com' && props.audiences)
+        props.authProviders
+        && !_.isEmpty(props.authProviders)
+        && !(Object.keys(props.authProviders).length === 1 && props.authProviders[0] === 'accounts.google.com' && props.audiences)
       ) {
-        this.identityPool.supportedLoginProviders = cdk.Lazy.anyValue({
+        this.identityPool.supportedLoginProviders = cdk.Lazy.any({
           produce: () => {
-            let supprtedProvider: any = {};
+            const supprtedProvider: any = {};
             props.authProviders?.forEach(provider => {
               if (Object.keys(authProvidersList).includes(provider)) {
                 supprtedProvider[provider] = cdk.Fn.ref(authProvidersList[provider]);
@@ -558,10 +578,11 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
    * @param _
    * @returns
    */
-  public renderCloudFormationTemplate = (_: cdk.ISynthesisSession): string => {
-    return JSON.stringify(this._toCloudFormation(), undefined, 2);
-  };
+  public renderCloudFormationTemplate = (_: cdk.ISynthesisSession): string => JSON.stringify(this._toCloudFormation(), undefined, 2);
 
+  /**
+   *
+   */
   createUserPoolClientCustomResource(props: CognitoStackOptions) {
     // iam role
     this.userPoolClientRole = new iam.CfnRole(this, 'UserPoolClientRole', {
@@ -659,6 +680,9 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     this.userPoolClientInputs.node.addDependency(this.userPoolClientLogPolicy);
   }
 
+  /**
+   *
+   */
   createHostedUICustomResource() {
     // lambda function
     this.hostedUICustomResource = new lambda.CfnFunction(this, 'HostedUICustomResource', {
@@ -737,6 +761,9 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     this.hostedUICustomResourceInputs.node.addDependency(this.hostedUICustomResourceLogPolicy);
   }
 
+  /**
+   *
+   */
   createHostedUIProviderCustomResource() {
     // lambda function
     this.hostedUIProvidersCustomResource = new lambda.CfnFunction(this, 'HostedUIProvidersCustomResource', {
@@ -817,6 +844,9 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     this.hostedUIProvidersCustomResourceInputs.node.addDependency(this.hostedUIProvidersCustomResourceLogPolicy);
   }
 
+  /**
+   *
+   */
   createOAuthCustomResource() {
     // lambda function
     this.oAuthCustomResource = new lambda.CfnFunction(this, 'OAuthCustomResource', {
@@ -891,6 +921,9 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     this.oAuthCustomResourceInputs.node.addDependency(this.oAuthCustomResourceLogPolicy);
   }
 
+  /**
+   *
+   */
   createMFACustomResource(props: CognitoStackOptions) {
     // iam role
     this.mfaLambdaRole = new iam.CfnRole(this, 'MFALambdaRole', {
@@ -1039,6 +1072,9 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     this.mfaLambdaInputs.node.addDependency(this.mfaLogPolicy);
   }
 
+  /**
+   *
+   */
   createOpenIdLambdaCustomResource(props: CognitoStackOptions) {
     // iam role
     /**
@@ -1083,7 +1119,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         },
       ],
     });
-    //TODO
+    // TODO
     this.openIdLambdaRole!.node.addDependency(this.userPoolClientInputs!.node!.defaultChild!);
     // lambda function
     /**

@@ -11,7 +11,8 @@
           "lint",
           "package",
           "prepare"
-        ]
+        ],
+        "useDaemonProcess": false
       }
     }
   },

@@ -1,5 +1,8 @@
-import { ResourceImpact, TemplateDiff } from '@aws-cdk/cloudformation-diff';
+import { ResourceImpact, TemplateDiff } from 'aws-cdk-lib/cloudformation-diff';
 
+/**
+ *
+ */
 export const getNestedStackDiffRules = (): NestedStackDiffRule[] => [
   onlyUpdatesTableNameProperty,
   tableNameResolvesToSameName,
@@ -13,7 +16,7 @@ export const getNestedStackDiffRules = (): NestedStackDiffRule[] => [
  * @param diff The diff of the nested stack
  */
 const onlyUpdatesTableNameProperty = (stackName: string, diff: TemplateDiff) => {
-  const propertyUpdates = diff.resources.changes[`${stackName}Table`].propertyUpdates;
+  const { propertyUpdates } = diff.resources.changes[`${stackName}Table`];
   try {
     expect(Object.keys(propertyUpdates)).toEqual(['TableName']); // The table name should resolve to the same value but the way it's defined is different so it shows up here as a diff
   } catch (err) {
@@ -24,7 +27,7 @@ const onlyUpdatesTableNameProperty = (stackName: string, diff: TemplateDiff) => 
 };
 
 const tableNameResolvesToSameName = (stackName: string, diff: TemplateDiff) => {
-  const propertyUpdates = diff.resources.changes[`${stackName}Table`].propertyUpdates;
+  const { propertyUpdates } = diff.resources.changes[`${stackName}Table`];
   const newTableName = propertyUpdates.TableName.newValue;
   expect(newTableName['Fn::Join']).toBeDefined();
   const joinParams = newTableName['Fn::Join'];
@@ -57,4 +60,7 @@ const dataSourceLogicalIdsAreSame = (_: string, diff: TemplateDiff) => {
   expect(areDataSourcesReplaced).toBe(true);
 };
 
+/**
+ *
+ */
 export type NestedStackDiffRule = (stackName: string, diff: TemplateDiff) => void;

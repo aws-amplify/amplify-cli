@@ -1,11 +1,12 @@
 /* eslint-disable max-classes-per-file */
-import * as cdk from '@aws-cdk/core';
-import * as iam from '@aws-cdk/aws-iam';
-import * as lambda from '@aws-cdk/aws-lambda';
-import { CfnUserPoolGroup } from '@aws-cdk/aws-cognito';
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { CfnUserPoolGroup } from 'aws-cdk-lib/aws-cognito';
 import { AmplifyUserPoolGroupStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 import { AmplifyStackTemplate } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
+import { Construct } from 'constructs';
 // eslint-disable-next-line import/no-cycle
 import { AmplifyUserPoolGroupStackOptions } from './user-pool-group-stack-transform';
 import { roleMapLambdaFilePath } from '../constants';
@@ -24,7 +25,7 @@ export type AmplifyAuthCognitoStackProps = {
  * CDK stack that contains the UserPool Group resources
  */
 export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserPoolGroupStackTemplate, AmplifyStackTemplate {
-  _scope: cdk.Construct;
+  _scope: Construct;
   private _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
   private _cfnConditionMap: Map<string, cdk.CfnCondition> = new Map();
   userPoolGroup: Record<string, CfnUserPoolGroup>;
@@ -33,7 +34,7 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
   roleMapLambdaFunction?: lambda.CfnFunction;
   lambdaExecutionRole?: iam.CfnRole;
 
-  constructor(scope: cdk.Construct, id: string, props: AmplifyAuthCognitoStackProps) {
+  constructor(scope: Construct, id: string, props: AmplifyAuthCognitoStackProps) {
     super(scope, id, props);
     this._scope = scope;
     this.templateOptions.templateFormatVersion = CFN_TEMPLATE_FORMAT_VERSION;
@@ -311,7 +312,7 @@ const getCfnParamsLogicalId = (cognitoResourceName: string, cfnParamName: string
  */
 export class AmplifyUserPoolGroupStackOutputs extends cdk.Stack implements AmplifyStackTemplate {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
-  constructor(scope: cdk.Construct, id: string, props: AmplifyAuthCognitoStackProps) {
+  constructor(scope: Construct, id: string, props: AmplifyAuthCognitoStackProps) {
     super(scope, id, props);
   }
 

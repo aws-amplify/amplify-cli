@@ -1,8 +1,12 @@
 import { AmplifyCDKL1 } from '@aws-amplify/cli-extensibility-helper';
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 import { $TSObject } from 'amplify-cli-core';
+import { Construct } from 'constructs';
 import { DdbAttrType } from '../cfn-template-utils';
 
+/**
+ *
+ */
 export interface AmplifyDDBResourceInputParameters {
   tableName: string;
   partitionKeyName: string;
@@ -11,12 +15,18 @@ export interface AmplifyDDBResourceInputParameters {
   sortKeyType?: DdbAttrType;
 }
 
+/**
+ *
+ */
 export type AmplifyCfnParamType = {
   params: Array<string>;
   paramType: string;
   default?: string;
 };
 
+/**
+ *
+ */
 export interface AmplifyS3ResourceInputParameters {
   bucketName?: string;
   resourceName?: string;
@@ -26,7 +36,7 @@ export interface AmplifyS3ResourceInputParameters {
   authRoleName?: $TSObject;
   unauthRoleName?: $TSObject;
   s3PublicPolicy?: string;
-  s3PrivatePolicy?: string; //default:"NONE"
+  s3PrivatePolicy?: string; // default:"NONE"
   s3ProtectedPolicy?: string;
   s3UploadsPolicy?: string;
   s3ReadPolicy?: string;
@@ -44,10 +54,13 @@ export interface AmplifyS3ResourceInputParameters {
   adminTriggerFunction?: string;
 }
 
-//Base class for all storage resource stacks ( S3, DDB )
+// Base class for all storage resource stacks ( S3, DDB )
+/**
+ *
+ */
 export class AmplifyResourceCfnStack extends cdk.Stack implements AmplifyCDKL1 {
   _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
-  constructor(scope: cdk.Construct, id: string) {
+  constructor(scope: Construct, id: string) {
     super(scope, id, undefined);
   }
 
@@ -89,6 +102,7 @@ export class AmplifyResourceCfnStack extends cdk.Stack implements AmplifyCDKL1 {
       throw error;
     }
   }
+
   /**
    *
    * @param props
@@ -101,6 +115,7 @@ export class AmplifyResourceCfnStack extends cdk.Stack implements AmplifyCDKL1 {
       throw error;
     }
   }
+
   /**
    *
    * @param props
@@ -117,13 +132,14 @@ export class AmplifyResourceCfnStack extends cdk.Stack implements AmplifyCDKL1 {
     }
   }
 
-  //Generate convert cdk stack to cloudformation
-  public renderCloudFormationTemplate = (): string => {
-    return this._toCloudFormation();
-  };
+  // Generate convert cdk stack to cloudformation
+  public renderCloudFormationTemplate = (): string => this._toCloudFormation();
 }
 
-//Types used in Build/Params.json
+// Types used in Build/Params.json
+/**
+ *
+ */
 export enum AmplifyBuildParamsPermissions {
   ALLOW = 'ALLOW',
   DISALLOW = 'DISALLOW',
