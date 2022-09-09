@@ -82,8 +82,6 @@ const logger = fileLogger('push-resources');
 // keep in sync with ServiceName in amplify-category-api, but probably it will not change
 const ApiServiceNameElasticContainer = 'ElasticContainer';
 
-const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
-
 const optionalBuildDirectoryName = 'build';
 const cfnTemplateGlobPattern = '*template*.+(yaml|yml|json)';
 const parametersJson = 'parameters.json';
@@ -274,6 +272,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
       // if there are deploymentSteps, need to do an iterative update
       if (deploymentSteps.length > 0) {
         // create deployment manager
+        const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
         const deploymentManager = await DeploymentManager.createInstance(context, cloudformationMeta.DeploymentBucketName, spinner, {
           userAgent: formUserAgentParam(context, generateUserAgentAction(resourcesToBeCreated, resourcesToBeUpdated)),
         });
@@ -546,7 +545,14 @@ const uploadStudioBackendFiles = async (s3: S3, bucketName: string) => {
       Body: fs.createReadStream(path.join(amplifyDirPath, filePath)),
       Key: path.join(studioBackendDirName, filePath.replace('#current-cloud-backend', '')),
     }));
-  await Promise.all(uploadFileParams.map(params => s3.uploadFile(params)));
+
+  const spinner = ora('Uploading files.');
+  try {
+    spinner.start();
+    await Promise.all(uploadFileParams.map(params => s3.uploadFile(params, false)));
+  } finally {
+    spinner.stop();
+  }
 };
 
 /**
