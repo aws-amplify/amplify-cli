@@ -11,7 +11,7 @@ exports.handler = event => {
       console.log(record.eventID);
       console.log(record.eventName);
       console.log('Kinesis Record: %j', record.kinesis);
-    });
+    }
     res += 'Successfully processed DynamoDB record';
   } else {
     res += 'Kinesis records not present in event';
