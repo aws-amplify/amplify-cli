@@ -32,28 +32,20 @@ describe('Lambda AppSync nodejs:', () => {
     const projName = `iammodel${generateRandomShortId()}`;
 
     await initJSProjectWithProfile(projRoot, { name: projName });
-
-    let catchError;
-
-    try {
-      await addFunction(
-        projRoot,
-        {
-          functionTemplate: 'AppSync - GraphQL API request (with IAM)',
-          additionalPermissions: {
-            permissions: ['api'],
-            choices: ['api'],
-            resources: ['Test_API'],
-            operations: ['Query'],
-          },
+    await addFunction(
+      projRoot,
+      {
+        functionTemplate: 'AppSync - GraphQL API request (with IAM)',
+        expectFailure: true,
+        additionalPermissions: {
+          permissions: ['api'],
+          choices: ['api'],
+          resources: ['Test_API'],
+          operations: ['Query'],
         },
-        'nodejs',
-      );
-    } catch (error) {
-      catchError = error;
-    }
-
-    expect(catchError.toString()).toBe(`Error: Process exited with non zero exit code 1`);
+      },
+      'nodejs',
+    );
   });
 
   it('IAM Auth not present', async () => {

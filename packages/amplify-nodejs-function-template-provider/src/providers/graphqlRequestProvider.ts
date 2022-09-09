@@ -15,13 +15,10 @@ const pathToTemplateFilesIAM = path.join(templateRoot, 'lambda/appsync-request')
 export async function graphqlRequest(context: any): Promise<FunctionTemplateParameters> {
   const { allResources } = await context.amplify.getResourceStatus();
   const apiResource = allResources.filter((resource: { service: string }) => resource.service === AmplifySupportedService.APPSYNC);
-  let apiResourceName: string;
 
-  if (apiResource.length > 0) {
-    const resource = apiResource[0];
-    apiResourceName = resource.resourceName;
-  } else {
-    throw new Error(`${AmplifySupportedService.APPSYNC} API does not exist. To add an api, use "amplify add api".`);
+  if (apiResource.length === 0) {
+    context.print.error(`${AmplifySupportedService.APPSYNC} API does not exist. To add an api, use "amplify add api".`);
+    exitOnNextTick(0);
   }
 
   const authConfigs = allResources[1].output.authConfig;
