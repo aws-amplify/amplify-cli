@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-auth-unauth-override.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.11.7...amplify-e2e-tests@3.12.0-auth-unauth-override.0) (2022-09-09)
+
+
+### Features
+
+* unified error handling framework ([#10933](https://github.com/aws-amplify/amplify-cli/issues/10933)) ([cc9a422](https://github.com/aws-amplify/amplify-cli/commit/cc9a422793f4ef620a4ed634b6f55e28e3a8a3a2))
+
+
+
+
+
 ## [3.11.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.11.7-rc.224a2e0e4.0...amplify-e2e-tests@3.11.7) (2022-09-06)
 
 

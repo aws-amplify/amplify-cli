@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.7.0-auth-unauth-override.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.6.0...amplify-provider-awscloudformation@6.7.0-auth-unauth-override.0) (2022-09-09)
+
+
+### Bug Fixes
+
+* refactor bugs caught by console integ tests ([#10896](https://github.com/aws-amplify/amplify-cli/issues/10896)) ([33c800b](https://github.com/aws-amplify/amplify-cli/commit/33c800b0046c3df97de0daad780c09fef4b5eb2c))
+* support for minify flag in CFNUtilities ([#10955](https://github.com/aws-amplify/amplify-cli/issues/10955)) ([bc76bd1](https://github.com/aws-amplify/amplify-cli/commit/bc76bd11784bac76750ad3ddf8a0c88d6020744c))
+* upload files spinner when executing amplify push command ([#10982](https://github.com/aws-amplify/amplify-cli/issues/10982)) ([ca5030a](https://github.com/aws-amplify/amplify-cli/commit/ca5030a88c079d9e234ca0882ddbc18e9810eed3))
+
+
+### Features
+
+* allow overriding name of IAM role names before init ([#10995](https://github.com/aws-amplify/amplify-cli/issues/10995)) ([6230023](https://github.com/aws-amplify/amplify-cli/commit/62300239f5681f00be428fc5cc0fd0b7281e616c))
+
+
+
+
+
 # [6.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.6.0-rc.224a2e0e4.0...amplify-provider-awscloudformation@6.6.0) (2022-09-06)
 
 

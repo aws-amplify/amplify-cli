@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [10.1.0-auth-unauth-override.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.0.0...@aws-amplify/cli-internal@10.1.0-auth-unauth-override.0) (2022-09-09)
+
+
+### Bug Fixes
+
+* handle status api acm for multi file schema projects ([#10916](https://github.com/aws-amplify/amplify-cli/issues/10916)) ([fbea986](https://github.com/aws-amplify/amplify-cli/commit/fbea986cbb1a6be433eb0b558fa27fb68ac2d0d3))
+
+
+### Features
+
+* unified error handling framework ([#10933](https://github.com/aws-amplify/amplify-cli/issues/10933)) ([cc9a422](https://github.com/aws-amplify/amplify-cli/commit/cc9a422793f4ef620a4ed634b6f55e28e3a8a3a2))
+
+
+
+
+
 # [10.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.0.0-rc.224a2e0e4.0...@aws-amplify/cli-internal@10.0.0) (2022-09-06)
 
 

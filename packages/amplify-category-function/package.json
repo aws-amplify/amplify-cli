@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-function",
-  "version": "4.0.12",
+  "version": "4.0.13-auth-unauth-override.0",
   "description": "amplify-cli function plugin",
   "repository": {
     "type": "git",
@@ -22,10 +22,10 @@
     "aws"
   ],
   "dependencies": {
-    "@aws-amplify/amplify-environment-parameters": "1.0.0",
-    "amplify-cli-core": "3.0.0",
+    "@aws-amplify/amplify-environment-parameters": "1.0.1-auth-unauth-override.0",
+    "amplify-cli-core": "3.1.0-auth-unauth-override.0",
     "amplify-function-plugin-interface": "1.9.5",
-    "amplify-prompts": "2.3.0",
+    "amplify-prompts": "2.4.0-auth-unauth-override.0",
     "archiver": "^5.3.0",
     "aws-sdk": "^2.1113.0",
     "chalk": "^4.1.1",
