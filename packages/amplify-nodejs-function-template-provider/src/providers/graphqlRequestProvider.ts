@@ -2,11 +2,10 @@ import { FunctionTemplateParameters } from 'amplify-function-plugin-interface';
 import path from 'path';
 import fs from 'fs-extra';
 import {
-  stateManager, AmplifySupportedService, exitOnNextTick,
+  AmplifySupportedService, exitOnNextTick,
 } from 'amplify-cli-core';
 import { getDstMap } from '../utils/destFileMapper';
 import { templateRoot } from '../utils/constants';
-import * as gql from 'graphql-transformer-core';
 
 const pathToTemplateFilesIAM = path.join(templateRoot, 'lambda/appsync-request');
 
@@ -17,7 +16,7 @@ export async function graphqlRequest(context: any): Promise<FunctionTemplatePara
   const { allResources } = await context.amplify.getResourceStatus();
   const apiResource = allResources.filter((resource: { service: string }) => resource.service === AmplifySupportedService.APPSYNC);
   let apiResourceName: string;
-  
+
   if (apiResource.length > 0) {
     const resource = apiResource[0];
     apiResourceName = resource.resourceName;

@@ -10,56 +10,54 @@ import {
   getFunction,
   functionBuild,
   invokeFunction,
-  addApiWithoutSchema,
   updateApiSchema,
   generateRandomShortId,
-  amplifyPushFunction,
   addApi,
 
 } from '@aws-amplify/amplify-e2e-core';
 
 describe('Lambda AppSync nodejs:', () => {
   let projRoot: string;
-  
+
   beforeEach(async () => {
     projRoot = await createNewProjectDir('lambda-appsync-nodejs');
   });
-  
+
   afterEach(async () => {
     await deleteProject(projRoot);
     deleteProjectDir(projRoot);
   });
-  
+
   it('API not present', async () => {
     const projName = `iammodel${generateRandomShortId()}`;
 
     await initJSProjectWithProfile(projRoot, { name: projName });
-    
+
     let catchError;
-    
-    try{
-    await addFunction(
-      projRoot,
-      {
-        functionTemplate: 'AppSync - GraphQL API request (with IAM)',
-        additionalPermissions: {
-          permissions: ['api'],
-          choices: ['api'],
-          resources: ["Test_API"],
-          operations: ['Query'],
+
+    try {
+      await addFunction(
+        projRoot,
+        {
+          functionTemplate: 'AppSync - GraphQL API request (with IAM)',
+          additionalPermissions: {
+            permissions: ['api'],
+            choices: ['api'],
+            resources: ['Test_API'],
+            operations: ['Query'],
+          },
         },
-      },
-      'nodejs',
-    )       
-    } catch(error){
+        'nodejs',
+      );
+    } catch (error) {
       catchError = error;
     }
-    
+
     expect(catchError.toString()).toBe(`Error: Process exited with non zero exit code 1`);
-  })
-  
+  });
+
   it('IAM Auth not present', async () => {
-    const projName = `apikeymodel${generateRandomShortId()}`;
+    const projName = `iammodel${generateRandomShortId()}`;
 
     await initJSProjectWithProfile(projRoot, { name: projName });
 
@@ -68,11 +66,7 @@ describe('Lambda AppSync nodejs:', () => {
     });
 
     expect(getBackendConfig(projRoot)).toBeDefined();
-    const beforeMeta = getBackendConfig(projRoot);
-    const apiName = Object.keys(beforeMeta.api)[0];
-    
-    let catchError;
-    
+
     await addFunction(
       projRoot,
       {
@@ -80,16 +74,15 @@ describe('Lambda AppSync nodejs:', () => {
         expectFailure: true,
       },
       'nodejs',
-    )       
-    
-  })
-  
+    );
+  });
+
   it('IAM as default auth', async () => {
     const projName = `iammodel${generateRandomShortId()}`;
 
     await initJSProjectWithProfile(projRoot, { name: projName });
 
-    await addApi(projRoot, {'IAM': {}, transformerVersion: 2 });
+    await addApi(projRoot, { IAM: {}, transformerVersion: 2 });
     await updateApiSchema(projRoot, projName, 'iam_simple_model.graphql');
 
     expect(getBackendConfig(projRoot)).toBeDefined();
@@ -136,12 +129,12 @@ describe('Lambda AppSync nodejs:', () => {
 
     expect(gqlResponse.body).toBeDefined();
   });
-  
-    it('IAM auth as secondary auth type', async () => {
-      const projName = `iammodel${generateRandomShortId()}`;
-      await initJSProjectWithProfile(projRoot, { name: projName });
-      await addApi(projRoot, {transformerVersion: 2, 'API key': {}, IAM:{}});
-      await updateApiSchema(projRoot, projName, 'iam_simple_model.graphql');
+
+  it('IAM auth as secondary auth type', async () => {
+    const projName = `iammodel${generateRandomShortId()}`;
+    await initJSProjectWithProfile(projRoot, { name: projName });
+    await addApi(projRoot, { transformerVersion: 2, 'API key': {}, IAM: {} });
+    await updateApiSchema(projRoot, projName, 'iam_simple_model.graphql');
 
     expect(getBackendConfig(projRoot)).toBeDefined();
 
@@ -186,5 +179,5 @@ describe('Lambda AppSync nodejs:', () => {
     const gqlResponse = JSON.parse(fnResponse.Payload as string);
 
     expect(gqlResponse.body).toBeDefined();
-  })
+  });
 });
