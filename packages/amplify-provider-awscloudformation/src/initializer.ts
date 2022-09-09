@@ -7,23 +7,23 @@ import glob from 'glob';
 import _ from 'lodash';
 import moment from 'moment';
 import * as path from 'path';
+import sequential from 'promise-sequential';
 import { v4 as uuid } from 'uuid';
 import * as vm from 'vm2';
 import { S3 } from './aws-utils/aws-s3';
 import { getAwsConfig, init, onInitSuccessful as configManagerInitSuccessful } from './configuration-manager';
 import { transformRootStack } from './override-manager';
+import { configurePermissionsBoundaryForInit } from './permissions-boundary/permissions-boundary';
+import { prePushCfnTemplateModifier } from './pre-push-cfn-processor/pre-push-cfn-modifier';
 import { rootStackFileName } from './push-resources';
 import { getDefaultTemplateDescription } from './template-description-utils';
 import { fileLogger } from './utils/aws-logger';
 
-const sequential = require('promise-sequential');
 const archiver = require('./utils/archiver');
 const Cloudformation = require('./aws-utils/aws-cfn');
 const constants = require('./constants');
 const amplifyServiceManager = require('./amplify-service-manager');
 const amplifyServiceMigrate = require('./amplify-service-migrate');
-const { prePushCfnTemplateModifier } = require('./pre-push-cfn-processor/pre-push-cfn-modifier');
-const { configurePermissionsBoundaryForInit } = require('./permissions-boundary/permissions-boundary');
 
 type ParamType = {
   StackName: string,
@@ -118,11 +118,11 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
         },
         {
           ParameterKey: 'AuthRoleName',
-          ParameterValue: configuration.authRole.roleName,
+          ParameterValue: context?.input?.options?.authRoleName ?? configuration.authRole.roleName,
         },
         {
           ParameterKey: 'UnauthRoleName',
-          ParameterValue: configuration.unauthRole.roleName,
+          ParameterValue: context?.input?.options?.unauthRoleName ?? configuration.unauthRole.roleName,
         },
       ],
       Tags,
