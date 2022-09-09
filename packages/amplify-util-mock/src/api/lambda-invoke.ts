@@ -4,7 +4,7 @@ import { BuildType, FunctionRuntimeLifecycleManager, BuildRequest } from 'amplif
 import { getInvoker, getBuilder } from 'amplify-category-function';
 import { timeConstrainedInvoker } from '../func';
 import { printer } from 'amplify-prompts';
-import { LambdaTrigger } from "../utils/lambda/find-lambda-triggers";
+import { LambdaTrigger, LambdaTriggerConfig } from "../utils/lambda/find-lambda-triggers";
 
 /**
  * Utility method to invoke the lambda function locally. 
@@ -34,14 +34,13 @@ export const invokeTrigger = async (context: $TSContext, trigger: LambdaTrigger,
       !trigger?.config?.directory) {
       throw new Error(`Could not parse lambda config for non-function category trigger`);
     }
+
     const runtimeManager: FunctionRuntimeLifecycleManager = await context.amplify.loadRuntimePlugin(context, trigger.config.runtimePluginId);
-    // Ensuring latest function changes are built
-    const buildRequest: BuildRequest = {
-      buildType: BuildType.DEV,
-      srcRoot: trigger.config.directory,
-      runtime: trigger.config.runtime
-    };
-    await runtimeManager.build(buildRequest);
+
+    if (trigger?.config?.reBuild) {
+      await buildLambdaTrigger(context, trigger.config);
+    }
+
     invoker = ({ event }) => runtimeManager.invoke({
       handler: trigger.config.handler,
       event: JSON.stringify(event),
@@ -67,4 +66,22 @@ export const invokeTrigger = async (context: $TSContext, trigger: LambdaTrigger,
 
 const stringifyResult = (result: $TSAny) => {
   return typeof result === 'object' ? JSON.stringify(result, undefined, 2) : typeof result === 'undefined' ? '' : result;
+}
+
+export const buildLambdaTrigger = async (context: $TSContext, triggerConfig: Pick<LambdaTriggerConfig, 'runtime' | 'directory' | 'runtimePluginId'>) => {
+  const runtimeManager: FunctionRuntimeLifecycleManager = await context.amplify.loadRuntimePlugin(context, triggerConfig?.runtimePluginId);
+  const runtimeRequirmentsCheck = await runtimeManager.checkDependencies(triggerConfig?.runtime);
+  if (!(runtimeRequirmentsCheck?.hasRequiredDependencies)) {
+    const runtimeRequirementsError = 'Required dependencies to build the lambda trigger are missing';
+    printer.error(runtimeRequirmentsCheck?.errorMessage || runtimeRequirementsError);
+    throw new Error(runtimeRequirementsError);
+  }
+
+  // Ensuring latest function changes are built
+  const buildRequest: BuildRequest = {
+    buildType: BuildType.DEV,
+    srcRoot: triggerConfig?.directory,
+    runtime: triggerConfig?.runtime
+  };
+  await runtimeManager.build(buildRequest);
 }

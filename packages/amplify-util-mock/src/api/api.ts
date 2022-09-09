@@ -7,6 +7,7 @@ import { add, generate, isCodegenConfigured, switchToSDLSchema } from 'amplify-c
 import * as path from 'path';
 import * as chokidar from 'chokidar';
 import _ from 'lodash';
+import fetch from 'node-fetch';
 
 import { getAmplifyMeta, getMockDataDirectory, getMockSearchableTriggerDirectory, isWindowsPlatform } from '../utils';
 import { checkJavaVersion } from '../utils/index';
@@ -16,7 +17,7 @@ import { ResolverOverrides } from './resolver-overrides';
 import { ConfigOverrideManager } from '../utils/config-override';
 import { configureDDBDataSource, createAndUpdateTable } from '../utils/dynamo-db';
 import { describeTables } from '../utils/dynamo-db/utils';
-import { findModelLambdaTriggers, findSearchableLambdaTriggers, LambdaTrigger } from '../utils/lambda/find-lambda-triggers';
+import { findModelLambdaTriggers, findSearchableLambdaTriggers, getSearchableLambdaTriggerConfig, LambdaTrigger } from '../utils/lambda/find-lambda-triggers';
 import { getMockConfig } from '../utils/mock-config-file';
 import { getInvoker } from 'amplify-category-function';
 import { lambdaArnToConfig } from './lambda-arn-to-config';
@@ -25,6 +26,7 @@ import { ddbLambdaTriggerHandler } from './lambda-trigger-handler';
 import { TableDescription } from 'aws-sdk/clients/dynamodb';
 import { querySearchable } from '../utils/opensearch';
 import { getMockSearchableResourceDirectory } from '../utils/mock-directory';
+import { buildLambdaTrigger } from './lambda-invoke';
 
 export const GRAPHQL_API_ENDPOINT_OUTPUT = 'GraphQLAPIEndpointOutput';
 export const GRAPHQL_API_KEY_OUTPUT = 'GraphQLAPIKeyOutput';
@@ -55,6 +57,7 @@ export class APITest {
       // check java version
       await checkJavaVersion(context);
       this.apiName = await this.getAppSyncAPI(context);
+      const isLocalDBEmpty = !(fs.existsSync(getMockDataDirectory(context)));
       this.ddbClient = await this.startDynamoDBLocalServer(context);
       const resolverDirectory = await this.getResolverTemplateDirectory(context);
       this.resolverOverrideManager = new ResolverOverrides(resolverDirectory);
@@ -70,7 +73,7 @@ export class APITest {
       
       // If any of the model types are searchable, start opensearch local instance
       if (appSyncConfig?.tables?.some( (table: $TSAny) => table?.isSearchable) && (!isWindowsPlatform())) {
-        this.opensearchURL = await this.startOpensearchLocalServer(context);
+        this.opensearchURL = await this.startOpensearchLocalServer(context, isLocalDBEmpty);
       }
       this.appSyncSimulator.init(appSyncConfig);
 
@@ -199,6 +202,9 @@ export class APITest {
         await this.appSyncSimulator.reload(config);
         await this.generateCode(context, config);
         await this.startDDBListeners(context, config, true);
+      } else if (filePath?.includes(getMockDataDirectory(context)) && (action === 'unlink')) {
+        context.print.info('Mock DB deletion detected. Clearing the OpenSearch indices...');
+        await this.clearAllIndices(this.opensearchURL);
       }
     } catch (e) {
       context.print.info(`Reloading failed with error\n${e}`);
@@ -305,7 +311,7 @@ export class APITest {
   }
 
   private async configureOpensearchDataSource(config: $TSAny): Promise<$TSAny> {
-    if (!this.opensearchURL) {
+    if (isWindowsPlatform()) {
       return config;
     }
     const opensearchDataSourceType = 'AMAZON_ELASTICSEARCH';
@@ -379,7 +385,7 @@ export class APITest {
     return dynamoEmulator.getClient(this.ddbEmulator);
   }
 
-  private async startOpensearchLocalServer(context: $TSContext) {
+  private async startOpensearchLocalServer(context: $TSContext, isLocalDBEmpty: boolean) {
     try {
       const mockConfig = await getMockConfig(context);
       const mockSearchableResourceDirectory = await this.createMockSearchableArtifacts(context);
@@ -390,9 +396,35 @@ export class APITest {
           ...mockConfig,
         }
       );
+      if (isLocalDBEmpty) {
+        await this.clearAllIndices(this.opensearchEmulator.url);
+      }
       return this.opensearchEmulator.url;
     } catch (error) {
       throw new Error('Unable to start the local OpenSearch Instance.');
+    }
+  }
+
+  private async clearAllIndices(openSearchURL:URL) {
+    if (openSearchURL) {
+      const errMessage = 'Unable to Clear the local OpenSearch Indices.';
+      try {
+        const url = openSearchURL.toString() + '*';
+
+        const result = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-type': 'application/json',
+            }
+        });
+        const status = await result.json();
+        if (!(status?.acknowledged)) {
+          throw new Error(errMessage);
+        }
+      }
+      catch(error) {
+        throw new Error(errMessage);
+      }
     }
   }
 
@@ -403,6 +435,9 @@ export class APITest {
     fs.ensureDirSync(mockSearchableTriggerDirectory);
     const searchableLambdaResourceDir = path.resolve(__dirname, '..', '..', 'resources', 'mock-searchable-lambda-trigger');
     fs.copySync(searchableLambdaResourceDir, mockSearchableTriggerDirectory, { overwrite: true });
+
+    // build the searchable lambda trigger
+    await buildLambdaTrigger(context, getSearchableLambdaTriggerConfig(context, null));
     return mockSearchableResourceDirectory;
   }
 
@@ -433,9 +468,11 @@ export class APITest {
     const apiDirectory = await this.getAPIBackendDirectory(context);
     return apiDirectory;
   }
+
   private async registerWatcher(context: any): Promise<chokidar.FSWatcher> {
     const watchDir = await this.getAPIBackendDirectory(context);
-    return chokidar.watch(watchDir, {
+    const watchMockDataDir = await getMockDataDirectory(context);
+    return chokidar.watch([watchDir, watchMockDataDir], {
       interval: 100,
       ignoreInitial: true,
       followSymlinks: false,
@@ -443,6 +480,7 @@ export class APITest {
       awaitWriteFinish: true,
     });
   }
+
   private async generateFrontendExports(
     context: any,
     localAppSyncDetails: {

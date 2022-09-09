@@ -16,7 +16,8 @@ export type LambdaTriggerConfig = {
   runtimePluginId: string,
   runtime: string,
   directory: string,
-  envVars: $TSObject
+  envVars: $TSObject,
+  reBuild: boolean
 }
 
 /**
@@ -69,7 +70,7 @@ export const findSearchableLambdaTriggers = async (context: $TSContext , tables:
   return lambdaTriggersMap;
 }
 
-export const getSearchableLambdaTriggerConfig = (context: $TSContext, opensearchEndpoint: URL, tableName: string): LambdaTriggerConfig => {
+export const getSearchableLambdaTriggerConfig = (context: $TSContext, opensearchEndpoint: URL, tableName?: string): LambdaTriggerConfig => {
   const mockSearchableTriggerDirectory = getMockSearchableTriggerDirectory(context);
   return {
     handler: 'index.handler',
@@ -80,8 +81,9 @@ export const getSearchableLambdaTriggerConfig = (context: $TSContext, opensearch
       OPENSEARCH_ENDPOINT: opensearchEndpoint,
       DEBUG: "1",
       OPENSEARCH_USE_EXTERNAL_VERSIONING: "false",
-      TABLE_NAME: tableName.substring(0, tableName.lastIndexOf('Table'))
-    }
+      TABLE_NAME: tableName?.substring(0, tableName?.lastIndexOf('Table')) || ''
+    },
+    reBuild: false
   }
 }
 

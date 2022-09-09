@@ -1,4 +1,5 @@
 import { $TSObject } from "amplify-cli-core"
+import fetch from 'node-fetch';
 
 type OpensearchQueryConfig = {
     path: string,
