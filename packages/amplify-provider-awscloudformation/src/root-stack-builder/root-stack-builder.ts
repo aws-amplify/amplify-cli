@@ -3,6 +3,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as iam from '@aws-cdk/aws-iam';
 import { AmplifyRootStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 import { IStackSynthesizer, ISynthesisSession } from '@aws-cdk/core';
+import { JSONUtilities } from 'amplify-cli-core';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'Root Stack for AWS Amplify CLI';
@@ -63,6 +64,7 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
       throw new Error(error);
     }
   }
+
   /**
    *
    * @param props
@@ -95,9 +97,8 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
   getCfnParameter(logicalId: string): cdk.CfnParameter {
     if (this._cfnParameterMap.has(logicalId)) {
       return this._cfnParameterMap.get(logicalId);
-    } else {
-      throw new Error(`Cfn Parameter with LogicalId ${logicalId} doesnt exist`);
     }
+    throw new Error(`Cfn Parameter with LogicalId ${logicalId} doesn't exist`);
   }
 
   generateRootStackResources = async () => {
@@ -142,15 +143,12 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
     });
   };
 
-  // add Function for Custom Resource in Root stack
   /**
-   *
-   * @param _
+   * add Function for Custom Resource in Root stack
+   * @param __
    * @returns
    */
-  public renderCloudFormationTemplate = (_: ISynthesisSession): string => {
-    return JSON.stringify(this._toCloudFormation(), undefined, 2);
-  };
+  public renderCloudFormationTemplate = (__: ISynthesisSession): string => JSONUtilities.stringify(this._toCloudFormation());
 }
 
 /**
@@ -160,6 +158,7 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
   constructor(scope: cdk.Construct, id: string, props: AmplifyRootStackProps) {
     super(scope, id, props);
   }
+
   deploymentBucket?: s3.CfnBucket;
   authRole?: iam.CfnRole;
   unauthRole?: iam.CfnRole;
@@ -167,6 +166,7 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
   addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
     throw new Error('Method not implemented.');
   }
+
   addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void {
     try {
       new cdk.CfnOutput(this, logicalId, props);
@@ -174,17 +174,18 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
       throw new Error(error);
     }
   }
+
   addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void {
     throw new Error('Method not implemented.');
   }
+
   addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void {
     throw new Error('Method not implemented.');
   }
+
   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void {
     throw new Error('Method not implemented.');
   }
 
-  public renderCloudFormationTemplate = (_: ISynthesisSession): string => {
-    return JSON.stringify((this as any)._toCloudFormation(), undefined, 2);
-  };
+  public renderCloudFormationTemplate = (__: ISynthesisSession): string => JSONUtilities.stringify(this._toCloudFormation());
 }

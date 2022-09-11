@@ -1,29 +1,34 @@
 import { AmplifyRootStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 import * as cdk from '@aws-cdk/core';
-import { $TSAny, $TSContext, buildOverrideDir, CFNTemplateFormat, pathManager, Template, writeCFNTemplate } from 'amplify-cli-core';
+import {
+  $TSAny, $TSContext, buildOverrideDir, CFNTemplateFormat, pathManager, Template, writeCFNTemplate,
+} from 'amplify-cli-core';
 import { printer, formatter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import os from 'os';
 import * as path from 'path';
 import * as vm from 'vm2';
 import { AmplifyRootStack, AmplifyRootStackOutputs } from './root-stack-builder';
-import { RootStackSythesizer } from './stack-synthesizer';
+import { RootStackSynthesizer } from './stack-synthesizer';
 
 export class AmplifyRootStackTransform {
   private app: cdk.App | undefined;
   private _rootTemplateObj: AmplifyRootStack; // Props to modify Root stack data
-  private _synthesizer: RootStackSythesizer;
-  private _synthesizerOutputs: RootStackSythesizer;
+  private _synthesizer: RootStackSynthesizer;
+  private _synthesizerOutputs: RootStackSynthesizer;
   private _rootTemplateObjOutputs: AmplifyRootStackOutputs;
   private _resourceName: string;
 
   constructor(resourceName: string) {
     this._resourceName = resourceName;
-    this._synthesizer = new RootStackSythesizer();
+    this._synthesizer = new RootStackSynthesizer();
     this.app = new cdk.App();
-    this._synthesizerOutputs = new RootStackSythesizer();
+    this._synthesizerOutputs = new RootStackSynthesizer();
   }
 
+  /**
+   * transform root stack, applying any overrides
+   */
   public async transform(context: $TSContext): Promise<Template> {
     // generate cfn Constructs and AmplifyRootStackTemplate object to get overridden
     await this.generateRootStackTemplate();
@@ -43,7 +48,7 @@ export class AmplifyRootStackTransform {
     return template;
   }
 
-  private applyOverride = async () => {
+  private applyOverride = async (): Promise<void> => {
     const backendDir = pathManager.getBackendDirPath();
     const overrideFilePath = path.join(backendDir, this._resourceName);
     let isBuild = false;
@@ -84,7 +89,7 @@ export class AmplifyRootStackTransform {
    * Generates Root stack Template
    * @returns CFN Template
    */
-  private generateRootStackTemplate = async () => {
+  private generateRootStackTemplate = async (): Promise<void> => {
     this._rootTemplateObj = new AmplifyRootStack(this.app, 'AmplifyRootStack', { synthesizer: this._synthesizer });
 
     this._rootTemplateObj.addCfnParameter(
@@ -188,7 +193,7 @@ export class AmplifyRootStackTransform {
 
   /**
    *
-   * @returns return CFN templates sunthesized by app
+   * @returns return CFN templates synthesized by app
    */
   private synthesizeTemplates = async (): Promise<Template> => {
     this.app?.synth();
@@ -200,20 +205,20 @@ export class AmplifyRootStackTransform {
     return cfnRootStack;
   };
 
-  private saveBuildFiles = async (context: $TSContext, template: Template) => {
-    const rootStackFileName = `root-cloudformation-stack.json`;
-    const rootstackFilePath = path.join(pathManager.getBackendDirPath(), this._resourceName, 'build', rootStackFileName);
+  private saveBuildFiles = async (context: $TSContext, template: Template): Promise<void> => {
+    const rootStackFileName = 'root-cloudformation-stack.json';
+    const rootStackFilePath = path.join(pathManager.getBackendDirPath(), this._resourceName, 'build', rootStackFileName);
     // write CFN template
-    await writeCFNTemplate(template, rootstackFilePath, {
+    await writeCFNTemplate(template, rootStackFilePath, {
       templateFormat: CFNTemplateFormat.JSON,
+      minify: context.input.options?.minify,
     });
   };
 
   public getRootStack(): AmplifyRootStack {
-    if (this._rootTemplateObj != null) {
+    if (this._rootTemplateObj) {
       return this._rootTemplateObj;
-    } else {
-      throw new Error(`Root Stack Template doesn't exist.`);
     }
+    throw new Error("Root Stack Template doesn't exist.");
   }
 }

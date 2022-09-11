@@ -1,8 +1,8 @@
+import { $TSContext, JSONUtilities, stateManager } from 'amplify-cli-core';
 import { run } from '../initializer';
 import { prePushCfnTemplateModifier } from '../pre-push-cfn-processor/pre-push-cfn-modifier';
 import CloudFormation from '../aws-utils/aws-cfn';
 import * as amplifyServiceManager from '../amplify-service-manager';
-import { JSONUtilities, stateManager } from 'amplify-cli-core';
 
 jest.mock('../pre-push-cfn-processor/pre-push-cfn-modifier');
 jest.mock('../configuration-manager');
@@ -12,15 +12,15 @@ jest.mock('../amplify-service-manager');
 jest.mock('amplify-cli-core');
 jest.mock('../permissions-boundary/permissions-boundary');
 
-const CloudFormation_mock = CloudFormation as jest.MockedClass<typeof CloudFormation>;
-const amplifyServiceManager_mock = amplifyServiceManager as jest.Mocked<typeof amplifyServiceManager>;
-const JSONUtilities_mock = JSONUtilities as jest.Mocked<typeof JSONUtilities>;
-const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
+const CloudFormationMock = CloudFormation as jest.MockedClass<typeof CloudFormation>;
+const amplifyServiceManagerMock = amplifyServiceManager as jest.Mocked<typeof amplifyServiceManager>;
+const JSONUtilitiesMock = JSONUtilities as jest.Mocked<typeof JSONUtilities>;
+const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 
 describe('run', () => {
   it('transforms the root stack using the pre-push modifier', async () => {
     // setup
-    const context_stub = {
+    const contextStub = {
       pluginPlatform: {
         plugins: {
           core: [{ packageVersion: '5.2' }],
@@ -32,32 +32,32 @@ describe('run', () => {
           projectName: 'test',
         },
         localEnvInfo: {
-          envName: 'testenv',
+          envName: 'testenv', // eslint-disable-line spellcheck/spell-checker
         },
         teamProviderInfo: {},
       },
       amplify: {
         getTags: jest.fn(),
       },
-    };
-    CloudFormation_mock.mockImplementation(
-      () =>
-        ({
-          createResourceStack: jest.fn().mockResolvedValue({
-            Stacks: [
-              {
-                Outputs: [],
-              },
-            ],
-          }),
-        } as unknown as CloudFormation),
+      input: {},
+    } as unknown as $TSContext;
+    CloudFormationMock.mockImplementation(
+      () => ({
+        createResourceStack: jest.fn().mockResolvedValue({
+          Stacks: [
+            {
+              Outputs: [],
+            },
+          ],
+        }),
+      } as unknown as CloudFormation),
     );
-    amplifyServiceManager_mock.init.mockResolvedValueOnce({} as any);
-    JSONUtilities_mock.readJson.mockReturnValueOnce({});
-    stateManager_mock.getLocalEnvInfo.mockReturnValueOnce({});
+    amplifyServiceManagerMock.init.mockResolvedValueOnce({} as any);
+    JSONUtilitiesMock.readJson.mockReturnValueOnce({});
+    stateManagerMock.getLocalEnvInfo.mockReturnValueOnce({});
 
     // execute
-    await run(context_stub);
+    await run(contextStub);
 
     // verify
     expect(prePushCfnTemplateModifier).toBeCalled();
