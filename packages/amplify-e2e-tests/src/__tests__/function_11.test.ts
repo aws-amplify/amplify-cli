@@ -28,7 +28,7 @@ describe('Lambda AppSync nodejs:', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('API not present', async () => {
+  it('Test case for when API is not present', async () => {
     const projName = `iammodel${generateRandomShortId()}`;
 
     await initJSProjectWithProfile(projRoot, { name: projName });
@@ -48,7 +48,7 @@ describe('Lambda AppSync nodejs:', () => {
     );
   });
 
-  it('IAM Auth not present', async () => {
+  it('Test case for when IAM Auth is not present', async () => {
     const projName = `iammodel${generateRandomShortId()}`;
 
     await initJSProjectWithProfile(projRoot, { name: projName });
@@ -69,7 +69,7 @@ describe('Lambda AppSync nodejs:', () => {
     );
   });
 
-  it('IAM as default auth', async () => {
+  it('Test case when IAM is set as default auth', async () => {
     const projName = `iammodel${generateRandomShortId()}`;
 
     await initJSProjectWithProfile(projRoot, { name: projName });
@@ -122,7 +122,7 @@ describe('Lambda AppSync nodejs:', () => {
     expect(gqlResponse.body).toBeDefined();
   });
 
-  it('IAM auth as secondary auth type', async () => {
+  it('Test case for when IAM auth is set as secondary auth type', async () => {
     const projName = `iammodel${generateRandomShortId()}`;
     await initJSProjectWithProfile(projRoot, { name: projName });
     await addApi(projRoot, { transformerVersion: 2, 'API key': {}, IAM: {} });
