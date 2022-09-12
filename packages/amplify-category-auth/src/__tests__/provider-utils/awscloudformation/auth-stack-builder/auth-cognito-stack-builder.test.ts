@@ -17,7 +17,7 @@ describe('generateCognitoStackResources', () => {
     expect(cognitoStack.oAuthCustomResource).toBeDefined();
     expect(
       cognitoStack
-        .oAuthCustomResource!.node!.dependencies!.map((dep: any) => dep.target.logicalId)
+        .oAuthCustomResource!.node!.dependencies!.map((dep: any) => dep.logicalId)
         .map(logicalIdToken => /testCognitoStack\.([^\.]+)\.Default/.exec(logicalIdToken)![1]),
     ).toMatchInlineSnapshot(`
       Array [
