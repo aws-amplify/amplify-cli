@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.6-rc.3c39ebab9.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.4.5...@aws-amplify/amplify-category-storage@3.4.6-rc.3c39ebab9.0) (2022-09-12)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-storage
+
+
+
+
+
 ## [3.4.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.4.5-rc.224a2e0e4.0...@aws-amplify/amplify-category-storage@3.4.5) (2022-09-06)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-storage
