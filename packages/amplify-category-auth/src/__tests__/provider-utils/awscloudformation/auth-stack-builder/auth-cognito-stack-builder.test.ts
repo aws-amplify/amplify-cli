@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable max-lines-per-function */
-import * as cdk from '@aws-cdk/core';
 import * as iam from '@aws-cdk/aws-iam';
-import { FeatureFlags } from 'amplify-cli-core';
+import * as cdk from '@aws-cdk/core';
 import { AmplifyAuthCognitoStack } from '../../../../provider-utils/awscloudformation/auth-stack-builder/auth-cognito-stack-builder';
 import { AuthStackSynthesizer } from '../../../../provider-utils/awscloudformation/auth-stack-builder/stack-synthesizer';
-import { CognitoStackOptions } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/cognito-user-input-types';
 import { AttributeType } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/awsCognito-user-input-types';
+import { CognitoStackOptions } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/cognito-user-input-types';
 
 describe('generateCognitoStackResources', () => {
   const props: CognitoStackOptions = {
@@ -111,26 +110,7 @@ describe('generateCognitoStackResources', () => {
     });
     const updatedProps: CognitoStackOptions = {
       ...props,
-      autoVerifiedAttributes: [AttributeType.PHONE_NUMBER],
-    };
-    cognitoStack.generateCognitoStackResources(updatedProps);
-    expect(cognitoStack.userPool?.userAttributeUpdateSettings).toMatchInlineSnapshot(`
-      Object {
-        "attributesRequireVerificationBeforeUpdate": Array [
-          "phone_number",
-        ],
-      }
-    `);
-  });
-
-  it('correctly adds updateAttributeSetting when autoVerifiedAttributes attributes is email', () => {
-    const testApp = new cdk.App();
-    const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'CognitoUpdateAttributesettingTest1', {
-      synthesizer: new AuthStackSynthesizer(),
-    });
-    const updatedProps: CognitoStackOptions = {
-      ...props,
-      autoVerifiedAttributes: [AttributeType.EMAIL],
+      userAutoVerifiedAttributeUpdateSettings: [AttributeType.PHONE_NUMBER],
     };
     cognitoStack.generateCognitoStackResources(updatedProps);
     expect(cognitoStack.userPool?.userAttributeUpdateSettings).toMatchInlineSnapshot(`
@@ -139,7 +119,26 @@ describe('generateCognitoStackResources', () => {
           "email",
         ],
       }
-    cognitoStack.generateCognitoStackResources(props);
+    `);
+  });
+
+  it('correctly adds updateAttributeSetting when autoVerifiedAttributes attributes is email', () => {
+    const testApp = new cdk.App();
+    const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'CognitoUpdateAttributesettingTesting1', {
+      synthesizer: new AuthStackSynthesizer(),
+    });
+    const updatedProps: CognitoStackOptions = {
+      ...props,
+      userAutoVerifiedAttributeUpdateSettings: [AttributeType.EMAIL],
+    };
+    cognitoStack.generateCognitoStackResources(updatedProps);
+    expect(cognitoStack.userPool?.userAttributeUpdateSettings).toMatchInlineSnapshot(`
+      Object {
+        "attributesRequireVerificationBeforeUpdate": Array [
+          "email",
+        ],
+      }
+    `);
     expect(cognitoStack.userPool!.lambdaConfig).toHaveProperty('preSignUp');
     expect(cognitoStack.userPoolClientWeb!.tokenValidityUnits).toHaveProperty('refreshToken');
     expect(cognitoStack.userPoolClient!.tokenValidityUnits).toHaveProperty('refreshToken');
