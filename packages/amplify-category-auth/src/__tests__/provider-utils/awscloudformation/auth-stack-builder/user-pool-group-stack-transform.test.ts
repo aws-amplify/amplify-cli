@@ -44,6 +44,8 @@ jest.mock('amplify-cli-core', () => ({
           ],
         },
       ]),
+    stringify: jest.fn().mockImplementation(JSON.stringify),
+    parse: jest.fn().mockImplementation(JSON.parse),
   },
   buildOverrideDir: jest.fn().mockResolvedValue(false),
   writeCFNTemplate: jest.fn(),
