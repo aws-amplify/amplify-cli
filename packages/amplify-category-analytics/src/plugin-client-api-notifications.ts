@@ -1,5 +1,5 @@
 import {
-  $TSContext, AmplifyCategories, IAnalyticsResource, INotificationsResource, IPluginAPIResponse,
+  $TSContext, AmplifyCategories, INotificationsResource, IPluginAPIResponse,
 } from 'amplify-cli-core';
 
 /**

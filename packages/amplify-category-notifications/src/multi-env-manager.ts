@@ -6,7 +6,6 @@ import {
   $TSAny, $TSContext, stateManager, AmplifyCategories, AmplifySupportedService, IAnalyticsResource, $TSMeta,
 } from 'amplify-cli-core';
 import _ from 'lodash';
-import { printer } from 'amplify-prompts';
 import { ensureEnvParamManager, getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import * as authHelper from './auth-helper';
 import {
@@ -14,7 +13,6 @@ import {
   getPinpointAppFromAnalyticsOutput,
   getPinpointAppStatus,
   getPinpointClient,
-  IPinpointAppStatus,
   isPinpointAppDeployed,
   isPinpointDeploymentRequired,
   pushAuthAndAnalyticsPinpointResources,
@@ -26,7 +24,7 @@ import { Notifications } from './notifications-api';
 import { ICategoryMeta, IPinpointAppMeta } from './notifications-amplify-meta-types';
 import { PinpointName } from './pinpoint-name';
 import {
-  viewShowInlineModeInstructionsStart, viewShowInlineModeInstructionsStop, viewShowInlineModeInstructionsFail, viewShowDeferredModeInstructions,
+  viewShowInlineModeInstructionsStart, viewShowInlineModeInstructionsStop, viewShowInlineModeInstructionsFail,
 } from './commands/notifications/add';
 
 /**
@@ -435,9 +433,12 @@ const pushChanges = async (context: $TSContext, pinpointNotificationsMeta: $TSAn
     context.exeInfo.pinpointInputParams = pinpointInputParams;
   }
 
-  let pinpointAppStatus : IPinpointAppStatus = await getPinpointAppStatus(context, context.exeInfo.amplifyMeta,
-    pinpointNotificationsMeta, context.exeInfo.localEnvInfo.envName);
-  pinpointAppStatus = await ensurePinpointApp(context, pinpointNotificationsMeta, pinpointAppStatus, context.exeInfo.localEnvInfo.envName);
+  const pinpointAppStatus = await getPinpointAppStatus(
+    context,
+    context.exeInfo.amplifyMeta,
+    pinpointNotificationsMeta,
+    context.exeInfo.localEnvInfo.envName);
+  await ensurePinpointApp(context, pinpointNotificationsMeta, pinpointAppStatus, context.exeInfo.localEnvInfo.envName);
 
   const tasks: Array<$TSAny> = [];
   const results: Array<IChannelAPIResponse | undefined> = [];
@@ -517,7 +518,7 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
       const applicationId = (notificationsServiceMeta.Id) || analyticsMeta[notificationsServiceMeta.ResourceName]?.output?.Id;
       const lastPushTimeStamp :string|undefined = (notificationsServiceMeta.lastPushTimeStamp)
       || (analyticsMeta[notificationsServiceMeta.ResourceName]?.lastPushTimeStamp);
-      pinpointMeta = (notificationsServiceMeta) ? ({
+      pinpointMeta = {
         serviceName: notificationsServiceMeta.ResourceName,
         service: notificationsServiceMeta.service, // TBD: standardize this
         channels: enabledChannels,
@@ -525,7 +526,7 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
         Id: applicationId,
         Region: notificationsServiceMeta.Region,
         lastPushTimeStamp,
-      }) : undefined;
+      };
     }
 
     // TODO: move writing to files logic to the cli core when those are ready
@@ -568,9 +569,8 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
     };
 
     // Team provider info and backend config are updated after push
-    if (channelAPIResponse) {
-      await Notifications.updateChannelAPIResponse(context, channelAPIResponse);
-    }
+    await Notifications.updateChannelAPIResponse(context, channelAPIResponse);
+
     writeTeamProviderInfo(pinpointMeta); // update Pinpoint data
     if (pinpointConfig) {
       writeBackendConfig(context, pinpointConfig, context.amplify.pathManager.getBackendConfigFilePath());

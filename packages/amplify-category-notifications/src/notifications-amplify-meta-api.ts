@@ -210,15 +210,13 @@ public static getPinpointRegionMapping = async (context: $TSContext): Promise<st
  public static constructPartialNotificationsAppMeta = (amplifyMeta: $TSMeta, resourceName: string,
    pinpointRegion: string|undefined):Partial<ICategoryMeta> => {
    const envName: string = stateManager.getCurrentEnvName() as string;
-   let updatedAmplifyMeta:$TSMeta = amplifyMeta;
    const partialPinpointOutput: Partial<ICategoryMeta> = {
      Id: undefined,
      Region: pinpointRegion,
      Name: `${resourceName}-${envName}`,
    };
    // save partial results in Amplify-meta. Identify related values will be placed after amplify push
-   updatedAmplifyMeta = NotificationsMeta.constructResourceMeta(amplifyMeta, resourceName, partialPinpointOutput);
-   return updatedAmplifyMeta;
+   return NotificationsMeta.constructResourceMeta(amplifyMeta, resourceName, partialPinpointOutput);
  };
 
  /**
@@ -228,7 +226,7 @@ public static getPinpointRegionMapping = async (context: $TSContext): Promise<st
  * @param resourceName Pinpoint resource for notifications
  * @param pinpointOutput Pinpoint resource metadata base class
  */
- public static constructResourceMeta = (amplifyMeta : $TSMeta, resourceName: string, pinpointOutput: Partial<ICategoryMeta>):void => {
+ public static constructResourceMeta = (amplifyMeta : $TSMeta, resourceName: string, pinpointOutput: Partial<ICategoryMeta>) : $TSMeta => {
    const tmpAmplifyMeta = amplifyMeta;
    if (!tmpAmplifyMeta[AmplifyCategories.NOTIFICATIONS]) {
      tmpAmplifyMeta[AmplifyCategories.NOTIFICATIONS] = { [resourceName]: { output: {} } };

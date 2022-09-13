@@ -23,10 +23,8 @@ import { ChannelCfg } from './notifications-backend-cfg-channel-api';
 import {
   buildPinpointChannelResponseError,
   buildPinpointChannelResponseSuccess,
-  ensurePinpointApp,
   getPinpointAppStatusFromMeta, IPinpointAppStatus, IPinpointDeploymentStatus,
 } from './pinpoint-helper';
-import { ICategoryMeta } from './notifications-amplify-meta-types';
 
 const channelName = 'InAppMessaging';
 const channelViewName = ChannelCfg.getChannelViewName(channelName);

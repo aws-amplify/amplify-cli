@@ -744,7 +744,8 @@ describe('resource-status', () => {
 
     it('throws an error when non amplify project', async () => {
       (getCloudInitStatus as jest.MockedFunction<typeof getCloudInitStatus>).mockReturnValue(NON_AMPLIFY_PROJECT);
-      await expect(await getResourceStatus()).rejects.toThrowError(NotInitializedError);
+      // eslint-disable-next-line jest/valid-expect
+      expect(getResourceStatus()).rejects.toThrowError(NotInitializedError);
     });
   });
 

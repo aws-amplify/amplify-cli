@@ -548,12 +548,15 @@ export const getAmplifyMeta = ():$TSAny => {
       amplifyMeta: stateManager.getMeta(),
       currentAmplifyMeta: stateManager.getCurrentMeta(),
     };
-  } if (amplifyProjectInitStatus === CLOUD_NOT_INITIALIZED) {
+}
+
+  if (amplifyProjectInitStatus === CLOUD_NOT_INITIALIZED) {
     return {
       amplifyMeta: stateManager.getBackendConfig(),
       currentAmplifyMeta: {},
     };
   }
+
   throw new NotInitializedError();
 };
 

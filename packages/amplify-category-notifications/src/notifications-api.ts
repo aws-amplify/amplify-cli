@@ -1,12 +1,10 @@
 import {
-  $TSAny, $TSContext, AmplifyCategories, AmplifySupportedService, INotificationsResource, INotificationsResourceMeta, stateManager,
+  $TSAny, $TSContext, AmplifyCategories, AmplifySupportedService, INotificationsResourceMeta, stateManager,
 } from 'amplify-cli-core';
 import { ChannelCfg } from './notifications-backend-cfg-channel-api';
 import { NotificationsMeta } from './notifications-amplify-meta-api';
 import { NotificationsCfg } from './notifications-backend-cfg-api';
 import { IChannelAPIResponse, ChannelAction, INotificationsConfigStatus } from './channel-types';
-import { ICategoryMeta } from './notifications-amplify-meta-types';
-import { INotificationsResourceBackendConfig, INotificationsResourceBackendConfigValue } from './notifications-backend-cfg-types';
 import { PinpointName } from './pinpoint-name';
 
 /**
@@ -111,7 +109,7 @@ export class Notifications {
       return {
         local: {
           config: notificationConfig,
-          channels: (notificationConfig) ? await ChannelCfg.getChannelAvailability(notificationConfig) : emptyChannels,
+          channels: await ChannelCfg.getChannelAvailability(notificationConfig),
         },
         deployed: {
           config: deployedNotificationConfig,

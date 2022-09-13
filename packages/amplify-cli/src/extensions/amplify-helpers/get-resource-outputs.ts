@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { $TSAny, $TSMeta, AmplifyCategories, stateManager } from 'amplify-cli-core';
+import { $TSMeta, AmplifyCategories, stateManager } from 'amplify-cli-core';
 
 /**
  *
