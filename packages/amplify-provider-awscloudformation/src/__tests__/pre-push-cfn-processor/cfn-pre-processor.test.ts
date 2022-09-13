@@ -1,8 +1,10 @@
-import { CFNTemplateFormat, readCFNTemplate, writeCFNTemplate, pathManager, stateManager, CustomIAMPolicies } from 'amplify-cli-core';
+import {
+  CFNTemplateFormat, pathManager, readCFNTemplate, stateManager, writeCFNTemplate,
+} from 'amplify-cli-core';
 import { Template } from 'cloudform-types';
-import { prePushCfnTemplateModifier } from '../../pre-push-cfn-processor/pre-push-cfn-modifier';
-import { preProcessCFNTemplate, writeCustomPoliciesToCFNTemplate } from '../../pre-push-cfn-processor/cfn-pre-processor';
 import * as path from 'path';
+import { preProcessCFNTemplate, writeCustomPoliciesToCFNTemplate } from '../../pre-push-cfn-processor/cfn-pre-processor';
+import { prePushCfnTemplateModifier } from '../../pre-push-cfn-processor/pre-push-cfn-modifier';
 
 jest.mock('amplify-cli-core');
 jest.mock('../../pre-push-cfn-processor/pre-push-cfn-modifier');
@@ -45,6 +47,7 @@ describe('preProcessCFNTemplate', () => {
         },
         "/project/amplify/backend/awscloudformation/build/api/resourceName/cfn-template-name.json",
         Object {
+          "minify": undefined,
           "templateFormat": "json",
         },
       ]

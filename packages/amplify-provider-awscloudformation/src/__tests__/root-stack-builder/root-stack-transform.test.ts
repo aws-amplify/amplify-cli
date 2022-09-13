@@ -1,22 +1,27 @@
+import { $TSContext, JSONUtilities } from 'amplify-cli-core';
 import { AmplifyRootStackTransform } from '../../root-stack-builder/root-stack-transform';
-import { $TSContext } from 'amplify-cli-core';
 
 jest.mock('amplify-cli-core');
+const JSONUtilitiesMock = JSONUtilities as jest.Mocked<typeof JSONUtilities>;
 
-describe('Check RootStack Template', () => {
-  it('Generated rootstack template during init', async () => {
-    const context_stub = {
+JSONUtilitiesMock.stringify.mockImplementation((data, __) => JSON.stringify(data, null, 2));
+JSONUtilitiesMock.parse.mockImplementation((data) => JSON.parse(data));
+
+
+describe('Root stack template tests', () => {
+  it('Generated root stack template during init', async () => {
+    const contextStub = {
       input: {
         command: 'init',
       },
     };
 
-    const context_stub_typed = context_stub as unknown as $TSContext;
+    const contextStubTyped = contextStub as unknown as $TSContext;
     // CFN transform for Root stack
     const resourceName = 'awscloudformation';
 
     const rootTransform = new AmplifyRootStackTransform(resourceName);
-    const mock_template = await rootTransform.transform(context_stub_typed);
-    expect(mock_template).toMatchSnapshot();
+    const mockTemplate = await rootTransform.transform(contextStubTyped);
+    expect(mockTemplate).toMatchSnapshot();
   });
 });

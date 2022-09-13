@@ -48,7 +48,7 @@ export async function setDefaultTemplateDescription(
 
   cfnTemplate.Description = getDefaultTemplateDescription(context, category, service);
 
-  await writeCFNTemplate(cfnTemplate, cfnFilePath, { templateFormat });
+  await writeCFNTemplate(cfnTemplate, cfnFilePath, { templateFormat, minify: context.input.options?.minify });
 }
 
 export function getDefaultTemplateDescription(context: $TSContext, category: string, service?: string): string {

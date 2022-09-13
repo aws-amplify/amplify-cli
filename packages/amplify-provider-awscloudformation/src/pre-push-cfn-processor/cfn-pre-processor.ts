@@ -12,7 +12,7 @@ const buildDir = 'build';
  * @param filePath the original template path
  * @returns The file path of the modified template
  */
-export const preProcessCFNTemplate = async (filePath: string): Promise<string> => {
+export const preProcessCFNTemplate = async (filePath: string, options?: { minify?: boolean }): Promise<string> => {
   const { templateFormat, cfnTemplate } = readCFNTemplate(filePath);
 
   await prePushCfnTemplateModifier(cfnTemplate);
@@ -20,7 +20,7 @@ export const preProcessCFNTemplate = async (filePath: string): Promise<string> =
   const pathSuffix = filePath.startsWith(backendDir) ? filePath.slice(backendDir.length) : path.parse(filePath).base;
   const newPath = path.join(backendDir, providerName, buildDir, pathSuffix);
 
-  await writeCFNTemplate(cfnTemplate, newPath, { templateFormat });
+  await writeCFNTemplate(cfnTemplate, newPath, { templateFormat, minify: options?.minify });
   return newPath;
 };
 
@@ -37,6 +37,7 @@ export const writeCustomPoliciesToCFNTemplate = async (
   service: string,
   cfnFile: string,
   category: string,
+  options?: { minify?: boolean },
 ): Promise<void> => {
   if (!(category === 'api' && service === 'ElasticContainer') && !(category === 'function' && service === 'Lambda')) {
     return;
@@ -46,5 +47,5 @@ export const writeCustomPoliciesToCFNTemplate = async (
   const cfnPath = path.join(resourceDir, cfnFile);
   const { templateFormat, cfnTemplate } = readCFNTemplate(cfnPath);
   const newCfnTemplate = generateCustomPoliciesInTemplate(cfnTemplate, resourceName, service, category);
-  await writeCFNTemplate(newCfnTemplate, cfnPath, { templateFormat });
+  await writeCFNTemplate(newCfnTemplate, cfnPath, { templateFormat, minify: options?.minify });
 }
