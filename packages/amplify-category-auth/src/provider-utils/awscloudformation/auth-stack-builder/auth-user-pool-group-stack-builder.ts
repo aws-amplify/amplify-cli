@@ -1,13 +1,15 @@
 /* eslint-disable max-classes-per-file */
-import * as cdk from '@aws-cdk/core';
+import { AmplifyUserPoolGroupStackTemplate } from '@aws-amplify/cli-extensibility-helper';
+import { CfnUserPoolGroup } from '@aws-cdk/aws-cognito';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { CfnUserPoolGroup } from '@aws-cdk/aws-cognito';
-import { AmplifyUserPoolGroupStackTemplate } from '@aws-amplify/cli-extensibility-helper';
+import * as cdk from '@aws-cdk/core';
+import { JSONUtilities } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 // eslint-disable-next-line import/no-cycle
-import { AmplifyUserPoolGroupStackOptions } from './user-pool-group-stack-transform';
 import { roleMapLambdaFilePath } from '../constants';
+// eslint-disable-next-line import/no-cycle
+import { AmplifyUserPoolGroupStackOptions } from './user-pool-group-stack-transform';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'Root Stack for AWS Amplify CLI';
@@ -391,5 +393,5 @@ export class AmplifyUserPoolGroupStackOutputs extends cdk.Stack {
   }
 
   public renderCloudFormationTemplate =
-  (__: cdk.ISynthesisSession): string => JSON.stringify(this._toCloudFormation(), undefined, 2);
+  (__: cdk.ISynthesisSession): string => JSONUtilities.stringify(this._toCloudFormation())!;
 }

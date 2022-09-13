@@ -476,7 +476,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     if (!_.isEmpty(props.dependsOn)) {
       const { dependsOn } = props;
       dependsOn?.forEach(param => {
-        param.attributes.forEach(attribute => {
+        param.attributes.forEach((attribute: $TSAny) => {
           this._authTemplateObj.addCfnParameter(
             {
               type: 'String',
@@ -494,7 +494,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
           {
             type: 'String',
           },
-          `${key}`,
+          key,
         );
       }
 
@@ -503,7 +503,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
           {
             type: 'String',
           },
-          `${key}`,
+          key,
         );
       }
       if (typeof value === 'number') {
@@ -511,7 +511,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
           {
             type: 'String',
           },
-          `${key}`,
+          key,
         );
       }
       if (value === 'parentStack') {
@@ -519,7 +519,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
           {
             type: 'String',
           },
-          `${key}`,
+          key,
         );
       }
       if (Array.isArray(value)) {
@@ -528,7 +528,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
             {
               type: 'CommaDelimitedList',
             },
-            `${key}`,
+            key,
           );
         }
       }
