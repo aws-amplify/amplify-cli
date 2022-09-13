@@ -76,6 +76,13 @@ describe('showBuildDirChangesMessage', () => {
     setInBackendDir = false;
   });
 
+  describe('project does not have auth', () => {
+    it('does not call warn', async () => {
+      await showBuildDirChangesMessage();
+      expect(printerMock.warn).not.toBeCalled();
+    });
+  });
+
   describe('warning message for UserAttributeUpdateSettings addition for cognito', () => {
     describe('#cloud-backend has UserAttributeUpdateSettings', () => {
       describe('backend dir does have UserAttributeUpdateSettings', () => {
