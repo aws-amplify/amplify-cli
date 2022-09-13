@@ -24,7 +24,10 @@ const dotNetCore31TemplateChoices = [
 
 const goTemplateChoices = ['Hello World'];
 
-const javaTemplateChoices = ['Hello World'];
+const javaTemplateChoices = [
+  'Hello World',
+  'AppSync - GraphQL API request (with IAM)',
+];
 
 const nodeJSTemplateChoices = [
   'CRUD function for DynamoDB (Integration with API Gateway)',
