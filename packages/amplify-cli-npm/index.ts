@@ -15,3 +15,5 @@ export const install = async (): Promise<void> => {
   const binary = new Binary();
   return binary.install();
 };
+
+// force minor version bump

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Check RootStack Template Generated rootstack template during init 1`] = `
+exports[`Root stack template tests Generated root stack template during init 1`] = `
 Object {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Root Stack for AWS Amplify CLI",

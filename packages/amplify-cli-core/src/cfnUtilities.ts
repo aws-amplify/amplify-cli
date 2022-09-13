@@ -12,6 +12,9 @@ export function readCFNTemplate(
   options: Partial<typeof defaultReadCFNTemplateOptions>,
 ): { templateFormat: CFNTemplateFormat; cfnTemplate: Template } | undefined;
 
+/**
+ * read the CloudFormation template at provided file path
+ */
 export function readCFNTemplate(filePath: string, options: Partial<typeof defaultReadCFNTemplateOptions> = defaultReadCFNTemplateOptions) {
   options = { ...defaultReadCFNTemplateOptions, ...options };
 
@@ -21,7 +24,6 @@ export function readCFNTemplate(filePath: string, options: Partial<typeof defaul
     }
     throw new Error(`No CloudFormation template found at ${filePath}`);
   }
-  //TODO:  somthing wrong with this call , work fine with readFileSync()
   const fileContent = fs.readFileSync(filePath, 'utf8');
 
   // We use the first character to determine if the content is json or yaml because historically the CLI could
@@ -32,25 +34,36 @@ export function readCFNTemplate(filePath: string, options: Partial<typeof defaul
   return { templateFormat, cfnTemplate };
 }
 
+/**
+ * CloudFormation template formats
+ */
 export enum CFNTemplateFormat {
   JSON = 'json',
   YAML = 'yaml',
 }
 
+/**
+ * options to specify how a CloudFormation template should be written
+ */
 export type WriteCFNTemplateOptions = {
   templateFormat?: CFNTemplateFormat;
+  minify?: boolean;
 };
 
 const writeCFNTemplateDefaultOptions: Required<WriteCFNTemplateOptions> = {
   templateFormat: CFNTemplateFormat.JSON,
+  minify: false,
 };
 
-export async function writeCFNTemplate(template: object, filePath: string, options?: WriteCFNTemplateOptions): Promise<void> {
+/**
+ * write the provided CloudFormation template to the provided file path
+ */
+export const writeCFNTemplate = async (template: object, filePath: string, options?: WriteCFNTemplateOptions): Promise<void> => {
   const mergedOptions = { ...writeCFNTemplateDefaultOptions, ...options };
   let serializedTemplate: string | undefined;
   switch (mergedOptions.templateFormat) {
     case CFNTemplateFormat.JSON:
-      serializedTemplate = JSONUtilities.stringify(template);
+      serializedTemplate = JSONUtilities.stringify(template, { minify: mergedOptions.minify });
       break;
     case CFNTemplateFormat.YAML:
       serializedTemplate = yaml.dump(template);
@@ -60,80 +73,82 @@ export async function writeCFNTemplate(template: object, filePath: string, optio
   }
   await fs.ensureDir(path.parse(filePath).dir);
   return fs.writeFileSync(filePath, serializedTemplate);
-}
+};
 
 // Register custom tags for yaml parser
 // Order and definition based on docs: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
 const CF_SCHEMA = yaml.JSON_SCHEMA.extend([
   new yaml.Type('!Base64', {
     kind: 'scalar',
-    construct: function (data) {
+    construct(data) {
       return { 'Fn::Base64': data };
     },
   }),
   new yaml.Type('!Base64', {
     kind: 'mapping',
-    construct: function (data) {
+    construct(data) {
       return { 'Fn::Base64': data };
     },
   }),
+  /* eslint-disable spellcheck/spell-checker */
   new yaml.Type('!Cidr', {
     kind: 'sequence',
-    construct: function (data) {
+    construct(data) {
       return { 'Fn::Cidr': data };
     },
   }),
   new yaml.Type('!Cidr', {
     kind: 'mapping',
-    construct: function (data) {
+    construct(data) {
       return { 'Fn::Cidr': data };
     },
   }),
+  /* eslint-enable spellcheck/spell-checker */
   new yaml.Type('!And', {
     kind: 'sequence',
-    construct: function (data) {
+    construct(data) {
       return { 'Fn::And': data };
     },
   }),
   new yaml.Type('!Equals', {
     kind: 'sequence',
-    construct: function (data) {
+    construct(data) {
       return { 'Fn::Equals': data };
     },
   }),
   new yaml.Type('!If', {
     kind: 'sequence',
-    construct: function (data) {
+    construct(data) {
       return { 'Fn::If': data };
     },
   }),
   new yaml.Type('!Not', {
     kind: 'sequence',
-    construct: function (data) {
+    construct(data) {
       return { 'Fn::Not': data };
     },
   }),
   new yaml.Type('!Or', {
     kind: 'sequence',
-    construct: function (data) {
+    construct(data) {
       return { 'Fn::Or': data };
     },
   }),
   new yaml.Type('!Condition', {
     kind: 'scalar',
-    construct: function (data) {
+    construct(data) {
       return { Condition: data };
     },
   }),
   new yaml.Type('!FindInMap', {
     kind: 'sequence',
-    construct: function (data) {
+    construct(data) {
       return { 'Fn::FindInMap': data };
     },
   }),
   new yaml.Type('!GetAtt', {
     kind: 'scalar',
-    construct: function (data) {
+    construct(data) {
       if (Array.isArray(data)) {
         return {
           'Fn::GetAtt': data,
@@ -148,7 +163,7 @@ const CF_SCHEMA = yaml.JSON_SCHEMA.extend([
   }),
   new yaml.Type('!GetAtt', {
     kind: 'sequence',
-    construct: function (data) {
+    construct(data) {
       if (Array.isArray(data)) {
         return {
           'Fn::GetAtt': data,
@@ -163,74 +178,74 @@ const CF_SCHEMA = yaml.JSON_SCHEMA.extend([
   }),
   new yaml.Type('!GetAZs', {
     kind: 'scalar',
-    construct: function (data) {
+    construct(data) {
       return { 'Fn::GetAZs': data };
     },
   }),
   new yaml.Type('!GetAZs', {
     kind: 'mapping',
-    construct: function (data) {
+    construct(data) {
       return { 'Fn::GetAZs': data };
     },
   }),
   new yaml.Type('!ImportValue', {
     kind: 'scalar',
-    construct: function (data) {
+    construct(data) {
       return { 'Fn::ImportValue': data };
     },
   }),
   new yaml.Type('!ImportValue', {
     kind: 'mapping',
-    construct: function (data) {
+    construct(data) {
       return { 'Fn::ImportValue': data };
     },
   }),
   new yaml.Type('!Join', {
     kind: 'sequence',
-    construct: function (data) {
+    construct(data) {
       return { 'Fn::Join': data };
     },
   }),
   new yaml.Type('!Select', {
     kind: 'sequence',
-    construct: function (data) {
+    construct(data) {
       return { 'Fn::Select': data };
     },
   }),
   new yaml.Type('!Split', {
     kind: 'sequence',
-    construct: function (data) {
+    construct(data) {
       return { 'Fn::Split': data };
     },
   }),
   new yaml.Type('!Sub', {
     kind: 'scalar',
-    construct: function (data) {
+    construct(data) {
       return { 'Fn::Sub': data };
     },
   }),
   new yaml.Type('!Sub', {
     kind: 'sequence',
-    construct: function (data) {
+    construct(data) {
       return { 'Fn::Sub': data };
     },
   }),
   new yaml.Type('!Transform', {
     kind: 'mapping',
-    construct: function (data) {
+    construct(data) {
       return { 'Fn::Transform': data };
     },
   }),
   new yaml.Type('!Ref', {
     kind: 'scalar',
-    construct: function (data) {
+    construct(data) {
       return { Ref: data };
     },
   }),
 ]);
 
-function isJsonFileContent(fileContent: string): boolean {
-  // We use the first character to determine if the content is json or yaml because historically the CLI could
-  // have emitted JSON with YML extension, so we can't rely on filename extension.
-  return fileContent?.trim()[0] === '{'; // CFN templates are always objects, never arrays
-}
+/**
+ * We use the first character to determine if the content is json or yaml because historically the CLI could
+ * have emitted JSON with YML extension, so we can't rely on filename extension.
+ */
+const isJsonFileContent = (fileContent: string): boolean => fileContent?.trim()[0] === '{';

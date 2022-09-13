@@ -1,8 +1,11 @@
-import { ISynthesisSession, Stack, LegacyStackSynthesizer } from '@aws-cdk/core';
-import { Template } from 'amplify-cli-core';
+import { ISynthesisSession, LegacyStackSynthesizer, Stack } from '@aws-cdk/core';
+import { JSONUtilities, Template } from 'amplify-cli-core';
 import { AmplifyRootStack, AmplifyRootStackOutputs } from './root-stack-builder';
 
-export class RootStackSythesizer extends LegacyStackSynthesizer {
+/**
+ * RootStackSynthesizer class
+ */
+export class RootStackSynthesizer extends LegacyStackSynthesizer {
   private stacks: Map<string, Stack> = new Map();
   private static readonly stackAssets: Map<string, Template> = new Map();
 
@@ -17,15 +20,24 @@ export class RootStackSythesizer extends LegacyStackSynthesizer {
     }
   }
 
+  /**
+   * set a specific stack
+   */
   setStackAsset(templateName: string, template: string): void {
-    RootStackSythesizer.stackAssets.set(templateName, JSON.parse(template));
+    RootStackSynthesizer.stackAssets.set(templateName, JSONUtilities.parse(template));
   }
 
+  /**
+   * get all stacks
+   */
   collectStacks(): Map<string, Template> {
-    return new Map(RootStackSythesizer.stackAssets.entries());
+    return new Map(RootStackSynthesizer.stackAssets.entries());
   }
 
-  addStack(stack: Stack) {
+  /**
+   * add a stack
+   */
+  addStack(stack: Stack): void {
     this.stacks.set(stack.node.id, stack);
   }
 
