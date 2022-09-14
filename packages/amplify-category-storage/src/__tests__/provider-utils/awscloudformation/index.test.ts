@@ -27,7 +27,7 @@ describe('awscloudformation function provider', () => {
 
     await console(amplifyMetaMock, provider, service);
 
-    expect(openMock).toBeCalledWith('https://us-east-1.console.aws.amazon.com/dynamodbv2/home?region=us-east-1#table?initialTagKey=&name=TestTable-test&tab=overview', { wait: false });
+    expect(openMock).toBeCalledWith('https://us-east-1.console.aws.amazon.com/dynamodbv2/home?region=us-east-1#table?name=TestTable-test&tab=overview', { wait: false });
   });
 
   it('opens the S3 console', async () => {

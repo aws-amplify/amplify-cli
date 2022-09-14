@@ -192,7 +192,7 @@ export const console = async (amplifyMeta: $TSMeta, provider: string, service: s
       return;
     }
     const { tableName, region } = await prompter.pick<'one', Pickchoice['value']>("Select DynamoDB table to open on your browser", tables);
-    const url = `https://${region}.console.aws.amazon.com/dynamodbv2/home?region=${region}#table?initialTagKey=&name=${tableName}&tab=overview`;
+    const url = `https://${region}.console.aws.amazon.com/dynamodbv2/home?region=${region}#table?name=${tableName}&tab=overview`;
     open(url, { wait: false });
   }
 }
