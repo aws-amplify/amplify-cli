@@ -7,6 +7,7 @@ import {
   DynamoDBCLIInputs,
   FieldType,
 } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/dynamoDB-user-input-types';
+import { getIAMPolicies } from '../../../../provider-utils/awscloudformation/service-walkthroughs/dynamoDb-walkthrough';
 
 jest.mock('amplify-cli-core');
 jest.mock('amplify-prompts');
@@ -241,5 +242,31 @@ describe('update ddb walkthrough tests', () => {
 
     expect(returnedCLIInputs).toEqual(expectedCLIInputsJSON);
     expect(DynamoDBInputState.prototype.saveCliInputPayload).toHaveBeenCalledWith(expectedCLIInputsJSON);
+  });
+});
+
+describe('PartiQL Policies', () => {
+  it('create', async () => {
+    const { policy } = getIAMPolicies('Dummy', ['create']);
+    const actions = policy.Action as string[];
+    expect(actions.includes('dynamodb:PartiQLInsert')).toBe(true);
+  });
+
+  it('update', async () => {
+    const { policy } = getIAMPolicies('Dummy', ['update']);
+    const actions = policy.Action as string[];
+    expect(actions.includes('dynamodb:PartiQLUpdate')).toBe(true);
+  });
+
+  it('read', async () => {
+    const { policy } = getIAMPolicies('Dummy', ['read']);
+    const actions = policy.Action as string[];
+    expect(actions.includes('dynamodb:PartiQLSelect')).toBe(true);
+  });
+
+  it('delete', async () => {
+    const { policy } = getIAMPolicies('Dummy', ['delete']);
+    const actions = policy.Action as string[];
+    expect(actions.includes('dynamodb:PartiQLDelete')).toBe(true);
   });
 });

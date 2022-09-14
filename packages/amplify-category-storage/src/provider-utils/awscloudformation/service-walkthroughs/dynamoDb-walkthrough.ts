@@ -731,22 +731,30 @@ export function migrate(context: $TSContext, projectPath: any, resourceName: any
 }
 
 export function getIAMPolicies(resourceName: string, crudOptions: $TSAny) {
-  let policy = {};
+  let policy: $TSObject = {};
   const actions: string[] = [];
 
   crudOptions.forEach((crudOption: $TSAny) => {
     switch (crudOption) {
       case 'create':
-        actions.push('dynamodb:Put*', 'dynamodb:Create*', 'dynamodb:BatchWriteItem');
+        actions.push('dynamodb:Put*', 'dynamodb:Create*', 'dynamodb:BatchWriteItem', 'dynamodb:PartiQLInsert');
         break;
       case 'update':
-        actions.push('dynamodb:Update*', 'dynamodb:RestoreTable*');
+        actions.push('dynamodb:Update*', 'dynamodb:RestoreTable*', 'dynamodb:PartiQLUpdate');
         break;
       case 'read':
-        actions.push('dynamodb:Get*', 'dynamodb:BatchGetItem', 'dynamodb:List*', 'dynamodb:Describe*', 'dynamodb:Scan', 'dynamodb:Query');
+        actions.push(
+          'dynamodb:Get*',
+          'dynamodb:BatchGetItem',
+          'dynamodb:List*',
+          'dynamodb:Describe*',
+          'dynamodb:Scan',
+          'dynamodb:Query',
+          'dynamodb:PartiQLSelect',
+        );
         break;
       case 'delete':
-        actions.push('dynamodb:Delete*');
+        actions.push('dynamodb:Delete*', 'dynamodb:PartiQLDelete');
         break;
       default:
         console.log(`${crudOption} not supported`);
