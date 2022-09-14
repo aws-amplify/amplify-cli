@@ -164,7 +164,7 @@ async function getAmplifyApp(context, amplifyClient) {
           : `Amplify AppID: ${inputAmplifyAppId} not found.`,
         resolution: e.name && e.name === 'NotFoundException'
           ? 'Check that the region of the Amplify App is matching the configured region.'
-          : 'Please ensure your local profile matches the AWS account or region in which the Amplify app exists.',
+          : 'Ensure your local profile matches the AWS account or region in which the Amplify app exists.',
       });
     }
   }
@@ -213,7 +213,7 @@ async function getAmplifyApp(context, amplifyClient) {
 
   throw amplifyErrorWithTroubleshootingLink('ProjectNotFoundError', {
     message: 'No Amplify apps found.',
-    resolution: 'Please ensure your local profile matches the AWS account or region in which the Amplify app exists.',
+    resolution: 'Ensure your local profile matches the AWS account or region in which the Amplify app exists.',
   });
 }
 

@@ -89,7 +89,6 @@ export const getCurrentCloudBackendDirPath = (projectPath?: string): string => p
   ),
 );
 
-// eslint-disable-next-line spellcheck/spell-checker
 /**
  * returns the project .amplifyrc file path
  */

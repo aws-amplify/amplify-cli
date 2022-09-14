@@ -414,7 +414,9 @@ async function promptForAuthConfig(context: $TSContext, authConfig?: AuthFlowCon
       answers = await prompt(profileNameQuestion(availableProfiles, awsConfigInfo.config.profileName));
       awsConfigInfo.config.profileName = answers.profileName;
       return;
-    } if (authType === 'admin') {
+    } 
+
+    if (authType === 'admin') {
       awsConfigInfo.configLevel = 'amplifyAdmin';
       awsConfigInfo.config.useProfile = false;
       return;

@@ -38,7 +38,7 @@ import { prePushCfnTemplateModifier } from './pre-push-cfn-processor/pre-push-cf
 import archiver from './utils/archiver';
 import { fileLogger } from './utils/aws-logger';
 
-const logger = fileLogger('attach-backend');
+const logger = fileLogger('initializer');
 
 type ParamType = {
   StackName: string,

@@ -4,7 +4,7 @@ import { hashElement } from 'folder-hash';
 import * as fs from 'fs-extra';
 import { AmplifyError } from '../../../../../amplify-cli-core/lib';
 import {
-  CLOUD_INITIALIZED,
+  CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus, NON_AMPLIFY_PROJECT,
 } from '../../../extensions/amplify-helpers/get-cloud-init-status';
 import { getEnvInfo } from '../../../extensions/amplify-helpers/get-env-info';
 import { print } from '../../../extensions/amplify-helpers/print';
@@ -736,6 +736,7 @@ describe('resource-status', () => {
 
     it('throws an error when non amplify project', async () => {
       (getCloudInitStatus as jest.MockedFunction<typeof getCloudInitStatus>).mockReturnValue(NON_AMPLIFY_PROJECT);
+      // eslint-disable-next-line jest/valid-expect
       expect(getResourceStatus()).rejects.toThrowError(AmplifyError);
     });
   });

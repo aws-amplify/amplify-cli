@@ -68,7 +68,6 @@ export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentN
     });
   }
 
-  /** ***************************************************************************/
 
   const { InternetGateways } = await ec2
     .describeInternetGateways({
@@ -93,7 +92,6 @@ export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentN
 
   const [{ InternetGatewayId: internetGatewayId = undefined } = {}] = InternetGateways;
 
-  /** ***************************************************************************/
 
   const { Subnets } = await ec2.describeSubnets({ Filters: [{ Name: 'vpc-id', Values: [vpcId] }] }).promise();
 
