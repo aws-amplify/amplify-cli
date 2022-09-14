@@ -66,7 +66,5 @@ const readCfnTemplateUserAttributeSettings = async (
     return undefined;
   }
 
-  const { Resources: { UserPool: { Properties: { UserAttributeUpdateSettings } } } } = cfnTemplate;
-
-  return UserAttributeUpdateSettings;
+  return cfnTemplate.Resources.UserPool?.Properties?.UserAttributeUpdateSettings;
 };
