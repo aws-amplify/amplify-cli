@@ -38,7 +38,7 @@ const showCognitoAttributesRequireVerificationBeforeUpdateMessage = async (
   const { resourceName } = cognitoResource;
   const cloudBackendUserAttrUpdateSettings = await readCfnTemplateUserAttributeSettings(currentCloudBackendDir, resourceName);
   const backendUserAttrUpdateSettings = await readCfnTemplateUserAttributeSettings(localBackendDir, resourceName);
-  const updateNotInCloudBackend = !cloudBackendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate
+  const updateNotInCloudBackend: boolean = !cloudBackendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate
     || cloudBackendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate[0] !== 'email';
   const updateInLocalBackend: boolean = backendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate.length === 1
     && backendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate[0] === 'email';
@@ -60,7 +60,12 @@ const readCfnTemplateUserAttributeSettings = async (
   resourceName: string,
 ): Promise<UserAttributeUpdateSettings | undefined> => {
   const cfnTemplatePath = path.join(backendDir, 'auth', resourceName, 'build', `${resourceName}-cloudformation-template.json`);
-  const cfnTemplate: $TSAny = readJson(cfnTemplatePath);
+  const cfnTemplate: $TSAny = readJson(cfnTemplatePath, { throwIfNotExist: false });
+
+  if (!cfnTemplate) {
+    return undefined;
+  }
+
   const { Resources: { UserPool: { Properties: { UserAttributeUpdateSettings } } } } = cfnTemplate;
 
   return UserAttributeUpdateSettings;
