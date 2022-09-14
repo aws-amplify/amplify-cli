@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-description */
 import {
   $TSAny, $TSContext, AmplifyCategories, AmplifySupportedService, IAmplifyResource, stateManager,
 } from 'amplify-cli-core';
@@ -44,9 +45,6 @@ export {
   s3RemoveStorageLambdaTrigger,
 } from './provider-utils/awscloudformation/service-walkthroughs/s3-resource-api';
 
-/**
- *
- */
 export async function s3GetBucketUserInputDefault(project: $TSAny, shortId: string, accessType: S3AccessType): Promise<S3UserInputs> {
   const defaultS3UserInputs = getAllDefaults(project, shortId);
   switch (accessType) {
@@ -61,16 +59,10 @@ export async function s3GetBucketUserInputDefault(project: $TSAny, shortId: stri
   return defaultS3UserInputs;
 }
 
-/**
- *
- */
 export async function getDefaultAuthPermissions() {
   return [S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ, S3PermissionType.DELETE];
 }
 
-/**
- *
- */
 export async function add(context: any, providerName: any, service: any) {
   const options = {
     service,
@@ -119,9 +111,6 @@ export const console = async (context: $TSContext): Promise<void> => {
   }
 };
 
-/**
- *
- */
 export async function migrateStorageCategory(context: any) {
   const { projectPath, amplifyMeta } = context.migrationInfo;
   const migrateResourcePromises: any = [];
@@ -155,9 +144,6 @@ export async function migrateStorageCategory(context: any) {
   await Promise.all(migrateResourcePromises);
 }
 
-/**
- *
- */
 export async function transformCategoryStack(context: $TSContext, resource: IAmplifyResource) {
   if (resource.service === AmplifySupportedService.DYNAMODB) {
     if (canResourceBeTransformed(context, resource.resourceName)) {
@@ -169,17 +155,11 @@ export async function transformCategoryStack(context: $TSContext, resource: IAmp
   }
 }
 
-/**
- *
- */
 export function canResourceBeTransformed(context: $TSContext, resourceName: string) {
   const resourceInputState = new DynamoDBInputState(context, resourceName);
   return resourceInputState.cliInputFileExists();
 }
 
-/**
- *
- */
 export async function getPermissionPolicies(context: any, resourceOpsMapping: any) {
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
@@ -221,9 +201,6 @@ export async function getPermissionPolicies(context: any, resourceOpsMapping: an
   return { permissionPolicies, resourceAttributes };
 }
 
-/**
- *
- */
 export async function executeAmplifyCommand(context: any) {
   let commandPath = path.normalize(path.join(__dirname, 'commands'));
 
@@ -238,9 +215,6 @@ export async function executeAmplifyCommand(context: any) {
   await commandModule.run(context);
 }
 
-/**
- *
- */
 export const executeAmplifyHeadlessCommand = async (context: $TSContext, headlessPayload: string) => {
   context.usageData.pushHeadlessFlow(headlessPayload, context.input);
   switch (context.input.command) {
@@ -261,17 +235,11 @@ export const executeAmplifyHeadlessCommand = async (context: $TSContext, headles
   }
 };
 
-/**
- *
- */
 export async function handleAmplifyEvent(context: $TSContext, args: $TSAny) {
   printer.info(`${categoryName} handleAmplifyEvent to be implemented`);
   printer.info(`Received event args ${args}`);
 }
 
-/**
- *
- */
 export async function initEnv(context: any) {
   const { resourcesToBeSynced, allResources } = await context.amplify.getResourceStatus(AmplifyCategories.STORAGE);
   const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
