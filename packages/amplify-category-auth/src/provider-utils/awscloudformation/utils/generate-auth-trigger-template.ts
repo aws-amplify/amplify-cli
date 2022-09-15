@@ -4,7 +4,6 @@ import { JSONUtilities, pathManager } from 'amplify-cli-core';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
-import { prepareApp } from 'aws-cdk-lib/core/lib/private/prepare-app';
 import { CustomResource } from 'aws-cdk-lib';
 import { v4 as uuid } from 'uuid';
 import { Construct } from 'constructs';
@@ -62,7 +61,6 @@ export class CustomResourceAuthStack extends cdk.Stack {
    * Generates a CFN template from the CDK stack
    */
   toCloudFormation(): Record<string, unknown> {
-    prepareApp(this);
     return this._toCloudFormation();
   }
 }
