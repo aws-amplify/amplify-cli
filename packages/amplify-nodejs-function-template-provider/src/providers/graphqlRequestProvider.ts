@@ -6,13 +6,14 @@ import {
 } from 'amplify-cli-core';
 import { getDstMap } from '../utils/destFileMapper';
 import { templateRoot } from '../utils/constants';
+import { $TSContext } from 'amplify-cli-core';
 
-const pathToTemplateFilesIAM = path.join(templateRoot, 'lambda/appsync-request');
+const pathToTemplateFilesIAM = path.join(templateRoot, 'lambda', 'appsync-request');
 
 /**
  * Graphql request to an AppSync API using Node runtime Lambda function
  */
-export async function graphqlRequest(context: any): Promise<FunctionTemplateParameters> {
+export async function graphqlRequest(context: $TSContext): Promise<FunctionTemplateParameters> {
   const { allResources } = await context.amplify.getResourceStatus();
   const apiResource = allResources.filter((resource: { service: string }) => resource.service === AmplifySupportedService.APPSYNC);
 
@@ -31,12 +32,12 @@ export async function graphqlRequest(context: any): Promise<FunctionTemplatePara
   }
 
   const files = fs.readdirSync(pathToTemplateFilesIAM);
-  return Promise.resolve({
+  return {
     functionTemplate: {
       sourceRoot: pathToTemplateFilesIAM,
       sourceFiles: files,
       defaultEditorFile: path.join('src', 'index.js'),
       destMap: getDstMap(files),
     },
-  });
+  };
 }
