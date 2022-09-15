@@ -1,14 +1,17 @@
-const chalk = require('chalk');
-const inquirer = require('inquirer');
+import { amplifyErrorWithTroubleshootingLink, open } from 'amplify-cli-core';
+import chalk from 'chalk';
+import inquirer from 'inquirer';
+import isOnWsl from 'is-wsl';
+import constants from './constants.js';
+import * as systemConfigManager from './system-config-manager';
+import obfuscationUtil from './utility-obfuscate';
 
-const awsRegions = require('./aws-regions.js').regions;
-const constants = require('./constants.js');
-const systemConfigManager = require('./system-config-manager');
-const obfuscationUtil = require('./utility-obfuscate');
-const { open } = require('amplify-cli-core');
-const isOnWsl = require('is-wsl');
+import awsRegions from './aws-regions.js';
 
-async function run(context) {
+/**
+ * setup new user entry point
+ */
+export const run = async (context): Promise<string> => {
   const awsConfigInfo = {
     accessKeyId: constants.DefaultAWSAccessKeyId,
     secretAccessKey: constants.DefaultAWSSecretAccessKey,
@@ -30,7 +33,7 @@ async function run(context) {
       type: 'list',
       name: 'region',
       message: 'region: ',
-      choices: awsRegions,
+      choices: awsRegions.regions,
       default: awsConfigInfo.region,
     },
   ]);
@@ -70,7 +73,7 @@ async function run(context) {
           if (input.length < 16) {
             message += ': Minimum length is 16';
           } else if (input.length > 128) {
-            message += ': Maximun length is 128';
+            message += ': Maximum length is 128';
           } else if (!/^[\w]+$/.test(input)) {
             message += ': It can only contain letter, number or underscore characters';
           }
@@ -121,17 +124,13 @@ async function run(context) {
     context.print.success('Successfully set up the new user.');
     return profileName;
   }
-  context.print.info('');
-  context.print.info('You did NOT enter valid keys.');
-  throw new Error('New user setup failed.');
-}
 
-function validateAWSConfig(awsConfigInfo) {
-  return (
-    awsConfigInfo.accessKeyId !== constants.DefaultAWSAccessKeyId && awsConfigInfo.secretAccessKey !== constants.DefaultAWSSecretAccessKey
-  );
-}
-
-module.exports = {
-  run,
+  throw amplifyErrorWithTroubleshootingLink('InputValidationError', {
+    message: 'Invalid AWS credentials',
+    resolution: 'Please check your AWS credentials',
+  });
 };
+
+const validateAWSConfig = (awsConfigInfo): boolean => (
+  awsConfigInfo.accessKeyId !== constants.DefaultAWSAccessKeyId && awsConfigInfo.secretAccessKey !== constants.DefaultAWSSecretAccessKey
+);

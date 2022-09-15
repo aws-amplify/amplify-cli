@@ -1,4 +1,4 @@
-import { JSONUtilities } from 'amplify-cli-core';
+import { amplifyErrorWithTroubleshootingLink, JSONUtilities } from 'amplify-cli-core';
 import { EC2 } from 'aws-sdk';
 import { Netmask } from 'netmask';
 import { loadConfiguration } from '../configuration-manager';
@@ -13,8 +13,13 @@ type GetEnvironmentNetworkInfoParams = {
   subnetsCount: number;
 };
 
+/**
+ *
+ */
 export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentNetworkInfoParams) {
-  const { stackName, vpcName, vpcCidr, subnetsCount = SUBNETS, subnetMask } = params;
+  const {
+    stackName, vpcName, vpcCidr, subnetsCount = SUBNETS, subnetMask,
+  } = params;
 
   const [, vpcMask] = vpcCidr.split('/');
 
@@ -33,9 +38,9 @@ export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentN
     const subnets = subnetsCount;
     const AZs = AvailabilityZones.length;
 
-    throw new Error(
-      `The requested number of subnets exceeds the number of AZs for the region. ${JSONUtilities.stringify({ subnets, azs: AZs })}`,
-    );
+    throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
+      message: `The requested number of subnets exceeds the number of AZs for the region. ${JSONUtilities.stringify({ subnets, azs: AZs })}`,
+    });
   }
 
   const { Vpcs } = await ec2
@@ -58,10 +63,11 @@ export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentN
   const { VpcId: vpcId } = vpc;
 
   if (vpcId && !vpc.CidrBlock.endsWith(vpcMask)) {
-    throw new Error('Not the right mask'); // Should never happen
+    throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
+      message: 'Not the right mask',
+    });
   }
 
-  /*****************************************************************************/
 
   const { InternetGateways } = await ec2
     .describeInternetGateways({
@@ -79,12 +85,13 @@ export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentN
     .promise();
 
   if (vpcId && InternetGateways.length === 0) {
-    throw new Error(`No attached and available Internet Gateway in VPC ${vpcId}`);
+    throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
+      message: `No attached and available Internet Gateway in VPC ${vpcId}`,
+    });
   }
 
   const [{ InternetGatewayId: internetGatewayId = undefined } = {}] = InternetGateways;
 
-  /*****************************************************************************/
 
   const { Subnets } = await ec2.describeSubnets({ Filters: [{ Name: 'vpc-id', Values: [vpcId] }] }).promise();
 
@@ -139,7 +146,9 @@ export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentN
   }
 
   if (envCidrs.size < subnetsCount) {
-    throw new Error('Not enough CIDRs available in VPC');
+    throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
+      message: 'Not enough CIDRs available in VPC',
+    });
   }
 
   const result = {

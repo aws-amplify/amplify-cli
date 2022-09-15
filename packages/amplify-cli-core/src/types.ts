@@ -361,7 +361,7 @@ export type $TSCopyJob = $TSAny;
   ) => void;
   updateamplifyMetaAfterResourceDelete: (category: string, resourceName: string) => void;
   /* eslint-disable-next-line spellcheck/spell-checker */
-  updateProvideramplifyMeta: (providerName: string, options: $TSObject) => void;
+  updateProviderAmplifyMeta: (providerName: string, options: $TSObject) => void;
   updateamplifyMetaAfterPush: (resources: $TSObject[]) => void;
   // buildType is from amplify-function-plugin-interface but can't be imported here because it would create a circular dependency
   updateamplifyMetaAfterBuild: (resource: ResourceTuple, buildType?: string) => void;

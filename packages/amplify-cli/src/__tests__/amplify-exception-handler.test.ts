@@ -2,7 +2,7 @@ import { AmplifyError } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts'; // eslint-disable-line import/no-extraneous-dependencies
 import { reportError } from '../commands/diagnose';
 import { Context } from '../domain/context';
-import { init, handleException } from '../exception-handler/amplify-exception-handler';
+import { init, handleException } from '../amplify-exception-handler';
 
 const printerMock = printer as any;
 

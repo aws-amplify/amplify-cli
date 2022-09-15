@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { S3 } from '../aws-utils/aws-s3';
@@ -7,11 +7,15 @@ import { getEnvironmentNetworkInfo } from '../network/environment-info';
 import { NetworkStack } from '../network/stack';
 import { prePushCfnTemplateModifier } from '../pre-push-cfn-processor/pre-push-cfn-modifier';
 import { consolidateApiGatewayPolicies } from './consolidate-apigw-policies';
+// eslint-disable-next-line import/no-cycle
 import { uploadAuthTriggerTemplate } from './upload-auth-trigger-template';
 
 const { ProviderName: providerName } = constants;
 
-export async function createEnvLevelConstructs(context: $TSContext) {
+/**
+ * creates env levels constructs
+ */
+export const createEnvLevelConstructs = async (context: $TSContext): Promise<void> => {
   const { StackName: stackName } = context.amplify.getProjectMeta().providers[constants.ProviderName];
 
   const hasContainers = envHasContainers(context);
@@ -25,7 +29,7 @@ export async function createEnvLevelConstructs(context: $TSContext) {
     await uploadAuthTriggerTemplate(context),
   );
 
-  context.amplify.updateProvideramplifyMeta(providerName, updatedMeta);
+  context.amplify.updateProviderAmplifyMeta(providerName, updatedMeta);
 
   if (hasContainers) {
     const containerResourcesFilenames = ['custom-resource-pipeline-awaiter.zip', 'codepipeline-action-buildspec-generator-lambda.zip'];
@@ -33,9 +37,10 @@ export async function createEnvLevelConstructs(context: $TSContext) {
       await uploadResourceFile(context, file);
     }
   }
-}
+};
 
-async function createNetworkResources(context: $TSContext, stackName: string, needsVpc: boolean) {
+const createNetworkResources = async (context: $TSContext, stackName: string, needsVpc: boolean)
+  : Promise<{ NetworkStackS3Url: string }> => {
   if (!needsVpc) {
     return {
       NetworkStackS3Url: undefined,
@@ -59,9 +64,12 @@ async function createNetworkResources(context: $TSContext, stackName: string, ne
   return {
     NetworkStackS3Url: templateURL,
   };
-}
+};
 
-export async function getNetworkResourceCfn(context: $TSContext, stackName: string) {
+/**
+ * get the network resource cfn
+ */
+export const getNetworkResourceCfn = async (context: $TSContext, stackName: string): Promise<$TSAny> => {
   const vpcName = 'Amplify/VPC-do-not-delete';
 
   const { vpcId, internetGatewayId, subnetCidrs } = await getEnvironmentNetworkInfo(context, {
@@ -81,12 +89,13 @@ export async function getNetworkResourceCfn(context: $TSContext, stackName: stri
   });
 
   return stack.toCloudFormation();
-}
+};
 
-function envHasContainers(context: $TSContext) {
+const envHasContainers = (context: $TSContext): boolean => {
   const { api: apiObj, hosting: hostingObj } = context.amplify.getProjectMeta();
 
   if (apiObj) {
+    // eslint-disable-next-line consistent-return, array-callback-return
     const found = Object.keys(apiObj).some(key => {
       const api = apiObj[key];
       if (api.providerPlugin === providerName && api.service === 'ElasticContainer') {
@@ -100,6 +109,7 @@ function envHasContainers(context: $TSContext) {
   }
 
   if (hostingObj) {
+    // eslint-disable-next-line consistent-return, array-callback-return
     const found = Object.keys(hostingObj).some(key => {
       const hosting = hostingObj[key];
       if (hosting.providerPlugin === providerName && hosting.service === 'ElasticContainer') {
@@ -113,11 +123,10 @@ function envHasContainers(context: $TSContext) {
   }
 
   return false;
-}
+};
 
-async function uploadResourceFile(context: $TSContext, fileName: string) {
+const uploadResourceFile = async (context: $TSContext, fileName: string): Promise<string> => {
   const filePath = path.join(__dirname, '..', '..', 'resources', fileName);
-
   const s3 = await S3.getInstance(context);
 
   // TODO: check if already exists
@@ -126,7 +135,5 @@ async function uploadResourceFile(context: $TSContext, fileName: string) {
     Key: fileName,
   };
 
-  const result = s3.uploadFile(s3Params, true);
-
-  return result;
-}
+  return s3.uploadFile(s3Params, true);
+};

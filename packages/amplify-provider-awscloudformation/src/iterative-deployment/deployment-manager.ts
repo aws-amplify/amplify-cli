@@ -1,6 +1,13 @@
 import * as aws from 'aws-sdk';
 
-import { $TSContext, IDeploymentStateManager } from 'amplify-cli-core';
+import {
+  $TSContext, amplifyFaultWithTroubleshootingLink, amplifyErrorWithTroubleshootingLink, IDeploymentStateManager,
+} from 'amplify-cli-core';
+import { ConfigurationOptions } from 'aws-sdk/lib/config-base';
+import assert from 'assert';
+import { interpret } from 'xstate';
+import ora from 'ora';
+import throttle from 'lodash.throttle';
 import {
   DeployMachineContext,
   DeploymentMachineOp,
@@ -13,20 +20,19 @@ import {
 import { IStackProgressPrinter, StackEventMonitor } from './stack-event-monitor';
 import { getBucketKey, getHttpUrl } from './helpers';
 
-import { ConfigurationOptions } from 'aws-sdk/lib/config-base';
 import { StackProgressPrinter } from './stack-progress-printer';
-import assert from 'assert';
 import { loadConfiguration } from '../configuration-manager';
-import { interpret } from 'xstate';
-import ora from 'ora';
-import throttle from 'lodash.throttle';
 import { fileLogger, Logger } from '../utils/aws-logger';
+
 interface DeploymentManagerOptions {
   throttleDelay?: number;
   eventPollingDelay?: number;
   userAgent?: string;
 }
 
+/**
+ *
+ */
 export class DeploymentError extends Error {
   constructor(errors: StateMachineError[]) {
     super('There was an error while deploying changes.');
@@ -39,15 +45,24 @@ export class DeploymentError extends Error {
   }
 }
 
+/**
+ *
+ */
 export type DeploymentOp = Omit<DeploymentMachineOp, 'region' | 'stackTemplatePath' | 'stackTemplateUrl'> & {
   stackTemplatePathOrUrl: string;
 };
 
+/**
+ *
+ */
 export type DeploymentStep = {
   deployment: DeploymentOp;
   rollback: DeploymentOp;
 };
 
+/**
+ *
+ */
 export class DeploymentManager {
   /**
    * Helper method to get an instance of the Deployment manager with the right credentials
@@ -65,7 +80,11 @@ export class DeploymentManager {
       assert(cred.region);
       return new DeploymentManager(cred, cred.region, deploymentBucket, spinner, printer, options);
     } catch (e) {
-      throw new Error('Could not load the credentials');
+      throw amplifyErrorWithTroubleshootingLink('DeploymentError', {
+        message: 'Could not load configuration',
+        stack: e.stack,
+        details: e.message,
+      });
     }
   };
 
@@ -170,8 +189,8 @@ export class DeploymentManager {
 
   public rollback = async (deploymentStateManager: IDeploymentStateManager): Promise<void> => {
     this.deploymentStateManager = deploymentStateManager;
-    let currentStepIndex = this.deploymentStateManager.getStatus().currentStepIndex;
-    let maxDeployed = currentStepIndex + 1;
+    const { currentStepIndex } = this.deploymentStateManager.getStatus();
+    const maxDeployed = currentStepIndex + 1;
 
     const deploymentTemplates = this.deployment.reduce<Set<string>>((acc, step) => {
       acc.add(step.rollback.stackTemplatePath);
@@ -314,11 +333,13 @@ export class DeploymentManager {
       await this.s3Client.headObject({ Bucket: this.deploymentBucket, Key: bucketKey }).promise();
       return true;
     } catch (e) {
-      if (e.code === 'NotFound') {
-        throw new Error(`The cloudformation template ${templatePath} was not found in deployment bucket ${this.deploymentBucket}`);
-      }
-      this.logger('ensureTemplateExists', [{ templatePath }])(e);
-      throw e;
+      throw amplifyErrorWithTroubleshootingLink('DeploymentError', {
+        message: e.code === 'NotFound'
+          ? `The cloudformation template ${templatePath} was not found in deployment bucket ${this.deploymentBucket}`
+          : e.message,
+        details: e.message,
+        stack: e.stack,
+      });
     }
   };
 
@@ -334,26 +355,26 @@ export class DeploymentManager {
       return gsis ? gsis.every(idx => idx.IndexStatus === 'ACTIVE') : true;
     } catch (err) {
       if (err?.code === 'ResourceNotFoundException') {
-        return true; // in the case of an iterative update that recreates a table, non-existance means the table has been fully removed
+        return true; // in the case of an iterative update that recreates a table, non-existence means the table has been fully removed
       }
-      this.logger('getTableStatus', [{ tableName }])(err);
-      throw err;
+      throw amplifyFaultWithTroubleshootingLink('ServiceCallFault', {
+        message: err.message,
+        stack: err.stack,
+      });
     }
   };
 
   private waitForActiveTables = async (tables: string[]): Promise<void> => {
     const throttledGetTableStatus = throttle(this.getTableStatus, this.options.throttleDelay);
-    const waiters = tables.map(name => {
-      return new Promise(resolve => {
-        let interval = setInterval(async () => {
-          const areIndexesReady = await throttledGetTableStatus(name);
-          if (areIndexesReady) {
-            clearInterval(interval);
-            resolve(undefined);
-          }
-        }, this.options.throttleDelay);
-      });
-    });
+    const waiters = tables.map(name => new Promise(resolve => {
+      const interval = setInterval(async () => {
+        const areIndexesReady = await throttledGetTableStatus(name);
+        if (areIndexesReady) {
+          clearInterval(interval);
+          resolve(undefined);
+        }
+      }, this.options.throttleDelay);
+    }));
     await Promise.all(waiters);
   };
 
@@ -402,12 +423,10 @@ export class DeploymentManager {
 
     await this.ensureStack(currentStack.stackName);
 
-    const parameters = Object.entries(currentStack.parameters).map(([key, val]) => {
-      return {
-        ParameterKey: key,
-        ParameterValue: val.toString(),
-      };
-    });
+    const parameters = Object.entries(currentStack.parameters).map(([key, val]) => ({
+      ParameterKey: key,
+      ParameterValue: val.toString(),
+    }));
 
     await cfn
       .updateStack({
@@ -421,7 +440,7 @@ export class DeploymentManager {
   };
 
   private waitForDeployment = async (stackParams: DeploymentMachineOp): Promise<void> => {
-    const cfnClient = this.cfnClient;
+    const { cfnClient } = this;
     assert(stackParams.stackName, 'stackName should be passed to waitForDeployment');
 
     await cfnClient

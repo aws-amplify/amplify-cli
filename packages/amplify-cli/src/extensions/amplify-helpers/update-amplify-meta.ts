@@ -139,7 +139,7 @@ export function updateamplifyMetaAfterResourceAdd(
   updateBackendConfigAfterResourceAdd(category, resourceName, backendConfigResource || metadataResource);
 }
 
-export function updateProvideramplifyMeta(providerName: string, options: $TSObject) {
+export function updateProviderAmplifyMeta(providerName: string, options: $TSObject) {
   const amplifyMeta = stateManager.getMeta();
 
   if (!amplifyMeta.providers) {
