@@ -15,6 +15,7 @@ import {
 import {
   getProviderPlugins,
 } from '../extensions/amplify-helpers/get-provider-plugins';
+import { updateCognitoTrackedFiles } from '../extensions/amplify-helpers/update-tracked-files';
 
 /**
  * Download and unzip deployment bucket contents to #current-cloud-backend so amplify status shows correct state
@@ -53,6 +54,13 @@ const syncCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
 };
 
 /**
+ * Updates tracked files for auto updates in the build directory that will not be detected for 'amplify push'
+ */
+const updateTrackedFiles = async (): Promise<void> => {
+  await updateCognitoTrackedFiles();
+};
+
+/**
  * Runs push command
  */
 export const run = async (context: $TSContext): Promise<$TSAny> => {
@@ -64,5 +72,6 @@ export const run = async (context: $TSContext): Promise<$TSAny> => {
     context.exeInfo.forcePush = true;
   }
   await syncCurrentCloudBackend(context);
+  await updateTrackedFiles();
   return context.amplify.pushResources(context);
 };
