@@ -121,8 +121,8 @@ describe('showBuildDirChangesMessage', () => {
         it('does call warn', async () => {
           await showBuildDirChangesMessage();
           expect(printerMock.warn).toBeCalledWith(
-            `We now support verifying a Cognito user email address that has been changed and are updating your auth configuration. Read more: \
-https://docs.amplify.aws/lib/auth/manageusers/q/platform/js/#updating-and-verifying-a-cognito-user-email-address`,
+            `Amplify CLI now supports verifying a Cognito user email address that has been changed and will automatically update your auth \
+configuration. Read more: https://docs.amplify.aws/lib/auth/manageusers/q/platform/js/#updating-and-verifying-a-cognito-user-email-address`,
           );
         });
       });
@@ -151,8 +151,8 @@ https://docs.amplify.aws/lib/auth/manageusers/q/platform/js/#updating-and-verify
         it('does call warn', async () => {
           await showBuildDirChangesMessage();
           expect(printerMock.warn).toBeCalledWith(
-            `We now support verifying a Cognito user email address that has been changed and are updating your auth configuration. Read more: \
-https://docs.amplify.aws/lib/auth/manageusers/q/platform/js/#updating-and-verifying-a-cognito-user-email-address`,
+            `Amplify CLI now supports verifying a Cognito user email address that has been changed and will automatically update your auth \
+configuration. Read more: https://docs.amplify.aws/lib/auth/manageusers/q/platform/js/#updating-and-verifying-a-cognito-user-email-address`,
           );
         });
       });
