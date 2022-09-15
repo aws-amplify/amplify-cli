@@ -1,14 +1,11 @@
-import * as cdk from 'aws-cdk-lib';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as sns from 'aws-cdk-lib/aws-sns';
-import * as subs from 'aws-cdk-lib/aws-sns-subscriptions';
-import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as cdk from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import * as sns from '@aws-cdk/aws-sns';
+import * as subs from '@aws-cdk/aws-sns-subscriptions';
+import * as sqs from '@aws-cdk/aws-sqs';
 
-/**
- *
- */
 export class cdkStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     /* Do not remove - Amplify CLI automatically injects the current deployment environment in this input paramater */
@@ -44,7 +41,7 @@ export class cdkStack extends cdk.Stack {
       assumedBy: new iam.AccountRootPrincipal(),
     });
 
-    /* Example 3: Adding policy to the IAM role*/
+    /*Example 3: Adding policy to the IAM role*/
     role.addToPolicy(
       new iam.PolicyStatement({
         actions: ['*'],
