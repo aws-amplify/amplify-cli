@@ -2,7 +2,15 @@ import { getCLIPath, nspawn as spawn } from '..';
 
 export function amplifyPull(
   cwd: string,
-  settings: { override?: boolean; emptyDir?: boolean; appId?: string; withRestore?: boolean; noUpdateBackend?: boolean; envName?: string },
+  settings: {
+    override?: boolean;
+    emptyDir?: boolean;
+    appId?: string;
+    withRestore?: boolean;
+    noUpdateBackend?: boolean;
+    envName?: string;
+    yesFlag?: boolean;
+  },
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     //Note:- Table checks have been removed since they are not necessary for push/pull flows and prone to breaking because
@@ -19,6 +27,10 @@ export function amplifyPull(
 
     if (settings.withRestore) {
       args.push('--restore');
+    }
+
+    if (settings.yesFlag) {
+      args.push('--yes');
     }
 
     const chain = spawn(getCLIPath(), args, { cwd, stripColors: true });

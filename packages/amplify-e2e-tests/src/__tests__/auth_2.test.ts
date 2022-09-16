@@ -1,20 +1,25 @@
 import {
-  initJSProjectWithProfile,
-  deleteProject,
-  amplifyPushAuth,
-  amplifyPush,
-  validateNodeModulesDirRemoval,
-  updateFunction,
+  addAuthViaAPIWithTrigger,
+  addAuthWithDefaultSocial,
+  addAuthWithGroupTrigger,
+  addAuthWithRecaptchaTrigger,
   addAuthwithUserPoolGroupsViaAPIWithTrigger,
-  addAuthWithDefaultSocial, addAuthWithGroupTrigger, addAuthWithRecaptchaTrigger, addAuthViaAPIWithTrigger,
+  amplifyPull,
+  amplifyPush,
+  amplifyPushAuth,
   createNewProjectDir,
+  deleteProject,
   deleteProjectDir,
+  getAppId,
+  getLambdaFunction,
   getProjectMeta,
   getUserPool,
   getUserPoolClients,
+  initJSProjectWithProfile,
   isDeploymentSecretForEnvExists,
-  getLambdaFunction,
   removeAuthWithDefault,
+  updateFunction,
+  validateNodeModulesDirRemoval,
 } from '@aws-amplify/amplify-e2e-core';
 
 const defaultsSettings = {
@@ -53,10 +58,14 @@ describe('amplify add auth...', () => {
     expect(clients[0].UserPoolClient.SupportedIdentityProviders).toHaveLength(5);
   });
 
-  it('...should init a project and add auth with defaultSocial and then remove federation', async () => {
-    await initJSProjectWithProfile(projRoot, defaultsSettings);
+  it('...should init a project and add auth with defaultSocial, pull into empty dir, and then remove federation', async () => {
+    await initJSProjectWithProfile(projRoot, { ...defaultsSettings, envName: 'integtest', disableAmplifyAppCreation: false });
     await addAuthWithDefaultSocial(projRoot, {});
     await amplifyPushAuth(projRoot);
+    const appId = getAppId(projRoot);
+    const projRoot2 = await createNewProjectDir('auth2');
+    await amplifyPull(projRoot2, { yesFlag: true, appId, envName: 'integtest' });
+    deleteProjectDir(projRoot2);
     await removeAuthWithDefault(projRoot);
     await amplifyPushAuth(projRoot);
   });
