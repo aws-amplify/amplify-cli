@@ -1,6 +1,15 @@
-const uuid = require('uuid');
+import { $TSAny, $TSMeta } from 'amplify-cli-core';
+import * as uuid from 'uuid';
 
-const getAllDefaults = project => {
+/**
+ * Get all default parameter values for Pinpoint walkthrough
+ * @param project amplify project related data
+ * @param project.amplifyMeta Project metadata from amplify-meta.json
+ * @param project.projectConfig Project backend configuration data
+ * @param project.projectConfig.projectName Amplify project name
+ * @returns default parameter values for Pinpoint
+ */
+export const getAllDefaults = (project: { amplifyMeta: $TSMeta; projectConfig: { projectName: string } }) : Record<string, $TSAny> => {
   const appName = project.projectConfig.projectName.toLowerCase();
   const [shortId] = uuid.v4().split('-');
 
@@ -31,8 +40,4 @@ const getAllDefaults = project => {
   };
 
   return defaults;
-};
-
-module.exports = {
-  getAllDefaults,
 };

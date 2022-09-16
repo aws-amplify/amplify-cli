@@ -1,30 +1,50 @@
-const inquirer = require('inquirer');
-const path = require('path');
-const fs = require('fs-extra');
-const os = require('os');
+/* eslint-disable no-param-reassign */
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable global-require */
+/* eslint-disable import/no-dynamic-require */
+import inquirer from 'inquirer';
+import path from 'path';
+import fs from 'fs-extra';
+import os from 'os';
+import {
+  $TSContext, ResourceAlreadyExistsError, exitOnNextTick, AmplifyCategories,
+  $TSAny,
+} from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 
 const providerName = 'awscloudformation';
 // FIXME: may be removed from here, since addResource can pass category to addWalkthrough
-const category = 'analytics';
+const category = AmplifyCategories.ANALYTICS;
 const parametersFileName = 'parameters.json';
 const serviceName = 'Pinpoint';
 const templateFileName = 'pinpoint-cloudformation-template.json';
-import { ResourceAlreadyExistsError, exitOnNextTick } from 'amplify-cli-core';
 
-async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
+/**
+ * Add resource walkthrough for Pinpoint/Kinesis resource.
+ * @param context amplify cli context
+ * @param defaultValuesFilename default values for given walkthrough
+ * @param serviceMetadata service related metadata from amplify-meta.json
+ * @returns resource
+ */
+export const addWalkthrough = async (context : $TSContext, defaultValuesFilename: string, serviceMetadata: $TSAny): Promise<$TSAny> => {
   const resourceName = resourceAlreadyExists(context);
 
   if (resourceName) {
     const errMessage = 'Pinpoint analytics have already been added to your project.';
-    context.print.warning(errMessage);
+    printer.warn(errMessage);
     await context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
     exitOnNextTick(0);
   } else {
-    return configure(context, defaultValuesFilename, serviceMetadata);
+    return configure(context, defaultValuesFilename, serviceMetadata, undefined);
   }
-}
+};
 
-function configure(context, defaultValuesFilename, serviceMetadata, resourceName) {
+const configure = (
+  context : $TSContext,
+  defaultValuesFilename: string,
+  serviceMetadata: $TSAny,
+  resourceName: string | undefined,
+): $TSAny => {
   const { amplify } = context;
   let { inputs } = serviceMetadata;
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
@@ -35,7 +55,7 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
 
   if (resourceName) {
-    inputs = inputs.filter(input => input.key !== 'resourceName');
+    inputs = inputs.filter((input: { key: string; }) => input.key !== 'resourceName');
     const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
     const parametersFilePath = path.join(resourceDirPath, parametersFileName);
     const parameters = context.amplify.readJsonFile(parametersFilePath);
@@ -51,7 +71,7 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
 
   const questions = [];
   for (let i = 1; i < inputs.length; i += 1) {
-    let question = {
+    let question : $TSAny = {
       name: inputs[i].key,
       message: inputs[i].question,
       validate: amplify.inputValidation(inputs[i]),
@@ -62,33 +82,27 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
     };
 
     if (inputs[i].type && inputs[i].type === 'list') {
-      question = Object.assign(
-        {
-          type: 'list',
-          choices: inputs[i].options,
-        },
-        question,
-      );
+      question = {
+        type: 'list',
+        choices: inputs[i].options,
+        ...question,
+      };
     } else if (inputs[i].type && inputs[i].type === 'multiselect') {
-      question = Object.assign(
-        {
-          type: 'checkbox',
-          choices: inputs[i].options,
-        },
-        question,
-      );
+      question = {
+        type: 'checkbox',
+        choices: inputs[i].options,
+        ...question,
+      };
     } else {
-      question = Object.assign(
-        {
-          type: 'input',
-        },
-        question,
-      );
+      question = {
+        type: 'input',
+        ...question,
+      };
     }
     questions.push(question);
   }
 
-  return inquirer.prompt(questions).then(async answers => {
+  return inquirer.prompt(questions).then(async (answers: $TSAny):Promise<$TSAny> => {
     answers[inputs[0].key] = answers[inputs[1].key];
     Object.assign(defaultValues, answers);
     const resource = defaultValues.resourceName;
@@ -98,7 +112,7 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
       allowUnauthenticatedIdentities: true,
     };
 
-    const checkResult = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
+    const checkResult : $TSAny = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
       analyticsRequirements,
       context,
       'analytics',
@@ -112,12 +126,12 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
     }
 
     if (checkResult.errors && checkResult.errors.length > 0) {
-      context.print.warning(checkResult.errors.join(os.EOL));
+      printer.warn(checkResult.errors.join(os.EOL));
     }
 
     // If auth is not imported and there were errors, adjust or enable auth configuration
     if (!checkResult.authEnabled || !checkResult.requirementsMet) {
-      context.print.warning('Adding analytics would add the Auth category to the project if not already added.');
+      printer.warn('Adding analytics would add the Auth category to the project if not already added.');
       if (
         await amplify.confirmPrompt(
           'Apps need authorization to send analytics events. Do you want to allow guests and unauthenticated users to send analytics events? (we recommend you allow this when getting started)',
@@ -131,12 +145,12 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
             analyticsRequirements,
           ]);
         } catch (error) {
-          context.print.error(error);
+          printer.error(error);
           throw error;
         }
       } else {
         try {
-          context.print.warning(
+          printer.warn(
             'Authorize only authenticated users to send analytics events. Use "amplify update auth" to modify this behavior.',
           );
           analyticsRequirements.allowUnauthenticatedIdentities = false;
@@ -147,7 +161,7 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
             analyticsRequirements,
           ]);
         } catch (error) {
-          context.print.error(error);
+          printer.error(error);
           throw error;
         }
       }
@@ -161,12 +175,12 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
     writeCfnFile(context, resourceDirPath);
     return resource;
   });
-}
+};
 
-function checkIfNotificationsCategoryExists(context) {
+const checkIfNotificationsCategoryExists = (context: $TSContext): $TSAny => {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
-  let pinpointApp;
+  let pinpointApp: $TSAny;
 
   if (amplifyMeta.notifications) {
     const categoryResources = amplifyMeta.notifications;
@@ -180,9 +194,9 @@ function checkIfNotificationsCategoryExists(context) {
   }
 
   return pinpointApp;
-}
+};
 
-function resourceAlreadyExists(context) {
+const resourceAlreadyExists = (context: $TSContext): string | undefined => {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
   let resourceName;
@@ -197,9 +211,9 @@ function resourceAlreadyExists(context) {
   }
 
   return resourceName;
-}
+};
 
-function writeCfnFile(context, resourceDirPath, force = false) {
+const writeCfnFile = (context: $TSContext, resourceDirPath: string, force = false): void => {
   fs.ensureDirSync(resourceDirPath);
   const templateFilePath = path.join(resourceDirPath, templateFileName);
   if (!fs.existsSync(templateFilePath) || force) {
@@ -209,10 +223,10 @@ function writeCfnFile(context, resourceDirPath, force = false) {
     const jsonString = JSON.stringify(templateSource, null, 4);
     fs.writeFileSync(templateFilePath, jsonString, 'utf8');
   }
-}
+};
 
-function getTemplateMappings(context) {
-  const Mappings = {
+const getTemplateMappings = (context:$TSContext):Record<string, $TSAny> => {
+  const Mappings: Record<string, $TSAny> = {
     RegionMapping: {},
   };
   const providerPlugins = context.amplify.getProviderPlugins(context);
@@ -224,16 +238,25 @@ function getTemplateMappings(context) {
     };
   });
   return Mappings;
-}
+};
 
-function writeParams(resourceDirPath, values) {
+/**
+ * Save the params.json file for analytics category
+ * @param {*} resourceDirPath Path to params.json
+ * @param {*} values values to be written to params.json
+ */
+export const writeParams = (resourceDirPath: string, values: Array<$TSAny>): void => {
   fs.ensureDirSync(resourceDirPath);
   const parametersFilePath = path.join(resourceDirPath, parametersFileName);
   const jsonString = JSON.stringify(values, null, 4);
   fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
-}
+};
 
-function migrate(context) {
+/**
+ * migrate from older version of pinpoint configuration to new version
+ * @param {*} context amplify cli context
+ */
+export const migrate = (context: $TSContext): void => {
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const { amplifyMeta } = context.migrationInfo;
   const { analytics = {} } = amplifyMeta;
@@ -251,9 +274,9 @@ function migrate(context) {
     const parametersFilePath = path.join(resourcePath, parametersFileName);
     fs.writeFileSync(parametersFilePath, JSON.stringify(updatedParams, null, 4), 'utf8');
   });
-}
+};
 
-function migrateCFN(cfn) {
+const migrateCFN = (cfn: $TSAny): $TSAny => {
   const { Parameters, Conditions, Resources } = cfn;
 
   // update Parameters
@@ -325,9 +348,9 @@ function migrateCFN(cfn) {
   });
 
   return cfn;
-}
+};
 
-function migrateParams(context, params) {
+const migrateParams = (context:$TSContext, params: Record<string, $TSAny>): Record<string, $TSAny> => {
   const { defaultValuesFilename } = require(`${__dirname}/../../supported-services.json`)[serviceName];
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
   const { getAllDefaults } = require(defaultValuesSrc);
@@ -343,9 +366,9 @@ function migrateParams(context, params) {
   const defaultValues = getAllDefaults(context.migrationInfo);
   delete defaultValues.resourceName;
   return { ...defaultValues, ...params };
-}
+};
 
-function replaceRef(node, refName, refReplacement) {
+const replaceRef = (node: $TSAny, refName: string, refReplacement: $TSAny): $TSAny => {
   if (Array.isArray(node)) {
     return node.forEach(item => replaceRef(item, refName, refReplacement));
   }
@@ -353,26 +376,33 @@ function replaceRef(node, refName, refReplacement) {
     if (isRefNode(node, refName)) {
       delete node.Ref;
       Object.assign(node, refReplacement);
-      return;
+      return undefined;
     }
     Object.values(node).forEach(n => {
       replaceRef(n, refName, refReplacement);
     });
   }
-}
+};
 
-function isRefNode(node, refName) {
+const isRefNode = (node: $TSAny, refName: string): boolean => {
   if (typeof node === 'object' && 'Ref' in node && node.Ref === refName) {
     return true;
   }
   return false;
-}
+};
 
-function getIAMPolicies(resourceName, crudOptions) {
+/**
+ * Given access pattern for Pinpoint resource, return the mobiletargeting IAM policies.
+ * e.g 'create' access requires ['mobiletargeting:Put*', 'mobiletargeting:Create*', 'mobiletargeting:Send*']
+ * @param resourceName Name of the Pinpoint resource
+ * @param crudOptions create, read, update, delete access pattern for Auth/UnAuth roles
+ * @returns IAM {policy, attributes}
+ */
+export const getIAMPolicies = (resourceName: string, crudOptions: $TSAny): $TSAny => {
   let policy = {};
-  const actions = [];
+  const actions: Array<string> = [];
 
-  crudOptions.forEach(crudOption => {
+  crudOptions.forEach((crudOption : string) => {
     switch (crudOption) {
       case 'create':
         actions.push('mobiletargeting:Put*', 'mobiletargeting:Create*', 'mobiletargeting:Send*');
@@ -436,6 +466,4 @@ function getIAMPolicies(resourceName, crudOptions) {
   const attributes = ['Id', 'Region'];
 
   return { policy, attributes };
-}
-
-module.exports = { addWalkthrough, migrate, getIAMPolicies };
+};
