@@ -1,19 +1,23 @@
-import * as cdk from '@aws-cdk/core';
-import * as iam from '@aws-cdk/aws-iam';
-import * as lambda from '@aws-cdk/aws-lambda';
-import { Duration, Fn } from '@aws-cdk/core';
-import { GeofenceCollectionParameters } from '../service-utils/geofenceCollectionParams';
-import { BaseStack, TemplateMappings } from './baseStack';
-import { Effect } from '@aws-cdk/aws-iam';
-import { customGeofenceCollectionLambdaCodePath } from '../service-utils/constants';
+import * as cdk from 'aws-cdk-lib/core';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { Duration, Fn } from 'aws-cdk-lib/core';
+import { Construct } from 'constructs';
+import { Effect } from 'aws-cdk-lib/aws-iam';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
-import { Runtime } from '@aws-cdk/aws-lambda';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import { customGeofenceCollectionLambdaCodePath } from '../service-utils/constants';
+import { BaseStack, TemplateMappings } from './baseStack';
+import { GeofenceCollectionParameters } from '../service-utils/geofenceCollectionParams';
 import { crudPermissionsMap } from '../service-utils/geofenceCollectionUtils';
 
 type GeofenceCollectionStackProps = Pick<GeofenceCollectionParameters, 'groupPermissions'> &
     TemplateMappings & { authResourceName: string };
 
+/**
+ * Geofence collection stack
+ */
 export class GeofenceCollectionStack extends BaseStack {
   protected readonly groupPermissions: Record<string, string[]>;
   protected readonly geofenceCollectionResource: cdk.CustomResource;
@@ -21,7 +25,7 @@ export class GeofenceCollectionStack extends BaseStack {
   protected readonly geofenceCollectionName: string;
   protected readonly authResourceName: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: GeofenceCollectionStackProps) {
+  constructor(scope: Construct, id: string, private readonly props: GeofenceCollectionStackProps) {
     super(scope, id, props);
 
     this.groupPermissions = this.props.groupPermissions;
@@ -29,13 +33,14 @@ export class GeofenceCollectionStack extends BaseStack {
     this.geofenceCollectionRegion = this.regionMapping.findInMap(cdk.Fn.ref('AWS::Region'), 'locationServiceRegion');
 
     const inputParameters: string[] = Object.keys(this.props.groupPermissions).map(
-        (group: string) => `authuserPoolGroups${group}GroupRole`
+      // eslint-disable-next-line spellcheck/spell-checker
+      (group: string) => `authuserPoolGroups${group}GroupRole`,
     );
     inputParameters.push(
       `auth${this.authResourceName}UserPoolId`,
       'collectionName',
       'env',
-      'isDefault'
+      'isDefault',
     );
     this.parameters = this.constructInputParameters(inputParameters);
 
@@ -46,22 +51,25 @@ export class GeofenceCollectionStack extends BaseStack {
     this.constructOutputs();
   }
 
-  private constructOutputs() {
+  private constructOutputs(): void {
+    // eslint-disable-next-line no-new
     new cdk.CfnOutput(this, 'Name', {
-      value: this.geofenceCollectionResource.getAtt('CollectionName').toString()
+      value: this.geofenceCollectionResource.getAtt('CollectionName').toString(),
     });
+    // eslint-disable-next-line no-new
     new cdk.CfnOutput(this, 'Region', {
-      value: this.geofenceCollectionRegion
+      value: this.geofenceCollectionRegion,
     });
     // This is a work-around until the CollectionArn is included in the `UpdateGeofenceCollection` output
     const outputGeofenceCollectionARN = cdk.Fn.sub('arn:aws:geo:${region}:${account}:geofence-collection/${collectionName}', {
       region: this.geofenceCollectionRegion,
       account: cdk.Fn.ref('AWS::AccountId'),
-      collectionName: this.geofenceCollectionResource.getAtt('CollectionName').toString()
+      collectionName: this.geofenceCollectionResource.getAtt('CollectionName').toString(),
     });
+    // eslint-disable-next-line no-new
     new cdk.CfnOutput(this, 'Arn', {
       // value: this.geofenceCollectionResource.getAtt('CollectionArn').toString(),
-      value: outputGeofenceCollectionARN
+      value: outputGeofenceCollectionARN,
     });
   }
 
@@ -100,7 +108,7 @@ export class GeofenceCollectionStack extends BaseStack {
       properties: {
         collectionName: this.geofenceCollectionName,
         region: this.geofenceCollectionRegion,
-        env: cdk.Fn.ref('env')
+        env: cdk.Fn.ref('env'),
       },
     });
 
@@ -108,35 +116,37 @@ export class GeofenceCollectionStack extends BaseStack {
   }
 
   // Grant selected access permissions for Geofence operations to chosen Cognito Groups
-  private constructCollectionPolicyResources(collectionResource: cdk.CustomResource) {
+  private constructCollectionPolicyResources(collectionResource: cdk.CustomResource):void {
     Object.keys(this.groupPermissions).forEach((group: string) => {
       // This is a work-around until the CollectionArn is included in the `UpdateGeofenceCollection` output
       const outputGeofenceCollectionARN = cdk.Fn.sub('arn:aws:geo:${region}:${account}:geofence-collection/${collectionName}', {
         region: this.geofenceCollectionRegion,
         account: cdk.Fn.ref('AWS::AccountId'),
-        collectionName: collectionResource.getAtt('CollectionName').toString()
+        collectionName: collectionResource.getAtt('CollectionName').toString(),
       });
-      const crudActions: string[] = _.uniq(_.flatten(this.groupPermissions[group].map((permission: string) => crudPermissionsMap[permission])));
+      const crudActions: string[] = _.uniq(_.flatten(this.groupPermissions[group].map(
+        (permission: string) => crudPermissionsMap[permission],
+      )));
       const policyDocument = new iam.PolicyDocument({
-          statements: [
-            new iam.PolicyStatement({
-              effect: iam.Effect.ALLOW,
-              actions: crudActions,
-              resources: [outputGeofenceCollectionARN],
-            }),
-          ],
+        statements: [
+          new iam.PolicyStatement({
+            effect: iam.Effect.ALLOW,
+            actions: crudActions,
+            resources: [outputGeofenceCollectionARN],
+          }),
+        ],
       });
 
       const policy = new iam.CfnPolicy(this, `${group}GeofenceCollectionPolicy`, {
-          policyName: `${group}${this.geofenceCollectionName}Policy`,
-          roles: [
-              cdk.Fn.join('-',
-              [
+        policyName: `${group}${this.geofenceCollectionName}Policy`,
+        roles: [
+          cdk.Fn.join('-',
+            [
                 this.parameters.get(`auth${this.authResourceName}UserPoolId`)!.valueAsString,
-                `${group}GroupRole`
-              ])
-          ],
-          policyDocument: policyDocument,
+                `${group}GroupRole`,
+            ]),
+        ],
+        policyDocument,
       });
     });
   }

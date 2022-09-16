@@ -4,6 +4,9 @@ import * as sns from '@aws-cdk/aws-sns';
 import * as subs from '@aws-cdk/aws-sns-subscriptions';
 import * as sqs from '@aws-cdk/aws-sqs';
 
+/**
+ *
+ */
 export class cdkStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -41,7 +44,7 @@ export class cdkStack extends cdk.Stack {
       assumedBy: new iam.AccountRootPrincipal(),
     });
 
-    /*Example 3: Adding policy to the IAM role*/
+    /* Example 3: Adding policy to the IAM role*/
     role.addToPolicy(
       new iam.PolicyStatement({
         actions: ['*'],

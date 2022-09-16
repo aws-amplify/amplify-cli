@@ -1,6 +1,6 @@
+import { App } from 'aws-cdk-lib/core';
 import { AccessType } from '../../service-utils/resourceParams';
 import { MapStack } from '../../service-stacks/mapStack';
-import { App } from '@aws-cdk/core';
 
 describe('cdk stack creation for map service', () => {
   beforeEach(() => {
@@ -16,7 +16,7 @@ describe('cdk stack creation for map service', () => {
         },
       },
       groupPermissions: ['adminGroup'],
-      authResourceName: 'mockAuth'
+      authResourceName: 'mockAuth',
     };
     const mapStack = new MapStack(new App(), 'MapStack', stackProps);
     expect(mapStack.toCloudFormation()).toMatchSnapshot();
@@ -31,7 +31,7 @@ describe('cdk stack creation for map service', () => {
         },
       },
       groupPermissions: ['adminGroup'],
-      authResourceName: 'mockAuth'
+      authResourceName: 'mockAuth',
     };
     const mapStack = new MapStack(new App(), 'MapStack', stackProps);
     expect(mapStack.toCloudFormation()).toMatchSnapshot();

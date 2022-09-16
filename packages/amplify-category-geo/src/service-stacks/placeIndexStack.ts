@@ -1,18 +1,22 @@
-import * as cdk from '@aws-cdk/core';
-import * as iam from '@aws-cdk/aws-iam';
-import * as lambda from '@aws-cdk/aws-lambda';
-import { CfnResource, Duration, Fn } from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib/core';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { CfnResource, Duration, Fn } from 'aws-cdk-lib/core';
+import { Effect } from 'aws-cdk-lib/aws-iam';
+import * as fs from 'fs-extra';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Construct } from 'constructs';
 import { PlaceIndexParameters } from '../service-utils/placeIndexParams';
 import { AccessType } from '../service-utils/resourceParams';
 import { BaseStack, TemplateMappings } from './baseStack';
-import { Effect } from '@aws-cdk/aws-iam';
 import { customPlaceIndexLambdaCodePath } from '../service-utils/constants';
-import * as fs from 'fs-extra';
-import { Runtime } from '@aws-cdk/aws-lambda';
 
 type PlaceIndexStackProps = Pick<PlaceIndexParameters, 'accessType' | 'groupPermissions'> &
   TemplateMappings & { authResourceName: string };
 
+/**
+ * Place Index Stack Class
+ */
 export class PlaceIndexStack extends BaseStack {
   protected readonly groupPermissions: string[];
   protected readonly accessType: string;
@@ -21,7 +25,7 @@ export class PlaceIndexStack extends BaseStack {
   protected readonly placeIndexName: string;
   protected readonly authResourceName: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: PlaceIndexStackProps) {
+  constructor(scope: Construct, id: string, private readonly props: PlaceIndexStackProps) {
     super(scope, id, props);
 
     this.accessType = this.props.accessType;
@@ -30,7 +34,8 @@ export class PlaceIndexStack extends BaseStack {
     this.placeIndexRegion = this.regionMapping.findInMap(cdk.Fn.ref('AWS::Region'), 'locationServiceRegion');
 
     const inputParameters: string[] = this.props.groupPermissions.map(
-      (group: string) => `authuserPoolGroups${group}GroupRole`
+      // eslint-disable-next-line spellcheck/spell-checker
+      (group: string) => `authuserPoolGroups${group}GroupRole`,
     );
     inputParameters.push(
       `auth${this.authResourceName}UserPoolId`,
@@ -40,7 +45,7 @@ export class PlaceIndexStack extends BaseStack {
       'dataProvider',
       'dataSourceIntendedUse',
       'env',
-      'isDefault'
+      'isDefault',
     );
     this.parameters = this.constructInputParameters(inputParameters);
 
@@ -51,13 +56,16 @@ export class PlaceIndexStack extends BaseStack {
     this.constructOutputs();
   }
 
-  private constructOutputs() {
+  private constructOutputs(): void {
+    // eslint-disable-next-line no-new
     new cdk.CfnOutput(this, 'Name', {
       value: this.placeIndexResource.getAtt('IndexName').toString(),
     });
+    // eslint-disable-next-line no-new
     new cdk.CfnOutput(this, 'Region', {
       value: this.placeIndexRegion,
     });
+    // eslint-disable-next-line no-new
     new cdk.CfnOutput(this, 'Arn', {
       value: this.placeIndexResource.getAtt('IndexArn').toString(),
     });
@@ -101,8 +109,8 @@ export class PlaceIndexStack extends BaseStack {
       resourceType: 'Custom::LambdaCallout',
       properties: {
         indexName: this.placeIndexName,
-        dataSource: dataSource,
-        dataSourceIntendedUse: dataSourceIntendedUse,
+        dataSource,
+        dataSourceIntendedUse,
         region: this.placeIndexRegion,
         env: cdk.Fn.ref('env'),
       },
@@ -113,7 +121,7 @@ export class PlaceIndexStack extends BaseStack {
 
   // Grant read-only access to the Place Index for Authorized and/or Guest users
   private constructIndexPolicyResource(indexResource: cdk.CustomResource): CfnResource {
-    let policy = new iam.PolicyDocument({
+    const policy = new iam.PolicyDocument({
       statements: [
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
@@ -123,22 +131,22 @@ export class PlaceIndexStack extends BaseStack {
       ],
     });
 
-    let cognitoRoles: Array<string> = new Array();
-    if (this.accessType === AccessType.AuthorizedUsers ||
-      this.accessType === AccessType.AuthorizedAndGuestUsers) {
+    const cognitoRoles: Array<string> = [];
+    if (this.accessType === AccessType.AuthorizedUsers
+      || this.accessType === AccessType.AuthorizedAndGuestUsers) {
       cognitoRoles.push(this.parameters.get('authRoleName')!.valueAsString);
     }
-    if (this.accessType == AccessType.AuthorizedAndGuestUsers) {
+    if (this.accessType === AccessType.AuthorizedAndGuestUsers) {
       cognitoRoles.push(this.parameters.get('unauthRoleName')!.valueAsString);
     }
     if (this.groupPermissions && this.authResourceName) {
       this.groupPermissions.forEach((group: string) => {
         cognitoRoles.push(
           cdk.Fn.join('-',
-          [
+            [
             this.parameters.get(`auth${this.authResourceName}UserPoolId`)!.valueAsString,
-            `${group}GroupRole`
-          ])
+            `${group}GroupRole`,
+            ]),
         );
       });
     }

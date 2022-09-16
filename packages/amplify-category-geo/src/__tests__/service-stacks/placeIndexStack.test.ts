@@ -1,6 +1,6 @@
+import { App } from 'aws-cdk-lib/core';
 import { AccessType } from '../../service-utils/resourceParams';
 import { PlaceIndexStack } from '../../service-stacks/placeIndexStack';
-import { App } from '@aws-cdk/core';
 
 describe('cdk stack creation for place index service', () => {
   beforeEach(() => {
@@ -16,7 +16,7 @@ describe('cdk stack creation for place index service', () => {
         },
       },
       groupPermissions: ['adminGroup'],
-      authResourceName: 'mockAuth'
+      authResourceName: 'mockAuth',
     };
     const mapStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', stackProps);
     expect(mapStack.toCloudFormation()).toMatchSnapshot();
@@ -31,7 +31,7 @@ describe('cdk stack creation for place index service', () => {
         },
       },
       groupPermissions: ['adminGroup'],
-      authResourceName: 'mockAuth'
+      authResourceName: 'mockAuth',
     };
     const mapStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', stackProps);
     expect(mapStack.toCloudFormation()).toMatchSnapshot();

@@ -1,18 +1,21 @@
-import * as cdk from '@aws-cdk/core';
-import * as iam from '@aws-cdk/aws-iam';
-import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from 'aws-cdk-lib/core';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { CfnResource, Duration, Fn } from 'aws-cdk-lib/core';
+import { Effect } from 'aws-cdk-lib/aws-iam';
+import { Construct } from 'constructs';
+import * as fs from 'fs-extra';
 import { MapParameters } from '../service-utils/mapParams';
-import { CfnResource, Duration, Fn } from '@aws-cdk/core';
 import { AccessType } from '../service-utils/resourceParams';
 import { BaseStack, TemplateMappings } from './baseStack';
-import { Effect } from '@aws-cdk/aws-iam';
-import { Runtime } from '@aws-cdk/aws-lambda';
 import { customMapLambdaCodePath } from '../service-utils/constants';
-import * as fs from 'fs-extra';
 
 type MapStackProps = Pick<MapParameters, 'accessType' | 'groupPermissions'> &
   TemplateMappings & { authResourceName: string };
 
+/**
+ * Map stack class
+ */
 export class MapStack extends BaseStack {
   protected readonly groupPermissions: string[];
   protected readonly accessType: string;
@@ -21,7 +24,7 @@ export class MapStack extends BaseStack {
   protected readonly mapName: string;
   protected readonly authResourceName: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: MapStackProps) {
+  constructor(scope: Construct, id: string, private readonly props: MapStackProps) {
     super(scope, id, props);
 
     this.accessType = this.props.accessType;
@@ -30,7 +33,8 @@ export class MapStack extends BaseStack {
     this.mapRegion = this.regionMapping.findInMap(cdk.Fn.ref('AWS::Region'), 'locationServiceRegion');
 
     const inputParameters: string[] = (this.props.groupPermissions || []).map(
-      (group: string) => `authuserPoolGroups${group}GroupRole`
+      // eslint-disable-next-line spellcheck/spell-checker
+      (group: string) => `authuserPoolGroups${group}GroupRole`,
     );
     inputParameters.push(
       `auth${this.authResourceName}UserPoolId`,
@@ -39,7 +43,7 @@ export class MapStack extends BaseStack {
       'mapName',
       'mapStyle',
       'env',
-      'isDefault'
+      'isDefault',
     );
     this.parameters = this.constructInputParameters(inputParameters);
 
@@ -49,16 +53,20 @@ export class MapStack extends BaseStack {
     this.constructOutputs();
   }
 
-  private constructOutputs() {
+  private constructOutputs(): void {
+    // eslint-disable-next-line no-new
     new cdk.CfnOutput(this, 'Name', {
       value: this.mapResource.getAtt('MapName').toString(),
     });
+    // eslint-disable-next-line no-new
     new cdk.CfnOutput(this, 'Style', {
       value: this.parameters.get('mapStyle')!.valueAsString,
     });
+    // eslint-disable-next-line no-new
     new cdk.CfnOutput(this, 'Region', {
       value: this.mapRegion,
     });
+    // eslint-disable-next-line no-new
     new cdk.CfnOutput(this, 'Arn', {
       value: this.mapResource.getAtt('MapArn').toString(),
     });
@@ -89,7 +97,7 @@ export class MapStack extends BaseStack {
     const customMapLambda = new lambda.Function(this, 'CustomMapLambda', {
       code: lambda.Code.fromInline(customMapLambdaCode),
       handler: 'index.handler',
-      runtime: Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       timeout: Duration.seconds(300),
     });
     customMapLambda.addToRolePolicy(geoCreateMapStatement);
@@ -100,7 +108,7 @@ export class MapStack extends BaseStack {
       resourceType: 'Custom::LambdaCallout',
       properties: {
         mapName: this.mapName,
-        mapStyle: mapStyle,
+        mapStyle,
         region: this.mapRegion,
         env: cdk.Fn.ref('env'),
       },
@@ -111,32 +119,33 @@ export class MapStack extends BaseStack {
 
   // Grant read-only access to the Map for Authorized and/or Guest users
   private constructMapPolicyResource(mapResource: cdk.CustomResource): CfnResource {
-    let policy = new iam.PolicyDocument({
+    const policy = new iam.PolicyDocument({
       statements: [
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
+          // eslint-disable-next-line spellcheck/spell-checker
           actions: ['geo:GetMapStyleDescriptor', 'geo:GetMapGlyphs', 'geo:GetMapSprites', 'geo:GetMapTile'],
           resources: [mapResource.getAtt('MapArn').toString()],
         }),
       ],
     });
 
-    let cognitoRoles: Array<string> = new Array();
-    if (this.accessType === AccessType.AuthorizedUsers ||
-      this.accessType === AccessType.AuthorizedAndGuestUsers) {
+    const cognitoRoles: Array<string> = [];
+    if (this.accessType === AccessType.AuthorizedUsers
+      || this.accessType === AccessType.AuthorizedAndGuestUsers) {
       cognitoRoles.push(this.parameters.get('authRoleName')!.valueAsString);
     }
-    if (this.accessType == AccessType.AuthorizedAndGuestUsers) {
+    if (this.accessType === AccessType.AuthorizedAndGuestUsers) {
       cognitoRoles.push(this.parameters.get('unauthRoleName')!.valueAsString);
     }
     if (this.groupPermissions && this.authResourceName) {
       this.groupPermissions.forEach((group: string) => {
         cognitoRoles.push(
           cdk.Fn.join('-',
-          [
+            [
             this.parameters.get(`auth${this.authResourceName}UserPoolId`)!.valueAsString,
-            `${group}GroupRole`
-          ])
+            `${group}GroupRole`,
+            ]),
         );
       });
     }
