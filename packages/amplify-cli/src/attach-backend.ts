@@ -119,9 +119,16 @@ const backupAmplifyFolder = (): void => {
     try {
       fs.moveSync(amplifyDirPath, backupAmplifyDirPath);
     } catch (e) {
-      throw amplifyErrorWithTroubleshootingLink('DirectoryError', {
+      if (e.code === 'EPERM') {
+        throw amplifyErrorWithTroubleshootingLink('DirectoryError', {
+          message: `Could not attach the backend to the project.`,
+          resolution: 'Ensure that there are no applications locking the `amplify` folder and try again.',
+          details: e.message,
+          stack: e.stack,
+        });
+      }
+      throw amplifyFaultWithTroubleshootingLink('AmplifyBackupFault', {
         message: `Could not attach the backend to the project.`,
-        resolution: 'Ensure that there are no applications locking the `amplify` folder and try again.',
         details: e.message,
         stack: e.stack,
       });

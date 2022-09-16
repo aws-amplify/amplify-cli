@@ -21,8 +21,8 @@ export const run = async (context: $TSContext): Promise<void> => {
       await preDeployPullBackend(context, inputParams.sandboxId);
     } catch (e) {
       throw amplifyFaultWithTroubleshootingLink('UnknownFault', {
-        message: `Failed to pull sandbox app: ${e.message || 'An unknown error occurred.'}`,
-        details: e.message,
+        message: `Failed to pull sandbox app.`,
+        details: e.message || 'An unknown error occurred.',
         stack: e.stack,
       });
     }

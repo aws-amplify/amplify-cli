@@ -119,6 +119,7 @@ export type AmplifyErrorType =
  * Amplify fault types
  */
 export type AmplifyFaultType =
+  | 'AmplifyBackupFault'
   | 'BackendPullFault'
   | 'DeploymentFault'
   | 'NotImplementedFault'

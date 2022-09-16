@@ -11,10 +11,10 @@ export const run = async context => {
   const isHostingAdded = amplifyMeta.hosting && Object.keys(amplifyMeta.hosting).length > 0;
 
   if (!isHostingAdded) {
-    printer.info('');
-    printer.error('Please add hosting to your project before publishing your project');
+    printer.blankLine();
+    printer.error('Add hosting to your project before publishing your project');
     printer.info('Command: amplify hosting add');
-    printer.info('');
+    printer.blankLine();
     return;
   }
 
