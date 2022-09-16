@@ -1,15 +1,21 @@
+import {
+  $TSContext,
+  amplifyErrorWithTroubleshootingLink,
+  amplifyFaultWithTroubleshootingLink,
+  FeatureFlags,
+  pathManager,
+  stateManager,
+} from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import {
-  pathManager, stateManager, $TSContext, FeatureFlags,
-} from 'amplify-cli-core';
+import { postPullCodegen } from './amplify-service-helper';
 import { queryProvider } from './attach-backend-steps/a10-queryProvider';
 import { analyzeProject } from './attach-backend-steps/a20-analyzeProject';
 import { initFrontend } from './attach-backend-steps/a30-initFrontend';
 import { generateFiles } from './attach-backend-steps/a40-generateFiles';
-import { postPullCodegen } from './amplify-service-helper';
-import { initializeEnv } from './initialize-env';
 import { getAmplifyAppId } from './extensions/amplify-helpers/get-amplify-appId';
+import { initializeEnv } from './initialize-env';
 
 const backupAmplifyDirName = 'amplify-backup';
 
@@ -39,10 +45,11 @@ export const attachBackend = async (context: $TSContext, inputParams): Promise<v
     removeAmplifyFolderStructure();
     restoreOriginalAmplifyFolder();
 
-    context.print.error('Failed to pull the backend.');
-    context.usageData.emitError(e);
-
-    throw e;
+    throw amplifyFaultWithTroubleshootingLink('PullBackendFault', {
+      message: 'Failed to pull the backend.',
+      details: e.message,
+      stack: e.stack,
+    });
   }
 };
 
@@ -77,18 +84,18 @@ const onSuccess = async (context: $TSContext): Promise<void> => {
 
       const { envName } = context.exeInfo.localEnvInfo;
 
-      context.print.info('');
-      context.print.success(`Successfully pulled backend environment ${envName} from the cloud.`);
-      context.print.info('Run \'amplify pull\' to sync future upstream changes.');
-      context.print.info('');
+      printer.info('');
+      printer.success(`Successfully pulled backend environment ${envName} from the cloud.`);
+      printer.info('Run \'amplify pull\' to sync future upstream changes.');
+      printer.info('');
     } else {
       stateManager.setLocalEnvInfo(process.cwd(), { ...context.exeInfo.localEnvInfo, noUpdateBackend: true });
       removeAmplifyFolderStructure(true);
 
-      context.print.info('');
-      context.print.success('Added backend environment config object to your project.');
-      context.print.info('Run \'amplify pull\' to sync future upstream changes.');
-      context.print.info('');
+      printer.info('');
+      printer.success('Added backend environment config object to your project.');
+      printer.info('Run \'amplify pull\' to sync future upstream changes.');
+      printer.info('');
     }
   } else if (stateManager.currentMetaFileExists()) {
     await initializeEnv(context, stateManager.getCurrentMeta());
@@ -105,22 +112,19 @@ const backupAmplifyFolder = (): void => {
     const backupAmplifyDirPath = path.join(projectPath, backupAmplifyDirName);
 
     if (fs.existsSync(backupAmplifyDirPath)) {
-      const error = new Error(`Backup folder at ${backupAmplifyDirPath} already exists, remove the folder and retry the operation.`);
-
-      error.name = 'BackupFolderAlreadyExist';
-      error.stack = undefined;
-
-      throw error;
+      throw amplifyErrorWithTroubleshootingLink('DirectoryAlreadyExistsError', {
+        message: `Backup folder at ${backupAmplifyDirPath} already exists, remove the folder and retry the operation.`,
+      });
     }
     try {
       fs.moveSync(amplifyDirPath, backupAmplifyDirPath);
     } catch (e) {
-      if (e.code === 'EPERM') {
-        throw new Error(
-          'Could not attach the backend to the project. Ensure that there are no applications locking the `amplify` folder and try again',
-        );
-      }
-      throw e;
+      throw amplifyErrorWithTroubleshootingLink('DirectoryError', {
+        message: `Could not attach the backend to the project.`,
+        resolution: 'Ensure that there are no applications locking the `amplify` folder and try again.',
+        details: e.message,
+        stack: e.stack,
+      });
     }
   }
 };
