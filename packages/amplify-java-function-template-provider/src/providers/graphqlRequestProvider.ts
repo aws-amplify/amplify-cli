@@ -2,13 +2,16 @@ import { FunctionTemplateParameters } from 'amplify-function-plugin-interface';
 import {
   AmplifySupportedService, exitOnNextTick,
 } from 'amplify-cli-core';
-import { templateRoot } from '../utils/constants';
 import path from 'path';
+import { $TSContext } from 'amplify-cli-core';
+import { templateRoot } from '../utils/constants';
 
 const pathToTemplateFiles = path.join(templateRoot, 'lambda');
 
-export async function graphqlRequestProvider(context: any): Promise<FunctionTemplateParameters> {
-    
+/**
+* Graphql request to an AppSync API using Java runtime Lambda function
+ */
+export async function graphqlRequestProvider(context: $TSContext): Promise<FunctionTemplateParameters> {
   const { allResources } = await context.amplify.getResourceStatus();
   const apiResource = allResources.filter((resource: { service: string }) => resource.service === AmplifySupportedService.APPSYNC);
 
@@ -25,7 +28,7 @@ export async function graphqlRequestProvider(context: any): Promise<FunctionTemp
     context.print.error(`IAM Auth not enabled for ${AmplifySupportedService.APPSYNC} API. To update an api, use "amplify update api".`);
     exitOnNextTick(0);
   }
-  
+
   const files = [
     'appsync-request/build.gradle.ejs',
     'appsync-request/LambdaRequestHandler.java.ejs',
