@@ -16,7 +16,7 @@ import {
   sleep,
 
 } from '@aws-amplify/amplify-e2e-core';
-import Lambda from "aws-sdk/clients/lambda";
+import Lambda from 'aws-sdk/clients/lambda';
 
 describe('Lambda AppSync Java:', () => {
   let projRoot: string;
@@ -106,17 +106,17 @@ describe('Lambda AppSync Java:', () => {
     const meta = getProjectMeta(projRoot);
     const { Arn: functionArn, Name: functionName, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
 
-      const lam = new Lambda({
-      region : region,
+    const lam = new Lambda({
+      region,
     });
-    var params = {
+    const params = {
       FunctionName: functionName,
       MemorySize: 200,
       Timeout: 50,
     };
 
-    await lam.updateFunctionConfiguration(params, function(err){
-      if(err) console.log(err, err.stack);
+    await lam.updateFunctionConfiguration(params, err => {
+      if (err) console.log(err, err.stack);
     });
 
     await sleep(1000 * 20);
@@ -134,8 +134,7 @@ describe('Lambda AppSync Java:', () => {
     expect(fnResponse.StatusCode).toBe(200);
     expect(fnResponse.Payload).toBeDefined();
 
-    console.log(fnResponse);
-    var gqlResponse = JSON.parse(fnResponse.Payload as string);
+    let gqlResponse = JSON.parse(fnResponse.Payload as string);
     gqlResponse = gqlResponse.replace(/\\"/g, '"');
     gqlResponse = JSON.parse(gqlResponse as string);
     expect(gqlResponse.data).toBeDefined();
@@ -174,17 +173,17 @@ describe('Lambda AppSync Java:', () => {
     const meta = getProjectMeta(projRoot);
     const { Arn: functionArn, Name: functionName, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
 
-      const lam = new Lambda({
-      region : region,
+    const lam = new Lambda({
+      region,
     });
-    var params = {
+    const params = {
       FunctionName: functionName,
       MemorySize: 200,
       Timeout: 50,
     };
 
-    await lam.updateFunctionConfiguration(params, function(err){
-      if(err) console.log(err, err.stack);
+    await lam.updateFunctionConfiguration(params, err => {
+      if (err) console.log(err, err.stack);
     });
 
     await sleep(1000 * 20);
@@ -202,8 +201,8 @@ describe('Lambda AppSync Java:', () => {
     expect(fnResponse.StatusCode).toBe(200);
     expect(fnResponse.Payload).toBeDefined();
 
-    var gqlResponse = JSON.parse(fnResponse.Payload as string);
-    
+    let gqlResponse = JSON.parse(fnResponse.Payload as string);
+
     gqlResponse = gqlResponse.replace(/\\"/g, '"');
     gqlResponse = JSON.parse(gqlResponse as string);
     expect(gqlResponse.data).toBeDefined();

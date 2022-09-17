@@ -1,9 +1,8 @@
 import { FunctionTemplateParameters } from 'amplify-function-plugin-interface';
 import {
-  AmplifySupportedService, exitOnNextTick,
+  $TSContext, AmplifySupportedService, exitOnNextTick,
 } from 'amplify-cli-core';
 import path from 'path';
-import { $TSContext } from 'amplify-cli-core';
 import { templateRoot } from '../utils/constants';
 
 const pathToTemplateFiles = path.join(templateRoot, 'lambda');
