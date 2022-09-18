@@ -34,7 +34,10 @@ const nodeJSTemplateChoices = [
   'Serverless ExpressJS function (Integration with API Gateway)',
 ];
 
-const pythonTemplateChoices = ['Hello World'];
+const pythonTemplateChoices = [
+  'Hello World',
+  'AppSync - GraphQL API request (with IAM)',
+];
 
 const crudOptions = ['create', 'read', 'update', 'delete'];
 

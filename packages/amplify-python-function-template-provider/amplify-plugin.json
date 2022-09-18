@@ -13,6 +13,10 @@
       {
         "name": "Hello World",
         "value": "hello-world"
+      },
+      {
+        "name": "AppSync - GraphQL API request (with IAM)",
+        "value": "appsync-request"
       }
     ]
   }
