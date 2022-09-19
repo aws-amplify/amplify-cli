@@ -47,21 +47,34 @@ export const handleException = async (exception: unknown): Promise<void> => {
     printAmplifyException(amplifyException);
   }
 
+  // Swallow and continue if any operations fail
   if (context) {
-    await reportError(context, amplifyException);
+    try {
+      await reportError(context, amplifyException);
+    } catch (e) {
+      printer.error(`Failed to report error: ${e?.message || e}`);
+    }
   }
 
-  await executeHooks(
-    HooksMeta.getInstance(undefined, 'post', {
-      message: amplifyException.message ?? 'undefined error in Amplify process',
-      stack: amplifyException.stack ?? 'undefined error stack',
-    }),
-  );
+  try {
+    await executeHooks(
+      HooksMeta.getInstance(undefined, 'post', {
+        message: amplifyException.message ?? 'undefined error in Amplify process',
+        stack: amplifyException.stack ?? 'undefined error stack',
+      }),
+    );
+  } catch (e) {
+    printer.error(`Failed to execute hooks: ${e?.message || e}`);
+  }
 
-  logger.logError({
-    message: amplifyException.message,
-    error: amplifyException,
-  });
+  try {
+    logger.logError({
+      message: amplifyException.message,
+      error: amplifyException,
+    });
+  } catch (e) {
+    printer.error(`Failed to log error: ${e?.message || e}`);
+  }
 
   process.exitCode = 1;
 };
