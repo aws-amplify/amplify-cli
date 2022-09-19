@@ -44,6 +44,8 @@ export const AmplifySupportedService = {
   COGNITOUSERPOOLGROUPS: 'Cognito-UserPool-Groups',
   LAMBDA: 'Lambda',
   LAMBDA_LAYER: 'LambdaLayer',
+  PINPOINT: 'Pinpoint',
+  KINESIS: 'Kinesis',
 };
 
 export const overriddenCategories = [AmplifyCategories.AUTH, AmplifyCategories.STORAGE, AmplifyCategories.CUSTOM, AmplifyCategories.API];
