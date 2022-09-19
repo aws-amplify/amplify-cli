@@ -1,7 +1,13 @@
-const { open } = require('amplify-cli-core');
-const constants = require('./constants');
+import {
+  open, $TSAny, $TSContext, $TSMeta,
+} from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
+import * as constants from './constants';
 
-function console(context) {
+/**
+ * opens resource in AWS console
+ */
+export const console = (context: $TSContext): void => {
   const amplifyMeta = context.amplify.getProjectMeta();
   let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName]);
   if (!pinpointApp) {
@@ -12,12 +18,12 @@ function console(context) {
     const consoleUrl = `https://${Region}.console.aws.amazon.com/pinpoint/home/?region=${Region}#/apps/${Id}/analytics/overview`;
     open(consoleUrl, { wait: false });
   } else {
-    context.print.error('Neither analytics nor notifications is enabled in the cloud.');
+    printer.error('Neither analytics nor notifications is enabled in the cloud.');
   }
-}
+};
 
-function scanCategoryMetaForPinpoint(categoryMeta) {
-  let result;
+const scanCategoryMetaForPinpoint = (categoryMeta: $TSMeta): $TSAny => {
+  let result: $TSAny;
   if (categoryMeta) {
     const services = Object.keys(categoryMeta);
     for (let i = 0; i < services.length; i++) {
@@ -40,9 +46,12 @@ function scanCategoryMetaForPinpoint(categoryMeta) {
     }
   }
   return result;
-}
+};
 
-function hasResource(context) {
+/**
+ * checks if the project has a pinpoint resource
+ */
+export const hasResource = (context: $TSContext): boolean => {
   const amplifyMeta = context.amplify.getProjectMeta();
   let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName]);
   if (!pinpointApp) {
@@ -50,9 +59,4 @@ function hasResource(context) {
   }
 
   return pinpointApp !== undefined;
-}
-
-module.exports = {
-  hasResource,
-  console,
 };

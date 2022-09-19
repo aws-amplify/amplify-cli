@@ -1,28 +1,75 @@
-const inquirer = require('inquirer');
-const path = require('path');
-const os = require('os');
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable global-require */
+/* eslint-disable import/no-dynamic-require */
+/* eslint-disable spellcheck/spell-checker */
+import {
+  $TSAny, $TSContext, AmplifyCategories, exitOnNextTick, IAmplifyResource, ResourceAlreadyExistsError, ResourceDoesNotExistError,
+} from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
+import inquirer from 'inquirer';
+import os from 'os';
+import path from 'path';
 // FIXME: may be removed from here, since addResource can pass category to addWalkthrough
-const category = 'analytics';
+const category = AmplifyCategories.ANALYTICS;
 const service = 'Kinesis';
-const { ResourceAlreadyExistsError, ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
 
-async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
+/**
+ * Kinesis resource add walkthrough
+ * @param context Amplify context
+ * @param defaultValuesFilename Filename for default values to be configured in Kinesis
+ * @param serviceMetadata Amplify Meta for analytics category kinesis resource
+ * @returns kinesis resource name
+ */
+export const addWalkthrough = async (context : $TSContext, defaultValuesFilename: string, serviceMetadata: $TSAny): Promise<$TSContext> => {
   const resourceName = resourceAlreadyExists(context);
 
   if (resourceName) {
     const errMessage = 'Kinesis resource have already been added to your project.';
-    context.print.warning(errMessage);
+    printer.warn(errMessage);
     await context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
     exitOnNextTick(0);
   }
   return configure(context, defaultValuesFilename, serviceMetadata);
-}
+};
 
-function migrate() {
+/**
+ * migration not implemented/required
+ */
+export const migrate = () : void => {
   // no-op for now
+};
+
+/**
+ * Auth resource configuration state.
+ * requirementsMet is set to true if all required
+ * configurations of the Auth resource have been configured.
+ */
+interface IAuthConfigRequirements {
+  errors: Array<string>
+  authEnabled : boolean;
+  authImported : boolean;
+  authSelections :boolean;
+  allowUnauthenticatedIdentities : boolean;
+  requirementsMet: boolean;
 }
 
-function configure(context, defaultValuesFilename, serviceMetadata, resourceName = null) {
+interface IKinesisCRUDPolicy {
+  Effect: string,
+  Action: $TSAny,
+  Resource: $TSAny,
+}
+
+interface IKinesisPolicyAttributes{
+  policy: IKinesisCRUDPolicy,
+  attributes : Array<$TSAny>
+}
+
+const configure = async (
+  context: $TSContext,
+  defaultValuesFilename: string,
+  serviceMetadata: $TSAny,
+  resourceName: string|null = null,
+) : Promise<$TSAny> => {
   const { amplify } = context;
   const { inputs } = serviceMetadata;
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
@@ -31,7 +78,7 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
   const projectBackendDirPath = amplify.pathManager.getBackendDirPath();
 
   const questions = inputs
-    .map(input => ({
+    .map((input: $TSAny) => ({
       name: input.key,
       message: input.question,
       type: input.type || 'input',
@@ -44,9 +91,9 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
       },
     }))
     // when resourceName is provider, we are in update flow - skip name question
-    .filter(question => (resourceName && question.name !== 'kinesisStreamName') || !resourceName);
+    .filter((question: { name: string; }) => (resourceName && question.name !== 'kinesisStreamName') || !resourceName);
 
-  return inquirer.prompt(questions).then(async answers => {
+  return inquirer.prompt(questions).then(async (answers: $TSAny) => {
     const targetResourceName = resourceName || answers.kinesisStreamName;
     const shardCount = answers.kinesisStreamShardCount;
     const templateDir = `${__dirname}/../cloudformation-templates`;
@@ -79,7 +126,7 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
       allowUnauthenticatedIdentities: true,
     };
 
-    const checkResult = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
+    const checkResult: IAuthConfigRequirements = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
       analyticsRequirements,
       context,
       'analytics',
@@ -93,12 +140,12 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
     }
 
     if (checkResult.errors && checkResult.errors.length > 0) {
-      context.print.warning(checkResult.errors.join(os.EOL));
+      printer.warn(checkResult.errors.join(os.EOL));
     }
 
     // If auth is not imported and there were errors, adjust or enable auth configuration
     if (!checkResult.authEnabled || !checkResult.requirementsMet) {
-      context.print.warning('Adding analytics would add the Auth category to the project if not already added.');
+      printer.warn('Adding analytics would add the Auth category to the project if not already added.');
       if (
         await amplify.confirmPrompt(
           'Apps need authorization to send analytics events. Do you want to allow guests and unauthenticated users to send analytics events? (we recommend you allow this when getting started)',
@@ -112,12 +159,12 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
             analyticsRequirements,
           ]);
         } catch (error) {
-          context.print.error(error);
+          printer.error(error);
           throw error;
         }
       } else {
         try {
-          context.print.warning(
+          printer.warn(
             'Authorize only authenticated users to send analytics events. Use "amplify update auth" to modify this behavior.',
           );
           analyticsRequirements.allowUnauthenticatedIdentities = false;
@@ -128,7 +175,7 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
             analyticsRequirements,
           ]);
         } catch (error) {
-          context.print.error(error);
+          printer.error(error);
           throw error;
         }
       }
@@ -140,30 +187,47 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
     await amplify.copyBatch(context, copyJobs, {}, !!resourceName, params);
     return targetResourceName;
   });
-}
+};
 
-function resourceNameAlreadyExists(context, name) {
+/**
+ * Returns true if a Kinesis resource already exists with the given name
+ * @param context Amplify CLI context
+ * @param name Kinesis resource name
+ * @returns true if resource with the same name exists
+ */
+const resourceNameAlreadyExists = (context: $TSContext, name: string):boolean => {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
 
   return category in amplifyMeta ? Object.keys(amplifyMeta[category]).includes(name) : false;
-}
+};
 
-async function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
+/**
+ * Kinesis resource CLI walkthrough
+ * @param context Amplify CLI context
+ * @param defaultValuesFilename File name for Kinesis default values
+ * @param serviceMetadata Amplify Meta, Analytics resource for Kinesis service
+ * @returns Kinesis resource name?( needs validation )
+ */
+export const updateWalkthrough = async (context: $TSContext, defaultValuesFilename: string, serviceMetadata: $TSAny) : Promise<$TSAny> => {
   const { amplify } = context;
   const { allResources } = await amplify.getResourceStatus();
-  const kinesisResources = allResources.filter(resource => resource.service === service).map(resource => resource.resourceName);
+  const kinesisResources = (allResources as IAmplifyResource[]).filter(
+    resource => resource.service === service,
+  ).map(resource => resource.resourceName);
 
   let targetResourceName;
   if (kinesisResources.length === 0) {
     const errMessage = 'No Kinesis streams resource to update. Please use "amplify add analytics" command to create a new Kinesis stream';
-    context.print.error(errMessage);
+    printer.error(errMessage);
     await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
     return;
-  } else if (kinesisResources.length === 1) {
+  }
+
+  if (kinesisResources.length === 1) {
     [targetResourceName] = kinesisResources;
-    context.print.success(`Selected resource ${targetResourceName}`);
+    printer.success(`Selected resource ${targetResourceName}`);
   } else {
     const resourceQuestion = [
       {
@@ -178,10 +242,18 @@ async function updateWalkthrough(context, defaultValuesFilename, serviceMetadata
     targetResourceName = answer.resourceName;
   }
 
-  return configure(context, defaultValuesFilename, serviceMetadata, targetResourceName);
-}
+  const result:$TSAny = await configure(context, defaultValuesFilename, serviceMetadata, targetResourceName as string);
+  // eslint-disable-next-line consistent-return
+  return result;
+};
 
-function getIAMPolicies(resourceName, crudOptions) {
+/**
+ * Generates Kinesis policies based on CRUD operations
+ * @param resourceName Kinesis resource name
+ * @param crudOptions  ['create', 'read', 'update', 'delete']
+ * @returns Kinesis policy for the given CRUD configuration
+ */
+export const getIAMPolicies = (resourceName:string, crudOptions: Array<$TSAny>) : IKinesisPolicyAttributes => {
   const actions = crudOptions
     .map(crudOption => {
       switch (crudOption) {
@@ -235,9 +307,14 @@ function getIAMPolicies(resourceName, crudOptions) {
 
   const attributes = ['kinesisStreamArn'];
   return { policy, attributes };
-}
+};
 
-function resourceAlreadyExists(context) {
+/**
+ * Returns the resourceName if it already exists
+ * @param context Amplify CLI context
+ * @returns resourceName if found
+ */
+const resourceAlreadyExists = (context: $TSContext) : string|undefined => {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
   let resourceName;
@@ -252,11 +329,4 @@ function resourceAlreadyExists(context) {
   }
 
   return resourceName;
-}
-
-module.exports = {
-  addWalkthrough,
-  migrate,
-  getIAMPolicies,
-  updateWalkthrough,
 };

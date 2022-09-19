@@ -1,7 +1,13 @@
-const { open } = require('amplify-cli-core');
-const constants = require('./constants');
+import {
+  $TSAny, $TSContext, $TSMeta, open,
+} from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
+import * as constants from './constants';
 
-function console(context) {
+/**
+ * opens resource in AWS console
+ */
+export const console = (context: $TSContext): void => {
   const amplifyMeta = context.amplify.getProjectMeta();
   const { envName } = context.amplify.getEnvInfo();
   const region = context.amplify.getEnvDetails()[envName].awscloudformation.Region;
@@ -12,13 +18,13 @@ function console(context) {
     const consoleUrl = `https://${region}.console.aws.amazon.com/kinesis/home?region=${region}#/streams/details?streamName=${Id}&tab=details`;
     open(consoleUrl, { wait: false });
   } else {
-    context.print.error('Kinesis is not enabled in the cloud.');
+    printer.error('Kinesis is not enabled in the cloud.');
   }
-}
+};
 
-function scanCategoryMetaForKinesis(categoryMeta) {
+const scanCategoryMetaForKinesis = (categoryMeta: $TSMeta): $TSAny => {
   // single kinesis resource for now
-  let result;
+  let result: $TSAny;
   if (categoryMeta) {
     const services = Object.keys(categoryMeta);
     for (let i = 0; i < services.length; i++) {
@@ -41,14 +47,12 @@ function scanCategoryMetaForKinesis(categoryMeta) {
     }
   }
   return result;
-}
+};
 
-function hasResource(context) {
+/**
+ * checks if the project has a kinesis resource
+ */
+export const hasResource = (context: $TSContext): boolean => {
   const amplifyMeta = context.amplify.getProjectMeta();
   return scanCategoryMetaForKinesis(amplifyMeta[constants.CategoryName]) !== undefined;
-}
-
-module.exports = {
-  console,
-  hasResource,
 };
