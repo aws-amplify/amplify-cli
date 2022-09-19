@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.5.5...amplify-frontend-javascript@3.5.6) (2022-09-19)
+
+
+### Bug Fixes
+
+* aws-exports to be read regardless of JS project type ([#10918](https://github.com/aws-amplify/amplify-cli/issues/10918)) ([c9586c7](https://github.com/aws-amplify/amplify-cli/commit/c9586c7933b656b264bdfbe3c57e97c0b865b430))
+
+
+
+
+
 ## [3.5.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.5.5-rc.224a2e0e4.0...amplify-frontend-javascript@3.5.5) (2022-09-06)
 
 **Note:** Version bump only for package amplify-frontend-javascript

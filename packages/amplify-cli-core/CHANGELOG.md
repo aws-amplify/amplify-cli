@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@3.0.0...amplify-cli-core@3.1.0) (2022-09-19)
+
+
+### Bug Fixes
+
+* support for minify flag in CFNUtilities ([#10955](https://github.com/aws-amplify/amplify-cli/issues/10955)) ([bc76bd1](https://github.com/aws-amplify/amplify-cli/commit/bc76bd11784bac76750ad3ddf8a0c88d6020744c))
+
+
+### Features
+
+* unified error handling framework ([#10933](https://github.com/aws-amplify/amplify-cli/issues/10933)) ([cc9a422](https://github.com/aws-amplify/amplify-cli/commit/cc9a422793f4ef620a4ed634b6f55e28e3a8a3a2))
+
+
+
+
+
 # [3.0.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@3.0.0-rc.224a2e0e4.0...amplify-cli-core@3.0.0) (2022-09-06)
 
 
