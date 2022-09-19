@@ -1,3 +1,5 @@
+import {getAwsConfig} from "./configuration-manager";
+
 const { ApiCategoryFacade, amplifyFaultWithTroubleshootingLink } = require('amplify-cli-core');
 const awsRegions = require('./aws-regions');
 const { Lambda } = require('./aws-utils/aws-lambda');
@@ -423,4 +425,8 @@ module.exports = {
 
     return results;
   },
+  /**
+   * Provides the same AWS config used to push the amplify project
+   */
+  retrieveAwsConfig: async context => getAwsConfig(context),
 };
