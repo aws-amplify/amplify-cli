@@ -28,7 +28,7 @@ import { getPluginPlatform, scan } from './plugin-manager';
 import { checkProjectConfigVersion } from './project-config-version-check';
 import { rewireDeprecatedCommands } from './rewireDeprecatedCommands';
 import { ensureMobileHubCommandCompatibility } from './utils/mobilehub-support';
-import { migrateTeamProviderInfo } from './utils/team-provider-migrate';
+import { copyAppIdAndRegionToLocalAwsInfo, moveTpiSecretsToDeploymentSecrets } from './utils/team-provider-migrate';
 import { deleteOldVersion } from './utils/win-utils';
 import { notify } from './version-notifier';
 import { getAmplifyVersion } from './extensions/amplify-helpers/get-amplify-version';
@@ -163,12 +163,9 @@ export const run = async (startTime: number): Promise<void> => {
   await FeatureFlags.initialize(contextEnvironmentProvider, useNewDefaults);
   prompter.setFlowData(context.usageData);
 
-  if (!(await migrateTeamProviderInfo(context))) {
-    throw new AmplifyError('MigrationError', {
-      message: 'An error occurred while migrating team provider info',
-      link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
-    });
-  }
+  // project structure migrations
+  await moveTpiSecretsToDeploymentSecrets(context);
+  await copyAppIdAndRegionToLocalAwsInfo();
 
   process.on('SIGINT', sigIntHandler.bind(context));
 

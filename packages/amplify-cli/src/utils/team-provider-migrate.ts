@@ -1,7 +1,9 @@
 import { externalAuthEnable } from '@aws-amplify/amplify-category-auth';
 import { ensureEnvParamManager, getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import {
-  mergeDeploymentSecrets, PathConstants, pathManager, stateManager,
+  $TSAny,
+  AmplifyError,
+  mergeDeploymentSecrets, PathConstants, stateManager,
 } from 'amplify-cli-core';
 import chalk from 'chalk';
 import { Context } from '../domain/context';
@@ -18,32 +20,62 @@ const hostedUIProviderCredsField = 'hostedUIProviderCreds';
  * return true if TPI does not contain any secrets or secrets successfully removed from TPI
  * return false if TPI does contain secrets and they could not be removed
  */
-export const migrateTeamProviderInfo = async (context: Context): Promise<boolean> => {
+export const moveTpiSecretsToDeploymentSecrets = async (context: Context): Promise<void> => {
   if (!stateManager.teamProviderInfoExists()) {
-    return true;
+    return;
   }
   // check if command executed in project root and team provider has secrets
 
-  if (!isInvalidEnvOrPulling(context) && pathManager.findProjectRoot()) {
-    await ensureEnvParamManager();
-    const authResourceName = authResourceNameHasSecrets();
+  if (isInvalidEnvOrPulling(context)) {
+    return;
+  }
+  await ensureEnvParamManager();
+  const authResourceName = authResourceNameHasSecrets();
 
-    if (!authResourceName) {
-      return true;
-    }
-
-    if (isYesFlagSet(context) || (await context.prompt.confirm(message))) {
-      const authParams = stateManager.getResourceParametersJson(undefined, 'auth', authResourceName);
-
-      moveAuthSecretToDeploymentSecrets(authResourceName);
-
-      await externalAuthEnable(context, undefined, undefined, authParams);
-    } else {
-      return false;
-    }
+  if (!authResourceName) {
+    return;
   }
 
-  return true;
+  if (isYesFlagSet(context) || (await context.prompt.confirm(message))) {
+    const authParams = stateManager.getResourceParametersJson(undefined, 'auth', authResourceName);
+
+    moveAuthSecretToDeploymentSecrets(authResourceName);
+
+    await externalAuthEnable(context, undefined, undefined, authParams);
+  } else {
+    throw new AmplifyError('MigrationError', {
+      message: 'An error occurred while migrating team provider info',
+      link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
+    });
+  }
+};
+
+/**
+ * Copies the AmplifyAppId and Region from the awscloudformation provider metadata in team-provider-info.json into `local-aws-info.json`
+ * for each environment present in the team-provider-info.json file.
+ *
+ * This allows the metadata for each environment to be reconstructed from service calls rather than rely on the team-provider-info.json file
+ */
+export const copyAppIdAndRegionToLocalAwsInfo = async (): Promise<void> => {
+  // early return if the files don't exist
+  if (!stateManager.teamProviderInfoExists() || !stateManager.localAWSInfoExists()) {
+    return;
+  }
+  const localAwsInfo = stateManager.getLocalAWSInfo();
+  Object.entries(stateManager.getTeamProviderInfo()).forEach(([envName, envConfig]: [string, $TSAny]) => {
+    const cfnMeta = envConfig?.awscloudformation;
+    if (!cfnMeta) {
+      return;
+    }
+    if (!localAwsInfo[envName].appId) {
+      localAwsInfo[envName].appId = cfnMeta.AmplifyAppId;
+    }
+    if (!localAwsInfo[envName].region) {
+      localAwsInfo[envName].region = cfnMeta.Region;
+    }
+  })
+  stateManager.setLocalAWSInfo(undefined, localAwsInfo);
+
 };
 
 const isInvalidEnvOrPulling = (context: Context): boolean => {

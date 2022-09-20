@@ -204,14 +204,31 @@ class EnvironmentMetadata implements IEnvironmentMetadata {
     this._dirty = true;
   }
 
+  /**
+   * Persist the metadata stored in the manager object
+   * 
+   * currently this writes the values out to the `amplify-meta.json` file and `team-provider-info.json` but eventually we will git rid of
+   * `team-provider-info.json`. And beyond that the values stored in `amplify-meta.json` should eventually be stored in a metadata service
+   */
   save(): void {
     if (!this._dirty) {
       return;
     }
+    // set values in `amplify-meta.json`
     const amplifyMeta = stateManager.getMeta(undefined, { throwIfNotExist: false }) || {};
     amplifyMeta.providers = {};
     amplifyMeta.providers.awscloudformation = this.toObject();
     stateManager.setMeta(undefined, amplifyMeta);
+
+    // set values in `team-provider-info.json
+    const tpi = stateManager.getTeamProviderInfo(undefined, {throwIfNotExist: false}) || {};
+    const currentEnv = stateManager.getLocalEnvInfo().envName;
+    if (typeof tpi[currentEnv] !== 'object') {
+      tpi[currentEnv] = {};
+    }
+    tpi[currentEnv].awscloudformation = this.toObject();
+    stateManager.setTeamProviderInfo(undefined, tpi);
+    
   }
 
   private toObject(): Record<string, string> {
