@@ -37,7 +37,25 @@ describe('Velocity $context.util.time', () => {
     expect(time.nowEpochMilliSeconds()).toEqual(TEST_TIMESTAMP_MILLIS);
   });
 
+  describe('nowFormatted', () => {
+    it('should format with JavaScript parameters correctly', () => {
+      expect(time.nowFormatted(FORMAT_CUSTOM_ZONED, 'Australia/Perth')).toEqual(
+        TEST_TIMESTAMP_CUSTOM_PLUS8,
+      );
+    });
+
+    it('should format with Java parameters correctly', () => {
+      expect(time.nowFormatted(valueMap(FORMAT_CUSTOM_ZONED), valueMap('Australia/Perth'))).toEqual(
+        TEST_TIMESTAMP_CUSTOM_PLUS8,
+      );
+    });
+  });
+
   describe('parseFormattedToEpochMilliSeconds', () => {
+    it('should return null with null parameters', () => {
+      expect(time.parseFormattedToEpochMilliSeconds(null, null)).toBeNull();
+    });
+
     it('should parse JavaScript parameters correctly', () => {
       expect(time.parseFormattedToEpochMilliSeconds(TEST_TIMESTAMP_CUSTOM_UTC, FORMAT_CUSTOM_ZONED)).toEqual(TEST_TIMESTAMP_MILLIS);
       expect(time.parseFormattedToEpochMilliSeconds(TEST_TIMESTAMP_CUSTOM_PLUS8, FORMAT_CUSTOM_ZONED)).toEqual(TEST_TIMESTAMP_MILLIS);
