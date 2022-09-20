@@ -39,7 +39,7 @@
     "fs-extra": "^8.1.0",
     "glob": "^8.0.3",
     "graphql-tag": "^2.10.1",
-    "graphql-transformer-core": "^7.6.5",
+    "graphql-transformer-core": "^7.6.6",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
     "rimraf": "^3.0.0",
