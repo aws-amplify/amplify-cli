@@ -7,11 +7,11 @@ import * as channelFCM from '../channel-FCM';
 const channelName = 'FCM';
 
 const mockInquirer = (answers : $TSAny): $TSAny => {
-  (inquirer as any).prompt = async (prompts: $TSAny):Promise<$TSAny> => {
+  (inquirer as $TSAny).prompt = async (prompts: $TSAny):Promise<$TSAny> => {
     [].concat(prompts).forEach(prompt => {
-      if (!((prompt as unknown as any).name in answers) && typeof (prompt as unknown as any).default !== 'undefined') {
+      if (!((prompt as $TSAny).name in answers) && typeof (prompt as $TSAny).default !== 'undefined') {
         // eslint-disable-next-line no-param-reassign
-        answers[(prompt as unknown as any).name] = (prompt as unknown as any).default;
+        answers[(prompt as $TSAny).name] = (prompt as $TSAny).default;
       }
     });
     return answers;

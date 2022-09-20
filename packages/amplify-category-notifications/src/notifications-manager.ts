@@ -1,5 +1,5 @@
 import {
-  $TSAny, $TSContext, AmplifyCategories, stateManager,
+  $TSAny, $TSContext, AmplifyCategories, AmplifySupportedService, stateManager,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import path from 'path';
@@ -35,7 +35,7 @@ export const getEnabledChannels = (context: $TSContext): string[] => {
     const services = Object.keys(categoryMeta);
     for (const service of services) {
       const serviceMeta = categoryMeta[service];
-      if (serviceMeta.service === 'Pinpoint' && serviceMeta.output && serviceMeta.output.Id) {
+      if (serviceMeta.service === AmplifySupportedService.PINPOINT && serviceMeta.output?.Id) {
         availableChannels.forEach(channel => {
           if (serviceMeta.output[channel]?.Enabled) {
             result.push(channel);
@@ -71,8 +71,7 @@ export const enableChannel = async (context: $TSContext, channelName: ChannelWor
   if (Object.keys(channelWorkers).includes(channelName)) {
     const envName: string = stateManager.getCurrentEnvName() as string; // throws exception if env is not configured
     context.exeInfo.pinpointClient = await getPinpointClient(context, 'update', envName);
-    // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
-    const channelWorker = require(path.join(__dirname, channelWorkers[channelName]));
+    const channelWorker = await import(path.join(__dirname, channelWorkers[channelName]));
     await channelWorker.enable(context);
   }
 };
@@ -84,8 +83,7 @@ export const disableChannel = async (context: $TSContext, channelName: ChannelWo
   if (Object.keys(channelWorkers).includes(channelName)) {
     const envName: string = stateManager.getCurrentEnvName() as string; // throws exception if env is not configured
     context.exeInfo.pinpointClient = await getPinpointClient(context, 'update', envName);
-    // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
-    const channelWorker = require(path.join(__dirname, channelWorkers[channelName]));
+    const channelWorker = await import(path.join(__dirname, channelWorkers[channelName]));
     await channelWorker.disable(context);
   }
 };
@@ -103,8 +101,7 @@ export const configureChannel = async (context: $TSContext, channelName: Channel
       return false;
     }
 
-    // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
-    const channelWorker = require(path.join(__dirname, channelWorkers[channelName]));
+    const channelWorker = await import(path.join(__dirname, channelWorkers[channelName]));
     await channelWorker.configure(context);
 
     return true;
@@ -120,9 +117,8 @@ export const pullAllChannels = async (context: $TSContext, pinpointApp: $TSAny):
   const pullTasks: $TSAny[] = [];
   const envName: string = stateManager.getCurrentEnvName() as string; // throws exception if env is not configured
   context.exeInfo.pinpointClient = await getPinpointClient(context, 'update', envName);
-  Object.keys(channelWorkers).forEach(channelName => {
-    // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
-    const channelWorker = require(path.join(__dirname, channelWorkers[channelName as ChannelWorkersKeys]));
+  Object.keys(channelWorkers).forEach(async channelName => {
+    const channelWorker = await import(path.join(__dirname, channelWorkers[channelName as ChannelWorkersKeys]));
     pullTasks.push(() => channelWorker.pull(context, pinpointApp));
   });
   await sequential(pullTasks);

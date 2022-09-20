@@ -4,11 +4,11 @@
 /* eslint-disable jest/valid-expect-in-promise */
 /* eslint-disable jest/no-conditional-expect */
 import { $TSAny } from 'amplify-cli-core';
+import inquirer from 'inquirer';
 import * as configureKey from '../apns-key-config';
 import * as configureCertificate from '../apns-cert-config';
 import * as channelAPNS from '../channel-APNS';
 
-const inquirer = require('inquirer');
 const mockirer = require('mockirer');
 
 const channelName = 'APNS';

@@ -12,8 +12,7 @@ export const alias = ['notification'];
 export const run = async (context: $TSContext) : Promise<$TSAny|undefined> => {
   if (/^win/.test(process.platform)) {
     try {
-      // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
-      const notificationsFlow = require(`./${name}/${context.parameters.first}`);
+      const notificationsFlow = await import(`./${name}/${context.parameters.first}`);
       return notificationsFlow.run(context);
     } catch (e) {
       printer.error('Command not found');

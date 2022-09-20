@@ -6,5 +6,5 @@ export interface ICategoryMeta {
   Id: string,
   Name: string,
   Region: string,
-  regulatedResourceName? : string
+  RegulatedResourceName? : string
 }

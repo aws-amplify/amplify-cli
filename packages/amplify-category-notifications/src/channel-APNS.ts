@@ -195,28 +195,26 @@ export const disable = async (context: $TSContext) : Promise<$TSAny> => {
  * @param pinpointApp Pinpoint resource metadata
  * @returns APNChannel response
  */
-export const pull = async (context:$TSContext, pinpointApp: $TSAny): Promise<$TSAny> => {
+export const pull = async (context: $TSContext, pinpointApp: $TSAny): Promise<$TSAny> => {
   const params = {
     ApplicationId: pinpointApp.Id,
   };
 
   spinner.start(`Retrieving channel information for ${channelName}.`);
-  return context.exeInfo.pinpointClient
+  try {
     // eslint-disable-next-line spellcheck/spell-checker
-    .getApnsChannel(params)
-    .promise()
-    .then((data: $TSAny) => {
-      spinner.succeed(`Channel information retrieved for ${channelName}`);
-      // eslint-disable-next-line no-param-reassign
-      pinpointApp[channelName] = data.APNSChannelResponse;
-      return data.APNSChannelResponse;
-    })
-    .catch((err: $TSAny) => {
-      if (err.code === 'NotFoundException') {
-        spinner.succeed(`Channel is not setup for ${channelName} `);
-        return err;
-      }
-      spinner.stop();
-      throw err;
-    });
+    const data = await context.exeInfo.pinpointClient.getApnsChannel(params).promise();
+    spinner.succeed(`Channel information retrieved for ${channelName}`);
+
+    // eslint-disable-next-line no-param-reassign
+    pinpointApp[channelName] = data.APNSChannelResponse;
+    return data.APNSChannelResponse;
+  } catch (e) {
+    if (e.code === 'NotFoundException') {
+      spinner.succeed(`Channel is not setup for ${channelName} `);
+      return e;
+    }
+    spinner.stop();
+    throw e;
+  }
 };

@@ -13,7 +13,7 @@ export const alias = 'enable';
  * @param context amplify cli context
  * @returns updated context with notifications metadata
  */
-export const run = async (context: $TSContext): Promise<void> => {
+export const run = async (context: $TSContext): Promise<$TSContext> => {
   context.exeInfo = context.amplify.getProjectDetails();
 
   const categoryMeta = context.exeInfo.amplifyMeta[AmplifyCategories.NOTIFICATIONS];
@@ -24,6 +24,7 @@ export const run = async (context: $TSContext): Promise<void> => {
 
       if (serviceMeta.mobileHubMigrated === true) {
         printer.error('Notifications is migrated from Mobile Hub and channels cannot be added with Amplify CLI.');
+        return context;
       }
     }
   }
@@ -55,4 +56,5 @@ export const run = async (context: $TSContext): Promise<void> => {
   } else {
     printer.info('All the available notification channels have already been enabled.');
   }
+  return context;
 };

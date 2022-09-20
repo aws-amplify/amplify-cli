@@ -11,7 +11,7 @@ const category = 'notifications';
  * @param context amplify cli context
  */
 export const console = async (context: $TSContext): Promise<void> => {
-  pinpointHelper.console(context);
+  await pinpointHelper.console(context);
 };
 
 /**
@@ -43,21 +43,15 @@ export const migrate = async (context: $TSContext): Promise<void> => {
  */
 export const executeAmplifyCommand = async (context: $TSContext): Promise<void> => {
   let commandPath = path.normalize(path.join(__dirname, 'commands'));
-  if (context.input.command === 'help') {
-    commandPath = path.join(commandPath, category);
-  } else {
-    commandPath = path.join(commandPath, category, context.input.command);
-  }
-
-  // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
-  const commandModule = require(commandPath);
+  commandPath = context.input.command === 'help' ? path.join(commandPath, category) : path.join(commandPath, category, context.input.command);
+  const commandModule = await import(commandPath);
   await commandModule.run(context);
 };
 
 /**
  * Placeholder to handle notifications from other parts of the Amplify CLI.
  */
-export const handleAmplifyEvent = async (__context: $TSContext, args: $TSAny) : Promise<void> => {
+export const handleAmplifyEvent = (__context: $TSContext, args: $TSAny) : void => {
   printer.info(`${category} handleAmplifyEvent to be implemented`);
   printer.info(`Received event args ${args}`);
 };

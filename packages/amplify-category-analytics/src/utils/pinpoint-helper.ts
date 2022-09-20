@@ -6,7 +6,7 @@ import { printer } from 'amplify-prompts';
 /**
  * opens resource in AWS console
  */
-export const console = (context: $TSContext): void => {
+export const console = async (context: $TSContext): Promise<void> => {
   const amplifyMeta = context.amplify.getProjectMeta();
   let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.ANALYTICS]);
   if (!pinpointApp) {

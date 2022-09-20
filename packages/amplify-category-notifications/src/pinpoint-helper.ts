@@ -56,7 +56,7 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
     };
     pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.NOTIFICATIONS], scanOptions);
     if (pinpointApp) {
-      resourceName = scanOptions.regulatedResourceName;
+      resourceName = scanOptions.RegulatedResourceName;
     }
   }
 
@@ -176,7 +176,7 @@ export const scanCategoryMetaForPinpoint = (categoryMeta: $TSAny, options: $TSAn
         if (options && options.isRegulatingResourceName) {
           const regulatedResourceName = generateResourceName(result.Name, options.envName);
           // eslint-disable-next-line no-param-reassign
-          options.regulatedResourceName = regulatedResourceName;
+          options.RegulatedResourceName = regulatedResourceName;
           // eslint-disable-next-line max-depth
           if (resourceName !== regulatedResourceName) {
             // eslint-disable-next-line no-param-reassign
@@ -261,7 +261,7 @@ const deleteApp = async (context : $TSContext, pinpointAppId : string) : Promise
 /**
  * Open the AWS console in the browser for the given service.
  */
-export const console = (context: $TSContext): void => {
+export const console = async (context: $TSContext): Promise<void> => {
   const { amplifyMeta } = context.exeInfo;
   let pinpointApp: $TSAny = scanCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.NOTIFICATIONS], undefined);
   if (!pinpointApp) {
@@ -281,8 +281,7 @@ export const console = (context: $TSContext): void => {
  */
 export const getPinpointClient = async (context : $TSContext, action: string, envName: string) : Promise<$TSAny> => {
   const providerPlugins = context.amplify.getProviderPlugins(context);
-  // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
-  const provider = require(providerPlugins[providerName]);
+  const provider = await import(providerPlugins[providerName]);
   return provider.getConfiguredPinpointClient(context, AmplifyCategories.NOTIFICATIONS, action, envName);
 };
 
