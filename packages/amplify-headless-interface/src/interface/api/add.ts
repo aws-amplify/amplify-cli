@@ -43,7 +43,7 @@ export interface AppSyncServiceConfiguration {
   /**
    * Configuration for how long to extend an API key from current set expiration
    */
-  apiKeyExpiration: AppSyncAPIKeyExpiration;
+  apiKeyExpiration?: AppSyncAPIKeyExpiration;
 }
 
 /**
