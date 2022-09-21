@@ -11,7 +11,7 @@ import {
 import { parse, ObjectTypeDefinitionNode, DirectiveNode, FieldDefinitionNode } from 'graphql';
 import { printer } from 'amplify-prompts';
 import { DirectiveWrapper } from '@aws-amplify/graphql-transformer-core';
-import {FeatureFlags} from "amplify-cli-core";
+import { FeatureFlags } from "amplify-cli-core";
 
 export function showACM(sdl: string, nodeName: string) {
   const schema = parse(sdl);
