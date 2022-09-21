@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-geo",
-  "version": "2.7.5",
+  "version": "2.8.1",
   "description": "Amplify CLI plugin to manage the Geo resources for the project",
   "repository": {
     "type": "git",
@@ -26,9 +26,9 @@
     "@aws-cdk/aws-lambda": "^1.159.0",
     "@aws-cdk/core": "^1.159.0",
     "ajv": "^6.12.6",
-    "amplify-cli-core": "3.0.0",
+    "amplify-cli-core": "3.2.0",
     "amplify-headless-interface": "1.15.0",
-    "amplify-prompts": "2.3.0",
+    "amplify-prompts": "2.5.0",
     "amplify-util-headless-input": "1.9.5",
     "aws-sdk": "^2.1169.0",
     "fs-extra": "^8.1.0",

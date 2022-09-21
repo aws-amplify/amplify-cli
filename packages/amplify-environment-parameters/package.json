@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-environment-parameters",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "description": "Amplify CLI environment parameter manager",
   "repository": {
     "type": "git",
@@ -15,6 +15,9 @@
     "amplify",
     "aws"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
@@ -22,7 +25,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "amplify-cli-core": "3.0.0",
+    "amplify-cli-core": "3.2.0",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
