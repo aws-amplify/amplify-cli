@@ -291,6 +291,8 @@ async function getCurrentAWSExports(context) {
       // transpile the file contents to CommonJS
       const { code } = babel.transformSync(fileContents, {
         plugins: [babelTransformEsmToCjs],
+        configFile: false,
+        babelrc: false,
       });
       const mod = new Module();
       mod._compile(code, 'aws-exports.js');
@@ -700,5 +702,11 @@ function getGeofenceCollectionConfig(geofenceCollectionResources) {
 }
 
 module.exports = {
-  createAWSExports, getAWSExports, getCurrentAWSExports, createAmplifyConfig, deleteAmplifyConfig, generateAwsExportsAtPath, getAWSExportsObject,
+  createAWSExports,
+  getAWSExports,
+  getCurrentAWSExports,
+  createAmplifyConfig,
+  deleteAmplifyConfig,
+  generateAwsExportsAtPath,
+  getAWSExportsObject,
 };
