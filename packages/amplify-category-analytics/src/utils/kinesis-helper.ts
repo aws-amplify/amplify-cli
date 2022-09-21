@@ -1,8 +1,7 @@
 import {
-  $TSAny, $TSContext, $TSMeta, open,
+  $TSAny, $TSContext, $TSMeta, AmplifyCategories, AmplifySupportedService, open,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-import * as constants from './constants';
 
 /**
  * opens resource in AWS console
@@ -12,7 +11,7 @@ export const console = (context: $TSContext): void => {
   const { envName } = context.amplify.getEnvInfo();
   const region = context.amplify.getEnvDetails()[envName].awscloudformation.Region;
 
-  const kinesisApp = scanCategoryMetaForKinesis(amplifyMeta[constants.CategoryName]);
+  const kinesisApp = scanCategoryMetaForKinesis(amplifyMeta[AmplifyCategories.ANALYTICS]);
   if (kinesisApp) {
     const { Id } = kinesisApp;
     const consoleUrl = `https://${region}.console.aws.amazon.com/kinesis/home?region=${region}#/streams/details?streamName=${Id}&tab=details`;
@@ -27,9 +26,9 @@ const scanCategoryMetaForKinesis = (categoryMeta: $TSMeta): $TSAny => {
   let result: $TSAny;
   if (categoryMeta) {
     const services = Object.keys(categoryMeta);
-    for (let i = 0; i < services.length; i++) {
-      const serviceMeta = categoryMeta[services[i]];
-      if (serviceMeta.service === constants.KinesisName && serviceMeta.output && serviceMeta.output.kinesisStreamId) {
+    for (const service of services) {
+      const serviceMeta = categoryMeta[service];
+      if (serviceMeta.service === AmplifySupportedService.KINESIS && serviceMeta.output && serviceMeta.output.kinesisStreamId) {
         result = {
           Id: serviceMeta.output.kinesisStreamId,
         };
@@ -54,5 +53,5 @@ const scanCategoryMetaForKinesis = (categoryMeta: $TSMeta): $TSAny => {
  */
 export const hasResource = (context: $TSContext): boolean => {
   const amplifyMeta = context.amplify.getProjectMeta();
-  return scanCategoryMetaForKinesis(amplifyMeta[constants.CategoryName]) !== undefined;
+  return scanCategoryMetaForKinesis(amplifyMeta[AmplifyCategories.ANALYTICS]) !== undefined;
 };

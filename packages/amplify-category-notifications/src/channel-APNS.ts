@@ -1,18 +1,23 @@
-const inquirer = require('inquirer');
-const ora = require('ora');
-const fs = require('fs-extra');
-const { exitOnNextTick } = require('amplify-cli-core');
+import inquirer, { QuestionCollection } from 'inquirer';
+import ora from 'ora';
+import fs from 'fs-extra';
+import { $TSAny, $TSContext, exitOnNextTick } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
+import { run as configureKeyRun } from './apns-key-config';
+import { run as configureCertificateRun } from './apns-cert-config';
+
 const channelName = 'APNS';
 const spinner = ora('');
 
-const configureKey = require('./apns-key-config');
-const configureCertificate = require('./apns-cert-config');
-
-async function configure(context) {
-  const isChannelEnabled = context.exeInfo.serviceMeta.output[channelName] && context.exeInfo.serviceMeta.output[channelName].Enabled;
+/**
+ * Configure the Pinpoint resource to enable the Apple Push Notifications Messaging channel
+ * @param context amplify cli context
+ */
+export const configure = async (context: $TSContext): Promise<void> => {
+  const isChannelEnabled = context.exeInfo.serviceMeta.output[channelName]?.Enabled;
 
   if (isChannelEnabled) {
-    context.print.info(`The ${channelName} channel is currently enabled`);
+    printer.info(`The ${channelName} channel is currently enabled`);
     const answer = await inquirer.prompt({
       name: 'disableChannel',
       type: 'confirm',
@@ -33,25 +38,30 @@ async function configure(context) {
       default: true,
     });
     if (answer.enableChannel) {
-      await enable(context);
+      await enable(context, undefined);
     }
   }
-}
+};
 
-async function enable(context, successMessage) {
+/**
+ * Enable Walkthrough for the APN (Apple Push Notifications) channel for notifications
+ * @param context amplify cli context
+ * @param successMessage optional message to be displayed on successfully enabling channel for notifications
+ */
+export const enable = async (context: $TSContext, successMessage: string | undefined) : Promise<$TSAny> => {
   let channelInput;
   let answers;
-  if (context.exeInfo.pinpointInputParams && context.exeInfo.pinpointInputParams[channelName]) {
+  if (context.exeInfo.pinpointInputParams?.[channelName]) {
     channelInput = validateInputParams(context.exeInfo.pinpointInputParams[channelName]);
     answers = {
       DefaultAuthenticationMethod: channelInput.DefaultAuthenticationMethod,
     };
   } else {
-    let channelOutput = {};
+    let channelOutput : $TSAny = {};
     if (context.exeInfo.serviceMeta.output[channelName]) {
       channelOutput = context.exeInfo.serviceMeta.output[channelName];
     }
-    const question = {
+    const question: QuestionCollection<{ [x: string]: unknown; }> = {
       name: 'DefaultAuthenticationMethod',
       type: 'list',
       message: 'Choose authentication method used for APNs',
@@ -63,14 +73,14 @@ async function enable(context, successMessage) {
 
   try {
     if (answers.DefaultAuthenticationMethod === 'Key') {
-      const keyConfig = await configureKey.run(channelInput);
+      const keyConfig = await configureKeyRun(channelInput);
       Object.assign(answers, keyConfig);
     } else {
-      const certificateConfig = await configureCertificate.run(channelInput);
+      const certificateConfig = await configureCertificateRun(channelInput);
       Object.assign(answers, certificateConfig);
     }
   } catch (err) {
-    context.print.error(err.message);
+    printer.error(err.message);
     await context.usageData.emitError(err);
     exitOnNextTick(1);
   }
@@ -95,7 +105,9 @@ async function enable(context, successMessage) {
 
   let data;
   try {
+    // eslint-disable-next-line spellcheck/spell-checker
     data = await context.exeInfo.pinpointClient.updateApnsChannel(params).promise();
+    // eslint-disable-next-line spellcheck/spell-checker
     await context.exeInfo.pinpointClient.updateApnsSandboxChannel(sandboxParams).promise();
     context.exeInfo.serviceMeta.output[channelName] = data.APNSChannelResponse;
   } catch (e) {
@@ -104,14 +116,15 @@ async function enable(context, successMessage) {
   }
 
   if (!successMessage) {
-    successMessage = `The ${channelName} channel has been successfully enabled.`;
+    spinner.succeed(`The ${channelName} channel has been successfully enabled.`);
+  } else {
+    spinner.succeed(successMessage);
   }
-  spinner.succeed(successMessage);
 
   return data;
-}
+};
 
-function validateInputParams(channelInput) {
+const validateInputParams = (channelInput: $TSAny): $TSAny => {
   if (channelInput.DefaultAuthenticationMethod) {
     const authMethod = channelInput.DefaultAuthenticationMethod;
     if (authMethod === 'Certificate') {
@@ -136,9 +149,14 @@ function validateInputParams(channelInput) {
   }
 
   return channelInput;
-}
+};
 
-async function disable(context) {
+/**
+ * Disable walkthrough for APN type notifications channel information from the cloud and update the Pinpoint resource metadata
+ * @param context amplify cli notifications
+ * @returns APNChannel response
+ */
+export const disable = async (context: $TSContext) : Promise<$TSAny> => {
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
     APNSChannelRequest: {
@@ -157,7 +175,9 @@ async function disable(context) {
 
   let data;
   try {
+    // eslint-disable-next-line spellcheck/spell-checker
     data = await context.exeInfo.pinpointClient.updateApnsChannel(params).promise();
+    // eslint-disable-next-line spellcheck/spell-checker
     await context.exeInfo.pinpointClient.updateApnsSandboxChannel(sandboxParams).promise();
   } catch (e) {
     spinner.fail(`Failed to update the ${channelName} channel.`);
@@ -167,35 +187,34 @@ async function disable(context) {
   spinner.succeed(`The ${channelName} channel has been disabled.`);
   context.exeInfo.serviceMeta.output[channelName] = data.APNSChannelResponse;
   return data;
-}
+};
 
-function pull(context, pinpointApp) {
+/**
+ * Pull Walkthrough for APN type notifications channel information from the cloud and update the Pinpoint resource metadata
+ * @param context amplify cli context
+ * @param pinpointApp Pinpoint resource metadata
+ * @returns APNChannel response
+ */
+export const pull = async (context: $TSContext, pinpointApp: $TSAny): Promise<$TSAny> => {
   const params = {
     ApplicationId: pinpointApp.Id,
   };
 
   spinner.start(`Retrieving channel information for ${channelName}.`);
-  return context.exeInfo.pinpointClient
-    .getApnsChannel(params)
-    .promise()
-    .then(data => {
-      spinner.succeed(`Channel information retrieved for ${channelName}`);
-      pinpointApp[channelName] = data.APNSChannelResponse;
-      return data.APNSChannelResponse;
-    })
-    .catch(err => {
-      if (err.code === 'NotFoundException') {
-        spinner.succeed(`Channel is not setup for ${channelName} `);
-        return err;
-      }
-      spinner.stop();
-      throw err;
-    });
-}
+  try {
+    // eslint-disable-next-line spellcheck/spell-checker
+    const data = await context.exeInfo.pinpointClient.getApnsChannel(params).promise();
+    spinner.succeed(`Channel information retrieved for ${channelName}`);
 
-module.exports = {
-  configure,
-  enable,
-  disable,
-  pull,
+    // eslint-disable-next-line no-param-reassign
+    pinpointApp[channelName] = data.APNSChannelResponse;
+    return data.APNSChannelResponse;
+  } catch (e) {
+    if (e.code === 'NotFoundException') {
+      spinner.succeed(`Channel is not setup for ${channelName} `);
+      return e;
+    }
+    spinner.stop();
+    throw e;
+  }
 };

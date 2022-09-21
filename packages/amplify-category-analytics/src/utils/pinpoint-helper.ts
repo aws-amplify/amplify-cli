@@ -1,17 +1,16 @@
 import {
-  open, $TSAny, $TSContext, $TSMeta,
+  open, $TSAny, $TSContext, $TSMeta, AmplifyCategories,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-import * as constants from './constants';
 
 /**
  * opens resource in AWS console
  */
-export const console = (context: $TSContext): void => {
+export const console = async (context: $TSContext): Promise<void> => {
   const amplifyMeta = context.amplify.getProjectMeta();
-  let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName]);
+  let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.ANALYTICS]);
   if (!pinpointApp) {
-    pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.NotificationsCategoryName]);
+    pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.NOTIFICATIONS]);
   }
   if (pinpointApp) {
     const { Id, Region } = pinpointApp;
@@ -26,8 +25,8 @@ const scanCategoryMetaForPinpoint = (categoryMeta: $TSMeta): $TSAny => {
   let result: $TSAny;
   if (categoryMeta) {
     const services = Object.keys(categoryMeta);
-    for (let i = 0; i < services.length; i++) {
-      const serviceMeta = categoryMeta[services[i]];
+    for (const service of services) {
+      const serviceMeta = categoryMeta[service];
       if (serviceMeta.service === 'Pinpoint' && serviceMeta.output && serviceMeta.output.Id) {
         result = {
           Id: serviceMeta.output.Id,
@@ -53,9 +52,9 @@ const scanCategoryMetaForPinpoint = (categoryMeta: $TSMeta): $TSAny => {
  */
 export const hasResource = (context: $TSContext): boolean => {
   const amplifyMeta = context.amplify.getProjectMeta();
-  let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName]);
+  let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.ANALYTICS]);
   if (!pinpointApp) {
-    pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.NotificationsCategoryName]);
+    pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.NOTIFICATIONS]);
   }
 
   return pinpointApp !== undefined;

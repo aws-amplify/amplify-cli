@@ -1,14 +1,20 @@
-const inquirer = require('inquirer');
-const ora = require('ora');
+import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
+import inquirer from 'inquirer';
+import ora from 'ora';
 
 const channelName = 'FCM';
 const spinner = ora('');
 
-async function configure(context) {
-  const isChannelEnabled = context.exeInfo.serviceMeta.output[channelName] && context.exeInfo.serviceMeta.output[channelName].Enabled;
+/**
+ * Configure the Pinpoint resource to enable the FireBase Cloud Messaging channel
+ * @param context amplify cli context
+ */
+export const configure = async (context: $TSContext): Promise<void> => {
+  const isChannelEnabled = context.exeInfo.serviceMeta.output[channelName]?.Enabled;
 
   if (isChannelEnabled) {
-    context.print.info(`The ${channelName} channel is currently enabled`);
+    printer.info(`The ${channelName} channel is currently enabled`);
     const answer = await inquirer.prompt({
       name: 'disableChannel',
       type: 'confirm',
@@ -29,17 +35,22 @@ async function configure(context) {
       default: true,
     });
     if (answer.enableChannel) {
-      await enable(context);
+      await enable(context, undefined);
     }
   }
-}
+};
 
-async function enable(context, successMessage) {
+/**
+ * Enable Walkthrough for the FireBase Cloud Messaging channel for notifications
+ * @param context amplify cli context
+ * @param successMessage optional message to be displayed on successfully enabling channel for notifications
+ */
+export const enable = async (context: $TSContext, successMessage: string | undefined) : Promise<void> => {
   let answers;
-  if (context.exeInfo.pinpointInputParams && context.exeInfo.pinpointInputParams[channelName]) {
+  if (context.exeInfo.pinpointInputParams?.[channelName]) {
     answers = validateInputParams(context.exeInfo.pinpointInputParams[channelName]);
   } else {
-    let channelOutput = {};
+    let channelOutput: $TSAny = {};
     if (context.exeInfo.serviceMeta.output[channelName]) {
       channelOutput = context.exeInfo.serviceMeta.output[channelName];
     }
@@ -64,35 +75,37 @@ async function enable(context, successMessage) {
 
   spinner.start('Updating FCM channel.');
   return new Promise((resolve, reject) => {
-    context.exeInfo.pinpointClient.updateGcmChannel(params, (err, data) => {
+    context.exeInfo.pinpointClient.updateGcmChannel(params, (err: $TSAny, data: $TSAny) => {
       if (err) {
         spinner.fail('update channel error');
         reject(err);
-      } else {
-        if (!successMessage) {
-          successMessage = `The ${channelName} channel has been successfully enabled.`;
-        }
-        spinner.succeed(successMessage);
-        context.exeInfo.serviceMeta.output[channelName] = data.GCMChannelResponse;
-        resolve(data);
+        return;
       }
+      spinner.succeed(successMessage || `The ${channelName} channel has been successfully enabled.`);
+      context.exeInfo.serviceMeta.output[channelName] = data.GCMChannelResponse;
+      resolve(data);
     });
   });
-}
+};
 
-function validateInputParams(channelInput) {
+const validateInputParams = (channelInput: $TSAny): $TSAny => {
   if (!channelInput.ApiKey) {
     throw new Error('ApiKey is missing for the FCM channel');
   }
   return channelInput;
-}
+};
 
-async function disable(context) {
+/**
+ * Disable walkthrough for FCM type notifications channel information from the cloud and update the Pinpoint resource metadata
+ * @param context amplify cli notifications
+ * @returns GCMChannel response
+ */
+export const disable = async (context: $TSContext): Promise<$TSAny> => {
   let answers;
-  if (context.exeInfo.pinpointInputParams && context.exeInfo.pinpointInputParams[channelName]) {
+  if (context.exeInfo.pinpointInputParams?.[channelName]) {
     answers = validateInputParams(context.exeInfo.pinpointInputParams[channelName]);
   } else {
-    let channelOutput = {};
+    let channelOutput: $TSAny = {};
     if (context.exeInfo.serviceMeta.output[channelName]) {
       channelOutput = context.exeInfo.serviceMeta.output[channelName];
     }
@@ -117,20 +130,26 @@ async function disable(context) {
 
   spinner.start('Updating FCM channel.');
   return new Promise((resolve, reject) => {
-    context.exeInfo.pinpointClient.updateGcmChannel(params, (err, data) => {
+    context.exeInfo.pinpointClient.updateGcmChannel(params, (err: $TSAny, data: $TSAny) => {
       if (err) {
         spinner.fail('update channel error');
         reject(err);
-      } else {
-        spinner.succeed(`The ${channelName} channel has been disabled.`);
-        context.exeInfo.serviceMeta.output[channelName] = data.GCMChannelResponse;
-        resolve(data);
+        return;
       }
+      spinner.succeed(`The ${channelName} channel has been disabled.`);
+      context.exeInfo.serviceMeta.output[channelName] = data.GCMChannelResponse;
+      resolve(data);
     });
   });
-}
+};
 
-function pull(context, pinpointApp) {
+/**
+ * Pull Walkthrough for FCM type notifications channel information from the cloud and update the Pinpoint resource metadata
+ * @param context amplify cli context
+ * @param pinpointApp Pinpoint resource metadata
+ * @returns GCMChannel response
+ */
+export const pull = async (context: $TSContext, pinpointApp: $TSAny): Promise<$TSAny> => {
   const params = {
     ApplicationId: pinpointApp.Id,
   };
@@ -139,12 +158,13 @@ function pull(context, pinpointApp) {
   return context.exeInfo.pinpointClient
     .getGcmChannel(params)
     .promise()
-    .then(data => {
+    .then((data: $TSAny) => {
       spinner.succeed(`Channel information retrieved for ${channelName}`);
+      // eslint-disable-next-line no-param-reassign
       pinpointApp[channelName] = data.GCMChannelResponse;
       return data.GCMChannelResponse;
     })
-    .catch(err => {
+    .catch((err: $TSAny) => {
       if (err.code === 'NotFoundException') {
         spinner.succeed(`Channel is not setup for ${channelName} `);
         return err;
@@ -152,20 +172,14 @@ function pull(context, pinpointApp) {
       spinner.stop();
       throw err;
     });
-}
+};
 
-function trimAnswers(answers) {
+const trimAnswers = (answers: Record<string, $TSAny>): Record<string, $TSAny> => {
   for (const [key, value] of Object.entries(answers)) {
     if (typeof answers[key] === 'string') {
+      // eslint-disable-next-line no-param-reassign
       answers[key] = value.trim();
     }
   }
   return answers;
-}
-
-module.exports = {
-  configure,
-  enable,
-  disable,
-  pull,
 };

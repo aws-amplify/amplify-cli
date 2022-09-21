@@ -1,14 +1,21 @@
-const inquirer = require('inquirer');
-const ora = require('ora');
+import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
+
+import inquirer from 'inquirer';
+import ora from 'ora';
 
 const channelName = 'Email';
 const spinner = ora('');
 
-async function configure(context) {
-  const isChannelEnabled = context.exeInfo.serviceMeta.output[channelName] && context.exeInfo.serviceMeta.output[channelName].Enabled;
+/**
+ * Configure Email channel on analytics resource
+ * @param context amplify cli context
+ */
+export const configure = async (context: $TSContext):Promise<void> => {
+  const isChannelEnabled = context.exeInfo.serviceMeta.output[channelName]?.Enabled;
 
   if (isChannelEnabled) {
-    context.print.info(`The ${channelName} channel is currently enabled`);
+    printer.info(`The ${channelName} channel is currently enabled`);
     const answer = await inquirer.prompt({
       name: 'disableChannel',
       type: 'confirm',
@@ -29,17 +36,22 @@ async function configure(context) {
       default: true,
     });
     if (answer.enableChannel) {
-      await enable(context);
+      await enable(context, undefined);
     }
   }
-}
+};
 
-async function enable(context, successMessage) {
+/**
+ * Enable Email channel on Analytics resource
+ * @param context amplify cli context
+ * @param successMessage message to be printed on successfully enabling channel
+ */
+export const enable = async (context: $TSContext, successMessage: string|undefined): Promise<$TSAny> => {
   let answers;
-  if (context.exeInfo.pinpointInputParams && context.exeInfo.pinpointInputParams[channelName]) {
+  if (context.exeInfo.pinpointInputParams?.[channelName]) {
     answers = validateInputParams(context.exeInfo.pinpointInputParams[channelName]);
   } else {
-    let channelOutput = {};
+    let channelOutput: $TSAny = {};
     if (context.exeInfo.serviceMeta.output[channelName]) {
       channelOutput = context.exeInfo.serviceMeta.output[channelName];
     }
@@ -76,7 +88,7 @@ async function enable(context, successMessage) {
 
   spinner.start('Updating Email Channel.');
   return new Promise((resolve, reject) => {
-    context.exeInfo.pinpointClient.updateEmailChannel(params, (err, data) => {
+    context.exeInfo.pinpointClient.updateEmailChannel(params, (err: $TSAny, data: $TSAny) => {
       if (err && err.code === 'NotFoundException') {
         spinner.succeed(`Project with ID '${params.ApplicationId}' was already deleted from the cloud.`);
         resolve({
@@ -86,25 +98,27 @@ async function enable(context, successMessage) {
         spinner.fail('update channel error');
         reject(err);
       } else {
-        if (!successMessage) {
-          successMessage = `The ${channelName} channel has been successfully enabled.`;
-        }
-        spinner.succeed(successMessage);
+        spinner.succeed(successMessage || `The ${channelName} channel has been successfully enabled.`);
         context.exeInfo.serviceMeta.output[channelName] = data.EmailChannelResponse;
         resolve(data);
       }
     });
   });
-}
+};
 
-function validateInputParams(channelInput) {
+const validateInputParams = (channelInput: $TSAny) : $TSAny => {
   if (!channelInput.FromAddress || !channelInput.Identity || !channelInput.RoleArn) {
     throw new Error('Missing FromAddress, Identity or RoleArn for the Email channel');
   }
   return channelInput;
-}
+};
 
-async function disable(context) {
+/**
+ * Disable Email notification channel on Analytics resource
+ * @param context - amplify cli context
+ * @returns Pinpoint API response
+ */
+export const disable = async (context:$TSContext) : Promise<$TSAny> => {
   const channelOutput = validateInputParams(context.exeInfo.serviceMeta.output[channelName]);
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
@@ -116,7 +130,7 @@ async function disable(context) {
   };
   spinner.start('Updating Email Channel.');
   return new Promise((resolve, reject) => {
-    context.exeInfo.pinpointClient.updateEmailChannel(params, (err, data) => {
+    context.exeInfo.pinpointClient.updateEmailChannel(params, (err: $TSAny, data: $TSAny) => {
       if (err && err.code === 'NotFoundException') {
         spinner.succeed(`Project with ID '${params.ApplicationId}' was already deleted from the cloud.`);
         resolve({
@@ -132,9 +146,15 @@ async function disable(context) {
       }
     });
   });
-}
+};
 
-function pull(context, pinpointApp) {
+/**
+ * Pull the Analytics resource and Email channel configuration
+ * @param context amplify cli context
+ * @param pinpointApp Pinpoint resource meta
+ * @returns Pinpoint API response
+ */
+export const pull = async (context: $TSContext, pinpointApp: $TSAny): Promise<$TSAny> => {
   const params = {
     ApplicationId: pinpointApp.Id,
   };
@@ -143,12 +163,13 @@ function pull(context, pinpointApp) {
   return context.exeInfo.pinpointClient
     .getEmailChannel(params)
     .promise()
-    .then(data => {
+    .then((data: $TSAny) => {
       spinner.succeed(`Channel information retrieved for ${channelName}`);
+      // eslint-disable-next-line no-param-reassign
       pinpointApp[channelName] = data.EmailChannelResponse;
       return data.EmailChannelResponse;
     })
-    .catch(err => {
+    .catch((err: $TSAny) => {
       if (err.code === 'NotFoundException') {
         spinner.succeed(`Channel is not setup for ${channelName} `);
         return err;
@@ -156,11 +177,4 @@ function pull(context, pinpointApp) {
       spinner.stop();
       throw err;
     });
-}
-
-module.exports = {
-  configure,
-  enable,
-  disable,
-  pull,
 };

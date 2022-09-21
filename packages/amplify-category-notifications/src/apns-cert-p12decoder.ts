@@ -1,9 +1,23 @@
-const fs = require('fs-extra');
-const os = require('os');
-const path = require('path');
-const { execSync } = require('child_process');
+import fs from 'fs-extra';
+import os from 'os';
+import path from 'path';
+import { execSync } from 'child_process';
+import { $TSAny } from 'amplify-cli-core';
 
-function run(info) {
+/**
+ * Certificate Info
+ */
+export interface ICertificateInfo{
+  Certificate: string;
+  PrivateKey: string;
+}
+
+/**
+ * Run function of p12Decoder module
+ * @param info filePath and Password for the decoder
+ * @returns Certificate info
+ */
+export const run = (info : $TSAny): ICertificateInfo => {
   const { P12FilePath, P12FilePassword } = info;
   const pemFileContent = getPemFileContent(P12FilePath, P12FilePassword);
   const Certificate = getCertificate(pemFileContent);
@@ -16,11 +30,11 @@ function run(info) {
   }
 
   if (!Certificate) {
-    const errorMessage = 'Openssl can not extract the Certificate from the p12 file';
+    const errorMessage = 'OpenSSL can not extract the Certificate from the p12 file';
     throw new Error(errorMessage);
   }
   if (!PrivateKey) {
-    const errorMessage = 'Openssl can not extract the Private Key from the p12 file';
+    const errorMessage = 'OpenSSL can not extract the Private Key from the p12 file';
     throw new Error(errorMessage);
   }
 
@@ -28,18 +42,20 @@ function run(info) {
     Certificate,
     PrivateKey,
   };
-}
+};
 
-function getPemFileContent(infp, pswd) {
-  const outfp = path.join(os.tmpdir(), 'temp.pem');
-  const cmd = `openssl pkcs12 -in ${infp} -out ${outfp} -nodes -passin pass:${pswd}`;
+const getPemFileContent = (filePath: string, filePassword: string):string => {
+  // eslint-disable-next-line spellcheck/spell-checker
+  const outputFilePath = path.join(os.tmpdir(), 'temp.pem');
+  // eslint-disable-next-line spellcheck/spell-checker
+  const cmd = `openssl pkcs12 -in ${filePath} -out ${outputFilePath} -nodes -passin pass:${filePassword}`;
   execSync(cmd);
-  const content = fs.readFileSync(outfp, 'utf8');
-  fs.removeSync(outfp);
+  const content = fs.readFileSync(outputFilePath, 'utf8');
+  fs.removeSync(outputFilePath);
   return content;
-}
+};
 
-function getCertificate(pemFileContent) {
+const getCertificate = (pemFileContent: $TSAny): string|undefined => {
   let certificate;
   const beginMark = '-----BEGIN CERTIFICATE-----';
   const beginIndex = pemFileContent.indexOf(beginMark) + beginMark.length;
@@ -52,9 +68,9 @@ function getCertificate(pemFileContent) {
     }
   }
   return certificate;
-}
+};
 
-function getPrivateKey(pemFileContent) {
+const getPrivateKey = (pemFileContent: $TSAny):string|undefined => {
   let privateKey;
   const beginMark = '-----BEGIN PRIVATE KEY-----';
   const beginIndex = pemFileContent.indexOf(beginMark) + beginMark.length;
@@ -67,9 +83,9 @@ function getPrivateKey(pemFileContent) {
     }
   }
   return privateKey;
-}
+};
 
-function getRSAPrivateKey(pemFileContent) {
+const getRSAPrivateKey = (pemFileContent: $TSAny):string|undefined => {
   let privateKey;
   const beginMark = '-----BEGIN RSA PRIVATE KEY-----';
   const beginIndex = pemFileContent.indexOf(beginMark) + beginMark.length;
@@ -82,9 +98,9 @@ function getRSAPrivateKey(pemFileContent) {
     }
   }
   return privateKey;
-}
+};
 
-function getEncryptedPrivateKey(pemFileContent) {
+const getEncryptedPrivateKey = (pemFileContent: $TSAny):string|undefined => {
   let privateKey;
   const beginMark = '-----BEGIN ENCRYPTED PRIVATE KEY-----';
   const beginIndex = pemFileContent.indexOf(beginMark) + beginMark.length;
@@ -97,8 +113,4 @@ function getEncryptedPrivateKey(pemFileContent) {
     }
   }
   return privateKey;
-}
-
-module.exports = {
-  run,
 };

@@ -1,22 +1,26 @@
-const inquirer = require('inquirer');
-const channelName = 'FCM';
-const channelFCM = require('../../lib/channel-FCM');
+/* eslint-disable jest/no-conditional-expect */
+/* eslint-disable spellcheck/spell-checker */
+import { $TSAny } from 'amplify-cli-core';
+import inquirer from 'inquirer';
+import * as channelFCM from '../channel-FCM';
 
-const mockInquirer = answers => {
-  inquirer.prompt = async prompts => {
-    [].concat(prompts).forEach(function (prompt) {
-      if (!(prompt.name in answers) && typeof prompt.default !== 'undefined') {
-        answers[prompt.name] = prompt.default;
+const channelName = 'FCM';
+
+const mockInquirer = (answers : $TSAny): $TSAny => {
+  (inquirer as $TSAny).prompt = async (prompts: $TSAny):Promise<$TSAny> => {
+    [].concat(prompts).forEach(prompt => {
+      if (!((prompt as $TSAny).name in answers) && typeof (prompt as $TSAny).default !== 'undefined') {
+        // eslint-disable-next-line no-param-reassign
+        answers[(prompt as $TSAny).name] = (prompt as $TSAny).default;
       }
     });
-
     return answers;
   };
 };
 
 describe('channel-FCM', () => {
-  const mockServiceOutput = {};
-  const mockChannelOutput = { Enabled: true };
+  const mockServiceOutput: $TSAny = {};
+  const mockChannelOutput: $TSAny = { Enabled: true };
   mockServiceOutput[channelName] = mockChannelOutput;
 
   const mockPinpointResponseErr = new Error('channel-FCM.test.js error');
@@ -25,22 +29,18 @@ describe('channel-FCM', () => {
   };
 
   const mockPinpointClient = {
-    updateGcmChannel: jest.fn((_, cb) => {
-      return new Promise(() => {
-        cb(null, mockPinpointResponseData);
-      });
-    }),
+    updateGcmChannel: jest.fn((__, cb) => new Promise(() => {
+      cb(null, mockPinpointResponseData);
+    })),
   };
 
   const mockPinpointClientReject = {
-    updateGcmChannel: jest.fn((_, cb) => {
-      return new Promise(() => {
-        cb(mockPinpointResponseErr);
-      });
-    }),
+    updateGcmChannel: jest.fn((__, cb) => new Promise(() => {
+      cb(mockPinpointResponseErr);
+    })),
   };
 
-  let mockContext = {
+  const mockContext = {
     exeInfo: {
       serviceMeta: {
         output: mockServiceOutput,
@@ -53,7 +53,7 @@ describe('channel-FCM', () => {
     },
   };
 
-  let mockContextReject = {
+  const mockContextReject = {
     exeInfo: {
       serviceMeta: {
         output: mockServiceOutput,
@@ -70,26 +70,26 @@ describe('channel-FCM', () => {
     mockChannelOutput.Enabled = true;
     mockInquirer({ disableChannel: true });
 
-    await channelFCM.configure(mockContext).then(() => {
+    await channelFCM.configure(mockContext as $TSAny).then(() => {
       expect(mockPinpointClient.updateGcmChannel).toBeCalled();
     });
 
     mockChannelOutput.Enabled = true;
     mockInquirer({ disableChannel: false });
-    await channelFCM.configure(mockContext).then(() => {
+    await channelFCM.configure(mockContext as $TSAny).then(() => {
       expect(mockPinpointClient.updateGcmChannel).toBeCalled();
     });
 
     mockChannelOutput.Enabled = false;
     mockInquirer({ enableChannel: true });
-    await channelFCM.configure(mockContext).then(() => {
+    await channelFCM.configure(mockContext as $TSAny).then(() => {
       expect(mockPinpointClient.updateGcmChannel).toBeCalled();
     });
   });
 
   test('enable', async () => {
     mockInquirer({ ApiKey: 'ApiKey-abc123' });
-    await channelFCM.enable(mockContext, 'successMessage').then(data => {
+    await channelFCM.enable(mockContext as $TSAny, 'successMessage').then(data => {
       expect(mockPinpointClient.updateGcmChannel).toBeCalled();
       expect(data).toEqual(mockPinpointResponseData);
     });
@@ -97,7 +97,7 @@ describe('channel-FCM', () => {
 
   test('enable with newline', async () => {
     mockInquirer({ ApiKey: 'ApiKey-abc123\n' });
-    await channelFCM.enable(mockContext, 'successMessage').then(data => {
+    await channelFCM.enable(mockContext as $TSAny, 'successMessage').then(data => {
       expect(mockPinpointClient.updateGcmChannel).toBeCalledWith(
         {
           ApplicationId: undefined,
@@ -114,20 +114,20 @@ describe('channel-FCM', () => {
 
   test('enable unsuccessful', async () => {
     mockInquirer({ ApiKey: 'ApiKey-abc123' });
-    await channelFCM.enable(mockContextReject, 'successMessage').catch(err => {
+    await channelFCM.enable(mockContextReject as $TSAny, 'successMessage').catch(err => {
       expect(mockPinpointClient.updateGcmChannel).toBeCalled();
       expect(err).toEqual(mockPinpointResponseErr);
     });
   });
 
   test('disable', async () => {
-    await channelFCM.disable(mockContext).then(data => {
+    await channelFCM.disable(mockContext as $TSAny).then(data => {
       expect(mockPinpointClient.updateGcmChannel).toBeCalled();
       expect(data).toEqual(mockPinpointResponseData);
     });
   });
 
   test('disable unsuccessful', async () => {
-    await expect(channelFCM.disable(mockContextReject)).rejects.toThrow(mockPinpointResponseErr);
+    await expect(channelFCM.disable(mockContextReject as $TSAny)).rejects.toThrow(mockPinpointResponseErr);
   });
 });
