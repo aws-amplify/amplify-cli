@@ -65,6 +65,7 @@ import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { fileLogger } from './utils/aws-logger';
 import { APIGW_AUTH_STACK_LOGICAL_ID, loadApiCliInputs } from './utils/consolidate-apigw-policies';
 import { createEnvLevelConstructs } from './utils/env-level-constructs';
+import { showBuildDirChangesMessage } from './utils/auto-updates';
 import { NETWORK_STACK_LOGICAL_ID } from './network/stack';
 import { preProcessCFNTemplate, writeCustomPoliciesToCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processor';
 import { AUTH_TRIGGER_STACK, AUTH_TRIGGER_TEMPLATE } from './utils/upload-auth-trigger-template';
@@ -193,6 +194,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     await prePushLambdaLayerPrompt(context, resources);
     await prepareBuildableResources(context, resources);
     await buildOverridesEnabledResources(context, resources);
+    await showBuildDirChangesMessage();
 
     // Removed api transformation to generate resources before starting deploy/
 
