@@ -689,34 +689,10 @@ workflows:
                 - beta
                 - release
                 - /tagged-release-without-e2e-tests\/.*/
-      - graphql_e2e_tests:
-          context:
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - dev
-                - /run-e2e-with-rc\/.*/
-                - /tagged-release\/.*/
-                - /run-e2e\/.*/
-          requires:
-            - build_pkg_binaries
-      - integration_test:
-          context:
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - dev
-                - /run-e2e-with-rc\/.*/
-                - /tagged-release\/.*/
-                - /run-e2e\/.*/
-          requires:
-            - build
       - publish_to_local_registry:
           filters:
             branches:
-              only:
+              ignore:
                 - dev
                 - release
                 - /release_rc\/.*/
@@ -739,7 +715,7 @@ workflows:
             - build_pkg_binaries
           filters:
             branches:
-              only:
+              ignore:
                 - dev
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
@@ -752,103 +728,22 @@ workflows:
             - build
           filters:
             branches:
-              only:
+              ignore:
                 - dev
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
-      - amplify_e2e_tests_pkg:
-          context:
-            - cleanup-resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - dev
-                - /run-e2e-with-rc\/.*/
-                - /tagged-release\/.*/
-                - /run-e2e\/.*/
-          requires:
-            - build_pkg_binaries
-      - amplify_migration_tests_v6:
-          context:
-            - e2e-auth-credentials
-            - cleanup-resources
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - dev
-                - /run-e2e-with-rc\/.*/
-                - /tagged-release\/.*/
-                - /run-e2e\/.*/
-          requires:
-            - build_pkg_binaries
-      - amplify_migration_tests_v5:
-          context:
-            - e2e-auth-credentials
-            - cleanup-resources
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - dev
-                - /run-e2e-with-rc\/.*/
-                - /tagged-release\/.*/
-                - /run-e2e\/.*/
-          requires:
-            - build_pkg_binaries
-      - amplify_migration_tests_non_multi_env_layers:
-          context:
-            - e2e-auth-credentials
-            - cleanup-resources
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - dev
-                - /run-e2e-with-rc\/.*/
-                - /tagged-release\/.*/
-                - /run-e2e\/.*/
-          requires:
-            - build_pkg_binaries
-      - amplify_migration_tests_multi_env_layers:
-          context:
-            - e2e-auth-credentials
-            - cleanup-resources
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - dev
-                - /run-e2e-with-rc\/.*/
-                - /tagged-release\/.*/
-                - /run-e2e\/.*/
-          requires:
-            - build_pkg_binaries
       - amplify_console_integration_tests:
           context:
             - e2e-auth-credentials
             - cleanup-resources
             - console-e2e-test
             - e2e-test-context
-          requires:
-            - build_pkg_binaries
-      - github_prerelease:
-          context: github-publish
-          requires:
-            - build_pkg_binaries
           filters:
             branches:
-              only:
-                - release
-      - github_prerelease_install_sanity_check:
+              ignore:
+                - beta
           requires:
-            - github_prerelease
-          filters:
-            branches:
-              only:
-                - release
+            - build_pkg_binaries
       - wait_for_all:
           context:
             - cleanup-resources
@@ -857,12 +752,11 @@ workflows:
             - build
           filters:
             branches:
-              only:
+              ignore:
                 - dev
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
-
       - cleanup_resources_after_e2e_runs:
           context:
             - cleanup-resources
@@ -871,48 +765,11 @@ workflows:
             - wait_for_all
           filters:
             branches:
-              only:
+              ignore:
                 - dev
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
-
-      - deploy:
-          context:
-            - e2e-auth-credentials
-            - e2e-test-context
-            - amplify-s3-upload
-            - npm-publish
-          requires:
-            - test
-            - mock_e2e_tests
-            - graphql_e2e_tests
-            - integration_test
-            - amplify_e2e_tests_pkg
-            - amplify_sudo_install_test
-            - amplify_console_integration_tests
-            - amplify_migration_tests_v6
-            - amplify_migration_tests_v5
-            - amplify_migration_tests_non_multi_env_layers
-            - amplify_migration_tests_multi_env_layers
-            - github_prerelease_install_sanity_check
-            - build_pkg_binaries
-          filters:
-            branches:
-              only:
-                - release
-                - /release_rc\/.*/
-                - /run-e2e-with-rc\/.*/
-                - /tagged-release\/.*/
-                - /tagged-release-without-e2e-tests\/.*/
-      - github_release:
-          context: github-publish
-          requires:
-            - deploy
-          filters:
-            branches:
-              only:
-                - release
 
 commands:
   install_packaged_cli:
