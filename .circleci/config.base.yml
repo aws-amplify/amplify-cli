@@ -832,10 +832,6 @@ workflows:
             - cleanup-resources
             - console-e2e-test
             - e2e-test-context
-          filters:
-            branches:
-              only:
-                - dev
           requires:
             - build_pkg_binaries
       - github_prerelease:

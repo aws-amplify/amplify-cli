@@ -8,7 +8,7 @@ import stream from 'stream';
 import os from 'os';
 import axios from 'axios';
 import rimraf from 'rimraf';
-import { name, version } from './package.json';
+import { name } from './package.json';
 
 const BINARY_LOCATION = 'https://package.cli.amplify.aws';
 
@@ -72,6 +72,7 @@ const getPlatformCompressedBinaryName = (): string => {
  */
 const getCompressedBinaryUrl = (): string => {
   const compressedBinaryName = getPlatformCompressedBinaryName();
+  const version = execSync('amplify -v').toString();
   let url = `${BINARY_LOCATION}/${version}/${compressedBinaryName}`;
 
   if (process.env.IS_AMPLIFY_CI) {
