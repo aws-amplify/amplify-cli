@@ -21,8 +21,8 @@ const { initializeProgressBars } = require('./aws-cfn-progress-formatter');
 const { printer } = require('amplify-prompts');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
-const CFN_POLL_TIME = 6 * 1000; // 6 secs wait to check if new stacks are created by root stack
-const CFN_POLL_TIME_BACKOFF = 50;
+const CFN_POLL_TIME = 6 * 1000; // 6 seconds wait to check if new stacks are created by root stack
+const CFN_POLL_TIME_MAX = 30 * 1000; // 30 seconds
 let CFNLOG = [];
 const CFN_SUCCESS_STATUS = ['UPDATE_COMPLETE', 'CREATE_COMPLETE', 'DELETE_COMPLETE', 'DELETE_SKIPPED'];
 
@@ -156,7 +156,8 @@ class CloudFormation {
 
   readStackEvents(stackName) {
     ++this.readStackEventsCalls;
-    this.pollForEvents = setInterval(() => this.addToPollQueue(stackName, 3), CFN_POLL_TIME + (this.readStackEventsCalls * CFN_POLL_TIME_BACKOFF));
+    const waitTimeInMs = Math.min((2 ^ this.readStackEventsCalls) * CFN_POLL_TIME, CFN_POLL_TIME_MAX);
+    this.pollForEvents = setInterval(() => this.addToPollQueue(stackName, 3), waitTimeInMs);
   }
 
   pollStack(stackName) {
@@ -554,7 +555,7 @@ class CloudFormation {
           log(e);
           if (e.code === 'Throttling' && e.retryable) {
             setTimeout(() => {
-              resolve(this.describeStack(cfnNestedStackParams, maxTry - 1, timeout + CFN_POLL_TIME_BACKOFF));
+              resolve(this.describeStack(cfnNestedStackParams, maxTry - 1, Math.min(timeout * 2, CFN_POLL_TIME_MAX)));
             }, timeout);
           } else {
             reject(e);
