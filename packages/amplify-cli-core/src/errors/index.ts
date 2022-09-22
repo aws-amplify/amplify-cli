@@ -5,15 +5,9 @@ export class ResourceAlreadyExistsError extends Error {}
 export class ResourceCredentialsNotFoundError extends Error {}
 export class UnknownResourceTypeError extends Error {}
 export class UnknownArgumentError extends Error {}
-export class EnvironmentDoesNotExistError extends Error {}
 export class MissingParametersError extends Error {}
 export class InvalidSubCommandError extends Error {}
-export class FrontendBuildError extends Error {}
-export class AppNotFoundError extends Error {}
-export class AppAlreadyDeployedError extends Error {}
-export class SchemaDoesNotExistError extends Error {}
 export class AngularConfigNotFoundError extends Error {}
-export class AppIdMismatchError extends Error {}
 export class UnrecognizedFrameworkError extends Error {}
 export class UnrecognizedFrontendError extends Error {}
 export class ConfigurationError extends Error {}
