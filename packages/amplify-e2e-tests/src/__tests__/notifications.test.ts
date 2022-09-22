@@ -2,7 +2,6 @@ import _ from 'lodash';
 import {
   addSMSNotification,
   amplifyPull,
-  amplifyPushAuth,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -12,10 +11,8 @@ import {
   getTeamProviderInfo,
   initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
-import { checkoutEnvironment, removeEnvironment } from '../environment/env';
+import { AmplifyCategories } from 'amplify-cli-core';
 import { getShortId } from '../import-helpers';
-
-const profileName = 'amplify-integ-test-user';
 
 describe('notification category test', () => {
   const projectPrefix = 'notification';
@@ -59,8 +56,6 @@ describe('notification category test', () => {
 
     await addSMSNotification(projectRoot, settings);
 
-    await amplifyPushAuth(projectRoot);
-
     const appId = getAppId(projectRoot);
     expect(appId).toBeDefined();
 
@@ -88,8 +83,8 @@ describe('notification category test', () => {
     const team = getTeamProviderInfo(projectRoot);
     const pulledTeam = getTeamProviderInfo(pulledProjectRoot);
 
-    const pinpointApp = _.get(team, ['integtest', 'categories', 'notifications']);
-    const pulledPinpointApp = _.get(pulledTeam, ['integtest', 'categories', 'notifications']);
+    const pinpointApp = _.get(team, ['integtest', 'categories', AmplifyCategories.ANALYTICS]);
+    const pulledPinpointApp = _.get(pulledTeam, ['integtest', 'categories', AmplifyCategories.ANALYTICS]);
 
     expect(pinpointApp).toMatchObject(pulledPinpointApp);
   };

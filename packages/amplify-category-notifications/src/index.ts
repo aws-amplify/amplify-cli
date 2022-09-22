@@ -11,7 +11,7 @@ const category = 'notifications';
  * @param context amplify cli context
  */
 export const console = async (context: $TSContext): Promise<void> => {
-  await pinpointHelper.console(context);
+  pinpointHelper.console(context);
 };
 
 /**
@@ -55,3 +55,9 @@ export const handleAmplifyEvent = (__context: $TSContext, args: $TSAny) : void =
   printer.info(`${category} handleAmplifyEvent to be implemented`);
   printer.info(`Received event args ${args}`);
 };
+
+export {
+  notificationsPluginAPIGetResource,
+  notificationsPluginAPIRemoveApp,
+  notificationsAPIGetAvailableChannelNames,
+} from './plugin-provider-api-notifications';

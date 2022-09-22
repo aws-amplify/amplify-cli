@@ -38,6 +38,10 @@
     },
     "env": {
       "Type": "String"
+    },
+    "pinpointInAppMessagingPolicyName": {
+      "Type": "String",
+      "Default": "NONE"
     }
   },
   "Metadata": {
@@ -69,6 +73,18 @@
           "Ref": "env"
         },
         "NONE"
+      ]
+    },
+    "ShouldEnablePinpointInAppMessaging": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "pinpointInAppMessagingPolicyName"
+            },
+            "NONE"
+          ]
+        }
       ]
     }
   },
@@ -116,6 +132,25 @@
           ]
         },
         "Policies": [
+          {
+            "PolicyName": {
+              "Ref": "cloudWatchPolicyName"
+            },
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": "arn:aws:logs:*:*:*"
+                }
+              ]
+            }
+          },
           {
             "PolicyName": {
               "Ref": "pinpointPolicyName"
@@ -490,6 +525,65 @@
                         ]
                       ]
                     }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "PinpointInAppMessagingPolicy": {
+      "Condition": "ShouldEnablePinpointInAppMessaging",
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": {
+          "Ref": "pinpointInAppMessagingPolicyName"
+        },
+        "Roles": [
+          {
+            "Ref": "unauthRoleName"
+          },
+          {
+            "Ref": "authRoleName"
+          }
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "mobiletargeting:GetInAppMessages"
+              ],
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:mobiletargeting:",
+                      {
+                        "Fn::FindInMap": [
+                          "RegionMapping",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "pinpointRegion"
+                        ]
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":apps/",
+                      {
+                        "Fn::GetAtt": [
+                          "PinpointFunctionOutputs",
+                          "Id"
+                        ]
+                      },
+                      "*"
+                    ]
                   ]
                 }
               ]

@@ -1,11 +1,15 @@
 import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
 
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import inquirer from 'inquirer';
 import ora from 'ora';
+import { ChannelAction, ChannelConfigDeploymentType } from './channel-types';
+import { isAmplifyCLIPulling } from './multi-env-manager';
+import { buildPinpointChannelResponseError, buildPinpointChannelResponseSuccess } from './pinpoint-helper';
 
 const channelName = 'Email';
 const spinner = ora('');
+const deploymentType = ChannelConfigDeploymentType.INLINE;
 
 /**
  * Configure Email channel on analytics resource
@@ -15,7 +19,7 @@ export const configure = async (context: $TSContext):Promise<void> => {
   const isChannelEnabled = context.exeInfo.serviceMeta.output[channelName]?.Enabled;
 
   if (isChannelEnabled) {
-    printer.info(`The ${channelName} channel is currently enabled`);
+    context.print.info(`The ${channelName} channel is currently enabled`);
     const answer = await inquirer.prompt({
       name: 'disableChannel',
       type: 'confirm',
@@ -46,12 +50,12 @@ export const configure = async (context: $TSContext):Promise<void> => {
  * @param context amplify cli context
  * @param successMessage message to be printed on successfully enabling channel
  */
-export const enable = async (context: $TSContext, successMessage: string|undefined): Promise<$TSAny> => {
+export const enable = async (context:$TSContext, successMessage: string|undefined):Promise<$TSAny> => {
   let answers;
   if (context.exeInfo.pinpointInputParams?.[channelName]) {
     answers = validateInputParams(context.exeInfo.pinpointInputParams[channelName]);
   } else {
-    let channelOutput: $TSAny = {};
+    let channelOutput:$TSAny = {};
     if (context.exeInfo.serviceMeta.output[channelName]) {
       channelOutput = context.exeInfo.serviceMeta.output[channelName];
     }
@@ -86,22 +90,31 @@ export const enable = async (context: $TSContext, successMessage: string|undefin
     },
   };
 
-  spinner.start('Updating Email Channel.');
+  spinner.start('Enabling Email Channel.');
   return new Promise((resolve, reject) => {
-    context.exeInfo.pinpointClient.updateEmailChannel(params, (err: $TSAny, data: $TSAny) => {
+    context.exeInfo.pinpointClient.updateEmailChannel(params, (err : $TSAny, data: $TSAny) => {
       if (err && err.code === 'NotFoundException') {
         spinner.succeed(`Project with ID '${params.ApplicationId}' was already deleted from the cloud.`);
-        resolve({
+        const successResponse = buildPinpointChannelResponseSuccess(ChannelAction.ENABLE, deploymentType, channelName, {
           id: params.ApplicationId,
         });
-      } else if (err) {
-        spinner.fail('update channel error');
-        reject(err);
-      } else {
-        spinner.succeed(successMessage || `The ${channelName} channel has been successfully enabled.`);
-        context.exeInfo.serviceMeta.output[channelName] = data.EmailChannelResponse;
-        resolve(data);
+        resolve(successResponse);
+        return;
       }
+      if (err) {
+        if (!isAmplifyCLIPulling(context)) {
+          spinner.fail('enable channel error');
+        }
+        const errorResponse = buildPinpointChannelResponseError(ChannelAction.ENABLE, deploymentType, channelName, err);
+        reject(errorResponse);
+        return;
+      }
+
+      spinner.succeed(successMessage ?? `The ${channelName} channel has been successfully enabled.`);
+      context.exeInfo.serviceMeta.output[channelName] = data.EmailChannelResponse;
+      const successResponse = buildPinpointChannelResponseSuccess(ChannelAction.ENABLE, deploymentType,
+        channelName, data.EmailChannelResponse);
+      resolve(successResponse);
     });
   });
 };
@@ -128,21 +141,25 @@ export const disable = async (context:$TSContext) : Promise<$TSAny> => {
       Identity: channelOutput.Identity,
     },
   };
-  spinner.start('Updating Email Channel.');
+  spinner.start('Disabling Email Channel.');
   return new Promise((resolve, reject) => {
-    context.exeInfo.pinpointClient.updateEmailChannel(params, (err: $TSAny, data: $TSAny) => {
+    context.exeInfo.pinpointClient.updateEmailChannel(params, (err:$TSAny, data:$TSAny) => {
       if (err && err.code === 'NotFoundException') {
         spinner.succeed(`Project with ID '${params.ApplicationId}' was already deleted from the cloud.`);
-        resolve({
+        const successResponse = buildPinpointChannelResponseSuccess(ChannelAction.DISABLE, deploymentType, channelName, {
           id: params.ApplicationId,
         });
+        resolve(successResponse);
       } else if (err) {
-        spinner.fail('update channel error');
-        reject(err);
+        spinner.fail('disable channel error');
+        const errorResponse = buildPinpointChannelResponseError(ChannelAction.DISABLE, deploymentType, channelName, err);
+        reject(errorResponse);
       } else {
         spinner.succeed(`The ${channelName} channel has been disabled.`);
         context.exeInfo.serviceMeta.output[channelName] = data.EmailChannelResponse;
-        resolve(data);
+        const successResponse = buildPinpointChannelResponseSuccess(ChannelAction.DISABLE, deploymentType,
+          channelName, data.EmailChannelResponse);
+        resolve(successResponse);
       }
     });
   });
@@ -154,7 +171,7 @@ export const disable = async (context:$TSContext) : Promise<$TSAny> => {
  * @param pinpointApp Pinpoint resource meta
  * @returns Pinpoint API response
  */
-export const pull = async (context: $TSContext, pinpointApp: $TSAny): Promise<$TSAny> => {
+export const pull = async (context:$TSContext, pinpointApp:$TSAny):Promise<$TSAny> => {
   const params = {
     ApplicationId: pinpointApp.Id,
   };
@@ -167,12 +184,13 @@ export const pull = async (context: $TSContext, pinpointApp: $TSAny): Promise<$T
       spinner.succeed(`Channel information retrieved for ${channelName}`);
       // eslint-disable-next-line no-param-reassign
       pinpointApp[channelName] = data.EmailChannelResponse;
-      return data.EmailChannelResponse;
+      return buildPinpointChannelResponseSuccess(ChannelAction.PULL, deploymentType,
+        channelName, data.EmailChannelResponse);
     })
     .catch((err: $TSAny) => {
       if (err.code === 'NotFoundException') {
         spinner.succeed(`Channel is not setup for ${channelName} `);
-        return err;
+        return buildPinpointChannelResponseError(ChannelAction.PULL, deploymentType, channelName, err);
       }
       spinner.stop();
       throw err;

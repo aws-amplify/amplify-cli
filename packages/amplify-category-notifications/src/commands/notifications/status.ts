@@ -1,24 +1,75 @@
-import { $TSContext } from 'amplify-cli-core';
-import { getEnabledChannels, getDisabledChannels } from '../../notifications-manager';
+import {
+  $TSContext,
+} from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
+import chalk from 'chalk';
+import { IChannelAvailability, INotificationsConfigStatus } from '../../channel-types';
+import { Notifications } from '../../notifications-api';
 
 export const name = 'status';
 export const alias = ['list', 'ls'];
 
+const viewStyles = {
+  enabled: chalk.bold.green,
+  disabled: chalk.bold.red,
+  pendingDeployment: chalk.yellowBright,
+  deployed: chalk.cyanBright,
+  notDeployed: chalk.dim,
+  url: chalk.bold.yellow,
+  underline: chalk.blue.underline,
+  appName: chalk.bold.yellowBright,
+};
+
+const getDeployedStyledStatus = (deployedChannel: string, deployedChannels: IChannelAvailability, configuredState: string): string => {
+  if (deployedChannels.enabledChannels.includes(deployedChannel)) {
+    if (configuredState === 'Enabled') {
+      return viewStyles.deployed('Deployed');
+    }
+    return viewStyles.pendingDeployment('Not Deployed'); // remote state is disabled
+  }
+  if (deployedChannels.disabledChannels.includes(deployedChannel)) {
+    if (configuredState === 'Disabled') {
+      return viewStyles.deployed('Deployed');
+    }
+    return viewStyles.pendingDeployment('Not Deployed'); // remote state is enabled
+  }
+  return viewStyles.notDeployed('Not Deployed');
+};
+
+const viewNotificationsAppURL = async (context: $TSContext, appName: string): Promise<void> => {
+  const meta = await Notifications.Meta.getNotificationsAppMeta(context.exeInfo.amplifyMeta, appName);
+  if (meta?.Id) {
+    const consoleUrl = `https://${meta.Region}.console.aws.amazon.com/pinpoint/home/?region=${meta.Region}#/apps/${meta.Id}/notifications`;
+    printer.info(`\nPinpoint App: ${viewStyles.underline(viewStyles.url(consoleUrl))}`);
+  }
+};
+
+const viewDisplayChannelAvailability = async (context: $TSContext, backend:INotificationsConfigStatus): Promise<void> => {
+  const tableOptions = [['Channel', 'Status', 'Deployed/Not Deployed']];
+  for (const enabledChannel of backend.local.channels.enabledChannels) {
+    const channelViewInfo = Notifications.ChannelCfg.getChannelViewInfo(enabledChannel);
+    tableOptions.push([channelViewInfo.viewName, viewStyles.enabled('Enabled'), getDeployedStyledStatus(enabledChannel, backend.deployed.channels, 'Enabled')]);
+  }
+  for (const disabledChannel of backend.local.channels.disabledChannels) {
+    const channelViewInfo = Notifications.ChannelCfg.getChannelViewInfo(disabledChannel);
+    tableOptions.push([channelViewInfo.viewName, viewStyles.disabled('Disabled'), getDeployedStyledStatus(disabledChannel, backend.deployed.channels, 'Disabled')]);
+  }
+  context.print.table(tableOptions, { format: 'lean' });
+};
+
+const viewDisplayNotificationsResourceInfo = async (backend:INotificationsConfigStatus):Promise<void> => {
+  printer.info(`\n\nApplication : ${viewStyles.appName(backend.local.config.serviceName)} (${backend.local.config.service})`);
+};
+
 /**
  *  Print the status of Pinpoint resource  and channels
  */
-export const run = async (context: $TSContext) : Promise<void> => {
+export const run = async (context: $TSContext): Promise<void> => {
   context.exeInfo = context.amplify.getProjectDetails();
-  const enabledChannels = getEnabledChannels(context);
-  const disableChannels = getDisabledChannels(context);
-
-  const tableOptions = [['Channel', 'Status']];
-  for (const enabledChannel of enabledChannels) {
-    tableOptions.push([enabledChannel, 'Enabled']);
+  const backend: INotificationsConfigStatus|undefined = await Notifications.getNotificationConfigStatus(context);
+  if (backend) {
+    await viewDisplayNotificationsResourceInfo(backend);
+    await viewNotificationsAppURL(context, backend.local.config.serviceName);
+    await viewDisplayChannelAvailability(context, backend);
   }
-  for (const disableChannel of disableChannels) {
-    tableOptions.push([disableChannel, 'Disabled']);
-  }
-
-  context.print.table(tableOptions, { format: 'markdown' });
 };
