@@ -1,9 +1,12 @@
-import { NotInitializedError, stateManager } from 'amplify-cli-core';
+import { $TSMeta, projectNotInitializedError, stateManager } from 'amplify-cli-core';
 
-export function getProjectMeta() {
+/**
+ * returns project meta
+ */
+export const getProjectMeta = (): $TSMeta => {
   if (!stateManager.metaFileExists()) {
-    throw new NotInitializedError();
+    throw projectNotInitializedError();
   }
 
   return stateManager.getMeta();
-}
+};

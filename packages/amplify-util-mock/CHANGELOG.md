@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.4.11...amplify-util-mock@4.5.1) (2022-09-21)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** mock websocket subscriptions ([#10870](https://github.com/aws-amplify/amplify-cli/issues/10870)) ([5881e95](https://github.com/aws-amplify/amplify-cli/commit/5881e95ad7394781b4e479af34340855efc46175))
+
+
+
+
+
 ## [4.4.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.4.11-rc.224a2e0e4.0...amplify-util-mock@4.4.11) (2022-09-06)
 
 

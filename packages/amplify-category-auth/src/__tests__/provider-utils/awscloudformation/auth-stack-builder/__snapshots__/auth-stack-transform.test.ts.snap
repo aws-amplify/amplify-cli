@@ -307,6 +307,11 @@ Object {
             "Required": true,
           },
         ],
+        "UserAttributeUpdateSettings": Object {
+          "AttributesRequireVerificationBeforeUpdate": Array [
+            "email",
+          ],
+        },
         "UserPoolName": Object {
           "Fn::If": Array [
             "ShouldNotCreateEnvResources",
@@ -1945,6 +1950,11 @@ exports.handler = (event, context, callback) => {
         },
         "SmsVerificationMessage": Object {
           "Ref": "smsVerificationMessage",
+        },
+        "UserAttributeUpdateSettings": Object {
+          "AttributesRequireVerificationBeforeUpdate": Array [
+            "email",
+          ],
         },
         "UserPoolName": Object {
           "Fn::If": Array [

@@ -37,7 +37,7 @@ describe('push notifications', () => {
     (<any>FeatureFlags.ensureFeatureFlag).mockImplementation(() => { /* noop */ });
     await notifyFieldAuthSecurityChange(contextMock);
     // eslint-disable-next-line spellcheck/spell-checker
-    expect(<any>FeatureFlags.ensureFeatureFlag).toHaveBeenCalledWith('graphqltransformer', 'showfieldauthnotification');
+    expect(<any>FeatureFlags.ensureFeatureFlag).toHaveBeenCalledWith('graphqltransformer', 'showFieldAuthNotification');
   });
 
   it('notifyListQuerySecurityChange should exit without fail when there is not api resource directory', async () => {
