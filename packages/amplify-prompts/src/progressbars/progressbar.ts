@@ -85,7 +85,7 @@ export class ProgressBar {
     /**
      * Create bar strings according to progress using the complete and incomplete bar string.
      */
-    createBarString() : string {
+    createBarString(): string {
       const completeSize = Math.round((this.value / this.total) * this.barSize);
       const incompleteSize = this.barSize - completeSize;
 
@@ -99,8 +99,8 @@ export class ProgressBar {
     /**
      * Render strings are made by concatenating the progress bar strings with the item strings.
      */
-    getRenderStrings() : StringObj[] {
-      let finalStrings : StringObj[] = [];
+    getRenderStrings(): StringObj[] {
+      let finalStrings: StringObj[] = [];
       const progressBar = this.options.progressBarFormatter.call(this, this.payload, this.value, this.total) + this.createBarString();
       finalStrings.push({
         renderString: progressBar,
@@ -116,14 +116,14 @@ export class ProgressBar {
     /**
      * Return current value.
      */
-    getValue() : number {
+    getValue(): number {
       return this.value;
     }
 
     /**
      * Render function
      */
-    render() : void {
+    render(): void {
       const stringsToRender = this.getRenderStrings();
       this.terminal.writeLines(stringsToRender);
     }
@@ -131,21 +131,21 @@ export class ProgressBar {
     /**
      * Checks if progress bar finished.
      */
-    isFinished() : boolean {
+    isFinished(): boolean {
       return this.value === this.total;
     }
 
     /**
      * Checks if progress bar failed.
      */
-    isFailed() : boolean {
+    isFailed(): boolean {
       return this.items.some(item => this.options.itemFailedStatus.includes(item.status));
     }
 
     /**
      * Starts a progress bar and calls render function.
      */
-    start(total: number, startValue: number, payload: ProgressPayload) : void {
+    start(total: number, startValue: number, payload: ProgressPayload): void {
       this.value = startValue || 0;
       this.total = total >= 0 ? total : this.total;
 
@@ -165,7 +165,7 @@ export class ProgressBar {
     /**
      * Stops the progress bar
      */
-    stop() : void {
+    stop(): void {
       this.isActive = false;
       if (this.options.loneWolf) {
         if (this.options.hideCursor) {
@@ -177,21 +177,21 @@ export class ProgressBar {
     /**
      * Checks if item exists
      */
-    hasItem(name: string) : boolean {
+    hasItem(name: string): boolean {
       return !!this.getItem(name);
     }
 
     /**
      * Returns item if it exists
      */
-    getItem(name: string) : Item | undefined {
+    getItem(name: string): Item | undefined {
       return this.items.find(item => item.name === name);
     }
 
     /**
      * Add a new item
      */
-    addItem(name: string, itemPayload: ItemPayload) : void {
+    addItem(name: string, itemPayload: ItemPayload): void {
       const status = itemPayload.ResourceStatus;
       this.items.push({
         name,
@@ -207,7 +207,7 @@ export class ProgressBar {
     /**
      * Updates an item if it exists.
      */
-    updateItem(name: string, newPayload: ItemPayload) : void {
+    updateItem(name: string, newPayload: ItemPayload): void {
       const newItemsSet = this.items.map(item => {
         let obj = null;
         if (item.name === name) {
@@ -230,7 +230,7 @@ export class ProgressBar {
     /**
      * Increments the progress bar
      */
-    increment(value = 1) : void {
+    increment(value = 1): void {
       this.value += value;
       if (this.options.loneWolf) {
         this.render();
@@ -240,7 +240,7 @@ export class ProgressBar {
     /**
      * Finishes the progress bar
      */
-    finish() : void {
+    finish(): void {
       const diff = this.total - this.value;
       this.increment(diff);
     }

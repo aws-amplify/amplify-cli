@@ -1,7 +1,7 @@
 import {
   $TSContext, amplifyErrorWithTroubleshootingLink, amplifyFaultWithTroubleshootingLink, IDeploymentStateManager,
 } from 'amplify-cli-core';
-import { AmplifySpinner } from 'amplify-prompts';
+import { AmplifySpinner, printer as promptsPrinter } from 'amplify-prompts';
 import assert from 'assert';
 import * as aws from 'aws-sdk';
 import { ConfigurationOptions } from 'aws-sdk/lib/config-base';
@@ -21,23 +21,28 @@ import {
 import { loadConfiguration } from '../configuration-manager';
 import { fileLogger, Logger } from '../utils/aws-logger';
 import { StackProgressPrinter } from './stack-progress-printer';
+
 interface DeploymentManagerOptions {
   throttleDelay?: number;
   eventPollingDelay?: number;
   userAgent?: string;
 }
 
-const deploy_spinner_message = {
-  'idle': { machine: 'deploy', message: `Starting deployment.` },
+const deploySpinnerMessage = {
+  idle: { machine: 'deploy', message: `Starting deployment.` },
   'deploy.waitForTablesToBeReady': { machine: 'deploy', message: `Waiting for DynamoDB indices to be ready.` },
-}
+};
 
-const rollback_spinner_message = {
-  'idle': { machine: 'rollback', message: `Starting rollback.` },
-  'preRollback': { machine: 'rollback', message: `Waiting for previous deployment to finish.` },
+const rollbackSpinnerMessage = {
+  idle: { machine: 'rollback', message: `Starting rollback.` },
+  preRollback: { machine: 'rollback', message: `Waiting for previous deployment to finish.` },
   'rollback.waitForTablesToBeReady': { machine: 'rollback', message: `Waiting for DynamoDB indices to be ready.` },
 };
 
+/**
+ * Deployment error class
+ * TODO conform to new error handling mechanism
+ */
 export class DeploymentError extends Error {
   constructor(errors: StateMachineError[]) {
     super('There was an error while deploying changes.');
@@ -51,14 +56,14 @@ export class DeploymentError extends Error {
 }
 
 /**
- *
+ * Deployment operation type
  */
 export type DeploymentOp = Omit<DeploymentMachineOp, 'region' | 'stackTemplatePath' | 'stackTemplateUrl'> & {
   stackTemplatePathOrUrl: string;
 };
 
 /**
- *
+ * Deployment step type
  */
 export type DeploymentStep = {
   deployment: DeploymentOp;
@@ -74,17 +79,19 @@ type EventMap = {
   categories: {name: string, size: number}[]
 }
 
+/**
+ * DeploymentManager class
+ */
 export class DeploymentManager {
   /**
    * Helper method to get an instance of the Deployment manager with the right credentials
    */
-
   public static createInstance = async (
     context: $TSContext,
     deploymentBucket: string,
     eventMap: EventMap,
     options?: DeploymentManagerOptions,
-  ) => {
+  ): Promise<DeploymentManager> => {
     try {
       const cred = await loadConfiguration(context);
       assert(cred.region);
@@ -166,32 +173,30 @@ export class DeploymentManager {
     return new Promise(async (resolve, reject) => {
       const service = interpret(machine)
         .onTransition(async state => {
-
           if (state.changed) {
             maxDeployed = Math.max(maxDeployed, state.context.currentIndex + 1);
 
-            const key = Object.keys(deploy_spinner_message).find(elm => state.matches(elm));
+            const key = Object.keys(deploySpinnerMessage).find(elm => state.matches(elm));
             if (key) {
-              const keyObj = deploy_spinner_message[key];
-              this.logger(keyObj['machine'], [{ spinner: keyObj['message'] }])();
+              const keyObj = deploySpinnerMessage[key];
+              this.logger(keyObj.machine, [{ spinner: keyObj.message }])();
               if (!this.printer || (this.printer && !this.printer.isRunning())) {
-                this.spinner.start(keyObj['message']);
+                this.spinner.start(keyObj.message);
               }
             } else if (state.matches('deployed')) {
               this.spinner.stop();
               this.printer.finishBars();
               this.printer.stopBars();
               this.logger('DeploymentManager', [{ spinner: 'Deployed' }]);
-              console.log(`Deployed (${maxDeployed-1} of ${state.context.stacks.length})`);
+              promptsPrinter.info(`Deployed (${maxDeployed - 1} of ${state.context.stacks.length})`);
               this.resetPrinter();
             } else if (state.matches('deploy') || state.matches('rollback')) {
               this.spinner.stop();
-              const currIndex =  state.context.currentIndex;
-              const message = state.matches('deploy') ? `Deploying (${maxDeployed} of ${state.context.stacks.length})` :
-              `Rolling back (${maxDeployed - currIndex} of ${maxDeployed})`;
-              this.logger('deploy', [{ spinner: message}])();
+              const currIndex = state.context.currentIndex;
+              const message = state.matches('deploy') ? `Deploying (${maxDeployed} of ${state.context.stacks.length})`
+                : `Rolling back (${maxDeployed - currIndex} of ${maxDeployed})`;
+              this.logger('deploy', [{ spinner: message }])();
             }
-
           }
 
           switch (state.value) {
@@ -200,7 +205,7 @@ export class DeploymentManager {
             case 'rolledBack':
             case 'failed':
               this.printer.stopBars();
-              console.log(`Rolled back (${maxDeployed -state.context.currentIndex} of ${maxDeployed})`)
+              promptsPrinter.info(`Rolled back (${maxDeployed - state.context.currentIndex} of ${maxDeployed})`);
               const deploymentErrors = new DeploymentError(state.context.errors);
               this.logger('DeploymentManager', [{ stateValue: state.value }])(deploymentErrors);
               return reject(deploymentErrors);
@@ -245,23 +250,22 @@ export class DeploymentManager {
     return new Promise(async (resolve, reject) => {
       const service = interpret(machine)
         .onTransition(async state => {
-
           if (state.changed) {
-            const key = Object.keys(rollback_spinner_message).find(elm => state.matches(elm));
+            const key = Object.keys(rollbackSpinnerMessage).find(elm => state.matches(elm));
             if (key) {
-              const keyObj = rollback_spinner_message[key];
-              this.logger(keyObj['machine'], [{ spinner: keyObj['message'] }])();
-              this.spinner.start(keyObj['message']);
+              const keyObj = rollbackSpinnerMessage[key];
+              this.logger(keyObj.machine, [{ spinner: keyObj.message }])();
+              this.spinner.start(keyObj.message);
             } else if (state.matches('rolledBack')) {
               this.spinner.stop();
               this.printer.finishBars();
               this.printer.stopBars();
-              console.log(`Rolled back (${maxDeployed - state.context.currentIndex} of ${maxDeployed})`)
+              promptsPrinter.info(`Rolled back (${maxDeployed - state.context.currentIndex} of ${maxDeployed})`);
               this.logger('rollback', [{ spinner: 'Rolled back successfully' }]);
             } else if (state.matches('rollback')) {
               this.spinner.stop();
               const message = `Rolling back (${maxDeployed - state.context.currentIndex} of ${maxDeployed})`;
-              this.logger('rollback', [{ spinner: message}])();
+              this.logger('rollback', [{ spinner: message }])();
             }
           }
 
@@ -336,15 +340,15 @@ export class DeploymentManager {
 
   /**
    * Called when an deployment is failed and rolling back is started
-   * @param context deployment machie context
+   * @param deployMachineContext deployment machine context
    */
-  private startRollBackFn = async (_: Readonly<DeployMachineContext>): Promise<void> => {
+  private startRollBackFn = async (deployMachineContext: Readonly<DeployMachineContext>): Promise<void> => {
     try {
       await this.deploymentStateManager?.startRollback();
       await this.deploymentStateManager?.startCurrentStep();
     } catch (err) {
       // log err but rollback should not fail because updating the deployment status fails
-      this.logger('startRolbackFn', [{ index: _.currentIndex }])(err);
+      this.logger('startRollbackFn', [{ index: deployMachineContext.currentIndex }])(err);
     }
   };
 
@@ -385,8 +389,8 @@ export class DeploymentManager {
       if (response.Table?.TableStatus === 'DELETING') {
         return false;
       }
-      const gsis = response.Table?.GlobalSecondaryIndexes;
-      return gsis ? gsis.every(idx => idx.IndexStatus === 'ACTIVE') : true;
+      const globalSecondaryIndexes = response.Table?.GlobalSecondaryIndexes;
+      return globalSecondaryIndexes ? globalSecondaryIndexes.every(idx => idx.IndexStatus === 'ACTIVE') : true;
     } catch (err) {
       if (err?.code === 'ResourceNotFoundException') {
         return true; // in the case of an iterative update that recreates a table, non-existence means the table has been fully removed
@@ -412,7 +416,7 @@ export class DeploymentManager {
     await Promise.all(waiters);
   };
 
-  private waitForIndices = async (stackParams: DeploymentMachineOp) => {
+  private waitForIndices = async (stackParams: DeploymentMachineOp): Promise<void> => {
     if (stackParams.tableNames.length) {
       // cfn is async to ddb gsi creation the api can return true before the gsi creation starts
       await new Promise(res => setTimeout(res, 2000));
@@ -430,11 +434,11 @@ export class DeploymentManager {
     await this.waitForActiveTables(stackParams.tableNames);
   };
 
-  private printLogs = () => {
+  private printLogs = (): void => {
     this.printer.print();
   }
 
-  private addPrinterEvent = (event) => {
+  private addPrinterEvent = (event: aws.CloudFormation.StackEvent): void => {
     this.printer.addActivity(event);
   }
 
@@ -493,14 +497,4 @@ export class DeploymentManager {
   private rollBackStack = async (currentStack: Readonly<DeploymentMachineOp>): Promise<void> => {
     await this.doDeploy(currentStack);
   };
-
-  /**
-   *
-   * @param machine which state machine is the spinner message coming from
-   * @param message the message to log and show on the spinner
-   */
-  // private logSpinnerMessage = (machine: string, message: string): void => {
-  //   this.logger(machine, [{ spinner: message }])();
-  //   this.spinner.text = message;
-  // };
 }

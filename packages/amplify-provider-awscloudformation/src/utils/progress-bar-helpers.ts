@@ -21,16 +21,16 @@ type ItemPayload = {
 /**
  * Custom item formatter for progress bar
  */
-export const createItemFormatter = (payload: ItemPayload) : { renderString: string, color: string } => {
+export const createItemFormatter = (payload: ItemPayload): { renderString: string, color: string } => {
   let color = '';
-  const e = [{
+  const lowercasePayload = [{
     logicalResourceId: payload.LogicalResourceId,
     resourceType: payload.ResourceType,
     resourceStatus: payload.ResourceStatus,
     timeStamp: (new Date(payload.Timestamp)).toString(),
   }];
 
-  const renderString = columnify(e, {
+  const renderString = columnify(lowercasePayload, {
     showHeaders: false,
     truncate: true,
     maxWidth: COLUMNIFY_WIDTH,

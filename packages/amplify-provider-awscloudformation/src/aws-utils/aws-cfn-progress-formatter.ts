@@ -12,7 +12,7 @@ import {
 /**
  * Initializing the root and individual category bars
  */
-const initializeProgressBars = (eventMap : EventMap) : MultiProgressBar => {
+export const initializeProgressBars = (eventMap : EventMap) : MultiProgressBar => {
   const newMultiBar = new MultiProgressBar({
     progressBarFormatter: createProgressBarFormatter,
     itemFormatter: createItemFormatter,
@@ -54,8 +54,4 @@ const initializeProgressBars = (eventMap : EventMap) : MultiProgressBar => {
     newMultiBar.create(progressBarsConfigs);
   }
   return newMultiBar;
-};
-
-export {
-  initializeProgressBars,
 };

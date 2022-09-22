@@ -14,21 +14,21 @@ import {
  * Abstraction to create multiple progress bars inside one re writable block.
  */
 export class MultiProgressBar {
-    private count : number;
-    private terminal : Terminal;
-    private options : BarOptions;
-    private bars : {name: string, bar: Bar}[];
+    private count: number;
+    private terminal: Terminal;
+    private options: BarOptions;
+    private bars: {name: string, bar: Bar}[];
     private lastDrawnTime: number;
     isActive: boolean;
     private refreshRate: number;
-    private frameCount : number;
-    private frames : string[];
+    private frameCount: number;
+    private frames: string[];
     private timer!: ReturnType<typeof setTimeout>;
-    private prefixText : string;
+    private prefixText: string;
     private updated: boolean;
-    private lastDrawnStrings : StringObj[];
+    private lastDrawnStrings: StringObj[];
 
-    constructor(options : BarOptions) {
+    constructor(options: BarOptions) {
       this.terminal = new Terminal();
       this.options = options;
       this.bars = [];
@@ -56,14 +56,14 @@ export class MultiProgressBar {
     /**
      * Checks if the environment is tty
      */
-    isTTY() : boolean {
+    isTTY(): boolean {
       return this.terminal.isTTY();
     }
 
     /**
      * Writes lines into the re writable block
      */
-    writeLines(prefixText: StringObj) : void {
+    writeLines(prefixText: StringObj): void {
       let barStrings : StringObj[] = [];
       let stringsToRender : StringObj[] = [];
       if (Object.keys(prefixText).length !== 0) {
@@ -84,7 +84,7 @@ export class MultiProgressBar {
     /**
      * Render function which is called repeatedly
      */
-    render() : void {
+    render(): void {
       let initLine = {} as StringObj;
       if (this.timer) {
         clearTimeout(this.timer);
@@ -114,14 +114,14 @@ export class MultiProgressBar {
     /**
      * Returns bar indexed by name
      */
-    getBar(name: string) : { name: string, bar: Bar } | undefined {
+    getBar(name: string): { name: string, bar: Bar } | undefined {
       return this.bars.find(obj => obj.name === name);
     }
 
     /**
      * Updates a progress bar by adding/updating item or increments the bar
      */
-    updateBar(name: string, updateObj: { name: string, payload: ItemPayload }) : void {
+    updateBar(name: string, updateObj: { name: string, payload: ItemPayload }): void {
       const barDetails = this.getBar(name);
       if (!barDetails) {
         return;
@@ -155,7 +155,7 @@ export class MultiProgressBar {
     /**
      * Increments value of a bar indexed by name
      */
-    incrementBar(name: string, value: number) : void {
+    incrementBar(name: string, value: number): void {
       const barDetails = this.getBar(name);
       if (!barDetails) {
         return;
@@ -168,7 +168,7 @@ export class MultiProgressBar {
     /**
      * Finishes a bar indexed by name
      */
-    finishBar(name: string) : void {
+    finishBar(name: string): void {
       const barDetails = this.getBar(name);
       if (!barDetails) {
         return;
@@ -183,7 +183,7 @@ export class MultiProgressBar {
     /**
      * Finish all bars
      */
-    finishAllBars() : void {
+    finishAllBars(): void {
       this.bars.forEach(bar => this.finishBar(bar.name));
     }
 
@@ -195,7 +195,7 @@ export class MultiProgressBar {
         value: number,
         total: number,
         payload: ProgressPayload
-    }[]) : void {
+    }[]): void {
       if (!this.bars.length) {
         this.terminal.newLine();
         if (this.options.hideCursor === true) {
@@ -219,14 +219,14 @@ export class MultiProgressBar {
     /**
      * Returns count of progress bars under the multi bar
      */
-    getBarCount() : number {
+    getBarCount(): number {
       return this.count;
     }
 
     /**
      * Stop all progress bars under the multi bar
      */
-    stop() : void {
+    stop(): void {
       this.isActive = false;
       clearTimeout(this.timer);
 
