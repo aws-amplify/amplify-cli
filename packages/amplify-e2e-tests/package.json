@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-category-auth": "2.12.1",
+    "@aws-amplify/amplify-e2e-core": "4.2.1",
     "@aws-amplify/graphql-transformer-core": "^0.17.11",
     "amplify-cli-core": "3.2.0",
     "amplify-headless-interface": "^1.15.0",
