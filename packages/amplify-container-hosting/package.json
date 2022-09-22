@@ -24,7 +24,7 @@
   "dependencies": {
     "@aws-amplify/amplify-category-api": "^4.0.2",
     "amplify-cli-core": "3.2.0",
-    "fs-extra": "^8.1.0",
+    "fs-extra": "^10.1.0",
     "inquirer": "^7.3.3",
     "mime-types": "^2.1.26",
     "promise-sequential": "^1.1.1"

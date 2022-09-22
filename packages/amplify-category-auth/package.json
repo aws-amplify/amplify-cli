@@ -42,7 +42,7 @@
     "chalk": "^4.1.1",
     "change-case": "^4.1.1",
     "enquirer": "^2.3.6",
-    "fs-extra": "^8.1.0",
+    "fs-extra": "^10.1.0",
     "inquirer": "^7.3.3",
     "lodash": "^4.17.21",
     "mime-types": "^2.1.26",

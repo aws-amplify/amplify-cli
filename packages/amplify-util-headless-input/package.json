@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@types/json-schema": "^7.0.5",
-    "fs-extra": "^8.1.0"
+    "fs-extra": "^10.1.0"
   },
   "jest": {
     "clearMocks": true,
