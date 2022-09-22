@@ -1,6 +1,4 @@
-/* eslint-disable spellcheck/spell-checker */
 import { MultiProgressBar } from 'amplify-prompts';
-
 import {
   createProgressBarFormatter,
   createItemFormatter,
@@ -12,7 +10,7 @@ import {
 /**
  * Initializing the root and individual category bars
  */
-export const initializeProgressBars = (eventMap : EventMap) : MultiProgressBar => {
+export const initializeProgressBars = (eventMap: EventMap): MultiProgressBar => {
   const newMultiBar = new MultiProgressBar({
     progressBarFormatter: createProgressBarFormatter,
     itemFormatter: createItemFormatter,
@@ -40,12 +38,12 @@ export const initializeProgressBars = (eventMap : EventMap) : MultiProgressBar =
   });
 
   progressBarsConfigs = eventMap.categories.reduce(
-    (prev, curr) => prev.concat({
-      name: curr.name,
+    (previous, current) => previous.concat({
+      name: current.name,
       value: 0,
-      total: curr.size,
+      total: current.size,
       payload: {
-        progressName: curr.name,
+        progressName: current.name,
         envName: eventMap.envName,
       },
     }), progressBarsConfigs,
