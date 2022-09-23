@@ -1,4 +1,4 @@
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny, amplifyFaultWithTroubleshootingLink } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { getProjectConfig } from './get-project-config';
 import { getAllCategoryPluginInfo } from './get-all-category-pluginInfos';
@@ -32,12 +32,11 @@ export const removeEnvFromCloud = async (context, envName, deleteS3): Promise<vo
     await Promise.all(providerPromises);
     await raiseInternalOnlyPostEnvRemoveEvent(context, envName);
   } catch (e) {
-    printer.blankLine();
-    printer.error(`Error occurred while deleting env: ${envName}.`);
-    printer.info(e.message);
     if (e.code !== 'NotFoundException') {
-      // TODO: not sure why we are ignoring NotFoundException, should let user know at least?
-      throw e;
+      throw amplifyFaultWithTroubleshootingLink('BackendDeleteFault', {
+        message: `Error occurred while deleting env: ${envName}. Error: ${e.message}`,
+        stack: e.stack,
+      });
     }
   }
 };

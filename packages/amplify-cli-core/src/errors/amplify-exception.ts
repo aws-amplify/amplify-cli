@@ -122,6 +122,7 @@ export type AmplifyErrorType =
 export type AmplifyFaultType =
   | 'AmplifyBackupFault'
   | 'BackendPullFault'
+  | 'BackendDeleteFault'
   | 'DeploymentFault'
   | 'NotImplementedFault'
   | 'ProjectDeleteFault'
