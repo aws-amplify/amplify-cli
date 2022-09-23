@@ -97,7 +97,26 @@ export const amplifyPullNonInteractive = (
   cwd: string,
   settings: {appId: string, envName: string},
 ): Promise<void> => {
-  const args = ['pull', '--appId', settings.appId, '--envName', settings.envName, '--yes'];
+  const { appId, envName } = settings;
+  const amplifyParamObj = { appId, envName };
+  const providersParamObj = {
+    awscloudformation: {
+      configLevel: 'project',
+      useProfile: true,
+      // eslint-disable-next-line spellcheck/spell-checker
+      profileName: 'amplify-integ-test-user',
+    },
+  };
+  const args = [
+    'pull',
+    '--amplify',
+    JSON.stringify(amplifyParamObj),
+    '--providers',
+    JSON.stringify(providersParamObj),
+    '--no-override',
+    '--no-codegen',
+    '--yes',
+  ];
   return spawn(getCLIPath(), args, { cwd, stripColors: true })
     .wait('Successfully pulled backend environment')
     .runAsync();
