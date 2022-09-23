@@ -155,9 +155,9 @@ class CloudFormation {
   }
 
   readStackEvents(stackName) {
-    ++this.readStackEventsCalls;
     const waitTimeInMs = Math.min((2 ^ this.readStackEventsCalls) * CFN_POLL_TIME, CFN_POLL_TIME_MAX);
     this.pollForEvents = setInterval(() => this.addToPollQueue(stackName, 3), waitTimeInMs);
+    ++this.readStackEventsCalls;
   }
 
   pollStack(stackName) {
