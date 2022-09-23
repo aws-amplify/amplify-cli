@@ -1,7 +1,7 @@
 import ora from 'ora';
 import sequential from 'promise-sequential';
 import {
-  stateManager, $TSAny, $TSMeta, $TSContext, AmplifyFault,
+  stateManager, $TSAny, $TSMeta, $TSContext, amplifyFaultWithTroubleshootingLink,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { ensureEnvParamManager, IEnvironmentParameterManager } from '@aws-amplify/amplify-environment-parameters';
@@ -50,7 +50,7 @@ export const initializeEnv = async (
           categoryInitializationTasks.push(() => initEnv(context));
         }
       } catch (e) {
-        throw new AmplifyFault('PluginNotLoadedFault', {
+        throw amplifyFaultWithTroubleshootingLink('PluginNotLoadedFault', {
           message: `Could not load plugin for category ${category}. Error: ${e.message}`,
           resolution: `Review the error message and stack trace for additional information.`,
           stack: e.stack,
@@ -68,12 +68,12 @@ export const initializeEnv = async (
     const initializationTasks: (() => Promise<$TSAny>)[] = [];
     const providerPushTasks: (() => Promise<$TSAny>)[] = [];
 
-    for (const provider of context.exeInfo.projectConfig.providers) {
+    for (const provider of context.exeInfo?.projectConfig?.providers) {
       try {
         const providerModule = await import(providerPlugins[provider]);
         initializationTasks.push(() => providerModule.initEnv(context, amplifyMeta.providers[provider]));
       } catch (e) {
-        throw new AmplifyFault('PluginNotLoadedFault', {
+        throw amplifyFaultWithTroubleshootingLink('PluginNotLoadedFault', {
           message: `Could not load plugin for provider ${provider}. Error: ${e.message}`,
           resolution: 'Review the error message and stack trace for additional information.',
           stack: e.stack,
@@ -89,7 +89,7 @@ export const initializeEnv = async (
       context.usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_PLATFORM);
       await sequential(initializationTasks);
     } catch (e) {
-      throw new AmplifyFault('ProjectInitFault', {
+      throw amplifyFaultWithTroubleshootingLink('ProjectInitFault', {
         message: `Could not initialize platform for '${currentEnv}': ${e.message}`,
         resolution: 'Review the error message and stack trace for additional information.',
         stack: e.stack,
@@ -111,7 +111,7 @@ export const initializeEnv = async (
       context.usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES);
       await sequential(categoryInitializationTasks);
     } catch (e) {
-      throw new AmplifyFault('ProjectInitFault', {
+      throw amplifyFaultWithTroubleshootingLink('ProjectInitFault', {
         message: `Could not initialize categories for '${currentEnv}': ${e.message}`,
         resolution: 'Review the error message and stack trace for additional information.',
         stack: e.stack,
