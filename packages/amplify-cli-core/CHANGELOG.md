@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.1-rc.cf54accdc.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@3.2.0...amplify-cli-core@3.2.1-rc.cf54accdc.0) (2022-09-23)
+
+
+### Bug Fixes
+
+* retain TPI on "restore backend" codepath, set stacktrace in AmplifyException, fix changelog script ([#11057](https://github.com/aws-amplify/amplify-cli/issues/11057)) ([cf54acc](https://github.com/aws-amplify/amplify-cli/commit/cf54accdca6c7bb1663371f98d48321edcaa76a1))
+
+
+
+
+
 # [3.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@3.0.0...amplify-cli-core@3.2.0) (2022-09-21)
 
 
