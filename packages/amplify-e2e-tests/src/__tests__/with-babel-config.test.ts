@@ -53,7 +53,11 @@ describe('project with babel config', () => {
     await initJSProjectWithProfile(projectRoot, { name: projName, envName });
   });
 
-  test('it should read aws-exports.js', () => {
+  /**
+   * This test is to ensure the CLI is able to read aws-exports.js when a babel config file is present
+   * @see {module:@aws-amplify/amplify-frontend-javascript/lib/frontend-config-creator.js:getCurrentAWSExports}
+   */
+  it('should be able to checkout env (reads aws-exports)', () => {
     spawn(getCLIPath(), ['env', 'checkout', envName], { cwd: projectRoot, stripColors: true });
   });
 });
