@@ -49,24 +49,22 @@ export const handleException = async (exception: unknown): Promise<void> => {
 
   // Swallow and continue if any operations fail
   if (context) {
-    await executeSafely(reportError, [context, amplifyException], 'Failed to report error');
+    await executeSafely(() => reportError(context, amplifyException), 'Failed to report error');
   }
 
   await executeSafely(
-    executeHooks,
-    [HooksMeta.getInstance(undefined, 'post', {
+    () => executeHooks(HooksMeta.getInstance(undefined, 'post', {
       message: amplifyException.message ?? 'undefined error in Amplify process',
       stack: amplifyException.stack ?? 'undefined error stack',
-    })],
+    })),
     'Failed to execute hooks',
   );
 
   await executeSafely(
-    logger.logError,
-    [{
+    () => logger.logError({
       message: amplifyException.message,
       error: amplifyException,
-    }],
+    }),
     'Failed to log error',
   );
 
@@ -77,16 +75,11 @@ export const handleException = async (exception: unknown): Promise<void> => {
  * Utility function to ensure a passed in function does not invoke the exception handler to avoid an infinite loop
  *
  * @param functionToExecute - the function that should be executed, but never reject
- * @param parameters - parameters to pass to the function
  * @param errorMessagePrefix - error message prefix before the thrown error is printed
- *
- * The type "Function" is banned by the linter, but I can't find a better way to define a more accurate type that
- * allows an arbitrary number of parameters
  */
-// eslint-disable-next-line @typescript-eslint/ban-types
-const executeSafely = async (functionToExecute: Function, parameters: unknown[], errorMessagePrefix: string): Promise<void> => {
+const executeSafely = async (functionToExecute: () => Promise<void> | void, errorMessagePrefix: string): Promise<void> => {
   try {
-    await functionToExecute(...parameters);
+    await functionToExecute();
   } catch (e) {
     // Log the error, but do not reject the promise
     printer.error(`${errorMessagePrefix}: ${e?.message || e}`);
