@@ -79,4 +79,30 @@ describe('test exception handler', () => {
     expect(printerMock.info).toHaveBeenCalledWith(amplifyError.details);
     expect(printerMock.debug).toHaveBeenCalledWith(amplifyError.stack);
   });
+
+  it('error handler should handle encountered errors gracefully', async () => {
+    const amplifyError = new AmplifyError('NotImplementedError', {
+      message: 'Test Not implemented',
+      details: 'Test Not implemented',
+      resolution: 'Test Not implemented',
+    });
+    const contextMock = {
+      amplify: {},
+      usageData: {
+        emitError: jest.fn(),
+      },
+      input: {
+        options: {},
+      },
+    } as unknown as Context;
+
+    init(contextMock);
+    reportErrorMock.mockRejectedValueOnce(new Error('MockTestError'));
+    await handleException(amplifyError);
+
+    expect(printerMock.error).toHaveBeenCalledWith(amplifyError.message);
+    expect(printerMock.info).toHaveBeenCalledWith(amplifyError.details);
+    expect(printerMock.debug).toHaveBeenCalledWith(amplifyError.stack);
+    expect(printerMock.error).toHaveBeenCalledWith('Failed to report error: MockTestError');
+  });
 });
