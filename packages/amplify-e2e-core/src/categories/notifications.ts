@@ -3,30 +3,36 @@ import { nspawn as spawn, getCLIPath, singleSelect } from '..';
 /**
  * notifications settings
  */
-export type NotificationSettings = {
+type NotificationSettings = {
   resourceName: string;
 };
 
+const NOTIFICATION_CHOICES = ['APNS', 'FCM', 'In-App Messaging', 'Email', 'SMS'];
+
 /**
- * Add notifications
+ * Adds notification resource for a given channel
+ *
+ * @param cwd the current working directory to run CLI in
+ * @param settings settings required to add a notification channel
+ * @param settings.resourceName the name to give to the created pinpoint resource
+ * @param channel the channel to add
  */
-export const addSMSNotification = async (cwd: string, settings: NotificationSettings): Promise<void> => new Promise((resolve, reject) => {
+export const addNotificationChannel = async (
+  cwd: string,
+  { resourceName }: NotificationSettings,
+  channel: string,
+): Promise<void> => {
   const chain = spawn(getCLIPath(), ['add', 'notification'], { cwd, stripColors: true });
 
-  singleSelect(chain.wait('Choose the notification channel to enable'), 'SMS', ['APNS', 'FCM', 'In-App Messaging', 'Email', 'SMS']);
+  singleSelect(chain.wait('Choose the notification channel to enable'), channel, NOTIFICATION_CHOICES);
 
-  chain
+  return chain
     .wait('Provide your pinpoint resource name')
-    .sendLine(settings.resourceName)
+    .sendLine(resourceName)
     .wait('Apps need authorization to send analytics events. Do you want to allow guests')
-    .sendConfirmNo()
-    .wait('The SMS channel has been successfully enabled')
+    .sendNo()
+    .sendCarriageReturn()
+    .wait(`The ${channel} channel has been successfully enabled`)
     .sendEof()
-    .run((err: Error) => {
-      if (!err) {
-        resolve(undefined);
-      } else {
-        reject(err);
-      }
-    });
-});
+    .runAsync();
+};
