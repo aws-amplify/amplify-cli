@@ -71,13 +71,13 @@ export type DeploymentStep = {
 };
 
 type EventMap = {
-  rootStackName: string,
-  envName: string,
-  projectName: string,
-  rootResources: {key: string, category: string}[],
-  eventToCategories: Map<string, string>,
-  categories: {name: string, size: number}[]
-}
+  rootStackName: string;
+  envName: string;
+  projectName: string;
+  rootResources: {key: string, category: string}[];
+  eventToCategories: Map<string, string>;
+  categories: {name: string, size: number}[];
+};
 
 /**
  * DeploymentManager class
@@ -192,9 +192,9 @@ export class DeploymentManager {
               this.resetPrinter();
             } else if (state.matches('deploy') || state.matches('rollback')) {
               this.spinner.stop();
-              const currIndex = state.context.currentIndex;
+              const { currentIndex } = state.context;
               const message = state.matches('deploy') ? `Deploying (${maxDeployed} of ${state.context.stacks.length})`
-                : `Rolling back (${maxDeployed - currIndex} of ${maxDeployed})`;
+                : `Rolling back (${maxDeployed - currentIndex} of ${maxDeployed})`;
               this.logger('deploy', [{ spinner: message }])();
             }
           }
@@ -331,7 +331,7 @@ export class DeploymentManager {
     });
   };
 
-  public resetPrinter = () => {
+  public resetPrinter = (): void => {
     if (this.printer) {
       this.printer = null;
     }
@@ -443,9 +443,8 @@ export class DeploymentManager {
   }
 
   private stackPollFn = (deploymentStep: DeploymentMachineOp): (() => void) => {
-    let monitor: StackEventMonitor;
     assert(deploymentStep.stackName, 'stack name should be passed to stackPollFn');
-    monitor = new StackEventMonitor(this.cfnClient, deploymentStep.stackName, this.printLogs, this.addPrinterEvent);
+    const monitor = new StackEventMonitor(this.cfnClient, deploymentStep.stackName, this.printLogs, this.addPrinterEvent);
     monitor.start();
     return () => {
       if (monitor) {

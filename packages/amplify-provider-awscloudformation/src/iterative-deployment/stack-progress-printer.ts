@@ -39,7 +39,7 @@ export class StackProgressPrinter implements IStackProgressPrinter {
     this.eventMap = eventMap;
   }
 
-  addActivity = (event: StackEvent) : void => {
+  addActivity = (event: StackEvent): void => {
     this.events.push(event);
     if (this.progressBar.isTTY()) {
       // Create a bar only if corresponding resources events trigger.
@@ -78,7 +78,7 @@ export class StackProgressPrinter implements IStackProgressPrinter {
     }
   };
 
-  print = () : void => {
+  print = (): void => {
     if (this.progressBar.isTTY()) {
       this.printEventProgress();
     } else {
@@ -86,7 +86,7 @@ export class StackProgressPrinter implements IStackProgressPrinter {
     }
   }
 
-  printEventProgress = () : void => {
+  printEventProgress = (): void => {
     this.events = this.events.reverse();
     if (this.events.length > 0) {
       this.events.forEach(event => {
@@ -118,7 +118,7 @@ export class StackProgressPrinter implements IStackProgressPrinter {
     }
   }
 
-  printDefaultLogs = () : void => {
+  printDefaultLogs = (): void => {
     // CFN sorts the events by descending
     this.events = this.events.reverse();
     if (this.events.length > 0) {
@@ -154,13 +154,13 @@ export class StackProgressPrinter implements IStackProgressPrinter {
     }
   };
 
-  finishBars = () : void => {
+  finishBars = (): void => {
     this.progressBar.finishAllBars();
   }
 
-  stopBars = () : void => {
+  stopBars = (): void => {
     this.progressBar.stop();
   }
 
-  isRunning = () : boolean => this.progressBar.getBarCount() !== 0;
+  isRunning = (): boolean => this.progressBar.getBarCount() !== 0;
 }

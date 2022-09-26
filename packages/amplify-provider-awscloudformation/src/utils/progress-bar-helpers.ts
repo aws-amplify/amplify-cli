@@ -66,9 +66,11 @@ export type EventMap = {
 /**
  * Custom progress bar formatter
  */
-export const createProgressBarFormatter = (payload : ProgressPayload,
+export const createProgressBarFormatter = (
+  payload: ProgressPayload,
   value: number,
-  total: number) : string => {
+  total: number,
+): string => {
   let statusString = 'Deploying';
   const progressNameParts = payload.progressName.split('-');
   const name = progressNameParts.length === 1 ? progressNameParts[0] : `${progressNameParts[0]} ${progressNameParts[1]}`;
