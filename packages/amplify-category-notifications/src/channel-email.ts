@@ -1,4 +1,5 @@
 import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import inquirer from 'inquirer';
@@ -19,7 +20,7 @@ export const configure = async (context: $TSContext):Promise<void> => {
   const isChannelEnabled = context.exeInfo.serviceMeta.output[channelName]?.Enabled;
 
   if (isChannelEnabled) {
-    context.print.info(`The ${channelName} channel is currently enabled`);
+    printer.info(`The ${channelName} channel is currently enabled`);
     const answer = await inquirer.prompt({
       name: 'disableChannel',
       type: 'confirm',

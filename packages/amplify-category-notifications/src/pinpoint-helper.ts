@@ -372,7 +372,7 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
     }
     case IPinpointDeploymentStatus.APP_NOT_CREATED: {
       // Create the Pinpoint resource if not yet created
-      context.print.warning('Adding notifications would add a Pinpoint resource from Analytics category if not already added');
+      printer.warn('Adding notifications would add a Pinpoint resource from Analytics category if not already added');
       const resourceResult = await invokeAnalyticsAPICreateResource(context, AmplifySupportedService.PINPOINT);
       resourceName = resourceResult.resourceName;
       // create updated version of amplify-meta with notifications resource

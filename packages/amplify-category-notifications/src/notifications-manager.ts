@@ -2,6 +2,7 @@ import sequential from 'promise-sequential';
 import {
   $TSAny, $TSContext, stateManager,
 } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 import * as pinpointHelper from './pinpoint-helper';
 import {
   IChannelAPIResponse, NotificationsChannelAPIModule,
@@ -79,7 +80,7 @@ export const configureChannel = async (context: $TSContext, channelName: string)
   if (channelName in Notifications.ChannelCfg.ChannelType) {
     context.exeInfo.pinpointClient = await pinpointHelper.getPinpointClient(context, 'update', envName);
     if (context.exeInfo.serviceMeta.mobileHubMigrated === true) {
-      context.print.error('No resources to update.');
+      printer.error('No resources to update.');
       return undefined;
     }
 

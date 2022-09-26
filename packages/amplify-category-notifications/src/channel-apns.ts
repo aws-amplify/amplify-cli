@@ -36,7 +36,7 @@ export const configure = async (context:$TSContext): Promise<IChannelAPIResponse
   const isChannelEnabled = context.exeInfo.serviceMeta.output[channelName]?.Enabled;
   let response: IChannelAPIResponse|undefined;
   if (isChannelEnabled) {
-    context.print.info(`The ${channelName} channel is currently enabled`);
+    printer.info(`The ${channelName} channel is currently enabled`);
     const answer = await inquirer.prompt({
       name: 'disableChannel',
       type: 'confirm',

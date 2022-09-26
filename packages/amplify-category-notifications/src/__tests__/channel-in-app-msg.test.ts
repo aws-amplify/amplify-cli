@@ -37,9 +37,9 @@ jest.mock('ora', () => {
   };
   return jest.fn(() => mockSpinnerInstance);
 });
-jest.mock('../src/notifications-api');
-jest.mock('../src/pinpoint-helper');
-jest.mock('../src/plugin-client-api-analytics');
+jest.mock('../notifications-api');
+jest.mock('../pinpoint-helper');
+jest.mock('../plugin-client-api-analytics');
 
 const channelName = 'InAppMessaging';
 
