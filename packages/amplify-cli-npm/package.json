@@ -32,7 +32,8 @@
   "dependencies": {
     "axios": "^0.26.0",
     "rimraf": "^3.0.2",
-    "tar-stream": "^2.2.0"
+    "tar-stream": "^2.2.0",
+    "@aws-amplify/cli-internal": "10.2.0"
   },
   "devDependencies": {
     "@aws-amplify/cli-internal": "10.2.0",
