@@ -6,7 +6,9 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-import { $TSAny, $TSContext, stateManager } from 'amplify-cli-core';
+import {
+  $TSAny, $TSContext, AmplifyError, amplifyErrorWithTroubleshootingLink, amplifyFaultWithTroubleshootingLink, stateManager,
+} from 'amplify-cli-core';
 
 import _ from 'lodash';
 
@@ -135,9 +137,6 @@ export class S3 {
       }
       await uploadTask.promise();
       return this.uploadState.s3Params.Bucket;
-    } catch (ex) {
-      logger('uploadFile.s3', [others])(ex);
-      throw ex;
     } finally {
       // eslint-disable-next-line no-unused-expressions
       showSpinner && spinner.stop();
@@ -152,15 +151,10 @@ export class S3 {
    */
   async getFile(s3Params: $TSAny, envName?: string) {
     s3Params = this.attachBucketToParams(s3Params, envName);
-    const log = logger('s3.getFile', [s3Params]);
-    try {
-      log();
-      const result = await this.s3.getObject(s3Params).promise();
-      return result.Body;
-    } catch (ex) {
-      log(ex);
-      throw ex;
-    }
+    logger('s3.getFile', [s3Params])();
+
+    const result = await this.s3.getObject(s3Params).promise();
+    return result.Body;
   }
 
   /**
@@ -186,7 +180,9 @@ export class S3 {
       await this.s3.waitFor('bucketExists', params).promise();
       this.context.print.success('S3 bucket successfully created');
     } else if (throwIfExists) {
-      throw new Error(`Bucket ${bucketName} already exists`);
+      throw amplifyErrorWithTroubleshootingLink('BucketAlreadyExistsError', {
+        message: `Bucket ${bucketName} already exists`,
+      });
     }
     return bucketName;
   }
@@ -341,10 +337,19 @@ export class S3 {
       return true;
     } catch (e) {
       logger('ifBucketExists.s3.headBucket', [{ BucketName: bucketName }])(e);
-      if (e.statusCode === 404) {
-        return false;
+
+      if (e.code === 'NotFound') {
+        throw new AmplifyError('BucketNotFoundError', {
+          message: e.message,
+          stack: e.stack,
+          resolution: `Check that bucket name is correct: ${bucketName}`,
+        });
       }
-      throw e;
+
+      throw amplifyFaultWithTroubleshootingLink('UnknownFault', {
+        message: e.message,
+        stack: e.stack,
+      });
     }
   }
 
@@ -369,7 +374,10 @@ export class S3 {
         return undefined;
       }
 
-      throw e;
+      throw amplifyFaultWithTroubleshootingLink('UnexpectedS3Fault', {
+        message: e.message,
+        stack: e.stack,
+      });
     }
   };
 }

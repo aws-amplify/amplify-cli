@@ -1,19 +1,18 @@
-import { $TSContext } from "amplify-cli-core";
-import { ServiceName } from "../service-utils/constants";
 import { printer, prompter } from 'amplify-prompts';
-import { getServiceFriendlyName } from './resourceWalkthrough';
+import { ServiceName } from '../service-utils/constants';
 import { getGeoResources } from '../service-utils/resourceUtils';
+import { getServiceFriendlyName } from './resourceWalkthrough';
 
 /**
  * CLI walkthrough to select resource to be removed
  */
-export const removeWalkthrough = async (context: $TSContext ,service: ServiceName) : Promise<string | undefined> => {
-    const resources = await getGeoResources(service);
-    const serviceFriendlyName = getServiceFriendlyName(service);
+export const removeWalkthrough = async (service: ServiceName): Promise<string | undefined> => {
+  const resources = await getGeoResources(service);
+  const serviceFriendlyName = getServiceFriendlyName(service);
 
-    if (resources.length === 0) {
-        printer.error(`No ${serviceFriendlyName} exists in the project.`);
-        return;
-    }
-    return await prompter.pick(`Select the ${serviceFriendlyName} you want to remove`, resources);
+  if (resources.length === 0) {
+    printer.error(`No ${serviceFriendlyName} exists in the project.`);
+    return undefined;
+  }
+  return prompter.pick(`Select the ${serviceFriendlyName} you want to remove`, resources);
 };

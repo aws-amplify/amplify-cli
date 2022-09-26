@@ -72,7 +72,7 @@ describe('Check RootStack Template', () => {
         },
         'AuthRoleName',
       ),
-    ).toThrow('logical Id already Exists');
+    ).toThrow('Logical Id already exists: AuthRoleName.');
   });
 
   test(' adding two resources with same logicalId throw error', () => {

@@ -56,6 +56,13 @@ export type AmplifyExceptionOptions = {
 });
 
 /**
+ * Amplify Error partial options object
+ */
+export type PartialAmplifyExceptionOptions = Partial<AmplifyExceptionOptions> & {
+  message: string;
+};
+
+/**
  * Amplify exception types
  */
 export type AmplifyExceptionType = AmplifyErrorType | AmplifyFaultType;
@@ -64,19 +71,70 @@ export type AmplifyExceptionType = AmplifyErrorType | AmplifyFaultType;
  * Amplify error types
  */
 export type AmplifyErrorType =
+  | 'AmplifyStudioError'
+  | 'AmplifyStudioLoginError'
+  | 'AmplifyStudioNotEnabledError'
+  | 'ApiCategorySchemaNotFoundError'
+  | 'AuthImportError'
+  | 'BucketAlreadyExistsError'
+  | 'BucketNotFoundError'
+  | 'CategoryNotEnabledError'
+  | 'CloudFormationTemplateError'
   | 'CommandNotSupportedError'
-  | 'MigrationError'
-  | 'InputValidationError'
-  | 'ProjectInitError'
-  | 'NestedProjectInitError'
-  | 'FeatureFlagsValidationError'
+  | 'ConfigurationError'
+  | 'DeploymentError'
+  | 'DeploymentInProgressError'
+  | 'DirectoryError'
+  | 'DirectoryAlreadyExistsError'
+  | 'DuplicateLogicalIdError'
   | 'EnvironmentNameError'
-  | 'NotImplementedError';
+  | 'EnvironmentNotInitializedError'
+  | 'FeatureFlagsValidationError'
+  | 'FrameworkNotSupportedError'
+  | 'FunctionTooLargeError'
+  | 'InputValidationError'
+  | 'InvalidAmplifyAppIdError'
+  | 'InvalidStackError'
+  | 'IterativeRollbackError'
+  | 'LambdaLayerDeleteError'
+  | 'MigrationError'
+  | 'MissingAmplifyMetaFileError'
+  | 'ModelgenError'
+  | 'NestedProjectInitError'
+  | 'NoUpdateBackendError'
+  | 'NotImplementedError'
+  | 'ParameterNotFoundError'
+  | 'PermissionsError'
+  | 'PluginMethodNotFoundError'
+  | 'PluginNotFoundError'
+  | 'ProfileConfigurationError'
+  | 'ProjectAppIdResolveError'
+  | 'ProjectInitError'
+  | 'ProjectNotFoundError'
+  | 'ProjectNotInitializedError'
+  | 'PushResourcesError'
+  | 'RegionNotAvailableError'
+  | 'StackNotFoundError'
+  | 'StackStateError';
 
 /**
  * Amplify fault types
  */
 export type AmplifyFaultType =
+  | 'AmplifyBackupFault'
+  | 'BackendPullFault'
+  | 'DeploymentFault'
+  | 'NotImplementedFault'
+  | 'ProjectDeleteFault'
   | 'ProjectInitFault'
-  | 'UnknownFaultType'
+  | 'PushResourcesFault'
+  | 'PullBackendFault'
+  | 'ResourceExportFault'
+  | 'ResourceNotFoundFault'
+  | 'ResourceNotReadyFault'
+  | 'RootStackNotFoundFault'
+  | 'ServiceCallFault'
+  | 'TimeoutFault'
+  | 'UnexpectedS3Fault'
+  | 'UnknownFault'
   | 'UnknownNodeJSFault';

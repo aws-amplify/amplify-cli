@@ -69,11 +69,6 @@ export const initializeEnv = async (
     try {
       context.usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_PLATFORM);
       await providerInitEnv(context, await ensureEnvMeta(context, currentEnv));
-    } catch (e) {
-      printer.error(`Could not initialize '${currentEnv}': ${e.message}`);
-      printer.debug(e.stack);
-      context.usageData.emitError(e);
-      process.exit(1);
     } finally {
       context.usageData.stopCodePathTimer(ManuallyTimedCodePath.INIT_ENV_PLATFORM);
     }

@@ -1,4 +1,8 @@
+import { printer } from 'amplify-prompts';
 import { deleteProject, getConfirmation } from '../../../extensions/amplify-helpers/delete-project';
+
+const printerMock = printer as jest.Mocked<typeof printer>;
+printerMock.success = jest.fn();
 
 jest.mock('../../../extensions/amplify-helpers/remove-env-from-cloud');
 jest.mock('../../../extensions/amplify-helpers/path-manager');
@@ -31,9 +35,11 @@ jest.mock('../../../extensions/amplify-helpers/get-plugin-instance', () => ({
             throw new Error('listBackendEnvironments error');
           })
           .mockImplementationOnce(() => {
-            const e: any = new Error('listBackendEnvironments error');
-            e.code = 'NotFoundException';
-            throw e;
+            throw {
+              name: 'BucketNotFoundError',
+              message: 'Bucket not found',
+              link: 'https://docs.aws.amazon.com/',
+            };
           }),
       }),
       deleteApp: jest.fn().mockReturnValue({
@@ -81,7 +87,6 @@ describe('getConfirmation', () => {
 });
 
 describe('deleteProject', () => {
-  const success = jest.fn();
   const contextStub = {
     input: {
       options: {
@@ -94,13 +99,10 @@ describe('deleteProject', () => {
     filesystem: {
       remove: jest.fn(),
     },
-    print: {
-      success,
-    },
   };
   it('should delete app', async () => {
     await deleteProject(contextStub);
-    expect(success).toBeCalled();
+    expect(printerMock.success).toBeCalled();
   });
 
   it('throws error when listBackendEnvironments promise rejected', async () => {

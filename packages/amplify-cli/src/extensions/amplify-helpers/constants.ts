@@ -1,9 +1,9 @@
 export const amplifyCLIConstants = Object.freeze({
   AmplifyCLIDirName: 'amplify',
   DotAmplifyDirName: '.amplify',
-  DotConfigamplifyCLISubDirName: '.config',
-  BackendamplifyCLISubDirName: 'backend',
-  CurrentCloudBackendamplifyCLISubDirName: '#current-cloud-backend',
+  DotConfigAmplifyCLISubDirName: '.config',
+  BackendAmplifyCLISubDirName: 'backend',
+  CurrentCloudBackendAmplifyCLISubDirName: '#current-cloud-backend',
   ProjectConfigFileName: 'project-config.json',
   amplifyMetaFileName: 'amplify-meta.json',
   CliName: 'amplify',

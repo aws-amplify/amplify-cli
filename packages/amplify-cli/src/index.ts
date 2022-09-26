@@ -32,7 +32,7 @@ import { copyAppIdAndRegionToLocalAwsInfo, moveTpiSecretsToDeploymentSecrets } f
 import { deleteOldVersion } from './utils/win-utils';
 import { notify } from './version-notifier';
 import { getAmplifyVersion } from './extensions/amplify-helpers/get-amplify-version';
-import { init as initErrorHandler, handleException } from './exception-handler/amplify-exception-handler';
+import { init as initErrorHandler, handleException } from './amplify-exception-handler';
 
 export { UsageData } from './domain/amplify-usageData';
 

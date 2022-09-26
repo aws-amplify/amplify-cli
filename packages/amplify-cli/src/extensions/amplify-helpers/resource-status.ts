@@ -1,11 +1,9 @@
 import _ from 'lodash';
 import { print } from './print';
-import { getEnvInfo } from './get-env-info';
 import { CLOUD_INITIALIZED, getCloudInitStatus } from './get-cloud-init-status';
 import { ViewResourceTableParams } from 'amplify-cli-core';
 import { viewSummaryTable, viewEnvInfo, viewResourceDiffs } from './resource-status-view';
 import { getMultiCategoryStatus, getResourceStatus, getHashForResourceDir } from './resource-status-data';
-import chalk from 'chalk';
 
 export { getResourceStatus, getHashForResourceDir };
 
@@ -16,7 +14,6 @@ export async function showStatusTable(tableViewFilter: ViewResourceTableParams) 
     resourcesToBeUpdated,
     resourcesToBeDeleted,
     resourcesToBeSynced,
-    rootStackUpdated,
     allResources,
     tagsUpdated,
   } = await getMultiCategoryStatus(tableViewFilter);

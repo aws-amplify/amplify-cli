@@ -303,11 +303,11 @@ const raisePostEvent = async (context: Context): Promise<void> => {
 };
 
 const raisePostInitEvent = async (context: Context): Promise<void> => {
-  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostInit, new AmplifyPostPushEventData()));
+  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostInit, new AmplifyPostInitEventData()));
 };
 
 const raisePostPushEvent = async (context: Context): Promise<void> => {
-  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostPush, new AmplifyPostInitEventData()));
+  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostPush, new AmplifyPostPushEventData()));
 };
 
 const raisePostPullEvent = async (context: Context): Promise<void> => {

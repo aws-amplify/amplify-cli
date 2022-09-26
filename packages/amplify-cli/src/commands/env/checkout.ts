@@ -2,9 +2,10 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
 import sequential from 'promise-sequential';
-import { $TSAny, $TSContext, stateManager } from 'amplify-cli-core';
+import {
+  $TSAny, $TSContext, AmplifyError, stateManager,
+} from 'amplify-cli-core';
 import { ensureEnvMeta, getEnvMeta, listLocalEnvNames } from '@aws-amplify/amplify-environment-parameters';
-import { printer } from 'amplify-prompts';
 import { initializeEnv } from '../../initialize-env';
 import { getProviderPlugins } from '../../extensions/amplify-helpers/get-provider-plugins';
 import { getEnvInfo } from '../../extensions/amplify-helpers/get-env-info';
@@ -20,8 +21,10 @@ export const run = async (context: $TSContext): Promise<void> => {
   const allEnvNames = listLocalEnvNames();
 
   if (!allEnvNames.includes(envName)) {
-    printer.error('Please pass in a valid environment name. Run amplify env list to get a list of valid environments');
-    return;
+    throw new AmplifyError('EnvironmentNameError', {
+      message: 'Environment name is invalid.',
+      resolution: `Run amplify env list to get a list of valid environments.`,
+    });
   }
 
   // load env meta from specified environment
@@ -33,14 +36,13 @@ export const run = async (context: $TSContext): Promise<void> => {
   stateManager.setLocalEnvInfo(undefined, localEnvInfo);
 
   if (localEnvInfo.noUpdateBackend) {
-    printer.error(
-      `The local environment configuration does not allow modifying the backend.\nUse amplify env pull --envName ${envName}`,
-    );
-    process.exitCode = 1;
-    return;
+    throw new AmplifyError('NoUpdateBackendError', {
+      message: 'The local environment configuration does not allow modifying the backend.',
+      resolution: `Use amplify env pull --envName ${envName}`,
+    });
   }
 
-  // Setup exeInfo
+  // Setup exe info
   context.amplify.constructExeInfo(context);
   context.exeInfo.forcePush = false;
   context.exeInfo.isNewEnv = false;
