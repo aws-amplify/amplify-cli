@@ -1,14 +1,13 @@
 import {
-  $TSContext, $TSObject, stateManager, pathManager, JSONUtilities,
+  $TSContext, $TSObject, JSONUtilities, pathManager, stateManager,
 } from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
+import { category } from '../../constants';
+import { provider, ServiceName } from '../../service-utils/constants';
 import { DataSourceIntendedUse, PlaceIndexParameters } from '../../service-utils/placeIndexParams';
 import { AccessType, DataProvider } from '../../service-utils/resourceParams';
-import { provider, ServiceName } from '../../service-utils/constants';
-import { category } from '../../constants';
-
-const { createPlaceIndexWalkthrough, updatePlaceIndexWalkthrough } = require('../../service-walkthroughs/placeIndexWalkthrough');
-const { removeWalkthrough } = require('../../service-walkthroughs/removeWalkthrough');
+import { createPlaceIndexWalkthrough, updatePlaceIndexWalkthrough } from '../../service-walkthroughs/placeIndexWalkthrough';
+import { removeWalkthrough } from '../../service-walkthroughs/removeWalkthrough';
 
 jest.mock('amplify-cli-core');
 jest.mock('amplify-prompts');
@@ -188,14 +187,14 @@ describe('Search walkthrough works as expected', () => {
   });
 
   it('sets the resource to remove correctly', async () => {
-    expect(await (removeWalkthrough(mockContext, service))).toEqual(mockPlaceIndexName);
+    expect(await (removeWalkthrough(service))).toEqual(mockPlaceIndexName);
   });
 
   it('early returns and prints error if no place index resource to remove', async () => {
     mockAmplifyMeta.geo = {};
     stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
 
-    await removeWalkthrough(mockContext, service);
+    await removeWalkthrough(service);
 
     expect(printer.error).toBeCalledWith('No search index exists in the project.');
   });
