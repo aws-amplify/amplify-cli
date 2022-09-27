@@ -51,7 +51,8 @@ export const initializeEnv = async (
         }
       } catch (e) {
         throw amplifyFaultWithTroubleshootingLink('PluginNotLoadedFault', {
-          message: `Could not load plugin for category ${category}. Error: ${e.message}`,
+          message: `Could not load plugin for category ${category}.`,
+          details: e.message,
           resolution: `Review the error message and stack trace for additional information.`,
           stack: e.stack,
         });
@@ -74,7 +75,8 @@ export const initializeEnv = async (
         initializationTasks.push(() => providerModule.initEnv(context, amplifyMeta.providers[provider]));
       } catch (e) {
         throw amplifyFaultWithTroubleshootingLink('PluginNotLoadedFault', {
-          message: `Could not load plugin for provider ${provider}. Error: ${e.message}`,
+          message: `Could not load plugin for provider ${provider}.`,
+          details: e.message,
           resolution: 'Review the error message and stack trace for additional information.',
           stack: e.stack,
         });
