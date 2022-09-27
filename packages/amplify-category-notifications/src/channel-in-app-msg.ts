@@ -98,29 +98,36 @@ const invokeInlineEnableInAppMessagingChannel = (
  */
 export const enable = async (context: $TSContext): Promise<IChannelAPIResponse> => {
   spinner.start(`Enabling ${ChannelCfg.getChannelViewName(channelName)} channel.`);
-  //get the pinpoint resource state - if custom deploy - fallback to in-line deployment
-  const envName = stateManager.getCurrentEnvName();
-  const notificationsMeta = await Notifications.Meta.getNotificationsAppMeta(context.exeInfo.amplifyMeta);
-  const pinpointAppStatus: IPinpointAppStatus = await getPinpointAppStatusFromMeta(context, notificationsMeta, envName);
-  const enableInAppMsgAPIResponse = pinpointAppStatus.status === IPinpointDeploymentStatus.APP_IS_DEPLOYED_CUSTOM
-    ? invokeInlineEnableInAppMessagingChannel(context, pinpointAppStatus)
-    : await invokeAnalyticsResourceToggleNotificationChannel(context,
-      AmplifySupportedService.PINPOINT,
-      NotificationChannels.IN_APP_MSG,
-      true);
 
-  if (enableInAppMsgAPIResponse.status) {
-    spinner.succeed(`The ${ChannelCfg.getChannelViewName(channelName)} channel has been successfully enabled.`);
-  } else {
-    spinner.fail(`Enable channel error: ${enableInAppMsgAPIResponse.reasonMsg as string}`);
+  try {
+    //get the pinpoint resource state - if custom deploy - fallback to in-line deployment
+    const envName = stateManager.getCurrentEnvName();
+    const notificationsMeta = await Notifications.Meta.getNotificationsAppMeta(context.exeInfo.amplifyMeta);
+    const pinpointAppStatus: IPinpointAppStatus = await getPinpointAppStatusFromMeta(context, notificationsMeta, envName);
+    const enableInAppMsgAPIResponse = pinpointAppStatus.status === IPinpointDeploymentStatus.APP_IS_DEPLOYED_CUSTOM
+      ? invokeInlineEnableInAppMessagingChannel(context, pinpointAppStatus)
+      : await invokeAnalyticsResourceToggleNotificationChannel(context,
+        AmplifySupportedService.PINPOINT,
+        NotificationChannels.IN_APP_MSG,
+        true);
+
+    if (enableInAppMsgAPIResponse.status) {
+      spinner.succeed(`The ${ChannelCfg.getChannelViewName(channelName)} channel has been successfully enabled.`);
+    } else {
+      spinner.fail(`Enable channel error: ${enableInAppMsgAPIResponse.reasonMsg as string}`);
+    }
+
+    const enableChannelInAppMsgResponse : IChannelAPIResponse = {
+      action: ChannelAction.ENABLE,
+      deploymentType,
+      channel: channelName,
+      response: enableInAppMsgAPIResponse,
+    };
+    return enableChannelInAppMsgResponse;
+  } catch (e) {
+    spinner.fail(`Enable channel error: ${e.message}`);
+    throw e;
   }
-  const enableChannelInAppMsgResponse : IChannelAPIResponse = {
-    action: ChannelAction.ENABLE,
-    deploymentType,
-    channel: channelName,
-    response: enableInAppMsgAPIResponse,
-  };
-  return enableChannelInAppMsgResponse;
 };
 
 /**

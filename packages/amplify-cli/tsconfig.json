@@ -18,6 +18,9 @@
       "path": "../amplify-cli-core"
     },
     {
+      "path": "../amplify-cli-logger"
+    },
+    {
       "path": "../amplify-prompts"
     },
     {

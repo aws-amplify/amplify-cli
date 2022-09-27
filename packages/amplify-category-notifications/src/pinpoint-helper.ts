@@ -1,7 +1,7 @@
 import ora from 'ora';
 import {
   $TSAny, $TSContext, open, AmplifySupportedService, AmplifyCategories, stateManager,
-  IAnalyticsResource, PluginAPIError, INotificationsResourceMeta, $TSMeta, AmplifyError, amplifyErrorWithTroubleshootingLink, amplifyFaultWithTroubleshootingLink,
+  IAnalyticsResource, PluginAPIError, INotificationsResourceMeta, $TSMeta, amplifyErrorWithTroubleshootingLink, amplifyFaultWithTroubleshootingLink,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import {
