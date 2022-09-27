@@ -27,7 +27,7 @@ export class AmplifySpinner {
   /**
    * Render function
    */
-  render(): void {
+  private render(): void {
     if (this.timer) {
       clearTimeout(this.timer);
     }
