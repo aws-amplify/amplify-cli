@@ -111,10 +111,17 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
         sandbox: {},
         require: {
           context: 'sandbox',
-          builtin: ['path'],
+          builtin: ['*'],
           external: true,
         },
       });
+
+      // https://github.com/patriksimek/vm2/issues/428
+      sandboxNode.sandbox.process.stdin = process.stdin;
+      sandboxNode.sandbox.process.stdout = process.stdout;
+      sandboxNode.sandbox.process.stderr = process.stderr;
+      sandboxNode.sandbox.process.binding = (<$TSAny>process).binding;
+
       try {
         await sandboxNode
           .run(overrideCode, path.join(overrideDir, 'build', 'override.js'))

@@ -3,6 +3,7 @@
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
+  $TSAny,
   $TSContext,
   $TSObject,
   amplifyErrorWithTroubleshootingLink,
@@ -103,10 +104,17 @@ export const run = async (context: $TSContext): Promise<void> => {
           sandbox: {},
           require: {
             context: 'sandbox',
-            builtin: ['path'],
+            builtin: ['*'],
             external: true,
           },
         });
+
+        // https://github.com/patriksimek/vm2/issues/428
+        sandboxNode.sandbox.process.stdin = process.stdin;
+        sandboxNode.sandbox.process.stdout = process.stdout;
+        sandboxNode.sandbox.process.stderr = process.stderr;
+        sandboxNode.sandbox.process.binding = (<$TSAny>process).binding;
+
         sandboxNode.run(overrideCode).override(configuration);
       }
     } catch (e) {

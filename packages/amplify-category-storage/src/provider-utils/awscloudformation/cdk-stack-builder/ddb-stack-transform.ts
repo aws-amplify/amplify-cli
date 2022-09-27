@@ -1,7 +1,9 @@
 import { AmplifyDDBResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
 import * as cdk from '@aws-cdk/core';
 import { App } from '@aws-cdk/core';
-import { $TSAny, $TSContext, buildOverrideDir, JSONUtilities, pathManager } from 'amplify-cli-core';
+import {
+  $TSAny, $TSContext, buildOverrideDir, JSONUtilities, pathManager,
+} from 'amplify-cli-core';
 import { formatter, printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import os from 'os';
@@ -13,6 +15,9 @@ import { AmplifyDDBResourceStack } from './ddb-stack-builder';
 import { AmplifyDDBResourceInputParameters } from './types';
 import { getDdbAttrType } from '../cfn-template-utils';
 
+/**
+ *  Class to handle DynamoDB cdk generation / override functionality
+ */
 export class DDBStackTransform {
   app: App;
   _context: $TSContext;
@@ -34,7 +39,10 @@ export class DDBStackTransform {
     this._cliInputsState.isCLIInputsValid();
   }
 
-  async transform() {
+  /**
+   * Entry point to generate CFN template w/o overrides
+   */
+  async transform(): Promise<void> {
     // Generate  cloudformation stack from cli-inputs.json
     await this.generateStack();
 
@@ -48,7 +56,10 @@ export class DDBStackTransform {
     this.saveBuildFiles();
   }
 
-  generateCfnInputParameters() {
+  /**
+   * Generates Cfn input parameters.
+   */
+  generateCfnInputParameters(): void {
     this._cfnInputParams = {
       tableName: this._cliInputs.tableName,
       partitionKeyName: this._cliInputs.partitionKey.fieldName,
@@ -60,7 +71,10 @@ export class DDBStackTransform {
     }
   }
 
-  async generateStack() {
+  /**
+   * Generates DynamoDB resource stack.
+   */
+  async generateStack(): Promise<void> {
     this._resourceTemplateObj = new AmplifyDDBResourceStack(this.app, 'AmplifyDDBResourceStack', this._cliInputs);
 
     // Add Parameters
@@ -172,7 +186,10 @@ export class DDBStackTransform {
     );
   }
 
-  async applyOverrides() {
+  /**
+   * Applies overrides.
+   */
+  async applyOverrides(): Promise<void> {
     const backendDir = pathManager.getBackendDirPath();
     const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, 'storage', this._resourceName);
     const overrideJSFilePath = path.resolve(path.join(resourceDirPath, 'build', 'override.js'));
@@ -200,10 +217,17 @@ export class DDBStackTransform {
           sandbox: {},
           require: {
             context: 'sandbox',
-            builtin: ['path'],
+            builtin: ['*'],
             external: true,
           },
         });
+
+        // https://github.com/patriksimek/vm2/issues/428
+        sandboxNode.sandbox.process.stdin = process.stdin;
+        sandboxNode.sandbox.process.stdout = process.stdout;
+        sandboxNode.sandbox.process.stderr = process.stderr;
+        sandboxNode.sandbox.process.binding = (<$TSAny>process).binding;
+
         try {
           await sandboxNode.run(overrideCode, overrideJSFilePath).override(this._resourceTemplateObj as AmplifyDDBResourceTemplate);
         } catch (err: $TSAny) {
@@ -216,12 +240,15 @@ export class DDBStackTransform {
     }
   }
 
-  saveBuildFiles() {
+  /**
+   * Saves build files
+   */
+  saveBuildFiles(): void {
     if (this._resourceTemplateObj) {
       this._cfn = JSON.parse(this._resourceTemplateObj.renderCloudFormationTemplate());
     }
 
-    // store files in local-filesysten
+    // store files in local-filesystem
 
     fs.ensureDirSync(this._cliInputsState.buildFilePath);
     const cfnFilePath = path.resolve(path.join(this._cliInputsState.buildFilePath, `${this._resourceName}-cloudformation-template.json`));

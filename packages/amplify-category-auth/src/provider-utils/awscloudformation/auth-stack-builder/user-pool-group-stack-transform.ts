@@ -198,7 +198,19 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
         console: 'inherit',
         timeout: 5000,
         sandbox: {},
+        require: {
+          context: 'sandbox',
+          builtin: ['*'],
+          external: true,
+        },
       });
+
+      // https://github.com/patriksimek/vm2/issues/428
+      sandboxNode.sandbox.process.stdin = process.stdin;
+      sandboxNode.sandbox.process.stdout = process.stdout;
+      sandboxNode.sandbox.process.stderr = process.stderr;
+      sandboxNode.sandbox.process.binding = (<$TSAny>process).binding;
+
       try {
         sandboxNode.run(overrideCode).override(this._userPoolGroupTemplateObj as AmplifyUserPoolGroupStack & AmplifyStackTemplate);
       } catch (err: $TSAny) {

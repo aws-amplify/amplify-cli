@@ -1,6 +1,8 @@
 import { AmplifyRootStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 import * as cdk from '@aws-cdk/core';
-import { $TSContext, amplifyFaultWithTroubleshootingLink, buildOverrideDir, CFNTemplateFormat, pathManager, Template, writeCFNTemplate } from 'amplify-cli-core';
+import {
+  $TSAny, $TSContext, amplifyFaultWithTroubleshootingLink, buildOverrideDir, CFNTemplateFormat, pathManager, Template, writeCFNTemplate,
+} from 'amplify-cli-core';
 import { formatter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -8,6 +10,9 @@ import * as vm from 'vm2';
 import { AmplifyRootStack, AmplifyRootStackOutputs } from './root-stack-builder';
 import { RootStackSynthesizer } from './stack-synthesizer';
 
+/**
+ *  Class to handle root stack cdk generation / override functionality
+ */
 export class AmplifyRootStackTransform {
   private app: cdk.App | undefined;
   private _rootTemplateObj: AmplifyRootStack; // Props to modify Root stack data
@@ -62,10 +67,16 @@ export class AmplifyRootStackTransform {
         sandbox: {},
         require: {
           context: 'sandbox',
-          builtin: ['path'],
+          builtin: ['*'],
           external: true,
         },
       });
+
+      // https://github.com/patriksimek/vm2/issues/428
+      sandboxNode.sandbox.process.stdin = process.stdin;
+      sandboxNode.sandbox.process.stdout = process.stdout;
+      sandboxNode.sandbox.process.stderr = process.stderr;
+      sandboxNode.sandbox.process.binding = (<$TSAny>process).binding;
 
       sandboxNode.run(overrideCode).override(this._rootTemplateObj as AmplifyRootStackTemplate);
     }
@@ -178,6 +189,7 @@ export class AmplifyRootStackTransform {
   };
 
   /**
+   * Synthesizes CFN templates.
    *
    * @returns return CFN templates synthesized by app
    */
@@ -201,6 +213,9 @@ export class AmplifyRootStackTransform {
     });
   };
 
+  /**
+   * Gets root stack.
+   */
   public getRootStack(): AmplifyRootStack {
     if (this._rootTemplateObj) {
       return this._rootTemplateObj;

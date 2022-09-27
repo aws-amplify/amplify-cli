@@ -194,10 +194,17 @@ export class AmplifyS3ResourceStackTransform {
           sandbox: {},
           require: {
             context: 'sandbox',
-            builtin: ['path'],
+            builtin: ['*'],
             external: true,
           },
         });
+
+        // https://github.com/patriksimek/vm2/issues/428
+        sandboxNode.sandbox.process.stdin = process.stdin;
+        sandboxNode.sandbox.process.stdout = process.stdout;
+        sandboxNode.sandbox.process.stderr = process.stderr;
+        sandboxNode.sandbox.process.binding = (<$TSAny>process).binding;
+
         try {
           await sandboxNode.run(overrideCode, overrideJSFilePath).override(this.resourceTemplateObj as AmplifyS3ResourceTemplate);
         } catch (err: $TSAny) {
