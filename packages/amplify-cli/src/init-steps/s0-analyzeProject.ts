@@ -6,6 +6,7 @@ import * as inquirer from 'inquirer';
 import * as path from 'path';
 import { amplifyCLIConstants } from '../extensions/amplify-helpers/constants';
 import { editors, editorSelection, normalizeEditor } from '../extensions/amplify-helpers/editor-selection';
+import { getAllEnvs } from '../extensions/amplify-helpers/get-all-envs';
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
 import { getSuitableFrontend } from './s1-initFrontend';
@@ -292,9 +293,7 @@ const getEnvName = async (context: $TSContext): Promise<string> => {
   return envName;
 };
 
-const isNewEnv = (envName: string): boolean => !Object.keys(
-  stateManager.getLocalAWSInfo(process.cwd(), { throwIfNotExist: false, default: {} }),
-).includes(envName);
+const isNewEnv = (envName: string): boolean => !getAllEnvs().includes(envName);
 
 const isNewProject = (context: $TSContext): boolean => {
   let newProject = true;

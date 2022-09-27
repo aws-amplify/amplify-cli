@@ -1,5 +1,5 @@
 import {
-  $TSContext, JSONUtilities, stateManager, UnknownArgumentError,
+  $TSContext, EnvAwsInfo, JSONUtilities, stateManager, UnknownArgumentError,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { getConfiguredAmplifyClient } from 'amplify-provider-awscloudformation/src/aws-utils/aws-amplify';
@@ -20,7 +20,7 @@ export const run = async (context: $TSContext): Promise<void> => {
     throw new Error(`AWS credential info must be specified in --awsInfo. ${errorLink}`);
   }
 
-  let awsInfo: Record<string, unknown>;
+  let awsInfo: Partial<EnvAwsInfo>;
   try {
     awsInfo = JSONUtilities.parse(context.parameters.options.awsInfo);
   } catch (e) {
@@ -29,7 +29,7 @@ export const run = async (context: $TSContext): Promise<void> => {
 
   let appIdParam: string | undefined = context.parameters.options.appId;
   if (appIdParam) {
-    addNewLocalAwsInfo(envName, awsInfo, appIdParam);
+    addNewLocalAwsInfoUnsafeDoNotExport(envName, awsInfo, appIdParam);
     printer.success(`Successfully added environment from your project`);
     return;
   }
@@ -46,7 +46,7 @@ export const run = async (context: $TSContext): Promise<void> => {
 
   appIdParam = config?.awscloudformation?.AmplifyAppId;
   if (appIdParam) {
-    addNewLocalAwsInfo(envName, awsInfo, appIdParam);
+    addNewLocalAwsInfoUnsafeDoNotExport(envName, awsInfo, appIdParam);
     printer.success(`Successfully added environment from your project`);
     return;
   }
@@ -56,7 +56,7 @@ export const run = async (context: $TSContext): Promise<void> => {
   // write the localAwsInfo without appId so that the credential loader will configure the client properly
   // initialize an amplify client for the new imported environment
   // use amplify-client-lookup.findAppByBackendPredicate to locate appId for given stack name
-  addNewLocalAwsInfo(envName, awsInfo);
+  addNewLocalAwsInfoUnsafeDoNotExport(envName, awsInfo);
   const amplifyClient = await getConfiguredAmplifyClient(context);
   if (!amplifyClient) {
     throw new UnknownArgumentError(`Could not construct Amplify client from specified config. ${errorLink}`);
@@ -65,7 +65,7 @@ export const run = async (context: $TSContext): Promise<void> => {
   appIdParam = (await findAppByBackendPredicate(amplifyClient, backend => backend.stackName === stackName))?.appId;
 
   if (appIdParam) {
-    addNewLocalAwsInfo(envName, awsInfo, appIdParam);
+    addNewLocalAwsInfoUnsafeDoNotExport(envName, awsInfo, appIdParam);
     printer.success(`Successfully added environment from your project`);
     return;
   }
@@ -73,13 +73,26 @@ export const run = async (context: $TSContext): Promise<void> => {
   throw new UnknownArgumentError(`Could not determine Amplify App Id from the specified config. ${errorLink}`);
 };
 
-const addNewLocalAwsInfo = (envName: string, envAwsInfo: Record<string, unknown>, appId?: string): void => {
+/**
+ * Writes a potentially incomplete entry into local-aws-info
+ *
+ * This is used internally to this module to load an Amplify client before an environment is fully initialized to try to fetch the appId
+ * for the environment at which point the local-aws-info entry is updated to include the appId
+ *
+ * This function should not be used outside of this module
+ *
+ * @param envName The env name to update
+ * @param envAwsInfo A partial aws info entry
+ * @param appId The app Id for the env
+ */
+const addNewLocalAwsInfoUnsafeDoNotExport = (envName: string, envAwsInfo: Partial<EnvAwsInfo>, appId?: string): void => {
   const localAwsInfo = stateManager.getLocalAWSInfo(undefined, {
     throwIfNotExist: false,
     default: {},
   });
 
-  localAwsInfo[envName] = { ...(appId ? { appId } : undefined), ...envAwsInfo };
+  // unsafe!
+  localAwsInfo[envName] = { ...(appId ? { AmplifyAppId: appId } : undefined), ...envAwsInfo } as unknown as EnvAwsInfo;
 
   stateManager.setLocalAWSInfo(undefined, localAwsInfo);
 };

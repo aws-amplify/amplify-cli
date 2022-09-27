@@ -67,11 +67,11 @@ export const copyAppIdAndRegionToLocalAwsInfo = async (): Promise<void> => {
     if (!cfnMeta) {
       return;
     }
-    if (!localAwsInfo[envName].appId) {
-      localAwsInfo[envName].appId = cfnMeta.AmplifyAppId;
+    if (!localAwsInfo[envName].AmplifyAppId) {
+      localAwsInfo[envName].AmplifyAppId = cfnMeta.AmplifyAppId;
     }
-    if (!localAwsInfo[envName].region) {
-      localAwsInfo[envName].region = cfnMeta.Region;
+    if (!localAwsInfo[envName].Region) {
+      localAwsInfo[envName].Region = cfnMeta.Region;
     }
   });
   stateManager.setLocalAWSInfo(undefined, localAwsInfo);

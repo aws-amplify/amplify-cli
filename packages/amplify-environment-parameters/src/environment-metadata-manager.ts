@@ -93,7 +93,7 @@ const ensureEnvMetaInternal = async (
   });
 
   // load appId from local-env-info
-  const appId = stateManager.getLocalAWSInfo()?.[envName]?.appId;
+  const appId = stateManager.getLocalAWSInfo()?.[envName]?.AmplifyAppId;
   if (!appId) {
     throw new Error(`Could not find Amplify App ID for environment ${envName} in 'local-aws-info.json'. Make sure the environment has been pulled.`);
   }

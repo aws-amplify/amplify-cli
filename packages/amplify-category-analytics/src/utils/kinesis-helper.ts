@@ -9,7 +9,7 @@ import { printer } from 'amplify-prompts';
 export const console = (context: $TSContext): void => {
   const amplifyMeta = context.amplify.getProjectMeta();
   const { envName } = context.amplify.getEnvInfo();
-  const region = stateManager.getLocalAWSInfo()?.[envName]?.region;
+  const region = stateManager.getLocalAWSInfo()?.[envName]?.Region;
 
   const kinesisApp = scanCategoryMetaForKinesis(amplifyMeta[AmplifyCategories.ANALYTICS]);
   if (kinesisApp) {

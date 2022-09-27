@@ -9,7 +9,10 @@ import { normalizeInputParams } from '../input-params-manager';
 import { write } from '../app-config';
 import { Context } from '../domain/context';
 
-export const run = async (context: Context) => {
+/**
+ * Entry point for configure command
+ */
+export const run = async (context: Context): Promise<void> => {
   if (context.parameters.options['usage-data-off']) {
     write(context, { usageDataConfig: { isUsageTrackingEnabled: false } });
     context.print.success('Usage Data has been turned off');
@@ -42,7 +45,7 @@ export const run = async (context: Context) => {
     constructExeInfo(context);
 
     try {
-      await analyzeProject(context);
+      await analyzeProject(context as unknown as $TSContext);
       await configFrontendHandler(context);
       await configProviders(context);
       await onSuccess(context);
@@ -54,7 +57,7 @@ export const run = async (context: Context) => {
   }
 };
 
-function constructExeInfo(context: Context) {
+const constructExeInfo = (context: Context): void => {
   context.exeInfo = context.amplify.getProjectDetails();
   context.exeInfo.inputParams = normalizeInputParams((context as unknown) as $TSContext);
-}
+};

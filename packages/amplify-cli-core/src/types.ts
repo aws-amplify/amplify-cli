@@ -400,3 +400,48 @@ export type $TSCopyJob = $TSAny;
   invokePluginMethod: <T>(context: $TSContext, category: string, service: string | undefined, method: string, args: $TSAny[]) => Promise<T>;
   getTags: (context: $TSContext) => Tag[],
  }
+
+/**
+ * Alias to use when a string represents an environment name
+ */
+export type EnvName = string;
+
+/**
+ * Valid config levels in local-aws-info file
+ */
+export type ConfigLevel = 'general' | 'project' | 'amplifyAdmin';
+/**
+ * Common config that should be present in local-aws-info for all environments
+ */
+export type EnvAwsInfoBase = {
+  configLevel: ConfigLevel,
+  useProfile: boolean,
+  AmplifyAppId: string,
+  Region: string,
+}
+/**
+ * Config that should be present for environments that authenticate using a profile
+ */
+export type ProfileEnvAwsInfo = EnvAwsInfoBase & {
+  useProfile: true
+  profileName: string
+}
+
+/**
+ * Config that should be present for environments where credentials are specified directly in an amplify workflow
+ */
+export type CredentialsEnvAwsInfo = EnvAwsInfoBase & {
+  useProfile: false
+  awsConfigFilePath: string
+}
+/**
+ * Any type of environment aws info.
+ *
+ * This is a best-effort type but as we come across possibilities here that are not covered by this type we should extend it
+ */
+export type EnvAwsInfo = ProfileEnvAwsInfo | CredentialsEnvAwsInfo;
+
+/**
+ * Type of the contents of `local-aws-info.json`
+ */
+export type LocalAwsInfo = Record<EnvName, EnvAwsInfo>;

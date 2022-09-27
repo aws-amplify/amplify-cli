@@ -6,7 +6,7 @@ import * as path from 'path';
 import _ from 'lodash';
 import { PathConstants, pathManager } from './pathManager';
 import {
-  $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets, HooksConfig, $TSObject,
+  $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets, HooksConfig, $TSObject, LocalAwsInfo,
 } from '..';
 import { JSONUtilities } from '../jsonUtilities';
 import { SecretFileMode } from '../cliConstants';
@@ -127,7 +127,7 @@ export class StateManager {
 
   localAWSInfoExists = (projectPath?: string): boolean => this.doesExist(pathManager.getLocalAWSInfoFilePath, projectPath);
 
-  getLocalAWSInfo = (projectPath?: string, options?: GetOptions<$TSAny>): $TSAny => {
+  getLocalAWSInfo = (projectPath?: string, options?: GetOptions<$TSAny>): LocalAwsInfo => {
     const filePath = pathManager.getLocalAWSInfoFilePath(projectPath);
     const mergedOptions = {
       throwIfNotExist: true,
@@ -249,7 +249,7 @@ export class StateManager {
     JSONUtilities.writeJson(filePath, localEnvInfo);
   };
 
-  setLocalAWSInfo = (projectPath: string | undefined, localAWSInfo: $TSAny): void => {
+  setLocalAWSInfo = (projectPath: string | undefined, localAWSInfo: LocalAwsInfo): void => {
     const filePath = pathManager.getLocalAWSInfoFilePath(projectPath);
 
     JSONUtilities.writeJson(filePath, localAWSInfo);
