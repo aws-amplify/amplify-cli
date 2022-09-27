@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import inquirer from 'inquirer';
 import ora from 'ora';
@@ -101,7 +101,10 @@ export const enable = async (context: $TSContext, successMessage: string | undef
 
 const validateInputParams = (channelInput: $TSAny):$TSAny => {
   if (!channelInput.ApiKey) {
-    throw new Error('ApiKey is missing for the FCM channel');
+    throw new AmplifyError('UserInputError', {
+      message: 'ApiKey is missing for the FCM channel',
+      resolution: 'Provide the ApiKey for the FCM channel',
+    });
   }
   return channelInput;
 };

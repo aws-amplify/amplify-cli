@@ -1,7 +1,7 @@
 /* eslint-disable max-depth */
 import sequential from 'promise-sequential';
 import {
-  $TSAny, $TSContext, stateManager, AmplifyCategories, AmplifySupportedService, IAnalyticsResource, $TSMeta,
+  $TSAny, $TSContext, stateManager, AmplifyCategories, AmplifySupportedService, IAnalyticsResource, $TSMeta, AmplifyError,
 } from 'amplify-cli-core';
 import _ from 'lodash';
 import { printer } from 'amplify-prompts';
@@ -157,7 +157,10 @@ const constructPinpointNotificationsMeta = async (context: $TSContext) : Promise
         }
 
         if (!pinpointResource.output.Id) {
-          throw new Error('Pinpoint resource ID not found - please run "amplify add analytics" to create a new Pinpoint resource');
+          throw new AmplifyError('ResourceNotReadyError', {
+            message: 'Pinpoint resource ID not found.',
+            resolution: 'Run "amplify add analytics" to create a new Pinpoint resource.',
+          });
         }
 
         pinpointApp = {
@@ -393,7 +396,10 @@ export const checkAndCreatePinpointApp = async (context: $TSContext, channelName
     } catch (err) {
       // if the push fails, the user will be prompted to deploy the resource manually
       await viewShowInlineModeInstructionsFail(channelName, err);
-      throw new Error('Failed to deploy Auth and Pinpoint resources. Please deploy them manually.');
+      throw new AmplifyError('DeploymentError', {
+        message: 'Failed to deploy Auth and Pinpoint resources.',
+        resolution: 'Deploy the Auth and Pinpoint resources manually.',
+      });
     }
     // eslint-disable-next-line no-param-reassign
     context = pinpointAppStatus.context;

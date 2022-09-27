@@ -1,5 +1,5 @@
 import inquirer from 'inquirer';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, AmplifyError } from 'amplify-cli-core';
 import * as pinpointHelper from '../../pinpoint-helper';
 import * as notificationManager from '../../notifications-manager';
 import { IChannelAPIResponse } from '../../channel-types';
@@ -44,7 +44,12 @@ export const run = async (context:$TSContext): Promise<$TSContext> => {
       } catch (err) {
         // if the push fails, the user will be prompted to deploy the resource manually
         await viewShowInlineModeInstructionsFail(channelName, err);
-        throw new Error('Failed to deploy Auth and Pinpoint resources. Please deploy them manually.');
+        throw new AmplifyError('DeploymentError', {
+          message: 'Failed to deploy Auth and Pinpoint resources.',
+          resolution: 'Deploy Auth and Pinpoint resources manually.',
+          details: err.message,
+          stack: err.stack,
+        });
       }
       // eslint-disable-next-line no-param-reassign
       context = pinpointAppStatus.context;
@@ -55,7 +60,10 @@ export const run = async (context:$TSContext): Promise<$TSContext> => {
       await writeData(context, channelAPIResponse);
     }
   } else {
-    throw new Error(`Update failure: Invalid Channel selected ${channelViewName}`);
+    throw new AmplifyError('ConfigurationError', {
+      message: `Update failure: Invalid Channel selected ${channelViewName}`,
+      resolution: `Select an available channel from the list: ${availableChannelViewNames.join(', ')}`,
+    });
   }
   return context;
 };

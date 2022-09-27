@@ -5,7 +5,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 import {
-  $TSAny, $TSContext, AmplifyCategories, AmplifySupportedService,
+  $TSAny, $TSContext, AmplifyCategories, amplifyFaultWithTroubleshootingLink, AmplifySupportedService,
   IPluginCapabilityAPIResponse,
   NotificationChannels,
   stateManager,
@@ -84,7 +84,10 @@ const invokeInlineEnableInAppMessagingChannel = (
   __context: $TSContext,
   __pinpointAppStatus: IPinpointAppStatus,
 ): IPluginCapabilityAPIResponse => {
-  throw new Error('Inline enable not supported for In-App Messaging channel');
+  throw amplifyFaultWithTroubleshootingLink('ConfigurationFault', {
+    message: 'Inline enable not supported for In-App Messaging channel.',
+  });
+
   // create IAM role and apply on pinpoint app using sdk
 };
 

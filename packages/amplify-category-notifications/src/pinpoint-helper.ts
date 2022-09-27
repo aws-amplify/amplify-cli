@@ -1,7 +1,7 @@
 import ora from 'ora';
 import {
   $TSAny, $TSContext, open, AmplifySupportedService, AmplifyCategories, stateManager,
-  IAnalyticsResource, PluginAPIError, INotificationsResourceMeta, $TSMeta,
+  IAnalyticsResource, PluginAPIError, INotificationsResourceMeta, $TSMeta, AmplifyError, amplifyErrorWithTroubleshootingLink, amplifyFaultWithTroubleshootingLink,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import {
@@ -147,8 +147,12 @@ export const buildPinpointChannelResponseSuccess = (action: ChannelAction,
  * @param err (channel api error)
  * @returns Channel API response
  */
-export const buildPinpointChannelResponseError = (action: ChannelAction,
-  deploymentType: ChannelConfigDeploymentType, channelName: string, err: Error|string): IChannelAPIResponse => ({
+export const buildPinpointChannelResponseError = (
+  action: ChannelAction,
+  deploymentType: ChannelConfigDeploymentType,
+  channelName: string,
+  err: Error|string,
+): IChannelAPIResponse => ({
   action,
   deploymentType,
   channel: channelName,
@@ -284,10 +288,12 @@ export const updateContextFromAnalyticsOutput = async (
  * Create the PinpointApp through Analytics API.
  * @param context amplify cli context
  */
-export const createAnalyticsPinpointApp = async (context: $TSContext):Promise<void> => {
+export const createAnalyticsPinpointApp = async (context: $TSContext): Promise<void> => {
   const pushResponse = await invokeAnalyticsPush(context, AmplifySupportedService.PINPOINT);
   if (!pushResponse.status) {
-    throw new Error(`Failed to create Pinpoint resource for the given environment: ${pushResponse.reasonMsg}`);
+    throw amplifyFaultWithTroubleshootingLink('PushResourcesFault', {
+      message: `Failed to create Pinpoint resource for the given environment: ${pushResponse.reasonMsg}`,
+    });
   }
 };
 
@@ -361,7 +367,9 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
         pinpointApp = await updateContextFromAnalyticsOutput(context, amplifyMeta, pinpointAppStatus);
         resourceName = pinpointAppStatus?.app?.resourceName;
         if (!resourceName) {
-          throw new Error(`Pinpoint resource name is not found in amplify-meta.json : ${pinpointAppStatus?.app}`);
+          throw amplifyFaultWithTroubleshootingLink('ResourceNotFoundFault', {
+            message: `Pinpoint resource name is not found in amplify-meta.json : ${pinpointAppStatus?.app}`,
+          });
         }
         // Update pinpointApp into Notifications amplifyMeta (in-core)
         context.exeInfo.amplifyMeta = Notifications.Meta.constructResourceMeta(amplifyMeta, resourceName, pinpointApp as ICategoryMeta);
@@ -398,7 +406,9 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
       break;
     }
     default:
-      throw new Error(`Invalid Pinpoint App Status ${pinpointAppStatus.status} : App: ${pinpointAppStatus.app}`);
+      throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
+        message: `Invalid Pinpoint App Status ${pinpointAppStatus.status} : App: ${pinpointAppStatus.app}`,
+      });
   }
 
   if (resourceName && context.exeInfo.amplifyMeta[AmplifyCategories.NOTIFICATIONS]) {

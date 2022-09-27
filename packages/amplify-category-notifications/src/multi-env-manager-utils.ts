@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import { ensureEnvParamManager, getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import {
-  $TSAny, $TSContext, $TSMeta, AmplifyCategories, AmplifySupportedService,
+  $TSAny, $TSContext, $TSMeta, AmplifyCategories, amplifyFaultWithTroubleshootingLink, AmplifySupportedService,
 } from 'amplify-cli-core';
 import { ChannelConfigDeploymentType, IChannelAPIResponse } from './channel-types';
 import { Notifications } from './notifications-api';
@@ -117,7 +117,9 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
     const enabledChannels: Array<string> = await Notifications.Meta.getEnabledChannelsFromAppMeta(context.exeInfo.amplifyMeta);
 
     if (!notificationsServiceMeta) {
-      throw new Error('WriteData: Failure: Amplify Meta not found for Notifications..');
+      throw amplifyFaultWithTroubleshootingLink('ConfigurationFault', {
+        message: 'Failed to store notifications meta. Amplify Meta not found for Notifications.',
+      });
     }
     // The applicationId is only generated once Analytics resource is deployed.
     // Until we find a generalized way to sync updates from provider categories like

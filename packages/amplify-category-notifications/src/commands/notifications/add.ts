@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { prompt } from 'inquirer';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, AmplifyError } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import {
   ensurePinpointApp, isPinpointAppDeployed, isPinpointDeploymentRequired, pushAuthAndAnalyticsPinpointResources,
@@ -92,7 +92,12 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
       } catch (err) {
         // if the push fails, the user will be prompted to deploy the resource manually
         await viewShowInlineModeInstructionsFail(channelName, err);
-        throw new Error('Failed to deploy Auth and Pinpoint resources. Please deploy them manually.');
+        throw new AmplifyError('DeploymentError', {
+          message: 'Failed to deploy Auth and Pinpoint resources.',
+          resolution: 'Deploy the Auth and Pinpoint resources manually.',
+          details: err.message,
+          stack: err.stack,
+        });
       }
       context = pinpointAppStatus.context;
     }

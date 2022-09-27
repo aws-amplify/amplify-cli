@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
@@ -122,7 +122,10 @@ export const enable = async (context:$TSContext, successMessage: string|undefine
 
 const validateInputParams = (channelInput: $TSAny) : $TSAny => {
   if (!channelInput.FromAddress || !channelInput.Identity || !channelInput.RoleArn) {
-    throw new Error('Missing FromAddress, Identity or RoleArn for the Email channel');
+    throw new AmplifyError('UserInputError', {
+      message: 'FromAddress, Identity or RoleArn is missing for the Email channel',
+      resolution: 'Provide the required parameters for the Email channel',
+    });
   }
   return channelInput;
 };

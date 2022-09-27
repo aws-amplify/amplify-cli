@@ -3,7 +3,7 @@
  *  API to update Notifications category state in the state-db ( backend-config, frontend-config, teams-provider, amplify-meta)
  */
 import {
-  $TSAny, stateManager, AmplifySupportedService, AmplifyCategories, $TSMeta, $TSContext, INotificationsResourceMeta, pathManager,
+  $TSAny, stateManager, AmplifySupportedService, AmplifyCategories, $TSMeta, $TSContext, INotificationsResourceMeta, pathManager, amplifyErrorWithTroubleshootingLink,
 } from 'amplify-cli-core';
 import { ICategoryMeta } from './notifications-amplify-meta-types';
 import { invokeGetLastPushTimeStamp } from './plugin-client-api-analytics';
@@ -182,7 +182,9 @@ export class NotificationsMeta {
     const projectPath = pathManager.findProjectRoot();
     const applicationRegion = stateManager.getCurrentRegion(projectPath);
     if (!applicationRegion) {
-      throw Error(`Invalid Region for project at ${projectPath}`);
+      throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
+        message: `Invalid Region for project at ${projectPath}`,
+      });
     }
     const providerPlugin = await import(context.amplify.getProviderPlugins(context)[NotificationsMeta.PINPOINT_PROVIDER_NAME]);
     const regionMapping: Record<string, string> = providerPlugin.getPinpointRegionMapping();

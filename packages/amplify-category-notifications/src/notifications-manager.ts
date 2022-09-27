@@ -1,6 +1,6 @@
 import sequential from 'promise-sequential';
 import {
-  $TSAny, $TSContext, stateManager,
+  $TSAny, $TSContext, AmplifyError, stateManager,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as pinpointHelper from './pinpoint-helper';
@@ -16,7 +16,10 @@ import { getPinpointAppStatusFromMeta } from './pinpoint-helper';
 export const enableChannel = async (context: $TSContext, channelName: string): Promise<IChannelAPIResponse|undefined> => {
   const envName: string = stateManager.getCurrentEnvName() as string; // throws exception if env is not configured
   if (!Notifications.ChannelCfg.isValidChannel(channelName)) {
-    throw new Error(`Enable failed: invalid notification channel ${channelName}`);
+    throw new AmplifyError('ConfigurationError', {
+      message: `Enable channel failed: invalid notification channel ${channelName}`,
+      resolution: `Select a valid notification channel from the list: ${Notifications.ChannelCfg.getAvailableChannels().join(', ')}`,
+    });
   }
   context.exeInfo.pinpointClient = await pinpointHelper.getPinpointClient(context, 'update', envName);
   const channelActionHandler:NotificationsChannelAPIModule = await import(Notifications.ChannelCfg.getChannelHandlerPath(channelName));
@@ -42,8 +45,8 @@ export const disableChannel = async (context : $TSContext, channelName: string):
  * @returns Array of Channel API responses
  */
 export const disableAllChannels = async (context: $TSContext): Promise<Array<IChannelAPIResponse>> => {
-  const enabledChannels : Array<string> = await Notifications.ChannelCfg.getEnabledChannels(context);
-  const responseArray : Array<IChannelAPIResponse> = [];
+  const enabledChannels = await Notifications.ChannelCfg.getEnabledChannels(context);
+  const responseArray = [];
   // sequentially disable each channel - since persistent context gets updated
   for (const channelName of enabledChannels) {
     const channelAPIResponse = await disableChannel(context, channelName);
@@ -60,9 +63,12 @@ export const disableAllChannels = async (context: $TSContext): Promise<Array<ICh
  */
 export const removeEmptyNotificationsApp = async (context: $TSContext): Promise<$TSContext> => {
   let updatedContext = context;
-  const enabledChannels : Array<string> = await Notifications.ChannelCfg.getEnabledChannels(context);
+  const enabledChannels = await Notifications.ChannelCfg.getEnabledChannels(context);
   if (enabledChannels.length > 0) {
-    throw new Error(`Cannot remove notifications app, please all channels( [${enabledChannels}] ) and retry`);
+    throw new AmplifyError('RemoveNotificationAppError', {
+      message: `Cannot remove notifications app`,
+      resolution: `Remove all notification channels before removing the notifications app`,
+    });
   }
   updatedContext = await Notifications.Meta.removeNotificationsAppMeta(updatedContext);
   return Notifications.Cfg.removeNotificationsAppConfig(updatedContext);

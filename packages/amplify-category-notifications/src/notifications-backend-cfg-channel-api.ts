@@ -1,5 +1,5 @@
 import {
-  $TSContext, stateManager, AmplifyCategories, AmplifySupportedService,
+  $TSContext, stateManager, AmplifyCategories, AmplifySupportedService, AmplifyError, amplifyErrorWithTroubleshootingLink,
 } from 'amplify-cli-core';
 import * as path from 'path';
 import {
@@ -109,7 +109,9 @@ export class ChannelCfg {
         return channelName;
       }
     }
-    throw new Error(`No channel name found for view ${channelViewString}`);
+    throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
+      message: `No channel name found for view: ${channelViewString}`,
+    });
   };
 
   /**
@@ -197,7 +199,7 @@ export class ChannelCfg {
   /**
    * Get all available notification channels
    */
-  public static getAvailableChannels = ():Array<string> => Object.keys(ChannelCfg.ChannelType);
+  public static getAvailableChannels = (): Array<string> => Object.keys(ChannelCfg.ChannelType);
 
   /**
    * Get user friendly names for all available notification channels
@@ -253,7 +255,11 @@ export class ChannelCfg {
       }
       return enabledNotificationsConfig;
     }
-    throw new Error(`EnableNotificationsChannel Failed: Invalid notificationsConfig: ${JSON.stringify(enabledNotificationsConfig, null, 2)}`);
+    throw new AmplifyError('ConfigurationError', {
+      message: `Failed to enable notification channel: ${validChannelName}`,
+      details: `Invalid notificationsConfig: ${JSON.stringify(enabledNotificationsConfig, null, 2)}`,
+      resolution: `Provide valid notification channel config`,
+    });
   }
 
   public static disableNotificationsChannel = (notificationsConfig: INotificationsResourceBackendConfig,
@@ -266,7 +272,11 @@ export class ChannelCfg {
       }
       return disabledNotificationsConfig;
     }
-    throw new Error(`disableNotificationsChannel Failed: Invalid Channel ${validChannelName} notificationsConfig: ${JSON.stringify(disabledNotificationsConfig, null, 2)}`);
+    throw new AmplifyError('ConfigurationError', {
+      message: `Failed to disable notification channel: ${validChannelName}`,
+      details: `Invalid notificationsConfig: ${JSON.stringify(disabledNotificationsConfig, null, 2)}`,
+      resolution: `Provide valid notification channel config`,
+    });
   }
 
   public static updateNotificationsChannelConfig = (notificationsConfig: INotificationsResourceBackendConfig,
@@ -279,6 +289,11 @@ export class ChannelCfg {
       }
       return notificationsConfig;
     }
-    throw new Error(`UpdateNotificationsChannelConfig Failed: Invalid notificationsConfig: ${JSON.stringify(updatedNotificationsConfig, null, 2)}`);
+
+    throw new AmplifyError('ConfigurationError', {
+      message: `Failed to update notification channel config`,
+      details: `Invalid notificationsConfig: ${JSON.stringify(notificationsConfig, null, 2)}`,
+      resolution: `Provide valid notification channel config`,
+    });
   }
 }

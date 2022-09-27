@@ -4,7 +4,7 @@ import inquirer, { QuestionCollection } from 'inquirer';
 import ora from 'ora';
 import fs from 'fs-extra';
 import {
-  $TSAny, $TSContext, exitOnNextTick,
+  $TSAny, $TSContext,
 } from 'amplify-cli-core';
 
 import { printer } from 'amplify-prompts';
@@ -24,8 +24,7 @@ const deploymentType = ChannelConfigDeploymentType.INLINE;
  * @returns void
  */
 const throwNormalizedError = (action: ChannelAction, err : string|Error):void => {
-  const errResponse = buildPinpointChannelResponseError(action, deploymentType, channelName, err);
-  throw errResponse;
+  throw buildPinpointChannelResponseError(action, deploymentType, channelName, err);
 };
 
 /**
@@ -94,18 +93,12 @@ export const enable = async (context: $TSContext, successMessage: string | undef
     answers = await inquirer.prompt(question);
   }
 
-  try {
-    if (answers.DefaultAuthenticationMethod === 'Key') {
-      const keyConfig = await configureKey.run(channelInput);
-      Object.assign(answers, keyConfig);
-    } else {
-      const certificateConfig = await configureCertificate.run(channelInput);
-      Object.assign(answers, certificateConfig);
-    }
-  } catch (err) {
-    printer.error(err.message);
-    await context.usageData.emitError(err);
-    exitOnNextTick(1);
+  if (answers.DefaultAuthenticationMethod === 'Key') {
+    const keyConfig = await configureKey.run(channelInput);
+    Object.assign(answers, keyConfig);
+  } else {
+    const certificateConfig = await configureCertificate.run(channelInput);
+    Object.assign(answers, certificateConfig);
   }
 
   spinner.start('Enabling APNS Channel.');

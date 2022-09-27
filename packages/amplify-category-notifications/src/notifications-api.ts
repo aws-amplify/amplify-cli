@@ -1,5 +1,5 @@
 import {
-  $TSAny, $TSContext, AmplifyCategories, AmplifySupportedService, INotificationsResourceMeta, stateManager,
+  $TSAny, $TSContext, AmplifyCategories, amplifyErrorWithTroubleshootingLink, AmplifySupportedService, INotificationsResourceMeta, stateManager,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { ChannelCfg } from './notifications-backend-cfg-channel-api';
@@ -37,7 +37,9 @@ export class Notifications {
     const outputRecords: Record<string, $TSAny>|undefined = (cfg?.channels?.length && cfg.channels.length > 0)
       ? Notifications._buildPartialChannelMeta(cfg.channels) : undefined;
     if (cfg.resourceName === undefined) {
-      throw new Error('Pinpoint resource name is missing in the backend config');
+      throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
+        message: 'Pinpoint resource name is missing in the backend config',
+      });
     }
     const notificationsMeta: Partial<INotificationsResourceMeta> = {
       Name: PinpointName.generatePinpointAppName(cfg.resourceName, envName), // Env specific resource name
