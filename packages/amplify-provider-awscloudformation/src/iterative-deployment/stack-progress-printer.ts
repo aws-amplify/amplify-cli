@@ -1,28 +1,24 @@
-/* eslint-disable spellcheck/spell-checker */
-import { StackEvent, StackEvents } from 'aws-sdk/clients/cloudformation';
-import columnify from 'columnify';
-import chalk from 'chalk';
 import { MultiProgressBar } from 'amplify-prompts';
-import { IStackProgressPrinter } from './stack-event-monitor';
+import type { StackEvent, StackEvents } from 'aws-sdk/clients/cloudformation';
+import chalk from 'chalk';
+import columnify from 'columnify';
 import {
-  createProgressBarFormatter,
-  createItemFormatter,
-  CFN_SUCCESS_STATUS,
-  CNF_ERROR_STATUS,
-  EventMap,
+  CFN_SUCCESS_STATUS, CNF_ERROR_STATUS, createItemFormatter, createProgressBarFormatter, EventMap,
 } from '../utils/progress-bar-helpers';
+import { IStackProgressPrinter } from './stack-event-monitor';
+
 /**
  * Iterative deployment stack printer.
  */
 export class StackProgressPrinter implements IStackProgressPrinter {
   private events: StackEvents = [];
-  private progressBar: MultiProgressBar;
+  private progressBars: MultiProgressBar;
   private eventMap: EventMap;
   private categoriesPrinted: string[] = [];
 
   constructor(eventMap: EventMap) {
     // Initialize the progress bar and event map.
-    this.progressBar = new MultiProgressBar({
+    this.progressBars = new MultiProgressBar({
       progressBarFormatter: createProgressBarFormatter,
       itemFormatter: createItemFormatter,
       loneWolf: false,
@@ -41,7 +37,7 @@ export class StackProgressPrinter implements IStackProgressPrinter {
 
   addActivity = (event: StackEvent): void => {
     this.events.push(event);
-    if (this.progressBar.isTTY()) {
+    if (this.progressBars.isTTY()) {
       // Create a bar only if corresponding resources events trigger.
       const progressBarsConfigs = [];
       const item = this.eventMap.rootResources.find(it => it.key === event.LogicalResourceId);
@@ -74,12 +70,12 @@ export class StackProgressPrinter implements IStackProgressPrinter {
         });
         this.categoriesPrinted.push(category);
       }
-      this.progressBar.create(progressBarsConfigs);
+      this.progressBars.create(progressBarsConfigs);
     }
   };
 
   print = (): void => {
-    if (this.progressBar.isTTY()) {
+    if (this.progressBars.isTTY()) {
       this.printEventProgress();
     } else {
       this.printDefaultLogs();
@@ -87,8 +83,8 @@ export class StackProgressPrinter implements IStackProgressPrinter {
   }
 
   printEventProgress = (): void => {
-    this.events = this.events.reverse();
     if (this.events.length > 0) {
+      this.events = this.events.reverse();
       this.events.forEach(event => {
         const finishStatus = CFN_SUCCESS_STATUS.includes(event.ResourceStatus);
         const updateObj = {
@@ -104,13 +100,13 @@ export class StackProgressPrinter implements IStackProgressPrinter {
         if (event.LogicalResourceId === this.eventMap.rootStackName || item) {
           // If the root resource for a category has already finished, then we do not have to wait for all events under it.
           if (finishStatus && item && item.category) {
-            this.progressBar.finishBar(item.category);
+            this.progressBars.finishBar(item.category);
           }
-          this.progressBar.updateBar('projectBar', updateObj);
+          this.progressBars.updateBar('projectBar', updateObj);
         } else if (this.eventMap.eventToCategories) {
           const category = this.eventMap.eventToCategories.get(event.LogicalResourceId);
           if (category) {
-            this.progressBar.updateBar(category, updateObj);
+            this.progressBars.updateBar(category, updateObj);
           }
         }
       });
@@ -155,12 +151,12 @@ export class StackProgressPrinter implements IStackProgressPrinter {
   };
 
   finishBars = (): void => {
-    this.progressBar.finishAllBars();
+    this.progressBars.finishAllBars();
   }
 
   stopBars = (): void => {
-    this.progressBar.stop();
+    this.progressBars.stop();
   }
 
-  isRunning = (): boolean => this.progressBar.getBarCount() !== 0;
+  isRunning = (): boolean => this.progressBars.getBarCount() !== 0;
 }
