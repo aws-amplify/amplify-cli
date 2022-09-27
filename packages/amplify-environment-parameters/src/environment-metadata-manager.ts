@@ -73,8 +73,10 @@ const ensureEnvMetaInternal = async (
   }
 
   if (envName === stateManager.getLocalEnvInfo().envName) {
-    // if getting metadata for the current environment, initialize it from the amplify-meta.json file
-    envMetaManagerMap[envName] = new EnvironmentMetadata(stateManager.getMeta()?.providers?.awscloudformation);
+    // if getting metadata for the current environment, initialize it from the amplify-meta.json file or fallback to current backend meta
+    const awsProviderMeta = stateManager.getMeta(undefined, { throwIfNotExist: false })?.providers?.awscloudformation;
+    const currentBackendAwsProviderMeta = stateManager.getCurrentMeta(undefined, { throwIfNotExist: false })?.providers?.awscloudformation;
+    envMetaManagerMap[envName] = new EnvironmentMetadata(awsProviderMeta ?? currentBackendAwsProviderMeta, !awsProviderMeta);
     return envMetaManagerMap[envName];
   }
   // if getting metadata for a different environment,
