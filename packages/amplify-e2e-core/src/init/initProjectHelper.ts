@@ -31,15 +31,20 @@ const defaultSettings = {
   permissionsBoundaryArn: undefined,
 };
 
+type EnvVarsConfig = {
+  disableAmplifyAppCreation: boolean
+}
+
+const getCliEnvVars = (config: EnvVarsConfig): Record<string, string> => {
+  const result: Record<string, string> = {};
+  if (config.disableAmplifyAppCreation) {
+    result.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION = '1';
+  }
+  return result;
+};
+
 export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof defaultSettings>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
-  let env;
-
-  if (s.disableAmplifyAppCreation === true) {
-    env = {
-      CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-    };
-  }
 
   addCircleCITags(cwd);
 
@@ -57,7 +62,10 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
 
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), cliArgs, {
-      cwd, stripColors: true, env, disableCIDetection: s.disableCIDetection,
+      cwd,
+      stripColors: true,
+      env: getCliEnvVars(s),
+      disableCIDetection: s.disableCIDetection,
     })
       .wait('Enter a name for the project')
       .sendLine(s.name)
@@ -100,7 +108,7 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
   });
 }
 
-export function initAndroidProjectWithProfile(cwd: string, settings: Record<string, unknown>): Promise<void> {
+export function initAndroidProjectWithProfile(cwd: string, settings: Partial<typeof defaultSettings>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
   addCircleCITags(cwd);
@@ -109,9 +117,7 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Record<stri
     spawn(getCLIPath(), ['init'], {
       cwd,
       stripColors: true,
-      env: {
-        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-      },
+      env: getCliEnvVars(s),
     })
       .wait('Enter a name for the project')
       .sendLine(s.name)
@@ -151,7 +157,7 @@ export function createRandomName(): string {
   return uuid().replace(regExp, '').substring(0, length);
 }
 
-export function initIosProjectWithProfile(cwd: string, settings: Record<string, unknown>): Promise<void> {
+export function initIosProjectWithProfile(cwd: string, settings: Partial<typeof defaultSettings>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
   addCircleCITags(cwd);
@@ -160,9 +166,7 @@ export function initIosProjectWithProfile(cwd: string, settings: Record<string, 
     spawn(getCLIPath(), ['init', '--debug'], {
       cwd,
       stripColors: true,
-      env: {
-        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-      },
+      env: getCliEnvVars(s),
     })
       .wait('Enter a name for the project')
       .sendLine(s.name)
@@ -194,13 +198,13 @@ export function initIosProjectWithProfile(cwd: string, settings: Record<string, 
   });
 }
 
-export function initFlutterProjectWithProfile(cwd: string, settings: Record<string, unknown>): Promise<void> {
+export function initFlutterProjectWithProfile(cwd: string, settings: Partial<typeof defaultSettings>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
   addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true, env: getCliEnvVars(s) })
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
