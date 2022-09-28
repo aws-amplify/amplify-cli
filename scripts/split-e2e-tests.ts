@@ -202,6 +202,7 @@ export type CircleCIConfig = {
     [name: string]: {
       steps: Record<string, any>;
       environment: Record<string, string>;
+      parallelism: number;
     };
   };
   workflows: {
@@ -267,6 +268,7 @@ function splitTests(
         CLI_REGION: testRegion,
         ...(USE_PARENT_ACCOUNT.some(job => newJobName.startsWith(job)) ? { USE_PARENT_ACCOUNT: 1 } : {}),
       },
+      parallelism: 4
     };
     const isPkg = newJobName.endsWith('_pkg');
     if (!isPkg) {
