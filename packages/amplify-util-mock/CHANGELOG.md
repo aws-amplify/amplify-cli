@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.6.0-rtf-release-phase-1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.5.1...amplify-util-mock@4.6.0-rtf-release-phase-1.0) (2022-09-28)
+
+
+### Features
+
+* **graphql:** subscription rtf tagged release ([7d020bf](https://github.com/aws-amplify/amplify-cli/commit/7d020bff1e47f0a2734e6ad5855bc986530bdb34))
+
+
+
+
+
 ## [4.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.4.11...amplify-util-mock@4.5.1) (2022-09-21)
 
 

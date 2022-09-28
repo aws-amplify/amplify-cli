@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli-internal",
-  "version": "10.2.0",
+  "version": "10.3.0-rtf-release-phase-1.0",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
@@ -55,7 +55,7 @@
     "amplify-cli-shared-interfaces": "1.1.0",
     "amplify-codegen": "^3.1.0",
     "amplify-console-hosting": "2.3.1",
-    "amplify-container-hosting": "2.5.1",
+    "amplify-container-hosting": "2.6.0-rtf-release-phase-1.0",
     "amplify-dotnet-function-runtime-provider": "1.6.10",
     "amplify-dotnet-function-template-provider": "2.3.1",
     "amplify-frontend-android": "3.4.0",
@@ -73,7 +73,7 @@
     "amplify-python-function-runtime-provider": "2.4.1",
     "amplify-python-function-template-provider": "1.3.16",
     "amplify-util-import": "2.2.36",
-    "amplify-util-mock": "4.5.1",
+    "amplify-util-mock": "4.6.0-rtf-release-phase-1.0",
     "aws-sdk": "^2.1113.0",
     "chalk": "^4.1.1",
     "ci-info": "^2.0.0",

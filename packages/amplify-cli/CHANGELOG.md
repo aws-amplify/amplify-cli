@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [10.3.0-rtf-release-phase-1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.2.0...@aws-amplify/cli-internal@10.3.0-rtf-release-phase-1.0) (2022-09-28)
+
+
+### Features
+
+* **graphql:** subscription rtf tagged release ([7d020bf](https://github.com/aws-amplify/amplify-cli/commit/7d020bff1e47f0a2734e6ad5855bc986530bdb34))
+
+
+
+
+
 # [10.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.0.0...@aws-amplify/cli-internal@10.2.0) (2022-09-21)
 
 
