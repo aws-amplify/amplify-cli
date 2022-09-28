@@ -97,7 +97,6 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/init-special-case.test.ts',
   'src/__tests__/datastore-modelgen.test.ts',
   'src/__tests__/amplify-configure.test.ts',
-  'src/__tests__/init.test.ts',
   'src/__tests__/tags.test.ts',
   'src/__tests__/notifications.test.ts',
   'src/__tests__/geo-headless.test.ts',
@@ -109,7 +108,6 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/amplify-app.test.ts',
   'src/__tests__/hosting.test.ts',
   'src/__tests__/analytics.test.ts',
-  'src/__tests__/feature-flags.test.ts',
   'src/__tests__/schema-iterative-update-2.test.ts',
   'src/__tests__/containers-api.test.ts',
   //<20m
@@ -120,24 +118,19 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/geo-remove.test.ts',
   'src/__tests__/geo-multi-env.test.ts',
   //<25m
-  'src/__tests__/schema-auth-10.test.ts',
   'src/__tests__/schema-key.test.ts',
   'src/__tests__/auth_1.test.ts',
-  'src/__tests__/auth_5.test.ts',
   'src/__tests__/function_3.test.ts',
   'src/__tests__/schema-iterative-update-1.test.ts',
   //<30m
   'src/__tests__/schema-auth-3.test.ts',
-  'src/__tests__/delete.test.ts',
   'src/__tests__/function_2.test.ts',
   'src/__tests__/auth_3.test.ts',
-  'src/__tests__/layer.test.ts',
   //<35m
   'src/__tests__/migration/api.key.migration1.test.ts',
   'src/__tests__/auth_4.test.ts',
   'src/__tests__/schema-auth-7.test.ts',
   'src/__tests__/schema-auth-8.test.ts',
-  'src/__tests__/schema-searchable.test.ts',
   'src/__tests__/schema-auth-4.test.ts',
   'src/__tests__/api_3.test.ts',
   'src/__tests__/import_auth_1.test.ts',
@@ -148,7 +141,6 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   //<40m
   'src/__tests__/geo-import.test.ts',
   'src/__tests__/schema-iterative-rollback-2.test.ts',
-  'src/__tests__/env.test.ts',
   'src/__tests__/auth_2.test.ts',
   'src/__tests__/schema-auth-9.test.ts',
   'src/__tests__/schema-auth-11.test.ts',
@@ -162,7 +154,6 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/schema-model.test.ts',
   'src/__tests__/migration/api.connection.migration.test.ts',
   'src/__tests__/schema-connection.test.ts',
-  'src/__tests__/schema-auth-6.test.ts',
   'src/__tests__/schema-iterative-update-3.test.ts',
   //<50m
   'src/__tests__/schema-auth-2.test.ts',
@@ -174,6 +165,19 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/api_5.test.ts',
   'src/__tests__/api_6.test.ts',
   'src/__tests__/schema-iterative-update-4.test.ts',
+  'src/__tests__/schema-auth-10.test.ts',
+  //<2h
+  'src/__tests__/auth_7.test.ts',
+  'src/__tests__/auth_6.test.ts',
+  'src/__tests__/auth_5.test.ts',
+  'src/__tests__/delete.test.ts',
+  'src/__tests__/env.test.ts',
+  'src/__tests__/feature-flags.test.ts',
+  'src/__tests__/layer.test.ts',
+  'src/__tests__/schema-auth-6.test.ts',
+  'src/__tests__/schema-searchable.test.ts',
+  //<3h
+  'src/__tests__/init.test.ts',
 ];
 
 /**
