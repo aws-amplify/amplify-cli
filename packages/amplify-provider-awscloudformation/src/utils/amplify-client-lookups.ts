@@ -21,7 +21,7 @@ export const getLocalAppIdsInSameRegionAndAccount = async (amplifyClient: Amplif
 
   // if there are local appIds, we need to verify that they are accessible by the amplifyClient (ie in the given account)
   const clientAccessibleAppIds = (await listAllApps(amplifyClient)).map(app => app.appId);
-  return localAppIdsInTheSameLocalProjectAndRegion.filter(appId => clientAccessibleAppIds.includes(appId));
+  return Array.from(new Set(localAppIdsInTheSameLocalProjectAndRegion.filter(appId => clientAccessibleAppIds.includes(appId))));
 };
 
 /**

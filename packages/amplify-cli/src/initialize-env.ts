@@ -5,7 +5,7 @@ import {
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import {
-  ensureEnvParamManager, IEnvironmentParameterManager, ensureEnvMeta,
+  ensureEnvParamManager, IEnvironmentParameterManager, ensureEnvMeta, getEnvMeta,
 } from '@aws-amplify/amplify-environment-parameters';
 import { initEnv as providerInitEnv, pushResources } from 'amplify-provider-awscloudformation';
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';
@@ -96,6 +96,9 @@ export const initializeEnv = async (
       const resourceDefinition = await context.amplify.getResourceStatus(undefined, undefined, 'awscloudformation');
       await pushResources(context, resourceDefinition);
     }
+
+    // save the current environment metadata so that it is loaded properly by the frontend plugins when generating frontend config
+    getEnvMeta(currentEnv).save();
 
     // Generate AWS exports/configuration file
     await context.amplify.onCategoryOutputsChange(context, currentAmplifyMeta);

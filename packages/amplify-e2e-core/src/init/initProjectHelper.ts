@@ -157,7 +157,7 @@ export function initIosProjectWithProfile(cwd: string, settings: Record<string, 
   addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init'], {
+    spawn(getCLIPath(), ['init', '--debug'], {
       cwd,
       stripColors: true,
       env: {

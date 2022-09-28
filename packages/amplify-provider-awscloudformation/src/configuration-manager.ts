@@ -3,7 +3,16 @@
 /* eslint-disable jsdoc/require-jsdoc */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
-  exitOnNextTick, JSONUtilities, pathManager, stateManager, $TSAny, $TSContext, amplifyErrorWithTroubleshootingLink,
+  exitOnNextTick,
+  JSONUtilities,
+  pathManager,
+  stateManager,
+  $TSAny,
+  $TSContext,
+  amplifyErrorWithTroubleshootingLink,
+  EnvAwsInfo,
+  ProfileEnvAwsInfo,
+  CredentialsEnvAwsInfo,
 } from 'amplify-cli-core';
 import fs from 'fs-extra';
 import chalk from 'chalk';
@@ -495,7 +504,7 @@ function persistLocalEnvConfig(context: $TSContext) {
     };
   }
 
-  const awsInfo: AwsConfig & Pick<ProjectConfig, 'configLevel'> & {appId?: string} = {
+  const awsInfo: Partial<EnvAwsInfo> = {
     configLevel: awsConfigInfo.configLevel,
   };
 
@@ -507,7 +516,7 @@ function persistLocalEnvConfig(context: $TSContext) {
     awsInfo.configLevel = 'project';
     if (awsConfigInfo.config.useProfile) {
       awsInfo.useProfile = true;
-      awsInfo.profileName = awsConfigInfo.config.profileName;
+      (awsInfo as ProfileEnvAwsInfo).profileName = awsConfigInfo.config.profileName;
     } else {
       awsInfo.useProfile = false;
       const awsSecrets = {
@@ -522,24 +531,19 @@ function persistLocalEnvConfig(context: $TSContext) {
       const awsSecretsFilePath = path.join(sharedConfigDirPath, awsSecretsFileName);
       JSONUtilities.writeJson(awsSecretsFilePath, awsSecrets);
 
-      awsInfo.awsConfigFilePath = awsSecretsFilePath;
+      (awsInfo as CredentialsEnvAwsInfo).awsConfigFilePath = awsSecretsFilePath;
     }
   }
 
-  const dotConfigDirPath = pathManager.getDotConfigDirPath();
-  const configInfoFilePath = path.join(dotConfigDirPath, constants.LocalAWSInfoFileName);
   const { envName } = context.exeInfo.localEnvInfo;
 
-  let envAwsInfo = {};
-  if (fs.existsSync(configInfoFilePath)) {
-    envAwsInfo = JSONUtilities.readJson(configInfoFilePath);
-  }
+  const envAwsInfo = stateManager.getLocalAWSInfo(undefined, { throwIfNotExist: false, default: {} });
 
-  awsInfo.appId = context?.exeInfo?.amplifyMeta?.providers?.awscloudformation?.AmplifyAppId;
-  awsInfo.region = context?.exeInfo?.amplifyMeta?.providers?.awscloudformation?.Region;
+  awsInfo.AmplifyAppId = context?.exeInfo?.amplifyMeta?.providers?.awscloudformation?.AmplifyAppId;
+  awsInfo.Region = context?.exeInfo?.amplifyMeta?.providers?.awscloudformation?.Region;
 
-  envAwsInfo[envName] = awsInfo;
-  JSONUtilities.writeJson(configInfoFilePath, envAwsInfo);
+  envAwsInfo[envName] = awsInfo as EnvAwsInfo; // assert that Partial<EnvAwsInfo> is complete at this point
+  stateManager.setLocalAWSInfo(undefined, envAwsInfo);
   return context;
 }
 
