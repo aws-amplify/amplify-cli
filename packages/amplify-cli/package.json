@@ -24,7 +24,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "jest",
+    "test": "jest --logHeapUsage",
     "postinstall": "node scripts/post-install.js",
     "watch": "tsc -w",
     "clean": "rimraf ./lib tsconfig.tsbuildinfo"

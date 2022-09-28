@@ -17,7 +17,7 @@
     "aws"
   ],
   "scripts": {
-    "test": "jest",
+    "test": "jest --logHeapUsage",
     "build": "tsc",
     "watch": "tsc -w"
   },

@@ -18,7 +18,7 @@
   "scripts": {
     "build": "node ./scripts/update-ddb-simulator.js",
     "clean": "rimraf emulator",
-    "test": "jest"
+    "test": "jest --logHeapUsage"
   },
   "dependencies": {
     "amplify-cli-core": "3.2.1",

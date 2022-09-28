@@ -7,7 +7,7 @@
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "demo": "yarn build && node lib/demo/demo.js",
-    "test": "jest --color",
+    "test": "jest --logHeapUsage --color",
     "watch": "tsc -w"
   },
   "repository": {
