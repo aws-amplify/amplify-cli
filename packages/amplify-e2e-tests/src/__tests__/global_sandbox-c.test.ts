@@ -1,19 +1,18 @@
+/* eslint-disable spellcheck/spell-checker */
+/* eslint-disable import/no-extraneous-dependencies */
+
 import {
   initJSProjectWithProfile,
   deleteProject,
-  addApiWithoutSchema,
-  addApiWithOneModel,
   addApiWithThreeModels,
-  updateApiSchema,
   apiGqlCompile,
   amplifyPush,
   generateModels,
   createNewProjectDir, deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
 
-describe('global sandbox mode', () => {
+describe('global sandbox mode c', () => {
   let projectDir: string;
-  const apiName = 'sandbox';
 
   beforeEach(async () => {
     projectDir = await createNewProjectDir('sandbox');
@@ -25,13 +24,7 @@ describe('global sandbox mode', () => {
     deleteProjectDir(projectDir);
   });
 
-  it('compiles schema with one model and pushes to cloud', async () => {
-    await addApiWithOneModel(projectDir);
-    await apiGqlCompile(projectDir, true);
-    await generateModels(projectDir);
-    await amplifyPush(projectDir, true);
-  });
-
+  // TODO: need a reason why we're skipping this or we should remove this test
   it.skip('compiles schema with three models and pushes to cloud', async () => {
     await addApiWithThreeModels(projectDir);
     await apiGqlCompile(projectDir, true);
@@ -39,11 +32,4 @@ describe('global sandbox mode', () => {
     await amplifyPush(projectDir, true);
   });
 
-  it('compiles schema user-added schema and pushes to cloud', async () => {
-    await addApiWithoutSchema(projectDir, { apiName });
-    updateApiSchema(projectDir, apiName, 'model_with_sandbox_mode.graphql');
-    await apiGqlCompile(projectDir, true);
-    await generateModels(projectDir);
-    await amplifyPush(projectDir, true);
-  });
 });
