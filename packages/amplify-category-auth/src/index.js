@@ -527,7 +527,7 @@ async function isSMSWorkflowEnabled(context, resourceName) {
  */
 const authPush = async context => {
   const commandPath = path.normalize(path.join(__dirname, 'commands', category, 'push'));
-  const commandModule = require(commandPath);
+  const commandModule = await import(commandPath);
   context.exeInfo = (context.exeInfo) || {};
   context.exeInfo.inputParams = (context.exeInfo.inputParams) || {};
   context.exeInfo.inputParams.yes = true; // force yes to avoid prompts

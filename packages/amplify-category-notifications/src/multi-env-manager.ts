@@ -1,4 +1,3 @@
-/* eslint-disable max-depth */
 import sequential from 'promise-sequential';
 import {
   $TSAny, $TSContext, stateManager, AmplifyCategories, AmplifySupportedService, IAnalyticsResource, $TSMeta, AmplifyError,
@@ -290,49 +289,15 @@ export const deletePinpointAppForEnv = async (context: $TSContext, envName: stri
   return undefined;
 };
 
-const buildPinpointInputParametersFromAmplifyMeta = (context : $TSContext): $TSAny => {
-  const { envName } = context.exeInfo.localEnvInfo;
-  const { amplifyMeta, backendConfig } = context.exeInfo;
-  const pinpointInputParameters : Record<string, $TSAny> = { envName };
+const buildPinpointInputParameters = (context : $TSContext): $TSAny => {
+  const { backendConfig } = context.exeInfo;
 
   // for pull and env add the backend-config may not be configured yet
   if (!backendConfig) {
-    const categoryMeta = amplifyMeta[AmplifyCategories.NOTIFICATIONS];
-    const availableChannels = getAvailableChannels();
-    if (categoryMeta) {
-      const resourceNames = Object.keys(categoryMeta);
-      for (const resourceName of resourceNames) {
-        const resource = categoryMeta[resourceName];
-        if (resource.service === AmplifySupportedService.PINPOINT) {
-          pinpointInputParameters.service = AmplifySupportedService.PINPOINT;
-          if (resource.output) {
-            for (const channelName of availableChannels) {
-              if (channelName in resource.output) {
-                pinpointInputParameters[channelName] = resource[channelName];
-              }
-            }
-          }
-          break;
-        }
-      }
-    }
-    return pinpointInputParameters;
+    return buildPinpointInputParametersFromAmplifyMeta(context);
   }
-  const categoryConfig = backendConfig[AmplifyCategories.NOTIFICATIONS];
-  const resourceNames = Object.keys(categoryConfig);
-  const availableChannels = getAvailableChannels();
-  for (const resourceName of resourceNames) {
-    const resource = categoryConfig[resourceName];
-    if (resource.service === AmplifySupportedService.PINPOINT) {
-      for (const channelName of availableChannels) {
-        if (resource.channels.includes(channelName)) {
-          pinpointInputParameters[channelName] = { Enabled: true };
-        }
-      }
-      return pinpointInputParameters;
-    }
-  }
-  return pinpointInputParameters;
+
+  return buildPinpointInputParametersFromBackendConfig(context);
 };
 
 /**
@@ -408,12 +373,8 @@ export const checkAndCreatePinpointApp = async (context: $TSContext, channelName
   }
 
   if (isPinpointAppDeployed(pinpointAppStatus.status) || isChannelDeploymentDeferred(channelName)) {
-    try {
-      const channelAPIResponse : IChannelAPIResponse|undefined = await notificationManager.enableChannel(context, channelName);
-      await writeData(context, channelAPIResponse);
-    } catch (e) {
-      printer.error('Enable Channel Failed!!');
-    }
+    const channelAPIResponse = await notificationManager.enableChannel(context, channelName);
+    await writeData(context, channelAPIResponse);
   }
 };
 
@@ -432,9 +393,8 @@ const pushChanges = async (context: $TSContext, pinpointNotificationsMeta: $TSAn
     pinpointNotificationsMeta,
     context.exeInfo.localEnvInfo.envName,
   );
-  await ensurePinpointApp(context, pinpointNotificationsMeta, pinpointAppStatus, context.exeInfo.localEnvInfo.envName);
 
-  const tasks: Array<$TSAny> = [];
+  await ensurePinpointApp(context, pinpointNotificationsMeta, pinpointAppStatus, context.exeInfo.localEnvInfo.envName);
   const results: Array<IChannelAPIResponse | undefined> = [];
 
   /**
@@ -442,25 +402,22 @@ const pushChanges = async (context: $TSContext, pinpointNotificationsMeta: $TSAn
    * In the Pull/Env add case input params are empty and need to be initialized from the context.exeInfo.backendConfig
    */
   if (!pinpointInputParams && context.exeInfo.amplifyMeta[AmplifyCategories.NOTIFICATIONS]) {
-    pinpointInputParams = buildPinpointInputParametersFromAmplifyMeta(context);
+    pinpointInputParams = buildPinpointInputParameters(context);
   }
-  const { channelsToEnable, channelsToDisable } = getEnabledDisabledChannelsFromConfigAndMeta(pinpointInputParams,
-    pinpointNotificationsMeta);
 
-  channelsToEnable.forEach(channel => tasks.push(async () => {
-    try {
-      const result = await notificationManager.enableChannel(context, channel);
-      results.push(result);
-    // eslint-disable-next-line no-empty
-    } catch (err) {}
-  }));
-  channelsToDisable.forEach(channel => tasks.push(async () => {
-    const result = await notificationManager.disableChannel(context, channel);
-    results.push(result);
-    return result;
-  }));
+  const { channelsToEnable, channelsToDisable } = getEnabledDisabledChannelsFromConfigAndMeta(
+    pinpointInputParams,
+    pinpointNotificationsMeta,
+  );
 
-  await sequential(tasks);
+  for (const channel of channelsToEnable) {
+    results.push(await notificationManager.enableChannel(context, channel));
+  }
+
+  for (const channel of channelsToDisable) {
+    results.push(await notificationManager.disableChannel(context, channel));
+  }
+
   return results;
 };
 
@@ -537,4 +494,55 @@ const fillTeamProviderInfo = (context: $TSContext, migrationInfo: $TSAny): void 
 
     Object.assign(teamProviderInfo[migrationInfo.envName].categories, categoryTeamInfo);
   }
+};
+
+const buildPinpointInputParametersFromAmplifyMeta = (context: $TSContext): Record<string, $TSAny> => {
+  const { envName } = context.exeInfo.localEnvInfo;
+  const { amplifyMeta } = context.exeInfo;
+  const pinpointInputParameters: Record<string, $TSAny> = { envName };
+  const categoryMeta = amplifyMeta[AmplifyCategories.NOTIFICATIONS];
+  const availableChannels = getAvailableChannels();
+  if (!categoryMeta) {
+    return pinpointInputParameters;
+  }
+
+  const resourceNames = Object.keys(categoryMeta);
+  for (const resourceName of resourceNames) {
+    const resource = categoryMeta[resourceName];
+    if (resource.service === AmplifySupportedService.PINPOINT) {
+      pinpointInputParameters.service = AmplifySupportedService.PINPOINT;
+      if (resource.output) {
+        for (const channelName of availableChannels) {
+          // eslint-disable-next-line max-depth
+          if (channelName in resource.output) {
+            pinpointInputParameters[channelName] = resource[channelName];
+          }
+        }
+      }
+      break;
+    }
+  }
+
+  return pinpointInputParameters;
+};
+
+const buildPinpointInputParametersFromBackendConfig = (context: $TSContext): Record<string, $TSAny> => {
+  const { backendConfig } = context.exeInfo;
+  const { envName } = context.exeInfo.localEnvInfo;
+  const pinpointInputParameters: Record<string, $TSAny> = { envName };
+  const categoryConfig = backendConfig[AmplifyCategories.NOTIFICATIONS];
+  const resourceNames = Object.keys(categoryConfig);
+  const availableChannels = getAvailableChannels();
+  for (const resourceName of resourceNames) {
+    const resource = categoryConfig[resourceName];
+    if (resource.service === AmplifySupportedService.PINPOINT) {
+      for (const channelName of availableChannels) {
+        if (resource.channels.includes(channelName)) {
+          pinpointInputParameters[channelName] = { Enabled: true };
+        }
+      }
+      return pinpointInputParameters;
+    }
+  }
+  return pinpointInputParameters;
 };

@@ -9,6 +9,7 @@ import {
 import inquirer from 'inquirer';
 import ora from 'ora';
 
+import { prompter } from 'amplify-prompts';
 import * as channel from '../channel-in-app-msg';
 import * as ChannelCfg from '../notifications-backend-cfg-channel-api';
 import * as Meta from '../notifications-amplify-meta-api';
@@ -49,6 +50,7 @@ const getAppConfigSpy = jest.spyOn(Cfg, 'getNotificationsAppConfig');
 const getAppMetaSpy = jest.spyOn(Meta, 'getNotificationsAppMeta');
 const isChannelEnabledSpy = jest.spyOn(ChannelCfg, 'isChannelEnabledNotificationsBackendConfig');
 const promptSpy = jest.spyOn(inquirer, 'prompt');
+const prompterYesOrNoSpy = jest.spyOn(prompter, 'yesOrNo');
 
 const mockContext = {
   print: { info: jest.fn(), error: jest.fn() },
@@ -87,16 +89,16 @@ describe('channel-InAppMessaging', () => {
       });
 
       test('user choosing to disable the channel', async () => {
-        promptSpy.mockResolvedValue({ disableChannel: true });
+        prompterYesOrNoSpy.mockResolvedValue(true);
         await channel.configure(mockContext);
-        expect(promptSpy).toBeCalledWith(expect.objectContaining({ name: 'disableChannel' }));
+        expect(prompterYesOrNoSpy).toBeCalledWith('Do you want to disable the In-App Messaging channel', false);
         expect(mockSpinner.succeed).toBeCalled();
       });
 
       test('user choosing not to disable the channel', async () => {
-        promptSpy.mockResolvedValue({ disableChannel: false });
+        prompterYesOrNoSpy.mockResolvedValue(false);
         await channel.configure(mockContext);
-        expect(promptSpy).toBeCalledWith(expect.objectContaining({ name: 'disableChannel' }));
+        expect(prompterYesOrNoSpy).toBeCalledWith('Do you want to disable the In-App Messaging channel', false);
         expect(mockSpinner.start).not.toBeCalled();
       });
     });
@@ -108,16 +110,16 @@ describe('channel-InAppMessaging', () => {
 
       test('user choosing to enable the channel', async () => {
         mockGetPinpointAppStatusFromMeta.mockResolvedValue({});
-        promptSpy.mockResolvedValue({ enableChannel: true });
+        prompterYesOrNoSpy.mockResolvedValue(true);
         await channel.configure(mockContext);
-        expect(promptSpy).toBeCalledWith(expect.objectContaining({ name: 'enableChannel' }));
+        expect(prompterYesOrNoSpy).toBeCalledWith('Do you want to enable the In-App Messaging channel', true);
         expect(mockSpinner.succeed).toBeCalled();
       });
 
       test('user choosing not to enable the channel', async () => {
-        promptSpy.mockResolvedValue({ enableChannel: false });
+        prompterYesOrNoSpy.mockResolvedValue(false);
         await channel.configure(mockContext);
-        expect(promptSpy).toBeCalledWith(expect.objectContaining({ name: 'enableChannel' }));
+        expect(prompterYesOrNoSpy).toBeCalledWith('Do you want to enable the In-App Messaging channel', true);
         expect(mockSpinner.start).not.toBeCalled();
       });
     });

@@ -55,24 +55,19 @@ export const enable = async (context:$TSContext):Promise<$TSAny> => {
   };
 
   spinner.start('Enabling SMS channel.');
-  return new Promise((resolve, reject) => {
-    context.exeInfo.pinpointClient.updateSmsChannel(params, (err: $TSAny, data:$TSAny) => {
-      if (err) {
-        if (!isAmplifyCLIPulling(context)) {
-          spinner.fail('enable channel error');
-        }
-        const enableChannelErrorResponse = buildPinpointChannelResponseError(ChannelAction.ENABLE, deploymentType,
-          channelName, err);
-        reject(enableChannelErrorResponse);
-        return;
-      }
-      spinner.succeed(`The ${channelName} channel has been successfully enabled.`);
-      context.exeInfo.serviceMeta.output[channelName] = data.SMSChannelResponse;
-      const enableChannelResponse = buildPinpointChannelResponseSuccess(ChannelAction.ENABLE, deploymentType,
-        channelName, data.SMSChannelResponse);
-      resolve(enableChannelResponse);
-    });
-  });
+
+  try {
+    const data = await context.exeInfo.pinpointClient.updateSmsChannel(params).promise();
+    context.exeInfo.serviceMeta.output[channelName] = data.SMSChannelResponse;
+    spinner.succeed(`The ${channelName} channel has been successfully enabled.`);
+
+    return buildPinpointChannelResponseSuccess(ChannelAction.ENABLE, deploymentType, channelName, data.SMSChannelResponse);
+  } catch (e) {
+    if (!isAmplifyCLIPulling(context)) {
+      spinner.fail('enable channel error');
+    }
+    throw buildPinpointChannelResponseError(ChannelAction.ENABLE, deploymentType, channelName, e);
+  }
 };
 
 /**
@@ -89,21 +84,19 @@ export const disable = async (context: $TSContext): Promise<$TSAny> => {
   };
 
   spinner.start('Disabling SMS channel.');
-  return new Promise((resolve, reject) => {
-    context.exeInfo.pinpointClient.updateSmsChannel(params, (err: Error, data:$TSAny) => {
-      if (err) {
-        spinner.fail('disable channel error');
-        const errResponse = buildPinpointChannelResponseError(ChannelAction.DISABLE, deploymentType, channelName, err);
-        reject(errResponse);
-        return;
-      }
-      spinner.succeed(`The ${channelName} channel has been disabled.`);
-      context.exeInfo.serviceMeta.output[channelName] = data.SMSChannelResponse;
-      const successResponse = buildPinpointChannelResponseSuccess(ChannelAction.DISABLE, deploymentType,
-        channelName, data.SMSChannelResponse);
-      resolve(successResponse);
-    });
-  });
+
+  try {
+    const data = await context.exeInfo.pinpointClient.updateSmsChannel(params).promise();
+    context.exeInfo.serviceMeta.output[channelName] = data.SMSChannelResponse;
+    spinner.succeed(`The ${channelName} channel has been successfully disabled.`);
+
+    return buildPinpointChannelResponseSuccess(ChannelAction.DISABLE, deploymentType, channelName, data.SMSChannelResponse);
+  } catch (e) {
+    if (!isAmplifyCLIPulling(context)) {
+      spinner.fail('disable channel error');
+    }
+    throw buildPinpointChannelResponseError(ChannelAction.DISABLE, deploymentType, channelName, e);
+  }
 };
 
 /**

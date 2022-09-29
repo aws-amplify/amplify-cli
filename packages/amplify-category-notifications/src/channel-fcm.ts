@@ -84,16 +84,19 @@ export const enable = async (context: $TSContext, successMessage: string | undef
         if (!isAmplifyCLIPulling(context)) {
           spinner.fail('enable channel error');
         }
-        const errResponse = buildPinpointChannelResponseError(ChannelAction.ENABLE, deploymentType,
-          channelName, err);
+        const errResponse = buildPinpointChannelResponseError(ChannelAction.ENABLE, deploymentType, channelName, err);
         reject(errResponse);
         return;
       }
 
       spinner.succeed(successMessage ?? `The ${channelName} channel has been successfully enabled.`);
       context.exeInfo.serviceMeta.output[channelName] = data.GCMChannelResponse;
-      const successResponse = buildPinpointChannelResponseSuccess(ChannelAction.ENABLE, deploymentType,
-        channelName, data.GCMChannelResponse);
+      const successResponse = buildPinpointChannelResponseSuccess(
+        ChannelAction.ENABLE,
+        deploymentType,
+        channelName,
+        data.GCMChannelResponse,
+      );
       resolve(successResponse);
     });
   });

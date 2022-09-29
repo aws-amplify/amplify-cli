@@ -43,16 +43,6 @@ const writeBackendConfig = (context: $TSContext, pinpointMeta: $TSAny, backendCo
   }
 };
 
-const writeAmplifyMeta = (context: $TSContext, categoryMeta: $TSMeta, amplifyMetaFilePath: string): void => {
-  if (fs.existsSync(amplifyMetaFilePath)) {
-    const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
-    amplifyMeta[AmplifyCategories.NOTIFICATIONS] = categoryMeta;
-    const jsonString = JSON.stringify(amplifyMeta, null, '\t');
-    fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
-    context.exeInfo.amplifyMeta = amplifyMeta;
-  }
-};
-
 /**
  * save updated Meta files into TeamProviderInfo, BackendConfig and AmplifyMeta files and for INLINE deployments
  * upload currentBackend deployment bucket. channelAPIResponse is undefined for legacy non CFN behavior.
@@ -92,9 +82,9 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
     await ensureEnvParamManager();
     writeTeamProviderInfo(pinpointMeta); // update Pinpoint data
     writeBackendConfig(context, pinpointMeta, context.amplify.pathManager.getBackendConfigFilePath());
-    writeAmplifyMeta(context, categoryMeta, context.amplify.pathManager.getAmplifyMetaFilePath());
+    stateManager.setMeta(undefined, updateNotificationsMeta(stateManager.getMeta(), categoryMeta));
     writeBackendConfig(context, pinpointMeta, context.amplify.pathManager.getCurrentBackendConfigFilePath());
-    writeAmplifyMeta(context, categoryMeta, context.amplify.pathManager.getCurrentAmplifyMetaFilePath());
+    stateManager.setCurrentMeta(undefined, updateNotificationsMeta(stateManager.getCurrentMeta(), categoryMeta));
 
     await context.amplify.storeCurrentCloudBackend(context);
   } else {
@@ -134,7 +124,13 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
     if (pinpointConfig) {
       writeBackendConfig(context, pinpointConfig, context.amplify.pathManager.getBackendConfigFilePath());
     }
-    writeAmplifyMeta(context, categoryMeta, context.amplify.pathManager.getAmplifyMetaFilePath());
+    stateManager.setMeta(undefined, updateNotificationsMeta(stateManager.getMeta(), categoryMeta));
   }
   await context.amplify.onCategoryOutputsChange(context, undefined, undefined);
+};
+
+const updateNotificationsMeta = (meta: $TSMeta, notificationsMeta: $TSAny): $TSMeta => {
+  // eslint-disable-next-line no-param-reassign
+  meta[AmplifyCategories.NOTIFICATIONS] = notificationsMeta;
+  return meta;
 };

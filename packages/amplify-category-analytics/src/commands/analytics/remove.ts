@@ -1,5 +1,5 @@
 import {
-  $TSAny, $TSContext, AmplifyCategories,
+  $TSContext, AmplifyCategories,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { checkResourceInUseByNotifications, invokeNotificationsAPIRecursiveRemoveApp } from '../../plugin-client-api-notifications';
@@ -31,18 +31,12 @@ const removeResourceDependencies = async (context:$TSContext, resourceName: stri
  * @param context amplify cli context
  * @returns removeResource response
  */
-export const run = async (context: $TSContext): Promise<$TSAny> => {
+export const run = async (context: $TSContext): Promise<void> => {
   const { amplify, parameters } = context;
   const resourceName = parameters.first;
 
-  return amplify.removeResource(context, category, resourceName, { headless: false },
-    async selectedResourceName => removeResourceDependencies(context, selectedResourceName)) // callback to pre-process selected resource
-    .catch(err => {
-      printer.info(err.stack);
-      printer.error('An error occurred when removing the analytics resource');
-      context.usageData.emitError(err);
-      process.exitCode = 1;
-    });
+  await amplify.removeResource(context, category, resourceName, { headless: false });
+  return removeResourceDependencies(context, resourceName);
 };
 
 export const name = subcommand;

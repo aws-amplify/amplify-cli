@@ -56,8 +56,7 @@ export const run = async (context:$TSContext): Promise<$TSContext> => {
       // eslint-disable-next-line no-param-reassign
       context = pinpointAppStatus.context;
     }
-    if (isPinpointAppDeployed(pinpointAppStatus.status)
-    || isChannelDeploymentDeferred(selectedChannel)) {
+    if (isPinpointAppDeployed(pinpointAppStatus.status) || isChannelDeploymentDeferred(selectedChannel)) {
       const channelAPIResponse : IChannelAPIResponse|undefined = await notificationManager.configureChannel(context, selectedChannel);
       await writeData(context, channelAPIResponse);
     }

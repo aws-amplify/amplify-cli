@@ -128,8 +128,8 @@ const removeNodeModulesDir = (currentCloudBackendDir: string):void => {
 export const updateamplifyMetaAfterResourceAdd = (
   category: string,
   resourceName: string,
-  metadataResource: { dependsOn? } = {},
-  backendConfigResource?: { dependsOn? },
+  metadataResource: { dependsOn?: [{ category: string; resourceName: string; }] } = {},
+  backendConfigResource?: { dependsOn?: $TSAny },
   overwriteObjectIfExists?: boolean,
 ): void => {
   const amplifyMeta = stateManager.getMeta();

@@ -38,7 +38,9 @@ export const handleException = async (exception: unknown): Promise<void> => {
   }
 
   if (context?.usageData) {
-    context?.usageData.emitError(amplifyException);
+    await executeSafely(
+      () => context?.usageData.emitError(amplifyException), 'Failed to emit error to usage data',
+    );
   }
 
   if (context && isHeadlessCommand(context)) {

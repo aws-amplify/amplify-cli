@@ -16,9 +16,7 @@ const category = 'notifications';
  * Open the AWS console in the browser for the given service.
  * @param context amplify cli context
  */
-export const console = async (context: $TSContext): Promise<void> => {
-  pinpointHelper.console(context);
-};
+export const console = async (context: $TSContext): Promise<void> => pinpointHelper.console(context);
 
 /**
  * De-link all notifications resources from Pinpoint resource in the analytics category
