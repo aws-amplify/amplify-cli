@@ -17,7 +17,7 @@ export const deleteProject = async (cwd: string, profileConfig?: any, usingLates
   );
 
   const noOutputTimeout = 1000 * 60 * 20; // 20 minutes;
-  return spawn(getCLIPath(usingLatestCodebase), ['delete'], { cwd, stripColors: true, noOutputTimeout })
+  return spawn(getCLIPath(usingLatestCodebase), ['delete', '--debug'], { cwd, stripColors: true, noOutputTimeout })
     .wait('Are you sure you want to continue?')
     .sendConfirmYes()
     .wait('Project deleted locally.')

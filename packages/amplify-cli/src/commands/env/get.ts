@@ -1,6 +1,6 @@
 import { $TSContext } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-import { ensureEnvMeta, listLocalEnvNames } from '@aws-amplify/amplify-environment-parameters';
+import { ensureEnvMeta, ensureEnvParamManager, listLocalEnvNames } from '@aws-amplify/amplify-environment-parameters';
 import { printEnvInfo } from '../helpers/envUtils';
 
 /**
@@ -18,6 +18,34 @@ export const run = async (context: $TSContext): Promise<void> => {
     throw new Error(`Cannot find environment ${envName}. Make sure the environment has been pulled using 'amplify pull'.`);
   }
 
-  printer.info(envName);
-  printEnvInfo(await ensureEnvMeta(context, envName));
+  if (context.parameters.options.json) {
+    // merge meta and params from env into one json and print it
+    printer.info(JSON.stringify(await constructEnvMetaAndParamsObject(context, envName), undefined, 2));
+  } else {
+    printer.blankLine();
+    printer.info(envName, 'blue');
+    (await ensureEnvMeta(context, envName)).write(false, printEnvInfo);
+  }
+};
+
+/**
+ * Constructs an object that is identical to what would be in the team-provider-info file but without relying on the contents of the file
+ *
+ * This is in preparation for when the team-provider-info file no longer exists but we neeed to maintain the behavior of the
+ * `env get --details --json` command
+ * @param context Amplify context object
+ * @param envName The environmnet to construct metadata for
+ * @returns The environment metadata object (both amplify meta and environment parameters)
+ */
+export const constructEnvMetaAndParamsObject = async (context: $TSContext, envName: string): Promise<Record<string, unknown>> => {
+  const result: Record<string, unknown> = {};
+  (await ensureEnvMeta(context, envName)).write(false, obj => {
+    result.awscloudformation = obj;
+  });
+  (await ensureEnvParamManager(envName)).instance.write(obj => {
+    if (Object.keys(obj).length > 0) {
+      result.categories = obj;
+    }
+  });
+  return result;
 };

@@ -37,6 +37,9 @@
     },
     {
       "path": "../amplify-cli-shared-interfaces"
+    },
+    {
+      "path": "../amplify-environment-parameters"
     }
   ]
 }

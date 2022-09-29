@@ -2,6 +2,7 @@ import {
   addAuthWithCustomTrigger,
   addAuthWithDefault,
   addAuthWithDefaultSocial,
+  // eslint-disable-next-line spellcheck/spell-checker
   addAuthWithRecaptchaTrigger,
   amplifyPull,
   amplifyPushAuth,
@@ -24,7 +25,12 @@ import {
   removeEnvironment,
 } from '../environment/env';
 
-async function validate(meta: any) {
+// eslint-disable-next-line spellcheck/spell-checker
+const envAName = 'enva';
+// eslint-disable-next-line spellcheck/spell-checker
+const envBName = 'envb';
+
+const validate = async (meta: any): Promise<void> => {
   expect(meta.providers.awscloudformation).toBeDefined();
   const {
     AuthRoleArn: authRoleArn, DeploymentBucketName: bucketName, Region: region, StackId: stackId,
@@ -35,7 +41,7 @@ async function validate(meta: any) {
   expect(stackId).toBeDefined();
   const bucketExists = await checkIfBucketExists(bucketName, region);
   expect(bucketExists).toMatchObject({});
-}
+};
 
 describe('environment commands', () => {
   let projRoot: string;
@@ -49,12 +55,12 @@ describe('environment commands', () => {
   });
 
   it('init a project, add environments, list them, then remove them', async () => {
-    await initJSProjectWithProfile(projRoot, { envName: 'enva' });
+    await initJSProjectWithProfile(projRoot, { envName: envAName, disableAmplifyAppCreation: false });
     await listEnvironment(projRoot, {});
-    await addEnvironment(projRoot, { envName: 'envb' });
+    await addEnvironment(projRoot, { envName: envBName });
     await listEnvironment(projRoot, { numEnv: 2 });
-    await checkoutEnvironment(projRoot, { envName: 'enva' });
-    await removeEnvironment(projRoot, { envName: 'envb' });
+    await checkoutEnvironment(projRoot, { envName: envAName });
+    await removeEnvironment(projRoot, { envName: envBName });
     await listEnvironment(projRoot, {});
 
     const meta = getProjectMeta(projRoot);
@@ -106,7 +112,7 @@ describe('environment commands with Cognito Triggers', () => {
   let projRoot: string;
   beforeAll(async () => {
     projRoot = await createNewProjectDir('env-test');
-    await initJSProjectWithProfile(projRoot, { envName: 'enva' });
+    await initJSProjectWithProfile(projRoot, { envName: envAName, disableAmplifyAppCreation: false });
     await addAuthWithCustomTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
   });
@@ -117,9 +123,9 @@ describe('environment commands with Cognito Triggers', () => {
   });
 
   it('init a project, add and checkout environment', async () => {
-    await addEnvironment(projRoot, { envName: 'envb' });
+    await addEnvironment(projRoot, { envName: envBName });
     await listEnvironment(projRoot, { numEnv: 2 });
-    await checkoutEnvironment(projRoot, { envName: 'enva' });
+    await checkoutEnvironment(projRoot, { envName: envAName });
     const meta = getProjectMeta(projRoot);
     await validate(meta);
   });
@@ -131,11 +137,13 @@ describe('environment commands with Cognito Triggers', () => {
   });
 });
 
+// eslint-disable-next-line spellcheck/spell-checker
 describe('environment commands with recaptcha trigger', () => {
   let projRoot: string;
   beforeAll(async () => {
     projRoot = await createNewProjectDir('env-test');
-    await initJSProjectWithProfile(projRoot, { envName: 'enva' });
+    await initJSProjectWithProfile(projRoot, { envName: envAName, disableAmplifyAppCreation: false });
+    // eslint-disable-next-line spellcheck/spell-checker
     await addAuthWithRecaptchaTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
   });
@@ -146,9 +154,9 @@ describe('environment commands with recaptcha trigger', () => {
   });
 
   it('init a project, add and checkout environment', async () => {
-    await addEnvironment(projRoot, { envName: 'envb' });
+    await addEnvironment(projRoot, { envName: envBName });
     await listEnvironment(projRoot, { numEnv: 2 });
-    await checkoutEnvironment(projRoot, { envName: 'enva' });
+    await checkoutEnvironment(projRoot, { envName: envAName });
     const meta = getProjectMeta(projRoot);
     await validate(meta);
   });
@@ -163,7 +171,7 @@ describe('environment commands with HostedUI params', () => {
   let projRoot: string;
   beforeAll(async () => {
     projRoot = await createNewProjectDir('env-test');
-    await initJSProjectWithProfile(projRoot, { envName: 'enva' });
+    await initJSProjectWithProfile(projRoot, { envName: envAName, disableAmplifyAppCreation: false });
     await addAuthWithDefaultSocial(projRoot, {});
     await amplifyPushAuth(projRoot);
   });
@@ -174,7 +182,7 @@ describe('environment commands with HostedUI params', () => {
   });
 
   it('init a project, add and checkout environment', async () => {
-    await addEnvironmentHostedUI(projRoot, { envName: 'envb' });
+    await addEnvironmentHostedUI(projRoot, { envName: envBName });
     await listEnvironment(projRoot, { numEnv: 2 });
     const meta = getProjectMeta(projRoot);
     await validate(meta);

@@ -1,4 +1,10 @@
-import { nspawn as spawn, getCLIPath, getSocialProviders, isCI } from '@aws-amplify/amplify-e2e-core';
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
+/* eslint-disable func-style */
+/* eslint-disable jsdoc/require-jsdoc */
+import {
+  nspawn as spawn, getCLIPath, getSocialProviders, isCI,
+} from '@aws-amplify/amplify-e2e-core';
 
 export function addEnvironment(cwd: string, settings: { envName: string; numLayers?: number }): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -25,22 +31,24 @@ export function updateEnvironment(cwd: string, settings: { permissionsBoundaryAr
     spawn(getCLIPath(), ['env', 'update'], { cwd, stripColors: true })
       .wait('Specify an IAM Policy ARN to use as a permissions boundary for all Amplify-generated IAM Roles')
       .sendLine(settings.permissionsBoundaryArn)
-      .run((err: Error) => (!!err ? reject(err) : resolve()));
+      .run((err: Error) => (err ? reject(err) : resolve()));
   });
 }
 
 export function addEnvironmentYes(cwd: string, settings: { envName: string; disableAmplifyAppCreation?: boolean }): Promise<void> {
+  // eslint-disable-next-line no-param-reassign
   settings.disableAmplifyAppCreation = settings.disableAmplifyAppCreation ?? true;
   const env = settings.disableAmplifyAppCreation
     ? {
-        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-      }
+      CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+    }
     : undefined;
 
   const providerConfig = {
     awscloudformation: {
       configLevel: 'project',
       useProfile: true,
+      // eslint-disable-next-line spellcheck/spell-checker
       profileName: isCI() ? 'amplify-integ-test-user' : 'default',
     },
   };
@@ -90,57 +98,42 @@ export function checkoutEnvironment(cwd: string, settings: { envName: string, re
 }
 
 // Test multiple Environments by passing settings.numEnv
-export function listEnvironment(cwd: string, settings: { numEnv?: number }): Promise<void> {
-  return new Promise((resolve, reject) => {
-    let numEnv = settings.numEnv || 1;
-    let regex = /\|\s\*?[a-z]{2,10}\s+\|/;
-    const chain = spawn(getCLIPath(), ['env', 'list'], { cwd, stripColors: true }).wait('| Environments |').wait('| ------------ |');
+export const listEnvironment = async (cwd: string, settings: { numEnv?: number }): Promise<void> => {
+  const numEnv = settings.numEnv || 1;
+  const chain = spawn(getCLIPath(), ['env', 'list', '--debug'], { cwd, stripColors: true }).wait('Environments:');
 
-    for (let i = 0; i < numEnv; ++i) {
-      chain.wait(regex);
-    }
+  for (let i = 0; i < numEnv; ++i) {
+    chain.wait(/.+/); // any output but expect the correct number of lines
+  }
 
-    chain.sendEof().run((err: Error) => {
-      if (!err) {
-        resolve();
-      } else {
-        reject(err);
-      }
-    });
-  });
-}
+  return chain.sendEof().runAsync();
+};
 
 // Get environment details and return them as JSON
-export function getEnvironment(cwd: string, settings: { envName: string }): Promise<string> {
+export const getEnvironment = async (cwd: string, settings: { envName: string }): Promise<string> => {
   const envData = {};
   const helper = (output: string) => {
     const [key, value] = output.split(/:(.+)/); // Split string on first ':' only
     envData[key.trim()] = value.trim();
   };
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['env', 'get', '--name', settings.envName], { cwd, stripColors: true })
-      .wait(settings.envName)
-      .wait('--------------')
-      .wait('Provider')
-      .wait('AuthRoleName', helper)
-      .wait('UnauthRoleArn', helper)
-      .wait(/^AuthRoleArn/, helper) // Needs to be a regex to prevent matching UnauthRoleArn twice
-      .wait('Region', helper)
-      .wait('DeploymentBucketName', helper)
-      .wait('UnauthRoleName', helper)
-      .wait('StackName', helper)
-      .wait('StackId', helper)
-      .wait('--------------')
-      .sendEof()
-      .run((err: Error) => {
-        if (!err) {
-          resolve(JSON.stringify({ awscloudformation: envData }));
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
+  await spawn(getCLIPath(), ['env', 'get', '--name', settings.envName], { cwd, stripColors: true })
+    .wait(settings.envName)
+    .wait('--------------')
+    .wait('Provider')
+    .wait('AuthRoleName', helper)
+    .wait('UnauthRoleArn', helper)
+    .wait(/^AuthRoleArn/, helper) // Needs to be a regex to prevent matching UnauthRoleArn twice
+    .wait('Region', helper)
+    .wait('DeploymentBucketName', helper)
+    .wait('UnauthRoleName', helper)
+    .wait('StackName', helper)
+    .wait('StackId', helper)
+    .wait('--------------')
+    .sendEof()
+    .runAsync();
+
+  return JSON.stringify({ awscloudformation: envData });
+};
 
 /*
   `amplify env pull` only outputs via ora.spinner,
@@ -212,7 +205,7 @@ export function addEnvironmentHostedUI(cwd: string, settings: { envName: string 
 }
 
 export function importEnvironment(cwd: string, settings: { envName: string; providerConfig: string }): Promise<void> {
-  const cmd_array = [
+  const cmdArray = [
     'env',
     'import',
     '--name',
@@ -223,7 +216,7 @@ export function importEnvironment(cwd: string, settings: { envName: string; prov
   ];
 
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), cmd_array, { cwd, stripColors: true })
+    spawn(getCLIPath(), cmdArray, { cwd, stripColors: true })
       .wait('Successfully added environment from your project')
       .sendEof()
       .run((err: Error) => {

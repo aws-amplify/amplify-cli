@@ -98,7 +98,7 @@ export const initializeEnv = async (
     }
 
     // save the current environment metadata so that it is loaded properly by the frontend plugins when generating frontend config
-    getEnvMeta(currentEnv).save();
+    getEnvMeta(currentEnv).write();
 
     // Generate AWS exports/configuration file
     await context.amplify.onCategoryOutputsChange(context, currentAmplifyMeta);

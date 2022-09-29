@@ -1,6 +1,7 @@
 import { $TSContext, pathManager, stateManager } from 'amplify-cli-core';
 import { AmplifyBackend } from 'aws-sdk';
 import type { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
+import { IEnvironmentMetadata, WriteTarget } from './types';
 
 const envMetaManagerMap: Record<string, IEnvironmentMetadata> = {};
 
@@ -60,7 +61,19 @@ const ensureEnvMetaInternal = async (
       }
       const currentEnv = stateManager.getLocalEnvInfo().envName;
       // ensure any updates to the current env meta are written to the `amplify-meta.json` file
-      envMetaManagerMap[currentEnv]?.save();
+      envMetaManagerMap[currentEnv]?.write();
+
+      // remove any environments from tpi that were deleted
+      const currentEnvs = context.amplify.getAllEnvs();
+      const tpi = stateManager.getTeamProviderInfo();
+      const tpiEnvs = Object.keys(tpi);
+      const removedEnvs = tpiEnvs.filter(env => !currentEnvs.includes(env));
+      if (removedEnvs.length > 0) {
+        removedEnvs.forEach(env => {
+          delete tpi[env];
+        });
+        stateManager.setTeamProviderInfo(undefined, tpi);
+      }
     });
   }
   if (envMetaManagerMap[envName]) {
@@ -212,24 +225,11 @@ class EnvironmentMetadata implements IEnvironmentMetadata {
    * currently this writes the values out to the `amplify-meta.json` file and `team-provider-info.json` but eventually we will git rid of
    * `team-provider-info.json`. And beyond that the values stored in `amplify-meta.json` should eventually be stored in a metadata service
    */
-  save(): void {
-    if (!this._dirty) {
+  write(respectIsDirty = true, writeTarget: WriteTarget = localFilesWriteTarget): void {
+    if (respectIsDirty && !this._dirty) {
       return;
     }
-    // set values in `amplify-meta.json`
-    const amplifyMeta = stateManager.getMeta(undefined, { throwIfNotExist: false }) || {};
-    amplifyMeta.providers = {};
-    amplifyMeta.providers.awscloudformation = this.toObject();
-    stateManager.setMeta(undefined, amplifyMeta);
-
-    // set values in `team-provider-info.json
-    const tpi = stateManager.getTeamProviderInfo(undefined, { throwIfNotExist: false }) || {};
-    const currentEnv = stateManager.getLocalEnvInfo().envName;
-    if (typeof tpi[currentEnv] !== 'object') {
-      tpi[currentEnv] = {};
-    }
-    tpi[currentEnv].awscloudformation = this.toObject();
-    stateManager.setTeamProviderInfo(undefined, tpi);
+    writeTarget(this.toObject());
   }
 
   private toObject(): Record<string, string> {
@@ -251,19 +251,20 @@ class EnvironmentMetadata implements IEnvironmentMetadata {
   }
 }
 
-/**
- * Env metadata type
- */
-export type IEnvironmentMetadata = {
-  readonly AuthRoleName: string,
-  readonly AuthRoleArn: string,
-  readonly UnauthRoleArn: string,
-  readonly UnauthRoleName: string,
-  readonly Region: string,
-  readonly DeploymentBucketName: string,
-  readonly StackName: string,
-  readonly StackId: string,
-  AmplifyAppId: string,
-  PermissionsBoundaryPolicyArn: string | undefined,
-  save: () => void
-}
+const localFilesWriteTarget: WriteTarget = serializableObject => {
+  // set values in `amplify-meta.json`
+  const amplifyMeta = stateManager.getMeta(undefined, { throwIfNotExist: false }) || {};
+  amplifyMeta.providers = {
+    awscloudformation: serializableObject,
+  };
+  stateManager.setMeta(undefined, amplifyMeta);
+
+  // set values in `team-provider-info.json
+  const tpi = stateManager.getTeamProviderInfo(undefined, { throwIfNotExist: false }) || {};
+  const currentEnv = stateManager.getLocalEnvInfo().envName;
+  if (typeof tpi[currentEnv] !== 'object') {
+    tpi[currentEnv] = {};
+  }
+  tpi[currentEnv].awscloudformation = serializableObject;
+  stateManager.setTeamProviderInfo(undefined, tpi);
+};

@@ -1,6 +1,7 @@
 import { pathManager, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
 import { ResourceParameterManager } from './resource-parameter-manager';
+import { IEnvironmentParameterManager, WriteTarget } from './types';
 
 const envParamManagerMap: Record<string, EnvironmentParameterManager> = {};
 const registerForDeletion: string[] = [];
@@ -93,6 +94,15 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     return !!this.resourceParamManagers[getResourceKey(category, resource)];
   }
 
+  write(target: WriteTarget): void {
+    const categoriesContent = this.serializeTPICategories();
+    if (Object.keys(categoriesContent).length === 0) {
+      target({});
+      return;
+    }
+    target(this.serializeTPICategories());
+  }
+
   private save = (): void => {
     if (!pathManager.findProjectRoot()) {
       // assume that the project is deleted if we cannot find a project root
@@ -129,15 +139,3 @@ const splitResourceKey = (key: string): readonly [string, string] => {
   const [category, resourceName] = key.split('_');
   return [category, resourceName];
 };
-
-/**
- * Interface for environment parameter managers
- */
-export type IEnvironmentParameterManager = {
-  init: () => Promise<void>;
-  removeResourceParamManager: (category: string, resource: string) => void;
-  hasResourceParamManager: (category: string, resource: string) => boolean;
-  getResourceParamManager: (category: string, resource: string) => ResourceParameterManager;
-  removeSaveListener: () => void;
-  // save: () => void;
-}
