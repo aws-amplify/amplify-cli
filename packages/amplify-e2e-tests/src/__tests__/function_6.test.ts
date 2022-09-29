@@ -1,3 +1,4 @@
+/* eslint-disable spellcheck/spell-checker */
 import {
   addFunction,
   amplifyPushAuth,
@@ -15,7 +16,6 @@ import {
   amplifyPushForce,
   generateRandomShortId,
 } from '@aws-amplify/amplify-e2e-core';
-import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { addEnvironmentYes } from '../environment/env';
 
@@ -88,7 +88,7 @@ describe('function environment variables', () => {
 
   it('carries over env vars to new env', async () => {
     // add func w/ env var
-    await initJSProjectWithProfile(projRoot);
+    await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false });
     const functionName = `testfunction${generateRandomShortId()}`;
     await addFunction(
       projRoot,

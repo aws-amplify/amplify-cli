@@ -32,10 +32,12 @@ describe('feature flags', () => {
 
   it('push and pull with multiple config files for environments', async () => {
     await initJSProjectWithProfile(projRoot, {
+      // eslint-disable-next-line spellcheck/spell-checker
       name: 'apifeatureflag',
       disableAmplifyAppCreation: false,
     });
     await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
+    // eslint-disable-next-line spellcheck/spell-checker
     await updateApiSchema(projRoot, 'apifeatureflag', 'simple_model.graphql');
 
     const envName = 'test';
@@ -64,10 +66,11 @@ describe('feature flags', () => {
   });
 
   it('config is cloned when new environment is created', async () => {
-    await initJSProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false });
 
     const envName = 'test';
     const cliJSONPath = pathManager.getCLIJSONFilePath(projRoot);
+    // eslint-disable-next-line spellcheck/spell-checker
     const cliDevJSONPath = pathManager.getCLIJSONFilePath(projRoot, 'integtest');
 
     fs.copyFileSync(cliJSONPath, cliDevJSONPath);

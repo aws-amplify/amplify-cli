@@ -1,3 +1,4 @@
+/* eslint-disable spellcheck/spell-checker */
 import {
   addAuthWithDefault,
   addS3StorageWithSettings,
@@ -17,13 +18,11 @@ import {
   expectLocalAndCloudMetaFilesMatching,
   expectLocalAndPulledBackendConfigMatching,
   expectS3LocalAndOGMetaFilesOutputMatching,
-  getOGStorageProjectDetails,
   getShortId,
   getStorageProjectDetails,
   headlessPull,
   headlessPullExpectError,
   importS3,
-  StorageProjectDetails,
 } from '../import-helpers';
 
 const profileName = 'amplify-integ-test-user';
@@ -48,11 +47,9 @@ describe('s3 import', () => {
   let ogProjectRoot: string;
   let ogShortId: string;
   let ogSettings: AddStorageSettings;
-  let ogProjectDetails: StorageProjectDetails;
 
   // We need an extra OG project to make sure that autocomplete prompt hits in
   let dummyOGProjectRoot: string;
-  let dummyOGShortId: string;
   let dummyOGSettings: AddStorageSettings;
 
   let projectRoot: string;
@@ -68,10 +65,7 @@ describe('s3 import', () => {
     await addS3StorageWithSettings(ogProjectRoot, ogSettings);
     await amplifyPushAuth(ogProjectRoot);
 
-    ogProjectDetails = getOGStorageProjectDetails(ogProjectRoot);
-
     dummyOGProjectRoot = await createNewProjectDir(dummyOGProjectSettings.name);
-    dummyOGShortId = getShortId();
     dummyOGSettings = createStorageSettings(dummyOGProjectSettings.name, ogShortId);
 
     await initJSProjectWithProfile(dummyOGProjectRoot, dummyOGProjectSettings);
@@ -106,7 +100,7 @@ describe('s3 import', () => {
   });
 
   it('imported storage, create prod env, files should match', async () => {
-    await initJSProjectWithProfile(projectRoot, projectSettings);
+    await initJSProjectWithProfile(projectRoot, { ...projectSettings, disableAmplifyAppCreation: false });
     await addAuthWithDefault(projectRoot, {});
     await importS3(projectRoot, ogSettings.bucketName);
 

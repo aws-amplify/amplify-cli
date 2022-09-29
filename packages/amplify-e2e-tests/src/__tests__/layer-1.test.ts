@@ -1,16 +1,13 @@
+/* eslint-disable spellcheck/spell-checker */
 import {
-  addFunction,
   addLayer,
   addOptData,
-  amplifyPull,
   amplifyPushAuth,
   amplifyPushLayer,
   amplifyStatus,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
-  ExecutionContext,
-  getAppId,
   getCurrentLayerArnFromMeta,
   getProjectConfig,
   getProjectMeta,
@@ -19,11 +16,8 @@ import {
   LayerPermissionChoice,
   LayerPermissionName,
   LayerRuntime,
-  removeFunction,
   removeLayer,
-  removeLayerVersion,
   updateLayer,
-  updateOptData,
   validateLayerDir,
   validateLayerMetadata,
   validatePushedVersion,
@@ -164,6 +158,23 @@ describe('amplify add lambda layer', () => {
     await amplifyPushAuth(projRoot);
     arns.push(getCurrentLayerArnFromMeta(projRoot, { layerName, projName }));
     await validateLayerMetadata(projRoot, { layerName, projName }, getProjectMeta(projRoot), envName, arns);
+  });
+});
+
+describe('amplify add lambda layer multi-env', () => {
+  let projRoot: string;
+  let projName: string;
+  const envName = 'integtest';
+
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('layers');
+    await initJSProjectWithProfile(projRoot, { envName, disableAmplifyAppCreation: false });
+    ({ projectName: projName } = getProjectConfig(projRoot));
+  });
+
+  afterEach(async () => {
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
   });
 
   it('init a project, add/push layer, change layer content, push layer using previous permissions, test env add and env checkout', async () => {
