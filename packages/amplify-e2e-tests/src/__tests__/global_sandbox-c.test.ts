@@ -31,5 +31,4 @@ describe('global sandbox mode c', () => {
     await generateModels(projectDir);
     await amplifyPush(projectDir, true);
   });
-
 });
