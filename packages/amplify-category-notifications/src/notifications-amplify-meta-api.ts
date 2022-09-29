@@ -31,32 +31,34 @@ export const toggleNotificationsChannelAppMeta = async (
   amplifyMeta?: $TSMeta,
   appName?: string,
 ): Promise<$TSMeta> => {
-  const tmpAmplifyMeta:$TSMeta = amplifyMeta;
+  const tmpAmplifyMeta = amplifyMeta;
   const notificationsAppMeta = await getNotificationsAppMeta(tmpAmplifyMeta, appName);
-  if (notificationsAppMeta) {
-    const channelOutput = (notificationsAppMeta.output) || {};
-    const channelValue = (channelOutput[channelName]) || {};
-    notificationsAppMeta.output = (notificationsAppMeta.output) || {};
-    notificationsAppMeta.output[channelName] = {
-      ...channelValue,
-      Enabled: isEnabled,
-      ApplicationId: channelOutput.Id,
-    };
-
-    // To mark notifications as UPDATED, we need a timestamp in the past.
-    // Any update to Notifications will result in updating the Analytics resource.
-    // syncing the timestamp from analytics.
-    if (!notificationsAppMeta.lastPushTimeStamp) {
-      const analyticsLastPushTimeStamp = await invokeGetLastPushTimeStamp(tmpAmplifyMeta, notificationsAppMeta.ResourceName);
-      if (analyticsLastPushTimeStamp) {
-        notificationsAppMeta.lastPushTimeStamp = analyticsLastPushTimeStamp;
-        notificationsAppMeta.lastPushDirHash = (notificationsAppMeta.lastPushDirHash)
-      || oneAtATimeJenkinsHash(JSON.stringify(notificationsAppMeta));
-      }
-    }
-
-    tmpAmplifyMeta[AmplifyCategories.NOTIFICATIONS][notificationsAppMeta.ResourceName] = notificationsAppMeta;
+  if (!notificationsAppMeta) {
+    return tmpAmplifyMeta;
   }
+
+  const channelOutput = (notificationsAppMeta.output) || {};
+  const channelValue = (channelOutput[channelName]) || {};
+  notificationsAppMeta.output = (notificationsAppMeta.output) || {};
+  notificationsAppMeta.output[channelName] = {
+    ...channelValue,
+    Enabled: isEnabled,
+    ApplicationId: channelOutput.Id,
+  };
+
+  // To mark notifications as UPDATED, we need a timestamp in the past.
+  // Any update to Notifications will result in updating the Analytics resource.
+  // syncing the timestamp from analytics.
+  if (!notificationsAppMeta.lastPushTimeStamp) {
+    const analyticsLastPushTimeStamp = await invokeGetLastPushTimeStamp(tmpAmplifyMeta, notificationsAppMeta.ResourceName);
+    if (analyticsLastPushTimeStamp) {
+      notificationsAppMeta.lastPushTimeStamp = analyticsLastPushTimeStamp;
+      notificationsAppMeta.lastPushDirHash = (notificationsAppMeta.lastPushDirHash)
+      || oneAtATimeJenkinsHash(JSON.stringify(notificationsAppMeta));
+    }
+  }
+
+  tmpAmplifyMeta[AmplifyCategories.NOTIFICATIONS][notificationsAppMeta.ResourceName] = notificationsAppMeta;
 
   return tmpAmplifyMeta;
 };

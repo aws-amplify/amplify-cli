@@ -6,8 +6,7 @@ import {
 } from 'amplify-cli-core';
 
 import ora from 'ora';
-import inquirer from 'inquirer';
-import { printer } from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
 import * as authHelper from './auth-helper';
 
 const providerName = 'awscloudformation';
@@ -103,11 +102,7 @@ const createPinpointApp = async (context: $TSContext, resourceName:string): Prom
   if (!resourceName) {
     resourceName = projectConfig.projectName + context.amplify.makeId(5);
     if (!context.exeInfo.inputParams || !context.exeInfo.inputParams.yes) {
-      const answer = await inquirer.prompt({
-        name: 'resourceNameInput',
-        type: 'input',
-        message: 'Provide your pinpoint resource name: ',
-        default: resourceName,
+      resourceName = await prompter.input('Provide your pinpoint resource name: ', {
         validate: (name: $TSAny):$TSAny => {
           let result = false;
           let message = '';
@@ -118,8 +113,8 @@ const createPinpointApp = async (context: $TSContext, resourceName:string): Prom
           }
           return result || message;
         },
+        initial: resourceName,
       });
-      resourceName = answer.resourceNameInput;
     }
   }
 
@@ -218,7 +213,7 @@ const getPinpointClient = async (context: $TSContext, action: string, envName?: 
   return provider.getConfiguredPinpointClient(context, AmplifyCategories.NOTIFICATIONS, action, envName);
 };
 
-const createApp = async (context: $TSContext, pinpointAppName:string):Promise<$TSAny> => {
+const createApp = async (context: $TSContext, pinpointAppName:string): Promise<$TSAny> => {
   const params = {
     CreateApplicationRequest: {
       Name: pinpointAppName,
@@ -226,18 +221,16 @@ const createApp = async (context: $TSContext, pinpointAppName:string):Promise<$T
   };
   const pinpointClient = await getPinpointClient(context, 'create');
   spinner.start('Creating Pinpoint app.');
-  return new Promise((resolve, reject) => {
-    pinpointClient.createApp(params, (err: $TSAny, data: $TSAny) => {
-      if (err) {
-        spinner.fail('Pinpoint project creation error');
-        reject(err);
-        return;
-      }
-      spinner.succeed(`Successfully created Pinpoint project: ${data.ApplicationResponse.Name}`);
-      data.ApplicationResponse.Region = pinpointClient.config.region;
-      resolve(data.ApplicationResponse);
-    });
-  });
+
+  try {
+    const data = await pinpointClient.createApp(params).promise();
+    spinner.succeed(`Successfully created Pinpoint project: ${data.ApplicationResponse.Name}`);
+    data.ApplicationResponse.Region = pinpointClient.config.region;
+    return data.ApplicationResponse;
+  } catch (e) {
+    spinner.fail('Pinpoint project creation error');
+    throw e;
+  }
 };
 
 const deleteApp = async (context: $TSContext, pinpointAppId: string): Promise<$TSAny> => {
@@ -246,23 +239,23 @@ const deleteApp = async (context: $TSContext, pinpointAppId: string): Promise<$T
   };
   const pinpointClient = await getPinpointClient(context, 'delete');
   spinner.start('Deleting Pinpoint app.');
-  return new Promise((resolve, reject) => {
-    pinpointClient.deleteApp(params, (err:$TSAny, data:$TSAny) => {
-      if (err && err.code === 'NotFoundException') {
-        spinner.succeed(`Project with ID '${params.ApplicationId}' was already deleted from the cloud.`);
-        resolve({
-          Id: params.ApplicationId,
-        });
-      } else if (err) {
-        spinner.fail('Pinpoint project deletion error');
-        reject(err);
-      } else {
-        spinner.succeed(`Successfully deleted Pinpoint project: ${data.ApplicationResponse.Name}`);
-        data.ApplicationResponse.Region = pinpointClient.config.region;
-        resolve(data.ApplicationResponse);
-      }
-    });
-  });
+
+  try {
+    const data = await pinpointClient.deleteApp(params).promise();
+    spinner.succeed(`Successfully deleted Pinpoint project: ${data.ApplicationResponse.Name}`);
+    data.ApplicationResponse.Region = pinpointClient.config.region;
+    return data.ApplicationResponse;
+  } catch (err) {
+    if (err && err.code === 'NotFoundException') {
+      spinner.succeed(`Project with ID '${params.ApplicationId}' was already deleted from the cloud.`);
+      return {
+        Id: params.ApplicationId,
+      };
+    }
+
+    spinner.fail('Pinpoint project deletion error');
+    throw err;
+  }
 };
 
 /**

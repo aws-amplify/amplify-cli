@@ -12,9 +12,8 @@ import {
 } from 'amplify-cli-core';
 
 /* eslint-disable @typescript-eslint/no-var-requires */
-import * as inquirer from 'inquirer';
 import ora from 'ora';
-import { printer } from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
 import {
   invokeAnalyticsResourceToggleNotificationChannel,
 } from './plugin-client-api-analytics';
@@ -54,27 +53,14 @@ const NOOP_CFG_RESPONSE: IChannelAPIResponse = {
 export const configure = async (context: $TSContext) : Promise<IChannelAPIResponse> => {
   if (await isChannelEnabledNotificationsBackendConfig(channelName)) {
     printer.info(`The ${channelViewName} channel is currently enabled`);
-    const answer = await inquirer.prompt({
-      name: 'disableChannel',
-      type: 'confirm',
-      message: `Do you want to disable the ${channelViewName} channel`,
-      default: false,
-    });
-    if (answer.disableChannel) {
+
+    if (await prompter.yesOrNo(`Do you want to disable the ${channelViewName} channel`, false)) {
       return disable(context);
     }
-  } else {
-    const answer = await inquirer.prompt({
-      name: 'enableChannel',
-      type: 'confirm',
-      message: `Do you want to enable the ${channelViewName} channel`,
-      default: true,
-    });
-    if (answer.enableChannel) {
-      return enable(context);
-    }
+  } else if (await prompter.yesOrNo(`Do you want to enable the ${channelViewName} channel`, true)) {
+    return enable(context);
   }
-  return NOOP_CFG_RESPONSE; //nothing to be done
+  return NOOP_CFG_RESPONSE; // nothing to be done
 };
 
 /**
@@ -88,6 +74,7 @@ const invokeInlineEnableInAppMessagingChannel = (
 ): IPluginCapabilityAPIResponse => {
   throw amplifyFaultWithTroubleshootingLink('ConfigurationFault', {
     message: 'Inline enable not supported for In-App Messaging channel.',
+    details: 'Adding In-App Messaging to a project with Push Notification enabled is currently not supported. Please refer to this Github issue for updates: https://github.com/aws-amplify/amplify-cli/issues/11087',
   });
 
   // create IAM role and apply on pinpoint app using sdk

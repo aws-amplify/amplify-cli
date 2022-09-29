@@ -68,8 +68,7 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
       const selectedChannelName = getChannelNameFromView(channelViewName);
       // a channel can only be disabled if the PinpointApp exists
       await pinpointHelper.ensurePinpointApp(context, undefined, pinpointAppStatus, envName);
-      if (isPinpointAppDeployed(pinpointAppStatus.status)
-      || isChannelDeploymentDeferred(selectedChannelName)) {
+      if (isPinpointAppDeployed(pinpointAppStatus.status) || isChannelDeploymentDeferred(selectedChannelName)) {
         const channelAPIResponse : IChannelAPIResponse|undefined = await notificationManager.disableChannel(context, selectedChannelName);
         await writeData(context, channelAPIResponse);
       }

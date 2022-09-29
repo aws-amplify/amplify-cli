@@ -1,7 +1,6 @@
 /* eslint-disable no-param-reassign */
-import { prompt } from 'inquirer';
-import { $TSContext, AmplifyError } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSContext, AmplifyError, amplifyErrorWithTroubleshootingLink } from 'amplify-cli-core';
+import { printer, prompter } from 'amplify-prompts';
 import {
   ensurePinpointApp, isPinpointAppDeployed, isPinpointDeploymentRequired, pushAuthAndAnalyticsPinpointResources,
 } from '../../pinpoint-helper';
@@ -41,14 +40,7 @@ const viewQuestionAskNotificationChannelToBeEnabled = async (
   const disabledChannelViewNames = disabledChannels.map(channelName => getChannelViewName(channelName));
 
   if (!channelViewName || !availableChannelViewNames.includes(channelViewName)) {
-    const answer = await prompt({
-      name: 'selection',
-      type: 'list',
-      message: 'Choose the notification channel to enable.',
-      choices: disabledChannelViewNames,
-      default: disabledChannelViewNames[0],
-    });
-    channelViewName = answer.selection;
+    channelViewName = await prompter.pick('Choose the notification channel to enable', disabledChannelViewNames);
   } else if (!disabledChannelViewNames.includes(channelViewName)) {
     printer.info(`The ${channelViewName} channel has already been enabled.`);
     channelViewName = undefined;
@@ -65,8 +57,9 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
   context.exeInfo = context.amplify.getProjectDetails();
 
   if (await checkMigratedFromMobileHub(context.exeInfo.amplifyMeta)) {
-    printer.error('Notifications is migrated from Mobile Hub and channels cannot be added with Amplify CLI.');
-    return context;
+    throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
+      message: 'Notifications has been migrated from Mobile Hub and channels cannot be added with Amplify CLI.',
+    });
   }
 
   const availableChannels: Array<string> = getAvailableChannels();

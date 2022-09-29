@@ -228,27 +228,23 @@ export const pull = async (context:$TSContext, pinpointApp:$TSAny): Promise<$TSA
   };
 
   spinner.start(`Retrieving channel information for ${channelName}.`);
-  return context.exeInfo.pinpointClient
-    .getApnsChannel(params)
-    .promise()
-    .then((data: $TSAny) => {
-      spinner.succeed(`Channel information retrieved for ${channelName}`);
-      pinpointApp[channelName] = data.APNSChannelResponse;
-      return buildPinpointChannelResponseSuccess(ChannelAction.PULL, deploymentType,
-        channelName, data.APNSChannelResponse);
-    })
-    // eslint-disable-next-line consistent-return
-    .catch((err: $TSAny): IChannelAPIResponse|undefined => {
-      if (err.code === 'NotFoundException') {
-        spinner.succeed(`Channel is not setup for ${channelName} `);
-        return buildPinpointChannelResponseError(ChannelAction.PULL, deploymentType, channelName, err);
-      }
-      spinner.stop();
 
-      throw amplifyFaultWithTroubleshootingLink('NotificationsChannelAPNSFault', {
-        message: `Failed to pull the ${channelName} channel.`,
-        details: `Action: ${ChannelAction.PULL}. ${err.message}`,
-        stack: err.stack,
-      });
+  try {
+    const data = await context.exeInfo.pinpointClient.getApnsChannel(params).promise();
+    spinner.succeed(`Channel information retrieved for ${channelName}`);
+    pinpointApp[channelName] = data.APNSChannelResponse;
+    return buildPinpointChannelResponseSuccess(ChannelAction.PULL, deploymentType, channelName, data.APNSChannelResponse);
+  } catch (err) {
+    if (err.code === 'NotFoundException') {
+      spinner.succeed(`Channel is not setup for ${channelName} `);
+      return buildPinpointChannelResponseError(ChannelAction.PULL, deploymentType, channelName, err);
+    }
+    spinner.stop();
+
+    throw amplifyFaultWithTroubleshootingLink('NotificationsChannelAPNSFault', {
+      message: `Failed to pull the ${channelName} channel.`,
+      details: `Action: ${ChannelAction.PULL}. ${err.message}`,
+      stack: err.stack,
     });
+  }
 };
