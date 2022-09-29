@@ -5,10 +5,14 @@ import chalk from 'chalk';
 import * as pinpointHelper from '../../pinpoint-helper';
 import * as notificationManager from '../../notifications-manager';
 import { IChannelAPIResponse } from '../../channel-types';
-import { Notifications } from '../../notifications-api';
 import { getPinpointAppStatus, isPinpointAppDeployed, isPinpointAppOwnedByNotifications } from '../../pinpoint-helper';
 import { notificationsAPIRemoveApp } from '../../plugin-provider-api-notifications';
 import { writeData } from '../../multi-env-manager-utils';
+import {
+  getAvailableChannelViewNames, getChannelNameFromView, getChannelViewName, getEnabledChannelViewNames, isChannelDeploymentDeferred,
+} from '../../notifications-backend-cfg-channel-api';
+import { checkMigratedFromMobileHub } from '../../notifications-amplify-meta-api';
+import { getNotificationsAppConfig } from '../../notifications-backend-cfg-api';
 
 const CANCEL = 'Cancel';
 
@@ -24,24 +28,24 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
   context.exeInfo = context.amplify.getProjectDetails();
   const envName = stateManager.getCurrentEnvName();
   const notificationsMeta = context.exeInfo.amplifyMeta[AmplifyCategories.NOTIFICATIONS];
-  const notificationConfig = await Notifications.Cfg.getNotificationsAppConfig(context.exeInfo.backendConfig);
+  const notificationConfig = await getNotificationsAppConfig(context.exeInfo.backendConfig);
   if (!notificationConfig) {
     printer.error('Notifications have not been added to your project.');
     return context;
   }
 
-  if (await Notifications.Meta.checkMigratedFromMobileHub(context.exeInfo.amplifyMeta)) {
+  if (await checkMigratedFromMobileHub(context.exeInfo.amplifyMeta)) {
     printer.error('Notifications is migrated from Mobile Hub and channels cannot be added with Amplify CLI.');
     return context;
   }
 
-  const availableChannelViewNames = Notifications.ChannelCfg.getAvailableChannelViewNames();
-  const enabledChannelViewNames = await Notifications.ChannelCfg.getEnabledChannelViewNames(notificationConfig);
+  const availableChannelViewNames = getAvailableChannelViewNames();
+  const enabledChannelViewNames = await getEnabledChannelViewNames(notificationConfig);
   const PinpointAppViewName = `All channels on Pinpoint resource : ${chalk.cyan.bold(notificationConfig.serviceName)}`;
   const optionChannelViewNames = [...enabledChannelViewNames, PinpointAppViewName, CANCEL];
 
   const channelName = context.parameters.first;
-  let channelViewName = (channelName) ? Notifications.ChannelCfg.getChannelViewName(channelName) : undefined;
+  let channelViewName = (channelName) ? getChannelViewName(channelName) : undefined;
 
   if (!channelViewName || !availableChannelViewNames.includes(channelViewName)) {
     const answer = await inquirer.prompt({
@@ -61,11 +65,11 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
     const pinpointAppStatus = await getPinpointAppStatus(context, context.exeInfo.amplifyMeta,
       notificationsMeta, envName);
     if (channelViewName !== PinpointAppViewName) {
-      const selectedChannelName = Notifications.ChannelCfg.getChannelNameFromView(channelViewName);
+      const selectedChannelName = getChannelNameFromView(channelViewName);
       // a channel can only be disabled if the PinpointApp exists
       await pinpointHelper.ensurePinpointApp(context, undefined, pinpointAppStatus, envName);
       if (isPinpointAppDeployed(pinpointAppStatus.status)
-      || Notifications.ChannelCfg.isChannelDeploymentDeferred(selectedChannelName)) {
+      || isChannelDeploymentDeferred(selectedChannelName)) {
         const channelAPIResponse : IChannelAPIResponse|undefined = await notificationManager.disableChannel(context, selectedChannelName);
         await writeData(context, channelAPIResponse);
       }

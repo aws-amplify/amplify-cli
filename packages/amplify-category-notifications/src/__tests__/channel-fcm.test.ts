@@ -5,7 +5,7 @@ import {
 import inquirer from 'inquirer';
 import * as channelFCM from '../channel-fcm';
 import { ChannelAction, ChannelConfigDeploymentType, IChannelAPIResponse } from '../channel-types';
-import { ChannelCfg } from '../notifications-backend-cfg-channel-api';
+import { ChannelType } from '../notifications-backend-cfg-channel-api';
 
 const channelName = 'FCM';
 
@@ -23,7 +23,7 @@ const mockInquirer = (answers : $TSAny): $TSAny => {
 
 const mockPinpointResponseData = (status: boolean, action : ChannelAction): IChannelAPIResponse => ({
   action,
-  channel: ChannelCfg.ChannelType.FCM,
+  channel: ChannelType.FCM,
   deploymentType: ChannelConfigDeploymentType.INLINE,
   output: undefined,
   response: {
@@ -31,7 +31,7 @@ const mockPinpointResponseData = (status: boolean, action : ChannelAction): ICha
     pluginName: AmplifyCategories.NOTIFICATIONS,
     resourceProviderServiceName: AmplifySupportedService.PINPOINT,
     status,
-    subCapability: ChannelCfg.ChannelType.FCM,
+    subCapability: ChannelType.FCM,
   },
 });
 

@@ -15,20 +15,22 @@ import {
 import * as inquirer from 'inquirer';
 import ora from 'ora';
 import { printer } from 'amplify-prompts';
-import { Notifications } from './notifications-api';
 import {
   invokeAnalyticsResourceToggleNotificationChannel,
 } from './plugin-client-api-analytics';
 import { IChannelAPIResponse, ChannelAction, ChannelConfigDeploymentType } from './channel-types';
-import { ChannelCfg } from './notifications-backend-cfg-channel-api';
+
 import {
   buildPinpointChannelResponseError,
   buildPinpointChannelResponseSuccess,
   getPinpointAppStatusFromMeta, IPinpointAppStatus, IPinpointDeploymentStatus,
 } from './pinpoint-helper';
+import { ChannelType, getChannelViewName, isChannelEnabledNotificationsBackendConfig } from './notifications-backend-cfg-channel-api';
+import { getNotificationsAppMeta } from './notifications-amplify-meta-api';
+import { getNotificationsAppConfig } from './notifications-backend-cfg-api';
 
 const channelName = 'InAppMessaging';
-const channelViewName = ChannelCfg.getChannelViewName(channelName);
+const channelViewName = getChannelViewName(channelName);
 const spinner = ora('');
 const deploymentType = ChannelConfigDeploymentType.DEFERRED;
 
@@ -40,7 +42,7 @@ const NOOP_CFG_RESPONSE: IChannelAPIResponse = {
     resourceProviderServiceName: AmplifySupportedService.PINPOINT,
     status: true,
     capability: AmplifyCategories.NOTIFICATIONS,
-    subCapability: ChannelCfg.ChannelType.InAppMessaging,
+    subCapability: ChannelType.InAppMessaging,
   },
   deploymentType: ChannelConfigDeploymentType.DEFERRED,
 };
@@ -50,7 +52,7 @@ const NOOP_CFG_RESPONSE: IChannelAPIResponse = {
  * @param {*} context amplify cli context
  */
 export const configure = async (context: $TSContext) : Promise<IChannelAPIResponse> => {
-  if (await Notifications.ChannelCfg.isChannelEnabledNotificationsBackendConfig(channelName)) {
+  if (await isChannelEnabledNotificationsBackendConfig(channelName)) {
     printer.info(`The ${channelViewName} channel is currently enabled`);
     const answer = await inquirer.prompt({
       name: 'disableChannel',
@@ -97,12 +99,12 @@ const invokeInlineEnableInAppMessagingChannel = (
  * @returns Analytics API response
  */
 export const enable = async (context: $TSContext): Promise<IChannelAPIResponse> => {
-  spinner.start(`Enabling ${ChannelCfg.getChannelViewName(channelName)} channel.`);
+  spinner.start(`Enabling ${getChannelViewName(channelName)} channel.`);
 
   try {
     //get the pinpoint resource state - if custom deploy - fallback to in-line deployment
     const envName = stateManager.getCurrentEnvName();
-    const notificationsMeta = await Notifications.Meta.getNotificationsAppMeta(context.exeInfo.amplifyMeta);
+    const notificationsMeta = await getNotificationsAppMeta(context.exeInfo.amplifyMeta);
     const pinpointAppStatus: IPinpointAppStatus = await getPinpointAppStatusFromMeta(context, notificationsMeta, envName);
     const enableInAppMsgAPIResponse = pinpointAppStatus.status === IPinpointDeploymentStatus.APP_IS_DEPLOYED_CUSTOM
       ? invokeInlineEnableInAppMessagingChannel(context, pinpointAppStatus)
@@ -112,7 +114,7 @@ export const enable = async (context: $TSContext): Promise<IChannelAPIResponse> 
         true);
 
     if (enableInAppMsgAPIResponse.status) {
-      spinner.succeed(`The ${ChannelCfg.getChannelViewName(channelName)} channel has been successfully enabled.`);
+      spinner.succeed(`The ${getChannelViewName(channelName)} channel has been successfully enabled.`);
     } else {
       spinner.fail(`Enable channel error: ${enableInAppMsgAPIResponse.reasonMsg as string}`);
     }
@@ -142,7 +144,7 @@ export const disable = async (context: $TSContext):Promise<IChannelAPIResponse> 
     NotificationChannels.IN_APP_MSG,
     false /*disable*/);
   if (disableInAppMsgResponse.status) {
-    spinner.succeed(`The ${ChannelCfg.getChannelViewName(channelName)} channel has been disabled.`);
+    spinner.succeed(`The ${getChannelViewName(channelName)} channel has been disabled.`);
   } else {
     spinner.fail('Disable channel error');
   }
@@ -163,11 +165,11 @@ export const disable = async (context: $TSContext):Promise<IChannelAPIResponse> 
 export const pull = async (__context: $TSContext, pinpointApp: $TSAny): Promise<$TSAny> => {
   const currentAmplifyMeta = stateManager.getCurrentMeta();
   const currentBackendCfg = stateManager.getCurrentBackendConfig();
-  spinner.start(`Retrieving channel information for ${ChannelCfg.getChannelViewName(channelName)}.`);
-  const notificationsMeta = await Notifications.Meta.getNotificationsAppMeta(currentAmplifyMeta);
+  spinner.start(`Retrieving channel information for ${getChannelViewName(channelName)}.`);
+  const notificationsMeta = await getNotificationsAppMeta(currentAmplifyMeta);
   let channelMeta = (notificationsMeta?.output?.channels) ? notificationsMeta.output.channels[channelName] : undefined;
   if (!channelMeta) {
-    const backendConfig = await Notifications.Cfg.getNotificationsAppConfig(currentBackendCfg);
+    const backendConfig = await getNotificationsAppConfig(currentBackendCfg);
     if (backendConfig?.channels?.includes(channelName)) {
       channelMeta = {
         Enabled: true,
@@ -175,12 +177,12 @@ export const pull = async (__context: $TSContext, pinpointApp: $TSAny): Promise<
         Name: pinpointApp.Name,
       };
     } else {
-      spinner.fail(`Channel ${ChannelCfg.getChannelViewName(channelName)} not found.`);
+      spinner.fail(`Channel ${getChannelViewName(channelName)} not found.`);
       return buildPinpointChannelResponseError(ChannelAction.PULL, deploymentType,
         channelName, new Error(`${channelName} not found in the notifications metadata`));
     }
   }
-  spinner.succeed(`Channel information retrieved for ${ChannelCfg.getChannelViewName(channelName)}`);
+  spinner.succeed(`Channel information retrieved for ${getChannelViewName(channelName)}`);
   pinpointApp[channelName] = channelMeta;
   return buildPinpointChannelResponseSuccess(ChannelAction.PULL, deploymentType, channelName, channelMeta);
 };

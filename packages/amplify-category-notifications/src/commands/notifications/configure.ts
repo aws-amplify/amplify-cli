@@ -3,10 +3,12 @@ import { $TSContext, AmplifyError } from 'amplify-cli-core';
 import * as pinpointHelper from '../../pinpoint-helper';
 import * as notificationManager from '../../notifications-manager';
 import { IChannelAPIResponse } from '../../channel-types';
-import { Notifications } from '../../notifications-api';
 import { isPinpointAppDeployed } from '../../pinpoint-helper';
 import { viewShowInlineModeInstructionsFail, viewShowInlineModeInstructionsStart, viewShowInlineModeInstructionsStop } from '../../display-utils';
 import { writeData } from '../../multi-env-manager-utils';
+import {
+  getAvailableChannelViewNames, getChannelViewName, getChannelNameFromView, isChannelDeploymentDeferred,
+} from '../../notifications-backend-cfg-channel-api';
 
 export const name = 'configure';
 export const alias = 'update';
@@ -17,9 +19,9 @@ export const alias = 'update';
  */
 export const run = async (context:$TSContext): Promise<$TSContext> => {
   context.exeInfo = context.amplify.getProjectDetails();
-  const availableChannelViewNames = Notifications.ChannelCfg.getAvailableChannelViewNames();
+  const availableChannelViewNames = getAvailableChannelViewNames();
   const channelName = context.parameters.first;
-  let channelViewName = (channelName) ? Notifications.ChannelCfg.getChannelViewName(channelName) : undefined;
+  let channelViewName = (channelName) ? getChannelViewName(channelName) : undefined;
 
   if (!channelViewName || !availableChannelViewNames.includes(channelViewName)) {
     const answer = await inquirer.prompt({
@@ -32,7 +34,7 @@ export const run = async (context:$TSContext): Promise<$TSContext> => {
     channelViewName = answer.selection;
   }
   if (channelViewName) {
-    const selectedChannel = Notifications.ChannelCfg.getChannelNameFromView(channelViewName);
+    const selectedChannel = getChannelNameFromView(channelViewName);
     let pinpointAppStatus = await pinpointHelper.ensurePinpointApp(context, undefined);
     // In-line deployment now requires an amplify-push to create the Pinpoint resource
     if (pinpointHelper.isPinpointDeploymentRequired(channelName, pinpointAppStatus)) {
@@ -55,7 +57,7 @@ export const run = async (context:$TSContext): Promise<$TSContext> => {
       context = pinpointAppStatus.context;
     }
     if (isPinpointAppDeployed(pinpointAppStatus.status)
-    || Notifications.ChannelCfg.isChannelDeploymentDeferred(selectedChannel)) {
+    || isChannelDeploymentDeferred(selectedChannel)) {
       const channelAPIResponse : IChannelAPIResponse|undefined = await notificationManager.configureChannel(context, selectedChannel);
       await writeData(context, channelAPIResponse);
     }

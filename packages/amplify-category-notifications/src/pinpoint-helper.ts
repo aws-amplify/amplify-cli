@@ -1,7 +1,17 @@
 import ora from 'ora';
 import {
-  $TSAny, $TSContext, open, AmplifySupportedService, AmplifyCategories, stateManager,
-  IAnalyticsResource, PluginAPIError, INotificationsResourceMeta, $TSMeta, amplifyErrorWithTroubleshootingLink, amplifyFaultWithTroubleshootingLink,
+  $TSAny,
+  $TSContext,
+  open,
+  AmplifySupportedService,
+  AmplifyCategories,
+  stateManager,
+  IAnalyticsResource,
+  PluginAPIError,
+  INotificationsResourceMeta,
+  $TSMeta,
+  amplifyErrorWithTroubleshootingLink,
+  amplifyFaultWithTroubleshootingLink,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import {
@@ -12,9 +22,11 @@ import {
 
 import * as authHelper from './auth-helper';
 import { ICategoryMeta } from './notifications-amplify-meta-types';
-import { Notifications } from './notifications-api';
 import { ChannelAction, ChannelConfigDeploymentType, IChannelAPIResponse } from './channel-types';
 import { PinpointName } from './pinpoint-name';
+import { isChannelDeploymentDeferred } from './notifications-backend-cfg-channel-api';
+import { constructResourceMeta, addPartialNotificationsAppMeta } from './notifications-amplify-meta-api';
+import { addPartialNotificationsBackendConfig } from './notifications-backend-cfg-api';
 
 const providerName = 'awscloudformation';
 const spinner = ora('');
@@ -22,7 +34,7 @@ const spinner = ora('');
 /**
  * Get the Pinpoint app from analytics category
  */
-export const getPinpointApp = (context: $TSContext):ICategoryMeta|undefined => {
+export const getPinpointApp = (context: $TSContext): ICategoryMeta|undefined => {
   const { amplifyMeta } = context.exeInfo;
   return scanCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.ANALYTICS], undefined);
 };
@@ -62,7 +74,7 @@ export const isPinpointAppDeployed = (pinpointStatus: IPinpointDeploymentStatus)
  */
 export const isPinpointDeploymentRequired = (channelName: string, pinpointAppStatus : IPinpointAppStatus): boolean => {
   if (!isPinpointAppDeployed(pinpointAppStatus.status)
-      && !Notifications.ChannelCfg.isChannelDeploymentDeferred(channelName)) {
+      && !isChannelDeploymentDeferred(channelName)) {
     return true;
   }
   return false;
@@ -262,9 +274,9 @@ export const updateContextFromAnalyticsOutput = async (
     const pinpointApp = getPinpointAppFromAnalyticsOutput(pinpointAppStatus.app);
     const resourceName = pinpointAppStatus.app.resourceName as string;
     // create updated version of amplify-meta with notifications resource
-    context.exeInfo.amplifyMeta = Notifications.Meta.constructResourceMeta(amplifyMeta, resourceName, pinpointApp);
+    context.exeInfo.amplifyMeta = constructResourceMeta(amplifyMeta, resourceName, pinpointApp);
     // create updated version of backend-config with notifications resource configuration
-    context.exeInfo.backendConfig = await Notifications.Cfg.addPartialNotificationsBackendConfig(resourceName,
+    context.exeInfo.backendConfig = await addPartialNotificationsBackendConfig(resourceName,
       context.exeInfo.backendConfig);
     return pinpointApp;
   }
@@ -337,7 +349,7 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
         pinpointApp = pinpointAppStatus.app?.output;
         resourceName = pinpointAppStatus.app?.resourceName;
         // Update pinpointApp into Notifications amplifyMeta (in-core)
-        Notifications.Meta.constructResourceMeta(amplifyMeta, resourceName, pinpointApp as ICategoryMeta);
+        constructResourceMeta(amplifyMeta, resourceName, pinpointApp as ICategoryMeta);
       }
       break;
     }
@@ -347,7 +359,7 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
         pinpointApp.regulatedResourceName = PinpointName.extractResourceName(pinpointNotificationsMeta.Name, envName);
         resourceName = pinpointApp.regulatedResourceName; // Pinpoint name - envName;
         // Update pinpointApp into Notifications amplifyMeta (in-core)
-        context.exeInfo.amplifyMeta = Notifications.Meta.constructResourceMeta(amplifyMeta, resourceName, pinpointApp);
+        context.exeInfo.amplifyMeta = constructResourceMeta(amplifyMeta, resourceName, pinpointApp);
       } else {
         // Pinpoint App is deployed but channels are not configured.
         // Sync Pinpoint resource from Analytics
@@ -359,9 +371,9 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
           });
         }
         // Update pinpointApp into Notifications amplifyMeta (in-core)
-        context.exeInfo.amplifyMeta = Notifications.Meta.constructResourceMeta(amplifyMeta, resourceName, pinpointApp as ICategoryMeta);
+        context.exeInfo.amplifyMeta = constructResourceMeta(amplifyMeta, resourceName, pinpointApp as ICategoryMeta);
       }
-      context.exeInfo.backendConfig = await Notifications.Cfg.addPartialNotificationsBackendConfig(resourceName,
+      context.exeInfo.backendConfig = await addPartialNotificationsBackendConfig(resourceName,
         context.exeInfo.backendConfig);
       break;
     }
@@ -371,9 +383,9 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
       const resourceResult = await invokeAnalyticsAPICreateResource(context, AmplifySupportedService.PINPOINT);
       resourceName = resourceResult.resourceName;
       // create updated version of amplify-meta with notifications resource
-      context.exeInfo.amplifyMeta = await Notifications.Meta.addPartialNotificationsAppMeta(context, resourceName);
+      context.exeInfo.amplifyMeta = await addPartialNotificationsAppMeta(context, resourceName);
       // create updated version of backend-config with notifications resource configuration
-      context.exeInfo.backendConfig = await Notifications.Cfg.addPartialNotificationsBackendConfig(resourceName,
+      context.exeInfo.backendConfig = await addPartialNotificationsBackendConfig(resourceName,
         context.exeInfo.backendConfig);
       // The Pinpoint resource is locally created, but requires an amplify push for channels to be programmed
       // note:- This is temporary until deployment state-machine supports deferred resource push.
@@ -384,9 +396,9 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
       resourceName = pinpointAppStatus.app?.resourceName;
       if (resourceName) {
         // create updated version of amplify-meta with notifications resource
-        context.exeInfo.amplifyMeta = await Notifications.Meta.addPartialNotificationsAppMeta(context, resourceName);
+        context.exeInfo.amplifyMeta = await addPartialNotificationsAppMeta(context, resourceName);
         // create updated version of backend-config with notifications resource configuration
-        context.exeInfo.backendConfig = await Notifications.Cfg.addPartialNotificationsBackendConfig(resourceName,
+        context.exeInfo.backendConfig = await addPartialNotificationsBackendConfig(resourceName,
           context.exeInfo.backendConfig);
       }
       // viewShowAmplifyPushRequired(pinpointAppStatus.status, context);

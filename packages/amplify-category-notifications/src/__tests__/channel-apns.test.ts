@@ -11,7 +11,7 @@ import * as configureCertificate from '../apns-cert-config';
 import * as channelAPNS from '../channel-apns';
 import { ICertificateInfo } from '../apns-cert-p12decoder';
 import { ChannelAction, ChannelConfigDeploymentType, IChannelAPIResponse } from '../channel-types';
-import { ChannelCfg } from '../notifications-backend-cfg-channel-api';
+import { ChannelType } from '../notifications-backend-cfg-channel-api';
 
 const inquirer = require('inquirer');
 const mockirer = require('mockirer');
@@ -43,7 +43,7 @@ describe('channel-APNS', () => {
 
   const mockAPNSChannelResponseData = (status: boolean, action: ChannelAction, output : $TSAny):IChannelAPIResponse => ({
     action,
-    channel: ChannelCfg.ChannelType.APNS,
+    channel: ChannelType.APNS,
     deploymentType: ChannelConfigDeploymentType.INLINE,
     output,
     response: {
@@ -51,7 +51,7 @@ describe('channel-APNS', () => {
       pluginName: AmplifyCategories.NOTIFICATIONS,
       resourceProviderServiceName: AmplifySupportedService.PINPOINT,
       status,
-      subCapability: ChannelCfg.ChannelType.APNS,
+      subCapability: ChannelType.APNS,
     },
   }
   );
@@ -61,12 +61,12 @@ describe('channel-APNS', () => {
 
   const mockPinpointClient = {
     updateApnsChannel: jest.fn(() => ({
-      promise: () => new Promise((resolve, _) => {
+      promise: () => new Promise((resolve, __) => {
         resolve(mockPinpointResponseData);
       }),
     })),
     updateApnsSandboxChannel: jest.fn(() => ({
-      promise: () => new Promise((resolve, _) => {
+      promise: () => new Promise((resolve, __) => {
         resolve(mockPinpointResponseData);
       }),
     })),
@@ -74,12 +74,12 @@ describe('channel-APNS', () => {
 
   const mockPinpointClientReject = {
     updateApnsChannel: jest.fn(() => ({
-      promise: () => new Promise((_, reject) => {
+      promise: () => new Promise((__, reject) => {
         reject(mockPinpointResponseErr);
       }),
     })),
     updateApnsSandboxChannel: jest.fn(() => ({
-      promise: () => new Promise((_, reject) => {
+      promise: () => new Promise((__, reject) => {
         reject(mockPinpointResponseErr);
       }),
     })),

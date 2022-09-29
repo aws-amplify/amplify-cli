@@ -2,11 +2,11 @@ import {
   $TSContext, AmplifyCategories, AmplifySupportedService, INotificationsResource, IPluginAPIResponse, PluginAPIError,
 } from 'amplify-cli-core';
 import * as notificationManager from './notifications-manager';
-import { NotificationsCfg } from './notifications-backend-cfg-api';
-import { NotificationsMeta } from './notifications-amplify-meta-api';
 import { IChannelAPIResponse } from './channel-types';
-import { Notifications } from './notifications-api';
 import { writeData } from './multi-env-manager-utils';
+import { getAvailableChannels } from './notifications-backend-cfg-channel-api';
+import { getNotificationsAppMeta } from './notifications-amplify-meta-api';
+import { getNotificationsAppConfig } from './notifications-backend-cfg-api';
 
 /**
  * Get Notifications Resource Info
@@ -14,8 +14,8 @@ import { writeData } from './multi-env-manager-utils';
  */
 export const notificationsPluginAPIGetResource = async (context: $TSContext): Promise<INotificationsResource|undefined> => {
   context.exeInfo = (context.exeInfo) || context.amplify.getProjectDetails();
-  const notificationsBackendConfig = await NotificationsCfg.getNotificationsAppConfig(context.exeInfo.backendConfig);
-  const notificationsMeta = await NotificationsMeta.getNotificationsAppMeta(context.exeInfo.amplifyMeta);
+  const notificationsBackendConfig = await getNotificationsAppConfig(context.exeInfo.backendConfig);
+  const notificationsMeta = await getNotificationsAppMeta(context.exeInfo.amplifyMeta);
   const response : INotificationsResource | undefined = (notificationsBackendConfig) ? ({
     id: notificationsMeta?.Id,
     region: (notificationsMeta?.Region),
@@ -32,7 +32,7 @@ export const notificationsPluginAPIGetResource = async (context: $TSContext): Pr
  */
 export const notificationsPluginAPIRemoveApp = async (context: $TSContext, appName: string): Promise<IPluginAPIResponse|undefined> => {
   context.exeInfo = (context.exeInfo) ? context.exeInfo : context.amplify.getProjectDetails();
-  context.exeInfo.serviceMeta = await NotificationsMeta.getNotificationsAppMeta(context.exeInfo.amplifyMeta, appName);
+  context.exeInfo.serviceMeta = await getNotificationsAppMeta(context.exeInfo.amplifyMeta, appName);
   // trigger remove notifications flow
   try {
     await notificationsAPIRemoveApp(context);
@@ -77,4 +77,4 @@ export const notificationsAPIRemoveApp = async (context:$TSContext): Promise<$TS
  */
 export const notificationsAPIGetAvailableChannelNames = async (
   __context: $TSContext,
-): Promise<string[]> => Notifications.ChannelCfg.getAvailableChannels();
+): Promise<string[]> => getAvailableChannels();

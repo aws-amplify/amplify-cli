@@ -10,8 +10,10 @@ import inquirer from 'inquirer';
 import ora from 'ora';
 
 import * as channel from '../channel-in-app-msg';
+import * as ChannelCfg from '../notifications-backend-cfg-channel-api';
+import * as Meta from '../notifications-amplify-meta-api';
+import * as Cfg from '../notifications-backend-cfg-api';
 import { ChannelAction, ChannelConfigDeploymentType } from '../channel-types';
-import { Notifications } from '../notifications-api';
 import { INotificationsResourceBackendConfig } from '../notifications-backend-cfg-types';
 import {
   buildPinpointChannelResponseError,
@@ -43,9 +45,9 @@ jest.mock('../plugin-client-api-analytics');
 
 const channelName = 'InAppMessaging';
 
-const getAppConfigSpy = jest.spyOn(Notifications.Cfg, 'getNotificationsAppConfig');
-const getAppMetaSpy = jest.spyOn(Notifications.Meta, 'getNotificationsAppMeta');
-const isChannelEnabledSpy = jest.spyOn(Notifications.ChannelCfg, 'isChannelEnabledNotificationsBackendConfig');
+const getAppConfigSpy = jest.spyOn(Cfg, 'getNotificationsAppConfig');
+const getAppMetaSpy = jest.spyOn(Meta, 'getNotificationsAppMeta');
+const isChannelEnabledSpy = jest.spyOn(ChannelCfg, 'isChannelEnabledNotificationsBackendConfig');
 const promptSpy = jest.spyOn(inquirer, 'prompt');
 
 const mockContext = {
@@ -226,7 +228,7 @@ describe('channel-InAppMessaging', () => {
         ChannelAction.PULL,
         ChannelConfigDeploymentType.DEFERRED,
         channelName,
-        expect.stringContaining(channelName),
+        new Error('InAppMessaging not found in the notifications metadata'),
       );
     });
   });

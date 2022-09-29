@@ -8,8 +8,6 @@ import {
 import { enableChannel } from '../../notifications-manager';
 
 import { ChannelConfigDeploymentType, IChannelAPIResponse } from '../../channel-types';
-import { NotificationsMeta } from '../../notifications-amplify-meta-api';
-import { Notifications } from '../../notifications-api';
 import { writeData } from '../../multi-env-manager-utils';
 import {
   viewShowAllChannelsEnabledWarning,
@@ -18,6 +16,10 @@ import {
   viewShowInlineModeInstructionsStart,
   viewShowInlineModeInstructionsStop,
 } from '../../display-utils';
+import {
+  getChannelViewName, getChannelNameFromView, getAvailableChannels, isValidChannel, isChannelDeploymentDeferred,
+} from '../../notifications-backend-cfg-channel-api';
+import { checkMigratedFromMobileHub, getDisabledChannelsFromAmplifyMeta } from '../../notifications-amplify-meta-api';
 
 export const name = 'add';
 export const alias = 'enable';
@@ -34,9 +36,9 @@ const viewQuestionAskNotificationChannelToBeEnabled = async (
   disabledChannels: Array<string>,
   selectedChannel: string|undefined,
 ): Promise<string|undefined> => {
-  let channelViewName = (selectedChannel) ? Notifications.ChannelCfg.getChannelViewName(selectedChannel) : undefined;
-  const availableChannelViewNames = availableChannels.map(channelName => Notifications.ChannelCfg.getChannelViewName(channelName));
-  const disabledChannelViewNames = disabledChannels.map(channelName => Notifications.ChannelCfg.getChannelViewName(channelName));
+  let channelViewName = (selectedChannel) ? getChannelViewName(selectedChannel) : undefined;
+  const availableChannelViewNames = availableChannels.map(channelName => getChannelViewName(channelName));
+  const disabledChannelViewNames = disabledChannels.map(channelName => getChannelViewName(channelName));
 
   if (!channelViewName || !availableChannelViewNames.includes(channelViewName)) {
     const answer = await prompt({
@@ -51,7 +53,7 @@ const viewQuestionAskNotificationChannelToBeEnabled = async (
     printer.info(`The ${channelViewName} channel has already been enabled.`);
     channelViewName = undefined;
   }
-  return (channelViewName) ? Notifications.ChannelCfg.getChannelNameFromView(channelViewName) : undefined;
+  return (channelViewName) ? getChannelNameFromView(channelViewName) : undefined;
 };
 
 /**
@@ -62,13 +64,13 @@ const viewQuestionAskNotificationChannelToBeEnabled = async (
 export const run = async (context: $TSContext): Promise<$TSContext> => {
   context.exeInfo = context.amplify.getProjectDetails();
 
-  if (await NotificationsMeta.checkMigratedFromMobileHub(context.exeInfo.amplifyMeta)) {
+  if (await checkMigratedFromMobileHub(context.exeInfo.amplifyMeta)) {
     printer.error('Notifications is migrated from Mobile Hub and channels cannot be added with Amplify CLI.');
     return context;
   }
 
-  const availableChannels: Array<string> = Notifications.ChannelCfg.getAvailableChannels();
-  const disabledChannels : Array<string> = await NotificationsMeta.getDisabledChannelsFromAmplifyMeta();
+  const availableChannels: Array<string> = getAvailableChannels();
+  const disabledChannels : Array<string> = await getDisabledChannelsFromAmplifyMeta();
 
   let channelName = context.parameters.first;
 
@@ -78,7 +80,7 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
   }
 
   channelName = await viewQuestionAskNotificationChannelToBeEnabled(availableChannels, disabledChannels, channelName);
-  if (Notifications.ChannelCfg.isValidChannel(channelName)) {
+  if (isValidChannel(channelName)) {
     let pinpointAppStatus = await ensurePinpointApp(context, undefined);
     context = pinpointAppStatus.context;
     // In-line deployment now requires an amplify-push to create the Pinpoint resource
@@ -102,7 +104,7 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
       context = pinpointAppStatus.context;
     }
     // enable the channel
-    if (isPinpointAppDeployed(pinpointAppStatus.status) || Notifications.ChannelCfg.isChannelDeploymentDeferred(channelName)) {
+    if (isPinpointAppDeployed(pinpointAppStatus.status) || isChannelDeploymentDeferred(channelName)) {
       const channelAPIResponse : IChannelAPIResponse|undefined = await enableChannel(context, channelName);
       await writeData(context, channelAPIResponse);
       if (channelAPIResponse?.deploymentType === ChannelConfigDeploymentType.DEFERRED) {

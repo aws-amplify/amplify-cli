@@ -4,19 +4,9 @@ import {
   $TSAny, $TSContext, $TSMeta, AmplifyCategories, amplifyFaultWithTroubleshootingLink, AmplifySupportedService, stateManager,
 } from 'amplify-cli-core';
 import { ChannelConfigDeploymentType, IChannelAPIResponse } from './channel-types';
-import { Notifications } from './notifications-api';
-
-// legacy structure used to sync state
-// Remove this once all notifications are implemented in CFN.
-interface IPinpointMeta {
-  serviceName: string,
-  service: string,
-  channels: Array<string>,
-  Name: string,
-  Id: string,
-  Region: string,
-  lastPushTimeStamp: string|undefined,
-}
+import { getEnabledChannelsFromAppMeta, getNotificationsAppMeta } from './notifications-amplify-meta-api';
+import { getNotificationsAppConfig } from './notifications-backend-cfg-api';
+import { updateChannelAPIResponse } from './notifications-api';
 
 const writeTeamProviderInfo = (pinpointMeta: $TSAny): void => {
   if (!pinpointMeta) {
@@ -75,12 +65,12 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
   if (!channelAPIResponse || channelAPIResponse.deploymentType === ChannelConfigDeploymentType.INLINE) {
     if (channelAPIResponse) {
       // Updates the enabled/disabled flags for channels from the API response
-      await Notifications.updateChannelAPIResponse(context, channelAPIResponse);
+      await updateChannelAPIResponse(context, channelAPIResponse);
     }
     const analyticsMeta = context.exeInfo.amplifyMeta[AmplifyCategories.ANALYTICS];
     const categoryMeta = context.exeInfo.amplifyMeta[AmplifyCategories.NOTIFICATIONS];
-    const notificationsServiceMeta = await Notifications.Meta.getNotificationsAppMeta(context.exeInfo.amplifyMeta);
-    const enabledChannels: Array<string> = await Notifications.Meta.getEnabledChannelsFromAppMeta(context.exeInfo.amplifyMeta);
+    const notificationsServiceMeta = await getNotificationsAppMeta(context.exeInfo.amplifyMeta);
+    const enabledChannels: Array<string> = await getEnabledChannelsFromAppMeta(context.exeInfo.amplifyMeta);
     // This normalization will be removed once all notifications are deployed through CFN
     let pinpointMeta;
     if (notificationsServiceMeta) {
@@ -109,11 +99,11 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
     await context.amplify.storeCurrentCloudBackend(context);
   } else {
     // For Deferred deployments: update context and backend-config
-    await Notifications.updateChannelAPIResponse(context, channelAPIResponse);
+    await updateChannelAPIResponse(context, channelAPIResponse);
     const analyticsMeta = context.exeInfo.amplifyMeta[AmplifyCategories.ANALYTICS];
     const categoryMeta = context.exeInfo.amplifyMeta[AmplifyCategories.NOTIFICATIONS];
-    const notificationsServiceMeta = await Notifications.Meta.getNotificationsAppMeta(context.exeInfo.amplifyMeta);
-    const enabledChannels: Array<string> = await Notifications.Meta.getEnabledChannelsFromAppMeta(context.exeInfo.amplifyMeta);
+    const notificationsServiceMeta = await getNotificationsAppMeta(context.exeInfo.amplifyMeta);
+    const enabledChannels: Array<string> = await getEnabledChannelsFromAppMeta(context.exeInfo.amplifyMeta);
 
     if (!notificationsServiceMeta) {
       throw amplifyFaultWithTroubleshootingLink('ConfigurationFault', {
@@ -127,7 +117,7 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
     const applicationId = (notificationsServiceMeta.Id) || analyticsMeta[notificationsServiceMeta?.ResourceName]?.output?.Id;
     const lastPushTimeStamp :string|undefined = (notificationsServiceMeta.lastPushTimeStamp)
     || (analyticsMeta[notificationsServiceMeta.ResourceName]?.lastPushTimeStamp);
-    const pinpointConfig = await Notifications.Cfg.getNotificationsAppConfig(context.exeInfo.backendConfig);
+    const pinpointConfig = await getNotificationsAppConfig(context.exeInfo.backendConfig);
     const pinpointMeta = {
       serviceName: notificationsServiceMeta.ResourceName,
       service: notificationsServiceMeta.service, // TBD: standardize this
@@ -139,7 +129,7 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
     };
 
     // Team provider info and backend config are updated after push
-    await Notifications.updateChannelAPIResponse(context, channelAPIResponse);
+    await updateChannelAPIResponse(context, channelAPIResponse);
     writeTeamProviderInfo(pinpointMeta); // update Pinpoint data
     if (pinpointConfig) {
       writeBackendConfig(context, pinpointConfig, context.amplify.pathManager.getBackendConfigFilePath());

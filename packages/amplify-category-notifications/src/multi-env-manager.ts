@@ -18,11 +18,12 @@ import {
 } from './pinpoint-helper';
 import * as notificationManager from './notifications-manager';
 import { IChannelAPIResponse } from './channel-types';
-import { Notifications } from './notifications-api';
+import { generateMetaFromConfig } from './notifications-api';
 import { ICategoryMeta } from './notifications-amplify-meta-types';
 import { PinpointName } from './pinpoint-name';
 import { writeData } from './multi-env-manager-utils';
 import { viewShowInlineModeInstructionsFail, viewShowInlineModeInstructionsStart, viewShowInlineModeInstructionsStop } from './display-utils';
+import { getAvailableChannels, isChannelDeploymentDeferred } from './notifications-backend-cfg-channel-api';
 
 /**
  * Create Pinpoint resource in Analytics, Create Pinpoint Meta for Notifications category and
@@ -60,7 +61,7 @@ export const initEnv = async (context: $TSContext): Promise<$TSAny> => {
           },
         };
         // update backendConfig with current pinpoint meta
-        const availableChannels = Notifications.ChannelCfg.getAvailableChannels();
+        const availableChannels = getAvailableChannels();
         const enabledChannels = availableChannels.filter(channelName => channelName in pinpointNotificationsMeta.output);
         context.exeInfo.backendConfig.notifications = (context.exeInfo.backendConfig.notifications) || {};
         context.exeInfo.backendConfig.notifications = {
@@ -238,7 +239,7 @@ const constructPinpointNotificationsMeta = async (context: $TSContext) : Promise
       if (pinpointNotificationsMeta) {
         pinpointNotificationsMeta.channels = serviceBackendConfig.channels;
       } else {
-        pinpointNotificationsMeta = Notifications.generateMetaFromConfig(envName, serviceBackendConfig);
+        pinpointNotificationsMeta = generateMetaFromConfig(envName, serviceBackendConfig);
       }
     }
     return pinpointNotificationsMeta;
@@ -297,7 +298,7 @@ const buildPinpointInputParametersFromAmplifyMeta = (context : $TSContext): $TSA
   // for pull and env add the backend-config may not be configured yet
   if (!backendConfig) {
     const categoryMeta = amplifyMeta[AmplifyCategories.NOTIFICATIONS];
-    const availableChannels = Notifications.ChannelCfg.getAvailableChannels();
+    const availableChannels = getAvailableChannels();
     if (categoryMeta) {
       const resourceNames = Object.keys(categoryMeta);
       for (const resourceName of resourceNames) {
@@ -319,7 +320,7 @@ const buildPinpointInputParametersFromAmplifyMeta = (context : $TSContext): $TSA
   }
   const categoryConfig = backendConfig[AmplifyCategories.NOTIFICATIONS];
   const resourceNames = Object.keys(categoryConfig);
-  const availableChannels = Notifications.ChannelCfg.getAvailableChannels();
+  const availableChannels = getAvailableChannels();
   for (const resourceName of resourceNames) {
     const resource = categoryConfig[resourceName];
     if (resource.service === AmplifySupportedService.PINPOINT) {
@@ -348,7 +349,7 @@ const getEnabledDisabledChannelsFromConfigAndMeta = (
   const channelsToEnable : Array<string> = [];
   const channelsToDisable : Array<string> = [];
   // const channelsToUpdate = [];
-  const availableChannels = Notifications.ChannelCfg.getAvailableChannels();
+  const availableChannels = getAvailableChannels();
 
   availableChannels.forEach(channel => {
     let isCurrentlyEnabled = false;
@@ -406,7 +407,7 @@ export const checkAndCreatePinpointApp = async (context: $TSContext, channelName
     context = pinpointAppStatus.context;
   }
 
-  if (isPinpointAppDeployed(pinpointAppStatus.status) || Notifications.ChannelCfg.isChannelDeploymentDeferred(channelName)) {
+  if (isPinpointAppDeployed(pinpointAppStatus.status) || isChannelDeploymentDeferred(channelName)) {
     try {
       const channelAPIResponse : IChannelAPIResponse|undefined = await notificationManager.enableChannel(context, channelName);
       await writeData(context, channelAPIResponse);
@@ -497,7 +498,7 @@ const extractMigrationInfo = (context: $TSContext): $TSAny => {
     migrationInfo.Name = migrationInfo.output.Name;
     migrationInfo.Region = migrationInfo.output.Region;
     migrationInfo.channels = [];
-    const availableChannels = Notifications.ChannelCfg.getAvailableChannels();
+    const availableChannels = getAvailableChannels();
     availableChannels.forEach(channel => {
       if (migrationInfo.output[channel]?.Enabled) {
         migrationInfo.channels.push(channel);

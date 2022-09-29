@@ -156,7 +156,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
         const {
           exposedContainer,
           pipelineInfo: { consoleUrl },
-        } = await context.amplify.invokePluginMethod(context, 'api', undefined, 'generateContainersArtifacts', [context, resource]);
+        } : $TSAny = await context.amplify.invokePluginMethod(context, 'api', undefined, 'generateContainersArtifacts', [context, resource]);
         await context.amplify.updateamplifyMetaAfterResourceUpdate('api', resource.resourceName, 'exposedContainer', exposedContainer);
 
         printer.blankLine();
@@ -332,7 +332,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
           await updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated, resourcesToBeUpdated, eventMap);
           await storeRootStackTemplate(context, nestedStack);
           // if the only root stack updates, function is called with empty resources . this fn copies amplifyMeta and backend Config to #current-cloud-backend
-          context.amplify.updateamplifyMetaAfterPush([]);
+          await context.amplify.updateamplifyMetaAfterPush([]);
         } catch (err) {
           if (err?.name === 'ValidationError' && err?.message === 'No updates are to be performed.') {
             return;
@@ -534,7 +534,7 @@ export const updateStackForAPIMigration = async (context: $TSContext, category: 
     await updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated, resourcesToBeUpdated, eventMap);
   }
 
-  context.amplify.updateamplifyMetaAfterPush(resources);
+  await context.amplify.updateamplifyMetaAfterPush(resources);
 };
 
 /**
