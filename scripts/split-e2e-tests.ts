@@ -55,7 +55,12 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
   'schema-auth-2_pkg',
   'container-hosting_pkg',
   'schema-auth-13_pkg',
-  'init_pkg',
+  'init_a_pkg',
+  'init_b_pkg',
+  'init_c_pkg',
+  'init_d_pkg',
+  'init_e_pkg',
+  'init_f_pkg',
   'auth_5_pkg',
 ];
 
@@ -158,7 +163,6 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   //<50m
   'src/__tests__/schema-auth-2.test.ts',
   'src/__tests__/api_1.test.ts',
-  'src/__tests__/schema-auth-5.test.ts',
   //<55m
   'src/__tests__/storage.test.ts',
   'src/__tests__/api_2.test.ts',
@@ -174,10 +178,7 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/env.test.ts',
   'src/__tests__/feature-flags.test.ts',
   'src/__tests__/layer.test.ts',
-  'src/__tests__/schema-auth-6.test.ts',
   'src/__tests__/schema-searchable.test.ts',
-  //<3h
-  'src/__tests__/init.test.ts',
 ];
 
 /**

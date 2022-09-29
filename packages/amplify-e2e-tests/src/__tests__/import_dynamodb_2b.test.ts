@@ -1,34 +1,27 @@
+/* eslint-disable spellcheck/spell-checker */
+/* eslint-disable import/no-extraneous-dependencies */
+
 import {
   addAuthWithDefault,
   AddDynamoDBSettings,
   addDynamoDBWithGSIWithSettings,
   amplifyPushAuth,
-  amplifyStatus,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
   getAppId,
-  getTeamProviderInfo,
   initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
-import { addEnvironmentWithImportedAuth, checkoutEnvironment, removeEnvironment } from '../environment/env';
 import {
   createDynamoDBSettings,
-  DynamoDBProjectDetails,
-  expectDynamoDBLocalAndOGMetaFilesOutputMatching,
-  expectLocalAndCloudMetaFilesMatching,
-  expectLocalAndPulledBackendConfigMatching,
-  getDynamoDBProjectDetails,
-  getOGDynamoDBProjectDetails,
   getShortId,
-  headlessPull,
   headlessPullExpectError,
   importDynamoDBTable,
 } from '../import-helpers';
 
 const profileName = 'amplify-integ-test-user';
 
-describe('dynamodb import', () => {
+describe('dynamodb import 2b', () => {
   const projectPrefix = 'ddbimp';
   const ogProjectPrefix = 'ogddbimp';
 
@@ -48,7 +41,6 @@ describe('dynamodb import', () => {
   let ogProjectRoot: string;
   let ogShortId: string;
   let ogSettings: AddDynamoDBSettings;
-  let ogProjectDetails: DynamoDBProjectDetails;
 
   // We need an extra OG project to make sure that autocomplete prompt hits in
   let dummyOGProjectRoot: string;
@@ -67,8 +59,6 @@ describe('dynamodb import', () => {
     await addAuthWithDefault(ogProjectRoot, {});
     await addDynamoDBWithGSIWithSettings(ogProjectRoot, ogSettings);
     await amplifyPushAuth(ogProjectRoot);
-
-    ogProjectDetails = getOGDynamoDBProjectDetails(ogProjectRoot);
 
     dummyOGProjectRoot = await createNewProjectDir(dummyOGProjectSettings.name);
     dummyOGShortId = getShortId();
@@ -103,48 +93,6 @@ describe('dynamodb import', () => {
       }
     }
     deleteProjectDir(projectRoot);
-  });
-
-  it('imported dynamodb table, create prod env, files should match', async () => {
-    await initJSProjectWithProfile(projectRoot, projectSettings);
-    await addAuthWithDefault(projectRoot, {});
-    await importDynamoDBTable(projectRoot, ogSettings.tableName);
-
-    await amplifyPushAuth(projectRoot);
-
-    const firstEnvName = 'integtest';
-    const secondEnvName = 'prod';
-
-    await addEnvironmentWithImportedAuth(projectRoot, {
-      envName: secondEnvName,
-      currentEnvName: firstEnvName,
-    });
-
-    let teamInfo = getTeamProviderInfo(projectRoot);
-    const env1 = teamInfo[firstEnvName];
-    const env2 = teamInfo[secondEnvName];
-
-    // Verify that same storage resource object is present
-    expect(Object.keys(env1)[0]).toEqual(Object.keys(env2)[0]);
-
-    await amplifyPushAuth(projectRoot);
-
-    // Meta is matching the data with the OG project's resources
-    expectLocalAndCloudMetaFilesMatching(projectRoot);
-    expectDynamoDBLocalAndOGMetaFilesOutputMatching(projectRoot, ogProjectRoot);
-
-    await checkoutEnvironment(projectRoot, {
-      envName: firstEnvName,
-    });
-
-    await removeEnvironment(projectRoot, {
-      envName: secondEnvName,
-    });
-
-    teamInfo = getTeamProviderInfo(projectRoot);
-
-    // No prod in team provider info
-    expect(teamInfo.prod).toBeUndefined();
   });
 
   it('dynamodb headless pull missing parameters', async () => {
@@ -183,56 +131,6 @@ describe('dynamodb import', () => {
           {},
         ),
       ).rejects.toThrowError('Process exited with non zero exit code 1');
-    } finally {
-      deleteProjectDir(projectRootPull);
-    }
-  });
-
-  it('dynamodb headless pull successful', async () => {
-    await initJSProjectWithProfile(projectRoot, {
-      ...projectSettings,
-      disableAmplifyAppCreation: false,
-    });
-    await addAuthWithDefault(projectRoot, {});
-    await importDynamoDBTable(projectRoot, ogSettings.tableName);
-
-    await amplifyPushAuth(projectRoot);
-
-    const projectDetails = getDynamoDBProjectDetails(projectRoot);
-
-    const appId = getAppId(projectRoot);
-    expect(appId).toBeDefined();
-
-    let projectRootPull;
-
-    try {
-      projectRootPull = await createNewProjectDir('ddbimport-pull');
-
-      const envName = 'integtest';
-      const providersParam = {
-        awscloudformation: {
-          configLevel: 'project',
-          useProfile: true,
-          profileName,
-        },
-      };
-
-      const categoryConfig = {
-        storage: {
-          region: projectDetails.team.region,
-          tables: {
-            [projectDetails.storageResourceName]: projectDetails.team.tableName,
-          },
-        },
-      };
-
-      await headlessPull(projectRootPull, { envName, appId }, providersParam, categoryConfig);
-
-      await amplifyStatus(projectRoot, 'No Change');
-
-      expectLocalAndCloudMetaFilesMatching(projectRoot);
-      expectLocalAndPulledBackendConfigMatching(projectRoot, projectRootPull);
-      expectDynamoDBLocalAndOGMetaFilesOutputMatching(projectRoot, projectRootPull);
     } finally {
       deleteProjectDir(projectRootPull);
     }

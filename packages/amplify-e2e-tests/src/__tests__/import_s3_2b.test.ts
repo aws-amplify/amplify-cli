@@ -1,34 +1,27 @@
+/* eslint-disable spellcheck/spell-checker */
+/* eslint-disable import/no-extraneous-dependencies */
+
 import {
   addAuthWithDefault,
   addS3StorageWithSettings,
   AddStorageSettings,
   amplifyPushAuth,
-  amplifyStatus,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
   getAppId,
-  getTeamProviderInfo,
   initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
-import { addEnvironmentWithImportedAuth, checkoutEnvironment, removeEnvironment } from '../environment/env';
 import {
   createStorageSettings,
-  expectLocalAndCloudMetaFilesMatching,
-  expectLocalAndPulledBackendConfigMatching,
-  expectS3LocalAndOGMetaFilesOutputMatching,
-  getOGStorageProjectDetails,
   getShortId,
-  getStorageProjectDetails,
-  headlessPull,
   headlessPullExpectError,
   importS3,
-  StorageProjectDetails,
 } from '../import-helpers';
 
 const profileName = 'amplify-integ-test-user';
 
-describe('s3 import', () => {
+describe('s3 import b', () => {
   const projectPrefix = 'sssimp';
   const ogProjectPrefix = 'ogsssimp';
 
@@ -48,11 +41,9 @@ describe('s3 import', () => {
   let ogProjectRoot: string;
   let ogShortId: string;
   let ogSettings: AddStorageSettings;
-  let ogProjectDetails: StorageProjectDetails;
 
   // We need an extra OG project to make sure that autocomplete prompt hits in
   let dummyOGProjectRoot: string;
-  let dummyOGShortId: string;
   let dummyOGSettings: AddStorageSettings;
 
   let projectRoot: string;
@@ -68,10 +59,7 @@ describe('s3 import', () => {
     await addS3StorageWithSettings(ogProjectRoot, ogSettings);
     await amplifyPushAuth(ogProjectRoot);
 
-    ogProjectDetails = getOGStorageProjectDetails(ogProjectRoot);
-
     dummyOGProjectRoot = await createNewProjectDir(dummyOGProjectSettings.name);
-    dummyOGShortId = getShortId();
     dummyOGSettings = createStorageSettings(dummyOGProjectSettings.name, ogShortId);
 
     await initJSProjectWithProfile(dummyOGProjectRoot, dummyOGProjectSettings);
@@ -103,48 +91,6 @@ describe('s3 import', () => {
       }
     }
     deleteProjectDir(projectRoot);
-  });
-
-  it('imported storage, create prod env, files should match', async () => {
-    await initJSProjectWithProfile(projectRoot, projectSettings);
-    await addAuthWithDefault(projectRoot, {});
-    await importS3(projectRoot, ogSettings.bucketName);
-
-    await amplifyPushAuth(projectRoot);
-
-    const firstEnvName = 'integtest';
-    const secondEnvName = 'prod';
-
-    await addEnvironmentWithImportedAuth(projectRoot, {
-      envName: secondEnvName,
-      currentEnvName: firstEnvName,
-    });
-
-    let teamInfo = getTeamProviderInfo(projectRoot);
-    const env1 = teamInfo[firstEnvName];
-    const env2 = teamInfo[secondEnvName];
-
-    // Verify that same storage resource object is present
-    expect(Object.keys(env1)[0]).toEqual(Object.keys(env2)[0]);
-
-    await amplifyPushAuth(projectRoot);
-
-    // Meta is matching the data with the OG project's resources
-    expectLocalAndCloudMetaFilesMatching(projectRoot);
-    expectS3LocalAndOGMetaFilesOutputMatching(projectRoot, ogProjectRoot);
-
-    await checkoutEnvironment(projectRoot, {
-      envName: firstEnvName,
-    });
-
-    await removeEnvironment(projectRoot, {
-      envName: secondEnvName,
-    });
-
-    teamInfo = getTeamProviderInfo(projectRoot);
-
-    // No prod in team proovider info
-    expect(teamInfo.prod).toBeUndefined();
   });
 
   it('storage headless pull missing parameters', async () => {
@@ -183,54 +129,6 @@ describe('s3 import', () => {
           {},
         ),
       ).rejects.toThrowError('Process exited with non zero exit code 1');
-    } finally {
-      deleteProjectDir(projectRootPull);
-    }
-  });
-
-  it('storage headless pull successful', async () => {
-    await initJSProjectWithProfile(projectRoot, {
-      ...projectSettings,
-      disableAmplifyAppCreation: false,
-    });
-    await addAuthWithDefault(projectRoot, {});
-    await importS3(projectRoot, ogSettings.bucketName);
-
-    await amplifyPushAuth(projectRoot);
-
-    const projectDetails = getStorageProjectDetails(projectRoot);
-
-    const appId = getAppId(projectRoot);
-    expect(appId).toBeDefined();
-
-    let projectRootPull;
-
-    try {
-      projectRootPull = await createNewProjectDir('s3import-pull');
-
-      const envName = 'integtest';
-      const providersParam = {
-        awscloudformation: {
-          configLevel: 'project',
-          useProfile: true,
-          profileName,
-        },
-      };
-
-      const categoryConfig = {
-        storage: {
-          bucketName: projectDetails.team.bucketName,
-          region: projectDetails.team.region,
-        },
-      };
-
-      await headlessPull(projectRootPull, { envName, appId }, providersParam, categoryConfig);
-
-      await amplifyStatus(projectRoot, 'No Change');
-
-      expectLocalAndCloudMetaFilesMatching(projectRoot);
-      expectLocalAndPulledBackendConfigMatching(projectRoot, projectRootPull);
-      expectS3LocalAndOGMetaFilesOutputMatching(projectRoot, projectRootPull);
     } finally {
       deleteProjectDir(projectRootPull);
     }
