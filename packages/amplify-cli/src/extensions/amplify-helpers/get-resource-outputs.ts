@@ -82,8 +82,5 @@ export const getResourceOutputs = (amplifyMeta: $TSMeta) => {
  */
 const checkIfVirtualCategory = (category: string): boolean => {
   const virtualCategoryTable = [AmplifyCategories.NOTIFICATIONS];
-  if (virtualCategoryTable.includes(category)) {
-    return true;
-  }
-  return false;
+  return virtualCategoryTable.includes(category);
 };

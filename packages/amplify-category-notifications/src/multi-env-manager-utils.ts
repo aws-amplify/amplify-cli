@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import { ensureEnvParamManager, getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import {
-  $TSAny, $TSContext, $TSMeta, AmplifyCategories, amplifyFaultWithTroubleshootingLink, AmplifySupportedService,
+  $TSAny, $TSContext, $TSMeta, AmplifyCategories, amplifyFaultWithTroubleshootingLink, AmplifySupportedService, stateManager,
 } from 'amplify-cli-core';
 import { ChannelConfigDeploymentType, IChannelAPIResponse } from './channel-types';
 import { Notifications } from './notifications-api';
@@ -49,8 +49,7 @@ const writeBackendConfig = (context: $TSContext, pinpointMeta: $TSAny, backendCo
       };
     }
 
-    const jsonString = JSON.stringify(backendConfig, null, 4);
-    fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
+    stateManager.setBackendConfig(undefined, backendConfig);
   }
 };
 

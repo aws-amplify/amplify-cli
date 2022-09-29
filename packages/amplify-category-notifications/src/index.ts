@@ -4,6 +4,12 @@ import { printer } from 'amplify-prompts';
 import * as pinpointHelper from './pinpoint-helper';
 import * as multiEnvManager from './multi-env-manager';
 
+export {
+  notificationsPluginAPIGetResource,
+  notificationsPluginAPIRemoveApp,
+  notificationsAPIGetAvailableChannelNames,
+} from './plugin-provider-api-notifications';
+
 const category = 'notifications';
 
 /**
@@ -55,9 +61,3 @@ export const handleAmplifyEvent = (__context: $TSContext, args: $TSAny) : void =
   printer.info(`${category} handleAmplifyEvent to be implemented`);
   printer.info(`Received event args ${args}`);
 };
-
-export {
-  notificationsPluginAPIGetResource,
-  notificationsPluginAPIRemoveApp,
-  notificationsAPIGetAvailableChannelNames,
-} from './plugin-provider-api-notifications';

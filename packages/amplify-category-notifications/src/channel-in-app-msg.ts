@@ -177,7 +177,7 @@ export const pull = async (__context: $TSContext, pinpointApp: $TSAny): Promise<
     } else {
       spinner.fail(`Channel ${ChannelCfg.getChannelViewName(channelName)} not found.`);
       return buildPinpointChannelResponseError(ChannelAction.PULL, deploymentType,
-        channelName, `${channelName} not found in the notifications metadata`);
+        channelName, new Error(`${channelName} not found in the notifications metadata`));
     }
   }
   spinner.succeed(`Channel information retrieved for ${ChannelCfg.getChannelViewName(channelName)}`);

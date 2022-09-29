@@ -75,7 +75,7 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
   }
 
   if (!pinpointApp) {
-    printer.info('');
+    printer.blankLine();
     resourceName = await createPinpointApp(context, resourceName);
   }
 

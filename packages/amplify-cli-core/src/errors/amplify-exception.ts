@@ -127,6 +127,7 @@ export type AmplifyFaultType =
   | 'BackendPullFault'
   | 'ConfigurationFault'
   | 'DeploymentFault'
+  | 'NotificationsChannelAPNSFault'
   | 'NotImplementedFault'
   | 'ProjectDeleteFault'
   | 'ProjectInitFault'

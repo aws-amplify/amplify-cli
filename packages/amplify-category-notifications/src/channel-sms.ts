@@ -56,7 +56,7 @@ export const enable = async (context:$TSContext):Promise<$TSAny> => {
 
   spinner.start('Enabling SMS channel.');
   return new Promise((resolve, reject) => {
-    context.exeInfo.pinpointClient.updateSmsChannel(params, (err:$TSAny, data:$TSAny) => {
+    context.exeInfo.pinpointClient.updateSmsChannel(params, (err: $TSAny, data:$TSAny) => {
       if (err) {
         if (!isAmplifyCLIPulling(context)) {
           spinner.fail('enable channel error');
@@ -80,7 +80,7 @@ export const enable = async (context:$TSContext):Promise<$TSAny> => {
  * @param context amplify cli context
  * @returns Pinpoint API response
  */
-export const disable = async (context: $TSContext) : Promise<$TSAny> => {
+export const disable = async (context: $TSContext): Promise<$TSAny> => {
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
     SMSChannelRequest: {
@@ -90,7 +90,7 @@ export const disable = async (context: $TSContext) : Promise<$TSAny> => {
 
   spinner.start('Disabling SMS channel.');
   return new Promise((resolve, reject) => {
-    context.exeInfo.pinpointClient.updateSmsChannel(params, (err:Error|string, data:$TSAny) => {
+    context.exeInfo.pinpointClient.updateSmsChannel(params, (err: Error, data:$TSAny) => {
       if (err) {
         spinner.fail('disable channel error');
         const errResponse = buildPinpointChannelResponseError(ChannelAction.DISABLE, deploymentType, channelName, err);

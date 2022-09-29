@@ -398,6 +398,7 @@ export const checkAndCreatePinpointApp = async (context: $TSContext, channelName
       await viewShowInlineModeInstructionsFail(channelName, err);
       throw new AmplifyError('DeploymentError', {
         message: 'Failed to deploy Auth and Pinpoint resources.',
+        details: err.message,
         resolution: 'Deploy the Auth and Pinpoint resources manually.',
       });
     }

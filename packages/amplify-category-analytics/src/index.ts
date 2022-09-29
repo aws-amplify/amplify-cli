@@ -5,6 +5,16 @@ import { printer } from 'amplify-prompts';
 import * as pinpointHelper from './utils/pinpoint-helper';
 import * as kinesisHelper from './utils/kinesis-helper';
 
+export { migrate } from './provider-utils/awscloudformation/service-walkthroughs/pinpoint-walkthrough';
+
+export {
+  analyticsPluginAPIGetResources,
+  analyticsPluginAPICreateResource,
+  analyticsPluginAPIToggleNotificationChannel,
+  analyticsPluginAPIPostPush,
+  analyticsPluginAPIPush,
+} from './analytics-resource-api';
+
 const category = 'analytics';
 
 /**
@@ -58,7 +68,7 @@ export const getPermissionPolicies = async (context: $TSContext, resourceOpsMapp
   const permissionPolicies: $TSAny[] = [];
   const resourceAttributes: $TSAny[] = [];
 
-  Object.keys(resourceOpsMapping).forEach(async resourceName => {
+  for (const resourceName of Object.keys(resourceOpsMapping)) {
     try {
       const providerName = amplifyMeta[category][resourceName].providerPlugin;
       if (providerName) {
@@ -78,7 +88,7 @@ export const getPermissionPolicies = async (context: $TSContext, resourceOpsMapp
       printer.warn(`Could not get policies for ${category}: ${resourceName}`);
       throw e;
     }
-  });
+  }
   return { permissionPolicies, resourceAttributes };
 };
 
@@ -88,11 +98,9 @@ export const getPermissionPolicies = async (context: $TSContext, resourceOpsMapp
  */
 export const executeAmplifyCommand = async (context: $TSContext) : Promise<$TSAny> => {
   let commandPath = path.normalize(path.join(__dirname, 'commands'));
-  if (context.input.command === 'help') {
-    commandPath = path.join(commandPath, category);
-  } else {
-    commandPath = path.join(commandPath, category, context.input.command);
-  }
+  commandPath = context.input.command === 'help'
+    ? path.join(commandPath, category)
+    : path.join(commandPath, category, context.input.command);
 
   const commandModule = await import(commandPath);
   await commandModule.run(context);
@@ -107,13 +115,3 @@ export const handleAmplifyEvent = async (__context: $TSContext, args: $TSAny): P
   printer.info(`${category} handleAmplifyEvent to be implemented`);
   printer.info(`Received event args ${args}`);
 };
-
-export { migrate } from './provider-utils/awscloudformation/service-walkthroughs/pinpoint-walkthrough';
-
-export {
-  analyticsPluginAPIGetResources,
-  analyticsPluginAPICreateResource,
-  analyticsPluginAPIToggleNotificationChannel,
-  analyticsPluginAPIPostPush,
-  analyticsPluginAPIPush,
-} from './analytics-resource-api';

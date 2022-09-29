@@ -151,7 +151,7 @@ export const analyticsPluginAPIPush = async (context: $TSContext, resourceProvid
     } catch (err) {
       pushResponse.status = false;
       pushResponse.errorCode = PluginAPIError.E_PUSH_FAILED;
-      pushResponse.reasonMsg = getErrorMessage(err);
+      pushResponse.reasonMsg = err.message;
     }
   }
   return pushResponse;
@@ -304,17 +304,4 @@ const pinpointAPIDisableNotificationChannel = (
     }
   }
   return pinPointCFNInputParams;
-};
-
-/**
- * Helper: convert generic exception to reason message
- * note - To be replaced with generic error handler
- * @param error Error thrown by the library function
- * @returns error message extracted from Error
- */
-export const getErrorMessage = (error: Error|string) : string => {
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return String(error) as string;
 };

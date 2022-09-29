@@ -78,19 +78,6 @@ export const isPinpointAppOwnedByNotifications = (pinpointStatus: IPinpointDeplo
   pinpointStatus === IPinpointDeploymentStatus.APP_IS_DEPLOYED_CUSTOM);
 
 /**
- * Helper: convert generic exception to reason message
- * note - To be replaced with generic error handler
- * @param error Error thrown by the library function
- * @returns error message extracted from Error
- */
-export const getErrorMessage = (error: Error|string) : string => {
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return String(error) as string;
-};
-
-/**
  * Helper function to normalize Notifications Pinpoint App to Analytics result
  * - This function will be removed once all Analytics and Notifications meta is normalized
  * @param pinpointApp - PinpointApp metadata extracted from Notifications
@@ -151,7 +138,7 @@ export const buildPinpointChannelResponseError = (
   action: ChannelAction,
   deploymentType: ChannelConfigDeploymentType,
   channelName: string,
-  err: Error|string,
+  err: Error,
 ): IChannelAPIResponse => ({
   action,
   deploymentType,
@@ -163,7 +150,7 @@ export const buildPinpointChannelResponseError = (
     subCapability: channelName, // e.g SMS
     status: false, // true - successfully applied, false - failed to apply
     errorCode: PluginAPIError.E_SVC_PROVIDER_SDK,
-    reasonMsg: getErrorMessage(err),
+    reasonMsg: err.message,
   },
 });
 
@@ -515,7 +502,7 @@ const deleteApp = async (context : $TSContext, pinpointAppId : string) : Promise
 /**
  * Open the AWS console in the browser for the given service.
  */
-export const console = (context: $TSContext):void => {
+export const console = (context: $TSContext): void => {
   const { amplifyMeta } = context.exeInfo;
   const pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.ANALYTICS], undefined);
   if (pinpointApp) {
