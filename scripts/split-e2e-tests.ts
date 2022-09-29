@@ -61,7 +61,12 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
   'init_d_pkg',
   'init_e_pkg',
   'init_f_pkg',
-  'auth_5_pkg',
+  'auth_5a_pkg',
+  'auth_5b_pkg',
+  'auth_5c_pkg',
+  'auth_5d_pkg',
+  'auth_5e_pkg',
+  'auth_5f_pkg',
 ];
 
 // Ensure to update packages/amplify-e2e-tests/src/cleanup-e2e-resources.ts is also updated this gets updated
@@ -173,7 +178,6 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   //<2h
   'src/__tests__/auth_7.test.ts',
   'src/__tests__/auth_6.test.ts',
-  'src/__tests__/auth_5.test.ts',
   'src/__tests__/delete.test.ts',
   'src/__tests__/env.test.ts',
   'src/__tests__/feature-flags.test.ts',
