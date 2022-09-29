@@ -15,7 +15,7 @@ import {
 import { UpdateAuthRequest } from 'amplify-headless-interface';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import {
   versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfile,
 } from '../../../migration-helpers';
