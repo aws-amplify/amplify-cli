@@ -2,12 +2,12 @@ import { FunctionTemplateParameters } from 'amplify-function-plugin-interface';
 import path from 'path';
 import fs from 'fs-extra';
 import {
-  AmplifySupportedService, exitOnNextTick,
+  AmplifySupportedService, exitOnNextTick, $TSContext,
 } from 'amplify-cli-core';
-import { $TSContext } from 'amplify-cli-core';
+
+import { printer } from 'amplify-prompts';
 import { getDstMap } from '../utils/destFileMapper';
 import { templateRoot } from '../utils/constants';
-import { printer } from '../../../amplify-prompts';
 
 const pathToTemplateFilesIAM = path.join(templateRoot, 'lambda', 'appsync-request');
 
