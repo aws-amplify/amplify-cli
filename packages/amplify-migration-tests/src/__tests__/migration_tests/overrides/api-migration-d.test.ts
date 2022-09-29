@@ -78,7 +78,7 @@ describe('api migration update test d', () => {
     expect(getCLIInputs(projRoot, 'api', 'myApiName')).toBeDefined();
     await amplifyPushUpdate(projRoot, undefined, undefined, true);
 
-    //verify
+    // verify
     const meta = getProjectMeta(projRoot);
     const { output } = meta.api.myApiName;
     const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;

@@ -80,5 +80,4 @@ describe('api migration update test b', () => {
     expect(graphqlApi).toBeDefined();
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
   });
-
 });
