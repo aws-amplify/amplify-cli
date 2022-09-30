@@ -23,5 +23,4 @@ describe('api directives @auth batch 8a', () => {
     const testresult = await testSchema(projectDir, 'auth', 'fieldLevelAuth7');
     expect(testresult).toBeTruthy();
   });
-
 });
