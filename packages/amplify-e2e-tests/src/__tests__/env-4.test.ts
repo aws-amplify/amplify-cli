@@ -29,7 +29,7 @@ const validate = async (meta: any) : Promise<void> => {
   expect(stackId).toBeDefined();
   const bucketExists = await checkIfBucketExists(bucketName, region);
   expect(bucketExists).toMatchObject({});
-}
+};
 
 describe('environment commands with recaptcha trigger', () => {
   let projRoot: string;
