@@ -15,7 +15,9 @@ const CONCURRENCY = 25;
 const WINDOWS_TEST_ALLOWLIST: string[] = [
   'schema-function-1_pkg',
   'tags_pkg',
-  'schema-auth-9_pkg',
+  'schema-auth-9-a_pkg',
+  'schema-auth-9-b_pkg',
+  'schema-auth-9-c_pkg',
   'schema-model_pkg',
   'api_lambda_auth_pkg',
   'node-function_pkg',
@@ -153,7 +155,6 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/geo-import.test.ts',
   'src/__tests__/schema-iterative-rollback-2.test.ts',
   'src/__tests__/auth_2.test.ts',
-  'src/__tests__/schema-auth-9.test.ts',
   'src/__tests__/migration/api.key.migration2.test.ts',
   'src/__tests__/migration/api.key.migration3.test.ts',
   'src/__tests__/function_1.test.ts',
