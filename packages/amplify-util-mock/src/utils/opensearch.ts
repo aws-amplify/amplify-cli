@@ -47,5 +47,6 @@ export const querySearchable = async (endpoint: string, searchConfig: Opensearch
             'Content-type': 'application/json',
         }
     });
-    return await result.json();
+    const resultJSON = await result.json();
+    return resultJSON;
 }
