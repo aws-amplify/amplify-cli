@@ -97,18 +97,13 @@ export const console = async (context: $TSContext): Promise<void> => {
   const servicesMetadata = ((await import('./provider-utils/supported-services')) as $TSAny).supportedServices;
 
   const serviceSelection = await amplify.serviceSelectionPrompt(context, categoryName, servicesMetadata, undefined, nameOverrides);
-  try {
-    const providerController = await import(`${__dirname}/provider-utils/${serviceSelection.providerName}/index`);
-    if (!providerController) {
-      printer.error('Provider not configured for this category');
-      return undefined;
-    }
-    return providerController.console(amplifyMeta, serviceSelection.providerName, serviceSelection.service);
-  } catch (err) {
-    printer.info(err.stack);
-    printer.error('There was an error trying to open the storage web console.');
-    throw err;
+
+  const providerController = await import(`${__dirname}/provider-utils/${serviceSelection.providerName}/index`);
+  if (!providerController) {
+    printer.error('Provider not configured for this category');
+    return undefined;
   }
+  return providerController.console(amplifyMeta, serviceSelection.providerName, serviceSelection.service);
 };
 
 export async function migrateStorageCategory(context: any) {
