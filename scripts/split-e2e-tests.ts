@@ -4,7 +4,7 @@ import { join } from 'path';
 import * as fs from 'fs-extra';
 import * as execa from 'execa';
 
-const CONCURRENCY = 25;
+const CONCURRENCY = 35;
 // Some our e2e tests are known to fail when run on windows hosts
 // These are caused by issues with our test harness, not broken cli behavior on windows
 // (examples: sending line endings when we shouldn't, java/gradle not installed on windows host)
