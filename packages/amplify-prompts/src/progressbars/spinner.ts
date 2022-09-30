@@ -3,7 +3,7 @@
  * and use a re writable block instead.
  */
 
-import { AmplifyTerminal, AmplifyTerminal as Terminal, StringObj } from './terminal';
+import { AmplifyTerminal, ColoredString } from './terminal';
 
 /**
  * Amplify spinner instance
@@ -13,7 +13,7 @@ export class AmplifySpinner {
   private frames: string[];
   private timer!: ReturnType<typeof setTimeout>;
   private prefixText: string;
-  private terminal: Terminal | null;
+  private terminal: AmplifyTerminal | null;
   private refreshRate: number;
 
   constructor() {
@@ -56,7 +56,7 @@ export class AmplifySpinner {
   }
 
   /**
-   * Reset Spinner message
+   * Reset spinner message
    */
   resetMessage(text: string | null): void {
     if (!this.terminal) {
@@ -73,7 +73,7 @@ export class AmplifySpinner {
     if (!this.terminal) {
       return;
     }
-    const lines: StringObj[] = [{
+    const lines: ColoredString[] = [{
       renderString: text || '',
       color: success ? 'green' : 'red',
     }];

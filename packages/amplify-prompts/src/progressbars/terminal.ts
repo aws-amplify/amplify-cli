@@ -2,9 +2,9 @@ import os from 'os';
 import chalk from 'chalk';
 
 /**
- * String obj passed to terminal
+ * string and color to be passed to terminal
  */
-export type StringObj = {
+export type ColoredString = {
   renderString: string,
   color: string
 }
