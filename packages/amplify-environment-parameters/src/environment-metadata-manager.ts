@@ -18,15 +18,15 @@ call amplify-backend.getBackend(appId, envName) to fetch amplifyMeta
  * Throws if EnvironmentMetadata is already initialized for the current environment.
  *
  * Intended to be used during init after the root stack deployment succeeds but before `amplify-meta.json` has been created yet
- * @param meta The contents to set in the `amplify-meta.json` providers block
+ * @param context The Amplify context object
  */
-export const initEnvMeta = async (meta: Record<string, string>): Promise<void> => {
+export const initEnvMeta = async (context: $TSContext): Promise<void> => {
   const currentEnv = stateManager.getLocalEnvInfo().envName;
   if (envMetaManagerMap[currentEnv]) {
     throw new Error(`EnvironmentMetadata is already initialized for ${currentEnv} environment.`);
   }
   // don't need to pass in context because specifying meta will early return before context is ever needed
-  await ensureEnvMetaInternal(undefined as unknown as $TSContext, currentEnv, meta);
+  await ensureEnvMetaInternal(context, currentEnv, context.exeInfo.amplifyMeta);
 };
 
 /**

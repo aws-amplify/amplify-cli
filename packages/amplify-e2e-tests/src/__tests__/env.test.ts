@@ -18,7 +18,6 @@ import {
   addEnvironment,
   addEnvironmentHostedUI,
   checkoutEnvironment,
-  getEnvironment,
   importEnvironment,
   listEnvironment,
   pullEnvironment,
@@ -92,17 +91,18 @@ describe('cross project environment commands', () => {
   it('init two projects, get and import environment from one to the other', async () => {
     await initJSProjectWithProfile(projRoot, { envName: 'env' });
     await addAuthWithDefault(projRoot, {});
-    const providerConfig: string = await getEnvironment(projRoot, { envName: 'env' });
+    const providerConfig = getProjectMeta(projRoot).providers;
     await amplifyPushUpdate(projRoot);
 
     let projRoot2: string;
     try {
       projRoot2 = await createNewProjectDir('import-env-test2');
       await initJSProjectWithProfile(projRoot2, {});
-      await importEnvironment(projRoot2, { providerConfig, envName: 'env' });
+      await importEnvironment(projRoot2, { providerConfig: JSON.stringify(providerConfig), envName: 'env' });
       await validate(getProjectMeta(projRoot));
       await validate(getProjectMeta(projRoot2));
     } finally {
+      await deleteProject(projRoot2);
       deleteProjectDir(projRoot2);
     }
   });

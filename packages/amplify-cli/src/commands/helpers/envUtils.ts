@@ -5,6 +5,7 @@ import { printer } from 'amplify-prompts';
  */
 export const printEnvInfo = (envMeta: Record<string, unknown>): void => {
   printer.info('--------------');
+  printer.info('Provider: awscloudformation');
   Object.entries(envMeta).forEach(([key, value]) => {
     if (typeof value === 'string') {
       printer.info(`${key}: ${value}`);

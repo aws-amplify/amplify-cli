@@ -2,8 +2,7 @@ import {
   $TSContext, EnvAwsInfo, JSONUtilities, stateManager, UnknownArgumentError,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-import { getConfiguredAmplifyClient } from 'amplify-provider-awscloudformation/src/aws-utils/aws-amplify';
-import { findAppByBackendPredicate } from 'amplify-provider-awscloudformation/src/utils/amplify-client-lookups';
+import { getConfiguredAmplifyClient, findAppByBackendPredicate } from 'amplify-provider-awscloudformation';
 
 const errorLink = 'See https://docs.amplify.aws/cli/teams/commands/#import-an-environment';
 

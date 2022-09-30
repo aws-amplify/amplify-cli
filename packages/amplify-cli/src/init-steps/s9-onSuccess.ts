@@ -152,7 +152,7 @@ export const generateAmplifyMetaFile = async (context: $TSContext): Promise<void
     stateManager.setCurrentMeta(projectPath, context.exeInfo.amplifyMeta);
     // setting meta to empty object here to avoid issues with appending category info during init
     stateManager.setMeta(undefined, {});
-    await initEnvMeta(context.exeInfo.amplifyMeta);
+    await initEnvMeta(context);
   }
   await ensureEnvMeta(context);
 };

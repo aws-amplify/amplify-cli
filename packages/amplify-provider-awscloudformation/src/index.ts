@@ -29,6 +29,9 @@ import { hashDirectory } from './upload-appsync-files';
 import { prePushCfnTemplateModifier } from './pre-push-cfn-processor/pre-push-cfn-modifier';
 import { getApiKeyConfig } from './utils/api-key-helpers';
 
+// eslint-disable-next-line spellcheck/spell-checker
+export { findAppByBackendPredicate } from './utils/amplify-client-lookups';
+
 const attachBackendWorker = require('./attach-backend');
 const initializer = require('./initializer');
 const initializeEnv = require('./initialize-env');
@@ -120,7 +123,7 @@ function getPinpointRegionMapping() {
   return pinpoint.getPinpointRegionMapping();
 }
 
-function getConfiguredAmplifyClient(context, __category, __action, options = {}) {
+export function getConfiguredAmplifyClient(context, __category?, __action?, options = {}) {
   return amplifyService.getConfiguredAmplifyClient(context, options);
 }
 

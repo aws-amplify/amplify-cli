@@ -109,32 +109,6 @@ export const listEnvironment = async (cwd: string, settings: { numEnv?: number }
   return chain.sendEof().runAsync();
 };
 
-// Get environment details and return them as JSON
-export const getEnvironment = async (cwd: string, settings: { envName: string }): Promise<string> => {
-  const envData = {};
-  const helper = (output: string) => {
-    const [key, value] = output.split(/:(.+)/); // Split string on first ':' only
-    envData[key.trim()] = value.trim();
-  };
-  await spawn(getCLIPath(), ['env', 'get', '--name', settings.envName], { cwd, stripColors: true })
-    .wait(settings.envName)
-    .wait('--------------')
-    .wait('Provider')
-    .wait('AuthRoleName', helper)
-    .wait('UnauthRoleArn', helper)
-    .wait(/^AuthRoleArn/, helper) // Needs to be a regex to prevent matching UnauthRoleArn twice
-    .wait('Region', helper)
-    .wait('DeploymentBucketName', helper)
-    .wait('UnauthRoleName', helper)
-    .wait('StackName', helper)
-    .wait('StackId', helper)
-    .wait('--------------')
-    .sendEof()
-    .runAsync();
-
-  return JSON.stringify({ awscloudformation: envData });
-};
-
 /*
   `amplify env pull` only outputs via ora.spinner,
   but nexpect can't wait() on the spinner output
@@ -212,6 +186,13 @@ export function importEnvironment(cwd: string, settings: { envName: string; prov
     settings.envName,
     '--config',
     settings.providerConfig,
+    '--awsInfo',
+    JSON.stringify({
+      configLevel: 'project',
+      useProfile: true,
+      // eslint-disable-next-line spellcheck/spell-checker
+      profileName: isCI() ? 'amplify-integ-test-user' : 'default',
+    }),
     '--yes', // If env with same name already exists, overwrite it
   ];
 
