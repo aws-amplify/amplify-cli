@@ -46,17 +46,15 @@ describe('amplify export pull a', () => {
     const object1 = JSON.parse(fileString1.substring(fileString1.indexOf('{'), fileString1.lastIndexOf('}') + 1));
     const object2 = JSON.parse(fileString2.substring(fileString2.indexOf('{'), fileString2.lastIndexOf('}') + 1));
     expect(recursiveComapre(object1, object2)).toBeTruthy();
-  }
+  };
 
-  const recursiveComapre = (object1: any, object2: any): boolean => {
-    return Object.keys(object1).reduce((equal, key) => {
-      if (!equal) return false;
-      if (typeof object1[key] !== 'object') {
-        return object1[key] === object2[key];
-      }
-      return recursiveComapre(object1[key], object2[key]);
-    }, true);
-  }
+  const recursiveComapre = (object1: any, object2: any): boolean => Object.keys(object1).reduce((equal, key) => {
+    if (!equal) return false;
+    if (typeof object1[key] !== 'object') {
+      return object1[key] === object2[key];
+    }
+    return recursiveComapre(object1[key], object2[key]);
+  }, true);
 
   const AddandPushCategories = async (frontend?: string): Promise<void> => {
     await addAuthWithMaxOptions(projRoot, { frontend });
@@ -69,7 +67,7 @@ describe('amplify export pull a', () => {
     } else {
       await amplifyPush(projRoot);
     }
-  }
+  };
 
   const generatePullConfig = async (frontend: string) : Promise<string> => {
     const meta = getBackendAmplifyMeta(projRoot);
@@ -82,5 +80,5 @@ describe('amplify export pull a', () => {
       rootStackName: stackName,
     });
     return pathToExportGeneratedConfig;
-  }
+  };
 });
