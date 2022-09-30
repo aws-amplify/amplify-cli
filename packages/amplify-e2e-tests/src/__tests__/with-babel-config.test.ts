@@ -14,8 +14,7 @@ describe('project with babel config', () => {
   let projectRoot: string;
   let packageJsonPath: string;
   let babelConfigPath: string;
-  // eslint-disable-next-line spellcheck/spell-checker
-  const projName = 'withbabelconfig';
+  const projName = 'withBabelConfig';
   const envName = 'dev';
 
   beforeAll(async () => {
@@ -42,6 +41,9 @@ describe('project with babel config', () => {
 
     // install babel dependencies
     spawnSync('npm', ['install'], { cwd: projectRoot });
+
+    // init project
+    await initJSProjectWithProfile(projectRoot, { name: projName, envName });
   });
 
   afterAll(async () => {
@@ -49,15 +51,11 @@ describe('project with babel config', () => {
     deleteProjectDir(projectRoot);
   });
 
-  it('should init a project', async () => {
-    await initJSProjectWithProfile(projectRoot, { name: projName, envName });
-  });
-
   /**
    * This test is to ensure the CLI is able to read aws-exports.js when a babel config file is present
    * @see {module:@aws-amplify/amplify-frontend-javascript/lib/frontend-config-creator.js:getCurrentAWSExports}
    */
-  it('should be able to checkout env (reads aws-exports)', () => {
-    spawn(getCLIPath(), ['env', 'checkout', envName], { cwd: projectRoot, stripColors: true });
+  it('should be able to checkout env (reads aws-exports)', async () => {
+    expect(() => spawn(getCLIPath(), ['env', 'checkout', envName], { cwd: projectRoot, stripColors: true })).not.toThrow();
   });
 });
