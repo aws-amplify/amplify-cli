@@ -178,7 +178,6 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/auth_7.test.ts',
   'src/__tests__/auth_6.test.ts',
   'src/__tests__/delete.test.ts',
-  'src/__tests__/env.test.ts',
   'src/__tests__/feature-flags.test.ts',
   'src/__tests__/layer.test.ts',
   'src/__tests__/schema-searchable.test.ts',
