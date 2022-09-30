@@ -249,9 +249,7 @@ export function initProjectWithAccessKey(
     const chain = spawn(getCLIPath(), ['init'], {
       cwd,
       stripColors: true,
-      env: {
-        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-      },
+      env: getCliEnvVars(s),
     })
       .wait('Enter a name for the project')
       .sendLine(s.name)

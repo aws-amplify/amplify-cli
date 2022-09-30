@@ -68,7 +68,7 @@ describe('amplify init', () => {
   });
 
   it('should init the project and create new env', async () => {
-    await initJSProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false });
     const meta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(meta.Region).toBeDefined();
     const {
@@ -159,6 +159,7 @@ describe('amplify init', () => {
     const localEnvData = fs.readJsonSync(localEnvPath);
     const originalPath = localEnvData.projectPath;
 
+    // eslint-disable-next-line spellcheck/spell-checker
     expect(localEnvData.projectPath).toEqual(fs.realpathSync(projRoot));
 
     localEnvData.projectPath = path.join('foo', 'bar');
@@ -196,6 +197,7 @@ describe('amplify init', () => {
     expect(newEnvMeta.AuthRoleName).toContain('mockRole');
 
     // create a new env, and the override should remain in place
+    // eslint-disable-next-line spellcheck/spell-checker
     await addEnvironment(projRoot, { envName: 'envb' });
     const newestEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(newestEnvMeta.AuthRoleName).toContain('mockRole');
