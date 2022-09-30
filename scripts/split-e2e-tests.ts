@@ -146,9 +146,8 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   //<35m
   'src/__tests__/migration/api.key.migration1.test.ts',
   'src/__tests__/auth_4.test.ts',
+  'src/__tests__/auth_5e.test.ts',
   'src/__tests__/schema-auth-7.test.ts',
-  'src/__tests__/schema-auth-8.test.ts',
-  'src/__tests__/schema-auth-4.test.ts',
   'src/__tests__/api_3.test.ts',
   'src/__tests__/import_auth_1.test.ts',
   'src/__tests__/import_auth_2.test.ts',
@@ -162,15 +161,17 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/migration/api.key.migration2.test.ts',
   'src/__tests__/migration/api.key.migration3.test.ts',
   'src/__tests__/function_1.test.ts',
-  'src/__tests__/schema-auth-1.test.ts',
   'src/__tests__/function_4.test.ts',
   //<45m
   'src/__tests__/schema-function.test.ts',
   'src/__tests__/migration/api.connection.migration.test.ts',
   'src/__tests__/schema-connection.test.ts',
   'src/__tests__/schema-iterative-update-3.test.ts',
+  'src/__tests__/schema-auth-1.test.ts',
+  'src/__tests__/schema-auth-4.test.ts',
   //<50m
   'src/__tests__/schema-auth-2.test.ts',
+  'src/__tests__/schema-auth-8.test.ts',
   'src/__tests__/api_1.test.ts',
   //<55m
   'src/__tests__/storage.test.ts',
@@ -180,12 +181,15 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/schema-iterative-update-4.test.ts',
   'src/__tests__/schema-auth-10.test.ts',
   //<2h
+  'src/__tests__/function_9.test.ts',
+  'src/__tests__/api_9.test.ts',
   'src/__tests__/auth_7.test.ts',
   'src/__tests__/auth_6.test.ts',
   'src/__tests__/delete.test.ts',
   'src/__tests__/feature-flags.test.ts',
   'src/__tests__/layer.test.ts',
   'src/__tests__/schema-searchable.test.ts',
+  'src/__tests__/api_migration_update.test.ts',
 ];
 
 /**
@@ -227,8 +231,7 @@ export type CircleCIConfig = {
 const repoRoot = join(__dirname, '..');
 
 function getTestFiles(dir: string, pattern = 'src/**/*.test.ts'): string[] {
-  // Todo: add reverse to run longest tests first
-  return sortTestsBasedOnTime(glob.sync(pattern, { cwd: dir })); // .reverse();
+  return sortTestsBasedOnTime(glob.sync(pattern, { cwd: dir })).reverse();
 }
 
 function generateJobName(baseName: string, testSuitePath: string): string {
