@@ -1,17 +1,12 @@
-import { $TSContext, $TSMeta, DeploymentState, DeploymentStepStatus, IDeploymentStateManager, JSONUtilities } from 'amplify-cli-core';
+import {
+  $TSContext, $TSMeta, amplifyErrorWithTroubleshootingLink, DeploymentState, DeploymentStepStatus, IDeploymentStateManager, JSONUtilities,
+} from 'amplify-cli-core';
+import ora from 'ora';
 import { DeploymentOp, DeploymentManager } from './deployment-manager';
 import { S3 } from '../aws-utils/aws-s3';
 import { formUserAgentParam } from '../aws-utils/user-agent';
-import ora from 'ora';
-const spinner = ora('');
 
-class IterativeRollbackError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'IterativeRollbackError';
-    this.stack = undefined;
-  }
-}
+const spinner = ora('');
 
 const prevDeploymentStatus = [
   DeploymentStepStatus.DEPLOYING,
@@ -25,7 +20,10 @@ const loadDeploymentMeta = async (s3: S3, bucketName: string, metaKey: string): 
   if (metaDeploymentContent) {
     return JSONUtilities.parse<DeploymentOp>(metaDeploymentContent);
   }
-  throw new IterativeRollbackError(`Could not load deployment meta for ${metaKey}`);
+
+  throw amplifyErrorWithTroubleshootingLink('IterativeRollbackError', {
+    message: `Could not find deployment meta file: ${metaKey}`,
+  });
 };
 
 // https://stackoverflow.com/questions/1916218/find-the-longest-common-starting-substring-in-a-set-of-strings
@@ -33,19 +31,22 @@ const getParentStatePath = (files: string[]): string | null => {
   if (!files) return null;
   if (files.length < 2) return files[0];
   files.sort();
-  let longestFilePath = files[0];
-  let smallestFilePath = files[files.length - 1];
-  let longestFilePathLength = longestFilePath.length;
+  const longestFilePath = files[0];
+  const smallestFilePath = files[files.length - 1];
+  const longestFilePathLength = longestFilePath.length;
   let i = 0;
   while (i < longestFilePathLength && longestFilePath.charAt(i) === smallestFilePath.charAt(i)) i++;
   return longestFilePath.substring(0, i);
 };
 
-export async function runIterativeRollback(
+/**
+ * Iterative deployment
+ */
+export const runIterativeRollback = async (
   context: $TSContext,
   cloudformationMeta: $TSMeta,
   deploymentStateManager: IDeploymentStateManager,
-) {
+): Promise<void> => {
   const deploymentBucket = cloudformationMeta.DeploymentBucketName;
   const deploymentStatus: DeploymentState = deploymentStateManager.getStatus();
   const deployedSteps = deploymentStatus.steps.slice(0, deploymentStatus.currentStepIndex + 1);
@@ -59,9 +60,9 @@ export async function runIterativeRollback(
   const stateFiles: string[] = [];
   for (const step of deployedSteps) {
     if (!step.previousMetaKey) {
-      throw new IterativeRollbackError(
-        `Cannot iteratively rollback as the following step does not contain a previousMetaKey: ${JSON.stringify(step)}`,
-      );
+      throw amplifyErrorWithTroubleshootingLink('IterativeRollbackError', {
+        message: `Cannot iteratively rollback as the following step does not contain a previousMetaKey: ${JSON.stringify(step)}`,
+      });
     }
 
     const deploymentMeta = await loadDeploymentMeta(s3, deploymentBucket, step.previousMetaKey);
@@ -82,4 +83,4 @@ export async function runIterativeRollback(
     await s3.deleteDirectory(deploymentBucket, stateS3Dir);
     spinner.succeed('Finished Rollback');
   }
-}
+};

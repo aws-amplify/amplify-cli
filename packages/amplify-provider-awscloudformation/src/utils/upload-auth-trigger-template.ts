@@ -1,6 +1,9 @@
-import { $TSContext, FeatureFlags, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import {
+  $TSContext, amplifyErrorWithTroubleshootingLink, FeatureFlags, JSONUtilities, pathManager, stateManager,
+} from 'amplify-cli-core';
 import * as path from 'path';
 import _ from 'lodash';
+// eslint-disable-next-line import/no-cycle
 import { uploadTemplateToS3 } from '../push-resources';
 import { ProviderName } from '../constants';
 
@@ -8,7 +11,10 @@ export const AUTH_TRIGGER_TEMPLATE = 'auth-trigger-cloudformation-template.json'
 export const AUTH_TRIGGER_STACK = 'AuthTriggerCustomLambdaStack';
 const S3_UPLOAD_PATH = `auth/${AUTH_TRIGGER_TEMPLATE}`;
 
-export async function uploadAuthTriggerTemplate(context: $TSContext): Promise<{ AuthTriggerTemplateURL: string | undefined }> {
+/**
+ * uploads the auth trigger template to S3
+ */
+export const uploadAuthTriggerTemplate = async (context: $TSContext): Promise<{ AuthTriggerTemplateURL: string | undefined }> => {
   const defaultResult = {
     AuthTriggerTemplateURL: undefined,
   };
@@ -32,7 +38,9 @@ export async function uploadAuthTriggerTemplate(context: $TSContext): Promise<{ 
 
   // This should not happen, so throw
   if (!deploymentBucketName) {
-    throw new Error('DeploymentBucket was not found in amplify-meta.json');
+    throw amplifyErrorWithTroubleshootingLink('BucketNotFoundError', {
+      message: 'DeploymentBucket was not found in amplify-meta.json',
+    });
   }
 
   const triggerCfnContent = JSONUtilities.readJson(authTriggerCfnFilePath, {
@@ -48,4 +56,4 @@ export async function uploadAuthTriggerTemplate(context: $TSContext): Promise<{ 
   return {
     AuthTriggerTemplateURL: `https://s3.amazonaws.com/${deploymentBucketName}/amplify-cfn-templates/${S3_UPLOAD_PATH}`,
   };
-}
+};

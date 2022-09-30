@@ -1,7 +1,11 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import {
+  $TSAny, $TSContext, amplifyFaultWithTroubleshootingLink, amplifyErrorWithTroubleshootingLink,
+} from 'amplify-cli-core';
 import { IIdentityPoolService } from 'amplify-util-import';
 import { CognitoIdentity } from 'aws-sdk';
-import { PaginationKey, IdentityPool, IdentityPoolShortDescription, ListIdentityPoolsResponse } from 'aws-sdk/clients/cognitoidentity';
+import {
+  PaginationKey, IdentityPool, IdentityPoolShortDescription, ListIdentityPoolsResponse,
+} from 'aws-sdk/clients/cognitoidentity';
 import { loadConfiguration } from '../configuration-manager';
 import { pagedAWSCall } from './paged-call';
 
@@ -28,14 +32,12 @@ export class IdentityPoolService implements IIdentityPoolService {
   public async listIdentityPools(): Promise<IdentityPoolShortDescription[]> {
     if (this.cachedIdentityPoolIds.length === 0) {
       const result = await pagedAWSCall<ListIdentityPoolsResponse, IdentityPoolShortDescription, PaginationKey>(
-        async (params: CognitoIdentity.Types.ListIdentitiesInput, nextToken: PaginationKey) => {
-          return await this.cognitoIdentity
-            .listIdentityPools({
-              ...params,
-              NextToken: nextToken,
-            })
-            .promise();
-        },
+        async (params: CognitoIdentity.Types.ListIdentitiesInput, nextToken: PaginationKey) => await this.cognitoIdentity
+          .listIdentityPools({
+            ...params,
+            NextToken: nextToken,
+          })
+          .promise(),
         {
           MaxResults: 60,
         },
@@ -56,13 +58,11 @@ export class IdentityPoolService implements IIdentityPoolService {
       const identityPoolDetails = [];
 
       if (identityPools.length > 0) {
-        const describeIdentityPoolPromises = identityPools.map(idp =>
-          this.cognitoIdentity
-            .describeIdentityPool({
-              IdentityPoolId: idp.IdentityPoolId,
-            })
-            .promise(),
-        );
+        const describeIdentityPoolPromises = identityPools.map(idp => this.cognitoIdentity
+          .describeIdentityPool({
+            IdentityPoolId: idp.IdentityPoolId,
+          })
+          .promise());
 
         const identityPoolDetailResults = await Promise.all(describeIdentityPoolPromises);
 
@@ -84,15 +84,17 @@ export class IdentityPoolService implements IIdentityPoolService {
       })
       .promise();
 
-    if (!response.Roles || !response.Roles['authenticated'] || !response.Roles['unauthenticated']) {
-      throw new Error(`Cannot import Identity Pool without roles.`);
+    if (!response.Roles || !response.Roles.authenticated || !response.Roles.unauthenticated) {
+      throw amplifyErrorWithTroubleshootingLink('AuthImportError', {
+        message: `Cannot import Identity Pool without 'authenticated' and 'unauthenticated' roles.`,
+      });
     }
 
     return {
-      authRoleArn: response.Roles['authenticated'],
-      authRoleName: this.getResourceNameFromArn(response.Roles['authenticated']),
-      unauthRoleArn: response.Roles['unauthenticated'],
-      unauthRoleName: this.getResourceNameFromArn(response.Roles['unauthenticated']),
+      authRoleArn: response.Roles.authenticated,
+      authRoleName: this.getResourceNameFromArn(response.Roles.authenticated),
+      unauthRoleArn: response.Roles.unauthenticated,
+      unauthRoleName: this.getResourceNameFromArn(response.Roles.unauthenticated),
     };
   }
 
@@ -109,7 +111,9 @@ export class IdentityPoolService implements IIdentityPoolService {
 
     // Should not happen anytime
     if (!resourceName) {
-      throw new Error(`Cannot parse arn: '${arn}'.`);
+      throw amplifyFaultWithTroubleshootingLink('UnknownFault', {
+        message: `Cannot parse arn: '${arn}'.`,
+      });
     }
 
     return resourceName;

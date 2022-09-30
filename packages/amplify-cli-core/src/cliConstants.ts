@@ -1,4 +1,4 @@
-export const SecretFileMode = 0o600; //file permissions for -rw-------
+export const SecretFileMode = 0o600; // file permissions for -rw-------
 export const CLISubCommands = {
   ADD: 'add',
   PUSH: 'push',
@@ -8,6 +8,10 @@ export const CLISubCommands = {
   CONSOLE: 'console',
   IMPORT: 'import',
 };
+
+/**
+ * CLI constants
+ */
 export enum CLISubCommandType {
   ADD = 'add',
   PUSH = 'push',
@@ -31,7 +35,6 @@ export const AmplifyCategories = {
   ANALYTICS: 'analytics',
   CUSTOM: 'custom',
 };
-
 export const AmplifySupportedService = {
   APIGW: 'API Gateway',
   APPSYNC: 'AppSync',
@@ -41,10 +44,15 @@ export const AmplifySupportedService = {
   COGNITOUSERPOOLGROUPS: 'Cognito-UserPool-Groups',
   LAMBDA: 'Lambda',
   LAMBDA_LAYER: 'LambdaLayer',
+  PINPOINT: 'Pinpoint',
+  KINESIS: 'Kinesis',
 };
 
 export const overriddenCategories = [AmplifyCategories.AUTH, AmplifyCategories.STORAGE, AmplifyCategories.CUSTOM, AmplifyCategories.API];
 
+/**
+ * Amplify Resource type
+ */
 export type IAmplifyResource = {
   category: string;
   resourceName: string;
@@ -54,21 +62,22 @@ export type IAmplifyResource = {
 export const AMPLIFY_DOCS_URL = 'https://docs.amplify.aws';
 export const AWS_DOCS_URL = 'https://docs.aws.amazon.com/';
 export const AWS_PREMIUM_SUPPORT_URL = 'https://aws.amazon.com/premiumsupport';
+
 /**
  * Amplify support documentation urls and description.
  */
 export const AMPLIFY_SUPPORT_DOCS = {
   CLI_PROJECT_TROUBLESHOOTING: {
     name: 'Amplify CLI troubleshooting guide',
-    url: `${AMPLIFY_DOCS_URL}/cli/project/troubleshooting/`
+    url: `${AMPLIFY_DOCS_URL}/cli/project/troubleshooting/`,
   },
   CLI_GRAPHQL_TROUBLESHOOTING: {
     name: 'Amplify CLI GraphQL troubleshooting guide',
-    url: `${AMPLIFY_DOCS_URL}/cli/graphql/troubleshooting/`
+    url: `${AMPLIFY_DOCS_URL}/cli/graphql/troubleshooting/`,
   },
   CLI_EXTENSIBILITY: {
     name: 'Amplify CLI extensibility guide',
-    url: `${AMPLIFY_DOCS_URL}/cli/#extensibility`
+    url: `${AMPLIFY_DOCS_URL}/cli/#extensibility`,
   },
   AWS_CUSTOM_DOMAIN_TROUBLESHOOTING: {
     name: 'AWS custom domain troubleshooting guide',
@@ -88,6 +97,6 @@ export const AMPLIFY_SUPPORT_DOCS = {
   },
   AWS_KNOWLEDGE_CENTER: {
     name: 'AWS knowledge center',
-    url: `${AWS_PREMIUM_SUPPORT_URL}/knowledge-center/`
+    url: `${AWS_PREMIUM_SUPPORT_URL}/knowledge-center/`,
   },
 };

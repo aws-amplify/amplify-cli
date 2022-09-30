@@ -1,15 +1,15 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
+import { amplifyErrorWithTroubleshootingLink, stateManager } from 'amplify-cli-core';
+import * as assert from 'assert';
 import { CognitoIdentity } from 'aws-sdk';
-import bodyParser from 'body-parser';  // eslint-disable-line
+import bodyParser from 'body-parser'; // eslint-disable-line
 import cors from 'cors';
-import express from 'express';  // eslint-disable-line
+import express from 'express'; // eslint-disable-line
 import http from 'http';
 import * as jose from 'jose';
 import _ from 'lodash';
-import * as assert from 'assert';
 
-import { AdminAuthPayload, CognitoIdToken, CognitoAccessToken } from './auth-types';
 import { Printer } from 'amplify-prompts';
+import { AdminAuthPayload, CognitoAccessToken, CognitoIdToken } from './auth-types';
 
 /**
  * Admin login server class
@@ -72,7 +72,9 @@ export class AdminLoginServer {
       })
       .promise();
     if (!IdentityId) {
-      throw new Error('IdentityId not defined. Amplify CLI was unable to retrieve credentials.');
+      throw amplifyErrorWithTroubleshootingLink('AmplifyStudioLoginError', {
+        message: 'IdentityId not defined. Amplify CLI was unable to retrieve credentials.',
+      });
     }
     return IdentityId;
   }
@@ -85,7 +87,9 @@ export class AdminLoginServer {
           this.print.info('Login canceled');
           process.exit(0);
         }
-        throw new Error('Failed to receive expected authentication tokens.');
+        throw amplifyErrorWithTroubleshootingLink('AmplifyStudioLoginError', {
+          message: 'Failed to receive expected authentication tokens.',
+        });
       }
       try {
         await this.storeTokens(req.body, this.appId);
@@ -93,7 +97,9 @@ export class AdminLoginServer {
         res.sendStatus(200);
       } catch (err) {
         res.sendStatus(500);
-        throw new Error(`Failed to receive expected authentication tokens. Error: [${err}]`);
+        throw amplifyErrorWithTroubleshootingLink('AmplifyStudioLoginError', {
+          message: `Failed to receive expected authentication tokens. Error: [${err}]`,
+        });
       }
       callback();
     });

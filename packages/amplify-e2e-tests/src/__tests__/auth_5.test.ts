@@ -6,9 +6,16 @@ import {
   updateHeadlessAuth,
   removeHeadlessAuth,
   getCloudBackendConfig,
-  addAuthWithDefault, getBackendAmplifyMeta, createNewProjectDir, deleteProjectDir, getProjectMeta, getUserPool, getMFAConfiguration,
+  addAuthWithDefault,
+  getBackendAmplifyMeta,
+  createNewProjectDir,
+  deleteProjectDir,
+  getProjectMeta,
+  getUserPool,
+  getMFAConfiguration,
 } from '@aws-amplify/amplify-e2e-core';
 import {
+  // eslint-disable-next-line spellcheck/spell-checker
   AddAuthRequest, CognitoUserPoolSigninMethod, CognitoUserProperty, UpdateAuthRequest,
 } from 'amplify-headless-interface';
 import _ from 'lodash';
@@ -37,6 +44,7 @@ describe('headless auth', () => {
         includeIdentityPool: false,
         userPoolConfiguration: {
           requiredSignupAttributes: [CognitoUserProperty.EMAIL, CognitoUserProperty.PHONE_NUMBER],
+          // eslint-disable-next-line spellcheck/spell-checker
           signinMethod: CognitoUserPoolSigninMethod.USERNAME,
         },
       },
@@ -59,6 +67,7 @@ describe('headless auth', () => {
         includeIdentityPool: false,
         userPoolConfiguration: {
           requiredSignupAttributes: [CognitoUserProperty.EMAIL],
+          // eslint-disable-next-line spellcheck/spell-checker
           signinMethod: CognitoUserPoolSigninMethod.PHONE_NUMBER,
           mfa: {
             mode: 'OPTIONAL',
@@ -76,14 +85,10 @@ describe('headless auth', () => {
     const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
     const region = meta.providers.awscloudformation.Region;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
-    const mfaconfig = await getMFAConfiguration(id, region);
-    expect(mfaconfig.SoftwareTokenMfaConfiguration.Enabled).toBeTruthy();
-    /** expected : undefined
-     * need to debug
-     *  Received: {"SmsAuthenticationMessage": "The verification code is {####}", "SmsConfiguration": {"ExternalId": "authte3404c1bd_role_external_id", "SnsCallerArn": "arn:aws:iam::136981144547:role/sns3404c1bd132643-integtest"}}
-     */
-    expect(mfaconfig.SmsMfaConfiguration).toBeDefined();
-    expect(mfaconfig.SmsMfaConfiguration.SmsAuthenticationMessage).toBe('The verification code is {####}');
+    const mfaConfig = await getMFAConfiguration(id, region);
+    expect(mfaConfig.SoftwareTokenMfaConfiguration.Enabled).toBeTruthy();
+    expect(mfaConfig.SmsMfaConfiguration).toBeDefined();
+    expect(mfaConfig.SmsMfaConfiguration.SmsAuthenticationMessage).toBe('The verification code is {####}');
     expect(userPool.UserPool).toBeDefined();
   });
 
@@ -96,6 +101,7 @@ describe('headless auth', () => {
         includeIdentityPool: false,
         userPoolConfiguration: {
           requiredSignupAttributes: [CognitoUserProperty.EMAIL, CognitoUserProperty.PHONE_NUMBER],
+          // eslint-disable-next-line spellcheck/spell-checker
           signinMethod: CognitoUserPoolSigninMethod.PHONE_NUMBER,
           mfa: {
             mode: 'OPTIONAL',
@@ -113,9 +119,9 @@ describe('headless auth', () => {
     const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
     const region = meta.providers.awscloudformation.Region;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
-    const mfaconfig = await getMFAConfiguration(id, region);
-    expect(mfaconfig.SoftwareTokenMfaConfiguration.Enabled).toBeTruthy();
-    expect(mfaconfig.SmsMfaConfiguration.SmsConfiguration).toBeDefined();
+    const mfaConfig = await getMFAConfiguration(id, region);
+    expect(mfaConfig.SoftwareTokenMfaConfiguration.Enabled).toBeTruthy();
+    expect(mfaConfig.SmsMfaConfiguration.SmsConfiguration).toBeDefined();
     expect(userPool.UserPool).toBeDefined();
   });
 
@@ -133,6 +139,7 @@ describe('headless auth', () => {
             deliveryMethod: 'SMS',
             smsMessage: 'The verification code is {####}',
           },
+          // eslint-disable-next-line spellcheck/spell-checker
           signinMethod: CognitoUserPoolSigninMethod.PHONE_NUMBER,
           mfa: {
             mode: 'OPTIONAL',
@@ -150,10 +157,17 @@ describe('headless auth', () => {
     const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
     const region = meta.providers.awscloudformation.Region;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
-    const mfaconfig = await getMFAConfiguration(id, region);
-    expect(mfaconfig.SoftwareTokenMfaConfiguration.Enabled).toBeTruthy();
-    expect(mfaconfig.SmsMfaConfiguration.SmsConfiguration).toBeDefined();
+    const mfaConfig = await getMFAConfiguration(id, region);
+    expect(mfaConfig.SoftwareTokenMfaConfiguration.Enabled).toBeTruthy();
+    expect(mfaConfig.SmsMfaConfiguration.SmsConfiguration).toBeDefined();
     expect(userPool.UserPool).toBeDefined();
+    expect(userPool.UserPool.UserAttributeUpdateSettings).toMatchInlineSnapshot(`
+      Object {
+        "AttributesRequireVerificationBeforeUpdate": Array [
+          "phone_number",
+        ],
+      }
+    `);
   });
 
   it('updates existing auth resource', async () => {

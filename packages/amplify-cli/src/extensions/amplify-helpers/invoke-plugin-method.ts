@@ -1,29 +1,33 @@
-import { $TSContext } from 'amplify-cli-core';
+import {
+  $TSAny, $TSContext, AmplifyError, amplifyErrorWithTroubleshootingLink,
+} from 'amplify-cli-core';
 
+/**
+ * invoke plugin method
+ */
 export const invokePluginMethod = async <T>(
   context: $TSContext,
   category: string,
   service: string | undefined,
   method: string,
-  args: any[],
+  args: $TSAny[],
 ): Promise<T> => {
   const pluginInfo = context.amplify.getCategoryPluginInfo(context, category, service);
 
   if (!pluginInfo) {
-    throw new Error(`Plugin for category: ${category} was not found. Make sure Amplify CLI is properly installed (do you need to run \`amplify plugin scan\`?).`);
+    throw new AmplifyError('PluginNotFoundError', {
+      message: `Plugin for category: ${category} was not found.`,
+      resolution: `Make sure Amplify CLI is properly installed. You may need to run \`amplify plugin scan\``,
+    });
   }
 
-  const plugin: Record<string, any> = await import(pluginInfo.packageLocation);
-
-  const pluginMethod: any = plugin[method];
+  const plugin: Record<string, $TSAny> = await import(pluginInfo.packageLocation);
+  const pluginMethod = plugin[method];
 
   if (!pluginMethod || typeof pluginMethod !== 'function') {
-    const error = new Error(`Method ${method} does not exist or not a function in category plugin: ${category}.`);
-
-    error.name = 'MethodNotFound';
-    error.stack = undefined;
-
-    throw error;
+    throw amplifyErrorWithTroubleshootingLink('PluginMethodNotFoundError', {
+      message: `Method ${method} does not exist or is not a function in category plugin: ${category}.`,
+    });
   }
 
   return pluginMethod(...args);

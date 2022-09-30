@@ -1,6 +1,6 @@
-import { AmplifyAuthTransform } from '../../../../provider-utils/awscloudformation/auth-stack-builder';
 import { $TSContext } from 'amplify-cli-core';
 import process from 'process';
+import { AmplifyAuthTransform } from '../../../../provider-utils/awscloudformation/auth-stack-builder';
 
 jest.mock('amplify-cli-core', () => ({
   ...(jest.requireActual('amplify-cli-core') as {}),
@@ -18,6 +18,8 @@ jest.mock('amplify-cli-core', () => ({
   JSONUtilities: {
     writeJson: jest.fn(),
     readJson: jest.fn(),
+    stringify: jest.fn().mockImplementation(JSON.stringify),
+    parse: jest.fn().mockImplementation(JSON.parse),
   },
   FeatureFlags: {
     getBoolean: jest.fn().mockReturnValue(true),
@@ -165,16 +167,12 @@ const getCLIInputPayload_mock = jest.fn().mockReturnValueOnce(inputPayload1).moc
 
 const isCLIInputsValid_mock = jest.fn().mockReturnValue('true');
 
-jest.mock('../../../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state.ts', () => {
-  return {
-    AuthInputState: jest.fn().mockImplementation(() => {
-      return {
-        getCLIInputPayload: getCLIInputPayload_mock,
-        isCLIInputsValid: isCLIInputsValid_mock,
-      };
-    }),
-  };
-});
+jest.mock('../../../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state.ts', () => ({
+  AuthInputState: jest.fn().mockImplementation(() => ({
+    getCLIInputPayload: getCLIInputPayload_mock,
+    isCLIInputsValid: isCLIInputsValid_mock,
+  })),
+}));
 
 const mockPolicy1 = {
   policyName: 'AddToGroupCognito',

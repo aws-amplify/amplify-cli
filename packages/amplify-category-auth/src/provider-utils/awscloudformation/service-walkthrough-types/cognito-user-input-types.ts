@@ -25,6 +25,7 @@ type AuthStackMetadata = {
   breakCircularDependency: boolean;
   permissions?: AuthTriggerPermissions[];
   authTriggerConnections?: AuthTriggerConnection[];
+  userAutoVerifiedAttributeUpdateSettings?: string[];
 };
 
 export type ServiceQuestionHeadlessResult = ServiceQuestionsBaseResult &

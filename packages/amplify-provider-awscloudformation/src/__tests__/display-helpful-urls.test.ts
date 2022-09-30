@@ -1,17 +1,19 @@
-import { showGraphQLTransformerVersion, showSMSSandboxWarning } from '../display-helpful-urls';
 import { ApiCategoryFacade, BannerMessage, stateManager } from 'amplify-cli-core';
-import { SNS } from '../aws-utils/aws-sns';
 import { AWSError } from 'aws-sdk';
+import { printer } from 'amplify-prompts';
+import { SNS } from '../aws-utils/aws-sns';
+import { showGraphQLTransformerVersion, showSMSSandboxWarning } from '../display-helpful-urls';
 
 jest.mock('../aws-utils/aws-sns');
 jest.mock('amplify-cli-core');
 
+const printerMock = printer as jest.Mocked<typeof printer>;
+printerMock.info = jest.fn();
+printerMock.warn = jest.fn();
+printerMock.error = jest.fn();
+
 describe('showGraphQLTransformerVersion', () => {
-  const context = {
-    print: {
-      info: jest.fn(),
-    },
-  };
+  const context = {};
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -19,7 +21,7 @@ describe('showGraphQLTransformerVersion', () => {
 
   it('returns early if there are no AppSync APIs', async () => {
     await showGraphQLTransformerVersion(context);
-    expect(context.print.info).not.toHaveBeenCalled();
+    expect(printerMock.info).not.toHaveBeenCalled();
   });
 
   it('prints the transformer version if there are AppSync APIs', async () => {
@@ -29,7 +31,7 @@ describe('showGraphQLTransformerVersion', () => {
     });
 
     await showGraphQLTransformerVersion(context);
-    expect(context.print.info).toHaveBeenCalledWith('GraphQL transformer version: 2');
+    expect(printerMock.info).toHaveBeenCalledWith('GraphQL transformer version: 2');
   });
 });
 
@@ -60,7 +62,7 @@ describe('showSMSSandBoxWarning', () => {
       await showSMSSandboxWarning(context);
 
       expect(mockedGetMessage).toHaveBeenCalledWith('COGNITO_SMS_SANDBOX_UPDATE_WARNING');
-      expect(context.print.warning).not.toHaveBeenCalled();
+      expect(printerMock.warn).not.toHaveBeenCalled();
     });
 
     it('should show warning when SNS Client is missing sandbox API and there is a banner message associated', async () => {
@@ -70,7 +72,7 @@ describe('showSMSSandBoxWarning', () => {
       await showSMSSandboxWarning(context);
 
       expect(mockedGetMessage).toHaveBeenCalledWith('COGNITO_SMS_SANDBOX_UPDATE_WARNING');
-      expect(context.print.warning).toHaveBeenCalledWith(message);
+      expect(printerMock.warn).toHaveBeenCalledWith(message);
     });
   });
 
@@ -84,7 +86,7 @@ describe('showSMSSandBoxWarning', () => {
       await showSMSSandboxWarning(context);
 
       expect(mockedGetMessage).toHaveBeenCalledWith('COGNITO_SMS_SANDBOX_MISSING_PERMISSION');
-      expect(context.print.warning).not.toHaveBeenCalled();
+      expect(printerMock.warn).not.toHaveBeenCalled();
     });
 
     it('should show any warning if there is no message associated', async () => {
@@ -102,7 +104,7 @@ describe('showSMSSandBoxWarning', () => {
       await showSMSSandboxWarning(context);
 
       expect(mockedGetMessage).toHaveBeenCalledWith('COGNITO_SMS_SANDBOX_MISSING_PERMISSION');
-      expect(context.print.warning).toHaveBeenCalledWith(message);
+      expect(printerMock.warn).toHaveBeenCalledWith(message);
     });
   });
 
@@ -119,7 +121,7 @@ describe('showSMSSandBoxWarning', () => {
       await showSMSSandboxWarning(context);
 
       expect(mockedGetMessage).toHaveBeenCalledWith('COGNITO_SMS_SANDBOX_UPDATE_WARNING');
-      expect(context.print.warning).not.toHaveBeenCalledWith(message);
+      expect(printerMock.warn).not.toHaveBeenCalledWith(message);
     });
   });
 
@@ -137,7 +139,7 @@ describe('showSMSSandBoxWarning', () => {
       await showSMSSandboxWarning(context);
 
       expect(mockedGetMessage).toHaveBeenCalledWith('COGNITO_SMS_SANDBOX_UPDATE_WARNING');
-      expect(context.print.warning).not.toHaveBeenCalledWith(message);
+      expect(printerMock.warn).not.toHaveBeenCalledWith(message);
     });
   });
 });
