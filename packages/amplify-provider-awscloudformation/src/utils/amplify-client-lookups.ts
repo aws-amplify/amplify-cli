@@ -8,7 +8,7 @@ const logger = fileLogger('get-local-app-ids-in-same-region-and-account');
  * Gets a list of AppIds that exist in the local aws info file that are in the specified region and accessible by the given amplifyClient
  */
 export const getLocalAppIdsInSameRegionAndAccount = async (amplifyClient: Amplify): Promise<string[]> => {
-  const awsInfo = stateManager.getLocalAWSInfo();
+  const awsInfo = stateManager.getLocalAWSInfo(undefined, { throwIfNotExist: false });
   if (!awsInfo) {
     return [];
   }
