@@ -24,7 +24,7 @@ import {
 const defaultSettings = {
   name: 'authMigration',
 };
-describe('amplify auth migration', () => {
+describe('amplify auth migration a', () => {
   let projRoot: string;
 
   beforeAll(async () => {
