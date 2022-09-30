@@ -23,5 +23,4 @@ describe('api directives @auth batch 3b', () => {
     const testresult = await testSchema(projectDir, 'auth', 'dynamicGroup2');
     expect(testresult).toBeTruthy();
   });
-
 });
