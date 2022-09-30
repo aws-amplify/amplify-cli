@@ -3,6 +3,7 @@ import {
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { getConfiguredAmplifyClient, findAppByBackendPredicate } from 'amplify-provider-awscloudformation';
+import { Amplify } from 'aws-sdk';
 
 const errorLink = 'See https://docs.amplify.aws/cli/teams/commands/#import-an-environment';
 
@@ -44,8 +45,9 @@ export const run = async (context: $TSContext): Promise<void> => {
   }
 
   appIdParam = config?.awscloudformation?.AmplifyAppId;
-  if (appIdParam) {
-    addNewLocalAwsInfoUnsafeDoNotExport(envName, awsInfo, appIdParam);
+  const regionParam: string | undefined = config?.awscloudformation?.Region;
+  if (appIdParam && regionParam) {
+    addNewLocalAwsInfoUnsafeDoNotExport(envName, awsInfo, appIdParam, regionParam);
     printer.success(`Successfully added environment from your project`);
     return;
   }
@@ -56,7 +58,7 @@ export const run = async (context: $TSContext): Promise<void> => {
   // initialize an amplify client for the new imported environment
   // use amplify-client-lookup.findAppByBackendPredicate to locate appId for given stack name
   addNewLocalAwsInfoUnsafeDoNotExport(envName, awsInfo);
-  const amplifyClient = await getConfiguredAmplifyClient(context);
+  const amplifyClient = await getConfiguredAmplifyClient(context) as Amplify;
   if (!amplifyClient) {
     throw new UnknownArgumentError(`Could not construct Amplify client from specified config. ${errorLink}`);
   }
@@ -64,7 +66,7 @@ export const run = async (context: $TSContext): Promise<void> => {
   appIdParam = (await findAppByBackendPredicate(amplifyClient, backend => backend.stackName === stackName))?.appId;
 
   if (appIdParam) {
-    addNewLocalAwsInfoUnsafeDoNotExport(envName, awsInfo, appIdParam);
+    addNewLocalAwsInfoUnsafeDoNotExport(envName, awsInfo, appIdParam, amplifyClient.config.region);
     printer.success(`Successfully added environment from your project`);
     return;
   }
@@ -84,14 +86,18 @@ export const run = async (context: $TSContext): Promise<void> => {
  * @param envAwsInfo A partial aws info entry
  * @param appId The app Id for the env
  */
-const addNewLocalAwsInfoUnsafeDoNotExport = (envName: string, envAwsInfo: Partial<EnvAwsInfo>, appId?: string): void => {
+const addNewLocalAwsInfoUnsafeDoNotExport = (envName: string, envAwsInfo: Partial<EnvAwsInfo>, appId?: string, region?: string): void => {
   const localAwsInfo = stateManager.getLocalAWSInfo(undefined, {
     throwIfNotExist: false,
     default: {},
   });
 
   // unsafe!
-  localAwsInfo[envName] = { ...(appId ? { AmplifyAppId: appId } : undefined), ...envAwsInfo } as unknown as EnvAwsInfo;
+  localAwsInfo[envName] = {
+    ...(appId ? { AmplifyAppId: appId } : undefined),
+    ...(region ? { Region: region } : undefined),
+    ...envAwsInfo,
+  } as unknown as EnvAwsInfo;
 
   stateManager.setLocalAWSInfo(undefined, localAwsInfo);
 };

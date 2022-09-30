@@ -30,6 +30,9 @@ import { prePushCfnTemplateModifier } from './pre-push-cfn-processor/pre-push-cf
 import { getApiKeyConfig } from './utils/api-key-helpers';
 
 // eslint-disable-next-line spellcheck/spell-checker
+import { findAppByBackendPredicate } from './utils/amplify-client-lookups';
+
+// eslint-disable-next-line spellcheck/spell-checker
 export { findAppByBackendPredicate } from './utils/amplify-client-lookups';
 
 const attachBackendWorker = require('./attach-backend');
@@ -210,4 +213,5 @@ module.exports = {
   hashDirectory,
   prePushCfnTemplateModifier,
   getApiKeyConfig,
+  findAppByBackendPredicate,
 };

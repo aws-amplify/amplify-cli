@@ -89,7 +89,7 @@ describe('cross project environment commands', () => {
   });
 
   it('init two projects, get and import environment from one to the other', async () => {
-    await initJSProjectWithProfile(projRoot, { envName: 'env' });
+    await initJSProjectWithProfile(projRoot, { envName: 'env', disableAmplifyAppCreation: false });
     await addAuthWithDefault(projRoot, {});
     const providerConfig = getProjectMeta(projRoot).providers;
     await amplifyPushUpdate(projRoot);
@@ -102,7 +102,6 @@ describe('cross project environment commands', () => {
       await validate(getProjectMeta(projRoot));
       await validate(getProjectMeta(projRoot2));
     } finally {
-      await deleteProject(projRoot2);
       deleteProjectDir(projRoot2);
     }
   });
