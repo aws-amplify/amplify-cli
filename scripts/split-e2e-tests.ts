@@ -123,7 +123,6 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   //<20m
   'src/__tests__/predictions.test.ts',
   'src/__tests__/hostingPROD.test.ts',
-  'src/__tests__/geo-add.test.ts',
   'src/__tests__/geo-update.test.ts',
   'src/__tests__/geo-remove.test.ts',
   'src/__tests__/geo-multi-env.test.ts',
