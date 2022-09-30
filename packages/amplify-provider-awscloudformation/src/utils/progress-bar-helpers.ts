@@ -1,3 +1,4 @@
+import { ItemPayload, ProgressPayload } from 'amplify-prompts';
 import columnify from 'columnify';
 
 const COLUMNIFY_WIDTH = 30;
@@ -10,13 +11,6 @@ export const CNF_ERROR_STATUS = [
   'CREATE_FAILED', 'DELETE_FAILED', 'UPDATE_FAILED',
   'UPDATE_ROLLBACK_FAILED', 'ROLLBACK_FAILED',
 ];
-
-type ItemPayload = {
-  LogicalResourceId: string,
-  ResourceType: string,
-  ResourceStatus: string,
-  Timestamp: string,
-}
 
 /**
  * Custom item formatter for progress bar
@@ -45,11 +39,6 @@ export const createItemFormatter = (payload: ItemPayload): { renderString: strin
   }
   return { renderString, color };
 };
-
-type ProgressPayload = {
-  progressName: string,
-  envName: string
-}
 
 /**
  * Event map type

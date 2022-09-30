@@ -20,6 +20,7 @@ import {
 } from './state-machine';
 import { loadConfiguration } from '../configuration-manager';
 import { fileLogger, Logger } from '../utils/aws-logger';
+import { EventMap } from '../utils/progress-bar-helpers';
 import { StackProgressPrinter } from './stack-progress-printer';
 
 interface DeploymentManagerOptions {
@@ -28,12 +29,16 @@ interface DeploymentManagerOptions {
   userAgent?: string;
 }
 
-const deploySpinnerMessage = {
+type SpinnerMessageMap = {
+  [state: string]: { machine: string; message: string };
+};
+
+const deploySpinnerMessages: SpinnerMessageMap = {
   idle: { machine: 'deploy', message: `Starting deployment.` },
   'deploy.waitForTablesToBeReady': { machine: 'deploy', message: `Waiting for DynamoDB indices to be ready.` },
 };
 
-const rollbackSpinnerMessage = {
+const rollbackSpinnerMessages: SpinnerMessageMap = {
   idle: { machine: 'rollback', message: `Starting rollback.` },
   preRollback: { machine: 'rollback', message: `Waiting for previous deployment to finish.` },
   'rollback.waitForTablesToBeReady': { machine: 'rollback', message: `Waiting for DynamoDB indices to be ready.` },
@@ -68,15 +73,6 @@ export type DeploymentOp = Omit<DeploymentMachineOp, 'region' | 'stackTemplatePa
 export type DeploymentStep = {
   deployment: DeploymentOp;
   rollback: DeploymentOp;
-};
-
-type EventMap = {
-  rootStackName: string;
-  envName: string;
-  projectName: string;
-  rootResources: {key: string, category: string}[];
-  eventToCategories: Map<string, string>;
-  categories: {name: string, size: number}[];
 };
 
 /**
@@ -176,12 +172,12 @@ export class DeploymentManager {
           if (state.changed) {
             maxDeployed = Math.max(maxDeployed, state.context.currentIndex + 1);
 
-            const key = Object.keys(deploySpinnerMessage).find(elm => state.matches(elm));
-            if (key) {
-              const keyObj = deploySpinnerMessage[key];
-              this.logger(keyObj.machine, [{ spinner: keyObj.message }])();
+            const deploySpinnerState = Object.keys(deploySpinnerMessages).find(key => state.matches(key));
+            if (deploySpinnerState) {
+              const deploySpinnerMessage = deploySpinnerMessages[deploySpinnerState];
+              this.logger(deploySpinnerMessage.machine, [{ spinner: deploySpinnerMessage.message }])();
               if (!this.printer || (this.printer && !this.printer.isRunning())) {
-                this.spinner.start(keyObj.message);
+                this.spinner.start(deploySpinnerMessage.message);
               }
             } else if (state.matches('deployed')) {
               this.spinner.stop();
@@ -251,11 +247,11 @@ export class DeploymentManager {
       const service = interpret(machine)
         .onTransition(async state => {
           if (state.changed) {
-            const key = Object.keys(rollbackSpinnerMessage).find(elm => state.matches(elm));
-            if (key) {
-              const keyObj = rollbackSpinnerMessage[key];
-              this.logger(keyObj.machine, [{ spinner: keyObj.message }])();
-              this.spinner.start(keyObj.message);
+            const rollbackSpinnerState = Object.keys(rollbackSpinnerMessages).find(key => state.matches(key));
+            if (rollbackSpinnerState) {
+              const rollbackSpinnerMessage = rollbackSpinnerMessages[rollbackSpinnerState];
+              this.logger(rollbackSpinnerMessage.machine, [{ spinner: rollbackSpinnerMessage.message }])();
+              this.spinner.start(rollbackSpinnerMessage.message);
             } else if (state.matches('rolledBack')) {
               this.spinner.stop();
               this.printer.finishBars();
@@ -332,9 +328,6 @@ export class DeploymentManager {
   };
 
   public resetPrinter = (): void => {
-    if (this.printer) {
-      this.printer = null;
-    }
     this.printer = new StackProgressPrinter(this.eventMap);
   };
 
@@ -434,17 +427,9 @@ export class DeploymentManager {
     await this.waitForActiveTables(stackParams.tableNames);
   };
 
-  private printLogs = (): void => {
-    this.printer.print();
-  }
-
-  private addPrinterEvent = (event: aws.CloudFormation.StackEvent): void => {
-    this.printer.addActivity(event);
-  }
-
   private stackPollFn = (deploymentStep: DeploymentMachineOp): (() => void) => {
     assert(deploymentStep.stackName, 'stack name should be passed to stackPollFn');
-    const monitor = new StackEventMonitor(this.cfnClient, deploymentStep.stackName, this.printLogs, this.addPrinterEvent);
+    const monitor = new StackEventMonitor(this.cfnClient, deploymentStep.stackName, this.printer.print, this.printer.addActivity);
     monitor.start();
     return () => {
       if (monitor) {

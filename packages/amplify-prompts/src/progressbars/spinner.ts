@@ -28,6 +28,9 @@ export class AmplifySpinner {
    * Render function
    */
   private render(): void {
+    if (!this.terminal) {
+      return;
+    }
     if (this.timer) {
       clearTimeout(this.timer);
     }
@@ -36,9 +39,7 @@ export class AmplifySpinner {
       color: '',
     }];
     this.frameCount = ++this.frameCount % this.frames.length;
-    if (this.terminal) {
-      this.terminal.writeLines(lines);
-    }
+    this.terminal.writeLines(lines);
     this.timer = setTimeout(() => this.render(), this.refreshRate);
   }
 
@@ -68,11 +69,11 @@ export class AmplifySpinner {
   /**
    * Stops the spinner
    */
-  stop(text? : string | null, success = true): void {
+  stop(text?: string | null, success = true): void {
     if (!this.terminal) {
       return;
     }
-    const lines : StringObj[] = [{
+    const lines: StringObj[] = [{
       renderString: text || '',
       color: success ? 'green' : 'red',
     }];

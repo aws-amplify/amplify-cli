@@ -17,7 +17,7 @@ export class MultiProgressBar {
     private count: number;
     private terminal: Terminal;
     private options: BarOptions;
-    private bars: {name: string, bar: Bar}[];
+    private bars: { name: string, bar: Bar }[];
     private lastDrawnTime: number;
     isActive: boolean;
     private refreshRate: number;
