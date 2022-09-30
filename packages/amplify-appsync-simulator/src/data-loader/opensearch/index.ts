@@ -5,7 +5,6 @@ export class OpenSearchDataLoader implements AmplifyAppSyncSimulatorDataLoader {
 
   async load(payload, extraData) {
     try {
-      console.log(payload);
       if (process?.platform?.startsWith('win')) {
         console.error('@searchable mocking is not supported for Windows platform.');
         return null;
