@@ -50,5 +50,4 @@ describe('amplify geo add b', () => {
     expect(getGeoJSConfiguration(awsExport).search_indices.default).toEqual(indexName);
     expect(getGeoJSConfiguration(awsExport).region).toEqual(region);
   });
-
 });

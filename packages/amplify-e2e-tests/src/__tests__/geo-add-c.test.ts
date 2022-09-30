@@ -53,5 +53,4 @@ describe('amplify geo add c', () => {
     expect(getGeoJSConfiguration(awsExport).geofenceCollections.default).toEqual(collectionName);
     expect(getGeoJSConfiguration(awsExport).region).toEqual(region);
   });
-
 });
