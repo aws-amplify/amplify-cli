@@ -1,3 +1,6 @@
+/* eslint-disable spellcheck/spell-checker */
+/* eslint-disable import/no-extraneous-dependencies */
+
 import {
   addApiWithoutSchema,
   addAuthWithMaxOptions,
@@ -11,21 +14,15 @@ import {
   deleteProjectDir,
   exportPullBackend,
   getAmplifyConfigAndroidPath,
-  getAmplifyConfigIOSPath,
   getAWSConfigAndroidPath,
-  getAWSConfigIOSPath,
   getBackendAmplifyMeta,
   initAndroidProjectWithProfile,
-  initFlutterProjectWithProfile,
-  initIosProjectWithProfile,
-  initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as _ from 'lodash';
-import { getAWSExportsPath } from '../aws-exports/awsExports';
 
-describe('amplify export pull', () => {
+describe('amplify export pull c', () => {
   let projRoot: string;
   beforeEach(async () => {
     projRoot = await createNewProjectDir('exporttest');
@@ -34,25 +31,6 @@ describe('amplify export pull', () => {
   afterEach(async () => {
     await deleteProject(projRoot);
     deleteProjectDir(projRoot);
-  });
-
-  it('init a js project and compare with export pull', async () => {
-    await initJSProjectWithProfile(projRoot, { envName: 'dev' });
-    await AddandPushCategories();
-    const exportsPath = getAWSExportsPath(projRoot);
-    const pathToExportGeneratedConfig = await generatePullConfig('javascript');
-    compareFileContents(exportsPath, path.join(pathToExportGeneratedConfig, path.basename(exportsPath)));
-  });
-
-  it('init an ios project and compare with export pull', async () => {
-    await initIosProjectWithProfile(projRoot, { envName: 'dev' });
-
-    await AddandPushCategories('ios');
-    const awsConfigPath = getAWSConfigIOSPath(projRoot);
-    const amplifyConfigPath = getAmplifyConfigIOSPath(projRoot);
-    const pullConfigPath = await generatePullConfig('ios');
-    compareFileContents(awsConfigPath, path.join(pullConfigPath, path.basename(awsConfigPath)));
-    compareFileContents(amplifyConfigPath, path.join(pullConfigPath, path.basename(amplifyConfigPath)));
   });
 
   it('init an android project and compare with export pull', async () => {
@@ -66,15 +44,7 @@ describe('amplify export pull', () => {
     compareFileContents(amplifyConfigPath, path.join(pullConfigPath, path.basename(amplifyConfigPath)));
   });
 
-  it('init a flutter project and compare with export pull', async () => {
-    await initFlutterProjectWithProfile(projRoot, { envName: 'dev' });
-    await AddandPushCategories('flutter');
-    const amplifyConfigPath = path.join(projRoot, 'lib', 'amplifyconfiguration.dart');
-    const pullConfigPath = await generatePullConfig('flutter');
-    compareFileContents(amplifyConfigPath, path.join(pullConfigPath, path.basename(amplifyConfigPath)));
-  });
-
-  function compareFileContents(path1: string, path2: string) {
+  const compareFileContents = (path1: string, path2: string) : void => {
     const fileString1 = fs.readFileSync(path1, 'utf-8');
     const fileString2 = fs.readFileSync(path2, 'utf-8');
     const object1 = JSON.parse(fileString1.substring(fileString1.indexOf('{'), fileString1.lastIndexOf('}') + 1));
@@ -82,7 +52,7 @@ describe('amplify export pull', () => {
     expect(recursiveComapre(object1, object2)).toBeTruthy();
   }
 
-  function recursiveComapre(object1: Object, object2: Object): boolean {
+  const recursiveComapre = (object1: any, object2: any): boolean => {
     return Object.keys(object1).reduce((equal, key) => {
       if (!equal) return false;
       if (typeof object1[key] !== 'object') {
@@ -92,7 +62,7 @@ describe('amplify export pull', () => {
     }, true);
   }
 
-  async function AddandPushCategories(frontend?: string) {
+  const AddandPushCategories = async (frontend?: string): Promise<void> => {
     await addAuthWithMaxOptions(projRoot, { frontend });
     await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await addDEVHosting(projRoot);
@@ -105,7 +75,7 @@ describe('amplify export pull', () => {
     }
   }
 
-  async function generatePullConfig(frontend: string) {
+  const generatePullConfig = async (frontend: string) : Promise<string> => {
     const meta = getBackendAmplifyMeta(projRoot);
     const stackName = _.get(meta, ['providers', 'awscloudformation', 'StackName']);
     const pathToExportGeneratedConfig = path.join(projRoot, 'exportSrc');
