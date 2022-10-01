@@ -275,17 +275,18 @@ export const updateUserPoolGroups = async (context: $TSContext, resourceName: st
     ensureDirSync(userPoolGroupFolder);
     JSONUtilities.writeJson(path.join(userPoolGroupFolder, 'user-pool-group-precedence.json'), updatedUserPoolGroupList);
 
-    context.amplify.updateamplifyMetaAfterResourceUpdate(AmplifyCategories.AUTH, 'userPoolGroups', 'userPoolGroups', {
-      service: 'Cognito-UserPool-Groups',
-      providerPlugin: 'awscloudformation',
-      dependsOn: [
-        {
-          category: AmplifyCategories.AUTH,
-          resourceName,
-          attributes: ['UserPoolId', 'AppClientIDWeb', 'AppClientID', 'IdentityPoolId'],
-        },
-      ],
-    });
+    context.amplify.updateamplifyMetaAfterResourceUpdate(AmplifyCategories.AUTH, 'userPoolGroups', 'service', 'Cognito-UserPool-Groups');
+
+    context.amplify.updateamplifyMetaAfterResourceUpdate(AmplifyCategories.AUTH, 'userPoolGroups', 'providerPlugin', 'awscloudformation');
+
+    context.amplify.updateamplifyMetaAfterResourceUpdate(AmplifyCategories.AUTH, 'userPoolGroups', 'dependsOn', [
+      {
+        category: AmplifyCategories.AUTH,
+        resourceName,
+        attributes: ['UserPoolId', 'AppClientIDWeb', 'AppClientID', 'IdentityPoolId'],
+      },
+    ]);
+
     // generate template
     await generateUserPoolGroupStackTemplate(context, resourceName);
   }
