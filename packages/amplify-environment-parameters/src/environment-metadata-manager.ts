@@ -1,4 +1,6 @@
-import { $TSContext, pathManager, stateManager } from 'amplify-cli-core';
+import {
+  $TSContext, pathManager, stateManager, getPermissionsBoundaryArn,
+} from 'amplify-cli-core';
 import { AmplifyBackend } from 'aws-sdk';
 import type { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
 import { IEnvironmentMetadata, WriteTarget } from './types';
@@ -202,7 +204,7 @@ class EnvironmentMetadata implements IEnvironmentMetadata {
   }
 
   get PermissionsBoundaryPolicyArn(): string | undefined {
-    return this._PermissionsBoundaryPolicyArn;
+    return this._PermissionsBoundaryPolicyArn || getPermissionsBoundaryArn();
   }
 
   set PermissionsBoundaryPolicyArn(value: string | undefined) {
@@ -244,8 +246,8 @@ class EnvironmentMetadata implements IEnvironmentMetadata {
       StackId: this.StackId,
       AmplifyAppId: this._AmplifyAppId,
     } as Record<string, string>;
-    if (this._PermissionsBoundaryPolicyArn) {
-      obj.PermissionsBoundaryPolicyArn = this._PermissionsBoundaryPolicyArn;
+    if (this.PermissionsBoundaryPolicyArn) {
+      obj.PermissionsBoundaryPolicyArn = this.PermissionsBoundaryPolicyArn;
     }
     return obj;
   }
