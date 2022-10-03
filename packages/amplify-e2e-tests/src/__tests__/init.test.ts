@@ -110,6 +110,7 @@ describe('amplify init', () => {
     await initProjectWithAccessKey(projRoot, {
       accessKeyId: AWS_ACCESS_KEY_ID,
       secretAccessKey: AWS_SECRET_ACCESS_KEY,
+      disableAmplifyAppCreation: false,
     });
 
     const meta = getProjectMeta(projRoot).providers.awscloudformation;
@@ -176,7 +177,7 @@ describe('amplify init', () => {
   });
 
   it('should init the project and override root and push', async () => {
-    await initJSProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false });
     const meta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(meta.Region).toBeDefined();
     const {

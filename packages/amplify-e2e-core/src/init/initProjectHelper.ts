@@ -239,7 +239,7 @@ export function initFlutterProjectWithProfile(cwd: string, settings: Partial<typ
 
 export function initProjectWithAccessKey(
   cwd: string,
-  settings: { accessKeyId: string; secretAccessKey: string; region?: string },
+  settings: { accessKeyId: string; secretAccessKey: string; region?: string } & Partial<typeof defaultSettings>,
 ): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
