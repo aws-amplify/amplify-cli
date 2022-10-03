@@ -73,7 +73,7 @@ export class AmplifyTerminal {
     /**
      * Write array of lines into block.
      */
-    public writeLines(lines : StringObj[]) : void {
+    public writeLines(lines: ColoredString[]) : void {
       // Go back to beginning of last written block
       this.stream.write(cursorUp(this.lastHeight));
 

@@ -93,7 +93,7 @@ export class StackProgressPrinter implements IStackProgressPrinter {
             LogicalResourceId: event.LogicalResourceId,
             ResourceType: event.ResourceType,
             ResourceStatus: event.ResourceStatus,
-            Timestamp: event.Timestamp,
+            Timestamp: event.Timestamp.toString(),
           },
         };
         const item = this.eventMap.rootResources.find(it => it.key === event.LogicalResourceId);

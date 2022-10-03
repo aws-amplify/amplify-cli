@@ -1,4 +1,4 @@
-import { AmplifyTerminal as Terminal, StringObj } from './terminal';
+import { AmplifyTerminal as Terminal, ColoredString } from './terminal';
 
 /**
  * Type for Bar configurations options
@@ -38,7 +38,7 @@ export type ItemPayload = {
     LogicalResourceId: string,
     ResourceType: string,
     ResourceStatus: string,
-    Timestamp: Date | string,
+    Timestamp: string,
 }
 
 type Item = {
@@ -99,8 +99,8 @@ export class ProgressBar {
     /**
      * Render strings are made by concatenating the progress bar strings with the item strings.
      */
-    getRenderStrings(): StringObj[] {
-      let finalStrings: StringObj[] = [];
+    getRenderStrings(): ColoredString[] {
+      let finalStrings: ColoredString[] = [];
       const progressBar = this.options.progressBarFormatter.call(this, this.payload, this.value, this.total) + this.createBarString();
       finalStrings.push({
         renderString: progressBar,

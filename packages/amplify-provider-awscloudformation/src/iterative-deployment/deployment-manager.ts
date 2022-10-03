@@ -29,16 +29,16 @@ interface DeploymentManagerOptions {
   userAgent?: string;
 }
 
-type SpinnerMessageMap = {
+type SpinnerMessageByState = {
   [state: string]: { machine: string; message: string };
 };
 
-const deploySpinnerMessages: SpinnerMessageMap = {
+const deploySpinnerMessages: SpinnerMessageByState = {
   idle: { machine: 'deploy', message: `Starting deployment.` },
   'deploy.waitForTablesToBeReady': { machine: 'deploy', message: `Waiting for DynamoDB indices to be ready.` },
 };
 
-const rollbackSpinnerMessages: SpinnerMessageMap = {
+const rollbackSpinnerMessages: SpinnerMessageByState = {
   idle: { machine: 'rollback', message: `Starting rollback.` },
   preRollback: { machine: 'rollback', message: `Waiting for previous deployment to finish.` },
   'rollback.waitForTablesToBeReady': { machine: 'rollback', message: `Waiting for DynamoDB indices to be ready.` },

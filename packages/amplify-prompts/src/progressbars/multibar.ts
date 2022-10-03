@@ -2,7 +2,7 @@
  * This class has been made as generic as possible to suit all use cases.
  * But it is not without influence from the nuances of CloudFormation.
 */
-import { AmplifyTerminal as Terminal, StringObj } from './terminal';
+import { AmplifyTerminal as Terminal, ColoredString } from './terminal';
 import {
   ProgressBar as Bar,
   BarOptions,
@@ -26,7 +26,7 @@ export class MultiProgressBar {
     private timer!: ReturnType<typeof setTimeout>;
     private prefixText: string;
     private updated: boolean;
-    private lastDrawnStrings: StringObj[];
+    private lastDrawnStrings: ColoredString[];
 
     constructor(options: BarOptions) {
       this.terminal = new Terminal();
@@ -63,9 +63,9 @@ export class MultiProgressBar {
     /**
      * Writes lines into the re writable block
      */
-    writeLines(prefixText: StringObj): void {
-      let barStrings : StringObj[] = [];
-      let stringsToRender : StringObj[] = [];
+    writeLines(prefixText: ColoredString): void {
+      let barStrings: ColoredString[] = [];
+      let stringsToRender: ColoredString[] = [];
       if (Object.keys(prefixText).length !== 0) {
         stringsToRender.push(prefixText);
       }
@@ -85,16 +85,16 @@ export class MultiProgressBar {
      * Render function which is called repeatedly
      */
     render(): void {
-      let initLine = {} as StringObj;
+      const initLine: ColoredString = {
+        renderString: '',
+        color: '',
+      };
       if (this.timer) {
         clearTimeout(this.timer);
       }
       // Init line is prefix text plus spinner
       if (this.prefixText.length) {
-        initLine = {
-          renderString: `${this.prefixText} ${this.frames[this.frameCount]}`,
-          color: '',
-        };
+        initLine.renderString = `${this.prefixText} ${this.frames[this.frameCount]}`;
       }
       this.writeLines(initLine);
 
@@ -231,7 +231,7 @@ export class MultiProgressBar {
       clearTimeout(this.timer);
 
       // Change prefix text according to success/failure
-      let initLine : StringObj = {
+      let initLine: ColoredString = {
         renderString: this.options.successText || '',
         color: 'green',
       };
