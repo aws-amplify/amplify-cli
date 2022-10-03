@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-notifications",
-  "version": "2.20.1",
+  "version": "2.20.2",
   "description": "amplify-cli notifications plugin",
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
   "dependencies": {
     "amplify-cli-core": "3.2.0",
     "amplify-prompts": "2.5.0",
-    "@aws-amplify/amplify-environment-parameters": "1.1.1",
+    "@aws-amplify/amplify-environment-parameters": "1.1.2",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",
     "lodash": "^4.17.21",
