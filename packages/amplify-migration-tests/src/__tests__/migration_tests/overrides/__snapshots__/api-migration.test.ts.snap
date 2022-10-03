@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`api migration update test updates AppSync API in headless mode 1`] = `
+exports[`api migration update test d updates AppSync API in headless mode 1`] = `
 Object {
   "ElasticsearchWarning": true,
   "ResolverConfig": Object {
@@ -13,7 +13,7 @@ Object {
 }
 `;
 
-exports[`api migration update test updates AppSync API in headless mode 2`] = `
+exports[`api migration update test d updates AppSync API in headless mode 2`] = `
 Object {
   "additionalAuthenticationProviders": Array [
     Object {
@@ -27,7 +27,7 @@ Object {
 }
 `;
 
-exports[`api migration update test updates AppSync API in headless mode 3`] = `
+exports[`api migration update test d updates AppSync API in headless mode 3`] = `
 "type Todo @model {
   id: ID!
   content: String
