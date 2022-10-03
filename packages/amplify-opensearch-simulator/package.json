@@ -28,14 +28,14 @@
         "openpgp": "^4.10.10",
         "promise-toolbox": "^0.20.0",
         "wait-port": "^0.2.7",
-        "which": "^2.0.2"
-    },
-    "devDependencies": {
+        "which": "^2.0.2",
         "get-port": "^5.1.1",
         "gunzip-maybe": "^1.4.2",
-        "hash.js": "^1.1.7",
         "node-fetch": "^2.6.7",
         "tar": "^6.1.11"
+    },
+    "devDependencies": {
+        "hash.js": "^1.1.7"
     },
     "jest": {
         "testEnvironment": "node",
