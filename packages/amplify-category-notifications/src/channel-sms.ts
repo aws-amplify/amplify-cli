@@ -4,7 +4,6 @@ import ora from 'ora';
 import { printer } from 'amplify-prompts';
 import { ChannelAction, ChannelConfigDeploymentType } from './channel-types';
 import { buildPinpointChannelResponseError, buildPinpointChannelResponseSuccess } from './pinpoint-helper';
-import { isAmplifyCLIPulling } from './multi-env-manager';
 
 const channelName = 'SMS';
 const spinner = ora('');
@@ -63,9 +62,7 @@ export const enable = async (context:$TSContext):Promise<$TSAny> => {
 
     return buildPinpointChannelResponseSuccess(ChannelAction.ENABLE, deploymentType, channelName, data.SMSChannelResponse);
   } catch (e) {
-    if (!isAmplifyCLIPulling(context)) {
-      spinner.fail('enable channel error');
-    }
+    spinner.fail('Enable channel error');
     throw buildPinpointChannelResponseError(ChannelAction.ENABLE, deploymentType, channelName, e);
   }
 };
@@ -92,9 +89,7 @@ export const disable = async (context: $TSContext): Promise<$TSAny> => {
 
     return buildPinpointChannelResponseSuccess(ChannelAction.DISABLE, deploymentType, channelName, data.SMSChannelResponse);
   } catch (e) {
-    if (!isAmplifyCLIPulling(context)) {
-      spinner.fail('disable channel error');
-    }
+    spinner.fail('Disable channel error');
     throw buildPinpointChannelResponseError(ChannelAction.DISABLE, deploymentType, channelName, e);
   }
 };

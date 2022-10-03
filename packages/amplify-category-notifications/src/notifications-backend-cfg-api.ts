@@ -14,8 +14,7 @@ import { INotificationsResourceBackendConfig, INotificationsResourceBackendConfi
 export const getNotificationsAppConfig = async (backendConfig?:$TSAny): Promise<INotificationsResourceBackendConfig|undefined> => {
   const notificationConfigList = await getNotificationsAppConfigList(backendConfig);
   if (notificationConfigList) {
-    const notificationsConfig:INotificationsResourceBackendConfig = notificationConfigList[0];
-    return notificationsConfig;
+    return notificationConfigList[0];
   }
   return undefined;
 };

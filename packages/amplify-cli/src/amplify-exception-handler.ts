@@ -117,9 +117,9 @@ const printHeadlessAmplifyException = (amplifyException: AmplifyException): void
 
 const unknownErrorToAmplifyException = (err: unknown): AmplifyException => amplifyFaultWithTroubleshootingLink(
   unknownErrorTypeToAmplifyExceptionType(err), {
-    message: 'message' in (err as $TSAny) ? (err as $TSAny).message : 'Unknown error',
+    message: (typeof err === 'object' && err !== null && 'message' in err) ? (err as $TSAny).message : 'Unknown error',
     resolution: mapUnknownErrorToResolution(err),
-    stack: 'stack' in (err as $TSAny) ? (err as $TSAny).stack : undefined,
+    stack: (typeof err === 'object' && err !== null && 'stack' in err) ? (err as $TSAny).stack : undefined,
   },
 );
 

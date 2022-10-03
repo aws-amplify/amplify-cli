@@ -329,9 +329,9 @@ export const getResourcesToBeDeleted = (amplifyMeta : $TSAny, currentAmplifyMeta
 };
 
 /**
- * Compares the contents of the backendConfig files from bckend and #currentCloudBackend
+ * Compares the contents of the backendConfig files from backend and #currentCloudBackend
  */
-const isBackendConfigModifiedSinceLastPush = (categoryName:string, resourceName:string, backendConfigs: IBackendConfigs): boolean => {
+const isBackendConfigModifiedSinceLastPush = (categoryName: string, resourceName: string, backendConfigs: IBackendConfigs): boolean => {
   if ((backendConfigs.backendConfig && backendConfigs.currentBackendConfig)) {
     const deployedCategoryBackendConfig = (categoryName in backendConfigs.currentBackendConfig)
       ? backendConfigs.currentBackendConfig[categoryName] : undefined;

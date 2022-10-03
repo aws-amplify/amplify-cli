@@ -97,14 +97,6 @@ const getAnalyticsResourcesFromMeta = (amplifyMeta: $TSMeta, supportedServiceNam
   }
   return resourceList;
 };
-/**
- * Utility function to check if amplify-cli is in pull mode or not.
- * @param context amplify cli context
- * @returns true if amplify-pull or env add/checkout commands are executed.
- */
-export const isAmplifyCLIPulling = (context: $TSContext):boolean => (context?.input?.command)
-  && (context.input.command === 'pull'
-  || (context.input.command === 'env' && context.input.subCommands[0] === 'pull'));
 
 /**
  * Get Pinpoint resource metadata from Analytics category metadata
@@ -237,7 +229,7 @@ const constructPinpointNotificationsMeta = async (context: $TSContext) : Promise
       if (pinpointNotificationsMeta) {
         pinpointNotificationsMeta.channels = serviceBackendConfig.channels;
       } else {
-        pinpointNotificationsMeta = generateMetaFromConfig(envName, serviceBackendConfig);
+        return generateMetaFromConfig(envName, serviceBackendConfig);
       }
     }
     return pinpointNotificationsMeta;

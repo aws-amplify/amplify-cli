@@ -26,7 +26,7 @@ export const enableChannel = async (context: $TSContext, channelName: string): P
     });
   }
   context.exeInfo.pinpointClient = await pinpointHelper.getPinpointClient(context, 'update', envName);
-  const channelActionHandler:NotificationsChannelAPIModule = await import(getChannelHandlerPath(channelName));
+  const channelActionHandler = await import(getChannelHandlerPath(channelName));
   return channelActionHandler.enable(context);
 };
 
@@ -37,7 +37,7 @@ export const disableChannel = async (context : $TSContext, channelName: string):
   const envName: string = stateManager.getCurrentEnvName() as string; // throws exception if env is not configured
   if (isValidChannel(channelName)) {
     context.exeInfo.pinpointClient = await pinpointHelper.getPinpointClient(context, 'update', envName);
-    const channelActionHandler:NotificationsChannelAPIModule = await import(getChannelHandlerPath(channelName));
+    const channelActionHandler = await import(getChannelHandlerPath(channelName));
     return channelActionHandler.disable(context);
   }
   return undefined;

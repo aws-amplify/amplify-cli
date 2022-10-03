@@ -294,6 +294,12 @@ export class StateManager {
     JSONUtilities.writeJson(filePath, backendConfig);
   };
 
+  setCurrentBackendConfig = (projectPath: string | undefined, backendConfig: $TSAny): void => {
+    const filePath = pathManager.getCurrentBackendConfigFilePath(projectPath);
+
+    JSONUtilities.writeJson(filePath, backendConfig);
+  };
+
   setMeta = (projectPath: string | undefined, meta: $TSMeta): void => {
     const filePath = pathManager.getAmplifyMetaFilePath(projectPath);
 

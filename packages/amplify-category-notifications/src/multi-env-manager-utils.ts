@@ -1,4 +1,3 @@
-import * as fs from 'fs-extra';
 import { ensureEnvParamManager, getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import {
   $TSAny, $TSContext, $TSMeta, AmplifyCategories, amplifyFaultWithTroubleshootingLink, AmplifySupportedService, stateManager,
@@ -19,28 +18,32 @@ const writeTeamProviderInfo = (pinpointMeta: $TSAny): void => {
   });
 };
 
-const writeBackendConfig = (context: $TSContext, pinpointMeta: $TSAny, backendConfigFilePath: string): void => {
-  if (fs.existsSync(backendConfigFilePath)) {
-    const backendConfig = context.amplify.readJsonFile(backendConfigFilePath);
+const updateBackendConfig = (pinpointMeta: $TSAny, backendConfig: $TSAny): $TSAny => {
+  if (backendConfig) {
+    // eslint-disable-next-line no-param-reassign
     backendConfig[AmplifyCategories.NOTIFICATIONS] = backendConfig[AmplifyCategories.NOTIFICATIONS] || {};
 
     const resources = Object.keys(backendConfig[AmplifyCategories.NOTIFICATIONS]);
     for (const resource of resources) {
       const serviceMeta = backendConfig[AmplifyCategories.NOTIFICATIONS][resource];
       if (serviceMeta.service === AmplifySupportedService.PINPOINT) {
+        // eslint-disable-next-line no-param-reassign
         delete backendConfig[AmplifyCategories.NOTIFICATIONS][resource];
       }
     }
 
     if (pinpointMeta) {
+      // eslint-disable-next-line no-param-reassign
       backendConfig[AmplifyCategories.NOTIFICATIONS][pinpointMeta.serviceName] = {
         service: pinpointMeta.service,
         channels: pinpointMeta.channels,
       };
     }
 
-    stateManager.setBackendConfig(undefined, backendConfig);
+    return backendConfig;
   }
+
+  return undefined;
 };
 
 /**
@@ -81,9 +84,9 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
     // TODO: move writing to files logic to the cli core when those are ready
     await ensureEnvParamManager();
     writeTeamProviderInfo(pinpointMeta); // update Pinpoint data
-    writeBackendConfig(context, pinpointMeta, context.amplify.pathManager.getBackendConfigFilePath());
+    stateManager.setBackendConfig(undefined, updateBackendConfig(pinpointMeta, stateManager.getBackendConfig()));
     stateManager.setMeta(undefined, updateNotificationsMeta(stateManager.getMeta(), categoryMeta));
-    writeBackendConfig(context, pinpointMeta, context.amplify.pathManager.getCurrentBackendConfigFilePath());
+    stateManager.setCurrentBackendConfig(undefined, updateBackendConfig(pinpointMeta, stateManager.getCurrentBackendConfig()));
     stateManager.setCurrentMeta(undefined, updateNotificationsMeta(stateManager.getCurrentMeta(), categoryMeta));
 
     await context.amplify.storeCurrentCloudBackend(context);
@@ -105,7 +108,7 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
     // Analytics to dependent categories like Notifications, we need to explicitly sync
     // the applicationId into Notifications.
     const applicationId = (notificationsServiceMeta.Id) || analyticsMeta[notificationsServiceMeta?.ResourceName]?.output?.Id;
-    const lastPushTimeStamp :string|undefined = (notificationsServiceMeta.lastPushTimeStamp)
+    const lastPushTimeStamp = (notificationsServiceMeta.lastPushTimeStamp)
     || (analyticsMeta[notificationsServiceMeta.ResourceName]?.lastPushTimeStamp);
     const pinpointConfig = await getNotificationsAppConfig(context.exeInfo.backendConfig);
     const pinpointMeta = {
@@ -122,7 +125,7 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
     await updateChannelAPIResponse(context, channelAPIResponse);
     writeTeamProviderInfo(pinpointMeta); // update Pinpoint data
     if (pinpointConfig) {
-      writeBackendConfig(context, pinpointConfig, context.amplify.pathManager.getBackendConfigFilePath());
+      stateManager.setBackendConfig(undefined, updateBackendConfig(pinpointConfig, stateManager.getBackendConfig()));
     }
     stateManager.setMeta(undefined, updateNotificationsMeta(stateManager.getMeta(), categoryMeta));
   }
