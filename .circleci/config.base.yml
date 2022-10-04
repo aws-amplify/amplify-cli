@@ -93,6 +93,7 @@ jobs:
             - ~/.cache
       - save_cache:
           key: amplify-cli-node_module-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          paths:
             - node_modules
             - ~/node_modules
             - ~/repo/node_modules
