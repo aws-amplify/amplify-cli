@@ -1,10 +1,13 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import inquirer from 'inquirer';
 import ora from 'ora';
+import { ChannelAction, ChannelConfigDeploymentType, IChannelAPIResponse } from './channel-types';
+import { buildPinpointChannelResponseError, buildPinpointChannelResponseSuccess } from './pinpoint-helper';
 
 const channelName = 'FCM';
 const spinner = ora('');
+const deploymentType = ChannelConfigDeploymentType.INLINE;
 
 /**
  * Configure the Pinpoint resource to enable the FireBase Cloud Messaging channel
@@ -45,12 +48,12 @@ export const configure = async (context: $TSContext): Promise<void> => {
  * @param context amplify cli context
  * @param successMessage optional message to be displayed on successfully enabling channel for notifications
  */
-export const enable = async (context: $TSContext, successMessage: string | undefined) : Promise<void> => {
+export const enable = async (context: $TSContext, successMessage: string | undefined) : Promise<IChannelAPIResponse> => {
   let answers;
   if (context.exeInfo.pinpointInputParams?.[channelName]) {
     answers = validateInputParams(context.exeInfo.pinpointInputParams[channelName]);
   } else {
-    let channelOutput: $TSAny = {};
+    let channelOutput : $TSAny = {};
     if (context.exeInfo.serviceMeta.output[channelName]) {
       channelOutput = context.exeInfo.serviceMeta.output[channelName];
     }
@@ -73,24 +76,35 @@ export const enable = async (context: $TSContext, successMessage: string | undef
     },
   };
 
-  spinner.start('Updating FCM channel.');
+  spinner.start('Enabling FCM channel.');
   return new Promise((resolve, reject) => {
     context.exeInfo.pinpointClient.updateGcmChannel(params, (err: $TSAny, data: $TSAny) => {
       if (err) {
-        spinner.fail('update channel error');
-        reject(err);
+        spinner.fail('Enable channel error');
+        const errResponse = buildPinpointChannelResponseError(ChannelAction.ENABLE, deploymentType, channelName, err);
+        reject(errResponse);
         return;
       }
-      spinner.succeed(successMessage || `The ${channelName} channel has been successfully enabled.`);
+
+      spinner.succeed(successMessage ?? `The ${channelName} channel has been successfully enabled.`);
       context.exeInfo.serviceMeta.output[channelName] = data.GCMChannelResponse;
-      resolve(data);
+      const successResponse = buildPinpointChannelResponseSuccess(
+        ChannelAction.ENABLE,
+        deploymentType,
+        channelName,
+        data.GCMChannelResponse,
+      );
+      resolve(successResponse);
     });
   });
 };
 
-const validateInputParams = (channelInput: $TSAny): $TSAny => {
+const validateInputParams = (channelInput: $TSAny):$TSAny => {
   if (!channelInput.ApiKey) {
-    throw new Error('ApiKey is missing for the FCM channel');
+    throw new AmplifyError('UserInputError', {
+      message: 'ApiKey is missing for the FCM channel',
+      resolution: 'Provide the ApiKey for the FCM channel',
+    });
   }
   return channelInput;
 };
@@ -128,17 +142,21 @@ export const disable = async (context: $TSContext): Promise<$TSAny> => {
     },
   };
 
-  spinner.start('Updating FCM channel.');
+  spinner.start('Disabling FCM channel.');
   return new Promise((resolve, reject) => {
-    context.exeInfo.pinpointClient.updateGcmChannel(params, (err: $TSAny, data: $TSAny) => {
+    context.exeInfo.pinpointClient.updateGcmChannel(params, (err: $TSAny, data:$TSAny) => {
       if (err) {
-        spinner.fail('update channel error');
-        reject(err);
+        spinner.fail('disable channel error');
+        const errResponse = buildPinpointChannelResponseError(ChannelAction.DISABLE, deploymentType,
+          channelName, err);
+        reject(errResponse);
         return;
       }
       spinner.succeed(`The ${channelName} channel has been disabled.`);
       context.exeInfo.serviceMeta.output[channelName] = data.GCMChannelResponse;
-      resolve(data);
+      const successResponse = buildPinpointChannelResponseSuccess(ChannelAction.DISABLE, deploymentType,
+        channelName, data.GCMChannelResponse);
+      resolve(successResponse);
     });
   });
 };
@@ -149,7 +167,7 @@ export const disable = async (context: $TSContext): Promise<$TSAny> => {
  * @param pinpointApp Pinpoint resource metadata
  * @returns GCMChannel response
  */
-export const pull = async (context: $TSContext, pinpointApp: $TSAny): Promise<$TSAny> => {
+export const pull = async (context: $TSContext, pinpointApp: $TSAny):Promise<$TSAny> => {
   const params = {
     ApplicationId: pinpointApp.Id,
   };
@@ -158,16 +176,18 @@ export const pull = async (context: $TSContext, pinpointApp: $TSAny): Promise<$T
   return context.exeInfo.pinpointClient
     .getGcmChannel(params)
     .promise()
-    .then((data: $TSAny) => {
+    .then((data:$TSAny) => {
       spinner.succeed(`Channel information retrieved for ${channelName}`);
       // eslint-disable-next-line no-param-reassign
       pinpointApp[channelName] = data.GCMChannelResponse;
-      return data.GCMChannelResponse;
+      return buildPinpointChannelResponseSuccess(ChannelAction.PULL, deploymentType,
+        channelName, data.GCMChannelResponse);
     })
-    .catch((err: $TSAny) => {
+    .catch((err:$TSAny) => {
       if (err.code === 'NotFoundException') {
         spinner.succeed(`Channel is not setup for ${channelName} `);
-        return err;
+        return buildPinpointChannelResponseError(ChannelAction.PULL, deploymentType,
+          channelName, err);
       }
       spinner.stop();
       throw err;

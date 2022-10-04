@@ -1,16 +1,19 @@
 import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
 import inquirer from 'inquirer';
 import ora from 'ora';
+import { printer } from 'amplify-prompts';
+import { ChannelAction, ChannelConfigDeploymentType } from './channel-types';
+import { buildPinpointChannelResponseError, buildPinpointChannelResponseSuccess } from './pinpoint-helper';
 
 const channelName = 'SMS';
 const spinner = ora('');
+const deploymentType = ChannelConfigDeploymentType.INLINE;
 
 /**
  * Configure SMS channel on analytics resource
  * @param context - amplify cli context
  */
-export const configure = async (context : $TSContext) : Promise<void> => {
+export const configure = async (context : $TSContext):Promise<void> => {
   const isChannelEnabled = context.exeInfo.serviceMeta.output[channelName]?.Enabled;
 
   if (isChannelEnabled) {
@@ -42,7 +45,7 @@ export const configure = async (context : $TSContext) : Promise<void> => {
  * @param context - amplify cli context
  * @returns Pinpoint Client update Sms Channel
  */
-export const enable = async (context : $TSContext) : Promise<$TSAny> => {
+export const enable = async (context:$TSContext):Promise<$TSAny> => {
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
     SMSChannelRequest: {
@@ -50,19 +53,18 @@ export const enable = async (context : $TSContext) : Promise<$TSAny> => {
     },
   };
 
-  spinner.start('Updating SMS channel.');
-  return new Promise((resolve, reject) => {
-    context.exeInfo.pinpointClient.updateSmsChannel(params, (err: $TSAny, data: $TSAny) => {
-      if (err) {
-        spinner.fail('update channel error');
-        reject(err);
-        return;
-      }
-      spinner.succeed(`The ${channelName} channel has been successfully enabled.`);
-      context.exeInfo.serviceMeta.output[channelName] = data.SMSChannelResponse;
-      resolve(data);
-    });
-  });
+  spinner.start('Enabling SMS channel.');
+
+  try {
+    const data = await context.exeInfo.pinpointClient.updateSmsChannel(params).promise();
+    context.exeInfo.serviceMeta.output[channelName] = data.SMSChannelResponse;
+    spinner.succeed(`The ${channelName} channel has been successfully enabled.`);
+
+    return buildPinpointChannelResponseSuccess(ChannelAction.ENABLE, deploymentType, channelName, data.SMSChannelResponse);
+  } catch (e) {
+    spinner.fail('Enable channel error');
+    throw buildPinpointChannelResponseError(ChannelAction.ENABLE, deploymentType, channelName, e);
+  }
 };
 
 /**
@@ -70,7 +72,7 @@ export const enable = async (context : $TSContext) : Promise<$TSAny> => {
  * @param context amplify cli context
  * @returns Pinpoint API response
  */
-export const disable = async (context: $TSContext) : Promise<$TSAny> => {
+export const disable = async (context: $TSContext): Promise<$TSAny> => {
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
     SMSChannelRequest: {
@@ -78,19 +80,18 @@ export const disable = async (context: $TSContext) : Promise<$TSAny> => {
     },
   };
 
-  spinner.start('Updating SMS channel.');
-  return new Promise((resolve, reject) => {
-    context.exeInfo.pinpointClient.updateSmsChannel(params, (err: $TSAny, data: $TSAny) => {
-      if (err) {
-        spinner.fail('update channel error');
-        reject(err);
-        return;
-      }
-      spinner.succeed(`The ${channelName} channel has been disabled.`);
-      context.exeInfo.serviceMeta.output[channelName] = data.SMSChannelResponse;
-      resolve(data);
-    });
-  });
+  spinner.start('Disabling SMS channel.');
+
+  try {
+    const data = await context.exeInfo.pinpointClient.updateSmsChannel(params).promise();
+    context.exeInfo.serviceMeta.output[channelName] = data.SMSChannelResponse;
+    spinner.succeed(`The ${channelName} channel has been successfully disabled.`);
+
+    return buildPinpointChannelResponseSuccess(ChannelAction.DISABLE, deploymentType, channelName, data.SMSChannelResponse);
+  } catch (e) {
+    spinner.fail('Disable channel error');
+    throw buildPinpointChannelResponseError(ChannelAction.DISABLE, deploymentType, channelName, e);
+  }
 };
 
 /**
@@ -99,7 +100,7 @@ export const disable = async (context: $TSContext) : Promise<$TSAny> => {
  * @param pinpointApp  Pinpoint resource meta
  * @returns pinpoint API response
  */
-export const pull = async (context: $TSContext, pinpointApp: $TSAny) : Promise<$TSAny> => {
+export const pull = async (context:$TSContext, pinpointApp:$TSAny) : Promise<$TSAny> => {
   const params = {
     ApplicationId: pinpointApp.Id,
   };
@@ -107,16 +108,16 @@ export const pull = async (context: $TSContext, pinpointApp: $TSAny) : Promise<$
   return context.exeInfo.pinpointClient
     .getSmsChannel(params)
     .promise()
-    .then((data: $TSAny) => {
+    .then((data :$TSAny) => {
       spinner.succeed(`Channel information retrieved for ${channelName}`);
       // eslint-disable-next-line no-param-reassign
       pinpointApp[channelName] = data.SMSChannelResponse;
-      return data.SMSChannelResponse;
+      return buildPinpointChannelResponseSuccess(ChannelAction.PULL, deploymentType, channelName, data.SMSChannelResponse);
     })
-    .catch((err: $TSAny) => {
+    .catch((err : $TSAny) => {
       if (err.code === 'NotFoundException') {
         spinner.succeed(`Channel is not setup for ${channelName} `);
-        return err;
+        return buildPinpointChannelResponseError(ChannelAction.PULL, deploymentType, channelName, err);
       }
       spinner.stop();
       throw err;

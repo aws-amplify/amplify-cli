@@ -17,7 +17,7 @@ export class AmplifyException extends Error {
     // https://github.com/Microsoft/TypeScript-wiki/blob/main/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
     Object.setPrototypeOf(this, AmplifyException.prototype);
 
-    this.stack ??= options.stack;
+    this.stack = options.stack ?? this.stack;
     this.message = options.message;
     this.details = options.details;
     this.resolution = 'resolution' in options ? options.resolution : undefined;
@@ -102,6 +102,7 @@ export type AmplifyErrorType =
   | 'NestedProjectInitError'
   | 'NoUpdateBackendError'
   | 'NotImplementedError'
+  | 'OpenSslCertificateError'
   | 'ParameterNotFoundError'
   | 'PermissionsError'
   | 'PluginMethodNotFoundError'
@@ -113,8 +114,11 @@ export type AmplifyErrorType =
   | 'ProjectNotInitializedError'
   | 'PushResourcesError'
   | 'RegionNotAvailableError'
+  | 'RemoveNotificationAppError'
+  | 'ResourceNotReadyError'
   | 'StackNotFoundError'
-  | 'StackStateError';
+  | 'StackStateError'
+  | 'UserInputError';
 
 /**
  * Amplify fault types
@@ -122,8 +126,10 @@ export type AmplifyErrorType =
 export type AmplifyFaultType =
   | 'AmplifyBackupFault'
   | 'BackendPullFault'
+  | 'ConfigurationFault'
   | 'BackendDeleteFault'
   | 'DeploymentFault'
+  | 'NotificationsChannelAPNSFault'
   | 'NotImplementedFault'
   | 'ProjectDeleteFault'
   | 'ProjectInitFault'

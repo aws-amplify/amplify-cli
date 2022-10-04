@@ -23,6 +23,7 @@ packages/amplify-appsync-simulator/public
 packages/amplify-dynamodb-simulator/emulator
 packages/amplify-dynamodb-simulator/__test__/dynamodb-data
 .vscode/*
+.history/*
 !.vscode/settings.json
 !.vscode/extensions.json
 packages/graphql*/lib
