@@ -2,10 +2,10 @@ import inquirer from 'inquirer';
 import { $TSContext, AmplifyCategories, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import chalk from 'chalk';
-import * as pinpointHelper from '../../pinpoint-helper';
-import * as notificationManager from '../../notifications-manager';
 import { IChannelAPIResponse } from '../../channel-types';
-import { getPinpointAppStatus, isPinpointAppDeployed, isPinpointAppOwnedByNotifications } from '../../pinpoint-helper';
+import {
+  deletePinpointApp, ensurePinpointApp, getPinpointAppStatus, isPinpointAppDeployed, isPinpointAppOwnedByNotifications,
+} from '../../pinpoint-helper';
 import { notificationsAPIRemoveApp } from '../../plugin-provider-api-notifications';
 import { writeData } from '../../multi-env-manager-utils';
 import {
@@ -13,6 +13,7 @@ import {
 } from '../../notifications-backend-cfg-channel-api';
 import { checkMigratedFromMobileHub } from '../../notifications-amplify-meta-api';
 import { getNotificationsAppConfig } from '../../notifications-backend-cfg-api';
+import { disableChannel } from '../../notifications-manager';
 
 const CANCEL = 'Cancel';
 
@@ -67,9 +68,9 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
     if (channelViewName !== PinpointAppViewName) {
       const selectedChannelName = getChannelNameFromView(channelViewName);
       // a channel can only be disabled if the PinpointApp exists
-      await pinpointHelper.ensurePinpointApp(context, undefined, pinpointAppStatus, envName);
+      await ensurePinpointApp(context, undefined, pinpointAppStatus, envName);
       if (isPinpointAppDeployed(pinpointAppStatus.status) || isChannelDeploymentDeferred(selectedChannelName)) {
-        const channelAPIResponse : IChannelAPIResponse|undefined = await notificationManager.disableChannel(context, selectedChannelName);
+        const channelAPIResponse : IChannelAPIResponse|undefined = await disableChannel(context, selectedChannelName);
         await writeData(context, channelAPIResponse);
       }
     } else if (isPinpointAppOwnedByNotifications(pinpointAppStatus.status)) {
@@ -80,12 +81,12 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
         default: false,
       });
       if (answer.deletePinpointApp) {
-        await pinpointHelper.deletePinpointApp(context);
+        await deletePinpointApp(context);
         printer.info('The Pinpoint application has been successfully deleted.');
         await writeData(context, undefined);
       }
     } else {
-      await pinpointHelper.ensurePinpointApp(context, notificationsMeta, pinpointAppStatus, envName);
+      await ensurePinpointApp(context, notificationsMeta, pinpointAppStatus, envName);
       printer.info('Disabling all notifications from the Pinpoint resource');
       await notificationsAPIRemoveApp(context);
       // Pinpoint App is not owned by Notifications
