@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.2.2-rc.86ede0345.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.2.1...@aws-amplify/cli-internal@10.2.2-rc.86ede0345.0) (2022-10-04)
+
+
+### Bug Fixes
+
+* exception handler should swallow encountered errors ([#11027](https://github.com/aws-amplify/amplify-cli/issues/11027)) ([#11104](https://github.com/aws-amplify/amplify-cli/issues/11104)) ([86ede03](https://github.com/aws-amplify/amplify-cli/commit/86ede03451372005fa9e8b30beeceebcc03533f6))
+
+
+
+
+
 ## [10.2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.2.0...@aws-amplify/cli-internal@10.2.1) (2022-10-03)
 
 
