@@ -50,7 +50,7 @@ export const executeCommand = async (context: Context): Promise<void> => {
  */
 const commandRequiresInitializedProject = (command: string): boolean => {
   // defining a list of non-initialized commands because that's a shorter list than initialized commands
-  const nonInitializedCommands = ['version', 'plugin', 'init', 'pull', 'help', 'configure'];
+  const nonInitializedCommands = ['version', 'plugin', 'init', 'pull', 'help', 'configure', 'codegen', 'models'];
   return !nonInitializedCommands.includes(command);
 };
 

@@ -13,7 +13,7 @@ import {
 import Enquirer from 'enquirer';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
-import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
+import { ensureEnvParamManager, getEnvMeta } from '@aws-amplify/amplify-environment-parameters';
 import { importMessages } from './messages';
 import {
   AuthParameters,
@@ -961,8 +961,7 @@ export const importedAuthEnvInit = async (
 ): Promise<{ doServiceWalkthrough?: boolean; succeeded?: boolean; envSpecificParameters?: EnvSpecificResourceParameters }> => {
   const cognito = await providerUtils.createCognitoUserPoolService(context);
   const identity = await providerUtils.createIdentityPoolService(context);
-  const amplifyMeta = stateManager.getMeta();
-  const { Region } = amplifyMeta.providers[providerName];
+  const { Region } = getEnvMeta(context?.exeInfo?.localEnvInfo?.envName);
   const projectConfig = context.amplify.getProjectConfig();
   const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
   const isEnvAdd = context.input.command === 'env' && context.input.subCommands[0] === 'add';

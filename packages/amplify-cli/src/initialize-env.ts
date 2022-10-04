@@ -41,6 +41,8 @@ export const initializeEnv = async (
     const categoryPluginInfoList = context.amplify.getAllCategoryPluginInfo(context);
     const availableCategories = Object.keys(categoryPluginInfoList).filter(key => initializedCategories.includes(key));
 
+    const currentEnvMeta = await ensureEnvMeta(context, currentEnv);
+
     availableCategories.forEach(category => {
       categoryPluginInfoList[category].forEach(pluginInfo => {
         try {
@@ -68,7 +70,7 @@ export const initializeEnv = async (
 
     try {
       context.usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_PLATFORM);
-      await providerInitEnv(context, await ensureEnvMeta(context, currentEnv));
+      await providerInitEnv(context, currentEnvMeta);
     } finally {
       context.usageData.stopCodePathTimer(ManuallyTimedCodePath.INIT_ENV_PLATFORM);
     }
