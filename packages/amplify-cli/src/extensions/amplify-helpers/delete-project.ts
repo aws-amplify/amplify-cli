@@ -82,7 +82,7 @@ const amplifyBackendEnvironments = async (client, appId): Promise<string[]> => {
 /**
  * Get confirmation from the user to delete the project
  */
-export const getConfirmation = async (context: $TSContext, env?)
+export const getConfirmation = async (context: $TSContext, env?: string)
   : Promise<{ proceed: boolean; deleteS3: boolean; deleteAmplifyApp: boolean; }> => {
   if (context.input.options && context.input.options.force) {
     return {
