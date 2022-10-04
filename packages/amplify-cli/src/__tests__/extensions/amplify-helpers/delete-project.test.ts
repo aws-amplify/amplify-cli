@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSAny } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { deleteProject, getConfirmation } from '../../../extensions/amplify-helpers/delete-project';
 
@@ -68,7 +68,7 @@ describe('getConfirmation', () => {
     expect(result).toHaveProperty('deleteAmplifyApp');
   });
   it('should return object when force option is true', async () => {
-    const contextStub = {
+    const contextStub: $TSAny = {
       input: {
         options: {
           force: true,
@@ -80,7 +80,7 @@ describe('getConfirmation', () => {
       deleteS3: true,
       deleteAmplifyApp: true,
     };
-    const result = await getConfirmation(contextStub as $TSContext);
+    const result = await getConfirmation(contextStub);
     expect(result).toStrictEqual(expected);
   });
 });
@@ -101,15 +101,15 @@ describe('deleteProject', () => {
     },
   };
   it('should delete app', async () => {
-    await deleteProject(contextStub as $TSContext);
+    await deleteProject(contextStub);
     expect(printerMock.success).toBeCalled();
   });
 
   it('throws error when listBackendEnvironments promise rejected', async () => {
-    await expect(deleteProject(contextStub as $TSContext)).rejects.toThrow('Project delete failed.');
+    await expect(deleteProject(contextStub)).rejects.toThrow('Project delete failed.');
   });
 
   it('does not throw not found error when listBackendEnvironments promise rejected', async () => {
-    await expect(deleteProject(contextStub as $TSContext)).resolves.not.toThrow('listBackendEnvironments error');
+    await expect(deleteProject(contextStub)).resolves.not.toThrow('listBackendEnvironments error');
   });
 });
