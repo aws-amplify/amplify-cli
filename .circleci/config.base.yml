@@ -76,7 +76,11 @@ install_cli_from_local_registry: &install_cli_from_local_registry
 
 jobs:
   build:
-    <<: *linux-e2e-executor
+    parameters:
+      os:
+        type: executor
+        default: l
+    executor: l
     steps:
       - checkout
       - run: yarn run production-build
