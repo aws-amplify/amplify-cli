@@ -27,7 +27,7 @@
     "@aws-amplify/amplify-category-custom": "2.5.2",
     "@aws-amplify/amplify-environment-parameters": "1.1.2",
     "@aws-amplify/cli-extensibility-helper": "2.4.2",
-    "@aws-amplify/graphql-transformer-core": "^0.17.11",
+    "@aws-amplify/graphql-transformer-core": "^0.17.12",
     "@aws-amplify/graphql-transformer-interfaces": "^1.14.7",
     "@aws-cdk/assert": "^1.159.0",
     "@aws-cdk/aws-apigatewayv2": "^1.159.0",
