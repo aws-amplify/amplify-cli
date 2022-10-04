@@ -2,9 +2,9 @@ import {
   $TSAny, AmplifyException, AmplifyFault, AmplifyFaultType, executeHooks, HooksMeta,
 } from 'amplify-cli-core';
 import { AmplifyPrinter, printer } from 'amplify-prompts';
-import { Context } from '../domain/context';
 import { reportError } from '../commands/diagnose';
 import { isHeadlessCommand } from '../context-manager';
+import { Context } from '../domain/context';
 
 let context: Context;
 
@@ -41,18 +41,35 @@ export const handleException = async (exception: unknown): Promise<void> => {
     printAmplifyException(amplifyException);
   }
 
+  // Swallow and continue if any operations fail
   if (context) {
-    await reportError(context, amplifyException);
+    await executeSafely(() => reportError(context, amplifyException), 'Failed to report error');
   }
 
-  await executeHooks(
-    HooksMeta.getInstance(undefined, 'post', {
+  await executeSafely(
+    () => executeHooks(HooksMeta.getInstance(undefined, 'post', {
       message: amplifyException.message ?? 'undefined error in Amplify process',
       stack: amplifyException.stack ?? 'undefined error stack',
-    }),
+    })),
+    'Failed to execute hooks',
   );
 
   process.exitCode = 1;
+};
+
+/**
+ * Utility function to ensure a passed in function does not invoke the exception handler to avoid an infinite loop
+ *
+ * @param functionToExecute - the function that should be executed, but never reject
+ * @param errorMessagePrefix - error message prefix before the thrown error is printed
+ */
+const executeSafely = async (functionToExecute: () => Promise<void> | void, errorMessagePrefix: string): Promise<void> => {
+  try {
+    await functionToExecute();
+  } catch (e) {
+    // Log the error, but do not reject the promise
+    printer.error(`${errorMessagePrefix}: ${e?.message || e}`);
+  }
 };
 
 const printAmplifyException = (amplifyException: AmplifyException): void => {
