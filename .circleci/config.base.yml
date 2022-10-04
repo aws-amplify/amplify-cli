@@ -92,6 +92,12 @@ jobs:
           paths:
             - ~/.cache
       - save_cache:
+          key: amplify-cli-node_module-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - node_modules
+            - ~/node_modules
+            - ~/repo/node_modules
+            - ~/.npm-global
+      - save_cache:
           key: amplify-cli-ssh-deps-{{ .Branch }}
           paths:
             - ~/.ssh
@@ -261,6 +267,8 @@ jobs:
           at: ./
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - restore_cache:
+          key: amplify-cli-node_module-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
@@ -970,7 +978,7 @@ commands:
           condition:
             equal: [*windows-e2e-executor, << parameters.os >>]
           steps:
-            - run: npm install -g ts-node@^8.10.2
+            - run: yarn --cache-folder ~/.cache/yarn
             - run:
                 shell: powershell.exe
                 command: cp /home/circleci/repo/out/amplify-pkg-win-x64.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps\amplify.exe
