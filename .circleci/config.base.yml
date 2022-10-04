@@ -970,6 +970,7 @@ commands:
           condition:
             equal: [*windows-e2e-executor, << parameters.os >>]
           steps:
+            - run: npm install -g ts-node@^8.10.2
             - run:
                 shell: powershell.exe
                 command: cp /home/circleci/repo/out/amplify-pkg-win-x64.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps\amplify.exe
