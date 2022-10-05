@@ -17,6 +17,7 @@ describe('correctly updates userPool group list', () => {
     mockContext = {
       amplify: {
         updateamplifyMetaAfterResourceUpdate: jest.fn(),
+        pathManager,
       },
     };
     pathManagerMock.getBackendDirPath = jest.fn().mockReturnValue('backend');
@@ -34,7 +35,7 @@ describe('correctly updates userPool group list', () => {
         {
           category: AmplifyCategories.AUTH,
           resourceName,
-          attributes: ['UserPoolId', 'AppClientIDWeb', 'AppClientID', 'IdentityPoolId'],
+          attributes: ['UserPoolId', 'AppClientIDWeb', 'AppClientID'],
         },
       ]);
   };
