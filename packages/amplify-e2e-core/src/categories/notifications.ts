@@ -1,4 +1,4 @@
-import { nspawn as spawn, getCLIPath, singleSelect } from '..';
+import { nspawn as spawn, getCLIPath } from '..';
 
 /**
  * notifications settings
@@ -7,7 +7,34 @@ type NotificationSettings = {
   resourceName: string;
 };
 
-const NOTIFICATION_CHOICES = ['APNS', 'FCM', 'In-App Messaging', 'Email', 'SMS'];
+/**
+ * removes all the notification channel
+ */
+export const removeAllNotificationChannel = async (
+  cwd: string,
+): Promise<void> => {
+  spawn(getCLIPath(), ['remove', 'notifications'], { cwd, stripColors: true })
+    .wait('Choose the notification channel to remove')
+    .sendLine('All channels on Pinpoint resource')
+    .wait(`All notifications have been disabled`)
+    .sendEof()
+    .runAsync();
+};
+
+/**
+ * removes the notification channel
+ */
+export const removeNotificationChannel = async (
+  cwd: string,
+  channel: string,
+): Promise<void> => {
+  spawn(getCLIPath(), ['remove', 'notifications'], { cwd, stripColors: true })
+    .wait('Choose the notification channel to remove')
+    .sendLine(channel)
+    .wait(`The ${channel} channel has been successfully disabled`)
+    .sendEof()
+    .runAsync();
+};
 
 /**
  * Adds notification resource for a given channel
@@ -24,14 +51,31 @@ export const addNotificationChannel = async (
 ): Promise<void> => {
   const chain = spawn(getCLIPath(), ['add', 'notification'], { cwd, stripColors: true });
 
-  singleSelect(chain.wait('Choose the notification channel to enable'), channel, NOTIFICATION_CHOICES);
-
-  return chain
+  chain
+    .wait('Choose the notification channel to enable')
+    .sendLine(channel)
     .wait('Provide your pinpoint resource name')
     .sendLine(resourceName)
     .wait('Apps need authorization to send analytics events. Do you want to allow guests')
     .sendNo()
-    .sendCarriageReturn()
+    .sendCarriageReturn();
+
+  // channel specific prompts
+  switch (channel) {
+    case 'APNS |  Apple Push Notifications   ': {
+      break;
+    }
+    case 'FCM  | » Firebase Push Notifications ': {
+      break;
+    }
+    case 'Email': {
+      break;
+    }
+    default:
+      break;
+  }
+
+  return chain
     .wait(`The ${channel} channel has been successfully enabled`)
     .sendEof()
     .runAsync();

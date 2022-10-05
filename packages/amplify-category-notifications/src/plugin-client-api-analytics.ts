@@ -15,12 +15,9 @@ import {
 * @returns Array of resources in Analytics category (IAmplifyResource type)
 */
 export const invokeAnalyticsAPIGetResources = async (context: $TSContext, resourceProviderServiceName?: string):
-  Promise<Array<IAnalyticsResource>> => {
-  const analyticsResources = (await context.amplify.invokePluginMethod(context,
+  Promise<Array<IAnalyticsResource>> => (await context.amplify.invokePluginMethod(context,
     'analytics', undefined,
     'analyticsPluginAPIGetResources', [resourceProviderServiceName])) as Array<IAnalyticsResource>;
-  return analyticsResources;
-};
 
 /**
  * Create an Analytics resource of the given provider type. e.g Pinpoint or Kinesis

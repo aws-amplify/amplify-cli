@@ -11,7 +11,7 @@ import { printer } from 'amplify-prompts';
 import * as configureKey from './apns-key-config';
 import * as configureCertificate from './apns-cert-config';
 import { ChannelAction, IChannelAPIResponse, ChannelConfigDeploymentType } from './channel-types';
-import { buildPinpointChannelResponseError, buildPinpointChannelResponseSuccess } from './pinpoint-helper';
+import { buildPinpointChannelResponseSuccess } from './pinpoint-helper';
 
 const channelName = 'APNS';
 const spinner = ora('');
@@ -115,11 +115,10 @@ export const enable = async (context: $TSContext, successMessage: string | undef
     await context.exeInfo.pinpointClient.updateApnsSandboxChannel(sandboxParams).promise();
     context.exeInfo.serviceMeta.output[channelName] = data.APNSChannelResponse;
   } catch (e) {
-    spinner.fail(`Failed to enable the ${channelName} channel.`);
+    spinner.stop();
     throw amplifyFaultWithTroubleshootingLink('NotificationsChannelAPNSFault', {
       message: `Failed to enable the ${channelName} channel.`,
       details: e.message,
-      stack: e.stack,
     });
   }
 
@@ -208,7 +207,6 @@ export const disable = async (context: $TSContext) : Promise<$TSAny> => {
     throw amplifyFaultWithTroubleshootingLink('NotificationsChannelAPNSFault', {
       message: `Failed to update the ${channelName} channel.`,
       details: `Action: ${ChannelAction.DISABLE}. ${e.message}`,
-      stack: e.stack,
     });
   }
   spinner.succeed(`The ${channelName} channel has been disabled.`);
@@ -235,16 +233,14 @@ export const pull = async (context:$TSContext, pinpointApp:$TSAny): Promise<$TSA
     pinpointApp[channelName] = data.APNSChannelResponse;
     return buildPinpointChannelResponseSuccess(ChannelAction.PULL, deploymentType, channelName, data.APNSChannelResponse);
   } catch (err) {
-    if (err.code === 'NotFoundException') {
-      spinner.succeed(`Channel is not setup for ${channelName} `);
-      return buildPinpointChannelResponseError(ChannelAction.PULL, deploymentType, channelName, err);
-    }
     spinner.stop();
+    if (err.code !== 'NotFoundException') {
+      throw amplifyFaultWithTroubleshootingLink('NotificationsChannelAPNSFault', {
+        message: `Failed to pull the ${channelName} channel.`,
+        details: `Action: ${ChannelAction.PULL}. ${err.message}`,
+      });
+    }
 
-    throw amplifyFaultWithTroubleshootingLink('NotificationsChannelAPNSFault', {
-      message: `Failed to pull the ${channelName} channel.`,
-      details: `Action: ${ChannelAction.PULL}. ${err.message}`,
-      stack: err.stack,
-    });
+    return undefined;
   }
 };

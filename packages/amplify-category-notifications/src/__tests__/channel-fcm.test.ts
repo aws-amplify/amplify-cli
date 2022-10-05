@@ -61,18 +61,6 @@ const mockContextReject = (output:$TSAny, clientReject:$TSAny):$TSAny => ({
   },
 });
 
-class NoErrorThrownError extends Error {}
-
-// wrapper to avoid conditional error checks
-const getError = async <TError>(call: () => unknown): Promise<TError> => {
-  try {
-    await call();
-    throw new NoErrorThrownError();
-  } catch (error: unknown) {
-    return error as TError;
-  }
-};
-
 describe('channel-FCM', () => {
   const mockServiceOutput : Record<string, unknown> = {};
   const mockChannelEnabledOutput = { Enabled: true };
@@ -81,14 +69,16 @@ describe('channel-FCM', () => {
   const mockPinpointResponseErr = new Error('channel-FCM.test.js error');
 
   const mockPinpointClient = {
-    updateGcmChannel: jest.fn((_, cb) => new Promise(() => {
-      cb(null, (mockPinpointResponseData(true, ChannelAction.ENABLE)));
+    updateGcmChannel: jest.fn().mockImplementation(() => ({
+      promise: jest.fn(() => mockPinpointResponseData(true, ChannelAction.ENABLE)),
     })),
   };
 
   const mockPinpointClientReject = {
-    updateGcmChannel: jest.fn((_, cb) => new Promise(() => {
-      cb(mockPinpointResponseErr);
+    updateGcmChannel: jest.fn().mockImplementation(() => ({
+      promise: jest.fn(() => {
+        throw mockPinpointResponseErr;
+      }),
     })),
   };
 
@@ -132,16 +122,13 @@ describe('channel-FCM', () => {
           Enabled: true,
         },
       },
-      expect.anything(),
     );
     expect(data).toEqual(mockPinpointResponseData(true, ChannelAction.ENABLE));
   });
 
-  // eslint-disable-next-line jest/no-focused-tests
   test('enable unsuccessful', async () => {
     mockInquirer({ ApiKey: 'ApiKey-abc123' });
-    const err: IChannelAPIResponse = await getError(async () => channelFCM.enable(mockContextReject(mockServiceOutput, mockPinpointClientReject), 'successMessage'));
-    expect(err.response.reasonMsg).toEqual(mockPinpointResponseErr.message);
+    await expect(channelFCM.enable(mockContextReject(mockServiceOutput, mockPinpointClientReject), 'successMessage')).rejects.toThrowError('Failed to enable the FCM channel');
     expect(mockPinpointClient.updateGcmChannel).toBeCalled();
   });
 
@@ -152,8 +139,6 @@ describe('channel-FCM', () => {
   });
 
   test('disable unsuccessful', async () => {
-    const err: IChannelAPIResponse = await getError(async () => channelFCM
-      .disable(mockContextReject(mockServiceOutput, mockPinpointClientReject)));
-    expect(err.response.reasonMsg).toEqual(mockPinpointResponseErr.message);
+    await expect(channelFCM.disable(mockContextReject(mockServiceOutput, mockPinpointClientReject))).rejects.toThrowError('Failed to disable the FCM channel');
   });
 });

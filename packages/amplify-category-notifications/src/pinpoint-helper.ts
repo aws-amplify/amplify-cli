@@ -138,35 +138,6 @@ export const buildPinpointChannelResponseSuccess = (action: ChannelAction,
 });
 
 /**
- * Helper function to build Channel-API error response.
- * note:- This will be moved to the Analytics category.
- * @param action (enable, disable, configure, pull)
- * @param deploymentType (INLINE- deployed immediately, DEFERRED - requires an amplify push)
- * @param channelName (SMS,InAppMessaging...)
- * @param err (channel api error)
- * @returns Channel API response
- */
-export const buildPinpointChannelResponseError = (
-  action: ChannelAction,
-  deploymentType: ChannelConfigDeploymentType,
-  channelName: string,
-  err: Error,
-): IChannelAPIResponse => ({
-  action,
-  deploymentType,
-  channel: channelName,
-  response: {
-    pluginName: AmplifyCategories.NOTIFICATIONS,
-    resourceProviderServiceName: AmplifySupportedService.PINPOINT,
-    capability: AmplifyCategories.NOTIFICATIONS, // Notifications
-    subCapability: channelName, // e.g SMS
-    status: false, // true - successfully applied, false - failed to apply
-    errorCode: PluginAPIError.E_SVC_PROVIDER_SDK,
-    reasonMsg: err.message,
-  },
-});
-
-/**
  * Get Pinpoint app status from notifications meta ( in-core or in-file )
  * TBD: Move to NotificationsDB API
  * @param notificationsMeta - notificationsMeta from context (in-core)

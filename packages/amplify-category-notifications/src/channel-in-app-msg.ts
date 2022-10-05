@@ -8,9 +8,11 @@ import {
   $TSAny, $TSContext, AmplifyCategories, amplifyFaultWithTroubleshootingLink, AmplifySupportedService,
   IPluginCapabilityAPIResponse,
   NotificationChannels,
+  pathManager,
+  readCFNTemplate,
   stateManager,
 } from 'amplify-cli-core';
-
+import * as path from 'path';
 /* eslint-disable @typescript-eslint/no-var-requires */
 import ora from 'ora';
 import { printer, prompter } from 'amplify-prompts';
@@ -21,7 +23,6 @@ import {
 import { IChannelAPIResponse, ChannelAction, ChannelConfigDeploymentType } from './channel-types';
 
 import {
-  buildPinpointChannelResponseError,
   buildPinpointChannelResponseSuccess,
   getPinpointAppStatusFromMeta, IPinpointAppStatus, IPinpointDeploymentStatus,
 } from './pinpoint-helper';
@@ -128,7 +129,7 @@ export const enable = async (context: $TSContext): Promise<IChannelAPIResponse> 
  */
 export const disable = async (context: $TSContext):Promise<IChannelAPIResponse> => {
   spinner.start('Disabling In-App messaging channel.');
-  const disableInAppMsgResponse : IPluginCapabilityAPIResponse = await invokeAnalyticsResourceToggleNotificationChannel(context,
+  const disableInAppMsgResponse = await invokeAnalyticsResourceToggleNotificationChannel(context,
     AmplifySupportedService.PINPOINT,
     NotificationChannels.IN_APP_MSG,
     false /*disable*/);
@@ -166,9 +167,8 @@ export const pull = async (__context: $TSContext, pinpointApp: $TSAny): Promise<
         Name: pinpointApp.Name,
       };
     } else {
-      spinner.fail(`Channel ${getChannelViewName(channelName)} not found.`);
-      return buildPinpointChannelResponseError(ChannelAction.PULL, deploymentType,
-        channelName, new Error(`${channelName} not found in the notifications metadata`));
+      spinner.stop();
+      return undefined;
     }
   }
   spinner.succeed(`Channel information retrieved for ${getChannelViewName(channelName)}`);
@@ -182,8 +182,14 @@ export const pull = async (__context: $TSContext, pinpointApp: $TSAny): Promise<
 export const pinpointTemplateHasInAppMessagingPolicy = async (context: $TSContext): Promise<boolean> => {
   const resources = await invokeAnalyticsAPIGetResources(context, AmplifySupportedService.PINPOINT);
   if (resources?.length > 0) {
-    const pinpointCFNParams = stateManager.getResourceParametersJson(undefined, AmplifyCategories.ANALYTICS, resources[0].resourceName);
-    return !!pinpointCFNParams?.pinpointInAppMessagingPolicyName;
+    const pinpointCloudFormationTemplatePath = path.join(
+      pathManager.getBackendDirPath(),
+      AmplifyCategories.ANALYTICS,
+      resources[0].resourceName,
+      `pinpoint-cloudformation-template.json`,
+    );
+    const { cfnTemplate } = readCFNTemplate(pinpointCloudFormationTemplatePath, { throwIfNotExist: false }) || {};
+    return !!cfnTemplate?.Parameters?.pinpointInAppMessagingPolicyName;
   }
 
   return false;

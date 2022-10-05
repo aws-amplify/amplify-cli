@@ -16,7 +16,6 @@ import * as Cfg from '../notifications-backend-cfg-api';
 import { ChannelAction, ChannelConfigDeploymentType } from '../channel-types';
 import { INotificationsResourceBackendConfig } from '../notifications-backend-cfg-types';
 import {
-  buildPinpointChannelResponseError,
   buildPinpointChannelResponseSuccess,
   getPinpointAppStatusFromMeta,
 } from '../pinpoint-helper';
@@ -35,6 +34,7 @@ jest.mock('ora', () => {
     fail: jest.fn(),
     start: jest.fn(),
     succeed: jest.fn(),
+    stop: jest.fn(),
   };
   return jest.fn(() => mockSpinnerInstance);
 });
@@ -55,7 +55,6 @@ const mockContext = {
   exeInfo: { amplifyMeta: {} },
 } as unknown as $TSContext;
 const mockBuildPinpointChannelResponseSuccess = buildPinpointChannelResponseSuccess as jest.Mock;
-const mockBuildPinpointChannelResponseError = buildPinpointChannelResponseError as jest.Mock;
 const mockGetPinpointAppStatusFromMeta = getPinpointAppStatusFromMeta as jest.Mock;
 const mockInvokeAnalyticsResourceToggleNotificationChannel = invokeAnalyticsResourceToggleNotificationChannel as jest.Mock;
 const mockPinpointApp: any = { Id: 'app-id', Name: 'app-name' };
@@ -225,14 +224,7 @@ describe('channel-InAppMessaging', () => {
     test('fails when channel metadata and backend config are both unavailable', async () => {
       getAppMetaSpy.mockResolvedValue({} as unknown as INotificationsResourceMeta);
       getAppConfigSpy.mockResolvedValue({} as INotificationsResourceBackendConfig);
-      await channel.pull(mockContext, mockPinpointApp);
-      expect(mockSpinner.fail).toBeCalled();
-      expect(mockBuildPinpointChannelResponseError).toBeCalledWith(
-        ChannelAction.PULL,
-        ChannelConfigDeploymentType.DEFERRED,
-        channelName,
-        new Error('InAppMessaging not found in the notifications metadata'),
-      );
+      await expect(channel.pull(mockContext, mockPinpointApp)).rejects.toThrowError('Channel In-App Messaging not found in the notifications metadata.');
     });
   });
 });
