@@ -1,5 +1,7 @@
 import { AMPLIFY_SUPPORT_DOCS } from '../cliConstants';
-import { AmplifyException, AmplifyExceptionOptions, AmplifyFaultType, PartialAmplifyExceptionOptions } from './amplify-exception';
+import {
+  AmplifyException, AmplifyExceptionOptions, AmplifyFaultType, PartialAmplifyExceptionOptions,
+} from './amplify-exception';
 
 /**
  * Base class for all Amplify faults
@@ -19,13 +21,13 @@ export class AmplifyFault extends AmplifyException {
  */
 export const amplifyFaultWithTroubleshootingLink = (
   downstreamException: Error | null,
-  name: AmplifyFaultType, 
-  options: PartialAmplifyExceptionOptions)
-  : AmplifyFault => {
-      return  new AmplifyFault(
-        downstreamException, 
-        name, {
-          ...options,
-          link: 'link' in options && options.link ? options.link : AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
-        });
-  };
+  name: AmplifyFaultType,
+  options: PartialAmplifyExceptionOptions,
+)
+  : AmplifyFault => new AmplifyFault(
+  downstreamException,
+  name, {
+    ...options,
+    link: 'link' in options && options.link ? options.link : AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
+  },
+);
