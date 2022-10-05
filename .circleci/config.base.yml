@@ -80,7 +80,7 @@ jobs:
       os:
         type: executor
         default: l
-    executor: << parameters.os >>
+    executor: l
     steps:
       - checkout
       - run: yarn run production-build
@@ -88,7 +88,7 @@ jobs:
           name: Build tests
           command: yarn build-tests
       - save_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache
       - save_cache:
@@ -108,13 +108,15 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Run tests
           command: yarn test-ci
       - run:
           name: Collect code coverage
           command: yarn coverage
+    environment:
+      NODE_OPTIONS: --max-old-space-size=4096
 
   lint:
     <<: *linux-e2e-executor
@@ -122,7 +124,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run: chmod +x .circleci/lint_pr.sh && ./.circleci/lint_pr.sh
 
   mock_e2e_tests:
@@ -131,7 +133,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Run Transformer end-to-end tests with mock server
           command: |
@@ -150,7 +152,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Publish to verdaccio
           command: |
@@ -163,9 +165,9 @@ jobs:
       - run:
           name: Generate unified changelog
           command: |
-            git reset --hard HEAD
-            yarn update-versions
+            git reset --soft HEAD~1
             yarn ts-node scripts/unified-changelog.ts
+            cat UNIFIED_CHANGELOG.md
       - run:
           name: Save new amplify GitHub tag
           command: node scripts/echo-current-cli-version.js > .amplify-pkg-version
@@ -188,7 +190,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - run:
@@ -212,7 +214,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Run GraphQL end-to-end tests
           command: |
@@ -258,11 +260,11 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
+          key: amplify-build-artifact-{{ .Revision }}
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
@@ -286,7 +288,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
@@ -312,7 +314,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
@@ -340,7 +342,7 @@ jobs:
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Run tests migrating from CLI v4.28.2
           command: |
@@ -364,7 +366,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
@@ -599,7 +601,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: 'Run cleanup script'
           command: |
@@ -617,7 +619,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: 'Run cleanup script'
           command: |
@@ -635,7 +637,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: 'Wait for all required jobs to finish'
           command: |
@@ -651,11 +653,6 @@ workflows:
   build_test_deploy:
     jobs:
       - build:
-          matrix:
-            parameters:
-              os:
-                - l
-                - w
           filters:
             branches:
               ignore:

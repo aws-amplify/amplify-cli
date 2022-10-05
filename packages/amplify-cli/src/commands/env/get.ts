@@ -1,21 +1,27 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, AmplifyError } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { ensureEnvMeta, ensureEnvParamManager, listLocalEnvNames } from '@aws-amplify/amplify-environment-parameters';
 import { printEnvInfo } from '../helpers/envUtils';
 
 /**
- * Prints environment info
+ * Executes the 'env get' command
  */
-export const run = async (context: $TSContext): Promise<void> => {
+export const run = async (context: $TSContext) : Promise<void> => {
   const envName = context.parameters.options.name;
 
   if (!envName) {
-    throw new Error(`Pass in the name of the environment using the --name flag`);
+    throw new AmplifyError('EnvironmentNameError', {
+      message: 'Environment name was not specified.',
+      resolution: 'Pass in the name of the environment using the --name flag.',
+    });
   }
 
   const allEnvs = listLocalEnvNames();
   if (!allEnvs.includes(envName)) {
-    throw new Error(`Cannot find environment ${envName}. Make sure the environment has been pulled using 'amplify pull'.`);
+    throw new AmplifyError('EnvironmentNameError', {
+      message: 'Environment name is invalid.',
+      resolution: 'Run amplify env list to get a list of valid environments.',
+    });
   }
 
   if (context.parameters.options.json) {

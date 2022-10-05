@@ -190,6 +190,10 @@ const prepareContext = (context: $TSContext, inputParams): void => {
     localEnvInfo: {
       projectPath,
     },
+    teamProviderInfo: {},
+    existingTeamProviderInfo: stateManager.getTeamProviderInfo(projectPath, {
+      throwIfNotExist: false,
+    }),
     existingProjectConfig: stateManager.getProjectConfig(projectPath, {
       throwIfNotExist: false,
     }),

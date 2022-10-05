@@ -1,5 +1,5 @@
 import {
-  $TSContext, EnvAwsInfo, JSONUtilities, stateManager, UnknownArgumentError,
+  $TSContext, EnvAwsInfo, JSONUtilities, stateManager, UnknownArgumentError, AmplifyError,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { getConfiguredAmplifyClient, findAppByBackendPredicate } from 'amplify-provider-awscloudformation';
@@ -13,7 +13,10 @@ const errorLink = 'See https://docs.amplify.aws/cli/teams/commands/#import-an-en
 export const run = async (context: $TSContext): Promise<void> => {
   const envName = context.parameters.options.name;
   if (!envName) {
-    throw new Error('The environment name must be specified in --name');
+    throw new AmplifyError('EnvironmentNameError', {
+      message: 'Environment name was not specified.',
+      resolution: 'Pass in the name of the environment using the --name flag.',
+    });
   }
 
   if (!context.parameters.options.awsInfo) {

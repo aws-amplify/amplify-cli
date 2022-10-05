@@ -1,7 +1,7 @@
 import ora from 'ora';
 import sequential from 'promise-sequential';
 import {
-  stateManager, $TSAny, $TSMeta, $TSContext,
+  stateManager, $TSAny, $TSMeta, $TSContext, amplifyFaultWithTroubleshootingLink,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import {
@@ -41,26 +41,33 @@ export const initializeEnv = async (
     const categoryPluginInfoList = context.amplify.getAllCategoryPluginInfo(context);
     const availableCategories = Object.keys(categoryPluginInfoList).filter(key => initializedCategories.includes(key));
 
-    const currentEnvMeta = await ensureEnvMeta(context, currentEnv);
+    const importCategoryPluginAndQueueInitEnvTask = async (pluginInfo, category) : Promise<void> => {
+      try {
+        const { initEnv } = await import(pluginInfo.packageLocation);
 
-    availableCategories.forEach(category => {
-      categoryPluginInfoList[category].forEach(pluginInfo => {
-        try {
-          // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
-          const { initEnv } = require(pluginInfo.packageLocation);
-
-          if (initEnv) {
-            categoryInitializationTasks.push(() => initEnv(context));
-          }
-        } catch (e) {
-          context.print.warning(`Could not load initEnv for ${category}`);
+        if (initEnv) {
+          categoryInitializationTasks.push(() => initEnv(context));
         }
-      });
-    });
+      } catch (e) {
+        throw amplifyFaultWithTroubleshootingLink('PluginNotLoadedFault', {
+          message: `Could not load plugin for category ${category}.`,
+          details: e.message,
+          resolution: `Review the error message and stack trace for additional information.`,
+          stack: e.stack,
+        });
+      }
+    };
+    const currentEnvMeta = await ensureEnvMeta(context, currentEnv);
+    for (const category of availableCategories) {
+      for (const pluginInfo of categoryPluginInfoList[category]) {
+        await importCategoryPluginAndQueueInitEnvTask(pluginInfo, category);
+      }
+    }
 
     const providerPlugins = getProviderPlugins(context);
     const pluginKeys = Object.keys(providerPlugins);
     if (!(pluginKeys.length === 1 && pluginKeys[0] === 'awscloudformation')) {
+      // TODO convert to AmplifyError
       throw new Error('Amplify no longer supports provider plugins');
     }
 
@@ -84,9 +91,18 @@ export const initializeEnv = async (
     context.exeInfo = context.exeInfo || {};
     Object.assign(context.exeInfo, projectDetails);
 
-    context.usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES);
-    await sequential(categoryInitializationTasks);
-    context.usageData.stopCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES);
+    try {
+      context.usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES);
+      await sequential(categoryInitializationTasks);
+    } catch (e) {
+      throw amplifyFaultWithTroubleshootingLink('ProjectInitFault', {
+        message: `Could not initialize categories for '${currentEnv}': ${e.message}`,
+        resolution: 'Review the error message and stack trace for additional information.',
+        stack: e.stack,
+      });
+    } finally {
+      context.usageData.stopCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES);
+    }
 
     if (context.exeInfo.forcePush === undefined) {
       context.exeInfo.forcePush = await context.amplify.confirmPrompt(
@@ -107,6 +123,7 @@ export const initializeEnv = async (
 
     printer.success(isPulling ? '' : 'Initialized your environment successfully.');
   } catch (e) {
+    // let the error propagate up after we safely exit the spinner
     spinner.fail('There was an error initializing your environment.');
     throw e;
   }

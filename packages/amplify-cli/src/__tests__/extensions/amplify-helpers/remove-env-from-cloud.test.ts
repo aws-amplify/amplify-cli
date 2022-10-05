@@ -8,6 +8,7 @@ jest.mock('../../../extensions/amplify-helpers/get-project-config', () => ({
   }),
 }));
 
+// eslint-disable-next-line spellcheck/spell-checker
 jest.mock('../../../extensions/amplify-helpers/get-all-category-pluginInfos', () => ({
   getAllCategoryPluginInfo: jest.fn().mockReturnValue({}),
 }));
@@ -35,12 +36,13 @@ const context = {
     error: jest.fn(),
   },
 };
+const envName = 'test';
 
 describe('remove-env-from-cloud', () => {
   it('invoke deleteEnv method in provider plugin', async () => {
-    await removeEnvFromCloud(context, 'test', false);
+    await removeEnvFromCloud(context, envName, false);
 
-    expect(deleteEnvMock).toBeCalledWith(context, 'test', false);
+    expect(deleteEnvMock).toBeCalledWith(context, envName, false);
   });
 
   it('invoke deletePinpointAppForEnv method in notificationsModule', async () => {
@@ -52,15 +54,17 @@ describe('remove-env-from-cloud', () => {
       ],
     });
 
-    await removeEnvFromCloud(context, 'test', false);
+    await removeEnvFromCloud(context, envName, false);
 
-    expect(deletePinpointAppForEnvMock).toBeCalledWith(context, 'test');
+    expect(deletePinpointAppForEnvMock).toBeCalledWith(context, envName);
   });
 
   it('throws error when deleteEnv promise rejected', async () => {
-    deleteEnvMock.mockRejectedValue(new Error('deleteEnv error'));
+    deleteEnvMock.mockRejectedValue(new Error('a generic deleteEnv error'));
 
-    await expect(removeEnvFromCloud(context, 'test', false)).rejects.toThrow('deleteEnv error');
+    await expect(removeEnvFromCloud(context, envName, false))
+      .rejects
+      .toThrow(`Error occurred while deleting env: ${envName}.`);
   });
 
   it('does not throw not found error when deleteEnv promise rejected', async () => {
@@ -68,6 +72,6 @@ describe('remove-env-from-cloud', () => {
     e.code = 'NotFoundException';
     deleteEnvMock.mockRejectedValue(e);
 
-    await expect(removeEnvFromCloud(context, 'test', false)).resolves.not.toThrow('deleteEnv error');
+    await expect(removeEnvFromCloud(context, envName, false)).resolves.not.toThrow(`Error occurred while deleting env: ${envName}.`);
   });
 });
