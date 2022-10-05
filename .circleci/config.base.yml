@@ -83,6 +83,10 @@ jobs:
     executor: l
     steps:
       - checkout
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - restore_cache:
+          key: amplify-cli-node_module-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run: yarn run production-build
       - run:
           name: Build tests
@@ -95,9 +99,7 @@ jobs:
           key: amplify-cli-node_module-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - node_modules
-            - ~/node_modules
             - ~/repo/node_modules
-            - ~/.npm-global
       - save_cache:
           key: amplify-cli-ssh-deps-{{ .Branch }}
           paths:
