@@ -25,6 +25,7 @@ packages/amplify-dynamodb-simulator/__test__/dynamodb-data
 .vscode/*
 !.vscode/settings.json
 !.vscode/extensions.json
+.idea
 packages/graphql*/lib
 packages/amplify-graphql-transformer-*/lib
 packages/amplify-cli/lib
