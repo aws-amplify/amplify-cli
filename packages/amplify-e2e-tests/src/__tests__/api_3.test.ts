@@ -42,7 +42,7 @@ describe('amplify add api (GraphQL)', () => {
   it('init a project and add the simple_model api, change transformer version to base version and push', async () => {
     const name = `simpleModelV${TRANSFORM_BASE_VERSION}`;
     await initJSProjectWithProfile(projRoot, { name });
-    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
+    await addApiWithoutSchema(projRoot, { transformerVersion: 1, apiName: name });
     updateApiSchema(projRoot, name, 'simple_model.graphql');
     const transformConfig = getTransformConfig(projRoot, name);
     expect(transformConfig).toBeDefined();
