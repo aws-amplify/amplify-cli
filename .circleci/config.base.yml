@@ -268,6 +268,8 @@ jobs:
     steps:
       - attach_workspace:
           at: ./
+      - install_yarn:
+          os: << parameters.os >>
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
@@ -278,7 +280,7 @@ jobs:
           key: amplify-build-artifact-{{ .Revision }}
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
-      - install_yarn:
+      - rename_binary:
           os: << parameters.os >>
       - install_packaged_cli:
           os: << parameters.os >>
@@ -969,9 +971,8 @@ commands:
             - run:
                 name: Confirm Amplify CLI is installed and available in PATH
                 command: amplify version
-
   install_yarn:
-    description: 'Install Amplify Packaged CLI to PATH'
+    description: 'Install Yarn'
     parameters:
       os:
         type: executor
@@ -982,6 +983,17 @@ commands:
             equal: [*windows-e2e-executor, << parameters.os >>]
           steps:
             - run: yarn --cache-folder ~/.cache/yarn
+  rename_binary:
+    description: 'Install Amplify Packaged CLI on Windows'
+    parameters:
+      os:
+        type: executor
+        default: l
+    steps:
+      - when:
+          condition:
+            equal: [*windows-e2e-executor, << parameters.os >>]
+          steps:
             - run:
                 shell: powershell.exe
                 command: cp /home/circleci/repo/out/amplify-pkg-win-x64.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps\amplify.exe
