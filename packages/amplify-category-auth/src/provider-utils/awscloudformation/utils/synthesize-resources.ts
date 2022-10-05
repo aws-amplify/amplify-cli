@@ -7,6 +7,7 @@ import {
   FeatureFlags,
   JSONUtilities,
   pathManager,
+  stateManager,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { copySync, ensureDirSync, existsSync } from 'fs-extra';
@@ -20,7 +21,6 @@ import {
 import { CognitoConfiguration } from '../service-walkthrough-types/awsCognito-user-input-types';
 import { AuthTriggerConfig, AuthTriggerConnection } from '../service-walkthrough-types/cognito-user-input-types';
 import { generateUserPoolGroupStackTemplate } from './generate-user-pool-group-stack-template';
-import { AuthParameters } from '../import/types';
 
 /**
  * Factory function that returns a function that synthesizes all resources based on a CognitoCLIInputs request.
@@ -287,10 +287,9 @@ export const updateUserPoolGroups = async (context: $TSContext, resourceName: st
     context.amplify.updateamplifyMetaAfterResourceUpdate(AmplifyCategories.AUTH, 'userPoolGroups', 'service', 'Cognito-UserPool-Groups');
     context.amplify.updateamplifyMetaAfterResourceUpdate(AmplifyCategories.AUTH, 'userPoolGroups', 'providerPlugin', 'awscloudformation');
 
-    const parametersJSONPath = path.join(context.amplify.pathManager.getBackendDirPath(), 'auth', resourceName, 'build', 'parameters.json');
-    const authParameters = JSONUtilities.readJson<AuthParameters>(parametersJSONPath)!;
+    const authParameters = stateManager.getResourceParametersJson(undefined, AmplifyCategories.AUTH, resourceName);
     const attributes = ['UserPoolId', 'AppClientIDWeb', 'AppClientID'];
-    if (authParameters.identityPoolName) {
+    if (authParameters?.identityPoolName) {
       attributes.push('IdentityPoolId');
     }
     context.amplify.updateamplifyMetaAfterResourceUpdate(AmplifyCategories.AUTH, 'userPoolGroups', 'dependsOn', [
