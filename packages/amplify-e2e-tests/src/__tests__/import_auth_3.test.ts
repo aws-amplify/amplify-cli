@@ -1,3 +1,4 @@
+/* eslint-disable spellcheck/spell-checker */
 import {
   addAuthUserPoolOnlyWithOAuth,
   AddAuthUserPoolOnlyWithOAuthSettings,
@@ -59,7 +60,6 @@ describe('auth import userpool only', () => {
 
   // We need an extra OG project to make sure that autocomplete prompt hits in
   let dummyOGProjectRoot: string;
-  let dummyOGShortId: string;
   let dummyOGSettings: AddAuthUserPoolOnlyWithOAuthSettings;
 
   let projectRoot: string;
@@ -77,7 +77,6 @@ describe('auth import userpool only', () => {
     ogProjectDetails = getOGAuthProjectDetails(ogProjectRoot);
 
     dummyOGProjectRoot = await createNewProjectDir(dummyOGProjectSettings.name);
-    dummyOGShortId = getShortId();
     dummyOGSettings = createUserPoolOnlyWithOAuthSettings(dummyOGProjectSettings.name, ogShortId);
 
     await initJSProjectWithProfile(dummyOGProjectRoot, dummyOGProjectSettings);
@@ -159,7 +158,10 @@ describe('auth import userpool only', () => {
   });
 
   it('imported auth, create prod env, files should match', async () => {
-    await initJSProjectWithProfile(projectRoot, projectSettings);
+    await initJSProjectWithProfile(projectRoot, {
+      ...projectSettings,
+      disableAmplifyAppCreation: false,
+    });
     await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
 
     await amplifyPushAuth(projectRoot);
