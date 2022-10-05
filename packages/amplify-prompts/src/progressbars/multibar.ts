@@ -2,7 +2,7 @@
  * This class has been made as generic as possible to suit all use cases.
  * But it is not without influence from the nuances of CloudFormation.
 */
-import { AmplifyTerminal as Terminal, ColoredString } from './terminal';
+import { AmplifyTerminal as Terminal, TerminalLine } from './terminal';
 import {
   ProgressBar as Bar,
   BarOptions,
@@ -26,7 +26,7 @@ export class MultiProgressBar {
     private timer!: ReturnType<typeof setTimeout>;
     private prefixText: string;
     private updated: boolean;
-    private lastDrawnStrings: ColoredString[];
+    private lastDrawnStrings: TerminalLine[];
 
     constructor(options: BarOptions) {
       this.terminal = new Terminal();
@@ -63,9 +63,9 @@ export class MultiProgressBar {
     /**
      * Writes lines into the re writable block
      */
-    writeLines(prefixText: ColoredString): void {
-      let barStrings: ColoredString[] = [];
-      let stringsToRender: ColoredString[] = [];
+    writeLines(prefixText: TerminalLine): void {
+      let barStrings: TerminalLine[] = [];
+      let stringsToRender: TerminalLine[] = [];
       if (Object.keys(prefixText).length !== 0) {
         stringsToRender.push(prefixText);
       }
@@ -85,7 +85,7 @@ export class MultiProgressBar {
      * Render function which is called repeatedly
      */
     render(): void {
-      const initLine: ColoredString = {
+      const initLine: TerminalLine = {
         renderString: '',
         color: '',
       };
@@ -231,7 +231,7 @@ export class MultiProgressBar {
       clearTimeout(this.timer);
 
       // Change prefix text according to success/failure
-      let initLine: ColoredString = {
+      let initLine: TerminalLine = {
         renderString: this.options.successText || '',
         color: 'green',
       };

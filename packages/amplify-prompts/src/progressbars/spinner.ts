@@ -3,7 +3,7 @@
  * and use a re writable block instead.
  */
 
-import { AmplifyTerminal, ColoredString } from './terminal';
+import { AmplifyTerminal, TerminalLine } from './terminal';
 
 /**
  * Amplify spinner instance
@@ -73,7 +73,7 @@ export class AmplifySpinner {
     if (!this.terminal) {
       return;
     }
-    const lines: ColoredString[] = [{
+    const lines: TerminalLine[] = [{
       renderString: text || '',
       color: success ? 'green' : 'red',
     }];

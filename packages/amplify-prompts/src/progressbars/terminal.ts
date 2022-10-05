@@ -4,7 +4,7 @@ import chalk from 'chalk';
 /**
  * string and color to be passed to terminal
  */
-export type ColoredString = {
+export type TerminalLine = {
   renderString: string,
   color: string
 }
@@ -73,7 +73,7 @@ export class AmplifyTerminal {
     /**
      * Write array of lines into block.
      */
-    public writeLines(lines: ColoredString[]) : void {
+    public writeLines(lines: TerminalLine[]): void {
       // Go back to beginning of last written block
       this.stream.write(cursorUp(this.lastHeight));
 

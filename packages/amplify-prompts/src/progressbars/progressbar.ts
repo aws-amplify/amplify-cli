@@ -1,4 +1,4 @@
-import { AmplifyTerminal as Terminal, ColoredString } from './terminal';
+import { AmplifyTerminal as Terminal, TerminalLine } from './terminal';
 
 /**
  * Type for Bar configurations options
@@ -101,8 +101,8 @@ export class ProgressBar {
     /**
      * Render strings are made by concatenating the progress bar strings with the item strings.
      */
-    getRenderStrings(): ColoredString[] {
-      let finalStrings: ColoredString[] = [];
+    getRenderStrings(): TerminalLine[] {
+      let finalStrings: TerminalLine[] = [];
       const progressBar = this.options.progressBarFormatter.call(this, this.payload, this.value, this.total) + this.createBarString();
       finalStrings.push({
         renderString: progressBar,
