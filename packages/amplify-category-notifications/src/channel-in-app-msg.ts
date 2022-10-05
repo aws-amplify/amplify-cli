@@ -15,6 +15,7 @@ import {
 import ora from 'ora';
 import { printer, prompter } from 'amplify-prompts';
 import {
+  invokeAnalyticsAPIGetResources,
   invokeAnalyticsResourceToggleNotificationChannel,
 } from './plugin-client-api-analytics';
 import { IChannelAPIResponse, ChannelAction, ChannelConfigDeploymentType } from './channel-types';
@@ -74,7 +75,7 @@ const invokeInlineEnableInAppMessagingChannel = (
 ): IPluginCapabilityAPIResponse => {
   throw amplifyFaultWithTroubleshootingLink('ConfigurationFault', {
     message: 'Inline enable not supported for In-App Messaging channel.',
-    details: 'Adding In-App Messaging to a project with Push Notification enabled is currently not supported. Please refer to this Github issue for updates: https://github.com/aws-amplify/amplify-cli/issues/11087',
+    details: 'Adding In-App Messaging to a project with Analytics or Push Notification enabled is currently not supported. Please refer to this Github issue for updates: https://github.com/aws-amplify/amplify-cli/issues/11087',
   });
 
   // create IAM role and apply on pinpoint app using sdk
@@ -92,8 +93,9 @@ export const enable = async (context: $TSContext): Promise<IChannelAPIResponse> 
     //get the pinpoint resource state - if custom deploy - fallback to in-line deployment
     const envName = stateManager.getCurrentEnvName();
     const notificationsMeta = await getNotificationsAppMeta(context.exeInfo.amplifyMeta);
-    const pinpointAppStatus: IPinpointAppStatus = await getPinpointAppStatusFromMeta(context, notificationsMeta, envName);
+    const pinpointAppStatus = await getPinpointAppStatusFromMeta(context, notificationsMeta, envName);
     const enableInAppMsgAPIResponse = pinpointAppStatus.status === IPinpointDeploymentStatus.APP_IS_DEPLOYED_CUSTOM
+      || !await pinpointTemplateHasInAppMessagingPolicy(context)
       ? invokeInlineEnableInAppMessagingChannel(context, pinpointAppStatus)
       : await invokeAnalyticsResourceToggleNotificationChannel(context,
         AmplifySupportedService.PINPOINT,
@@ -172,4 +174,17 @@ export const pull = async (__context: $TSContext, pinpointApp: $TSAny): Promise<
   spinner.succeed(`Channel information retrieved for ${getChannelViewName(channelName)}`);
   pinpointApp[channelName] = channelMeta;
   return buildPinpointChannelResponseSuccess(ChannelAction.PULL, deploymentType, channelName, channelMeta);
+};
+
+/**
+ * checks if pinpoint template contains the in app messaging policy
+ */
+export const pinpointTemplateHasInAppMessagingPolicy = async (context: $TSContext): Promise<boolean> => {
+  const resources = await invokeAnalyticsAPIGetResources(context, AmplifySupportedService.PINPOINT);
+  if (resources?.length > 0) {
+    const pinpointCFNParams = stateManager.getResourceParametersJson(undefined, AmplifyCategories.ANALYTICS, resources[0].resourceName);
+    return !!pinpointCFNParams?.pinpointInAppMessagingPolicyName;
+  }
+
+  return false;
 };

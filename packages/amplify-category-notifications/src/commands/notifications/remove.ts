@@ -1,6 +1,5 @@
-import inquirer from 'inquirer';
 import { $TSContext, AmplifyCategories, stateManager } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
 import chalk from 'chalk';
 import { IChannelAPIResponse } from '../../channel-types';
 import {
@@ -49,14 +48,7 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
   let channelViewName = (channelName) ? getChannelViewName(channelName) : undefined;
 
   if (!channelViewName || !availableChannelViewNames.includes(channelViewName)) {
-    const answer = await inquirer.prompt({
-      name: 'selection',
-      type: 'list',
-      message: 'Choose what to remove.',
-      choices: optionChannelViewNames,
-      default: optionChannelViewNames[0],
-    });
-    channelViewName = answer.selection;
+    channelViewName = await prompter.pick('Choose the notification channel to remove', optionChannelViewNames);
   } else if (!optionChannelViewNames.includes(channelViewName)) {
     printer.info(`The ${channelViewName} channel has NOT been enabled.`);
     channelViewName = undefined;
@@ -74,13 +66,8 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
         await writeData(context, channelAPIResponse);
       }
     } else if (isPinpointAppOwnedByNotifications(pinpointAppStatus.status)) {
-      const answer = await inquirer.prompt({
-        name: 'deletePinpointApp',
-        type: 'confirm',
-        message: 'Confirm that you want to delete the associated Amazon Pinpoint application',
-        default: false,
-      });
-      if (answer.deletePinpointApp) {
+      const confirmDelete = await prompter.confirmContinue('Confirm that you want to delete the associated Amazon Pinpoint application');
+      if (confirmDelete) {
         await deletePinpointApp(context);
         printer.info('The Pinpoint application has been successfully deleted.');
         await writeData(context, undefined);

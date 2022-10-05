@@ -1,5 +1,5 @@
-import inquirer from 'inquirer';
 import { $TSContext, AmplifyError } from 'amplify-cli-core';
+import { prompter } from 'amplify-prompts';
 import * as pinpointHelper from '../../pinpoint-helper';
 import * as notificationManager from '../../notifications-manager';
 import { IChannelAPIResponse } from '../../channel-types';
@@ -24,14 +24,7 @@ export const run = async (context:$TSContext): Promise<$TSContext> => {
   let channelViewName = (channelName) ? getChannelViewName(channelName) : undefined;
 
   if (!channelViewName || !availableChannelViewNames.includes(channelViewName)) {
-    const answer = await inquirer.prompt({
-      name: 'selection',
-      type: 'list',
-      message: 'Choose the notification channel to configure.',
-      choices: availableChannelViewNames,
-      default: availableChannelViewNames[0],
-    });
-    channelViewName = answer.selection;
+    channelViewName = await prompter.pick('Choose the notification channel to configure', availableChannelViewNames);
   }
   if (channelViewName) {
     const selectedChannel = getChannelNameFromView(channelViewName);

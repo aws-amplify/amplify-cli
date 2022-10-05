@@ -48,7 +48,7 @@ export const invokeAnalyticsResourceToggleNotificationChannel = async (
   enableChannel: boolean,
 ): Promise<IPluginCapabilityAPIResponse> => (await context.amplify.invokePluginMethod(context,
   'analytics', resourceProviderServiceName,
-  'analyticsPluginAPIToggleNotificationChannel', [context, resourceProviderServiceName, channel, enableChannel])) as IPluginCapabilityAPIResponse;
+  'analyticsPluginAPIToggleNotificationChannel', [resourceProviderServiceName, channel, enableChannel])) as IPluginCapabilityAPIResponse;
 
 /**
  * Get the last pushed time-stamp for the given resource from Analytics amplify-meta

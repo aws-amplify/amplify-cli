@@ -6,7 +6,6 @@ import {
   IPluginCapabilityAPIResponse,
   NotificationChannels,
 } from 'amplify-cli-core';
-import inquirer from 'inquirer';
 import ora from 'ora';
 
 import { prompter } from 'amplify-prompts';
@@ -31,7 +30,6 @@ jest.mock('amplify-cli-core', () => ({
     getCurrentMeta: jest.fn(),
   },
 }));
-jest.mock('inquirer');
 jest.mock('ora', () => {
   const mockSpinnerInstance = {
     fail: jest.fn(),
@@ -49,8 +47,8 @@ const channelName = 'InAppMessaging';
 const getAppConfigSpy = jest.spyOn(Cfg, 'getNotificationsAppConfig');
 const getAppMetaSpy = jest.spyOn(Meta, 'getNotificationsAppMeta');
 const isChannelEnabledSpy = jest.spyOn(ChannelCfg, 'isChannelEnabledNotificationsBackendConfig');
-const promptSpy = jest.spyOn(inquirer, 'prompt');
 const prompterYesOrNoSpy = jest.spyOn(prompter, 'yesOrNo');
+const pinpointTemplateHasInAppMessagingPolicySpy = jest.spyOn(channel, 'pinpointTemplateHasInAppMessagingPolicy');
 
 const mockContext = {
   print: { info: jest.fn(), error: jest.fn() },
@@ -86,6 +84,7 @@ describe('channel-InAppMessaging', () => {
     describe('enabled channel', () => {
       beforeEach(() => {
         isChannelEnabledSpy.mockResolvedValue(true);
+        pinpointTemplateHasInAppMessagingPolicySpy.mockResolvedValue(true);
       });
 
       test('user choosing to disable the channel', async () => {
@@ -106,6 +105,7 @@ describe('channel-InAppMessaging', () => {
     describe('disabled channel', () => {
       beforeEach(() => {
         isChannelEnabledSpy.mockResolvedValue(false);
+        pinpointTemplateHasInAppMessagingPolicySpy.mockResolvedValue(true);
       });
 
       test('user choosing to enable the channel', async () => {
@@ -128,6 +128,7 @@ describe('channel-InAppMessaging', () => {
   describe('enable', () => {
     beforeEach(() => {
       mockGetPinpointAppStatusFromMeta.mockResolvedValue({});
+      pinpointTemplateHasInAppMessagingPolicySpy.mockResolvedValue(true);
     });
 
     test('returns successful API response', async () => {

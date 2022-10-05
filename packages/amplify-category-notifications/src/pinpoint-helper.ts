@@ -220,9 +220,8 @@ export const getPinpointAppStatus = async (context: $TSContext, amplifyMeta: $TS
 /**
  * Display 'amplify push' required prompt.
  * @param pinpointStatus - deployment status of the pinpoint app
- * @param context amplify cli context
  */
-export const viewShowAmplifyPushRequired = (pinpointStatus:IPinpointDeploymentStatus, context: $TSContext):void => {
+export const viewShowAmplifyPushRequired = (pinpointStatus:IPinpointDeploymentStatus): void => {
   let pinpointStatusMessage = '';
   switch (pinpointStatus) {
     case IPinpointDeploymentStatus.APP_NOT_CREATED:
@@ -330,8 +329,12 @@ export const pushAuthAndAnalyticsPinpointResources = async (
 /**
  * Ensure Pinpoint app exists
  */
-export const ensurePinpointApp = async (context: $TSContext, pinpointNotificationsMeta: $TSAny,
-  appStatus?:IPinpointAppStatus, appEnvName?:string): Promise<IPinpointAppStatus> => {
+export const ensurePinpointApp = async (
+  context: $TSContext,
+  pinpointNotificationsMeta: $TSAny,
+  appStatus?: IPinpointAppStatus,
+  appEnvName?: string,
+): Promise<IPinpointAppStatus> => {
   let pinpointApp : Partial<ICategoryMeta>|undefined;
   let resourceName;
   const amplifyMeta = (context.exeInfo.amplifyMeta) || stateManager.getMeta();
@@ -389,7 +392,7 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
         context.exeInfo.backendConfig);
       // The Pinpoint resource is locally created, but requires an amplify push for channels to be programmed
       // note:- This is temporary until deployment state-machine supports deferred resource push.
-      // viewShowAmplifyPushRequired(pinpointAppStatus.status, context);
+      viewShowAmplifyPushRequired(pinpointAppStatus.status);
       break;
     }
     case IPinpointDeploymentStatus.APP_IS_CREATED_NOT_DEPLOYED: {
@@ -401,7 +404,7 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
         context.exeInfo.backendConfig = await addPartialNotificationsBackendConfig(resourceName,
           context.exeInfo.backendConfig);
       }
-      // viewShowAmplifyPushRequired(pinpointAppStatus.status, context);
+      viewShowAmplifyPushRequired(pinpointAppStatus.status);
       break;
     }
     default:
@@ -424,7 +427,8 @@ export const ensurePinpointApp = async (context: $TSContext, pinpointNotificatio
  */
 export const deletePinpointApp = async (context: $TSContext):Promise<void> => {
   const { amplifyMeta } = context.exeInfo;
-  let pinpointApp : ICategoryMeta|undefined = scanCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.ANALYTICS], undefined);
+  let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.ANALYTICS], undefined);
+
   if (pinpointApp) {
     await authHelper.deleteRolePolicy(context);
     pinpointApp = await deleteApp(context, pinpointApp.Id) as ICategoryMeta;

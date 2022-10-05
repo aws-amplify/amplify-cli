@@ -4,7 +4,7 @@ import {
   AmplifyCategories, AmplifySupportedService, stateManager, IAmplifyResource,
   pathManager, $TSContext, IAnalyticsResource, PluginAPIError, NotificationChannels, IPluginCapabilityAPIResponse, $TSAny,
 } from 'amplify-cli-core';
-
+import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { addResource } from './provider-utils/awscloudformation/index';
 import { analyticsPush } from './commands/analytics';
 import { invokeAuthPush } from './plugin-client-api-auth';
@@ -70,13 +70,15 @@ export const analyticsPluginAPICreateResource = async (
 /**
  * Configure Analytics service to enable Notification channels to client.
  * Currently only Pinpoint supports notifications to the client.
- * @param _ amplify cli context
  * @param resourceProviderServiceName - Pinpoint or Kinesis
  * @param channel - Notification channel to be toggled
  * @param enableChannel - True - enable notification/ false - disable notification
  */
-export const analyticsPluginAPIToggleNotificationChannel = async (__: $TSContext, resourceProviderServiceName: string,
-  channel: NotificationChannels, enableChannel: boolean): Promise<IPluginCapabilityAPIResponse> => {
+export const analyticsPluginAPIToggleNotificationChannel = async (
+  resourceProviderServiceName: string,
+  channel: NotificationChannels,
+  enableChannel: boolean,
+): Promise<IPluginCapabilityAPIResponse> => {
   const response: IPluginCapabilityAPIResponse = {
     pluginName: AmplifyCategories.ANALYTICS,
     resourceProviderServiceName,
@@ -109,7 +111,7 @@ export const analyticsPluginAPIToggleNotificationChannel = async (__: $TSContext
   }
 
   // Add notifications to the first pinpoint resource available
-  const pinpointResource: IAmplifyResource = resources[0];
+  const pinpointResource = resources[0];
   if (enableChannel) {
     await pinpointAPIEnableNotificationChannel(pinpointResource, channel);
   } else {
@@ -120,6 +122,7 @@ export const analyticsPluginAPIToggleNotificationChannel = async (__: $TSContext
   response.status = true;
   return response;
 };
+
 /**
  * Push Analytics resource to the cloud. If the resourceProviderService exists in the configuration,
  * then this function will attempt to push to the cloud, else return failure.
@@ -164,9 +167,10 @@ export const analyticsPluginAPIPostPush = async (context: $TSContext) : Promise<
   const amplifyMeta = stateManager.getMeta();
   let pinpointNotificationsMeta; // build this to update amplify-meta and team-provider-info.json
   // update state only if analytics and notifications resources are present
-  if (amplifyMeta
-      && amplifyMeta[AmplifyCategories.ANALYTICS] && Object.keys(amplifyMeta[AmplifyCategories.ANALYTICS]).length > 0
-      && amplifyMeta[AmplifyCategories.NOTIFICATIONS] && Object.keys(amplifyMeta[AmplifyCategories.NOTIFICATIONS]).length > 0) {
+  if (amplifyMeta?.[AmplifyCategories.ANALYTICS]
+      && Object.keys(amplifyMeta[AmplifyCategories.ANALYTICS]).length > 0
+      && amplifyMeta[AmplifyCategories.NOTIFICATIONS]
+      && Object.keys(amplifyMeta[AmplifyCategories.NOTIFICATIONS]).length > 0) {
     // Fetch Analytics data from persistent amplify-meta.json. This is expected to be updated by the push operation.
     const analyticsResourceList:IAnalyticsResource[] = analyticsPluginAPIGetResources(AmplifySupportedService.PINPOINT);
     const notificationsResourceName = Object.keys(amplifyMeta[AmplifyCategories.NOTIFICATIONS])[0];
@@ -175,7 +179,7 @@ export const analyticsPluginAPIPostPush = async (context: $TSContext) : Promise<
     // Get analytics resource on which notifications are enabled
     const analyticsResource = analyticsResourceList.find(p => p.resourceName === notificationsResourceName);
     // Check if the resource is deployed to the cloud.
-    if (analyticsResource && analyticsResource.output && analyticsResource.output.Id) {
+    if (analyticsResource?.output?.Id) {
       pinpointNotificationsMeta = amplifyMeta[AmplifyCategories.NOTIFICATIONS][analyticsResource.resourceName];
       pinpointNotificationsMeta.Name = (pinpointNotificationsMeta.Name) || analyticsResource.output.appName;
       pinpointNotificationsMeta.Id = analyticsResource.output.Id;
@@ -211,7 +215,7 @@ export const analyticsPluginAPIPostPush = async (context: $TSContext) : Promise<
   }
   // save updated notifications team-provider-info.json
   if (pinpointNotificationsMeta) {
-    await writeNotificationsTeamProviderInfo(context, pinpointNotificationsMeta);
+    await writeNotificationsTeamProviderInfo(pinpointNotificationsMeta);
   }
 
   // Generate frontend exports from currentMeta.
@@ -224,33 +228,24 @@ export const analyticsPluginAPIPostPush = async (context: $TSContext) : Promise<
   return context;
 };
 
-// TBD move to notifications plugin
 /**
  * Build team provider info for notifications
- * @param context amplify cli context
  * @param pinpointMeta ( for Id, Region and env specific resource name)
  */
-const writeNotificationsTeamProviderInfo = async (context: $TSContext, pinpointMeta: $TSAny): Promise<void> => {
-  const projectPath = pathManager.findProjectRoot();
-  const { envName } = context.exeInfo.localEnvInfo;
-  const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath) || {};
-  teamProviderInfo[envName] = teamProviderInfo[envName] || {};
-  teamProviderInfo[envName].categories = teamProviderInfo[envName].categories || {};
-  teamProviderInfo[envName].categories[AmplifyCategories.NOTIFICATIONS] = teamProviderInfo[envName]
-    .categories[AmplifyCategories.NOTIFICATIONS] || {};
-  teamProviderInfo[envName].categories[AmplifyCategories.NOTIFICATIONS][AmplifySupportedService.PINPOINT] = pinpointMeta
-    ? {
-      Name: pinpointMeta.Name,
-      Id: pinpointMeta.Id,
-      Region: pinpointMeta.Region,
-    }
-    : undefined;
-  stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
+const writeNotificationsTeamProviderInfo = async (pinpointMeta: $TSAny): Promise<void> => {
+  if (!pinpointMeta) {
+    return;
+  }
+  getEnvParamManager().getResourceParamManager(AmplifyCategories.NOTIFICATIONS, AmplifySupportedService.PINPOINT).setAllParams({
+    Name: pinpointMeta.Name,
+    Id: pinpointMeta.Id,
+    Region: pinpointMeta.Region,
+  });
 };
 
 /**
  * Build the Notification channel's IAM policy name using the same shortID as the pinpoint policy name
- * */
+ **/
 const buildPolicyName = (channel: string, pinpointPolicyName: string): string => {
   // split the policy name by the prefix
   const shortId = pinpointPolicyName.split('pinpointPolicy')[1];
