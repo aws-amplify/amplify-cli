@@ -268,8 +268,6 @@ jobs:
     steps:
       - attach_workspace:
           at: ./
-      - install_yarn:
-          os: << parameters.os >>
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
@@ -280,6 +278,8 @@ jobs:
           key: amplify-build-artifact-{{ .Revision }}
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+      - install_yarn:
+          os: << parameters.os >>
       - rename_binary:
           os: << parameters.os >>
       - install_packaged_cli:
