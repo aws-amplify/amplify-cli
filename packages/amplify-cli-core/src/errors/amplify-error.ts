@@ -6,10 +6,11 @@ import { AmplifyException, AmplifyExceptionOptions, AmplifyErrorType, PartialAmp
  */
 export class AmplifyError extends AmplifyException {
   constructor(
+    downstreamException: Error | null,
     name: AmplifyErrorType,
     options: AmplifyExceptionOptions,
   ) {
-    super(name, 'ERROR', options);
+    super(downstreamException, name, 'ERROR', options);
   }
 }
 
@@ -17,8 +18,16 @@ export class AmplifyError extends AmplifyException {
  * convenience method to return an amplify error with the default troubleshooting link
  * @deprecated prefer using AmplifyError and passing the resolution steps
  */
-export const amplifyErrorWithTroubleshootingLink = (name: AmplifyErrorType, options: PartialAmplifyExceptionOptions)
-  : AmplifyError => new AmplifyError(name, {
-  ...options,
-  link: 'link' in options && options.link ? options.link : AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
-});
+export const amplifyErrorWithTroubleshootingLink = (
+  downstreamException: Error | null,
+  name: AmplifyErrorType, 
+  options: PartialAmplifyExceptionOptions)
+  : AmplifyError => {
+    return new AmplifyError(
+      downstreamException, 
+      name, 
+        {
+        ...options,
+        link: 'link' in options && options.link ? options.link : AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
+      });
+  };

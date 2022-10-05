@@ -1,27 +1,45 @@
 /**
  * Base class for all Amplify exceptions
  */
-export class AmplifyException extends Error {
+export abstract class AmplifyException extends Error {
   public readonly message: string;
   public readonly resolution?: string;
   public readonly details?: string;
   public readonly link?: string;
 
   constructor(
+    /*
+    * Developers must provide the original exception.
+
+    * This way, we can determine if an AmplifyException was already thrown,
+    * and we can make sure that exception & its resolution steps are shown to
+    * the user.
+    */
+    public readonly downstreamException: Error | null,
     public readonly name: AmplifyExceptionType,
     public readonly classification: AmplifyExceptionClassification,
     private readonly options: AmplifyExceptionOptions,
   ) {
-    super(options.message);
+    // If an AmplifyException was already thrown, we must allow it to reach the user.
+    // This ensures that resolution steps, and the original error are bubbled up.
+    super(downstreamException instanceof AmplifyException ? downstreamException.message : options.message);
 
     // https://github.com/Microsoft/TypeScript-wiki/blob/main/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
     Object.setPrototypeOf(this, AmplifyException.prototype);
 
-    this.stack = options.stack ?? this.stack;
-    this.message = options.message;
-    this.details = options.details;
-    this.resolution = 'resolution' in options ? options.resolution : undefined;
-    this.link = 'link' in options ? options.link : undefined;
+    if(downstreamException instanceof AmplifyException){
+      this.stack ??= downstreamException.stack;
+      this.message = downstreamException.message;
+      this.details = downstreamException.details;
+      this.resolution = downstreamException.resolution;
+      this.link = downstreamException.link;
+    } else {
+      this.stack ??= options.stack;
+      this.message = options.message;
+      this.details = options.details;
+      this.resolution = 'resolution' in options ? options.resolution : undefined;
+      this.link = 'link' in options ? options.link : undefined;
+    }
   }
 
   toObject = (): object => {
