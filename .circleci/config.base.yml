@@ -982,7 +982,7 @@ commands:
           condition:
             equal: [*windows-e2e-executor, << parameters.os >>]
           steps:
-            - run: yarn --cache-folder ~/.cache/yarn
+            - run: yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
   rename_binary:
     description: 'Install Amplify Packaged CLI on Windows'
     parameters:
