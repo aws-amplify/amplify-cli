@@ -180,11 +180,8 @@ export class DeploymentManager {
                 this.spinner.start(deploySpinnerMessage.message);
               }
             } else if (state.matches('deployed')) {
-              this.spinner.stop();
-              this.printer.finishBars();
-              this.printer.stopBars();
+              this.updateTerminalOnEventCompletion(`Deployed (${maxDeployed - 1} of ${state.context.stacks.length})`);
               this.logger('DeploymentManager', [{ spinner: 'Deployed' }]);
-              promptsPrinter.info(`Deployed (${maxDeployed - 1} of ${state.context.stacks.length})`);
               this.resetPrinter();
             } else if (state.matches('deploy') || state.matches('rollback')) {
               this.spinner.stop();
@@ -253,10 +250,7 @@ export class DeploymentManager {
               this.logger(rollbackSpinnerMessage.machine, [{ spinner: rollbackSpinnerMessage.message }])();
               this.spinner.start(rollbackSpinnerMessage.message);
             } else if (state.matches('rolledBack')) {
-              this.spinner.stop();
-              this.printer.finishBars();
-              this.printer.stopBars();
-              promptsPrinter.info(`Rolled back (${maxDeployed - state.context.currentIndex} of ${maxDeployed})`);
+              this.updateTerminalOnEventCompletion(`Rolled back (${maxDeployed - state.context.currentIndex} of ${maxDeployed})`);
               this.logger('rollback', [{ spinner: 'Rolled back successfully' }]);
             } else if (state.matches('rollback')) {
               this.spinner.stop();
@@ -329,6 +323,13 @@ export class DeploymentManager {
 
   public resetPrinter = (): void => {
     this.printer = new StackProgressPrinter(this.eventMap);
+  };
+
+  private updateTerminalOnEventCompletion = (eventCompletionText: string): void => {
+    this.spinner.stop();
+    this.printer.finishBars();
+    this.printer.stopBars();
+    promptsPrinter.info(eventCompletionText);
   };
 
   /**
