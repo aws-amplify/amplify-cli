@@ -57,7 +57,7 @@ const DEFAULT_BAR_SIZE = 40;
 export class ProgressBar {
     private value: number;
     private total: number;
-    private terminal: Terminal;
+    private terminal: Terminal | undefined;
     private payload!: ProgressPayload;
     private isActive: boolean;
     private options: BarOptions;
@@ -69,7 +69,9 @@ export class ProgressBar {
     barSize: number;
 
     constructor(options: BarOptions) {
-      this.terminal = new Terminal();
+      if (options.loneWolf) {
+        this.terminal = new Terminal();
+      }
       this.value = 0;
       this.total = 1;
       this.options = options;
@@ -124,8 +126,10 @@ export class ProgressBar {
      * Render function
      */
     render(): void {
-      const stringsToRender = this.getRenderStrings();
-      this.terminal.writeLines(stringsToRender);
+      if (this.terminal) {
+        const stringsToRender = this.getRenderStrings();
+        this.terminal.writeLines(stringsToRender);
+      }
     }
 
     /**
@@ -154,7 +158,7 @@ export class ProgressBar {
 
       this.isActive = true;
 
-      if (this.options.loneWolf) {
+      if (this.terminal) {
         if (this.options.hideCursor === true) {
           this.terminal.cursor(false);
         }
@@ -167,7 +171,7 @@ export class ProgressBar {
      */
     stop(): void {
       this.isActive = false;
-      if (this.options.loneWolf) {
+      if (this.terminal) {
         if (this.options.hideCursor) {
           this.terminal.cursor(true);
         }
@@ -199,9 +203,7 @@ export class ProgressBar {
         ...this.options.itemFormatter.call(this, itemPayload),
         finished: this.options.itemCompleteStatus.includes(status),
       });
-      if (this.options.loneWolf) {
-        this.render();
-      }
+      this.render();
     }
 
     /**
@@ -222,9 +224,7 @@ export class ProgressBar {
         return obj || item;
       });
       this.items = newItemsSet;
-      if (this.options.loneWolf) {
-        this.render();
-      }
+      this.render();
     }
 
     /**
