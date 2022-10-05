@@ -1,3 +1,5 @@
+/* eslint-disable spellcheck/spell-checker */
+/* eslint-disable jest/no-standalone-expect */
 import {
   checkIfBucketExists,
   createNewProjectDir,
@@ -66,7 +68,7 @@ describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
   it('init a project and add the api with lambda auth multiple env', async () => {
     const envName = 'devtest';
     const projName = 'lambdaauthenv';
-    await initJSProjectWithProfile(projRoot, { name: projName, envName });
+    await initJSProjectWithProfile(projRoot, { name: projName, envName, disableAmplifyAppCreation: false });
     await addApiWithAllAuthModes(projRoot);
     await updateApiSchema(projRoot, projName, 'lambda-auth-field-auth-v2.graphql');
     await amplifyPush(projRoot);
@@ -127,7 +129,6 @@ describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
 
     const url = GraphQLAPIEndpointOutput as string;
-    const apiKey = GraphQLAPIKeyOutput as string;
 
     const appSyncClient = new AWSAppSyncClient({
       url,

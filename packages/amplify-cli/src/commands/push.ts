@@ -1,12 +1,11 @@
+import { ensureEnvMeta } from '@aws-amplify/amplify-environment-parameters';
 import {
   $TSAny,
   $TSContext,
   amplifyErrorWithTroubleshootingLink,
   amplifyFaultWithTroubleshootingLink,
   spinner,
-  stateManager,
 } from 'amplify-cli-core';
-import sequential from 'promise-sequential';
 import {
   notifyFieldAuthSecurityChange,
   notifyListQuerySecurityChange,
@@ -25,15 +24,14 @@ const syncCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
   const currentEnv = context.exeInfo.localEnvInfo.envName;
 
   try {
-    const amplifyMeta = stateManager.getMeta();
     const providerPlugins = getProviderPlugins(context);
-    const pullCurrentCloudTasks: (() => Promise<$TSAny>)[] = [];
+    const awsProviderPlugin = await import(providerPlugins.awscloudformation);
+    if (!awsProviderPlugin) {
+      throw amplifyFaultWithTroubleshootingLink('PluginNotLoadedFault', { message: 'Could not find AWS CloudFormation provider plugin' });
+    }
 
-    context.exeInfo.projectConfig.providers.forEach(provider => {
-      // eslint-disable-next-line
-      const providerModule = require(providerPlugins[provider]);
-      pullCurrentCloudTasks.push(() => providerModule.initEnv(context, amplifyMeta.providers[provider]));
-    });
+    spinner.start(`Fetching updates to backend environment: ${currentEnv} from the cloud.`);
+    await awsProviderPlugin.initEnv(context, await ensureEnvMeta(context, currentEnv));
 
     await notifySecurityEnhancement(context);
 
@@ -43,9 +41,6 @@ const syncCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
     if (!securityChangeNotified) {
       securityChangeNotified = await notifyListQuerySecurityChange(context);
     }
-
-    spinner.start(`Fetching updates to backend environment: ${currentEnv} from the cloud.`);
-    await sequential(pullCurrentCloudTasks);
     spinner.succeed(`Successfully pulled backend environment ${currentEnv} from the cloud.`);
   } catch (e) {
     spinner.fail(`There was an error pulling the backend environment ${currentEnv}.`);

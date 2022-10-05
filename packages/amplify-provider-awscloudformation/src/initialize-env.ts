@@ -12,9 +12,9 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
-import { ensureEnvMeta } from '@aws-amplify/amplify-environment-parameters';
+import { ensureEnvMeta, IEnvironmentMetadata } from '@aws-amplify/amplify-environment-parameters';
 import {
-  $TSContext, $TSMeta, JSONUtilities, PathConstants, stateManager,
+  $TSContext, JSONUtilities, PathConstants, stateManager,
 } from 'amplify-cli-core';
 import fs from 'fs-extra';
 import glob from 'glob';
@@ -32,7 +32,7 @@ const logger = fileLogger('initialize-env');
 /**
  * initialize env for selected provider
  */
-export async function run(context: $TSContext, providerMetadata: $TSMeta) {
+export async function run(context: $TSContext, providerMetadata: IEnvironmentMetadata) {
   if (!(context.exeInfo && context.exeInfo.isNewEnv)) {
     const amplifyDir = context.amplify.pathManager.getAmplifyDirPath();
     const tempDir = path.join(amplifyDir, '.temp');

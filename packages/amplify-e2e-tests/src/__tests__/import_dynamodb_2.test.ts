@@ -1,3 +1,4 @@
+/* eslint-disable spellcheck/spell-checker */
 import {
   addAuthWithDefault,
   AddDynamoDBSettings,
@@ -14,12 +15,10 @@ import {
 import { addEnvironmentWithImportedAuth, checkoutEnvironment, removeEnvironment } from '../environment/env';
 import {
   createDynamoDBSettings,
-  DynamoDBProjectDetails,
   expectDynamoDBLocalAndOGMetaFilesOutputMatching,
   expectLocalAndCloudMetaFilesMatching,
   expectLocalAndPulledBackendConfigMatching,
   getDynamoDBProjectDetails,
-  getOGDynamoDBProjectDetails,
   getShortId,
   headlessPull,
   headlessPullExpectError,
@@ -48,7 +47,6 @@ describe('dynamodb import', () => {
   let ogProjectRoot: string;
   let ogShortId: string;
   let ogSettings: AddDynamoDBSettings;
-  let ogProjectDetails: DynamoDBProjectDetails;
 
   // We need an extra OG project to make sure that autocomplete prompt hits in
   let dummyOGProjectRoot: string;
@@ -67,8 +65,6 @@ describe('dynamodb import', () => {
     await addAuthWithDefault(ogProjectRoot, {});
     await addDynamoDBWithGSIWithSettings(ogProjectRoot, ogSettings);
     await amplifyPushAuth(ogProjectRoot);
-
-    ogProjectDetails = getOGDynamoDBProjectDetails(ogProjectRoot);
 
     dummyOGProjectRoot = await createNewProjectDir(dummyOGProjectSettings.name);
     dummyOGShortId = getShortId();
@@ -106,7 +102,10 @@ describe('dynamodb import', () => {
   });
 
   it('imported dynamodb table, create prod env, files should match', async () => {
-    await initJSProjectWithProfile(projectRoot, projectSettings);
+    await initJSProjectWithProfile(projectRoot, {
+      ...projectSettings,
+      disableAmplifyAppCreation: false,
+    });
     await addAuthWithDefault(projectRoot, {});
     await importDynamoDBTable(projectRoot, ogSettings.tableName);
 
