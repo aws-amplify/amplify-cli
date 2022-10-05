@@ -1207,9 +1207,7 @@ export const headlessImport = async (
 ): Promise<{ succeeded: boolean; envSpecificParameters: EnvSpecificResourceParameters }> => {
   // Validate required parameters' presence and merge into parameters
   const currentEnvSpecificParameters = ensureHeadlessParameters(resourceParameters, headlessParams);
-
-  const amplifyMeta = stateManager.getMeta();
-  const { Region } = amplifyMeta.providers[providerName];
+  const { Region } = getEnvMeta(context?.exeInfo?.localEnvInfo?.envName);
   const projectConfig = context.amplify.getProjectConfig();
 
   // If region mismatch, signal prompt for new arguments, only in interactive mode, headless does not matter

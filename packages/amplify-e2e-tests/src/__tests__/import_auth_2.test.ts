@@ -1,7 +1,7 @@
+/* eslint-disable spellcheck/spell-checker */
 import {
   AddAuthIdentityPoolAndUserPoolWithOAuthSettings,
   addAuthIdentityPoolAndUserPoolWithOAuth,
-  addS3Storage,
   amplifyPull,
   amplifyPushAuth,
   amplifyStatus,
@@ -11,6 +11,7 @@ import {
   getAppId,
   initJSProjectWithProfile,
   addS3StorageWithSettings,
+  isCI,
 } from '@aws-amplify/amplify-e2e-core';
 import {
   AuthProjectDetails,
@@ -27,7 +28,7 @@ import {
   importIdentityPoolAndUserPool,
 } from '../import-helpers';
 
-const profileName = 'amplify-integ-test-user';
+const profileName = isCI() ? 'amplify-integ-test-user' : 'default';
 
 describe('auth import identity pool and userpool', () => {
   const projectPrefix = 'auimpidup';
@@ -53,11 +54,10 @@ describe('auth import identity pool and userpool', () => {
 
   // We need an extra OG project to make sure that autocomplete prompt hits in
   let dummyOGProjectRoot: string;
-  let dummyOGShortId: string;
   let dummyOGSettings: AddAuthIdentityPoolAndUserPoolWithOAuthSettings;
 
   let projectRoot: string;
-  let ignoreProjectDeleteErrors: boolean = false;
+  let ignoreProjectDeleteErrors = false;
 
   beforeAll(async () => {
     ogProjectRoot = await createNewProjectDir(ogProjectSettings.name);
@@ -71,7 +71,6 @@ describe('auth import identity pool and userpool', () => {
     ogProjectDetails = getOGAuthProjectDetails(ogProjectRoot);
 
     dummyOGProjectRoot = await createNewProjectDir(dummyOGProjectSettings.name);
-    dummyOGShortId = getShortId();
     dummyOGSettings = createIDPAndUserPoolWithOAuthSettings(dummyOGProjectSettings.name, ogShortId);
 
     await initJSProjectWithProfile(dummyOGProjectRoot, dummyOGProjectSettings);
@@ -110,7 +109,7 @@ describe('auth import identity pool and userpool', () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
     await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
 
-    let projectDetails = getAuthProjectDetails(projectRoot);
+    const projectDetails = getAuthProjectDetails(projectRoot);
 
     expectAuthProjectDetailsMatch(projectDetails, ogProjectDetails);
 
@@ -199,7 +198,7 @@ describe('auth import identity pool and userpool', () => {
 
     await amplifyPushAuth(projectRoot);
 
-    let projectDetails = getAuthProjectDetails(projectRoot);
+    const projectDetails = getAuthProjectDetails(projectRoot);
 
     const appId = getAppId(projectRoot);
     expect(appId).toBeDefined();

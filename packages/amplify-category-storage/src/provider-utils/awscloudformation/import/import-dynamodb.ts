@@ -1,4 +1,4 @@
-import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
+import { ensureEnvParamManager, getEnvMeta } from '@aws-amplify/amplify-environment-parameters';
 import {
   $TSAny, $TSContext, AmplifyCategories, ServiceSelection, stateManager,
 } from 'amplify-cli-core';
@@ -288,8 +288,7 @@ export const importedDynamoDBEnvInit = async (
   headlessParams: ImportDynamoDBHeadlessParameters,
 ): Promise<{ doServiceWalkthrough?: boolean; succeeded?: boolean; envSpecificParameters?: DynamoDBEnvSpecificResourceParameters }> => {
   const dynamoDB = await providerUtils.createDynamoDBService(context);
-  const amplifyMeta = stateManager.getMeta();
-  const { Region } = amplifyMeta.providers[providerName];
+  const { Region } = getEnvMeta(context?.exeInfo?.localEnvInfo?.envName);
   const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
   const isEnvAdd = context.input.command === 'env' && context.input.subCommands[0] === 'add';
 
@@ -415,8 +414,7 @@ const headlessImport = async (
   // Validate required parameters' presence and merge into parameters
   const currentEnvSpecificParameters = ensureHeadlessParameters(resourceParameters, headlessParams);
 
-  const amplifyMeta = stateManager.getMeta();
-  const { Region } = amplifyMeta.providers[providerName];
+  const { Region } = getEnvMeta(context?.exeInfo?.localEnvInfo?.envName);
 
   // Validate the parameters, generate the missing ones and import the resource.
   const questionParameters: DynamoDBImportParameters = {
