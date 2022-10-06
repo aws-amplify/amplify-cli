@@ -117,7 +117,10 @@ jobs:
                 command: yarn build-tests
             - persist_to_workspace:
                 root: ~/.
-                paths: .
+                paths:
+                  - repo
+                  - .cache
+                  - .ssh
   test:
     <<: *linux-e2e-executor
     steps:
