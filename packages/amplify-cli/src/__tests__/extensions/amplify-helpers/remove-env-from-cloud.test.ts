@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { AmplifyError } from 'amplify-cli-core';
 import { removeEnvFromCloud } from '../../../extensions/amplify-helpers/remove-env-from-cloud';
 import { getAllCategoryPluginInfo } from '../../../extensions/amplify-helpers/get-all-category-pluginInfos';
 
@@ -67,9 +68,11 @@ describe('remove-env-from-cloud', () => {
       .toThrow(`Error occurred while deleting env: ${envName}.`);
   });
 
-  it('does not throw not found error when deleteEnv promise rejected', async () => {
-    const e: any = new Error('deleteEnv error');
-    e.code = 'NotFoundException';
+  it('does not throw bucket not found error when deleteEnv promise rejected', async () => {
+    const e: any = new AmplifyError('BucketNotFoundError', {
+      message: 'Project deployment bucket has not been created yet.',
+      resolution: 'Use amplify init to initialize the project.',
+    });
     deleteEnvMock.mockRejectedValue(e);
 
     await expect(removeEnvFromCloud(context, envName, false)).resolves.not.toThrow(`Error occurred while deleting env: ${envName}.`);
