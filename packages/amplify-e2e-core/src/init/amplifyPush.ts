@@ -421,18 +421,19 @@ export const amplifyPushOverride = (cwd: string, testingWithLatestCodebase = fal
     .run((err: Error) => {
       if (err) {
         reject(err);
-      }
-    });
-  // Test amplify push
-  spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
-    .wait('Are you sure you want to continue?')
-    .sendConfirmYes()
-    .wait(/.*/)
-    .run((err: Error) => {
-      if (!err) {
-        resolve();
       } else {
-        reject(err);
+        // Test amplify push
+        spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+          .wait('Are you sure you want to continue?')
+          .sendConfirmYes()
+          .wait(/.*/)
+          .run((error: Error) => {
+            if (!error) {
+              resolve();
+            } else {
+              reject(error);
+            }
+          });
       }
     });
 });
