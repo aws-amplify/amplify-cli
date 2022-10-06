@@ -13,7 +13,12 @@ import {
   removeAllNotificationChannel,
   removeNotificationChannel,
 } from '@aws-amplify/amplify-e2e-core';
-import { expectLocalAndPulledBackendConfigMatching, getShortId } from '../import-helpers';
+import {
+  expectLocalAndPulledAwsExportsMatching,
+  expectLocalAndPulledBackendAmplifyMetaMatching,
+  expectLocalAndPulledBackendConfigMatching,
+  getShortId,
+} from '../import-helpers';
 
 describe('notification category test', () => {
   const INLINE_NOTIFICATION_CHOICES = ['SMS'];
@@ -36,10 +41,12 @@ describe('notification category test', () => {
       const appId = getAppId(projectRoot);
       expect(appId).toBeDefined();
 
-      projectRootPull = await createNewProjectDir('notification-pull');
+      projectRootPull = await createNewProjectDir(`notification-pull${getShortId()}`);
       await amplifyPull(projectRootPull, { override: false, emptyDir: true, appId });
 
       expectLocalAndPulledBackendConfigMatching(projectRoot, projectRootPull);
+      expectLocalAndPulledBackendAmplifyMetaMatching(projectRoot, projectRootPull);
+      expectLocalAndPulledAwsExportsMatching(projectRoot, projectRootPull);
 
       // Delete the project now to assert that CFN is able to clean up successfully.
       const { StackId: stackId, Region: region } = getProjectMeta(projectRoot).providers.awscloudformation;
@@ -72,10 +79,12 @@ describe('notification category test', () => {
 
       await amplifyPushAuth(projectRoot);
 
-      projectRootPull = await createNewProjectDir('notification-pull');
+      projectRootPull = await createNewProjectDir(`notification-pull${getShortId()}`);
       await amplifyPull(projectRootPull, { override: false, emptyDir: true, appId });
 
       expectLocalAndPulledBackendConfigMatching(projectRoot, projectRootPull);
+      expectLocalAndPulledBackendAmplifyMetaMatching(projectRoot, projectRootPull);
+      expectLocalAndPulledAwsExportsMatching(projectRoot, projectRootPull);
 
       // Delete the project now to assert that CFN is able to clean up successfully.
       const { StackId: stackId, Region: region } = getProjectMeta(projectRoot).providers.awscloudformation;
