@@ -7,14 +7,22 @@ export abstract class AmplifyException extends Error {
   public readonly details?: string;
   public readonly link?: string;
 
+  /**
+   * You should use AmplifyError or AmplifyFault to throw an exception.
+   *
+   * @param {Error | null} downstreamException If you are throwing this exception from within a catch block,
+   * you must provide the exception that was caught.
+   * @example
+   * try {
+   *  ...
+   * } catch (downstreamException){
+   *    throw new AmplifyError(downstreamException,...,...);
+   * }
+   * @param {AmplifyExceptionType} name - a user friendly name for the exception
+   * @param {AmplifyExceptionClassification} classification - Fault or Error
+   * @param {AmplifyExceptionOptions} options - error stack, resolution steps, details, or help links
+   */
   constructor(
-    /*
-    * Developers must provide the original exception.
-
-    * This way, we can determine if an AmplifyException was already thrown,
-    * and we can make sure that exception & its resolution steps are shown to
-    * the user.
-    */
     public readonly downstreamException: Error | null,
     public readonly name: AmplifyExceptionType,
     public readonly classification: AmplifyExceptionClassification,
@@ -28,13 +36,13 @@ export abstract class AmplifyException extends Error {
     Object.setPrototypeOf(this, AmplifyException.prototype);
 
     if (downstreamException instanceof AmplifyException) {
-      this.stack ??= downstreamException.stack;
+      this.stack = downstreamException.stack;
       this.message = downstreamException.message;
       this.details = downstreamException.details;
       this.resolution = downstreamException.resolution;
       this.link = downstreamException.link;
     } else {
-      this.stack ??= options.stack;
+      this.stack = options.stack;
       this.message = options.message;
       this.details = options.details;
       this.resolution = 'resolution' in options ? options.resolution : undefined;

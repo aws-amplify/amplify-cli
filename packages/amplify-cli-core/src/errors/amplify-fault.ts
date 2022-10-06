@@ -7,6 +7,20 @@ import {
  * Base class for all Amplify faults
  */
 export class AmplifyFault extends AmplifyException {
+  /**
+   * Create a new Amplify Fault
+   *
+   * @param {Error | null} downstreamException If you are throwing this exception from within a catch block,
+   * you must provide the exception that was caught.
+   * @example
+   * try {
+   *  ...
+   * } catch (downstreamException){
+   *    throw new AmplifyFault(downstreamException,...,...);
+   * }
+   * @param {AmplifyErrorType} name - a user friendly name for the exception
+   * @param {AmplifyExceptionOptions} options - error stack, resolution steps, details, or help links
+   */
   constructor(
     downstreamException: Error | null,
     name: AmplifyFaultType,
