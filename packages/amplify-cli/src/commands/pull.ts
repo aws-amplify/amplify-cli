@@ -1,6 +1,7 @@
 import {
   $TSContext, stateManager, AmplifyError, amplifyFaultWithTroubleshootingLink,
 } from 'amplify-cli-core';
+import { ensureEnvMeta } from '@aws-amplify/amplify-environment-parameters';
 import { pullBackend } from '../pull-backend';
 import { preDeployPullBackend } from '../pre-deployment-pull';
 import { attachBackend } from '../attach-backend';
@@ -48,6 +49,8 @@ export const run = async (context: $TSContext): Promise<void> => {
         resolution: `Try running "amplify env add" to add a new environment.\nIf this backend already exists, try restoring its definition in your team-provider-info.json file.`,
       });
     }
+
+    await ensureEnvMeta(context);
 
     if (inputEnvName) {
       if (inputEnvName === envName) {

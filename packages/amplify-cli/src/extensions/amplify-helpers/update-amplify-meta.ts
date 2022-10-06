@@ -1,5 +1,9 @@
+/* eslint-disable jsdoc/require-jsdoc */
+import { getEnvMeta } from '@aws-amplify/amplify-environment-parameters';
 import { buildTypeKeyMap, ServiceName } from 'amplify-category-function';
-import { $TSAny, $TSMeta, $TSObject, JSONUtilities, pathManager, ResourceTuple, stateManager } from 'amplify-cli-core';
+import {
+  $TSAny, $TSMeta, $TSObject, JSONUtilities, pathManager, ResourceTuple, stateManager,
+} from 'amplify-cli-core';
 import { BuildType } from 'amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
 import glob from 'glob';
@@ -9,14 +13,14 @@ import { ensureAmplifyMetaFrontendConfig } from './on-category-outputs-change';
 import { getHashForResourceDir } from './resource-status';
 import { updateBackendConfigAfterResourceAdd, updateBackendConfigAfterResourceUpdate } from './update-backend-config';
 
-export function updateAwsMetaFile(
+export const updateAwsMetaFile = (
   filePath: string,
   category: string,
   resourceName: string,
   attribute: $TSAny,
   value: $TSAny,
   timestamp: $TSAny,
-): $TSMeta {
+): $TSMeta => {
   const amplifyMeta = JSONUtilities.readJson<$TSMeta>(filePath);
 
   if (!amplifyMeta[category]) {
@@ -43,9 +47,9 @@ export function updateAwsMetaFile(
   JSONUtilities.writeJson(filePath, amplifyMeta);
 
   return amplifyMeta;
-}
+};
 
-function moveBackendResourcesToCurrentCloudBackend(resources: $TSObject[]) {
+const moveBackendResourcesToCurrentCloudBackend = (resources: $TSObject[]): void => {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyCloudMetaFilePath = pathManager.getCurrentAmplifyMetaFilePath();
   const backendConfigFilePath = pathManager.getBackendConfigFilePath();
@@ -94,9 +98,9 @@ function moveBackendResourcesToCurrentCloudBackend(resources: $TSObject[]) {
       throw err;
     }
   }
-}
+};
 
-function removeNodeModulesDir(currentCloudBackendDir: string) {
+const removeNodeModulesDir = (currentCloudBackendDir: string): void => {
   const nodeModulesDirs = glob.sync('**/node_modules', {
     cwd: currentCloudBackendDir,
     absolute: true,
@@ -106,15 +110,15 @@ function removeNodeModulesDir(currentCloudBackendDir: string) {
       fs.removeSync(nodeModulesPath);
     }
   }
-}
+};
 
-export function updateamplifyMetaAfterResourceAdd(
+export const updateamplifyMetaAfterResourceAdd = (
   category: string,
   resourceName: string,
   metadataResource: { dependsOn? } = {},
   backendConfigResource?: { dependsOn? },
   overwriteObjectIfExists?: boolean,
-) {
+): void => {
   const amplifyMeta = stateManager.getMeta();
 
   if (metadataResource.dependsOn) {
@@ -137,9 +141,9 @@ export function updateamplifyMetaAfterResourceAdd(
   // In case of imported resources the output block contains only the user selected values that
   // are needed for recreation of sensitive data like secrets and such.
   updateBackendConfigAfterResourceAdd(category, resourceName, backendConfigResource || metadataResource);
-}
+};
 
-export function updateProviderAmplifyMeta(providerName: string, options: $TSObject) {
+export const updateProviderAmplifyMeta = (providerName: string, options: $TSObject): void => {
   const amplifyMeta = stateManager.getMeta();
 
   if (!amplifyMeta.providers) {
@@ -154,9 +158,9 @@ export function updateProviderAmplifyMeta(providerName: string, options: $TSObje
   });
 
   stateManager.setMeta(undefined, amplifyMeta);
-}
+};
 
-export function updateamplifyMetaAfterResourceUpdate(category: string, resourceName: string, attribute: string, value: $TSAny): $TSMeta {
+export const updateamplifyMetaAfterResourceUpdate = (category: string, resourceName: string, attribute: string, value: $TSAny): $TSMeta => {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const currentTimestamp = new Date();
 
@@ -171,9 +175,11 @@ export function updateamplifyMetaAfterResourceUpdate(category: string, resourceN
   }
 
   return updatedMeta;
-}
+};
 
-export async function updateamplifyMetaAfterPush(resources: $TSObject[]) {
+export const updateamplifyMetaAfterPush = async (resources: $TSObject[]): Promise<void> => {
+  // ensure that env meta is written by this point
+  getEnvMeta().write();
   const amplifyMeta = stateManager.getMeta();
   const currentTimestamp = new Date();
 
@@ -183,7 +189,7 @@ export async function updateamplifyMetaAfterPush(resources: $TSObject[]) {
       const sourceDir = path.normalize(path.join(pathManager.getBackendDirPath(), resource.category, resource.resourceName));
       // skip hashing deleted resources
       if (fs.pathExistsSync(sourceDir)) {
-        let hashDir: string | undefined = undefined;
+        let hashDir: string | undefined;
 
         if (resource.category === 'hosting' && resource.service === 'ElasticContainer') {
           const {
@@ -192,13 +198,15 @@ export async function updateamplifyMetaAfterPush(resources: $TSObject[]) {
               config: { SourceDir },
             },
           } = stateManager.getProjectConfig();
-          // build absolute path for Dockerfile and docker-compose.yaml
+          // build absolute path for Docker file and docker-compose.yaml
           const projectRootPath = pathManager.findProjectRoot();
+          // eslint-disable-next-line max-depth
           if (projectRootPath) {
             const sourceAbsolutePath = path.join(projectRootPath, SourceDir);
 
-            // Generate the hash for this file, cfn files are autogenerated based on Dockerfile and resource settings
+            // Generate the hash for this file, cfn files are auto-generated based on Docker file and resource settings
             // Hash is generated by this files and not cfn files
+            // eslint-disable-next-line spellcheck/spell-checker
             hashDir = await getHashForResourceDir(sourceAbsolutePath, ['Dockerfile', 'docker-compose.yaml', 'docker-compose.yml']);
           }
         } else if (resource.category === 'function' && resource.service === ServiceName.LambdaLayer) {
@@ -226,20 +234,20 @@ export async function updateamplifyMetaAfterPush(resources: $TSObject[]) {
   stateManager.setMeta(undefined, amplifyMeta);
 
   moveBackendResourcesToCurrentCloudBackend(resources);
-}
+};
 
-export function updateamplifyMetaAfterBuild({ category, resourceName }: ResourceTuple, buildType: BuildType = BuildType.PROD) {
+export const updateamplifyMetaAfterBuild = ({ category, resourceName }: ResourceTuple, buildType: BuildType = BuildType.PROD): void => {
   const amplifyMeta = stateManager.getMeta();
   _.set(amplifyMeta, [category, resourceName, buildTypeKeyMap[buildType]], new Date());
   _.set(amplifyMeta, [category, resourceName, 'lastBuildType'], buildType);
   stateManager.setMeta(undefined, amplifyMeta);
-}
+};
 
-export function updateAmplifyMetaAfterPackage(
+export const updateAmplifyMetaAfterPackage = (
   { category, resourceName }: ResourceTuple,
   zipFilename: string,
   hash?: { resourceKey: string; hashValue: string },
-) {
+): void => {
   const amplifyMeta = stateManager.getMeta();
   _.set(amplifyMeta, [category, resourceName, 'lastPackageTimeStamp'], new Date());
   _.set(amplifyMeta, [category, resourceName, 'distZipFilename'], zipFilename);
@@ -247,9 +255,9 @@ export function updateAmplifyMetaAfterPackage(
     _.set(amplifyMeta, [category, resourceName, hash.resourceKey], hash.hashValue);
   }
   stateManager.setMeta(undefined, amplifyMeta);
-}
+};
 
-export function updateamplifyMetaAfterResourceDelete(category: string, resourceName: string) {
+export const updateamplifyMetaAfterResourceDelete = (category: string, resourceName: string): void => {
   const currentMeta = stateManager.getCurrentMeta();
 
   const resourceDir = path.normalize(path.join(pathManager.getCurrentCloudBackendDirPath(), category, resourceName));
@@ -261,11 +269,11 @@ export function updateamplifyMetaAfterResourceDelete(category: string, resourceN
   stateManager.setCurrentMeta(undefined, currentMeta);
 
   fs.removeSync(resourceDir);
-}
+};
 
-function checkForCyclicDependencies(category, resourceName, dependsOn: [{ category; resourceName }]) {
+const checkForCyclicDependencies = (category, resourceName, dependsOn: [{ category; resourceName }]): void => {
   const amplifyMeta = stateManager.getMeta();
-  let cyclicDependency: Boolean = false;
+  let cyclicDependency = false;
 
   if (dependsOn) {
     dependsOn.forEach(resource => {
@@ -285,7 +293,7 @@ function checkForCyclicDependencies(category, resourceName, dependsOn: [{ catego
     });
   }
 
-  if (cyclicDependency === true) {
+  if (cyclicDependency) {
     throw new Error(`Cannot add ${resourceName} due to a cyclic dependency`);
   }
-}
+};

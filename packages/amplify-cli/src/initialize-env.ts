@@ -28,7 +28,9 @@ export const initializeEnv = async (
 
     const envParamManager = (await ensureEnvParamManager(currentEnv)).instance;
 
-    const categoryMeta = {};
+    const categoryMeta = { providers: { awscloudformation: {} } };
+    (await ensureEnvMeta(context, currentEnv)).write(false, (metaObj => { categoryMeta.providers.awscloudformation = metaObj; }));
+
     if (!context.exeInfo.restoreBackend) {
       mergeBackendConfigIntoAmplifyMeta(projectPath, categoryMeta);
       mergeCategoryEnvParamsIntoAmplifyMeta(envParamManager, categoryMeta, 'hosting', 'ElasticContainer');
