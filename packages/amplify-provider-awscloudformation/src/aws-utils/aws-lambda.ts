@@ -39,7 +39,7 @@ export class Lambda {
         return await this.lambda.listLayerVersions(params).promise();
       },
       startingParams,
-      response? => response?.LayerVersions,
+      response => response?.LayerVersions,
       async response => response?.NextMarker,
     );
     return result;
