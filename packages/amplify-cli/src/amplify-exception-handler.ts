@@ -118,24 +118,21 @@ const unknownErrorToAmplifyException = (err: unknown): AmplifyException => ampli
     message: 'message' in (err as $TSAny) ? (err as $TSAny).message : 'Unknown error',
     resolution: mapUnknownErrorToResolution(err),
     stack: 'stack' in (err as $TSAny) ? (err as $TSAny).stack : undefined,
-  },
-);
+  });
 
 const genericErrorToAmplifyException = (err: Error): AmplifyException => amplifyFaultWithTroubleshootingLink(err,
   genericErrorTypeToAmplifyExceptionType(err), {
     message: err.message,
     resolution: mapGenericErrorToResolution(err),
     stack: err.stack,
-  },
-);
+  });
 
 const nodeErrorToAmplifyException = (err: NodeJS.ErrnoException): AmplifyException => amplifyFaultWithTroubleshootingLink(err,
   nodeErrorTypeToAmplifyExceptionType(err), {
     message: err.message,
     resolution: mapNodeErrorToResolution(err),
     stack: err.stack,
-  },
-);
+  });
 
 const nodeErrorTypeToAmplifyExceptionType = (__err: NodeJS.ErrnoException): AmplifyFaultType => 'UnknownNodeJSFault';
 const mapNodeErrorToResolution = (__err: NodeJS.ErrnoException): string => `Please report this issue at https://github.com/aws-amplify/amplify-cli/issues and include the project identifier from: 'amplify diagnose --send-report'`;
