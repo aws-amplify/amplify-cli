@@ -113,7 +113,7 @@ const printHeadlessAmplifyException = (amplifyException: AmplifyException): void
   errorPrinter.error(JSON.stringify(amplifyException.toObject()));
 };
 
-const unknownErrorToAmplifyException = (err: unknown): AmplifyException => amplifyFaultWithTroubleshootingLink(
+const unknownErrorToAmplifyException = (err: unknown): AmplifyException => amplifyFaultWithTroubleshootingLink(null,
   unknownErrorTypeToAmplifyExceptionType(err), {
     message: 'message' in (err as $TSAny) ? (err as $TSAny).message : 'Unknown error',
     resolution: mapUnknownErrorToResolution(err),
@@ -121,7 +121,7 @@ const unknownErrorToAmplifyException = (err: unknown): AmplifyException => ampli
   },
 );
 
-const genericErrorToAmplifyException = (err: Error): AmplifyException => amplifyFaultWithTroubleshootingLink(
+const genericErrorToAmplifyException = (err: Error): AmplifyException => amplifyFaultWithTroubleshootingLink(err,
   genericErrorTypeToAmplifyExceptionType(err), {
     message: err.message,
     resolution: mapGenericErrorToResolution(err),
@@ -129,7 +129,7 @@ const genericErrorToAmplifyException = (err: Error): AmplifyException => amplify
   },
 );
 
-const nodeErrorToAmplifyException = (err: NodeJS.ErrnoException): AmplifyException => amplifyFaultWithTroubleshootingLink(
+const nodeErrorToAmplifyException = (err: NodeJS.ErrnoException): AmplifyException => amplifyFaultWithTroubleshootingLink(err,
   nodeErrorTypeToAmplifyExceptionType(err), {
     message: err.message,
     resolution: mapNodeErrorToResolution(err),
