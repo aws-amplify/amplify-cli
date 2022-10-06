@@ -4,7 +4,7 @@ import { join } from 'path';
 import * as fs from 'fs-extra';
 import * as execa from 'execa';
 
-const CONCURRENCY = 25;
+const CONCURRENCY = 35;
 // Some our e2e tests are known to fail when run on windows hosts
 // These are caused by issues with our test harness, not broken cli behavior on windows
 // (examples: sending line endings when we shouldn't, java/gradle not installed on windows host)
@@ -15,8 +15,14 @@ const CONCURRENCY = 25;
 const WINDOWS_TEST_ALLOWLIST: string[] = [
   'schema-function-1_pkg',
   'tags_pkg',
-  'schema-auth-9_pkg',
-  'schema-model_pkg',
+  'schema-auth-9-a_pkg',
+  'schema-auth-9-b_pkg',
+  'schema-auth-9-c_pkg',
+  'schema-model-a_pkg',
+  'schema-model-b_pkg',
+  'schema-model-c_pkg',
+  'schema-model-d_pkg',
+  'schema-model-e_pkg',
   'api_lambda_auth_pkg',
   'node-function_pkg',
   'schema-function-2_pkg',
@@ -24,7 +30,9 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
   'interactions_pkg',
   'analytics_pkg',
   'schema-auth-7_pkg',
-  'schema-auth-11_pkg',
+  'schema-auth-11-a_pkg',
+  'schema-auth-11-b_pkg',
+  'schema-auth-11-c_pkg',
   'auth_6_pkg',
   'frontend_config_drift_pkg',
   'hooks_pkg',
@@ -55,8 +63,18 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
   'schema-auth-2_pkg',
   'container-hosting_pkg',
   'schema-auth-13_pkg',
-  'init_pkg',
-  'auth_5_pkg',
+  'init_a_pkg',
+  'init_b_pkg',
+  'init_c_pkg',
+  'init_d_pkg',
+  'init_e_pkg',
+  'init_f_pkg',
+  'auth_5a_pkg',
+  'auth_5b_pkg',
+  'auth_5c_pkg',
+  'auth_5d_pkg',
+  'auth_5e_pkg',
+  'auth_5f_pkg',
 ];
 
 // Ensure to update packages/amplify-e2e-tests/src/cleanup-e2e-resources.ts is also updated this gets updated
@@ -97,7 +115,6 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/init-special-case.test.ts',
   'src/__tests__/datastore-modelgen.test.ts',
   'src/__tests__/amplify-configure.test.ts',
-  'src/__tests__/init.test.ts',
   'src/__tests__/tags.test.ts',
   'src/__tests__/notifications.test.ts',
   'src/__tests__/geo-headless.test.ts',
@@ -109,36 +126,28 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/amplify-app.test.ts',
   'src/__tests__/hosting.test.ts',
   'src/__tests__/analytics.test.ts',
-  'src/__tests__/feature-flags.test.ts',
   'src/__tests__/schema-iterative-update-2.test.ts',
   'src/__tests__/containers-api.test.ts',
   //<20m
   'src/__tests__/predictions.test.ts',
   'src/__tests__/hostingPROD.test.ts',
-  'src/__tests__/geo-add.test.ts',
   'src/__tests__/geo-update.test.ts',
   'src/__tests__/geo-remove.test.ts',
   'src/__tests__/geo-multi-env.test.ts',
   //<25m
-  'src/__tests__/schema-auth-10.test.ts',
   'src/__tests__/schema-key.test.ts',
   'src/__tests__/auth_1.test.ts',
-  'src/__tests__/auth_5.test.ts',
   'src/__tests__/function_3.test.ts',
   'src/__tests__/schema-iterative-update-1.test.ts',
   //<30m
   'src/__tests__/schema-auth-3.test.ts',
-  'src/__tests__/delete.test.ts',
   'src/__tests__/function_2.test.ts',
   'src/__tests__/auth_3.test.ts',
-  'src/__tests__/layer.test.ts',
   //<35m
   'src/__tests__/migration/api.key.migration1.test.ts',
   'src/__tests__/auth_4.test.ts',
+  'src/__tests__/auth_5e.test.ts',
   'src/__tests__/schema-auth-7.test.ts',
-  'src/__tests__/schema-auth-8.test.ts',
-  'src/__tests__/schema-searchable.test.ts',
-  'src/__tests__/schema-auth-4.test.ts',
   'src/__tests__/api_3.test.ts',
   'src/__tests__/import_auth_1.test.ts',
   'src/__tests__/import_auth_2.test.ts',
@@ -148,32 +157,39 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   //<40m
   'src/__tests__/geo-import.test.ts',
   'src/__tests__/schema-iterative-rollback-2.test.ts',
-  'src/__tests__/env.test.ts',
   'src/__tests__/auth_2.test.ts',
-  'src/__tests__/schema-auth-9.test.ts',
-  'src/__tests__/schema-auth-11.test.ts',
   'src/__tests__/migration/api.key.migration2.test.ts',
   'src/__tests__/migration/api.key.migration3.test.ts',
   'src/__tests__/function_1.test.ts',
-  'src/__tests__/schema-auth-1.test.ts',
   'src/__tests__/function_4.test.ts',
   //<45m
   'src/__tests__/schema-function.test.ts',
-  'src/__tests__/schema-model.test.ts',
   'src/__tests__/migration/api.connection.migration.test.ts',
   'src/__tests__/schema-connection.test.ts',
-  'src/__tests__/schema-auth-6.test.ts',
   'src/__tests__/schema-iterative-update-3.test.ts',
+  'src/__tests__/schema-auth-1.test.ts',
+  'src/__tests__/schema-auth-4.test.ts',
   //<50m
   'src/__tests__/schema-auth-2.test.ts',
+  'src/__tests__/schema-auth-8.test.ts',
   'src/__tests__/api_1.test.ts',
-  'src/__tests__/schema-auth-5.test.ts',
   //<55m
   'src/__tests__/storage.test.ts',
   'src/__tests__/api_2.test.ts',
   'src/__tests__/api_5.test.ts',
   'src/__tests__/api_6.test.ts',
   'src/__tests__/schema-iterative-update-4.test.ts',
+  'src/__tests__/schema-auth-10.test.ts',
+  //<2h
+  'src/__tests__/function_9.test.ts',
+  'src/__tests__/api_9.test.ts',
+  'src/__tests__/auth_7.test.ts',
+  'src/__tests__/auth_6.test.ts',
+  'src/__tests__/delete.test.ts',
+  'src/__tests__/feature-flags.test.ts',
+  'src/__tests__/layer.test.ts',
+  'src/__tests__/schema-searchable.test.ts',
+  'src/__tests__/api_migration_update.test.ts',
 ];
 
 /**
@@ -202,6 +218,7 @@ export type CircleCIConfig = {
     [name: string]: {
       steps: Record<string, any>;
       environment: Record<string, string>;
+      parallelism: number;
     };
   };
   workflows: {
@@ -214,8 +231,7 @@ export type CircleCIConfig = {
 const repoRoot = join(__dirname, '..');
 
 function getTestFiles(dir: string, pattern = 'src/**/*.test.ts'): string[] {
-  // Todo: add reverse to run longest tests first
-  return sortTestsBasedOnTime(glob.sync(pattern, { cwd: dir })); // .reverse();
+  return sortTestsBasedOnTime(glob.sync(pattern, { cwd: dir })).reverse();
 }
 
 function generateJobName(baseName: string, testSuitePath: string): string {
