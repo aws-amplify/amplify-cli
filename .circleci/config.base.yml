@@ -88,6 +88,10 @@ jobs:
           name: Build tests
           command: yarn build-tests
       - save_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .BuildNum }}
+          paths:
+            - ~/repo
+      - save_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache
@@ -118,6 +122,8 @@ jobs:
     <<: *linux-e2e-executor
     steps:
       - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .BuildNum }}
+      - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Run tests
@@ -132,12 +138,16 @@ jobs:
     <<: *linux-e2e-executor
     steps:
       - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .BuildNum }}
+      - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run: chmod +x .circleci/lint_pr.sh && ./.circleci/lint_pr.sh
 
   mock_e2e_tests:
     <<: *linux-e2e-executor
     steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .BuildNum }}
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
@@ -155,6 +165,8 @@ jobs:
   publish_to_local_registry:
     <<: *linux-e2e-executor
     steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .BuildNum }}
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
@@ -192,6 +204,8 @@ jobs:
     <<: *linux-e2e-executor
     steps:
       - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .BuildNum }}
+      - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
@@ -214,6 +228,8 @@ jobs:
     <<: *defaults
     steps:
       - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .BuildNum }}
+      - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Run GraphQL end-to-end tests
@@ -229,6 +245,8 @@ jobs:
   amplify_sudo_install_test:
     <<: *defaults
     steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .BuildNum }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
@@ -266,6 +284,8 @@ jobs:
             equal: [*linux-e2e-executor, << parameters.os >>]
           steps:
             - restore_cache:
+                key: amplify-cli-repo-{{ .Branch }}-{{ .BuildNum }}
+            - restore_cache:
                 key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
@@ -292,6 +312,8 @@ jobs:
     <<: *defaults
     steps:
       - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .BuildNum }}
+      - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
@@ -315,6 +337,8 @@ jobs:
       AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
     <<: *defaults
     steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .BuildNum }}
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
@@ -340,6 +364,8 @@ jobs:
       AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
     steps:
       - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .BuildNum }}
+      - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
@@ -364,6 +390,8 @@ jobs:
       AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
     steps:
       - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .BuildNum }}
+      - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
@@ -385,6 +413,8 @@ jobs:
   amplify_console_integration_tests:
     <<: *defaults
     steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .BuildNum }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - run: *install_cli_from_local_registry
@@ -413,6 +443,8 @@ jobs:
         environment:
           TERM: dumb
     steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .BuildNum }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - run: cd .circleci/ && chmod +x aws.sh
@@ -513,6 +545,8 @@ jobs:
     <<: *linux-e2e-executor
     steps:
       - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .BuildNum }}
+      - restore_cache:
           keys:
             - amplify-cli-ssh-deps-{{ .Branch }}
       - restore_cache:
@@ -534,6 +568,8 @@ jobs:
   github_prerelease:
     <<: *linux-e2e-executor
     steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .BuildNum }}
       - restore_cache:
           key: amplify-unified-changelog-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
@@ -561,6 +597,8 @@ jobs:
     <<: *linux-e2e-executor
     steps:
       - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .BuildNum }}
+      - restore_cache:
           key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Install packaged Amplify CLI
@@ -576,6 +614,8 @@ jobs:
     <<: *linux-e2e-executor
     steps:
       - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .BuildNum }}
+      - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
           key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
@@ -586,6 +626,8 @@ jobs:
   cleanup_resources:
     <<: *linux-e2e-executor
     steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .BuildNum }}
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
@@ -603,6 +645,8 @@ jobs:
     <<: *linux-e2e-executor
     steps:
       - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .BuildNum }}
+      - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: 'Run cleanup script'
@@ -618,6 +662,8 @@ jobs:
   wait_for_all:
     <<: *linux-e2e-executor
     steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .BuildNum }}
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
