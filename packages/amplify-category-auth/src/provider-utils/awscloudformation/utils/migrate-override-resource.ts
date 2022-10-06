@@ -56,7 +56,7 @@ export const migrateResourceToSupportOverride = async (resourceName: string): Pr
   } catch (e) {
     rollback(authResourceDirPath, backupAuthResourceFolder!);
     rollback(userPoolGroupResourceDirPath, backupUserPoolGroupResourceFolder!);
-    throw amplifyErrorWithTroubleshootingLink('MigrationError', {
+    throw amplifyErrorWithTroubleshootingLink(e, 'MigrationError', {
       message: `There was an error migrating your project: ${e.message}`,
       details: `Migration operations are rolled back.`,
       stack: e.stack,
@@ -73,7 +73,7 @@ const backup = (authResourcePath: string, projectPath: string, resourceName: str
     const backupAuthResourceDirPath = path.join(projectPath, backupAuthResourceDirName);
 
     if (fs.existsSync(backupAuthResourceDirPath)) {
-      throw new AmplifyError('MigrationError', {
+      throw new AmplifyError(null, 'MigrationError', {
         message: `Backup folder for ${resourceName} already exists.`,
         resolution: `Delete the backup folder and try again.`,
       });

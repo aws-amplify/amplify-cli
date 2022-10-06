@@ -28,7 +28,7 @@ const getProviders = async (context, providerPlugins): Promise<$TSAny> => {
   const providerPluginList = Object.keys(providerPlugins);
 
   if (providerPluginList.length === 0) {
-    throw new AmplifyError('ProjectInitError', {
+    throw new AmplifyError(null, 'ProjectInitError', {
       message: 'Found no provider plugins',
       resolution: `Run 'amplify plugin scan' to scan your system for provider plugins.`,
     });

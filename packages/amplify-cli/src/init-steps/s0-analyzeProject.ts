@@ -219,7 +219,7 @@ const getDefaultEnv = (context: $TSContext): string | undefined => {
       defaultEnv = context.exeInfo.inputParams.amplify.envName;
       return defaultEnv;
     }
-    throw new AmplifyError('EnvironmentNameError', {
+    throw new AmplifyError(null, 'EnvironmentNameError', {
       message: `Invalid environment name: ${context.exeInfo.inputParams.amplify.envName}`,
       resolution: INVALID_ENV_NAME_MSG,
     });
@@ -239,12 +239,12 @@ const getEnvName = async (context: $TSContext): Promise<string> => {
       ({ envName } = context.exeInfo.inputParams.amplify);
       return envName;
     }
-    throw new AmplifyError('ProjectInitError', {
+    throw new AmplifyError(null, 'ProjectInitError', {
       message: `Invalid environment name: ${context.exeInfo.inputParams.amplify.envName}`,
       resolution: INVALID_ENV_NAME_MSG,
     });
   } else if (context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
-    throw new AmplifyError('ProjectInitError', {
+    throw new AmplifyError(null, 'ProjectInitError', {
       message: `Invalid environment name: ${context.exeInfo.inputParams.amplify.envName}`,
       resolution: INVALID_ENV_NAME_MSG,
     });

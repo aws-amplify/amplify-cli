@@ -125,7 +125,7 @@ export const run = async (context): Promise<string> => {
     return profileName;
   }
 
-  throw amplifyErrorWithTroubleshootingLink('InputValidationError', {
+  throw amplifyErrorWithTroubleshootingLink(null, 'InputValidationError', {
     message: 'Invalid AWS credentials',
     resolution: 'Please check your AWS credentials',
   });

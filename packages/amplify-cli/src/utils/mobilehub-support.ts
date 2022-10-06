@@ -54,7 +54,7 @@ const ensureSupportedCommand = (context: $TSContext): void => {
 
   // env commands are not supported for projects that having resources without provider assigned
   if (command === 'env') {
-    throw new AmplifyError('CommandNotSupportedError', {
+    throw new AmplifyError(null, 'CommandNotSupportedError', {
       message: 'multi-environment support is not available for Amplify projects with Mobile Hub migrated resources.',
       link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
     });

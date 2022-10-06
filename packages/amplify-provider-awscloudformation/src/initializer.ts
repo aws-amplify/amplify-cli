@@ -201,7 +201,7 @@ const processStackCreationData = (context: $TSContext, amplifyAppId: string | un
 
     setCloudFormationOutputInContext(context, metadata);
   } else {
-    throw amplifyErrorWithTroubleshootingLink('StackNotFoundError', {
+    throw amplifyErrorWithTroubleshootingLink(null, 'StackNotFoundError', {
       message: 'No stack data present',
     });
   }
@@ -321,7 +321,7 @@ const storeCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
     })
     .catch(ex => {
       spinner.stop('Deployment state save failed.', false);
-      throw amplifyFaultWithTroubleshootingLink('DeploymentFault', {
+      throw amplifyFaultWithTroubleshootingLink(ex, 'DeploymentFault', {
         message: ex.message,
         stack: ex.stack,
       });

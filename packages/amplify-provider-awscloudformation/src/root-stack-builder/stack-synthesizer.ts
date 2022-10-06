@@ -16,7 +16,7 @@ export class RootStackSynthesizer extends LegacyStackSynthesizer {
       const templateName = stack.node.id;
       this.setStackAsset(templateName, template);
     } else {
-      throw amplifyFaultWithTroubleshootingLink('UnknownFault', {
+      throw amplifyFaultWithTroubleshootingLink(null, 'UnknownFault', {
         message: 'Error synthesizing the template. Expected Stack to be either instance of AmplifyRootStack',
       });
     }
@@ -48,7 +48,7 @@ export class RootStackSynthesizer extends LegacyStackSynthesizer {
       return this.stacks.get(stackName)!;
     }
 
-    throw amplifyFaultWithTroubleshootingLink('UnknownFault', {
+    throw amplifyFaultWithTroubleshootingLink(null, 'UnknownFault', {
       message: `Stack ${stackName} is not created`,
     });
   };

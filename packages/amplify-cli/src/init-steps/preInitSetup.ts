@@ -35,7 +35,7 @@ const validateGithubRepo = async (repoUrl: string): Promise<void> => {
 
     execSync(`git ls-remote ${repoUrl}`, { stdio: 'ignore' });
   } catch (e) {
-    throw new AmplifyError('ProjectInitError', {
+    throw new AmplifyError(e, 'ProjectInitError', {
       message: 'Invalid remote github url',
       details: e.message,
       link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
@@ -51,7 +51,7 @@ const cloneRepo = async (repoUrl: string): Promise<void> => {
   const files = fs.readdirSync(process.cwd());
 
   if (files.length > 0) {
-    throw new AmplifyError('ProjectInitError', {
+    throw new AmplifyError(null, 'ProjectInitError', {
       message: 'Unable to clone repository',
       resolution: 'Please ensure you run this command in an empty directory',
     });
@@ -60,7 +60,7 @@ const cloneRepo = async (repoUrl: string): Promise<void> => {
   try {
     execSync(`git clone ${repoUrl} .`, { stdio: 'inherit' });
   } catch (e) {
-    throw new AmplifyError('ProjectInitError', {
+    throw new AmplifyError(e, 'ProjectInitError', {
       message: 'Unable to clone repository',
       details: e.message,
       link: 'https://docs.amplify.aws/cli/project/troubleshooting/',

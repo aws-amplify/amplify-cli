@@ -9,7 +9,7 @@ import { printer } from 'amplify-prompts';
 export const run = async (context: $TSContext): Promise<void> => {
   const envName = context.parameters.options.name;
   if (!envName) {
-    throw new AmplifyError('EnvironmentNameError', {
+    throw new AmplifyError(null, 'EnvironmentNameError', {
       message: 'Environment name was not specified.',
       resolution: 'Pass in the name of the environment using the --name flag.',
     });
@@ -47,14 +47,14 @@ export const run = async (context: $TSContext): Promise<void> => {
       /* eslint-enable no-prototype-builtins */
       )
     ) {
-      throw new AmplifyError('EnvironmentConfigurationError', {
+      throw new AmplifyError(null, 'EnvironmentConfigurationError', {
         message: 'The environment configuration provided is missing required properties.',
         resolution: 'Add the required properties and try again.',
         link: 'https://docs.amplify.aws/cli/teams/commands/#import-an-environment',
       });
     }
   } catch (e) {
-    throw new AmplifyError('EnvironmentConfigurationError', {
+    throw new AmplifyError(e, 'EnvironmentConfigurationError', {
       message: 'Environment configuration was not specified or was formatted incorrectly.',
       resolution: 'You must pass in the configuration of the environment in an object format using the --config flag.',
     });
@@ -66,7 +66,7 @@ export const run = async (context: $TSContext): Promise<void> => {
     try {
       awsInfo = JSONUtilities.parse(context.parameters.options.awsInfo);
     } catch (e) {
-      throw new AmplifyError('EnvironmentConfigurationError', {
+      throw new AmplifyError(e, 'EnvironmentConfigurationError', {
         message: 'The AWS credential info was not specified or was incorrectly formatted.',
         resolution: 'Pass in the AWS credential info in an object format using the --awsInfo flag.',
         link: 'https://docs.amplify.aws/cli/teams/commands/#import-an-environment',

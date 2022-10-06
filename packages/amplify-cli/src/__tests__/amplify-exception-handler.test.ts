@@ -15,7 +15,7 @@ jest.mock('amplify-prompts');
 
 describe('test exception handler', () => {
   it('error handler should call usageData emitError', async () => {
-    const amplifyError = new AmplifyError('NotImplementedError', {
+    const amplifyError = new AmplifyError(null, 'NotImplementedError', {
       message: 'Test Not implemented',
       resolution: 'Test Not implemented',
     });
@@ -36,7 +36,7 @@ describe('test exception handler', () => {
   });
 
   it('error handler should send error report', async () => {
-    const amplifyError = new AmplifyError('NotImplementedError', {
+    const amplifyError = new AmplifyError(null, 'NotImplementedError', {
       message: 'Test Not implemented',
       resolution: 'Test Not implemented',
     });
@@ -57,7 +57,7 @@ describe('test exception handler', () => {
   });
 
   it('error handler should print error', async () => {
-    const amplifyError = new AmplifyError('NotImplementedError', {
+    const amplifyError = new AmplifyError(null, 'NotImplementedError', {
       message: 'Test Not implemented',
       details: 'Test Not implemented',
       resolution: 'Test Not implemented',
@@ -81,7 +81,7 @@ describe('test exception handler', () => {
   });
 
   it('error handler should handle encountered errors gracefully', async () => {
-    const amplifyError = new AmplifyError('NotImplementedError', {
+    const amplifyError = new AmplifyError(null, 'NotImplementedError', {
       message: 'Test Not implemented',
       details: 'Test Not implemented',
       resolution: 'Test Not implemented',

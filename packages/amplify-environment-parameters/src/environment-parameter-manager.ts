@@ -30,7 +30,7 @@ export const getEnvParamManager = (envName: string = stateManager.getLocalEnvInf
   if (envParamManagerMap[envName]) {
     return envParamManagerMap[envName];
   }
-  throw amplifyFaultWithTroubleshootingLink('ProjectInitFault', {
+  throw amplifyFaultWithTroubleshootingLink(null, 'ProjectInitFault', {
     message: `EnvironmentParameterManager for ${envName} environment is not initialized.`,
   });
 };
@@ -63,7 +63,7 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
 
   getResourceParamManager(category: string, resource: string): ResourceParameterManager {
     if (!category || !resource) {
-      throw amplifyFaultWithTroubleshootingLink('ResourceNotFoundFault', {
+      throw amplifyFaultWithTroubleshootingLink(null, 'ResourceNotFoundFault', {
         message: 'Missing Category or Resource.',
       });
     }

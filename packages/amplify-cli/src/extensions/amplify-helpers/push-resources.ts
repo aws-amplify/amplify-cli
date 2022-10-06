@@ -28,7 +28,7 @@ export const pushResources = async (
   if (context.parameters.options['iterative-rollback']) {
     // validate --iterative-rollback with --force
     if (context.parameters.options.force) {
-      throw new AmplifyError('CommandNotSupportedError', {
+      throw new AmplifyError(null, 'CommandNotSupportedError', {
         message: '--iterative-rollback and --force are not supported together',
         resolution: 'Use --force without --iterative-rollback to iteratively rollback and redeploy.',
       });
@@ -55,7 +55,7 @@ export const pushResources = async (
       }
       await initializeEnv(context);
     } else {
-      throw new AmplifyError('EnvironmentNotInitializedError', {
+      throw new AmplifyError(null, 'EnvironmentNotInitializedError', {
         message: 'Current environment cannot be determined.',
         resolution: `Use 'amplify init' in the root of your app directory to create a new environment.`,
       });
@@ -115,7 +115,7 @@ export const pushResources = async (
         if (err instanceof AmplifyException) {
           throw err;
         }
-        throw new AmplifyFault('PushResourcesFault', {
+        throw new AmplifyFault(err, 'PushResourcesFault', {
           message: err.message,
           stack: err.stack,
           link: isAuthError ? AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url : AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,

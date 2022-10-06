@@ -71,7 +71,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSAny[], exp
   } catch (ex) {
     revertToBackup(amplifyExportFolder);
     spinner.fail();
-    throw amplifyFaultWithTroubleshootingLink('ResourceNotReadyFault', {
+    throw amplifyFaultWithTroubleshootingLink(ex, 'ResourceNotReadyFault', {
       stack: ex.stack,
       message: ex.message,
     });

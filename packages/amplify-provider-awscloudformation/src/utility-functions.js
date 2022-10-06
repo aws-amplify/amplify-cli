@@ -135,7 +135,7 @@ module.exports = {
       const { code } = error;
 
       if (code !== 'ResourceNotFoundException') {
-        throw amplifyFaultWithTroubleshootingLink('ResourceNotFoundFault', {
+        throw amplifyFaultWithTroubleshootingLink(error, 'ResourceNotFoundFault', {
           message: error.message,
           stack: error.stack,
         });
@@ -184,7 +184,7 @@ module.exports = {
   getTransformerDirectives: async (context, options) => {
     const { resourceDir } = options;
     if (!resourceDir) {
-      throw amplifyFaultWithTroubleshootingLink('ResourceNotFoundFault', {
+      throw amplifyFaultWithTroubleshootingLink(null, 'ResourceNotFoundFault', {
         message: 'Missing resource directory.',
       });
     }

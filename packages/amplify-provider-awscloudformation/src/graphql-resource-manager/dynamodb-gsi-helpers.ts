@@ -54,7 +54,7 @@ export const addGSI = (index: GSIRecord, table: DynamoDB.Table): DynamoDB.Table 
   const existingIndices = getExistingIndexNames(table);
 
   if (existingIndices.length + 1 > MAX_GSI_PER_TABLE) {
-    throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
+    throw amplifyErrorWithTroubleshootingLink(null, 'ConfigurationError', {
       message: `DynamoDB ${table.Properties.TableName || '{UnNamedTable}'} can have max of ${MAX_GSI_PER_TABLE} GSIs`,
     });
   }
@@ -63,7 +63,7 @@ export const addGSI = (index: GSIRecord, table: DynamoDB.Table): DynamoDB.Table 
   assertNotIntrinsicFunction(indexName);
 
   if (existingIndices.includes(indexName)) {
-    throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
+    throw amplifyErrorWithTroubleshootingLink(null, 'ConfigurationError', {
       message: `An index with name ${indexName} already exists`,
     });
   }
@@ -89,7 +89,7 @@ export const removeGSI = (indexName: string, table: DynamoDB.Table): DynamoDB.Ta
   assertNotIntrinsicFunction(gsis);
 
   if (!gsis || gsis.length === 0) {
-    throw new AmplifyError('ConfigurationError', {
+    throw new AmplifyError(null, 'ConfigurationError', {
       message: `No GSIs are present in the table`,
       link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
     });
@@ -97,7 +97,7 @@ export const removeGSI = (indexName: string, table: DynamoDB.Table): DynamoDB.Ta
 
   const indexNames = gsis.map(g => g.IndexName);
   if (!indexNames.includes(indexName)) {
-    throw new AmplifyError('ConfigurationError', {
+    throw new AmplifyError(null, 'ConfigurationError', {
       message: `Table ${table.Properties.TableName || '{UnnamedTable}'} does not contain GSI ${indexName}`,
       link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
     });
@@ -136,7 +136,7 @@ export const removeGSI = (indexName: string, table: DynamoDB.Table): DynamoDB.Ta
  */
 export function assertNotIntrinsicFunction<A>(x: A[] | A | IntrinsicFunction): asserts x is A[] | A {
   if (x instanceof IntrinsicFunction) {
-    throw new AmplifyError('ConfigurationError', {
+    throw new AmplifyError(null, 'ConfigurationError', {
       message: 'Intrinsic functions are not supported in KeySchema and GlobalSecondaryIndex',
       link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
     });

@@ -10,13 +10,13 @@ export const run = async (context: $TSContext) : Promise<void> => {
   const allEnvs = context.amplify.getEnvDetails();
 
   if (!envName) {
-    throw new AmplifyError('EnvironmentNameError', {
+    throw new AmplifyError(null, 'EnvironmentNameError', {
       message: 'Environment name was not specified.',
       resolution: 'Pass in the name of the environment using the --name flag.',
     });
   }
   if (!allEnvs[envName]) {
-    throw new AmplifyError('EnvironmentNameError', {
+    throw new AmplifyError(null, 'EnvironmentNameError', {
       message: 'Environment name is invalid.',
       resolution: 'Run amplify env list to get a list of valid environments.',
     });

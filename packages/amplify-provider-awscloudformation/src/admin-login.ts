@@ -2,7 +2,9 @@ import ora from 'ora';
 import util from 'util';
 import readline from 'readline';
 import { Writable } from 'stream';
-import { $TSContext, AmplifyError, AMPLIFY_DOCS_URL, open } from 'amplify-cli-core';
+import {
+  $TSContext, AmplifyError, AMPLIFY_DOCS_URL, open,
+} from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { adminVerifyUrl, adminBackendMap, isAmplifyAdminApp } from './utils/admin-helpers';  // eslint-disable-line
 import { AdminLoginServer } from './utils/admin-login-server';
@@ -16,7 +18,7 @@ export const adminLoginFlow = async (context: $TSContext, appId: string, envName
   if (!region) {
     const { isAdminApp, region: _region } = await isAmplifyAdminApp(appId);
     if (!isAdminApp) {
-      throw new AmplifyError('AmplifyStudioNotEnabledError', {
+      throw new AmplifyError(null, 'AmplifyStudioNotEnabledError', {
         message: `Amplify Studio not enabled for appId: ${appId}`,
         link: `${AMPLIFY_DOCS_URL}/console/adminui/start/#to-get-started-from-an-existing-amplify-app`,
       });

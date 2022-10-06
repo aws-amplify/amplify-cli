@@ -3,10 +3,16 @@ import * as aws from 'aws-sdk';
 import { amplifyFaultWithTroubleshootingLink } from 'amplify-cli-core';
 import { fileLogger, Logger } from '../utils/aws-logger';
 
+/**
+ *
+ */
 export interface StackEventMonitorOptions {
   pollDelay: number;
 }
 
+/**
+ *
+ */
 export interface IStackProgressPrinter {
   addActivity: (activity: StackEvent) => void;
   print: () => void;
@@ -14,6 +20,9 @@ export interface IStackProgressPrinter {
   stop: () => void;
 }
 
+/**
+ *
+ */
 export class StackEventMonitor {
   private active = false;
   private tickTimer?: NodeJS.Timeout;
@@ -36,6 +45,9 @@ export class StackEventMonitor {
     this.logger = fileLogger('stack-event-monitor');
   }
 
+  /**
+   *
+   */
   public start() {
     this.active = true;
     this.printer.start();
@@ -43,6 +55,9 @@ export class StackEventMonitor {
     return this;
   }
 
+  /**
+   *
+   */
   public async stop() {
     this.active = false;
     this.printer.stop();
@@ -143,7 +158,7 @@ export class StackEventMonitor {
         return;
       }
       if (e.code !== 'Throttling') {
-        throw amplifyFaultWithTroubleshootingLink('NotImplementedFault', {
+        throw amplifyFaultWithTroubleshootingLink(e, 'NotImplementedFault', {
           message: e.message,
           stack: e.stack,
         });

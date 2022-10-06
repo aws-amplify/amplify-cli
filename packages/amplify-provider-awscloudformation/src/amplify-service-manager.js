@@ -56,7 +56,7 @@ async function init(amplifyServiceParams) {
       context.print.info(`Amplify AppID found: ${inputAmplifyAppId}. Amplify App name is: ${getAppResult.app.name}`);
       amplifyAppId = inputAmplifyAppId;
     } catch (e) {
-      throw new AmplifyError('ProjectNotFoundError', {
+      throw new AmplifyError(e,'ProjectNotFoundError', {
         message: `Amplify AppID ${inputAmplifyAppId} not found.`,
         resolution: `Please ensure your local profile matches the AWS account or region in which the Amplify app exists.`,
       })
@@ -135,7 +135,7 @@ async function init(amplifyServiceParams) {
       ) {
         // Do nothing
       } else {
-        throw amplifyFaultWithTroubleshootingLink('ProjectInitFault', {
+        throw amplifyFaultWithTroubleshootingLink(e,'ProjectInitFault', {
           message: e.message,
           stack: e.stack,
         });
@@ -230,7 +230,7 @@ async function deleteEnv(context, envName, awsConfigInfo) {
         if (ex.code === 'NotFoundException') {
           context.print.warning(ex.message);
         } else {
-          throw amplifyFaultWithTroubleshootingLink('ProjectDeleteFault', {
+          throw amplifyFaultWithTroubleshootingLink(ex,'ProjectDeleteFault', {
             message: ex.message,
             stack: ex.stack,
           });
@@ -318,7 +318,7 @@ async function postPushCheck(context) {
         ) {
           // Do nothing
         } else {
-          throw amplifyFaultWithTroubleshootingLink('ProjectInitFault', {
+          throw amplifyFaultWithTroubleshootingLink(e,'ProjectInitFault', {
             message: e.message,
             stack: e.stack,
           });

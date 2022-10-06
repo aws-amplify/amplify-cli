@@ -259,7 +259,7 @@ export const showSMSSandboxWarning = async (context) : Promise<void> => {
       // Network error. Sandbox status is for informational purpose and should not stop deployment
       log(e);
     } else {
-      throw amplifyFaultWithTroubleshootingLink('DeploymentFault', {
+      throw amplifyFaultWithTroubleshootingLink(e, 'DeploymentFault', {
         stack: e.stack,
         message: e.message,
       });
