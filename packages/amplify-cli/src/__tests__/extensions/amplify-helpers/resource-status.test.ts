@@ -2,7 +2,6 @@ import { hashLayerResource } from 'amplify-category-function';
 import { stateManager } from 'amplify-cli-core';
 import { hashElement } from 'folder-hash';
 import * as fs from 'fs-extra';
-import { AmplifyError } from '../../../../../amplify-cli-core/lib';
 import {
   CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus, NON_AMPLIFY_PROJECT,
 } from '../../../extensions/amplify-helpers/get-cloud-init-status';
@@ -737,7 +736,7 @@ describe('resource-status', () => {
     it('throws an error when non amplify project', async () => {
       (getCloudInitStatus as jest.MockedFunction<typeof getCloudInitStatus>).mockReturnValue(NON_AMPLIFY_PROJECT);
       // eslint-disable-next-line jest/valid-expect
-      expect(getResourceStatus()).rejects.toThrowError(AmplifyError);
+      await expect(getResourceStatus()).rejects.toThrow('No Amplify backend project files detected within this folder.');
     });
   });
 

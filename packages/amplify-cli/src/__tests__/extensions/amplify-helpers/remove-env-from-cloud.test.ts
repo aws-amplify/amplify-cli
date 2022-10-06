@@ -69,7 +69,7 @@ describe('remove-env-from-cloud', () => {
   });
 
   it('does not throw bucket not found error when deleteEnv promise rejected', async () => {
-    const e: any = new AmplifyError('BucketNotFoundError', {
+    const e: any = new AmplifyError(null, 'BucketNotFoundError', {
       message: 'Project deployment bucket has not been created yet.',
       resolution: 'Use amplify init to initialize the project.',
     });
