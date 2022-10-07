@@ -189,6 +189,7 @@ export class DeploymentManager {
               const message = state.matches('deploy') ? `Deploying (${maxDeployed} of ${state.context.stacks.length})`
                 : `Rolling back (${maxDeployed - currentIndex} of ${maxDeployed})`;
               this.logger('deploy', [{ spinner: message }])();
+              this.printer.updateIndexInHeader(maxDeployed, state.context.stacks.length);
             }
           }
 

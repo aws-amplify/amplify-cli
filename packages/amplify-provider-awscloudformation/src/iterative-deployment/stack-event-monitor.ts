@@ -12,6 +12,7 @@ export interface IStackProgressPrinter {
   print: () => void;
   printEventProgress: () => void;
   printDefaultLogs: () => void;
+  updateIndexInHeader: (currentIndex: number, totalIndices: number) => void;
   finishBars: () => void;
   stopBars: () => void;
   isRunning: () => boolean;
@@ -41,13 +42,13 @@ export class StackEventMonitor {
     this.printerFn = printerFn;
   }
 
-  public start() {
+  public start(): StackEventMonitor {
     this.active = true;
     this.scheduleNextTick();
     return this;
   }
 
-  public async stop() {
+  public async stop(): Promise<void> {
     this.active = false;
     if (this.tickTimer) {
       clearTimeout(this.tickTimer);
@@ -79,8 +80,8 @@ export class StackEventMonitor {
     // We might have been stop()ped while the network call was in progress.
     if (!this.active) {
       return;
-
     }
+
     this.printerFn();
     this.scheduleNextTick();
   }
@@ -126,7 +127,7 @@ export class StackEventMonitor {
 
           if (event.ResourceType === 'AWS::CloudFormation::Stack') {
             this.processNestedStack(event);
-            // Dont' render info about the stack itself
+            // Don't render info about the stack itself
             continue;
           }
 
@@ -159,7 +160,7 @@ export class StackEventMonitor {
     }
   }
 
-  private processNestedStack(event: StackEvent) {
+  private processNestedStack(event: StackEvent): void {
     if (event.ResourceType === 'AWS::CloudFormation::Stack') {
       const physicalResourceId = event.PhysicalResourceId!;
       const idx = this.stacksBeingMonitored.indexOf(physicalResourceId);
@@ -178,7 +179,7 @@ export class StackEventMonitor {
    * Finish any poll currently in progress, then do a final one until we've
    * reached the last page.
    */
-  private async finalPollToEnd() {
+  private async finalPollToEnd(): Promise<void> {
     // If we were doing a poll, finish that first. It was started before
     // the moment we were sure we weren't going to get any new events anymore
     // so we need to do a new one anyway. Need to wait for this one though

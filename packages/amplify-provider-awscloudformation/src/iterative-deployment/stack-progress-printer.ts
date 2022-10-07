@@ -74,6 +74,12 @@ export class StackProgressPrinter implements IStackProgressPrinter {
     }
   };
 
+  updateIndexInHeader = (currentIndex: number, totalIndices: number): void => {
+    this.progressBars.updatePrefixText(
+      `Deploying iterative update ${currentIndex} of ${totalIndices} into ${this.eventMap.envName} environment. This will take a few minutes.`,
+    );
+  }
+
   print = (): void => {
     if (this.progressBars.isTTY()) {
       this.printEventProgress();

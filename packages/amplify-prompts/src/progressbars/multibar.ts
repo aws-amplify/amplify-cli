@@ -24,7 +24,7 @@ export class MultiProgressBar {
     private frameCount: number;
     private frames: string[];
     private timer!: ReturnType<typeof setTimeout>;
-    private prefixText: string;
+    private prefixText: string; // Header text goes in front of an animated spinner
     private updated: boolean;
     private lastDrawnStrings: TerminalLine[];
 
@@ -63,11 +63,11 @@ export class MultiProgressBar {
     /**
      * Writes lines into the re writable block
      */
-    writeLines(prefixText: TerminalLine): void {
+    writeLines(terminalLine: TerminalLine): void {
       let barStrings: TerminalLine[] = [];
       let stringsToRender: TerminalLine[] = [];
-      if (Object.keys(prefixText).length !== 0) {
-        stringsToRender.push(prefixText);
+      if (Object.keys(terminalLine).length !== 0) {
+        stringsToRender.push(terminalLine);
       }
       // Only call on the render strings for the individual bar if an update happened.
       if (this.updated) {
@@ -214,6 +214,13 @@ export class MultiProgressBar {
         this.render();
       }
       this.count += bars.length;
+    }
+
+    /**
+     * Update the header text that has a trailing spinner
+     */
+    updatePrefixText(newPrefixText: string): void {
+      this.prefixText = newPrefixText;
     }
 
     /**
