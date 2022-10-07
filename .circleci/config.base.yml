@@ -27,7 +27,7 @@ executors:
       AMPLIFY_DIR: C:/home/circleci/repo/out
       AMPLIFY_PATH: C:/home/circleci/repo/out/amplify.exe
 
-  windowsSetup: &windows-xlarge-setup-executor
+  winsetup: &windows-setup-executor
     machine:
       image: 'windows-server-2019-vs2019:stable'
       resource_class: 'windows.xlarge'
@@ -113,12 +113,12 @@ jobs:
     parameters:
       os:
         type: executor
-        default: windowsSetup
-    executor: windowsSetup
+        default: winsetup
+    executor: winsetup
     steps:
       - when:
           condition:
-            equal: [*windows-e2e-executor, << parameters.os >>]
+            equal: [*windows-setup-executor, << parameters.os >>]
           steps:
             - checkout
             - run: yarn run production-build
