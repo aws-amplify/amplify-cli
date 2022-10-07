@@ -172,7 +172,7 @@ export const analyticsPluginAPIPostPush = async (context: $TSContext) : Promise<
       && amplifyMeta[AmplifyCategories.NOTIFICATIONS]
       && Object.keys(amplifyMeta[AmplifyCategories.NOTIFICATIONS]).length > 0) {
     // Fetch Analytics data from persistent amplify-meta.json. This is expected to be updated by the push operation.
-    const analyticsResourceList:IAnalyticsResource[] = analyticsPluginAPIGetResources(AmplifySupportedService.PINPOINT);
+    const analyticsResourceList = analyticsPluginAPIGetResources(AmplifySupportedService.PINPOINT);
     const notificationsResourceName = Object.keys(amplifyMeta[AmplifyCategories.NOTIFICATIONS])[0];
     // TBD: move to Notifications plugin
     // Populate the outputs for the notifications plugin.

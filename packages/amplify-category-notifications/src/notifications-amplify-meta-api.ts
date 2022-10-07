@@ -208,12 +208,11 @@ export const getPinpointRegionMapping = async (context: $TSContext): Promise<str
 /**
  * add partial notification app meta data
  */
-export const addPartialNotificationsAppMeta = async (context: $TSContext, notificationResourceName: string):Promise<$TSMeta> => {
+export const addPartialNotificationsAppMeta = async (context: $TSContext, notificationResourceName: string): Promise<$TSMeta> => {
   const updatedAmplifyMeta = await stateManager.getMeta();
   const pinpointRegion = await getPinpointRegionMapping(context);
   // update amplify-meta with notifications metadata
-  return constructPartialNotificationsAppMeta(updatedAmplifyMeta,
-    notificationResourceName, pinpointRegion);
+  return constructPartialNotificationsAppMeta(updatedAmplifyMeta, notificationResourceName, pinpointRegion);
 };
 
 /**

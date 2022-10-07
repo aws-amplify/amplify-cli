@@ -63,7 +63,7 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
   }
 
   const availableChannels: Array<string> = getAvailableChannels();
-  const disabledChannels : Array<string> = await getDisabledChannelsFromAmplifyMeta();
+  const disabledChannels: Array<string> = await getDisabledChannelsFromAmplifyMeta();
 
   let channelName = context.parameters.first;
 

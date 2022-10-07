@@ -56,7 +56,10 @@ export const generateMetaFromConfig = (envName: string, cfg:$TSAny): Partial<INo
 /**
  * update channel api response
  */
-export const updateChannelAPIResponse = async (context : $TSContext, channelAPIResponse: IChannelAPIResponse):Promise<$TSContext> => {
+export const updateChannelAPIResponse = async (
+  context: $TSContext,
+  channelAPIResponse: IChannelAPIResponse,
+): Promise<$TSContext> => {
   let notificationConfig = await getNotificationsAppConfig(context.exeInfo.backendConfig);
   if (notificationConfig) {
     switch (channelAPIResponse.action) {
@@ -93,7 +96,7 @@ export const updateChannelAPIResponse = async (context : $TSContext, channelAPIR
 * @param context amplify cli context
 * @returns backendConfig and channel availability for notifications
 */
-export const getNotificationConfigStatus = async (context:$TSContext): Promise<INotificationsConfigStatus|undefined> => {
+export const getNotificationConfigStatus = async (context: $TSContext): Promise<INotificationsConfigStatus|undefined> => {
   const notificationConfig = await getNotificationsAppConfig(context.exeInfo.backendConfig);
 
   // no Notifications resource

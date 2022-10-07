@@ -62,8 +62,7 @@ export interface IPinpointAppStatus {
  * Given a pinpoint resource deployment state returns true if channel can be programmed
  */
 export const isPinpointAppDeployed = (pinpointStatus: IPinpointDeploymentStatus): boolean => (
-  (pinpointStatus === IPinpointDeploymentStatus.APP_IS_DEPLOYED)
-  || (pinpointStatus === IPinpointDeploymentStatus.APP_IS_DEPLOYED_CUSTOM));
+  (pinpointStatus === IPinpointDeploymentStatus.APP_IS_DEPLOYED) || (pinpointStatus === IPinpointDeploymentStatus.APP_IS_DEPLOYED_CUSTOM));
 
 /**
  * Given the Pinpoint App Status and channelName return true if channel requires the Pinpoint resource to be deployed.
@@ -71,13 +70,10 @@ export const isPinpointAppDeployed = (pinpointStatus: IPinpointDeploymentStatus)
  * note: - TBD!!:  in legacy deployments even In-App-Messaging is deployed in-line
  * isChannelDeploymentDeferred needs to be changed to check if environment is configured for legacy deployment.
  */
-export const isPinpointDeploymentRequired = (channelName: string, pinpointAppStatus : IPinpointAppStatus): boolean => {
-  if (!isPinpointAppDeployed(pinpointAppStatus.status)
-      && !isChannelDeploymentDeferred(channelName)) {
-    return true;
-  }
-  return false;
-};
+export const isPinpointDeploymentRequired = (
+  channelName: string,
+  pinpointAppStatus: IPinpointAppStatus,
+): boolean => !isPinpointAppDeployed(pinpointAppStatus.status) && !isChannelDeploymentDeferred(channelName);
 
 /**
  * Only legacy apps where PinpointApp is allocated through

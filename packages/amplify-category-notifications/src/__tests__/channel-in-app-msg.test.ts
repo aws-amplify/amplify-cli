@@ -221,10 +221,11 @@ describe('channel-InAppMessaging', () => {
       );
     });
 
-    test('fails when channel metadata and backend config are both unavailable', async () => {
+    test('should not fail when channel metadata and backend config are both unavailable but return undefined', async () => {
       getAppMetaSpy.mockResolvedValue({} as unknown as INotificationsResourceMeta);
       getAppConfigSpy.mockResolvedValue({} as INotificationsResourceBackendConfig);
-      await expect(channel.pull(mockContext, mockPinpointApp)).rejects.toThrowError('Channel In-App Messaging not found in the notifications metadata.');
+      await channel.pull(mockContext, mockPinpointApp);
+      expect(mockBuildPinpointChannelResponseSuccess).not.toBeCalled();
     });
   });
 });
