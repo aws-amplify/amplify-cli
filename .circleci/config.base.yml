@@ -27,7 +27,7 @@ executors:
       AMPLIFY_DIR: C:/home/circleci/repo/out
       AMPLIFY_PATH: C:/home/circleci/repo/out/amplify.exe
 
-  w_setup: &windows-xlarge-setup-executor
+  windowsSetup: &windows-xlarge-setup-executor
     machine:
       image: 'windows-server-2019-vs2019:stable'
       resource_class: 'windows.xlarge'
@@ -113,8 +113,8 @@ jobs:
     parameters:
       os:
         type: executor
-        default: w_setup
-    executor: w_setup
+        default: windowsSetup
+    executor: windowsSetup
     steps:
       - when:
           condition:
