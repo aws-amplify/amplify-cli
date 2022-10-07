@@ -7,7 +7,6 @@ import {
   AmplifyCategories,
   stateManager,
   IAnalyticsResource,
-  PluginAPIError,
   INotificationsResourceMeta,
   $TSMeta,
   amplifyErrorWithTroubleshootingLink,

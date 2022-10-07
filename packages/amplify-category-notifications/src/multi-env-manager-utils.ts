@@ -69,7 +69,7 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
     if (notificationsServiceMeta) {
       const applicationId = (notificationsServiceMeta.Id) || analyticsMeta[notificationsServiceMeta.ResourceName]?.output?.Id;
       const lastPushTimeStamp = (notificationsServiceMeta.lastPushTimeStamp)
-      || (analyticsMeta[notificationsServiceMeta.ResourceName]?.lastPushTimeStamp);
+        || (analyticsMeta[notificationsServiceMeta.ResourceName]?.lastPushTimeStamp);
       pinpointMeta = {
         serviceName: notificationsServiceMeta.ResourceName,
         service: notificationsServiceMeta.service, // TBD: standardize this
@@ -109,7 +109,7 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
     // the applicationId into Notifications.
     const applicationId = (notificationsServiceMeta.Id) || analyticsMeta[notificationsServiceMeta?.ResourceName]?.output?.Id;
     const lastPushTimeStamp = (notificationsServiceMeta.lastPushTimeStamp)
-    || (analyticsMeta[notificationsServiceMeta.ResourceName]?.lastPushTimeStamp);
+      || (analyticsMeta[notificationsServiceMeta.ResourceName]?.lastPushTimeStamp);
     const pinpointConfig = await getNotificationsAppConfig(context.exeInfo.backendConfig);
     const pinpointMeta = {
       serviceName: notificationsServiceMeta.ResourceName,

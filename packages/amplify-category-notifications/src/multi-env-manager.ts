@@ -159,6 +159,7 @@ const constructPinpointNotificationsMeta = async (context: $TSContext) : Promise
         };
         pinpointApp.Name = pinpointResource.output.Name || pinpointResource.output.appName;
         pinpointApp.Region = pinpointResource.output.Region;
+        pinpointApp.lastPushTimeStamp = pinpointResource.lastPushTimeStamp;
       }
     }
   }
