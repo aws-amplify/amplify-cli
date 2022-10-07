@@ -39,7 +39,9 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
   'plugin_pkg',
   'schema-versioned_pkg',
   'schema-auth-3_pkg',
-  'schema-auth-8_pkg',
+  'schema-auth-8a_pkg',
+  'schema-auth-8b_pkg',
+  'schema-auth-8c_pkg',
   'import_dynamodb_1_pkg',
   'schema-connection_pkg',
   'auth_7a_pkg',
@@ -175,13 +177,11 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/schema-auth-1.test.ts',
   //<50m
   'src/__tests__/schema-auth-2.test.ts',
-  'src/__tests__/schema-auth-8.test.ts',
   'src/__tests__/api_1.test.ts',
   //<55m
   'src/__tests__/storage.test.ts',
   'src/__tests__/api_2.test.ts',
   'src/__tests__/api_5.test.ts',
-  'src/__tests__/api_6.test.ts',
   'src/__tests__/schema-iterative-update-4.test.ts',
   'src/__tests__/schema-auth-10.test.ts',
   //<2h
