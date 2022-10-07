@@ -27,6 +27,16 @@ executors:
       AMPLIFY_DIR: C:/home/circleci/repo/out
       AMPLIFY_PATH: C:/home/circleci/repo/out/amplify.exe
 
+  w_setup: &windows-xlarge-setup-executor
+    machine:
+      image: 'windows-server-2019-vs2019:stable'
+      resource_class: 'windows.xlarge'
+      shell: bash.exe
+    working_directory: ~/repo
+    environment:
+      AMPLIFY_DIR: C:/home/circleci/repo/out
+      AMPLIFY_PATH: C:/home/circleci/repo/out/amplify.exe
+
   l: &linux-e2e-executor
     docker:
       - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
@@ -103,8 +113,8 @@ jobs:
     parameters:
       os:
         type: executor
-        default: w
-    executor: w
+        default: w_setup
+    executor: w_setup
     steps:
       - when:
           condition:
