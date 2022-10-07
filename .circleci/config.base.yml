@@ -99,7 +99,7 @@ jobs:
           key: amplify-cli-ssh-deps-{{ .Branch }}
           paths:
             - ~/.ssh
-  build_windows_workspace:
+  build_windows_workspace_for_e2e:
     parameters:
       os:
         type: executor
@@ -281,7 +281,7 @@ jobs:
             equal: [*windows-e2e-executor, << parameters.os >>]
           steps:
             - attach_workspace:
-                at: ./
+                at: ~/.
       - when:
           condition:
             equal: [*linux-e2e-executor, << parameters.os >>]
@@ -439,7 +439,7 @@ jobs:
     working_directory: ~/repo
 
   integration_test:
-    working_directory: ~/repo
+    working_directory: /home/circleci/repo
     resource_class: large
     docker:
       - image: cypress/base:14.17.0
@@ -688,11 +688,14 @@ workflows:
             branches:
               ignore:
                 - beta
-      - build_windows_workspace:
+      - build_windows_workspace_for_e2e:
           filters:
             branches:
-              ignore:
-                - beta
+              only:
+                - dev
+                - /run-e2e-with-rc\/.*/
+                - /tagged-release\/.*/
+                - /run-e2e\/.*/
       - lint:
           requires:
             - build
