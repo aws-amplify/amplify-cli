@@ -23,7 +23,7 @@ export const adminVerifyUrl = (appId: string, envName: string, region: string): 
  */
 export function doAdminTokensExist(appId: string): boolean {
   if (!appId) {
-    throw amplifyErrorWithTroubleshootingLink(null, 'AmplifyStudioError', {
+    throw amplifyErrorWithTroubleshootingLink('AmplifyStudioError', {
       message: `Failed to check if admin credentials exist: appId is undefined`,
     });
   }
@@ -35,7 +35,7 @@ export function doAdminTokensExist(appId: string): boolean {
  */
 export async function isAmplifyAdminApp(appId: string): Promise<{ isAdminApp: boolean; region: string; userPoolID: string }> {
   if (!appId) {
-    throw amplifyErrorWithTroubleshootingLink(null, 'AmplifyStudioError', {
+    throw amplifyErrorWithTroubleshootingLink('AmplifyStudioError', {
       message: `Failed to check if Amplify Studio is enabled: appId is undefined`,
     });
   }

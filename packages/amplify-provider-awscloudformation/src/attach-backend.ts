@@ -41,7 +41,7 @@ export const run = async (context): Promise<void> => {
     isAdminApp = res.isAdminApp;
     if (isAdminApp) {
       if (!envName) {
-        throw amplifyErrorWithTroubleshootingLink(null, 'EnvironmentNameError', {
+        throw amplifyErrorWithTroubleshootingLink('EnvironmentNameError', {
           message: 'Missing --envName <environment name> in parameters.',
         });
       }
@@ -49,10 +49,10 @@ export const run = async (context): Promise<void> => {
       try {
         await adminLoginFlow(context, appId, envName, res.region);
       } catch (e) {
-        throw amplifyErrorWithTroubleshootingLink(e, 'AmplifyStudioLoginError', {
+        throw amplifyErrorWithTroubleshootingLink('AmplifyStudioLoginError', {
           message: `Failed to authenticate: ${e.message || 'Unknown error occurred.'}`,
           stack: e.stack,
-        });
+        }, e);
       }
     }
   }
@@ -72,14 +72,14 @@ export const run = async (context): Promise<void> => {
   if (!amplifyClient) {
     // This happens when the Amplify service is not available in the region
     const region = awsConfigInfo && awsConfigInfo.region ? awsConfigInfo.region : '<unknown>';
-    throw amplifyErrorWithTroubleshootingLink(null, 'RegionNotAvailableError', {
+    throw amplifyErrorWithTroubleshootingLink('RegionNotAvailableError', {
       message: `Amplify service is not available in the region ${region}`,
     });
   }
 
   const hasPermission = await checkAmplifyServiceIAMPermission(context, amplifyClient);
   if (!hasPermission) {
-    throw amplifyErrorWithTroubleshootingLink(null, 'PermissionsError', {
+    throw amplifyErrorWithTroubleshootingLink('PermissionsError', {
       message: 'Permissions to access Amplify service is required.',
     });
   }
@@ -162,14 +162,14 @@ async function getAmplifyApp(context, amplifyClient) {
       context.print.info(`Amplify AppID found: ${inputAmplifyAppId}. Amplify App name is: ${getAppResult.app.name}`);
       return getAppResult.app;
     } catch (e) {
-      throw amplifyErrorWithTroubleshootingLink(e, 'ProjectNotFoundError', {
+      throw amplifyErrorWithTroubleshootingLink('ProjectNotFoundError', {
         message: e.message && e.name && e.name === 'NotFoundException'
           ? e.message
           : `Amplify AppID: ${inputAmplifyAppId} not found.`,
         resolution: e.name && e.name === 'NotFoundException'
           ? 'Check that the region of the Amplify App is matching the configured region.'
           : 'Ensure your local profile matches the AWS account or region in which the Amplify app exists.',
-      });
+      }, e);
     }
   }
 
@@ -215,7 +215,7 @@ async function getAmplifyApp(context, amplifyClient) {
     return selection;
   }
 
-  throw amplifyErrorWithTroubleshootingLink(null, 'ProjectNotFoundError', {
+  throw amplifyErrorWithTroubleshootingLink('ProjectNotFoundError', {
     message: 'No Amplify apps found.',
     resolution: 'Ensure your local profile matches the AWS account or region in which the Amplify app exists.',
   });
@@ -242,11 +242,11 @@ async function getBackendEnv(context, amplifyClient, amplifyApp) {
       context.print.info(`Backend environment ${inputEnvName} found in Amplify Console app: ${amplifyApp.name}`);
       return getBackendEnvironmentResult.backendEnvironment;
     } catch (e) {
-      throw amplifyErrorWithTroubleshootingLink(e, 'EnvironmentNotInitializedError', {
+      throw amplifyErrorWithTroubleshootingLink('EnvironmentNotInitializedError', {
         message: `Cannot find backend environment ${inputEnvName} in Amplify Console app: ${amplifyApp.name}`,
         stack: e.stack,
         details: e.message,
-      });
+      }, e);
     }
   }
 
@@ -293,7 +293,7 @@ async function getBackendEnv(context, amplifyClient, amplifyApp) {
     context.print.info(`Backend environment '${backendEnvs[0].environmentName}' found. Initializing...`);
     return backendEnvs[0];
   }
-  throw amplifyErrorWithTroubleshootingLink(null, 'EnvironmentNotInitializedError', {
+  throw amplifyErrorWithTroubleshootingLink('EnvironmentNotInitializedError', {
     message: `Cannot find backend environment in Amplify Console app: ${amplifyApp.name}`,
   });
 }

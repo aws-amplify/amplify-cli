@@ -158,10 +158,10 @@ export class StackEventMonitor {
         return;
       }
       if (e.code !== 'Throttling') {
-        throw amplifyFaultWithTroubleshootingLink(e, 'NotImplementedFault', {
+        throw amplifyFaultWithTroubleshootingLink('NotImplementedFault', {
           message: e.message,
           stack: e.stack,
-        });
+        }, e);
       }
     }
 

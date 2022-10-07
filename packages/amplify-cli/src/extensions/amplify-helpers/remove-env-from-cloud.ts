@@ -33,7 +33,7 @@ export const removeEnvFromCloud = async (context, envName, deleteS3): Promise<vo
     await raiseInternalOnlyPostEnvRemoveEvent(context, envName);
   } catch (ex) {
     if (!(ex?.name === 'BucketNotFoundError')) {
-      throw amplifyFaultWithTroubleshootingLink(null,'BackendDeleteFault', {
+      throw amplifyFaultWithTroubleshootingLink('BackendDeleteFault', {
         message: `Error occurred while deleting env: ${envName}.`,
         details: ex.message,
         stack: ex.stack,

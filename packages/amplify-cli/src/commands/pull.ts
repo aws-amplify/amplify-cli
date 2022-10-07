@@ -20,11 +20,11 @@ export const run = async (context: $TSContext): Promise<void> => {
     try {
       await preDeployPullBackend(context, inputParams.sandboxId);
     } catch (e) {
-      throw amplifyFaultWithTroubleshootingLink(e, 'UnknownFault', {
+      throw amplifyFaultWithTroubleshootingLink('UnknownFault', {
         message: `Failed to pull sandbox app.`,
         details: e.message || 'An unknown error occurred.',
         stack: e.stack,
-      });
+      }, e);
     }
     return;
   }
@@ -38,12 +38,12 @@ export const run = async (context: $TSContext): Promise<void> => {
     const localEnvNames = Object.keys(stateManager.getLocalAWSInfo(undefined, { throwIfNotExist: false }) || {});
 
     if (inputAppId && appId && inputAppId !== appId) {
-      throw new AmplifyError(null, 'InvalidAmplifyAppIdError', {
+      throw new AmplifyError('InvalidAmplifyAppIdError', {
         message: `Amplify appId mismatch.`,
         resolution: `You are currently working in the amplify project with Id ${appId}`,
       });
     } else if (!appId) {
-      throw new AmplifyError(null, 'EnvironmentNotInitializedError', {
+      throw new AmplifyError('EnvironmentNotInitializedError', {
         message: `Environment '${envName}' not found.`,
         resolution: `Try running "amplify env add" to add a new environment.\nIf this backend already exists, try restoring its definition in your team-provider-info.json file.`,
       });

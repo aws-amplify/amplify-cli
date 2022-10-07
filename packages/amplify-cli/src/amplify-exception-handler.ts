@@ -113,26 +113,29 @@ const printHeadlessAmplifyException = (amplifyException: AmplifyException): void
   errorPrinter.error(JSON.stringify(amplifyException.toObject()));
 };
 
-const unknownErrorToAmplifyException = (err: unknown): AmplifyException => amplifyFaultWithTroubleshootingLink(null,
+const unknownErrorToAmplifyException = (err: unknown): AmplifyException => amplifyFaultWithTroubleshootingLink(
   unknownErrorTypeToAmplifyExceptionType(err), {
     message: 'message' in (err as $TSAny) ? (err as $TSAny).message : 'Unknown error',
     resolution: mapUnknownErrorToResolution(err),
     stack: 'stack' in (err as $TSAny) ? (err as $TSAny).stack : undefined,
-  });
+  },
+);
 
-const genericErrorToAmplifyException = (err: Error): AmplifyException => amplifyFaultWithTroubleshootingLink(err,
+const genericErrorToAmplifyException = (err: Error): AmplifyException => amplifyFaultWithTroubleshootingLink(
   genericErrorTypeToAmplifyExceptionType(err), {
     message: err.message,
     resolution: mapGenericErrorToResolution(err),
     stack: err.stack,
-  });
+  }, err,
+);
 
-const nodeErrorToAmplifyException = (err: NodeJS.ErrnoException): AmplifyException => amplifyFaultWithTroubleshootingLink(err,
+const nodeErrorToAmplifyException = (err: NodeJS.ErrnoException): AmplifyException => amplifyFaultWithTroubleshootingLink(
   nodeErrorTypeToAmplifyExceptionType(err), {
     message: err.message,
     resolution: mapNodeErrorToResolution(err),
     stack: err.stack,
-  });
+  }, err,
+);
 
 const nodeErrorTypeToAmplifyExceptionType = (__err: NodeJS.ErrnoException): AmplifyFaultType => 'UnknownNodeJSFault';
 const mapNodeErrorToResolution = (__err: NodeJS.ErrnoException): string => `Please report this issue at https://github.com/aws-amplify/amplify-cli/issues and include the project identifier from: 'amplify diagnose --send-report'`;

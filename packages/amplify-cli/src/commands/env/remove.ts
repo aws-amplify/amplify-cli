@@ -15,20 +15,20 @@ export const run = async (context: $TSContext): Promise<void> => {
   const allEnvs = context.amplify.getEnvDetails();
 
   if (!envName) {
-    throw new AmplifyError(null, 'EnvironmentNameError', {
+    throw new AmplifyError('EnvironmentNameError', {
       message: 'Environment name was not specified.',
       resolution: 'Pass in the name of the environment using the --name flag.',
     });
   }
   if (!allEnvs[envName]) {
-    throw new AmplifyError(null, 'EnvironmentNameError', {
+    throw new AmplifyError('EnvironmentNameError', {
       message: 'Environment name is invalid.',
       resolution: 'Run amplify env list to get a list of valid environments.',
     });
   }
 
   if (currentEnv === envName) {
-    throw new AmplifyError(null, 'EnvironmentNameError', {
+    throw new AmplifyError('EnvironmentNameError', {
       message: 'You cannot delete your current environment.',
       resolution: 'Switch to another environment before deleting the current environment.',
       details: "If this is your only environment you can use the 'amplify delete' command to delete your project.",

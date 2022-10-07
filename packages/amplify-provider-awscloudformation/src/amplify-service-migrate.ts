@@ -49,13 +49,13 @@ export const run = async (context): Promise<void> => {
   if (!amplifyClient) {
     // This happens when the Amplify service is not available in the region
     const message = `Amplify service is not available in the region ${awsConfigInfo.region ? awsConfigInfo.region : ''}`;
-    throw amplifyErrorWithTroubleshootingLink(null, 'RegionNotAvailableError', { message });
+    throw amplifyErrorWithTroubleshootingLink('RegionNotAvailableError', { message });
   }
 
   const hasPermission = await checkAmplifyServiceIAMPermission(context, amplifyClient);
   if (!hasPermission) {
     const message = 'Permissions to access Amplify service is required.';
-    throw amplifyErrorWithTroubleshootingLink(null, 'PermissionsError', { message });
+    throw amplifyErrorWithTroubleshootingLink('PermissionsError', { message });
   }
 
   const { inputParams } = context.exeInfo;
@@ -74,10 +74,10 @@ export const run = async (context): Promise<void> => {
         .promise();
       context.print.info(`Amplify AppID found: ${amplifyAppId}. Amplify App name is: ${getAppResult.app.name}`);
     } catch (e) {
-      throw amplifyErrorWithTroubleshootingLink(e, 'ProjectNotFoundError', {
+      throw amplifyErrorWithTroubleshootingLink('ProjectNotFoundError', {
         message: `Amplify AppID: ${amplifyAppId} not found.`,
         resolution: `Please ensure your local profile matches the AWS account or region in which the Amplify app exists.`,
-      });
+      }, e);
     }
 
     let backendEnvs = [];
@@ -124,7 +124,7 @@ export const run = async (context): Promise<void> => {
       logger('run.amplifyClient.getBackendEnvironment', [getEnvParams])();
       const { backendEnvironment } = await amplifyClient.getBackendEnvironment(getEnvParams).promise();
       if (StackName !== backendEnvironment.stackName) {
-        throw amplifyErrorWithTroubleshootingLink(null, 'InvalidStackError', {
+        throw amplifyErrorWithTroubleshootingLink('InvalidStackError', {
           message: `Stack name mismatch for the backend environment ${envName}. Local: ${StackName}, Amplify: ${backendEnvironment.stackName}`,
         });
       }

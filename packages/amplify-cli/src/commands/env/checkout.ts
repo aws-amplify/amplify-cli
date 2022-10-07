@@ -19,7 +19,7 @@ export const run = async (context: $TSContext): Promise<void> => {
 
   const allEnvs = context.amplify.getEnvDetails();
   if (!envName || !allEnvs[envName]) {
-    throw new AmplifyError(null, 'EnvironmentNameError', {
+    throw new AmplifyError('EnvironmentNameError', {
       message: 'Environment name is invalid.',
       resolution: `Run amplify env list to get a list of valid environments.`,
     });
@@ -32,7 +32,7 @@ export const run = async (context: $TSContext): Promise<void> => {
   stateManager.setLocalEnvInfo(undefined, localEnvInfo);
 
   if (localEnvInfo.noUpdateBackend) {
-    throw new AmplifyError(null, 'NoUpdateBackendError', {
+    throw new AmplifyError('NoUpdateBackendError', {
       message: 'The local environment configuration does not allow modifying the backend.',
       resolution: `Use amplify env pull --envName ${envName}`,
     });

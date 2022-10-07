@@ -68,7 +68,7 @@ const permissionsBoundarySupplier = async (
 
   const isYes = context?.input?.options?.yes;
   if (required && (isYes || !doPrompt)) {
-    throw new AmplifyError(null, 'InputValidationError', {
+    throw new AmplifyError('InputValidationError', {
       message: 'A permissions boundary ARN must be specified using --permissions-boundary',
       link: `${AMPLIFY_DOCS_URL}/cli/project/permissions-boundary/`,
     });

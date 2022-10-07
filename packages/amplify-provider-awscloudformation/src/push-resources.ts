@@ -335,10 +335,10 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
           if (err?.name === 'ValidationError' && err?.message === 'No updates are to be performed.') {
             return;
           }
-          throw amplifyFaultWithTroubleshootingLink(err, 'DeploymentFault', {
+          throw amplifyFaultWithTroubleshootingLink('DeploymentFault', {
             stack: err.stack,
             message: err.message,
-          });
+          }, err);
         }
       }
       context.usageData.stopCodePathTimer('pushDeployment');
@@ -462,10 +462,10 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
       await deploymentStateManager.failDeployment();
     }
     rollbackLambdaLayers(layerResources);
-    throw amplifyFaultWithTroubleshootingLink(error, 'DeploymentFault', {
+    throw amplifyFaultWithTroubleshootingLink('DeploymentFault', {
       stack: error.stack,
       message: error.message,
-    });
+    }, error);
   }
 };
 
@@ -651,7 +651,7 @@ const prepareResource = async (context: $TSContext, resource: $TSAny) => {
   });
 
   if (cfnFiles.length !== 1) {
-    throw amplifyErrorWithTroubleshootingLink(null, 'CloudFormationTemplateError', {
+    throw amplifyErrorWithTroubleshootingLink('CloudFormationTemplateError', {
       message: cfnFiles.length > 1 ? 'Only one CloudFormation template is allowed in the resource directory' : 'No CloudFormation template found in the resource directory',
       details: `Resource directory: ${resourceDir}`,
     });
@@ -1114,7 +1114,7 @@ export const formNestedStack = async (
               const dependentResource = _.get(amplifyMeta, [dependsOn[i].category, dependsOn[i].resourceName], undefined);
 
               if (!dependentResource && dependsOn[i].category) {
-                throw amplifyErrorWithTroubleshootingLink(null, 'PushResourcesError', {
+                throw amplifyErrorWithTroubleshootingLink('PushResourcesError', {
                   message: `Cannot get resource: ${dependsOn[i].resourceName} from '${dependsOn[i].category}' category.`,
                 });
               }
@@ -1123,7 +1123,7 @@ export const formNestedStack = async (
                 const outputAttributeValue = _.get(dependentResource, ['output', attribute], undefined);
 
                 if (!outputAttributeValue) {
-                  throw amplifyErrorWithTroubleshootingLink(null, 'PushResourcesError', {
+                  throw amplifyErrorWithTroubleshootingLink('PushResourcesError', {
                     message: `Cannot read the '${attribute}' dependent attribute value from the output section of resource: '${dependsOn[i].resourceName}'.`,
                   });
                 }

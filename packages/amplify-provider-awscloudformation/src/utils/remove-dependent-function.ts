@@ -57,7 +57,7 @@ export const ensureValidFunctionModelDependencies = async (
       apiResource[0].resourceName,
     ]);
   } else {
-    throw new AmplifyError(null, 'DeploymentError', {
+    throw new AmplifyError('DeploymentError', {
       message: 'Failed to resolve appId.',
       resolution: `Run “amplify update function” on the affected functions ${dependentFunctionsNames} and remove the access permission to ${tablesDeleted}.`,
     });

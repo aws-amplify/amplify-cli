@@ -80,11 +80,11 @@ export class DeploymentManager {
       assert(cred.region);
       return new DeploymentManager(cred, cred.region, deploymentBucket, spinner, printer, options);
     } catch (e) {
-      throw amplifyErrorWithTroubleshootingLink(e, 'DeploymentError', {
+      throw amplifyErrorWithTroubleshootingLink('DeploymentError', {
         message: 'Could not load configuration',
         stack: e.stack,
         details: e.message,
-      });
+      }, e);
     }
   };
 
@@ -333,13 +333,13 @@ export class DeploymentManager {
       await this.s3Client.headObject({ Bucket: this.deploymentBucket, Key: bucketKey }).promise();
       return true;
     } catch (e) {
-      throw amplifyErrorWithTroubleshootingLink(e, 'DeploymentError', {
+      throw amplifyErrorWithTroubleshootingLink('DeploymentError', {
         message: e.code === 'NotFound'
           ? `The cloudformation template ${templatePath} was not found in deployment bucket ${this.deploymentBucket}`
           : e.message,
         details: e.message,
         stack: e.stack,
-      });
+      }, e);
     }
   };
 
@@ -357,10 +357,10 @@ export class DeploymentManager {
       if (err?.code === 'ResourceNotFoundException') {
         return true; // in the case of an iterative update that recreates a table, non-existence means the table has been fully removed
       }
-      throw amplifyFaultWithTroubleshootingLink(err, 'ServiceCallFault', {
+      throw amplifyFaultWithTroubleshootingLink('ServiceCallFault', {
         message: err.message,
         stack: err.stack,
-      });
+      }, err);
     }
   };
 

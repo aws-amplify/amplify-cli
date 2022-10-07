@@ -89,7 +89,7 @@ const copyFilesToSrc = (context: $TSContext, apiName: string, framework: string)
       }
       break;
     default:
-      throw amplifyErrorWithTroubleshootingLink(null, 'FrameworkNotSupportedError', {
+      throw amplifyErrorWithTroubleshootingLink('FrameworkNotSupportedError', {
         message: `Unsupported framework. ${framework}`,
       });
   }
@@ -129,7 +129,7 @@ const getAPIGWRequestParams = (resource: $TSObject, framework: string): $TSAny =
       };
 
     default:
-      throw amplifyErrorWithTroubleshootingLink(null, 'FrameworkNotSupportedError', {
+      throw amplifyErrorWithTroubleshootingLink('FrameworkNotSupportedError', {
         message: `Unsupported framework. ${framework}`,
       });
   }

@@ -186,7 +186,7 @@ export class S3 {
       await this.s3.waitFor('bucketExists', params).promise();
       this.context.print.success('S3 bucket successfully created');
     } else if (throwIfExists) {
-      throw amplifyErrorWithTroubleshootingLink(null, 'BucketAlreadyExistsError', {
+      throw amplifyErrorWithTroubleshootingLink('BucketAlreadyExistsError', {
         message: `Bucket ${bucketName} already exists`,
       });
     }
@@ -345,17 +345,17 @@ export class S3 {
       logger('ifBucketExists.s3.headBucket', [{ BucketName: bucketName }])(e);
 
       if (e.code === 'NotFound') {
-        throw new AmplifyError(e, 'BucketNotFoundError', {
+        throw new AmplifyError('BucketNotFoundError', {
           message: e.message,
           stack: e.stack,
           resolution: `Check that bucket name is correct: ${bucketName}`,
-        });
+        }, e);
       }
 
-      throw amplifyFaultWithTroubleshootingLink(e, 'UnknownFault', {
+      throw amplifyFaultWithTroubleshootingLink('UnknownFault', {
         message: e.message,
         stack: e.stack,
-      });
+      }, e);
     }
   }
 
@@ -380,10 +380,10 @@ export class S3 {
         return undefined;
       }
 
-      throw amplifyFaultWithTroubleshootingLink(e, 'UnexpectedS3Fault', {
+      throw amplifyFaultWithTroubleshootingLink('UnexpectedS3Fault', {
         message: e.message,
         stack: e.stack,
-      });
+      }, e);
     }
   };
 }

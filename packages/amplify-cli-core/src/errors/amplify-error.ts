@@ -10,24 +10,23 @@ export class AmplifyError extends AmplifyException {
   /**
    * Create a new Amplify Exception.
    *
-   *
+   * @param {AmplifyErrorType} name - a user friendly name for the exception
+   * @param {AmplifyExceptionOptions} options - error stack, resolution steps, details, or help links
    * @param {Error | null} downstreamException If you are throwing this exception from within a catch block,
    * you must provide the exception that was caught.
    * @example
    * try {
    *  ...
    * } catch (downstreamException){
-   *    throw new AmplifyError(downstreamException,...,...);
+   *    throw new AmplifyError(...,...,downstreamException);
    * }
-   * @param {AmplifyErrorType} name - a user friendly name for the exception
-   * @param {AmplifyExceptionOptions} options - error stack, resolution steps, details, or help links
    */
   constructor(
-    downstreamException: Error | null,
     name: AmplifyErrorType,
     options: AmplifyExceptionOptions,
+    downstreamException?: Error,
   ) {
-    super(downstreamException, name, 'ERROR', options);
+    super(name, 'ERROR', options, downstreamException);
   }
 }
 
@@ -36,15 +35,15 @@ export class AmplifyError extends AmplifyException {
  * @deprecated prefer using AmplifyError and passing the resolution steps
  */
 export const amplifyErrorWithTroubleshootingLink = (
-  downstreamException: Error | null,
   name: AmplifyErrorType,
   options: PartialAmplifyExceptionOptions,
+  downstreamException?: Error,
 )
   : AmplifyError => new AmplifyError(
-  downstreamException,
   name,
   {
     ...options,
     link: 'link' in options && options.link ? options.link : AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
   },
+  downstreamException,
 );

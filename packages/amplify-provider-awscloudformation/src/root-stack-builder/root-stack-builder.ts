@@ -75,7 +75,7 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
    */
   addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
     if (this._cfnParameterMap.has(logicalId)) {
-      throw amplifyErrorWithTroubleshootingLink(null, 'DuplicateLogicalIdError', {
+      throw amplifyErrorWithTroubleshootingLink('DuplicateLogicalIdError', {
         message: `Logical Id already exists: ${logicalId}.`,
       });
     }
@@ -89,7 +89,7 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
     if (this._cfnParameterMap.has(logicalId)) {
       return this._cfnParameterMap.get(logicalId);
     }
-    throw amplifyErrorWithTroubleshootingLink(null, 'ParameterNotFoundError', {
+    throw amplifyErrorWithTroubleshootingLink('ParameterNotFoundError', {
       message: `Cfn Parameter with LogicalId ${logicalId} doesn't exist`,
     });
   }
@@ -160,7 +160,7 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
    *
    */
   addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
-    throw amplifyFaultWithTroubleshootingLink(null, 'NotImplementedFault', {
+    throw amplifyFaultWithTroubleshootingLink('NotImplementedFault', {
       message: 'Method not implemented.',
     });
   }
@@ -176,7 +176,7 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
    *
    */
   addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void {
-    throw amplifyFaultWithTroubleshootingLink(null, 'NotImplementedFault', {
+    throw amplifyFaultWithTroubleshootingLink('NotImplementedFault', {
       message: 'Method not implemented.',
     });
   }
@@ -185,7 +185,7 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
    *
    */
   addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void {
-    throw amplifyFaultWithTroubleshootingLink(null, 'NotImplementedFault', {
+    throw amplifyFaultWithTroubleshootingLink('NotImplementedFault', {
       message: 'Method not implemented.',
     });
   }
@@ -194,7 +194,7 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
    *
    */
   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void {
-    throw amplifyFaultWithTroubleshootingLink(null, 'NotImplementedFault', {
+    throw amplifyFaultWithTroubleshootingLink('NotImplementedFault', {
       message: 'Method not implemented.',
     });
   }

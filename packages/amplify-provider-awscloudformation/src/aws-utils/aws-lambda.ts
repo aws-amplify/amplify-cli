@@ -4,6 +4,7 @@ import { LayerVersionsListItem, ListLayerVersionsRequest, ListLayerVersionsRespo
 import { AwsSecrets, loadConfiguration } from '../configuration-manager';
 import { fileLogger } from '../utils/aws-logger';
 import { pagedAWSCall } from './paged-call';
+
 const aws = require('./aws');
 
 const logger = fileLogger('aws-lambda');
@@ -58,10 +59,10 @@ export class Lambda {
           await this.lambda.deleteLayerVersion(params).promise();
         } catch (err) {
           if (err.code !== 'ParameterNotFound') {
-            throw amplifyErrorWithTroubleshootingLink(err, 'LambdaLayerDeleteError', {
+            throw amplifyErrorWithTroubleshootingLink('LambdaLayerDeleteError', {
               message: err.message,
               stack: err.stack,
-            });
+            }, err);
           }
         }
       });

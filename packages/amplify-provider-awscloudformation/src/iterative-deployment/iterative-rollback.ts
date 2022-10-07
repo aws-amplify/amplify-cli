@@ -21,7 +21,7 @@ const loadDeploymentMeta = async (s3: S3, bucketName: string, metaKey: string): 
     return JSONUtilities.parse<DeploymentOp>(metaDeploymentContent);
   }
 
-  throw amplifyErrorWithTroubleshootingLink(null, 'IterativeRollbackError', {
+  throw amplifyErrorWithTroubleshootingLink('IterativeRollbackError', {
     message: `Could not find deployment meta file: ${metaKey}`,
   });
 };
@@ -60,7 +60,7 @@ export const runIterativeRollback = async (
   const stateFiles: string[] = [];
   for (const step of deployedSteps) {
     if (!step.previousMetaKey) {
-      throw amplifyErrorWithTroubleshootingLink(null, 'IterativeRollbackError', {
+      throw amplifyErrorWithTroubleshootingLink('IterativeRollbackError', {
         message: `Cannot iteratively rollback as the following step does not contain a previousMetaKey: ${JSON.stringify(step)}`,
       });
     }

@@ -28,7 +28,7 @@ export const pushResources = async (
   if (context.parameters.options['iterative-rollback']) {
     // validate --iterative-rollback with --force
     if (context.parameters.options.force) {
-      throw new AmplifyError(null, 'CommandNotSupportedError', {
+      throw new AmplifyError('CommandNotSupportedError', {
         message: '--iterative-rollback and --force are not supported together',
         resolution: 'Use --force without --iterative-rollback to iteratively rollback and redeploy.',
       });
@@ -55,7 +55,7 @@ export const pushResources = async (
       }
       await initializeEnv(context);
     } else {
-      throw new AmplifyError(null, 'EnvironmentNotInitializedError', {
+      throw new AmplifyError('EnvironmentNotInitializedError', {
         message: 'Current environment cannot be determined.',
         resolution: `Use 'amplify init' in the root of your app directory to create a new environment.`,
       });
@@ -115,12 +115,12 @@ export const pushResources = async (
         if (err instanceof AmplifyException) {
           throw err;
         }
-        throw new AmplifyFault(err, 'PushResourcesFault', {
+        throw new AmplifyFault('PushResourcesFault', {
           message: err.message,
           stack: err.stack,
           link: isAuthError ? AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url : AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
           resolution: isAuthError ? 'Some @auth rules are defined in the GraphQL schema without enabling the corresponding auth providers. Run `amplify update api` to configure your GraphQL API to include the appropriate auth providers as an authorization mode.' : undefined,
-        });
+        }, err);
       }
     }
   } while (retryPush);

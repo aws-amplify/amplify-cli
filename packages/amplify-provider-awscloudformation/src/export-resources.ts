@@ -71,10 +71,10 @@ export const run = async (context: $TSContext, resourceDefinition: $TSAny[], exp
   } catch (ex) {
     revertToBackup(amplifyExportFolder);
     spinner.fail();
-    throw amplifyFaultWithTroubleshootingLink(ex, 'ResourceNotReadyFault', {
+    throw amplifyFaultWithTroubleshootingLink('ResourceNotReadyFault', {
       stack: ex.stack,
       message: ex.message,
-    });
+    }, ex);
   } finally {
     removeBackup(amplifyExportFolder);
     spinner.stop();

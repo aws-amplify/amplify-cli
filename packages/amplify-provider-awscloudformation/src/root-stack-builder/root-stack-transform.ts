@@ -214,7 +214,7 @@ export class AmplifyRootStackTransform {
       return this._rootTemplateObj;
     }
 
-    throw amplifyFaultWithTroubleshootingLink(null, 'RootStackNotFoundFault', {
+    throw amplifyFaultWithTroubleshootingLink('RootStackNotFoundFault', {
       message: `Root Stack Template doesn't exist.`,
     });
   }

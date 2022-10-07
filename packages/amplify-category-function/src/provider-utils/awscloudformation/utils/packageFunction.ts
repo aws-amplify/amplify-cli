@@ -49,7 +49,7 @@ export const packageFunction: Packager = async (context, resource) => {
   }
 
   if (functionSizeInBytes + layersSizeInBytes > lambdaPackageLimitInMB * 1024 ** 2) {
-    throw amplifyErrorWithTroubleshootingLink(null, 'FunctionTooLargeError', {
+    throw amplifyErrorWithTroubleshootingLink('FunctionTooLargeError', {
       message: `The function is too large to package.`,
       details: `
 Total size of Lambda function ${

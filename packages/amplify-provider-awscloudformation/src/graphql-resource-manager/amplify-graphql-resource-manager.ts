@@ -94,7 +94,7 @@ export class GraphQLResourceManager {
 
   constructor(props: GQLResourceManagerProps) {
     if (!props.resourceMeta) {
-      throw new AmplifyError(null, 'CategoryNotEnabledError', {
+      throw new AmplifyError('CategoryNotEnabledError', {
         message: 'No GraphQL API enabled.',
         link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
       });
@@ -124,11 +124,11 @@ export class GraphQLResourceManager {
       sanityCheckDiffs(gqlDiff.diff, gqlDiff.current, gqlDiff.next, diffRules, projectRules);
     } catch (err) {
       if (err.name !== 'InvalidGSIMigrationError') {
-        throw new AmplifyFault(err, 'UnknownFault', {
+        throw new AmplifyFault('UnknownFault', {
           stack: err.stack,
           message: err.message,
           link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
-        });
+        }, err);
       }
     }
     if (!this.rebuildAllTables) {
@@ -295,7 +295,7 @@ export class GraphQLResourceManager {
             break;
 
           default:
-            throw new AmplifyFault(null, 'UnknownFault', {
+            throw new AmplifyFault('UnknownFault', {
               message: `Unknown GSI change type ${changeStep.type}`,
               link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
             });

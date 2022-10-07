@@ -59,10 +59,10 @@ export class S3Service implements IS3Service {
       if (error.code === 'NotFound') {
         return false;
       }
-      throw amplifyFaultWithTroubleshootingLink(error, 'UnknownFault', {
+      throw amplifyFaultWithTroubleshootingLink('UnknownFault', {
         stack: error.stack,
         message: error.message,
-      });
+      }, error);
     }
   }
 

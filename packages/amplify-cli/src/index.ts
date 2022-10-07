@@ -136,7 +136,7 @@ export const run = async (startTime: number): Promise<void> => {
     if (verificationResult.helpCommandAvailable) {
       input.command = constants.HELP;
     } else {
-      throw new AmplifyError(null, 'InputValidationError', {
+      throw new AmplifyError('InputValidationError', {
         message: verificationResult.message ?? 'Invalid input',
         details: JSON.stringify(verificationResult),
         link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
@@ -164,7 +164,7 @@ export const run = async (startTime: number): Promise<void> => {
   prompter.setFlowData(context.usageData);
 
   if (!(await migrateTeamProviderInfo(context))) {
-    throw new AmplifyError(null, 'MigrationError', {
+    throw new AmplifyError('MigrationError', {
       message: 'An error occurred while migrating team provider info',
       link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
     });

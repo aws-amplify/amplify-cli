@@ -38,7 +38,7 @@ export const uploadAuthTriggerTemplate = async (context: $TSContext): Promise<{ 
 
   // This should not happen, so throw
   if (!deploymentBucketName) {
-    throw amplifyErrorWithTroubleshootingLink(null, 'BucketNotFoundError', {
+    throw amplifyErrorWithTroubleshootingLink('BucketNotFoundError', {
       message: 'DeploymentBucket was not found in amplify-meta.json',
     });
   }

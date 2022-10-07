@@ -296,13 +296,13 @@ class CloudFormation {
       const Tags = this.context.amplify.getTags(this.context);
 
       if (!stackName) {
-        throw new AmplifyError(null,'StackNotFoundError', {
+        throw new AmplifyError('StackNotFoundError', {
           message: 'Project stack has not been created yet.',
           resolution: 'Use amplify init to initialize the project.',
         });
       }
       if (!deploymentBucketName) {
-        throw new AmplifyError(null,'BucketNotFoundError', {
+        throw new AmplifyError('BucketNotFoundError', {
           message: 'Project deployment bucket has not been created yet.',
           resolution: 'Use amplify init to initialize the project.',
         });
@@ -389,10 +389,10 @@ class CloudFormation {
         throw error;
       }
 
-      throw amplifyFaultWithTroubleshootingLink(error,'ResourceNotReadyFault', {
+      throw amplifyFaultWithTroubleshootingLink('ResourceNotReadyFault', {
         message: error.message,
         stack: error.stack,
-      });
+      }, error);
     }
   }
 
@@ -564,7 +564,7 @@ class CloudFormation {
     const meta = stateManager.getMeta();
     stackId = stackId || _.get(meta, ['providers', providerName, 'StackName'], undefined);
     if (!stackId) {
-      throw amplifyErrorWithTroubleshootingLink(null,'StackNotFoundError', {
+      throw amplifyErrorWithTroubleshootingLink('StackNotFoundError', {
         message: `StackId not found in amplify-meta for provider ${providerName}`,
       });
     }
@@ -577,7 +577,7 @@ class CloudFormation {
     const providerInfo = teamProviderInfo?.[envName]?.[providerName];
     const stackName = providerInfo?.StackName;
     if (!stackName) {
-      throw amplifyErrorWithTroubleshootingLink(null,'StackNotFoundError', {
+      throw amplifyErrorWithTroubleshootingLink('StackNotFoundError', {
         message: `Stack not defined for the environment.`,
       });
     }

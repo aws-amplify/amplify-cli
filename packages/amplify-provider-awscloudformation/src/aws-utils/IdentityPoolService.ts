@@ -100,7 +100,7 @@ export class IdentityPoolService implements IIdentityPoolService {
       .promise();
 
     if (!response.Roles || !response.Roles.authenticated || !response.Roles.unauthenticated) {
-      throw amplifyErrorWithTroubleshootingLink(null, 'AuthImportError', {
+      throw amplifyErrorWithTroubleshootingLink('AuthImportError', {
         message: `Cannot import Identity Pool without 'authenticated' and 'unauthenticated' roles.`,
       });
     }
@@ -126,7 +126,7 @@ export class IdentityPoolService implements IIdentityPoolService {
 
     // Should not happen anytime
     if (!resourceName) {
-      throw amplifyFaultWithTroubleshootingLink(null, 'UnknownFault', {
+      throw amplifyFaultWithTroubleshootingLink('UnknownFault', {
         message: `Cannot parse arn: '${arn}'.`,
       });
     }

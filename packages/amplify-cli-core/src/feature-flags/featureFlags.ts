@@ -378,7 +378,7 @@ export class FeatureFlags {
         });
 
         if (unknownFlags.length > 0 || otherErrors.length > 0) {
-          throw new AmplifyError(null, 'FeatureFlagsValidationError', {
+          throw new AmplifyError('FeatureFlagsValidationError', {
             message: 'Invalid feature flag configuration',
             details:
               (unknownFlags.length > 0 ? `These feature flags are defined in the "amplify/cli.json" configuration file and are unknown to the currently running Amplify CLI:\n${unknownFlags.map(el => `- ${el}`).join(',\n')}\n` : '')

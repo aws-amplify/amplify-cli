@@ -27,7 +27,7 @@ export const executeAmplifyCommand = async (context: $TSContext): Promise<void> 
 
   // Check if project has been initialized
   if (!stateManager.metaFileExists()) {
-    throw new AmplifyError(null, 'MissingAmplifyMetaFileError', {
+    throw new AmplifyError('MissingAmplifyMetaFileError', {
       message: 'Could not find the amplify-meta.json file.',
       resolution: 'Make sure your project is initialized in the cloud.',
     });

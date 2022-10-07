@@ -18,7 +18,7 @@ export const adminLoginFlow = async (context: $TSContext, appId: string, envName
   if (!region) {
     const { isAdminApp, region: _region } = await isAmplifyAdminApp(appId);
     if (!isAdminApp) {
-      throw new AmplifyError(null, 'AmplifyStudioNotEnabledError', {
+      throw new AmplifyError('AmplifyStudioNotEnabledError', {
         message: `Amplify Studio not enabled for appId: ${appId}`,
         link: `${AMPLIFY_DOCS_URL}/console/adminui/start/#to-get-started-from-an-existing-amplify-app`,
       });

@@ -38,7 +38,7 @@ export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentN
     const subnets = subnetsCount;
     const AZs = AvailabilityZones.length;
 
-    throw amplifyErrorWithTroubleshootingLink(null, 'ConfigurationError', {
+    throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
       message: `The requested number of subnets exceeds the number of AZs for the region. ${JSONUtilities.stringify({ subnets, azs: AZs })}`,
     });
   }
@@ -63,7 +63,7 @@ export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentN
   const { VpcId: vpcId } = vpc;
 
   if (vpcId && !vpc.CidrBlock.endsWith(vpcMask)) {
-    throw amplifyErrorWithTroubleshootingLink(null, 'ConfigurationError', {
+    throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
       message: 'Not the right mask',
     });
   }
@@ -84,7 +84,7 @@ export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentN
     .promise();
 
   if (vpcId && InternetGateways.length === 0) {
-    throw amplifyErrorWithTroubleshootingLink(null, 'ConfigurationError', {
+    throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
       message: `No attached and available Internet Gateway in VPC ${vpcId}`,
     });
   }
@@ -144,7 +144,7 @@ export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentN
   }
 
   if (envCidrs.size < subnetsCount) {
-    throw amplifyErrorWithTroubleshootingLink(null, 'ConfigurationError', {
+    throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
       message: 'Not enough CIDRs available in VPC',
     });
   }

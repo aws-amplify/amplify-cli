@@ -21,7 +21,7 @@ export const preDeployPullBackend = async (context: $TSContext, sandboxId: strin
 
   // App not present
   if (resJson.message === 'Requested app was not found') {
-    throw new AmplifyError(null, 'ProjectNotFoundError', {
+    throw new AmplifyError('ProjectNotFoundError', {
       message: `Requested app: ${sandboxId} was not found`,
       link: `${AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url}`,
     });
@@ -29,7 +29,7 @@ export const preDeployPullBackend = async (context: $TSContext, sandboxId: strin
 
   // Handle Deployed App Case
   if (resJson.appId) {
-    throw new AmplifyError(null, 'DeploymentError', {
+    throw new AmplifyError('DeploymentError', {
       message: 'This app is already deployed.',
       resolution: `You can pull it using "amplify pull --appId ${resJson.appId}"`,
     });
@@ -37,7 +37,7 @@ export const preDeployPullBackend = async (context: $TSContext, sandboxId: strin
 
   // Handle missing schema
   if (!resJson.schema) {
-    throw new AmplifyError(null, 'ApiCategorySchemaNotFoundError', {
+    throw new AmplifyError('ApiCategorySchemaNotFoundError', {
       message: 'No GraphQL schema found in the app.',
       link: `${AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url}`,
     });
