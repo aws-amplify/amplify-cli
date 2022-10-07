@@ -5,25 +5,9 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this bug report! Try to include as much information as you can.
+        Thanks for taking the time to fill out this bug report! Before submitting please read the guide for [submitting bug reports](https://github.com/aws-amplify/amplify-cli/blob/dev/CONTRIBUTING.md#bug-reports), and try to include as much information as you can.
 
         For reference, the current version of the Amplify CLI is <img src="https://img.shields.io/npm/v/@aws-amplify/cli.svg" />.
-
-  - type: checkboxes
-    attributes:
-      label: |
-        Before opening, please confirm:
-      options:
-        - label: I have installed the latest version of the Amplify CLI (see above), and confirmed that the issue still persists.
-          required: true
-        - label: I have [searched for duplicate or closed issues](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+).
-          required: true
-        - label: I have read the guide for [submitting bug reports](https://github.com/aws-amplify/amplify-cli/blob/dev/CONTRIBUTING.md#bug-reports).
-          required: true
-        - label: I have done my best to include a minimal, self-contained set of instructions for consistently reproducing the issue.
-          required: true
-        - label: I have removed any sensitive information from my code snippets and submission.
-          required: true
   - type: markdown
     attributes:
       value: |
@@ -31,7 +15,7 @@ body:
   - type: input
     attributes:
       label: How did you install the Amplify CLI?
-      description: 'For example: npm, yarn, curl, etc.'
+      description: "For example: npm, yarn, curl, etc."
   - type: input
     attributes:
       label: If applicable, what version of Node.js are you using?
@@ -45,7 +29,7 @@ body:
   - type: input
     attributes:
       label: What operating system are you using?
-      description: 'For example: Mac, Windows, Ubuntu.'
+      description: "For example: Mac, Windows, Ubuntu."
     validations:
       required: true
   - type: textarea
@@ -54,6 +38,10 @@ body:
       description: 'For example: "Deleted DynamoDB GSIs from the AWS Console or using AWS CLI" Or "No manual changes made"'
     validations:
       required: true
+  - type: markdown
+    attributes:
+      value: |
+        ## Details
   - type: textarea
     attributes:
       label: Describe the bug
@@ -117,3 +105,12 @@ body:
         If you have any additional information, workarounds, etc. for us, use the field below.
         Please note, you can attach screenshots or screen recordings here, by
         dragging and dropping files in the field below.
+  - type: checkboxes
+    attributes:
+      label: |
+        Before submitting, please confirm:
+      options:
+        - label: I have done my best to include a minimal, self-contained set of instructions for consistently reproducing the issue.
+          required: true
+        - label: I have removed any sensitive information from my code snippets and submission.
+          required: true
