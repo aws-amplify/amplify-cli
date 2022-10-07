@@ -806,7 +806,7 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build_pkg_binaries
-            - build_windows_workspace
+            - build_windows_workspace_for_e2e
       - amplify_migration_tests_v6:
           context:
             - e2e-auth-credentials
