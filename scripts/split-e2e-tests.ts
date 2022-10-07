@@ -42,7 +42,8 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
   'schema-auth-8_pkg',
   'import_dynamodb_1_pkg',
   'schema-connection_pkg',
-  'auth_7_pkg',
+  'auth_7a_pkg',
+  'auth_7b_pkg',
   'iam-permissions-boundary_pkg',
   'schema-data-access-patterns_pkg',
   'schema-auth-10_pkg',
@@ -58,7 +59,9 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
   'amplify-configure_pkg',
   'schema-predictions_pkg',
   'predictions_pkg',
-  'auth_1_pkg',
+  'auth_1a_pkg',
+  'auth_1b_pkg',
+  'auth_1c_pkg',
   'schema-auth-1_pkg',
   'schema-auth-2_pkg',
   'container-hosting_pkg',
@@ -136,7 +139,6 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/geo-multi-env.test.ts',
   //<25m
   'src/__tests__/schema-key.test.ts',
-  'src/__tests__/auth_1.test.ts',
   'src/__tests__/function_3.test.ts',
   'src/__tests__/schema-iterative-update-1.test.ts',
   //<30m
@@ -183,7 +185,6 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   //<2h
   'src/__tests__/function_9.test.ts',
   'src/__tests__/api_9.test.ts',
-  'src/__tests__/auth_7.test.ts',
   'src/__tests__/auth_6.test.ts',
   'src/__tests__/delete.test.ts',
   'src/__tests__/feature-flags.test.ts',

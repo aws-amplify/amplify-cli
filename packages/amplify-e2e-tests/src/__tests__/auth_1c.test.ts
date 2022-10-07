@@ -1,5 +1,4 @@
 import {
-  initJSProjectWithProfile,
   deleteProject,
   amplifyPushAuth,
   getAwsIOSConfig,
@@ -7,16 +6,10 @@ import {
   initIosProjectWithProfile,
   getCLIInputs,
   setCLIInputs,
-  getAppId,
-  addAuthWithDefaultSocial,
-  updateAuthSignInSignOutUrl,
-  amplifyPull,
   addAuthWithDefault,
-  runAmplifyAuthConsole,
   createNewProjectDir,
   deleteProjectDir,
   getProjectMeta,
-  getUserPool,
 } from '@aws-amplify/amplify-e2e-core';
 
 const defaultsSettings = {
@@ -32,41 +25,6 @@ describe('amplify add auth...', () => {
   afterEach(async () => {
     await deleteProject(projRoot);
     deleteProjectDir(projRoot);
-  });
-
-  it('...should init a project and add auth with defaults', async () => {
-    await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithDefault(projRoot, {});
-    await amplifyPushAuth(projRoot);
-    await runAmplifyAuthConsole(projRoot);
-    const meta = getProjectMeta(projRoot);
-    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
-    const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
-    expect(userPool.UserPool).toBeDefined();
-  });
-
-  it('...should init a project and add auth with defaults, pull project and push again', async () => {
-    await initJSProjectWithProfile(projRoot, {
-      disableAmplifyAppCreation: false,
-      name: 'authtest',
-    });
-    await addAuthWithDefaultSocial(projRoot, {});
-    await amplifyPushAuth(projRoot);
-    const appId = getAppId(projRoot);
-    const projRootPullAuth = await createNewProjectDir('authPullTest');
-    await amplifyPull(projRootPullAuth, {
-      emptyDir: true,
-      noUpdateBackend: false,
-      appId,
-    });
-    await updateAuthSignInSignOutUrl(projRootPullAuth, {
-      signinUrl: 'https://www.google.com/',
-      signoutUrl: 'https://www.nytimes.com/',
-      updatesigninUrl: 'http://localhost:3003/',
-      updatesignoutUrl: 'http://localhost:3004/',
-    });
-    await amplifyPushAuth(projRootPullAuth);
-    deleteProjectDir(projRootPullAuth);
   });
 
   it('...should init an IOS project and add default auth', async () => {
