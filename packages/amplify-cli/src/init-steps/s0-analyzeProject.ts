@@ -307,7 +307,7 @@ const getEnvName = async (context: $TSContext): Promise<string> => {
  */
 const isNewEnv = (envName: string): boolean => {
   const localAwsInfoEnvs = Object.keys(stateManager.getLocalAWSInfo(process.cwd(), { throwIfNotExist: false, default: {} }));
-  const tpiEnvs = Object.keys(stateManager.getTeamProviderInfo(undefined, { throwIfNotExist: false, default: {} }));
+  const tpiEnvs = Object.keys(stateManager.getTeamProviderInfo(process.cwd(), { throwIfNotExist: false, default: {} }));
   const allEnvs = Array.from(new Set([...localAwsInfoEnvs, ...tpiEnvs]));
   return !allEnvs.includes(envName);
 };
