@@ -1,3 +1,4 @@
+/* eslint-disable spellcheck/spell-checker */
 import {
   initJSProjectWithProfile,
   deleteProject,
@@ -7,7 +8,6 @@ import {
   deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
 import { ImportAuthRequest } from 'amplify-headless-interface';
-import _ from 'lodash';
 import {
   expectAuthProjectDetailsMatch,
   expectLocalAndCloudMetaFilesMatching,
@@ -54,7 +54,6 @@ describe('headless auth', () => {
 
     test.each([
       ['userpool only', false],
-      ['userpool with identitypool', true],
     ])('cognito userpool %s', async (_: string, withIdentityPool: boolean) => {
       const ogProjectDetails = await setupOgProjectWithAuth(ogProjectRoot, ogProjectSettings, withIdentityPool);
 
