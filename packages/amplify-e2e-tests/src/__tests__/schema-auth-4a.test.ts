@@ -20,18 +20,4 @@ describe('api directives @auth batch 4', () => {
     const testresult = await testSchema(projectDir, 'auth', 'public1');
     expect(testresult).toBeTruthy();
   });
-
-  it('auth public2', async () => {
-    const testresult = await testSchema(projectDir, 'auth', 'public2');
-    expect(testresult).toBeTruthy();
-  });
-  it('auth private1', async () => {
-    const testresult = await testSchema(projectDir, 'auth', 'private1');
-    expect(testresult).toBeTruthy();
-  });
-
-  it('auth private2', async () => {
-    const testresult = await testSchema(projectDir, 'auth', 'private2');
-    expect(testresult).toBeTruthy();
-  });
 });
