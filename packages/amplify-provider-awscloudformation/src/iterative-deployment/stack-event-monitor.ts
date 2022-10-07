@@ -3,16 +3,10 @@ import * as aws from 'aws-sdk';
 import { amplifyFaultWithTroubleshootingLink } from 'amplify-cli-core';
 import { fileLogger, Logger } from '../utils/aws-logger';
 
-/**
- *
- */
 export interface StackEventMonitorOptions {
   pollDelay: number;
 }
 
-/**
- *
- */
 export interface IStackProgressPrinter {
   addActivity: (activity: StackEvent) => void;
   print: () => void;
