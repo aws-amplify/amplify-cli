@@ -3,7 +3,7 @@ import { AmplifyError } from './amplify-error';
 /**
  * defines the project not initialized error factory method
  */
-export const projectNotInitializedError = (): AmplifyError => new AmplifyError(null, 'ProjectNotInitializedError', {
+export const projectNotInitializedError = (): AmplifyError => new AmplifyError('ProjectNotInitializedError', {
   message: 'No Amplify backend project files detected within this folder.',
   resolution: `
 Either initialize a new Amplify project or pull an existing project.
