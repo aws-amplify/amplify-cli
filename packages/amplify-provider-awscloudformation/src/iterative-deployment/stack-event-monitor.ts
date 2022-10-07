@@ -20,9 +20,6 @@ export interface IStackProgressPrinter {
   stop: () => void;
 }
 
-/**
- *
- */
 export class StackEventMonitor {
   private active = false;
   private tickTimer?: NodeJS.Timeout;
@@ -45,9 +42,6 @@ export class StackEventMonitor {
     this.logger = fileLogger('stack-event-monitor');
   }
 
-  /**
-   *
-   */
   public start() {
     this.active = true;
     this.printer.start();
@@ -55,9 +49,6 @@ export class StackEventMonitor {
     return this;
   }
 
-  /**
-   *
-   */
   public async stop() {
     this.active = false;
     this.printer.stop();

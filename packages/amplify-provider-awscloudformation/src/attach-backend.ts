@@ -23,7 +23,7 @@ import { fileLogger } from './utils/aws-logger';
 const logger = fileLogger('attach-backend');
 
 /**
- *
+ * attach backend to project
  */
 export const run = async (context): Promise<void> => {
   let appId;

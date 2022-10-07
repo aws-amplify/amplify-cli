@@ -4,9 +4,6 @@ import {
 import { prompt } from 'inquirer';
 import { IAMClient } from '../aws-utils/aws-iam';
 
-/**
- *
- */
 export const configurePermissionsBoundaryForExistingEnv = async (context: $TSContext) => {
   setPermissionsBoundaryArn(await permissionsBoundarySupplier(context));
   context.print.info(
@@ -14,9 +11,6 @@ export const configurePermissionsBoundaryForExistingEnv = async (context: $TSCon
   );
 };
 
-/**
- *
- */
 export const configurePermissionsBoundaryForInit = async (context: $TSContext) => {
   const { envName } = context.exeInfo.localEnvInfo; // the new environment name
   if (context?.exeInfo?.isNewProject) {
