@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.3.0-in-app-messaging.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@3.2.1...amplify-cli-core@3.3.0-in-app-messaging.0) (2022-10-08)
+
+
+### Bug Fixes
+
+* Await Metadata file updates to avoid race conditions ([#11074](https://github.com/aws-amplify/amplify-cli/issues/11074)) ([0c745c4](https://github.com/aws-amplify/amplify-cli/commit/0c745c44773db3dfd09e75eaeb60ab2be97b91b7))
+* refactor pull flow to use amplify error handling framework ([#10974](https://github.com/aws-amplify/amplify-cli/issues/10974)) ([ee29583](https://github.com/aws-amplify/amplify-cli/commit/ee29583b2e0a4a4faafca36c410cbc58f20d96a3))
+* refactor push flow to use amplify error handling framework ([#10951](https://github.com/aws-amplify/amplify-cli/issues/10951)) ([38a8603](https://github.com/aws-amplify/amplify-cli/commit/38a8603db4965ec05beb2ddd1daaa3913096c9c6))
+* update error handling for notification channels commands ([6cf7029](https://github.com/aws-amplify/amplify-cli/commit/6cf7029c912343794fac03cf037e12a62c78027f))
+* updateUserAttributeSetting during add/update/push flows ([#10773](https://github.com/aws-amplify/amplify-cli/issues/10773)) ([52c1e49](https://github.com/aws-amplify/amplify-cli/commit/52c1e49caa5098c37c32c9f2b6f095cfd60454b1))
+
+
+### Features
+
+* address PR feedback ([44d6cd1](https://github.com/aws-amplify/amplify-cli/commit/44d6cd1bec19c9cf3e6ef5007384112161e8790b))
+* address PR feedback ([f291641](https://github.com/aws-amplify/amplify-cli/commit/f291641eb8e3666981fd4d9a12d4c00f6bb34a20))
+* convert errors to amplify errors ([acb9876](https://github.com/aws-amplify/amplify-cli/commit/acb987681cc44d7df34fcbaa0677112846e30630))
+* in app messaging initial commit ([b09ce19](https://github.com/aws-amplify/amplify-cli/commit/b09ce191576b5bc2cd75a941966f81262a8923bf))
+* narrowing down the scope for lambda execution role policy ([6219ab9](https://github.com/aws-amplify/amplify-cli/commit/6219ab9b1624e17aa8ab13ea5686ecb24e4f4c0d))
+
+
+
+
+
 ## [3.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@3.2.0...amplify-cli-core@3.2.1) (2022-10-03)
 
 

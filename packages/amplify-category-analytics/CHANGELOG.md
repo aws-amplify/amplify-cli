@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.2.0-in-app-messaging.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@4.1.2...amplify-category-analytics@4.2.0-in-app-messaging.0) (2022-10-08)
+
+
+### Bug Fixes
+
+* fixed notifications unit test ([a22d9ed](https://github.com/aws-amplify/amplify-cli/commit/a22d9edc701c96965aca1fa8d1cc619af36489e3))
+* prevent adding in app messaging to projects with legacy analytics ([f07e5e1](https://github.com/aws-amplify/amplify-cli/commit/f07e5e1b38b9c6e2faecd97122aea597e918fdf5))
+
+
+### Features
+
+* address PR feedback ([44d6cd1](https://github.com/aws-amplify/amplify-cli/commit/44d6cd1bec19c9cf3e6ef5007384112161e8790b))
+* address PR feedback ([f291641](https://github.com/aws-amplify/amplify-cli/commit/f291641eb8e3666981fd4d9a12d4c00f6bb34a20))
+* in app messaging initial commit ([b09ce19](https://github.com/aws-amplify/amplify-cli/commit/b09ce191576b5bc2cd75a941966f81262a8923bf))
+* narrowing down the scope for lambda execution role policy ([6219ab9](https://github.com/aws-amplify/amplify-cli/commit/6219ab9b1624e17aa8ab13ea5686ecb24e4f4c0d))
+
+
+
+
+
 ## [4.1.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@4.1.1...amplify-category-analytics@4.1.2) (2022-10-03)
 
 **Note:** Version bump only for package amplify-category-analytics

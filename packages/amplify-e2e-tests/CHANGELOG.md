@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.14.0-in-app-messaging.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.13.1...amplify-e2e-tests@3.14.0-in-app-messaging.0) (2022-10-08)
+
+
+### Bug Fixes
+
+* headless pull with Oauth social providers ([#11011](https://github.com/aws-amplify/amplify-cli/issues/11011)) ([afbdd20](https://github.com/aws-amplify/amplify-cli/commit/afbdd206b5a19666027cc10d9f6f28e9683f84d4))
+* test that pulled project has correct aws-exports content ([95c47e3](https://github.com/aws-amplify/amplify-cli/commit/95c47e3391a151bea59aedce2ce4761ffdb6ee15))
+* update error handling for notification channels commands ([6cf7029](https://github.com/aws-amplify/amplify-cli/commit/6cf7029c912343794fac03cf037e12a62c78027f))
+* update of user pool groups in amplify metadata file. ([#11090](https://github.com/aws-amplify/amplify-cli/issues/11090)) ([24dd409](https://github.com/aws-amplify/amplify-cli/commit/24dd4093a9c88616c4d390e860b2462a82ae3548))
+* updateUserAttributeSetting during add/update/push flows ([#10773](https://github.com/aws-amplify/amplify-cli/issues/10773)) ([52c1e49](https://github.com/aws-amplify/amplify-cli/commit/52c1e49caa5098c37c32c9f2b6f095cfd60454b1))
+
+
+### Features
+
+* add in app messaging e2e test ([4142ebf](https://github.com/aws-amplify/amplify-cli/commit/4142ebf10d0efcb0e6fd2b9839e6ad0fc4883799))
+* in app messaging initial commit ([b09ce19](https://github.com/aws-amplify/amplify-cli/commit/b09ce191576b5bc2cd75a941966f81262a8923bf))
+
+
+
+
+
 ## [3.13.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.13.0...amplify-e2e-tests@3.13.1) (2022-10-03)
 
 

@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.8.0-in-app-messaging.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.7.2...amplify-provider-awscloudformation@6.8.0-in-app-messaging.0) (2022-10-08)
+
+
+### Bug Fixes
+
+* Await Metadata file updates to avoid race conditions ([#11074](https://github.com/aws-amplify/amplify-cli/issues/11074)) ([0c745c4](https://github.com/aws-amplify/amplify-cli/commit/0c745c44773db3dfd09e75eaeb60ab2be97b91b7))
+* detect added sort key ([#11013](https://github.com/aws-amplify/amplify-cli/issues/11013)) ([bd175f6](https://github.com/aws-amplify/amplify-cli/commit/bd175f6d687d75191ec51f21aabf23a2ffe4476d))
+* refactor push flow to use amplify error handling framework ([#10951](https://github.com/aws-amplify/amplify-cli/issues/10951)) ([38a8603](https://github.com/aws-amplify/amplify-cli/commit/38a8603db4965ec05beb2ddd1daaa3913096c9c6))
+* updateUserAttributeSetting during add/update/push flows ([#10773](https://github.com/aws-amplify/amplify-cli/issues/10773)) ([52c1e49](https://github.com/aws-amplify/amplify-cli/commit/52c1e49caa5098c37c32c9f2b6f095cfd60454b1))
+
+
+### Features
+
+* in app messaging initial commit ([b09ce19](https://github.com/aws-amplify/amplify-cli/commit/b09ce191576b5bc2cd75a941966f81262a8923bf))
+* show warning when the cloud backend build dir does not match local backend build dir ([#10960](https://github.com/aws-amplify/amplify-cli/issues/10960)) ([bec3b22](https://github.com/aws-amplify/amplify-cli/commit/bec3b222fa96c82460da859a3133ed3e1c5177d9))
+
+
+
+
+
 ## [6.7.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.7.1...amplify-provider-awscloudformation@6.7.2) (2022-10-03)
 
 **Note:** Version bump only for package amplify-provider-awscloudformation

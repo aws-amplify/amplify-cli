@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.21.0-in-app-messaging.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.20.2...amplify-category-notifications@2.21.0-in-app-messaging.0) (2022-10-08)
+
+
+### Bug Fixes
+
+* fixed notifications unit test ([a22d9ed](https://github.com/aws-amplify/amplify-cli/commit/a22d9edc701c96965aca1fa8d1cc619af36489e3))
+* incorrect status for notifications after pull ([a6b7800](https://github.com/aws-amplify/amplify-cli/commit/a6b7800236c372f6fe4e0cf3b7f60e3bd4a6ac50))
+* prevent adding in app messaging to projects with legacy analytics ([f07e5e1](https://github.com/aws-amplify/amplify-cli/commit/f07e5e1b38b9c6e2faecd97122aea597e918fdf5))
+* update error handling for notification channels commands ([6cf7029](https://github.com/aws-amplify/amplify-cli/commit/6cf7029c912343794fac03cf037e12a62c78027f))
+
+
+### Features
+
+* add in app messaging e2e test ([4142ebf](https://github.com/aws-amplify/amplify-cli/commit/4142ebf10d0efcb0e6fd2b9839e6ad0fc4883799))
+* address PR feedback ([44d6cd1](https://github.com/aws-amplify/amplify-cli/commit/44d6cd1bec19c9cf3e6ef5007384112161e8790b))
+* address PR feedback ([f291641](https://github.com/aws-amplify/amplify-cli/commit/f291641eb8e3666981fd4d9a12d4c00f6bb34a20))
+* convert errors to amplify errors ([acb9876](https://github.com/aws-amplify/amplify-cli/commit/acb987681cc44d7df34fcbaa0677112846e30630))
+* in app messaging initial commit ([b09ce19](https://github.com/aws-amplify/amplify-cli/commit/b09ce191576b5bc2cd75a941966f81262a8923bf))
+* narrowing down the scope for lambda execution role policy ([6219ab9](https://github.com/aws-amplify/amplify-cli/commit/6219ab9b1624e17aa8ab13ea5686ecb24e4f4c0d))
+* removing unused code ([8d59f51](https://github.com/aws-amplify/amplify-cli/commit/8d59f51c87b5b645ae4e7ac50ca51af2ecfd5735))
+
+
+
+
+
 ## [2.20.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.20.1...amplify-category-notifications@2.20.2) (2022-10-03)
 
 **Note:** Version bump only for package amplify-category-notifications
