@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli-extensibility-helper",
-  "version": "2.4.2",
+  "version": "2.4.3-remove-arm-64-tagged-release.0",
   "description": "Amplify CLI Extensibility Helper utility package",
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-custom": "2.5.2",
+    "@aws-amplify/amplify-category-custom": "2.5.3-remove-arm-64-tagged-release.0",
     "@aws-cdk/aws-apigateway": "^1.159.0",
     "@aws-cdk/aws-appsync": "^1.159.0",
     "@aws-cdk/aws-cognito": "^1.159.0",
@@ -37,7 +37,7 @@
     "@aws-cdk/aws-lambda": "^1.159.0",
     "@aws-cdk/aws-s3": "^1.159.0",
     "@aws-cdk/core": "^1.159.0",
-    "amplify-cli-core": "3.2.1"
+    "amplify-cli-core": "3.2.2-remove-arm-64-tagged-release.0"
   },
   "jest": {
     "transform": {
