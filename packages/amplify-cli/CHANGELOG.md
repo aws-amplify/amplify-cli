@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.2.3-rc.ed2ca3ebf.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.2.2...@aws-amplify/cli-internal@10.2.3-rc.ed2ca3ebf.0) (2022-10-08)
+
+
+### Bug Fixes
+
+* fallback to tpi when looking for existing envs on init ([#11137](https://github.com/aws-amplify/amplify-cli/issues/11137)) ([ed2ca3e](https://github.com/aws-amplify/amplify-cli/commit/ed2ca3ebfed71cbd7124ab172fa72272f86a51ea))
+
+
+
+
+
 ## [10.2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.2.1...@aws-amplify/cli-internal@10.2.2) (2022-10-05)
 
 
