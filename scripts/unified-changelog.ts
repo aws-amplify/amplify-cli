@@ -17,10 +17,10 @@ const getChangelogPaths = async (): Promise<string[]> => {
   }
   const changelogPaths = statusResult
     .split('\n')
-    .filter(item => item.startsWith(' M '))
-    .map(item => item.slice(3)) // get rid of ' M ' prefix
-    .filter(item => item.endsWith('CHANGELOG.md'))
-    .map(item => join(packageRoot, item));
+    // match lines of the form ` M package/name/whatever`
+    .map(item => item.match(/^\s*M\s*(.*)/)?.[1])
+    .filter(item => item && item.endsWith('CHANGELOG.md'))
+    .map(item => join(packageRoot, item!));
   return changelogPaths;
 };
 
@@ -31,7 +31,7 @@ interface ChangelogInfo {
 const extractChangelogInfo = async (changelogPath: string): Promise<ChangelogInfo> => {
   console.log(`Extracting latest changes from [${changelogPath}]`);
   const changelog = await fs.readFile(changelogPath, 'utf8');
-  const versionSplitRegex = /#+ \[?\d+\.\d+\.\d+\]?/;
+  const versionSplitRegex = /#+ \[?\d+\.\d+\.\d+[^\]]*\]?/;
   const startMatch = changelog.match(versionSplitRegex);
   if (!startMatch?.index) {
     throw new Error(`No version information found in [${changelogPath}]`);
@@ -59,6 +59,7 @@ const formatUnifiedChangelog = (infos: ChangelogInfo[]): string => {
   const formattedChangelog = infos
     .filter(info => info.latestChanges)
     .filter(info => !info.latestChanges.includes('Version bump only for package'))
+    .filter(info => info.latestChanges.includes('\n')) // if the latestChanges string doesn't contain a newline it's only a version bump
     .sort((a, b) => a.packageName.localeCompare(b.packageName))
     .map(info => {
       const latestChanges = info.latestChanges.replace(/^#+\s+/, ''); // strip off any leading markdown headers

@@ -27,6 +27,16 @@ executors:
       AMPLIFY_DIR: C:/home/circleci/repo/out
       AMPLIFY_PATH: C:/home/circleci/repo/out/amplify.exe
 
+  winsetup: &windows-setup-executor
+    machine:
+      image: 'windows-server-2019-vs2019:stable'
+      resource_class: 'windows.xlarge'
+      shell: bash.exe
+    working_directory: ~/repo
+    environment:
+      AMPLIFY_DIR: C:/home/circleci/repo/out
+      AMPLIFY_PATH: C:/home/circleci/repo/out/amplify.exe
+
   l: &linux-e2e-executor
     docker:
       - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
@@ -80,7 +90,7 @@ jobs:
       os:
         type: executor
         default: l
-    executor: << parameters.os >>
+    executor: l
     steps:
       - checkout
       - run: yarn run production-build
@@ -88,27 +98,46 @@ jobs:
           name: Build tests
           command: yarn build-tests
       - save_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ~/repo
+      - save_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache
       - save_cache:
           key: amplify-cli-ssh-deps-{{ .Branch }}
           paths:
             - ~/.ssh
+  build_windows_workspace_for_e2e:
+    parameters:
+      os:
+        type: executor
+        default: winsetup
+    executor: winsetup
+    steps:
       - when:
           condition:
-            equal: [*linux-e2e-executor, << parameters.os >>]
+            equal: [*windows-setup-executor, << parameters.os >>]
           steps:
+            - checkout
+            - run: yarn run production-build
+            - run:
+                name: Build tests
+                command: yarn build-tests
             - persist_to_workspace:
-                root: .
-                paths: .
+                root: ~/.
+                paths:
+                  - repo
+                  - .cache
+                  - .ssh
   test:
     <<: *linux-e2e-executor
     steps:
-      - attach_workspace:
-          at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Run tests
           command: yarn test-ci
@@ -121,19 +150,19 @@ jobs:
   lint:
     <<: *linux-e2e-executor
     steps:
-      - attach_workspace:
-          at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run: chmod +x .circleci/lint_pr.sh && ./.circleci/lint_pr.sh
 
   mock_e2e_tests:
     <<: *linux-e2e-executor
     steps:
-      - attach_workspace:
-          at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Run Transformer end-to-end tests with mock server
           command: |
@@ -149,10 +178,10 @@ jobs:
   publish_to_local_registry:
     <<: *linux-e2e-executor
     steps:
-      - attach_workspace:
-          at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Publish to verdaccio
           command: |
@@ -165,9 +194,9 @@ jobs:
       - run:
           name: Generate unified changelog
           command: |
-            git reset --hard HEAD
-            yarn update-versions
+            git reset --soft HEAD~1
             yarn ts-node scripts/unified-changelog.ts
+            cat UNIFIED_CHANGELOG.md
       - run:
           name: Save new amplify GitHub tag
           command: node scripts/echo-current-cli-version.js > .amplify-pkg-version
@@ -187,10 +216,10 @@ jobs:
   build_pkg_binaries:
     <<: *linux-e2e-executor
     steps:
-      - attach_workspace:
-          at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - run:
@@ -211,10 +240,10 @@ jobs:
   graphql_e2e_tests:
     <<: *defaults
     steps:
-      - attach_workspace:
-          at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Run GraphQL end-to-end tests
           command: |
@@ -229,8 +258,8 @@ jobs:
   amplify_sudo_install_test:
     <<: *defaults
     steps:
-      - attach_workspace:
-          at: ./
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
@@ -257,17 +286,27 @@ jobs:
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
-      - attach_workspace:
-          at: ./
-      - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+      - when:
+          condition:
+            equal: [*windows-e2e-executor, << parameters.os >>]
+          steps:
+            - attach_workspace:
+                at: ~/.
+      - when:
+          condition:
+            equal: [*linux-e2e-executor, << parameters.os >>]
+          steps:
+            - restore_cache:
+                key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+            - restore_cache:
+                key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
+          key: amplify-build-artifact-{{ .Revision }}
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
-      - install_yarn:
+      - rename_binary_for_windows:
           os: << parameters.os >>
       - install_packaged_cli:
           os: << parameters.os >>
@@ -285,10 +324,10 @@ jobs:
   amplify_migration_tests_v5:
     <<: *defaults
     steps:
-      - attach_workspace:
-          at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
@@ -311,10 +350,10 @@ jobs:
       AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
     <<: *defaults
     steps:
-      - attach_workspace:
-          at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
@@ -337,12 +376,12 @@ jobs:
     environment:
       AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
     steps:
-      - attach_workspace:
-          at: ./
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Run tests migrating from CLI v4.28.2
           command: |
@@ -363,10 +402,10 @@ jobs:
     environment:
       AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
     steps:
-      - attach_workspace:
-          at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
@@ -387,8 +426,8 @@ jobs:
   amplify_console_integration_tests:
     <<: *defaults
     steps:
-      - attach_workspace:
-          at: ./
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - run: *install_cli_from_local_registry
@@ -410,15 +449,15 @@ jobs:
     working_directory: ~/repo
 
   integration_test:
-    working_directory: ~/repo
+    working_directory: /home/circleci/repo
     resource_class: large
     docker:
       - image: cypress/base:14.17.0
         environment:
           TERM: dumb
     steps:
-      - attach_workspace:
-          at: ./
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - run: cd .circleci/ && chmod +x aws.sh
@@ -518,8 +557,8 @@ jobs:
   deploy:
     <<: *linux-e2e-executor
     steps:
-      - attach_workspace:
-          at: ./
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
           keys:
             - amplify-cli-ssh-deps-{{ .Branch }}
@@ -542,8 +581,8 @@ jobs:
   github_prerelease:
     <<: *linux-e2e-executor
     steps:
-      - attach_workspace:
-          at: ./
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
           key: amplify-unified-changelog-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
@@ -571,6 +610,8 @@ jobs:
     <<: *linux-e2e-executor
     steps:
       - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
           key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Install packaged Amplify CLI
@@ -585,8 +626,8 @@ jobs:
   github_release:
     <<: *linux-e2e-executor
     steps:
-      - attach_workspace:
-          at: ./
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
@@ -598,10 +639,10 @@ jobs:
   cleanup_resources:
     <<: *linux-e2e-executor
     steps:
-      - attach_workspace:
-          at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: 'Run cleanup script'
           command: |
@@ -616,10 +657,10 @@ jobs:
   cleanup_resources_after_e2e_runs:
     <<: *linux-e2e-executor
     steps:
-      - attach_workspace:
-          at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: 'Run cleanup script'
           command: |
@@ -634,10 +675,10 @@ jobs:
   wait_for_all:
     <<: *linux-e2e-executor
     steps:
-      - attach_workspace:
-          at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: 'Wait for all required jobs to finish'
           command: |
@@ -653,15 +694,18 @@ workflows:
   build_test_deploy:
     jobs:
       - build:
-          matrix:
-            parameters:
-              os:
-                - l
-                - w
           filters:
             branches:
               ignore:
                 - beta
+      - build_windows_workspace_for_e2e:
+          filters:
+            branches:
+              only:
+                - dev
+                - /run-e2e-with-rc\/.*/
+                - /tagged-release\/.*/
+                - /run-e2e\/.*/
       - lint:
           requires:
             - build
@@ -772,6 +816,7 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build_pkg_binaries
+            - build_windows_workspace_for_e2e
       - amplify_migration_tests_v6:
           context:
             - e2e-auth-credentials
@@ -964,18 +1009,17 @@ commands:
                 name: Confirm Amplify CLI is installed and available in PATH
                 command: amplify version
 
-  install_yarn:
-    description: 'Install Amplify Packaged CLI to PATH'
+  rename_binary_for_windows:
+    description: 'Rename binary for windows'
     parameters:
       os:
         type: executor
-        default: l
+        default: w
     steps:
       - when:
           condition:
             equal: [*windows-e2e-executor, << parameters.os >>]
           steps:
-            - run: yarn --cache-folder ~/.cache/yarn
             - run:
                 shell: powershell.exe
                 command: cp /home/circleci/repo/out/amplify-pkg-win-x64.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps\amplify.exe
@@ -997,7 +1041,7 @@ commands:
                   source .circleci/local_publish_helpers.sh
                   cd packages/amplify-e2e-tests
                   retry yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
-                no_output_timeout: 90m
+                no_output_timeout: 60m
       - when:
           condition:
             equal: [*linux-e2e-executor, << parameters.os >>]
@@ -1009,7 +1053,7 @@ commands:
                   source $BASH_ENV
                   amplify version
                   retry runE2eTest
-                no_output_timeout: 90m
+                no_output_timeout: 60m
   scan_e2e_test_artifacts:
     description: 'Scan And Cleanup E2E Test Artifacts'
     parameters:

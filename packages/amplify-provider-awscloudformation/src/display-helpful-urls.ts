@@ -262,7 +262,7 @@ export const showSMSSandboxWarning = async (context) : Promise<void> => {
       throw amplifyFaultWithTroubleshootingLink('DeploymentFault', {
         stack: e.stack,
         message: e.message,
-      });
+      }, e);
     }
   }
 };

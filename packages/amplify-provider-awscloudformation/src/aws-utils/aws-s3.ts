@@ -349,13 +349,13 @@ export class S3 {
           message: e.message,
           stack: e.stack,
           resolution: `Check that bucket name is correct: ${bucketName}`,
-        });
+        }, e);
       }
 
       throw amplifyFaultWithTroubleshootingLink('UnknownFault', {
         message: e.message,
         stack: e.stack,
-      });
+      }, e);
     }
   }
 
@@ -383,7 +383,7 @@ export class S3 {
       throw amplifyFaultWithTroubleshootingLink('UnexpectedS3Fault', {
         message: e.message,
         stack: e.stack,
-      });
+      }, e);
     }
   };
 }

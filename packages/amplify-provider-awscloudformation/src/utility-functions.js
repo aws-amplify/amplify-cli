@@ -138,7 +138,7 @@ module.exports = {
         throw amplifyFaultWithTroubleshootingLink('ResourceNotFoundFault', {
           message: error.message,
           stack: error.stack,
-        });
+        }, error);
       }
     }
 
