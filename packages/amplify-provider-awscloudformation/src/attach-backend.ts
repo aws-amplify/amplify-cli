@@ -19,8 +19,12 @@ import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { resolveAppId } from './utils/resolve-appId';
 import { adminLoginFlow } from './admin-login';
 import { fileLogger } from './utils/aws-logger';
+
 const logger = fileLogger('attach-backend');
 
+/**
+ * attach backend to project
+ */
 export const run = async (context): Promise<void> => {
   let appId;
   let awsConfigInfo;
@@ -48,7 +52,7 @@ export const run = async (context): Promise<void> => {
         throw amplifyErrorWithTroubleshootingLink('AmplifyStudioLoginError', {
           message: `Failed to authenticate: ${e.message || 'Unknown error occurred.'}`,
           stack: e.stack,
-        });
+        }, e);
       }
     }
   }
@@ -90,7 +94,7 @@ export const run = async (context): Promise<void> => {
   context.exeInfo.projectConfig.projectName = amplifyApp.name;
   context.exeInfo.localEnvInfo.envName = backendEnv.environmentName;
   _.set(context, ['exeInfo', 'teamProviderInfo', backendEnv.environmentName], currentAmplifyMeta.providers);
-}
+};
 
 async function ensureAmplifyMeta(context, amplifyApp, awsConfigInfo) {
   // check if appId is present in the provider section of the metadata
@@ -165,7 +169,7 @@ async function getAmplifyApp(context, amplifyClient) {
         resolution: e.name && e.name === 'NotFoundException'
           ? 'Check that the region of the Amplify App is matching the configured region.'
           : 'Ensure your local profile matches the AWS account or region in which the Amplify app exists.',
-      });
+      }, e);
     }
   }
 
@@ -242,7 +246,7 @@ async function getBackendEnv(context, amplifyClient, amplifyApp) {
         message: `Cannot find backend environment ${inputEnvName} in Amplify Console app: ${amplifyApp.name}`,
         stack: e.stack,
         details: e.message,
-      });
+      }, e);
     }
   }
 
@@ -285,7 +289,7 @@ async function getBackendEnv(context, amplifyClient, amplifyApp) {
     });
 
     return selection;
-  } else if (backendEnvs.length === 1) {
+  } if (backendEnvs.length === 1) {
     context.print.info(`Backend environment '${backendEnvs[0].environmentName}' found. Initializing...`);
     return backendEnvs[0];
   }
