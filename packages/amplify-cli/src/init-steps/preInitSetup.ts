@@ -40,7 +40,7 @@ const validateGithubRepo = async (repoUrl: string): Promise<void> => {
       details: e.message,
       link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
       stack: e.stack,
-    });
+    }, e);
   }
 };
 
@@ -65,7 +65,7 @@ const cloneRepo = async (repoUrl: string): Promise<void> => {
       details: e.message,
       link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
       stack: e.stack,
-    });
+    }, e);
   }
 };
 

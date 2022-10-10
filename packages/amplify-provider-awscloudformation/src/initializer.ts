@@ -324,7 +324,7 @@ const storeCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
       throw amplifyFaultWithTroubleshootingLink('DeploymentFault', {
         message: ex.message,
         stack: ex.stack,
-      });
+      }, ex);
     })
     .then(() => {
       fs.removeSync(tempDir);

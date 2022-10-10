@@ -32,7 +32,7 @@ export const postInitSetup = async (context: $TSContext): Promise<void> => {
         details: e.message,
         link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
         stack: e.stack,
-      });
+      }, e);
     }
   }
 };
