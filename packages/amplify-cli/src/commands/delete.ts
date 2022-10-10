@@ -8,7 +8,7 @@ export const run = async (context: $TSContext) : Promise<void> => {
     throw new AmplifyError('CommandNotSupportedError', {
       message: 'The "delete" command does not expect additional arguments.',
       details: 'Perhaps you meant to use the "remove" command instead of "delete"?',
-      resolution: 'Try the "delete" command again without any additional arguments.',
+      resolution: 'If you intend to delete this project and all backend resources, try the "delete" command again without any additional arguments.',
     });
   }
 
