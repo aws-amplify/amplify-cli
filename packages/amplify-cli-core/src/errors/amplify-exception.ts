@@ -149,6 +149,7 @@ export type AmplifyFaultType =
   | 'AmplifyBackupFault'
   | 'BackendPullFault'
   | 'BackendDeleteFault'
+  | 'ConfigurationFault'
   | 'DeploymentFault'
   | 'NotImplementedFault'
   | 'ProjectDeleteFault'
