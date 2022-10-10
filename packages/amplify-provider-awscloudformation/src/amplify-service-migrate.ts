@@ -77,7 +77,7 @@ export const run = async (context): Promise<void> => {
       throw amplifyErrorWithTroubleshootingLink('ProjectNotFoundError', {
         message: `Amplify AppID: ${amplifyAppId} not found.`,
         resolution: `Please ensure your local profile matches the AWS account or region in which the Amplify app exists.`,
-      });
+      }, e);
     }
 
     let backendEnvs = [];

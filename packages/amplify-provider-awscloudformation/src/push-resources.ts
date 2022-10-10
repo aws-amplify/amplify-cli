@@ -336,7 +336,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
           throw amplifyFaultWithTroubleshootingLink('DeploymentFault', {
             stack: err.stack,
             message: err.message,
-          });
+          }, err);
         }
       }
       context.usageData.stopCodePathTimer('pushDeployment');
@@ -463,7 +463,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     throw amplifyFaultWithTroubleshootingLink('DeploymentFault', {
       stack: error.stack,
       message: error.message,
-    });
+    }, error);
   }
 };
 

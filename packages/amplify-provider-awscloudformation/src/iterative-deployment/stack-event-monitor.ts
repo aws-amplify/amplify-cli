@@ -150,7 +150,7 @@ export class StackEventMonitor {
         throw amplifyFaultWithTroubleshootingLink('NotImplementedFault', {
           message: e.message,
           stack: e.stack,
-        });
+        }, e);
       }
     }
 

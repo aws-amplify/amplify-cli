@@ -97,7 +97,7 @@ export class DeploymentManager {
         message: 'Could not load configuration',
         stack: e.stack,
         details: e.message,
-      });
+      }, e);
     }
   };
 
@@ -372,7 +372,7 @@ export class DeploymentManager {
           : e.message,
         details: e.message,
         stack: e.stack,
-      });
+      }, e);
     }
   };
 
@@ -393,7 +393,7 @@ export class DeploymentManager {
       throw amplifyFaultWithTroubleshootingLink('ServiceCallFault', {
         message: err.message,
         stack: err.stack,
-      });
+      }, err);
     }
   };
 

@@ -22,7 +22,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
-    "test": "jest"
+    "test": "jest --logHeapUsage"
   },
   "dependencies": {
     "amplify-cli-core": "3.2.1",

@@ -126,7 +126,7 @@ const genericErrorToAmplifyException = (err: Error): AmplifyException => amplify
     message: err.message,
     resolution: mapGenericErrorToResolution(err),
     stack: err.stack,
-  },
+  }, err,
 );
 
 const nodeErrorToAmplifyException = (err: NodeJS.ErrnoException): AmplifyException => amplifyFaultWithTroubleshootingLink(
@@ -134,7 +134,7 @@ const nodeErrorToAmplifyException = (err: NodeJS.ErrnoException): AmplifyExcepti
     message: err.message,
     resolution: mapNodeErrorToResolution(err),
     stack: err.stack,
-  },
+  }, err,
 );
 
 const nodeErrorTypeToAmplifyExceptionType = (__err: NodeJS.ErrnoException): AmplifyFaultType => 'UnknownNodeJSFault';

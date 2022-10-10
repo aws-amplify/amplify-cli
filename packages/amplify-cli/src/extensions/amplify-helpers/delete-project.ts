@@ -1,9 +1,11 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
+/* eslint-disable global-require */
+/* eslint-disable @typescript-eslint/no-var-requires */
 import ora from 'ora';
 import chalk from 'chalk';
-import { FeatureFlags, $TSContext } from 'amplify-cli-core';
+import {
+  FeatureFlags, $TSContext, amplifyFaultWithTroubleshootingLink,
+} from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { removeEnvFromCloud } from './remove-env-from-cloud';
 import { getFrontendPlugins } from './get-frontend-plugins';
@@ -14,7 +16,7 @@ import { getAmplifyDirPath } from './path-manager';
 /**
  * Deletes the amplify project from the cloud and local machine
  */
-export const deleteProject = async (context): Promise<void> => {
+export const deleteProject = async (context: $TSContext): Promise<void> => {
   const confirmation = await getConfirmation(context);
 
   if (confirmation.proceed) {
@@ -38,7 +40,7 @@ export const deleteProject = async (context): Promise<void> => {
         if (environments.length === 0) {
           await amplifyClient.deleteApp({ appId }).promise();
         } else {
-          context.print.warning('Amplify App cannot be deleted, other environments still linked to Application');
+          printer.warn('Amplify App cannot be deleted, other environments still linked to Application');
         }
       }
       spinner.succeed('Project deleted in the cloud.');
@@ -47,7 +49,11 @@ export const deleteProject = async (context): Promise<void> => {
         spinner.succeed('Project already deleted in the cloud.');
       } else {
         spinner.fail('Project delete failed.');
-        throw ex;
+        throw amplifyFaultWithTroubleshootingLink('BackendDeleteFault', {
+          message: 'Project delete failed.',
+          stack: ex.stack,
+          details: ex.message,
+        });
       }
     }
     removeLocalAmplifyDir(context);
@@ -76,7 +82,8 @@ const amplifyBackendEnvironments = async (client, appId): Promise<string[]> => {
 /**
  * Get confirmation from the user to delete the project
  */
-export const getConfirmation = async (context, env?) => {
+export const getConfirmation = async (context: $TSContext, env?: string)
+  : Promise<{ proceed: boolean; deleteS3: boolean; deleteAmplifyApp: boolean; }> => {
   if (context.input.options && context.input.options.force) {
     return {
       proceed: true,

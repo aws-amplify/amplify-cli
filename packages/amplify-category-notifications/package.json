@@ -18,7 +18,7 @@
   "scripts": {
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
-    "test": "jest",
+    "test": "jest --logHeapUsage",
     "watch": "tsc --watch"
   },
   "dependencies": {
