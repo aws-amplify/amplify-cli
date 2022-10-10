@@ -1,4 +1,6 @@
-import { $TSContext, AmplifyCategories, stateManager } from 'amplify-cli-core';
+import {
+  $TSContext, AmplifyCategories, amplifyErrorWithTroubleshootingLink, stateManager,
+} from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
 import chalk from 'chalk';
 import { IChannelAPIResponse } from '../../channel-types';
@@ -30,13 +32,15 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
   const notificationsMeta = context.exeInfo.amplifyMeta[AmplifyCategories.NOTIFICATIONS];
   const notificationConfig = await getNotificationsAppConfig(context.exeInfo.backendConfig);
   if (!notificationConfig) {
-    printer.error('Notifications have not been added to your project.');
-    return context;
+    throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
+      message: 'Notifications have not been added to your project.',
+    });
   }
 
   if (await checkMigratedFromMobileHub(context.exeInfo.amplifyMeta)) {
-    printer.error('Notifications is migrated from Mobile Hub and channels cannot be added with Amplify CLI.');
-    return context;
+    throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
+      message: 'Notifications has been migrated from Mobile Hub and channels cannot be added with Amplify CLI.',
+    });
   }
 
   const availableChannelViewNames = getAvailableChannelViewNames();

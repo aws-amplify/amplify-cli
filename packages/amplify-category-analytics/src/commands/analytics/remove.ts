@@ -1,5 +1,5 @@
 import {
-  $TSContext, AmplifyCategories,
+  $TSContext, AmplifyCategories, amplifyFaultWithTroubleshootingLink,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { checkResourceInUseByNotifications, invokeNotificationsAPIRecursiveRemoveApp } from '../../plugin-client-api-notifications';
@@ -19,9 +19,9 @@ const removeResourceDependencies = async (context:$TSContext, resourceName: stri
     printer.warn(`Disabling all notifications on ${resourceName}`);
     const result = await invokeNotificationsAPIRecursiveRemoveApp(context, resourceName);
     if (!result.status) {
-      const errPrompt = `Failed to remove ${resourceName} from ${AmplifyCategories.NOTIFICATIONS} category`;
-      const errMsg = (result.reasonMsg) || errPrompt;
-      throw new Error(errMsg);
+      throw amplifyFaultWithTroubleshootingLink('ResourceRemoveFault', {
+        message: result.reasonMsg || `Failed to remove ${resourceName} from ${AmplifyCategories.NOTIFICATIONS} category`,
+      });
     }
   }
 };

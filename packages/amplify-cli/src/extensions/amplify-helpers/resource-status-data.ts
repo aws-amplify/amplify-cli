@@ -43,7 +43,6 @@ export const getMultiCategoryStatus = async (inputs: ViewResourceTableParams | u
   const resourceStatusResults = await getResourceStatus();
   if (inputs?.categoryList?.length) {
     // diffs for only the required categories (amplify -v <category1>...<categoryN>)
-    // TBD: optimize search
     resourceStatusResults.resourcesToBeCreated = filterResourceCategory(resourceStatusResults.resourcesToBeCreated, inputs.categoryList);
     resourceStatusResults.resourcesToBeUpdated = filterResourceCategory(resourceStatusResults.resourcesToBeUpdated, inputs.categoryList);
     resourceStatusResults.resourcesToBeSynced = filterResourceCategory(resourceStatusResults.resourcesToBeSynced, inputs.categoryList);

@@ -2,7 +2,7 @@
 /* eslint-disable spellcheck/spell-checker */
 import {
   AmplifyCategories, AmplifySupportedService, stateManager, IAmplifyResource,
-  pathManager, $TSContext, IAnalyticsResource, PluginAPIError, NotificationChannels, IPluginCapabilityAPIResponse, $TSAny,
+  pathManager, $TSContext, IAnalyticsResource, PluginAPIError, NotificationChannels, IPluginCapabilityAPIResponse, $TSAny, AmplifyError,
 } from 'amplify-cli-core';
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { addResource } from './provider-utils/awscloudformation/index';
@@ -117,7 +117,6 @@ export const analyticsPluginAPIToggleNotificationChannel = async (
   } else {
     await pinpointAPIDisableNotificationChannel(pinpointResource, channel);
   }
-  // Update amplify-meta.json
 
   response.status = true;
   return response;
@@ -174,7 +173,7 @@ export const analyticsPluginAPIPostPush = async (context: $TSContext) : Promise<
     // Fetch Analytics data from persistent amplify-meta.json. This is expected to be updated by the push operation.
     const analyticsResourceList = analyticsPluginAPIGetResources(AmplifySupportedService.PINPOINT);
     const notificationsResourceName = Object.keys(amplifyMeta[AmplifyCategories.NOTIFICATIONS])[0];
-    // TBD: move to Notifications plugin
+
     // Populate the outputs for the notifications plugin.
     // Get analytics resource on which notifications are enabled
     const analyticsResource = analyticsResourceList.find(p => p.resourceName === notificationsResourceName);
@@ -295,7 +294,10 @@ const pinpointAPIDisableNotificationChannel = (
       break;
     }
     default: {
-      throw Error(`Channel ${notificationChannel} is not supported on Analytics resource`);
+      throw new AmplifyError('ConfigurationError', {
+        message: `Channel ${notificationChannel} is not supported on Analytics resource`,
+        resolution: 'Use one of the supported channels',
+      });
     }
   }
   return pinPointCFNInputParams;

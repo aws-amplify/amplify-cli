@@ -116,6 +116,7 @@ export type AmplifyErrorType =
   | 'RegionNotAvailableError'
   | 'RemoveNotificationAppError'
   | 'ResourceNotReadyError'
+  | 'ResourceAlreadyExistsError'
   | 'StackNotFoundError'
   | 'StackStateError'
   | 'UserInputError';
@@ -143,6 +144,7 @@ export type AmplifyFaultType =
   | 'ResourceExportFault'
   | 'ResourceNotFoundFault'
   | 'ResourceNotReadyFault'
+  | 'ResourceRemoveFault'
   | 'RootStackNotFoundFault'
   | 'ServiceCallFault'
   | 'TimeoutFault'

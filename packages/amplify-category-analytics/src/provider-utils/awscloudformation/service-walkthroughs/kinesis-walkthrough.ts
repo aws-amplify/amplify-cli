@@ -6,10 +6,10 @@ import {
   $TSAny,
   $TSContext,
   AmplifyCategories,
+  AmplifyError,
   AmplifySupportedService,
   exitOnNextTick,
   IAmplifyResource,
-  ResourceAlreadyExistsError,
   ResourceDoesNotExistError,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
@@ -31,10 +31,10 @@ export const addWalkthrough = async (context : $TSContext, defaultValuesFilename
   const resourceName = resourceAlreadyExists(context);
 
   if (resourceName) {
-    const errMessage = 'Kinesis resource have already been added to your project.';
-    printer.warn(errMessage);
-    await context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
-    exitOnNextTick(0);
+    throw new AmplifyError('ResourceAlreadyExistsError', {
+      message: 'Kinesis resource have already been added to your project.',
+      resolution: 'Please run amplify update analytics to make changes to the existing Kinesis resource.',
+    });
   }
   return configure(context, defaultValuesFilename, serviceMetadata);
 };
@@ -183,42 +183,24 @@ const configure = async (
     if (!checkResult.authEnabled || !checkResult.requirementsMet) {
       printer.warn('Adding analytics would add the Auth category to the project if not already added.');
       if (
-        await amplify.confirmPrompt(
+        !await amplify.confirmPrompt(
           'Apps need authorization to send analytics events. Do you want to allow guests and unauthenticated users to send analytics events? (we recommend you allow this when getting started)',
         )
       ) {
-        try {
-          await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
-            context,
-            'analytics',
-            targetResourceName,
-            analyticsRequirements,
-          ]);
-        } catch (error) {
-          printer.error(error);
-          throw error;
-        }
-      } else {
-        try {
-          printer.warn(
-            'Authorize only authenticated users to send analytics events. Use "amplify update auth" to modify this behavior.',
-          );
-          analyticsRequirements.allowUnauthenticatedIdentities = false;
-          await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
-            context,
-            'analytics',
-            targetResourceName,
-            analyticsRequirements,
-          ]);
-        } catch (error) {
-          printer.error(error);
-          throw error;
-        }
+        printer.warn(
+          'Authorize only authenticated users to send analytics events. Use "amplify update auth" to modify this behavior.',
+        );
+        analyticsRequirements.allowUnauthenticatedIdentities = false;
       }
+      await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
+        context,
+        'analytics',
+        targetResourceName,
+        analyticsRequirements,
+      ]);
     }
 
     // At this point we have a valid auth configuration either imported or added/updated.
-
     // allow overwrite in update case: resourceName specified
     await amplify.copyBatch(context, copyJobs, {}, !!resourceName, params);
     return targetResourceName;

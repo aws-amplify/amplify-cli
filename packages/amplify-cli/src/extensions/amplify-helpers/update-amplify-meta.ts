@@ -317,8 +317,11 @@ export const updateamplifyMetaAfterResourceDelete = (category: string, resourceN
   fs.removeSync(resourceDir);
 };
 
-const checkForCyclicDependencies = (category:$TSAny, resourceName: string,
-  dependsOn: [{ category:string; resourceName:string }]): void => {
+const checkForCyclicDependencies = (
+  category: $TSAny,
+  resourceName: string,
+  dependsOn: [{ category:string; resourceName:string }],
+): void => {
   const amplifyMeta = stateManager.getMeta();
   let cyclicDependency = false;
 

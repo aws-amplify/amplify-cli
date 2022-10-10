@@ -283,8 +283,8 @@ const getNotificationsAppListMeta = async (
           Name: notificationsResourceMeta.output.Name, // {ResourceName}-{env}
           service: (notificationsResourceMeta.service) || AmplifySupportedService.PINPOINT,
           Region: notificationsResourceMeta.output.Region, // Region in which Notifications resource is deployed.
-          output: notificationsResourceMeta.output, // TBD: validate output
-          ...notificationsResourceMeta, // TBD: remove if not needed
+          output: notificationsResourceMeta.output,
+          ...notificationsResourceMeta,
         } as INotificationsResourceMeta);
       }
     }
