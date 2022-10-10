@@ -1,5 +1,5 @@
-import { StackEventMonitor, IStackProgressPrinter } from '../../iterative-deployment/stack-event-monitor';
-import { CloudFormation } from 'aws-sdk';
+import type { CloudFormation } from 'aws-sdk';
+import { StackEventMonitor } from '../../iterative-deployment/stack-event-monitor';
 
 const stackProgressPrinterStub = {
   printerFn: jest.fn(),
@@ -26,11 +26,16 @@ describe('StackEventMonitor', () => {
     jest.runAllTimers();
     expect(setTimeout).toHaveBeenCalledTimes(1);
     expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 5000);
+    setImmediate(() => {
+      expect(stackProgressPrinterStub.printerFn).toBeCalled();
+      expect(stackProgressPrinterStub.addEventActivity).not.toBeCalled();
+    });
   });
 
   test('stop StackEventMonitor', () => {
     monitor.stop();
 
     expect(stackProgressPrinterStub.printerFn).toBeCalled();
+    expect(clearTimeout).toBeCalledTimes(1);
   });
 });
