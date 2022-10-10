@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "private": true,
   "scripts": {
-    "test": "jest"
+    "test": "jest --logHeapUsage"
   },
   "repository": {
     "type": "git",

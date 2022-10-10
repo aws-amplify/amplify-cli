@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
-    "test": "jest"
+    "test": "jest --logHeapUsage"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
