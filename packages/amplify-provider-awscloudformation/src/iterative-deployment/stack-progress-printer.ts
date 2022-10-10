@@ -59,16 +59,18 @@ export class StackProgressPrinter implements IStackProgressPrinter {
       const category = this.eventMap.eventToCategories.get(event.LogicalResourceId);
       if (category && !this.categoriesPrinted.includes(category)) {
         const categoryItem = this.eventMap.categories.find(it => it.name === category);
-        progressBarsConfigs.push({
-          name: categoryItem.name,
-          value: 0,
-          total: categoryItem.size,
-          payload: {
-            progressName: categoryItem.name,
-            envName: this.eventMap.envName,
-          },
-        });
-        this.categoriesPrinted.push(category);
+        if (categoryItem) {
+          progressBarsConfigs.push({
+            name: categoryItem.name,
+            value: 0,
+            total: categoryItem.size,
+            payload: {
+              progressName: categoryItem?.name,
+              envName: this.eventMap.envName,
+            },
+          });
+          this.categoriesPrinted.push(category);
+        }
       }
       this.progressBars.create(progressBarsConfigs);
     }

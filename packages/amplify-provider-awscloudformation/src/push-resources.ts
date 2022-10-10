@@ -122,7 +122,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     let resources = !!context?.exeInfo?.forcePush || rebuild ? allResources : resourcesToBeCreated.concat(resourcesToBeUpdated);
 
     layerResources = resources.filter((r: { service: string; }) => r.service === AmplifySupportedService.LAMBDA_LAYER);
-    const eventMap = createEventMap(context, resourcesToBeCreated, resourcesToBeUpdated);
+    const eventMap = createEventMap(context, resources);
 
     if (deploymentStateManager.isDeploymentInProgress() && !deploymentStateManager.isDeploymentFinished()) {
       if (context.exeInfo?.forcePush || context.exeInfo?.iterativeRollback) {
@@ -519,7 +519,7 @@ export const updateStackForAPIMigration = async (context: $TSContext, category: 
       nestedStack = await formNestedStack(context, projectDetails, category);
     }
 
-    const eventMap = createEventMap(context, resourcesToBeCreated, resourcesToBeUpdated);
+    const eventMap = createEventMap(context, [...resourcesToBeCreated, ...resourcesToBeUpdated]);
     await updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated, resourcesToBeUpdated, eventMap);
   }
 
@@ -874,8 +874,7 @@ type EventMap = {
  */
 const createEventMap = (
   context: $TSContext,
-  resourcesToBeCreated: $TSAny,
-  resourcesToBeUpdated: $TSAny,
+  resourcesToBeCreatedOrUpdated: $TSAny,
 ): EventMap => {
   let eventMap = {} as EventMap;
 
@@ -892,16 +891,13 @@ const createEventMap = (
   eventMap.categories = [];
 
   // Type script throws an error unless I explicitly convert to string
-  const resourcesUpdated = getAllUniqueCategories(resourcesToBeUpdated).map(item => `${item}`);
-  const resourcesCreated = getAllUniqueCategories(resourcesToBeCreated).map(item => `${item}`);
+  const resources = getAllUniqueCategories(resourcesToBeCreatedOrUpdated).map(item => `${item}`);
 
   Object.keys(meta).forEach(category => {
     if (category !== 'providers') {
       Object.keys(meta[category]).forEach(resource => {
         eventMap.rootResources.push(createResourceObject(resource, category));
-        handleCfnFiles(eventMap,
-          category, resource,
-          _.union(resourcesUpdated, resourcesCreated));
+        handleCfnFiles(eventMap, category, resource, resources);
       });
     }
   });
