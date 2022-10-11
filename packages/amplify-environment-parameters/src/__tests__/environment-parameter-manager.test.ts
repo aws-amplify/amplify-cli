@@ -34,8 +34,20 @@ beforeEach(() => {
 
 describe('init', () => {
   it('loads params and registers save on exit listener', async () => {
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    const processEventListeners: Record<string | symbol, Function[]> = {};
+    jest.spyOn(process, 'on').mockImplementation((event, func) => {
+      if (Array.isArray(processEventListeners[event])) {
+        processEventListeners[event].push(func);
+      } else {
+        processEventListeners[event] = [func];
+      }
+      return process;
+    });
     await ensureEnvParamManager();
-    process.listeners('beforeExit').forEach(fn => fn(0));
+    // it's important that the save callback is registered on exit instead of beforeExit
+    // because if save fails, beforeExit will be called again
+    processEventListeners.exit.forEach(fn => fn(0));
     expect(stateManagerMock.setTeamProviderInfo).toHaveBeenCalledWith(undefined, stubTPI);
   });
 });
