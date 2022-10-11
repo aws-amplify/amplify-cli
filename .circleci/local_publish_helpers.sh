@@ -13,9 +13,6 @@ function startLocalRegistry {
 }
 
 function uploadPkgCli {
-    aws configure --profile=s3-uploader set aws_access_key_id $S3_ACCESS_KEY
-    aws configure --profile=s3-uploader set aws_secret_access_key $S3_SECRET_ACCESS_KEY
-    aws configure --profile=s3-uploader set aws_session_token $S3_AWS_SESSION_TOKEN
     cd out/
     export hash=$(git rev-parse HEAD | cut -c 1-12)
     export version=$(./amplify-pkg-linux-x64 --version)
@@ -25,6 +22,11 @@ function uploadPkgCli {
         tar -czvf amplify-pkg-linux-x64.tgz amplify-pkg-linux-x64
         tar -czvf amplify-pkg-macos-x64.tgz amplify-pkg-macos-x64
         tar -czvf amplify-pkg-win-x64.tgz amplify-pkg-win-x64.exe
+
+        # Move AWS configure here, because tar/zip may take long, & default AWS session is 1 hour
+        aws configure --profile=s3-uploader set aws_access_key_id $S3_ACCESS_KEY
+        aws configure --profile=s3-uploader set aws_secret_access_key $S3_SECRET_ACCESS_KEY
+        aws configure --profile=s3-uploader set aws_session_token $S3_AWS_SESSION_TOKEN
 
         aws --profile=s3-uploader s3 cp amplify-pkg-win-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win-x64-$(echo $hash).tgz
         aws --profile=s3-uploader s3 cp amplify-pkg-macos-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos-x64-$(echo $hash).tgz
@@ -43,6 +45,12 @@ function uploadPkgCli {
 
     else
         tar -czvf amplify-pkg-linux-x64.tgz amplify-pkg-linux-x64
+        
+        # Move AWS configure here, because tar/zip may take long, & default AWS session is 1 hour
+        aws configure --profile=s3-uploader set aws_access_key_id $S3_ACCESS_KEY
+        aws configure --profile=s3-uploader set aws_secret_access_key $S3_SECRET_ACCESS_KEY
+        aws configure --profile=s3-uploader set aws_session_token $S3_AWS_SESSION_TOKEN
+
         aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64-$(echo $hash).tgz
     fi
 
