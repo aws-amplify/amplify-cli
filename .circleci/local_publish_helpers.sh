@@ -71,7 +71,22 @@ function generatePkgCli {
   # Build pkg cli
   cp package.json ../build/node_modules/package.json
   if [[ "$CIRCLE_BRANCH" == "release" ]] || [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
-    npx pkg -t node14-macos-x64,node14-linux-x64,node14-linux-arm64,node14-win-x64 ../build/node_modules --out-path ../out
+    # This will generate a file 'amplify-pkg' in the '../tmp-out' directory for our arm64 binary.
+    # The file name does not include the generated <platform>-<arch> suffixes because there is a single target.
+    npx pkg --no-bytecode -t node14-linux-arm64 ../build/node_modules --out-path ../tmp-out
+
+    # This will generate files 'amplify-pkg-<platform>' in the '../out' directory for our x64 binaries.
+    # The <platform> tag is included in the output file names because there are different
+    # platforms (macos/linux/win) being built in the same pkg call.
+    npx pkg -t node14-macos-x64,node14-linux-x64,node14-win-x64 ../build/node_modules --out-path ../out
+
+    # this renames the x64 files so that they have the appropriate suffix 'x64'
+    mv ../out/amplify-pkg-macos ../out/amplify-pkg-macos-x64
+    mv ../out/amplify-pkg-linux ../out/amplify-pkg-linux-x64
+    mv ../out/amplify-pkg-win.exe ../out/amplify-pkg-win-x64.exe
+
+    # this renames the arm64 file so that it has the appropriate suffix 'linux-arm64'
+    mv ../tmp-out/amplify-pkg ../out/amplify-pkg-linux-arm64
   else
     npx pkg -t node14-macos-x64,node14-linux-x64,node14-win-x64 ../build/node_modules --out-path ../out
     mv ../out/amplify-pkg-macos ../out/amplify-pkg-macos-x64
