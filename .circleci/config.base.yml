@@ -46,6 +46,15 @@ executors:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
 
+  xl: &linux-xlarge-executor
+    docker:
+      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
+    resource_class: xlarge
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
+
 defaults: &defaults
   working_directory: ~/repo
   parameters:
@@ -214,7 +223,7 @@ jobs:
             - ~/repo/.amplify-pkg-version
 
   build_pkg_binaries:
-    <<: *linux-e2e-executor
+    <<: *linux-xlarge-executor
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -555,7 +564,7 @@ jobs:
           path: /root/aws-amplify-cypress-api/cypress/screenshots
 
   deploy:
-    <<: *linux-e2e-executor
+    <<: *linux-xlarge-executor
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
