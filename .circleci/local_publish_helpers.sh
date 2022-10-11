@@ -71,8 +71,9 @@ function generatePkgCli {
   # Build pkg cli
   cp package.json ../build/node_modules/package.json
   if [[ "$CIRCLE_BRANCH" == "release" ]] || [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
+    npx pkg --no-bytecode -t node14-linux-arm64 ../build/node_modules --out-path ../tmp-out
     npx pkg -t node14-macos-x64,node14-linux-x64,node14-win-x64 ../build/node_modules --out-path ../out
-    npx pkg --no-bytecode -t node14-linux-arm64 ../build/node_modules --output ../out/amplify-pkg-linux-arm64
+    cp ../tmp-out/amplify-pkg-linux-x64 ../out/amplify-pkg-linux-x64
   else
     npx pkg -t node14-macos-x64,node14-linux-x64,node14-win-x64 ../build/node_modules --out-path ../out
     mv ../out/amplify-pkg-macos ../out/amplify-pkg-macos-x64
