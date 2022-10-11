@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.3-fix-bytecode-issue-with-arm64.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.3.2...amplify-app@4.3.3-fix-bytecode-issue-with-arm64.0) (2022-10-11)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
 ## [4.3.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@4.3.1...amplify-app@4.3.2) (2022-10-03)
 
 **Note:** Version bump only for package amplify-app

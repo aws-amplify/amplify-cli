@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "3.13.1",
+  "version": "3.13.2-fix-bytecode-issue-with-arm64.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -23,10 +23,10 @@
     "clean-e2e-resources": "ts-node ./src/cleanup-e2e-resources.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-auth": "2.12.2",
-    "@aws-amplify/amplify-e2e-core": "4.2.2",
+    "@aws-amplify/amplify-category-auth": "2.12.3-fix-bytecode-issue-with-arm64.0",
+    "@aws-amplify/amplify-e2e-core": "4.2.3-fix-bytecode-issue-with-arm64.0",
     "@aws-amplify/graphql-transformer-core": "^0.17.12",
-    "amplify-cli-core": "3.2.1",
+    "amplify-cli-core": "3.2.2-fix-bytecode-issue-with-arm64.0",
     "amplify-headless-interface": "^1.15.0",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
