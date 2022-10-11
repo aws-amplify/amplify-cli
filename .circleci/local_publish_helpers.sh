@@ -76,7 +76,7 @@ function generatePkgCli {
     mv ../out/amplify-pkg-macos ../out/amplify-pkg-macos-x64
     mv ../out/amplify-pkg-linux ../out/amplify-pkg-linux-x64
     mv ../out/amplify-pkg-win.exe ../out/amplify-pkg-win-x64.exe
-    mv ../tmp-out/amplify-pkg-linux ../out/amplify-pkg-linux-arm64
+    mv ../tmp-out/amplify-pkg ../out/amplify-pkg-linux-arm64
   else
     npx pkg -t node14-macos-x64,node14-linux-x64,node14-win-x64 ../build/node_modules --out-path ../out
     mv ../out/amplify-pkg-macos ../out/amplify-pkg-macos-x64
