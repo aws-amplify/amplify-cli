@@ -1,8 +1,10 @@
-import { executeAmplifyHeadlessCommand } from '../../../src';
 import { ImportAuthRequest } from 'amplify-headless-interface';
-import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
 import { printer } from 'amplify-prompts';
+import * as cliCore from 'amplify-cli-core';
 import { stateManager } from 'amplify-cli-core';
+import { getEnvMeta, IEnvironmentMetadata } from '@aws-amplify/amplify-environment-parameters';
+import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
+import { executeAmplifyHeadlessCommand } from '../..';
 
 jest.mock('amplify-prompts', () => ({
   printer: {
@@ -12,7 +14,7 @@ jest.mock('amplify-prompts', () => ({
 }));
 
 jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as {}),
+  ...(jest.requireActual('amplify-cli-core') as typeof cliCore),
   FeatureFlags: {
     getBoolean: () => false,
   },
@@ -21,13 +23,17 @@ jest.mock('amplify-cli-core', () => ({
   },
 }));
 
-const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
-stateManager_mock.getMeta = jest.fn().mockReturnValue({
+jest.mock('@aws-amplify/amplify-environment-parameters');
+const getEnvMetaMock = getEnvMeta as jest.MockedFunction<typeof getEnvMeta>;
+getEnvMetaMock.mockReturnValue({ Region: 'test-region-1' } as IEnvironmentMetadata);
+
+const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
+stateManagerMock.getMeta = jest.fn().mockReturnValue({
   providers: {
     awscloudformation: {},
   },
 });
-stateManager_mock.setResourceParametersJson = jest.fn();
+stateManagerMock.setResourceParametersJson = jest.fn();
 
 jest.mock('../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state');
 
@@ -137,9 +143,9 @@ describe('import auth headless', () => {
       input: {
         command: 'import',
       },
-      usageData : {
-        pushHeadlessFlow : jest.fn()
-      }
+      usageData: {
+        pushHeadlessFlow: jest.fn(),
+      },
     };
   });
 
@@ -162,7 +168,7 @@ describe('import auth headless', () => {
       projectConfig,
     });
 
-    stateManager_mock.getMeta = jest.fn().mockReturnValueOnce({
+    stateManagerMock.getMeta = jest.fn().mockReturnValueOnce({
       auth: {
         foo: {},
       },
@@ -178,7 +184,7 @@ describe('import auth headless', () => {
       projectConfig,
     });
 
-    stateManager_mock.getMeta = jest.fn().mockReturnValueOnce({
+    stateManagerMock.getMeta = jest.fn().mockReturnValueOnce({
       auth: {
         foo: {
           serviceType: 'imported',
@@ -194,69 +200,54 @@ describe('import auth headless', () => {
   });
 
   it('should throw user pool not found exception', async () => {
-    stateManager_mock.getMeta = jest.fn().mockReturnValue({
+    stateManagerMock.getMeta = jest.fn().mockReturnValue({
       providers: {
         awscloudformation: {},
       },
     });
+    getUserPoolDetailsMock.mockRejectedValueOnce({
+      name: 'ResourceNotFoundException',
+    });
 
-    try {
-      getUserPoolDetailsMock.mockRejectedValueOnce({
-        name: 'ResourceNotFoundException',
-      });
-
-      await executeAmplifyHeadlessCommand(mockContext, headlessPayloadString);
-
-      fail('should throw error');
-    } catch (e) {
-      expect(e.message).toBe(`The previously configured Cognito User Pool: '' (user-pool-123) cannot be found.`);
-    }
+    await expect(executeAmplifyHeadlessCommand(mockContext, headlessPayloadString)).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"The previously configured Cognito User Pool: '' (user-pool-123) cannot be found."`,
+    );
   });
 
-  it('should throw web clients not found exception ', async () => {
-    stateManager_mock.getMeta = jest.fn().mockReturnValue({
+  it('should throw web clients not found exception', async () => {
+    stateManagerMock.getMeta = jest.fn().mockReturnValue({
       providers: {
         awscloudformation: {},
       },
     });
 
-    try {
-      listUserPoolClientsMock.mockResolvedValue([]);
+    listUserPoolClientsMock.mockResolvedValue([]);
 
-      await executeAmplifyHeadlessCommand(mockContext, headlessPayloadString);
-
-      fail('should throw error');
-    } catch (e) {
-      expect(e.message).toBe(
-        'The selected Cognito User Pool does not have at least 1 Web app client configured. Web app clients are app clients without a client secret.',
-      );
-    }
+    await expect(() => executeAmplifyHeadlessCommand(mockContext, headlessPayloadString)).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"The selected Cognito User Pool does not have at least 1 Web app client configured. Web app clients are app clients without a client secret."`,
+    );
   });
 
   it('should throw no matching identity pool found exception', async () => {
-    stateManager_mock.getMeta = jest.fn().mockReturnValue({
+    stateManagerMock.getMeta = jest.fn().mockReturnValue({
       providers: {
         awscloudformation: {},
       },
     });
-    const INVALID_USER_POOL_ID = USER_POOL_ID + '-invalid';
+    const INVALID_USER_POOL_ID = `${USER_POOL_ID}-invalid`;
     const invalidHeadlessPayload = {
       ...headlessPayload,
       userPoolId: INVALID_USER_POOL_ID,
     };
     const invalidHeadlessPayloadString = JSON.stringify(invalidHeadlessPayload);
-    try {
-      getUserPoolDetailsMock.mockResolvedValueOnce({
-        Id: INVALID_USER_POOL_ID,
-        MfaConfiguration: 'ON',
-      });
-      listUserPoolClientsMock.mockResolvedValueOnce(defaultUserPoolClients);
+    getUserPoolDetailsMock.mockResolvedValueOnce({
+      Id: INVALID_USER_POOL_ID,
+      MfaConfiguration: 'ON',
+    });
+    listUserPoolClientsMock.mockResolvedValueOnce(defaultUserPoolClients);
 
-      await executeAmplifyHeadlessCommand(mockContext, invalidHeadlessPayloadString);
-
-      fail('should throw error');
-    } catch (e) {
-      expect(e.message).toBe('There are no Identity Pools found which has the selected Cognito User Pool configured as identity provider.');
-    }
+    await expect(executeAmplifyHeadlessCommand(mockContext, invalidHeadlessPayloadString)).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"There are no Identity Pools found which has the selected Cognito User Pool configured as identity provider."`,
+    );
   });
 });
