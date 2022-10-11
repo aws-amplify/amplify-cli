@@ -53,7 +53,7 @@ export const deleteProject = async (context: $TSContext): Promise<void> => {
           message: 'Project delete failed.',
           stack: ex.stack,
           details: ex.message,
-        });
+        }, ex);
       }
     }
     removeLocalAmplifyDir(context);
