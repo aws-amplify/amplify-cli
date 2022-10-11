@@ -1,4 +1,4 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
+import { $TSContext, stateManager, EnvAwsInfo } from 'amplify-cli-core';
 import { analyzeProject } from '../../init-steps/s0-analyzeProject';
 import { constructMockPluginPlatform } from '../extensions/amplify-helpers/mock-plugin-platform';
 import { Input } from '../../domain/input';
@@ -7,7 +7,7 @@ import { constructContext } from '../../context-manager';
 jest.mock('amplify-cli-core');
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
-stateManagerMock.getLocalAWSInfo.mockReturnValue({ envA: 'test', envB: 'test' });
+stateManagerMock.getLocalAWSInfo.mockReturnValue({ envA: 'test' as unknown as EnvAwsInfo, envB: 'test' as unknown as EnvAwsInfo });
 stateManagerMock.getLocalEnvInfo.mockReturnValue({ defaultEditor: 'Visual Studio Code' });
 
 describe('analyzeProject', () => {

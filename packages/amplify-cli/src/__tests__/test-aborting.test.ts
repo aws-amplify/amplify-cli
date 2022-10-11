@@ -1,5 +1,7 @@
 import { Context } from '../domain/context';
 
+jest.mock('../utils/team-provider-migrate');
+
 describe('test SIGINT with execute', () => {
   afterAll(() => {
     jest.clearAllMocks();

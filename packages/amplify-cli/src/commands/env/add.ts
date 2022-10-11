@@ -1,5 +1,5 @@
 import { $TSContext, pathManager, AmplifyError } from 'amplify-cli-core';
-import fs from 'fs-extra';
+import * as fs from 'fs-extra';
 import { run as init } from '../init';
 
 /**

@@ -1,14 +1,23 @@
-describe('amplify env: ', () => {
-  const mockExit = jest.fn();
-  jest.mock('amplify-cli-core', () => ({
-    exitOnNextTick: mockExit,
-    pathManager: { getAmplifyMetaFilePath: jest.fn().mockReturnValue('test_file_does_not_exist') },
-  }));
-  const { run: runEnvCmd } = require('../../commands/env');
-  const { run: runAddEnvCmd } = require('../../commands/env/add');
-  const envList = require('../../commands/env/list');
-  jest.mock('../../commands/env/list');
+import {
+  exitOnNextTick, pathManager, $TSContext, AmplifyError,
+} from 'amplify-cli-core';
+import { run as runEnvCmd } from '../../commands/env';
+import { run as runAddEnvCmd } from '../../commands/env/add';
+import * as envList from '../../commands/env/list';
 
+jest.mock('../../commands/env/list');
+
+jest.mock('amplify-cli-core');
+const mockExit = jest.fn();
+const exitOnNextTickMock = exitOnNextTick as jest.MockedFunction<typeof exitOnNextTick>;
+const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
+exitOnNextTickMock.mockImplementation(mockExit);
+pathManagerMock.getAmplifyMetaFilePath.mockReturnValue('test_file_does_not_exist');
+pathManagerMock.getAWSCredentialsFilePath.mockReturnValue('test-creds-path');
+pathManagerMock.getAWSConfigFilePath.mockReturnValue('test-config-path');
+
+describe('amplify env:', () => {
+  beforeEach(() => jest.clearAllMocks());
   it('env run method should exist', () => {
     expect(runEnvCmd).toBeDefined();
   });
@@ -17,8 +26,12 @@ describe('amplify env: ', () => {
     expect(runAddEnvCmd).toBeDefined();
   });
 
-  it('env add method should throw if meta file does not exist', () => {
-    expect(async () => await runAddEnvCmd()).rejects.toThrow();
+  it('env add method should throw if meta file does not exist', async () => {
+    await expect(runAddEnvCmd(({} as unknown) as $TSContext)).rejects.toEqual(new AmplifyError('ConfigurationError', {
+      // eslint-disable-next-line spellcheck/spell-checker
+      message: 'Your workspace is not configured to modify the backend.',
+      resolution: 'If you wish to change this configuration, remove your `amplify` directory and pull the project again.',
+    }));
   });
 
   it('env ls is an alias for env list', async () => {

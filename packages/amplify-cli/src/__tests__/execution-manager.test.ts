@@ -1,5 +1,6 @@
 import * as fs from 'fs-extra';
 import path from 'path';
+// import { ensureEnvMeta } from '@aws-amplify/amplify-environment-parameters';
 import {
   AmplifyEvent,
   AmplifyEventArgs,
@@ -24,6 +25,8 @@ jest.mock('../../__mocks__/faked-plugin', () => ({
   executeAmplifyCommand: jest.fn(),
   handleAmplifyEvent: handleAmplifyEventMock,
 }));
+
+jest.mock('@aws-amplify/amplify-environment-parameters');
 
 describe('execution manager', () => {
   const mockFs = (fs as jest.Mocked<typeof fs>);
