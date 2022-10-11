@@ -130,9 +130,9 @@ export function initProjectForPinpoint(cwd: string): Promise<void> {
   });
 }
 
-export function addPinpointAnalytics(cwd: string): Promise<string> {
+export function addPinpointAnalytics(cwd: string, testingWithLatestCodebase = true): Promise<string> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true })
+    spawn(getCLIPath(testingWithLatestCodebase), ['add', 'analytics'], { cwd, stripColors: true })
       .wait('Select an Analytics provider')
       .sendCarriageReturn()
       .wait('Provide your pinpoint resource name:')
