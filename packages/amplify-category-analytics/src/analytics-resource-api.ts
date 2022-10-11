@@ -9,34 +9,19 @@ import { addResource } from './provider-utils/awscloudformation/index';
 import { analyticsPush } from './commands/analytics';
 import { invokeAuthPush } from './plugin-client-api-auth';
 import { invokeNotificationsAPIGetAvailableChannelNames } from './plugin-client-api-notifications';
+import { pinpointHasInAppMessagingPolicy } from './utils/pinpoint-helper';
+import { getAnalyticsResources } from './utils/analytics-helper';
+import { analyticsMigrations } from './migrations';
 
 /**
  * Get all analytics resources. If resourceProviderService name is provided,
  * then only return resources matching the service.
  * @returns Array of resources in Analytics category (IAmplifyResource type)
  */
-export const analyticsPluginAPIGetResources = (resourceProviderServiceName?: string, context?: $TSContext): Array<IAnalyticsResource> => {
-  const resourceList: Array<IAnalyticsResource> = [];
-  const amplifyMeta = (context) ? context.exeInfo.amplifyMeta : stateManager.getMeta();
-  if (amplifyMeta?.[AmplifyCategories.ANALYTICS]) {
-    const categoryResources = amplifyMeta[AmplifyCategories.ANALYTICS];
-    Object.keys(categoryResources).forEach(resource => {
-      // if resourceProviderService is provided, then only return resources provided by that service
-      // else return all resources. e.g. Pinpoint, Kinesis
-      if (!resourceProviderServiceName || categoryResources[resource].service === resourceProviderServiceName) {
-        resourceList.push({
-          category: AmplifyCategories.ANALYTICS,
-          resourceName: resource,
-          service: categoryResources[resource].service,
-          region: categoryResources[resource]?.output?.Region,
-          id: categoryResources[resource]?.output?.Id,
-          output: categoryResources[resource]?.output,
-        });
-      }
-    });
-  }
-  return resourceList;
-};
+export const analyticsPluginAPIGetResources = (
+  resourceProviderServiceName?: string,
+  context?: $TSContext,
+): Array<IAnalyticsResource> => getAnalyticsResources(context, resourceProviderServiceName);
 
 /**
  * Create an Analytics resource of the given provider type. e.g Pinpoint or Kinesis
@@ -129,8 +114,10 @@ export const analyticsPluginAPIToggleNotificationChannel = async (
  * @param resourceProviderServiceName - Pinpoint or Kinesis
  * @returns analytics push status
  */
-export const analyticsPluginAPIPush = async (context: $TSContext, resourceProviderServiceName: string)
-  : Promise<IPluginCapabilityAPIResponse> => {
+export const analyticsPluginAPIPush = async (
+  context: $TSContext,
+  resourceProviderServiceName: string,
+): Promise<IPluginCapabilityAPIResponse> => {
   const pushResponse: IPluginCapabilityAPIResponse = {
     pluginName: AmplifyCategories.ANALYTICS,
     resourceProviderServiceName,
@@ -302,3 +289,17 @@ const pinpointAPIDisableNotificationChannel = (
   }
   return pinPointCFNInputParams;
 };
+
+/**
+ * Checks if analytics pinpoint resource has in-app messaging policy
+ */
+export const analyticsPluginAPIPinpointHasInAppMessagingPolicy = async (
+  context: $TSContext,
+): Promise<boolean> => pinpointHasInAppMessagingPolicy(context);
+
+/**
+ * Exposes the analytics migration API
+ */
+export const analyticsPluginAPIMigrations = (
+  context: $TSContext,
+): Promise<void> => analyticsMigrations(context);

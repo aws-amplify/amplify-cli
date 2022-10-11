@@ -43,9 +43,7 @@ export class StateManager {
       ...options,
     };
 
-    const data = this.getData<$TSMeta>(filePath, mergedOptions);
-
-    return data;
+    return this.getData<$TSMeta>(filePath, mergedOptions);
   };
 
   currentMetaFileExists = (projectPath?: string): boolean => this.doesExist(pathManager.getCurrentAmplifyMetaFilePath, projectPath);

@@ -54,8 +54,6 @@ const viewQuestionAskNotificationChannelToBeEnabled = async (
  * @returns updated context with notifications metadata
  */
 export const run = async (context: $TSContext): Promise<$TSContext> => {
-  context.exeInfo = context.amplify.getProjectDetails();
-
   if (await checkMigratedFromMobileHub(context.exeInfo.amplifyMeta)) {
     throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
       message: 'Notifications has been migrated from Mobile Hub and channels cannot be added with Amplify CLI.',

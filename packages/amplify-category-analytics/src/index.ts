@@ -1,9 +1,12 @@
-import { $TSContext, $TSAny } from 'amplify-cli-core';
+import {
+  $TSContext, $TSAny,
+} from 'amplify-cli-core';
 import * as path from 'path';
 import inquirer, { QuestionCollection } from 'inquirer';
 import { printer } from 'amplify-prompts';
 import * as pinpointHelper from './utils/pinpoint-helper';
 import * as kinesisHelper from './utils/kinesis-helper';
+import { migrationCheck } from './migrations';
 
 export { migrate } from './provider-utils/awscloudformation/service-walkthroughs/pinpoint-walkthrough';
 
@@ -11,6 +14,8 @@ export {
   analyticsPluginAPIGetResources,
   analyticsPluginAPICreateResource,
   analyticsPluginAPIToggleNotificationChannel,
+  analyticsPluginAPIPinpointHasInAppMessagingPolicy,
+  analyticsPluginAPIMigrations,
   analyticsPluginAPIPostPush,
   analyticsPluginAPIPush,
 } from './analytics-resource-api';
@@ -97,6 +102,9 @@ export const getPermissionPolicies = async (context: $TSContext, resourceOpsMapp
  * @param context - Amplify CLI context
  */
 export const executeAmplifyCommand = async (context: $TSContext) : Promise<$TSAny> => {
+  context.exeInfo = context.amplify.getProjectDetails();
+  migrationCheck(context);
+
   let commandPath = path.normalize(path.join(__dirname, 'commands'));
   commandPath = context.input.command === 'help'
     ? path.join(commandPath, category)

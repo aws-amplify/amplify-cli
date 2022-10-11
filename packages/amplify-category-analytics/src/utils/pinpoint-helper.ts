@@ -1,7 +1,11 @@
 import {
+  AmplifySupportedService,
+  pathManager, readCFNTemplate,
   open, $TSAny, $TSContext, $TSMeta, AmplifyCategories,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
+import * as path from 'path';
+import { getAnalyticsResources } from './analytics-helper';
 
 /**
  * opens resource in AWS console
@@ -58,4 +62,23 @@ export const hasResource = (context: $TSContext): boolean => {
   }
 
   return pinpointApp !== undefined;
+};
+
+/**
+ * Checks if pinpoint has in app messaging policy
+ */
+export const pinpointHasInAppMessagingPolicy = (context: $TSContext): boolean => {
+  const resources = getAnalyticsResources(context, AmplifySupportedService.PINPOINT);
+  if (resources?.length > 0) {
+    const pinpointCloudFormationTemplatePath = path.join(
+      pathManager.getBackendDirPath(),
+      AmplifyCategories.ANALYTICS,
+      resources[0].resourceName,
+      `pinpoint-cloudformation-template.json`,
+    );
+    const { cfnTemplate } = readCFNTemplate(pinpointCloudFormationTemplatePath, { throwIfNotExist: false }) || {};
+    return !!cfnTemplate?.Parameters?.pinpointInAppMessagingPolicyName;
+  }
+
+  return false;
 };
