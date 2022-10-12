@@ -181,10 +181,10 @@
     "@aws-amplify/api-graphql" "2.2.18"
     "@aws-amplify/api-rest" "2.0.29"
 
-"@aws-amplify/appsync-modelgen-plugin@2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-2.1.0.tgz#1fe08b4462552ad8545c3653914c26831fbc46ab"
-  integrity sha512-UvK/AkZaCgcCqOLv3PC5tzR+csv7OT2CFlgv342Vmn00gLoVjw+bVVsCFgx/z+QI8+kugfOkeD/a/neYglCtbA==
+"@aws-amplify/appsync-modelgen-plugin@2.2.0":
+  version "2.2.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-2.2.0.tgz#f4a422a760ea0398d14e565f6dcd4607ca7f2dea"
+  integrity sha512-imxEKB7lx4ksgEJD0VWHEWAtuIhvj3n/WZbPelBIN96955skYz4gMHrLN6MoQ3sSBaleUt8RAjs6W2r3tqChiA==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^1.18.8"
     "@graphql-codegen/visitor-plugin-common" "^1.22.0"
@@ -10224,12 +10224,12 @@ amdefine@>=0.0.4:
   resolved "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
-amplify-codegen@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/amplify-codegen/-/amplify-codegen-3.1.0.tgz#b3014d078d675a6510035f8bf4a6c3b5b58851a5"
-  integrity sha512-OaCEaUZlaDZEo1S1NG+M5FRqTw8CtrAMRsRMe9EqPqIOCX3RzRRxy1/0l9c/6svtY/djSdrf2WCZdKx9t1cnfA==
+amplify-codegen@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.npmjs.org/amplify-codegen/-/amplify-codegen-3.2.0.tgz#d159d5cdc1091ba8c1aca15468e46191fb006d27"
+  integrity sha512-C/T7hDj4hQUMR4M+3yYp7LHSd3EVYHGhu9FPAs6rIaKwWpKsRCW7TkzrJuD1PA2B0OqdNl9PcQ/XqIGWxqryRA==
   dependencies:
-    "@aws-amplify/appsync-modelgen-plugin" "2.1.0"
+    "@aws-amplify/appsync-modelgen-plugin" "2.2.0"
     "@aws-amplify/graphql-docs-generator" "3.0.2"
     "@aws-amplify/graphql-types-generator" "3.0.0"
     "@graphql-codegen/core" "1.8.3"
@@ -13378,10 +13378,10 @@ defaults@^1.0.3:
   dependencies:
     clone "^1.0.2"
 
-defer-to-connect@^1.0.1:
-  version "1.1.3"
-  resolved "https://registry.npmjs.org/defer-to-connect/-/defer-to-connect-1.1.3.tgz#331ae050c08dcf789f8c83a7b81f0ed94f4ac591"
-  integrity sha512-0ISdNousHvZT2EiFlZeZAHBUvSxmKswVCEf8hW7KWgG4a8MVEu/3Vb6uWYozkjylyCxe0JBIiRB1jV45S70WVQ==
+defer-to-connect@^2.0.0:
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/defer-to-connect/-/defer-to-connect-2.0.1.tgz#8016bdb4143e4632b77a3449c6236277de520587"
+  integrity sha512-4tvttepXG1VaYGrRibk5EwJd1t4udunSOVMdLSAL6mId1ix438oPwPZMALY41FCijukO1L0twNcGsdzS7dHgDg==
 
 define-lazy-prop@^2.0.0:
   version "2.0.0"
