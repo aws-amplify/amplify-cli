@@ -74,7 +74,7 @@
     "amplify-python-function-template-provider": "1.3.16",
     "amplify-util-import": "2.2.36",
     "amplify-util-mock": "4.5.3",
-    "aws-sdk": "^2.1169.0",
+    "aws-sdk": "^2.1233.0",
     "chalk": "^4.1.1",
     "ci-info": "^2.0.0",
     "cli-table3": "^0.6.0",

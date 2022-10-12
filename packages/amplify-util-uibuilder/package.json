@@ -13,11 +13,12 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/codegen-ui": "^2.4.2",
-    "@aws-amplify/codegen-ui-react": "^2.4.2",
+    "@aws-amplify/codegen-ui": "2.5.2",
+    "@aws-amplify/codegen-ui-react": "2.5.2",
     "amplify-cli-core": "3.2.2",
     "amplify-prompts": "2.6.0",
-    "aws-sdk": "^2.1113.0",
+    "aws-sdk": "^2.1233.0",
+    "fs-extra": "^8.1.0",
     "ora": "^4.0.3"
   },
   "devDependencies": {
