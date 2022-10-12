@@ -1,5 +1,5 @@
 import {
-  $TSAny, $TSContext, JSONUtilities, pathManager,
+  $TSAny, $TSContext, AmplifyCategories, JSONUtilities, pathManager,
 } from 'amplify-cli-core';
 import { UserPoolGroupMetadata } from '../../../../provider-utils/awscloudformation/auth-stack-builder';
 import { updateUserPoolGroups } from '../../../../provider-utils/awscloudformation/utils/synthesize-resources';
@@ -17,17 +17,35 @@ describe('correctly updates userPool group list', () => {
     mockContext = {
       amplify: {
         updateamplifyMetaAfterResourceUpdate: jest.fn(),
+        pathManager,
       },
     };
     pathManagerMock.getBackendDirPath = jest.fn().mockReturnValue('backend');
   });
   afterEach(() => jest.resetAllMocks());
 
+  const expectAmplifyMetaFileUpdate = (): void => {
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledTimes(3);
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate)
+      .toBeCalledWith(AmplifyCategories.AUTH, 'userPoolGroups', 'service', 'Cognito-UserPool-Groups');
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate)
+      .toBeCalledWith(AmplifyCategories.AUTH, 'userPoolGroups', 'providerPlugin', 'awscloudformation');
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate)
+      .toBeCalledWith(AmplifyCategories.AUTH, 'userPoolGroups', 'dependsOn', [
+        {
+          category: AmplifyCategories.AUTH,
+          resourceName,
+          attributes: ['UserPoolId', 'AppClientIDWeb', 'AppClientID'],
+        },
+      ]);
+  };
+
   it('correctly updates userPool precedence file when no updated userPool groups in empty', async () => {
     const updatedUserPoolList: string[] = [];
     JSONUtilitiesMock.readJson = jest.fn().mockReturnValue([]);
     await updateUserPoolGroups((mockContext as unknown) as $TSContext, resourceName, updatedUserPoolList);
     expect(JSONUtilitiesMock.writeJson).not.toBeCalled();
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).not.toBeCalled();
   });
 
   it('correctly updates userPool precedence file when no prev userPool group is added', async () => {
@@ -53,6 +71,8 @@ describe('correctly updates userPool group list', () => {
         ],
       ]
     `);
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledTimes(3);
+    expectAmplifyMetaFileUpdate();
   });
 
   it('correctly updates userPool precedence file when prev userPool group has precedence mismatch', async () => {
@@ -88,6 +108,7 @@ describe('correctly updates userPool group list', () => {
         ],
       ]
     `);
+    expectAmplifyMetaFileUpdate();
   });
 
   it('correctly updates userPool precedence file when userPool group contains custom policies', async () => {
@@ -125,5 +146,6 @@ describe('correctly updates userPool group list', () => {
         ],
       ]
     `);
+    expectAmplifyMetaFileUpdate();
   });
 });

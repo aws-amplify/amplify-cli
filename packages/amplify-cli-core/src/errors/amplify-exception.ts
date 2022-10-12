@@ -17,7 +17,7 @@ export class AmplifyException extends Error {
     // https://github.com/Microsoft/TypeScript-wiki/blob/main/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
     Object.setPrototypeOf(this, AmplifyException.prototype);
 
-    this.stack ??= options.stack;
+    this.stack = options.stack ?? this.stack;
     this.message = options.message;
     this.details = options.details;
     this.resolution = 'resolution' in options ? options.resolution : undefined;
@@ -85,6 +85,7 @@ export type AmplifyErrorType =
   | 'DirectoryError'
   | 'DirectoryAlreadyExistsError'
   | 'DuplicateLogicalIdError'
+  | 'EnvironmentConfigurationError'
   | 'EnvironmentNameError'
   | 'EnvironmentNotInitializedError'
   | 'FeatureFlagsValidationError'
@@ -121,10 +122,12 @@ export type AmplifyErrorType =
 export type AmplifyFaultType =
   | 'AmplifyBackupFault'
   | 'BackendPullFault'
+  | 'BackendDeleteFault'
   | 'DeploymentFault'
   | 'NotImplementedFault'
   | 'ProjectDeleteFault'
   | 'ProjectInitFault'
+  | 'PluginNotLoadedFault'
   | 'PushResourcesFault'
   | 'PullBackendFault'
   | 'ResourceExportFault'

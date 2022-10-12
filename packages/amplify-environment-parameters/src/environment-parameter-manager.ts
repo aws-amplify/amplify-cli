@@ -1,4 +1,6 @@
-import { pathManager, stateManager } from 'amplify-cli-core';
+import {
+  amplifyFaultWithTroubleshootingLink, pathManager, stateManager,
+} from 'amplify-cli-core';
 import _ from 'lodash';
 import { ResourceParameterManager } from './resource-parameter-manager';
 
@@ -28,7 +30,9 @@ export const getEnvParamManager = (envName: string = stateManager.getLocalEnvInf
   if (envParamManagerMap[envName]) {
     return envParamManagerMap[envName];
   }
-  throw new Error(`EnvironmentParameterManager for ${envName} environment is not initialized. Use initEnvParamManager first to initialize it`);
+  throw amplifyFaultWithTroubleshootingLink('ProjectInitFault', {
+    message: `EnvironmentParameterManager for ${envName} environment is not initialized.`,
+  });
 };
 
 /**
@@ -43,7 +47,7 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
    */
   async init(): Promise<void> {
     // read in the TPI contents
-    const categories = stateManager.getTeamProviderInfo()?.[this.envName]?.categories || {};
+    const categories = stateManager.getTeamProviderInfo(undefined, { throwIfNotExist: false })?.[this.envName]?.categories || {};
     Object.entries(categories as Record<string, unknown>).forEach(([category, resources]) => {
       Object.entries(resources as Record<string, Record<string, string>>).forEach(([resource, parameters]) => {
         this.getResourceParamManager(category, resource).setAllParams(parameters);
@@ -59,7 +63,9 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
 
   getResourceParamManager(category: string, resource: string): ResourceParameterManager {
     if (!category || !resource) {
-      throw new Error('category and resource must be specified to getResourceParamManager');
+      throw amplifyFaultWithTroubleshootingLink('ResourceNotFoundFault', {
+        message: 'Missing Category or Resource.',
+      });
     }
     const resourceKey = getResourceKey(category, resource);
     if (!this.resourceParamManagers[resourceKey]) {
