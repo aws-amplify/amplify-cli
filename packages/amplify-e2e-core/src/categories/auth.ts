@@ -34,9 +34,9 @@ export type AddAuthIdentityPoolAndUserPoolWithOAuthSettings = AddAuthUserPoolOnl
   idpAppleAppId: string;
 };
 
-export function addAuthWithDefault(cwd: string, settings: any = {}): Promise<void> {
+export function addAuthWithDefault(cwd: string, settings: any = {}, testingWithLatestCodebase = true): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
+    spawn(getCLIPath(testingWithLatestCodebase), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication')
       .sendCarriageReturn()
       .wait('How do you want users to be able to sign in')

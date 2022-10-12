@@ -84,3 +84,43 @@ export const pinpointHasInAppMessagingPolicy = (context: $TSContext): boolean =>
   const { cfnTemplate } = readCFNTemplate(pinpointCloudFormationTemplatePath, { throwIfNotExist: false }) || {};
   return !!cfnTemplate?.Parameters?.[pinpointInAppMessagingPolicyName];
 };
+
+/**
+ * checks if notifications category has a pinpoint resource - legacy projects
+ */
+export const checkIfNotificationsCategoryHasPinpoint = (context: $TSContext): $TSAny => {
+  const { amplify } = context;
+  const { amplifyMeta } = amplify.getProjectDetails();
+  let pinpointApp: $TSAny;
+
+  if (amplifyMeta.notifications) {
+    const categoryResources = amplifyMeta.notifications;
+    Object.keys(categoryResources).forEach(resource => {
+      if (categoryResources[resource].service === AmplifySupportedService.PINPOINT && categoryResources[resource].output.Id) {
+        pinpointApp = {};
+        pinpointApp.appId = categoryResources[resource].output.Id;
+        pinpointApp.appName = resource;
+      }
+    });
+  }
+
+  return pinpointApp;
+};
+
+/**
+ * returns provider pinpoint region mapping
+ */
+export const getTemplateMappings = async (context: $TSContext): Promise<Record<string, $TSAny>> => {
+  const Mappings: Record<string, $TSAny> = {
+    RegionMapping: {},
+  };
+  const providerPlugins = context.amplify.getProviderPlugins(context);
+  const provider = await import(providerPlugins.awscloudformation);
+  const regionMapping = provider.getPinpointRegionMapping();
+  Object.keys(regionMapping).forEach(region => {
+    Mappings.RegionMapping[region] = {
+      pinpointRegion: regionMapping[region],
+    };
+  });
+  return Mappings;
+};

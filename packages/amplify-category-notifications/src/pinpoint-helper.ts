@@ -170,7 +170,8 @@ export const getPinpointAppStatus = async (context: $TSContext, amplifyMeta: $TS
   if (resources.length > 0) {
     // eslint-disable-next-line prefer-destructuring
     resultPinpointApp.app = resources[0];
-    resultPinpointApp.status = (resultPinpointApp.app.id) ? IPinpointDeploymentStatus.APP_IS_DEPLOYED
+    resultPinpointApp.status = resultPinpointApp.app.id
+      ? IPinpointDeploymentStatus.APP_IS_DEPLOYED
       : IPinpointDeploymentStatus.APP_IS_CREATED_NOT_DEPLOYED;
   }
   // Check if Notifications is using an App but different from Analytics - Legacy behavior
