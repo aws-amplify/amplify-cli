@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.3-fix-bytecode-issue-with-arm64-revised.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.4.2...@aws-amplify/amplify-console-integration-tests@2.4.3-fix-bytecode-issue-with-arm64-revised.0) (2022-10-12)
+
+
+### Bug Fixes
+
+* updateUserAttributeSetting during add/update/push flows ([#10773](https://github.com/aws-amplify/amplify-console-integration-tests/issues/10773)) ([52c1e49](https://github.com/aws-amplify/amplify-console-integration-tests/commit/52c1e49caa5098c37c32c9f2b6f095cfd60454b1))
+
+
+
+
+
 ## [2.4.2](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.4.1...@aws-amplify/amplify-console-integration-tests@2.4.2) (2022-10-03)
 
 **Note:** Version bump only for package @aws-amplify/amplify-console-integration-tests

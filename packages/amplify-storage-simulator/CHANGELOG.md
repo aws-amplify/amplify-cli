@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.8-fix-bytecode-issue-with-arm64-revised.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.6.7...amplify-storage-simulator@1.6.8-fix-bytecode-issue-with-arm64-revised.0) (2022-10-12)
+
+**Note:** Version bump only for package amplify-storage-simulator
+
+
+
+
+
 ## [1.6.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.6.6...amplify-storage-simulator@1.6.7) (2022-04-27)
 
 **Note:** Version bump only for package amplify-storage-simulator
