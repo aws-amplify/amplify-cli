@@ -1,6 +1,6 @@
 {
   "name": "amplify-prompts",
-  "version": "2.5.0",
+  "version": "2.6.0-rc.9ecc3f4ca.0",
   "description": "Utility functions for Amplify CLI terminal I/O",
   "main": "lib/index.js",
   "scripts": {
