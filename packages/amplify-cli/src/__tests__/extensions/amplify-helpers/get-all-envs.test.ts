@@ -4,6 +4,9 @@ jest.mock('amplify-cli-core', () => ({
   stateManager: {
     getLocalAWSInfo: jest.fn().mockReturnValue({ production: 'test', develop: 'test', staging: 'test' }),
   },
+  pathManager: {
+    getLocalAWSInfoFilePath: jest.fn().mockReturnValue('some-path'),
+  },
 }));
 
 describe('getAllEnvs', () => {

@@ -1,4 +1,5 @@
 import { printer } from 'amplify-prompts';
+import { listLocalEnvNames } from '@aws-amplify/amplify-environment-parameters';
 import { deleteProject, getConfirmation } from '../../../extensions/amplify-helpers/delete-project';
 
 const printerMock = printer as jest.Mocked<typeof printer>;
@@ -35,6 +36,7 @@ jest.mock('../../../extensions/amplify-helpers/get-plugin-instance', () => ({
             throw new Error('listBackendEnvironments error');
           })
           .mockImplementationOnce(() => {
+            // eslint-disable-next-line no-throw-literal
             throw {
               name: 'BucketNotFoundError',
               message: 'Bucket not found',
@@ -54,6 +56,11 @@ jest.mock('ora', () => () => ({
   fail: jest.fn(),
   succeed: jest.fn(),
 }));
+
+jest.mock('@aws-amplify/amplify-environment-parameters');
+
+const listLocalEnvNamesMock = listLocalEnvNames as jest.MockedFunction<typeof listLocalEnvNames>;
+listLocalEnvNamesMock.mockReturnValue([]);
 
 describe('getConfirmation', () => {
   it('should return proceed object', async () => {

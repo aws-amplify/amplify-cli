@@ -5,17 +5,13 @@ import { AmplifyBackend } from 'aws-sdk';
 import type { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
 import { IEnvironmentMetadata, WriteTarget } from './types';
 
+/**
+ * This module maintains a map of environment name to metadata for that environment
+ */
 const envMetaManagerMap: Record<string, IEnvironmentMetadata> = {};
 
-/*
-when initializing new env manager, check if initializing currently checked out env. If so, load from amplify-meta.json
-if not, get amplify-backend client with other environment's credentials (can look up cred mode in local-aws-info.json)
-call amplify-backend.getBackend(appId, envName) to fetch amplifyMeta
-(need to store appId in local-aws-info.json for each environment)
-*/
-
 /**
- * Initializes the EnvironmentMetadata object for the current environment to the given meta object
+ * Initializes the EnvironmentMetadata object for the current environment to the values stored in context.exeInfo.amplifyMeta
  *
  * Throws if EnvironmentMetadata is already initialized for the current environment.
  *
@@ -27,8 +23,7 @@ export const initEnvMeta = async (context: $TSContext): Promise<void> => {
   if (envMetaManagerMap[currentEnv]) {
     throw new Error(`EnvironmentMetadata is already initialized for ${currentEnv} environment.`);
   }
-  // don't need to pass in context because specifying meta will early return before context is ever needed
-  await ensureEnvMetaInternal(context, currentEnv, context.exeInfo.amplifyMeta);
+  await ensureEnvMetaInternal(context, currentEnv, context?.exeInfo?.amplifyMeta?.providers?.awscloudformation);
 };
 
 /**
@@ -57,26 +52,7 @@ const ensureEnvMetaInternal = async (
 ): Promise<IEnvironmentMetadata> => {
   // when adding the first manager into the map, need to add a callback to save on exit
   if (Object.keys(envMetaManagerMap).length === 0) {
-    process.on('exit', () => {
-      if (!pathManager.findProjectRoot()) {
-        return; // in the case of delete, the project root will be gone in which case we don't need to save anything
-      }
-      const currentEnv = stateManager.getLocalEnvInfo().envName;
-      // ensure any updates to the current env meta are written to the `amplify-meta.json` file
-      envMetaManagerMap[currentEnv]?.write();
-
-      // remove any environments from tpi that were deleted
-      const currentEnvs = context.amplify.getAllEnvs();
-      const tpi = stateManager.getTeamProviderInfo();
-      const tpiEnvs = Object.keys(tpi);
-      const removedEnvs = tpiEnvs.filter(env => !currentEnvs.includes(env));
-      if (removedEnvs.length > 0) {
-        removedEnvs.forEach(env => {
-          delete tpi[env];
-        });
-        stateManager.setTeamProviderInfo(undefined, tpi);
-      }
-    });
+    process.on('exit', saveOnExit(context));
   }
   if (envMetaManagerMap[envName]) {
     return envMetaManagerMap[envName];
@@ -84,27 +60,37 @@ const ensureEnvMetaInternal = async (
 
   if (typeof initialMeta === 'object' && Object.keys(initialMeta).length > 0) {
     envMetaManagerMap[envName] = new EnvironmentMetadata(initialMeta, true);
-    return envMetaManagerMap[envName];
+  } else if (envName === stateManager.getLocalEnvInfo().envName) {
+    envMetaManagerMap[envName] = initEnvMetaFromFile();
+  } else {
+    envMetaManagerMap[envName] = await initEnvMetaFromService(context, envName);
   }
+  return envMetaManagerMap[envName];
+};
 
-  if (envName === stateManager.getLocalEnvInfo().envName) {
-    // if getting metadata for the current environment, initialize it from the amplify-meta.json file or fallback to current backend meta
-    const awsProviderMeta = stateManager.getMeta(undefined, { throwIfNotExist: false })?.providers?.awscloudformation;
-    const currentBackendAwsProviderMeta = stateManager.getCurrentMeta(undefined, { throwIfNotExist: false })?.providers?.awscloudformation;
-    envMetaManagerMap[envName] = new EnvironmentMetadata(awsProviderMeta ?? currentBackendAwsProviderMeta, !awsProviderMeta);
-    return envMetaManagerMap[envName];
-  }
-  // if getting metadata for a different environment,
-  // we need to construct an amplify-backend client with that environment's credentials
-  // and make a call to getBackend to fetch the metadata
-  const creds = (await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'loadConfigurationForEnv', [
+const initEnvMetaFromFile = (): IEnvironmentMetadata => {
+  // if getting metadata for the current environment, initialize it from the amplify-meta.json file or fallback to current backend meta
+  const awsProviderMeta = stateManager.getMeta(undefined, { throwIfNotExist: false, default: {} })?.providers?.awscloudformation;
+  const currentBackendAwsProviderMeta = stateManager.getCurrentMeta(undefined, { throwIfNotExist: false })?.providers?.awscloudformation;
+  // set isDirty to true if amplify-meta doesn't exist (indicating that it should be written on exit)
+  return new EnvironmentMetadata(awsProviderMeta ?? currentBackendAwsProviderMeta, !awsProviderMeta);
+};
+
+// if getting metadata for a different environment,
+// we need to construct an amplify-backend client with that environment's credentials
+// and make a call to getBackend to fetch the metadata
+const initEnvMetaFromService = async (
+  context: $TSContext,
+  envName: string = stateManager.getLocalEnvInfo().envName,
+): Promise<IEnvironmentMetadata> => {
+  const credentials = (await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'loadConfigurationForEnv', [
     context,
     envName,
   ])) as ServiceConfigurationOptions;
   const { AMPLIFY_BACKEND_ENDPOINT, AMPLIFY_BACKEND_REGION } = process.env;
 
   const amplifyBackendClient = new AmplifyBackend({
-    ...creds,
+    ...credentials,
     ...(AMPLIFY_BACKEND_ENDPOINT && { endpoint: AMPLIFY_BACKEND_ENDPOINT }),
     ...(AMPLIFY_BACKEND_REGION && { region: AMPLIFY_BACKEND_REGION }),
   });
@@ -125,8 +111,7 @@ const ensureEnvMetaInternal = async (
   if (!response.AmplifyMetaConfig) {
     throw new Error(`AmplifyBackend.getBackend did not return AmplifyMetaConfig for environment ${envName}`);
   }
-  envMetaManagerMap[envName] = new EnvironmentMetadata(JSON.parse(response.AmplifyMetaConfig)?.providers?.awscloudformation, true);
-  return envMetaManagerMap[envName];
+  return new EnvironmentMetadata(JSON.parse(response.AmplifyMetaConfig)?.providers?.awscloudformation, true);
 };
 
 class EnvironmentMetadata implements IEnvironmentMetadata {
@@ -143,6 +128,9 @@ class EnvironmentMetadata implements IEnvironmentMetadata {
    */
   private _AmplifyAppId: string | undefined;
   private _PermissionsBoundaryPolicyArn: string | undefined;
+  /**
+   * flag that keeps track of whether this object needs to be written to disk on save or not
+   */
   private _dirty = false;
 
   /**
@@ -152,12 +140,7 @@ class EnvironmentMetadata implements IEnvironmentMetadata {
    * @param isDirty whether the given amplifyMeta is in sync with what's on the disc
    */
   constructor(amplifyMeta: Record<string, unknown>, isDirty = false) {
-    let flattenedMeta = amplifyMeta;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (typeof (amplifyMeta as any)?.providers?.awscloudformation === 'object') {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      flattenedMeta = (amplifyMeta as any).providers.awscloudformation;
-    }
+    // validate input has correct shape
     const requiredKeys: (keyof IEnvironmentMetadata)[] = [
       'AuthRoleName',
       'AuthRoleArn',
@@ -168,12 +151,12 @@ class EnvironmentMetadata implements IEnvironmentMetadata {
       'StackId',
       'StackName',
     ];
-    const amplifyMetaKeys = Object.keys(flattenedMeta);
+    const amplifyMetaKeys = Object.keys(amplifyMeta);
     requiredKeys.forEach(requiredKey => {
       if (!amplifyMetaKeys.includes(requiredKey)) {
         throw new Error(`Tried to initialize EnvironmentMetadata object without required key ${requiredKey}`);
       }
-      if (typeof flattenedMeta[requiredKey] !== 'string') {
+      if (typeof amplifyMeta[requiredKey] !== 'string') {
         throw new Error(`Tried to initialize EnvironmentMetadata object with ${requiredKey} set to a non-string value`);
       }
     });
@@ -184,12 +167,12 @@ class EnvironmentMetadata implements IEnvironmentMetadata {
     ];
 
     optionalKeys.forEach(optionalKey => {
-      const typeOfValue = typeof flattenedMeta[optionalKey];
+      const typeOfValue = typeof amplifyMeta[optionalKey];
       if (typeOfValue !== 'string' && typeOfValue !== 'undefined') {
         throw new Error(`Tried to initialize EnvironmentMetadata object with ${optionalKey} set to a non-string value`);
       }
     });
-    const validatedAmplifyMeta = flattenedMeta as IEnvironmentMetadata;
+    const validatedAmplifyMeta = amplifyMeta as IEnvironmentMetadata;
     this.AuthRoleName = validatedAmplifyMeta.AuthRoleName;
     this.AuthRoleArn = validatedAmplifyMeta.AuthRoleArn;
     this.UnauthRoleArn = validatedAmplifyMeta.UnauthRoleArn;
@@ -255,18 +238,39 @@ class EnvironmentMetadata implements IEnvironmentMetadata {
 
 const localFilesWriteTarget: WriteTarget = serializableObject => {
   // set values in `amplify-meta.json`
-  const amplifyMeta = stateManager.getMeta(undefined, { throwIfNotExist: false }) || {};
+  const amplifyMeta = stateManager.getMeta(undefined, { throwIfNotExist: false, default: {} });
   amplifyMeta.providers = {
     awscloudformation: serializableObject,
   };
   stateManager.setMeta(undefined, amplifyMeta);
 
   // set values in `team-provider-info.json
-  const tpi = stateManager.getTeamProviderInfo(undefined, { throwIfNotExist: false }) || {};
+  const tpi = stateManager.getTeamProviderInfo(undefined, { throwIfNotExist: false, default: {} });
   const currentEnv = stateManager.getLocalEnvInfo().envName;
   if (typeof tpi[currentEnv] !== 'object') {
     tpi[currentEnv] = {};
   }
   tpi[currentEnv].awscloudformation = serializableObject;
   stateManager.setTeamProviderInfo(undefined, tpi);
+};
+
+const saveOnExit = (context: $TSContext) => () => {
+  if (!pathManager.findProjectRoot()) {
+    return; // in the case of delete, the project root will be gone in which case we don't need to save anything
+  }
+  const currentEnv = stateManager.getLocalEnvInfo().envName;
+  // ensure any updates to the current env meta are written to the `amplify-meta.json` file
+  envMetaManagerMap[currentEnv]?.write();
+
+  // remove any environments from tpi that were deleted
+  const currentEnvs = context.amplify.getAllEnvs();
+  const tpi = stateManager.getTeamProviderInfo(undefined, { throwIfNotExist: false, default: {} });
+  const tpiEnvs = Object.keys(tpi);
+  const removedEnvs = tpiEnvs.filter(env => !currentEnvs.includes(env));
+  if (removedEnvs.length > 0) {
+    removedEnvs.forEach(env => {
+      delete tpi[env];
+    });
+    stateManager.setTeamProviderInfo(undefined, tpi);
+  }
 };

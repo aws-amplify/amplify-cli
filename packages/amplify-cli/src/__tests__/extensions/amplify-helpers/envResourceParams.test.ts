@@ -2,6 +2,7 @@ import * as fs from 'fs-extra';
 import {
   pathManager, stateManager, DeploymentSecrets, removeFromDeploymentSecrets, $TSContext,
 } from 'amplify-cli-core';
+import { getRootStackId } from '../../../extensions/amplify-helpers/get-root-stack-id';
 import { getEnvInfo } from '../../../extensions/amplify-helpers/get-env-info';
 import {
   saveEnvResourceParameters,
@@ -10,6 +11,7 @@ import {
   removeDeploymentSecrets,
 } from '../../../extensions/amplify-helpers/envResourceParams';
 
+jest.mock('../../../extensions/amplify-helpers/get-root-stack-id');
 jest.mock('fs-extra');
 jest.mock('amplify-cli-core', () => ({
   pathManager: { getTeamProviderInfoFilePath: jest.fn() },
@@ -19,17 +21,14 @@ jest.mock('amplify-cli-core', () => ({
     getDeploymentSecrets: jest.fn(),
     setDeploymentSecrets: jest.fn(),
     getLocalEnvInfo: jest.fn().mockReturnValue({ envName: 'testEnv' }),
-    getMeta: jest.fn().mockReturnValue({
-      providers: {
-        awscloudformation: {
-          StackId: 'arn:aws:cloudformation:us-west-2:1234567890:stack/amplify-test-test-123456/testStackId',
-        },
-      },
-    }),
   },
   removeFromDeploymentSecrets: jest.fn(),
 }));
 jest.mock('../../../extensions/amplify-helpers/get-env-info', () => ({ getEnvInfo: jest.fn() }));
+jest.mock('../../../extensions/amplify-helpers/get-root-stack-id');
+
+const getRootStackIdMock = getRootStackId as jest.MockedFunction<typeof getRootStackId>;
+getRootStackIdMock.mockReturnValue('testStackId');
 
 let getEnvParamManager;
 let ensureEnvParamManager;
