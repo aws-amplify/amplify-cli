@@ -5,6 +5,9 @@ import { run } from '../commands/cloneComponentsFromEnv';
 const extractArgsDependencyMock = extractArgsDependency as any;
 const awsMock = aws as any;
 
+jest.mock('../commands/utils/featureFlags', () => ({
+  getTransformerVersion: jest.fn().mockImplementation(() => 2)
+}));
 jest.mock('../commands/utils/extractArgs');
 jest.mock('amplify-cli-core');
 
@@ -45,6 +48,14 @@ describe('can clone components to new environment', () => {
         promise: () => mockedComponentExport(environmentName),
       })),
       createComponent: jest.fn(() => ({ promise: () => mockedComponentCreate() })),
+      getMetadata: jest.fn(() => ({
+        promise: jest.fn(() => ({
+          features: {
+            autoGenerateForms: 'true',
+            autoGenerateViews: 'true',
+          },
+        })),
+      })),
     }));
   });
 

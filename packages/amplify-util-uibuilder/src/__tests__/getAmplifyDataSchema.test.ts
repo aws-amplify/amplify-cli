@@ -1,6 +1,7 @@
 import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
-import { AmplifyCategories, AmplifySupportedService } from 'amplify-cli-core'; // eslint-disable-line import/no-extraneous-dependencies
+import { AmplifyCategories, AmplifySupportedService, FeatureFlags } from 'amplify-cli-core'; // eslint-disable-line import/no-extraneous-dependencies
 import { printer } from 'amplify-prompts'; // eslint-disable-line import/no-extraneous-dependencies
+import { mocked } from 'ts-jest/utils';
 import { AmplifyStudioClient } from '../clients';
 import { getAmplifyDataSchema } from '../commands/utils';
 
@@ -17,13 +18,18 @@ jest.mock('amplify-cli-core', () => ({
         },
       },
     })),
+    getCLIJSON: jest.fn().mockReturnValue({ features: { graphqltransformer: { transformerversion: 1 } } }),
+    setCLIJSON: jest.fn(),
   },
   FeatureFlags: {
-    getBoolean: () => false,
-    getNumber: () => 0,
+    getBoolean: () => true,
+    getNumber: jest.fn(),
+    reloadValues: jest.fn(),
   },
 }));
 jest.mock('amplify-prompts');
+
+const mockedFeatureFlags = mocked(FeatureFlags);
 
 const getMockedSchema = jest.fn(
   // eslint-disable-next-line no-useless-escape, spellcheck/spell-checker
@@ -32,6 +38,20 @@ const getMockedSchema = jest.fn(
 
 describe('should sync amplify backend models', () => {
   let context: any;
+
+  beforeAll(() => {
+    // set metadata response
+    awsMock.AmplifyUIBuilder = jest.fn(() => ({
+      getMetadata: jest.fn(() => ({
+        promise: jest.fn(() => ({
+          features: {
+            autoGenerateForms: 'true',
+            autoGenerateViews: 'true',
+          },
+        })),
+      })),
+    }));
+  });
 
   beforeEach(() => {
     context = {
@@ -56,7 +76,11 @@ describe('should sync amplify backend models', () => {
           envName: 'testEnvName',
         },
       },
+      print: { warning: jest.fn() },
     };
+
+    mockedFeatureFlags.getNumber.mockReturnValue(2);
+    getMockedSchema.mockClear();
   });
 
   it('should getAmplifyBackendModels', async () => {
@@ -72,6 +96,22 @@ describe('should sync amplify backend models', () => {
     expect(getMockedSchema).toBeCalled();
     expect(dataSchema).toBeDefined();
     expect(Object.keys(dataSchema!.models)).toContain('Blog');
+  });
+
+  it('should not getAmplifyBackendModels and return undefined if graphQLTransformer version not supported', async () => {
+    mockedFeatureFlags.getNumber.mockReturnValue(1);
+
+    awsMock.AmplifyBackend = jest.fn(() => ({
+      getBackendAPIModels: jest.fn(() => ({
+        promise: () => ({
+          Models: getMockedSchema(),
+        }),
+      })),
+    }));
+    const client = await AmplifyStudioClient.setClientInfo(context);
+    const dataSchema = await getAmplifyDataSchema(client);
+    expect(getMockedSchema).not.toBeCalled();
+    expect(dataSchema).toBeUndefined();
   });
 
   it('should handle Models not found', async () => {

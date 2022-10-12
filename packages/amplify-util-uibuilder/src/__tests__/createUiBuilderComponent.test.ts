@@ -3,11 +3,12 @@ import {
   generateAmplifyUiBuilderIndexFile,
   createUiBuilderTheme,
   createUiBuilderComponent,
+  createUiBuilderForm,
+  generateAmplifyUiBuilderUtilFile,
 } from '../commands/utils/codegenResources';
 
 jest.mock('@aws-amplify/codegen-ui');
 const codegenMock = codegen as any;
-const renderSchemaToTemplateMock = jest.fn();
 
 describe('can create a ui builder component', () => {
   let context: any;
@@ -42,6 +43,7 @@ describe('can create a ui builder component', () => {
       properties: {},
       variants: [],
     };
+    const renderSchemaToTemplateMock = jest.fn();
     codegenMock.StudioTemplateRendererManager = jest.fn().mockImplementation(() => ({
       renderSchemaToTemplate: renderSchemaToTemplateMock,
     }));
@@ -54,8 +56,24 @@ describe('can create a ui builder component', () => {
     createUiBuilderTheme(context, schema);
     expect(new codegenMock.StudioTemplateRendererManager().renderSchemaToTemplate).toBeCalled();
   });
+  it('calls the renderManager for forms', () => {
+    createUiBuilderForm(context, schema);
+    expect(new codegenMock.StudioTemplateRendererManager().renderSchemaToTemplate).toBeCalled();
+  });
   it('calls the renderManager for index file', () => {
     generateAmplifyUiBuilderIndexFile(context, [schema]);
     expect(new codegenMock.StudioTemplateRendererManager().renderSchemaToTemplate).toBeCalled();
+  });
+  it('calls the renderManager for utils file w/ validation, formatter, and fetchByPath helpers if there is a form', () => {
+    generateAmplifyUiBuilderUtilFile(context, { hasForms: true, hasViews: false });
+    expect(new codegenMock.StudioTemplateRendererManager().renderSchemaToTemplate).toBeCalledWith(expect.arrayContaining(['validation', 'formatter', 'fetchByPath']));
+  });
+  it('calls the renderManager for utils file w/ formatter helper if there is a view', () => {
+    generateAmplifyUiBuilderUtilFile(context, { hasForms: false, hasViews: true });
+    expect(new codegenMock.StudioTemplateRendererManager().renderSchemaToTemplate).toBeCalledWith(['formatter']);
+  });
+  it('should not call the renderManager for utils file if there is neither form nor views', () => {
+    generateAmplifyUiBuilderUtilFile(context, { hasForms: false, hasViews: false });
+    expect(new codegenMock.StudioTemplateRendererManager().renderSchemaToTemplate).toBeCalledTimes(0);
   });
 });

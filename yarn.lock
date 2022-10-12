@@ -216,21 +216,21 @@
   dependencies:
     "@aws-amplify/core" "4.3.11"
 
-"@aws-amplify/codegen-ui-react@^2.4.2":
-  version "2.4.2"
-  resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui-react/-/codegen-ui-react-2.4.2.tgz#fc84f2820bd06be8d6e87b4ccb6cdd0bbc3c914a"
-  integrity sha512-4JnMZfxaGxUeEgGh4sP7F1g6UNcb8KIyNT/qTSaj7lEqC9i6dyJgjIC/KNlqIT+mg4QTySTB4kC6yTz66DBWXw==
+"@aws-amplify/codegen-ui-react@^2.5.1":
+  version "2.5.1"
+  resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui-react/-/codegen-ui-react-2.5.1.tgz#5b878e094ea13eaa54124214e6902354e0077a1f"
+  integrity sha512-/4HZmlz6Ee9Ed8r7DhpxExNcYf5iSoO185ImRNXd00SI0tjkEo447yOvbcAyip9qhEGDrtN4vED5FSjfyoXkSQ==
   dependencies:
-    "@aws-amplify/codegen-ui" "2.4.2"
+    "@aws-amplify/codegen-ui" "2.5.1"
     "@typescript/vfs" "~1.3.5"
     typescript "<=4.5.0"
   optionalDependencies:
     prettier "2.3.2"
 
-"@aws-amplify/codegen-ui@2.4.2", "@aws-amplify/codegen-ui@^2.4.2":
-  version "2.4.2"
-  resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui/-/codegen-ui-2.4.2.tgz#3502b97ecfa34089f8dd41313de38d5a51a40975"
-  integrity sha512-VEo/eFbX1iKmtauK6KkM1AQIa5g8Hwa5f/vVuDZpS82h9NoKGRivovII1Hfq+ke6sgx8sCRgFjTZWbbvuNqVVg==
+"@aws-amplify/codegen-ui@2.5.1", "@aws-amplify/codegen-ui@^2.5.1":
+  version "2.5.1"
+  resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui/-/codegen-ui-2.5.1.tgz#24393cc9d52b7773c67ad1fa2d82ffd18a154c70"
+  integrity sha512-WuVtd/+kt2qqCXsUMNz0KGrF4JyTvKCmo3gANS/NXyPR4jcWnJm0ZR5/5aTWhVNprzSPeuPuYymIWZ4uRcTSuA==
   dependencies:
     change-case "^4.1.2"
     yup "^0.32.11"
@@ -8824,7 +8824,7 @@
 
 "@szmarczak/http-timer@^4.0.5":
   version "4.0.6"
-  resolved "https://registry.yarnpkg.com/@szmarczak/http-timer/-/http-timer-4.0.6.tgz#b4a914bb62e7c272d4e5989fe4440f812ab1d807"
+  resolved "https://registry.npmjs.org/@szmarczak/http-timer/-/http-timer-4.0.6.tgz#b4a914bb62e7c272d4e5989fe4440f812ab1d807"
   integrity sha512-4BAffykYOgO+5nzBWYwE3W90sBgLJoUPRWWcL8wlyiM8IB8ipJz3UMJ9KXQd1RKQXpKp8Tutn80HZtWsu2u76w==
   dependencies:
     defer-to-connect "^2.0.0"
@@ -10895,6 +10895,22 @@ aws-sdk@^2.1169.0:
   version "2.1213.0"
   resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1213.0.tgz#efdbe52c72e6879348650ff9a69ab55ef948b6f3"
   integrity sha512-ZfrUfhlLjwvQ6QTbg8lR4+SRFHaivzZMmfpS+64YzafcKjwc7rklYqiyh4MPTSmdNZkErgaAykYpXPMuTiWBug==
+  dependencies:
+    buffer "4.9.2"
+    events "1.1.1"
+    ieee754 "1.1.13"
+    jmespath "0.16.0"
+    querystring "0.2.0"
+    sax "1.2.1"
+    url "0.10.3"
+    util "^0.12.4"
+    uuid "8.0.0"
+    xml2js "0.4.19"
+
+aws-sdk@^2.1221.0:
+  version "2.1231.0"
+  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1231.0.tgz#c02e83b095211d9f6dfb540fd47fa69190af9c0d"
+  integrity sha512-ONBuRsOxsu0zL8u/Vmz49tPWi9D4ls2pjb6szdfSx9VQef7bOnWe9gJpWoA94OTzcjOWsvjsG7UgjvQJkIuPBg==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -13378,10 +13394,10 @@ defaults@^1.0.3:
   dependencies:
     clone "^1.0.2"
 
-defer-to-connect@^1.0.1:
-  version "1.1.3"
-  resolved "https://registry.npmjs.org/defer-to-connect/-/defer-to-connect-1.1.3.tgz#331ae050c08dcf789f8c83a7b81f0ed94f4ac591"
-  integrity sha512-0ISdNousHvZT2EiFlZeZAHBUvSxmKswVCEf8hW7KWgG4a8MVEu/3Vb6uWYozkjylyCxe0JBIiRB1jV45S70WVQ==
+defer-to-connect@^2.0.0:
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/defer-to-connect/-/defer-to-connect-2.0.1.tgz#8016bdb4143e4632b77a3449c6236277de520587"
+  integrity sha512-4tvttepXG1VaYGrRibk5EwJd1t4udunSOVMdLSAL6mId1ix438oPwPZMALY41FCijukO1L0twNcGsdzS7dHgDg==
 
 define-lazy-prop@^2.0.0:
   version "2.0.0"
