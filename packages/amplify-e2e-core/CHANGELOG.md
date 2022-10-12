@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.3-ds-dep-fix.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.2.2...@aws-amplify/amplify-e2e-core@4.2.3-ds-dep-fix.0) (2022-10-12)
+
+
+### Bug Fixes
+
+* bug with carriage return after ctrl A ([#11133](https://github.com/aws-amplify/amplify-cli/issues/11133)) ([de41614](https://github.com/aws-amplify/amplify-cli/commit/de4161441fa69ba7d888ff6ec200eed825f361e8))
+* headless pull with Oauth social providers ([#11011](https://github.com/aws-amplify/amplify-cli/issues/11011)) ([afbdd20](https://github.com/aws-amplify/amplify-cli/commit/afbdd206b5a19666027cc10d9f6f28e9683f84d4))
+
+
+
+
+
 ## [4.2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.2.1...@aws-amplify/amplify-e2e-core@4.2.2) (2022-10-03)
 
 
