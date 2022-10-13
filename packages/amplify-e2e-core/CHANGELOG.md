@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.3.0-hooksdeletion.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.2.2...@aws-amplify/amplify-e2e-core@4.3.0-hooksdeletion.0) (2022-10-13)
+
+
+### Bug Fixes
+
+* bug with carriage return after ctrl A ([#11133](https://github.com/aws-amplify/amplify-cli/issues/11133)) ([de41614](https://github.com/aws-amplify/amplify-cli/commit/de4161441fa69ba7d888ff6ec200eed825f361e8))
+* headless pull with Oauth social providers ([#11011](https://github.com/aws-amplify/amplify-cli/issues/11011)) ([afbdd20](https://github.com/aws-amplify/amplify-cli/commit/afbdd206b5a19666027cc10d9f6f28e9683f84d4))
+* keeps hooks intact when attach backend ([e63f0ce](https://github.com/aws-amplify/amplify-cli/commit/e63f0cee4702d26efbedef125794f2e2a717517a))
+
+
+### Features
+
+* pretty-print for iterative deployment ([#11051](https://github.com/aws-amplify/amplify-cli/issues/11051)) ([4184164](https://github.com/aws-amplify/amplify-cli/commit/418416420756273f286d81384f4e63924deda4a9))
+
+
+
+
+
 ## [4.2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.2.1...@aws-amplify/amplify-e2e-core@4.2.2) (2022-10-03)
 
 
