@@ -20,6 +20,16 @@ export {
   analyticsPluginAPIPush,
 } from './analytics-resource-api';
 
+export { migrate } from './provider-utils/awscloudformation/service-walkthroughs/pinpoint-walkthrough';
+
+export {
+  analyticsPluginAPIGetResources,
+  analyticsPluginAPICreateResource,
+  analyticsPluginAPIToggleNotificationChannel,
+  analyticsPluginAPIPostPush,
+  analyticsPluginAPIPush,
+} from './analytics-resource-api';
+
 const category = 'analytics';
 
 /**

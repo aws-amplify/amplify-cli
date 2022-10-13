@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-appsync-simulator",
-  "version": "2.6.1",
+  "version": "2.6.2",
   "description": "An AppSync Simulator to test AppSync API.",
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
     "clean": "rimraf ./lib tsconfig.tsbuildinfo tsconfig.tests.tsbuildinfo node_modules",
     "watch": "tsc -w",
     "start": "node ./lib/index.js",
-    "test": "jest --forceExit"
+    "test": "jest --logHeapUsage --forceExit"
   },
   "dependencies": {
     "@graphql-tools/schema": "^8.3.1",

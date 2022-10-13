@@ -11,6 +11,12 @@ export {
   notificationsAPIGetAvailableChannelNames,
 } from './plugin-provider-api-notifications';
 
+export {
+  notificationsPluginAPIGetResource,
+  notificationsPluginAPIRemoveApp,
+  notificationsAPIGetAvailableChannelNames,
+} from './plugin-provider-api-notifications';
+
 const category = 'notifications';
 
 /**

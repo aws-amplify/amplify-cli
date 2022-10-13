@@ -11,6 +11,7 @@ import {
 import { parse, ObjectTypeDefinitionNode, DirectiveNode, FieldDefinitionNode } from 'graphql';
 import { printer } from 'amplify-prompts';
 import { DirectiveWrapper } from '@aws-amplify/graphql-transformer-core';
+import { FeatureFlags } from "amplify-cli-core";
 
 export function showACM(sdl: string, nodeName: string) {
   const schema = parse(sdl);
@@ -25,11 +26,17 @@ export function showACM(sdl: string, nodeName: string) {
     const acm = new AccessControlMatrix({ name: type.name.value, operations: MODEL_OPERATIONS, resources: fields });
     const parentAuthDirective = type.directives?.find(dir => dir.name.value === 'auth');
     if (parentAuthDirective) {
-      const authRules: AuthRule[] = getAuthDirectiveRules(new DirectiveWrapper(parentAuthDirective));
+      const authRules: AuthRule[] = getAuthDirectiveRules(
+        new DirectiveWrapper(parentAuthDirective),
+        {
+          isField: false,
+          deepMergeArguments: FeatureFlags.getBoolean('graphqltransformer.shouldDeepMergeDirectiveConfigDefaults'),
+        },
+      );
       convertModelRulesToRoles(acm, authRules);
     }
-    for (let fieldNode of type.fields || []) {
-      let fieldAuthDir = fieldNode.directives?.find(dir => dir.name.value === 'auth') as DirectiveNode;
+    for (const fieldNode of type.fields || []) {
+      const fieldAuthDir = fieldNode.directives?.find(dir => dir.name.value === 'auth') as DirectiveNode;
       if (fieldAuthDir) {
         if (parentAuthDirective) {
           acm.resetAccessForResource(fieldNode.name.value);

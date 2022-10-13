@@ -130,8 +130,8 @@ export function cancelIterativeAmplifyPush(
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
-      .wait(`Deploying (${idx.current} of ${idx.max})`)
-      .wait(/.*UPDATE_IN_PROGRESS GraphQLSchema*/)
+      .wait(`Deploying iterative update ${idx.current} of ${idx.max} into`)
+      .wait(/.*AWS::AppSync::GraphQLSchema\s*UPDATE_IN_PROGRESS.*/)
       .sendCtrlC()
       .run((err: Error) => {
         if (err && !/Killed the process as no output receive for/.test(err.message)) {
