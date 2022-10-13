@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [10.3.0-studio-forms.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.2.3...@aws-amplify/cli@10.3.0-studio-forms.0) (2022-10-13)
+
+
+### Features
+
+* no-op feat commit to force version bump ([#11132](https://github.com/aws-amplify/amplify-cli/issues/11132)) ([9f3bba7](https://github.com/aws-amplify/amplify-cli/commit/9f3bba77a3dc24318df3523c2ceb7029f5fcb56c))
+
+
+
+
+
 ## [10.2.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.2.2...@aws-amplify/cli@10.2.3) (2022-10-10)
 
 **Note:** Version bump only for package @aws-amplify/cli

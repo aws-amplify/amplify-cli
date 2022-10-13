@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.1-studio-forms.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-logger@1.2.0...amplify-cli-logger@1.2.1-studio-forms.0) (2022-10-13)
+
+**Note:** Version bump only for package amplify-cli-logger
+
+
+
+
+
 # [1.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-logger@1.1.3...amplify-cli-logger@1.2.0) (2022-06-03)
 
 

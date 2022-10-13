@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.6.0-studio-forms.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@2.5.0...amplify-prompts@2.6.0-studio-forms.0) (2022-10-13)
+
+
+### Features
+
+* pretty-print for iterative deployment ([#11051](https://github.com/aws-amplify/amplify-cli/issues/11051)) ([4184164](https://github.com/aws-amplify/amplify-cli/commit/418416420756273f286d81384f4e63924deda4a9))
+
+
+
+
+
 # [2.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@2.3.0...amplify-prompts@2.5.0) (2022-09-21)
 
 

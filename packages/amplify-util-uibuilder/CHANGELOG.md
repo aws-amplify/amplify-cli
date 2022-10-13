@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.5.0-studio-forms.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.4.2...@aws-amplify/amplify-util-uibuilder@1.5.0-studio-forms.0) (2022-10-13)
+
+
+### Bug Fixes
+
+* updateUserAttributeSetting during add/update/push flows ([#10773](https://github.com/aws-amplify/amplify-cli/issues/10773)) ([52c1e49](https://github.com/aws-amplify/amplify-cli/commit/52c1e49caa5098c37c32c9f2b6f095cfd60454b1))
+
+
+### Features
+
+* **amplify-util-uibuilder:** add studio forms ([e019c3c](https://github.com/aws-amplify/amplify-cli/commit/e019c3c26dac5b32fe769c36fbdbb4ceb58c41cf))
+* **amplify-util-uibuilder:** update codegen-ui with responsive app support ([#11028](https://github.com/aws-amplify/amplify-cli/issues/11028)) ([2088309](https://github.com/aws-amplify/amplify-cli/commit/2088309f91f32069765cf514d91067600770a0ac))
+
+
+
+
+
 ## [1.4.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.4.1...@aws-amplify/amplify-util-uibuilder@1.4.2) (2022-10-03)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder

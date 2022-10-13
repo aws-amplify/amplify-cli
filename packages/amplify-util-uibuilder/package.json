@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-util-uibuilder",
-  "version": "1.4.2",
+  "version": "1.5.0-studio-forms.0",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -15,8 +15,8 @@
   "dependencies": {
     "@aws-amplify/codegen-ui": "^2.5.1",
     "@aws-amplify/codegen-ui-react": "^2.5.1",
-    "amplify-cli-core": "3.2.1",
-    "amplify-prompts": "2.5.0",
+    "amplify-cli-core": "3.2.2-studio-forms.0",
+    "amplify-prompts": "2.6.0-studio-forms.0",
     "aws-sdk": "^2.1221.0",
     "fs-extra": "^8.1.0",
     "ora": "^4.0.3"
