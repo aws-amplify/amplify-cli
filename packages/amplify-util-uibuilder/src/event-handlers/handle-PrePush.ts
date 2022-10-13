@@ -1,13 +1,13 @@
 import { $TSContext } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-import { run as generateComponents } from '../commands/generateComponents';
+import { prePushHandler } from '../utils/prePushHandler';
 
 /**
- * The code to run after a push
+ * The code to run before a push.
  */
 export const run = async (context: $TSContext): Promise<void> => {
   try {
-    await generateComponents(context, 'PostPush');
+    await prePushHandler(context);
   } catch (e) {
     // Swallow all errors from the uibuilder plugin
     printer.debug(e);
