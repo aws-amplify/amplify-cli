@@ -1,96 +1,137 @@
-import _ from 'lodash';
 import {
-  addSMSNotification,
+  addNotificationChannel,
   amplifyPull,
   amplifyPushAuth,
+  amplifyStatus,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
   describeCloudFormationStack,
   getAppId,
   getProjectMeta,
-  getTeamProviderInfo,
   initJSProjectWithProfile,
+  removeAllNotificationChannel,
+  removeNotificationChannel,
 } from '@aws-amplify/amplify-e2e-core';
-import { checkoutEnvironment, removeEnvironment } from '../environment/env';
-import { getShortId } from '../import-helpers';
-
-const profileName = 'amplify-integ-test-user';
+import {
+  expectLocalAndPulledAwsExportsMatching,
+  expectLocalAndPulledBackendAmplifyMetaMatching,
+  expectLocalAndPulledBackendConfigMatching,
+  getShortId,
+} from '../import-helpers';
 
 describe('notification category test', () => {
-  const projectPrefix = 'notification';
+  const INLINE_NOTIFICATION_CHOICES = ['SMS'];
+  const DEFERRED_NOTIFICATION_CHOICES = ['In-App Messaging'];
 
-  const projectSettings = {
-    name: projectPrefix,
-  };
+  // inline channels
+  it.each(INLINE_NOTIFICATION_CHOICES)('should add the %s channel correctly when no pinpoint is configured', async channel => {
+    const projectPrefix = `notification${getShortId()}`;
+    const projectSettings = { name: projectPrefix, disableAmplifyAppCreation: false };
 
-  let projectRoot: string;
-  let ignoreProjectDeleteErrors = false;
+    const projectRoot = await createNewProjectDir(projectPrefix);
+    await initJSProjectWithProfile(projectRoot, projectSettings);
 
-  beforeEach(async () => {
-    projectRoot = await createNewProjectDir(projectPrefix);
-    ignoreProjectDeleteErrors = false;
-  });
-
-  afterEach(async () => {
-    try {
-      await deleteProject(projectRoot);
-    } catch (error) {
-      // In some tests where project initialization fails it can lead to errors on cleanup which we
-      // can ignore if set by the test
-      if (!ignoreProjectDeleteErrors) {
-        throw error;
-      }
-    }
-    deleteProjectDir(projectRoot);
-  });
-
-  it('add notifications and pull to empty dir to compare values', async () => {
-    await initJSProjectWithProfile(projectRoot, {
-      ...projectSettings,
-      disableAmplifyAppCreation: false,
-    });
-
-    const shortId = getShortId();
-
-    const settings = {
-      resourceName: `${projectPrefix}${shortId}`,
-    };
-
-    await addSMSNotification(projectRoot, settings);
-
-    await amplifyPushAuth(projectRoot);
-
-    const appId = getAppId(projectRoot);
-    expect(appId).toBeDefined();
-
-    let projectRootPull;
+    let projectRootPull: string;
 
     try {
-      projectRootPull = await createNewProjectDir('notification-pull');
+      const settings = { resourceName: `${projectPrefix}${getShortId()}` };
+      await addNotificationChannel(projectRoot, settings, channel);
 
+      const appId = getAppId(projectRoot);
+      expect(appId).toBeDefined();
+
+      projectRootPull = await createNewProjectDir(`notification-pull${getShortId()}`);
       await amplifyPull(projectRootPull, { override: false, emptyDir: true, appId });
 
-      expectLocalAndPulledTeamNotificationMatching(projectRoot, projectRootPull);
+      expectLocalAndPulledBackendConfigMatching(projectRoot, projectRootPull);
+      expectLocalAndPulledBackendAmplifyMetaMatching(projectRoot, projectRootPull);
+      expectLocalAndPulledAwsExportsMatching(projectRoot, projectRootPull);
 
       // Delete the project now to assert that CFN is able to clean up successfully.
       const { StackId: stackId, Region: region } = getProjectMeta(projectRoot).providers.awscloudformation;
       await deleteProject(projectRoot);
-      ignoreProjectDeleteErrors = true;
+
       const stack = await describeCloudFormationStack(stackId, region);
       expect(stack.StackStatus).toEqual('DELETE_COMPLETE');
     } finally {
+      deleteProjectDir(projectRoot);
       deleteProjectDir(projectRootPull);
     }
   });
 
-  const expectLocalAndPulledTeamNotificationMatching = (projectRoot: string, pulledProjectRoot: string) => {
-    const team = getTeamProviderInfo(projectRoot);
-    const pulledTeam = getTeamProviderInfo(pulledProjectRoot);
+  // deferred channels
+  it.each(DEFERRED_NOTIFICATION_CHOICES)('should add the %s channel correctly when no pinpoint is configured', async channel => {
+    const projectPrefix = `notification${getShortId()}`;
+    const projectSettings = { name: projectPrefix, disableAmplifyAppCreation: false };
 
-    const pinpointApp = _.get(team, ['integtest', 'categories', 'notifications']);
-    const pulledPinpointApp = _.get(pulledTeam, ['integtest', 'categories', 'notifications']);
+    const projectRoot = await createNewProjectDir(projectPrefix);
+    await initJSProjectWithProfile(projectRoot, projectSettings);
 
-    expect(pinpointApp).toMatchObject(pulledPinpointApp);
-  };
+    let projectRootPull: string;
+
+    try {
+      const settings = { resourceName: `${projectPrefix}${getShortId()}` };
+      await addNotificationChannel(projectRoot, settings, channel);
+
+      const appId = getAppId(projectRoot);
+      expect(appId).toBeDefined();
+
+      await amplifyPushAuth(projectRoot);
+
+      projectRootPull = await createNewProjectDir(`notification-pull${getShortId()}`);
+      await amplifyPull(projectRootPull, { override: false, emptyDir: true, appId });
+
+      expectLocalAndPulledBackendConfigMatching(projectRoot, projectRootPull);
+      expectLocalAndPulledBackendAmplifyMetaMatching(projectRoot, projectRootPull);
+      expectLocalAndPulledAwsExportsMatching(projectRoot, projectRootPull);
+
+      // Delete the project now to assert that CFN is able to clean up successfully.
+      const { StackId: stackId, Region: region } = getProjectMeta(projectRoot).providers.awscloudformation;
+      await deleteProject(projectRoot);
+
+      const stack = await describeCloudFormationStack(stackId, region);
+      expect(stack.StackStatus).toEqual('DELETE_COMPLETE');
+    } finally {
+      deleteProjectDir(projectRoot);
+      deleteProjectDir(projectRootPull);
+    }
+  });
+
+  // inline channels
+  it.each(INLINE_NOTIFICATION_CHOICES)('should add and remove the %s channel correctly when no pinpoint is configured', async channel => {
+    const projectPrefix = `notification${getShortId()}`;
+    const projectSettings = { name: projectPrefix, disableAmplifyAppCreation: false };
+
+    const projectRoot = await createNewProjectDir(projectPrefix);
+    await initJSProjectWithProfile(projectRoot, projectSettings);
+
+    try {
+      const settings = { resourceName: `${projectPrefix}${getShortId()}` };
+      await addNotificationChannel(projectRoot, settings, channel);
+
+      const appId = getAppId(projectRoot);
+      expect(appId).toBeDefined();
+
+      await amplifyStatus(projectRoot, 'Notifications');
+      await amplifyStatus(projectRoot, 'Analytics');
+      await amplifyStatus(projectRoot, 'Auth');
+
+      await removeNotificationChannel(projectRoot, channel);
+
+      await amplifyStatus(projectRoot, 'Notifications');
+      await amplifyStatus(projectRoot, 'Analytics');
+      await amplifyStatus(projectRoot, 'Auth');
+
+      await removeAllNotificationChannel(projectRoot);
+
+      await amplifyStatus(projectRoot, '^(Notifications)');
+      await amplifyStatus(projectRoot, 'Analytics');
+      await amplifyStatus(projectRoot, 'Auth');
+
+      await deleteProject(projectRoot);
+    } finally {
+      deleteProjectDir(projectRoot);
+    }
+  });
 });

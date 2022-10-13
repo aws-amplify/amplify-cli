@@ -20,6 +20,7 @@
     "watch": "tsc --watch"
   },
   "dependencies": {
+    "@aws-amplify/amplify-environment-parameters": "1.1.2",
     "amplify-cli-core": "3.2.1",
     "amplify-prompts": "2.5.0",
     "fs-extra": "^8.1.0",

@@ -12,11 +12,13 @@ jest.mock('amplify-cli-core', () => ({
     getLocalEnvInfo: jest.fn(),
     getProjectConfig: jest.fn(),
     metaFileExists: jest.fn(),
+    backendConfigFileExists: jest.fn(),
     getMeta: jest.fn().mockReturnValue({
       providers: {
         awscloudformation: {},
       },
     }),
+    getBackendConfig: jest.fn().mockReturnValue({}),
   },
 }));
 
@@ -40,6 +42,7 @@ describe('getProjectDetails', () => {
   beforeEach(() => {
     stateManagerMock.getProjectConfig.mockReturnValue(mockProjectConfig);
   });
+
   it('should return correctly if there is not amplify-meta.json and team-provider.json', () => {
     stateManagerMock.metaFileExists.mockReturnValue(false);
 
@@ -47,15 +50,19 @@ describe('getProjectDetails', () => {
     expect(response).toStrictEqual({
       amplifyMeta: {},
       projectConfig: mockProjectConfig,
+      backendConfig: {},
       localEnvInfo: {
         envName: 'test',
       },
     });
   });
+
   it('should return correctly if amplify-meta.json and team-provider-info.json exist', () => {
     stateManagerMock.metaFileExists.mockReturnValue(true);
+    stateManagerMock.backendConfigFileExists.mockReturnValue(true);
     const response = getProjectDetails();
     expect(stateManagerMock.getMeta.mock.calls.length).toBe(1);
+    expect(stateManagerMock.getBackendConfig.mock.calls.length).toBe(1);
     expect(response).toStrictEqual({
       amplifyMeta: {
         providers: {
@@ -63,6 +70,7 @@ describe('getProjectDetails', () => {
         },
       },
       projectConfig: mockProjectConfig,
+      backendConfig: {},
       localEnvInfo: {
         envName: 'test',
       },

@@ -521,6 +521,20 @@ async function isSMSWorkflowEnabled(context, resourceName) {
   return result;
 }
 
+/**
+ * Execute auth Push command with force yes
+ * @param {Object} context - The amplify context.
+ */
+const authPush = async context => {
+  const commandPath = path.normalize(path.join(__dirname, 'commands', category, 'push'));
+  const commandModule = await import(commandPath);
+  context.exeInfo = (context.exeInfo) || {};
+  context.exeInfo.inputParams = (context.exeInfo.inputParams) || {};
+  context.exeInfo.inputParams.yes = true; // force yes to avoid prompts
+  await commandModule.run(context);
+};
+
+
 module.exports = {
   externalAuthEnable,
   migrateAuthResource,
@@ -544,4 +558,5 @@ module.exports = {
   AmplifyAuthTransform,
   AmplifyUserPoolGroupTransform,
   transformCategoryStack,
+  authPluginAPIPush: authPush,
 };

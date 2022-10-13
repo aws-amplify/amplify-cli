@@ -128,6 +128,7 @@ export type AmplifyErrorType =
   | 'NestedProjectInitError'
   | 'NoUpdateBackendError'
   | 'NotImplementedError'
+  | 'OpenSslCertificateError'
   | 'ParameterNotFoundError'
   | 'PermissionsError'
   | 'PluginMethodNotFoundError'
@@ -139,8 +140,12 @@ export type AmplifyErrorType =
   | 'ProjectNotInitializedError'
   | 'PushResourcesError'
   | 'RegionNotAvailableError'
+  | 'RemoveNotificationAppError'
+  | 'ResourceNotReadyError'
+  | 'ResourceAlreadyExistsError'
   | 'StackNotFoundError'
-  | 'StackStateError';
+  | 'StackStateError'
+  | 'UserInputError';
 
 /**
  * Amplify fault types
@@ -148,9 +153,15 @@ export type AmplifyErrorType =
 export type AmplifyFaultType =
   | 'AmplifyBackupFault'
   | 'BackendPullFault'
+  | 'ConfigurationFault'
   | 'BackendDeleteFault'
   | 'ConfigurationFault'
   | 'DeploymentFault'
+  | 'NotificationsChannelAPNSFault'
+  | 'NotificationsChannelEmailFault'
+  | 'NotificationsChannelFCMFault'
+  | 'NotificationsChannelSmsFault'
+  | 'NotificationsChannelInAppMessagingFault'
   | 'NotImplementedFault'
   | 'ProjectDeleteFault'
   | 'ProjectInitFault'
@@ -160,6 +171,7 @@ export type AmplifyFaultType =
   | 'ResourceExportFault'
   | 'ResourceNotFoundFault'
   | 'ResourceNotReadyFault'
+  | 'ResourceRemoveFault'
   | 'RootStackNotFoundFault'
   | 'ServiceCallFault'
   | 'TimeoutFault'
