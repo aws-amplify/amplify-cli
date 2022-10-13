@@ -13,7 +13,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "test": "jest",
+    "test": "jest --logHeapUsage",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "watch": "tsc -w"
   },

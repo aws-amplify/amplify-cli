@@ -39,6 +39,8 @@ describe('init', () => {
   it('loads params and registers save on exit listener', async () => {
     const executeProcessEvents = getProcessEventSpy();
     await ensureEnvParamManager();
+    // it's important that the save callback is registered on exit instead of beforeExit
+    // because if save fails, beforeExit will be called again
     executeProcessEvents('exit');
     expect(stateManagerMock.setTeamProviderInfo).toHaveBeenCalledWith(undefined, stubTPI);
   });

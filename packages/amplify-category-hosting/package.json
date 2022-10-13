@@ -15,7 +15,7 @@
     "aws"
   ],
   "scripts": {
-    "test": "jest --coverage"
+    "test": "jest --logHeapUsage --coverage"
   },
   "dependencies": {
     "amplify-cli-core": "3.2.1",

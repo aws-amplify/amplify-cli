@@ -813,7 +813,7 @@ export async function getAwsConfig(context: $TSContext): Promise<AwsSdkConfig> {
       throw amplifyErrorWithTroubleshootingLink('AmplifyStudioLoginError', {
         message: 'Failed to fetch Amplify Studio credentials',
         details: err.message,
-      });
+      }, err);
     }
   }
 

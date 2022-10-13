@@ -393,7 +393,7 @@ class CloudFormation {
       throw amplifyFaultWithTroubleshootingLink('ResourceNotReadyFault', {
         message: error.message,
         stack: error.stack,
-      });
+      }, error);
     }
   }
 

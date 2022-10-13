@@ -17,7 +17,7 @@
   ],
   "scripts": {
     "generate-xcode-bindings": "node ./scripts/native-bindings-gen",
-    "test": "jest",
+    "test": "jest --logHeapUsage",
     "test-watch": "jest --watch"
   },
   "dependencies": {

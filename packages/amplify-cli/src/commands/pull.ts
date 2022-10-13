@@ -25,7 +25,7 @@ export const run = async (context: $TSContext): Promise<void> => {
         message: `Failed to pull sandbox app.`,
         details: e.message || 'An unknown error occurred.',
         stack: e.stack,
-      });
+      }, e);
     }
     return;
   }

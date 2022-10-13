@@ -65,7 +65,7 @@ export const init = async amplifyServiceParams => {
       throw new AmplifyError('ProjectNotFoundError', {
         message: `Amplify AppID ${inputAmplifyAppId} not found.`,
         resolution: `Please ensure your local profile matches the AWS account or region in which the Amplify app exists.`,
-      });
+      }, e);
     }
   }
 
@@ -99,7 +99,7 @@ export const init = async amplifyServiceParams => {
         throw amplifyFaultWithTroubleshootingLink('ProjectInitFault', {
           message: e.message,
           stack: e.stack,
-        });
+        }, e);
       }
     }
   }
@@ -189,7 +189,7 @@ export const deleteEnv = async (context, envName, awsConfigInfo?) => {
       throw amplifyFaultWithTroubleshootingLink('ProjectDeleteFault', {
         message: ex.message,
         stack: ex.stack,
-      });
+      }, ex);
     }
   }
 };
@@ -246,7 +246,7 @@ export const postPushCheck = async (context: $TSContext) => {
         throw amplifyFaultWithTroubleshootingLink('ProjectInitFault', {
           message: e.message,
           stack: e.stack,
-        });
+        }, e);
       }
     }
   }

@@ -15,7 +15,7 @@
     "aws"
   ],
   "scripts": {
-    "test": "jest",
+    "test": "jest --logHeapUsage",
     "test-watch": "jest --watch"
   },
   "dependencies": {

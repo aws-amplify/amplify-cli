@@ -293,7 +293,27 @@ const getEnvName = async (context: $TSContext): Promise<string> => {
   return envName;
 };
 
-const isNewEnv = (envName: string): boolean => !getAllEnvs().includes(envName);
+/**
+ * TODO this currently checks both local-aws-info and team-provider-info for environments
+ *
+ * We need to remove the check from team-provider-info and instead use a service call
+ * but this is a breaking change because it means that some init flows will now require additional arguments to correctly
+ * attach to existing environments.
+ * Specifically we need the appId, region and AWS credentials to make a service call to get existing environments
+ *
+ * Most likely we should make a breaking change for this where init can no longer be use to pull existing projects and instead customers
+ * can only use pull for this use case
+ * @param envName the envName to check
+ * @returns whether the env already exists
+ */
+const isNewEnv = (envName: string): boolean => {
+  const cwd = process.cwd();
+  const readOptions = { throwIfNotExist: false, default: {} };
+  const localAwsInfoEnvs = Object.keys(stateManager.getLocalAWSInfo(cwd, readOptions));
+  const tpiEnvs = Object.keys(stateManager.getTeamProviderInfo(cwd, readOptions));
+  const allEnvs = Array.from(new Set([...localAwsInfoEnvs, ...tpiEnvs]));
+  return !allEnvs.includes(envName);
+};
 
 const isNewProject = (context: $TSContext): boolean => {
   let newProject = true;

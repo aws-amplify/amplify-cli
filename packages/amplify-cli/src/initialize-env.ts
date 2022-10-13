@@ -56,7 +56,7 @@ export const initializeEnv = async (
           details: e.message,
           resolution: `Review the error message and stack trace for additional information.`,
           stack: e.stack,
-        });
+        }, e);
       }
     };
     const currentEnvMeta = await ensureEnvMeta(context, currentEnv);
@@ -101,7 +101,7 @@ export const initializeEnv = async (
         message: `Could not initialize categories for '${currentEnv}': ${e.message}`,
         resolution: 'Review the error message and stack trace for additional information.',
         stack: e.stack,
-      });
+      }, e);
     } finally {
       context.usageData.stopCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES);
     }

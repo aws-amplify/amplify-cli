@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-empty-function */
+import { $TSAny } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { listLocalEnvNames } from '@aws-amplify/amplify-environment-parameters';
 import { deleteProject, getConfirmation } from '../../../extensions/amplify-helpers/delete-project';
@@ -17,6 +20,7 @@ jest.mock('../../../../__mocks__/faked-plugin', () => ({
   deleteConfig: jest.fn(),
 }));
 jest.mock('amplify-cli-core', () => ({
+  ...(jest.requireActual('amplify-cli-core') as $TSAny),
   FeatureFlags: {
     isInitialized: jest.fn().mockReturnValue(true),
     removeFeatureFlagConfiguration: jest.fn().mockResolvedValue(true),
@@ -64,7 +68,7 @@ listLocalEnvNamesMock.mockReturnValue([]);
 
 describe('getConfirmation', () => {
   it('should return proceed object', async () => {
-    const contextStub = {
+    const contextStub: $TSAny = {
       input: {},
       amplify: {
         confirmPrompt: () => { /* noop */ },
@@ -76,7 +80,7 @@ describe('getConfirmation', () => {
     expect(result).toHaveProperty('deleteAmplifyApp');
   });
   it('should return object when force option is true', async () => {
-    const contextStub = {
+    const contextStub: $TSAny = {
       input: {
         options: {
           force: true,
@@ -94,7 +98,7 @@ describe('getConfirmation', () => {
 });
 
 describe('deleteProject', () => {
-  const contextStub = {
+  const contextStub: $TSAny = {
     input: {
       options: {
         force: true,
@@ -113,7 +117,7 @@ describe('deleteProject', () => {
   });
 
   it('throws error when listBackendEnvironments promise rejected', async () => {
-    await expect(deleteProject(contextStub)).rejects.toThrow('listBackendEnvironments error');
+    await expect(deleteProject(contextStub)).rejects.toThrow('Project delete failed.');
   });
 
   it('does not throw not found error when listBackendEnvironments promise rejected', async () => {
