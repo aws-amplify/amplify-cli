@@ -289,11 +289,6 @@ const migrateCFN = (cfn: $TSAny): $TSAny => {
     Type: 'String',
   };
 
-  Parameters.pinpointInAppMessagingPolicyName = {
-    Type: 'String',
-    Default: 'NONE',
-  };
-
   delete Parameters.IAMPrefix;
 
   // Update conditions
@@ -303,19 +298,6 @@ const migrateCFN = (cfn: $TSAny): $TSAny => {
         Ref: 'env',
       },
       'NONE',
-    ],
-  };
-
-  Conditions.ShouldEnablePinpointInAppMessaging = {
-    'Fn::Not': [
-      {
-        'Fn::Equals': [
-          {
-            Ref: 'pinpointInAppMessagingPolicyName',
-          },
-          'NONE',
-        ],
-      },
     ],
   };
 
@@ -360,65 +342,6 @@ const migrateCFN = (cfn: $TSAny): $TSAny => {
     ],
   };
   Resources.PinpointFunctionOutputs.Properties.appName = newAppName;
-  Resources.PinpointInAppMessagingPolicy = {
-    Condition: 'ShouldEnablePinpointInAppMessaging',
-    Type: 'AWS::IAM::Policy',
-    Properties: {
-      PolicyName: {
-        Ref: 'pinpointInAppMessagingPolicyName',
-      },
-      Roles: [
-        {
-          Ref: 'unauthRoleName',
-        },
-        {
-          Ref: 'authRoleName',
-        },
-      ],
-      PolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Action: [
-              'mobiletargeting:GetInAppMessages',
-            ],
-            Resource: [
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:aws:mobiletargeting:',
-                    {
-                      'Fn::FindInMap': [
-                        'RegionMapping',
-                        {
-                          Ref: 'AWS::Region',
-                        },
-                        'pinpointRegion',
-                      ],
-                    },
-                    ':',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':apps/',
-                    {
-                      'Fn::GetAtt': [
-                        'PinpointFunctionOutputs',
-                        'Id',
-                      ],
-                    },
-                    '*',
-                  ],
-                ],
-              },
-            ],
-          },
-        ],
-      },
-    },
-  };
 
   // replace all IAMPrefix refs
   replaceRef(Resources, 'IAMPrefix', {

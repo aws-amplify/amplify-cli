@@ -7,6 +7,7 @@ import { printer } from 'amplify-prompts';
 import * as pinpointHelper from './utils/pinpoint-helper';
 import * as kinesisHelper from './utils/kinesis-helper';
 import { migrationCheck } from './migrations';
+import { amplifyFaultWithTroubleshootingLink } from '../../amplify-cli-core/src/errors/amplify-fault';
 
 export { migrate } from './provider-utils/awscloudformation/service-walkthroughs/pinpoint-walkthrough';
 
@@ -100,8 +101,11 @@ export const getPermissionPolicies = async (context: $TSContext, resourceOpsMapp
         printer.error(`Provider not configured for ${category}: ${resourceName}`);
       }
     } catch (e) {
-      printer.warn(`Could not get policies for ${category}: ${resourceName}`);
-      throw e;
+      throw amplifyFaultWithTroubleshootingLink('AnalyticsCategoryFault', {
+        message: `Could not get policies for ${category}: ${resourceName}`,
+        stack: e.stack,
+        details: e.message,
+      });
     }
   }
   return { permissionPolicies, resourceAttributes };

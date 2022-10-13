@@ -260,7 +260,10 @@ const pinpointAPIEnableNotificationChannel = (
       break;
     }
     default: {
-      throw Error(`Channel ${notificationChannel} is not supported on Analytics resource`);
+      throw new AmplifyError('ConfigurationError', {
+        message: `Channel ${notificationChannel} is not supported on Analytics resource`,
+        resolution: 'Use one of the supported channels',
+      });
     }
   }
   return pinPointCFNInputParams;
