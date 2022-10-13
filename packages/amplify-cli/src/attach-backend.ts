@@ -101,9 +101,12 @@ const onSuccess = async (context: $TSContext): Promise<void> => {
     await initializeEnv(context, stateManager.getCurrentMeta());
   }
   // move Hooks folder from backup to original amplify folder
-  const HooksDirPath = pathManager.getHooksDirPath(projectPath);
-  const HooksBackupDirPath = path.join(backupAmplifyDirPath, 'hooks');
-  fs.moveSync(HooksBackupDirPath, HooksDirPath, { overwrite: true });
+  const hooksDirPath = pathManager.getHooksDirPath(projectPath);
+  const hooksBackupDirPath = path.join(backupAmplifyDirPath, 'hooks');
+  // hooks folder shouldnt be present , if it is then we overrite with the given Customer folder from amplify backup
+  if (fs.existsSync(hooksBackupDirPath)) {
+    fs.moveSync(hooksBackupDirPath, hooksDirPath, { overwrite: true });
+  }
   removeBackupAmplifyFolder();
 };
 
