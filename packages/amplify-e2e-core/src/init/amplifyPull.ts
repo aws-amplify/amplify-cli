@@ -116,7 +116,7 @@ export const amplifyPullNonInteractive = (
       configLevel: 'project',
       useProfile: true,
       // eslint-disable-next-line spellcheck/spell-checker
-      profileName: 'default',
+      profileName: 'amplify-integ-test-user',
     },
   };
   const args = [
