@@ -6,16 +6,23 @@ function readJsonFromDart(jsonFilePath, encoding = 'utf8', throwOnError = true) 
     return undefined;
   }
   const fileContents = fs.readFileSync(jsonFilePath, encoding);
-  let jsonValue = fileContents.substring(fileContents.indexOf('{'), fileContents.lastIndexOf('}') + 1);
+  const configStart = fileContents.indexOf('const amplifyconfig');
+  if (configStart === -1) {
+    return undefined;
+  }
+  const QUOTE = "'''";
+  const jsonStart = fileContents.indexOf(QUOTE, configStart) + QUOTE.length;
+  const jsonEnd = fileContents.indexOf(QUOTE, jsonStart);
+  const jsonValue = fileContents.substring(jsonStart, jsonEnd).trim();
   return JSON.parse(jsonValue);
 }
 
-function writeJsonToDart(dest, obj) {
+function writeJsonToDart(dest, json) {
   const destPath = path.parse(dest).dir;
   if (!fs.existsSync(destPath)) {
     fs.mkdirSync(destPath, { recursive: true });
   }
-  const dartContent = `const amplifyconfig = ''' ${obj}''';`;
+  const dartContent = `const amplifyconfig = '''${json}''';\n`;
   fs.writeFileSync(dest, dartContent);
 }
 
