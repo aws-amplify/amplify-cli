@@ -55,10 +55,10 @@ export const attachBackend = async (context: $TSContext, inputParams): Promise<v
 
 const onSuccess = async (context: $TSContext): Promise<void> => {
   const { inputParams } = context.exeInfo;
+  const projectPath = process.cwd();
+  const backupAmplifyDirPath = path.join(projectPath, backupAmplifyDirName);
 
   if (inputParams.amplify.noOverride) {
-    const projectPath = process.cwd();
-    const backupAmplifyDirPath = path.join(projectPath, backupAmplifyDirName);
     // eslint-disable-next-line spellcheck/spell-checker
     const backupBackendDirPath = path.join(backupAmplifyDirPath, context.amplify.constants.BackendAmplifyCLISubDirName);
 
@@ -100,7 +100,10 @@ const onSuccess = async (context: $TSContext): Promise<void> => {
   } else if (stateManager.currentMetaFileExists()) {
     await initializeEnv(context, stateManager.getCurrentMeta());
   }
-
+  // move Hooks folder from backup to original amplify folder
+  const HooksDirPath = pathManager.getHooksDirPath(projectPath);
+  const HooksBackupDirPath = path.join(backupAmplifyDirPath, 'hooks');
+  fs.moveSync(HooksBackupDirPath, HooksDirPath, { overwrite: true });
   removeBackupAmplifyFolder();
 };
 
