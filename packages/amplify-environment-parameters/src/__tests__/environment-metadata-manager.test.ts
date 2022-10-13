@@ -3,6 +3,7 @@ import {
 } from 'amplify-cli-core';
 import { AmplifyBackend } from 'aws-sdk';
 import { IEnvironmentMetadata } from '../types';
+import { getProcessEventSpy } from './utils/process-event-spy';
 
 jest.mock('amplify-cli-core');
 jest.mock('aws-sdk');
@@ -60,7 +61,7 @@ beforeEach(() => {
 
 describe('initEnvMeta', () => {
   it('registers specified meta to be saved on exit', async () => {
-    const executeProcessEvents = getProcessOnSpy();
+    const executeProcessEvents = getProcessEventSpy();
     await initEnvMeta(stubContext);
     executeProcessEvents('exit');
     expect(stateManagerMock.setTeamProviderInfo).toBeCalledTimes(1);
@@ -73,7 +74,7 @@ describe('initEnvMeta', () => {
     stateManagerMock.getTeamProviderInfo.mockReturnValue({
       env1: { test: 'remove me' },
     });
-    const executeProcessEvents = getProcessOnSpy();
+    const executeProcessEvents = getProcessEventSpy();
     await initEnvMeta(stubContext);
     executeProcessEvents('exit');
     expect(stateManagerMock.setTeamProviderInfo).toBeCalledTimes(2);
@@ -83,7 +84,7 @@ describe('initEnvMeta', () => {
   it('preserves other contents of amplify-meta on save', async () => {
     const existingMeta = { some: 'existing stuff', another: 'thing' };
     stateManagerMock.getMeta.mockReturnValue(existingMeta);
-    const executeProcessEvents = getProcessOnSpy();
+    const executeProcessEvents = getProcessEventSpy();
     await initEnvMeta(stubContext);
     executeProcessEvents('exit');
     expect(stateManagerMock.setTeamProviderInfo).toBeCalledTimes(1);
@@ -134,7 +135,7 @@ describe('ensureEnvMeta', () => {
   });
 
   it('does not save on exit when loading from amplify-meta file', async () => {
-    const executeProcessEvents = getProcessOnSpy();
+    const executeProcessEvents = getProcessEventSpy();
     await ensureEnvMeta(stubContext);
     executeProcessEvents('exit');
     expect(stateManagerMock.setTeamProviderInfo).toBeCalledTimes(0);
@@ -143,7 +144,7 @@ describe('ensureEnvMeta', () => {
   it('saves on exit when loading from #current-cloud-backend/amplify-meta file', async () => {
     stateManagerMock.getMeta.mockReturnValue({});
     stateManagerMock.getCurrentMeta.mockReturnValue({ providers: { awscloudformation: stubMeta } });
-    const executeProcessEvents = getProcessOnSpy();
+    const executeProcessEvents = getProcessEventSpy();
     await ensureEnvMeta(stubContext);
     executeProcessEvents('exit');
     expect(stateManagerMock.setTeamProviderInfo).toBeCalledTimes(1);
@@ -170,7 +171,7 @@ describe('ensureEnvMeta', () => {
         }),
       }),
     } as unknown as AmplifyBackend));
-    const executeProcessEvents = getProcessOnSpy();
+    const executeProcessEvents = getProcessEventSpy();
     const envMeta = await ensureEnvMeta(stubContext, 'other');
     expect(envMeta.AmplifyAppId).toBe('override-value');
     stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: 'other' });
@@ -179,26 +180,6 @@ describe('ensureEnvMeta', () => {
     expect(stateManagerMock.setMeta.mock.calls[0]).toEqual([undefined, { providers: { awscloudformation: overrideMeta } }]);
   });
 });
-
-/**
- * Spies on process.on and adds event listeners to an internal map
- * @returns A function that can be used to execute the event listeners that were attached to a particular event
- */
-const getProcessOnSpy = (): ((event: string, exitCode?: number) => void) => {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  const processEventListeners: Record<string | symbol, Function[]> = {};
-  jest.spyOn(process, 'on').mockImplementation((event, func) => {
-    if (Array.isArray(processEventListeners[event])) {
-      processEventListeners[event].push(func);
-    } else {
-      processEventListeners[event] = [func];
-    }
-    return process;
-  });
-  return (event: string, exitCode = 0): void => {
-    processEventListeners[event].forEach(func => func(exitCode));
-  };
-};
 
 const validateEnvMetaAgainstStubMeta = (envMeta: IEnvironmentMetadata): void => {
   Object.entries(stubMeta).forEach(([key, value]) => {

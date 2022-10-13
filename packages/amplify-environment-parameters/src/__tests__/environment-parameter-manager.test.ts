@@ -1,6 +1,7 @@
 /* eslint-disable spellcheck/spell-checker */
 import { pathManager, stateManager } from 'amplify-cli-core';
-import { IEnvironmentParameterManager } from '../environment-parameter-manager';
+import { IEnvironmentParameterManager } from '../types';
+import { getProcessEventSpy } from './utils/process-event-spy';
 
 jest.mock('amplify-cli-core');
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
@@ -27,26 +28,30 @@ let ensureEnvParamManager: () => Promise<{instance: IEnvironmentParameterManager
 
 beforeEach(() => {
   jest.clearAllMocks();
-  jest.isolateModules(async () => {
-    ({ ensureEnvParamManager } = await import('../environment-parameter-manager'));
+  // isolateModules does not work with async import()
+  jest.isolateModules(() => {
+    // eslint-disable-next-line global-require
+    ({ ensureEnvParamManager } = require('../environment-parameter-manager'));
   });
 });
 
 describe('init', () => {
   it('loads params and registers save on exit listener', async () => {
+    const executeProcessEvents = getProcessEventSpy();
     await ensureEnvParamManager();
-    process.listeners('beforeExit').forEach(fn => fn(0));
+    executeProcessEvents('exit');
     expect(stateManagerMock.setTeamProviderInfo).toHaveBeenCalledWith(undefined, stubTPI);
   });
 });
 
 describe('save', () => {
   it('stores resources with no params as empty object', async () => {
+    const executeProcessEvents = getProcessEventSpy();
     const envParamManager = (await ensureEnvParamManager()).instance;
     const funcParamManager = envParamManager.getResourceParamManager('function', 'funcName');
     funcParamManager.deleteParam('envVar1');
     funcParamManager.deleteParam('envVar2');
-    envParamManager.save();
+    executeProcessEvents('exit');
     expect(stateManagerMock.setTeamProviderInfo).toHaveBeenCalledWith(undefined, {
       testEnv: {
         categories: {
@@ -59,9 +64,10 @@ describe('save', () => {
   });
 
   it('does not store empty categories', async () => {
+    const executeProcessEvents = getProcessEventSpy();
     const envParamManager = (await ensureEnvParamManager()).instance;
     envParamManager.removeResourceParamManager('function', 'funcName');
-    envParamManager.save();
+    executeProcessEvents('exit');
     expect(stateManagerMock.setTeamProviderInfo).toHaveBeenCalledWith(undefined, {
       testEnv: {},
     });
