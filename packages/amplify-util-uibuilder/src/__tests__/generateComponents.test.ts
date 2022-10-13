@@ -1,5 +1,6 @@
 import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
-import { CloudformationProviderFacade } from 'amplify-cli-core';
+// amplify-cli-core is in project dependencies
+import { CloudformationProviderFacade } from 'amplify-cli-core'; // eslint-disable-line import/no-extraneous-dependencies
 import * as utils from '../commands/utils';
 import { run } from '../commands/generateComponents';
 
@@ -10,18 +11,20 @@ const utilsMock = utils as any;
 
 utilsMock.shouldRenderComponents = jest.fn().mockImplementation(() => true);
 utilsMock.notifyMissingPackages = jest.fn().mockImplementation(() => true);
-CloudformationProviderFacade.isAmplifyAdminApp = jest.fn().mockImplementation(() => ({
-  isAdminApp: true,
-}));
+utilsMock.getAmplifyDataSchema = jest.fn().mockImplementation(() => ({}));
 jest.mock('../commands/utils/featureFlags', () => ({
-  getTransformerVersion: jest.fn().mockImplementation(() => 2)
+  getTransformerVersion: jest.fn().mockImplementation(() => 2),
 }));
 
 describe('can generate components', () => {
   let context: any;
   let schemas: any;
   let mockedExport: jest.Mock<any, any>;
+  let mockedDeleteForm: jest.Mock<any, any>;
   beforeEach(() => {
+    CloudformationProviderFacade.isAmplifyAdminApp = jest.fn().mockImplementation(() => ({
+      isAdminApp: true,
+    }));
     context = {
       amplify: {
         invokePluginMethod: () => ({}),
@@ -41,11 +44,19 @@ describe('can generate components', () => {
           name: 'testSchema',
           schemaVersion: '1.0',
         },
+        {
+          resultType: 'FAILURE',
+          schemaName: 'testSchema',
+          name: 'testSchema',
+          schemaVersion: '1.0',
+          schema: { id: 'f-123456' },
+        },
       ],
     };
     mockedExport = jest.fn(() => ({
       entities: schemas.entities,
     }));
+    mockedDeleteForm = jest.fn(() => true);
     awsMock.AmplifyUIBuilder = jest.fn(() => ({
       exportComponents: jest.fn(() => ({
         promise: () => mockedExport(),
@@ -67,6 +78,9 @@ describe('can generate components', () => {
           },
         })),
       })),
+      deleteForm: jest.fn(() => ({
+        promise: () => mockedDeleteForm(),
+      })),
     }));
     utilsMock.generateUiBuilderComponents = jest.fn().mockImplementation(() => schemas.entities);
     utilsMock.generateUiBuilderThemes = jest.fn().mockImplementation(() => schemas.entities);
@@ -77,20 +91,31 @@ describe('can generate components', () => {
   });
 
   it('runs generateComponents', async () => {
-    await run(context);
+    await run(context, 'PostPull');
     expect(mockedExport).toBeCalledTimes(3);
     expect(utilsMock.generateUiBuilderComponents).toBeCalledTimes(1);
     expect(utilsMock.generateUiBuilderThemes).toBeCalledTimes(1);
     expect(utilsMock.generateUiBuilderForms).toBeCalledTimes(1);
+    expect(mockedDeleteForm).toBeCalledTimes(0);
   });
+
   it('does not run generateComponents if not Amplify Admin app', async () => {
     CloudformationProviderFacade.isAmplifyAdminApp = jest.fn().mockImplementationOnce(() => ({
       isAdminApp: false,
     }));
-    await run(context);
+    await run(context, 'PostPull');
     expect(mockedExport).toBeCalledTimes(0);
     expect(utilsMock.generateUiBuilderComponents).toBeCalledTimes(0);
     expect(utilsMock.generateUiBuilderThemes).toBeCalledTimes(0);
     expect(utilsMock.generateUiBuilderForms).toBeCalledTimes(0);
+    expect(mockedDeleteForm).toBeCalledTimes(0);
+  });
+
+  it('should delete dangling form', async () => {
+    utilsMock.getAmplifyDataSchema = jest.fn().mockImplementationOnce(() => ({}));
+    utilsMock.isStudioForm = jest.fn().mockImplementationOnce(() => true);
+    utilsMock.shouldDeleteForm = jest.fn().mockImplementationOnce(() => true);
+    await run(context, 'PostPush');
+    expect(mockedDeleteForm).toBeCalledTimes(1);
   });
 });

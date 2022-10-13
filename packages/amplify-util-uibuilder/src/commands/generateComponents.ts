@@ -13,12 +13,14 @@ import {
   generateAmplifyUiBuilderIndexFile,
   generateUiBuilderForms,
   generateAmplifyUiBuilderUtilFile,
+  isStudioForm,
+  shouldDeleteForm,
 } from './utils';
 
 /**
  * Pulls ui components from Studio backend and generates the code in the user's file system
  */
-export const run = async (context: $TSContext): Promise<void> => {
+export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull'): Promise<void> => {
   if (!(await shouldRenderComponents(context))) {
     return;
   }
@@ -47,7 +49,10 @@ export const run = async (context: $TSContext): Promise<void> => {
       component: generateUiBuilderComponents(context, componentSchemas.entities, dataSchema),
       theme: generateUiBuilderThemes(context, themeSchemas.entities),
       form: generateUiBuilderForms(
-        context, formSchemas.entities, dataSchema, studioClient.metadata.autoGenerateForms && studioClient.isSupportedGraphQL,
+        context,
+        formSchemas.entities,
+        dataSchema,
+        studioClient.metadata.autoGenerateForms && studioClient.isSupportedGraphQL,
       ),
     };
 
@@ -56,13 +61,35 @@ export const run = async (context: $TSContext): Promise<void> => {
     const failedResponseNames: string[] = [];
 
     Object.entries(generatedResults).forEach(([key, results]) => {
-      results.forEach(result => {
+      results.forEach(async result => {
         if (result.resultType === 'SUCCESS') {
           successfulSchemas.push(result.schema);
           if (key === 'form') {
             hasSuccessfulForm = true;
           }
         } else {
+          const failedSchema = result.schema;
+          /**
+           * A form resource may fail to generate because it's DataStore model type
+           * no longer exists. Delete the form if it has no customizations
+           */
+          if (
+            isStudioForm(failedSchema)
+            && failedSchema.id
+            && dataSchema
+            && eventType === 'PostPush'
+            && shouldDeleteForm(failedSchema, dataSchema.models)
+          ) {
+            try {
+              // Try to delete the form but don't stop any other operations if it fails
+              await studioClient.deleteForm(failedSchema.id);
+              // Don't need to add form to failedResponseNames if it deletes
+              printer.debug(`Deleted detached form ${failedSchema.name}`);
+              return;
+            } catch (error) {
+              printer.debug(`Failed to delete detached form ${failedSchema.name}`);
+            }
+          }
           failedResponseNames.push(result.schemaName);
         }
       });

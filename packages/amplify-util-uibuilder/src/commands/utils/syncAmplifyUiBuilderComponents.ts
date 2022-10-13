@@ -1,7 +1,8 @@
+// es-lint-disable-file spellcheck/spell-checker
 import { printer } from 'amplify-prompts';
 import { $TSContext } from 'amplify-cli-core';
 import {
-  StudioComponent, StudioTheme, GenericDataSchema, StudioForm, StudioSchema,checkIsSupportedAsForm
+  StudioComponent, StudioTheme, GenericDataSchema, StudioForm, StudioSchema, checkIsSupportedAsForm,
 } from '@aws-amplify/codegen-ui';
 import {
   createUiBuilderComponent,
@@ -77,8 +78,8 @@ export const generateUiBuilderThemes = (context: $TSContext, themeSchemas: any[]
  * Returns instances of StudioForm from form schemas
  */
 export const generateUiBuilderForms = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   context: $TSContext,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   formSchemas: any[],
   dataSchema?: GenericDataSchema,
   autoGenerateForms?: boolean,
@@ -86,7 +87,7 @@ export const generateUiBuilderForms = (
   const modelMap: { [model: string]: Set<'create' | 'update'> } = {};
   if (dataSchema?.dataSourceType === 'DataStore' && autoGenerateForms) {
     Object.entries(dataSchema.models).forEach(([name, model]) => {
-      if(checkIsSupportedAsForm(model) && !model.isJoinTable) {
+      if (checkIsSupportedAsForm(model) && !model.isJoinTable) {
         modelMap[name] = new Set(['create', 'update']);
       }
     });
@@ -98,7 +99,9 @@ export const generateUiBuilderForms = (
     } catch (e) {
       printer.debug(`Failure caught processing ${schema.name}`);
       printer.debug(e);
-      return { resultType: 'FAILURE', schemaName: schema.name, error: e };
+      return {
+        resultType: 'FAILURE', schemaName: schema.name, schema, error: e,
+      };
     }
   };
   const formResults = formSchemas.map((schema: StudioForm) => {
