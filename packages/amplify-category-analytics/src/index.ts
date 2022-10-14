@@ -104,7 +104,11 @@ export const getPermissionPolicies = async (context: $TSContext, resourceOpsMapp
  */
 export const executeAmplifyCommand = async (context: $TSContext) : Promise<$TSAny> => {
   context.exeInfo = context.amplify.getProjectDetails();
+<<<<<<< HEAD
   await migrationCheck(context);
+=======
+  migrationCheck(context);
+>>>>>>> 84cc86823 (feat: migrates analytics category to support in app messaging channel notifications (#11158))
 
   let commandPath = path.normalize(path.join(__dirname, 'commands'));
   commandPath = context.input.command === 'help'

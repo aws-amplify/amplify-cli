@@ -1,5 +1,6 @@
 import {
   $TSAny,
+<<<<<<< HEAD
   $TSContext,
   AmplifyCategories,
   AmplifySupportedService,
@@ -20,11 +21,19 @@ import {
   pinpointHasInAppMessagingPolicy,
   pinpointInAppMessagingPolicyName,
 } from '../utils/pinpoint-helper';
+=======
+  $TSContext, AmplifyCategories, JSONUtilities, pathManager, stateManager,
+} from 'amplify-cli-core';
+import fs from 'fs-extra';
+import * as path from 'path';
+import { pinpointHasInAppMessagingPolicy, pinpointInAppMessagingPolicyName } from '../utils/pinpoint-helper';
+>>>>>>> 84cc86823 (feat: migrates analytics category to support in app messaging channel notifications (#11158))
 
 /**
  * checks if the project has been migrated to the latest version of in-app messaging
  */
 export const inAppMessagingMigrationCheck = async (context: $TSContext): Promise<void> => {
+<<<<<<< HEAD
   const projectBackendDirPath = pathManager.getBackendDirPath();
   const resources = getAnalyticsResources(context);
 
@@ -78,6 +87,21 @@ export const inAppMessagingMigrationCheck = async (context: $TSContext): Promise
     await invokeAuthPush(context);
     await analyticsPush(context);
   }
+=======
+  if (['add', 'update', 'push'].includes(context.input.command) && !pinpointHasInAppMessagingPolicy(context)) {
+    const projectBackendDirPath = pathManager.getBackendDirPath();
+    const amplifyMeta = stateManager.getMeta();
+    const analytics = amplifyMeta[AmplifyCategories.ANALYTICS] || {};
+    Object.keys(analytics).forEach(resourceName => {
+      const resourcePath = path.join(projectBackendDirPath, AmplifyCategories.ANALYTICS, resourceName);
+      const templateFilePath = path.join(resourcePath, 'pinpoint-cloudformation-template.json');
+      const cfn = JSONUtilities.readJson(templateFilePath);
+      const updatedCfn = migratePinpointCFN(cfn);
+      fs.ensureDirSync(resourcePath);
+      JSONUtilities.writeJson(templateFilePath, updatedCfn);
+    });
+  }
+>>>>>>> 84cc86823 (feat: migrates analytics category to support in app messaging channel notifications (#11158))
 };
 
 const migratePinpointCFN = (cfn: $TSAny): $TSAny => {
