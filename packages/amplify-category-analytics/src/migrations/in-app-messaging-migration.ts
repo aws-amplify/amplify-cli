@@ -13,7 +13,7 @@ import { analyticsPush } from '../commands/analytics';
 import { invokeAuthPush } from '../plugin-client-api-auth';
 import { getAllDefaults } from '../provider-utils/awscloudformation/default-values/pinpoint-defaults';
 import { getAnalyticsResources } from '../utils/analytics-helper';
-import { readCFNTemplate, writeCFNTemplate } from '../../../amplify-cli-core/src/cfnUtilities';
+import { readCFNTemplate, writeCFNTemplate } from 'amplify-cli-core';
 import {
   getNotificationsCategoryHasPinpointIfExists,
   getPinpointRegionMappings,
