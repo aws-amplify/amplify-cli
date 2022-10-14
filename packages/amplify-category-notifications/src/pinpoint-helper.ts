@@ -174,8 +174,7 @@ export const getPinpointAppStatus = async (context: $TSContext, amplifyMeta: $TS
       : IPinpointDeploymentStatus.APP_IS_CREATED_NOT_DEPLOYED;
   }
   // Check if Notifications is using an App but different from Analytics - Legacy behavior
-  const notificationsPinpointApp:ICategoryMeta|undefined = getPinpointAppStatusNotifications(pinpointNotificationsMeta,
-    amplifyMeta, envName);
+  const notificationsPinpointApp = getPinpointAppStatusNotifications(pinpointNotificationsMeta, amplifyMeta, envName);
   if (notificationsPinpointApp?.Id && notificationsPinpointApp.Id !== resultPinpointApp?.app?.id) {
     resultPinpointApp.status = IPinpointDeploymentStatus.APP_IS_DEPLOYED_CUSTOM;
     resultPinpointApp.app = buildAnalyticsResourceFromPinpointApp(notificationsPinpointApp, envName);

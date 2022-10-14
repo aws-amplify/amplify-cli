@@ -21,7 +21,7 @@ const deploymentType = ChannelConfigDeploymentType.INLINE;
  * Configure the Pinpoint resource to enable the Apple Push Notifications Messaging channel
  * @param context amplify cli context
  */
-export const configure = async (context:$TSContext): Promise<IChannelAPIResponse> => {
+export const configure = async (context: $TSContext): Promise<IChannelAPIResponse> => {
   const isChannelEnabled = context.exeInfo.serviceMeta.output[channelName]?.Enabled;
   let response: IChannelAPIResponse|undefined;
   if (isChannelEnabled) {

@@ -10,16 +10,6 @@ type AuthCommandType = {
 };
 
 /**
- * Push Auth resources to the cloud
- * @param context amplify cli context
- * @returns push command response
- */
-export const authPush = async (context: $TSContext): Promise<$TSAny> => {
-  const { run } = await import(path.join('.', name, 'push'));
-  return run(context);
-};
-
-/**
  * Execute all auth cli commands
  * @param context amplify cli context
  * @returns auth command response

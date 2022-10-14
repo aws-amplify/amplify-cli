@@ -69,3 +69,19 @@ export const invokeAnalyticsPush = async (
   analyticsResourceName: string,
 ): Promise<IPluginCapabilityAPIResponse> => (await context.amplify.invokePluginMethod(context,
   'analytics', analyticsResourceName, 'analyticsPluginAPIPush', [context])) as IPluginCapabilityAPIResponse;
+
+/**
+ * Checks if analytics pinpoint resource has in-app messaging policy
+ */
+export const invokeAnalyticsPinpointHasInAppMessagingPolicy = async (
+  context: $TSContext,
+): Promise<boolean> => (await context.amplify.invokePluginMethod(context,
+  'analytics', undefined, 'analyticsPluginAPIPinpointHasInAppMessagingPolicy', [context])) as boolean;
+
+/**
+ * invoke analytics plugin migrations
+ */
+export const invokeAnalyticsMigrations = async (
+  context: $TSContext,
+): Promise<void> => context.amplify.invokePluginMethod(context,
+  'analytics', undefined, 'analyticsPluginAPIMigrations', [context]);

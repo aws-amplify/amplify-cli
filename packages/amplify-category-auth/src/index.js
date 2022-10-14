@@ -37,6 +37,7 @@ const {
 const { AuthInputState } = require('./provider-utils/awscloudformation/auth-inputs-manager/auth-input-state');
 const { privateKeys } = require('./provider-utils/awscloudformation/constants');
 const { checkAuthResourceMigration } = require('./provider-utils/awscloudformation/utils/check-for-auth-migration');
+const { run: authRunPush } = require('./commands/auth/push');
 
 // this function is being kept for temporary compatability.
 async function add(context, skipNextSteps = false) {
@@ -525,13 +526,16 @@ async function isSMSWorkflowEnabled(context, resourceName) {
  * Execute auth Push command with force yes
  * @param {Object} context - The amplify context.
  */
-const authPush = async context => {
-  const commandPath = path.normalize(path.join(__dirname, 'commands', category, 'push'));
-  const commandModule = await import(commandPath);
-  context.exeInfo = (context.exeInfo) || {};
-  context.exeInfo.inputParams = (context.exeInfo.inputParams) || {};
-  context.exeInfo.inputParams.yes = true; // force yes to avoid prompts
-  await commandModule.run(context);
+const authPushYes = async context => {
+  const exeInfoClone = { ...context?.exeInfo };
+  try {
+    context.exeInfo = (context.exeInfo) || {};
+    context.exeInfo.inputParams = (context.exeInfo.inputParams) || {};
+    context.exeInfo.inputParams.yes = true; // force yes to avoid prompts
+    await authRunPush(context);
+  } finally {
+    context.exeInfo = exeInfoClone;
+  }
 };
 
 
@@ -558,5 +562,5 @@ module.exports = {
   AmplifyAuthTransform,
   AmplifyUserPoolGroupTransform,
   transformCategoryStack,
-  authPluginAPIPush: authPush,
+  authPluginAPIPush: authPushYes,
 };

@@ -446,7 +446,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     }
 
     // Generate frontend resources for any notifications channels enabled on analytics resources.
-    const analyticsResources = resourcesToBeCreated.filter((r: { category: string; }) => r.category === AmplifyCategories.ANALYTICS);
+    const analyticsResources = resourcesToBeCreated.filter((resource: { category: string; }) => resource.category === AmplifyCategories.ANALYTICS);
     if (analyticsResources && analyticsResources.length > 0) {
       context = await invokePostPushAnalyticsUpdate(context);
       context.amplify.updateamplifyMetaAfterPush(analyticsResources);

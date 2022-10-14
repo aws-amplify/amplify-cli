@@ -46,7 +46,7 @@ const viewNotificationsAppURL = async (context: $TSContext, appName: string): Pr
   }
 };
 
-const viewDisplayChannelAvailability = async (context: $TSContext, backend:INotificationsConfigStatus): Promise<void> => {
+const viewDisplayChannelAvailability = async (context: $TSContext, backend: INotificationsConfigStatus): Promise<void> => {
   const tableOptions = [['Channel', 'Status', 'Deployed/Not Deployed']];
   for (const enabledChannel of backend.local.channels.enabledChannels) {
     const channelViewInfo = getChannelViewInfo(enabledChannel);
@@ -59,7 +59,7 @@ const viewDisplayChannelAvailability = async (context: $TSContext, backend:INoti
   context.print.table(tableOptions, { format: 'lean' });
 };
 
-const viewDisplayNotificationsResourceInfo = async (backend:INotificationsConfigStatus):Promise<void> => {
+const viewDisplayNotificationsResourceInfo = async (backend: INotificationsConfigStatus): Promise<void> => {
   printer.info(`\n\nApplication : ${viewStyles.appName(backend.local.config.serviceName)} (${backend.local.config.service})`);
 };
 
@@ -67,8 +67,7 @@ const viewDisplayNotificationsResourceInfo = async (backend:INotificationsConfig
  *  Print the status of Pinpoint resource  and channels
  */
 export const run = async (context: $TSContext): Promise<void> => {
-  context.exeInfo = context.amplify.getProjectDetails();
-  const backend: INotificationsConfigStatus|undefined = await getNotificationConfigStatus(context);
+  const backend = await getNotificationConfigStatus(context);
   if (backend) {
     await viewDisplayNotificationsResourceInfo(backend);
     await viewNotificationsAppURL(context, backend.local.config.serviceName);

@@ -3,6 +3,7 @@ import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as pinpointHelper from './pinpoint-helper';
 import * as multiEnvManager from './multi-env-manager';
+import { migrationCheck } from './migrations';
 
 export {
   notificationsPluginAPIGetResource,
@@ -46,6 +47,9 @@ export const migrate = async (context: $TSContext): Promise<void> => {
  * Run the amplify command's handler function.
  */
 export const executeAmplifyCommand = async (context: $TSContext): Promise<void> => {
+  context.exeInfo = context.amplify.getProjectDetails();
+  migrationCheck(context);
+
   let commandPath = path.normalize(path.join(__dirname, 'commands'));
   commandPath = context.input.command === 'help' ? path.join(commandPath, category) : path.join(commandPath, category, context.input.command);
   const commandModule = await import(commandPath);
