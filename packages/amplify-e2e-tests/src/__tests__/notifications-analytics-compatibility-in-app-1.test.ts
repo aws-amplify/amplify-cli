@@ -1,27 +1,32 @@
 import {
   addNotificationChannel,
+  amplifyPull,
   amplifyPushAuth,
-  amplifyStatus,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
   getAppId,
-  getBackendAmplifyMeta,
   getProjectMeta,
-  getTeamProviderInfo,
   initJSProjectWithProfile,
-  removeAllNotificationChannel,
+  removeAnalytics,
+  addPinpointAnalytics,
   removeNotificationChannel,
+  getBackendAmplifyMeta,
+  amplifyStatus,
+  getTeamProviderInfo,
+  removeAllNotificationChannel,
 } from '@aws-amplify/amplify-e2e-core';
 import {
+  expectLocalAndPulledAwsExportsMatching,
+  expectLocalAndPulledBackendAmplifyMetaMatching,
+  expectLocalAndPulledBackendConfigMatching,
   getShortId,
 } from '../import-helpers';
 
-describe('notification category test - InAppMessaging', () => {
-  const testChannel = 'InAppMessaging';
+describe('notification category compatibility test', () => {
   const testChannelSelection = 'In-App Messaging';
   const envName = 'test';
-  const projectPrefix = `notification${testChannel}`.substring(0, 19);
+  const projectPrefix = `notificationCompatibility`.substring(0, 19);
   const projectSettings = {
     name: projectPrefix,
     disableAmplifyAppCreation: false,
@@ -29,39 +34,43 @@ describe('notification category test - InAppMessaging', () => {
   };
 
   let projectRoot: string;
+  let pullTestProjectRoot: string;
 
   beforeEach(async () => {
     projectRoot = await createNewProjectDir(projectPrefix);
   });
 
   afterEach(async () => {
+    await removeAnalytics(projectRoot, {});
     await deleteProject(projectRoot);
     deleteProjectDir(projectRoot);
+    if (pullTestProjectRoot) {
+      deleteProjectDir(pullTestProjectRoot);
+    }
   });
 
-  it(`should add and remove the ${testChannel} channel correctly when no pinpoint is configured`, async () => {
+  it(`works with existing pinpoint that hasn't pushed`, async () => {
+    const pinpointResourceName = `${projectPrefix}${getShortId()}`;
     await initJSProjectWithProfile(projectRoot, projectSettings);
-
-    const settings = { resourceName: `${projectPrefix}${getShortId()}` };
-    await addNotificationChannel(projectRoot, settings, testChannelSelection);
 
     const appId = getAppId(projectRoot);
     expect(appId).toBeDefined();
 
-    // InAppMessaging does not deploy inline, so we must push manually
-    await amplifyPushAuth(projectRoot);
+    // BEGIN - SETUP PINPOINT BUT DON'T PUSH (see analytics.test.ts)
+    await addPinpointAnalytics(projectRoot, pinpointResourceName);
 
-    // expect that Notifications, Analytics, and Auth categories are shown
-    await amplifyStatus(projectRoot, 'Notifications');
-    await amplifyStatus(projectRoot, 'Analytics');
-    await amplifyStatus(projectRoot, 'Auth');
+    // SETUP NOTIFICATIONS CHANNEL BUT DON'T PUSH (IN-APP MESSAGING)
+    await addNotificationChannel(projectRoot, { resourceName: pinpointResourceName }, testChannelSelection, true, true);
+
+    // PUSH BOTH
+    await amplifyPushAuth(projectRoot);
 
     // InAppMessaging & Analytics meta should exist
     const meta = getBackendAmplifyMeta(projectRoot);
     console.log(meta.analytics);
-    console.log(meta.notifications);
-    const inAppMessagingMeta = meta.notifications[settings.resourceName]?.output?.InAppMessaging;
-    const analyticsMeta = meta.analytics[settings.resourceName]?.output;
+    console.log(meta.notifications[pinpointResourceName]?.output);
+    const inAppMessagingMeta = meta.notifications[pinpointResourceName]?.output?.InAppMessaging;
+    const analyticsMeta = meta.analytics[pinpointResourceName]?.output;
     expect(inAppMessagingMeta).toBeDefined();
     expect(analyticsMeta).toBeDefined();
     expect(inAppMessagingMeta.Enabled).toBe(true);
@@ -70,16 +79,26 @@ describe('notification category test - InAppMessaging', () => {
     // pinpointId in team-provider-info should match the analyticsMetaId
     const teamInfo = getTeamProviderInfo(projectRoot);
     console.log(teamInfo[envName].categories);
+    // when analytics hasn't pushed or when notifications & analytics push at the same time,
+    // the pinpoint id will be stored under notifications
     const pinpointId = teamInfo[envName].categories?.notifications?.Pinpoint?.Id;
     expect(pinpointId).toBeDefined();
     expect(pinpointId).toEqual(analyticsMeta.Id);
 
+    // Test that backend resources match local configurations
+    pullTestProjectRoot = await createNewProjectDir(`notification-pull${getShortId()}`);
+    await amplifyPull(pullTestProjectRoot, { override: false, emptyDir: true, appId });
+    expectLocalAndPulledBackendConfigMatching(projectRoot, pullTestProjectRoot);
+    expectLocalAndPulledBackendAmplifyMetaMatching(projectRoot, pullTestProjectRoot);
+    expectLocalAndPulledAwsExportsMatching(projectRoot, pullTestProjectRoot);
+
+    // remove notifications - inapp
     // remove in-app messaging only but don't push yet
     await removeNotificationChannel(projectRoot, testChannelSelection);
     // InAppMessaging should be disabled locally
     const updatedMeta = getBackendAmplifyMeta(projectRoot);
     console.log(updatedMeta.notifications);
-    const updatedInAppMsgMeta = updatedMeta.notifications[settings.resourceName]?.output?.InAppMessaging;
+    const updatedInAppMsgMeta = updatedMeta.notifications[pinpointResourceName]?.output?.InAppMessaging;
     expect(updatedInAppMsgMeta).toBeDefined();
     expect(updatedInAppMsgMeta.Enabled).toBe(false);
 
@@ -87,7 +106,7 @@ describe('notification category test - InAppMessaging', () => {
     await amplifyStatus(projectRoot, 'Update');
     // cloud backend should show that InAppMessaging is still enabled because we haven't pushed
     const cloudBackendMeta = await getProjectMeta(projectRoot);
-    const cloudBackendInAppMsgMeta = cloudBackendMeta.notifications[settings.resourceName]?.output?.InAppMessaging;
+    const cloudBackendInAppMsgMeta = cloudBackendMeta.notifications[pinpointResourceName]?.output?.InAppMessaging;
     expect(cloudBackendInAppMsgMeta).toBeDefined();
     expect(cloudBackendInAppMsgMeta.Enabled).toBe(true);
 
@@ -96,7 +115,7 @@ describe('notification category test - InAppMessaging', () => {
 
     // verify changes
     const updatedCloudBackendMeta = await getProjectMeta(projectRoot);
-    const updatedCloudBackendInAppMsgMeta = updatedCloudBackendMeta.notifications[settings.resourceName]?.output?.InAppMessaging;
+    const updatedCloudBackendInAppMsgMeta = updatedCloudBackendMeta.notifications[pinpointResourceName]?.output?.InAppMessaging;
     expect(updatedCloudBackendInAppMsgMeta).toBeDefined();
     expect(updatedCloudBackendInAppMsgMeta.Enabled).toBe(false);
 

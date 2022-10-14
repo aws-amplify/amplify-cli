@@ -24,15 +24,12 @@ type NotificationSettings = {
  */
 export const removeAllNotificationChannel = async (
   cwd: string,
-): Promise<void> => {
-  await spawn(getCLIPath(), ['remove', 'notifications'], { cwd, stripColors: true })
-    .wait('Choose the notification channel to remove')
-    .sendLine('All channels on Pinpoint resource')
-    .wait(`All notifications have been disabled`)
-    .sendEof()
-    .runAsync();
-  await sleep(3000);
-};
+): Promise<void> => spawn(getCLIPath(), ['remove', 'notifications'], { cwd, stripColors: true })
+  .wait('Choose the notification channel to remove')
+  .sendLine('All channels on Pinpoint resource')
+  .wait(`All notifications have been disabled`)
+  .sendEof()
+  .runAsync();
 
 /**
  * removes the notification channel
@@ -40,15 +37,12 @@ export const removeAllNotificationChannel = async (
 export const removeNotificationChannel = async (
   cwd: string,
   channel: string,
-): Promise<void> => {
-  await spawn(getCLIPath(), ['remove', 'notifications'], { cwd, stripColors: true })
-    .wait('Choose the notification channel to remove')
-    .sendLine(channel)
-    .wait(`The channel has been successfully updated.`)
-    .sendEof()
-    .runAsync();
-  await sleep(3000);
-};
+): Promise<void> => spawn(getCLIPath(), ['remove', 'notifications'], { cwd, stripColors: true })
+  .wait('Choose the notification channel to remove')
+  .sendLine(channel)
+  .wait(`The channel has been successfully updated.`)
+  .sendEof()
+  .runAsync();
 
 /**
  * Adds notification resource for a given channel
@@ -62,17 +56,28 @@ export const addNotificationChannel = async (
   cwd: string,
   { resourceName }: NotificationSettings,
   channel: string,
+  hasAnalytics = false,
+  hasAuth = false,
+  testingWithLatestCodebase = false,
 ): Promise<void> => {
-  const chain = spawn(getCLIPath(), ['add', 'notification'], { cwd, stripColors: true });
+  const chain = spawn(getCLIPath(testingWithLatestCodebase), ['add', 'notification'], { cwd, stripColors: true });
 
   chain
     .wait('Choose the notification channel to enable')
-    .sendLine(channel)
-    .wait('Provide your pinpoint resource name')
-    .sendLine(resourceName)
-    .wait('Apps need authorization to send analytics events. Do you want to allow guests')
-    .sendNo()
-    .sendCarriageReturn();
+    .sendLine(channel);
+
+  if (!hasAnalytics) {
+    chain
+      .wait('Provide your pinpoint resource name')
+      .sendLine(resourceName);
+  }
+
+  if (!hasAuth) {
+    chain
+      .wait('Apps need authorization to send analytics events. Do you want to allow guests')
+      .sendNo()
+      .sendCarriageReturn();
+  }
 
   // channel specific prompts
   switch (channel) {
@@ -85,14 +90,16 @@ export const addNotificationChannel = async (
     case 'Email': {
       break;
     }
+    case 'In-App Messaging': {
+      return chain
+        .wait(`Run "amplify push" to update the channel in the cloud`)
+        .runAsync();
+    }
     default:
       break;
   }
 
-  await chain
+  return chain
     .wait(`The ${channel} channel has been successfully enabled`)
-    .sendEof()
     .runAsync();
-
-  await sleep(3000);
 };

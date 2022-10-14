@@ -2,15 +2,16 @@ import {
   addNotificationChannel,
   amplifyPull,
   amplifyPushAuth,
+  amplifyStatus,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
-  describeCloudFormationStack,
   getAppId,
   getProjectMeta,
   initJSProjectWithProfile,
+  amplifyPushUpdate,
   removeAnalytics,
-  addPinpoint,
+  addPinpointAnalytics,
 } from '@aws-amplify/amplify-e2e-core';
 import {
   expectLocalAndPulledAwsExportsMatching,
@@ -20,7 +21,6 @@ import {
 } from '../import-helpers';
 
 describe('notification category compatibility test', () => {
-  const testChannelSelection = 'In-App Messaging';
   const projectPrefix = `notificationCompatibility`.substring(0, 19);
   const projectSettings = {
     name: projectPrefix,
@@ -29,7 +29,6 @@ describe('notification category compatibility test', () => {
 
   let projectRoot: string;
   let pullTestProjectRoot: string;
-  let deleteBackendNeeded = false;
 
   beforeEach(async () => {
     projectRoot = await createNewProjectDir(projectPrefix);
@@ -37,34 +36,32 @@ describe('notification category compatibility test', () => {
 
   afterEach(async () => {
     await removeAnalytics(projectRoot, {});
-    if (deleteBackendNeeded) {
-      await deleteProject(projectRoot);
-    }
+    await deleteProject(projectRoot);
     deleteProjectDir(projectRoot);
     if (pullTestProjectRoot) {
       deleteProjectDir(pullTestProjectRoot);
     }
   });
 
-  it(`should work well with pre-existing pinpoint that hasn't pushed`, async () => {
-    await initJSProjectWithProfile(projectRoot, projectSettings);
-    deleteBackendNeeded = true;
+  it(`works with existing pinpoint that has pushed`, async () => {
+    const pinpointResourceName = `${projectPrefix}${getShortId()}`;
 
-    // BEGIN - SETUP PINPOINT BUT DON'T PUSH (see analytics.test.ts)
-    const rightName = 'testApp';
-    await addPinpoint(projectRoot, { rightName, wrongName: '$' });
-    console.log('a');
-    // SETUP NOTIFICATIONS CHANNEL BUT DON'T PUSH (IN-APP MESSAGING)
-    const settings = { resourceName: `${projectPrefix}${getShortId()}` };
-    console.log('b');
-    await addNotificationChannel(projectRoot, settings, testChannelSelection);
+    await initJSProjectWithProfile(projectRoot, projectSettings);
+
     const appId = getAppId(projectRoot);
-    console.log('c');
     expect(appId).toBeDefined();
 
-    // PUSH BOTH
+    // BEGIN - SETUP PINPOINT & PUSH (see analytics.test.ts)
+    await addPinpointAnalytics(projectRoot, pinpointResourceName);
+    await amplifyPushUpdate(projectRoot);
+
+    // SETUP NOTIFICATIONS CHANNEL & PUSH (IN-APP MESSAGING)
+    const settings = { resourceName: pinpointResourceName };
+    await addNotificationChannel(projectRoot, settings, 'In-App Messaging', true, true);
+
+    // PUTH NOTIFICATIONS
     await amplifyPushAuth(projectRoot);
-    console.log('d');
+
     // Test that backend resources match local configurations
     pullTestProjectRoot = await createNewProjectDir(`notification-pull${getShortId()}`);
     await amplifyPull(pullTestProjectRoot, { override: false, emptyDir: true, appId });
@@ -72,12 +69,14 @@ describe('notification category compatibility test', () => {
     expectLocalAndPulledBackendAmplifyMetaMatching(projectRoot, pullTestProjectRoot);
     expectLocalAndPulledAwsExportsMatching(projectRoot, pullTestProjectRoot);
 
-    // Delete the project now to assert that CFN is able to clean up successfully.
-    const { StackId: stackId, Region: region } = getProjectMeta(projectRoot).providers.awscloudformation;
-    await deleteProject(projectRoot);
+    // Remove Pinpoint
+    await removeAnalytics(projectRoot, {});
+    await amplifyPushUpdate(projectRoot);
 
-    const stack = await describeCloudFormationStack(stackId, region);
-    expect(stack.StackStatus).toEqual('DELETE_COMPLETE');
-    deleteBackendNeeded = false;
+    await amplifyStatus(projectRoot, 'Auth');
+
+    // notification should not exist in the cloud
+    const endCloudBackendMeta = await getProjectMeta(projectRoot);
+    expect(endCloudBackendMeta.notifications).toBeUndefined();
   });
 });
