@@ -1,16 +1,4 @@
 import { nspawn as spawn, getCLIPath } from '..';
-/**
- * the notification plugin isn't writing to metadata files before completion messages are shown to the user,
- * this makes it hard to test without having to wait manually before assertions
- * @param ms milliseconds
- */
-const sleep = (ms: number) : Promise<void> => new Promise((resolve, reject) => {
-  try {
-    setTimeout(resolve, ms);
-  } catch (err) {
-    reject(err);
-  }
-});
 
 /**
  * notifications settings
