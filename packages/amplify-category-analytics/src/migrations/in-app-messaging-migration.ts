@@ -1,6 +1,11 @@
 import {
   $TSAny,
-  $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities, pathManager, stateManager,
+  $TSContext,
+  AmplifyCategories,
+  AmplifySupportedService,
+  JSONUtilities,
+  pathManager,
+  stateManager,
 } from 'amplify-cli-core';
 import fs from 'fs-extra';
 import * as path from 'path';

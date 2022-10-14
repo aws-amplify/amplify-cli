@@ -80,7 +80,7 @@ describe('amplify add notifications', () => {
     const settings = { resourceName: `notification${getShortId()}` };
 
     await initJSProjectWithProfile(projectRoot, {}, false);
-    await addAuthWithDefault(projectRoot, false);
+    await addAuthWithDefault(projectRoot, true);
     await addLegacySmsNotificationChannel(projectRoot, settings.resourceName);
     await addNotificationChannel(projectRoot, settings, 'In-App Messaging', true, true, true);
     await amplifyPushAuth(projectRoot, true);
