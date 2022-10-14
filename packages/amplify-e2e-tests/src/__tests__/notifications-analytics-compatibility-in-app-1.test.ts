@@ -57,11 +57,7 @@ describe('notification category compatibility test', () => {
     expect(appId).toBeDefined();
 
     // BEGIN - SETUP PINPOINT BUT DON'T PUSH (see analytics.test.ts)
-<<<<<<< HEAD
-    await addPinpointAnalytics(projectRoot, pinpointResourceName);
-=======
     await addPinpointAnalytics(projectRoot, false, pinpointResourceName);
->>>>>>> 13664d310 (chore: resolve conflicts)
 
     // SETUP NOTIFICATIONS CHANNEL BUT DON'T PUSH (IN-APP MESSAGING)
     await addNotificationChannel(projectRoot, { resourceName: pinpointResourceName }, testChannelSelection, true, true);
