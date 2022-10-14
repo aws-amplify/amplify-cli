@@ -1,13 +1,10 @@
-import {
-  $TSContext, $TSAny,
-} from 'amplify-cli-core';
+import { $TSContext, $TSAny, amplifyFaultWithTroubleshootingLink } from 'amplify-cli-core';
 import * as path from 'path';
 import inquirer, { QuestionCollection } from 'inquirer';
 import { printer } from 'amplify-prompts';
 import * as pinpointHelper from './utils/pinpoint-helper';
 import * as kinesisHelper from './utils/kinesis-helper';
 import { migrationCheck } from './migrations';
-import { amplifyFaultWithTroubleshootingLink } from '../../amplify-cli-core/src/errors/amplify-fault';
 
 export { migrate } from './provider-utils/awscloudformation/service-walkthroughs/pinpoint-walkthrough';
 
@@ -17,16 +14,6 @@ export {
   analyticsPluginAPIToggleNotificationChannel,
   analyticsPluginAPIPinpointHasInAppMessagingPolicy,
   analyticsPluginAPIMigrations,
-  analyticsPluginAPIPostPush,
-  analyticsPluginAPIPush,
-} from './analytics-resource-api';
-
-export { migrate } from './provider-utils/awscloudformation/service-walkthroughs/pinpoint-walkthrough';
-
-export {
-  analyticsPluginAPIGetResources,
-  analyticsPluginAPICreateResource,
-  analyticsPluginAPIToggleNotificationChannel,
   analyticsPluginAPIPostPush,
   analyticsPluginAPIPush,
 } from './analytics-resource-api';

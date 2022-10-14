@@ -37,8 +37,7 @@ const {
 const { AuthInputState } = require('./provider-utils/awscloudformation/auth-inputs-manager/auth-input-state');
 const { privateKeys } = require('./provider-utils/awscloudformation/constants');
 const { checkAuthResourceMigration } = require('./provider-utils/awscloudformation/utils/check-for-auth-migration');
-
-import { run as authRunPush } from './commands/auth/push';
+const { run: authRunPush } = require('./commands/auth/push');
 
 // this function is being kept for temporary compatability.
 async function add(context, skipNextSteps = false) {
