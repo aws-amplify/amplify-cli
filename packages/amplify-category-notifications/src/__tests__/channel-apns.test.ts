@@ -60,29 +60,21 @@ describe('channel-APNS', () => {
   const mockCertificateConfig = {};
 
   const mockPinpointClient = {
-    updateApnsChannel: jest.fn(() => ({
-      promise: () => new Promise((resolve, __) => {
-        resolve(mockPinpointResponseData);
-      }),
-    })),
-    updateApnsSandboxChannel: jest.fn(() => ({
-      promise: () => new Promise((resolve, __) => {
-        resolve(mockPinpointResponseData);
-      }),
-    })),
+    updateApnsChannel: jest.fn().mockReturnValue({
+      promise: jest.fn().mockResolvedValue(mockPinpointResponseData),
+    }),
+    updateApnsSandboxChannel: jest.fn().mockReturnValue({
+      promise: jest.fn().mockResolvedValue(mockPinpointResponseData),
+    }),
   };
 
   const mockPinpointClientReject = {
-    updateApnsChannel: jest.fn(() => ({
-      promise: () => new Promise((__, reject) => {
-        reject(mockPinpointResponseErr);
-      }),
-    })),
-    updateApnsSandboxChannel: jest.fn(() => ({
-      promise: () => new Promise((__, reject) => {
-        reject(mockPinpointResponseErr);
-      }),
-    })),
+    updateApnsChannel: jest.fn().mockReturnValue({
+      promise: jest.fn().mockRejectedValue(mockPinpointResponseErr),
+    }),
+    updateApnsSandboxChannel: jest.fn().mockReturnValue({
+      promise: jest.fn().mockRejectedValue(mockPinpointResponseErr),
+    }),
   };
 
   const mockContext: $TSContext = {

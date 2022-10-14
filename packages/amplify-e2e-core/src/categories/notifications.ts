@@ -48,17 +48,28 @@ export const addNotificationChannel = async (
   cwd: string,
   { resourceName }: NotificationSettings,
   channel: string,
+  hasAnalytics = false,
+  hasAuth = false,
+  testingWithLatestCodebase = true,
 ): Promise<void> => {
-  const chain = spawn(getCLIPath(), ['add', 'notification'], { cwd, stripColors: true });
+  const chain = spawn(getCLIPath(testingWithLatestCodebase), ['add', 'notification'], { cwd, stripColors: true });
 
   chain
     .wait('Choose the notification channel to enable')
-    .sendLine(channel)
-    .wait('Provide your pinpoint resource name')
-    .sendLine(resourceName)
-    .wait('Apps need authorization to send analytics events. Do you want to allow guests')
-    .sendNo()
-    .sendCarriageReturn();
+    .sendLine(channel);
+
+  if (!hasAnalytics) {
+    chain
+      .wait('Provide your pinpoint resource name')
+      .sendLine(resourceName);
+  }
+
+  if (!hasAuth) {
+    chain
+      .wait('Apps need authorization to send analytics events. Do you want to allow guests')
+      .sendNo()
+      .sendCarriageReturn();
+  }
 
   // channel specific prompts
   switch (channel) {

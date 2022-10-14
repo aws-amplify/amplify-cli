@@ -272,11 +272,11 @@ const getNotificationsAppListMeta = async (
 ): Promise<Array<INotificationsResourceMeta>> => {
   const tmpMeta = (amplifyMeta) || await stateManager.getMeta();
   const notificationsMeta = tmpMeta[AmplifyCategories.NOTIFICATIONS];
-  const notificationsResourceList: Array<INotificationsResourceMeta> = [];
+  const notificationsResourceList = [];
   if (notificationsMeta) {
     for (const resourceName of Object.keys(notificationsMeta)) {
       if ((!appName || appName === resourceName)) {
-        const notificationsResourceMeta :$TSAny = notificationsMeta[resourceName];
+        const notificationsResourceMeta = notificationsMeta[resourceName];
         notificationsResourceList.push({
           Id: notificationsResourceMeta.output.Id,
           ResourceName: resourceName,

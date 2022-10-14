@@ -27,7 +27,6 @@ export const alias = ['disable', 'delete'];
  * @returns amplify cli context with updated notifications metadata
  */
 export const run = async (context: $TSContext): Promise<$TSContext> => {
-  context.exeInfo = context.amplify.getProjectDetails();
   const envName = stateManager.getCurrentEnvName();
   const notificationsMeta = context.exeInfo.amplifyMeta[AmplifyCategories.NOTIFICATIONS];
   const notificationConfig = await getNotificationsAppConfig(context.exeInfo.backendConfig);
@@ -59,8 +58,12 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
   }
 
   if (channelViewName && channelViewName !== CANCEL) {
-    const pinpointAppStatus = await getPinpointAppStatus(context, context.exeInfo.amplifyMeta,
-      notificationsMeta, envName);
+    const pinpointAppStatus = await getPinpointAppStatus(
+      context,
+      context.exeInfo.amplifyMeta,
+      notificationsMeta,
+      envName,
+    );
     if (channelViewName !== PinpointAppViewName) {
       const selectedChannelName = getChannelNameFromView(channelViewName);
       // a channel can only be disabled if the PinpointApp exists

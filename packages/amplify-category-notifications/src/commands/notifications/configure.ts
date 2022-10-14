@@ -18,7 +18,6 @@ export const alias = 'update';
  * @returns context with notifications metadata updated
  */
 export const run = async (context:$TSContext): Promise<$TSContext> => {
-  context.exeInfo = context.amplify.getProjectDetails();
   const availableChannelViewNames = getAvailableChannelViewNames();
   const channelName = context.parameters.first;
   let channelViewName = (channelName) ? getChannelViewName(channelName) : undefined;

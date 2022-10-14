@@ -17,4 +17,4 @@ export const install = async (): Promise<void> => {
 };
 
 // force minor version bump
-// -
+// --

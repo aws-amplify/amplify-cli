@@ -151,6 +151,7 @@ export type AmplifyErrorType =
  * Amplify fault types
  */
 export type AmplifyFaultType =
+  | 'AnalyticsCategoryFault'
   | 'AmplifyBackupFault'
   | 'BackendPullFault'
   | 'ConfigurationFault'

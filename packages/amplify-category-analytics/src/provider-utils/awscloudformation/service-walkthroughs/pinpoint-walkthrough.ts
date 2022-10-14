@@ -342,6 +342,7 @@ const migrateCFN = (cfn: $TSAny): $TSAny => {
     ],
   };
   Resources.PinpointFunctionOutputs.Properties.appName = newAppName;
+
   // replace all IAMPrefix refs
   replaceRef(Resources, 'IAMPrefix', {
     'Fn::Select': ['4', { 'Fn::Split': [':', { Ref: 'authRoleArn' }] }],
