@@ -183,7 +183,7 @@ export function pushToCloud(cwd: string): Promise<void> {
 }
 
 /**
- * delete the project
+ * deletes the app
  */
 export function amplifyDelete(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
