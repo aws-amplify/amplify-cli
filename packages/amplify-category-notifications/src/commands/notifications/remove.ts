@@ -68,13 +68,14 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
       if (isPinpointAppDeployed(pinpointAppStatus.status) || isChannelDeploymentDeferred(selectedChannelName)) {
         const channelAPIResponse : IChannelAPIResponse|undefined = await disableChannel(context, selectedChannelName);
         await writeData(context, channelAPIResponse);
+        printer.info('The channel has been successfully updated.');
       }
     } else if (isPinpointAppOwnedByNotifications(pinpointAppStatus.status)) {
       const confirmDelete = await prompter.confirmContinue('Confirm that you want to delete the associated Amazon Pinpoint application');
       if (confirmDelete) {
         await deletePinpointApp(context);
-        printer.info('The Pinpoint application has been successfully deleted.');
         await writeData(context, undefined);
+        printer.info('The Pinpoint application has been successfully deleted.');
       }
     } else {
       await ensurePinpointApp(context, notificationsMeta, pinpointAppStatus, envName);

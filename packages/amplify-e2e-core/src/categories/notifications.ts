@@ -1,4 +1,16 @@
 import { nspawn as spawn, getCLIPath } from '..';
+/**
+ * the notification plugin isn't writing to metadata files before completion messages are shown to the user,
+ * this makes it hard to test without having to wait manually before assertions
+ * @param ms milliseconds
+ */
+const sleep = (ms: number) : Promise<void> => new Promise((resolve, reject) => {
+  try {
+    setTimeout(resolve, ms);
+  } catch (err) {
+    reject(err);
+  }
+});
 
 /**
  * notifications settings
@@ -13,12 +25,13 @@ type NotificationSettings = {
 export const removeAllNotificationChannel = async (
   cwd: string,
 ): Promise<void> => {
-  spawn(getCLIPath(), ['remove', 'notifications'], { cwd, stripColors: true })
+  await spawn(getCLIPath(), ['remove', 'notifications'], { cwd, stripColors: true })
     .wait('Choose the notification channel to remove')
     .sendLine('All channels on Pinpoint resource')
     .wait(`All notifications have been disabled`)
     .sendEof()
     .runAsync();
+  await sleep(3000);
 };
 
 /**
@@ -28,12 +41,13 @@ export const removeNotificationChannel = async (
   cwd: string,
   channel: string,
 ): Promise<void> => {
-  spawn(getCLIPath(), ['remove', 'notifications'], { cwd, stripColors: true })
+  await spawn(getCLIPath(), ['remove', 'notifications'], { cwd, stripColors: true })
     .wait('Choose the notification channel to remove')
     .sendLine(channel)
-    .wait(`The ${channel} channel has been successfully disabled`)
+    .wait(`The channel has been successfully updated.`)
     .sendEof()
     .runAsync();
+  await sleep(3000);
 };
 
 /**
@@ -75,8 +89,10 @@ export const addNotificationChannel = async (
       break;
   }
 
-  return chain
+  await chain
     .wait(`The ${channel} channel has been successfully enabled`)
     .sendEof()
     .runAsync();
+
+  await sleep(3000);
 };

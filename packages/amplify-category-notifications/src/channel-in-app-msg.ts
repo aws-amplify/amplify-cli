@@ -128,7 +128,7 @@ export const enable = async (context: $TSContext): Promise<IChannelAPIResponse> 
  * @returns Analytics API response
  */
 export const disable = async (context: $TSContext):Promise<IChannelAPIResponse> => {
-  spinner.start('Disabling In-App messaging channel.');
+  spinner.start('Disabling In-App Messaging channel.');
   const disableInAppMsgResponse = await invokeAnalyticsResourceToggleNotificationChannel(context,
     AmplifySupportedService.PINPOINT,
     NotificationChannels.IN_APP_MSG,
