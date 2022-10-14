@@ -9,9 +9,10 @@ import os from 'os';
 import {
   $TSContext, ResourceAlreadyExistsError, exitOnNextTick, AmplifyCategories,
   $TSAny,
+  JSONUtilities,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-import { checkIfNotificationsCategoryHasPinpoint, getTemplateMappings } from '../../../utils/pinpoint-helper';
+import { getNotificationsCategoryHasPinpointIfExists, getPinpointRegionMappings } from '../../../utils/pinpoint-helper';
 
 // FIXME: may be removed from here, since addResource can pass category to addWalkthrough
 const category = AmplifyCategories.ANALYTICS;
@@ -63,7 +64,7 @@ const configure = (
     Object.assign(defaultValues, parameters);
   }
 
-  const pinpointApp = checkIfNotificationsCategoryHasPinpoint(context);
+  const pinpointApp = getNotificationsCategoryHasPinpointIfExists();
 
   if (pinpointApp) {
     Object.assign(defaultValues, pinpointApp);
@@ -198,11 +199,10 @@ const writeCfnFile = async (context: $TSContext, resourceDirPath: string, force 
   fs.ensureDirSync(resourceDirPath);
   const templateFilePath = path.join(resourceDirPath, templateFileName);
   if (!fs.existsSync(templateFilePath) || force) {
-    const templateSourceFilePath = `${__dirname}/../cloudformation-templates/${templateFileName}`;
+    const templateSourceFilePath = path.join(__dirname, '..', 'cloudformation-templates', templateFileName);
     const templateSource = context.amplify.readJsonFile(templateSourceFilePath);
-    templateSource.Mappings = await getTemplateMappings(context);
-    const jsonString = JSON.stringify(templateSource, null, 4);
-    fs.writeFileSync(templateFilePath, jsonString, 'utf8');
+    templateSource.Mappings = await getPinpointRegionMappings(context);
+    JSONUtilities.writeJson(templateFilePath, templateSource);
   }
 };
 

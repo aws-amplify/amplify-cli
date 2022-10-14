@@ -13,9 +13,10 @@ import { analyticsPush } from '../commands/analytics';
 import { invokeAuthPush } from '../plugin-client-api-auth';
 import { getAllDefaults } from '../provider-utils/awscloudformation/default-values/pinpoint-defaults';
 import { getAnalyticsResources } from '../utils/analytics-helper';
+import { readCFNTemplate, writeCFNTemplate } from '../../../amplify-cli-core/src/cfnUtilities';
 import {
-  checkIfNotificationsCategoryHasPinpoint,
-  getTemplateMappings,
+  getNotificationsCategoryHasPinpointIfExists,
+  getPinpointRegionMappings,
   pinpointHasInAppMessagingPolicy,
   pinpointInAppMessagingPolicyName,
 } from '../utils/pinpoint-helper';
@@ -40,34 +41,30 @@ export const inAppMessagingMigrationCheck = async (context: $TSContext): Promise
     });
   }
 
-  const pinpointApp = checkIfNotificationsCategoryHasPinpoint(context);
+  const pinpointApp = getNotificationsCategoryHasPinpointIfExists();
   if (resources.length === 0 && pinpointApp) {
-    const defaultValues = getAllDefaults(context.amplify.getProjectDetails());
+    const resourceParameters = getAllDefaults(context.amplify.getProjectDetails());
     const notificationsInfo = {
       appName: pinpointApp.appName,
       resourceName: pinpointApp.appName,
     };
 
-    Object.assign(defaultValues, notificationsInfo);
+    Object.assign(resourceParameters, notificationsInfo);
 
-    const resource = defaultValues.resourceName;
-    delete defaultValues.resourceName;
+    const resource = resourceParameters.resourceName;
+    delete resourceParameters.resourceName;
     const analyticsResourcePath = path.join(projectBackendDirPath, AmplifyCategories.ANALYTICS, resource);
     fs.ensureDirSync(analyticsResourcePath);
 
-    const parametersFileName = 'parameters.json';
-    const parametersFilePath = path.join(analyticsResourcePath, parametersFileName);
-    const jsonString = JSON.stringify(defaultValues, null, 4);
-    fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+    stateManager.setResourceParametersJson(projectBackendDirPath, AmplifyCategories.ANALYTICS, resource, resourceParameters);
 
     const templateFileName = 'pinpoint-cloudformation-template.json';
     const templateFilePath = path.join(analyticsResourcePath, templateFileName);
     if (!fs.existsSync(templateFilePath)) {
-      const templateSourceFilePath = `${__dirname}/../provider-utils/awscloudformation/cloudformation-templates/${templateFileName}`;
-      const templateSource = context.amplify.readJsonFile(templateSourceFilePath);
-      templateSource.Mappings = await getTemplateMappings(context);
-      const templateJsonString = JSON.stringify(templateSource, null, 4);
-      fs.writeFileSync(templateFilePath, templateJsonString, 'utf8');
+      const templateSourceFilePath = path.join(__dirname, '..', 'provider-utils', 'awscloudformation', 'cloudformation-templates', templateFileName);
+      const { cfnTemplate } = readCFNTemplate(templateSourceFilePath);
+      cfnTemplate.Mappings = await getPinpointRegionMappings(context);
+      writeCFNTemplate(cfnTemplate, templateFilePath);
     }
 
     const options = {

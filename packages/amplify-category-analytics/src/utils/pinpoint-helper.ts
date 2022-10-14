@@ -1,11 +1,19 @@
 import {
   AmplifySupportedService,
   pathManager, readCFNTemplate,
-  open, $TSAny, $TSContext, $TSMeta, AmplifyCategories,
+  open, $TSAny, $TSContext, $TSMeta, AmplifyCategories, stateManager,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as path from 'path';
 import { getAnalyticsResources } from './analytics-helper';
+
+/**
+ *
+ */
+export type PinpointApp = {
+  appId: string;
+  appName: string;
+};
 
 export const pinpointInAppMessagingPolicyName = 'pinpointInAppMessagingPolicyName';
 
@@ -88,35 +96,32 @@ export const pinpointHasInAppMessagingPolicy = (context: $TSContext): boolean =>
 /**
  * checks if notifications category has a pinpoint resource - legacy projects
  */
-export const checkIfNotificationsCategoryHasPinpoint = (context: $TSContext): $TSAny => {
-  const { amplify } = context;
-  const { amplifyMeta } = amplify.getProjectDetails();
-  let pinpointApp: $TSAny;
+export const getNotificationsCategoryHasPinpointIfExists = (): PinpointApp | undefined => {
+  const amplifyMeta = stateManager.getMeta();
 
   if (amplifyMeta.notifications) {
     const categoryResources = amplifyMeta.notifications;
     Object.keys(categoryResources).forEach(resource => {
       if (categoryResources[resource].service === AmplifySupportedService.PINPOINT && categoryResources[resource].output.Id) {
-        pinpointApp = {};
-        pinpointApp.appId = categoryResources[resource].output.Id;
-        pinpointApp.appName = resource;
+        return {
+          appId: categoryResources[resource].output.Id,
+          appName: resource,
+        };
       }
     });
   }
 
-  return pinpointApp;
+  return undefined;
 };
 
 /**
  * returns provider pinpoint region mapping
  */
-export const getTemplateMappings = async (context: $TSContext): Promise<Record<string, $TSAny>> => {
+export const getPinpointRegionMappings = async (context: $TSContext): Promise<Record<string, $TSAny>> => {
   const Mappings: Record<string, $TSAny> = {
     RegionMapping: {},
   };
-  const providerPlugins = context.amplify.getProviderPlugins(context);
-  const provider = await import(providerPlugins.awscloudformation);
-  const regionMapping = provider.getPinpointRegionMapping();
+  const regionMapping: $TSAny = await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'getPinpointRegionMapping', []);
   Object.keys(regionMapping).forEach(region => {
     Mappings.RegionMapping[region] = {
       pinpointRegion: regionMapping[region],
