@@ -7,9 +7,6 @@ import { printer } from 'amplify-prompts';
 import * as path from 'path';
 import { getAnalyticsResources } from './analytics-helper';
 
-/**
- *
- */
 export type PinpointApp = {
   appId: string;
   appName: string;
