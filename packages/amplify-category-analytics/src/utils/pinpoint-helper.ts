@@ -7,6 +7,8 @@ import { printer } from 'amplify-prompts';
 import * as path from 'path';
 import { getAnalyticsResources } from './analytics-helper';
 
+export const pinpointInAppMessagingPolicyName = 'pinpointInAppMessagingPolicyName';
+
 /**
  * opens resource in AWS console
  */
@@ -69,16 +71,16 @@ export const hasResource = (context: $TSContext): boolean => {
  */
 export const pinpointHasInAppMessagingPolicy = (context: $TSContext): boolean => {
   const resources = getAnalyticsResources(context, AmplifySupportedService.PINPOINT);
-  if (resources?.length > 0) {
-    const pinpointCloudFormationTemplatePath = path.join(
-      pathManager.getBackendDirPath(),
-      AmplifyCategories.ANALYTICS,
-      resources[0].resourceName,
-      `pinpoint-cloudformation-template.json`,
-    );
-    const { cfnTemplate } = readCFNTemplate(pinpointCloudFormationTemplatePath, { throwIfNotExist: false }) || {};
-    return !!cfnTemplate?.Parameters?.pinpointInAppMessagingPolicyName;
+  if (resources?.length === 0) {
+    return false;
   }
 
-  return false;
+  const pinpointCloudFormationTemplatePath = path.join(
+    pathManager.getBackendDirPath(),
+    AmplifyCategories.ANALYTICS,
+    resources[0].resourceName,
+    `pinpoint-cloudformation-template.json`,
+  );
+  const { cfnTemplate } = readCFNTemplate(pinpointCloudFormationTemplatePath, { throwIfNotExist: false }) || {};
+  return !!cfnTemplate?.Parameters?.[pinpointInAppMessagingPolicyName];
 };

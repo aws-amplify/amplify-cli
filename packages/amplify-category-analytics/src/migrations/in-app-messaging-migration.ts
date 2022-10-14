@@ -4,7 +4,7 @@ import {
 } from 'amplify-cli-core';
 import fs from 'fs-extra';
 import * as path from 'path';
-import { pinpointHasInAppMessagingPolicy } from '../utils/pinpoint-helper';
+import { pinpointHasInAppMessagingPolicy, pinpointInAppMessagingPolicyName } from '../utils/pinpoint-helper';
 
 /**
  * checks if the project has been migrated to the latest version of in-app messaging
@@ -20,7 +20,7 @@ export const inAppMessagingMigrationCheck = async (context: $TSContext): Promise
       const cfn = JSONUtilities.readJson(templateFilePath);
       const updatedCfn = migratePinpointCFN(cfn);
       fs.ensureDirSync(resourcePath);
-      fs.writeFileSync(templateFilePath, JSON.stringify(updatedCfn, null, 4), 'utf8');
+      JSONUtilities.writeJson(templateFilePath, updatedCfn);
     });
   }
 };
@@ -28,7 +28,7 @@ export const inAppMessagingMigrationCheck = async (context: $TSContext): Promise
 const migratePinpointCFN = (cfn: $TSAny): $TSAny => {
   const { Parameters, Conditions, Resources } = cfn;
 
-  Parameters.pinpointInAppMessagingPolicyName = {
+  Parameters[pinpointInAppMessagingPolicyName] = {
     Type: 'String',
     Default: 'NONE',
   };

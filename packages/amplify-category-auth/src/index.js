@@ -527,7 +527,7 @@ async function isSMSWorkflowEnabled(context, resourceName) {
  * @param {Object} context - The amplify context.
  */
 const authPushYes = async context => {
-  const exeInfoClone = Object.assign({}, (context.exeInfo) || {});
+  const exeInfoClone = { ...context?.exeInfo };
   try {
     context.exeInfo = (context.exeInfo) || {};
     context.exeInfo.inputParams = (context.exeInfo.inputParams) || {};
