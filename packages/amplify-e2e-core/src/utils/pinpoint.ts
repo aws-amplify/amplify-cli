@@ -47,7 +47,7 @@ const serviceRegionMap = {
 };
 
 /**
- *
+ * checks to see if the pinpoint app exists
  */
 export async function pinpointAppExist(pinpointProjectId: string): Promise<boolean> {
   let result = false;
@@ -80,7 +80,7 @@ export async function pinpointAppExist(pinpointProjectId: string): Promise<boole
 }
 
 /**
- *
+ * initializes a project to test pinpoint
  */
 export function initProjectForPinpoint(cwd: string): Promise<void> {
   addCircleCITags(cwd);
@@ -164,7 +164,7 @@ export function addPinpointAnalytics(cwd: string, pinPointResourceName?: string)
 }
 
 /**
- *
+ * calls amplify push and verifies that the pinpoint resource succeeds
  */
 export function pushToCloud(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -183,7 +183,7 @@ export function pushToCloud(cwd: string): Promise<void> {
 }
 
 /**
- *
+ * deletes the app
  */
 export function amplifyDelete(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
