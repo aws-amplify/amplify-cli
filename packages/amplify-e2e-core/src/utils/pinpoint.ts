@@ -141,10 +141,10 @@ export function initProjectForPinpoint(cwd: string): Promise<void> {
 /**
  * adds a pinpoint resource, you may specific a name for the resource
  */
-export function addPinpointAnalytics(cwd: string, pinPointResourceName?: string): Promise<string> {
+export function addPinpointAnalytics(cwd: string, testingWithLatestCodebase = true, pinPointResourceName?: string): Promise<string> {
   const resourceName = pinPointResourceName || settings.pinpointResourceName;
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true })
+    spawn(getCLIPath(testingWithLatestCodebase), ['add', 'analytics'], { cwd, stripColors: true })
       .wait('Select an Analytics provider')
       .sendCarriageReturn()
       .wait('Provide your pinpoint resource name:')
@@ -183,7 +183,7 @@ export function pushToCloud(cwd: string): Promise<void> {
 }
 
 /**
- * deletes the app
+ * delete the project
  */
 export function amplifyDelete(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {

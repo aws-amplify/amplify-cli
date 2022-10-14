@@ -52,7 +52,11 @@ describe('notification category compatibility test', () => {
     expect(appId).toBeDefined();
 
     // BEGIN - SETUP PINPOINT & PUSH (see analytics.test.ts)
+<<<<<<< HEAD
     await addPinpointAnalytics(projectRoot, pinpointResourceName);
+=======
+    await addPinpointAnalytics(projectRoot, false, pinpointResourceName);
+>>>>>>> 13664d310 (chore: resolve conflicts)
     await amplifyPushUpdate(projectRoot);
 
     // SETUP NOTIFICATIONS CHANNEL & PUSH (IN-APP MESSAGING)
