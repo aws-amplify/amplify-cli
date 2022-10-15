@@ -104,7 +104,7 @@ export const getPermissionPolicies = async (context: $TSContext, resourceOpsMapp
  */
 export const executeAmplifyCommand = async (context: $TSContext) : Promise<$TSAny> => {
   context.exeInfo = context.amplify.getProjectDetails();
-  migrationCheck(context);
+  await migrationCheck(context);
 
   let commandPath = path.normalize(path.join(__dirname, 'commands'));
   commandPath = context.input.command === 'help'

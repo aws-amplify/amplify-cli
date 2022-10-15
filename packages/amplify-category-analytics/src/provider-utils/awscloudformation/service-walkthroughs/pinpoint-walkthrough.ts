@@ -9,10 +9,11 @@ import os from 'os';
 import {
   $TSContext, ResourceAlreadyExistsError, exitOnNextTick, AmplifyCategories,
   $TSAny,
+  JSONUtilities,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
+import { getNotificationsCategoryHasPinpointIfExists, getPinpointRegionMappings } from '../../../utils/pinpoint-helper';
 
-const providerName = 'awscloudformation';
 // FIXME: may be removed from here, since addResource can pass category to addWalkthrough
 const category = AmplifyCategories.ANALYTICS;
 const parametersFileName = 'parameters.json';
@@ -63,7 +64,7 @@ const configure = (
     Object.assign(defaultValues, parameters);
   }
 
-  const pinpointApp = checkIfNotificationsCategoryExists(context);
+  const pinpointApp = getNotificationsCategoryHasPinpointIfExists();
 
   if (pinpointApp) {
     Object.assign(defaultValues, pinpointApp);
@@ -172,28 +173,9 @@ const configure = (
     const resourceDirPath = path.join(projectBackendDirPath, category, resource);
     delete defaultValues.resourceName;
     writeParams(resourceDirPath, defaultValues);
-    writeCfnFile(context, resourceDirPath);
+    await writeCfnFile(context, resourceDirPath);
     return resource;
   });
-};
-
-const checkIfNotificationsCategoryExists = (context: $TSContext): $TSAny => {
-  const { amplify } = context;
-  const { amplifyMeta } = amplify.getProjectDetails();
-  let pinpointApp: $TSAny;
-
-  if (amplifyMeta.notifications) {
-    const categoryResources = amplifyMeta.notifications;
-    Object.keys(categoryResources).forEach(resource => {
-      if (categoryResources[resource].service === serviceName && categoryResources[resource].output.Id) {
-        pinpointApp = {};
-        pinpointApp.appId = categoryResources[resource].output.Id;
-        pinpointApp.appName = resource;
-      }
-    });
-  }
-
-  return pinpointApp;
 };
 
 const resourceAlreadyExists = (context: $TSContext): string | undefined => {
@@ -213,31 +195,15 @@ const resourceAlreadyExists = (context: $TSContext): string | undefined => {
   return resourceName;
 };
 
-const writeCfnFile = (context: $TSContext, resourceDirPath: string, force = false): void => {
+const writeCfnFile = async (context: $TSContext, resourceDirPath: string, force = false): Promise<void> => {
   fs.ensureDirSync(resourceDirPath);
   const templateFilePath = path.join(resourceDirPath, templateFileName);
   if (!fs.existsSync(templateFilePath) || force) {
-    const templateSourceFilePath = `${__dirname}/../cloudformation-templates/${templateFileName}`;
+    const templateSourceFilePath = path.join(__dirname, '..', 'cloudformation-templates', templateFileName);
     const templateSource = context.amplify.readJsonFile(templateSourceFilePath);
-    templateSource.Mappings = getTemplateMappings(context);
-    const jsonString = JSON.stringify(templateSource, null, 4);
-    fs.writeFileSync(templateFilePath, jsonString, 'utf8');
+    templateSource.Mappings = await getPinpointRegionMappings(context);
+    JSONUtilities.writeJson(templateFilePath, templateSource);
   }
-};
-
-const getTemplateMappings = (context:$TSContext):Record<string, $TSAny> => {
-  const Mappings: Record<string, $TSAny> = {
-    RegionMapping: {},
-  };
-  const providerPlugins = context.amplify.getProviderPlugins(context);
-  const provider = require(providerPlugins[providerName]);
-  const regionMapping = provider.getPinpointRegionMapping();
-  Object.keys(regionMapping).forEach(region => {
-    Mappings.RegionMapping[region] = {
-      pinpointRegion: regionMapping[region],
-    };
-  });
-  return Mappings;
 };
 
 /**
