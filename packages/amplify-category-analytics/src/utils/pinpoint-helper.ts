@@ -7,6 +7,9 @@ import { printer } from 'amplify-prompts';
 import * as path from 'path';
 import { getAnalyticsResources } from './analytics-helper';
 
+/**
+ * Pinpoint app type definition
+ */
 export type PinpointApp = {
   appId: string;
   appName: string;
@@ -95,17 +98,19 @@ export const pinpointHasInAppMessagingPolicy = (context: $TSContext): boolean =>
  */
 export const getNotificationsCategoryHasPinpointIfExists = (): PinpointApp | undefined => {
   const amplifyMeta = stateManager.getMeta();
-
   if (amplifyMeta.notifications) {
     const categoryResources = amplifyMeta.notifications;
-    Object.keys(categoryResources).forEach(resource => {
-      if (categoryResources[resource].service === AmplifySupportedService.PINPOINT && categoryResources[resource].output.Id) {
-        return {
-          appId: categoryResources[resource].output.Id,
-          appName: resource,
-        };
-      }
-    });
+    const pinpointServiceResource = Object.keys(categoryResources).find(
+      (resource: string) => categoryResources[resource].service === AmplifySupportedService.PINPOINT
+        && categoryResources[resource].output.Id,
+    );
+
+    if (pinpointServiceResource) {
+      return {
+        appId: categoryResources[pinpointServiceResource].output.Id,
+        appName: pinpointServiceResource,
+      };
+    }
   }
 
   return undefined;

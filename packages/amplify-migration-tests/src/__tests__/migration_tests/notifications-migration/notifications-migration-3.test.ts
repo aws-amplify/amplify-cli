@@ -1,5 +1,7 @@
 import {
+  addAuthWithDefault,
   addNotificationChannel,
+  addPinpointAnalytics,
   amplifyPushAuth,
   createNewProjectDir,
   deleteProject,
@@ -15,7 +17,7 @@ describe('amplify add notifications', () => {
   const migrateToVersion = { v: 'uninitialized' };
 
   beforeEach(async () => {
-    projectRoot = await createNewProjectDir('notification-migration-2');
+    projectRoot = await createNewProjectDir('notification-migration-3');
   });
 
   afterEach(async () => {
@@ -28,23 +30,37 @@ describe('amplify add notifications', () => {
     await versionCheck(process.cwd(), true, migrateToVersion);
   });
 
-  it('should add in app notifications if another notification channel added with an older version', async () => {
+  it('should add in app notifications if analytics then another notification channel added and pushed with an older version', async () => {
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     const settings = { resourceName: `notification${getShortId()}` };
 
     await initJSProjectWithProfile(projectRoot, {}, false);
+    await addPinpointAnalytics(projectRoot, false);
+    await amplifyPushAuth(projectRoot, false);
+    await addLegacySmsNotificationChannel(projectRoot, settings.resourceName, true);
+    await addNotificationChannel(projectRoot, settings, 'In-App Messaging', true, true, true);
+    await amplifyPushAuth(projectRoot, true);
+  });
+
+  it('should add in app notifications if analytics then another notification channel and auth added and pushed with an older version', async () => {
+    expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
+    const settings = { resourceName: `notification${getShortId()}` };
+
+    await initJSProjectWithProfile(projectRoot, {}, false);
+    await addAuthWithDefault(projectRoot, false);
+    await amplifyPushAuth(projectRoot, false);
     await addLegacySmsNotificationChannel(projectRoot, settings.resourceName);
     await addNotificationChannel(projectRoot, settings, 'In-App Messaging', true, true, true);
     await amplifyPushAuth(projectRoot, true);
   });
 
-  it('should add in app notifications if another notification channel added and pushed with an older version', async () => {
+  it('should add in app notifications if analytics then another notification channel and auth added with an older version', async () => {
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     const settings = { resourceName: `notification${getShortId()}` };
 
     await initJSProjectWithProfile(projectRoot, {}, false);
+    await addAuthWithDefault(projectRoot, true);
     await addLegacySmsNotificationChannel(projectRoot, settings.resourceName);
-    await amplifyPushAuth(projectRoot, false);
     await addNotificationChannel(projectRoot, settings, 'In-App Messaging', true, true, true);
     await amplifyPushAuth(projectRoot, true);
   });

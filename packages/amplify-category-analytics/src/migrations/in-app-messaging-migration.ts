@@ -6,6 +6,7 @@ import {
   JSONUtilities,
   pathManager,
   stateManager,
+  readCFNTemplate, writeCFNTemplate,
 } from 'amplify-cli-core';
 import fs from 'fs-extra';
 import * as path from 'path';
@@ -13,7 +14,6 @@ import { analyticsPush } from '../commands/analytics';
 import { invokeAuthPush } from '../plugin-client-api-auth';
 import { getAllDefaults } from '../provider-utils/awscloudformation/default-values/pinpoint-defaults';
 import { getAnalyticsResources } from '../utils/analytics-helper';
-import { readCFNTemplate, writeCFNTemplate } from 'amplify-cli-core';
 import {
   getNotificationsCategoryHasPinpointIfExists,
   getPinpointRegionMappings,
@@ -54,9 +54,7 @@ export const inAppMessagingMigrationCheck = async (context: $TSContext): Promise
     const resource = resourceParameters.resourceName;
     delete resourceParameters.resourceName;
     const analyticsResourcePath = path.join(projectBackendDirPath, AmplifyCategories.ANALYTICS, resource);
-    fs.ensureDirSync(analyticsResourcePath);
-
-    stateManager.setResourceParametersJson(projectBackendDirPath, AmplifyCategories.ANALYTICS, resource, resourceParameters);
+    stateManager.setResourceParametersJson(undefined, AmplifyCategories.ANALYTICS, resource, resourceParameters);
 
     const templateFileName = 'pinpoint-cloudformation-template.json';
     const templateFilePath = path.join(analyticsResourcePath, templateFileName);
@@ -64,7 +62,7 @@ export const inAppMessagingMigrationCheck = async (context: $TSContext): Promise
       const templateSourceFilePath = path.join(__dirname, '..', 'provider-utils', 'awscloudformation', 'cloudformation-templates', templateFileName);
       const { cfnTemplate } = readCFNTemplate(templateSourceFilePath);
       cfnTemplate.Mappings = await getPinpointRegionMappings(context);
-      writeCFNTemplate(cfnTemplate, templateFilePath);
+      await writeCFNTemplate(cfnTemplate, templateFilePath);
     }
 
     const options = {
