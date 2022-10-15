@@ -91,7 +91,7 @@ describe('notification category test - InAppMessaging', () => {
     expect(newEnvCloudBackendInAppMsgMeta.Enabled).toBe(false);
 
     // switch back to the first environment
-    await checkoutEnvironment(projectRoot, { envName: envName, restoreBackend: true });
+    await checkoutEnvironment(projectRoot, { envName, restoreBackend: true });
     // in-app messaging should be enabled in the cloud on this env
     const originalEnvCloudBackendMeta = await getProjectMeta(projectRoot);
     const originalEnvCloudBackendInAppMsgMeta = originalEnvCloudBackendMeta.notifications[settings.resourceName]?.output?.InAppMessaging;
