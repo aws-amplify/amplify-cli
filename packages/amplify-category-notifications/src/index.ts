@@ -48,7 +48,7 @@ export const migrate = async (context: $TSContext): Promise<void> => {
  */
 export const executeAmplifyCommand = async (context: $TSContext): Promise<void> => {
   context.exeInfo = context.amplify.getProjectDetails();
-  migrationCheck(context);
+  await migrationCheck(context);
 
   let commandPath = path.normalize(path.join(__dirname, 'commands'));
   commandPath = context.input.command === 'help' ? path.join(commandPath, category) : path.join(commandPath, category, context.input.command);

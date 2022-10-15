@@ -13,5 +13,7 @@ export const analyticsMigrations = async (context: $TSContext): Promise<void> =>
  * checks if the project has been migrated to the latest version
  */
 export const migrationCheck = async (context: $TSContext): Promise<void> => {
-  await analyticsMigrations(context);
+  if (['add', 'update', 'push'].includes(context.input.command)) {
+    await analyticsMigrations(context);
+  }
 };

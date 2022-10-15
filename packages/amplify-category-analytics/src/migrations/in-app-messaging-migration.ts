@@ -1,27 +1,82 @@
 import {
   $TSAny,
-  $TSContext, AmplifyCategories, JSONUtilities, pathManager, stateManager,
+  $TSContext,
+  AmplifyCategories,
+  AmplifySupportedService,
+  JSONUtilities,
+  pathManager,
+  stateManager,
+  readCFNTemplate, writeCFNTemplate,
 } from 'amplify-cli-core';
 import fs from 'fs-extra';
 import * as path from 'path';
-import { pinpointHasInAppMessagingPolicy, pinpointInAppMessagingPolicyName } from '../utils/pinpoint-helper';
+import { analyticsPush } from '../commands/analytics';
+import { invokeAuthPush } from '../plugin-client-api-auth';
+import { getAllDefaults } from '../provider-utils/awscloudformation/default-values/pinpoint-defaults';
+import { getAnalyticsResources } from '../utils/analytics-helper';
+import {
+  getNotificationsCategoryHasPinpointIfExists,
+  getPinpointRegionMappings,
+  pinpointHasInAppMessagingPolicy,
+  pinpointInAppMessagingPolicyName,
+} from '../utils/pinpoint-helper';
 
 /**
  * checks if the project has been migrated to the latest version of in-app messaging
  */
 export const inAppMessagingMigrationCheck = async (context: $TSContext): Promise<void> => {
-  if (['add', 'update', 'push'].includes(context.input.command) && !pinpointHasInAppMessagingPolicy(context)) {
-    const projectBackendDirPath = pathManager.getBackendDirPath();
+  const projectBackendDirPath = pathManager.getBackendDirPath();
+  const resources = getAnalyticsResources(context);
+
+  if (resources.length > 0 && !pinpointHasInAppMessagingPolicy(context)) {
     const amplifyMeta = stateManager.getMeta();
     const analytics = amplifyMeta[AmplifyCategories.ANALYTICS] || {};
     Object.keys(analytics).forEach(resourceName => {
-      const resourcePath = path.join(projectBackendDirPath, AmplifyCategories.ANALYTICS, resourceName);
-      const templateFilePath = path.join(resourcePath, 'pinpoint-cloudformation-template.json');
+      const analyticsResourcePath = path.join(projectBackendDirPath, AmplifyCategories.ANALYTICS, resourceName);
+      const templateFilePath = path.join(analyticsResourcePath, 'pinpoint-cloudformation-template.json');
       const cfn = JSONUtilities.readJson(templateFilePath);
       const updatedCfn = migratePinpointCFN(cfn);
-      fs.ensureDirSync(resourcePath);
+      fs.ensureDirSync(analyticsResourcePath);
       JSONUtilities.writeJson(templateFilePath, updatedCfn);
     });
+  }
+
+  const pinpointApp = getNotificationsCategoryHasPinpointIfExists();
+  if (resources.length === 0 && pinpointApp) {
+    const resourceParameters = getAllDefaults(context.amplify.getProjectDetails());
+    const notificationsInfo = {
+      appName: pinpointApp.appName,
+      resourceName: pinpointApp.appName,
+    };
+
+    Object.assign(resourceParameters, notificationsInfo);
+
+    const resource = resourceParameters.resourceName;
+    delete resourceParameters.resourceName;
+    const analyticsResourcePath = path.join(projectBackendDirPath, AmplifyCategories.ANALYTICS, resource);
+    stateManager.setResourceParametersJson(undefined, AmplifyCategories.ANALYTICS, resource, resourceParameters);
+
+    const templateFileName = 'pinpoint-cloudformation-template.json';
+    const templateFilePath = path.join(analyticsResourcePath, templateFileName);
+    if (!fs.existsSync(templateFilePath)) {
+      const templateSourceFilePath = path.join(__dirname, '..', 'provider-utils', 'awscloudformation', 'cloudformation-templates', templateFileName);
+      const { cfnTemplate } = readCFNTemplate(templateSourceFilePath);
+      cfnTemplate.Mappings = await getPinpointRegionMappings(context);
+      await writeCFNTemplate(cfnTemplate, templateFilePath);
+    }
+
+    const options = {
+      service: AmplifySupportedService.PINPOINT,
+      providerPlugin: 'awscloudformation',
+    };
+    context.amplify.updateamplifyMetaAfterResourceAdd(AmplifyCategories.ANALYTICS, resource, options);
+
+    context.parameters.options.yes = true;
+    context.exeInfo.inputParams = (context.exeInfo.inputParams) || {};
+    context.exeInfo.inputParams.yes = true;
+
+    await invokeAuthPush(context);
+    await analyticsPush(context);
   }
 };
 
