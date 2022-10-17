@@ -44,6 +44,7 @@ export const toggleNotificationsChannelAppMeta = async (
     ...channelValue,
     Enabled: isEnabled,
     ApplicationId: channelOutput.Id,
+    Name: channelOutput.Name,
   };
 
   // To mark notifications as UPDATED, we need a timestamp in the past.
