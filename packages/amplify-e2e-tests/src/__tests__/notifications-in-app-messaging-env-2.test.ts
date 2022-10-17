@@ -105,10 +105,15 @@ describe('notifications in-app without existing pinpoint', () => {
     expect(originalEnvCloudBackendInAppMsgMeta).toBeDefined();
     expect(originalEnvCloudBackendInAppMsgMeta.Enabled).toBe(true);
 
+    // resources should still exist on the first environment (this checks that status works after checkout)
+    await amplifyStatus(projectRoot, 'Analytics');
+    await amplifyStatus(projectRoot, 'Auth');
+    await amplifyStatus(projectRoot, 'Notifications');
+
     // delete the 2nd environment
     await removeEnvironment(projectRoot, { envName: newEnvName });
 
-    // resources should still exist on the first environment
+    // resources should still exist on the first environment (this checks that env1 is not deleted when deleting env2)
     await amplifyStatus(projectRoot, 'Analytics');
     await amplifyStatus(projectRoot, 'Auth');
     await amplifyStatus(projectRoot, 'Notifications');
