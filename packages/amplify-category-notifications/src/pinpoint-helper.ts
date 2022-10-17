@@ -419,6 +419,7 @@ export const scanCategoryMetaForPinpoint = (categoryMeta: $TSAny, options: $TSAn
           Id: serviceMeta.output.Id,
           Name: serviceMeta.output.Name || serviceMeta.output.appName,
           Region: serviceMeta.output.Region,
+          lastPushTimeStamp: serviceMeta.lastPushTimeStamp,
         };
 
         if (options && options.isRegulatingResourceName) {
