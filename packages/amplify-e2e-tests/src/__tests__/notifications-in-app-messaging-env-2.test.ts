@@ -2,7 +2,6 @@ import {
   addNotificationChannel,
   addPinpointAnalytics,
   amplifyPushAuth,
-  amplifyPushUpdate,
   amplifyStatus,
   createNewProjectDir,
   deleteProject,

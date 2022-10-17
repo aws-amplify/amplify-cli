@@ -80,7 +80,7 @@ describe('notifications in-app with existing pinpoint', () => {
     // new environment should show that we still need to push resources for this environment
     await amplifyStatus(projectRoot, 'Create');
     await amplifyStatus(projectRoot, 'Notifications');
-    // remove in-app messaging on this environment locally
+    // remove in-app messaging on this environment
     await removeNotificationChannel(projectRoot, testChannelSelection);
     await amplifyPushAuth(projectRoot);
 
