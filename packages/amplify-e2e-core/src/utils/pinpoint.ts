@@ -44,6 +44,9 @@ const serviceRegionMap = {
   'me-south-1': 'ap-south-1',
 };
 
+/**
+ * checks to see if the pinpoint app exists
+ */
 export async function pinpointAppExist(pinpointProjectId: string): Promise<boolean> {
   let result = false;
 
@@ -74,6 +77,9 @@ export async function pinpointAppExist(pinpointProjectId: string): Promise<boole
   return result;
 }
 
+/**
+ * initializes a project to test pinpoint
+ */
 export function initProjectForPinpoint(cwd: string): Promise<void> {
   addCircleCITags(cwd);
 
@@ -130,20 +136,24 @@ export function initProjectForPinpoint(cwd: string): Promise<void> {
   });
 }
 
-export function addPinpointAnalytics(cwd: string, testingWithLatestCodebase = true): Promise<string> {
+/**
+ * adds a pinpoint resource, you may specific a name for the resource
+ */
+ export function addPinpointAnalytics(cwd: string, testingWithLatestCodebase = true, pinPointResourceName?: string): Promise<string> {
+  const resourceName = pinPointResourceName || settings.pinpointResourceName;
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['add', 'analytics'], { cwd, stripColors: true })
       .wait('Select an Analytics provider')
       .sendCarriageReturn()
       .wait('Provide your pinpoint resource name:')
-      .sendLine(settings.pinpointResourceName)
+      .sendLine(resourceName)
       .wait('Apps need authorization to send analytics events. Do you want to allow guests')
       .sendConfirmNo()
-      .wait(`Successfully added resource ${settings.pinpointResourceName} locally`)
+      .wait(`Successfully added resource ${resourceName} locally`)
       .sendEof()
       .run((err: Error) => {
         if (!err) {
-          resolve(settings.pinpointResourceName);
+          resolve(resourceName);
         } else {
           reject(err);
         }
@@ -151,6 +161,9 @@ export function addPinpointAnalytics(cwd: string, testingWithLatestCodebase = tr
   });
 }
 
+/**
+ * calls amplify push and verifies that the pinpoint resource succeeds
+ */
 export function pushToCloud(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
@@ -167,6 +180,9 @@ export function pushToCloud(cwd: string): Promise<void> {
   });
 }
 
+/**
+ * delete the project
+ */
 export function amplifyDelete(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['delete'], { cwd, stripColors: true })
