@@ -117,7 +117,11 @@ export class PlaceIndexStack extends BaseStack {
       statements: [
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
-          actions: ['geo:SearchPlaceIndexForPosition', 'geo:SearchPlaceIndexForText', 'geo:SearchPlaceIndexForSuggestions'],
+          actions: [
+            'geo:SearchPlaceIndexForPosition',
+            'geo:SearchPlaceIndexForText',
+            'geo:SearchPlaceIndexForSuggestions',
+            'geo:GetPlace'],
           resources: [indexResource.getAtt('IndexArn').toString()],
         }),
       ],

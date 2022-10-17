@@ -293,6 +293,7 @@ exports.handler = async function (event, context) {
                 "geo:SearchPlaceIndexForPosition",
                 "geo:SearchPlaceIndexForText",
                 "geo:SearchPlaceIndexForSuggestions",
+                "geo:GetPlace",
               ],
               "Effect": "Allow",
               "Resource": Object {
@@ -645,6 +646,7 @@ exports.handler = async function (event, context) {
                 "geo:SearchPlaceIndexForPosition",
                 "geo:SearchPlaceIndexForText",
                 "geo:SearchPlaceIndexForSuggestions",
+                "geo:GetPlace",
               ],
               "Effect": "Allow",
               "Resource": Object {
