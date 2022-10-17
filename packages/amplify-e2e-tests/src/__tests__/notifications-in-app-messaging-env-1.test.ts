@@ -20,7 +20,7 @@ import {
 describe('notifications in-app with existing pinpoint', () => {
   const testChannel = 'InAppMessaging';
   const testChannelSelection = 'In-App Messaging';
-  const envName = 'inappnotifstest';
+  const envName = 'inapptest';
   const projectPrefix = `notification${testChannel}`.substring(0, 19);
   const projectSettings = {
     name: projectPrefix,
@@ -75,7 +75,7 @@ describe('notifications in-app with existing pinpoint', () => {
     expect(pinpointId).toEqual(analyticsMeta.Id);
 
     // make sure we can add new environments
-    const newEnvName = 'inappnotifs2';
+    const newEnvName = 'inapptest';
     await addEnvironment(projectRoot, { envName: newEnvName });
     // new environment should show that we still need to push resources for this environment
     await amplifyStatus(projectRoot, 'Create');
@@ -97,7 +97,7 @@ describe('notifications in-app with existing pinpoint', () => {
     const originalEnvCloudBackendInAppMsgMeta = originalEnvCloudBackendMeta.notifications[settings.resourceName]?.output?.InAppMessaging;
     expect(originalEnvCloudBackendInAppMsgMeta).toBeDefined();
     expect(originalEnvCloudBackendInAppMsgMeta.Enabled).toBe(true);
-    
+
     // resources should still exist on the first environment (this checks that status works after checkout)
     await amplifyStatus(projectRoot, 'Analytics');
     await amplifyStatus(projectRoot, 'Auth');
