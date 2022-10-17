@@ -41,6 +41,7 @@
     "aws-sdk": "^2.1169.0",
     "chalk": "^4.1.1",
     "change-case": "^4.1.1",
+    "cloudform-types": "^4.2.0",
     "enquirer": "^2.3.6",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",
