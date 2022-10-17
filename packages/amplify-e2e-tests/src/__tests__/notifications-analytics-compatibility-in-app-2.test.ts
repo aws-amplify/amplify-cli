@@ -50,7 +50,7 @@ describe('notification category compatibility test', () => {
     const appId = getAppId(projectRoot);
     expect(appId).toBeDefined();
 
-    // BEGIN - SETUP PINPOINT & PUSH (see analytics.test.ts)
+    // BEGIN - SETUP PINPOINT & PUSH
     await addPinpointAnalytics(projectRoot, false, pinpointResourceName);
     await amplifyPushUpdate(projectRoot);
 

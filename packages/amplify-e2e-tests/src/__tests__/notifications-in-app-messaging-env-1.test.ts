@@ -17,7 +17,7 @@ import {
   getShortId,
 } from '../import-helpers';
 
-describe('notification category test - InAppMessaging', () => {
+describe('notifications in-app with existing pinpoint', () => {
   const testChannel = 'InAppMessaging';
   const testChannelSelection = 'In-App Messaging';
   const envName = 'inappnotifstest';
