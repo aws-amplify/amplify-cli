@@ -1,7 +1,9 @@
 import { Pinpoint } from 'aws-sdk';
-import { getCLIPath, nspawn as spawn, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW } from '..';
 import _ from 'lodash';
 import { EOL } from 'os';
+import {
+  getCLIPath, nspawn as spawn, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW,
+} from '..';
 
 const settings = {
   name: EOL,
@@ -84,7 +86,7 @@ export function initProjectForPinpoint(cwd: string): Promise<void> {
   addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['init'], {
+    const chain = spawn(getCLIPath(), ['init'], {
       cwd,
       stripColors: true,
       env: {
@@ -125,21 +127,21 @@ export function initProjectForPinpoint(cwd: string): Promise<void> {
 
     singleSelect(chain, settings.region, amplifyRegions);
     chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
-    .sendYes()
-    .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
-      if (!err) {
-        resolve();
-      } else {
-        reject(err);
-      }
-    });
+      .sendYes()
+      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
   });
 }
 
 /**
  * adds a pinpoint resource, you may specific a name for the resource
  */
- export function addPinpointAnalytics(cwd: string, testingWithLatestCodebase = true, pinPointResourceName?: string): Promise<string> {
+export function addPinpointAnalytics(cwd: string, testingWithLatestCodebase = true, pinPointResourceName?: string): Promise<string> {
   const resourceName = pinPointResourceName || settings.pinpointResourceName;
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['add', 'analytics'], { cwd, stripColors: true })
