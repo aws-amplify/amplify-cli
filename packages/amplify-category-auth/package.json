@@ -38,7 +38,7 @@
     "amplify-prompts": "2.6.0",
     "amplify-util-headless-input": "1.9.6",
     "amplify-util-import": "2.2.36",
-    "aws-sdk": "^2.1169.0",
+    "aws-sdk": "^2.1233.0",
     "chalk": "^4.1.1",
     "change-case": "^4.1.1",
     "enquirer": "^2.3.6",

@@ -3,7 +3,7 @@ import { printer } from 'amplify-prompts';
 import { run as generateComponents } from '../commands/generateComponents';
 
 /**
- * The code to run after a pull.
+ * The code to run after a push
  */
 export const run = async (context: $TSContext): Promise<void> => {
   try {

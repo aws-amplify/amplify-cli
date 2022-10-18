@@ -1,5 +1,8 @@
 import { printer } from 'amplify-prompts';
 
-export async function run() {
+/**
+ * help command
+ */
+export const run = (): void => {
   printer.info('Supported commands: generateComponents, cloneComponentsFromEnv');
-}
+};
