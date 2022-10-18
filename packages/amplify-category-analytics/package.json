@@ -18,7 +18,7 @@
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "watch": "tsc --watch",
-    "test": "jest"
+    "test": "jest --logHeapUsage"
   },
   "dependencies": {
     "@aws-amplify/amplify-environment-parameters": "1.1.3",
