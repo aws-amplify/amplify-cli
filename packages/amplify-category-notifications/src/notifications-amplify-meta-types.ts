@@ -9,6 +9,7 @@ export interface ICategoryMeta {
   Name: string,
   Region: string,
   regulatedResourceName? : string
+  lastPushTimeStamp: string,
 }
 
 /**
@@ -36,7 +37,6 @@ export type IPinpointAppMeta = ICategoryMeta & IPinpointAppOutput;
 export interface INotificationsMeta extends ICategoryMeta {
   ResourceName: string, // legacy structure to store the resource name (without env)
   output: Record<string, NotificationsChannelMeta>
-  lastPushTimeStamp: string,
 }
 
 interface IChannelResourceMeta {
