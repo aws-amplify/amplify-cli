@@ -69,8 +69,6 @@ describe('notification category compatibility test', () => {
     await sleep(3000);
     // SMS & Analytics meta should exist
     const meta = getBackendAmplifyMeta(projectRoot);
-    console.log(meta.analytics);
-    console.log(meta.notifications[pinpointResourceName]?.output);
     const SMSMeta = meta.notifications[pinpointResourceName]?.output?.SMS;
     const analyticsMeta = meta.analytics[pinpointResourceName]?.output;
     expect(SMSMeta).toBeDefined();
@@ -80,7 +78,6 @@ describe('notification category compatibility test', () => {
 
     // pinpointId in team-provider-info should match the analyticsMetaId
     const teamInfo = getTeamProviderInfo(projectRoot);
-    console.log(teamInfo[envName].categories);
     // const pinpointId = teamInfo[envName].categories?.notifications?.Pinpoint?.Id;
     // when analytics are added first, the pinpoint id is stored under analytics, not notifications
     const pinpointId = teamInfo[envName].categories?.analytics?.Pinpoint?.Id;
@@ -99,7 +96,6 @@ describe('notification category compatibility test', () => {
 
     // SMS should be disabled locally
     const updatedMeta = getBackendAmplifyMeta(projectRoot);
-    console.log(updatedMeta.notifications);
     const updatedInAppMsgMeta = updatedMeta.notifications[pinpointResourceName]?.output?.SMS;
     expect(updatedInAppMsgMeta).toBeDefined();
     expect(updatedInAppMsgMeta.Enabled).toBe(false);

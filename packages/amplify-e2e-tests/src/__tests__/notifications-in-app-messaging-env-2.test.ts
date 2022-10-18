@@ -52,7 +52,7 @@ describe('notifications in-app without existing pinpoint', () => {
     await addPinpointAnalytics(projectRoot, false, pinpointResourceName);
 
     // setup channel for in-app messaging
-    const settings = { resourceName: `${projectPrefix}${getShortId()}` };
+    const settings = { resourceName: pinpointResourceName };
     await addNotificationChannel(projectRoot, settings, testChannelSelection, true, true);
 
     // push both
@@ -65,10 +65,8 @@ describe('notifications in-app without existing pinpoint', () => {
 
     // InAppMessaging & Analytics meta should exist
     const meta = getBackendAmplifyMeta(projectRoot);
-    console.log(meta.analytics);
-    console.log(meta.notifications);
-    const inAppMessagingMeta = meta.notifications[settings.resourceName]?.output?.InAppMessaging;
-    const analyticsMeta = meta.analytics[settings.resourceName]?.output;
+    const inAppMessagingMeta = meta.notifications[pinpointResourceName]?.output?.InAppMessaging;
+    const analyticsMeta = meta.analytics[pinpointResourceName]?.output;
     expect(inAppMessagingMeta).toBeDefined();
     expect(analyticsMeta).toBeDefined();
     expect(inAppMessagingMeta.Enabled).toBe(true);
@@ -76,7 +74,6 @@ describe('notifications in-app without existing pinpoint', () => {
 
     // pinpointId in team-provider-info should match the analyticsMetaId
     const teamInfo = getTeamProviderInfo(projectRoot);
-    console.log(teamInfo[envName].categories);
     const pinpointId = teamInfo[envName].categories?.notifications?.Pinpoint?.Id;
     expect(pinpointId).toBeDefined();
     expect(pinpointId).toEqual(analyticsMeta.Id);
@@ -93,7 +90,7 @@ describe('notifications in-app without existing pinpoint', () => {
 
     // in-app messaging should be disabled in the cloud on this env
     const newEnvCloudBackendMeta = await getProjectMeta(projectRoot);
-    const newEnvCloudBackendInAppMsgMeta = newEnvCloudBackendMeta.notifications[settings.resourceName]?.output?.InAppMessaging;
+    const newEnvCloudBackendInAppMsgMeta = newEnvCloudBackendMeta.notifications[pinpointResourceName]?.output?.InAppMessaging;
     expect(newEnvCloudBackendInAppMsgMeta).toBeDefined();
     expect(newEnvCloudBackendInAppMsgMeta.Enabled).toBe(false);
 
@@ -101,7 +98,7 @@ describe('notifications in-app without existing pinpoint', () => {
     await checkoutEnvironment(projectRoot, { envName, restoreBackend: true });
     // in-app messaging should be enabled in the cloud on this env
     const originalEnvCloudBackendMeta = await getProjectMeta(projectRoot);
-    const originalEnvCloudBackendInAppMsgMeta = originalEnvCloudBackendMeta.notifications[settings.resourceName]?.output?.InAppMessaging;
+    const originalEnvCloudBackendInAppMsgMeta = originalEnvCloudBackendMeta.notifications[pinpointResourceName]?.output?.InAppMessaging;
     expect(originalEnvCloudBackendInAppMsgMeta).toBeDefined();
     expect(originalEnvCloudBackendInAppMsgMeta.Enabled).toBe(true);
 

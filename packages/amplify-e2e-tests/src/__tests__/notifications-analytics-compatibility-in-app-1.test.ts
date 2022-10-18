@@ -67,8 +67,6 @@ describe('notification category compatibility test', () => {
 
     // InAppMessaging & Analytics meta should exist
     const meta = getBackendAmplifyMeta(projectRoot);
-    console.log(meta.analytics);
-    console.log(meta.notifications[pinpointResourceName]?.output);
     const inAppMessagingMeta = meta.notifications[pinpointResourceName]?.output?.InAppMessaging;
     const analyticsMeta = meta.analytics[pinpointResourceName]?.output;
     expect(inAppMessagingMeta).toBeDefined();
@@ -78,7 +76,6 @@ describe('notification category compatibility test', () => {
 
     // pinpointId in team-provider-info should match the analyticsMetaId
     const teamInfo = getTeamProviderInfo(projectRoot);
-    console.log(teamInfo[envName].categories);
     // when analytics hasn't pushed or when notifications & analytics push at the same time,
     // the pinpoint id will be stored under notifications
     const pinpointId = teamInfo[envName].categories?.notifications?.Pinpoint?.Id;
@@ -97,7 +94,6 @@ describe('notification category compatibility test', () => {
     await removeNotificationChannel(projectRoot, testChannelSelection);
     // InAppMessaging should be disabled locally
     const updatedMeta = getBackendAmplifyMeta(projectRoot);
-    console.log(updatedMeta.notifications);
     const updatedInAppMsgMeta = updatedMeta.notifications[pinpointResourceName]?.output?.InAppMessaging;
     expect(updatedInAppMsgMeta).toBeDefined();
     expect(updatedInAppMsgMeta.Enabled).toBe(false);

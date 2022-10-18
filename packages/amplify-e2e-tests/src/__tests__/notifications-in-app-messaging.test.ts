@@ -58,8 +58,6 @@ describe('notification category test - InAppMessaging', () => {
 
     // InAppMessaging & Analytics meta should exist
     const meta = getBackendAmplifyMeta(projectRoot);
-    console.log(meta.analytics);
-    console.log(meta.notifications);
     const inAppMessagingMeta = meta.notifications[settings.resourceName]?.output?.InAppMessaging;
     const analyticsMeta = meta.analytics[settings.resourceName]?.output;
     expect(inAppMessagingMeta).toBeDefined();
@@ -69,7 +67,6 @@ describe('notification category test - InAppMessaging', () => {
 
     // pinpointId in team-provider-info should match the analyticsMetaId
     const teamInfo = getTeamProviderInfo(projectRoot);
-    console.log(teamInfo[envName].categories);
     const pinpointId = teamInfo[envName].categories?.notifications?.Pinpoint?.Id;
     expect(pinpointId).toBeDefined();
     expect(pinpointId).toEqual(analyticsMeta.Id);
@@ -78,7 +75,6 @@ describe('notification category test - InAppMessaging', () => {
     await removeNotificationChannel(projectRoot, testChannelSelection);
     // InAppMessaging should be disabled locally
     const updatedMeta = getBackendAmplifyMeta(projectRoot);
-    console.log(updatedMeta.notifications);
     const updatedInAppMsgMeta = updatedMeta.notifications[settings.resourceName]?.output?.InAppMessaging;
     expect(updatedInAppMsgMeta).toBeDefined();
     expect(updatedInAppMsgMeta.Enabled).toBe(false);
