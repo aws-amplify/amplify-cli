@@ -194,7 +194,7 @@ export class DDBStackTransform {
     const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, 'storage', this._resourceName);
     const overrideJSFilePath = path.resolve(path.join(resourceDirPath, 'build', 'override.js'));
 
-    const isBuild = await buildOverrideDir(backendDir, resourceDirPath).catch(error => {
+    const isBuild = await buildOverrideDir(backendDir, resourceDirPath).catch((error: $TSAny) => {
       printer.error(`Build error : ${error.message}`);
       throw new Error(error);
     });
