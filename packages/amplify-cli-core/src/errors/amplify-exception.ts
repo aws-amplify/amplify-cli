@@ -141,8 +141,9 @@ export type AmplifyErrorType =
   | 'PushResourcesError'
   | 'RegionNotAvailableError'
   | 'RemoveNotificationAppError'
-  | 'ResourceNotReadyError'
   | 'ResourceAlreadyExistsError'
+  | 'ResourceInUseError'
+  | 'ResourceNotReadyError'
   | 'StackNotFoundError'
   | 'StackStateError'
   | 'UserInputError';
