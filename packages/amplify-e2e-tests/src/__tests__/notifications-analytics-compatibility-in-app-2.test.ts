@@ -9,7 +9,6 @@ import {
   getAppId,
   initJSProjectWithProfile,
   amplifyPushUpdate,
-  removeAnalytics,
   addPinpointAnalytics,
 } from '@aws-amplify/amplify-e2e-core';
 import {
@@ -67,16 +66,9 @@ describe('notification category compatibility test', () => {
     expectLocalAndPulledBackendAmplifyMetaMatching(projectRoot, pullTestProjectRoot);
     expectLocalAndPulledAwsExportsMatching(projectRoot, pullTestProjectRoot);
 
-    // Remove Pinpoint
-    await removeAnalytics(projectRoot, {});
-    await amplifyPushUpdate(projectRoot);
-
+    // all categories should show up
     await amplifyStatus(projectRoot, 'Auth');
-
-    // notification should not exist in the cloud
-    // TBD: at this time, removing pinpoint doesn't remove notifications, but we intend to
-    // re-enable this check once updated
-    // const endCloudBackendMeta = await getProjectMeta(projectRoot);
-    // expect(endCloudBackendMeta.notifications).toBeUndefined();
+    await amplifyStatus(projectRoot, 'Analytics');
+    await amplifyStatus(projectRoot, 'Notifications');
   });
 });
