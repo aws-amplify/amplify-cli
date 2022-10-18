@@ -29,7 +29,7 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "aws-sdk": "^2.1113.0"
+    "aws-sdk": "^2.1233.0"
   },
   "jest": {
     "collectCoverage": true,

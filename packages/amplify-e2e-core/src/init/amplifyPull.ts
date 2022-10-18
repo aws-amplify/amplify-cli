@@ -133,3 +133,40 @@ export const amplifyPullNonInteractive = (
     .wait('Successfully pulled backend environment')
     .runAsync();
 };
+
+/**
+ * headless studio pull
+ * instead of opening the browser for login pass the profile name so aws creds are used instead
+ * accepts defaults by using yes flag
+ *
+ * if testing locally
+ * set useDevCLI to `true`
+ * use profile name in local aws config
+ */
+export const amplifyStudioHeadlessPull = (
+  cwd: string,
+  settings: { appId: string, envName: string, profileName?: string, useDevCLI?: boolean },
+): Promise<void> => {
+  const {
+    appId, envName, profileName, useDevCLI,
+  } = settings;
+  const providersConfig = {
+    awscloudformation: {
+      configLevel: 'project',
+      useProfile: true,
+      // eslint-disable-next-line spellcheck/spell-checker
+      profileName: profileName ?? 'amplify-integ-test-user',
+    },
+  };
+  const args = [
+    'pull',
+    '--amplify',
+    JSON.stringify({ appId, envName }),
+    '--providers',
+    JSON.stringify(providersConfig),
+    '--yes',
+  ];
+  return spawn(getCLIPath(useDevCLI), args, { cwd, stripColors: true })
+    .wait('Successfully pulled backend environment')
+    .runAsync();
+};

@@ -30,7 +30,7 @@
     "amplify-headless-interface": "1.15.0",
     "amplify-prompts": "2.6.0",
     "amplify-util-headless-input": "1.9.6",
-    "aws-sdk": "^2.1169.0",
+    "aws-sdk": "^2.1233.0",
     "fs-extra": "^8.1.0",
     "lodash": "^4.17.21",
     "uuid": "^8.3.2"
