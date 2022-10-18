@@ -1,0 +1,23 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": false,
+    "rootDir": "src",
+    "outDir": "lib",
+    "forceConsistentCasingInFileNames": true,
+  },
+  "include": [
+    "src/**/*",
+    "lib/aws-exports.empty.js",
+    "index.js"
+  ],
+  "references": [
+    {
+      "path": "../amplify-cli-core",
+    },
+    {
+      "path": "../amplify-prompts",
+    }
+  ]
+}

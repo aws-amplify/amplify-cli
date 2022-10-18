@@ -24,7 +24,7 @@ Object {
         },
       },
       "region": "eu-west-1",
-      "search_indices": Object {
+      "searchIndices": Object {
         "default": "defaultIndex12345",
         "items": Array [
           "index12345",
@@ -60,7 +60,7 @@ Object {
         },
       },
       "region": "us-west-2",
-      "search_indices": Object {
+      "searchIndices": Object {
         "default": "defaultIndex12345",
         "items": Array [
           "index12345",

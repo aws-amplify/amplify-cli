@@ -1,38 +1,48 @@
-const path = require('path');
-const _ = require('lodash');
-const { AngularConfigNotFoundError, exitOnNextTick, JSONUtilities } = require('amplify-cli-core');
+import path from 'path';
+import _ from 'lodash';
+import {
+  $TSAny,
+  $TSContext, AngularConfigNotFoundError, exitOnNextTick, JSONUtilities,
+} from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 
 const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
 
-const reactConfig = {
+type ProjectConfiguration = {
+  SourceDir: string,
+  DistributionDir: string,
+  BuildCommand: string,
+  StartCommand: string,
+}
+const reactConfig: ProjectConfiguration = {
   SourceDir: 'src',
   DistributionDir: 'build',
   BuildCommand: `${npm} run-script build`,
   StartCommand: `${npm} run-script start`,
 };
 
-const reactNativeConfig = {
+const reactNativeConfig: ProjectConfiguration = {
   SourceDir: 'src',
   DistributionDir: '/',
   BuildCommand: `${npm} run-script build`,
   StartCommand: `${npm} run-script start`,
 };
 
-const angularConfig = {
+const angularConfig: ProjectConfiguration = {
   SourceDir: 'src',
   DistributionDir: 'dist',
   BuildCommand: `${npm} run-script build`,
   StartCommand: 'ng serve',
 };
 
-const ionicConfig = {
+const ionicConfig: ProjectConfiguration = {
   SourceDir: 'src',
   DistributionDir: 'www',
   BuildCommand: `${npm} run-script build`,
   StartCommand: 'ionic serve',
 };
 
-const vueConfig = {
+const vueConfig: ProjectConfiguration = {
   SourceDir: 'src',
   DistributionDir: 'dist',
   BuildCommand: `${npm} run-script build`,
@@ -46,23 +56,24 @@ const emberConfig = {
   StartCommand: `${npm} run-script start`,
 };
 
-const defaultConfig = {
+const defaultConfig: ProjectConfiguration = {
   SourceDir: 'src',
   DistributionDir: 'dist',
   BuildCommand: `${npm} run-script build`,
   StartCommand: `${npm} run-script start`,
 };
 
-function getAngularConfig(context, projectPath) {
+const getAngularConfig = (context: $TSContext, projectPath?: string): ProjectConfiguration => {
   const projectRoot = projectPath || context.exeInfo.localEnvInfo.projectPath;
   const angularConfigFile = path.join(projectRoot, 'angular.json');
+  const projectName
   let angularProjectConfig;
   try {
-    angularProjectConfig = JSONUtilities.readJson(angularConfigFile);
+    angularProjectConfig = JSONUtilities.readJson<$TSAny>(angularConfigFile);
   } catch (error) {
     const errorMessage = `Failed to read ${angularConfigFile}: ${error.message || 'Unknown error occurred.'}`;
-    context.print.error(errorMessage);
-    context.print.info(
+    printer.error(errorMessage);
+    printer.info(
       `Angular apps need to be set up by the Angular CLI first: https://docs.amplify.aws/start/getting-started/setup/q/integration/angular`,
     );
     context.usageData.emitError(new AngularConfigNotFoundError(errorMessage));
@@ -70,16 +81,19 @@ function getAngularConfig(context, projectPath) {
   }
   const dist = _.get(
     angularProjectConfig,
-    ['projects', angularProjectConfig.defaultProject, 'architect', 'build', 'options', 'outputPath'],
+    ['projects', 'architect', 'build', 'options', 'outputPath'],
     'dist',
   );
   return {
     ...angularConfig,
     DistributionDir: dist,
   };
-}
+};
 
-function getProjectConfiguration(context, framework, projectPath) {
+/**
+ Returns project configuration for the framework
+ */
+export const getProjectConfiguration = (context: $TSContext, framework: string, projectPath?: string): ProjectConfiguration => {
   let config;
 
   switch (framework) {
@@ -106,15 +120,16 @@ function getProjectConfiguration(context, framework, projectPath) {
   }
 
   const headlessConfig = _.get(context, 'exeInfo.inputParams.javascript.config', {});
-  config = Object.assign({}, config, headlessConfig);
+  config = { ...config, ...headlessConfig };
   return config;
-}
+};
 
-function getSupportedFrameworks() {
-  return ['angular', 'ember', 'ionic', 'react', 'react-native', 'vue', 'none'];
-}
+/**
+ Returns a list containing all the supported frameworks
+ */
+export const getSupportedFrameworks = (): Array<string> => ['angular', 'ember', 'ionic', 'react', 'react-native', 'vue', 'none'];
 
-module.exports = {
+export default {
   getSupportedFrameworks,
   getProjectConfiguration,
 };
