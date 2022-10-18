@@ -3,15 +3,11 @@ import {
   $TSContext,
   amplifyErrorWithTroubleshootingLink,
   amplifyFaultWithTroubleshootingLink,
+  ApiCategoryFacade,
   spinner,
   stateManager,
 } from 'amplify-cli-core';
 import sequential from 'promise-sequential';
-import {
-  notifyFieldAuthSecurityChange,
-  notifyListQuerySecurityChange,
-  notifySecurityEnhancement,
-} from '../extensions/amplify-helpers/auth-notifications';
 import {
   getProviderPlugins,
 } from '../extensions/amplify-helpers/get-provider-plugins';
@@ -35,14 +31,7 @@ const syncCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
       pullCurrentCloudTasks.push(() => providerModule.initEnv(context, amplifyMeta.providers[provider]));
     });
 
-    await notifySecurityEnhancement(context);
-
-    let securityChangeNotified = false;
-    securityChangeNotified = await notifyFieldAuthSecurityChange(context);
-
-    if (!securityChangeNotified) {
-      securityChangeNotified = await notifyListQuerySecurityChange(context);
-    }
+    await ApiCategoryFacade.checkForcedUpdates(context);
 
     spinner.start(`Fetching updates to backend environment: ${currentEnv} from the cloud.`);
     await sequential(pullCurrentCloudTasks);

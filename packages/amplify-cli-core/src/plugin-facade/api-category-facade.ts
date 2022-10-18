@@ -36,4 +36,11 @@ export class ApiCategoryFacade {
   ): Promise<DeploymentResourcesV2 | DeploymentResourcesV1 | undefined> {
     return context.amplify.invokePluginMethod(context, API_CATEGORY_NAME, undefined, 'transformGraphQLSchema', [context, options]);
   }
+
+  /**
+   * Check and execute any required data force updates on `push`.
+   */
+  static async checkForcedUpdates(context: $TSContext): Promise<void> {
+    return context.amplify.invokePluginMethod(context, API_CATEGORY_NAME, undefined, 'checkForcedUpdates', [context]);
+  }
 }
