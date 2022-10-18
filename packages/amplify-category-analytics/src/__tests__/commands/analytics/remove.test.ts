@@ -13,7 +13,11 @@ checkResourceInUseByNotificationsMock.mockResolvedValue(true);
 describe('remove analytics handler', () => {
   it('throws error if notifications exists', async () => {
     const stubContext = ({
-      amplify: {},
+      amplify: {
+        removeResource: jest.fn().mockImplementation(async (__context, __category, resourceName, __config, callback) => {
+          await callback(resourceName);
+        }),
+      },
       parameters: {
         first: 'testing',
       },

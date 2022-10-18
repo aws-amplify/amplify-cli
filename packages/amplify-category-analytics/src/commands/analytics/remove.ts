@@ -27,9 +27,6 @@ export const run = async (context: $TSContext): Promise<void> => {
     }
   };
 
-  // check if the CLI input analytics name is in use by notification
-  await blockRemovalOfInUseAnalytics(resourceName);
-
   // remove resource with a resourceName callback that will block removal if selecting an analytics resource that notifications depends on
   await amplify.removeResource(context, category, resourceName, { headless: false }, blockRemovalOfInUseAnalytics);
 };
