@@ -50,7 +50,7 @@ describe('notification category compatibility test', () => {
     }
   });
 
-  it(`should work well with pre-existing pinpoint that has pushed`, async () => {
+  it(`should work with pre-existing pinpoint that has pushed`, async () => {
     const pinpointResourceName = `${projectPrefix}${getShortId()}`;
 
     await initJSProjectWithProfile(projectRoot, projectSettings);
