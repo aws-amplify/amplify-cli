@@ -71,7 +71,7 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
       if (isPinpointAppDeployed(pinpointAppStatus.status) || isChannelDeploymentDeferred(selectedChannelName)) {
         const channelAPIResponse : IChannelAPIResponse|undefined = await disableChannel(context, selectedChannelName);
         await writeData(context, channelAPIResponse);
-        printer.info('The channel has been successfully updated.');
+        printer.info('The channel has been successfully disabled.');
       }
     } else if (isPinpointAppOwnedByNotifications(pinpointAppStatus.status)) {
       const confirmDelete = await prompter.confirmContinue('Confirm that you want to delete the associated Amazon Pinpoint application');
