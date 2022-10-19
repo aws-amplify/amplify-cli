@@ -58,6 +58,22 @@ export default class AmplifyStudioClient {
   #envName: string;
   metadata: StudioMetadata;
   isGraphQLSupported = false;
+
+  /**
+   * static function meant to check if given appId is studio enabled
+   */
+  static isAmplifyApp = async (context: $TSContext, appId: string): Promise<boolean> => {
+    try {
+      const { isAdminApp } = await CloudformationProviderFacade.isAmplifyAdminApp(context, appId);
+      return isAdminApp;
+    } catch (err) {
+      // return false is admin app failed check
+      // this means we wont run codegen-ui
+      printer.debug(`Failed admin app check: ${err.message}`);
+      return false;
+    }
+  }
+
   /**
    * Used to configure the AWS Amplify clients.
    */
@@ -230,13 +246,4 @@ export default class AmplifyStudioClient {
       throw new Error(`Models not found in AmplifyBackend:GetBackendAPIModels response: ${err.message}`);
     }
   };
-
- isAmplifyApp = async (context: $TSContext): Promise<boolean> => {
-   try {
-     const { isAdminApp } = await CloudformationProviderFacade.isAmplifyAdminApp(context, this.#appId);
-     return isAdminApp;
-   } catch (err) {
-     throw new Error(`Failed admin app check: ${err.message}`);
-   }
- }
 }

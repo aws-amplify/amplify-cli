@@ -2,11 +2,12 @@
 import { $TSContext } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { AmplifyStudioClient } from '../../clients';
+import { getAppId } from './environmentHelpers';
 
 /**
  * process to decide if we should render components
  */
-export const shouldRenderComponents = async (context: $TSContext, studioClient: AmplifyStudioClient): Promise<boolean> => {
+export const shouldRenderComponents = async (context: $TSContext): Promise<boolean> => {
   if (process.env.FORCE_RENDER) {
     printer.debug('Forcing component render since environment variable flag is set.');
     return true;
@@ -36,7 +37,7 @@ export const shouldRenderComponents = async (context: $TSContext, studioClient: 
     return false;
   }
 
-  if (!(await studioClient.isAmplifyApp(context))) {
+  if (!(await AmplifyStudioClient.isAmplifyApp(context, getAppId(context)))) {
     printer.debug('Not pulling components because this project is not Amplify Studio enabled.');
     return false;
   }

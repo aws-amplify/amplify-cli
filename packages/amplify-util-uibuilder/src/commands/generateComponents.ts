@@ -19,12 +19,12 @@ import {
  * Pulls ui components from Studio backend and generates the code in the user's file system
  */
 export const run = async (context: $TSContext): Promise<void> => {
-  const studioClient = await AmplifyStudioClient.setClientInfo(context);
-  if (!(await shouldRenderComponents(context, studioClient))) {
+  if (!(await shouldRenderComponents(context))) {
     return;
   }
   const spinner = ora('');
   try {
+    const studioClient = await AmplifyStudioClient.setClientInfo(context);
     const [componentSchemas, themeSchemas, formSchemas, dataSchema] = await Promise.all([
       studioClient.listComponents(),
       studioClient.listThemes(),
