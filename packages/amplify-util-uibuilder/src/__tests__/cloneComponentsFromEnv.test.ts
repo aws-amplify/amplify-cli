@@ -5,6 +5,9 @@ import { run } from '../commands/cloneComponentsFromEnv';
 const extractArgsDependencyMock = extractArgsDependency as any;
 const awsMock = aws as any;
 
+jest.mock('../commands/utils/featureFlags', () => ({
+  getTransformerVersion: jest.fn().mockReturnValue(2),
+}));
 jest.mock('../commands/utils/extractArgs');
 jest.mock('amplify-cli-core');
 
@@ -18,7 +21,7 @@ const mockedComponentExport = jest.fn((envName: string) => {
     entities: [{}],
   };
 });
-const mockedComponentCreate = jest.fn(() => ({ entity: {} }));
+const mockedComponentCreate = jest.fn().mockReturnValue({ entity: {} });
 
 describe('can clone components to new environment', () => {
   let context: any;
@@ -34,18 +37,26 @@ describe('can clone components to new environment', () => {
         },
       },
     };
-    extractArgsDependencyMock.extractArgs = jest.fn().mockImplementation(() => ({
+    extractArgsDependencyMock.extractArgs = jest.fn().mockReturnValue({
       sourceEnvName: 'sourceEnvName',
       newEnvName: 'newEnvName',
       appId: 'appId',
       environmentName: 'environmentName',
-    }));
-    awsMock.AmplifyUIBuilder = jest.fn(() => ({
+    });
+    awsMock.AmplifyUIBuilder = jest.fn().mockReturnValue({
       exportComponents: jest.fn(({ environmentName }) => ({
         promise: () => mockedComponentExport(environmentName),
       })),
-      createComponent: jest.fn(() => ({ promise: () => mockedComponentCreate() })),
-    }));
+      createComponent: jest.fn().mockReturnValue({ promise: () => mockedComponentCreate() }),
+      getMetadata: jest.fn().mockReturnValue({
+        promise: jest.fn().mockReturnValue({
+          features: {
+            autoGenerateForms: 'true',
+            autoGenerateViews: 'true',
+          },
+        }),
+      }),
+    });
   });
 
   it('clones components to a new env', async () => {

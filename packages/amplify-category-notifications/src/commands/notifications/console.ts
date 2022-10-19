@@ -8,6 +8,5 @@ export const name = 'console';
  * @param context amplify cli context
  */
 export const run = async (context: $TSContext): Promise<void> => {
-  context.exeInfo = context.amplify.getProjectDetails();
   pinpointHelper.console(context);
 };

@@ -13,6 +13,16 @@ import { ensureAmplifyMetaFrontendConfig } from './on-category-outputs-change';
 import { getHashForResourceDir } from './resource-status';
 import { updateBackendConfigAfterResourceAdd, updateBackendConfigAfterResourceUpdate } from './update-backend-config';
 
+/**
+ * Generic resource function to update any arbitrary value in amplify-meta.json and save.
+ * @param filePath Path to amplify-meta.json
+ * @param category Category to be updated in amplify-meta.json
+ * @param resourceName Logical name of the resource in this category
+ * @param attribute Attribute specific to the resource (cannot be nested)
+ * @param value value for the above attribute
+ * @param timestamp Timestamp at which value was updated
+ * @returns amplifyMeta update
+ */
 export const updateAwsMetaFile = (
   filePath: string,
   category: string,
@@ -112,11 +122,14 @@ const removeNodeModulesDir = (currentCloudBackendDir: string): void => {
   }
 };
 
+/**
+ * Update amplify-meta.json and backend-config.json
+ */
 export const updateamplifyMetaAfterResourceAdd = (
   category: string,
   resourceName: string,
-  metadataResource: { dependsOn? } = {},
-  backendConfigResource?: { dependsOn? },
+  metadataResource: { dependsOn?: [{ category: string; resourceName: string; }] } = {},
+  backendConfigResource?: { dependsOn?: $TSAny },
   overwriteObjectIfExists?: boolean,
 ): void => {
   const amplifyMeta = stateManager.getMeta();
@@ -143,6 +156,9 @@ export const updateamplifyMetaAfterResourceAdd = (
   updateBackendConfigAfterResourceAdd(category, resourceName, backendConfigResource || metadataResource);
 };
 
+/**
+ * Update the cloudformation part of amplify-meta.json
+ */
 export const updateProviderAmplifyMeta = (providerName: string, options: $TSObject): void => {
   const amplifyMeta = stateManager.getMeta();
 
@@ -160,6 +176,14 @@ export const updateProviderAmplifyMeta = (providerName: string, options: $TSObje
   stateManager.setMeta(undefined, amplifyMeta);
 };
 
+/**
+ *  Update AmplifyMeta and BackendConfig ( if the service depends on another service)
+ * @param category amplify category to be updated
+ * @param resourceName logical name of resource to be updated
+ * @param attribute  attribute key for which the value has changed
+ * @param value value of the attribute
+ * @returns updated AmplifyMeta
+ */
 export const updateamplifyMetaAfterResourceUpdate = (category: string, resourceName: string, attribute: string, value: $TSAny): $TSMeta => {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const currentTimestamp = new Date();
@@ -177,7 +201,13 @@ export const updateamplifyMetaAfterResourceUpdate = (category: string, resourceN
   return updatedMeta;
 };
 
-export const updateamplifyMetaAfterPush = async (resources: $TSObject[]): Promise<void> => {
+/**
+ * Updates amplify-meta with the following data and also uploads currentCloudBackend
+ * a. Directory hash
+ * b. Timestamp of last push
+ * @param resources all resources from amplify-meta.json
+ */
+export const updateamplifyMetaAfterPush = async (resources: $TSObject[]):Promise<void> => {
   // ensure that env meta is written by this point
   getEnvMeta().write();
   const amplifyMeta = stateManager.getMeta();
@@ -236,6 +266,12 @@ export const updateamplifyMetaAfterPush = async (resources: $TSObject[]): Promis
   moveBackendResourcesToCurrentCloudBackend(resources);
 };
 
+/**
+ * Update Amplify Meta with build information ( lastBuildType and timestamp)
+ * @param param0.category Category which was updated
+ * @param param0.resourceName  Name of the resource which was updated
+ * @param buildType PROD/DEV
+ */
 export const updateamplifyMetaAfterBuild = ({ category, resourceName }: ResourceTuple, buildType: BuildType = BuildType.PROD): void => {
   const amplifyMeta = stateManager.getMeta();
   _.set(amplifyMeta, [category, resourceName, buildTypeKeyMap[buildType]], new Date());
@@ -243,6 +279,12 @@ export const updateamplifyMetaAfterBuild = ({ category, resourceName }: Resource
   stateManager.setMeta(undefined, amplifyMeta);
 };
 
+/**
+ * Update Amplify Meta with packaging information ( lastPackageTimeStamp, distZipFilename, hash)
+ * @param param0 A tuple with category and resourceName
+ * @param zipFilename - Name of the distribution zip file
+ * @param hash - hash value of the resource
+ */
 export const updateAmplifyMetaAfterPackage = (
   { category, resourceName }: ResourceTuple,
   zipFilename: string,
@@ -257,7 +299,14 @@ export const updateAmplifyMetaAfterPackage = (
   stateManager.setMeta(undefined, amplifyMeta);
 };
 
-export const updateamplifyMetaAfterResourceDelete = (category: string, resourceName: string): void => {
+/**
+ * After resource deletion,
+ * a. We remove the resource from amplify-meta.json and save it.
+ * b. We remove the resource folder.
+ * @param category category of the resource
+ * @param resourceName logical name of the resource
+ */
+export const updateamplifyMetaAfterResourceDelete = (category: string, resourceName: string):void => {
   const currentMeta = stateManager.getCurrentMeta();
 
   const resourceDir = path.normalize(path.join(pathManager.getCurrentCloudBackendDirPath(), category, resourceName));
@@ -271,7 +320,11 @@ export const updateamplifyMetaAfterResourceDelete = (category: string, resourceN
   fs.removeSync(resourceDir);
 };
 
-const checkForCyclicDependencies = (category, resourceName, dependsOn: [{ category; resourceName }]): void => {
+const checkForCyclicDependencies = (
+  category: $TSAny,
+  resourceName: string,
+  dependsOn: [{ category:string; resourceName:string }],
+): void => {
   const amplifyMeta = stateManager.getMeta();
   let cyclicDependency = false;
 

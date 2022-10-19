@@ -1,5 +1,5 @@
 import { hashLayerResource } from 'amplify-category-function';
-import { stateManager } from 'amplify-cli-core';
+import { AmplifyException, stateManager } from 'amplify-cli-core';
 import { hashElement } from 'folder-hash';
 import * as fs from 'fs-extra';
 import {
@@ -68,6 +68,7 @@ jest.mock('amplify-cli-core', () => ({
     getProjectTags: jest.fn(),
     getCurrentProjectTags: jest.fn(),
     getBackendConfig: jest.fn(),
+    getCurrentBackendConfig: jest.fn(),
     getProjectConfig: jest.fn(),
   },
   pathManager: {
@@ -113,6 +114,7 @@ describe('resource-status', () => {
     stateManagerMock.getProjectTags.mockReturnValue([]);
     stateManagerMock.getCurrentProjectTags.mockReturnValue([]);
     stateManagerMock.getBackendConfig.mockReturnValue({});
+    stateManagerMock.getCurrentBackendConfig.mockReturnValue({});
     stateManagerMock.getProjectConfig.mockReturnValue(mockProjectConfig);
 
     (getEnvInfo as jest.MockedFunction<typeof getEnvInfo>).mockReturnValue({ envName: 'test' });

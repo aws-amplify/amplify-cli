@@ -3,6 +3,13 @@ import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as pinpointHelper from './pinpoint-helper';
 import * as multiEnvManager from './multi-env-manager';
+import { migrationCheck } from './migrations';
+
+export {
+  notificationsPluginAPIGetResource,
+  notificationsPluginAPIRemoveApp,
+  notificationsAPIGetAvailableChannelNames,
+} from './plugin-provider-api-notifications';
 
 const category = 'notifications';
 
@@ -10,9 +17,7 @@ const category = 'notifications';
  * Open the AWS console in the browser for the given service.
  * @param context amplify cli context
  */
-export const console = async (context: $TSContext): Promise<void> => {
-  await pinpointHelper.console(context);
-};
+export const console = async (context: $TSContext): Promise<void> => pinpointHelper.console(context);
 
 /**
  * De-link all notifications resources from Pinpoint resource in the analytics category
@@ -42,6 +47,9 @@ export const migrate = async (context: $TSContext): Promise<void> => {
  * Run the amplify command's handler function.
  */
 export const executeAmplifyCommand = async (context: $TSContext): Promise<void> => {
+  context.exeInfo = context.amplify.getProjectDetails();
+  await migrationCheck(context);
+
   let commandPath = path.normalize(path.join(__dirname, 'commands'));
   commandPath = context.input.command === 'help' ? path.join(commandPath, category) : path.join(commandPath, category, context.input.command);
   const commandModule = await import(commandPath);
