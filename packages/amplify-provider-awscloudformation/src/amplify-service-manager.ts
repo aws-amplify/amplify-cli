@@ -59,12 +59,12 @@ export const init = async amplifyServiceParams => {
           appId: inputAmplifyAppId,
         })
         .promise();
-      context.print.info(`Amplify AppID found: ${inputAmplifyAppId}. Amplify App name is: ${getAppResult.app.name}`);
+      printer.info(`Amplify AppID found: ${inputAmplifyAppId}. Amplify App name is: ${getAppResult.app.name}`);
       amplifyAppId = inputAmplifyAppId;
     } catch (e) {
       throw new AmplifyError('ProjectNotFoundError', {
         message: `Amplify AppID ${inputAmplifyAppId} not found.`,
-        resolution: `Please ensure your local profile matches the AWS account or region in which the Amplify app exists.`,
+        resolution: `Ensure your local profile matches the AWS account or region in which the Amplify app exists.`,
       }, e);
     }
   }
@@ -141,7 +141,7 @@ export const init = async amplifyServiceParams => {
   }
 
   if (needToCreateNewBackendEnv) {
-    context.print.info(`Adding backend environment ${envName} to AWS Amplify app: ${amplifyAppId}`);
+    printer.info(`Adding backend environment ${envName} to AWS Amplify app: ${amplifyAppId}`);
     const createEnvParams = {
       appId: amplifyAppId,
       environmentName: envName,
@@ -184,7 +184,7 @@ export const deleteEnv = async (context, envName, awsConfigInfo?) => {
     await amplifyClient.deleteBackendEnvironment(deleteEnvParams).promise();
   } catch (ex) {
     if (ex.code === 'NotFoundException') {
-      context.print.warning(ex.message);
+      printer.warn(ex.message);
     } else {
       throw amplifyFaultWithTroubleshootingLink('ProjectDeleteFault', {
         message: ex.message,
@@ -198,7 +198,7 @@ export const postPushCheck = async (context: $TSContext) => {
   const envMeta = await ensureEnvMeta(context);
   const { AmplifyAppId: appId, StackName: stackName, DeploymentBucketName: deploymentBucket } = envMeta;
 
-  if (appId) {
+  if (appId || !amplifyAppCreationEnabled()) {
     return;
   }
 
@@ -286,7 +286,7 @@ const selectFromExistingAppId = async (
 
 export const storeArtifactsForAmplifyService = async (context: $TSContext) => {
   const s3 = await S3.getInstance(context);
-  const currentCloudBackendDir = context.amplify.pathManager.getCurrentCloudBackendDirPath();
+  const currentCloudBackendDir = pathManager.getCurrentCloudBackendDirPath();
   const amplifyMetaFilePath = path.join(currentCloudBackendDir, 'amplify-meta.json');
   const backendConfigFilePath = path.join(currentCloudBackendDir, 'backend-config.json');
   await uploadFile(s3, amplifyMetaFilePath, 'amplify-meta.json');
