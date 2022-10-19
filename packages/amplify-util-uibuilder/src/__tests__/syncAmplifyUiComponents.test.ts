@@ -1,5 +1,6 @@
 import { AmplifyCategories, AmplifySupportedService, stateManager } from 'amplify-cli-core'; // eslint-disable-line import/no-extraneous-dependencies
 import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
+import { GenericDataModel, GenericDataSchema } from '@aws-amplify/codegen-ui';
 import {
   generateUiBuilderComponents,
   generateUiBuilderThemes,
@@ -11,7 +12,6 @@ import {
 import { AmplifyStudioClient } from '../clients';
 import * as createUiBuilderComponentDependency from '../commands/utils/codegenResources';
 import { exampleSchema } from './utils';
-import { GenericDataModel, GenericDataSchema } from '@aws-amplify/codegen-ui';
 
 jest.mock('amplify-cli-core', () => ({
   ...jest.requireActual('amplify-cli-core'),
@@ -21,7 +21,7 @@ jest.mock('amplify-cli-core', () => ({
   },
 }));
 jest.mock('../commands/utils/featureFlags', () => ({
-  getTransformerVersion: jest.fn().mockImplementation(() => 2)
+  getTransformerVersion: jest.fn().mockImplementation(() => 2),
 }));
 
 const awsMock = aws as any;
@@ -259,8 +259,8 @@ describe('should sync amplify ui builder components', () => {
   });
 
   it('should not autogen forms for join tables or unsupported models', async () => {
-    expect(Object.keys(exampleSchema.models)).toStrictEqual(['Author', 'JoinTable', 'EmptyModel' ])
-    createUiBuilderComponentDependencyMock.createUiBuilderForm = jest.fn().mockImplementation((context, schema, dataSchema) => ({name: schema.dataType.dataTypeName}));
+    expect(Object.keys(exampleSchema.models)).toStrictEqual(['Author', 'JoinTable', 'EmptyModel']);
+    createUiBuilderComponentDependencyMock.createUiBuilderForm = jest.fn().mockImplementation((context, schema, dataSchema) => ({ name: schema.dataType.dataTypeName }));
     const forms = generateUiBuilderForms(context, [], exampleSchema, true);
     expect(forms.every(form => form.resultType === 'SUCCESS')).toBeTruthy();
     // only create & update form for author model

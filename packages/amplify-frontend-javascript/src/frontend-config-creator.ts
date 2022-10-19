@@ -671,9 +671,7 @@ type PinpointConfig = {
 }
 /* eslint-enable camelcase*/
 
-const isPinpointChannelEnabled = (channelName, pinpointResource): bool => {
-  return pinpointResource?.output?.[channelName]?.Enabled;
-}
+const isPinpointChannelEnabled = (channelName, pinpointResource): bool => pinpointResource?.output?.[channelName]?.Enabled;
 
 const getPinpointConfig = (pinpointResources): PinpointConfig => {
   // There are legacy projects where we could have multiple Pinpoint resources.
@@ -701,15 +699,13 @@ const getPinpointConfig = (pinpointResources): PinpointConfig => {
     }
   }
   return pinpointConfig;
-
-}
+};
 
 /* eslint-disable camelcase */
 type DynamoDBConfig = {
   aws_dynamodb_all_tables_region,
   aws_dynamodb_table_schemas: Array<$TSAny>,
 }
-
 
 const getDynamoDBConfig = (dynamoDBResources, projectRegion): DynamoDBConfig => {
   // There can be multiple dynamo db resource

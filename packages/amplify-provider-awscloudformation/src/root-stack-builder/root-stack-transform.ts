@@ -10,6 +10,9 @@ import * as vm from 'vm2';
 import { AmplifyRootStack, AmplifyRootStackOutputs } from './root-stack-builder';
 import { RootStackSynthesizer } from './stack-synthesizer';
 
+/**
+ *
+ */
 export class AmplifyRootStackTransform {
   private app: cdk.App | undefined;
   private _rootTemplateObj: AmplifyRootStack; // Props to modify Root stack data
@@ -203,6 +206,9 @@ export class AmplifyRootStackTransform {
     });
   };
 
+  /**
+   *
+   */
   public getRootStack(): AmplifyRootStack {
     if (this._rootTemplateObj) {
       return this._rootTemplateObj;
