@@ -44,6 +44,7 @@
     "amplify-prompts": "2.5.0",
     "chalk": "^4.1.1",
     "execa": "^5.1.1",
+    "find-up": "5.0.0",
     "fs-extra": "^8.1.0",
     "graphql-config": "^2.2.1",
     "inquirer": "^7.3.3",

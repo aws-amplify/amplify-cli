@@ -6,6 +6,8 @@ import {
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 
+import findUp from 'find-up';
+
 const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
 
 type ProjectConfiguration = {
@@ -64,14 +66,24 @@ const defaultConfig: ProjectConfiguration = {
 };
 
 const getAngularConfig = (context: $TSContext, projectPath?: string): ProjectConfiguration => {
-  const projectRoot = projectPath || context.exeInfo.localEnvInfo.projectPath;
-  const angularConfigFile = path.join(projectRoot, 'angular.json');
-  const projectName
+  const projectRoot: string = projectPath || context.exeInfo.localEnvInfo.projectPath;
+  const parentDirToStop = path.join(...projectRoot.split(path.sep).slice(0, -2));
+  const angularConfigFilePath = findUp.sync(directory => (path.basename(directory) === parentDirToStop ? findUp.stop : 'angular.json'), {
+    cwd: projectRoot,
+  });
+
   let angularProjectConfig;
+  let angularConfigDir;
+  let projectRelativePathToConfigDir;
+  let relativeSrcPath;
   try {
-    angularProjectConfig = JSONUtilities.readJson<$TSAny>(angularConfigFile);
+    angularConfigDir = path.dirname(angularConfigFilePath as string);
+
+    projectRelativePathToConfigDir = path.relative(angularConfigDir, projectRoot);
+    relativeSrcPath = path.join(projectRelativePathToConfigDir, 'src');
+    angularProjectConfig = JSONUtilities.readJson<$TSAny>(angularConfigFilePath as string);
   } catch (error) {
-    const errorMessage = `Failed to read ${angularConfigFile}: ${error.message || 'Unknown error occurred.'}`;
+    const errorMessage = `Failed to read ${angularConfigFilePath}: ${error.message || 'Unknown error occurred.'}`;
     printer.error(errorMessage);
     printer.info(
       `Angular apps need to be set up by the Angular CLI first: https://docs.amplify.aws/start/getting-started/setup/q/integration/angular`,
@@ -79,14 +91,29 @@ const getAngularConfig = (context: $TSContext, projectPath?: string): ProjectCon
     context.usageData.emitError(new AngularConfigNotFoundError(errorMessage));
     exitOnNextTick(1);
   }
+
+  const projectName = _.findKey(angularProjectConfig.projects, project => project.sourceRoot === relativeSrcPath);
+
+  const projectExists = _.has(angularProjectConfig, ['projects', projectName as string]);
+  if (!projectExists) {
+    return angularConfig;
+  }
+
   const dist = _.get(
     angularProjectConfig,
-    ['projects', 'architect', 'build', 'options', 'outputPath'],
+    ['projects', projectName as string, 'architect', 'build', 'options', 'outputPath'],
     'dist',
   );
+  const src = _.get(
+    angularProjectConfig,
+    ['projects', projectName as string, 'sourceRoot'],
+    'src',
+  );
   return {
-    ...angularConfig,
+    SourceDir: src,
     DistributionDir: dist,
+    BuildCommand: `${npm} run-script build ${projectName}`,
+    StartCommand: `ng serve ${projectName}`,
   };
 };
 

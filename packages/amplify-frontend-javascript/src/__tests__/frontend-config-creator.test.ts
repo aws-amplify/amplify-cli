@@ -1,5 +1,5 @@
 import { $TSAny } from 'amplify-cli-core';
-import fs from 'fs';
+import fs from 'fs-extra';
 import path from 'path';
 import configCreator from '../frontend-config-creator';
 
