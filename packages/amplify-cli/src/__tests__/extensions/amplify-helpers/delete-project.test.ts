@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny, spinner } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { listLocalEnvNames } from '@aws-amplify/amplify-environment-parameters';
 import { deleteProject, getConfirmation } from '../../../extensions/amplify-helpers/delete-project';
@@ -55,11 +55,10 @@ jest.mock('../../../extensions/amplify-helpers/get-plugin-instance', () => ({
   }),
 }));
 
-jest.mock('ora', () => () => ({
-  start: jest.fn(),
-  fail: jest.fn(),
-  succeed: jest.fn(),
-}));
+const spinnerMock = spinner as jest.Mocked<typeof spinner>;
+spinnerMock.start = jest.fn();
+spinnerMock.fail = jest.fn();
+spinnerMock.succeed = jest.fn();
 
 jest.mock('@aws-amplify/amplify-environment-parameters');
 
