@@ -287,9 +287,9 @@ export const updateUserPoolGroups = async (context: $TSContext, resourceName: st
     context.amplify.updateamplifyMetaAfterResourceUpdate(AmplifyCategories.AUTH, 'userPoolGroups', 'service', 'Cognito-UserPool-Groups');
     context.amplify.updateamplifyMetaAfterResourceUpdate(AmplifyCategories.AUTH, 'userPoolGroups', 'providerPlugin', 'awscloudformation');
 
-    const authParameters = stateManager.getResourceParametersJson(undefined, AmplifyCategories.AUTH, resourceName);
+    const authInputs = stateManager.getResourceInputsJson(undefined, AmplifyCategories.AUTH, resourceName);
     const attributes = ['UserPoolId', 'AppClientIDWeb', 'AppClientID'];
-    if (authParameters?.identityPoolName) {
+    if (authInputs?.cognitoConfig?.identityPoolName) {
       attributes.push('IdentityPoolId');
     }
     context.amplify.updateamplifyMetaAfterResourceUpdate(AmplifyCategories.AUTH, 'userPoolGroups', 'dependsOn', [
