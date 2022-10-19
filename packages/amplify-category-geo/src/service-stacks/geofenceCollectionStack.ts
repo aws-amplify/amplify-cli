@@ -123,8 +123,10 @@ export class GeofenceCollectionStack extends BaseStack {
         account: cdk.Fn.ref('AWS::AccountId'),
         collectionName: collectionResource.getAtt('CollectionName').toString(),
       });
-      // eslint-disable-next-line max-len
-      const crudActions: string[] = _.uniq(_.flatten(this.groupPermissions[group].map((permission: string) => crudPermissionsMap[permission])));
+
+      const crudActions: string[] = _.uniq(_.flatten(
+        this.groupPermissions[group].map((permission: string) => crudPermissionsMap[permission]),
+      ));
       const policyDocument = new iam.PolicyDocument({
         statements: [
           new iam.PolicyStatement({
