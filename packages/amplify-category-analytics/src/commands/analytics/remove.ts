@@ -17,7 +17,7 @@ export const run = async (context: $TSContext): Promise<void> => {
   const { amplify, parameters } = context;
   const resourceName = parameters.first;
 
-  const blockRemovalOfInUseAnalytics = async (selectedAnalyticsResource: string): Promise<void> => {
+  const throwIfUsedByNotifications = async (selectedAnalyticsResource: string): Promise<void> => {
     const isResourceInUse = await checkResourceInUseByNotifications(context, selectedAnalyticsResource);
     if (isResourceInUse) {
       throw new AmplifyError('ResourceInUseError', {
@@ -28,5 +28,5 @@ export const run = async (context: $TSContext): Promise<void> => {
   };
 
   // remove resource with a resourceName callback that will block removal if selecting an analytics resource that notifications depends on
-  await amplify.removeResource(context, category, resourceName, { headless: false }, blockRemovalOfInUseAnalytics);
+  await amplify.removeResource(context, category, resourceName, { headless: false }, throwIfUsedByNotifications);
 };
