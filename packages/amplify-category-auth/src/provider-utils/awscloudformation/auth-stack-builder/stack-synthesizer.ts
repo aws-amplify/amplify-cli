@@ -1,6 +1,6 @@
 import { ISynthesisSession, Stack, LegacyStackSynthesizer } from '@aws-cdk/core';
 import { JSONUtilities } from 'amplify-cli-core';
-import { Template } from 'cloudform-types';
+import type { Template } from 'cloudform-types';
 import { AmplifyAuthCognitoStack, AmplifyUserPoolGroupStack, AmplifyUserPoolGroupStackOutputs } from './index';
 
 /**
