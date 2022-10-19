@@ -33,7 +33,6 @@ export class GeofenceCollectionStack extends BaseStack {
     this.geofenceCollectionRegion = this.regionMapping.findInMap(cdk.Fn.ref('AWS::Region'), 'locationServiceRegion');
 
     const inputParameters: string[] = Object.keys(this.props.groupPermissions).map(
-      // eslint-disable-next-line spellcheck/spell-checker
       (group: string) => `authuserPoolGroups${group}GroupRole`,
     );
     inputParameters.push(

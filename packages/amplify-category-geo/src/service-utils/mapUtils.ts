@@ -1,8 +1,6 @@
 import {
   $TSContext, $TSObject, stateManager, pathManager,
 } from 'amplify-cli-core';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import _ from 'lodash';
 import { App } from '@aws-cdk/core';
 import { MapParameters, getGeoMapStyle, getMapStyleComponents } from './mapParams';
 import { parametersFileName, provider, ServiceName } from './constants';

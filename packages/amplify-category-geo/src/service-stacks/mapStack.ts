@@ -33,7 +33,6 @@ export class MapStack extends BaseStack {
     this.mapRegion = this.regionMapping.findInMap(cdk.Fn.ref('AWS::Region'), 'locationServiceRegion');
 
     const inputParameters: string[] = (this.props.groupPermissions || []).map(
-      // eslint-disable-next-line spellcheck/spell-checker
       (group: string) => `authuserPoolGroups${group}GroupRole`,
     );
     inputParameters.push(
