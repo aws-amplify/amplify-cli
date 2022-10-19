@@ -1,10 +1,11 @@
-const aws = require('./aws');
 import { $TSAny, $TSContext, amplifyErrorWithTroubleshootingLink } from 'amplify-cli-core';
 import { Lambda as AwsSdkLambda } from 'aws-sdk';
 import { LayerVersionsListItem, ListLayerVersionsRequest, ListLayerVersionsResponse } from 'aws-sdk/clients/lambda';
 import { AwsSecrets, loadConfiguration } from '../configuration-manager';
 import { fileLogger } from '../utils/aws-logger';
 import { pagedAWSCall } from './paged-call';
+
+const aws = require('./aws');
 
 const logger = fileLogger('aws-lambda');
 
@@ -33,7 +34,7 @@ export class Lambda {
         return await this.lambda.listLayerVersions(params).promise();
       },
       startingParams,
-      (response?) => response?.LayerVersions,
+      response => response?.LayerVersions,
       async response => response?.NextMarker,
     );
     return result;
@@ -52,7 +53,7 @@ export class Lambda {
             throw amplifyErrorWithTroubleshootingLink('LambdaLayerDeleteError', {
               message: err.message,
               stack: err.stack,
-            });
+            }, err);
           }
         }
       });

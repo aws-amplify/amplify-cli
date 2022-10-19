@@ -54,7 +54,7 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
       });
     });
 
-    process.on('beforeExit', () => this.save());
+    process.on('exit', () => this.save());
   }
 
   removeResourceParamManager(category: string, resource: string): void {
@@ -83,11 +83,14 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
       // assume that the project is deleted if we cannot find a project root
       return;
     }
-    const tpiContent = stateManager.getTeamProviderInfo();
+    const tpiContent = stateManager.getTeamProviderInfo(undefined, { throwIfNotExist: false, default: {} });
     const categoriesContent = this.serializeTPICategories();
     if (Object.keys(categoriesContent).length === 0) {
-      delete tpiContent[this.envName].categories;
+      delete tpiContent?.[this.envName]?.categories;
     } else {
+      if (!tpiContent[this.envName]) {
+        tpiContent[this.envName] = {};
+      }
       tpiContent[this.envName].categories = this.serializeTPICategories();
     }
     stateManager.setTeamProviderInfo(undefined, tpiContent);

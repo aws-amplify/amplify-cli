@@ -55,7 +55,7 @@ export const initializeEnv = async (
           details: e.message,
           resolution: `Review the error message and stack trace for additional information.`,
           stack: e.stack,
-        });
+        }, e);
       }
     };
     for (const category of availableCategories) {
@@ -79,7 +79,7 @@ export const initializeEnv = async (
           details: e.message,
           resolution: 'Review the error message and stack trace for additional information.',
           stack: e.stack,
-        });
+        }, e);
       }
     }
 
@@ -95,7 +95,7 @@ export const initializeEnv = async (
         message: `Could not initialize platform for '${currentEnv}': ${e.message}`,
         resolution: 'Review the error message and stack trace for additional information.',
         stack: e.stack,
-      });
+      }, e);
     } finally {
       context.usageData.stopCodePathTimer(ManuallyTimedCodePath.INIT_ENV_PLATFORM);
     }
@@ -117,7 +117,7 @@ export const initializeEnv = async (
         message: `Could not initialize categories for '${currentEnv}': ${e.message}`,
         resolution: 'Review the error message and stack trace for additional information.',
         stack: e.stack,
-      });
+      }, e);
     } finally {
       context.usageData.stopCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES);
     }

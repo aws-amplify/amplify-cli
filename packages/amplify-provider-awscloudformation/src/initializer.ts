@@ -302,13 +302,14 @@ const storeCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
   }
 
   const zipFilePath = path.normalize(path.join(tempDir, zipFilename));
-  const spinner = new AmplifySpinner('Saving deployment state.');
+  const spinner = new AmplifySpinner();
+
 
   return archiver
     .run(currentCloudBackendDir, zipFilePath, undefined, cliJSONFiles)
     .then(result => {
       const s3Key = `${result.zipFilename}`;
-      spinner.start();
+      spinner.start('Saving deployment state.');
       return S3.getInstance(context).then(s3 => {
         spinner.stop('Deployment bucket fetched.');
         const s3Params = {
@@ -324,7 +325,7 @@ const storeCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
       throw amplifyFaultWithTroubleshootingLink('DeploymentFault', {
         message: ex.message,
         stack: ex.stack,
-      });
+      }, ex);
     })
     .then(() => {
       fs.removeSync(tempDir);

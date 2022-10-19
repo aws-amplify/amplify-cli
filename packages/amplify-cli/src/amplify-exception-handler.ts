@@ -38,7 +38,9 @@ export const handleException = async (exception: unknown): Promise<void> => {
   }
 
   if (context?.usageData) {
-    context?.usageData.emitError(amplifyException);
+    await executeSafely(
+      () => context?.usageData.emitError(amplifyException), 'Failed to emit error to usage data',
+    );
   }
 
   if (context && isHeadlessCommand(context)) {
@@ -115,9 +117,9 @@ const printHeadlessAmplifyException = (amplifyException: AmplifyException): void
 
 const unknownErrorToAmplifyException = (err: unknown): AmplifyException => amplifyFaultWithTroubleshootingLink(
   unknownErrorTypeToAmplifyExceptionType(err), {
-    message: 'message' in (err as $TSAny) ? (err as $TSAny).message : 'Unknown error',
+    message: (typeof err === 'object' && err !== null && 'message' in err) ? (err as $TSAny).message : 'Unknown error',
     resolution: mapUnknownErrorToResolution(err),
-    stack: 'stack' in (err as $TSAny) ? (err as $TSAny).stack : undefined,
+    stack: (typeof err === 'object' && err !== null && 'stack' in err) ? (err as $TSAny).stack : undefined,
   },
 );
 
@@ -126,7 +128,7 @@ const genericErrorToAmplifyException = (err: Error): AmplifyException => amplify
     message: err.message,
     resolution: mapGenericErrorToResolution(err),
     stack: err.stack,
-  },
+  }, err,
 );
 
 const nodeErrorToAmplifyException = (err: NodeJS.ErrnoException): AmplifyException => amplifyFaultWithTroubleshootingLink(
@@ -134,7 +136,7 @@ const nodeErrorToAmplifyException = (err: NodeJS.ErrnoException): AmplifyExcepti
     message: err.message,
     resolution: mapNodeErrorToResolution(err),
     stack: err.stack,
-  },
+  }, err,
 );
 
 const nodeErrorTypeToAmplifyExceptionType = (__err: NodeJS.ErrnoException): AmplifyFaultType => 'UnknownNodeJSFault';

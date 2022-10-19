@@ -47,6 +47,7 @@ const AMPLIFY_RESERVED_EXPORT_KEYS = [
   // Pinpoint
   'aws_mobile_analytics_app_id',
   'aws_mobile_analytics_app_region',
+  'Notifications',
 
   // DynamoDB
   'aws_dynamodb_all_tables_region',
@@ -163,7 +164,6 @@ export const getAWSExports = async (context: $TSContext, amplifyResources, cloud
   const newAWSExports = getAWSExportsObject(amplifyResources);
   const cloudAWSExports = getAWSExportsObject(cloudAmplifyResources);
   const currentAWSExports = await getCurrentAWSExports(context);
-
   const customConfigs = getCustomConfigs(cloudAWSExports, currentAWSExports);
 
   Object.assign(newAWSExports, customConfigs);
@@ -671,23 +671,45 @@ type PinpointConfig = {
 }
 /* eslint-enable camelcase*/
 
-const getPinpointConfig = (pinpointResources, projectRegion): PinpointConfig => {
-  // There can only be one analytics resource
+const isPinpointChannelEnabled = (channelName, pinpointResource): bool => {
+  return pinpointResource?.output?.[channelName]?.Enabled;
+}
 
-  const pinpointResource = pinpointResources[0];
+const getPinpointConfig = (pinpointResources): PinpointConfig => {
+  // There are legacy projects where we could have multiple Pinpoint resources.
+  // We will iterate over all Pinpoint resources in amplify-meta until we get the configured
+  // AppId, Region and Channel configuration for that Pinpoint resource
 
-  return {
-    aws_mobile_analytics_app_id: pinpointResource.output.Id,
-    aws_mobile_analytics_app_region: projectRegion,
+  const firstPinpointResource = pinpointResources[0];
+  const pinpointConfig = {
+    aws_mobile_analytics_app_id: firstPinpointResource.output.Id,
+    aws_mobile_analytics_app_region: firstPinpointResource.output.Region,
   };
-};
+  for (const pinpointResource of pinpointResources) {
+    pinpointConfig.aws_mobile_analytics_app_id = (pinpointConfig.aws_mobile_analytics_app_id) || pinpointResource.output.Id;
+    pinpointConfig.aws_mobile_analytics_app_region = (pinpointConfig.aws_mobile_analytics_app_region) || pinpointResource.output.Region;
+    if (isPinpointChannelEnabled('InAppMessaging', pinpointResource)) {
+      pinpointConfig.Notifications = {
+        InAppMessaging: {
+          AWSPinpoint: {
+            appId: pinpointConfig.aws_mobile_analytics_app_id,
+            region: pinpointConfig.aws_mobile_analytics_app_region,
+          },
+        },
+      };
+      break;
+    }
+  }
+  return pinpointConfig;
+
+}
 
 /* eslint-disable camelcase */
 type DynamoDBConfig = {
   aws_dynamodb_all_tables_region,
   aws_dynamodb_table_schemas: Array<$TSAny>,
 }
-/* eslint-enable camelcase*/
+
 
 const getDynamoDBConfig = (dynamoDBResources, projectRegion): DynamoDBConfig => {
   // There can be multiple dynamo db resource

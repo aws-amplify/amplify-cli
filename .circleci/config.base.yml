@@ -635,6 +635,8 @@ jobs:
       - run:
           name: Publish Amplify CLI GitHub release
           command: |
+            commit=$(git rev-parse HEAD)
+            version=$(cat .amplify-pkg-version)
             yarn ts-node scripts/github-release.ts $version $commit
   cleanup_resources:
     <<: *linux-e2e-executor

@@ -82,9 +82,6 @@ export async function init(context: $TSContext) {
   return await initialize(context, authTypeConfig);
 }
 
-/**
- *
- */
 export async function configure(context: $TSContext) {
   context.exeInfo = context.exeInfo || context.amplify.getProjectDetails();
   normalizeInputParams(context);
@@ -270,9 +267,6 @@ async function initialize(context: $TSContext, authConfig?: AuthFlowConfig) {
   return context;
 }
 
-/**
- *
- */
 export function onInitSuccessful(context: $TSContext) {
   if (context.exeInfo.isNewEnv || !doesAwsConfigExists(context)) {
     persistLocalEnvConfig(context);
@@ -414,7 +408,7 @@ async function promptForAuthConfig(context: $TSContext, authConfig?: AuthFlowCon
       answers = await prompt(profileNameQuestion(availableProfiles, awsConfigInfo.config.profileName));
       awsConfigInfo.config.profileName = answers.profileName;
       return;
-    } 
+    }
 
     if (authType === 'admin') {
       awsConfigInfo.configLevel = 'amplifyAdmin';
@@ -803,7 +797,7 @@ export async function getAwsConfig(context: $TSContext): Promise<AwsSdkConfig> {
       throw amplifyErrorWithTroubleshootingLink('AmplifyStudioLoginError', {
         message: 'Failed to fetch Amplify Studio credentials',
         details: err.message,
-      });
+      }, err);
     }
   }
 

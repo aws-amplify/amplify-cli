@@ -123,7 +123,6 @@ describe('amplify status:', () => {
       },
     };
     runStatusCmd(mockContextWithHelpSubcommandAndCLArgs);
-    // TBD: to move ViewResourceTableParams into a separate file for mocking instance functions.
     expect(mockContextWithHelpSubcommandAndCLArgs.amplify.showStatusTable.mock.calls.length).toBe(0);
   });
 
