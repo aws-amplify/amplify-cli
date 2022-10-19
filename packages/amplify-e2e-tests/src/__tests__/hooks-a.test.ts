@@ -1,8 +1,14 @@
 import {
-  addFunction, amplifyPullNonInteractive, amplifyPushAuth, createNewProjectDir,
+  addFunction,
+  amplifyPullNonInteractive,
+  amplifyPushAuth,
+  createNewProjectDir,
   deleteProject,
   deleteProjectDir,
-  getBackendAmplifyMeta, getHooksDirPath, initJSProjectWithProfile, transformCurrentProjectToGitPulledProject,
+  getBackendAmplifyMeta,
+  getHooksDirPath,
+  initJSProjectWithProfile,
+  transformCurrentProjectToGitPulledProject,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';

@@ -1,7 +1,10 @@
 import {
-  addFunction, createNewProjectDir,
+  addFunction,
+  createNewProjectDir,
   deleteProject,
-  deleteProjectDir, getHooksDirPath, initJSProjectWithProfile,
+  deleteProjectDir,
+  getHooksDirPath,
+  initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
