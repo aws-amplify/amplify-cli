@@ -3,6 +3,7 @@ import {
 } from 'amplify-cli-core';
 import _ from 'lodash';
 import { printer } from 'amplify-prompts';
+import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import * as authHelper from './auth-helper';
 import {
   ensurePinpointApp,
