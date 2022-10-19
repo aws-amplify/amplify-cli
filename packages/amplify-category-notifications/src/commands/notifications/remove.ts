@@ -77,7 +77,6 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
       const confirmDelete = await prompter.confirmContinue('Confirm that you want to delete the associated Amazon Pinpoint application');
       if (confirmDelete) {
         await deletePinpointApp(context);
-        printer.info('The Pinpoint application has been successfully deleted.');
         await writeData(context, undefined);
         printer.info('The Pinpoint application has been successfully deleted.');
       }
