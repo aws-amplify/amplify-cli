@@ -31,6 +31,7 @@ export const invokeNotificationsAPIRecursiveRemoveApp = async (
  */
 export const checkResourceInUseByNotifications = async (context: $TSContext, resourceName: string): Promise<boolean> => {
   const notificationsResource = await invokeNotificationsAPIGetResource(context);
+  if (!notificationsResource?.resourceName) return false;
   return (notificationsResource?.resourceName === resourceName);
 };
 
