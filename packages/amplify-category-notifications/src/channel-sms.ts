@@ -88,7 +88,7 @@ export const disable = async (context: $TSContext): Promise<$TSAny> => {
   try {
     const data = await context.exeInfo.pinpointClient.updateSmsChannel(params).promise();
     context.exeInfo.serviceMeta.output[channelName] = data.SMSChannelResponse;
-    spinner.succeed(`The ${channelName} channel has been successfully disabled.`);
+    spinner.succeed(`The ${channelName} channel has been disabled.`);
 
     return buildPinpointChannelResponseSuccess(ChannelAction.DISABLE, deploymentType, channelName, data.SMSChannelResponse);
   } catch (e) {

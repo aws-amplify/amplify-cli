@@ -12,14 +12,12 @@ type NotificationSettings = {
  */
 export const removeAllNotificationChannel = async (
   cwd: string,
-): Promise<void> => {
-  spawn(getCLIPath(), ['remove', 'notifications'], { cwd, stripColors: true })
-    .wait('Choose the notification channel to remove')
-    .sendLine('All channels on Pinpoint resource')
-    .wait(`All notifications have been disabled`)
-    .sendEof()
-    .runAsync();
-};
+): Promise<void> => spawn(getCLIPath(), ['remove', 'notifications'], { cwd, stripColors: true })
+  .wait('Choose the notification channel to remove')
+  .sendLine('All channels on Pinpoint resource')
+  .wait(`All notifications have been disabled`)
+  .sendEof()
+  .runAsync();
 
 /**
  * removes the notification channel
@@ -27,14 +25,12 @@ export const removeAllNotificationChannel = async (
 export const removeNotificationChannel = async (
   cwd: string,
   channel: string,
-): Promise<void> => {
-  spawn(getCLIPath(), ['remove', 'notifications'], { cwd, stripColors: true })
-    .wait('Choose the notification channel to remove')
-    .sendLine(channel)
-    .wait(`The ${channel} channel has been successfully disabled`)
-    .sendEof()
-    .runAsync();
-};
+): Promise<void> => spawn(getCLIPath(), ['remove', 'notifications'], { cwd, stripColors: true })
+  .wait('Choose the notification channel to remove')
+  .sendLine(channel)
+  .wait(`The channel has been successfully disabled`)
+  .sendEof()
+  .runAsync();
 
 /**
  * Adds notification resource for a given channel
@@ -81,6 +77,11 @@ export const addNotificationChannel = async (
     }
     case 'Email': {
       break;
+    }
+    case 'In-App Messaging': {
+      return chain
+        .wait(`Run "amplify push" to update the channel in the cloud`)
+        .runAsync();
     }
     default:
       break;
