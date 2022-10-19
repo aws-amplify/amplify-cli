@@ -1,6 +1,5 @@
 import {
   addAuthUserPoolOnly,
-  addAuthWithDefault,
   amplifyPushAuth,
   createNewProjectDir,
   deleteProject,
@@ -42,7 +41,6 @@ describe('amplify init', () => {
     const envName = 'dev';
     const resourceName = 'authConsoleTest';
     await initJSProjectWithProfile(projectRoot, { disableAmplifyAppCreation: false, name: resourceName, envName });
-    await addAuthWithDefault(projectRoot, {});
     await addAuthUserPoolOnly(projectRoot, {});
     await amplifyPushAuth(projectRoot);
     const teamInfo = getTeamProviderInfo(projectRoot);
