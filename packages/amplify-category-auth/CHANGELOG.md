@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.12.4-rc.35b3563eb.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.12.3...@aws-amplify/amplify-category-auth@2.12.4-rc.35b3563eb.0) (2022-10-20)
+
+
+### Bug Fixes
+
+* failing env init when user pool is defined ([#11225](https://github.com/aws-amplify/amplify-cli/issues/11225)) ([35b3563](https://github.com/aws-amplify/amplify-cli/commit/35b3563ebdd9e8b32097fd74a7417424034ef6bf))
+
+
+
+
+
 ## [2.12.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.12.2...@aws-amplify/amplify-category-auth@2.12.3) (2022-10-13)
 
 

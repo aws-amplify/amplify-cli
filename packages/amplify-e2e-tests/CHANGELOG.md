@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.13.3-rc.35b3563eb.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.13.2...amplify-e2e-tests@3.13.3-rc.35b3563eb.0) (2022-10-20)
+
+
+### Bug Fixes
+
+* failing env init when user pool is defined ([#11225](https://github.com/aws-amplify/amplify-cli/issues/11225)) ([35b3563](https://github.com/aws-amplify/amplify-cli/commit/35b3563ebdd9e8b32097fd74a7417424034ef6bf))
+
+
+
+
+
 ## [3.13.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.13.1...amplify-e2e-tests@3.13.2) (2022-10-13)
 
 
