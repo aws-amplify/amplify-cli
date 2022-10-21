@@ -35,7 +35,7 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
   'schema-auth-11-c_pkg',
   'auth_6_pkg',
   'frontend_config_drift_pkg',
-  'hooks_pkg',
+  'hooks-b_pkg',
   'plugin_pkg',
   'schema-versioned_pkg',
   'schema-auth-3_pkg',
