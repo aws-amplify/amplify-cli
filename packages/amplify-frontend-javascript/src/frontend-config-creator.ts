@@ -668,18 +668,20 @@ const getInferConfig = (inferResources):InferConfig => ({
 type PinpointConfig = {
   aws_mobile_analytics_app_id,
   aws_mobile_analytics_app_region,
+  Notifications?
 }
 /* eslint-enable camelcase*/
 
-const isPinpointChannelEnabled = (channelName, pinpointResource): bool => pinpointResource?.output?.[channelName]?.Enabled;
+const isPinpointChannelEnabled = (channelName, pinpointResource): boolean => pinpointResource?.output?.[channelName]?.Enabled;
 
-const getPinpointConfig = (pinpointResources): PinpointConfig => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const getPinpointConfig = (pinpointResources, projectRegion?): PinpointConfig => {
   // There are legacy projects where we could have multiple Pinpoint resources.
   // We will iterate over all Pinpoint resources in amplify-meta until we get the configured
   // AppId, Region and Channel configuration for that Pinpoint resource
 
   const firstPinpointResource = pinpointResources[0];
-  const pinpointConfig = {
+  const pinpointConfig: PinpointConfig = {
     aws_mobile_analytics_app_id: firstPinpointResource.output.Id,
     aws_mobile_analytics_app_region: firstPinpointResource.output.Region,
   };
