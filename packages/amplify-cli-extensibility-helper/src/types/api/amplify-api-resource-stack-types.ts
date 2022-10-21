@@ -1,6 +1,8 @@
 // Amplify generated Types for API - override.ts
 
-import { CfnApiKey, CfnDataSource, CfnFunctionConfiguration, CfnGraphQLApi, CfnGraphQLSchema, CfnResolver } from '@aws-cdk/aws-appsync';
+import {
+  CfnApiKey, CfnDataSource, CfnFunctionConfiguration, CfnGraphQLApi, CfnGraphQLSchema, CfnResolver,
+} from '@aws-cdk/aws-appsync';
 import { CfnTable } from '@aws-cdk/aws-dynamodb';
 import { CfnPolicy, CfnRole } from '@aws-cdk/aws-iam';
 import { CfnDomain } from '@aws-cdk/aws-elasticsearch';
@@ -10,6 +12,9 @@ import { CfnStack } from '@aws-cdk/core';
 // Base template
 // Customer can use these params to mutate the Cloudformation for the resource
 
+/**
+ * Public API: Base template to override amplify generated graphqlAPI
+ */
 export interface AmplifyApiGraphQlResourceStackTemplate {
   // directives stack
   api?: Partial<AppsyncApiStack>;
@@ -18,7 +23,11 @@ export interface AmplifyApiGraphQlResourceStackTemplate {
   predictions?: Partial<PredictionsDirectiveStack & AppsyncStackCommon>;
 }
 
+/**
+ * Public API:  Amplify Appsync Api type
+ */
 export type AppsyncApiStack = {
+  // eslint-disable-next-line spellcheck/spell-checker
   rootstack: CfnStack;
   GraphQLAPI: CfnGraphQLApi;
   GraphQLAPIDefaultApiKey?: CfnApiKey;
@@ -29,13 +38,22 @@ export type AppsyncApiStack = {
   DynamoDBAccess?: CfnPolicy;
 };
 
+/**
+ * Public API:  Amplify model directive type
+ */
 export type ModelDirectiveStack = AppsyncStackCommon & DDBModelDirectiveStack;
 
+/**
+ * Public API:  Appsync resolvers and Functions type
+ */
 export type AppsyncStackCommon = {
   resolvers?: Record<string, CfnResolver>;
   appsyncFunctions?: Record<string, CfnFunctionConfiguration>;
 };
 
+/**
+ * Public API:  dynamoDB model directive stack
+ */
 export type DDBModelDirectiveStack = {
   modelStack?: CfnStack;
   modelDDBTable?: CfnTable;
@@ -46,12 +64,18 @@ export type DDBModelDirectiveStack = {
   invokeLambdaFunction?: CfnPolicy;
 };
 
+/**
+ * Public API:  http directive stack
+ */
 export interface HttpsDirectiveStack {
   httpsDataSource?: Record<string, CfnDataSource>;
   httpDataSourceServiceRole?: Record<string, CfnRole>;
   httpDataSourceServiceRoleDefaultPolicy?: Record<string, CfnPolicy>;
 }
 
+/**
+ * Public API:  open search directive stack
+ */
 export interface OpenSearchDirectiveStack {
   OpenSearchDataSource?: CfnDataSource;
   OpenSearchAccessIAMRole?: CfnRole;
@@ -59,17 +83,24 @@ export interface OpenSearchDirectiveStack {
   OpenSearchDomain?: CfnDomain;
   OpenSearchStreamingLambdaIAMRole?: CfnRole;
   OpenSearchStreamingLambdaIAMRoleDefaultPolicy?: CfnPolicy;
+  // eslint-disable-next-line spellcheck/spell-checker
   CloudwatchLogsAccess?: CfnPolicy;
   OpenSearchStreamingLambdaFunction?: CfnFunction;
   OpenSearchModelLambdaMapping?: Record<string, CfnEventSourceMapping>;
 }
 
+/**
+ * Public API:  function directive stack
+ */
 export interface FunctionDirectiveStack {
   lambdaDataSource: Record<string, CfnDataSource>;
   lambdaDataSourceRole: Record<string, CfnRole>;
   lambdaDataSourceServiceRoleDefaultPolicy: Record<string, CfnPolicy>;
 }
 
+/**
+ * Public API:  predictions directive stack
+ */
 export interface PredictionsDirectiveStack {
   RekognitionDataSource: CfnDataSource;
   RekognitionDataSourceServiceRole: CfnRole;
