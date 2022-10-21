@@ -1,5 +1,6 @@
-import { stateManager, pathManager } from 'amplify-cli-core';
+import { stateManager, pathManager, $TSContext } from 'amplify-cli-core';
 import { readProjectSchema } from 'graphql-transformer-core';
+// import { run as runStatusCmd } from '../../commands/status';
 
 jest.mock('amplify-category-hosting');
 jest.mock('amplify-cli-core');
@@ -9,6 +10,7 @@ jest.mock('graphql-transformer-core', () => ({
 jest.mock('../../extensions/amplify-helpers/show-auth-acm', () => ({
   showACM: jest.fn(),
 }));
+jest.mock('fs-extra');
 const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
 pathManagerMock.getBackendDirPath.mockReturnValue('testBackendDirPath');
 
@@ -36,7 +38,7 @@ describe('amplify status:', () => {
   const { run } = require('../../commands/status');
   const runStatusCmd = run;
   const statusPluginInfo = `${process.cwd()}/../amplify-console-hosting`;
-  const mockPath = './';
+  const mockPath = './help';
 
   afterAll(() => {
     jest.clearAllMocks();
@@ -53,6 +55,9 @@ describe('amplify status:', () => {
         showGlobalSandboxModeWarning: jest.fn(),
         showHelpfulProviderLinks: jest.fn(),
         getCategoryPluginInfo: jest.fn().mockReturnValue({ packageLocation: mockPath }),
+        pathManager: {
+          getBackendDirPath: jest.fn().mockReturnValue('test/path'),
+        },
       },
       parameters: {
         input: {
@@ -64,7 +69,7 @@ describe('amplify status:', () => {
         },
       },
     };
-    runStatusCmd(mockContextNoCLArgs);
+    runStatusCmd(mockContextNoCLArgs as unknown as $TSContext);
     expect(mockContextNoCLArgs.amplify.showStatusTable).toBeCalled();
   });
 
@@ -75,6 +80,9 @@ describe('amplify status:', () => {
         showGlobalSandboxModeWarning: jest.fn(),
         showHelpfulProviderLinks: jest.fn(),
         getCategoryPluginInfo: jest.fn().mockReturnValue({ packageLocation: statusPluginInfo }),
+        pathManager: {
+          getBackendDirPath: jest.fn().mockReturnValue('test/path'),
+        },
       },
       input: {
         command: 'status',
@@ -83,7 +91,7 @@ describe('amplify status:', () => {
         },
       },
     };
-    runStatusCmd(mockContextWithVerboseOptionAndCLArgs);
+    runStatusCmd(mockContextWithVerboseOptionAndCLArgs as unknown as $TSContext);
     expect(mockContextWithVerboseOptionAndCLArgs.amplify.showStatusTable).toBeCalled();
   });
 
@@ -94,6 +102,9 @@ describe('amplify status:', () => {
         showGlobalSandboxModeWarning: jest.fn(),
         showHelpfulProviderLinks: jest.fn(),
         getCategoryPluginInfo: jest.fn().mockReturnValue({ packageLocation: statusPluginInfo }),
+        pathManager: {
+          getBackendDirPath: jest.fn().mockReturnValue('test/path'),
+        },
       },
       input: {
         command: 'status',
@@ -105,7 +116,7 @@ describe('amplify status:', () => {
       },
     };
 
-    runStatusCmd(mockContextWithVerboseOptionWithCategoriesAndCLArgs);
+    runStatusCmd(mockContextWithVerboseOptionWithCategoriesAndCLArgs as unknown as $TSContext);
     expect(mockContextWithVerboseOptionWithCategoriesAndCLArgs.amplify.showStatusTable).toBeCalled();
   });
 
@@ -116,13 +127,16 @@ describe('amplify status:', () => {
         showGlobalSandboxModeWarning: jest.fn(),
         showHelpfulProviderLinks: jest.fn(),
         getCategoryPluginInfo: jest.fn().mockReturnValue({ packageLocation: statusPluginInfo }),
+        pathManager: {
+          getBackendDirPath: jest.fn().mockReturnValue('test/path'),
+        },
       },
       input: {
         command: 'status',
         subCommands: ['help'],
       },
     };
-    runStatusCmd(mockContextWithHelpSubcommandAndCLArgs);
+    runStatusCmd(mockContextWithHelpSubcommandAndCLArgs as unknown as $TSContext);
     expect(mockContextWithHelpSubcommandAndCLArgs.amplify.showStatusTable.mock.calls.length).toBe(0);
   });
 
@@ -134,6 +148,9 @@ describe('amplify status:', () => {
         showGlobalSandboxModeWarning: jest.fn(),
         showHelpfulProviderLinks: jest.fn(),
         getCategoryPluginInfo: jest.fn().mockReturnValue({ packageLocation: statusPluginInfo }),
+        pathManager: {
+          getBackendDirPath: jest.fn().mockReturnValue('test/path'),
+        },
       },
       input: {
         command: 'status',
@@ -149,7 +166,7 @@ describe('amplify status:', () => {
       compileSchema: jest.fn().mockReturnValue(Promise.resolve({})),
     }));
 
-    await runStatusCmd(mockContextWithVerboseOptionAndCLArgs);
+    await runStatusCmd(mockContextWithVerboseOptionAndCLArgs as unknown as $TSContext);
     expect(readProjectSchemaMock.mock.calls.length).toBeGreaterThan(0);
   });
 });

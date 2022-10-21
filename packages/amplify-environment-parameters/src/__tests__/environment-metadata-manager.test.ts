@@ -1,8 +1,9 @@
 import {
-  pathManager, stateManager, $TSContext, $TSAny, EnvAwsInfo,
+  pathManager, stateManager, $TSContext, $TSAny, EnvAwsInfo, AmplifyError, AmplifyFault, amplifyFaultWithIssueReportLink,
 } from 'amplify-cli-core';
 import { AmplifyBackend } from 'aws-sdk';
 import { IEnvironmentMetadata } from '../types';
+import { mockWithActual } from './utils/mock-with-actual';
 import { getProcessEventSpy } from './utils/process-event-spy';
 
 jest.mock('amplify-cli-core');
@@ -24,6 +25,14 @@ let stubContext: $TSContext;
 let stubMeta: Record<string, unknown>;
 
 const AmplifyBackendMock = AmplifyBackend as jest.MockedClass<typeof AmplifyBackend>;
+
+const AmplifyErrorMock = AmplifyError as jest.MockedClass<typeof AmplifyError>;
+const AmplifyFaultMock = AmplifyFault as jest.MockedClass<typeof AmplifyFault>;
+const amplifyFaultWithIssueReportLinkMock = amplifyFaultWithIssueReportLink as jest.MockedFunction<typeof amplifyFaultWithIssueReportLink>;
+
+AmplifyErrorMock.mockImplementation(mockWithActual('amplify-cli-core', 'AmplifyError'));
+AmplifyFaultMock.mockImplementation(mockWithActual('amplify-cli-core', 'AmplifyFault'));
+amplifyFaultWithIssueReportLinkMock.mockImplementation(mockWithActual('amplify-cli-core', 'amplifyFaultWithIssueReportLink'));
 
 beforeEach(() => {
   jest.clearAllMocks();
