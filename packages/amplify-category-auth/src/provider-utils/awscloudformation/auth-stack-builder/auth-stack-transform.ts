@@ -17,8 +17,7 @@ import { AttributeType, CognitoCLIInputs } from '../service-walkthrough-types/aw
 import { AuthTriggerConnection, AuthTriggerPermissions, CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
 import { generateNestedAuthTriggerTemplate } from '../utils/generate-auth-trigger-template';
 import { createUserPoolGroups, updateUserPoolGroups } from '../utils/synthesize-resources';
-import { AmplifyAuthCognitoStack } from './auth-cognito-stack-builder';
-import { AuthStackSynthesizer } from './stack-synthesizer';
+import { AmplifyAuthCognitoStack, AuthStackSynthesizer } from './index';
 
 /**
  *  Class to handle Auth cdk generation / override functionality
@@ -38,6 +37,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     this._app = new cdk.App();
     this._category = AmplifyCategories.AUTH;
     this._service = AmplifySupportedService.COGNITO;
+    // eslint-disable-next-line spellcheck/spell-checker
     this._authTemplateObj = new AmplifyAuthCognitoStack(this._app, 'AmplifyAuthCongitoStack', { synthesizer: this._synthesizer });
   }
 
@@ -276,7 +276,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
   /**
    * validate cfn Parameters for the bug mentioned below
    */
-  public validateCfnParameters(context: $TSContext, oldParameters: $TSAny, parametersJson: $TSAny) {
+  public validateCfnParameters(context: $TSContext, oldParameters: $TSAny, parametersJson: $TSAny): boolean {
     // There was a bug between v7.3.0 and v7.6.9 where Cognito resources were being created with incorrect `requiredAttributes` parameter
     // Since `requiredAttributes` is immutable, we must adjust this or CloudFormation step will fail
     // More info: https://github.com/aws-amplify/amplify-cli/issues/9525
@@ -285,8 +285,8 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     }
 
     const cliInputsFilePath = path.join(pathManager.getBackendDirPath(), this._category, this.resourceName, 'cli-inputs.json');
-    const containsAll = (arr1: string[], arr2: string[]) => arr2.every(arr2Item => arr1.includes(arr2Item));
-    const sameMembers = (arr1: string[], arr2: string[]) => arr1.length === arr2.length && containsAll(arr2, arr1);
+    const containsAll = (arr1: string[], arr2: string[]): boolean => arr2.every(arr2Item => arr1.includes(arr2Item));
+    const sameMembers = (arr1: string[], arr2: string[]): boolean => arr1.length === arr2.length && containsAll(arr2, arr1);
     if (!sameMembers(oldParameters.requiredAttributes ?? [], parametersJson.requiredAttributes ?? [])) {
       context.print.error(
         `Cognito configuration in the cloud has drifted from local configuration. Present changes cannot be pushed until drift is fixed. \`requiredAttributes\` requested is ${JSON.stringify(
@@ -305,11 +305,11 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
    */
   private generateCfnOutputs = (props: CognitoStackOptions): void => {
     const configureSMS = (props.autoVerifiedAttributes && props.autoVerifiedAttributes.includes('phone_number'))
-      || (props.mfaConfiguration != 'OFF' && props.mfaTypes && props.mfaTypes.includes('SMS Text Message'))
+      || (props.mfaConfiguration !== 'OFF' && props.mfaTypes && props.mfaTypes.includes('SMS Text Message'))
       || (props.requiredAttributes && props.requiredAttributes.includes('phone_number'))
       || (props.usernameAttributes && props.usernameAttributes.includes(AttributeType.PHONE_NUMBER));
 
-    if (props.authSelections === 'identityPoolAndUserPool' || props.authSelections == 'identityPoolOnly') {
+    if (props.authSelections === 'identityPoolAndUserPool' || props.authSelections === 'identityPoolOnly') {
       this._authTemplateObj.addCfnOutput(
         {
           value: cdk.Fn.ref('IdentityPool'),

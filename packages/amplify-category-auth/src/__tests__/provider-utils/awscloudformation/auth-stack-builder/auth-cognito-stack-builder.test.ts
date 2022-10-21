@@ -9,9 +9,12 @@ import { CognitoStackOptions } from '../../../../provider-utils/awscloudformatio
 
 describe('generateCognitoStackResources', () => {
   const props: CognitoStackOptions = {
+    // eslint-disable-next-line spellcheck/spell-checker
     identityPoolName: 'issue96802f106de3_identitypool_2f106de3',
     allowUnauthenticatedIdentities: false,
+    // eslint-disable-next-line spellcheck/spell-checker
     resourceNameTruncated: 'issue92f106de3',
+    // eslint-disable-next-line spellcheck/spell-checker
     userPoolName: 'issue96802f106de3_userpool_2f106de3',
     autoVerifiedAttributes: ['email'],
     mfaConfiguration: 'OFF',
@@ -28,9 +31,11 @@ describe('generateCognitoStackResources', () => {
     userpoolClientRefreshTokenValidity: 30,
     userpoolClientWriteAttributes: ['email'],
     userpoolClientReadAttributes: ['email'],
+    // eslint-disable-next-line spellcheck/spell-checker
     userpoolClientLambdaRole: 'issue92f106de3_userpoolclient_lambda_role',
     userpoolClientSetAttributes: false,
     sharedId: '2f106de3',
+    // eslint-disable-next-line spellcheck/spell-checker
     resourceName: 'issue96802f106de32f106de3',
     authSelections: 'identityPoolAndUserPool',
     useDefault: 'manual',
@@ -55,11 +60,13 @@ describe('generateCognitoStackResources', () => {
     dependsOn: [
       {
         category: 'function',
+        // eslint-disable-next-line spellcheck/spell-checker
         resourceName: 'issue96802f106de32f106de3PreSignup',
         attributes: ['Arn', 'Name'],
       },
     ],
     permissions: [],
+    // eslint-disable-next-line spellcheck/spell-checker
     authTriggerConnections: [{ triggerType: 'PreSignUp', lambdaFunctionName: 'issue96802f106de32f106de3PreSignup' }],
     authProviders: [],
   };
@@ -77,7 +84,7 @@ describe('generateCognitoStackResources', () => {
     expect(
       cognitoStack
         .oAuthCustomResource!.node!.dependencies!.map((dep: any) => dep.target.logicalId)
-        .map(logicalIdToken => /testCognitoStack\.([^\.]+)\.Default/.exec(logicalIdToken)![1]),
+        .map(logicalIdToken => /testCognitoStack\.([^.]+)\.Default/.exec(logicalIdToken)![1]),
     ).toMatchInlineSnapshot(`
       Array [
         "HostedUICustomResourceInputs",
@@ -105,6 +112,7 @@ describe('generateCognitoStackResources', () => {
 
   it('correctly adds updateAttributeSetting when autoVerifiedAttributes attributes is TOTP', () => {
     const testApp = new cdk.App();
+    // eslint-disable-next-line spellcheck/spell-checker
     const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'CognitoUpdateAttributesettingTest', {
       synthesizer: new AuthStackSynthesizer(),
     });
@@ -124,6 +132,7 @@ describe('generateCognitoStackResources', () => {
 
   it('correctly adds updateAttributeSetting when autoVerifiedAttributes attributes is email', () => {
     const testApp = new cdk.App();
+    // eslint-disable-next-line spellcheck/spell-checker
     const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'CognitoUpdateAttributesettingTesting1', {
       synthesizer: new AuthStackSynthesizer(),
     });
