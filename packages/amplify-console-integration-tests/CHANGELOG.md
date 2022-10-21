@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.5.0-rc.80138bf22.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.4.3...@aws-amplify/amplify-console-integration-tests@2.5.0-rc.80138bf22.0) (2022-10-21)
+
+
+### Features
+
+* **amplify-util-uibuilder:** add studio forms ([#11165](https://github.com/aws-amplify/amplify-console-integration-tests/issues/11165)) ([6f15294](https://github.com/aws-amplify/amplify-console-integration-tests/commit/6f15294d6809639c7d7e7d3aa4378df894168b0b))
+
+
+
+
+
 ## [2.4.3](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.4.2...@aws-amplify/amplify-console-integration-tests@2.4.3) (2022-10-13)
 
 

@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.14.0-rc.80138bf22.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.13.3...amplify-e2e-tests@3.14.0-rc.80138bf22.0) (2022-10-21)
+
+
+### Bug Fixes
+
+* failing env init when user pool is defined ([#11225](https://github.com/aws-amplify/amplify-cli/issues/11225)) ([4ef1f55](https://github.com/aws-amplify/amplify-cli/commit/4ef1f5561ee020b4241c0bf0e076942ffb2f5af4))
+
+
+### Features
+
+* **amplify-util-uibuilder:** add studio forms ([#11165](https://github.com/aws-amplify/amplify-cli/issues/11165)) ([6f15294](https://github.com/aws-amplify/amplify-cli/commit/6f15294d6809639c7d7e7d3aa4378df894168b0b))
+* in app messaging notification ([#11067](https://github.com/aws-amplify/amplify-cli/issues/11067)) ([0c70a05](https://github.com/aws-amplify/amplify-cli/commit/0c70a05bf97943ddf6b4607b9bfe0bdff132aae1))
+
+
+
+
+
 ## [3.13.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.13.2...amplify-e2e-tests@3.13.3) (2022-10-21)
 
 

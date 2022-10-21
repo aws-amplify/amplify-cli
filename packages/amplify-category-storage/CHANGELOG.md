@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.6.0-rc.80138bf22.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.5.3...@aws-amplify/amplify-category-storage@3.6.0-rc.80138bf22.0) (2022-10-21)
+
+
+### Features
+
+* **amplify-util-uibuilder:** add studio forms ([#11165](https://github.com/aws-amplify/amplify-cli/issues/11165)) ([6f15294](https://github.com/aws-amplify/amplify-cli/commit/6f15294d6809639c7d7e7d3aa4378df894168b0b))
+
+
+
+
+
 ## [3.5.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.5.2...@aws-amplify/amplify-category-storage@3.5.3) (2022-10-13)
 
 

@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0-rc.80138bf22.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.5.0...@aws-amplify/amplify-util-uibuilder@1.6.0-rc.80138bf22.0) (2022-10-21)
+
+
+### Bug Fixes
+
+* **amplify-util-uibuilder:** make studio app check static ([#11220](https://github.com/aws-amplify/amplify-cli/issues/11220)) ([b1fdc86](https://github.com/aws-amplify/amplify-cli/commit/b1fdc8634f10da558272aa2e98dfdffc28edd74c))
+
+
+### Features
+
+* **amplify-util-uibuilder:** add studio forms ([#11165](https://github.com/aws-amplify/amplify-cli/issues/11165)) ([6f15294](https://github.com/aws-amplify/amplify-cli/commit/6f15294d6809639c7d7e7d3aa4378df894168b0b))
+
+
+
+
+
 # [1.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.4.2...@aws-amplify/amplify-util-uibuilder@1.5.0) (2022-10-13)
 
 

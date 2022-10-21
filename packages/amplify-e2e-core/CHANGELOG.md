@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.4.0-rc.80138bf22.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.3.0...@aws-amplify/amplify-e2e-core@4.4.0-rc.80138bf22.0) (2022-10-21)
+
+
+### Features
+
+* **amplify-util-uibuilder:** add studio forms ([#11165](https://github.com/aws-amplify/amplify-cli/issues/11165)) ([6f15294](https://github.com/aws-amplify/amplify-cli/commit/6f15294d6809639c7d7e7d3aa4378df894168b0b))
+* in app messaging notification ([#11067](https://github.com/aws-amplify/amplify-cli/issues/11067)) ([0c70a05](https://github.com/aws-amplify/amplify-cli/commit/0c70a05bf97943ddf6b4607b9bfe0bdff132aae1))
+* migrates analytics category to support in app messaging channel notifications ([#11158](https://github.com/aws-amplify/amplify-cli/issues/11158)) ([9dfbf6c](https://github.com/aws-amplify/amplify-cli/commit/9dfbf6c1aa1031814ea6ea097435e49f9029801a))
+* migrates notifications category to support in app messaging channel notifications ([#11170](https://github.com/aws-amplify/amplify-cli/issues/11170)) ([52f5787](https://github.com/aws-amplify/amplify-cli/commit/52f57870bf4b1e67a5aa879d6bcec403b049d6b8))
+
+
+
+
+
 # [4.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.2.2...@aws-amplify/amplify-e2e-core@4.3.0) (2022-10-13)
 
 
