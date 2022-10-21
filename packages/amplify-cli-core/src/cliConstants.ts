@@ -128,7 +128,7 @@ export interface INotificationsResourceMeta {
 export interface IAnalyticsResource extends IAmplifyResource {
   id?: string;
   region?: string;
-  output?: unknown; // cloudformation deployment outputs - indicates resource deployed
+  output?: Record<string, unknown>; // cloudformation deployment outputs - indicates resource deployed
 }
 
 /**

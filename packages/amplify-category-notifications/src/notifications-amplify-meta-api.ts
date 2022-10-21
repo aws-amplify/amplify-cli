@@ -41,7 +41,7 @@ export const toggleNotificationsChannelAppMeta = async (
   const channelValue = (channelOutput[channelName]) || {};
   notificationsAppMeta.output = (notificationsAppMeta.output) || {};
   notificationsAppMeta.output[channelName] = {
-    ...channelValue,
+    ...(channelValue as object),
     Enabled: isEnabled,
     ApplicationId: channelOutput.Id,
     Name: channelOutput.Name,
@@ -151,7 +151,8 @@ export const isNotificationChannelEnabled = (
   channelName: string,
 ): boolean => notificationsResourceMeta.output
             && channelName in notificationsResourceMeta.output
-            && notificationsResourceMeta.output[channelName].Enabled;
+            && typeof notificationsResourceMeta.output[channelName] === 'object'
+            && (notificationsResourceMeta.output[channelName] as Record<string, boolean>).Enabled;
 
 /**
  * Get the enabled channels from the notifications table of amplify-meta.json

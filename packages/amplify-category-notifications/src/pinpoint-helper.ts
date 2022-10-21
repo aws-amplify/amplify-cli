@@ -220,7 +220,7 @@ export const viewShowAmplifyPushRequired = (pinpointStatus:IPinpointDeploymentSt
 export const getPinpointAppFromAnalyticsOutput = (analyticsMeta: IAnalyticsResource): Partial<ICategoryMeta> => {
   const pinpointApp: Partial<ICategoryMeta> = {
     Id: analyticsMeta.id,
-    Name: analyticsMeta.output.appName,
+    Name: analyticsMeta.output?.appName as string,
     Region: analyticsMeta.region,
     regulatedResourceName: analyticsMeta.resourceName,
   };

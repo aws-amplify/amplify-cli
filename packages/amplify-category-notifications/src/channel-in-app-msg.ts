@@ -154,7 +154,9 @@ export const pull = async (__context: $TSContext, pinpointApp: $TSAny): Promise<
   const currentBackendCfg = stateManager.getCurrentBackendConfig();
   spinner.start(`Retrieving channel information for ${getChannelViewName(channelName)}.`);
   const notificationsMeta = await getNotificationsAppMeta(currentAmplifyMeta);
-  let channelMeta = (notificationsMeta?.output?.channels) ? notificationsMeta.output.channels[channelName] : undefined;
+  let channelMeta = (notificationsMeta?.output?.channels)
+    ? (notificationsMeta.output.channels as Record<string, unknown>)[channelName]
+    : undefined;
   if (!channelMeta) {
     const backendConfig = await getNotificationsAppConfig(currentBackendCfg);
     if (backendConfig?.channels?.includes(channelName)) {
