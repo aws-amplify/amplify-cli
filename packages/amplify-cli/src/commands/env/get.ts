@@ -1,4 +1,4 @@
-import { $TSContext, AmplifyError } from 'amplify-cli-core';
+import { $TSContext, AmplifyError, JSONUtilities } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { ensureEnvMeta, ensureEnvParamManager, listLocalEnvNames } from '@aws-amplify/amplify-environment-parameters';
 import { printEnvInfo } from '../helpers/envUtils';
@@ -26,7 +26,7 @@ export const run = async (context: $TSContext) : Promise<void> => {
 
   if (context.parameters.options.json) {
     // merge meta and params from env into one json and print it
-    printer.info(JSON.stringify(await constructEnvMetaAndParamsObject(context, envName), undefined, 2));
+    printer.info(JSONUtilities.stringify(await constructEnvMetaAndParamsObject(context, envName))!);
   } else {
     printer.blankLine();
     printer.info(envName, 'blue');

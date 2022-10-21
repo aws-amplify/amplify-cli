@@ -743,7 +743,6 @@ describe('resource-status', () => {
 
     it('throws an error when non amplify project', async () => {
       (getCloudInitStatus as jest.MockedFunction<typeof getCloudInitStatus>).mockReturnValue(NON_AMPLIFY_PROJECT);
-      // eslint-disable-next-line jest/valid-expect
       await expect(getResourceStatus).rejects.toThrowErrorMatchingInlineSnapshot(
         `"No Amplify backend project files detected within this folder."`,
       );

@@ -1,6 +1,5 @@
 import { stateManager, pathManager, $TSContext } from 'amplify-cli-core';
 import { readProjectSchema } from 'graphql-transformer-core';
-// import { run as runStatusCmd } from '../../commands/status';
 
 jest.mock('amplify-category-hosting');
 jest.mock('amplify-cli-core');

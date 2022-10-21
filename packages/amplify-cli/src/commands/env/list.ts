@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, JSONUtilities } from 'amplify-cli-core';
 import { ensureEnvMeta, listLocalEnvNames } from '@aws-amplify/amplify-environment-parameters';
 import { formatter, printer } from 'amplify-prompts';
 import { printEnvInfo } from '../helpers/envUtils';
@@ -19,14 +19,12 @@ export const run = async (context: $TSContext): Promise<void> => {
         const envDetails = await constructEnvMetaAndParamsObject(context, envName);
         result[envName] = envDetails;
       }
-      printer.info(JSON.stringify(result, undefined, 2));
+      printer.info(JSONUtilities.stringify(result)!);
     } else { // non json output
       printDetailedEnvList(context, allEnvNames, currentEnvName);
     }
   } else if (context.parameters.options.json) {
-    printer.info(JSON.stringify({
-      envs: allEnvNames,
-    }, undefined, 2));
+    printer.info(JSONUtilities.stringify({ envs: allEnvNames })!);
   } else {
     printShortEnvList(allEnvNames, currentEnvName);
   }

@@ -1,6 +1,5 @@
 import * as fs from 'fs-extra';
 import path from 'path';
-// import { ensureEnvMeta } from '@aws-amplify/amplify-environment-parameters';
 import {
   AmplifyEvent,
   AmplifyEventArgs,

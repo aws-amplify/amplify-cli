@@ -100,7 +100,7 @@ export function checkoutEnvironment(cwd: string, settings: { envName: string, re
 // Test multiple Environments by passing settings.numEnv
 export const listEnvironment = async (cwd: string, settings: { numEnv?: number }): Promise<void> => {
   const numEnv = settings.numEnv || 1;
-  const chain = spawn(getCLIPath(), ['env', 'list', '--debug'], { cwd, stripColors: true }).wait('Environments:');
+  const chain = spawn(getCLIPath(), ['env', 'list'], { cwd, stripColors: true }).wait('Environments:');
 
   for (let i = 0; i < numEnv; ++i) {
     chain.wait(/.+/); // any output but expect the correct number of lines

@@ -53,7 +53,7 @@ export const run = async (context: $TSContext): Promise<void> => {
   const providerPlugins = getProviderPlugins(context);
   context.exeInfo.projectConfig.providers.forEach(provider => {
     const providerModule = require(providerPlugins[provider]);
-    initializationTasks.push(async () => providerModule.init(context, getEnvMeta(envName)));
+    initializationTasks.push(() => providerModule.init(context, getEnvMeta(envName)));
   });
 
   await sequential(initializationTasks);
@@ -61,7 +61,7 @@ export const run = async (context: $TSContext): Promise<void> => {
   const onInitSuccessfulTasks: (() => Promise<$TSAny>)[] = [];
   context.exeInfo.projectConfig.providers.forEach(provider => {
     const providerModule = require(providerPlugins[provider]);
-    onInitSuccessfulTasks.push(async () => providerModule.onInitSuccessful(context, getEnvMeta(envName)));
+    onInitSuccessfulTasks.push(() => providerModule.onInitSuccessful(context, getEnvMeta(envName)));
   });
 
   await sequential(onInitSuccessfulTasks);

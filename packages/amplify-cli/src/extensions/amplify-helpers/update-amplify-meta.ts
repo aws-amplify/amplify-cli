@@ -208,7 +208,7 @@ export const updateamplifyMetaAfterResourceUpdate = (category: string, resourceN
  * @param resources all resources from amplify-meta.json
  */
 export const updateamplifyMetaAfterPush = async (resources: $TSObject[]):Promise<void> => {
-  // ensure that env meta is written by this point
+  // ensure that env meta is written by this point so the remainder of this function doesn't blow away content that should be their
   getEnvMeta().write();
   const amplifyMeta = stateManager.getMeta();
   const currentTimestamp = new Date();
@@ -268,9 +268,6 @@ export const updateamplifyMetaAfterPush = async (resources: $TSObject[]):Promise
 
 /**
  * Update Amplify Meta with build information ( lastBuildType and timestamp)
- * @param param0.category Category which was updated
- * @param param0.resourceName  Name of the resource which was updated
- * @param buildType PROD/DEV
  */
 export const updateamplifyMetaAfterBuild = ({ category, resourceName }: ResourceTuple, buildType: BuildType = BuildType.PROD): void => {
   const amplifyMeta = stateManager.getMeta();
@@ -281,9 +278,6 @@ export const updateamplifyMetaAfterBuild = ({ category, resourceName }: Resource
 
 /**
  * Update Amplify Meta with packaging information ( lastPackageTimeStamp, distZipFilename, hash)
- * @param param0 A tuple with category and resourceName
- * @param zipFilename - Name of the distribution zip file
- * @param hash - hash value of the resource
  */
 export const updateAmplifyMetaAfterPackage = (
   { category, resourceName }: ResourceTuple,

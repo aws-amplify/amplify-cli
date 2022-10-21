@@ -108,12 +108,14 @@ describe('initEnvMeta', () => {
       `"EnvironmentMetadata is already initialized for testing environment."`,
     );
   });
+
   it('throws if meta is missing a required param', async () => {
     delete stubMeta.AuthRoleName;
     await expect(initEnvMeta(stubContext)).rejects.toThrowErrorMatchingInlineSnapshot(
       `"Tried to initialize EnvironmentMetadata object without required key AuthRoleName"`,
     );
   });
+
   it('throws if meta has a non-string value', async () => {
     stubMeta.AmplifyAppId = 1234;
     await expect(initEnvMeta(stubContext)).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -127,10 +129,12 @@ describe('getEnvMeta', () => {
     await initEnvMeta(stubContext);
     validateEnvMetaAgainstStubMeta(getEnvMeta('testing'));
   });
+
   it('returns initialized meta for current environment when none specified', async () => {
     await initEnvMeta(stubContext);
     validateEnvMetaAgainstStubMeta(getEnvMeta());
   });
+
   it('throws if specified env not initialized', () => {
     expect(() => getEnvMeta()).toThrowErrorMatchingInlineSnapshot(
       `"Environment metadata not initialized for testing environment. Call ensureEnvMeta() to initialize."`,
@@ -150,6 +154,7 @@ describe('ensureEnvMeta', () => {
     expect(stateManagerMock.setTeamProviderInfo).toBeCalledTimes(0);
     expect(stateManagerMock.setMeta).toBeCalledTimes(0);
   });
+
   it('saves on exit when loading from #current-cloud-backend/amplify-meta file', async () => {
     stateManagerMock.getMeta.mockReturnValue({});
     stateManagerMock.getCurrentMeta.mockReturnValue({ providers: { awscloudformation: stubMeta } });
@@ -160,11 +165,13 @@ describe('ensureEnvMeta', () => {
     expect(stateManagerMock.setMeta).toBeCalledTimes(1);
     expect(stateManagerMock.setMeta.mock.calls[0]).toEqual([undefined, { providers: { awscloudformation: stubMeta } }]);
   });
+
   it('returns existing meta if already initialized', async () => {
     const instance1 = await ensureEnvMeta(stubContext);
     const instance2 = await ensureEnvMeta(stubContext);
     expect(instance2).toBe(instance1);
   });
+
   it('initializes from calling amplify backend service if requested env is not the current env', async () => {
     stateManagerMock.getLocalAWSInfo.mockReturnValue({
       other: {
