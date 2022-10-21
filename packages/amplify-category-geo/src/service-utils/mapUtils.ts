@@ -34,8 +34,12 @@ export const createMapResource = async (context: $TSContext, parameters: MapPara
   const mapStack = new MapStack(new App(), 'MapStack', { ...parameters, ...templateMappings, authResourceName });
   generateTemplateFile(mapStack, parameters.name);
   saveCFNParameters(parameters);
-  stateManager.setResourceInputsJson(pathManager.findProjectRoot(),
-    category, parameters.name, { groupPermissions: parameters.groupPermissions });
+  stateManager.setResourceInputsJson(
+    pathManager.findProjectRoot(),
+    category,
+    parameters.name,
+    { groupPermissions: parameters.groupPermissions },
+  );
 
   const mapMetaParameters = constructMapMetaParameters(parameters, authResourceName);
 
@@ -61,8 +65,12 @@ export const modifyMapResource = async (context: $TSContext, parameters: MapPara
   const mapStack = new MapStack(new App(), 'MapStack', { ...parameters, ...templateMappings, authResourceName });
   generateTemplateFile(mapStack, parameters.name);
   saveCFNParameters(parameters);
-  stateManager.setResourceInputsJson(pathManager.findProjectRoot(),
-    category, parameters.name, { groupPermissions: parameters.groupPermissions });
+  stateManager.setResourceInputsJson(
+    pathManager.findProjectRoot(),
+    category,
+    parameters.name,
+    { groupPermissions: parameters.groupPermissions },
+  );
 
   // update the default map
   if (parameters.isDefault) {

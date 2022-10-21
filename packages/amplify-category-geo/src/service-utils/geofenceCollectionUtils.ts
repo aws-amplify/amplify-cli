@@ -35,8 +35,12 @@ export const createGeofenceCollectionResource = async (context: $TSContext, para
   );
   generateTemplateFile(geofenceCollectionStack, parameters.name);
   saveCFNParameters(parameters);
-  stateManager.setResourceInputsJson(pathManager.findProjectRoot(), category,
-    parameters.name, { groupPermissions: parameters.groupPermissions });
+  stateManager.setResourceInputsJson(
+    pathManager.findProjectRoot(),
+    category,
+    parameters.name,
+    { groupPermissions: parameters.groupPermissions },
+  );
 
   const geofenceCollectionMetaParameters = constructGeofenceCollectionMetaParameters(parameters, authResourceName);
 
@@ -67,8 +71,12 @@ export const modifyGeofenceCollectionResource = async (
   );
   generateTemplateFile(geofenceCollectionStack, parameters.name);
   saveCFNParameters(parameters);
-  stateManager.setResourceInputsJson(pathManager.findProjectRoot(),
-    category, parameters.name, { groupPermissions: parameters.groupPermissions });
+  stateManager.setResourceInputsJson(
+    pathManager.findProjectRoot(),
+    category,
+    parameters.name,
+    { groupPermissions: parameters.groupPermissions },
+  );
 
   // update the default Geofence collection
   if (parameters.isDefault) {

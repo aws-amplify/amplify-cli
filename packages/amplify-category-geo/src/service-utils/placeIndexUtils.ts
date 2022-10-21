@@ -35,8 +35,12 @@ export const createPlaceIndexResource = async (context: $TSContext, parameters: 
   const placeIndexStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', { ...parameters, ...templateMappings, authResourceName });
   generateTemplateFile(placeIndexStack, parameters.name);
   saveCFNParameters(parameters);
-  stateManager.setResourceInputsJson(pathManager.findProjectRoot(), category,
-    parameters.name, { groupPermissions: parameters.groupPermissions });
+  stateManager.setResourceInputsJson(
+    pathManager.findProjectRoot(),
+    category,
+    parameters.name,
+    { groupPermissions: parameters.groupPermissions },
+  );
 
   const placeIndexMetaParameters = constructPlaceIndexMetaParameters(parameters, authResourceName);
 
@@ -62,8 +66,12 @@ export const modifyPlaceIndexResource = async (context: $TSContext, parameters: 
   const placeIndexStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', { ...parameters, ...templateMappings, authResourceName });
   generateTemplateFile(placeIndexStack, parameters.name);
   saveCFNParameters(parameters);
-  stateManager.setResourceInputsJson(pathManager.findProjectRoot(),
-    category, parameters.name, { groupPermissions: parameters.groupPermissions });
+  stateManager.setResourceInputsJson(
+    pathManager.findProjectRoot(),
+    category,
+    parameters.name,
+    { groupPermissions: parameters.groupPermissions },
+  );
 
   // update the default place index
   if (parameters.isDefault) {
