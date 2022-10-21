@@ -29,6 +29,8 @@
     "@aws-amplify/amplify-environment-parameters": "1.1.3",
     "@aws-amplify/cli-extensibility-helper": "2.4.3",
     "@aws-cdk/aws-dynamodb": "^1.159.0",
+    "@aws-cdk/aws-iam": "^1.159.0",
+    "@aws-cdk/aws-lambda": "^1.159.0",
     "@aws-cdk/aws-s3": "^1.159.0",
     "@aws-cdk/core": "^1.159.0",
     "amplify-cli-core": "3.2.2",
