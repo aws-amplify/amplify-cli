@@ -4,7 +4,7 @@ import { execSync } from 'child_process';
 import { $TSAny } from 'amplify-cli-core';
 import configMapping from '../framework-config-mapping';
 
-describe('Get angular project config file for new projects created with application', () => {
+describe.skip('Get angular project config file for new projects created with application', () => {
   let context;
   const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
   const projectPath = path.resolve('./');
@@ -86,7 +86,7 @@ describe('Get angular project config file for new projects created with applicat
 //     }
 //     fs.rmSync('./foo', { recursive: true, force: true });
 
-describe('Get angular project config file for new projects created without application', () => {
+describe.skip('Get angular project config file for new projects created without application', () => {
   let context;
   const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
   const projectPath = path.resolve('./');
