@@ -1,7 +1,7 @@
 import ora from 'ora';
 import sequential from 'promise-sequential';
 import {
-  stateManager, $TSAny, $TSMeta, $TSContext, amplifyFaultWithTroubleshootingLink,
+  stateManager, $TSAny, $TSMeta, $TSContext, amplifyFaultWithTroubleshootingLink, AmplifyError,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import {
@@ -69,8 +69,10 @@ export const initializeEnv = async (
     const providerPlugins = getProviderPlugins(context);
     const pluginKeys = Object.keys(providerPlugins);
     if (!(pluginKeys.length === 1 && pluginKeys[0] === 'awscloudformation')) {
-      // TODO convert to AmplifyError
-      throw new Error('Amplify no longer supports provider plugins');
+      throw new AmplifyError('ConfigurationError', {
+        message: 'Amplify no longer supports 3P provider plugins',
+        resolution: 'File an issue at https://github.com/aws-amplify/amplify-cli/issues/new/choose describing your use case for 3P providers',
+      });
     }
 
     spinner.start(

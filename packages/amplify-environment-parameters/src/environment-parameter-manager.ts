@@ -1,4 +1,5 @@
 import {
+  amplifyFaultWithIssueReportLink,
   amplifyFaultWithTroubleshootingLink, pathManager, stateManager,
 } from 'amplify-cli-core';
 import _ from 'lodash';
@@ -15,7 +16,9 @@ export const ensureEnvParamManager = async (
   envName: string = stateManager.getLocalEnvInfo().envName,
 ): Promise<{instance: EnvironmentParameterManager}> => {
   if (registerForDeletion.includes(envName)) {
-    throw new Error(`An environment named ${envName} is already pending deletion`);
+    throw amplifyFaultWithIssueReportLink('ConfigurationFault', {
+      message: `An environment named ${envName} is already pending deletion`,
+    });
   }
   if (!envParamManagerMap[envName]) {
     const envManager = new EnvironmentParameterManager(envName);

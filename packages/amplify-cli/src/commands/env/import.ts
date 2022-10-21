@@ -1,11 +1,11 @@
 import {
-  $TSContext, EnvAwsInfo, JSONUtilities, stateManager, UnknownArgumentError, AmplifyError,
+  $TSContext, EnvAwsInfo, JSONUtilities, stateManager, AmplifyError,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { getConfiguredAmplifyClient, findAppByBackendPredicate } from 'amplify-provider-awscloudformation';
 import { Amplify } from 'aws-sdk';
 
-const errorLink = 'See https://docs.amplify.aws/cli/teams/commands/#import-an-environment';
+const errorLink = 'https://docs.amplify.aws/cli/teams/commands/#import-an-environment';
 
 /**
  * Entry point for env import
@@ -20,14 +20,20 @@ export const run = async (context: $TSContext): Promise<void> => {
   }
 
   if (!context.parameters.options.awsInfo) {
-    throw new Error(`AWS credential info must be specified in --awsInfo. ${errorLink}`);
+    throw new AmplifyError('EnvironmentConfigurationError', {
+      message: 'AWS credential info must be specified in --awsInfo',
+      link: errorLink,
+    });
   }
 
   let awsInfo: Partial<EnvAwsInfo>;
   try {
     awsInfo = JSONUtilities.parse(context.parameters.options.awsInfo);
   } catch (e) {
-    throw new UnknownArgumentError(`Could not parse --awsInfo argument. ${errorLink}`);
+    throw new AmplifyError('EnvironmentConfigurationError', {
+      message: 'Could not parse --awsInfo argument',
+      link: errorLink,
+    });
   }
 
   let appIdParam: string | undefined = context.parameters.options.appId;
@@ -44,7 +50,10 @@ export const run = async (context: $TSContext): Promise<void> => {
   try {
     config = JSONUtilities.parse(context.parameters.options.config);
   } catch (e) {
-    throw new UnknownArgumentError(`Could not parse --config argument. ${errorLink}`);
+    throw new AmplifyError('EnvironmentConfigurationError', {
+      message: 'Could not parse --config argument',
+      link: errorLink,
+    });
   }
 
   appIdParam = config?.awscloudformation?.AmplifyAppId;
@@ -63,7 +72,10 @@ export const run = async (context: $TSContext): Promise<void> => {
   addNewLocalAwsInfoUnsafeDoNotExport(envName, awsInfo);
   const amplifyClient = await getConfiguredAmplifyClient(context) as Amplify;
   if (!amplifyClient) {
-    throw new UnknownArgumentError(`Could not construct Amplify client from specified config. ${errorLink}`);
+    throw new AmplifyError('EnvironmentConfigurationError', {
+      message: 'Could not construct Amplify client from specified config',
+      link: errorLink,
+    });
   }
   const stackName = config?.awscloudformation?.StackName;
   appIdParam = (await findAppByBackendPredicate(amplifyClient, backend => backend.stackName === stackName))?.appId;
@@ -74,7 +86,10 @@ export const run = async (context: $TSContext): Promise<void> => {
     return;
   }
 
-  throw new UnknownArgumentError(`Could not determine Amplify App Id from the specified config. ${errorLink}`);
+  throw new AmplifyError('EnvironmentConfigurationError', {
+    message: 'Could not determine Amplify AppId from the specified config',
+    link: errorLink,
+  });
 };
 
 /**

@@ -1,5 +1,3 @@
-import { $TSAny } from '.';
-
 /* eslint-disable spellcheck/spell-checker */
 export const SecretFileMode = 0o6_0_0; // file permissions for -rw-------
 export const CLISubCommands = {
@@ -118,7 +116,7 @@ export interface INotificationsResourceMeta {
   Region: string, // Region in which Notifications resource is deployed.
   ResourceName: string, // Logical name of Notifications App.
   service: string, // AWS Service e.g Pinpoint (small s for legacy support)
-  output: Record<string, $TSAny>,
+  output: Record<string, unknown>,
   mobileHubMigrated?: boolean,
   lastPushTimeStamp? :string,
   lastPushDirHash?: string, // this is a pseudo field since all notification pushes are through analytics or sdk
@@ -130,7 +128,7 @@ export interface INotificationsResourceMeta {
 export interface IAnalyticsResource extends IAmplifyResource {
   id?: string;
   region?: string;
-  output?: $TSAny; // cloudformation deployment outputs - indicates resource deployed
+  output?: unknown; // cloudformation deployment outputs - indicates resource deployed
 }
 
 /**

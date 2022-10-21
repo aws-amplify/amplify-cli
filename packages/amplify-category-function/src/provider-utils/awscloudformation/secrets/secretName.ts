@@ -7,7 +7,7 @@
  * runtime
  */
 import { getEnvMeta } from '@aws-amplify/amplify-environment-parameters';
-import { stateManager } from 'amplify-cli-core';
+import { stateManager, AmplifyError } from 'amplify-cli-core';
 import { Fn, IntrinsicFunction } from 'cloudform-types';
 import * as path from 'path';
 
@@ -68,7 +68,10 @@ export const getFunctionSecretCfnPrefix = (functionName: string): IntrinsicFunct
 export const getAppId = (): string => {
   const appId = getEnvMeta().AmplifyAppId;
   if (!appId) {
-    throw new Error('Could not find an Amplify AppId in the amplify-meta.json file. Make sure your project is initialized in the cloud.');
+    throw new AmplifyError('InvalidAmplifyAppIdError', {
+      message: 'Could not find an Amplify AppId for the current environment',
+      resolution: 'Make sure your project is initialized using `amplify init` or `amplify push`',
+    });
   }
   return appId;
 };

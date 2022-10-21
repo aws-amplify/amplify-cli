@@ -1,5 +1,5 @@
 import {
-  $TSContext, pathManager, stateManager, getPermissionsBoundaryArn,
+  $TSContext, pathManager, stateManager, getPermissionsBoundaryArn, AmplifyFault, AmplifyError, amplifyFaultWithIssueReportLink,
 } from 'amplify-cli-core';
 import { AmplifyBackend } from 'aws-sdk';
 import type { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
@@ -21,7 +21,9 @@ const envMetaManagerMap: Record<string, IEnvironmentMetadata> = {};
 export const initEnvMeta = async (context: $TSContext): Promise<void> => {
   const currentEnv = stateManager.getLocalEnvInfo().envName;
   if (envMetaManagerMap[currentEnv]) {
-    throw new Error(`EnvironmentMetadata is already initialized for ${currentEnv} environment.`);
+    throw amplifyFaultWithIssueReportLink('EnvironmentInitializationFault', {
+      message: `EnvironmentMetadata is already initialized for ${currentEnv} environment.`,
+    });
   }
   await ensureEnvMetaInternal(context, currentEnv, context?.exeInfo?.amplifyMeta?.providers?.awscloudformation);
 };
@@ -33,7 +35,9 @@ export const getEnvMeta = (envName: string = stateManager.getLocalEnvInfo().envN
   if (envMetaManagerMap[envName]) {
     return envMetaManagerMap[envName];
   }
-  throw new Error(`Environment metadata not initialized for ${envName} environment. Call ensureEnvMeta() to initialize.`);
+  throw amplifyFaultWithIssueReportLink('EnvironmentInitializationFault', {
+    message: `Environment metadata not initialized for ${envName} environment. Call ensureEnvMeta() to initialize.`,
+  });
 };
 
 /**
@@ -98,7 +102,10 @@ const initEnvMetaFromService = async (
   // load appId from local-env-info
   const appId = stateManager.getLocalAWSInfo()?.[envName]?.AmplifyAppId;
   if (!appId) {
-    throw new Error(`Could not find Amplify App ID for environment ${envName} in 'local-aws-info.json'. Make sure the environment has been pulled.`);
+    throw new AmplifyError('EnvironmentNotInitializedError', {
+      message: `Could not find Amplify App ID for environment ${envName} in 'local-aws-info.json'`,
+      resolution: `Make sure the environment has been pulled using 'amplify pull'`,
+    });
   }
 
   const response = await amplifyBackendClient.getBackend({
@@ -106,10 +113,17 @@ const initEnvMetaFromService = async (
     BackendEnvironmentName: envName,
   }).promise();
   if (response.Error) {
-    throw new Error(`Error fetching backend metadata for environment ${envName}: ${response.Error}`);
+    throw new AmplifyFault('ServiceCallFault', {
+      message: `Error fetching backend metadata for environment ${envName}`,
+      details: response.Error,
+      resolution: 'Ensure the CLI has permission to call AmplifyBackend.getBackend and try again',
+    });
   }
   if (!response.AmplifyMetaConfig) {
-    throw new Error(`AmplifyBackend.getBackend did not return AmplifyMetaConfig for environment ${envName}`);
+    throw new AmplifyFault('ServiceCallFault', {
+      message: `AmplifyBackend.getBackend did not return AmplifyMetaConfig for environment ${envName}`,
+      resolution: 'Ensure your project has been initialized with `amplify init`',
+    });
   }
   return new EnvironmentMetadata(JSON.parse(response.AmplifyMetaConfig)?.providers?.awscloudformation, true);
 };
@@ -154,10 +168,14 @@ class EnvironmentMetadata implements IEnvironmentMetadata {
     const amplifyMetaKeys = Object.keys(amplifyMeta);
     requiredKeys.forEach(requiredKey => {
       if (!amplifyMetaKeys.includes(requiredKey)) {
-        throw new Error(`Tried to initialize EnvironmentMetadata object without required key ${requiredKey}`);
+        throw amplifyFaultWithIssueReportLink('ConfigurationFault', {
+          message: `Tried to initialize EnvironmentMetadata object without required key ${requiredKey}`,
+        });
       }
       if (typeof amplifyMeta[requiredKey] !== 'string') {
-        throw new Error(`Tried to initialize EnvironmentMetadata object with ${requiredKey} set to a non-string value`);
+        throw amplifyFaultWithIssueReportLink('ConfigurationFault', {
+          message: `Tried to initialize EnvironmentMetadata object with ${requiredKey} set to a non-string value`,
+        });
       }
     });
 
@@ -169,7 +187,9 @@ class EnvironmentMetadata implements IEnvironmentMetadata {
     optionalKeys.forEach(optionalKey => {
       const typeOfValue = typeof amplifyMeta[optionalKey];
       if (typeOfValue !== 'string' && typeOfValue !== 'undefined') {
-        throw new Error(`Tried to initialize EnvironmentMetadata object with ${optionalKey} set to a non-string value`);
+        throw amplifyFaultWithIssueReportLink('ConfigurationFault', {
+          message: `Tried to initialize EnvironmentMetadata object with ${optionalKey} set to a non-string value`,
+        });
       }
     });
     const validatedAmplifyMeta = amplifyMeta as IEnvironmentMetadata;
