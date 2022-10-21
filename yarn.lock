@@ -10224,9 +10224,9 @@ amdefine@>=0.0.4:
   resolved "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
-amplify-codegen@^3.1.0:
+amplify-codegen@^3.2.0:
   version "3.2.0"
-  resolved "https://registry.yarnpkg.com/amplify-codegen/-/amplify-codegen-3.2.0.tgz#d159d5cdc1091ba8c1aca15468e46191fb006d27"
+  resolved "https://registry.npmjs.org/amplify-codegen/-/amplify-codegen-3.2.0.tgz#d159d5cdc1091ba8c1aca15468e46191fb006d27"
   integrity sha512-C/T7hDj4hQUMR4M+3yYp7LHSd3EVYHGhu9FPAs6rIaKwWpKsRCW7TkzrJuD1PA2B0OqdNl9PcQ/XqIGWxqryRA==
   dependencies:
     "@aws-amplify/appsync-modelgen-plugin" "2.2.0"
