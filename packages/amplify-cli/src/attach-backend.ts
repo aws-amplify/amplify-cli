@@ -49,16 +49,16 @@ export const attachBackend = async (context: $TSContext, inputParams): Promise<v
       message: 'Failed to pull the backend.',
       details: e.message,
       stack: e.stack,
-    });
+    }, e);
   }
 };
 
 const onSuccess = async (context: $TSContext): Promise<void> => {
   const { inputParams } = context.exeInfo;
+  const projectPath = process.cwd();
+  const backupAmplifyDirPath = path.join(projectPath, backupAmplifyDirName);
 
   if (inputParams.amplify.noOverride) {
-    const projectPath = process.cwd();
-    const backupAmplifyDirPath = path.join(projectPath, backupAmplifyDirName);
     // eslint-disable-next-line spellcheck/spell-checker
     const backupBackendDirPath = path.join(backupAmplifyDirPath, context.amplify.constants.BackendAmplifyCLISubDirName);
 
@@ -100,7 +100,13 @@ const onSuccess = async (context: $TSContext): Promise<void> => {
   } else if (stateManager.currentMetaFileExists()) {
     await initializeEnv(context, stateManager.getCurrentMeta());
   }
-
+  // move Hooks folder from backup to original amplify folder
+  const hooksDirPath = pathManager.getHooksDirPath(projectPath);
+  const hooksBackupDirPath = path.join(backupAmplifyDirPath, 'hooks');
+  // hooks folder shouldnt be present , if it is then we overrite with the given Customer folder from amplify backup
+  if (fs.existsSync(hooksBackupDirPath)) {
+    fs.moveSync(hooksBackupDirPath, hooksDirPath, { overwrite: true });
+  }
   removeBackupAmplifyFolder();
 };
 
@@ -125,13 +131,13 @@ const backupAmplifyFolder = (): void => {
           resolution: 'Ensure that there are no applications locking the `amplify` folder and try again.',
           details: e.message,
           stack: e.stack,
-        });
+        }, e);
       }
       throw amplifyFaultWithTroubleshootingLink('AmplifyBackupFault', {
         message: `Could not attach the backend to the project.`,
         details: e.message,
         stack: e.stack,
-      });
+      }, e);
     }
   }
 };
@@ -190,6 +196,10 @@ const prepareContext = (context: $TSContext, inputParams): void => {
     localEnvInfo: {
       projectPath,
     },
+    teamProviderInfo: {},
+    existingTeamProviderInfo: stateManager.getTeamProviderInfo(projectPath, {
+      throwIfNotExist: false,
+    }),
     existingProjectConfig: stateManager.getProjectConfig(projectPath, {
       throwIfNotExist: false,
     }),

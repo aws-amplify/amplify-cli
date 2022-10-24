@@ -1,4 +1,6 @@
-import { $TSAny, $TSContext, AmplifyCategories } from 'amplify-cli-core';
+import {
+  $TSAny, $TSContext, AmplifyCategories, amplifyErrorWithTroubleshootingLink,
+} from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import ora from 'ora';
 import os from 'os';
@@ -120,7 +122,9 @@ const checkAuth = async (context : $TSContext, resourceName : string) : Promise<
   // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
   // configuration.
   if (checkResult.authImported === true && checkResult.errors && checkResult.errors.length > 0) {
-    throw new Error(checkResult.errors.join(os.EOL));
+    throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
+      message: checkResult.errors.join(os.EOL),
+    });
   }
 
   if (checkResult.errors && checkResult.errors.length > 0) {
@@ -129,21 +133,16 @@ const checkAuth = async (context : $TSContext, resourceName : string) : Promise<
 
   // If auth is not imported and there were errors, adjust or enable auth configuration
   if (!checkResult.authEnabled || !checkResult.requirementsMet) {
-    try {
-      printer.warn(`Adding ${AmplifyCategories.NOTIFICATIONS} would also add the Auth category to the project if not already added.`);
+    printer.warn(`Adding ${AmplifyCategories.NOTIFICATIONS} would also add the Auth category to the project if not already added.`);
 
-      await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
-        context,
-        AmplifyCategories.NOTIFICATIONS,
-        resourceName,
-        apiRequirements,
-      ]);
+    await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
+      context,
+      AmplifyCategories.NOTIFICATIONS,
+      resourceName,
+      apiRequirements,
+    ]);
 
-      printer.warn('Execute "amplify push" to update the Auth resources in the cloud.');
-    } catch (error) {
-      printer.error(error);
-      throw error;
-    }
+    printer.warn('Execute "amplify push" to update the Auth resources in the cloud.');
   }
 };
 

@@ -104,9 +104,13 @@ Pull requests are welcome!
 
 You should open an issue to discuss your pull request, unless it's a trivial change. It's best to ensure that your proposed change would be accepted so that you don't waste your own time. If you would like to implement support for a significant feature that is not yet available, please talk to us beforehand to avoid any duplication of effort.
 
-Pull requests should generally be opened against **_dev_**.
+Pull requests should be opened against **_dev_**.
 
 Don't include any build files i.e. `dist/` in your PR. These will be built upon publish to npm and when a release is created on GitHub.
+
+### Labels
+
+If the change is a breaking change ([as defined by semantic versioning](https://semver.org/)), please add the `semver-major` label to your pull request on GiHub.
 
 ### Steps
 

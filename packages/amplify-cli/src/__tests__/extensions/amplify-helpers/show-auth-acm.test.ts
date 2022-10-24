@@ -1,8 +1,14 @@
 import { DEFAULT_GROUP_CLAIM } from '@aws-amplify/graphql-auth-transformer';
 import { showACM } from '../../../extensions/amplify-helpers/show-auth-acm';
 
-describe('show-auth-acm helper: ', () => {
+jest.mock('amplify-cli-core', () => ({
+  ...(jest.requireActual('amplify-cli-core') as {}),
+  FeatureFlags: {
+    getBoolean: () => true,
+  },
+}));
 
+describe('show-auth-acm helper:', () => {
   let functionArguments: {sdl: string, node: 'Blog'};
 
   it('...the show-auth-acm helper should be exported', () => {
@@ -27,16 +33,15 @@ describe('show-auth-acm helper: ', () => {
             name: String!
             tenantId: String!
           }`,
-        node: 'Blog'
+        node: 'Blog',
       };
     });
 
     it('...should throw a specific exception', () => {
-      expect( 
-          () => showACM(functionArguments.sdl, functionArguments.node)
-        ).toThrow(`@auth userPools:dynamicGroup:${DEFAULT_GROUP_CLAIM}:tenantId already exists for Blog`)
+      expect(
+        () => showACM(functionArguments.sdl, functionArguments.node),
+      ).toThrow(`@auth userPools:dynamicGroup:${DEFAULT_GROUP_CLAIM}:tenantId already exists for Blog`);
     });
-
   });
 
   describe('case: where identical auth rules exist with custom group claim', () => {
@@ -54,16 +59,15 @@ describe('show-auth-acm helper: ', () => {
             name: String!
             tenantId: String!
           }`,
-        node: 'Blog'
+        node: 'Blog',
       };
     });
 
     it('...should throw a specific exception', () => {
-      expect( 
-          () => showACM(functionArguments.sdl, functionArguments.node)
-        ).toThrow(`@auth userPools:dynamicGroup:custom:adminRole:tenantId already exists for Blog`)
+      expect(
+        () => showACM(functionArguments.sdl, functionArguments.node),
+      ).toThrow(`@auth userPools:dynamicGroup:custom:adminRole:tenantId already exists for Blog`);
     });
-
   });
 
   describe('case: auth rules with a custom groupField are distinguished by a custom group claim', () => {
@@ -80,21 +84,18 @@ describe('show-auth-acm helper: ', () => {
             name: String!
             tenantId: String!
           }`,
-        node: 'Blog'
+        node: 'Blog',
       };
     });
 
     it('...should complete without exception', () => {
-
-      const callShowAcm = jest.fn(() => showACM(functionArguments.sdl, functionArguments.node))
+      const callShowAcm = jest.fn(() => showACM(functionArguments.sdl, functionArguments.node));
 
       callShowAcm();
 
-      expect( 
-        callShowAcm
-        ).toHaveReturned()
+      expect(
+        callShowAcm,
+      ).toHaveReturned();
     });
-
   });
-
 });

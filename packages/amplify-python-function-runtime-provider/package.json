@@ -1,6 +1,6 @@
 {
   "name": "amplify-python-function-runtime-provider",
-  "version": "2.4.1",
+  "version": "2.4.3",
   "description": "Provides functionality related to functions in Python on AWS",
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules"
   },
   "dependencies": {
-    "amplify-cli-core": "3.2.0",
+    "amplify-cli-core": "3.2.2",
     "amplify-function-plugin-interface": "1.9.5",
     "execa": "^5.1.1",
     "glob": "^7.2.0",

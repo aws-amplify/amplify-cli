@@ -99,7 +99,7 @@ export class AdminLoginServer {
         res.sendStatus(500);
         throw amplifyErrorWithTroubleshootingLink('AmplifyStudioLoginError', {
           message: `Failed to receive expected authentication tokens. Error: [${err}]`,
-        });
+        }, err);
       }
       callback();
     });

@@ -1,7 +1,12 @@
-import { $TSContext, stateManager, getPermissionsBoundaryArn, setPermissionsBoundaryArn, AmplifyError, AMPLIFY_DOCS_URL } from 'amplify-cli-core';
+import {
+  $TSContext, stateManager, getPermissionsBoundaryArn, setPermissionsBoundaryArn, AmplifyError, AMPLIFY_DOCS_URL,
+} from 'amplify-cli-core';
 import { prompt } from 'inquirer';
 import { IAMClient } from '../aws-utils/aws-iam';
 
+/**
+ *
+ */
 export const configurePermissionsBoundaryForExistingEnv = async (context: $TSContext) => {
   setPermissionsBoundaryArn(await permissionsBoundarySupplier(context));
   context.print.info(
@@ -9,8 +14,11 @@ export const configurePermissionsBoundaryForExistingEnv = async (context: $TSCon
   );
 };
 
+/**
+ *
+ */
 export const configurePermissionsBoundaryForInit = async (context: $TSContext) => {
-  const envName = context.exeInfo.localEnvInfo.envName; // the new environment name
+  const { envName } = context.exeInfo.localEnvInfo; // the new environment name
   if (context?.exeInfo?.isNewProject) {
     // amplify init
     // on init flow, set the permissions boundary if specified in a cmd line arg, but don't prompt for it
@@ -54,9 +62,8 @@ const permissionsBoundarySupplier = async (
   if (typeof headlessPermissionsBoundary === 'string') {
     if (validate(headlessPermissionsBoundary)) {
       return headlessPermissionsBoundary;
-    } else {
-      context.print.error('The permissions boundary ARN specified is not a valid IAM Policy ARN');
     }
+    context.print.error('The permissions boundary ARN specified is not a valid IAM Policy ARN');
   }
 
   const isYes = context?.input?.options?.yes;

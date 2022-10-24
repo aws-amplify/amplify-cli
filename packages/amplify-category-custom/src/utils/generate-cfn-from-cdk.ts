@@ -1,6 +1,6 @@
-import * as path from 'path';
-import * as cdk from 'aws-cdk-lib';
 import { JSONUtilities, pathManager } from 'amplify-cli-core';
+import * as cdk from 'aws-cdk-lib';
+import * as path from 'path';
 import { categoryName } from './constants';
 
 export type AmplifyResourceProps = {

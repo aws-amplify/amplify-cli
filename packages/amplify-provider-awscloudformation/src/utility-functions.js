@@ -17,6 +17,7 @@ const { fileLogger } = require('./utils/aws-logger');
 
 const logger = fileLogger('utility-functions');
 const { getAccountId } = require('./amplify-sts');
+const { getAwsConfig } = require('./configuration-manager');
 
 module.exports = {
   /**
@@ -138,7 +139,7 @@ module.exports = {
         throw amplifyFaultWithTroubleshootingLink('ResourceNotFoundFault', {
           message: error.message,
           stack: error.stack,
-        });
+        }, error);
       }
     }
 
@@ -423,4 +424,8 @@ module.exports = {
 
     return results;
   },
+  /**
+   * Provides the same AWS config used to push the amplify project
+   */
+  retrieveAwsConfig: async context => getAwsConfig(context),
 };

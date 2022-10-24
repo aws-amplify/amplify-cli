@@ -1,7 +1,7 @@
+/* eslint-disable spellcheck/spell-checker */
 import {
-  getBackendAmplifyMeta, getAppId, amplifyPull, createNewProjectDir, deleteProject, deleteProjectDir, initJSProjectWithProfile,
-
-  getNpxPath, getNpmPath, myIconComponent, formCheckoutComponent,
+  getBackendAmplifyMeta, getAppId, createNewProjectDir, deleteProject, deleteProjectDir, initJSProjectWithProfile,
+  getNpxPath, getNpmPath, myIconComponent, formCheckoutComponent, enableAdminUI, amplifyStudioHeadlessPull,
 } from '@aws-amplify/amplify-e2e-core';
 import { spawnSync, spawn } from 'child_process';
 import { AmplifyUIBuilder } from 'aws-sdk';
@@ -40,7 +40,8 @@ describe('amplify pull with uibuilder', () => {
 
     appId = getAppId(projRoot);
     const meta = getBackendAmplifyMeta(projRoot);
-    const amplifyUIBuilder = new AmplifyUIBuilder({ region: meta.providers.awscloudformation.Region });
+    const region = meta.providers.awscloudformation.Region;
+    const amplifyUIBuilder = new AmplifyUIBuilder({ region });
 
     await amplifyUIBuilder.createComponent({
       appId,
@@ -53,6 +54,9 @@ describe('amplify pull with uibuilder', () => {
       environmentName: envName,
       componentToCreate: formCheckoutComponent,
     }).promise();
+
+    // needs to enable studio for resources to be pull down
+    await enableAdminUI(appId, envName, region);
   });
 
   afterEach(async () => {
@@ -64,7 +68,7 @@ describe('amplify pull with uibuilder', () => {
 
   it('appropriate uibuilder files are generated', async () => {
     spawnSync(getNpxPath(), ['create-react-app', projectName], { cwd: projectDir, encoding: 'utf-8' });
-    await amplifyPull(reactDir, { appId, envName, emptyDir: true });
+    await amplifyStudioHeadlessPull(reactDir, { appId, envName });
     const fileList = fs.readdirSync(`${reactDir}/src/ui-components/`);
     expect(fileList).toContain('FormCheckout.jsx');
     expect(fileList).toContain('FormCheckout.d.ts');

@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.12.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.12.3...@aws-amplify/amplify-category-auth@2.12.4) (2022-10-21)
+
+
+### Bug Fixes
+
+* failing env init when user pool is defined ([#11225](https://github.com/aws-amplify/amplify-cli/issues/11225)) ([35b3563](https://github.com/aws-amplify/amplify-cli/commit/35b3563ebdd9e8b32097fd74a7417424034ef6bf))
+
+
+
+
+
+## [2.12.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.12.2...@aws-amplify/amplify-category-auth@2.12.3) (2022-10-13)
+
+
+### Bug Fixes
+
+* Await Metadata file updates to avoid race conditions ([#11074](https://github.com/aws-amplify/amplify-cli/issues/11074)) ([0c745c4](https://github.com/aws-amplify/amplify-cli/commit/0c745c44773db3dfd09e75eaeb60ab2be97b91b7))
+* headless pull with Oauth social providers ([#11011](https://github.com/aws-amplify/amplify-cli/issues/11011)) ([afbdd20](https://github.com/aws-amplify/amplify-cli/commit/afbdd206b5a19666027cc10d9f6f28e9683f84d4))
+* refactor push flow to use amplify error handling framework ([#10951](https://github.com/aws-amplify/amplify-cli/issues/10951)) ([38a8603](https://github.com/aws-amplify/amplify-cli/commit/38a8603db4965ec05beb2ddd1daaa3913096c9c6))
+* update of user pool groups in amplify metadata file. ([#11090](https://github.com/aws-amplify/amplify-cli/issues/11090)) ([24dd409](https://github.com/aws-amplify/amplify-cli/commit/24dd4093a9c88616c4d390e860b2462a82ae3548))
+* updateUserAttributeSetting during add/update/push flows ([#10773](https://github.com/aws-amplify/amplify-cli/issues/10773)) ([52c1e49](https://github.com/aws-amplify/amplify-cli/commit/52c1e49caa5098c37c32c9f2b6f095cfd60454b1))
+
+
+
+
+
+## [2.12.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.12.1...@aws-amplify/amplify-category-auth@2.12.2) (2022-10-03)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
 ## [2.12.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.11.0...@aws-amplify/amplify-category-auth@2.12.1) (2022-09-21)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-auth

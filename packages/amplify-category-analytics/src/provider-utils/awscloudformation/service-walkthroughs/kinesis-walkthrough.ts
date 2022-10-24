@@ -3,7 +3,14 @@
 /* eslint-disable import/no-dynamic-require */
 /* eslint-disable spellcheck/spell-checker */
 import {
-  $TSAny, $TSContext, AmplifyCategories, exitOnNextTick, IAmplifyResource, ResourceAlreadyExistsError, ResourceDoesNotExistError,
+  $TSAny,
+  $TSContext,
+  AmplifyCategories,
+  AmplifyError,
+  AmplifySupportedService,
+  exitOnNextTick,
+  IAmplifyResource,
+  ResourceDoesNotExistError,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import inquirer from 'inquirer';
@@ -11,7 +18,7 @@ import os from 'os';
 import path from 'path';
 // FIXME: may be removed from here, since addResource can pass category to addWalkthrough
 const category = AmplifyCategories.ANALYTICS;
-const service = 'Kinesis';
+const service = AmplifySupportedService.KINESIS;
 
 /**
  * Kinesis resource add walkthrough
@@ -24,10 +31,10 @@ export const addWalkthrough = async (context : $TSContext, defaultValuesFilename
   const resourceName = resourceAlreadyExists(context);
 
   if (resourceName) {
-    const errMessage = 'Kinesis resource have already been added to your project.';
-    printer.warn(errMessage);
-    await context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
-    exitOnNextTick(0);
+    throw new AmplifyError('ResourceAlreadyExistsError', {
+      message: 'Kinesis resource have already been added to your project.',
+      resolution: 'Please run amplify update analytics to make changes to the existing Kinesis resource.',
+    });
   }
   return configure(context, defaultValuesFilename, serviceMetadata);
 };
@@ -38,6 +45,38 @@ export const addWalkthrough = async (context : $TSContext, defaultValuesFilename
 export const migrate = () : void => {
   // no-op for now
 };
+
+interface IKinesisInputType {
+  key: string | number;
+  question: $TSAny;
+  type: $TSAny;
+  options: $TSAny;
+  required: $TSAny;
+}
+
+interface IKinesisCRUDPolicy {
+  Effect: string,
+  Action: $TSAny,
+  Resource: $TSAny,
+}
+interface IKinesisPolicyAttributes{
+ policy: IKinesisCRUDPolicy,
+ attributes : Array<$TSAny>
+}
+
+/**
+ * Auth resource configuration state.
+ * requirementsMet is set to true if all required
+ * configurations of the Auth resource have been configured.
+ */
+interface IAuthConfigRequirements {
+  errors: Array<string>
+  authEnabled : boolean;
+  authImported : boolean;
+  authSelections :boolean;
+  allowUnauthenticatedIdentities : boolean;
+  requirementsMet: boolean;
+}
 
 /**
  * Auth resource configuration state.
@@ -78,17 +117,14 @@ const configure = async (
   const projectBackendDirPath = amplify.pathManager.getBackendDirPath();
 
   const questions = inputs
-    .map((input: $TSAny) => ({
+    .map((input: IKinesisInputType) => ({
       name: input.key,
       message: input.question,
       type: input.type || 'input',
       choices: input.options || undefined,
       required: input.required || false,
       validate: 'validation' in input ? amplify.inputValidation(input) : undefined,
-      default: () => {
-        const defaultValue = defaultValues[input.key];
-        return defaultValue;
-      },
+      default: () => defaultValues[input.key],
     }))
     // when resourceName is provider, we are in update flow - skip name question
     .filter((question: { name: string; }) => (resourceName && question.name !== 'kinesisStreamName') || !resourceName);
@@ -147,42 +183,24 @@ const configure = async (
     if (!checkResult.authEnabled || !checkResult.requirementsMet) {
       printer.warn('Adding analytics would add the Auth category to the project if not already added.');
       if (
-        await amplify.confirmPrompt(
+        !await amplify.confirmPrompt(
           'Apps need authorization to send analytics events. Do you want to allow guests and unauthenticated users to send analytics events? (we recommend you allow this when getting started)',
         )
       ) {
-        try {
-          await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
-            context,
-            'analytics',
-            targetResourceName,
-            analyticsRequirements,
-          ]);
-        } catch (error) {
-          printer.error(error);
-          throw error;
-        }
-      } else {
-        try {
-          printer.warn(
-            'Authorize only authenticated users to send analytics events. Use "amplify update auth" to modify this behavior.',
-          );
-          analyticsRequirements.allowUnauthenticatedIdentities = false;
-          await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
-            context,
-            'analytics',
-            targetResourceName,
-            analyticsRequirements,
-          ]);
-        } catch (error) {
-          printer.error(error);
-          throw error;
-        }
+        printer.warn(
+          'Authorize only authenticated users to send analytics events. Use "amplify update auth" to modify this behavior.',
+        );
+        analyticsRequirements.allowUnauthenticatedIdentities = false;
       }
+      await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
+        context,
+        'analytics',
+        targetResourceName,
+        analyticsRequirements,
+      ]);
     }
 
     // At this point we have a valid auth configuration either imported or added/updated.
-
     // allow overwrite in update case: resourceName specified
     await amplify.copyBatch(context, copyJobs, {}, !!resourceName, params);
     return targetResourceName;
@@ -195,7 +213,7 @@ const configure = async (
  * @param name Kinesis resource name
  * @returns true if resource with the same name exists
  */
-const resourceNameAlreadyExists = (context: $TSContext, name: string):boolean => {
+const resourceNameAlreadyExists = (context: $TSContext, name: string): boolean => {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
 
@@ -253,7 +271,7 @@ export const updateWalkthrough = async (context: $TSContext, defaultValuesFilena
  * @param crudOptions  ['create', 'read', 'update', 'delete']
  * @returns Kinesis policy for the given CRUD configuration
  */
-export const getIAMPolicies = (resourceName:string, crudOptions: Array<$TSAny>) : IKinesisPolicyAttributes => {
+export const getIAMPolicies = (resourceName: string, crudOptions: Array<$TSAny>): IKinesisPolicyAttributes => {
   const actions = crudOptions
     .map(crudOption => {
       switch (crudOption) {

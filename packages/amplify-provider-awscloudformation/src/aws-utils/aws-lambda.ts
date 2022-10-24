@@ -1,4 +1,3 @@
-const aws = require('./aws');
 import { $TSAny, $TSContext, amplifyErrorWithTroubleshootingLink } from 'amplify-cli-core';
 import { Lambda as AwsSdkLambda } from 'aws-sdk';
 import { LayerVersionsListItem, ListLayerVersionsRequest, ListLayerVersionsResponse } from 'aws-sdk/clients/lambda';
@@ -6,8 +5,13 @@ import { AwsSecrets, loadConfiguration } from '../configuration-manager';
 import { fileLogger } from '../utils/aws-logger';
 import { pagedAWSCall } from './paged-call';
 
+const aws = require('./aws');
+
 const logger = fileLogger('aws-lambda');
 
+/**
+ *
+ */
 export class Lambda {
   private lambda: AwsSdkLambda;
 
@@ -24,6 +28,9 @@ export class Lambda {
     })() as $TSAny;
   }
 
+  /**
+   *
+   */
   async listLayerVersions(layerNameOrArn: string) {
     const startingParams: ListLayerVersionsRequest = { LayerName: layerNameOrArn, MaxItems: 20 };
     const result = await pagedAWSCall<ListLayerVersionsResponse, LayerVersionsListItem, string>(
@@ -33,12 +40,15 @@ export class Lambda {
         return await this.lambda.listLayerVersions(params).promise();
       },
       startingParams,
-      (response?) => response?.LayerVersions,
+      response => response?.LayerVersions,
       async response => response?.NextMarker,
     );
     return result;
   }
 
+  /**
+   *
+   */
   async deleteLayerVersions(layerNameOrArn: string, versions: number[]) {
     const params = { LayerName: layerNameOrArn, VersionNumber: undefined };
     const deletionPromises = [];
@@ -52,7 +62,7 @@ export class Lambda {
             throw amplifyErrorWithTroubleshootingLink('LambdaLayerDeleteError', {
               message: err.message,
               stack: err.stack,
-            });
+            }, err);
           }
         }
       });

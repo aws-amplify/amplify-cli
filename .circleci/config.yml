@@ -53,8 +53,7 @@ jobs:
       - run: yarn run production-build
       - save_cache:
           key: >-
-            amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
-            arch }}
+            amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache
       - save_cache:
@@ -90,8 +89,7 @@ jobs:
           at: ./
       - restore_cache:
           key: >-
-            amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
-            arch }}
+            amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Publish to verdaccio
           command: |
@@ -182,8 +180,7 @@ jobs:
           at: ./
       - restore_cache:
           key: >-
-            amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
-            arch }}
+            amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Run cleanup script
           command: |

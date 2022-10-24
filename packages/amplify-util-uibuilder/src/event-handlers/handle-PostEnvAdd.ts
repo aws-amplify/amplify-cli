@@ -1,14 +1,16 @@
 import { $TSContext } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
+import { run as cloneComponentsFromEnv } from '../commands/cloneComponentsFromEnv';
 
-export async function run(context: $TSContext) {
+/**
+ *
+ * runs after adding an environment
+ */
+export const run = async (context: $TSContext): Promise<void> => {
   try {
-    await context.amplify.invokePluginMethod(context, 'ui-builder', undefined, 'executeAmplifyCommand', [
-      context,
-      'cloneComponentsFromEnv',
-    ]);
+    await cloneComponentsFromEnv(context);
   } catch (e) {
     // Swallow all errors from the uibuilder plugin
     printer.debug(e);
   }
-}
+};
