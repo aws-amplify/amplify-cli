@@ -10,11 +10,11 @@ export async function configFrontendHandler(context) {
 
   if (selectedFrontend !== frontend) {
     delete context.exeInfo.projectConfig[frontend];
-    const frontendModule = require(frontendPlugins[selectedFrontend]);
+    const frontendModule = await import(frontendPlugins[selectedFrontend]);
     await frontendModule.init(context);
     context.exeInfo.projectConfig.frontend = selectedFrontend;
   } else {
-    const frontendModule = require(frontendPlugins[selectedFrontend]);
+    const frontendModule = await import(frontendPlugins[selectedFrontend]);
     await frontendModule.configure(context);
   }
 

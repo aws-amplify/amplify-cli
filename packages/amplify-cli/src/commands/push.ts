@@ -29,11 +29,10 @@ const syncCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
     const providerPlugins = getProviderPlugins(context);
     const pullCurrentCloudTasks: (() => Promise<$TSAny>)[] = [];
 
-    context.exeInfo.projectConfig.providers.forEach(provider => {
-      // eslint-disable-next-line
-      const providerModule = require(providerPlugins[provider]);
+    for (const provider of context.exeInfo.projectConfig.providers) {
+      const providerModule = await import(providerPlugins[provider]);
       pullCurrentCloudTasks.push(() => providerModule.initEnv(context, amplifyMeta.providers[provider]));
-    });
+    }
 
     await notifySecurityEnhancement(context);
 
