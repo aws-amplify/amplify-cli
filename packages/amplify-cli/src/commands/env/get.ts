@@ -1,40 +1,33 @@
-import chalk from 'chalk';
-import { JSONUtilities, $TSContext, UnknownArgumentError, exitOnNextTick } from 'amplify-cli-core';
+import { JSONUtilities, $TSContext, AmplifyError } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 import { printEnvInfo } from '../helpers/envUtils';
 
-export const run = async (context: $TSContext) => {
+/**
+ * Executes the 'env get' command
+ */
+export const run = async (context: $TSContext) : Promise<void> => {
   const envName = context.parameters.options.name;
-
-  if (!envName) {
-    const errMessage = 'You must pass in the name of the environment using the --name flag';
-    context.print.error(errMessage);
-    context.usageData.emitError(new UnknownArgumentError(errMessage));
-    exitOnNextTick(1);
-  }
-
   const allEnvs = context.amplify.getEnvDetails();
 
+  if (!envName) {
+    throw new AmplifyError('EnvironmentNameError', {
+      message: 'Environment name was not specified.',
+      resolution: 'Pass in the name of the environment using the --name flag.',
+    });
+  }
+  if (!allEnvs[envName]) {
+    throw new AmplifyError('EnvironmentNameError', {
+      message: 'Environment name is invalid.',
+      resolution: 'Run amplify env list to get a list of valid environments.',
+    });
+  }
+
   if (context.parameters.options.json) {
-    if (allEnvs[envName]) {
-      context.print.fancy(JSONUtilities.stringify(allEnvs[envName]));
-    } else {
-      context.print.fancy(JSONUtilities.stringify({ error: `No environment found with name: '${envName}'` }));
-    }
+    printer.info(JSONUtilities.stringify(allEnvs[envName]) as string);
     return;
   }
 
-  let envFound = false;
-
-  Object.keys(allEnvs).forEach(env => {
-    if (env === envName) {
-      envFound = true;
-      context.print.info('');
-      context.print.info(chalk.red(env));
-      printEnvInfo(context, env, allEnvs);
-    }
-  });
-
-  if (!envFound) {
-    context.print.error('No environment found with the corresponding name provided');
-  }
+  printer.blankLine();
+  printer.info(envName, 'red');
+  printEnvInfo(envName, allEnvs);
 };

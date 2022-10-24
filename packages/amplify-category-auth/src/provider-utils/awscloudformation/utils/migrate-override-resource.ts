@@ -1,4 +1,6 @@
-import { $TSObject, AmplifyCategories, JSONUtilities, NotInitializedError, pathManager } from 'amplify-cli-core';
+import {
+  $TSObject, AmplifyCategories, projectNotInitializedError, AmplifyError, amplifyErrorWithTroubleshootingLink, JSONUtilities, pathManager,
+} from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
@@ -17,7 +19,10 @@ import {
   PasswordPolicyResult,
 } from '../service-walkthrough-types/awsCognito-user-input-types';
 
-export const migrateResourceToSupportOverride = async (resourceName: string) => {
+/**
+ * migrates resources to support override feature
+ */
+export const migrateResourceToSupportOverride = async (resourceName: string): Promise<void> => {
   printer.debug('Starting Migration Process');
   /**
    * backup resource folder
@@ -27,18 +32,17 @@ export const migrateResourceToSupportOverride = async (resourceName: string) => 
    *  */
   const projectPath = pathManager.findProjectRoot();
   if (!projectPath) {
-    // New project, hence not able to find the amplify dir
-    throw new NotInitializedError();
+    throw projectNotInitializedError();
   }
-  const authresourceDirPath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.AUTH, resourceName);
+  const authResourceDirPath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.AUTH, resourceName);
   const userPoolGroupResourceDirPath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.AUTH, 'userPoolGroups');
-  const backupAuthResourceFolder = backup(authresourceDirPath, projectPath, resourceName);
+  const backupAuthResourceFolder = backup(authResourceDirPath, projectPath, resourceName);
   const backupUserPoolGroupResourceFolder = backup(userPoolGroupResourceDirPath, projectPath, 'userPoolGroups');
 
   try {
-    const parameters = JSONUtilities.readJson<$TSObject>(path.join(authresourceDirPath, 'parameters.json'), { throwIfNotExist: true });
-    fs.emptyDirSync(authresourceDirPath);
-    // remomve UserPool Resource
+    const parameters = JSONUtilities.readJson<$TSObject>(path.join(authResourceDirPath, 'parameters.json'), { throwIfNotExist: true });
+    fs.emptyDirSync(authResourceDirPath);
+    // remove UserPool Resource
     if (parameters?.userPoolGroupList?.length > 0) {
       fs.unlinkSync(path.join(userPoolGroupResourceDirPath, 'template.json'));
       fs.unlinkSync(path.join(userPoolGroupResourceDirPath, 'parameters.json'));
@@ -46,50 +50,52 @@ export const migrateResourceToSupportOverride = async (resourceName: string) => 
 
     // convert parameters.json to cli-inputs.json
     const cliInputs = mapParametersJsonToCliInputs(parameters!);
-    const cliInputsPath = path.join(authresourceDirPath, 'cli-inputs.json');
+    const cliInputsPath = path.join(authResourceDirPath, 'cli-inputs.json');
     JSONUtilities.writeJson(cliInputsPath, cliInputs);
     printer.debug('Migration is Successful');
   } catch (e) {
-    printer.error('There was an error migrating your project.');
-    rollback(authresourceDirPath, backupAuthResourceFolder!);
+    rollback(authResourceDirPath, backupAuthResourceFolder!);
     rollback(userPoolGroupResourceDirPath, backupUserPoolGroupResourceFolder!);
-    printer.info('migration operations are rolled back.');
-    throw e;
+    throw amplifyErrorWithTroubleshootingLink('MigrationError', {
+      message: `There was an error migrating your project: ${e.message}`,
+      details: `Migration operations are rolled back.`,
+      stack: e.stack,
+    }, e);
   } finally {
     cleanUp(backupAuthResourceFolder);
     cleanUp(backupUserPoolGroupResourceFolder);
   }
 };
 
-function backup(authresourcePath: string, projectPath: string, resourceName: string) {
-  if (fs.existsSync(authresourcePath)) {
-    const backupauthResourceDirName = `${resourceName}-BACKUP-${uuid().split('-')[0]}`;
-    const backupauthResourceDirPath = path.join(projectPath, backupauthResourceDirName);
+const backup = (authResourcePath: string, projectPath: string, resourceName: string): string | undefined => {
+  if (fs.existsSync(authResourcePath)) {
+    const backupAuthResourceDirName = `${resourceName}-BACKUP-${uuid().split('-')[0]}`;
+    const backupAuthResourceDirPath = path.join(projectPath, backupAuthResourceDirName);
 
-    if (fs.existsSync(backupauthResourceDirPath)) {
-      const error = new Error(`Backup folder at ${backupauthResourceDirPath} already exists, remove the folder and retry the operation.`);
-
-      error.name = 'BackupFolderAlreadyExist';
-      error.stack = undefined;
-
-      throw error;
+    if (fs.existsSync(backupAuthResourceDirPath)) {
+      throw new AmplifyError('MigrationError', {
+        message: `Backup folder for ${resourceName} already exists.`,
+        resolution: `Delete the backup folder and try again.`,
+      });
     }
 
-    fs.copySync(authresourcePath, backupauthResourceDirPath);
-    return backupauthResourceDirPath;
+    fs.copySync(authResourcePath, backupAuthResourceDirPath);
+    return backupAuthResourceDirPath;
   }
-}
 
-function rollback(authresourcePath: string, backupauthResourceDirPath: string) {
-  if (fs.existsSync(authresourcePath) && fs.existsSync(backupauthResourceDirPath)) {
-    fs.removeSync(authresourcePath);
-    fs.moveSync(backupauthResourceDirPath, authresourcePath);
+  return undefined;
+};
+
+const rollback = (authResourcePath: string, backupAuthResourceDirPath: string): void => {
+  if (fs.existsSync(authResourcePath) && fs.existsSync(backupAuthResourceDirPath)) {
+    fs.removeSync(authResourcePath);
+    fs.moveSync(backupAuthResourceDirPath, authResourcePath);
   }
-}
+};
 
-function cleanUp(authresourcePath: string | undefined) {
-  if (!!authresourcePath && fs.existsSync(authresourcePath)) fs.removeSync(authresourcePath);
-}
+const cleanUp = (authResourcePath: string | undefined): void => {
+  if (!!authResourcePath && fs.existsSync(authResourcePath)) fs.removeSync(authResourcePath);
+};
 
 const mapParametersJsonToCliInputs = (parameters: $TSObject): CognitoCLIInputs => {
   const baseResult: ServiceQuestionsBaseResult = {

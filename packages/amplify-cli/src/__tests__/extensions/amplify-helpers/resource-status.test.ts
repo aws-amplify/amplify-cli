@@ -1,27 +1,22 @@
+import { hashLayerResource } from 'amplify-category-function';
+import { AmplifyException, stateManager } from 'amplify-cli-core';
 import { hashElement } from 'folder-hash';
 import * as fs from 'fs-extra';
-import { NotInitializedError } from '../../../../../amplify-cli-core/lib';
-import { print } from '../../../extensions/amplify-helpers/print';
-import { getEnvInfo } from '../../../extensions/amplify-helpers/get-env-info';
-import { getHashForResourceDir, getResourceStatus, showResourceTable } from '../../../extensions/amplify-helpers/resource-status';
 import {
-  CLOUD_INITIALIZED,
-  CLOUD_NOT_INITIALIZED,
-  NON_AMPLIFY_PROJECT,
-  getCloudInitStatus,
+  CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus, NON_AMPLIFY_PROJECT,
 } from '../../../extensions/amplify-helpers/get-cloud-init-status';
-import { stateManager } from 'amplify-cli-core';
-import { hashLayerResource } from 'amplify-category-function';
-import { cronJobSetting } from '../../../../../amplify-category-function/lib/provider-utils/awscloudformation/utils/constants';
+import { getEnvInfo } from '../../../extensions/amplify-helpers/get-env-info';
+import { print } from '../../../extensions/amplify-helpers/print';
+import { getHashForResourceDir, getResourceStatus, showResourceTable } from '../../../extensions/amplify-helpers/resource-status';
 
-const sample_hash1 = 'testhash1';
-const sample_hash2 = 'testhash2';
+const sampleHash1 = 'testHash1';
+const sampleHash2 = 'testHash2';
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 
 jest.mock('folder-hash', () => ({
   hashElement: jest.fn().mockImplementation(async () => ({
-    hash: sample_hash1,
+    hash: sampleHash1,
   })),
 }));
 
@@ -31,6 +26,7 @@ jest.mock('chalk', () => ({
   red: jest.fn().mockImplementation(input => input),
   blue: jest.fn().mockImplementation(input => input),
   gray: jest.fn().mockImplementation(input => input),
+  grey: jest.fn().mockImplementation(input => input),
   bgRgb: jest.fn().mockImplementation(input => input),
   blueBright: jest.fn().mockImplementation(input => input),
   greenBright: jest.fn().mockImplementation(input => input),
@@ -48,7 +44,7 @@ jest.mock('../../../extensions/amplify-helpers/get-env-info', () => ({
 }));
 
 jest.mock('../../../extensions/amplify-helpers/get-cloud-init-status', () => ({
-  ...(jest.requireActual('../../../extensions/amplify-helpers/get-cloud-init-status') as {}),
+  ...(jest.requireActual('../../../extensions/amplify-helpers/get-cloud-init-status') as Record<string, never>),
   getCloudInitStatus: jest.fn(),
 }));
 
@@ -61,13 +57,14 @@ const currentBackendDirPathStub = 'currentBackendDirPathStub';
 const projectRootPath = 'projectRootPath';
 
 jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as {}),
+  ...(jest.requireActual('amplify-cli-core') as Record<string, never>),
   stateManager: {
     getCurrentMeta: jest.fn(),
     getMeta: jest.fn(),
     getProjectTags: jest.fn(),
     getCurrentProjectTags: jest.fn(),
     getBackendConfig: jest.fn(),
+    getCurrentBackendConfig: jest.fn(),
     getProjectConfig: jest.fn(),
   },
   pathManager: {
@@ -81,7 +78,7 @@ jest.mock('amplify-cli-core', () => ({
 }));
 
 jest.mock('amplify-category-function', () => ({
-  ...(jest.requireActual('amplify-category-function') as {}),
+  ...(jest.requireActual('amplify-category-function') as Record<string, never>),
   hashLayerResource: jest.fn(),
 }));
 
@@ -113,6 +110,7 @@ describe('resource-status', () => {
     stateManagerMock.getProjectTags.mockReturnValue([]);
     stateManagerMock.getCurrentProjectTags.mockReturnValue([]);
     stateManagerMock.getBackendConfig.mockReturnValue({});
+    stateManagerMock.getCurrentBackendConfig.mockReturnValue({});
     stateManagerMock.getProjectConfig.mockReturnValue(mockProjectConfig);
 
     (getEnvInfo as jest.MockedFunction<typeof getEnvInfo>).mockReturnValue({ envName: 'test' });
@@ -122,12 +120,12 @@ describe('resource-status', () => {
   });
 
   describe('getHashForResourceDir', () => {
-    it('returns hash excludes dotfiles, node_modules, test_coverage, dist and build directories', async () => {
+    it('returns hash excludes dot files, node_modules, test_coverage, dist and build directories', async () => {
       const testDirName = 'test';
       const files = ['resource.js'];
       const hash = await getHashForResourceDir(testDirName, files);
 
-      const expected = sample_hash1;
+      const expected = sampleHash1;
       expect(hash).toBe(expected);
 
       expect(hashElement).toBeCalledWith(testDirName, {
@@ -485,10 +483,10 @@ describe('resource-status', () => {
       fsMock.existsSync.mockReturnValue(true);
       const hashElementMock = hashElement as jest.MockedFunction<typeof hashElement>;
       hashElementMock.mockImplementation(async () => ({
-        hash: sample_hash1,
+        hash: sampleHash1,
       }));
       hashElementMock.mockImplementationOnce(async () => ({
-        hash: sample_hash2,
+        hash: sampleHash2,
       }));
 
       const status = await getResourceStatus();
@@ -739,7 +737,8 @@ describe('resource-status', () => {
 
     it('throws an error when non amplify project', async () => {
       (getCloudInitStatus as jest.MockedFunction<typeof getCloudInitStatus>).mockReturnValue(NON_AMPLIFY_PROJECT);
-      expect(getResourceStatus()).rejects.toThrowError(NotInitializedError);
+      // eslint-disable-next-line jest/valid-expect
+      await expect(getResourceStatus()).rejects.toThrow('No Amplify backend project files detected within this folder.');
     });
   });
 
@@ -815,10 +814,10 @@ describe('resource-status', () => {
       fsMock.existsSync.mockReturnValue(true);
       const hashElementMock = hashElement as jest.MockedFunction<typeof hashElement>;
       hashElementMock.mockImplementation(async () => ({
-        hash: sample_hash1,
+        hash: sampleHash1,
       }));
       hashElementMock.mockImplementationOnce(async () => ({
-        hash: sample_hash2,
+        hash: sampleHash2,
       }));
 
       const hasChanges = await showResourceTable();

@@ -23,8 +23,10 @@ packages/amplify-appsync-simulator/public
 packages/amplify-dynamodb-simulator/emulator
 packages/amplify-dynamodb-simulator/__test__/dynamodb-data
 .vscode/*
+.history/*
 !.vscode/settings.json
 !.vscode/extensions.json
+.idea
 packages/graphql*/lib
 packages/amplify-graphql-transformer-*/lib
 packages/amplify-cli/lib
@@ -82,6 +84,7 @@ packages/amplify-console-hosting/lib/
 packages/amplify-container-hosting/lib/
 packages/amplify-category-predictions/lib
 packages/amplify-category-analytics/lib
+packages/amplify-category-notifications/lib
 packages/amplify-category-interactions/lib/
 packages/amplify-environment-parameters/lib/
 !packages/amplify-graphql-model-transformer/src/__tests__/overrides/build/override.js

@@ -62,6 +62,18 @@ module.exports = awsmobile;
     // expect(configCreator.getCurrentAWSExports(context)).toThrowError('Unable to parse aws-exports.js. Has this file been modified?');
   });
 
+  it('should load with babel.config.json present', async () => {
+    const babelConfigPath = path.join(projectPath, 'babel.config.json');
+    const babelConfigContent = JSON.stringify({ presets: ['es2015'] });
+    try {
+      fs.writeFileSync(babelConfigPath, babelConfigContent);
+      const result = await configCreator.getCurrentAWSExports(context);
+      expect(result).toEqual(awsmobile);
+    } finally {
+      fs.unlinkSync(babelConfigPath);
+    }
+  });
+
   it('should throw error if file does not have exports', async () => {
     expect.assertions(1);
     fs.writeFileSync(awsExportsPath, generateAwsExportsFileContents(null));

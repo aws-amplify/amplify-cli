@@ -1,15 +1,25 @@
-import { $TSContext } from 'amplify-cli-core';
-import { configurePermissionsBoundaryForInit } from '../../permissions-boundary/permissions-boundary';
-import { setPermissionsBoundaryArn, getPermissionsBoundaryArn, stateManager } from 'amplify-cli-core';
+import {
+  $TSContext, setPermissionsBoundaryArn, getPermissionsBoundaryArn, stateManager,
+} from 'amplify-cli-core';
 import { prompt } from 'inquirer';
-import { IAMClient } from '../../aws-utils/aws-iam';
 import { IAM } from 'aws-sdk';
+import { configurePermissionsBoundaryForInit } from '../../permissions-boundary/permissions-boundary';
+import { IAMClient } from '../../aws-utils/aws-iam';
 
 const permissionsBoundaryArn = 'arn:aws:iam::123456789012:policy/some-policy-name';
 const argName = 'permissions-boundary';
 const envName = 'newEnvName';
 
-jest.mock('amplify-cli-core');
+// jest.mock('amplify-cli-core');
+jest.mock('amplify-cli-core', () => ({
+  ...(jest.requireActual('amplify-cli-core') as {}),
+  stateManager: {
+    getLocalEnvInfo: jest.fn(),
+  },
+  setPermissionsBoundaryArn: jest.fn(),
+  getPermissionsBoundaryArn: jest.fn(),
+}));
+
 jest.mock('inquirer');
 jest.mock('../../aws-utils/aws-iam');
 
@@ -140,7 +150,7 @@ describe('configure permissions boundary on env add', () => {
       } as unknown) as IAM,
     });
     await expect(configurePermissionsBoundaryForInit(context_stub)).rejects.toMatchInlineSnapshot(
-      `[Error: A permissions boundary ARN must be specified using --permissions-boundary]`,
+      `[InputValidationError: A permissions boundary ARN must be specified using --permissions-boundary]`,
     );
     expect(prompt_mock).not.toHaveBeenCalled();
   });

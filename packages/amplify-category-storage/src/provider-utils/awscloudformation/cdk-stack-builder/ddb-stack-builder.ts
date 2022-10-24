@@ -2,13 +2,13 @@ import * as cdk from 'aws-cdk-lib';
 import * as ddb from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 import { AmplifyDDBResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
-import { DynamoDBCLIInputs, DynamoDBCLIInputsKeyType, FieldType } from '../service-walkthrough-types/dynamoDB-user-input-types';
+import { DynamoDBCLIInputs, DynamoDBCLIInputsKeyType } from '../service-walkthrough-types/dynamoDB-user-input-types';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'DDB Resource for AWS Amplify CLI';
 
 /**
- *
+ * Class to generate Amplify DynamoDB resource for storage category
  */
 export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBResourceTemplate {
   _scope: Construct;
@@ -25,12 +25,11 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
   }
 
   /**
-   *
-   * @param props :cdk.CfnOutputProps
-   * @param logicalId: : lodicalId of the Resource
+   * adds  cfn output to stack
    */
   addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void {
     try {
+      // eslint-disable-next-line no-new
       new cdk.CfnOutput(this, logicalId, props);
     } catch (error) {
       throw new Error(error);
@@ -38,12 +37,11 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
   }
 
   /**
-   *
-   * @param props
-   * @param logicalId
+   * adds cfn mapping to stack
    */
   addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void {
     try {
+      // eslint-disable-next-line no-new
       new cdk.CfnMapping(this, logicalId, props);
     } catch (error) {
       throw new Error(error);
@@ -51,12 +49,11 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
   }
 
   /**
-   *
-   * @param props
-   * @param logicalId
+   * adds cfn condition to stack
    */
   addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void {
     try {
+      // eslint-disable-next-line no-new
       new cdk.CfnCondition(this, logicalId, props);
     } catch (error) {
       throw new Error(error);
@@ -64,12 +61,11 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
   }
 
   /**
-   *
-   * @param props
-   * @param logicalId
+   * adds cfn resource to stack
    */
   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void {
     try {
+      // eslint-disable-next-line no-new
       new cdk.CfnResource(this, logicalId, props);
     } catch (error) {
       throw new Error(error);
@@ -77,9 +73,7 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
   }
 
   /**
-   *
-   * @param props
-   * @param logicalId
+   * adds cfn parameter to stack
    */
   addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
     try {
@@ -92,7 +86,7 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
     }
   }
 
-  generateStackResources = async () => {
+  generateStackResources = async (): Promise<void> => {
     const usedAttributes: DynamoDBCLIInputsKeyType[] = [];
     const keySchema: ddb.CfnTable.KeySchemaProperty[] = [];
     const globalSecondaryIndexes: ddb.CfnTable.GlobalSecondaryIndexProperty[] = [];
@@ -138,7 +132,7 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
             attributeName: gsi.sortKey?.fieldName,
             keyType: 'RANGE',
           });
-          if (usedAttributes.findIndex(attr => attr?.fieldName === gsi.sortKey?.fieldName) == -1) {
+          if (usedAttributes.findIndex(attr => attr?.fieldName === gsi.sortKey?.fieldName) === -1) {
             usedAttributes.push(gsi.sortKey);
           }
         }

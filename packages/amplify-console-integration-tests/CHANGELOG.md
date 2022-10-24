@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.3](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.4.2...@aws-amplify/amplify-console-integration-tests@2.4.3) (2022-10-13)
+
+
+### Bug Fixes
+
+* updateUserAttributeSetting during add/update/push flows ([#10773](https://github.com/aws-amplify/amplify-console-integration-tests/issues/10773)) ([52c1e49](https://github.com/aws-amplify/amplify-console-integration-tests/commit/52c1e49caa5098c37c32c9f2b6f095cfd60454b1))
+
+
+
+
+
+## [2.4.2](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.4.1...@aws-amplify/amplify-console-integration-tests@2.4.2) (2022-10-03)
+
+**Note:** Version bump only for package @aws-amplify/amplify-console-integration-tests
+
+
+
+
+
+## [2.4.1](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.3.1...@aws-amplify/amplify-console-integration-tests@2.4.1) (2022-09-21)
+
+**Note:** Version bump only for package @aws-amplify/amplify-console-integration-tests
+
+
+
+
+
 ## [2.3.1](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.3.1-rc.224a2e0e4.0...@aws-amplify/amplify-console-integration-tests@2.3.1) (2022-09-06)
 
 **Note:** Version bump only for package @aws-amplify/amplify-console-integration-tests

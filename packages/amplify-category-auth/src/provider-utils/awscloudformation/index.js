@@ -121,14 +121,20 @@ const updateConfigOnEnvInit = async (context, category, service) => {
     return envSpecificParametersResult;
   }
 
+  const { hostedUIProviderMeta } = resourceParams;
+
+  if (hostedUIProviderMeta) {
+    currentEnvSpecificValues = getOAuthProviderKeys(currentEnvSpecificValues, resourceParams);
+  }
+
   // legacy headless mode (only supports init)
   if (isInHeadlessMode(context)) {
     const envParams = {};
     let mergedValues;
-    if (resourceParams.thirdPartyAuth || resourceParams.hostedUIProviderMeta) {
+    if (resourceParams.thirdPartyAuth || hostedUIProviderMeta) {
       const authParams = getHeadlessParams(context);
       const projectType = context.amplify.getProjectConfig().frontend;
-      mergedValues = { ...resourceParams, ...authParams };
+      mergedValues = { ...resourceParams, ...authParams, ...currentEnvSpecificValues };
       const requiredParams = getRequiredParamsForHeadlessInit(projectType, resourceParams);
       const missingParams = [];
       requiredParams.forEach(p => {
@@ -143,17 +149,12 @@ const updateConfigOnEnvInit = async (context, category, service) => {
         throw new Error(`auth headless is missing the following inputParams ${missingParams.join(', ')}`);
       }
     }
-    if (resourceParams.hostedUIProviderMeta) {
+    if (hostedUIProviderMeta) {
       parseCredsForHeadless(mergedValues, envParams);
     }
     return envParams;
   }
 
-  const { hostedUIProviderMeta } = resourceParams;
-
-  if (hostedUIProviderMeta) {
-    currentEnvSpecificValues = getOAuthProviderKeys(currentEnvSpecificValues, resourceParams);
-  }
   const isPullingOrEnv = context.input.command === 'pull'
     || (context.input.command === 'env' && context.input.subCommands && !context.input.subCommands.includes('add'));
   // don't ask for env_specific params when checking out env or pulling

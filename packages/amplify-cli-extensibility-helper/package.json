@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli-extensibility-helper",
-  "version": "2.3.34",
+  "version": "2.4.3",
   "description": "Amplify CLI Extensibility Helper utility package",
   "repository": {
     "type": "git",
@@ -27,9 +27,9 @@
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-custom": "2.4.4",
+    "@aws-amplify/amplify-category-custom": "2.5.3",
     "aws-cdk-lib": "^2.41.0",
-    "amplify-cli-core": "3.0.0"
+    "amplify-cli-core": "3.2.2"
   },
   "jest": {
     "transform": {

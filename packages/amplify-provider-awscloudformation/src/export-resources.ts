@@ -1,20 +1,20 @@
-import { $TSAny, $TSContext, JSONUtilities, PathConstants, stateManager, spinner } from 'amplify-cli-core';
-import { ResourceExport } from './resource-package/resource-export';
-import { ResourceDefinition, StackIncludeDetails, StackParameters } from './resource-package/types';
-import * as path from 'path';
+import {
+  $TSAny, $TSContext, amplifyFaultWithTroubleshootingLink, JSONUtilities, PathConstants, spinner, stateManager, validateExportDirectoryPath,
+} from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
-const backup = 'backup';
 import _ from 'lodash';
+import * as path from 'path';
 import rimraf from 'rimraf';
-import { validateExportDirectoryPath } from 'amplify-cli-core';
+// eslint-disable-next-line import/no-cycle
+import { ResourceExport } from './resource-package/resource-export';
+import { ResourceDefinition, StackIncludeDetails, StackParameters } from './resource-package/types';
+
+const backup = 'backup';
 /**
  * Walks through
- * @param context
- * @param resourceDefinition
- * @param exportPath is the path to export to
  */
-export async function run(context: $TSContext, resourceDefinition: $TSAny[], exportPath: string) {
+export const run = async (context: $TSContext, resourceDefinition: $TSAny[], exportPath: string): Promise<void> => {
   const resolvedExportDir = validateExportDirectoryPath(exportPath, PathConstants.DefaultExportFolder);
 
   const { projectName } = stateManager.getProjectConfig();
@@ -48,7 +48,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSAny[], exp
     const parameters = resourceExport.fixNestedStackParameters(transformedResources, extractedParameters);
 
     spinner.text = `Generating export manifest`;
-    writeExportManifest(parameters, resolvedExportDir, amplifyExportFolder);
+    writeExportManifest(parameters, amplifyExportFolder);
 
     spinner.text = `Generating category stack mappings`;
     createCategoryStackMapping(transformedResources, amplifyExportFolder);
@@ -71,26 +71,28 @@ export async function run(context: $TSContext, resourceDefinition: $TSAny[], exp
   } catch (ex) {
     revertToBackup(amplifyExportFolder);
     spinner.fail();
-    throw ex;
+    throw amplifyFaultWithTroubleshootingLink('ResourceNotReadyFault', {
+      stack: ex.stack,
+      message: ex.message,
+    }, ex);
   } finally {
     removeBackup(amplifyExportFolder);
     spinner.stop();
   }
-}
+};
 
 /**
  * setting permissions rwx for user
- * @param amplifyExportFolder
  */
-async function setPermissions(amplifyExportFolder: string): Promise<void> {
+const setPermissions = async (amplifyExportFolder: string): Promise<void> => {
   await fs.chmod(amplifyExportFolder, 0o700);
-}
+};
+
 /**
  * Gets the tags from the tags.json file and transforms them into Pascal case
  * leaves the project-env var in for the CDK construct to apply
- * @param exportPath
  */
-function createTagsFile(exportPath: string) {
+const createTagsFile = (exportPath: string): void => {
   const hydratedTags = stateManager.getHydratedTags(undefined, true);
 
   JSONUtilities.writeJson(
@@ -100,28 +102,25 @@ function createTagsFile(exportPath: string) {
       value: tag.Value,
     })),
   );
-}
+};
 
 /**
  * generates category stack mapping of the files
- * @param resources
+ * @param resources resource definitions
  * @param amplifyExportFolder export folder different from the root of the export
  */
-function createCategoryStackMapping(resources: ResourceDefinition[], amplifyExportFolder: string) {
+const createCategoryStackMapping = (resources: ResourceDefinition[], amplifyExportFolder: string): void => {
   JSONUtilities.writeJson(
     path.join(amplifyExportFolder, PathConstants.ExportCategoryStackMappingJsonFilename),
-    resources.map(r => {
-      return _.pick(r, ['category', 'resourceName', 'service']);
-    }),
+    resources.map(r => _.pick(r, ['category', 'resourceName', 'service'])),
   );
-}
+};
 
 /**
  *  checks if there is an existing folder and prompt
- * @param amplifyExportFolder
  * @returns true if to proceed no if to exit
  */
-async function checkForExistingExport(amplifyExportFolder: string): Promise<boolean> {
+const checkForExistingExport = async (amplifyExportFolder: string): Promise<boolean> => {
   let proceed = true;
   if (fs.existsSync(amplifyExportFolder)) {
     proceed = await prompter.yesOrNo(
@@ -131,45 +130,44 @@ async function checkForExistingExport(amplifyExportFolder: string): Promise<bool
   }
   await fs.ensureDir(amplifyExportFolder);
   return proceed;
-}
+};
 
-function deleteFolder(directoryPath) {
+const deleteFolder = (directoryPath): void => {
   if (fs.existsSync(directoryPath)) {
     rimraf.sync(directoryPath);
   }
-}
+};
 
-async function removeBackup(amplifyExportFolder: string) {
+const removeBackup = async (amplifyExportFolder: string): Promise<void> => {
   if (fs.existsSync(`${amplifyExportFolder}-${backup}`)) {
     deleteFolder(`${amplifyExportFolder}-${backup}`);
   }
-}
-async function revertToBackup(amplifyExportFolder: string) {
+};
+
+const revertToBackup = async (amplifyExportFolder: string): Promise<void> => {
   if (fs.existsSync(`${amplifyExportFolder}-${backup}`)) {
     await fs.copy(`${amplifyExportFolder}-${backup}`, amplifyExportFolder);
   }
-}
+};
 
-async function createBackup(amplifyExportFolder: string) {
+const createBackup = async (amplifyExportFolder: string): Promise<void> => {
   await fs.copy(amplifyExportFolder, `${amplifyExportFolder}-${backup}`);
-}
+};
 
 /**
- * Transforms the stackparameters file path to convert into the export manifest file
- * @param stackParameters
- * @param exportPath
- * @param amplifyExportFolder
+ * Transforms the stack parameters file path to convert into the export manifest file
  */
-function writeExportManifest(stackParameters: StackParameters, exportPath: string, amplifyExportFolder: string) {
+const writeExportManifest = (stackParameters: StackParameters, amplifyExportFolder: string): void => {
   const rootStackParametersKey = _.first(Object.keys(stackParameters));
   const manifestJson = {
     stackName: rootStackParametersKey,
     props: transformManifestParameters(stackParameters[rootStackParametersKey], amplifyExportFolder),
   };
   JSONUtilities.writeJson(path.join(amplifyExportFolder, PathConstants.ExportManifestJsonFilename), manifestJson);
-}
+};
 
-function transformManifestParameters(stackParameters: StackIncludeDetails, exportPath: string) {
+// eslint-disable-next-line consistent-return
+const transformManifestParameters = (stackParameters: StackIncludeDetails, exportPath: string): $TSAny => {
   if (stackParameters) {
     const manifest = {
       templateFile: path.relative(exportPath, stackParameters.destination),
@@ -183,8 +181,8 @@ function transformManifestParameters(stackParameters: StackIncludeDetails, expor
     Object.keys(stackParameters.nestedStacks)
       .sort()
       .forEach(key => {
-        manifest['loadNestedStacks'][key] = transformManifestParameters(stackParameters.nestedStacks[key], exportPath);
+        manifest.loadNestedStacks[key] = transformManifestParameters(stackParameters.nestedStacks[key], exportPath);
       });
     return manifest;
   }
-}
+};

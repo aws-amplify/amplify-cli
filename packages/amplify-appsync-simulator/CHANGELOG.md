@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-appsync-simulator@2.6.1...@aws-amplify/amplify-appsync-simulator@2.6.2) (2022-10-13)
+
+
+### Bug Fixes
+
+* updateUserAttributeSetting during add/update/push flows ([#10773](https://github.com/aws-amplify/amplify-cli/issues/10773)) ([52c1e49](https://github.com/aws-amplify/amplify-cli/commit/52c1e49caa5098c37c32c9f2b6f095cfd60454b1))
+
+
+
+
+
+## [2.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-appsync-simulator@2.5.1...@aws-amplify/amplify-appsync-simulator@2.6.1) (2022-09-21)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** mock websocket subscriptions ([#10870](https://github.com/aws-amplify/amplify-cli/issues/10870)) ([5881e95](https://github.com/aws-amplify/amplify-cli/commit/5881e95ad7394781b4e479af34340855efc46175))
+
+
+
+
+
 ## [2.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-appsync-simulator@2.5.0...@aws-amplify/amplify-appsync-simulator@2.5.1) (2022-08-06)
 
 **Note:** Version bump only for package @aws-amplify/amplify-appsync-simulator

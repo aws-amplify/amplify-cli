@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.5.2...@aws-amplify/amplify-category-custom@2.5.3) (2022-10-13)
+
+
+### Bug Fixes
+
+* refactor push flow to use amplify error handling framework ([#10951](https://github.com/aws-amplify/amplify-cli/issues/10951)) ([38a8603](https://github.com/aws-amplify/amplify-cli/commit/38a8603db4965ec05beb2ddd1daaa3913096c9c6))
+* updateUserAttributeSetting during add/update/push flows ([#10773](https://github.com/aws-amplify/amplify-cli/issues/10773)) ([52c1e49](https://github.com/aws-amplify/amplify-cli/commit/52c1e49caa5098c37c32c9f2b6f095cfd60454b1))
+
+
+
+
+
+## [2.5.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.5.1...@aws-amplify/amplify-category-custom@2.5.2) (2022-10-03)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-custom
+
+
+
+
+
+## [2.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.4.4...@aws-amplify/amplify-category-custom@2.5.1) (2022-09-21)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-custom
+
+
+
+
+
 ## [2.4.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.4.4-rc.224a2e0e4.0...@aws-amplify/amplify-category-custom@2.4.4) (2022-09-06)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-custom

@@ -1,15 +1,15 @@
-import { ProviderContext } from 'amplify-cli-core';
-import { ServiceName, provider } from '../service-utils/constants';
-import { $TSObject, open, stateManager } from 'amplify-cli-core';
-import { $TSContext } from 'amplify-cli-core';
-import { addPlaceIndexResource, updatePlaceIndexResource, removePlaceIndexResource } from './placeIndex';
-import { addMapResource, updateMapResource, removeMapResource, addMapResourceHeadless, updateMapResourceHeadless } from './map';
-import { addGeofenceCollectionResource, updateGeofenceCollectionResource, removeGeofenceCollectionResource } from './geofenceCollection';
+import { $TSContext, $TSObject, AmplifyCategories, AmplifySupportedService, open, ProviderContext, stateManager } from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
-import { getServiceFriendlyName } from '../service-walkthroughs/resourceWalkthrough';
-import { TemplateMappings } from '../service-stacks/baseStack';
 import { validateAddGeoRequest, validateUpdateGeoRequest } from 'amplify-util-headless-input';
+import { TemplateMappings } from '../service-stacks/baseStack';
+import { provider, ServiceName } from '../service-utils/constants';
 import { checkGeoResourceExists } from '../service-utils/resourceUtils';
+import { getServiceFriendlyName } from '../service-walkthroughs/resourceWalkthrough';
+import { addGeofenceCollectionResource, removeGeofenceCollectionResource, updateGeofenceCollectionResource } from './geofenceCollection';
+import {
+  addMapResource, addMapResourceHeadless, removeMapResource, updateMapResource, updateMapResourceHeadless,
+} from './map';
+import { addPlaceIndexResource, removePlaceIndexResource, updatePlaceIndexResource } from './placeIndex';
 
 /**
  * Entry point for creating a new Geo resource
@@ -17,10 +17,10 @@ import { checkGeoResourceExists } from '../service-utils/resourceUtils';
 export const addResource = async (context: $TSContext, service: string): Promise<string | undefined> => {
   if (!projectHasAuth()) {
     if (await prompter.yesOrNo('geo category resources require auth (Amazon Cognito). Do you want to add auth now?')) {
-      await context.amplify.invokePluginMethod(context, 'auth', undefined, 'add', [context]);
+      await context.amplify.invokePluginMethod(context, AmplifyCategories.AUTH, undefined, 'add', [context]);
     } else {
       printer.info('Please add auth (Amazon Cognito) to your project using "amplify add auth"');
-      return;
+      return undefined;
     }
   }
 
@@ -68,10 +68,10 @@ export const removeResource = async (context: $TSContext, service: string): Prom
   }
 };
 
-export const projectHasAuth = () =>
-  !!Object.values(stateManager.getMeta()?.auth || {}).find(meta => (meta as $TSObject)?.service === 'Cognito');
+export const projectHasAuth = (): boolean => !!Object.values(stateManager.getMeta()?.auth || {})
+  .find(meta => (meta as $TSObject)?.service === AmplifySupportedService.COGNITO);
 
-export const printNextStepsSuccessMessage = (context: $TSContext) => {
+export const printNextStepsSuccessMessage = () => {
   printer.blankLine();
   printer.success('Next steps:');
   printer.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
@@ -80,13 +80,11 @@ export const printNextStepsSuccessMessage = (context: $TSContext) => {
   );
 };
 
-export const setProviderContext = (context: $TSContext, service: string): ProviderContext => {
-  return {
-    provider: provider,
-    service: service,
-    projectName: context.amplify.getProjectDetails().projectConfig.projectName,
-  };
-};
+export const setProviderContext = (context: $TSContext, service: string): ProviderContext => ({
+  provider,
+  service,
+  projectName: context.amplify.getProjectDetails().projectConfig.projectName,
+});
 
 export const openConsole = (service: string) => {
   const amplifyMeta = stateManager.getMeta();
@@ -105,20 +103,17 @@ export const openConsole = (service: string) => {
     default:
       selection = undefined;
   }
-  let url: string = `https://${region}.console.aws.amazon.com/location/home?region=${region}#/`;
+  let url = `https://${region}.console.aws.amazon.com/location/home?region=${region}#/`;
   if (selection) {
     url = `https://${region}.console.aws.amazon.com/location/${selection}/home?region=${region}#/`;
   }
   open(url, { wait: false });
 };
 
-const badServiceError = (service: string) => {
-  return new Error(`amplify-category-geo is not configured to provide service type ${service}`);
-};
+const badServiceError = (service: string): Error => new Error(`amplify-category-geo is not configured to provide service type ${service}`);
 
-export const insufficientInfoForUpdateError = (service: ServiceName) => {
-  return new Error(`Insufficient information to update ${getServiceFriendlyName(service)}. Please re-try and provide all inputs.`);
-};
+export const insufficientInfoForUpdateError = (service: ServiceName): Error =>
+  new Error(`Insufficient information to update ${getServiceFriendlyName(service)}. Please re-try and provide all inputs.`);
 
 export const getTemplateMappings = async (context: $TSContext): Promise<TemplateMappings> => {
   const Mappings: TemplateMappings = {
@@ -140,15 +135,15 @@ export const getTemplateMappings = async (context: $TSContext): Promise<Template
  */
 export const addResourceHeadless = async (
   context: $TSContext,
-  headlessPayload: string
+  headlessPayload: string,
 ): Promise<string | undefined> => {
-  if(!projectHasAuth()) {
+  if (!projectHasAuth()) {
     throw new Error('Please add auth (Amazon Cognito) to your project using "amplify add auth"');
   }
   const { serviceConfiguration } = await validateAddGeoRequest(headlessPayload);
-  const { serviceName,name } = serviceConfiguration;
+  const { serviceName, name } = serviceConfiguration;
   if (await checkGeoResourceExists(name)) {
-    throw new Error(`Geo resource with name '${name}' already exists.`)
+    throw new Error(`Geo resource with name '${name}' already exists.`);
   }
   switch (serviceName) {
     case ServiceName.Map:
@@ -163,12 +158,12 @@ export const addResourceHeadless = async (
  */
 export const updateResourceHeadless = async (
   context: $TSContext,
-  headlessPayload: string
+  headlessPayload: string,
 ): Promise<string | undefined> => {
   const { serviceModification } = await validateUpdateGeoRequest(headlessPayload);
   const { serviceName, name } = serviceModification;
   if (!await checkGeoResourceExists(name)) {
-    throw new Error(`Geo resource with name '${name}' does not exist.`)
+    throw new Error(`Geo resource with name '${name}' does not exist.`);
   }
   switch (serviceName) {
     case ServiceName.Map:
@@ -178,6 +173,4 @@ export const updateResourceHeadless = async (
   }
 };
 
-const badHeadlessServiceError = (service: string) => {
-  return new Error(`Headless mode for service type ${service} is not supported`);
-}
+const badHeadlessServiceError = (service: string): Error => new Error(`Headless mode for service type ${service} is not supported`);

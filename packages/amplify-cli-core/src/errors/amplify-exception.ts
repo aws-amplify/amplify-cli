@@ -1,27 +1,53 @@
 /**
  * Base class for all Amplify exceptions
  */
-export class AmplifyException extends Error {
+export abstract class AmplifyException extends Error {
   public readonly message: string;
   public readonly resolution?: string;
   public readonly details?: string;
   public readonly link?: string;
 
+  /**
+   * You should use AmplifyError or AmplifyFault to throw an exception.
+   *
+   * @param {AmplifyExceptionType} name - a user friendly name for the exception
+   * @param {AmplifyExceptionClassification} classification - Fault or Error
+   * @param {AmplifyExceptionOptions} options - error stack, resolution steps, details, or help links
+   * @param {Error | null} downstreamException If you are throwing this exception from within a catch block,
+   * you must provide the exception that was caught.
+   * @example
+   * try {
+   *  ...
+   * } catch (downstreamException){
+   *    throw new AmplifyError(...,...,downstreamException);
+   * }
+   */
   constructor(
     public readonly name: AmplifyExceptionType,
     public readonly classification: AmplifyExceptionClassification,
     private readonly options: AmplifyExceptionOptions,
+    public readonly downstreamException?: Error,
   ) {
-    super(options.message);
+    // If an AmplifyException was already thrown, we must allow it to reach the user.
+    // This ensures that resolution steps, and the original error are bubbled up.
+    super(downstreamException instanceof AmplifyException ? downstreamException.message : options.message);
 
     // https://github.com/Microsoft/TypeScript-wiki/blob/main/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
     Object.setPrototypeOf(this, AmplifyException.prototype);
 
-    this.stack ??= options.stack;
-    this.message = options.message;
-    this.details = options.details;
-    this.resolution = 'resolution' in options ? options.resolution : undefined;
-    this.link = 'link' in options ? options.link : undefined;
+    if (downstreamException instanceof AmplifyException) {
+      this.stack = downstreamException.stack ? downstreamException.stack : this.stack;
+      this.message = downstreamException.message;
+      this.details = downstreamException.details;
+      this.resolution = downstreamException.resolution;
+      this.link = downstreamException.link;
+    } else {
+      this.stack = options.stack ? options.stack : this.stack;
+      this.message = options.message;
+      this.details = options.details;
+      this.resolution = 'resolution' in options ? options.resolution : undefined;
+      this.link = 'link' in options ? options.link : undefined;
+    }
   }
 
   toObject = (): object => {
@@ -54,6 +80,13 @@ export type AmplifyExceptionOptions = {
 });
 
 /**
+ * Amplify Error partial options object
+ */
+export type PartialAmplifyExceptionOptions = Partial<AmplifyExceptionOptions> & {
+  message: string;
+};
+
+/**
  * Amplify exception types
  */
 export type AmplifyExceptionType = AmplifyErrorType | AmplifyFaultType;
@@ -62,19 +95,88 @@ export type AmplifyExceptionType = AmplifyErrorType | AmplifyFaultType;
  * Amplify error types
  */
 export type AmplifyErrorType =
+  | 'AmplifyStudioError'
+  | 'AmplifyStudioLoginError'
+  | 'AmplifyStudioNotEnabledError'
+  | 'ApiCategorySchemaNotFoundError'
+  | 'AuthImportError'
+  | 'BucketAlreadyExistsError'
+  | 'BucketNotFoundError'
+  | 'CategoryNotEnabledError'
+  | 'CloudFormationTemplateError'
   | 'CommandNotSupportedError'
-  | 'MigrationError'
-  | 'InputValidationError'
-  | 'ProjectInitError'
-  | 'NestedProjectInitError'
-  | 'FeatureFlagsValidationError'
+  | 'ConfigurationError'
+  | 'DeploymentError'
+  | 'DeploymentInProgressError'
+  | 'DirectoryError'
+  | 'DirectoryAlreadyExistsError'
+  | 'DuplicateLogicalIdError'
+  | 'EnvironmentConfigurationError'
   | 'EnvironmentNameError'
-  | 'NotImplementedError';
+  | 'EnvironmentNotInitializedError'
+  | 'FeatureFlagsValidationError'
+  | 'FrameworkNotSupportedError'
+  | 'FunctionTooLargeError'
+  | 'InputValidationError'
+  | 'InvalidAmplifyAppIdError'
+  | 'InvalidStackError'
+  | 'IterativeRollbackError'
+  | 'LambdaLayerDeleteError'
+  | 'MigrationError'
+  | 'MissingAmplifyMetaFileError'
+  | 'ModelgenError'
+  | 'NestedProjectInitError'
+  | 'NoUpdateBackendError'
+  | 'NotImplementedError'
+  | 'OpenSslCertificateError'
+  | 'ParameterNotFoundError'
+  | 'PermissionsError'
+  | 'PluginMethodNotFoundError'
+  | 'PluginNotFoundError'
+  | 'ProfileConfigurationError'
+  | 'ProjectAppIdResolveError'
+  | 'ProjectInitError'
+  | 'ProjectNotFoundError'
+  | 'ProjectNotInitializedError'
+  | 'PushResourcesError'
+  | 'RegionNotAvailableError'
+  | 'RemoveNotificationAppError'
+  | 'ResourceAlreadyExistsError'
+  | 'ResourceInUseError'
+  | 'ResourceNotReadyError'
+  | 'StackNotFoundError'
+  | 'StackStateError'
+  | 'UserInputError';
 
 /**
  * Amplify fault types
  */
 export type AmplifyFaultType =
+  | 'AnalyticsCategoryFault'
+  | 'AmplifyBackupFault'
+  | 'BackendPullFault'
+  | 'ConfigurationFault'
+  | 'BackendDeleteFault'
+  | 'ConfigurationFault'
+  | 'DeploymentFault'
+  | 'NotificationsChannelAPNSFault'
+  | 'NotificationsChannelEmailFault'
+  | 'NotificationsChannelFCMFault'
+  | 'NotificationsChannelSmsFault'
+  | 'NotificationsChannelInAppMessagingFault'
+  | 'NotImplementedFault'
+  | 'ProjectDeleteFault'
   | 'ProjectInitFault'
-  | 'UnknownFaultType'
+  | 'PluginNotLoadedFault'
+  | 'PushResourcesFault'
+  | 'PullBackendFault'
+  | 'ResourceExportFault'
+  | 'ResourceNotFoundFault'
+  | 'ResourceNotReadyFault'
+  | 'ResourceRemoveFault'
+  | 'RootStackNotFoundFault'
+  | 'ServiceCallFault'
+  | 'TimeoutFault'
+  | 'UnexpectedS3Fault'
+  | 'UnknownFault'
   | 'UnknownNodeJSFault';

@@ -5,7 +5,7 @@ import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 /**
- *
+ * Public API:  Base  cdk type
  */
 export type AmplifyCDKL1 = {
   addCfnCondition: (props: cdk.CfnConditionProps, logicalId: string) => void;
@@ -16,7 +16,7 @@ export type AmplifyCDKL1 = {
 };
 
 /**
- *
+ * Public API:  amplify auth type
  */
 export type AmplifyAuthCognitoStackTemplate = {
   customMessageConfirmationBucket?: s3.CfnBucket;
@@ -28,13 +28,13 @@ export type AmplifyAuthCognitoStackTemplate = {
   identityPoolRoleMap?: cognito.CfnIdentityPoolRoleAttachment;
   lambdaConfigPermissions?: Record<string, lambda.CfnPermission>;
   lambdaTriggerPermissions?: Record<string, iam.CfnPolicy>;
-  // customresources userPoolClient
+  // custom resources userPoolClient
   userPoolClientLambda?: lambda.CfnFunction;
   userPoolClientRole?: iam.CfnRole;
   userPoolClientLambdaPolicy?: iam.CfnPolicy;
   userPoolClientLogPolicy?: iam.CfnPolicy;
   userPoolClientInputs?: cdk.CustomResource;
-  // customresources HostedUI
+  // custom resources HostedUI
   hostedUICustomResource?: lambda.CfnFunction;
   hostedUICustomResourcePolicy?: iam.CfnPolicy;
   hostedUICustomResourceLogPolicy?: iam.CfnPolicy;
@@ -65,7 +65,7 @@ export type AmplifyAuthCognitoStackTemplate = {
 } & AmplifyCDKL1;
 
 /**
- *
+ * Public API:  amplify auth user pool group type
  */
 export type AmplifyUserPoolGroupStackTemplate = {
   userPoolGroup?: Record<string, cognito.CfnUserPoolGroup>;

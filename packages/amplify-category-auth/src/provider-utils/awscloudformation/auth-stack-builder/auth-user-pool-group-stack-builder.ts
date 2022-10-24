@@ -4,12 +4,13 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { CfnUserPoolGroup } from 'aws-cdk-lib/aws-cognito';
 import { AmplifyUserPoolGroupStackTemplate } from '@aws-amplify/cli-extensibility-helper';
-import { AmplifyStackTemplate } from 'amplify-cli-core';
+import { AmplifyStackTemplate, JSONUtilities } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import { Construct } from 'constructs';
 // eslint-disable-next-line import/no-cycle
-import { AmplifyUserPoolGroupStackOptions } from './user-pool-group-stack-transform';
 import { roleMapLambdaFilePath } from '../constants';
+// eslint-disable-next-line import/no-cycle
+import { AmplifyUserPoolGroupStackOptions } from './user-pool-group-stack-transform';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'Root Stack for AWS Amplify CLI';
@@ -144,7 +145,7 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
   }
 
   // add Function for Custom Resource in Root stack
-  public renderCloudFormationTemplate = (_: cdk.ISynthesisSession): string => JSON.stringify(this._toCloudFormation(), undefined, 2);
+  public renderCloudFormationTemplate = (__: cdk.ISynthesisSession): string => JSON.stringify(this._toCloudFormation(), undefined, 2);
 
   generateUserPoolGroupResources = async (props: AmplifyUserPoolGroupStackOptions): Promise<void> => {
     props.groups.forEach(group => {
@@ -310,7 +311,7 @@ const getCfnParamsLogicalId = (cognitoResourceName: string, cfnParamName: string
 /**
  * additional class to merge CFN parameters and CFN outputs as cdk doesn't allow same logical ID of constructs in same stack
  */
-export class AmplifyUserPoolGroupStackOutputs extends cdk.Stack implements AmplifyStackTemplate {
+export class AmplifyUserPoolGroupStackOutputs extends cdk.Stack {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(scope: Construct, id: string, props: AmplifyAuthCognitoStackProps) {
     super(scope, id, props);
@@ -393,5 +394,5 @@ export class AmplifyUserPoolGroupStackOutputs extends cdk.Stack implements Ampli
   }
 
   public renderCloudFormationTemplate =
-  (_: cdk.ISynthesisSession): string => JSON.stringify(this._toCloudFormation(), undefined, 2);
+  (__: cdk.ISynthesisSession): string => JSONUtilities.stringify(this._toCloudFormation())!;
 }

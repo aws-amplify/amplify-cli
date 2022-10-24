@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@2.5.0...amplify-prompts@2.6.0) (2022-10-13)
+
+
+### Features
+
+* pretty-print for iterative deployment ([#11051](https://github.com/aws-amplify/amplify-cli/issues/11051)) ([4184164](https://github.com/aws-amplify/amplify-cli/commit/418416420756273f286d81384f4e63924deda4a9))
+
+
+
+
+
+# [2.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@2.3.0...amplify-prompts@2.5.0) (2022-09-21)
+
+
+### Features
+
+* unified error handling framework ([#10933](https://github.com/aws-amplify/amplify-cli/issues/10933)) ([cc9a422](https://github.com/aws-amplify/amplify-cli/commit/cc9a422793f4ef620a4ed634b6f55e28e3a8a3a2))
+
+
+
+
+
 # [2.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@2.3.0-rc.224a2e0e4.0...amplify-prompts@2.3.0) (2022-09-06)
 
 **Note:** Version bump only for package amplify-prompts

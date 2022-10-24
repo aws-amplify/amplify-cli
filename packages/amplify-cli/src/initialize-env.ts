@@ -1,7 +1,7 @@
 import ora from 'ora';
 import sequential from 'promise-sequential';
 import {
-  stateManager, $TSAny, $TSMeta, $TSContext,
+  stateManager, $TSAny, $TSMeta, $TSContext, amplifyFaultWithTroubleshootingLink,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { ensureEnvParamManager, IEnvironmentParameterManager } from '@aws-amplify/amplify-environment-parameters';
@@ -42,31 +42,46 @@ export const initializeEnv = async (
     const categoryPluginInfoList = context.amplify.getAllCategoryPluginInfo(context);
     const availableCategories = Object.keys(categoryPluginInfoList).filter(key => initializedCategories.includes(key));
 
-    availableCategories.forEach(category => {
-      categoryPluginInfoList[category].forEach(pluginInfo => {
-        try {
-          // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
-          const { initEnv } = require(pluginInfo.packageLocation);
+    const importCategoryPluginAndQueueInitEnvTask = async (pluginInfo, category) : Promise<void> => {
+      try {
+        const { initEnv } = await import(pluginInfo.packageLocation);
 
-          if (initEnv) {
-            categoryInitializationTasks.push(() => initEnv(context));
-          }
-        } catch (e) {
-          context.print.warning(`Could not load initEnv for ${category}`);
+        if (initEnv) {
+          categoryInitializationTasks.push(() => initEnv(context));
         }
-      });
-    });
+      } catch (e) {
+        throw amplifyFaultWithTroubleshootingLink('PluginNotLoadedFault', {
+          message: `Could not load plugin for category ${category}.`,
+          details: e.message,
+          resolution: `Review the error message and stack trace for additional information.`,
+          stack: e.stack,
+        }, e);
+      }
+    };
+    for (const category of availableCategories) {
+      for (const pluginInfo of categoryPluginInfoList[category]) {
+        await importCategoryPluginAndQueueInitEnvTask(pluginInfo, category);
+      }
+    }
 
     const providerPlugins = getProviderPlugins(context);
 
     const initializationTasks: (() => Promise<$TSAny>)[] = [];
     const providerPushTasks: (() => Promise<$TSAny>)[] = [];
 
-    context.exeInfo.projectConfig.providers.forEach(provider => {
-      // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
-      const providerModule = require(providerPlugins[provider]);
-      initializationTasks.push(() => providerModule.initEnv(context, amplifyMeta.providers[provider]));
-    });
+    for (const provider of context.exeInfo?.projectConfig?.providers) {
+      try {
+        const providerModule = await import(providerPlugins[provider]);
+        initializationTasks.push(() => providerModule.initEnv(context, amplifyMeta.providers[provider]));
+      } catch (e) {
+        throw amplifyFaultWithTroubleshootingLink('PluginNotLoadedFault', {
+          message: `Could not load plugin for provider ${provider}.`,
+          details: e.message,
+          resolution: 'Review the error message and stack trace for additional information.',
+          stack: e.stack,
+        }, e);
+      }
+    }
 
     spinner.start(
       isPulling ? `Fetching updates to backend environment: ${currentEnv} from the cloud.` : `Initializing your environment: ${currentEnv}`,
@@ -76,10 +91,11 @@ export const initializeEnv = async (
       context.usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_PLATFORM);
       await sequential(initializationTasks);
     } catch (e) {
-      printer.error(`Could not initialize '${currentEnv}': ${e.message}`);
-      printer.debug(e.stack);
-      context.usageData.emitError(e);
-      process.exit(1);
+      throw amplifyFaultWithTroubleshootingLink('ProjectInitFault', {
+        message: `Could not initialize platform for '${currentEnv}': ${e.message}`,
+        resolution: 'Review the error message and stack trace for additional information.',
+        stack: e.stack,
+      }, e);
     } finally {
       context.usageData.stopCodePathTimer(ManuallyTimedCodePath.INIT_ENV_PLATFORM);
     }
@@ -93,9 +109,18 @@ export const initializeEnv = async (
     context.exeInfo = context.exeInfo || {};
     Object.assign(context.exeInfo, projectDetails);
 
-    context.usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES);
-    await sequential(categoryInitializationTasks);
-    context.usageData.stopCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES);
+    try {
+      context.usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES);
+      await sequential(categoryInitializationTasks);
+    } catch (e) {
+      throw amplifyFaultWithTroubleshootingLink('ProjectInitFault', {
+        message: `Could not initialize categories for '${currentEnv}': ${e.message}`,
+        resolution: 'Review the error message and stack trace for additional information.',
+        stack: e.stack,
+      }, e);
+    } finally {
+      context.usageData.stopCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES);
+    }
 
     if (context.exeInfo.forcePush === undefined) {
       context.exeInfo.forcePush = await context.amplify.confirmPrompt(
@@ -104,10 +129,8 @@ export const initializeEnv = async (
     }
 
     if (context.exeInfo.forcePush) {
-      // eslint-disable-next-line no-restricted-syntax
       for (const provider of context.exeInfo.projectConfig.providers) {
-        // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
-        const providerModule = require(providerPlugins[provider]);
+        const providerModule = await import(providerPlugins[provider]);
 
         const resourceDefinition = await context.amplify.getResourceStatus(undefined, undefined, provider);
         providerPushTasks.push(() => providerModule.pushResources(context, resourceDefinition));
@@ -121,6 +144,7 @@ export const initializeEnv = async (
 
     printer.success(isPulling ? '' : 'Initialized your environment successfully.');
   } catch (e) {
+    // let the error propagate up after we safely exit the spinner
     spinner.fail('There was an error initializing your environment.');
     throw e;
   }

@@ -3,9 +3,12 @@ import * as path from 'path';
 import * as glob from 'glob';
 import chalk from 'chalk';
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
-import { generateCustomPoliciesInTemplate, pathManager, readCFNTemplate } from 'amplify-cli-core';
+import {
+  $TSAny, generateCustomPoliciesInTemplate, pathManager, readCFNTemplate,
+} from 'amplify-cli-core';
 import { Template } from 'cloudform-types';
 import { print } from './print';
+// eslint-disable-next-line import/no-cycle
 import { getResourceService } from './resource-status-data';
 
 const CategoryProviders = {
@@ -13,16 +16,16 @@ const CategoryProviders = {
 };
 
 /**
- *
+ * stack mutation info types
  */
 export interface StackMutationInfo {
   label: string;
   consoleStyle: chalk.Chalk;
   icon: string;
 }
-// helper for summary styling
+
 /**
- *
+ * helper for summary styling
  */
 export interface StackMutationType {
   CREATE: StackMutationInfo;
@@ -64,23 +67,21 @@ export const stackMutationType: StackMutationType = {
   },
   NOCHANGE: {
     label: 'No Change',
+    // eslint-disable-next-line spellcheck/spell-checker
     consoleStyle: chalk.grey,
     icon: `[ ]`,
   },
 };
 
-// helper to capitalize string
 /**
- *
+ * helper to capitalize string
  */
-export function capitalize(str: string): string {
-  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-}
+export const capitalize = (str: string): string => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
 // Console text styling for resource details section
 const resourceDetailSectionStyle = chalk.bgRgb(15, 100, 204);
 
-// IResourcePaths: Interface for (build/prebuild) paths to local and cloud CFN files
+// IResourcePaths: Interface for ( build / pre build) paths to local and cloud CFN files
 interface IResourcePaths {
   localPreBuildCfnFile: string;
   cloudPreBuildCfnFile: string;
@@ -89,14 +90,15 @@ interface IResourcePaths {
 }
 
 /**
- *
+ * glob cfn file path
  */
-export function globCFNFilePath(fileFolder: string) {
+export const globCFNFilePath = (fileFolder: string): string => {
   if (fs.existsSync(fileFolder)) {
     const globOptions: glob.IOptions = {
       absolute: false,
       cwd: fileFolder,
       follow: false,
+      // eslint-disable-next-line spellcheck/spell-checker
       nodir: true,
     };
     const templateFileNames = glob.sync('**/*template.{yaml,yml,json}', globOptions);
@@ -106,10 +108,10 @@ export function globCFNFilePath(fileFolder: string) {
     }
   }
   throw new Error(`No CloudFormation template found in ${fileFolder}`);
-}
+};
 
 /**
- *
+ * class to manage amplify resource
  */
 export class ResourceDiff {
   resourceName: string;
@@ -147,7 +149,7 @@ export class ResourceDiff {
   }
 
   // API :View: Print the resource detail status for the given mutation (Create/Update/Delete)
-  public printResourceDetailStatus = async (mutationInfo: StackMutationInfo) => {
+  public printResourceDetailStatus = async (mutationInfo: StackMutationInfo) : Promise<void> => {
     const header = `${mutationInfo.consoleStyle(mutationInfo.label)}`;
     const diff = await this.calculateCfnDiff();
     print.info(`${resourceDetailSectionStyle(`[\u27A5] Resource Stack: ${capitalize(this.category)}/${this.resourceName}`)} : ${header}`);
@@ -168,8 +170,9 @@ export class ResourceDiff {
     // Note!! :- special handling to support multi-env. Currently in multi-env, when new env is created,
     // we do *Not* delete the cloud-backend folder. Hence this logic will always give no diff for new resources.
     // TBD: REMOVE this once we delete cloud-backend folder for new envs
-    if (this.mutationInfo.label == stackMutationType.CREATE.label) {
-      this.cloudTemplate = {}; // Dont use the parent env's template
+    if (this.mutationInfo.label === stackMutationType.CREATE.label) {
+      // Don't use the parent env's template
+      this.cloudTemplate = {};
     }
 
     // calculate diff of graphs.
@@ -178,14 +181,14 @@ export class ResourceDiff {
   };
 
   // helper: wrapper around readCFNTemplate type to handle expressions.
-  private safeReadCFNTemplate = async (filePath: string) => {
+  private safeReadCFNTemplate = async (filePath: string): Promise<$TSAny> => {
     const templateResult = readCFNTemplate(filePath, { throwIfNotExist: false });
     return templateResult?.cfnTemplate || {};
   };
 
   // helper: Select cloudformation file path from build folder or non build folder.
-  // TBD: Update this function to infer filepath based on the state of the resource.
-  private getCfnResourceFilePaths = async () => {
+  // TBD: Update this function to infer file path based on the state of the resource.
+  private getCfnResourceFilePaths = async (): Promise<{ localTemplatePath: string; cloudTemplatePath: string; }> => {
     const resourceFilePaths = {
       localTemplatePath: checkExist(this.resourceFiles.localBuildCfnFile)
         ? this.resourceFiles.localBuildCfnFile
@@ -198,7 +201,7 @@ export class ResourceDiff {
   };
 
   // helper: Get category provider from filename
-  private normalizeProviderForFileNames(provider: string): string {
+  private normalizeProviderForFileNames = (provider: string): string => {
     // file-names are currently standardized around "cloudformation" not awscloudformation.
     if (provider === 'awscloudformation') {
       return CategoryProviders.CLOUDFORMATION;
@@ -207,13 +210,15 @@ export class ResourceDiff {
   }
 
   // helper: Convert cloudformation template diff data using CDK api
-  private printStackDiff = (templateDiff: cfnDiff.TemplateDiff, stream?: cfnDiff.FormatStream) => {
-    // filter out 'AWS::CDK::Metadata' since info is not helpful and formatDifferences doesnt know how to format it.
+  private printStackDiff = (templateDiff: cfnDiff.TemplateDiff, stream?: cfnDiff.FormatStream): $TSAny => {
+    // filter out 'AWS::CDK::Metadata' since info is not helpful and formatDifferences doesn't know how to format it.
     if (templateDiff.resources) {
+      // eslint-disable-next-line no-param-reassign
       templateDiff.resources = templateDiff.resources.filter(change => {
         if (!change) {
           return true;
         }
+        // eslint-disable-next-line spellcheck/spell-checker
         if (this.isResourceTypeCDKMetada(change.newResourceType) || this.isResourceTypeCDKMetada(change.oldResourceType)) {
           return false;
         }
@@ -227,7 +232,7 @@ export class ResourceDiff {
   };
 
   // Search and return the path to cloudformation template in the given folder
-  private safeGlobCFNFilePath(fileFolder: string) {
+  private safeGlobCFNFilePath = (fileFolder: string): string => {
     try {
       return globCFNFilePath(fileFolder);
     } catch (e) {
@@ -235,12 +240,11 @@ export class ResourceDiff {
     }
   }
 
-  private isResourceTypeCDKMetada(resourceType: string | undefined): boolean {
-    return resourceType === 'AWS::CDK::Metadata';
-  }
+  // eslint-disable-next-line spellcheck/spell-checker
+  private isResourceTypeCDKMetada = (resourceType: string | undefined): boolean => resourceType === 'AWS::CDK::Metadata'
 }
 
-function checkExist(filePath) {
+const checkExist = (filePath): boolean => {
   const inputTypes = ['json', 'yaml', 'yml']; // check for existence of any one of the extensions.
   for (let i = 0; i < inputTypes.length; i++) {
     if (fs.existsSync(`${filePath}.${inputTypes[i]}`)) {
@@ -248,11 +252,10 @@ function checkExist(filePath) {
     }
   }
   return false;
-}
+};
 
-// Interface to store template-diffs for C-D-U resource diffs
 /**
- *
+ * Interface to store template-diffs for C-D-U resource diffs
  */
 export interface IResourceDiffCollection {
   updatedDiff: ResourceDiff[] | [];
@@ -260,30 +263,29 @@ export interface IResourceDiffCollection {
   createdDiff: ResourceDiff[] | [];
 }
 
-// Interface to store resource status for each category
 /**
- *
+ * Interface to store resource status for each category
  */
 export interface ICategoryStatusCollection {
-  resourcesToBeCreated: any[];
-  resourcesToBeUpdated: any[];
-  resourcesToBeDeleted: any[];
-  resourcesToBeSynced: any[];
+  resourcesToBeCreated: $TSAny[];
+  resourcesToBeUpdated: $TSAny[];
+  resourcesToBeDeleted: $TSAny[];
+  resourcesToBeSynced: $TSAny[];
   rootStackUpdated?: boolean;
-  allResources: any[];
+  allResources: $TSAny[];
   tagsUpdated: boolean;
 }
 
-// "CollateResourceDiffs" - Calculates the diffs for the list of resources provided.
-// note:- The mutationInfo may be used for styling in enhanced summary.
 /**
- *
+ * "CollateResourceDiffs" - Calculates the diffs for the list of resources provided.
+ * note:- The mutationInfo may be used for styling in enhanced summary.
  */
-export async function CollateResourceDiffs(resources, mutationInfo: StackMutationInfo /* create/update/delete */) {
+export const CollateResourceDiffs = async (resources,
+  mutationInfo: StackMutationInfo /* create/update/delete */): Promise<ResourceDiff[]> => {
   const provider = CategoryProviders.CLOUDFORMATION;
   const resourceDiffs: ResourceDiff[] = [];
   for await (const resource of resources) {
     resourceDiffs.push(new ResourceDiff(resource.category, resource.resourceName, provider, mutationInfo));
   }
   return resourceDiffs;
-}
+};

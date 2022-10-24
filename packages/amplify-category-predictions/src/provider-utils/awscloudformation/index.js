@@ -124,7 +124,7 @@ async function openRekognitionUploadUrl(context, bucketName, region, folderPolic
     await open(URL, { wait: false });
   }
   context.print.info(
-    chalk`Rekognition endpoint to upload Images: {blue.underline ${URL}} (Amazon Rekognition only supports uploading PNG and JPEG files)`,
+    `Rekognition endpoint to upload Images: ${chalk.blue.underline(URL)} (Amazon Rekognition only supports uploading PNG and JPEG files)`,
   );
 }
 

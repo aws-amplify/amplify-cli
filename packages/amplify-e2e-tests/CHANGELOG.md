@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.13.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.13.2...amplify-e2e-tests@3.13.3) (2022-10-21)
+
+
+### Bug Fixes
+
+* failing env init when user pool is defined ([#11225](https://github.com/aws-amplify/amplify-cli/issues/11225)) ([35b3563](https://github.com/aws-amplify/amplify-cli/commit/35b3563ebdd9e8b32097fd74a7417424034ef6bf))
+
+
+
+
+
+## [3.13.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.13.1...amplify-e2e-tests@3.13.2) (2022-10-13)
+
+
+### Bug Fixes
+
+* headless pull with Oauth social providers ([#11011](https://github.com/aws-amplify/amplify-cli/issues/11011)) ([afbdd20](https://github.com/aws-amplify/amplify-cli/commit/afbdd206b5a19666027cc10d9f6f28e9683f84d4))
+* update of user pool groups in amplify metadata file. ([#11090](https://github.com/aws-amplify/amplify-cli/issues/11090)) ([24dd409](https://github.com/aws-amplify/amplify-cli/commit/24dd4093a9c88616c4d390e860b2462a82ae3548))
+* updateUserAttributeSetting during add/update/push flows ([#10773](https://github.com/aws-amplify/amplify-cli/issues/10773)) ([52c1e49](https://github.com/aws-amplify/amplify-cli/commit/52c1e49caa5098c37c32c9f2b6f095cfd60454b1))
+
+
+
+
+
+## [3.13.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.13.0...amplify-e2e-tests@3.13.1) (2022-10-03)
+
+
+### Bug Fixes
+
+* retain TPI on "restore backend" codepath, set stacktrace in AmplifyException, fix changelog script ([#11057](https://github.com/aws-amplify/amplify-cli/issues/11057)) ([cf54acc](https://github.com/aws-amplify/amplify-cli/commit/cf54accdca6c7bb1663371f98d48321edcaa76a1))
+
+
+
+
+
+# [3.13.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.11.7...amplify-e2e-tests@3.13.0) (2022-09-21)
+
+
+### Features
+
+* unified error handling framework ([#10933](https://github.com/aws-amplify/amplify-cli/issues/10933)) ([cc9a422](https://github.com/aws-amplify/amplify-cli/commit/cc9a422793f4ef620a4ed634b6f55e28e3a8a3a2))
+
+
+
+
+
 ## [3.11.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.11.7-rc.224a2e0e4.0...amplify-e2e-tests@3.11.7) (2022-09-06)
 
 

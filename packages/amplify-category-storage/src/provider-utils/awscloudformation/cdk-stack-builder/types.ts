@@ -5,7 +5,7 @@ import { Construct } from 'constructs';
 import { DdbAttrType } from '../cfn-template-utils';
 
 /**
- *
+ * AmplifyDDBResourceInputParameters
  */
 export interface AmplifyDDBResourceInputParameters {
   tableName: string;
@@ -16,7 +16,7 @@ export interface AmplifyDDBResourceInputParameters {
 }
 
 /**
- *
+ * AmplifyCfnParamType
  */
 export type AmplifyCfnParamType = {
   params: Array<string>;
@@ -25,7 +25,7 @@ export type AmplifyCfnParamType = {
 };
 
 /**
- *
+ * AmplifyS3ResourceInputParameters
  */
 export interface AmplifyS3ResourceInputParameters {
   bucketName?: string;
@@ -54,9 +54,8 @@ export interface AmplifyS3ResourceInputParameters {
   adminTriggerFunction?: string;
 }
 
-// Base class for all storage resource stacks ( S3, DDB )
 /**
- *
+ * Base class for all storage resource stacks ( S3, DDB )
  */
 export class AmplifyResourceCfnStack extends cdk.Stack implements AmplifyCDKL1 {
   _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
@@ -65,80 +64,52 @@ export class AmplifyResourceCfnStack extends cdk.Stack implements AmplifyCDKL1 {
   }
 
   /**
-   *
-   * @param props :cdk.CfnOutputProps
-   * @param logicalId: : lodicalId of the Resource
+   * adds cfn output to stack
    */
   addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void {
-    try {
-      new cdk.CfnOutput(this, logicalId, props);
-    } catch (error) {
-      throw error;
-    }
+    // eslint-disable-next-line no-new
+    new cdk.CfnOutput(this, logicalId, props);
   }
 
   /**
-   *
-   * @param props
-   * @param logicalId
+   * adds cfn mapping to stack
    */
   addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void {
-    try {
-      new cdk.CfnMapping(this, logicalId, props);
-    } catch (error) {
-      throw error;
-    }
+    // eslint-disable-next-line no-new
+    new cdk.CfnMapping(this, logicalId, props);
   }
 
   /**
-   *
-   * @param props
-   * @param logicalId
+   * adds cfn condition to stack
    */
   addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void {
-    try {
-      new cdk.CfnCondition(this, logicalId, props);
-    } catch (error) {
-      throw error;
-    }
+    // eslint-disable-next-line no-new
+    new cdk.CfnCondition(this, logicalId, props);
   }
 
   /**
-   *
-   * @param props
-   * @param logicalId
+   * adds cfn resource to stack
    */
   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): cdk.CfnResource {
-    try {
-      return new cdk.CfnResource(this, logicalId, props);
-    } catch (error) {
-      throw error;
-    }
+    return new cdk.CfnResource(this, logicalId, props);
   }
 
   /**
-   *
-   * @param props
-   * @param logicalId
+   * adds cfn parameter to stack
    */
   addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
-    try {
-      if (this._cfnParameterMap.has(logicalId)) {
-        throw new Error('logical Id already Exists');
-      }
-      this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
-    } catch (error) {
-      throw error;
+    if (this._cfnParameterMap.has(logicalId)) {
+      throw new Error('logical Id already Exists');
     }
+    this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
   }
 
   // Generate convert cdk stack to cloudformation
   public renderCloudFormationTemplate = (): string => this._toCloudFormation();
 }
 
-// Types used in Build/Params.json
 /**
- *
+ * Types used in Build/Params.json
  */
 export enum AmplifyBuildParamsPermissions {
   ALLOW = 'ALLOW',

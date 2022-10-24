@@ -1,5 +1,5 @@
 import {
-  $TSContext, EnvironmentDoesNotExistError, exitOnNextTick, IAmplifyResource, stateManager,
+  $TSContext, AmplifyError, AmplifyFault, AmplifyException, AMPLIFY_SUPPORT_DOCS, exitOnNextTick, IAmplifyResource, stateManager,
 } from 'amplify-cli-core';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 import { printer } from 'amplify-prompts';
@@ -12,6 +12,7 @@ import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { showResourceTable } from './resource-status';
 import { isValidGraphQLAuthError, handleValidGraphQLAuthError } from './apply-auth-mode';
 import { ManuallyTimedCodePath } from '../../domain/amplify-usageData/UsageDataTypes';
+
 /**
  * Entry point for pushing resources to the cloud
  */
@@ -23,15 +24,18 @@ export const pushResources = async (
   rebuild = false,
 ): Promise<boolean> => {
   context.usageData.startCodePathTimer(ManuallyTimedCodePath.PUSH_TRANSFORM);
+
   if (context.parameters.options['iterative-rollback']) {
     // validate --iterative-rollback with --force
     if (context.parameters.options.force) {
-      throw new Error(
-        "'--iterative-rollback' and '--force' cannot be used together. Consider running 'amplify push --force' to iteratively rollback and redeploy.",
-      );
+      throw new AmplifyError('CommandNotSupportedError', {
+        message: '--iterative-rollback and --force are not supported together',
+        resolution: 'Use --force without --iterative-rollback to iteratively rollback and redeploy.',
+      });
     }
     context.exeInfo.iterativeRollback = true;
   }
+
   if (context.parameters.options.env) {
     const envName: string = context.parameters.options.env;
     const allEnvs = context.amplify.getAllEnvs();
@@ -51,12 +55,10 @@ export const pushResources = async (
       }
       await initializeEnv(context);
     } else {
-      const errMessage = "Environment doesn't exist. Please use 'amplify init' to create a new environment";
-
-      context.print.error(errMessage);
-      await context.usageData.emitError(new EnvironmentDoesNotExistError(errMessage));
-
-      exitOnNextTick(1);
+      throw new AmplifyError('EnvironmentNotInitializedError', {
+        message: 'Current environment cannot be determined.',
+        resolution: `Use 'amplify init' in the root of your app directory to create a new environment.`,
+      });
     }
   }
 
@@ -101,23 +103,24 @@ export const pushResources = async (
     try {
       // Get current-cloud-backend's amplify-meta
       const currentAmplifyMeta = stateManager.getCurrentMeta();
-
       await providersPush(context, rebuild, category, resourceName, filteredResources);
-
       await onCategoryOutputsChange(context, currentAmplifyMeta);
     } catch (err) {
+      // TODO PL: this needs to be removed once the api category is using the new amplify error class
       const isAuthError = isValidGraphQLAuthError(err.message);
       if (isAuthError) {
         retryPush = await handleValidGraphQLAuthError(context, err.message);
       }
       if (!retryPush) {
-        if (isAuthError) {
-          printer.warn(
-            'You defined authorization rules (@auth) but haven\'t enabled their authorization providers on your GraphQL API. Run "amplify update api" to configure your GraphQL API to include the appropriate authorization providers as an authorization mode.',
-          );
-          printer.error(err.message);
+        if (err instanceof AmplifyException) {
+          throw err;
         }
-        throw err;
+        throw new AmplifyFault('PushResourcesFault', {
+          message: err.message,
+          stack: err.stack,
+          link: isAuthError ? AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url : AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
+          resolution: isAuthError ? 'Some @auth rules are defined in the GraphQL schema without enabling the corresponding auth providers. Run `amplify update api` to configure your GraphQL API to include the appropriate auth providers as an authorization mode.' : undefined,
+        }, err);
       }
     }
   } while (retryPush);

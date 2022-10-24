@@ -3,9 +3,8 @@ import * as ddb from 'aws-cdk-lib/aws-dynamodb';
 import * as s3Cdk from 'aws-cdk-lib/aws-s3';
 import * as iamCdk from 'aws-cdk-lib/aws-iam';
 
-// CDK - L1 methods to store CFN gen related information
 /**
- *
+ * PUBLIC API : L1 methods to store CFN gen related information
  */
 export interface AmplifyCDKL1 {
   addCfnParameter: (props: cdk.CfnParameterProps, logicalId: string) => void;
@@ -16,14 +15,14 @@ export interface AmplifyCDKL1 {
 }
 
 /**
- *
+ * PUBLIC API : Amplify DDB resource type
  */
 export interface AmplifyDDBResourceTemplate extends AmplifyCDKL1 {
   dynamoDBTable?: ddb.CfnTable;
 }
 
 /**
- *
+ * PUBLIC API : Amplify S3 resource type
  */
 export interface AmplifyS3ResourceTemplate extends AmplifyCDKL1 {
   s3Bucket?: s3Cdk.CfnBucket;
@@ -37,9 +36,8 @@ export interface AmplifyS3ResourceTemplate extends AmplifyCDKL1 {
   s3GuestReadPolicy?: iamCdk.CfnPolicy;
 }
 
-// Types used in Build/Params.json
 /**
- *
+ * PUBLIC API : Amplify build permissions type
  */
 export enum AmplifyBuildParamsPermissions {
   ALLOW = 'ALLOW',

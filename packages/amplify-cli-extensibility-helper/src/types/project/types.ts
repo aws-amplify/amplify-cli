@@ -2,7 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 
 /**
- *
+ * amplify root stack type
  */
 export interface AmplifyRootStackTemplate {
   authRole?: iam.CfnRole;

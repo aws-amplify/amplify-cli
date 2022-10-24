@@ -1,28 +1,20 @@
 import {
-  $TSContext,
-  AmplifyCategories,
-  AmplifySupportedService,
+  $TSAny, $TSContext,
+  AmplifyCategories, AmplifyCategoryTransform, AmplifyStackTemplate, AmplifySupportedService,
   buildOverrideDir,
   CFNTemplateFormat,
   JSONUtilities,
-  pathManager,
-  writeCFNTemplate,
-  Template,
-  AmplifyStackTemplate,
-  AmplifyCategoryTransform,
-  $TSAny,
-  $TSObject,
+  pathManager, Template, writeCFNTemplate
 } from 'amplify-cli-core';
+import { formatter, printer } from 'amplify-prompts';
 import * as cdk from 'aws-cdk-lib';
-import * as path from 'path';
-import { printer, formatter } from 'amplify-prompts';
-import _ from 'lodash';
 import * as fs from 'fs-extra';
-import * as vm from 'vm2';
 import os from 'os';
-import { CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
-import { AmplifyUserPoolGroupStack, AmplifyUserPoolGroupStackOutputs } from './auth-user-pool-group-stack-builder';
+import * as path from 'path';
+import * as vm from 'vm2';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
+import { CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
+import { AmplifyUserPoolGroupStack, AmplifyUserPoolGroupStackOutputs } from './index';
 import { AuthStackSynthesizer } from './stack-synthesizer';
 
 /**

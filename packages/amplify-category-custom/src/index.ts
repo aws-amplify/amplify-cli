@@ -1,13 +1,20 @@
-import { $TSAny, $TSContext, IAmplifyResource, stateManager } from 'amplify-cli-core';
+import {
+  $TSAny,
+  $TSContext, AmplifyError, IAmplifyResource, stateManager,
+} from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as path from 'path';
 import { buildCustomResources } from './utils/build-custom-resources';
 import { categoryName } from './utils/constants';
-export { addCDKResourceDependency } from './utils/dependency-management-utils';
+
 export { generateDependentResourcesType } from './utils/build-custom-resources';
+export { addCDKResourceDependency } from './utils/dependency-management-utils';
 export { AmplifyResourceProps } from './utils/generate-cfn-from-cdk';
 
-export async function executeAmplifyCommand(context: $TSContext) {
+/**
+ * execute amplify command
+ */
+export const executeAmplifyCommand = async (context: $TSContext): Promise<void> => {
   let commandPath = path.normalize(path.join(__dirname, 'commands'));
 
   if (context.input.command === 'help') {
@@ -20,18 +27,26 @@ export async function executeAmplifyCommand(context: $TSContext) {
 
   // Check if project has been initialized
   if (!stateManager.metaFileExists()) {
-    printer.error('Could not find the amplfiy-meta.json file. Make sure your project is initialized in the cloud.');
-    return;
+    throw new AmplifyError('MissingAmplifyMetaFileError', {
+      message: 'Could not find the amplify-meta.json file.',
+      resolution: 'Make sure your project is initialized in the cloud.',
+    });
   }
 
   await commandModule.run(context);
-}
+};
 
-export async function handleAmplifyEvent(context: $TSContext, args: $TSAny) {
+/**
+ * Amplify event handler
+ */
+export const handleAmplifyEvent = async (__context: $TSContext, args: $TSAny): Promise<void> => {
   printer.info(`${categoryName} handleAmplifyEvent to be implemented`);
   printer.info(`Received event args ${args}`);
-}
+};
 
-export async function transformCategoryStack(context: $TSContext, resource: IAmplifyResource) {
+/**
+ * Transform category stack
+ */
+export const transformCategoryStack = async (context: $TSContext, resource: IAmplifyResource): Promise<void> => {
   await buildCustomResources(context, resource.resourceName);
-}
+};

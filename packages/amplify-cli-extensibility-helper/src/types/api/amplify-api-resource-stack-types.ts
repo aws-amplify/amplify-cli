@@ -13,7 +13,7 @@ import { CfnStack } from 'aws-cdk-lib';
 // Customer can use these params to mutate the Cloudformation for the resource
 
 /**
- *
+ * Public API: Base template to override amplify generated graphqlAPI
  */
 export interface AmplifyApiGraphQlResourceStackTemplate {
   // directives stack
@@ -24,9 +24,10 @@ export interface AmplifyApiGraphQlResourceStackTemplate {
 }
 
 /**
- *
+ * Public API:  Amplify Appsync Api type
  */
 export type AppsyncApiStack = {
+  // eslint-disable-next-line spellcheck/spell-checker
   rootstack: CfnStack;
   GraphQLAPI: CfnGraphQLApi;
   GraphQLAPIDefaultApiKey?: CfnApiKey;
@@ -38,12 +39,12 @@ export type AppsyncApiStack = {
 };
 
 /**
- *
+ * Public API:  Amplify model directive type
  */
 export type ModelDirectiveStack = AppsyncStackCommon & DDBModelDirectiveStack;
 
 /**
- *
+ * Public API:  Appsync resolvers and Functions type
  */
 export type AppsyncStackCommon = {
   resolvers?: Record<string, CfnResolver>;
@@ -51,7 +52,7 @@ export type AppsyncStackCommon = {
 };
 
 /**
- *
+ * Public API:  dynamoDB model directive stack
  */
 export type DDBModelDirectiveStack = {
   modelStack?: CfnStack;
@@ -64,7 +65,7 @@ export type DDBModelDirectiveStack = {
 };
 
 /**
- *
+ * Public API:  http directive stack
  */
 export interface HttpsDirectiveStack {
   httpsDataSource?: Record<string, CfnDataSource>;
@@ -73,7 +74,7 @@ export interface HttpsDirectiveStack {
 }
 
 /**
- *
+ * Public API:  open search directive stack
  */
 export interface OpenSearchDirectiveStack {
   OpenSearchDataSource?: CfnDataSource;
@@ -82,13 +83,14 @@ export interface OpenSearchDirectiveStack {
   OpenSearchDomain?: CfnDomain;
   OpenSearchStreamingLambdaIAMRole?: CfnRole;
   OpenSearchStreamingLambdaIAMRoleDefaultPolicy?: CfnPolicy;
+  // eslint-disable-next-line spellcheck/spell-checker
   CloudwatchLogsAccess?: CfnPolicy;
   OpenSearchStreamingLambdaFunction?: CfnFunction;
   OpenSearchModelLambdaMapping?: Record<string, CfnEventSourceMapping>;
 }
 
 /**
- *
+ * Public API:  function directive stack
  */
 export interface FunctionDirectiveStack {
   lambdaDataSource: Record<string, CfnDataSource>;
@@ -97,7 +99,7 @@ export interface FunctionDirectiveStack {
 }
 
 /**
- *
+ * Public API:  predictions directive stack
  */
 export interface PredictionsDirectiveStack {
   RekognitionDataSource: CfnDataSource;
