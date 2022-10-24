@@ -1,7 +1,7 @@
 import { printer } from 'amplify-prompts';
 import { $TSContext } from 'amplify-cli-core';
 import {
-  StudioComponent, StudioTheme, GenericDataSchema, StudioForm, StudioSchema, checkIsSupportedAsForm,
+  StudioComponent, StudioTheme, GenericDataSchema, StudioForm, StudioSchema,checkIsSupportedAsForm
 } from '@aws-amplify/codegen-ui';
 import {
   createUiBuilderComponent,
@@ -88,7 +88,7 @@ export const generateUiBuilderForms = (
   const modelMap: { [model: string]: Set<'create' | 'update'> } = {};
   if (dataSchema?.dataSourceType === 'DataStore' && autoGenerateForms) {
     Object.entries(dataSchema.models).forEach(([name, model]) => {
-      if (checkIsSupportedAsForm(model) && !model.isJoinTable) {
+      if(checkIsSupportedAsForm(model) && !model.isJoinTable) {
         modelMap[name] = new Set(['create', 'update']);
       }
     });

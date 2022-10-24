@@ -9,9 +9,6 @@ const aws = require('./aws');
 
 const logger = fileLogger('aws-lambda');
 
-/**
- *
- */
 export class Lambda {
   private lambda: AwsSdkLambda;
 
@@ -28,9 +25,6 @@ export class Lambda {
     })() as $TSAny;
   }
 
-  /**
-   *
-   */
   async listLayerVersions(layerNameOrArn: string) {
     const startingParams: ListLayerVersionsRequest = { LayerName: layerNameOrArn, MaxItems: 20 };
     const result = await pagedAWSCall<ListLayerVersionsResponse, LayerVersionsListItem, string>(
@@ -46,9 +40,6 @@ export class Lambda {
     return result;
   }
 
-  /**
-   *
-   */
   async deleteLayerVersions(layerNameOrArn: string, versions: number[]) {
     const params = { LayerName: layerNameOrArn, VersionNumber: undefined };
     const deletionPromises = [];

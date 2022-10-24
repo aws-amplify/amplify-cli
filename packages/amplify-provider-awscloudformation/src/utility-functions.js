@@ -427,5 +427,5 @@ module.exports = {
   /**
    * Provides the same AWS config used to push the amplify project
    */
-  retrieveAwsConfig: async context => getAwsConfig(context),
+  retrieveAwsConfig: async (context) => getAwsConfig(context),
 };

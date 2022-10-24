@@ -58,7 +58,7 @@ export const exampleSchema: GenericDataSchema = {
           isArray: false,
         },
       },
-      isJoinTable: true,
+      isJoinTable: true
     },
     EmptyModel: {
       fields: {
