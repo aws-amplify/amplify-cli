@@ -48,7 +48,7 @@
     signedsource "^1.0.0"
     yargs "^15.3.1"
 
-"@aws-amplify/amplify-category-api@^5.1.0-cdkv2.1 || ^5.0.0":
+"@aws-amplify/amplify-category-api@^5.1.0-cdkv2.1":
   version "5.1.0-cdkv2.1"
   resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-category-api/-/amplify-category-api-5.1.0-cdkv2.1.tgz#566a80f7b2479fb1eea6e573bea7904792fe4a87"
   integrity sha512-ceSrH9OXdWOATtJqR5pqCeoMgEV7tdgs5chwMROxZp75G5airNrXBNRgTcNUDuOnKRhoHAqXlqNjWuKr8PR/0g==
@@ -235,7 +235,7 @@
     "@aws-sdk/client-location" "3.41.0"
     camelcase-keys "6.2.2"
 
-"@aws-amplify/graphql-auth-transformer@2.1.0-cdkv2.1", "@aws-amplify/graphql-auth-transformer@^2.1.0-cdkv2.1 || ^2.0.0":
+"@aws-amplify/graphql-auth-transformer@2.1.0-cdkv2.1", "@aws-amplify/graphql-auth-transformer@^2.1.0-cdkv2.1":
   version "2.1.0-cdkv2.1"
   resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-auth-transformer/-/graphql-auth-transformer-2.1.0-cdkv2.1.tgz#44c5f4f6de2b2ba1c777edb8f7d25a1b65e2ef1e"
   integrity sha512-lrcWVarEkY+/JysfRwm+jAmrXiT50V0I7pa6low22kYVINN46j0FYOpch1tLIU4YLT2PE7bL3ViKNgBNsP7RQw==
@@ -252,7 +252,7 @@
     lodash "^4.17.21"
     md5 "^2.3.0"
 
-"@aws-amplify/graphql-default-value-transformer@1.1.0-cdkv2.1", "@aws-amplify/graphql-default-value-transformer@^1.1.0-cdkv2.1 || ^1.0.0":
+"@aws-amplify/graphql-default-value-transformer@1.1.0-cdkv2.1", "@aws-amplify/graphql-default-value-transformer@^1.1.0-cdkv2.1":
   version "1.1.0-cdkv2.1"
   resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-default-value-transformer/-/graphql-default-value-transformer-1.1.0-cdkv2.1.tgz#1d4cfa9a67aa49e8d9a7dcb50cd85c12b1233646"
   integrity sha512-dL28qv/UX9m3VyyuVjP2jd0Rv6u1Sn45fK/L4qjbq6YXIFWdyMDofCA8gf2p1C2e1FvbTiwwzrJR10VUvT9KpA==
@@ -274,7 +274,7 @@
     prettier "^1.19.1"
     yargs "^15.1.0"
 
-"@aws-amplify/graphql-function-transformer@1.1.0-cdkv2.1", "@aws-amplify/graphql-function-transformer@^1.1.0-cdkv2.1 || ^1.0.0":
+"@aws-amplify/graphql-function-transformer@1.1.0-cdkv2.1", "@aws-amplify/graphql-function-transformer@^1.1.0-cdkv2.1":
   version "1.1.0-cdkv2.1"
   resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-function-transformer/-/graphql-function-transformer-1.1.0-cdkv2.1.tgz#fa2f54c8b28c7e1a88464322e876f9106158b8cd"
   integrity sha512-4cDySdoJ1FzSoAQnXVb2CpfLYUfiZHZpXksLCOIoI+F7cE9bidoxoSuuGostBlvb7AttsSpJ6SxD+IQhdhf/Tw==
@@ -288,7 +288,7 @@
     graphql-mapping-template "4.20.5"
     graphql-transformer-common "4.24.0"
 
-"@aws-amplify/graphql-http-transformer@1.1.0-cdkv2.1", "@aws-amplify/graphql-http-transformer@^1.1.0-cdkv2.1 || ^1.0.0":
+"@aws-amplify/graphql-http-transformer@1.1.0-cdkv2.1", "@aws-amplify/graphql-http-transformer@^1.1.0-cdkv2.1":
   version "1.1.0-cdkv2.1"
   resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-http-transformer/-/graphql-http-transformer-1.1.0-cdkv2.1.tgz#ac49b94542f3d6febf5b3f4d007a12000d0583f5"
   integrity sha512-+xubIIHgSG4p4W1M91El4DfGhsWatyxZTND2X4hUN/KfegBx2IfiCW752dVVObBPxI/2gR/M48C2Cb4OMx2ctQ==
@@ -302,7 +302,7 @@
     graphql-mapping-template "4.20.5"
     graphql-transformer-common "4.24.0"
 
-"@aws-amplify/graphql-index-transformer@1.1.0-cdkv2.1", "@aws-amplify/graphql-index-transformer@^1.1.0-cdkv2.1 || ^1.0.0":
+"@aws-amplify/graphql-index-transformer@1.1.0-cdkv2.1", "@aws-amplify/graphql-index-transformer@^1.1.0-cdkv2.1":
   version "1.1.0-cdkv2.1"
   resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-index-transformer/-/graphql-index-transformer-1.1.0-cdkv2.1.tgz#c64f8a79bfe531b6f7d0baf619e4cb0fa232d82b"
   integrity sha512-nzaMZjTI3j2gdPqhpHjaSleGo+JsAyE3/i3o90xfUD5j1465yD+6gWTN3VJm8lAH/pX+hcYHrIN6D0NBGeqQhw==
@@ -317,7 +317,7 @@
     graphql-mapping-template "4.20.5"
     graphql-transformer-common "4.24.0"
 
-"@aws-amplify/graphql-maps-to-transformer@2.1.0-cdkv2.1", "@aws-amplify/graphql-maps-to-transformer@^2.1.0-cdkv2.1 || ^2.0.0":
+"@aws-amplify/graphql-maps-to-transformer@2.1.0-cdkv2.1", "@aws-amplify/graphql-maps-to-transformer@^2.1.0-cdkv2.1":
   version "2.1.0-cdkv2.1"
   resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-maps-to-transformer/-/graphql-maps-to-transformer-2.1.0-cdkv2.1.tgz#6cd8dbfc135e3ad9620b78ddd756314c04960d4a"
   integrity sha512-uxXYNbIIWFJpDDqlVyfFUDgu7O891CV2b6fl88HbSUJgR70nzvVVUmVpc3JIPouylZdvbqmBe60JvhJRHILa+w==
@@ -330,7 +330,7 @@
     graphql-mapping-template "4.20.5"
     graphql-transformer-common "4.24.0"
 
-"@aws-amplify/graphql-model-transformer@1.1.0-cdkv2.1", "@aws-amplify/graphql-model-transformer@^1.1.0-cdkv2.1 || ^1.0.0":
+"@aws-amplify/graphql-model-transformer@1.1.0-cdkv2.1", "@aws-amplify/graphql-model-transformer@^1.1.0-cdkv2.1":
   version "1.1.0-cdkv2.1"
   resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-model-transformer/-/graphql-model-transformer-1.1.0-cdkv2.1.tgz#1d4ad4ca5607e2e51628f0c4cb444f94fc032803"
   integrity sha512-nFeNJdK6seb2Lrx5qQrQUdjXbwwmoyl5CpE4GLCDdaWMwN7od1BT8WJgfY6lk3kYPxBCPcSSw75Rh87SzJaHDQ==
@@ -344,7 +344,7 @@
     graphql-mapping-template "4.20.5"
     graphql-transformer-common "4.24.0"
 
-"@aws-amplify/graphql-predictions-transformer@1.1.0-cdkv2.1", "@aws-amplify/graphql-predictions-transformer@^1.1.0-cdkv2.1 || ^1.0.0":
+"@aws-amplify/graphql-predictions-transformer@1.1.0-cdkv2.1", "@aws-amplify/graphql-predictions-transformer@^1.1.0-cdkv2.1":
   version "1.1.0-cdkv2.1"
   resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-predictions-transformer/-/graphql-predictions-transformer-1.1.0-cdkv2.1.tgz#ec430b4d23a2c28d29e91a4fc6d90314faa2dd6f"
   integrity sha512-CLXGLHF4EZeyS+mwmtQDUmpNNI/oMcweuYQKDTbcvInGpNDKhfi5au7ABELdqPsD0axLmru3UQI3IpVKnnurDQ==
@@ -358,7 +358,7 @@
     graphql-mapping-template "4.20.5"
     graphql-transformer-common "4.24.0"
 
-"@aws-amplify/graphql-relational-transformer@1.1.0-cdkv2.1", "@aws-amplify/graphql-relational-transformer@^1.1.0-cdkv2.1 || ^1.0.0":
+"@aws-amplify/graphql-relational-transformer@1.1.0-cdkv2.1", "@aws-amplify/graphql-relational-transformer@^1.1.0-cdkv2.1":
   version "1.1.0-cdkv2.1"
   resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-relational-transformer/-/graphql-relational-transformer-1.1.0-cdkv2.1.tgz#2231374bd9a3fe21899a1b0468a47754db768e93"
   integrity sha512-aVRNJvkYPdQYJWKXGdYcf9DnKi9o84U7fWBm8ugR+OUt+7YbBCE/EEVD0KvMG7cKxTFxSRqp7JqKWpH23iJEQQ==
@@ -374,7 +374,7 @@
     graphql-transformer-common "4.24.0"
     immer "^9.0.12"
 
-"@aws-amplify/graphql-searchable-transformer@1.1.0-cdkv2.1", "@aws-amplify/graphql-searchable-transformer@^1.1.0-cdkv2.1 || ^1.0.0":
+"@aws-amplify/graphql-searchable-transformer@1.1.0-cdkv2.1", "@aws-amplify/graphql-searchable-transformer@^1.1.0-cdkv2.1":
   version "1.1.0-cdkv2.1"
   resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-searchable-transformer/-/graphql-searchable-transformer-1.1.0-cdkv2.1.tgz#ed619f1128eebcbf6cbcc8f3cdb2f03c72b5a45a"
   integrity sha512-OR64bUrrjhwsvvyrhyfsmOsmd78D8VEhfCc8YC8XJHs7R+vM1ODV0Q8RA5OJV/+12P+1/4H4AdG8UbKg6JoNDA==
@@ -389,7 +389,7 @@
     graphql-mapping-template "4.20.5"
     graphql-transformer-common "4.24.0"
 
-"@aws-amplify/graphql-transformer-core@1.1.0-cdkv2.1", "@aws-amplify/graphql-transformer-core@^1.1.0-cdkv2.1 || ^1.0.0":
+"@aws-amplify/graphql-transformer-core@1.1.0-cdkv2.1", "@aws-amplify/graphql-transformer-core@^1.1.0-cdkv2.1":
   version "1.1.0-cdkv2.1"
   resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-transformer-core/-/graphql-transformer-core-1.1.0-cdkv2.1.tgz#8182fe10075deebe6efb4bdb3abc883754404a64"
   integrity sha512-ZC1bI1pQ8Upm1PKE8IRaGeSQQnetgQueT6iUtPMuOWIfDQ7Ok8U/laRz2DbnC5JXn08XaDX5l7Kl4QYleeBEiQ==
@@ -407,7 +407,7 @@
     ts-dedent "^2.0.0"
     vm2 "^3.9.8"
 
-"@aws-amplify/graphql-transformer-interfaces@2.1.0-cdkv2.1", "@aws-amplify/graphql-transformer-interfaces@^2.1.0-cdkv2.1 || ^2.0.0":
+"@aws-amplify/graphql-transformer-interfaces@2.1.0-cdkv2.1", "@aws-amplify/graphql-transformer-interfaces@^2.1.0-cdkv2.1":
   version "2.1.0-cdkv2.1"
   resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-transformer-interfaces/-/graphql-transformer-interfaces-2.1.0-cdkv2.1.tgz#46253b5c520ae48a60c0344673dccae9ac2e79fb"
   integrity sha512-nYk2dJNEhDPjlaSyVgiaybaPcJWe7usrx3jOvv5VTZf0ueJfPq15zGj5JLXaKl0oRWh2nQK8ku2JnRKL1tCuBw==
@@ -417,7 +417,7 @@
     constructs "^10.0.5"
     graphql "^14.5.8"
 
-"@aws-amplify/graphql-transformer-migrator@2.1.0-cdkv2.1", "@aws-amplify/graphql-transformer-migrator@^2.1.0-cdkv2.1 || ^2.0.0":
+"@aws-amplify/graphql-transformer-migrator@2.1.0-cdkv2.1", "@aws-amplify/graphql-transformer-migrator@^2.1.0-cdkv2.1":
   version "2.1.0-cdkv2.1"
   resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-transformer-migrator/-/graphql-transformer-migrator-2.1.0-cdkv2.1.tgz#e19124cf2613f2456de412ccf71537b39ab6e09e"
   integrity sha512-qgA97uuXwLyxvIPvaJm+UjI7FArwsg43D9o7VSX+N2rA3XoIf0/e2PgAO7htdFdq/yMmRQxnp6Dn1SguDccLBw==

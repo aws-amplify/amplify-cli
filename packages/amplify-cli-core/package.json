@@ -24,8 +24,8 @@
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-core": "^1.1.0-cdkv2.1 || ^1.0.0",
-    "@aws-amplify/graphql-transformer-interfaces": "^2.1.0-cdkv2.1 || ^2.0.0",
+    "@aws-amplify/graphql-transformer-core": "^1.1.0-cdkv2.1",
+    "@aws-amplify/graphql-transformer-interfaces": "^2.1.0-cdkv2.1",
     "ajv": "^6.12.6",
     "amplify-cli-logger": "1.2.1",
     "amplify-prompts": "2.6.0",
