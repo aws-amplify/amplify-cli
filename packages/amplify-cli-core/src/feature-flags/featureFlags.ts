@@ -662,7 +662,7 @@ export class FeatureFlags {
         name: 'populateOwnerFieldForStaticGroupAuth',
         type: 'boolean',
         defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: false,
+        defaultValueForNewProjects: true,
       },
     ]);
 
