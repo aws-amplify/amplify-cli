@@ -32,13 +32,9 @@ export const run = async (context: $TSContext): Promise<void> => {
       printer.error(err?.message);
     }
   } else {
-    try {
-      await context.amplify.showStatusTable(view);
-      await context.amplify.showHelpfulProviderLinks(context);
-      await showAmplifyConsoleHostingStatus(context);
-    } catch (e) {
-      view.logErrorException(e, context);
-    }
+    await context.amplify.showStatusTable(view);
+    await context.amplify.showHelpfulProviderLinks(context);
+    await showAmplifyConsoleHostingStatus(context);
   }
 };
 

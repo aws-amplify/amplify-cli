@@ -1,26 +1,13 @@
 import {
   addFunction,
-  amplifyPull,
-  amplifyPushWithNoChanges,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
-  getAppId,
-  getBucketKeys,
   getHooksDirPath,
-  getProjectMeta,
   initJSProjectWithProfile,
-  removeFunction,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { addEnvironment, checkoutEnvironment } from '../environment/env';
-
-const checkForFiles = (toCheckFiles: string[], inFiles: string[], prefix?: string): void => {
-  toCheckFiles.forEach(toCheckFile => {
-    expect(inFiles).toContain(prefix ? prefix.concat(toCheckFile) : toCheckFile);
-  });
-};
 
 describe('runtime hooks', () => {
   let projRoot: string;
@@ -34,6 +21,7 @@ describe('runtime hooks', () => {
   });
 
   it('test hook scripts with non zero exit code', async () => {
+    // eslint-disable-next-line spellcheck/spell-checker
     await initJSProjectWithProfile(projRoot, { envName: 'enva' });
     const hooksDirPath = getHooksDirPath(projRoot);
     expect(fs.existsSync(hooksDirPath)).toBe(true);

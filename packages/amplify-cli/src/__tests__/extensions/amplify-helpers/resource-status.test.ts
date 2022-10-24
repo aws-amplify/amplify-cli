@@ -1,5 +1,5 @@
 import { hashLayerResource } from 'amplify-category-function';
-import { stateManager } from 'amplify-cli-core';
+import { AmplifyException, stateManager } from 'amplify-cli-core';
 import { hashElement } from 'folder-hash';
 import * as fs from 'fs-extra';
 import {
@@ -44,7 +44,7 @@ jest.mock('../../../extensions/amplify-helpers/get-env-info', () => ({
 }));
 
 jest.mock('../../../extensions/amplify-helpers/get-cloud-init-status', () => ({
-  ...(jest.requireActual('../../../extensions/amplify-helpers/get-cloud-init-status') as {}),
+  ...(jest.requireActual('../../../extensions/amplify-helpers/get-cloud-init-status') as Record<string, never>),
   getCloudInitStatus: jest.fn(),
 }));
 
@@ -57,13 +57,14 @@ const currentBackendDirPathStub = 'currentBackendDirPathStub';
 const projectRootPath = 'projectRootPath';
 
 jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as {}),
+  ...(jest.requireActual('amplify-cli-core') as Record<string, never>),
   stateManager: {
     getCurrentMeta: jest.fn(),
     getMeta: jest.fn(),
     getProjectTags: jest.fn(),
     getCurrentProjectTags: jest.fn(),
     getBackendConfig: jest.fn(),
+    getCurrentBackendConfig: jest.fn(),
     getProjectConfig: jest.fn(),
   },
   pathManager: {
@@ -77,7 +78,7 @@ jest.mock('amplify-cli-core', () => ({
 }));
 
 jest.mock('amplify-category-function', () => ({
-  ...(jest.requireActual('amplify-category-function') as {}),
+  ...(jest.requireActual('amplify-category-function') as Record<string, never>),
   hashLayerResource: jest.fn(),
 }));
 
@@ -109,6 +110,7 @@ describe('resource-status', () => {
     stateManagerMock.getProjectTags.mockReturnValue([]);
     stateManagerMock.getCurrentProjectTags.mockReturnValue([]);
     stateManagerMock.getBackendConfig.mockReturnValue({});
+    stateManagerMock.getCurrentBackendConfig.mockReturnValue({});
     stateManagerMock.getProjectConfig.mockReturnValue(mockProjectConfig);
 
     (getEnvInfo as jest.MockedFunction<typeof getEnvInfo>).mockReturnValue({ envName: 'test' });
