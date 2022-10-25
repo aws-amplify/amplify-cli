@@ -215,8 +215,7 @@ const createApiResource = (regionRef,
 // - 2 * the length of the method length
 // - 2 * the length of the path length
 const computePolicySizeIncrease = (stageLength: number,
-  methodLength: number, pathLength: number): number => 2 * (64 + stageLength + methodLength + pathLength)
-;
+  methodLength: number, pathLength: number): number => 2 * (64 + stageLength + methodLength + pathLength);
 
 /**
  * consolidate api gateway policies

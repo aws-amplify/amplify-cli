@@ -4,7 +4,7 @@ import { cloneDeep } from 'lodash';
 
 import { ApiGatewayAuthStack, CrudOperation } from '../../utils/consolidate-apigw-policies';
 
-const generatePolicyDoc = (roleName: string, policy: any, assertionType: 'Presence' | 'Absence' = 'Presence') => ({
+const generatePolicyDoc = (roleName: string, policy: any, assertionType: 'Presence' | 'Absence' = 'Presence'):$TSAny => ({
   Roles: [
     {
       Ref: roleName,
@@ -224,7 +224,7 @@ describe('ApiGatewayAuthStack', () => {
   // The test needs CDK to be updated to 1.140.0 so it can use capture.next. Skipping it for now
   it('should slice managed role when the size of the policy document exceeds 6K', () => {
     // create 100 paths
-    const paths = new Array(100).fill(1).reduce((acc, _, idx) => ({
+    const paths = new Array(100).fill(1).reduce((acc, __, idx) => ({
       ...acc,
       [`/items${idx}`]: {
         lambdaFunction: 'myFn1',
