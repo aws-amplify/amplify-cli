@@ -1,10 +1,10 @@
+import { $TSAny } from 'amplify-cli-core';
 import { Capture, Template, Match } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
 import { cloneDeep } from 'lodash';
-
 import { ApiGatewayAuthStack, CrudOperation } from '../../utils/consolidate-apigw-policies';
 
-const generatePolicyDoc = (roleName: string, policy: any, assertionType: 'Presence' | 'Absence' = 'Presence'):$TSAny => ({
+const generatePolicyDoc = (roleName: string, policy: any, assertionType: 'Presence' | 'Absence' = 'Presence'): $TSAny => ({
   Roles: [
     {
       Ref: roleName,
