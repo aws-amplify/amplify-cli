@@ -137,7 +137,6 @@ async function init(amplifyServiceParams) {
       } else {
         throw amplifyFaultWithTroubleshootingLink('ProjectInitFault', {
           message: e.message,
-          stack: e.stack,
         }, e);
       }
     }
@@ -232,7 +231,6 @@ async function deleteEnv(context, envName, awsConfigInfo) {
         } else {
           throw amplifyFaultWithTroubleshootingLink('ProjectDeleteFault', {
             message: ex.message,
-            stack: ex.stack,
           }, ex);
         }
       }
@@ -320,7 +318,6 @@ async function postPushCheck(context) {
         } else {
           throw amplifyFaultWithTroubleshootingLink('ProjectInitFault', {
             message: e.message,
-            stack: e.stack,
           }, e);
         }
       }

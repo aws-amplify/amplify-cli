@@ -6,8 +6,9 @@ import {
   executeHooks,
   HooksMeta,
 } from 'amplify-cli-core';
-import { AmplifyPrinter, printer } from 'amplify-prompts';
 import { logger } from 'amplify-cli-logger';
+import { AmplifyPrinter, printer } from 'amplify-prompts';
+import { isDebug } from 'amplify-prompts/src/flags';
 import { reportError } from './commands/diagnose';
 import { isHeadlessCommand } from './context-manager';
 import { Context } from './domain/context';
@@ -108,6 +109,23 @@ const printAmplifyException = (amplifyException: AmplifyException): void => {
   if (stack) {
     printer.debug(stack);
   }
+
+  if (isDebug && amplifyException.downstreamException) {
+    printer.blankLine();
+    if (amplifyException.downstreamException instanceof AmplifyException) {
+      printAmplifyException(amplifyException.downstreamException);
+    } else {
+      printError(amplifyException.downstreamException);
+    }
+  }
+};
+
+const printError = (err: Error): void => {
+  printer.error(err.message);
+  printer.blankLine();
+  if (err.stack) {
+    printer.debug(err.stack);
+  }
 };
 
 const printHeadlessAmplifyException = (amplifyException: AmplifyException): void => {
@@ -119,7 +137,6 @@ const unknownErrorToAmplifyException = (err: unknown): AmplifyException => ampli
   unknownErrorTypeToAmplifyExceptionType(err), {
     message: (typeof err === 'object' && err !== null && 'message' in err) ? (err as $TSAny).message : 'Unknown error',
     resolution: mapUnknownErrorToResolution(err),
-    stack: (typeof err === 'object' && err !== null && 'stack' in err) ? (err as $TSAny).stack : undefined,
   },
 );
 
@@ -127,7 +144,6 @@ const genericErrorToAmplifyException = (err: Error): AmplifyException => amplify
   genericErrorTypeToAmplifyExceptionType(err), {
     message: err.message,
     resolution: mapGenericErrorToResolution(err),
-    stack: err.stack,
   }, err,
 );
 
@@ -135,7 +151,6 @@ const nodeErrorToAmplifyException = (err: NodeJS.ErrnoException): AmplifyExcepti
   nodeErrorTypeToAmplifyExceptionType(err), {
     message: err.message,
     resolution: mapNodeErrorToResolution(err),
-    stack: err.stack,
   }, err,
 );
 

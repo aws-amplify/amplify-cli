@@ -52,7 +52,6 @@ export class Lambda {
           if (err.code !== 'ParameterNotFound') {
             throw amplifyErrorWithTroubleshootingLink('LambdaLayerDeleteError', {
               message: err.message,
-              stack: err.stack,
             }, err);
           }
         }

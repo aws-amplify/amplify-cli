@@ -25,29 +25,20 @@ export abstract class AmplifyException extends Error {
   constructor(
     public readonly name: AmplifyExceptionType,
     public readonly classification: AmplifyExceptionClassification,
-    private readonly options: AmplifyExceptionOptions,
+    public readonly options: AmplifyExceptionOptions,
     public readonly downstreamException?: Error,
   ) {
     // If an AmplifyException was already thrown, we must allow it to reach the user.
     // This ensures that resolution steps, and the original error are bubbled up.
-    super(downstreamException instanceof AmplifyException ? downstreamException.message : options.message);
+    super(options.message);
 
     // https://github.com/Microsoft/TypeScript-wiki/blob/main/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
     Object.setPrototypeOf(this, AmplifyException.prototype);
 
-    if (downstreamException instanceof AmplifyException) {
-      this.stack = downstreamException.stack ? downstreamException.stack : this.stack;
-      this.message = downstreamException.message;
-      this.details = downstreamException.details;
-      this.resolution = downstreamException.resolution;
-      this.link = downstreamException.link;
-    } else {
-      this.stack = options.stack ? options.stack : this.stack;
-      this.message = options.message;
-      this.details = options.details;
-      this.resolution = 'resolution' in options ? options.resolution : undefined;
-      this.link = 'link' in options ? options.link : undefined;
-    }
+    this.message = options.message;
+    this.details = options.details;
+    this.resolution = 'resolution' in options ? options.resolution : undefined;
+    this.link = 'link' in options ? options.link : undefined;
   }
 
   toObject = (): object => {
@@ -72,7 +63,6 @@ export type AmplifyExceptionClassification = 'FAULT' | 'ERROR';
 export type AmplifyExceptionOptions = {
   message: string,
   details?: string,
-  stack?: string,
 } & ({
   resolution: string
 } | {

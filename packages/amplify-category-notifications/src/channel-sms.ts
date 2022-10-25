@@ -65,8 +65,7 @@ export const enable = async (context:$TSContext):Promise<$TSAny> => {
     spinner.stop();
     throw amplifyFaultWithTroubleshootingLink('NotificationsChannelEmailFault', {
       message: `Failed to enable the ${channelName} channel.`,
-      details: e.message,
-    });
+    }, e);
   }
 };
 
@@ -95,8 +94,7 @@ export const disable = async (context: $TSContext): Promise<$TSAny> => {
     spinner.fail(`Failed to disable the ${channelName} channel.`);
     throw amplifyFaultWithTroubleshootingLink('NotificationsChannelEmailFault', {
       message: `Failed to disable the ${channelName} channel.`,
-      details: e.message,
-    });
+    }, e);
   }
 };
 
@@ -122,8 +120,7 @@ export const pull = async (context:$TSContext, pinpointApp:$TSAny) : Promise<$TS
     if (err.code !== 'NotFoundException') {
       throw amplifyFaultWithTroubleshootingLink('NotificationsChannelSmsFault', {
         message: `Channel ${channelName} not found in the notifications metadata.`,
-        details: err.message,
-      });
+      }, err);
     }
 
     return undefined;

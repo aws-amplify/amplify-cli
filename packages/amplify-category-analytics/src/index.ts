@@ -90,9 +90,7 @@ export const getPermissionPolicies = async (context: $TSContext, resourceOpsMapp
     } catch (e) {
       throw amplifyFaultWithTroubleshootingLink('AnalyticsCategoryFault', {
         message: `Could not get policies for ${category}: ${resourceName}`,
-        stack: e.stack,
-        details: e.message,
-      });
+      }, e);
     }
   }
   return { permissionPolicies, resourceAttributes };

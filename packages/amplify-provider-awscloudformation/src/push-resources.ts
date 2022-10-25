@@ -336,7 +336,6 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
             return;
           }
           throw amplifyFaultWithTroubleshootingLink('DeploymentFault', {
-            stack: err.stack,
             message: err.message,
           }, err);
         }
@@ -470,7 +469,6 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     }
     rollbackLambdaLayers(layerResources);
     throw amplifyFaultWithTroubleshootingLink('DeploymentFault', {
-      stack: error.stack,
       message: error.message,
     }, error);
   }

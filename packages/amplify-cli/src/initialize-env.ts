@@ -52,9 +52,7 @@ export const initializeEnv = async (
       } catch (e) {
         throw amplifyFaultWithTroubleshootingLink('PluginNotLoadedFault', {
           message: `Could not load plugin for category ${category}.`,
-          details: e.message,
           resolution: `Review the error message and stack trace for additional information.`,
-          stack: e.stack,
         }, e);
       }
     };
@@ -76,9 +74,7 @@ export const initializeEnv = async (
       } catch (e) {
         throw amplifyFaultWithTroubleshootingLink('PluginNotLoadedFault', {
           message: `Could not load plugin for provider ${provider}.`,
-          details: e.message,
           resolution: 'Review the error message and stack trace for additional information.',
-          stack: e.stack,
         }, e);
       }
     }
@@ -94,7 +90,6 @@ export const initializeEnv = async (
       throw amplifyFaultWithTroubleshootingLink('ProjectInitFault', {
         message: `Could not initialize platform for '${currentEnv}': ${e.message}`,
         resolution: 'Review the error message and stack trace for additional information.',
-        stack: e.stack,
       }, e);
     } finally {
       context.usageData.stopCodePathTimer(ManuallyTimedCodePath.INIT_ENV_PLATFORM);
@@ -116,7 +111,6 @@ export const initializeEnv = async (
       throw amplifyFaultWithTroubleshootingLink('ProjectInitFault', {
         message: `Could not initialize categories for '${currentEnv}': ${e.message}`,
         resolution: 'Review the error message and stack trace for additional information.',
-        stack: e.stack,
       }, e);
     } finally {
       context.usageData.stopCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES);

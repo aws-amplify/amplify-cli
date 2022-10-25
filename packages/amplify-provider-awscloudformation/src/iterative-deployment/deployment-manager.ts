@@ -95,8 +95,6 @@ export class DeploymentManager {
     } catch (e) {
       throw amplifyErrorWithTroubleshootingLink('DeploymentError', {
         message: 'Could not load configuration',
-        stack: e.stack,
-        details: e.message,
       }, e);
     }
   };
@@ -371,7 +369,6 @@ export class DeploymentManager {
           ? `The cloudformation template ${templatePath} was not found in deployment bucket ${this.deploymentBucket}`
           : e.message,
         details: e.message,
-        stack: e.stack,
       }, e);
     }
   };
@@ -392,7 +389,6 @@ export class DeploymentManager {
       }
       throw amplifyFaultWithTroubleshootingLink('ServiceCallFault', {
         message: err.message,
-        stack: err.stack,
       }, err);
     }
   };

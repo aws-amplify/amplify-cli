@@ -51,7 +51,6 @@ export const deleteProject = async (context: $TSContext): Promise<void> => {
         spinner.fail('Project delete failed.');
         throw amplifyFaultWithTroubleshootingLink('BackendDeleteFault', {
           message: 'Project delete failed.',
-          stack: ex.stack,
           details: ex.message,
         }, ex);
       }

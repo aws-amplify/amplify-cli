@@ -51,7 +51,6 @@ export const run = async (context): Promise<void> => {
       } catch (e) {
         throw amplifyErrorWithTroubleshootingLink('AmplifyStudioLoginError', {
           message: `Failed to authenticate: ${e.message || 'Unknown error occurred.'}`,
-          stack: e.stack,
         }, e);
       }
     }
@@ -244,7 +243,6 @@ async function getBackendEnv(context, amplifyClient, amplifyApp) {
     } catch (e) {
       throw amplifyErrorWithTroubleshootingLink('EnvironmentNotInitializedError', {
         message: `Cannot find backend environment ${inputEnvName} in Amplify Console app: ${amplifyApp.name}`,
-        stack: e.stack,
         details: e.message,
       }, e);
     }

@@ -118,8 +118,7 @@ export const enable = async (context: $TSContext, successMessage: string | undef
     spinner.stop();
     throw amplifyFaultWithTroubleshootingLink('NotificationsChannelAPNSFault', {
       message: `Failed to enable the ${channelName} channel.`,
-      details: e.message,
-    });
+    }, e);
   }
 
   if (!successMessage) {
@@ -207,7 +206,7 @@ export const disable = async (context: $TSContext) : Promise<$TSAny> => {
     throw amplifyFaultWithTroubleshootingLink('NotificationsChannelAPNSFault', {
       message: `Failed to update the ${channelName} channel.`,
       details: `Action: ${ChannelAction.DISABLE}. ${e.message}`,
-    });
+    }, e);
   }
   spinner.succeed(`The ${channelName} channel has been disabled.`);
   context.exeInfo.serviceMeta.output[channelName] = data.APNSChannelResponse;
@@ -238,7 +237,7 @@ export const pull = async (context:$TSContext, pinpointApp:$TSAny): Promise<$TSA
       throw amplifyFaultWithTroubleshootingLink('NotificationsChannelAPNSFault', {
         message: `Failed to pull the ${channelName} channel.`,
         details: `Action: ${ChannelAction.PULL}. ${err.message}`,
-      });
+      }, err);
     }
 
     return undefined;

@@ -138,7 +138,6 @@ module.exports = {
       if (code !== 'ResourceNotFoundException') {
         throw amplifyFaultWithTroubleshootingLink('ResourceNotFoundFault', {
           message: error.message,
-          stack: error.stack,
         }, error);
       }
     }
@@ -427,5 +426,5 @@ module.exports = {
   /**
    * Provides the same AWS config used to push the amplify project
    */
-  retrieveAwsConfig: async (context) => getAwsConfig(context),
+  retrieveAwsConfig: async context => getAwsConfig(context),
 };

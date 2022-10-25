@@ -48,7 +48,6 @@ export class S3Service implements IS3Service {
         return false;
       }
       throw amplifyFaultWithTroubleshootingLink('UnknownFault', {
-        stack: error.stack,
         message: error.message,
       }, error);
     }

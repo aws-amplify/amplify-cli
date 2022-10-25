@@ -93,7 +93,6 @@ export const enable = async (context: $TSContext, successMessage: string | undef
     spinner.stop();
     throw amplifyFaultWithTroubleshootingLink('NotificationsChannelFCMFault', {
       message: `Failed to enable the ${channelName} channel`,
-      details: err.message,
     });
   }
 };
@@ -151,8 +150,7 @@ export const disable = async (context: $TSContext): Promise<$TSAny> => {
     spinner.stop();
     throw amplifyFaultWithTroubleshootingLink('NotificationsChannelFCMFault', {
       message: `Failed to disable the ${channelName} channel`,
-      details: err.message,
-    });
+    }, err);
   }
 };
 
@@ -179,8 +177,7 @@ export const pull = async (context: $TSContext, pinpointApp: $TSAny):Promise<$TS
     if (err.code !== 'NotFoundException') {
       throw amplifyFaultWithTroubleshootingLink('NotificationsChannelFCMFault', {
         message: `Failed to retrieve channel information for ${channelName}`,
-        details: err.message,
-      });
+      }, err);
     }
 
     return undefined;

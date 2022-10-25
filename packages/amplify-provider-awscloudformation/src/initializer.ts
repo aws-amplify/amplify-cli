@@ -304,7 +304,6 @@ const storeCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
   const zipFilePath = path.normalize(path.join(tempDir, zipFilename));
   const spinner = new AmplifySpinner();
 
-
   return archiver
     .run(currentCloudBackendDir, zipFilePath, undefined, cliJSONFiles)
     .then(result => {
@@ -324,7 +323,6 @@ const storeCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
       spinner.stop('Deployment state save failed.', false);
       throw amplifyFaultWithTroubleshootingLink('DeploymentFault', {
         message: ex.message,
-        stack: ex.stack,
       }, ex);
     })
     .then(() => {

@@ -260,7 +260,6 @@ export const showSMSSandboxWarning = async (context) : Promise<void> => {
       log(e);
     } else {
       throw amplifyFaultWithTroubleshootingLink('DeploymentFault', {
-        stack: e.stack,
         message: e.message,
       }, e);
     }
