@@ -1,8 +1,7 @@
 /**
  * If this flag is set, debug messages will be printed.
  */
-export const isDebug = process.argv.includes('--debug');
-
+export const isDebug = process.argv.includes('--debug') || process.env.AMPLIFY_DEV_INTERNAL_DEBUG === 'true';
 /**
  * If this flag is set, only warn and error messages will be printed.
  */
