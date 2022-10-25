@@ -1,6 +1,6 @@
-import * as cdk from '@aws-cdk/core';
-import * as apigwCdk from '@aws-cdk/aws-apigateway';
-import * as iamCdk from '@aws-cdk/aws-iam';
+import * as cdk from 'aws-cdk-lib';
+import * as apigwCdk from 'aws-cdk-lib/aws-apigateway';
+import * as iamCdk from 'aws-cdk-lib/aws-iam';
 import { $TSAny } from 'amplify-cli-core';
 
 /**

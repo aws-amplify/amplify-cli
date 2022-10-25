@@ -1,4 +1,4 @@
-import { App } from '@aws-cdk/core';
+import { App } from 'aws-cdk-lib';
 import { AccessType } from '../../service-utils/resourceParams';
 import { PlaceIndexStack } from '../../service-stacks/placeIndexStack';
 

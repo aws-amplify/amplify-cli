@@ -1,4 +1,4 @@
-import { ISynthesisSession, LegacyStackSynthesizer, Stack } from '@aws-cdk/core';
+import { ISynthesisSession, LegacyStackSynthesizer, Stack } from 'aws-cdk-lib';
 import { amplifyFaultWithTroubleshootingLink, JSONUtilities, Template } from 'amplify-cli-core';
 import { AmplifyRootStack, AmplifyRootStackOutputs } from './root-stack-builder';
 

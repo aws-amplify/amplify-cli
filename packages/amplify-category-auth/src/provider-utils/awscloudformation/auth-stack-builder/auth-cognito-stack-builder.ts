@@ -8,7 +8,6 @@ import { $TSAny, JSONUtilities } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import { Construct } from 'constructs';
-import { AmplifyStackTemplate } from 'amplify-cli-core';
 import {
   hostedUILambdaFilePath,
   hostedUIProviderLambdaFilePath,
@@ -54,7 +53,7 @@ export type AmplifyAuthCognitoStackProps = {
  * L2 construct for amplify auth cognito stack
  */
 export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCognitoStackTemplate {
-  private _scope: cdk.Construct;
+  private _scope: Construct;
   private _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
   private _cfnConditionMap: Map<string, cdk.CfnCondition> = new Map();
   private _cfnOutputMap: Map<string, cdk.CfnOutput> = new Map();
