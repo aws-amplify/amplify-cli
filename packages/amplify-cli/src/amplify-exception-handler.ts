@@ -7,8 +7,7 @@ import {
   HooksMeta,
 } from 'amplify-cli-core';
 import { logger } from 'amplify-cli-logger';
-import { AmplifyPrinter, printer } from 'amplify-prompts';
-import { isDebug } from 'amplify-prompts/src/flags';
+import { AmplifyPrinter, printer, isDebug } from 'amplify-prompts';
 import { reportError } from './commands/diagnose';
 import { isHeadlessCommand } from './context-manager';
 import { Context } from './domain/context';
