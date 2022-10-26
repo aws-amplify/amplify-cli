@@ -19,8 +19,6 @@ let openSearchEmulator = null;
 let dbPath = null;
 let server: AmplifyAppSyncSimulator;
 
-const mockContext = {} as $TSAny as $TSContext;
-
 
 describe('@searchable transformer', () => {
   let pathToSearchableMockResources;
@@ -113,7 +111,10 @@ describe('@searchable transformer', () => {
         await openSearchEmulator.terminate();
         openSearchEmulator = null;
       }
-      pathToSearchableMockResources ? fs.emptyDirSync(pathToSearchableMockResources) : null;
+
+      if (pathToSearchableMockResources) {
+        fs.emptyDirSync(pathToSearchableMockResources);
+      }
     } catch (e) {
       console.error(e);
       expect(true).toEqual(false);
