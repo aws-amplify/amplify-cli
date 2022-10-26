@@ -1,4 +1,5 @@
 import { AmplifyAppSyncSimulatorDataLoader } from '..';
+import { AmplifyError } from 'amplify-cli-core';
 
 export class OpenSearchDataLoader implements AmplifyAppSyncSimulatorDataLoader {
   constructor(private _config) {}
@@ -8,12 +9,14 @@ export class OpenSearchDataLoader implements AmplifyAppSyncSimulatorDataLoader {
       if (process?.platform?.startsWith('win')) {
         return null;
       }
-      const result = await this._config.invoke(payload);
-      return result;
+      return await this._config.invoke(payload);
     } catch (e) {
       console.log('Opensearch Data source failed with the following error');
       console.error(e);
-      throw e;
+      throw new AmplifyError('ConfigurationError', {
+        message: 'Failed to load data from Opensearch data source',
+        resolution: 'Restart the mock process'
+      });
     }
   }
 }

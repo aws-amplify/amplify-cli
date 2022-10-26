@@ -1,52 +1,57 @@
-import { $TSObject } from "amplify-cli-core"
+import { $TSObject, AmplifyFault, AMPLIFY_SUPPORT_DOCS } from "amplify-cli-core"
 import fetch from 'node-fetch';
 
 type OpensearchQueryConfig = {
-    path: string,
-    params: {
-        body: {
-            size: number,
-            sort: $TSObject[],
-            version: boolean,
-            query: $TSObject,
-            aggs: $TSObject,
-            from?: number
-        }
+  path: string,
+  params: {
+    body: {
+      size: number,
+      sort: $TSObject[],
+      version: boolean,
+      query: $TSObject,
+      aggs: $TSObject,
+      from?: number
     }
+  }
 }
 
 type OpensearchQueryResult = {
-    hits: {
-        hits: $TSObject,
-        total: {
-            value: number
-        }
-    },
-    aggregations: $TSObject,
+  hits: {
+    hits: $TSObject,
+    total: {
+      value: number
+    }
+  },
+  aggregations: $TSObject,
 
 }
 
 export const querySearchable = async (endpoint: string, searchConfig: OpensearchQueryConfig): Promise<OpensearchQueryResult> => {
-    if (!endpoint) {
-        throw new Error('The local opensearch endpoint is not found');
-    }
-
-    try {
-        searchConfig = searchConfig as OpensearchQueryConfig;
-    }
-    catch(e) {
-        throw new Error('Given search query configuration is not valid' + e?.message);
-    }
-
-    const url = endpoint.replace(/\/+$/, '') + searchConfig.path;
-
-    const result = await fetch(url, {
-        method: 'POST',
-        body: JSON.stringify(searchConfig.params.body),
-        headers: {
-            'Content-type': 'application/json',
-        }
+  if (!endpoint) {
+    throw new AmplifyFault('MockProcessFault', {
+      message: 'The local opensearch endpoint is not found',
+      link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
     });
-    const resultJSON = await result.json();
-    return resultJSON;
+  }
+
+  try {
+    searchConfig = searchConfig as OpensearchQueryConfig;
+  }
+  catch(e) {
+    throw new AmplifyFault('MockProcessFault', {
+      message: 'Given search query configuration is not valid',
+      link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+    });
+  }
+
+  const url = endpoint.replace(/\/+$/, '') + searchConfig.path;
+
+  const result = await fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(searchConfig.params.body),
+    headers: {
+      'Content-type': 'application/json',
+    }
+  });
+  return await result.json();
 }

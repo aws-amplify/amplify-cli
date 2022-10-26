@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext } from "amplify-cli-core";
+import { $TSAny, $TSContext, AmplifyFault, AMPLIFY_SUPPORT_DOCS } from "amplify-cli-core";
 import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
 import { BuildType, FunctionRuntimeLifecycleManager, BuildRequest } from 'amplify-function-plugin-interface';
 import { getInvoker, getBuilder } from 'amplify-category-function';
@@ -20,7 +20,10 @@ export const invokeTrigger = async (context: $TSContext, trigger: LambdaTrigger,
     const functionName = trigger.name;
     const lambdaConfig = await loadLambdaConfig(context, functionName, true);
     if (!lambdaConfig?.handler) {
-      throw new Error(`Could not parse handler for ${functionName} from cloudformation file`);
+      throw new AmplifyFault('MockProcessFault', {
+        message: `Could not parse handler for ${functionName} from cloudformation file`,
+        link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+      });
     }
     // Ensuring latest function changes are built
     await getBuilder(context, functionName, BuildType.DEV)();
@@ -32,7 +35,10 @@ export const invokeTrigger = async (context: $TSContext, trigger: LambdaTrigger,
       !trigger?.config?.handler || 
       !trigger?.config?.runtime ||
       !trigger?.config?.directory) {
-      throw new Error(`Could not parse lambda config for non-function category trigger`);
+        throw new AmplifyFault('MockProcessFault', {
+          message: `Could not parse lambda config for non-function category trigger`,
+          link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+        });
     }
 
     const runtimeManager: FunctionRuntimeLifecycleManager = await context.amplify.loadRuntimePlugin(context, trigger.config.runtimePluginId);
@@ -74,7 +80,10 @@ export const buildLambdaTrigger = async (context: $TSContext, triggerConfig: Pic
   if (!(runtimeRequirmentsCheck?.hasRequiredDependencies)) {
     const runtimeRequirementsError = 'Required dependencies to build the lambda trigger are missing';
     printer.error(runtimeRequirmentsCheck?.errorMessage || runtimeRequirementsError);
-    throw new Error(runtimeRequirementsError);
+    throw new AmplifyFault('MockProcessFault', {
+      message: runtimeRequirementsError,
+      link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+    });
   }
 
   // Ensuring latest function changes are built

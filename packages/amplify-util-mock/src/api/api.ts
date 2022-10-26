@@ -2,7 +2,7 @@ import * as fs from 'fs-extra';
 import * as dynamoEmulator from 'amplify-dynamodb-simulator';
 import { AmplifyAppSyncSimulator, AmplifyAppSyncSimulatorConfig } from '@aws-amplify/amplify-appsync-simulator';
 import * as opensearchEmulator from '@aws-amplify/amplify-opensearch-simulator';
-import { $TSContext, $TSAny } from 'amplify-cli-core';
+import { $TSContext, $TSAny, AmplifyFault, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
 import { add, generate, isCodegenConfigured, switchToSDLSchema } from 'amplify-codegen';
 import * as path from 'path';
 import * as chokidar from 'chokidar';
@@ -86,7 +86,10 @@ export class APITest {
       const errMessage = 'Failed to start API Mocking.';
       context.print.error(errMessage + ' Running cleanup tasks.');
       await this.stop(context);
-      throw new Error(`${errMessage} Reason: ${e?.message}`);
+      throw new AmplifyFault('MockProcessFault', {
+        message: `${errMessage}. Reason: ${e?.message}`,
+        link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+      });
     }
   }
 
@@ -368,7 +371,10 @@ export class APITest {
       }
     });
     if (!name) {
-      throw new Error('No AppSync API is added to the project');
+      throw new AmplifyFault('MockProcessFault', {
+        message: 'No AppSync API is added to the project',
+        link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+      });
     }
     return name;
   }
@@ -401,7 +407,10 @@ export class APITest {
       }
       return this.opensearchEmulator.url;
     } catch (error) {
-      throw new Error('Unable to start the local OpenSearch Instance.');
+      throw new AmplifyFault('MockProcessFault', {
+        message: 'Unable to start the local OpenSearch Instance.',
+        link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+      });
     }
   }
 
@@ -419,11 +428,17 @@ export class APITest {
         });
         const status = await result.json();
         if (!(status?.acknowledged)) {
-          throw new Error(errMessage);
+          throw new AmplifyFault('MockProcessFault', {
+            message: errMessage,
+            link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+          });
         }
       }
       catch(error) {
-        throw new Error(errMessage);
+        throw new AmplifyFault('MockProcessFault', {
+          message: errMessage,
+          link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+        });
       }
     }
   }

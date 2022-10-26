@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, AmplifyFault, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
 import { DynamoDBStreams, Endpoint } from 'aws-sdk';
 import { invokeTrigger } from './lambda-invoke';
 import { isMockable } from 'amplify-category-function';
@@ -20,20 +20,32 @@ export const ddbLambdaTriggerHandler = async (
     localDynamoDBEndpoint?: Endpoint
 ): Promise<void> => {
     if (!lambdaTrigger || (!lambdaTrigger?.name && !lambdaTrigger?.config)) {
-        throw new Error('Lambda trigger must be specified');
+        throw new AmplifyFault('MockProcessFault', {
+          message: 'Lambda trigger must be specified',
+          link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+        });
     }
     if (!streamArn) {
-        throw new Error('Stream Arn must be specified');
+        throw new AmplifyFault('MockProcessFault', {
+          message: 'Stream Arn must be specified',
+          link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+        });
     }
     if (!localDynamoDBEndpoint) {
-        throw new Error('Local URL where DDB is running should be specified');
+        throw new AmplifyFault('MockProcessFault', {
+          message: 'Local URL where DDB is running should be specified',
+          link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+        });
     }
 
     if (lambdaTrigger?.name) {
         // Lambda functions with layers are not mockable
         const mockable = isMockable(context, lambdaTrigger?.name);
         if (!mockable.isMockable) {
-            throw new Error(`Unable to mock ${lambdaTrigger?.name}. ${mockable.reason}`);
+            throw new AmplifyFault('MockProcessFault', {
+              message: `Unable to mock ${lambdaTrigger?.name}. ${mockable.reason}`,
+              link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+            });
         }
     }
 
@@ -54,7 +66,10 @@ export const getLatestShardIterator = async (streamArn: string, streams: DynamoD
         .promise();
 
     if (!stream) {
-        throw new Error(`Local DynamoDB stream with ARN ${streamArn} cannot be found`);
+        throw new AmplifyFault('MockProcessFault', {
+          message: `Local DynamoDB stream with ARN ${streamArn} cannot be found`,
+          link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+        });
     }
 
     // Get the latest active shard
@@ -64,7 +79,10 @@ export const getLatestShardIterator = async (streamArn: string, streams: DynamoD
         )[0] || {}
 
     if (!shardId) {
-        throw new Error('There is no shard that is open');
+        throw new AmplifyFault('MockProcessFault', {
+          message: 'There is no shard that is open',
+          link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+        });
     }
 
     const { ShardIterator: start } = await streams

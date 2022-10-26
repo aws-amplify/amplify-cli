@@ -171,4 +171,5 @@ export type AmplifyFaultType =
   | 'TriggerUploadFault'
   | 'UnexpectedS3Fault'
   | 'UnknownFault'
-  | 'UnknownNodeJSFault';
+  | 'UnknownNodeJSFault'
+  | 'MockProcessFault';

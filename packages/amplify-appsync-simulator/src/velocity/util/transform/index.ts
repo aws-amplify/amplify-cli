@@ -1,6 +1,7 @@
 import { generateFilterExpression } from './dynamodb-filter';
-import ElasticsearchHelper from '../opensearch-utils';
+import ElasticsearchHelper from '../elasticsearch-helper';
 import { $TSObject } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 
 export const transformUtils = {
   toDynamoDBConditionExpression: condition => {
@@ -21,7 +22,7 @@ export const transformUtils = {
   },
 
   toElasticsearchQueryDSL: filter => {
-    const elasticsearchHelper: ElasticsearchHelper = new ElasticsearchHelper();
+    const elasticsearchHelper = new ElasticsearchHelper();
     if (!filter) {
       return null;
     }
@@ -29,11 +30,9 @@ export const transformUtils = {
     try {
       const queryDSL: $TSObject = elasticsearchHelper.getQueryDSL(filter.toJSON());
       return JSON.stringify(queryDSL);
-    }
-    catch (err) {
-        console.error("Error when constructing the Elasticsearch Query DSL using the model transform utils. {}");
-        console.error(err);
-        return null;
+    } catch (err) {
+      printer.error("Error when constructing the Elasticsearch Query DSL using the model transform utils. {}");
+      return null;
     }
   }
 };
