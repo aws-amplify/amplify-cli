@@ -25,11 +25,7 @@
   "dependencies": {
     "@aws-amplify/amplify-category-auth": "2.12.4",
     "@aws-amplify/amplify-e2e-core": "4.3.0",
-    "@aws-cdk/core": "^1.159.0",
-    "@aws-cdk/aws-iam": "^1.159.0",
-    "@aws-cdk/aws-sns": "^1.159.0",
-    "@aws-cdk/aws-sns-subscriptions": "^1.159.0",
-    "@aws-cdk/aws-sqs": "^1.159.0",
+    "aws-cdk-lib": "~2.44.0",
     "@aws-amplify/graphql-transformer-core": "^1.1.0-cdkv2.1",
     "amplify-cli-core": "3.2.2",
     "amplify-headless-interface": "^1.15.0",

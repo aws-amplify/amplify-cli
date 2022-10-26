@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { CfnResource, Duration, Fn } from 'aws-cdk-lib/core';
+import { CfnResource, Duration, Fn } from 'aws-cdk-lib';
 import { Effect } from 'aws-cdk-lib/aws-iam';
 import * as fs from 'fs-extra';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
