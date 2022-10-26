@@ -16,7 +16,6 @@ DEBUG = True if os.environ['DEBUG'] == "1" else False
 OPENSEARCH_USE_EXTERNAL_VERSIONING = True if os.environ['OPENSEARCH_USE_EXTERNAL_VERSIONING'] == "true" else False
 
 # Multiple mapping types in an index is deprecated in OpenSearch ver 7.10+. Default to _doc.
-DOC_TYPE = '_doc'
 OPENSEARCH_MAX_RETRIES = 3 # Max number of retries for exponential backoff
 
 logger = logging.getLogger()
@@ -157,7 +156,6 @@ def _lambda_handler(event, context):
 
         # Compute DynamoDB table, type and index for item
         doc_table = ddb_table_name.lower()
-        doc_type = DOC_TYPE
         doc_table_parts = doc_table.split('-')
         doc_opensearch_index_name = doc_table_parts[0] if len(doc_table_parts) > 0  else doc_table
 
