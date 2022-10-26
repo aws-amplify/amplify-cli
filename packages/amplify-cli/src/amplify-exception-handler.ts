@@ -54,11 +54,11 @@ export const handleException = async (exception: unknown): Promise<void> => {
 
       if (downstreamException instanceof AmplifyException) {
         printAmplifyException(downstreamException);
+        downstreamException = downstreamException.downstreamException;
       } else {
         printError(downstreamException);
+        downstreamException = null;
       }
-
-      downstreamException = downstreamException.downstreamException;
     }
   }
 
