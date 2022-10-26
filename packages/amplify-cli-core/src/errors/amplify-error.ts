@@ -1,6 +1,5 @@
-import { AMPLIFY_SUPPORT_DOCS } from '../cliConstants';
 import {
-  AmplifyException, AmplifyExceptionOptions, AmplifyErrorType, PartialAmplifyExceptionOptions,
+  AmplifyException, AmplifyExceptionOptions, AmplifyErrorType,
 } from './amplify-exception';
 
 /**
