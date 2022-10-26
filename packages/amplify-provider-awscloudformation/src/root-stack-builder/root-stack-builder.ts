@@ -8,16 +8,10 @@ import { AmplifyError, AmplifyFault, JSONUtilities } from 'amplify-cli-core';
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'Root Stack for AWS Amplify CLI';
 
-/**
- *
- */
 export type AmplifyRootStackProps = {
   synthesizer: IStackSynthesizer;
 };
 
-/**
- *
- */
 export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTemplate {
   _scope: cdk.Construct;
   deploymentBucket: s3.CfnBucket;
@@ -82,9 +76,6 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
     this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
   }
 
-  /**
-   *
-   */
   getCfnParameter(logicalId: string): cdk.CfnParameter {
     if (this._cfnParameterMap.has(logicalId)) {
       return this._cfnParameterMap.get(logicalId);
@@ -156,43 +147,28 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
   authRole?: iam.CfnRole;
   unauthRole?: iam.CfnRole;
 
-  /**
-   *
-   */
   addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
     throw new AmplifyFault('NotImplementedFault', {
       message: 'Method not implemented.',
     });
   }
 
-  /**
-   *
-   */
   addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void {
     new cdk.CfnOutput(this, logicalId, props);
   }
 
-  /**
-   *
-   */
   addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void {
     throw new AmplifyFault('NotImplementedFault', {
       message: 'Method not implemented.',
     });
   }
 
-  /**
-   *
-   */
   addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void {
     throw new AmplifyFault('NotImplementedFault', {
       message: 'Method not implemented.',
     });
   }
 
-  /**
-   *
-   */
   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void {
     throw new AmplifyFault('NotImplementedFault', {
       message: 'Method not implemented.',

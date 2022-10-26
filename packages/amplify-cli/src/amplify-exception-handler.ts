@@ -47,6 +47,19 @@ export const handleException = async (exception: unknown): Promise<void> => {
     printHeadlessAmplifyException(amplifyException);
   } else {
     printAmplifyException(amplifyException);
+
+    let { downstreamException } = amplifyException;
+    while (isDebug && downstreamException) {
+      printer.blankLine();
+
+      if (downstreamException instanceof AmplifyException) {
+        printAmplifyException(downstreamException);
+      } else {
+        printError(downstreamException);
+      }
+
+      downstreamException = downstreamException.downstreamException;
+    }
   }
 
   // Swallow and continue if any operations fail
@@ -107,15 +120,6 @@ const printAmplifyException = (amplifyException: AmplifyException): void => {
   printer.blankLine();
   if (stack) {
     printer.debug(stack);
-  }
-
-  if (isDebug && amplifyException.downstreamException) {
-    printer.blankLine();
-    if (amplifyException.downstreamException instanceof AmplifyException) {
-      printAmplifyException(amplifyException.downstreamException);
-    } else {
-      printError(amplifyException.downstreamException);
-    }
   }
 };
 
