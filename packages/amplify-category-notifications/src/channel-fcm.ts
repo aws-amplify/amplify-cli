@@ -93,7 +93,7 @@ export const enable = async (context: $TSContext, successMessage: string | undef
     spinner.stop();
     throw amplifyFaultWithTroubleshootingLink('NotificationsChannelFCMFault', {
       message: `Failed to enable the ${channelName} channel`,
-    });
+    }, err);
   }
 };
 

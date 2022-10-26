@@ -41,7 +41,7 @@ export const run = async (context:$TSContext): Promise<$TSContext> => {
         throw new AmplifyError('DeploymentError', {
           message: 'Failed to deploy Auth and Pinpoint resources.',
           resolution: 'Deploy Auth and Pinpoint resources manually.',
-        });
+        }, err);
       }
       // eslint-disable-next-line no-param-reassign
       context = pinpointAppStatus.context;

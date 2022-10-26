@@ -335,9 +335,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
           if (err?.name === 'ValidationError' && err?.message === 'No updates are to be performed.') {
             return;
           }
-          throw amplifyFaultWithTroubleshootingLink('DeploymentFault', {
-            message: err.message,
-          }, err);
+          throw err;
         }
       }
       context.usageData.stopCodePathTimer('pushDeployment');
