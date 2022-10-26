@@ -172,6 +172,7 @@ jobs:
           no_output_timeout: 90m
           environment:
             JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
+            NODE_OPTIONS: --max-old-space-size=4096
       - store_test_results:
           path: packages/amplify-util-mock/
 
