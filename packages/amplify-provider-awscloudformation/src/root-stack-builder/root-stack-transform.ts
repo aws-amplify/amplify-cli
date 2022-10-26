@@ -1,7 +1,7 @@
 import { AmplifyRootStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 import * as cdk from '@aws-cdk/core';
 import {
-  $TSContext, amplifyFaultWithTroubleshootingLink, buildOverrideDir, CFNTemplateFormat, pathManager, Template, writeCFNTemplate,
+  $TSContext, AmplifyFault, buildOverrideDir, CFNTemplateFormat, pathManager, Template, writeCFNTemplate,
 } from 'amplify-cli-core';
 import { formatter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
@@ -213,7 +213,7 @@ export class AmplifyRootStackTransform {
       return this._rootTemplateObj;
     }
 
-    throw amplifyFaultWithTroubleshootingLink('RootStackNotFoundFault', {
+    throw new AmplifyFault('RootStackNotFoundFault', {
       message: `Root Stack Template doesn't exist.`,
     });
   }

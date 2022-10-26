@@ -30,19 +30,3 @@ export class AmplifyFault extends AmplifyException {
     super(name, 'FAULT', options, downstreamException);
   }
 }
-
-/**
- * returns an amplify fault with the default troubleshooting link if not passed
- */
-export const amplifyFaultWithTroubleshootingLink = (
-  name: AmplifyFaultType,
-  options: PartialAmplifyExceptionOptions,
-  downstreamException?: Error,
-)
-  : AmplifyFault => new AmplifyFault(
-  name, {
-    ...options,
-    link: 'link' in options && options.link ? options.link : AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
-  },
-  downstreamException,
-);

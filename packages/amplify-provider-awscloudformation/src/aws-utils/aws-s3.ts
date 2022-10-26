@@ -7,7 +7,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 import {
-  $TSAny, $TSContext, AmplifyError, amplifyErrorWithTroubleshootingLink, amplifyFaultWithTroubleshootingLink, stateManager,
+  $TSAny, $TSContext, AmplifyError, AmplifyFault, stateManager,
 } from 'amplify-cli-core';
 
 import _ from 'lodash';
@@ -186,7 +186,7 @@ export class S3 {
       await this.s3.waitFor('bucketExists', params).promise();
       this.context.print.success('S3 bucket successfully created');
     } else if (throwIfExists) {
-      throw amplifyErrorWithTroubleshootingLink('BucketAlreadyExistsError', {
+      throw new AmplifyError('BucketAlreadyExistsError', {
         message: `Bucket ${bucketName} already exists`,
       });
     }
@@ -351,7 +351,7 @@ export class S3 {
         }, e);
       }
 
-      throw amplifyFaultWithTroubleshootingLink('UnknownFault', {
+      throw new AmplifyFault('UnknownFault', {
         message: e.message,
       }, e);
     }
@@ -378,7 +378,7 @@ export class S3 {
         return undefined;
       }
 
-      throw amplifyFaultWithTroubleshootingLink('UnexpectedS3Fault', {
+      throw new AmplifyFault('UnexpectedS3Fault', {
         message: e.message,
       }, e);
     }

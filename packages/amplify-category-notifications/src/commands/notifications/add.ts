@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { $TSContext, AmplifyError, amplifyErrorWithTroubleshootingLink } from 'amplify-cli-core';
+import { $TSContext, AmplifyError } from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
 import {
   ensurePinpointApp, isPinpointAppDeployed, isPinpointDeploymentRequired, pushAuthAndAnalyticsPinpointResources,
@@ -55,7 +55,7 @@ const viewQuestionAskNotificationChannelToBeEnabled = async (
  */
 export const run = async (context: $TSContext): Promise<$TSContext> => {
   if (await checkMigratedFromMobileHub(context.exeInfo.amplifyMeta)) {
-    throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
+    throw new AmplifyError('ConfigurationError', {
       message: 'Notifications has been migrated from Mobile Hub and channels cannot be added with Amplify CLI.',
     });
   }

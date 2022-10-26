@@ -2,7 +2,7 @@ import {
   $TSAny,
   AmplifyException,
   AmplifyFaultType,
-  amplifyFaultWithTroubleshootingLink,
+  AmplifyFault,
   executeHooks,
   HooksMeta,
 } from 'amplify-cli-core';
@@ -132,21 +132,21 @@ const printHeadlessAmplifyException = (amplifyException: AmplifyException): void
   errorPrinter.error(JSON.stringify(amplifyException.toObject()));
 };
 
-const unknownErrorToAmplifyException = (err: unknown): AmplifyException => amplifyFaultWithTroubleshootingLink(
+const unknownErrorToAmplifyException = (err: unknown): AmplifyException => new AmplifyFault(
   unknownErrorTypeToAmplifyExceptionType(err), {
     message: (typeof err === 'object' && err !== null && 'message' in err) ? (err as $TSAny).message : 'Unknown error',
     resolution: mapUnknownErrorToResolution(err),
   },
 );
 
-const genericErrorToAmplifyException = (err: Error): AmplifyException => amplifyFaultWithTroubleshootingLink(
+const genericErrorToAmplifyException = (err: Error): AmplifyException => new AmplifyFault(
   genericErrorTypeToAmplifyExceptionType(err), {
     message: err.message,
     resolution: mapGenericErrorToResolution(err),
   }, err,
 );
 
-const nodeErrorToAmplifyException = (err: NodeJS.ErrnoException): AmplifyException => amplifyFaultWithTroubleshootingLink(
+const nodeErrorToAmplifyException = (err: NodeJS.ErrnoException): AmplifyException => new AmplifyFault(
   nodeErrorTypeToAmplifyExceptionType(err), {
     message: err.message,
     resolution: mapNodeErrorToResolution(err),

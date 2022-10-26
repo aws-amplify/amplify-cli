@@ -1,5 +1,5 @@
 import {
-  $TSAny, $TSContext, amplifyErrorWithTroubleshootingLink, amplifyFaultWithTroubleshootingLink, pathManager, stateManager,
+  $TSAny, $TSContext, AmplifyError, AmplifyFault, pathManager, stateManager,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import AWS from 'aws-sdk';
@@ -64,7 +64,7 @@ export const adminModelgen = async (context: $TSContext, resources: $TSAny[]): P
     if (jobCompletionDetails.Status === 'COMPLETED') {
       spinner.succeed('Successfully generated models in the cloud.');
     } else {
-      throw amplifyErrorWithTroubleshootingLink('ModelgenError', { message: `Failed to generate models in the cloud.` });
+      throw new AmplifyError('ModelgenError', { message: `Failed to generate models in the cloud.` });
     }
   } catch (e) {
     spinner.stop();
@@ -100,7 +100,7 @@ const pollUntilDone = async (
       return jobDetails;
     }
     if (timeout !== 0 && Date.now() - start > timeout) {
-      throw amplifyFaultWithTroubleshootingLink('TimeoutFault', { message: `Job Timed out for ${jobId}` });
+      throw new AmplifyFault('TimeoutFault', { message: `Job Timed out for ${jobId}` });
     } else {
       // run again with a short delay
       await delay(interval);

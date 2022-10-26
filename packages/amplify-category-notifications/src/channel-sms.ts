@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, amplifyFaultWithTroubleshootingLink } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyFault } from 'amplify-cli-core';
 import inquirer from 'inquirer';
 import ora from 'ora';
 import { printer } from 'amplify-prompts';
@@ -63,7 +63,7 @@ export const enable = async (context:$TSContext):Promise<$TSAny> => {
     return buildPinpointChannelResponseSuccess(ChannelAction.ENABLE, deploymentType, channelName, data.SMSChannelResponse);
   } catch (e) {
     spinner.stop();
-    throw amplifyFaultWithTroubleshootingLink('NotificationsChannelEmailFault', {
+    throw new AmplifyFault('NotificationsChannelEmailFault', {
       message: `Failed to enable the ${channelName} channel.`,
     }, e);
   }
@@ -92,7 +92,7 @@ export const disable = async (context: $TSContext): Promise<$TSAny> => {
     return buildPinpointChannelResponseSuccess(ChannelAction.DISABLE, deploymentType, channelName, data.SMSChannelResponse);
   } catch (e) {
     spinner.fail(`Failed to disable the ${channelName} channel.`);
-    throw amplifyFaultWithTroubleshootingLink('NotificationsChannelEmailFault', {
+    throw new AmplifyFault('NotificationsChannelEmailFault', {
       message: `Failed to disable the ${channelName} channel.`,
     }, e);
   }
@@ -118,7 +118,7 @@ export const pull = async (context:$TSContext, pinpointApp:$TSAny) : Promise<$TS
   } catch (err) {
     spinner.stop();
     if (err.code !== 'NotFoundException') {
-      throw amplifyFaultWithTroubleshootingLink('NotificationsChannelSmsFault', {
+      throw new AmplifyFault('NotificationsChannelSmsFault', {
         message: `Channel ${channelName} not found in the notifications metadata.`,
       }, err);
     }

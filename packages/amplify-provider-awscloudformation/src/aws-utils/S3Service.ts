@@ -1,8 +1,11 @@
-import { $TSAny, $TSContext, amplifyFaultWithTroubleshootingLink } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyFault } from 'amplify-cli-core';
 import { IS3Service } from 'amplify-util-import';
 import S3, { Bucket } from 'aws-sdk/clients/s3';
 import { loadConfiguration } from '../configuration-manager';
 
+/**
+ *
+ */
 export const createS3Service = async (context: $TSContext, options: $TSAny): Promise<S3Service> => {
   let credentials = {};
 
@@ -17,11 +20,17 @@ export const createS3Service = async (context: $TSContext, options: $TSAny): Pro
   return new S3Service(s3);
 };
 
+/**
+ *
+ */
 export class S3Service implements IS3Service {
   private cachedBucketList: Bucket[] = [];
 
   public constructor(private s3: S3) {}
 
+  /**
+   *
+   */
   public async listBuckets(): Promise<Bucket[]> {
     if (this.cachedBucketList.length === 0) {
       const response = await this.s3.listBuckets().promise();
@@ -34,6 +43,9 @@ export class S3Service implements IS3Service {
     return this.cachedBucketList;
   }
 
+  /**
+   *
+   */
   public async bucketExists(bucketName: string): Promise<boolean> {
     try {
       const response = await this.s3
@@ -47,12 +59,15 @@ export class S3Service implements IS3Service {
       if (error.code === 'NotFound') {
         return false;
       }
-      throw amplifyFaultWithTroubleshootingLink('UnknownFault', {
+      throw new AmplifyFault('UnknownFault', {
         message: error.message,
       }, error);
     }
   }
 
+  /**
+   *
+   */
   public async getBucketLocation(bucketName: string): Promise<string> {
     const response = await this.s3
       .getBucketLocation({

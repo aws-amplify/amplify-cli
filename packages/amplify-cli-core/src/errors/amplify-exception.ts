@@ -1,3 +1,6 @@
+// eslint-disable-next-line import/no-cycle
+import { AMPLIFY_SUPPORT_DOCS } from '../cliConstants';
+
 /**
  * Base class for all Amplify exceptions
  */
@@ -37,8 +40,8 @@ export abstract class AmplifyException extends Error {
 
     this.message = options.message;
     this.details = options.details;
-    this.resolution = 'resolution' in options ? options.resolution : undefined;
-    this.link = 'link' in options ? options.link : undefined;
+    this.resolution = options.resolution;
+    this.link = options.link ?? AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url;
   }
 
   toObject = (): object => {
@@ -63,11 +66,9 @@ export type AmplifyExceptionClassification = 'FAULT' | 'ERROR';
 export type AmplifyExceptionOptions = {
   message: string,
   details?: string,
-} & ({
-  resolution: string
-} | {
-  link: string
-});
+  resolution?: string,
+  link?: string,
+};
 
 /**
  * Amplify Error partial options object

@@ -1,5 +1,5 @@
 import {
-  $TSContext, amplifyErrorWithTroubleshootingLink, FeatureFlags, JSONUtilities, pathManager, stateManager,
+  $TSContext, AmplifyError, FeatureFlags, JSONUtilities, pathManager, stateManager,
 } from 'amplify-cli-core';
 import * as path from 'path';
 import _ from 'lodash';
@@ -38,7 +38,7 @@ export const uploadAuthTriggerTemplate = async (context: $TSContext): Promise<{ 
 
   // This should not happen, so throw
   if (!deploymentBucketName) {
-    throw amplifyErrorWithTroubleshootingLink('BucketNotFoundError', {
+    throw new AmplifyError('BucketNotFoundError', {
       message: 'DeploymentBucket was not found in amplify-meta.json',
     });
   }

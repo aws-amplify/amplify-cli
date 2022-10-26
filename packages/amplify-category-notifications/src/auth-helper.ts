@@ -1,5 +1,5 @@
 import {
-  $TSAny, $TSContext, AmplifyCategories, amplifyErrorWithTroubleshootingLink,
+  $TSAny, $TSContext, AmplifyCategories, AmplifyError,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import ora from 'ora';
@@ -122,7 +122,7 @@ const checkAuth = async (context : $TSContext, resourceName : string) : Promise<
   // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
   // configuration.
   if (checkResult.authImported === true && checkResult.errors && checkResult.errors.length > 0) {
-    throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
+    throw new AmplifyError('ConfigurationError', {
       message: checkResult.errors.join(os.EOL),
     });
   }

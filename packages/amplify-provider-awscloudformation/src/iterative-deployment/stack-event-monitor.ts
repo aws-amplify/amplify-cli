@@ -1,12 +1,18 @@
 import { StackEvent } from 'aws-sdk/clients/cloudformation';
 import * as aws from 'aws-sdk';
-import { amplifyFaultWithTroubleshootingLink } from 'amplify-cli-core';
+import { AmplifyFault } from 'amplify-cli-core';
 import { fileLogger, Logger } from '../utils/aws-logger';
 
+/**
+ *
+ */
 export interface StackEventMonitorOptions {
   pollDelay: number;
 }
 
+/**
+ *
+ */
 export interface IStackProgressPrinter {
   addActivity: (activity: StackEvent) => void;
   print: () => void;
@@ -18,6 +24,9 @@ export interface IStackProgressPrinter {
   isRunning: () => boolean;
 }
 
+/**
+ *
+ */
 export class StackEventMonitor {
   private active = false;
   private tickTimer?: NodeJS.Timeout;
@@ -42,12 +51,18 @@ export class StackEventMonitor {
     this.printerFn = printerFn;
   }
 
+  /**
+   *
+   */
   public start(): StackEventMonitor {
     this.active = true;
     this.scheduleNextTick();
     return this;
   }
 
+  /**
+   *
+   */
   public async stop(): Promise<void> {
     this.active = false;
     if (this.tickTimer) {
@@ -147,7 +162,7 @@ export class StackEventMonitor {
         return;
       }
       if (e.code !== 'Throttling') {
-        throw amplifyFaultWithTroubleshootingLink('NotImplementedFault', {
+        throw new AmplifyFault('NotImplementedFault', {
           message: e.message,
         }, e);
       }

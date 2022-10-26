@@ -1,4 +1,4 @@
-const { ApiCategoryFacade, amplifyFaultWithTroubleshootingLink } = require('amplify-cli-core');
+const { ApiCategoryFacade, AmplifyFault } = require('amplify-cli-core');
 const awsRegions = require('./aws-regions');
 const { Lambda } = require('./aws-utils/aws-lambda');
 const DynamoDB = require('./aws-utils/aws-dynamodb');
@@ -136,7 +136,7 @@ module.exports = {
       const { code } = error;
 
       if (code !== 'ResourceNotFoundException') {
-        throw amplifyFaultWithTroubleshootingLink('ResourceNotFoundFault', {
+        throw new AmplifyFault('ResourceNotFoundFault', {
           message: error.message,
         }, error);
       }
@@ -184,7 +184,7 @@ module.exports = {
   getTransformerDirectives: async (context, options) => {
     const { resourceDir } = options;
     if (!resourceDir) {
-      throw amplifyFaultWithTroubleshootingLink('ResourceNotFoundFault', {
+      throw new AmplifyFault('ResourceNotFoundFault', {
         message: 'Missing resource directory.',
       });
     }

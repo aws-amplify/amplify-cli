@@ -1,5 +1,5 @@
 import {
-  stateManager, $TSContext, amplifyErrorWithTroubleshootingLink,
+  stateManager, $TSContext, AmplifyError,
 } from 'amplify-cli-core';
 import aws from 'aws-sdk';
 import _ from 'lodash';
@@ -10,23 +10,32 @@ import {
   AdminAuthConfig, AwsSdkConfig, CognitoAccessToken, CognitoIdToken,
 } from './auth-types';
 
+/**
+ *
+ */
 export const adminVerifyUrl = (appId: string, envName: string, region: string): string => {
   const baseUrl = process.env.AMPLIFY_CLI_ADMINUI_BASE_URL ?? adminBackendMap[region]?.amplifyAdminUrl;
   return `${baseUrl}/admin/${appId}/${envName}/verify/?loginVersion=1`;
 };
 
+/**
+ *
+ */
 export function doAdminTokensExist(appId: string): boolean {
   if (!appId) {
-    throw amplifyErrorWithTroubleshootingLink('AmplifyStudioError', {
+    throw new AmplifyError('AmplifyStudioError', {
       message: `Failed to check if admin credentials exist: appId is undefined`,
     });
   }
   return !!stateManager.getAmplifyAdminConfigEntry(appId);
 }
 
+/**
+ *
+ */
 export async function isAmplifyAdminApp(appId: string): Promise<{ isAdminApp: boolean; region: string; userPoolID: string }> {
   if (!appId) {
-    throw amplifyErrorWithTroubleshootingLink('AmplifyStudioError', {
+    throw new AmplifyError('AmplifyStudioError', {
       message: `Failed to check if Amplify Studio is enabled: appId is undefined`,
     });
   }
@@ -38,6 +47,9 @@ export async function isAmplifyAdminApp(appId: string): Promise<{ isAdminApp: bo
   return { isAdminApp: !!appState.appId, region: appState.region, userPoolID };
 }
 
+/**
+ *
+ */
 export async function getTempCredsWithAdminTokens(context: $TSContext, appId: string): Promise<AwsSdkConfig> {
   if (!doAdminTokensExist(appId)) {
     await adminLoginFlow(context, appId);
