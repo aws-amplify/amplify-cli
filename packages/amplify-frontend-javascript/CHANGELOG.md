@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-rc.43121b9b9.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.6.3...amplify-frontend-javascript@3.7.0-rc.43121b9b9.0) (2022-10-26)
+
+
+### Features
+
+* in app messaging notification ([#11067](https://github.com/aws-amplify/amplify-cli/issues/11067)) ([0c70a05](https://github.com/aws-amplify/amplify-cli/commit/0c70a05bf97943ddf6b4607b9bfe0bdff132aae1))
+
+
+
+
+
 ## [3.6.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.6.2...amplify-frontend-javascript@3.6.3) (2022-10-13)
 
 **Note:** Version bump only for package amplify-frontend-javascript
