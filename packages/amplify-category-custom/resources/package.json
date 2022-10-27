@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "@aws-amplify/cli-extensibility-helper": "^2.0.0",
-    "aws-cdk-lib": "~2.44.0"
+    "aws-cdk-lib": "~2.44.0",
+    "constructs": "^10.0.5"
   },
   "devDependencies": {
     "typescript": "^4.2.4"
