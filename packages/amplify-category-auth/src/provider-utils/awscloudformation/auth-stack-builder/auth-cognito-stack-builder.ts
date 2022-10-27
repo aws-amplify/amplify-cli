@@ -1,13 +1,13 @@
+import * as cdk from 'aws-cdk-lib';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as cognito from 'aws-cdk-lib/aws-cognito';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { AmplifyAuthCognitoStackTemplate } from '@aws-amplify/cli-extensibility-helper';
-import * as cognito from '@aws-cdk/aws-cognito';
-import * as iam from '@aws-cdk/aws-iam';
-import * as lambda from '@aws-cdk/aws-lambda';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import * as s3 from '@aws-cdk/aws-s3';
-import * as cdk from '@aws-cdk/core';
 import { $TSAny, JSONUtilities } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
+import { Construct } from 'constructs';
 import {
   hostedUILambdaFilePath,
   hostedUIProviderLambdaFilePath,
@@ -16,8 +16,8 @@ import {
   openIdLambdaFilePath,
   userPoolClientLambdaFilePath,
 } from '../constants';
-import { AttributeType } from '../service-walkthrough-types/awsCognito-user-input-types';
 import { CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
+import { AttributeType } from '../service-walkthrough-types/awsCognito-user-input-types';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'Amplify Cognito Stack for AWS Amplify CLI';
@@ -53,7 +53,7 @@ export type AmplifyAuthCognitoStackProps = {
  * L2 construct for amplify auth cognito stack
  */
 export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCognitoStackTemplate {
-  private _scope: cdk.Construct;
+  private _scope: Construct;
   private _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
   private _cfnConditionMap: Map<string, cdk.CfnCondition> = new Map();
   private _cfnOutputMap: Map<string, cdk.CfnOutput> = new Map();
@@ -103,7 +103,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   openIdLambdaInputs?: cdk.CustomResource;
   openIdLambdaRole?: iam.CfnRole;
 
-  constructor(scope: cdk.Construct, id: string, props: AmplifyAuthCognitoStackProps) {
+  constructor(scope: Construct, id: string, props: AmplifyAuthCognitoStackProps) {
     super(scope, id, props);
     this._scope = scope;
     this.templateOptions.templateFormatVersion = CFN_TEMPLATE_FORMAT_VERSION;
@@ -536,7 +536,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         && !_.isEmpty(props.authProviders)
         && !(Object.keys(props.authProviders).length === 1 && props.authProviders[0] === 'accounts.google.com' && props.audiences)
       ) {
-        this.identityPool.supportedLoginProviders = cdk.Lazy.anyValue({
+        this.identityPool.supportedLoginProviders = cdk.Lazy.any({
           produce: () => {
             const supportedProvider: $TSAny = {};
             props.authProviders?.forEach(provider => {

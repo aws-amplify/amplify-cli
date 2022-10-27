@@ -1,12 +1,24 @@
-/* eslint-disable max-lines-per-function */
-import * as cdk from '@aws-cdk/core';
 import {
-  $TSAny, $TSContext, AmplifyCategories, AmplifyCategoryTransform,
-  AmplifyStackTemplate, AmplifySupportedService, buildOverrideDir,
-  CFNTemplateFormat, FeatureFlags, JSONUtilities, pathManager,
-  stateManager, Template, writeCFNTemplate,
+  $TSAny,
+  $TSContext,
+  AmplifyCategories,
+  AmplifyCategoryTransform,
+  AmplifyStackTemplate,
+  AmplifySupportedService,
+  buildOverrideDir,
+  CFNTemplateFormat,
+  FeatureFlags,
+  JSONUtilities,
+  pathManager,
+  stateManager,
+  Template,
+  writeCFNTemplate
 } from 'amplify-cli-core';
-import { formatter, printer } from 'amplify-prompts';
+import {
+  formatter,
+  printer 
+} from 'amplify-prompts';
+import * as cdk from 'aws-cdk-lib';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import os from 'os';
@@ -17,7 +29,8 @@ import { AttributeType, CognitoCLIInputs } from '../service-walkthrough-types/aw
 import { AuthTriggerConnection, AuthTriggerPermissions, CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
 import { generateNestedAuthTriggerTemplate } from '../utils/generate-auth-trigger-template';
 import { createUserPoolGroups, updateUserPoolGroups } from '../utils/synthesize-resources';
-import { AmplifyAuthCognitoStack, AuthStackSynthesizer } from './index';
+import { AmplifyAuthCognitoStack } from './auth-cognito-stack-builder';
+import { AuthStackSynthesizer } from './stack-synthesizer';
 
 /**
  *  Class to handle Auth cdk generation / override functionality

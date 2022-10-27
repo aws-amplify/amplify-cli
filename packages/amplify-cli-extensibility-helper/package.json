@@ -28,16 +28,8 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-category-custom": "2.5.3",
-    "@aws-cdk/aws-apigateway": "^1.159.0",
-    "@aws-cdk/aws-appsync": "^1.159.0",
-    "@aws-cdk/aws-cognito": "^1.159.0",
-    "@aws-cdk/aws-dynamodb": "^1.159.0",
-    "@aws-cdk/aws-elasticsearch": "^1.159.0",
-    "@aws-cdk/aws-iam": "^1.159.0",
-    "@aws-cdk/aws-lambda": "^1.159.0",
-    "@aws-cdk/aws-s3": "^1.159.0",
-    "@aws-cdk/core": "^1.159.0",
-    "amplify-cli-core": "3.2.2"
+    "amplify-cli-core": "3.2.2",
+    "aws-cdk-lib": "~2.44.0"
   },
   "jest": {
     "transform": {

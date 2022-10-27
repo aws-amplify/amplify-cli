@@ -112,10 +112,6 @@ Object {
       "UpdateReplacePolicy": "Delete",
     },
     "CustomMapLambda51D5D430": Object {
-      "DependsOn": Array [
-        "CustomMapLambdaServiceRoleDefaultPolicy983FDD4E",
-        "CustomMapLambdaServiceRole4EE7732C",
-      ],
       "Properties": Object {
         "Code": Object {
           "ZipFile": "const response = require('cfn-response');
@@ -457,10 +453,6 @@ Object {
       "UpdateReplacePolicy": "Delete",
     },
     "CustomMapLambda51D5D430": Object {
-      "DependsOn": Array [
-        "CustomMapLambdaServiceRoleDefaultPolicy983FDD4E",
-        "CustomMapLambdaServiceRole4EE7732C",
-      ],
       "Properties": Object {
         "Code": Object {
           "ZipFile": "const response = require('cfn-response');

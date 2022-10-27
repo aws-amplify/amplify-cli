@@ -113,10 +113,6 @@ Object {
       "UpdateReplacePolicy": "Delete",
     },
     "CustomPlaceIndexLambda79813BB9": Object {
-      "DependsOn": Array [
-        "CustomPlaceIndexLambdaServiceRoleDefaultPolicy818068B1",
-        "CustomPlaceIndexLambdaServiceRoleFD2F3C9D",
-      ],
       "Properties": Object {
         "Code": Object {
           "ZipFile": "const response = require('cfn-response');
@@ -466,10 +462,6 @@ Object {
       "UpdateReplacePolicy": "Delete",
     },
     "CustomPlaceIndexLambda79813BB9": Object {
-      "DependsOn": Array [
-        "CustomPlaceIndexLambdaServiceRoleDefaultPolicy818068B1",
-        "CustomPlaceIndexLambdaServiceRoleFD2F3C9D",
-      ],
       "Properties": Object {
         "Code": Object {
           "ZipFile": "const response = require('cfn-response');

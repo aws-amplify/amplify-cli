@@ -1,15 +1,17 @@
-import { $TSContext, CFNTemplateFormat, readCFNTemplate, pathManager, stateManager, writeCFNTemplate } from 'amplify-cli-core';
+import {
+  $TSContext, CFNTemplateFormat, readCFNTemplate, pathManager, stateManager, writeCFNTemplate,
+} from 'amplify-cli-core';
 import { glob } from 'glob';
 import * as inquirer from 'inquirer';
 import { prompter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
+import * as cdk from 'aws-cdk-lib';
 import {
   getResourceCfnOutputAttributes,
   getAllResources,
   addCDKResourceDependency,
   addCFNResourceDependency,
 } from '../../utils/dependency-management-utils';
-import * as cdk from '@aws-cdk/core';
 
 jest.mock('amplify-cli-core');
 jest.mock('amplify-prompts');
@@ -319,7 +321,7 @@ describe('addCFNResourceDependency() scenarios', () => {
     } as unknown as $TSContext;
   });
 
-  it('add new resource dependency to custom cfn stack ', async () => {
+  it('add new resource dependency to custom cfn stack', async () => {
     prompter.yesOrNo = jest.fn().mockReturnValueOnce(true);
     fs_mock.existsSync.mockReturnValue(false); // if build dir exists
 

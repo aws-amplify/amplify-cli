@@ -1,7 +1,8 @@
-import { ISynthesisSession, Stack, LegacyStackSynthesizer } from '@aws-cdk/core';
 import { JSONUtilities } from 'amplify-cli-core';
-import type { Template } from 'cloudform-types';
-import { AmplifyAuthCognitoStack, AmplifyUserPoolGroupStack, AmplifyUserPoolGroupStackOutputs } from './index';
+import { ISynthesisSession, Stack, LegacyStackSynthesizer } from 'aws-cdk-lib';
+import { Template } from 'cloudform-types';
+import { AmplifyAuthCognitoStack } from './auth-cognito-stack-builder';
+import { AmplifyUserPoolGroupStack, AmplifyUserPoolGroupStackOutputs } from './auth-user-pool-group-stack-builder';
 
 /**
  * Amplify Stack Synthesizer for Auth Category

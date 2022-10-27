@@ -1,10 +1,10 @@
-import * as apigw2 from '@aws-cdk/aws-apigatewayv2';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as ecs from '@aws-cdk/aws-ecs';
-import * as discovery from '@aws-cdk/aws-servicediscovery';
-import * as cdk from '@aws-cdk/core';
-import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
+import * as apigw2 from 'aws-cdk-lib/aws-apigatewayv2';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as discovery from 'aws-cdk-lib/aws-servicediscovery';
+import * as cdk from 'aws-cdk-lib';
 import { $TSAny } from 'amplify-cli-core';
+import { Construct } from 'constructs';
 
 export const RESOURCE_TAG = 'amplify-env';
 
@@ -22,7 +22,7 @@ export const NETWORK_STACK_LOGICAL_ID = 'NetworkStack';
  * Class to generate Network Stack for Amplify API Containers
  */
 export class NetworkStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props: NetworkStackProps) {
+  constructor(scope: Construct, id: string, props: NetworkStackProps) {
     super(scope, id);
 
     const {
@@ -38,15 +38,13 @@ export class NetworkStack extends cdk.Stack {
    * generates cfn from stack
    */
   toCloudFormation = (): $TSAny => {
-    prepareApp(this);
-
     const cfn = this._toCloudFormation();
 
     return cfn;
   }
 }
 
-const createVpc = (scope: cdk.Construct, vpcId: string, vpcName: string, internetGatewayId: string): $TSAny => {
+const createVpc = (scope: Construct, vpcId: string, vpcName: string, internetGatewayId: string): $TSAny => {
   const vpcCidrBlock = '10.0.0.0/16';
   const condition = new cdk.CfnCondition(scope, 'UseNewVpcCondition', {
     expression: cdk.Fn.conditionAnd(cdk.Fn.conditionEquals(vpcId, ''), cdk.Fn.conditionEquals(internetGatewayId, '')),
@@ -97,7 +95,7 @@ const createVpc = (scope: cdk.Construct, vpcId: string, vpcName: string, interne
   };
 };
 
-const createAmplifyEnv = (scope: cdk.Construct,
+const createAmplifyEnv = (scope: Construct,
   envName: string,
   vpcId: string,
   vpcCidrBlock: string,

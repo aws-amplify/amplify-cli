@@ -1,12 +1,12 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { JSONUtilities, pathManager } from 'amplify-cli-core';
-import * as iam from '@aws-cdk/aws-iam';
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as cdk from '@aws-cdk/core';
-import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
-import { Construct, CustomResource } from '@aws-cdk/core';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as cdk from 'aws-cdk-lib';
+import { CustomResource } from 'aws-cdk-lib';
 import { v4 as uuid } from 'uuid';
+import { Construct } from 'constructs';
 import { AuthTriggerConnection, CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
 import { authTriggerAssetFilePath } from '../constants';
 
@@ -21,7 +21,7 @@ const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
  * CDK stack for custom auth resources
  */
 export class CustomResourceAuthStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props: CustomResourceAuthStackProps) {
+  constructor(scope: Construct, id: string, props: CustomResourceAuthStackProps) {
     super(scope, id, props);
     this.templateOptions.templateFormatVersion = CFN_TEMPLATE_FORMAT_VERSION;
 
@@ -61,7 +61,6 @@ export class CustomResourceAuthStack extends cdk.Stack {
    * Generates a CFN template from the CDK stack
    */
   toCloudFormation(): Record<string, unknown> {
-    prepareApp(this);
     return this._toCloudFormation();
   }
 }

@@ -1,7 +1,7 @@
 import {
   $TSContext, $TSObject, stateManager, pathManager,
 } from 'amplify-cli-core';
-import { App } from '@aws-cdk/core';
+import { App } from 'aws-cdk-lib';
 import { MapParameters, getGeoMapStyle, getMapStyleComponents } from './mapParams';
 import { parametersFileName, provider, ServiceName } from './constants';
 import { category } from '../constants';
