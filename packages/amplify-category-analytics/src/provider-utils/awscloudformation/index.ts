@@ -54,23 +54,20 @@ export const updateResource = (context : $TSContext, __: string, service: string
 /**
  * Get IAM permission policies
  * @param context amplify cli context
- * @param __ category name - this is always analytics
  * @param service provider service for analytics resource
  * @param resourceName name of the analytics resource
  * @param crudOptions access requirements ( Create-Read-Update-Delete )
  * @returns IAM policies
  */
-export const getPermissionPolicies = (context : $TSContext, __: string, service: string, resourceName: string, crudOptions: $TSAny):
- $TSAny|undefined => {
+export const getPermissionPolicies = (
+  context: $TSContext,
+  service: string,
+  resourceName: string,
+  crudOptions: $TSAny,
+): $TSAny|undefined => {
   const serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   const { serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { getIAMPolicies } = require(serviceWalkthroughSrc);
-
-  if (!getPermissionPolicies) {
-    printer.info(`No policies found for ${resourceName}`);
-    return undefined;
-  }
-
   return getIAMPolicies(resourceName, crudOptions);
 };
