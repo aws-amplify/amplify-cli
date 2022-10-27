@@ -57,7 +57,7 @@ export const handleException = async (exception: unknown): Promise<void> => {
         downstreamException = downstreamException.downstreamException;
       } else {
         printError(downstreamException);
-        downstreamException = null;
+        downstreamException = undefined;
       }
     }
   }
