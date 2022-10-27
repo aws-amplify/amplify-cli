@@ -1,5 +1,5 @@
 import {
-  $TSAny, $TSContext, AmplifyError, amplifyFaultWithTroubleshootingLink,
+  $TSAny, $TSContext, AmplifyError, AmplifyFault,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import inquirer from 'inquirer';
@@ -91,10 +91,9 @@ export const enable = async (context: $TSContext, successMessage: string | undef
     );
   } catch (err) {
     spinner.stop();
-    throw amplifyFaultWithTroubleshootingLink('NotificationsChannelFCMFault', {
+    throw new AmplifyFault('NotificationsChannelFCMFault', {
       message: `Failed to enable the ${channelName} channel`,
-      details: err.message,
-    });
+    }, err);
   }
 };
 
@@ -149,10 +148,9 @@ export const disable = async (context: $TSContext): Promise<$TSAny> => {
     return buildPinpointChannelResponseSuccess(ChannelAction.DISABLE, deploymentType, channelName, data.GCMChannelResponse);
   } catch (err) {
     spinner.stop();
-    throw amplifyFaultWithTroubleshootingLink('NotificationsChannelFCMFault', {
+    throw new AmplifyFault('NotificationsChannelFCMFault', {
       message: `Failed to disable the ${channelName} channel`,
-      details: err.message,
-    });
+    }, err);
   }
 };
 
@@ -177,10 +175,9 @@ export const pull = async (context: $TSContext, pinpointApp: $TSAny):Promise<$TS
   } catch (err) {
     spinner.stop();
     if (err.code !== 'NotFoundException') {
-      throw amplifyFaultWithTroubleshootingLink('NotificationsChannelFCMFault', {
+      throw new AmplifyFault('NotificationsChannelFCMFault', {
         message: `Failed to retrieve channel information for ${channelName}`,
-        details: err.message,
-      });
+      }, err);
     }
 
     return undefined;

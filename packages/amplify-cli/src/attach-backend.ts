@@ -1,7 +1,7 @@
 import {
   $TSContext,
-  amplifyErrorWithTroubleshootingLink,
-  amplifyFaultWithTroubleshootingLink,
+  AmplifyError,
+  AmplifyFault,
   FeatureFlags,
   pathManager,
   stateManager,
@@ -45,10 +45,8 @@ export const attachBackend = async (context: $TSContext, inputParams): Promise<v
     removeAmplifyFolderStructure();
     restoreOriginalAmplifyFolder();
 
-    throw amplifyFaultWithTroubleshootingLink('PullBackendFault', {
+    throw new AmplifyFault('PullBackendFault', {
       message: 'Failed to pull the backend.',
-      details: e.message,
-      stack: e.stack,
     }, e);
   }
 };
@@ -118,7 +116,7 @@ const backupAmplifyFolder = (): void => {
     const backupAmplifyDirPath = path.join(projectPath, backupAmplifyDirName);
 
     if (fs.existsSync(backupAmplifyDirPath)) {
-      throw amplifyErrorWithTroubleshootingLink('DirectoryAlreadyExistsError', {
+      throw new AmplifyError('DirectoryAlreadyExistsError', {
         message: `Backup folder at ${backupAmplifyDirPath} already exists, remove the folder and retry the operation.`,
       });
     }
@@ -126,17 +124,13 @@ const backupAmplifyFolder = (): void => {
       fs.moveSync(amplifyDirPath, backupAmplifyDirPath);
     } catch (e) {
       if (e.code === 'EPERM') {
-        throw amplifyErrorWithTroubleshootingLink('DirectoryError', {
+        throw new AmplifyError('DirectoryError', {
           message: `Could not attach the backend to the project.`,
           resolution: 'Ensure that there are no applications locking the `amplify` folder and try again.',
-          details: e.message,
-          stack: e.stack,
         }, e);
       }
-      throw amplifyFaultWithTroubleshootingLink('AmplifyBackupFault', {
+      throw new AmplifyFault('AmplifyBackupFault', {
         message: `Could not attach the backend to the project.`,
-        details: e.message,
-        stack: e.stack,
       }, e);
     }
   }

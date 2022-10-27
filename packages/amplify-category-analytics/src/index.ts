@@ -1,4 +1,4 @@
-import { $TSContext, $TSAny, amplifyFaultWithTroubleshootingLink } from 'amplify-cli-core';
+import { $TSContext, $TSAny, AmplifyFault } from 'amplify-cli-core';
 import * as path from 'path';
 import inquirer, { QuestionCollection } from 'inquirer';
 import { printer } from 'amplify-prompts';
@@ -88,11 +88,9 @@ export const getPermissionPolicies = async (context: $TSContext, resourceOpsMapp
         printer.error(`Provider not configured for ${category}: ${resourceName}`);
       }
     } catch (e) {
-      throw amplifyFaultWithTroubleshootingLink('AnalyticsCategoryFault', {
+      throw new AmplifyFault('AnalyticsCategoryFault', {
         message: `Could not get policies for ${category}: ${resourceName}`,
-        stack: e.stack,
-        details: e.message,
-      });
+      }, e);
     }
   }
   return { permissionPolicies, resourceAttributes };

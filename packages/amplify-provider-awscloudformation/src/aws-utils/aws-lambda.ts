@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, amplifyErrorWithTroubleshootingLink } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError } from 'amplify-cli-core';
 import { Lambda as AwsSdkLambda } from 'aws-sdk';
 import { LayerVersionsListItem, ListLayerVersionsRequest, ListLayerVersionsResponse } from 'aws-sdk/clients/lambda';
 import { AwsSecrets, loadConfiguration } from '../configuration-manager';
@@ -50,9 +50,8 @@ export class Lambda {
           await this.lambda.deleteLayerVersion(params).promise();
         } catch (err) {
           if (err.code !== 'ParameterNotFound') {
-            throw amplifyErrorWithTroubleshootingLink('LambdaLayerDeleteError', {
+            throw new AmplifyError('LambdaLayerDeleteError', {
               message: err.message,
-              stack: err.stack,
             }, err);
           }
         }

@@ -1,5 +1,5 @@
 import {
-  $TSAny, $TSContext, AmplifyError, amplifyFaultWithTroubleshootingLink,
+  $TSAny, $TSContext, AmplifyError, AmplifyFault,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 
@@ -107,10 +107,10 @@ export const enable = async (context:$TSContext, successMessage: string|undefine
     }
 
     spinner.stop();
-    throw amplifyFaultWithTroubleshootingLink('NotificationsChannelEmailFault', {
+    throw new AmplifyFault('NotificationsChannelEmailFault', {
       message: `Failed to enable the ${channelName} channel.`,
       details: err.message,
-    });
+    }, err);
   }
 };
 
@@ -154,10 +154,10 @@ export const disable = async (context:$TSContext) : Promise<$TSAny> => {
     }
 
     spinner.fail(`Failed to disable the ${channelName} channel.`);
-    throw amplifyFaultWithTroubleshootingLink('NotificationsChannelEmailFault', {
+    throw new AmplifyFault('NotificationsChannelEmailFault', {
       message: `Failed to disable the ${channelName} channel.`,
       details: err.message,
-    });
+    }, err);
   }
 };
 
@@ -182,10 +182,9 @@ export const pull = async (context:$TSContext, pinpointApp:$TSAny):Promise<$TSAn
   } catch (err) {
     spinner.stop();
     if (err.code !== 'NotFoundException') {
-      throw amplifyFaultWithTroubleshootingLink('NotificationsChannelEmailFault', {
+      throw new AmplifyFault('NotificationsChannelEmailFault', {
         message: `Failed to pull the ${channelName} channel.`,
-        details: err.message,
-      });
+      }, err);
     }
 
     return undefined;

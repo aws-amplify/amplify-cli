@@ -1,5 +1,5 @@
 import {
-  $TSContext, stateManager, AmplifyCategories, AmplifySupportedService, AmplifyError, amplifyErrorWithTroubleshootingLink,
+  $TSContext, stateManager, AmplifyCategories, AmplifySupportedService, AmplifyError,
 } from 'amplify-cli-core';
 import * as path from 'path';
 import {
@@ -114,7 +114,7 @@ export const getChannelNameFromView = (channelViewString: string): string => {
       return channelName;
     }
   }
-  throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
+  throw new AmplifyError('ConfigurationError', {
     message: `No channel name found for view: ${channelViewString}`,
   });
 };
