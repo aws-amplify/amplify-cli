@@ -16,10 +16,11 @@ export const provider = 'awscloudformation';
 export const customMapLambdaCodePath = path.join(__dirname, '../../resources/custom-map-resource-handler.js');
 export const customPlaceIndexLambdaCodePath = path.join(__dirname, '../../resources/custom-place-index-resource-handler.js');
 export const customGeofenceCollectionLambdaCodePath = path.join(__dirname, '../../resources/custom-geofence-collection-resource-handler.js');
+export const customDeviceLocationTrackingLambdaCodePath = path.join(__dirname, '../../resources/custom-device-location-tracking-resource-handler.js');
 
 export enum ServiceName {
   Map = 'Map',
   PlaceIndex = 'PlaceIndex',
   GeofenceCollection = 'GeofenceCollection',
-  Tracker = 'Tracker',
+  DeviceLocationTracking = 'DeviceLocationTracking',
 }

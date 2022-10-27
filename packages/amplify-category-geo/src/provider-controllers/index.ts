@@ -10,6 +10,7 @@ import { getServiceFriendlyName } from '../service-walkthroughs/resourceWalkthro
 import { TemplateMappings } from '../service-stacks/baseStack';
 import { validateAddGeoRequest, validateUpdateGeoRequest } from 'amplify-util-headless-input';
 import { checkGeoResourceExists } from '../service-utils/resourceUtils';
+import { addDeviceLocationTrackingResource } from './devicelocationtracking';
 
 /**
  * Entry point for creating a new Geo resource
@@ -29,6 +30,8 @@ export const addResource = async (context: $TSContext, service: string): Promise
       return addMapResource(context);
     case ServiceName.PlaceIndex:
       return addPlaceIndexResource(context);
+    case ServiceName.DeviceLocationTracking:
+      return addDeviceLocationTrackingResource(context);
     case ServiceName.GeofenceCollection:
       return addGeofenceCollectionResource(context);
     default:
