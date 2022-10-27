@@ -177,6 +177,7 @@ export type AmplifyFaultType =
   | 'RootStackNotFoundFault'
   | 'ServiceCallFault'
   | 'TimeoutFault'
+  | 'TriggerUploadFault'
   | 'UnexpectedS3Fault'
   | 'UnknownFault'
   | 'UnknownNodeJSFault';
