@@ -259,7 +259,7 @@ export enum CrudOperation {
   DELETE = 'delete',
 }
 
-const convertCrudOperationsToPermissions = (crudOps: CrudOperation[]): $TSAny => {
+const convertCrudOperationsToPermissions = (crudOps: CrudOperation[]): string[] => {
   const opMap: Record<CrudOperation, string[]> = {
     [CrudOperation.CREATE]: ['/POST'],
     [CrudOperation.READ]: ['/GET'],
