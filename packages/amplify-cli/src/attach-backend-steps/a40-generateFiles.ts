@@ -27,19 +27,17 @@ export const generateFiles = async (context: $TSContext): Promise<$TSContext> =>
   const providerOnSuccessTasks: (() => Promise<$TSAny>)[] = [];
 
   const frontendPlugins = getFrontendPlugins(context);
-  // eslint-disable-next-line
-  const frontendModule = require(frontendPlugins[context.exeInfo.projectConfig.frontend]);
+  const frontendModule = await import(frontendPlugins[context.exeInfo.projectConfig.frontend]);
 
   await frontendModule.onInitSuccessful(context);
 
   generateLocalRuntimeFiles(context);
   generateNonRuntimeFiles(context);
 
-  context.exeInfo.projectConfig.providers.forEach(provider => {
-    // eslint-disable-next-line
-    const providerModule = require(providerPlugins[provider]);
+  for (const provider of context.exeInfo.projectConfig.providers) {
+    const providerModule = await import(providerPlugins[provider]);
     providerOnSuccessTasks.push(() => providerModule.onInitSuccessful(context));
-  });
+  }
 
   await sequential(providerOnSuccessTasks);
 

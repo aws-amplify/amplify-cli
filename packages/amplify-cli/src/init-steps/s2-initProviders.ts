@@ -13,11 +13,10 @@ export const initProviders = async (context): Promise<void> => {
   context.exeInfo.projectConfig.providers = providers;
   const initializationTasks: (() => Promise<$TSAny>)[] = [];
 
-  providers.forEach(provider => {
-    // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
-    const providerModule = require(providerPlugins[provider]);
+  for (const provider of providers) {
+    const providerModule = await import(providerPlugins[provider]);
     initializationTasks.push(() => providerModule.init(context));
-  });
+  }
 
   await sequential(initializationTasks);
   return context;
