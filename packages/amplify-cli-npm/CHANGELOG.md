@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [10.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.3.1...@aws-amplify/cli@10.4.0) (2022-10-27)
+
+
+### Features
+
+* migrates analytics category to support in app messaging channel notifications ([#11158](https://github.com/aws-amplify/amplify-cli/issues/11158)) ([9dfbf6c](https://github.com/aws-amplify/amplify-cli/commit/9dfbf6c1aa1031814ea6ea097435e49f9029801a))
+
+
+
+
+
 ## [10.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@10.3.0...@aws-amplify/cli@10.3.1) (2022-10-21)
 
 **Note:** Version bump only for package @aws-amplify/cli
