@@ -1,4 +1,6 @@
-import { $TSContext, pathManager, stateManager, AmplifyCategories, amplifyFaultWithTroubleshootingLink, spinner } from 'amplify-cli-core';
+import {
+  $TSContext, pathManager, stateManager, AmplifyCategories, spinner, AmplifyFault,
+} from 'amplify-cli-core';
 import type { S3 } from 'aws-sdk';
 import { createReadStream, readdirSync, existsSync } from 'fs-extra';
 import mime from 'mime-types';
@@ -49,7 +51,7 @@ export const uploadFiles = async (context: $TSContext): Promise<void> => {
       throw e;
     }
   } catch (e) {
-    throw amplifyFaultWithTroubleshootingLink('TriggerUploadFault', { message: 'Unable to upload trigger files to S3' }, e);
+    throw new AmplifyFault('TriggerUploadFault', { message: 'Unable to upload trigger files to S3' }, e);
   }
 };
 
