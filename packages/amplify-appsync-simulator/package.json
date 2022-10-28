@@ -29,7 +29,7 @@
     "test": "jest --logHeapUsage --forceExit"
   },
   "dependencies": {
-    "amplify-cli-core": "3.2.2",
+    "amplify-cli-core": "3.3.0",
     "amplify-prompts": "2.6.0",
     "@graphql-tools/schema": "^8.3.1",
     "@graphql-tools/utils": "^8.5.1",
