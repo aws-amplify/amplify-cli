@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.9.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.8.3...amplify-category-geo@2.9.0) (2022-10-27)
+
+
+### Features
+
+* **amplify-util-uibuilder:** add studio forms ([#11165](https://github.com/aws-amplify/amplify-cli/issues/11165)) ([6f15294](https://github.com/aws-amplify/amplify-cli/commit/6f15294d6809639c7d7e7d3aa4378df894168b0b))
+
+
+
+
+
 ## [2.8.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.8.2...amplify-category-geo@2.8.3) (2022-10-13)
 
 

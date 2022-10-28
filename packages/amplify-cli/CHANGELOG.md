@@ -3,9 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [10.3.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.3.1...@aws-amplify/cli-internal@10.3.2) (2022-10-26)
+# [10.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.3.1...@aws-amplify/cli-internal@10.4.0) (2022-10-27)
 
-**Note:** Version bump only for package @aws-amplify/cli-internal
+
+### Features
+
+* **amplify-util-uibuilder:** add studio forms ([#11165](https://github.com/aws-amplify/amplify-cli/issues/11165)) ([6f15294](https://github.com/aws-amplify/amplify-cli/commit/6f15294d6809639c7d7e7d3aa4378df894168b0b))
+* in app messaging notification ([#11067](https://github.com/aws-amplify/amplify-cli/issues/11067)) ([0c70a05](https://github.com/aws-amplify/amplify-cli/commit/0c70a05bf97943ddf6b4607b9bfe0bdff132aae1))
 
 
 
