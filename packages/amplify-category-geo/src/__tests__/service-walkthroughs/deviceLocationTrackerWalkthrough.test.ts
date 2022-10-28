@@ -197,4 +197,38 @@ describe('Device Location Tracker walkthrough works as expected', () => {
 
     expect(printer.error).toBeCalledWith('No device tracker resource to update. Use "amplify add geo" to create a new device tracker.');
   });
+
+  it('sets the resource to remove correctly', async () => {
+    expect(await removeWalkthrough(service)).toEqual(mockDeviceTrackerName);
+  });
+
+  it('early returns and prints error if no device tracker resource to remove', async () => {
+    mockAmplifyMeta.geo = {};
+    stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
+
+    await removeWalkthrough(service);
+
+    expect(printer.error).toBeCalledWith(`No device tracker exists in the project.`);
+  });
+
+  it('updates default device tracker to another if it is removed', async () => {
+    mockContext.amplify.removeResource = jest.fn().mockReturnValue({
+      service: ServiceName.DeviceLocationTracking,
+      resourceName: mockDeviceTrackerName,
+    });
+
+    // given the geofence collection to be removed is default
+    mockAmplifyMeta.geo[mockDeviceTrackerName].isDefault = true;
+    stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
+
+    const { removeDeviceLocationTrackingResource } = await import('../../provider-controllers/deviceLocationTracking');
+
+    expect(await removeDeviceLocationTrackingResource(mockContext)).toEqual(mockDeviceTrackerName);
+    // The default geofence collection is now changed to secondary collection
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledTimes(2);
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate)
+      .toBeCalledWith(category, mockDeviceTrackerName, 'isDefault', false);
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate)
+      .toBeCalledWith(category, secondaryDeviceTrackerName, 'isDefault', true);
+  });
 });

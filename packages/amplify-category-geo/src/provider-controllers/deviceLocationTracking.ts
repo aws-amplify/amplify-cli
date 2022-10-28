@@ -2,9 +2,11 @@ import { $TSContext } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { ServiceName } from '../service-utils/constants';
 import { convertToCompleteTrackingParams, DeviceLocationTrackingParameters } from '../service-utils/deviceLocationTrackingParams';
-import { createDeviceLocationTrackingResource, modifyDeviceLocationTrackingResource } from '../service-utils/deviceLocationTrackingUtils';
-import { createDeviceLocationTrackingWalkthrough, updateDeviceLocationTrackerWalkthrough } from '../service-walkthroughs/deviceLocationTrackingWalkthrough';
+import { createDeviceLocationTrackingResource, modifyDeviceLocationTrackingResource, getCurrentTrackingParameters } from '../service-utils/deviceLocationTrackingUtils';
+import { createDeviceLocationTrackingWalkthrough, updateDefaultDeviceTrackerWalkthrough, updateDeviceLocationTrackerWalkthrough } from '../service-walkthroughs/deviceLocationTrackingWalkthrough';
 import { printNextStepsSuccessMessage, setProviderContext } from './index';
+import { removeWalkthrough } from '../service-walkthroughs/removeWalkthrough';
+import { category } from '../constants';
 
 /**
  * Add Device Location Tracking resource
@@ -54,4 +56,27 @@ export const updateDeviceLocationTrackingResource = async (
   printer.success(`Successfully updated resource ${updatedParams.name} locally.`);
   printNextStepsSuccessMessage();
   return completeParameters.name;
+};
+
+/**
+ * Remove Device Location Tracking resource
+ */
+export const removeDeviceLocationTrackingResource = async (
+  context: $TSContext,
+): Promise<string | undefined> => {
+  const { amplify } = context;
+  const resourceToRemove = await removeWalkthrough(ServiceName.DeviceLocationTracking);
+  if (!resourceToRemove) return undefined;
+
+  const resourceParameters = await getCurrentTrackingParameters(resourceToRemove);
+
+  const resource = await amplify.removeResource(context, category, resourceToRemove);
+  if (resource?.service === ServiceName.DeviceLocationTracking && resourceParameters.isDefault) {
+    // choose another default if removing a default geofence collection
+    await updateDefaultDeviceTrackerWalkthrough(context, resource?.resourceName);
+  }
+  context.amplify.updateBackendConfigAfterResourceRemove(category, resourceToRemove);
+
+  printNextStepsSuccessMessage();
+  return resourceToRemove;
 };

@@ -421,6 +421,25 @@ export function removeFirstDefaultGeofenceCollection(cwd: string): Promise<void>
     .runAsync()
 }
 
+/**
+ * Remove an existing default device tracker. Assume auth is already configured and three device trackers added with first default
+ * @param cwd command directory
+ */
+ export function removeFirstDefaultDeviceTracker(cwd: string): Promise<void> {
+  return spawn(getCLIPath(), ['geo', 'remove'], { cwd, stripColors: true })
+    .wait('Select which capability you want to remove:')
+    .sendKeyDown(3)
+    .sendCarriageReturn()
+    .wait('Select the device tracker you want to remove')
+    .sendCarriageReturn()
+    .wait('Are you sure you want to delete the resource?')
+    .sendConfirmYes()
+    .wait('Select the device tracker you want to set as default:')
+    .sendCarriageReturn()
+    .runAsync();
+}
+
+
 
 /**
  * Get Geo configuration from aws-exports

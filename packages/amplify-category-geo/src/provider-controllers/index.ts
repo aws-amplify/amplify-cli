@@ -12,7 +12,7 @@ import {
   addMapResource, addMapResourceHeadless, removeMapResource, updateMapResource, updateMapResourceHeadless,
 } from './map';
 import { addPlaceIndexResource, removePlaceIndexResource, updatePlaceIndexResource } from './placeIndex';
-import { addDeviceLocationTrackingResource, updateDeviceLocationTrackingResource } from './deviceLocationTracking';
+import { addDeviceLocationTrackingResource, updateDeviceLocationTrackingResource, removeDeviceLocationTrackingResource } from './deviceLocationTracking';
 
 /**
  * Entry point for creating a new Geo resource
@@ -68,6 +68,8 @@ export const removeResource = async (context: $TSContext, service: string): Prom
       return removeMapResource(context);
     case ServiceName.PlaceIndex:
       return removePlaceIndexResource(context);
+    case ServiceName.DeviceLocationTracking:
+      return removeDeviceLocationTrackingResource(context);
     case ServiceName.GeofenceCollection:
       return removeGeofenceCollectionResource(context);
     default:
