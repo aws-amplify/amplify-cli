@@ -2,12 +2,13 @@ import { $TSContext } from 'amplify-cli-core';
 import { v4 as uuid } from 'uuid';
 import { merge } from 'lodash';
 import {
-  prompter, alphanumeric, and, minLength, maxLength, Validator,
+  prompter, alphanumeric, and, minLength, maxLength, Validator, byValues,
 } from 'amplify-prompts';
 import { DeviceLocationTrackingParameters } from '../service-utils/deviceLocationTrackingParams';
 import { AccessType } from '../service-utils/resourceParams';
 import { ServiceName } from '../service-utils/constants';
 import { resourceAccessWalkthrough } from './resourceWalkthrough';
+import { deviceLocationTrackingCrudPermissionsMap } from '../service-utils/deviceLocationTrackingUtils';
 
 /**
  * Starting point for CLI walkthrough that creates a device location tracking resource
@@ -48,6 +49,15 @@ const deviceLocationTrackerNameWalkthrough = async (context: any): Promise<Pick<
     { validate: validator, initial: `tracker${initialTrackerId}` },
   );
   return { name: trackerNameInput };
+};
+
+const groupCrudPermissionsFlow = async (group: string, defaults: string[] = []) => {
+  const selectedCrudPermissions = await prompter.pick<'many', string>(
+    `What kind of access do you want for ${group} users? Select ALL that apply:`,
+    Object.keys(deviceLocationTrackingCrudPermissionsMap),
+    { returnSize: 'many', initial: byValues(defaults), pickAtLeast: 1 },
+  );
+  return selectedCrudPermissions;
 };
 
 // const deviceLocationTrackerAdvancedWalkthrough = (): void => {
