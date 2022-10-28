@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { $TSAny, $TSObject } from 'amplify-cli-core';
 import { Construct } from 'constructs';
+import { prepareApp } from '../service-utils/prepare-app';
 
 /**
  *  cfn template mapping type
@@ -41,6 +42,7 @@ export class BaseStack extends cdk.Stack {
    * converts to cfn
    */
   toCloudFormation = (): $TSAny => {
+    prepareApp(this);
     const cfn = this._toCloudFormation();
     return cfn;
   }
