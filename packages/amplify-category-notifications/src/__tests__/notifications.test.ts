@@ -24,6 +24,11 @@ describe('notifications tests', () => {
     expect(apiAnalyticsClient.invokeAnalyticsMigrations).toBeCalled();
     jest.resetAllMocks();
 
+    mockContext.input.command = 'update';
+    await migrationCheck(mockContext);
+    expect(apiAnalyticsClient.invokeAnalyticsMigrations).toBeCalled();
+    jest.resetAllMocks();
+
     mockContext.input.command = 'push';
     await migrationCheck(mockContext);
     expect(apiAnalyticsClient.invokeAnalyticsMigrations).toBeCalled();
