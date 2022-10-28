@@ -10,7 +10,7 @@ import { getServiceFriendlyName } from '../service-walkthroughs/resourceWalkthro
 import { TemplateMappings } from '../service-stacks/baseStack';
 import { validateAddGeoRequest, validateUpdateGeoRequest } from 'amplify-util-headless-input';
 import { checkGeoResourceExists } from '../service-utils/resourceUtils';
-import { addDeviceLocationTrackingResource } from './devicelocationtracking';
+import { addDeviceLocationTrackingResource, removeDeviceLocationTrackingResource } from './devicelocationtracking';
 
 /**
  * Entry point for creating a new Geo resource
@@ -64,6 +64,8 @@ export const removeResource = async (context: $TSContext, service: string): Prom
       return removeMapResource(context);
     case ServiceName.PlaceIndex:
       return removePlaceIndexResource(context);
+    case ServiceName.DeviceLocationTracking:
+      return removeDeviceLocationTrackingResource(context);
     case ServiceName.GeofenceCollection:
       return removeGeofenceCollectionResource(context);
     default:
