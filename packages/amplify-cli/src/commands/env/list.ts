@@ -1,29 +1,32 @@
-import chalk from 'chalk';
 import { JSONUtilities } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 import { printEnvInfo } from '../helpers/envUtils';
 
-export const run = async context => {
+/**
+ * Executes the 'env list' command
+ */
+export const run = async (context): Promise<void> => {
   const { envName } = context.amplify.getEnvInfo();
 
   if (context.parameters.options.details) {
     const allEnvs = context.amplify.getEnvDetails();
     if (context.parameters.options.json) {
-      context.print.fancy(JSONUtilities.stringify(allEnvs));
+      printer.info(JSONUtilities.stringify(allEnvs) as string);
       return;
     }
     Object.keys(allEnvs).forEach(env => {
-      context.print.info('');
+      printer.blankLine();
       if (envName === env) {
-        context.print.info(chalk.red(`*${env}*`));
+        printer.info(`*${env}*`, 'red');
       } else {
-        context.print.info(chalk.yellow(env));
+        printer.info(env, 'yellow');
       }
-      printEnvInfo(context, env, allEnvs);
+      printEnvInfo(env, allEnvs);
     });
   } else {
     const allEnvs = context.amplify.getAllEnvs();
     if (context.parameters.options.json) {
-      context.print.fancy(JSONUtilities.stringify({ envs: allEnvs }));
+      printer.info(JSONUtilities.stringify({ envs: allEnvs }) as string);
       return;
     }
     const { table } = context.print;
@@ -35,8 +38,8 @@ export const run = async context => {
         tableOptions.push([allEnvs[i]]);
       }
     }
-    context.print.info('');
+    printer.blankLine();
     table(tableOptions, { format: 'markdown' });
-    context.print.info('');
+    printer.blankLine();
   }
 };

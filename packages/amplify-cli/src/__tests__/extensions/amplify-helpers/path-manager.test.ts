@@ -48,7 +48,7 @@ describe('getDotConfigDirPath', () => {
   it('return normalized dot config dir path', () => {
     const result = getDotConfigDirPath();
     const amplifyDirPath = getAmplifyDirPath();
-    expect(result).toBe(path.normalize(path.join(amplifyDirPath, amplifyCLIConstants.DotConfigamplifyCLISubDirName)));
+    expect(result).toBe(path.normalize(path.join(amplifyDirPath, amplifyCLIConstants.DotConfigAmplifyCLISubDirName)));
   });
 });
 
@@ -56,7 +56,7 @@ describe('getBackendDirPath', () => {
   it('return normalized backend dir path', () => {
     const result = getBackendDirPath();
     const amplifyDirPath = getAmplifyDirPath();
-    expect(result).toBe(path.normalize(path.join(amplifyDirPath, amplifyCLIConstants.BackendamplifyCLISubDirName)));
+    expect(result).toBe(path.normalize(path.join(amplifyDirPath, amplifyCLIConstants.BackendAmplifyCLISubDirName)));
   });
 });
 
@@ -64,7 +64,7 @@ describe('getCurrentCloudBackendDirPath', () => {
   it('return normalized current cloud backend dir path', () => {
     const result = getCurrentCloudBackendDirPath();
     const amplifyDirPath = getAmplifyDirPath();
-    expect(result).toBe(path.normalize(path.join(amplifyDirPath, amplifyCLIConstants.CurrentCloudBackendamplifyCLISubDirName)));
+    expect(result).toBe(path.normalize(path.join(amplifyDirPath, amplifyCLIConstants.CurrentCloudBackendAmplifyCLISubDirName)));
   });
 });
 

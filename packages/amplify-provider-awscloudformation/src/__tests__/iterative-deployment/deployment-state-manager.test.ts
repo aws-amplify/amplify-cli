@@ -105,7 +105,7 @@ describe('deployment state manager', () => {
     expect(started).toBe(true);
 
     await expect(deploymentStateManager.advanceStep()).rejects.toThrow(
-      'Cannot advance step then the current step is in WAITING_FOR_DEPLOYMENT status.',
+      'Cannot advance step when the current step is in WAITING_FOR_DEPLOYMENT status.',
     );
   });
 
@@ -121,7 +121,7 @@ describe('deployment state manager', () => {
     await deploymentStateManager.startRollback();
 
     await expect(deploymentStateManager.advanceStep()).rejects.toThrow(
-      'Cannot advance step then the current step is in WAITING_FOR_ROLLBACK status.',
+      'Cannot advance step when the current step is in WAITING_FOR_ROLLBACK status.',
     );
   });
 

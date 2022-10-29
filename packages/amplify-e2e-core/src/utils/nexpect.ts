@@ -323,7 +323,7 @@ function chain(context: Context): ExecutionContext {
     sendCtrlA(): ExecutionContext {
       const _send: ExecutionStep = {
         fn: () => {
-          context.process.write(`${CONTROL_A}${EOL}`);
+          context.process.write(`${CONTROL_A}`);
           return true;
         },
         name: '_send',

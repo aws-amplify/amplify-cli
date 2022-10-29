@@ -25,5 +25,6 @@ the requirements below.
 - [ ] Tests are [changed or added](https://github.com/aws-amplify/amplify-cli/blob/dev/CONTRIBUTING.md#tests)
 - [ ] Relevant documentation is changed or added (and PR referenced)
 - [ ] New AWS SDK calls or CloudFormation actions have been added to relevant test and service IAM policies
+- [ ] [Pull request labels](https://github.com/aws-amplify/amplify-cli/blob/dev/CONTRIBUTING.md#labels) are added
 
 By submitting this pull request, I confirm that my contribution is made under the terms of the Apache 2.0 license.

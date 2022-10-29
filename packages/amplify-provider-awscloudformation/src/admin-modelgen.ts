@@ -1,13 +1,20 @@
-import ora from 'ora';
+import {
+  $TSAny, $TSContext, AmplifyError, AmplifyFault, pathManager, stateManager,
+} from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 import AWS from 'aws-sdk';
-import { $TSContext, stateManager, pathManager, $TSAny } from 'amplify-cli-core';
+import { PromiseResult } from 'aws-sdk/lib/request';
 import { isDataStoreEnabled } from 'graphql-transformer-core';
+import ora from 'ora';
 import * as path from 'path';
+import { AmplifyBackend } from './aws-utils/aws-amplify-backend';
 import { ProviderName as providerName } from './constants';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
-import { AmplifyBackend } from './aws-utils/aws-amplify-backend';
 
-export async function adminModelgen(context: $TSContext, resources: $TSAny[]) {
+/**
+ * Generates DataStore Models for Admin UI CMS to consume
+ */
+export const adminModelgen = async (context: $TSContext, resources: $TSAny[]): Promise<void> => {
   const appSyncResources = resources.filter(resource => resource.service === 'AppSync');
 
   if (appSyncResources.length === 0) {
@@ -26,7 +33,7 @@ export async function adminModelgen(context: $TSContext, resources: $TSAny[]) {
     return;
   }
 
-  const envName = localEnvInfo.envName;
+  const { envName } = localEnvInfo;
   const { isAdminApp } = await isAmplifyAdminApp(appId);
   const isDSEnabled = await isDataStoreEnabled(path.join(pathManager.getBackendDirPath(), 'api', resourceName));
 
@@ -34,7 +41,6 @@ export async function adminModelgen(context: $TSContext, resources: $TSAny[]) {
     return;
   }
 
-  // Generate DataStore Models for Admin UI CMS to consume
   const spinner = ora('Generating models in the cloud...\n').start();
   const amplifyBackendInstance = await AmplifyBackend.getInstance(context);
 
@@ -58,26 +64,27 @@ export async function adminModelgen(context: $TSContext, resources: $TSAny[]) {
     if (jobCompletionDetails.Status === 'COMPLETED') {
       spinner.succeed('Successfully generated models in the cloud.');
     } else {
-      throw new Error('Modelgen job creation failed');
+      throw new AmplifyError('ModelgenError', { message: `Failed to generate models in the cloud.` });
     }
   } catch (e) {
     spinner.stop();
-    context.print.error(`Failed to create models in the cloud: ${e.message}`);
+    printer.error(`Failed to create models in the cloud: ${e.message}`);
   }
-}
+};
 
 // interval is how often to poll
 // timeout is how long to poll waiting for a result (0 means try forever)
 
-async function pollUntilDone(
+const pollUntilDone = async (
   jobId: string,
   appId: string,
   backendEnvironmentName: string,
   interval: number,
   timeout: number,
   amplifyBackendClient: AWS.AmplifyBackend,
-) {
+): Promise<PromiseResult<AWS.AmplifyBackend.GetBackendJobResponse, AWS.AWSError>> => {
   const start = Date.now();
+  // eslint-disable-next-line no-constant-condition
   while (true) {
     const jobDetails = await amplifyBackendClient
       .getBackendJob({
@@ -91,20 +98,15 @@ async function pollUntilDone(
       // we know we're done here, return from here whatever you
       // want the final resolved value of the promise to be
       return jobDetails;
+    }
+    if (timeout !== 0 && Date.now() - start > timeout) {
+      throw new AmplifyFault('TimeoutFault', { message: `Job Timed out for ${jobId}` });
     } else {
-      if (timeout !== 0 && Date.now() - start > timeout) {
-        throw new Error(`Job Timed out for ${jobId}`);
-      } else {
-        // run again with a short delay
-        await delay(interval);
-      }
+      // run again with a short delay
+      await delay(interval);
     }
   }
-}
+};
 
 // create a promise that resolves after a short delay
-function delay(t: number) {
-  return new Promise(function (resolve) {
-    setTimeout(resolve, t);
-  });
-}
+const delay = (t: number): Promise<void> => new Promise(resolve => setTimeout(resolve, t));

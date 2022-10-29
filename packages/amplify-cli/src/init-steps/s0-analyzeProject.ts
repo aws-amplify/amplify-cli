@@ -76,18 +76,17 @@ const displayAndSetDefaults = async (context: $TSContext, projectPath: string, p
   context.print.success('The following configuration will be applied:');
   context.print.info('');
 
-  await displayConfigurationDefaults(context, defaultProjectName, defaultEnv, defaultEditorName);
+  displayConfigurationDefaults(context, defaultProjectName, defaultEnv, defaultEditorName);
 
   const frontendPlugins = getFrontendPlugins(context);
   const defaultFrontend = getSuitableFrontend(context, frontendPlugins, projectPath);
-  // eslint-disable-next-line
-  const frontendModule = require(frontendPlugins[defaultFrontend]);
+  const frontendModule = await import(frontendPlugins[defaultFrontend]);
 
   await frontendModule.displayFrontendDefaults(context, projectPath);
   context.print.info('');
 
   if (context.exeInfo.inputParams.yes || (await context.amplify.confirmPrompt('Initialize the project with the above configuration?'))) {
-    await setConfigurationDefaults(context, projectPath, defaultProjectName, defaultEnv, defaultEditorName);
+    setConfigurationDefaults(context, projectPath, defaultProjectName, defaultEnv, defaultEditorName);
     await frontendModule.setFrontendDefaults(context, projectPath);
   }
 };

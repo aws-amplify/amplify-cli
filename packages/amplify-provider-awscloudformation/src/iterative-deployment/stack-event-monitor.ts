@@ -1,17 +1,25 @@
 import { StackEvent } from 'aws-sdk/clients/cloudformation';
-import { fileLogger, Logger } from '../utils/aws-logger';
 import * as aws from 'aws-sdk';
+import { AmplifyFault } from 'amplify-cli-core';
+import { fileLogger, Logger } from '../utils/aws-logger';
+
 export interface StackEventMonitorOptions {
   pollDelay: number;
 }
+
 export interface IStackProgressPrinter {
-  addActivity(activity: StackEvent): void;
-  print(): void;
-  start(): void;
-  stop(): void;
+  addActivity: (activity: StackEvent) => void;
+  print: () => void;
+  printEventProgress: () => void;
+  printDefaultLogs: () => void;
+  updateIndexInHeader: (currentIndex: number, totalIndices: number) => void;
+  finishBars: () => void;
+  stopBars: () => void;
+  isRunning: () => boolean;
 }
+
 export class StackEventMonitor {
-  private active: boolean = false;
+  private active = false;
   private tickTimer?: NodeJS.Timeout;
   private options: StackEventMonitorOptions;
   private readPromise?: Promise<any>;
@@ -19,29 +27,29 @@ export class StackEventMonitor {
   private activity: Record<string, StackEvent> = {};
   private completedStacks: Set<string> = new Set();
   private stacksBeingMonitored: string[] = [this.stackName];
-  private lastPolledStackIndex: number = 0;
+  private lastPolledStackIndex = 0;
   private logger: Logger;
 
   constructor(
     private cfn: aws.CloudFormation,
     private stackName: string,
-    private printer: IStackProgressPrinter,
+    private printerFn: () => void,
+    private addEventActivity: (event) => void,
     options?: StackEventMonitor,
   ) {
     this.options = { pollDelay: 5_000, ...options };
     this.logger = fileLogger('stack-event-monitor');
+    this.printerFn = printerFn;
   }
 
-  public start() {
+  public start(): StackEventMonitor {
     this.active = true;
-    this.printer.start();
     this.scheduleNextTick();
     return this;
   }
 
-  public async stop() {
+  public async stop(): Promise<void> {
     this.active = false;
-    this.printer.stop();
     if (this.tickTimer) {
       clearTimeout(this.tickTimer);
     }
@@ -65,22 +73,16 @@ export class StackEventMonitor {
       return;
     }
 
-    try {
-      this.readPromise = this.readNewEvents();
-      await this.readPromise;
-      this.readPromise = undefined;
+    this.readPromise = this.readNewEvents();
+    await this.readPromise;
+    this.readPromise = undefined;
 
-      // We might have been stop()ped while the network call was in progress.
-      if (!this.active) {
-        return;
-      }
-
-      this.printer.print();
-    } catch (e) {
-      this.logger('scheduleNextTick', [])(e);
-      if (e && e.code !== 'Throttling') e.message = 'Error occurred while monitoring stack:' + e.message;
-      throw e;
+    // We might have been stop()ped while the network call was in progress.
+    if (!this.active) {
+      return;
     }
+
+    this.printerFn();
     this.scheduleNextTick();
   }
 
@@ -125,7 +127,7 @@ export class StackEventMonitor {
 
           if (event.ResourceType === 'AWS::CloudFormation::Stack') {
             this.processNestedStack(event);
-            // Dont' render info about the stack itself
+            // Don't render info about the stack itself
             continue;
           }
 
@@ -144,20 +146,20 @@ export class StackEventMonitor {
       if (e.code === 'ValidationError' && e.message === `Stack [${this.stackName}] does not exist`) {
         return;
       }
-      if (e.code === 'Throttling') {
-        // ignore throttling error
-      } else {
-        throw e;
+      if (e.code !== 'Throttling') {
+        throw new AmplifyFault('NotImplementedFault', {
+          message: e.message,
+        }, e);
       }
     }
 
     events.reverse();
     for (const event of events) {
-      this.printer.addActivity(event);
+      this.addEventActivity(event);
     }
   }
 
-  private processNestedStack(event: StackEvent) {
+  private processNestedStack(event: StackEvent): void {
     if (event.ResourceType === 'AWS::CloudFormation::Stack') {
       const physicalResourceId = event.PhysicalResourceId!;
       const idx = this.stacksBeingMonitored.indexOf(physicalResourceId);
@@ -176,7 +178,7 @@ export class StackEventMonitor {
    * Finish any poll currently in progress, then do a final one until we've
    * reached the last page.
    */
-  private async finalPollToEnd() {
+  private async finalPollToEnd(): Promise<void> {
     // If we were doing a poll, finish that first. It was started before
     // the moment we were sure we weren't going to get any new events anymore
     // so we need to do a new one anyway. Need to wait for this one though
@@ -188,6 +190,6 @@ export class StackEventMonitor {
     await this.readNewEvents();
 
     // Final print
-    this.printer.print();
+    this.printerFn();
   }
 }

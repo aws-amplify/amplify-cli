@@ -1,4 +1,4 @@
-import { $TSContext } from "amplify-cli-core";
+import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { getProjectMeta } from './get-project-meta';
 
 const errAuthMissingIAM = `@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.`;
@@ -7,52 +7,60 @@ const errAuthMissingOIDC = `@auth directive with 'oidc' provider found, but the 
 const errAuthMissingApiKey = `@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.`;
 const errAuthMissingLambda = `@auth directive with 'function' provider found, but the project has no Lambda authentication provider configured.`;
 
-export function isValidGraphQLAuthError(message: string): boolean {
-  return [errAuthMissingIAM, errAuthMissingUserPools, errAuthMissingOIDC, errAuthMissingApiKey, errAuthMissingLambda].includes(message);
-}
+/**
+ * checks if the message comes from a graphql auth error
+ */
+export const isValidGraphQLAuthError = (message: string): boolean => [
+  errAuthMissingIAM, errAuthMissingUserPools, errAuthMissingOIDC, errAuthMissingApiKey, errAuthMissingLambda,
+].includes(message);
 
-export async function handleValidGraphQLAuthError(context: $TSContext, message: string): Promise<boolean> {
+/**
+ * handles a valid graphql auth error
+ */
+export const handleValidGraphQLAuthError = async (context: $TSContext, message: string): Promise<boolean> => {
   if (message === errAuthMissingIAM) {
     await addGraphQLAuthRequirement(context, 'AWS_IAM');
     return true;
-  } else if (checkIfAuthExists() && message === errAuthMissingUserPools) {
-      await addGraphQLAuthRequirement(context, 'AMAZON_COGNITO_USER_POOLS');
-      return true;
-  } else if (!context?.parameters?.options?.yes) {
+  }
+
+  if (checkIfAuthExists() && message === errAuthMissingUserPools) {
+    await addGraphQLAuthRequirement(context, 'AMAZON_COGNITO_USER_POOLS');
+    return true;
+  }
+
+  if (!context?.parameters?.options?.yes) {
     if (message === errAuthMissingUserPools) {
       await addGraphQLAuthRequirement(context, 'AMAZON_COGNITO_USER_POOLS');
       return true;
-    } else if (message === errAuthMissingOIDC) {
+    } if (message === errAuthMissingOIDC) {
       await addGraphQLAuthRequirement(context, 'OPENID_CONNECT');
       return true;
-    } else if (message === errAuthMissingApiKey) {
+    } if (message === errAuthMissingApiKey) {
       await addGraphQLAuthRequirement(context, 'API_KEY');
       return true;
-    } else if (message === errAuthMissingLambda) {
+    } if (message === errAuthMissingLambda) {
       await addGraphQLAuthRequirement(context, 'AWS_LAMBDA');
       return true;
     }
   }
   return false;
-}
+};
 
-async function addGraphQLAuthRequirement(context, authType): Promise<any> {
-  return await context.amplify.invokePluginMethod(context, 'api', undefined, 'addGraphQLAuthorizationMode', [
-    context,
-    {
-      authType: authType,
-      printLeadText: true,
-      authSettings: undefined,
-    },
-  ]);
-}
+const addGraphQLAuthRequirement = async (context, authType)
+  : Promise<$TSAny> => context.amplify.invokePluginMethod(context, 'api', undefined, 'addGraphQLAuthorizationMode', [
+  context,
+  {
+    authType,
+    printLeadText: true,
+    authSettings: undefined,
+  },
+]);
 
 /**
- * Query Amplify Metafile and check if Auth is configured
- * @param context
+ * Query Amplify Meta file and check if Auth is configured
  * @returns true if Auth is configured else false
  */
- export function checkIfAuthExists(): boolean {
+export const checkIfAuthExists = (): boolean => {
   const amplifyMeta = getProjectMeta();
   let authExists = false;
   const authServiceName = 'Cognito';
@@ -63,4 +71,4 @@ async function addGraphQLAuthRequirement(context, authType): Promise<any> {
     authExists = Object.keys(categoryResources).some(resource => categoryResources[resource].service === authServiceName);
   }
   return authExists;
-}
+};

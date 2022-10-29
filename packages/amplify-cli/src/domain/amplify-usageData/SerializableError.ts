@@ -7,9 +7,11 @@ const regex = /^\s*at (?:((?:\[object object\])?[^\\/]+(?: \[as \S+\])?) )?\(?(.
  */
 export class SerializableError {
   name: string;
+  message: string;
   trace?: Trace[];
   constructor(error: Error) {
     this.name = error.name;
+    this.message = error.message;
     this.trace = this.extractStackTrace(error);
   }
 

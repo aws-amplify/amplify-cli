@@ -64,14 +64,9 @@ export const uploadTempFuncDeploymentFiles = async (s3Client: S3, funcNames: str
         Key: getTempFuncMetaS3Key(funcName),
       },
     ];
-    const log = logger('uploadTemplateToS3.s3.uploadFile', [{ Key: uploads[0].Key }]);
+    logger('uploadTemplateToS3.s3.uploadFile', [{ Key: uploads[0].Key }])();
     for (const upload of uploads) {
-      try {
-        await s3Client.uploadFile(upload, false);
-      } catch (error) {
-        log(error);
-        throw error;
-      }
+      await s3Client.uploadFile(upload, false);
     }
   }
 };

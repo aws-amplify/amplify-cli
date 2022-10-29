@@ -1,10 +1,11 @@
-const aws = require('./aws');
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError } from 'amplify-cli-core';
 import { Lambda as AwsSdkLambda } from 'aws-sdk';
 import { LayerVersionsListItem, ListLayerVersionsRequest, ListLayerVersionsResponse } from 'aws-sdk/clients/lambda';
 import { AwsSecrets, loadConfiguration } from '../configuration-manager';
 import { fileLogger } from '../utils/aws-logger';
 import { pagedAWSCall } from './paged-call';
+
+const aws = require('./aws');
 
 const logger = fileLogger('aws-lambda');
 
@@ -33,7 +34,7 @@ export class Lambda {
         return await this.lambda.listLayerVersions(params).promise();
       },
       startingParams,
-      (response?) => response?.LayerVersions,
+      response => response?.LayerVersions,
       async response => response?.NextMarker,
     );
     return result;
@@ -49,7 +50,9 @@ export class Lambda {
           await this.lambda.deleteLayerVersion(params).promise();
         } catch (err) {
           if (err.code !== 'ParameterNotFound') {
-            throw err;
+            throw new AmplifyError('LambdaLayerDeleteError', {
+              message: err.message,
+            }, err);
           }
         }
       });
@@ -59,8 +62,8 @@ export class Lambda {
       await Promise.all(deletionPromises);
     } catch (e) {
       this.context.print.error(
-        'Failed to delete some or all layer versions. Check your internet connection and try again. ' +
-          'If the problem persists, try deleting the versions in the Lambda console.',
+        'Failed to delete some or all layer versions. Check your internet connection and try again. '
+          + 'If the problem persists, try deleting the versions in the Lambda console.',
       );
       e.stack = undefined;
       this.context.print.error(e);

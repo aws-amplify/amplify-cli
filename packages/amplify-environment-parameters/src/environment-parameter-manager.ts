@@ -1,4 +1,6 @@
-import { pathManager, stateManager } from 'amplify-cli-core';
+import {
+  AmplifyFault, pathManager, stateManager,
+} from 'amplify-cli-core';
 import _ from 'lodash';
 import { ResourceParameterManager } from './resource-parameter-manager';
 
@@ -28,7 +30,9 @@ export const getEnvParamManager = (envName: string = stateManager.getLocalEnvInf
   if (envParamManagerMap[envName]) {
     return envParamManagerMap[envName];
   }
-  throw new Error(`EnvironmentParameterManager for ${envName} environment is not initialized. Use initEnvParamManager first to initialize it`);
+  throw new AmplifyFault('ProjectInitFault', {
+    message: `EnvironmentParameterManager for ${envName} environment is not initialized.`,
+  });
 };
 
 /**
@@ -50,7 +54,7 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
       });
     });
 
-    process.on('beforeExit', () => this.save());
+    process.on('exit', () => this.save());
   }
 
   removeResourceParamManager(category: string, resource: string): void {
@@ -59,7 +63,9 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
 
   getResourceParamManager(category: string, resource: string): ResourceParameterManager {
     if (!category || !resource) {
-      throw new Error('category and resource must be specified to getResourceParamManager');
+      throw new AmplifyFault('ResourceNotFoundFault', {
+        message: 'Missing Category or Resource.',
+      });
     }
     const resourceKey = getResourceKey(category, resource);
     if (!this.resourceParamManagers[resourceKey]) {
@@ -77,11 +83,14 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
       // assume that the project is deleted if we cannot find a project root
       return;
     }
-    const tpiContent = stateManager.getTeamProviderInfo();
+    const tpiContent = stateManager.getTeamProviderInfo(undefined, { throwIfNotExist: false, default: {} });
     const categoriesContent = this.serializeTPICategories();
     if (Object.keys(categoriesContent).length === 0) {
-      delete tpiContent[this.envName].categories;
+      delete tpiContent?.[this.envName]?.categories;
     } else {
+      if (!tpiContent[this.envName]) {
+        tpiContent[this.envName] = {};
+      }
       tpiContent[this.envName].categories = this.serializeTPICategories();
     }
     stateManager.setTeamProviderInfo(undefined, tpiContent);

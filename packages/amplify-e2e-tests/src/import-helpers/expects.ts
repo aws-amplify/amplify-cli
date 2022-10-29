@@ -4,9 +4,11 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import { AuthParameters } from '@aws-amplify/amplify-category-auth';
 // eslint-disable-next-line import/no-cycle
+import { $TSAny } from 'amplify-cli-core';
 import {
   AuthProjectDetails, DynamoDBProjectDetails, readRootStack, StorageProjectDetails,
 } from '.';
+import { getAWSExports } from '../aws-exports/awsExports';
 
 export const expectAuthProjectDetailsMatch = (projectDetails: AuthProjectDetails, ogProjectDetails: AuthProjectDetails): void => {
   expect(projectDetails.parameters.authSelections).toEqual(ogProjectDetails.parameters.authSelections);
@@ -72,7 +74,7 @@ export const expectLocalTeamInfoHasNoCategories = (projectRoot: string): void =>
 };
 
 // eslint-disable-next-line @typescript-eslint/no-shadow
-export const expectApiHasCorrectAuthConfig = (projectRoot: string, _: string, userPoolId: string): void => {
+export const expectApiHasCorrectAuthConfig = (projectRoot: string, __: string, userPoolId: string): void => {
   const meta = getBackendAmplifyMeta(projectRoot);
 
   // eslint-disable-next-line spellcheck/spell-checker
@@ -94,6 +96,20 @@ export const expectLocalAndPulledBackendConfigMatching = (projectRoot: string, p
   const backendConfigPull = getBackendConfig(projectRootPull);
 
   expect(backendConfig).toMatchObject(backendConfigPull);
+};
+
+export const expectLocalAndPulledBackendAmplifyMetaMatching = (projectRoot: string, projectRootPull: string): void => {
+  const amplifyMeta = deepRemoveObjectKey(getBackendAmplifyMeta(projectRoot), 'lastPushTimeStamp');
+  const amplifyMetaPull = deepRemoveObjectKey(getBackendAmplifyMeta(projectRootPull), 'lastPushTimeStamp');
+
+  expect(amplifyMeta).toMatchObject(amplifyMetaPull);
+};
+
+export const expectLocalAndPulledAwsExportsMatching = (projectRoot: string, projectRootPull: string): void => {
+  const awsExports = getAWSExports(projectRoot);
+  const awsExportsPull = getAWSExports(projectRootPull);
+
+  expect(awsExports).toMatchObject(awsExportsPull);
 };
 
 export const expectStorageProjectDetailsMatch = (projectDetails: StorageProjectDetails, ogProjectDetails: StorageProjectDetails): void => {
@@ -190,4 +206,18 @@ export const expectAuthParametersMatch = (authParameters: AuthParameters, ogAuth
   expect(authParameters.passwordPolicyCharacters).toEqual(ogAuthParameters.passwordPolicyCharacters);
   expect(authParameters.mfaConfiguration).toEqual(ogAuthParameters.mfaConfiguration);
   expect(authParameters.autoVerifiedAttributes).toEqual(ogAuthParameters.autoVerifiedAttributes);
+};
+
+const deepRemoveObjectKey = (obj: $TSAny, key: string): $TSAny => {
+  Object.keys(obj).forEach(objKey => {
+    if (typeof obj[objKey] === 'object') {
+      // eslint-disable-next-line no-param-reassign
+      obj[objKey] = deepRemoveObjectKey(obj[objKey], key);
+    } else if (objKey === key) {
+      // eslint-disable-next-line no-param-reassign
+      delete obj[objKey];
+    }
+  });
+
+  return obj;
 };

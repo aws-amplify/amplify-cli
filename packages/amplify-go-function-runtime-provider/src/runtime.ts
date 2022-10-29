@@ -12,8 +12,12 @@ import archiver from 'archiver';
 import fs from 'fs-extra';
 import glob from 'glob';
 import path from 'path';
-import { SemVer, coerce, gte, lt } from 'semver';
-import { BIN_LOCAL, BIN, SRC, MAIN_BINARY, DIST, MAIN_BINARY_WIN } from './constants';
+import {
+  SemVer, coerce, gte, lt,
+} from 'semver';
+import {
+  BIN_LOCAL, BIN, SRC, MAIN_BINARY, DIST, MAIN_BINARY_WIN,
+} from './constants';
 
 const executableName = 'go';
 const minimumVersion = <SemVer>coerce('1.0');
@@ -107,6 +111,25 @@ export const buildResource = async ({ buildType, srcRoot, lastBuildTimeStamp }: 
   };
 };
 
+export const getGoVersion = (): SemVer => {
+  // Validate go version
+  const versionOutput = executeCommand(['version'], false);
+
+  if (versionOutput) {
+    const parts = versionOutput.split(' ');
+
+    // Output: go version go1.14 darwin/amd64
+    if (parts.length !== 4 || !parts[2].startsWith('go') || coerce(parts[2].slice(2)) === null) {
+      throw new Error(`Invalid version string: ${versionOutput}`);
+    }
+
+    const goVersion = <SemVer>coerce(parts[2].slice(2));
+
+    return goVersion;
+  }
+  throw new Error(`Invalid version string: ${versionOutput}`);
+};
+
 export const checkDependencies = async (_runtimeValue: string): Promise<CheckDependenciesResult> => {
   // Check if go is in the path
   executablePath = which.sync(executableName, {
@@ -120,28 +143,13 @@ export const checkDependencies = async (_runtimeValue: string): Promise<CheckDep
     };
   }
 
-  // Validate go version
-  const versionOutput = executeCommand(['version'], false);
+  const version = getGoVersion();
 
-  if (versionOutput) {
-    const parts = versionOutput.split(' ');
-
-    // Output: go version go1.14 darwin/amd64
-    if (parts.length !== 4 || !parts[2].startsWith('go') || coerce(parts[2].slice(2)) === null) {
-      return {
-        hasRequiredDependencies: false,
-        errorMessage: `Invalid version string: ${versionOutput}`,
-      };
-    }
-
-    const version = <SemVer>coerce(parts[2].slice(2));
-
-    if (lt(version, minimumVersion) || gte(version, maximumVersion)) {
-      return {
-        hasRequiredDependencies: false,
-        errorMessage: `${executableName} version found was: ${version.format()}, but must be between ${minimumVersion.format()} and ${maximumVersion.format()}`,
-      };
-    }
+  if (lt(version, minimumVersion) || gte(version, maximumVersion)) {
+    return {
+      hasRequiredDependencies: false,
+      errorMessage: `${executableName} version found was: ${version.format()}, but must be between ${minimumVersion.format()} and ${maximumVersion.format()}`,
+    };
   }
 
   return {
@@ -161,8 +169,17 @@ export const packageResource = async (request: PackageRequest, context: any): Pr
 };
 
 const winZip = async (src: string, dest: string, print: any) => {
-  // get lambda zip tool
-  await execa(executableName, ['get', '-u', 'github.com/aws/aws-lambda-go/cmd/build-lambda-zip']);
+  // get lambda zip tool with the fix of https://go.dev/doc/go-get-install-deprecation
+  const version = getGoVersion();
+  try {
+    if (gte(version, '1.17')) {
+      await execa(executableName, ['install', 'github.com/aws/aws-lambda-go/cmd/build-lambda-zip']);
+    } else {
+      await execa(executableName, ['get', '-u', 'github.com/aws/aws-lambda-go/cmd/build-lambda-zip']);
+    }
+  } catch (error: unknown) {
+    throw new Error(`Error installing build-lambda-zip: ${error}`);
+  }
   const goPath = process.env.GOPATH;
   if (!goPath) {
     throw new Error('Could not determine GOPATH. Make sure it is set.');
