@@ -176,7 +176,7 @@ export const getServicePermissionPolicies = (
     case ServiceName.PlaceIndex:
       return getPlaceIndexIamPolicies(resourceName, crudOptions);
     case ServiceName.GeofenceCollection:
-        return getGeofenceCollectionIamPolicies(resourceName, crudOptions);
+      return getGeofenceCollectionIamPolicies(resourceName, crudOptions);
     default:
       printer.warn(`${service} not supported in category ${category}`);
   }

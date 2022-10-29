@@ -7,8 +7,12 @@ import { ResourceParameters } from './resourceParams';
  */
 export type DeviceLocationTrackingParameters = ResourceParameters & {
     groupPermissions: string[];
+    roleAndGroupPermissionsMap: Record<string, string[]>;
 };
 
+/**
+ * isCompleteTrackingParams
+ */
 export const isCompleteTrackingParams = (
   partial: Partial<DeviceLocationTrackingParameters>,
 ): partial is DeviceLocationTrackingParameters => {
@@ -18,6 +22,9 @@ export const isCompleteTrackingParams = (
   return !missingField;
 };
 
+/**
+ * convertToCompleteTrackingParams
+ */
 export const convertToCompleteTrackingParams = (
   partial: Partial<DeviceLocationTrackingParameters>,
 ): DeviceLocationTrackingParameters => {

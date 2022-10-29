@@ -22,6 +22,9 @@ export const addDeviceLocationTrackingResource = async (
   return resourceName;
 };
 
+/**
+ * addDeviceLocationTrackingWithParams
+ */
 export const addDeviceLocationTrackingWithParams = async (
   context: $TSContext,
   trackingParams: Partial<DeviceLocationTrackingParameters>,

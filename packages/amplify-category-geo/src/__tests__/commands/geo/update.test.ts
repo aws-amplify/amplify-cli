@@ -34,9 +34,7 @@ describe('update command tests', () => {
 
   it('update resource workflow is invoked for map service', async () => {
     const service = ServiceName.Map;
-    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => {
-      return { service: service, providerName: provider };
-    });
+    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => ({ service, providerName: provider }));
 
     await run(mockContext);
 
@@ -45,9 +43,7 @@ describe('update command tests', () => {
 
   it('update resource workflow is invoked for place index service', async () => {
     const service = ServiceName.PlaceIndex;
-    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => {
-      return { service: service, providerName: provider };
-    });
+    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => ({ service, providerName: provider }));
 
     await run(mockContext);
 
@@ -56,9 +52,16 @@ describe('update command tests', () => {
 
   it('update resource workflow is invoked for geofence collection service', async () => {
     const service = ServiceName.GeofenceCollection;
-    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => {
-      return { service: service, providerName: provider };
-    });
+    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => ({ service, providerName: provider }));
+
+    await run(mockContext);
+
+    expect(mockUpdateResource).toHaveBeenCalledWith(mockContext, service);
+  });
+
+  it('update resource workflow is invoked for device tracker service', async () => {
+    const service = ServiceName.DeviceLocationTracking;
+    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => ({ service, providerName: provider }));
 
     await run(mockContext);
 
@@ -72,9 +75,7 @@ describe('update command tests', () => {
     stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
 
     const service = ServiceName.Map;
-    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => {
-      return { service: service, providerName: provider };
-    });
+    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => ({ service, providerName: provider }));
 
     await run(mockContext);
     expect(mockUpdateResource).toHaveBeenCalledWith(mockContext, service);
@@ -87,9 +88,7 @@ describe('update command tests', () => {
     stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
 
     const service = ServiceName.PlaceIndex;
-    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => {
-      return { service: service, providerName: provider };
-    });
+    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => ({ service, providerName: provider }));
 
     await run(mockContext);
     expect(mockUpdateResource).toHaveBeenCalledWith(mockContext, service);
@@ -102,9 +101,20 @@ describe('update command tests', () => {
     stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
 
     const service = ServiceName.GeofenceCollection;
-    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => {
-      return { service: service, providerName: provider };
-    });
+    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => ({ service, providerName: provider }));
+
+    await run(mockContext);
+    expect(mockUpdateResource).toHaveBeenCalledWith(mockContext, service);
+  });
+
+  it('update resource workflow is invoked for device tracker service in unsupported region', async () => {
+    mockAmplifyMeta.providers[provider] = {
+      Region: 'eu-west-2',
+    };
+    stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
+
+    const service = ServiceName.DeviceLocationTracking;
+    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => ({ service, providerName: provider }));
 
     await run(mockContext);
     expect(mockUpdateResource).toHaveBeenCalledWith(mockContext, service);

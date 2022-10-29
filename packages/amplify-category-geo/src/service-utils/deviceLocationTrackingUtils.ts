@@ -34,7 +34,7 @@ export const createDeviceLocationTrackingResource = async (
     pathManager.findProjectRoot(),
     category,
     parameters.name,
-    { groupPermissions: parameters.groupPermissions },
+    { groupPermissions: parameters.groupPermissions, roleAndGroupPermissionsMap: parameters.roleAndGroupPermissionsMap },
   );
 
   const deviceLocationTrackingMetaParameters = constructTrackingMetaParameters(parameters, authResourceName);
@@ -95,21 +95,24 @@ export type DeviceLocationTrackingMetaParameters = Pick<DeviceLocationTrackingPa
 /**
  * getCurrentTrackingParameters
  */
-export const getCurrentTrackingParameters = async (trackingName: string): Promise<Partial<DeviceLocationTrackingParameters>> => {
+export const getCurrentTrackingParameters = async (trackerName: string): Promise<Partial<DeviceLocationTrackingParameters>> => {
   const currentTrackingMetaParameters = (
-    await readResourceMetaParameters(ServiceName.DeviceLocationTracking, trackingName)
+    await readResourceMetaParameters(ServiceName.DeviceLocationTracking, trackerName)
   ) as DeviceLocationTrackingMetaParameters;
   const currentTrackingParameters = stateManager.getResourceInputsJson(
-    pathManager.findProjectRoot(), category, trackingName, { throwIfNotExist: false },
+    pathManager.findProjectRoot(), category, trackerName, { throwIfNotExist: false },
   ) || {};
   return {
-    // dataProvider: currentTrackingMetaParameters.dataProvider,
     accessType: currentTrackingMetaParameters.accessType,
     isDefault: currentTrackingMetaParameters.isDefault,
     groupPermissions: currentTrackingParameters?.groupPermissions || [],
+    roleAndGroupPermissionsMap: currentTrackingParameters?.roleAndGroupPermissionsMap || {},
   };
 };
 
+/**
+ * getTrackingIamPolicies
+ */
 export const getTrackingIamPolicies = (resourceName: string, crudOptions: string[]): { policy: $TSObject[]; attributes: string[] } => {
   const policy = [];
   const actions = new Set<string>();
@@ -159,12 +162,4 @@ export const getTrackingIamPolicies = (resourceName: string, crudOptions: string
   const attributes = ['Name'];
 
   return { policy, attributes };
-};
-
-export const deviceLocationTrackingCrudPermissionsMap: Record<string, string[]> = {
-  'Update device position': ['geo:BatchUpdateDevicePosition'],
-  'Read latest device position': ['geo:BatchGetDevicePosition', 'geo:GetDevicePosition'],
-  'Read device position history': ['geo:GetDevicePositionHistory'],
-  'List device positions': ['geo:ListDevicePositions'],
-  'Delete device position history': ['geo:BatchDeleteDevicePositionHistory'],
 };

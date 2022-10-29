@@ -1,16 +1,18 @@
+/* eslint-disable no-new */
 import * as cdk from '@aws-cdk/core';
 import * as iam from '@aws-cdk/aws-iam';
 import * as fs from 'fs-extra';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Effect } from '@aws-cdk/aws-iam';
-import { CfnResource, Duration, Fn } from '@aws-cdk/core';
+import { Duration, Fn } from '@aws-cdk/core';
 import { Runtime } from '@aws-cdk/aws-lambda';
+import _ from 'lodash';
 import { DeviceLocationTrackingParameters } from '../service-utils/deviceLocationTrackingParams';
 import { BaseStack, TemplateMappings } from './baseStack';
 import { customDeviceLocationTrackingLambdaCodePath } from '../service-utils/constants';
-import { AccessType } from '../service-utils/resourceParams';
+import { deviceLocationTrackingCrudPermissionsMap } from '../service-utils/deviceLocationTrackingConstants';
 
-type DeviceLocationTrackingStackProps = Pick<DeviceLocationTrackingParameters, 'accessType' | 'groupPermissions'> &
+type DeviceLocationTrackingStackProps = Pick<DeviceLocationTrackingParameters, 'roleAndGroupPermissionsMap' | 'groupPermissions'> &
   TemplateMappings & { authResourceName: string };
 
 /**
@@ -18,49 +20,58 @@ type DeviceLocationTrackingStackProps = Pick<DeviceLocationTrackingParameters, '
  */
 export class DeviceLocationTrackingStack extends BaseStack {
     protected readonly groupPermissions: string[];
-    protected readonly accessType: string;
+    protected readonly roleAndGroupPermissionsMap: Record<string, string[]>;
     protected readonly trackingResource: cdk.CustomResource;
     protected readonly trackingRegion: string;
-    protected readonly trackingName: string;
+    protected readonly trackerName: string;
     protected readonly authResourceName: string;
 
     constructor(scope: cdk.Construct, id: string, private readonly props: DeviceLocationTrackingStackProps) {
       super(scope, id, props);
 
-      this.accessType = this.props.accessType;
       this.groupPermissions = this.props.groupPermissions;
+      this.roleAndGroupPermissionsMap = this.props.roleAndGroupPermissionsMap;
       this.authResourceName = this.props.authResourceName;
       this.trackingRegion = this.regionMapping.findInMap(cdk.Fn.ref('AWS::Region'), 'locationServiceRegion');
 
-      const inputParameters: string[] = (this.props.groupPermissions || []).map(
+      const inputParameters: string[] = this.groupPermissions.map(
+        // eslint-disable-next-line spellcheck/spell-checker
         (group: string) => `authuserPoolGroups${group}GroupRole`,
       );
       inputParameters.push(
         `auth${this.authResourceName}UserPoolId`,
         'authRoleName',
         'unauthRoleName',
-        'trackingName',
+        'trackerName',
         'env',
         'isDefault',
       );
       this.parameters = this.constructInputParameters(inputParameters);
 
-      this.trackingName = Fn.join('-', [this.parameters.get('trackingName')!.valueAsString, this.parameters.get('env')!.valueAsString]);
+      this.trackerName = Fn.join('-', [this.parameters.get('trackerName')!.valueAsString, this.parameters.get('env')!.valueAsString]);
 
       this.trackingResource = this.constructTrackingResource();
-      this.constructTrackingPolicyResource(this.trackingResource);
+      this.constructTrackingPolicyResources(this.trackingResource);
       this.constructOutputs();
     }
 
     private constructOutputs(): void {
       new cdk.CfnOutput(this, 'Name', {
-        value: this.trackingResource.getAtt('TrackingName').toString(),
+        value: this.trackingResource.getAtt('TrackerName').toString(),
       });
       new cdk.CfnOutput(this, 'Region', {
-        value: this.trackingResource.getAtt('TrackingRegion').toString(),
+        value: this.trackingRegion,
       });
+
+      // This is a work-around until the TrackingArn is included in the `UpdateTracker` output
+      const outputTrackingArn = cdk.Fn.sub('arn:aws:geo:${region}:${account}:tracker/${trackerName}', {
+        region: this.trackingRegion,
+        account: cdk.Fn.ref('AWS::AccountId'),
+        collectionName: this.trackingResource.getAtt('TrackerName').toString(),
+      });
+
       new cdk.CfnOutput(this, 'Arn', {
-        value: this.trackingResource.getAtt('TrackingArn').toString(),
+        value: outputTrackingArn,
       });
     }
 
@@ -71,10 +82,10 @@ export class DeviceLocationTrackingStack extends BaseStack {
       geoCreateTrackingStatement.addActions('geo:CreateTracker');
       geoCreateTrackingStatement.addAllResources();
 
-      const trackingARN = cdk.Fn.sub('arn:aws:geo:${region}:${account}:tracker/${trackingName}', {
+      const trackingARN = cdk.Fn.sub('arn:aws:geo:${region}:${account}:tracker/${trackerName}', {
         region: this.trackingRegion,
         account: cdk.Fn.ref('AWS::AccountId'),
-        trackingName: this.trackingName,
+        trackerName: this.trackerName,
       });
 
       const geoUpdateDeleteTrackingStatement = new iam.PolicyStatement({
@@ -101,7 +112,7 @@ export class DeviceLocationTrackingStack extends BaseStack {
         serviceToken: customTrackingLambda.functionArn,
         resourceType: 'Custom::LambdaCallout',
         properties: {
-          trackingName: this.trackingName,
+          trackerName: this.trackerName,
           region: this.trackingRegion,
           env: cdk.Fn.ref('env'),
         },
@@ -111,47 +122,52 @@ export class DeviceLocationTrackingStack extends BaseStack {
     }
 
     // Grant read-only access to the Tracking Index for Authorized and/or Guest users
-    private constructTrackingPolicyResource(trackingResource: cdk.CustomResource): CfnResource {
-      const policy = new iam.PolicyDocument({
-        statements: [
-          new iam.PolicyStatement({
-            effect: iam.Effect.ALLOW,
-            actions: [
-              'geo:BatchGetDevicePosition',
-              'geo:GetDevicePosition',
-            ],
-            resources: [trackingResource.getAtt('TrackingARN').toString()],
-            conditions: {
-              deviceContains: ['${cognito-identity.amazonaws.com:sub}'],
-            },
-          }),
-        ],
-      });
+    private constructTrackingPolicyResources(trackingResource: cdk.CustomResource): void {
+      Object.keys(this.roleAndGroupPermissionsMap).forEach((group: string) => {
+        const crudActions: string[] = _.uniq(_.flatten(this.roleAndGroupPermissionsMap[group]
+          .map((permission: string) => deviceLocationTrackingCrudPermissionsMap[permission])));
 
-      const cognitoRoles: Array<string> = [];
-      if (this.accessType === AccessType.AuthorizedUsers
-        || this.accessType === AccessType.AuthorizedAndGuestUsers) {
-        cognitoRoles.push(this.parameters.get('authRoleName')!.valueAsString);
-      }
-      if (this.accessType === AccessType.AuthorizedAndGuestUsers) {
-        cognitoRoles.push(this.parameters.get('unauthRoleName')!.valueAsString);
-      }
-      if (this.groupPermissions && this.authResourceName) {
-        this.groupPermissions.forEach((group: string) => {
-          cognitoRoles.push(
-            cdk.Fn.join('-',
-              [
-                this.parameters.get(`auth${this.authResourceName}UserPoolId`)!.valueAsString,
-                `${group}GroupRole`,
-              ]),
-          );
+        // This is a work-around until the TrackingArn is included in the `UpdateTracker` output
+        const outputTrackingArn = cdk.Fn.sub('arn:aws:geo:${region}:${account}:tracker/${trackerName}', {
+          region: this.trackingRegion,
+          account: cdk.Fn.ref('AWS::AccountId'),
+          collectionName: trackingResource.getAtt('TrackerName').toString(),
         });
-      }
+        const policyDocument = new iam.PolicyDocument({
+          statements: [
+            new iam.PolicyStatement({
+              effect: iam.Effect.ALLOW,
+              actions: crudActions,
+              resources: [outputTrackingArn],
+              conditions: {
+                StringLike: {
+                  'geo:DeviceIds': [
+                    '${cognito-identity.amazonaws.com:sub}',
+                  ],
+                },
+              },
+            }),
+          ],
+        });
 
-      return new iam.CfnPolicy(this, 'DeviceLocationTrackingPolicy', {
-        policyName: `${this.trackingName}Policy`,
-        roles: cognitoRoles,
-        policyDocument: policy,
+        let roleName: string;
+        if (group === 'authenticated') {
+          roleName = this.parameters.get('authRoleName')!.valueAsString;
+        } else if (group === 'guest') {
+          roleName = this.parameters.get('unauthRoleName')!.valueAsString;
+        } else {
+          roleName = cdk.Fn.join('-',
+            [
+              this.parameters.get(`auth${this.authResourceName}UserPoolId`)!.valueAsString,
+              `${group}GroupRole`,
+            ]);
+        }
+
+        new iam.CfnPolicy(this, `${group}DeviceLocationTrackingPolicy`, {
+          policyName: `${this.trackerName}Policy`,
+          roles: [roleName],
+          policyDocument,
+        });
       });
     }
 }
