@@ -32,6 +32,6 @@ export const addDeviceLocationTrackingWithParams = async (
   const completeParameters: DeviceLocationTrackingParameters = convertToCompleteTrackingParams(trackingParams);
   await createDeviceLocationTrackingResource(context, completeParameters);
   printer.success(`Successfully added resource ${completeParameters.name} locally.`);
-  printNextStepsSuccessMessage(context);
+  printNextStepsSuccessMessage();
   return completeParameters.name;
 };

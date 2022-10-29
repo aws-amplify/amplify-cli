@@ -12,7 +12,7 @@ import {
   addMapResource, addMapResourceHeadless, removeMapResource, updateMapResource, updateMapResourceHeadless,
 } from './map';
 import { addPlaceIndexResource, removePlaceIndexResource, updatePlaceIndexResource } from './placeIndex';
-import { addDeviceLocationTrackingResource } from './devicelocationtracking';
+import { addDeviceLocationTrackingResource } from './deviceLocationTracking';
 
 /**
  * Entry point for creating a new Geo resource
