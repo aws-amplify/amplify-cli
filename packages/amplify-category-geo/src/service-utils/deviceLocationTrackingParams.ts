@@ -1,5 +1,3 @@
-import _ from 'lodash';
-import { printer } from 'amplify-prompts';
 import { ResourceParameters } from './resourceParams';
 
 /**
@@ -16,7 +14,6 @@ export type DeviceLocationTrackingParameters = ResourceParameters & {
 export const isCompleteTrackingParams = (
   partial: Partial<DeviceLocationTrackingParameters>,
 ): partial is DeviceLocationTrackingParameters => {
-  printer.info(`params: ${JSON.stringify(partial)}`);
   const requiredFields = ['providerContext', 'name', 'accessType'];
   const missingField = requiredFields.find(field => !Object.keys(partial).includes(field));
   return !missingField;

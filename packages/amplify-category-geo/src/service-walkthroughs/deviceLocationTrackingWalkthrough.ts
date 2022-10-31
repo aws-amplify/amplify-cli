@@ -111,19 +111,3 @@ export const deviceLocationTrackerAccessWalkthrough = async (
   updatedParameters.roleAndGroupPermissionsMap = selectedGroupPermissions;
   return updatedParameters;
 };
-
-// const deviceLocationTrackerAdvancedWalkthrough = (): void => {
-
-// };
-
-// const deviceLocationTrackerGeofenceLinkingWalkthrough = async (context: $TSContext): Promise<> => {
-
-// };
-
-// const deviceLocationTrackerKMSSettingsWalkthrough = async (context: $TSContext): Promise<> => {
-
-// };
-
-// const deviceLocationTrackerFilteringMethodWalkthrough = async (context: $TSContext): Promise<> => {
-
-// };
