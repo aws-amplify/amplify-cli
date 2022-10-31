@@ -44,7 +44,7 @@ export const invokeTrigger = async (context: $TSContext, trigger: LambdaTrigger,
     const runtimeManager: FunctionRuntimeLifecycleManager = await context.amplify.loadRuntimePlugin(context, trigger.config.runtimePluginId);
 
     if (trigger?.config?.reBuild) {
-      await buildLambdaTrigger(context, trigger.config);
+      await buildLambdaTrigger(runtimeManager, trigger.config);
     }
 
     invoker = ({ event }) => runtimeManager.invoke({
@@ -74,8 +74,10 @@ const stringifyResult = (result: $TSAny) => {
   return typeof result === 'object' ? JSON.stringify(result, undefined, 2) : typeof result === 'undefined' ? '' : result;
 }
 
-export const buildLambdaTrigger = async (context: $TSContext, triggerConfig: Pick<LambdaTriggerConfig, 'runtime' | 'directory' | 'runtimePluginId'>) => {
-  const runtimeManager: FunctionRuntimeLifecycleManager = await context.amplify.loadRuntimePlugin(context, triggerConfig?.runtimePluginId);
+export const buildLambdaTrigger = async (
+  runtimeManager: FunctionRuntimeLifecycleManager, 
+  triggerConfig: Pick<LambdaTriggerConfig, 'runtime' | 'directory' | 'runtimePluginId'>
+) => {
   const runtimeRequirmentsCheck = await runtimeManager.checkDependencies(triggerConfig?.runtime);
   if (!(runtimeRequirmentsCheck?.hasRequiredDependencies)) {
     const runtimeRequirementsError = 'Required dependencies to build the lambda trigger are missing';

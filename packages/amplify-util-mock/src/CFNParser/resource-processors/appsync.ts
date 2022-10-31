@@ -1,7 +1,7 @@
 import { parseValue } from '../field-parser';
 import { CloudFormationProcessedResourceResult } from '../stack/types';
 import { CloudFormationParseContext } from '../types';
-import { isWindowsPlatform } from '../../utils';
+import { isWindowsPlatform } from 'amplify-cli-core';
 
 export function dynamoDBResourceHandler(resourceName, resource, cfnContext: CloudFormationParseContext) {
   const tableName = resourceName;
@@ -86,7 +86,7 @@ export function appSyncDataSourceHandler(
 
   if (typeName === 'AMAZON_ELASTICSEARCH') {
     if (isWindowsPlatform()) {
-      console.log(`@searchable mocking is not supported. Search queries will not work as expected.`);
+      console.log(`@searchable mocking is not supported on Windows. Search queries against the mock API will not work.`);
     }
 
     return {

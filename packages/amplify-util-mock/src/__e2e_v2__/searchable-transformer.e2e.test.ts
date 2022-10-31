@@ -3,12 +3,11 @@ import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-tran
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { deploy, launchDDBLocal, logDebug, GraphQLClient, terminateDDB, setupSearchableMockResources } from '../__e2e__/utils';
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny, isWindowsPlatform } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { v4 } from 'uuid';
 import fetch from 'node-fetch';
-import { isWindowsPlatform } from '../utils';
 
 jest.setTimeout(2000000);
 

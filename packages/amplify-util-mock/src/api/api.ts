@@ -2,14 +2,14 @@ import * as fs from 'fs-extra';
 import * as dynamoEmulator from 'amplify-dynamodb-simulator';
 import { AmplifyAppSyncSimulator, AmplifyAppSyncSimulatorConfig } from '@aws-amplify/amplify-appsync-simulator';
 import * as opensearchEmulator from '@aws-amplify/amplify-opensearch-simulator';
-import { $TSContext, $TSAny, AmplifyFault, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
+import { $TSContext, $TSAny, AmplifyFault, AMPLIFY_SUPPORT_DOCS, isWindowsPlatform } from 'amplify-cli-core';
 import { add, generate, isCodegenConfigured, switchToSDLSchema } from 'amplify-codegen';
 import * as path from 'path';
 import * as chokidar from 'chokidar';
 import _ from 'lodash';
 import fetch from 'node-fetch';
 
-import { getAmplifyMeta, getMockDataDirectory, getMockSearchableTriggerDirectory, isWindowsPlatform } from '../utils';
+import { getAmplifyMeta, getMockDataDirectory, getMockSearchableTriggerDirectory } from '../utils';
 import { checkJavaVersion } from '../utils/index';
 import { runTransformer } from './run-graphql-transformer';
 import { processAppSyncResources } from '../CFNParser';
@@ -27,6 +27,7 @@ import { TableDescription } from 'aws-sdk/clients/dynamodb';
 import { querySearchable } from '../utils/opensearch';
 import { getMockSearchableResourceDirectory } from '../utils/mock-directory';
 import { buildLambdaTrigger } from './lambda-invoke';
+import { printer } from 'amplify-prompts';
 
 export const GRAPHQL_API_ENDPOINT_OUTPUT = 'GraphQLAPIEndpointOutput';
 export const GRAPHQL_API_KEY_OUTPUT = 'GraphQLAPIKeyOutput';
@@ -107,7 +108,7 @@ export class APITest {
       }
     } catch (e) {
       // failed to stop DDB emulator
-      context.print.error(`Failed to stop DynamoDB Local Server ${e.message}`);
+      printer.error(`Failed to stop DynamoDB Local Server ${e.message}`);
     }
 
     try {
@@ -118,7 +119,7 @@ export class APITest {
       }
     } catch (e) {
       // failed to stop opensearch emulator
-      context.print.error(`Failed to stop OpenSearch Local Server ${e.message}`);
+      printer.error(`Failed to stop OpenSearch Local Server ${e.message}. Please kill the mock process and restart it.`);
     }
 
     await this.appSyncSimulator.stop();
@@ -139,7 +140,7 @@ export class APITest {
 
   private async generateCode(context: any, config: AmplifyAppSyncSimulatorConfig = null) {
     try {
-      context.print.info('Running GraphQL codegen');
+      printer.info('Running GraphQL codegen');
       const { projectPath } = context.amplify.getEnvInfo();
       const schemaPath = path.join(projectPath, 'amplify', 'backend', 'api', this.apiName, 'build', 'schema.graphql');
       if (config && config.schema) {
@@ -152,7 +153,7 @@ export class APITest {
         await generate(context);
       }
     } catch (e) {
-      context.print.info(`Failed to run GraphQL codegen with following error:\n${e.message}`);
+      printer.info(`Failed to run GraphQL codegen with following error:\n${e.message}`);
     }
   }
 
@@ -177,7 +178,7 @@ export class APITest {
         }
 
         if (shouldReload) {
-          context.print.info('Mapping template change detected. Reloading...');
+          printer.info('Mapping template change detected. Reloading...');
           const mappingTemplates = this.resolverOverrideManager.sync(this.transformerResult.mappingTemplates, this.userOverriddenSlots);
           await this.appSyncSimulator.reload({
             ...this.transformerResult,
@@ -185,7 +186,7 @@ export class APITest {
           });
         }
       } else if (filePath.includes(inputSchemaPath)) {
-        context.print.info('GraphQL Schema change detected. Reloading...');
+        printer.info('GraphQL Schema change detected. Reloading...');
         const config: AmplifyAppSyncSimulatorConfig = await this.runTransformer(context, this.apiParameters);
         await this.appSyncSimulator.reload(config);
         await this.generateCode(context, config);
@@ -200,17 +201,17 @@ export class APITest {
           await this.generateCode(context, config);
         }
       } else if (filePath.includes(customStackPath)) {
-        context.print.info('Custom stack change detected. Reloading...');
+        printer.info('Custom stack change detected. Reloading...');
         const config = await this.runTransformer(context, this.apiParameters);
         await this.appSyncSimulator.reload(config);
         await this.generateCode(context, config);
         await this.startDDBListeners(context, config, true);
       } else if (filePath?.includes(getMockDataDirectory(context)) && (action === 'unlink')) {
-        context.print.info('Mock DB deletion detected. Clearing the OpenSearch indices...');
+        printer.info('Mock DB deletion detected. Clearing the OpenSearch indices...');
         await this.clearAllIndices(this.opensearchURL);
       }
     } catch (e) {
-      context.print.info(`Reloading failed with error\n${e}`);
+      printer.info(`Reloading failed with error\n${e}`);
     }
   }
 
@@ -409,37 +410,39 @@ export class APITest {
     } catch (error) {
       throw new AmplifyFault('MockProcessFault', {
         message: 'Unable to start the local OpenSearch Instance.',
+        details: error?.message || '',
         link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
       });
     }
   }
 
   private async clearAllIndices(openSearchURL:URL) {
-    if (openSearchURL) {
-      const errMessage = 'Unable to Clear the local OpenSearch Indices.';
-      try {
-        const url = openSearchURL.toString() + '*';
-
-        const result = await fetch(url, {
-            method: 'DELETE',
-            headers: {
-                'Content-type': 'application/json',
-            }
-        });
-        const status = await result.json();
-        if (!(status?.acknowledged)) {
-          throw new AmplifyFault('MockProcessFault', {
-            message: errMessage,
-            link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
-          });
-        }
-      }
-      catch(error) {
+    if (!openSearchURL) {
+      return;
+    }
+    const errMessage = 'Unable to Clear the local OpenSearch Indices.';
+    try {
+      const url = openSearchURL.toString() + '*';
+      const result = await fetch(url, {
+          method: 'DELETE',
+          headers: {
+              'Content-type': 'application/json',
+          }
+      });
+      const status = await result.json();
+      if (!(status?.acknowledged)) {
         throw new AmplifyFault('MockProcessFault', {
-          message: errMessage,
+          message: 'The action to delete all items in an index is not acknowledged by the Opensearch server.',
           link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
         });
       }
+    }
+    catch(error) {
+      throw new AmplifyFault('MockProcessFault', {
+        message: errMessage,
+        details: error?.message || '',
+        link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+      });
     }
   }
 
@@ -452,7 +455,9 @@ export class APITest {
     fs.copySync(searchableLambdaResourceDir, mockSearchableTriggerDirectory, { overwrite: true });
 
     // build the searchable lambda trigger
-    await buildLambdaTrigger(context, getSearchableLambdaTriggerConfig(context, null));
+    const triggerConfig = getSearchableLambdaTriggerConfig(context, null);
+    const runtimeManager = await context.amplify.loadRuntimePlugin(context, triggerConfig?.runtimePluginId);
+    await buildLambdaTrigger(runtimeManager, triggerConfig);
     return mockSearchableResourceDirectory;
   }
 

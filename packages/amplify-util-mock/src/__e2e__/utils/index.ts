@@ -11,16 +11,17 @@ import { getFunctionDetails } from './lambda-helper';
 import { DynamoDB } from 'aws-sdk';
 import { functionRuntimeContributorFactory } from 'amplify-nodejs-function-runtime-provider';
 import { querySearchable } from '../../utils/opensearch';
-import { isWindowsPlatform } from '../../utils';
+import { isWindowsPlatform } from 'amplify-cli-core';
 
 const invoke = functionRuntimeContributorFactory({}).invoke;
 
 export * from './graphql-client';
 
 jest.mock('amplify-cli-core', () => ({
+  ...(jest.requireActual('amplify-cli-core') as {}),
   pathManager: {
-    getAmplifyPackageLibDirPath: jest.fn().mockReturnValue('../amplify-dynamodb-simulator'),
-  },
+    getAmplifyPackageLibDirPath: jest.fn().mockReturnValue('../amplify-dynamodb-simulator')
+  }
 }));
 
 export async function launchDDBLocal() {
@@ -149,7 +150,7 @@ export function logDebug(...msgs) {
   }
 }
 
-export async function setupSearchableMockResources(pathToSearchableMockResources: string) {
+export async function setupSearchableMockResources(pathToSearchableMockResources: string): Promise<{ emulator: openSearchEmulator.OpenSearchEmulator}> {
   const pathToSearchableTrigger = path.join(pathToSearchableMockResources, 'searchable-lambda-trigger');
   fs.ensureDirSync(pathToSearchableTrigger);
 

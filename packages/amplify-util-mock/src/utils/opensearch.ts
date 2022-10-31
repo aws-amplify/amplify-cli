@@ -1,4 +1,4 @@
-import { $TSObject, AmplifyFault, AMPLIFY_SUPPORT_DOCS } from "amplify-cli-core"
+import { $TSObject, AmplifyFault, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
 import fetch from 'node-fetch';
 
 type OpensearchQueryConfig = {

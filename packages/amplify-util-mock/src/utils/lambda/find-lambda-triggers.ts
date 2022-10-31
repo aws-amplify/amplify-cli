@@ -56,7 +56,11 @@ export const findModelLambdaTriggers = async (context: $TSContext , tables: stri
     return lambdaTriggersMap;
 }
 
-export const findSearchableLambdaTriggers = async (context: $TSContext , tables: string[], opensearchEndpoint?: URL): Promise<{ [index: string] : LambdaTrigger }> => {
+export const findSearchableLambdaTriggers = async (
+  context: $TSContext, 
+  tables: string[], 
+  opensearchEndpoint?: URL
+): Promise<{ [index: string] : LambdaTrigger }> => {
   const lambdaTriggersMap: { [index: string] : LambdaTrigger } = {};
   if (_.isEmpty(tables) || !opensearchEndpoint) {
     return lambdaTriggersMap;
