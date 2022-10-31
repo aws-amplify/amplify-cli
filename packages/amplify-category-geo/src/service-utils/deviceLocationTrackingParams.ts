@@ -18,7 +18,7 @@ export const isCompleteTrackingParams = (
 ): partial is DeviceLocationTrackingParameters => {
   printer.info(`params: ${JSON.stringify(partial)}`);
   const requiredFields = ['providerContext', 'name', 'accessType'];
-  const missingField = requiredFields.find(field => !_.keys(partial).includes(field));
+  const missingField = requiredFields.find(field => !Object.keys(partial).includes(field));
   return !missingField;
 };
 
