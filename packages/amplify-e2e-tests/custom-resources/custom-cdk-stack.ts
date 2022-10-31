@@ -3,13 +3,14 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as subs from 'aws-cdk-lib/aws-sns-subscriptions';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
+import { Construct } from 'constructs';
 
 /**
  * Base amplify stack class
  */
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export class cdkStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     /* Do not remove - Amplify CLI automatically injects the current deployment environment in this input parameter */
