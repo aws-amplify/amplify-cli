@@ -192,3 +192,5 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
 
   public renderCloudFormationTemplate = (__: ISynthesisSession): string => JSONUtilities.stringify(this._toCloudFormation());
 }
+
+// force major version bump for cdk v2

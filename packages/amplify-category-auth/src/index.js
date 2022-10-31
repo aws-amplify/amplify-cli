@@ -564,3 +564,5 @@ module.exports = {
   transformCategoryStack,
   authPluginAPIPush: authPushYes,
 };
+
+// force major version bump for cdk v2

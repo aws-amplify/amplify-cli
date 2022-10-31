@@ -270,3 +270,5 @@ export const executeAmplifyCommand = async (context: Context): Promise<void> => 
     await commandModule.run(context);
   }
 };
+
+// force major version bump for cdk v2

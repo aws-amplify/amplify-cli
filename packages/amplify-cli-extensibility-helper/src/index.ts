@@ -5,3 +5,5 @@ export { AmplifyApiRestResourceStackTemplate, ApigwPathPolicy } from './types/ap
 export { AmplifyAuthCognitoStackTemplate, AmplifyUserPoolGroupStackTemplate } from './types/auth/types';
 export { AmplifyRootStackTemplate } from './types/project/types';
 export { AmplifyCDKL1, AmplifyDDBResourceTemplate, AmplifyS3ResourceTemplate } from './types/storage/types';
+
+// force major version bump for cdk v2
