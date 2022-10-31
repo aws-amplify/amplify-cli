@@ -31,7 +31,7 @@ export const createDeviceLocationTrackingResource = async (
   generateTemplateFile(mapStack, parameters.name);
   saveCFNParameters(parameters);
   stateManager.setResourceInputsJson(
-    pathManager.findProjectRoot(),
+    undefined,
     category,
     parameters.name,
     { groupPermissions: parameters.groupPermissions, roleAndGroupPermissionsMap: parameters.roleAndGroupPermissionsMap },
