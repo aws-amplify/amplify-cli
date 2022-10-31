@@ -96,7 +96,7 @@ async function configureLambdaDataSource(config) {
 }
 
 async function configureOpensearchDataSource(config, opensearchURL) {
-  if (isWindowsPlatform()) {
+  if (isWindowsPlatform) {
     return config;
   }
   const opensearchDataSourceType = 'AMAZON_ELASTICSEARCH';

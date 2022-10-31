@@ -73,7 +73,7 @@ export class APITest {
       const appSyncConfig: AmplifyAppSyncSimulatorConfig = await this.runTransformer(context, this.apiParameters);
       
       // If any of the model types are searchable, start opensearch local instance
-      if (appSyncConfig?.tables?.some( (table: $TSAny) => table?.isSearchable) && (!isWindowsPlatform())) {
+      if (appSyncConfig?.tables?.some( (table: $TSAny) => table?.isSearchable) && (!isWindowsPlatform)) {
         this.opensearchURL = await this.startOpensearchLocalServer(context, isLocalDBEmpty);
       }
       this.appSyncSimulator.init(appSyncConfig);
@@ -119,7 +119,7 @@ export class APITest {
       }
     } catch (e) {
       // failed to stop opensearch emulator
-      printer.error(`Failed to stop OpenSearch Local Server ${e.message}. Please kill the mock process and restart it.`);
+      printer.error(`Failed to stop OpenSearch Local Server ${e.message}. Kill the mock process using "kill -9 ${this.opensearchEmulator?.pid}" and restart it.`);
     }
 
     await this.appSyncSimulator.stop();
@@ -315,7 +315,7 @@ export class APITest {
   }
 
   private async configureOpensearchDataSource(config: $TSAny): Promise<$TSAny> {
-    if (isWindowsPlatform()) {
+    if (isWindowsPlatform) {
       return config;
     }
     const opensearchDataSourceType = 'AMAZON_ELASTICSEARCH';
@@ -440,9 +440,8 @@ export class APITest {
     catch(error) {
       throw new AmplifyFault('MockProcessFault', {
         message: errMessage,
-        details: error?.message || '',
         link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
-      });
+      }, error);
     }
   }
 

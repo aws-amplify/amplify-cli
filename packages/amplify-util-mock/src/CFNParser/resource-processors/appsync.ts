@@ -86,7 +86,7 @@ export function appSyncDataSourceHandler(
   }
 
   if (typeName === 'AMAZON_ELASTICSEARCH') {
-    if (isWindowsPlatform()) {
+    if (isWindowsPlatform) {
       printer.info(`@searchable mocking is not supported on Windows. Search queries against the mock API will not work.`);
     }
 

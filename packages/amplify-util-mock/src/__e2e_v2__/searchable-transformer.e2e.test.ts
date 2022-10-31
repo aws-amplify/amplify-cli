@@ -65,7 +65,7 @@ describe('@searchable transformer', () => {
       let ddbClient;
       ({ dbPath, emulator: ddbEmulator, client: ddbClient } = await launchDDBLocal());
 
-      if (!isWindowsPlatform()) {
+      if (!isWindowsPlatform) {
         while (true) {
           pathToSearchableMockResources = path.join('/tmp', `amplify-cli-emulator-opensearch-${v4()}`);
           if (!fs.existsSync(pathToSearchableMockResources)) break;
@@ -87,7 +87,7 @@ describe('@searchable transformer', () => {
       });
 
       // create test records and wait for 5 secs for local indices to update
-      if (!isWindowsPlatform()) {
+      if (!isWindowsPlatform) {
         await createTestRecords();
         await new Promise(r => setTimeout(r, 5000));
       }
@@ -124,7 +124,7 @@ describe('@searchable transformer', () => {
    * Test queries below
    */
 
-  if (isWindowsPlatform()) {
+  if (isWindowsPlatform) {
     test('@searchable allows the mock server to run on windows', async () => {
       const response = await GRAPHQL_CLIENT.query(
         `query {

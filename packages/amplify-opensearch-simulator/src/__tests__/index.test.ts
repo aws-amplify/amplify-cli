@@ -84,7 +84,7 @@ describe('emulator operations', () => {
     });
   };
 
-  if (isWindowsPlatform()) {
+  if (isWindowsPlatform) {
     it('should fail to launch on windows OS', async () => {
       try {
         await openSearchEmulator.launch(mockSearchableResourcePath);

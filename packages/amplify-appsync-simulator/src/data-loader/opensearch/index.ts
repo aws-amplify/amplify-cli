@@ -16,7 +16,7 @@ export class OpenSearchDataLoader implements AmplifyAppSyncSimulatorDataLoader {
       throw new AmplifyFault('MockProcessFault', {
         message: 'Failed to load data from Opensearch data source',
         link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
-      });
+      }, e);
     }
   }
 }

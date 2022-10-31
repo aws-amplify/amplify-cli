@@ -85,7 +85,7 @@ describe('Invoke local lambda function', () => {
       envVars: { 'ENV_KEY': 'env_value' }
     };
     await invokeTrigger(mockContext, { config: mockTriggerConfig }, echoInput);
-    expect(mockContext.amplify.loadRuntimePlugin).toBeCalledTimes(2);
+    expect(mockContext.amplify.loadRuntimePlugin).toBeCalledTimes(1);
     expect(mockContext.amplify.loadRuntimePlugin).toBeCalledWith(mockContext, mockTriggerConfig.runtimePluginId);
     
     // check for lambda dependencies
