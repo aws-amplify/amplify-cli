@@ -95,8 +95,6 @@ export class DeviceLocationTrackingStack extends BaseStack {
     geoUpdateDeleteTrackingStatement.addResources(trackingARN);
 
     // set up custom params
-    // ....
-    // ....
 
     const customTrackingLambdaCode = fs.readFileSync(customDeviceLocationTrackingLambdaCodePath, 'utf-8');
     const customTrackingLambda = new lambda.Function(this, 'customTrackingLambda', {
