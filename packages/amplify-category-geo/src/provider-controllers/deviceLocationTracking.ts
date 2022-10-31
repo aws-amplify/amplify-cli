@@ -2,8 +2,8 @@ import { $TSContext } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { ServiceName } from '../service-utils/constants';
 import { convertToCompleteTrackingParams, DeviceLocationTrackingParameters } from '../service-utils/deviceLocationTrackingParams';
-import { createDeviceLocationTrackingResource } from '../service-utils/deviceLocationTrackingUtils';
-import { createDeviceLocationTrackingWalkthrough } from '../service-walkthroughs/deviceLocationTrackingWalkthrough';
+import { createDeviceLocationTrackingResource, modifyDeviceLocationTrackingResource } from '../service-utils/deviceLocationTrackingUtils';
+import { createDeviceLocationTrackingWalkthrough, updateDeviceLocationTrackerWalkthrough } from '../service-walkthroughs/deviceLocationTrackingWalkthrough';
 import { printNextStepsSuccessMessage, setProviderContext } from './index';
 
 /**
@@ -32,6 +32,26 @@ export const addDeviceLocationTrackingWithParams = async (
   const completeParameters: DeviceLocationTrackingParameters = convertToCompleteTrackingParams(trackingParams);
   await createDeviceLocationTrackingResource(context, completeParameters);
   printer.success(`Successfully added resource ${completeParameters.name} locally.`);
+  printNextStepsSuccessMessage();
+  return completeParameters.name;
+};
+
+/**
+ * updateDeviceLocationTracking
+ */
+export const updateDeviceLocationTrackingResource = async (
+  context: $TSContext,
+): Promise<string> => {
+  const deviceLocationTrackingParams: Partial<DeviceLocationTrackingParameters> = {
+    providerContext: setProviderContext(context, ServiceName.DeviceLocationTracking),
+  };
+  // populate the parameters for the resource
+  const updatedParams = await updateDeviceLocationTrackerWalkthrough(context, deviceLocationTrackingParams);
+  const completeParameters: DeviceLocationTrackingParameters = convertToCompleteTrackingParams(updatedParams);
+
+  await modifyDeviceLocationTrackingResource(context, completeParameters);
+
+  printer.success(`Successfully updated resource ${updatedParams.name} locally.`);
   printNextStepsSuccessMessage();
   return completeParameters.name;
 };
