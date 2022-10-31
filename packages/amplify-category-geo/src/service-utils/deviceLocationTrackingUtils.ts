@@ -100,8 +100,8 @@ export const getCurrentTrackingParameters = async (trackerName: string): Promise
     await readResourceMetaParameters(ServiceName.DeviceLocationTracking, trackerName)
   ) as DeviceLocationTrackingMetaParameters;
   const currentTrackingParameters = stateManager.getResourceInputsJson(
-    pathManager.findProjectRoot(), category, trackerName, { throwIfNotExist: false },
-  ) || {};
+    undefined, category, trackerName, { default: {}, throwIfNotExist: false },
+  );
   return {
     accessType: currentTrackingMetaParameters.accessType,
     isDefault: currentTrackingMetaParameters.isDefault,
