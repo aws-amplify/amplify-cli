@@ -6,8 +6,8 @@ import { ResourceParameters } from './resourceParams';
  * DeviceLocationTrackingParameters
  */
 export type DeviceLocationTrackingParameters = ResourceParameters & {
-    groupPermissions: string[];
-    roleAndGroupPermissionsMap: Record<string, string[]>;
+  groupPermissions: string[];
+  roleAndGroupPermissionsMap: Record<string, string[]>;
 };
 
 /**
