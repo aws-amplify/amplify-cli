@@ -29,8 +29,8 @@ const hostedUIProviders = [
   },
   {
     name: 'Signinwithapple',
-    value: 'Signinwithapple'
-  }
+    value: 'Signinwithapple',
+  },
 ];
 const attributeProviderMap = {
   email: {
@@ -46,10 +46,10 @@ const attributeProviderMap = {
       attr: 'amazon_email',
       scope: 'default',
     },
-    signinwithapple:{
+    signinwithapple: {
       attr: 'apple_email',
-      scope:'default'
-    }
+      scope: 'default',
+    },
   },
   address: {
     prov1: {
@@ -57,7 +57,7 @@ const attributeProviderMap = {
       scope: 'default',
     },
     prov2: {},
-    signinwithapple:{},
+    signinwithapple: {},
     loginwithamazon: {
       attr: 'amazon_address',
       scope: 'default',
@@ -69,14 +69,14 @@ const attributeProviderMap = {
       attr: 'prov2_locale',
       scope: 'default',
     },
-    loginwithamazon: {}, 
-    signinwithapple:{},
+    loginwithamazon: {},
+    signinwithapple: {},
   },
   name: {
     prov1: {},
     prov2: {},
     loginwithamazon: {},
-    signinwithapple:{}
+    signinwithapple: {},
   },
 };
 const { coreAttributes, updateFlowMap } = maps;
@@ -264,7 +264,7 @@ describe('When generating auth questions...', () => {
       input.type = 'multiselect';
       input.map = 'hostedUIProviders';
       const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
-      const correctChoices = res.choices && res.choices.length === 4 && res.choices.filter(i => i.disabled).length === 1;
+      const correctChoices = res.choices && res.choices.length === 4 && res.choices.filter(i => i.disabled).length === 2;
       expect(correctChoices).toBe(true);
     });
 
