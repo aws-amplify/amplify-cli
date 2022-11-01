@@ -1,6 +1,5 @@
 name: Bug report
 description: Create a report to help us improve Amplify CLI
-
 body:
   - type: markdown
     attributes:
@@ -8,7 +7,9 @@ body:
         Thanks for taking the time to fill out this bug report! Before submitting please read the guide for [submitting bug reports](https://github.com/aws-amplify/amplify-cli/blob/dev/CONTRIBUTING.md#bug-reports), and try to include as much information as you can.
 
         For reference, the current version of the Amplify CLI is <img src="https://img.shields.io/npm/v/@aws-amplify/cli.svg" />.
-        For issues regarding REST API's, GraphQL API's, or containers, please visit https://github.com/aws-amplify/amplify-category-api/issues
+        - For issues regarding REST API's, GraphQL API's, or containers, please visit [amplify-category-api](https://github.com/aws-amplify/amplify-category-api/issues/new/choose)
+        - For **Amplify Hosting** issues, visit [amplify-hosting](https://github.com/aws-amplify/amplify-hosting/issues/new/choose)
+        - For **Amplify Codegen** issues, visit [amplify-codegen](https://github.com/aws-amplify/amplify-codegen/issues/new/choose)
   - type: markdown
     attributes:
       value: |
