@@ -122,7 +122,7 @@ describe('Device Location Tracker walkthrough works as expected', () => {
       }
       return Promise.resolve(mockUserInput);
     });
-    prompter.yesOrNo = jest.fn().mockReturnValue(mockDeviceTrackerParameters.isDefault);
+    prompter.yesOrNo = jest.fn().mockResolvedValue(mockDeviceTrackerParameters.isDefault);
   });
 
   it('sets the first device tracker added as default automatically', async () => {
