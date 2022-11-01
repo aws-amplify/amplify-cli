@@ -33,13 +33,11 @@
     "openpgp": "^4.10.10",
     "promise-toolbox": "^0.20.0",
     "tar": "^6.1.11",
-    "wait-port": "^0.2.7",
-    "which": "^2.0.2"
+    "wait-port": "^0.2.7"
   },
   "devDependencies": {
     "@types/node": "^12.12.6",
     "@types/openpgp": "^4.4.18",
-    "hash.js": "^1.1.7",
     "uuid": "^8.3.2"
   },
   "jest": {
