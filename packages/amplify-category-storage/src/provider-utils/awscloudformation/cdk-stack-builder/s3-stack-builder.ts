@@ -456,7 +456,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
    */
   isAmplifyStackLegacy = (): boolean => {
     const amplifyMeta = stateManager.getMeta();
-    const stackName :string = amplifyMeta.providers.awscloudformation.StackName;
+    const stackName: string = amplifyMeta.providers.awscloudformation.StackName;
     return !stackName.startsWith('amplify-');
   }
 
@@ -1002,7 +1002,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
 
     const policyStatements = []; // Build each statement from the policyDefinitionStatement
     for (const policyDefinitionStatement of policyDefinition.statements) {
-      const policyStatement:$TSAny = {};
+      const policyStatement: $TSObject = {};
       // 3.1.0 Property: PolicyDocument.Statement.Effect
       policyStatement.Effect = policyDefinitionStatement.effect;
 

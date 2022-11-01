@@ -2,17 +2,16 @@ import { AmplifyAuthCognitoStackTemplate } from '@aws-amplify/cli-extensibility-
 import * as cognito from '@aws-cdk/aws-cognito';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import { $TSAny, JSONUtilities } from 'amplify-cli-core';
+import { $TSObject, JSONUtilities } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import {
   hostedUILambdaFilePath,
   hostedUIProviderLambdaFilePath,
   mfaLambdaFilePath,
-  oauthLambdaFilePath,
+  oauthLambdaFilePath, // eslint-disable-line spellcheck/spell-checker
   openIdLambdaFilePath,
   userPoolClientLambdaFilePath,
 } from '../constants';
@@ -29,7 +28,7 @@ const LambdaTriggersKeys = [
   'PostAuthentication',
   'PostConfirmation',
   'PreAuthentication',
-  'PreSignup',
+  'PreSignup', // eslint-disable-line spellcheck/spell-checker
   'PreTokenGeneration',
   'VerifyAuthChallengeResponse',
 ];
@@ -55,6 +54,7 @@ export type AmplifyAuthCognitoStackProps = {
 export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCognitoStackTemplate {
   private _scope: cdk.Construct;
   private _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
+  private _cfnParameterValues: $TSObject;
   private _cfnConditionMap: Map<string, cdk.CfnCondition> = new Map();
   private _cfnOutputMap: Map<string, cdk.CfnOutput> = new Map();
   private _cfnMappingMap: Map<string, cdk.CfnMapping> = new Map();
@@ -113,98 +113,107 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   }
 
   /**
-   * adds a cfn resource
+   * add CloudFormation resource
    */
   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void {
     if (!this._cfnResourceMap.has(logicalId)) {
       this._cfnResourceMap.set(logicalId, new cdk.CfnResource(this, logicalId, props));
     } else {
-      throw new Error(`Cfn Resource with LogicalId ${logicalId} already exists`);
+      throw new Error(`CloudFormation Resource with LogicalId ${logicalId} already exists`);
     }
   }
 
   /**
-   * get cfn output from logical id
+   * get CloudFormation output for logical id
    */
   getCfnOutput(logicalId: string): cdk.CfnOutput {
     if (this._cfnOutputMap.has(logicalId)) {
       return this._cfnOutputMap.get(logicalId)!;
     }
-    throw new Error(`Cfn Output with LogicalId ${logicalId} doesn't exist`);
+    throw new Error(`CloudFormation Output with LogicalId ${logicalId} does not exist`);
   }
 
   /**
-   * get cfn mapping from logical id
+   * get CloudFormation mapping
    */
   getCfnMapping(logicalId: string): cdk.CfnMapping {
     if (this._cfnMappingMap.has(logicalId)) {
       return this._cfnMappingMap.get(logicalId)!;
     }
-    throw new Error(`Cfn Mapping with LogicalId ${logicalId} doesn't exist`);
+    throw new Error(`CloudFormation Mapping with LogicalId ${logicalId} does not exist`);
   }
 
   /**
-   * adds cfn output to stack
+   * get CloudFormation parameter values
+   */
+  getCfnParameterValues(): $TSObject {
+    return this._cfnParameterValues;
+  }
+
+  /**
+   * add CloudFormation output
+   * @param props : cdk.CfnOutputProps
+   * @param logicalId : logicalId of the Resource
    */
   addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void {
     if (!this._cfnOutputMap.has(logicalId)) {
       this._cfnOutputMap.set(logicalId, new cdk.CfnOutput(this, logicalId, props));
     } else {
-      throw new Error(`Cfn Parameter with LogicalId ${logicalId} already exists`);
+      throw new Error(`CloudFormation Parameter with LogicalId ${logicalId} already exists`);
     }
   }
 
   /**
-   * adds cfn mapping to stack
+   * add CloudFormation mapping to stack
    */
   addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void {
     if (!this._cfnMappingMap.has(logicalId)) {
       this._cfnMappingMap.set(logicalId, new cdk.CfnMapping(this, logicalId, props));
     } else {
-      throw new Error(`Cfn Parameter with LogicalId ${logicalId} already exists`);
+      throw new Error(`CloudFormation Parameter with LogicalId ${logicalId} already exists`);
     }
   }
 
   /**
-   * adds cfn condition to stack
+   * add CloudFormation condition
    */
   addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void {
     if (!this._cfnConditionMap.has(logicalId)) {
       this._cfnConditionMap.set(logicalId, new cdk.CfnCondition(this, logicalId, props));
     } else {
-      throw new Error(`Cfn Parameter with LogicalId ${logicalId} already exists`);
+      throw new Error(`CloudFormation Parameter with LogicalId ${logicalId} already exists`);
     }
   }
 
   /**
-   * adds cfn parameter to stack
+   * add CloudFormation parameter
    */
   addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
     if (!this._cfnParameterMap.has(logicalId)) {
       this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
     } else {
-      throw new Error(`Cfn Parameter with LogicalId ${logicalId} already exists`);
+      throw new Error(`CloudFormation Parameter with LogicalId ${logicalId} already exists`);
     }
   }
 
   /**
-   * get cfn parameter from logical id
+   * get CloudFormation parameter for logical id
    */
   getCfnParameter(logicalId: string): cdk.CfnParameter {
     if (this._cfnParameterMap.has(logicalId)) {
       return this._cfnParameterMap.get(logicalId)!;
     }
-    throw new Error(`Cfn Parameter with LogicalId ${logicalId} doesn't exist`);
+    throw new Error(`CloudFormation Parameter with LogicalId ${logicalId} does not exist`);
   }
 
   /**
-   * get cfn condition from logical id
+   * get CloudFormation condition for logical id
    */
   getCfnCondition(logicalId: string): cdk.CfnCondition {
     if (this._cfnConditionMap.has(logicalId)) {
       return this._cfnConditionMap.get(logicalId)!;
     }
-    throw new Error(`Cfn Condition with LogicalId ${logicalId} doesn't exist`);
+    throw new Error(`CloudFormation Condition with LogicalId ${logicalId} does not exist`);
   }
 
   generateCognitoStackResources = async (props: CognitoStackOptions): Promise<void> => {
@@ -385,9 +394,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
 
       if (autoVerifiedAttributes && autoVerifiedAttributes.length > 0) {
         this.userPool!.autoVerifiedAttributes = autoVerifiedAttributes;
-        /**
-     * Reason: All attributes in AttributesRequireVerificationBeforeUpdate must exist in AutoVerifiedAttributes
-     */
+        // Reason: All attributes in AttributesRequireVerificationBeforeUpdate must exist in AutoVerifiedAttributes
         this.userPool!.userAttributeUpdateSettings = {
           attributesRequireVerificationBeforeUpdate: autoVerifiedAttributes,
         };
@@ -430,8 +437,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         this.userPool.addDependsOn(this.snsRole!);
       }
 
-      // updating Lambda Config when FF is (break circular dependency : false)
-
+      // update Lambda Config when FF breakCircularDependency is false
       if (!props.breakCircularDependency && props.triggers && props.dependsOn) {
         props.dependsOn.forEach(trigger => {
           LambdaTriggersKeys.forEach(key => {
@@ -452,8 +458,8 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         }
       }
       /**
-       *   # Created provide application access to user pool
-            # Depends on UserPool for ID reference
+       * Created provide application access to user pool
+       * Depends on UserPool for ID reference
        */
       this.userPoolClientWeb = new cognito.CfnUserPoolClient(this, 'UserPoolClientWeb', {
         userPoolId: cdk.Fn.ref('UserPool'),
@@ -538,7 +544,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       ) {
         this.identityPool.supportedLoginProviders = cdk.Lazy.anyValue({
           produce: () => {
-            const supportedProvider: $TSAny = {};
+            const supportedProvider: $TSObject = {};
             props.authProviders?.forEach(provider => {
               if (Object.keys(authProvidersList).includes(provider)) {
                 supportedProvider[provider] = cdk.Fn.ref(authProvidersList[provider]);
@@ -572,7 +578,9 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   };
 
   /**
-   *  add Function for Custom Resource in Root stack
+   * render CloudFormation template
+   *
+   * @returns stringify'd CloudFormation template
    */
   public renderCloudFormationTemplate = (__: cdk.ISynthesisSession): string => JSONUtilities.stringify(this._toCloudFormation())!;
 
@@ -620,11 +628,10 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     });
     this.userPoolClientLambda.addDependsOn(this.userPoolClientRole);
 
-    // userPool client lambda policy
     /**
-     *   # Sets userpool policy for the role that executes the Userpool Client Lambda
-        # Depends on UserPool for Arn
-        # Marked as depending on UserPoolClientRole for easier to understand CFN sequencing
+     * Sets userpool policy for the role that executes the Userpool Client Lambda
+     * Depends on UserPool for Arn
+     * Marked as depending on UserPoolClientRole for easier to understand CFN sequencing
      */
     this.userPoolClientLambdaPolicy = new iam.CfnPolicy(this, 'UserPoolClientLambdaPolicy', {
       // eslint-disable-next-line spellcheck/spell-checker
@@ -694,11 +701,10 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     });
     this.hostedUICustomResource.addDependsOn(this.userPoolClientRole!);
 
-    // userPool client lambda policy
     /**
-     *   # Sets userpool policy for the role that executes the Userpool Client Lambda
-        # Depends on UserPool for Arn
-        # Marked as depending on UserPoolClientRole for easier to understand CFN sequencing
+     * Sets userpool policy for the role that executes the Userpool Client Lambda
+     * Depends on UserPool for Arn
+     * Marked as depending on UserPoolClientRole for easier to understand CFN sequencing
      */
     this.hostedUICustomResourcePolicy = new iam.CfnPolicy(this, 'HostedUICustomResourcePolicy', {
       policyName: cdk.Fn.join('-', [cdk.Fn.ref('UserPool'), cdk.Fn.ref('hostedUI')]),
@@ -775,11 +781,10 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     });
     this.hostedUIProvidersCustomResource.addDependsOn(this.userPoolClientRole!);
 
-    // userPool client lambda policy
     /**
-     *   # Sets userpool policy for the role that executes the Userpool Client Lambda
-        # Depends on UserPool for Arn
-        # Marked as depending on UserPoolClientRole for easier to understand CFN sequencing
+     * Sets userpool policy for the role that executes the Userpool Client Lambda
+     * Depends on UserPool for Arn
+     * Marked as depending on UserPoolClientRole for easier to understand CFN sequencing
      */
     this.hostedUIProvidersCustomResourcePolicy = new iam.CfnPolicy(this, 'HostedUIProvidersCustomResourcePolicy', {
       policyName: cdk.Fn.join('-', [cdk.Fn.ref('UserPool'), 'hostedUIProvider']),
@@ -843,13 +848,13 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   }
 
   /**
- * creates OAuth customResource for Cognito
- */
+   * creates OAuth customResource for Cognito
+   */
   createOAuthCustomResource(): void {
     // lambda function
     this.oAuthCustomResource = new lambda.CfnFunction(this, 'OAuthCustomResource', {
       code: {
-        zipFile: fs.readFileSync(oauthLambdaFilePath, 'utf-8'),
+        zipFile: fs.readFileSync(oauthLambdaFilePath, 'utf-8'), // eslint-disable-line spellcheck/spell-checker
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
@@ -882,7 +887,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     });
     this.oAuthCustomResourcePolicy.addDependsOn(this.oAuthCustomResource);
 
-    // Oauth Log policy
+    // OAuth Log policy
 
     this.oAuthCustomResourceLogPolicy = new iam.CfnPolicy(this, 'OAuthCustomResourceLogPolicy', {
       policyName: cdk.Fn.join('-', [cdk.Fn.ref('UserPool'), 'OAuthLogPolicy']),
@@ -920,8 +925,8 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   }
 
   /**
- * creates MFA customResource for Cognito
- */
+   * creates MFA customResource for Cognito
+   */
   createMFACustomResource(props: CognitoStackOptions): void {
     // iam role
     this.mfaLambdaRole = new iam.CfnRole(this, 'MFALambdaRole', {
@@ -976,10 +981,10 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       ],
     });
     this.mfaLambdaRole.addDependsOn(this.snsRole!);
-    // lambda function
+
     /**
-     *   Lambda which sets MFA config values
-         Depends on MFALambdaRole for role ARN
+     * Lambda which sets MFA config values
+     * Depends on MFALambdaRole for role ARN
      */
     this.mfaLambda = new lambda.CfnFunction(this, 'MFALambda', {
       code: {
@@ -992,11 +997,10 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     });
     this.mfaLambda.addDependsOn(this.mfaLambdaRole);
 
-    // MFA lambda policy
     /**
-    # Sets policy for the role that executes the MFA Lambda
-    # Depends on Userpool for Arn
-    # Marked as depending on MFALambda for easier to understand CFN sequencing
+     * Sets policy for the role that executes the MFA Lambda
+     * Depends on Userpool for Arn
+     * Marked as depending on MFALambda for easier to understand CFN sequencing
      */
     this.mfaLambdaPolicy = new iam.CfnPolicy(this, 'MFALambdaPolicy', {
       policyName: `${props.resourceNameTruncated}_totp_lambda_iam_policy`,
@@ -1020,7 +1024,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     });
     this.mfaLambdaPolicy.addDependsOn(this.mfaLambda);
 
-    // mfa Log policy
+    // MFA Log policy
 
     this.mfaLogPolicy = new iam.CfnPolicy(this, 'MFALogPolicy', {
       policyName: `${props.resourceNameTruncated}_totp_lambda_log_policy`,

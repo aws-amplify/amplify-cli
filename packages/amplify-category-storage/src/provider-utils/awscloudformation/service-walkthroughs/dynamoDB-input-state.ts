@@ -11,15 +11,15 @@ import {
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { getFieldType } from '../cfn-template-utils';
-import { DynamoDBCLIInputs, DynamoDBCLIInputsGSIType } from '../service-walkthrough-types/dynamoDB-user-input-types';
+import { DynamoDBCLIInputs, DynamoDBCLIInputsGSIType, FieldType } from '../service-walkthrough-types/dynamoDB-user-input-types';
 
 /* Need to move this logic to a base class */
 
 export class DynamoDBInputState {
-  _cliInputsFilePath: string; //cli-inputs.json (output) filepath
-  _resourceName: string; //user friendly name provided by user
-  _category: string; //category of the resource
-  _service: string; //AWS service for the resource
+  _cliInputsFilePath: string; // cli-inputs.json (output) filepath
+  _resourceName: string; // user friendly name provided by user
+  _category: string; // category of the resource
+  _service: string; // AWS service for the resource
   buildFilePath: string;
 
   constructor(private readonly context: $TSContext, resourceName: string) {
@@ -49,29 +49,23 @@ export class DynamoDBInputState {
     return fs.existsSync(this._cliInputsFilePath);
   }
 
-  public isCLIInputsValid(cliInputs?: DynamoDBCLIInputs) {
+  public async isCLIInputsValid(cliInputs?: DynamoDBCLIInputs): Promise<boolean> {
     if (!cliInputs) {
       cliInputs = this.getCliInputPayload();
     }
 
     const schemaValidator = new CLIInputSchemaValidator(this.context, this._service, this._category, 'DynamoDBCLIInputs');
-    schemaValidator.validateInput(JSON.stringify(cliInputs));
+    return schemaValidator.validateInput(JSON.stringify(cliInputs));
   }
 
-  public saveCliInputPayload(cliInputs: DynamoDBCLIInputs): void {
-    this.isCLIInputsValid(cliInputs);
+  public async saveCliInputPayload(cliInputs: DynamoDBCLIInputs): Promise<void> {
+    await this.isCLIInputsValid(cliInputs);
 
     fs.ensureDirSync(pathManager.getResourceDirectoryPath(undefined, this._category, this._resourceName));
-    try {
-      JSONUtilities.writeJson(this._cliInputsFilePath, cliInputs);
-    } catch (e) {
-      throw new Error(e);
-    }
+    JSONUtilities.writeJson(this._cliInputsFilePath, cliInputs);
   }
 
-  public migrate() {
-    let cliInputs: DynamoDBCLIInputs;
-
+  public async migrate(): Promise<void> {
     // migrate the resource to new directory structure if cli-inputs.json is not found for the resource
 
     const backendDir = pathManager.getBackendDirPath();
@@ -103,10 +97,10 @@ export class DynamoDBInputState {
       triggerFunctions = oldStorageParams.triggerFunctions;
     }
 
-    const getType = (attrList: $TSAny, attrName: string) => {
-      let attrType;
+    const getType = (attrList: $TSObject, attrName: string): FieldType | undefined => {
+      let attrType: FieldType | undefined;
 
-      attrList.forEach((attr: $TSAny) => {
+      attrList.forEach((attr: $TSObject) => {
         if (attr.AttributeName === attrName) {
           attrType = getFieldType(attr.AttributeType);
         }
@@ -115,29 +109,29 @@ export class DynamoDBInputState {
       return attrType;
     };
 
-    let gsi: DynamoDBCLIInputsGSIType[] = [];
+    const gsi: DynamoDBCLIInputsGSIType[] = [];
 
     if (oldCFN?.Resources?.DynamoDBTable?.Properties?.GlobalSecondaryIndexes) {
       oldCFN.Resources.DynamoDBTable.Properties.GlobalSecondaryIndexes.forEach((cfnGSIValue: $TSAny) => {
-        let gsiValue: $TSAny = {};
-        (gsiValue.name = cfnGSIValue.IndexName),
-          cfnGSIValue.KeySchema.forEach((keySchema: $TSObject) => {
-            if (keySchema.KeyType === 'HASH') {
-              gsiValue.partitionKey = {
-                fieldName: keySchema.AttributeName,
-                fieldType: getType(oldCFN.Resources.DynamoDBTable.Properties.AttributeDefinitions, keySchema.AttributeName),
-              };
-            } else {
-              gsiValue.sortKey = {
-                fieldName: keySchema.AttributeName,
-                fieldType: getType(oldCFN.Resources.DynamoDBTable.Properties.AttributeDefinitions, keySchema.AttributeName),
-              };
-            }
-          });
+        const gsiValue: $TSAny = {};
+        gsiValue.name = cfnGSIValue.IndexName;
+        cfnGSIValue.KeySchema.forEach((keySchema: $TSObject) => {
+          if (keySchema.KeyType === 'HASH') {
+            gsiValue.partitionKey = {
+              fieldName: keySchema.AttributeName,
+              fieldType: getType(oldCFN.Resources.DynamoDBTable.Properties.AttributeDefinitions, keySchema.AttributeName),
+            };
+          } else {
+            gsiValue.sortKey = {
+              fieldName: keySchema.AttributeName,
+              fieldType: getType(oldCFN.Resources.DynamoDBTable.Properties.AttributeDefinitions, keySchema.AttributeName),
+            };
+          }
+        });
         gsi.push(gsiValue);
       });
     }
-    cliInputs = {
+    const cliInputs: DynamoDBCLIInputs = {
       resourceName: this._resourceName,
       tableName: oldParameters.tableName,
       partitionKey,
@@ -146,7 +140,7 @@ export class DynamoDBInputState {
       gsi,
     };
 
-    this.saveCliInputPayload(cliInputs);
+    await this.saveCliInputPayload(cliInputs);
 
     // Remove old files
 

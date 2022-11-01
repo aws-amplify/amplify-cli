@@ -1,17 +1,24 @@
 /* eslint-disable max-lines-per-function */
 import * as cdk from '@aws-cdk/core';
 import {
-  $TSAny, $TSContext, AmplifyCategories, AmplifyCategoryTransform,
-  AmplifyStackTemplate, AmplifySupportedService, buildOverrideDir,
-  CFNTemplateFormat, FeatureFlags, JSONUtilities, pathManager,
-  stateManager, Template, writeCFNTemplate,
+  $TSAny,
+  $TSContext,
+  AmplifyCategories,
+  AmplifyCategoryTransform,
+  AmplifySupportedService,
+  applyCategoryOverride,
+  CFNTemplateFormat,
+  FeatureFlags,
+  JSONUtilities,
+  pathManager,
+  stateManager,
+  Template,
+  writeCFNTemplate,
 } from 'amplify-cli-core';
-import { formatter, printer } from 'amplify-prompts';
+import { printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
-import os from 'os';
 import * as path from 'path';
-import * as vm from 'vm2';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
 import { AttributeType, CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
 import { AuthTriggerConnection, AuthTriggerPermissions, CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
@@ -31,18 +38,17 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
   private _cliInputs: CognitoCLIInputs;
   private _cognitoStackProps: CognitoStackOptions;
 
-  constructor(resourceName: string) {
+  constructor(readonly resourceName: string) {
     super(resourceName);
     this._synthesizer = new AuthStackSynthesizer();
     this._app = new cdk.App();
     this._category = AmplifyCategories.AUTH;
     this._service = AmplifySupportedService.COGNITO;
-    // eslint-disable-next-line spellcheck/spell-checker
-    this._authTemplateObj = new AmplifyAuthCognitoStack(this._app, 'AmplifyAuthCongitoStack', { synthesizer: this._synthesizer });
+    this._authTemplateObj = new AmplifyAuthCognitoStack(this._app, 'AmplifyAuthCognitoStack', { synthesizer: this._synthesizer });
   }
 
   /**
-   * Entry point to generate CFN template w/o overrides
+   * Generates CloudFormation stack, parameters, apply any overrides, and saves artifacts
    */
   public async transform(context: $TSContext): Promise<Template> {
     // parse Input data
@@ -65,7 +71,11 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     await this.generateStackResources(this._cognitoStackProps);
 
     // apply override on Amplify Object having CDK Constructs for Auth Stack
-    await this.applyOverride();
+    await applyCategoryOverride<AmplifyAuthCognitoStack>(
+      AmplifyCategories.AUTH,
+      this.resourceName,
+      this._authTemplateObj,
+    );
 
     // generate CFN template
     const template: Template = await this.synthesizeTemplates();
@@ -91,42 +101,6 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     // generate Output
     this.generateCfnOutputs(props);
   }
-
-  public applyOverride = async (): Promise<void> => {
-    const backendDir = pathManager.getBackendDirPath();
-    const overrideDir = path.join(backendDir, this._category, this.resourceName);
-    const isBuild = await buildOverrideDir(backendDir, overrideDir).catch(error => {
-      printer.error(`Build error : ${error.message}`);
-      throw new Error(error);
-    });
-    if (isBuild) {
-      const overrideCode: string = await fs.readFile(path.join(overrideDir, 'build', 'override.js'), 'utf-8').catch(() => {
-        formatter.list(['No override File Found', `To override ${this.resourceName} run amplify override auth`]);
-        return '';
-      });
-
-      const sandboxNode = new vm.NodeVM({
-        console: 'inherit',
-        timeout: 5000,
-        sandbox: {},
-        require: {
-          context: 'sandbox',
-          builtin: ['path'],
-          external: true,
-        },
-      });
-      try {
-        await sandboxNode
-          .run(overrideCode, path.join(overrideDir, 'build', 'override.js'))
-          .override(this._authTemplateObj as AmplifyAuthCognitoStack & AmplifyStackTemplate);
-      } catch (err: $TSAny) {
-        const error = new Error(`Skipping override due to ${err}${os.EOL}`);
-        printer.error(`${error}`);
-        error.stack = undefined;
-        throw error;
-      }
-    }
-  };
 
   /**
    * Generate Object required by cdk to generate Auth cfn template
@@ -172,7 +146,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       const dependsOnKeys = Object.keys(this._cliInputs.cognitoConfig.triggers).map(
         i => `${this._cliInputs.cognitoConfig.resourceName}${i}`,
       );
-      const dependsOn = context.amplify.dependsOnBlock(context, dependsOnKeys, 'Cognito');
+      const dependsOn = context.amplify.dependsOnBlock(context, dependsOnKeys, this._service);
       // generate trigger config
       const keys = Object.keys(this._cliInputs.cognitoConfig.triggers);
       // Auth lambda config for Triggers
@@ -195,8 +169,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
   private synthesizeTemplates = async (): Promise<Template> => {
     this._app.synth();
     const templates = this._synthesizer.collectStacks();
-    // eslint-disable-next-line spellcheck/spell-checker
-    return templates.get('AmplifyAuthCongitoStack')!;
+    return templates.get('AmplifyAuthCognitoStack')!;
   };
 
   public saveBuildFiles = async (context: $TSContext, template: Template): Promise<void> => {
@@ -262,6 +235,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
         triggers: this._cognitoStackProps.triggers,
         dependsOn,
         authTriggerConnections,
+        ...this._authTemplateObj.getCfnParameterValues(),
       });
     } else if (_.isEmpty(this._cognitoStackProps.triggers)) {
       parameters = Object.assign(parameters, { triggers: JSON.stringify(this._cognitoStackProps.triggers) });
@@ -288,7 +262,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     const containsAll = (arr1: string[], arr2: string[]): boolean => arr2.every(arr2Item => arr1.includes(arr2Item));
     const sameMembers = (arr1: string[], arr2: string[]): boolean => arr1.length === arr2.length && containsAll(arr2, arr1);
     if (!sameMembers(oldParameters.requiredAttributes ?? [], parametersJson.requiredAttributes ?? [])) {
-      context.print.error(
+      printer.error(
         `Cognito configuration in the cloud has drifted from local configuration. Present changes cannot be pushed until drift is fixed. \`requiredAttributes\` requested is ${JSON.stringify(
           parametersJson.requiredAttributes,
         )}, but ${JSON.stringify(

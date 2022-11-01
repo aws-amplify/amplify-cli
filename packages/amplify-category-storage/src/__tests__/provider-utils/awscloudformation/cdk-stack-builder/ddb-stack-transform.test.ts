@@ -9,16 +9,28 @@ import {
 import { DynamoDBInputState } from '../../../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state';
 
 jest.mock('amplify-cli-core', () => ({
-  buildOverrideDir: jest.fn().mockResolvedValue(false),
+  ...(jest.requireActual('amplify-cli-core') as {}),
+  AmplifyCategories: {
+    STORAGE: 'storage',
+  },
+  applyCategoryOverride: jest.fn(),
+  CLIInputSchemaValidator: jest.fn().mockImplementation(function () { // cannot be arrow function to call with new
+    return { validateInput: jest.fn().mockResolvedValue(true) };
+  }),
   JSONUtilities: {
     writeJson: jest.fn(),
     readJson: jest.fn(),
+    parse: JSON.parse,
   },
   pathManager: {
-    getBackendDirPath: jest.fn().mockReturnValue('mockbackendpath'),
-    getResourceDirectoryPath: jest.fn().mockReturnValue('mockresourcepath'),
+    getBackendDirPath: jest.fn().mockReturnValue('mockBackendPath'),
+    getResourceDirectoryPath: jest.fn().mockReturnValue('mockResourcePath'),
+  },
+  stateManager: {
+    setResourceParametersJson: jest.fn(),
   },
 }));
+
 jest.mock('fs-extra', () => ({
   readFileSync: () => jest.fn().mockReturnValue('{ "Cognito": { "provider": "aws"}}'),
   existsSync: () => jest.fn().mockReturnValue(true),
@@ -26,10 +38,15 @@ jest.mock('fs-extra', () => ({
 }));
 
 jest.mock('path', () => ({
-  join: jest.fn().mockReturnValue('mockjoinedpath'),
-  resolve: jest.fn().mockReturnValue('mockjoinedpath'),
+  join: jest.fn().mockReturnValue('mockJoinedPath'),
+  basename: jest.fn().mockReturnValue('mockBaseName'),
+  dirname: jest.fn().mockReturnValue('mockDirName'),
+  resolve: jest.fn().mockReturnValue('mockResolvedPath'),
 }));
 
+jest.mock('globby', () => ({})); // Not used by ddb transform, but gets pulled in from an unrelated amplify-cli-core method
+
+// eslint-disable-next-line spellcheck/spell-checker
 jest.mock('../../../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state');
 
 describe('Test DDB transform generates correct CFN template', () => {
@@ -38,11 +55,9 @@ describe('Test DDB transform generates correct CFN template', () => {
   beforeEach(() => {
     mockContext = {
       amplify: {
-        getCategoryPluginInfo: (_context: $TSContext, category: string) => {
-          return {
-            packageLocation: `@aws-amplify/amplify-category-${category}`,
-          };
-        },
+        getCategoryPluginInfo: (_context: $TSContext, category: string) => ({
+          packageLocation: `@aws-amplify/amplify-category-${category}`,
+        }),
       },
       input: {
         options: {},
@@ -54,11 +69,11 @@ describe('Test DDB transform generates correct CFN template', () => {
     jest.clearAllMocks();
   });
 
-  it('Generated ddb template with all CLI configurations set with no overrides', async () => {
+  it('Generated DDB template with all CLI configurations set with no override', async () => {
     const resourceName = 'mockResource';
     const cliInputsJSON: DynamoDBCLIInputs = {
-      resourceName: resourceName,
-      tableName: 'mocktablename',
+      resourceName,
+      tableName: 'mockTableName',
       partitionKey: {
         fieldName: 'id',
         fieldType: FieldType.string,
@@ -69,14 +84,14 @@ describe('Test DDB transform generates correct CFN template', () => {
       },
       gsi: [
         {
-          name: 'gsiname',
+          name: 'gsiName',
           partitionKey: {
             fieldName: 'name',
             fieldType: FieldType.number,
           },
         },
         {
-          name: 'updategsiname',
+          name: 'updateGsiName',
           partitionKey: {
             fieldName: 'col',
             fieldType: FieldType.string,
@@ -86,9 +101,11 @@ describe('Test DDB transform generates correct CFN template', () => {
       triggerFunctions: [],
     };
 
+    // const DynamoDBInputStateMock = DynamoDBInputState as jest.Mocked<typeof DynamoDBInputState>;
     jest.spyOn(DynamoDBInputState.prototype, 'getCliInputPayload').mockImplementation(() => cliInputsJSON);
     const ddbTransform = new DDBStackTransform(mockContext, resourceName);
     await ddbTransform.transform();
+
     expect(ddbTransform._cfn).toMatchSnapshot();
     expect(ddbTransform._cfnInputParams).toMatchSnapshot();
   });

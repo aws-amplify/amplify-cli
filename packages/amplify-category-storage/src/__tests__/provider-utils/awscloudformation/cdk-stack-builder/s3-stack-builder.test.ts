@@ -3,7 +3,7 @@
 /* These tests test the AmplifyS3ResourceStackTransform and run the cdk builder tool which is used within this file */
 import * as uuid from 'uuid';
 import {
-  $TSContext, CLISubCommandType, stateManager, buildOverrideDir, pathManager,
+  $TSContext, CLISubCommandType,
 } from 'amplify-cli-core';
 import _ from 'lodash';
 import { AmplifyS3ResourceStackTransform } from '../../../../provider-utils/awscloudformation/cdk-stack-builder/s3-stack-transform';
@@ -28,9 +28,9 @@ const mockContext = {
     }),
     getUserPoolGroupList: () => [],
     // eslint-disable-next-line
-      getResourceStatus: () => {
+    getResourceStatus: () => {
       return { allResources: S3MockDataBuilder.getMockGetAllResourcesNoExistingLambdas() };
-      }, //eslint-disable-line
+    }, //eslint-disable-line
     copyBatch: jest.fn().mockReturnValue(new Promise(resolve => resolve(true))),
     updateamplifyMetaAfterResourceAdd: jest.fn().mockReturnValue(new Promise(resolve => resolve(true))),
     pathManager: {
@@ -39,20 +39,36 @@ const mockContext = {
   },
 } as unknown as $TSContext;
 
-jest.mock('amplify-cli-core');
-
-const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
-stateManagerMock.getMeta.mockReturnValue({
-  providers: {
-    awscloudformation: { StackName: 'amplify-stackName' },
+jest.mock('amplify-cli-core', () => ({
+  stateManager: {
+    getMeta: jest.fn(() => ({
+      providers: {
+        awscloudformation: { StackName: 'amplify-stackname' },
+      },
+    })),
   },
-});
-const buildOverrideDirMock = buildOverrideDir as jest.MockedFunction<typeof buildOverrideDir>;
-buildOverrideDirMock.mockResolvedValue(false);
-
-const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
-pathManagerMock.getBackendDirPath.mockReturnValue('mockBackendPath');
-pathManagerMock.getResourceDirectoryPath.mockReturnValue('mockResourcePath');
+  CLISubCommandType: {
+    ADD: 'add',
+  },
+  CLIInputSchemaValidator: jest.fn().mockImplementation(function () { // cannot be arrow function to call with new
+    return { validateInput: jest.fn().mockResolvedValue(true) };
+  }),
+  AmplifyCategories: {
+    STORAGE: 'storage',
+  },
+  AmplifySupportedService: {
+    S3: 'S3',
+  },
+  applyCategoryOverride: jest.fn(),
+  JSONUtilities: {
+    writeJson: jest.fn(),
+    readJson: jest.fn(),
+  },
+  pathManager: {
+    getResourceDirectoryPath: jest.fn().mockReturnValue('mockResourcePath'),
+    getResourceInputsJsonFilePath: jest.fn().mockReturnValue('mockResourceInputsJsonPath'),
+  },
+}));
 
 jest.mock('fs-extra', () => ({
   readFileSync: () => jest.fn().mockReturnValue('{ "Cognito": { "provider": "aws"}}'),
@@ -63,12 +79,12 @@ jest.mock('fs-extra', () => ({
 jest.mock('../../../../provider-utils/awscloudformation/service-walkthroughs/s3-questions');
 jest.mock('../../../../provider-utils/awscloudformation/service-walkthroughs/s3-walkthrough');
 
-describe('Test S3 transform generates correct CFN template', () => {
+describe('Test AmplifyS3ResourceStackTransform and run the cdk builder tool', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('Generated s3 template with all CLI configurations set with no overrides', async () => {
+  it('Generated S3 template with all CLI configurations set with no overrides', async () => {
     const resourceName = 'mockResource';
     const bucketName = 'mockBucketName';
     const [shortId] = uuid.v4().split('-');

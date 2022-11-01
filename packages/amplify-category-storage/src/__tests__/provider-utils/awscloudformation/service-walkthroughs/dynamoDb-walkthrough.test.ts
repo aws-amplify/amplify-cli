@@ -8,8 +8,11 @@ import {
   FieldType,
 } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/dynamoDB-user-input-types';
 
+const DynamoDBInputStateMock = DynamoDBInputState as jest.Mocked<typeof DynamoDBInputState>;
+
 jest.mock('amplify-cli-core');
 jest.mock('amplify-prompts');
+jest.mock('fs-extra');
 jest.mock('../../../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state');
 jest.mock('../../../../provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform');
 
@@ -19,13 +22,11 @@ describe('add ddb walkthrough tests', () => {
   beforeEach(() => {
     mockContext = {
       amplify: {
-        getProjectDetails: () => {
-          return {
-            projectConfig: {
-              projectName: 'mockProject',
-            },
-          };
-        },
+        getProjectDetails: () => ({
+          projectConfig: {
+            projectName: 'mockProject',
+          },
+        }),
       },
       input: {
         options: {},
@@ -38,8 +39,8 @@ describe('add ddb walkthrough tests', () => {
   });
 
   it('addWalkthrough() test', async () => {
-    jest.spyOn(DynamoDBInputState.prototype, 'saveCliInputPayload').mockImplementation(() => true);
-    jest.spyOn(DDBStackTransform.prototype, 'transform').mockImplementation(() => Promise.resolve());
+    jest.spyOn(DynamoDBInputStateMock.prototype, 'saveCliInputPayload').mockResolvedValue();
+    jest.spyOn(DDBStackTransform.prototype, 'transform').mockResolvedValue();
 
     const expectedCLIInputsJSON: DynamoDBCLIInputs = {
       resourceName: 'mockresourcename',
@@ -121,13 +122,11 @@ describe('update ddb walkthrough tests', () => {
     jest.mock('amplify-prompts');
     mockContext = {
       amplify: {
-        getProjectDetails: () => {
-          return {
-            projectConfig: {
-              projectName: 'mockProject',
-            },
-          };
-        },
+        getProjectDetails: () => ({
+          projectConfig: {
+            projectName: 'mockProject',
+          },
+        }),
       },
       input: {
         options: {},
@@ -140,7 +139,7 @@ describe('update ddb walkthrough tests', () => {
   });
 
   it('updateWalkthrough() test to add gsi', async () => {
-    let mockAmplifyMeta = {
+    const mockAmplifyMeta = {
       storage: {
         mockresourcename: {
           service: 'DynamoDB',
@@ -178,11 +177,11 @@ describe('update ddb walkthrough tests', () => {
       triggerFunctions: [],
     };
 
-    jest.spyOn(DynamoDBInputState.prototype, 'getCliInputPayload').mockImplementation(() => currentCLIInputsJSON);
+    jest.spyOn(DynamoDBInputStateMock.prototype, 'getCliInputPayload').mockImplementation(() => currentCLIInputsJSON);
 
-    jest.spyOn(DynamoDBInputState.prototype, 'saveCliInputPayload').mockImplementation(() => true);
-    jest.spyOn(DynamoDBInputState.prototype, 'cliInputFileExists').mockImplementation(() => true);
-    jest.spyOn(DDBStackTransform.prototype, 'transform').mockImplementation(() => Promise.resolve());
+    jest.spyOn(DynamoDBInputStateMock.prototype, 'saveCliInputPayload').mockResolvedValue();
+    jest.spyOn(DynamoDBInputStateMock.prototype, 'cliInputFileExists').mockImplementation(() => true);
+    jest.spyOn(DDBStackTransform.prototype, 'transform').mockResolvedValue();
 
     prompter.input = jest
       .fn()
@@ -240,6 +239,6 @@ describe('update ddb walkthrough tests', () => {
     };
 
     expect(returnedCLIInputs).toEqual(expectedCLIInputsJSON);
-    expect(DynamoDBInputState.prototype.saveCliInputPayload).toHaveBeenCalledWith(expectedCLIInputsJSON);
+    expect(DynamoDBInputStateMock.prototype.saveCliInputPayload).toHaveBeenCalledWith(expectedCLIInputsJSON);
   });
 });

@@ -9,6 +9,9 @@ export class RootStackSynthesizer extends LegacyStackSynthesizer {
   private stacks: Map<string, Stack> = new Map();
   private static readonly stackAssets: Map<string, Template> = new Map();
 
+  /**
+   * synthesize stack template
+   */
   protected synthesizeStackTemplate(stack: Stack, session: ISynthesisSession): void {
     if (stack instanceof AmplifyRootStack || stack instanceof AmplifyRootStackOutputs) {
       this.addStack(stack);
@@ -41,6 +44,11 @@ export class RootStackSynthesizer extends LegacyStackSynthesizer {
     this.stacks.set(stack.node.id, stack);
   }
 
+  /**
+   * getter for this.stacks
+   * @param stackName name of the stack to retrieve from this.stacks
+   * @returns Stack
+   */
   getStack = (stackName: string): Stack => {
     if (this.stacks.has(stackName)) {
       return this.stacks.get(stackName)!;

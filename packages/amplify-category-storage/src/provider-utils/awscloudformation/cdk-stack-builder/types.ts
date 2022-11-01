@@ -1,6 +1,7 @@
+/* eslint-disable no-new */
 import { AmplifyCDKL1 } from '@aws-amplify/cli-extensibility-helper';
 import * as cdk from '@aws-cdk/core';
-import { $TSObject } from 'amplify-cli-core';
+import { $TSAny, $TSObject } from 'amplify-cli-core';
 import { DdbAttrType } from '../cfn-template-utils';
 
 /**
@@ -58,12 +59,15 @@ export interface AmplifyS3ResourceInputParameters {
  */
 export class AmplifyResourceCfnStack extends cdk.Stack implements AmplifyCDKL1 {
   _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
+  _cfnParameterValues: $TSObject;
+
   constructor(scope: cdk.Construct, id: string) {
     super(scope, id, undefined);
+    this._cfnParameterValues = {};
   }
 
   /**
-   * adds cfn output to stack
+   * adds CloudFormation output to stack
    */
   addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void {
     // eslint-disable-next-line no-new
@@ -71,7 +75,7 @@ export class AmplifyResourceCfnStack extends cdk.Stack implements AmplifyCDKL1 {
   }
 
   /**
-   * adds cfn mapping to stack
+   * adds CloudFormation mapping to stack
    */
   addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void {
     // eslint-disable-next-line no-new
@@ -79,7 +83,7 @@ export class AmplifyResourceCfnStack extends cdk.Stack implements AmplifyCDKL1 {
   }
 
   /**
-   * adds cfn condition to stack
+   * adds CloudFormation condition to stack
    */
   addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void {
     // eslint-disable-next-line no-new
@@ -87,20 +91,33 @@ export class AmplifyResourceCfnStack extends cdk.Stack implements AmplifyCDKL1 {
   }
 
   /**
-   * adds cfn resource to stack
+   * adds CloudFormation resource to stack
    */
   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): cdk.CfnResource {
     return new cdk.CfnResource(this, logicalId, props);
   }
 
   /**
-   * adds cfn parameter to stack
+   * add CloudFormation parameter to stack
+   * @param props : cdk.CfnParameterProps
+   * @param logicalId : logical identifier of the parameter
+   * @param value ?: optional value to be stored in build/parameters.json
    */
-  addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
+  addCfnParameter(props: cdk.CfnParameterProps, logicalId: string, value?: $TSAny): void {
     if (this._cfnParameterMap.has(logicalId)) {
       throw new Error('logical Id already Exists');
     }
+    if (value !== undefined) {
+      this._cfnParameterValues[logicalId] = value;
+    }
     this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
+  }
+
+  /**
+   * get CloudFormation parameter values
+   */
+  getCfnParameterValues(): $TSObject {
+    return this._cfnParameterValues;
   }
 
   // Generate convert cdk stack to cloudformation

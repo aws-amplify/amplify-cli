@@ -1,12 +1,10 @@
 import { AmplifyRootStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 import * as cdk from '@aws-cdk/core';
 import {
-  $TSContext, AmplifyFault, buildOverrideDir, CFNTemplateFormat, pathManager, Template, writeCFNTemplate,
+  $TSContext, AmplifyFault, applyOverride, CFNTemplateFormat, pathManager, Template, writeCFNTemplate,
 } from 'amplify-cli-core';
 import { formatter } from 'amplify-prompts';
-import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as vm from 'vm2';
 import { AmplifyRootStack, AmplifyRootStackOutputs } from './root-stack-builder';
 import { RootStackSynthesizer } from './stack-synthesizer';
 
@@ -29,7 +27,7 @@ export class AmplifyRootStackTransform {
   }
 
   /**
-   * transform root stack, applying any overrides
+   * Generates CloudFormation root stack, apply any overrides, and saves artifacts
    */
   public async transform(context: $TSContext): Promise<Template> {
     // generate cfn Constructs and AmplifyRootStackTemplate object to get overridden
@@ -37,7 +35,14 @@ export class AmplifyRootStackTransform {
 
     // apply override on Amplify Object having CDK Constructs for Root Stack
     if (context.input.command !== 'init') {
-      await this.applyOverride();
+      const backendDir = pathManager.getBackendDirPath();
+      const overrideFilePath = path.join(backendDir, this._resourceName);
+      await applyOverride<AmplifyRootStackTemplate>(
+        backendDir,
+        overrideFilePath,
+        this._rootTemplateObj,
+        () => formatter.list(['No override file found', `To override ${this._resourceName} run amplify override project`]),
+      );
     }
 
     // generate CFN template
@@ -49,32 +54,6 @@ export class AmplifyRootStackTransform {
     }
     return template;
   }
-
-  private applyOverride = async (): Promise<void> => {
-    const backendDir = pathManager.getBackendDirPath();
-    const overrideFilePath = path.join(backendDir, this._resourceName);
-    const isBuild = await buildOverrideDir(backendDir, overrideFilePath);
-
-    // skip if packageManager or override.ts not found
-    if (isBuild) {
-      const overrideCode: string = await fs.readFile(path.join(overrideFilePath, 'build', 'override.js'), 'utf-8').catch(() => {
-        formatter.list(['No override File Found', `To override ${this._resourceName} run amplify override auth`]);
-        return '';
-      });
-      const sandboxNode = new vm.NodeVM({
-        console: 'inherit',
-        timeout: 5000,
-        sandbox: {},
-        require: {
-          context: 'sandbox',
-          builtin: ['path'],
-          external: true,
-        },
-      });
-
-      sandboxNode.run(overrideCode).override(this._rootTemplateObj as AmplifyRootStackTemplate);
-    }
-  };
 
   /**
    * Generates Root stack Template

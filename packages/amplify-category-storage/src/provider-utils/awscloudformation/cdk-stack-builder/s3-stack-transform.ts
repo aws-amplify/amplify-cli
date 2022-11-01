@@ -1,27 +1,21 @@
-import { AmplifyS3ResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
 import * as cdk from '@aws-cdk/core';
 import { App } from '@aws-cdk/core';
 import {
   $TSAny,
   $TSContext,
+  $TSObject,
   AmplifyCategories,
-  buildOverrideDir,
+  applyCategoryOverride,
   CLISubCommandType,
   IAmplifyResource,
   JSONUtilities,
-  pathManager,
 } from 'amplify-cli-core';
-import { formatter, printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
-import os from 'os';
 import * as path from 'path';
-import * as vm from 'vm2';
 import { S3PermissionType, S3UserInputs } from '../service-walkthrough-types/s3-user-input-types';
-// eslint-disable-next-line import/no-cycle
 import {
   canResourceBeTransformed, S3CFNDependsOn, S3CFNPermissionType, S3InputState,
 } from '../service-walkthroughs/s3-user-input-state';
-// eslint-disable-next-line import/no-cycle
 import { AmplifyS3ResourceCfnStack } from './s3-stack-builder';
 import { AmplifyBuildParamsPermissions, AmplifyCfnParamType, AmplifyS3ResourceInputParameters } from './types';
 
@@ -76,13 +70,17 @@ export class AmplifyS3ResourceStackTransform {
    */
   async transform(commandType: CLISubCommandType): Promise<void> {
     this.generateCfnInputParameters();
-    // Generate cloudformation stack from cli-inputs.json
+    // Generate CloudFormation stack from cli-inputs.json
     await this.generateStack(this.context);
 
-    // Modify cloudformation files based on overrides
-    await this.applyOverrides();
+    if (this.resourceTemplateObj === undefined) {
+      throw new Error(`S3 ${this.resourceName} stack object is undefined`);
+    }
 
-    // Save generated cloudformation.json and parameters.json files
+    // Modify CloudFormation files based on overrides
+    await applyCategoryOverride<AmplifyS3ResourceCfnStack>(AmplifyCategories.STORAGE, this.resourceName, this.resourceTemplateObj);
+
+    // Save generated CloudFormation.json and parameters.json files
     this.saveBuildFiles(commandType);
   }
 
@@ -143,6 +141,8 @@ export class AmplifyS3ResourceStackTransform {
       true, // exclude bucketList
     );
     this.cfnInputParams.s3PermissionsGuestUploads = this._getUploadPermissions(userInput.guestAccess);
+
+    this.cfnInputParams = { ...this.cfnInputParams, ...this.resourceTemplateObj?.getCfnParameterValues() };
   }
 
   /**
@@ -190,63 +190,17 @@ export class AmplifyS3ResourceStackTransform {
   }
 
   /**
-   * Modify cloudformation files based on overrides
+   * Save build files
    */
-   applyOverrides = async (): Promise<void> => {
-     const backendDir = pathManager.getBackendDirPath();
-     const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.STORAGE, this.resourceName);
-     const overrideJSFilePath = path.resolve(path.join(resourceDirPath, 'build', 'override.js'));
+  saveBuildFiles(commandType: CLISubCommandType): void {
+    if (this.resourceTemplateObj) {
+      // Render CFN Template string and store as member in this.cfn
+      this.cfn = this.resourceTemplateObj.renderCloudFormationTemplate();
+    }
 
-     const isBuild = await buildOverrideDir(backendDir, resourceDirPath).catch(error => {
-       printer.error(`Build error : ${error.message}`);
-       throw new Error(error);
-     });
-     // Skip if packageManager or override.ts not found
-     if (isBuild) {
-       const { override } = await import(overrideJSFilePath).catch(() => {
-         formatter.list(['No override File Found', `To override ${this.resourceName} run amplify override auth ${this.resourceName} `]);
-         return undefined;
-       });
-       // Pass stack object
-       if (override && typeof override === 'function') {
-         const overrideCode: string = await fs.readFile(overrideJSFilePath, 'utf-8').catch(() => {
-           formatter.list(['No override File Found', `To override ${this.resourceName} run amplify override auth`]);
-           return '';
-         });
-
-         const sandboxNode = new vm.NodeVM({
-           console: 'inherit',
-           timeout: 5000,
-           sandbox: {},
-           require: {
-             context: 'sandbox',
-             builtin: ['path'],
-             external: true,
-           },
-         });
-         try {
-           await sandboxNode.run(overrideCode, overrideJSFilePath).override(this.resourceTemplateObj as AmplifyS3ResourceTemplate);
-         } catch (err: $TSAny) {
-           const error = new Error(`Skipping override due to ${err}${os.EOL}`);
-           printer.error(`${error}`);
-           error.stack = undefined;
-           throw error;
-         }
-       }
-     }
-   }
-
-   /**
-   * save build files
-   */
-   saveBuildFiles = (commandType: CLISubCommandType): void => {
-     if (this.resourceTemplateObj) {
-       // Render CFN Template string and store as member in this.cfn
-       this.cfn = this.resourceTemplateObj.renderCloudFormationTemplate();
-     }
-     // Store cloudformation-template.json, Parameters.json and Update BackendConfig
-     this._saveFilesToLocalFileSystem('cloudformation-template.json', this.cfn);
-     this._saveFilesToLocalFileSystem('parameters.json', this.cfnInputParams);
+    // Store cloudformation-template.json, parameters.json
+    this._saveFilesToLocalFileSystem('cloudformation-template.json', this.cfn);
+    this._saveFilesToLocalFileSystem('parameters.json', this.cfnInputParams);
 
      /*
      ** Save DependsOn into Amplify-Meta:
@@ -258,130 +212,129 @@ export class AmplifyS3ResourceStackTransform {
      }
    }
 
-   /**
-   * generate stack for s3
+  /**
+   * generate CloudFormation stack for S3
    */
-   async generateStack(context: $TSContext): Promise<void> {
-     // Create Resource Stack from CLI Inputs in this._resourceTemplateObj
-     this.resourceTemplateObj = new AmplifyS3ResourceCfnStack(this.app, 'AmplifyS3ResourceStack', this.cliInputs, this.cfnInputParams);
+  async generateStack(context: $TSContext): Promise<void> {
+    // Create Resource Stack from CLI Inputs in this._resourceTemplateObj
+    this.resourceTemplateObj = new AmplifyS3ResourceCfnStack(this.app, 'AmplifyS3ResourceStack', this.cliInputs, this.cfnInputParams);
 
-     // Add Parameters
-     this.resourceTemplateObj.addParameters();
+    // Add Parameters
+    this.resourceTemplateObj.addParameters();
 
-     // Add Conditions
-     this.resourceTemplateObj.addConditions();
+    // Add Conditions
+    this.resourceTemplateObj.addConditions();
 
-     // Add Outputs
-     this.resourceTemplateObj.addOutputs();
+    // Add Outputs
+    this.resourceTemplateObj.addOutputs();
 
-     /*
-     ** Generate Stack Resources for the S3 resource
-     **
+    /**
+     * Generate Stack Resources for the S3 resource
      * 1. Create the S3 bucket, configure CORS and create CFN Conditions
      * 2. Configure Notifications on the S3 bucket.
      * 3. Create IAM policies to control Cognito pool access to S3 bucket
      * 4. Configure Cognito User pool policies
      * 5. Configure Trigger policies
      */
-     await this.resourceTemplateObj.generateCfnStackResources(context);
-   }
+    await this.resourceTemplateObj.generateCfnStackResources(context);
+  }
 
    /**
    * adds cfn outputs to stack
    */
-   _addOutputs = (): void => {
-     this.resourceTemplateObj?.addCfnOutput(
-       {
-         value: cdk.Fn.ref('S3Bucket'),
-         description: 'Bucket name for the S3 bucket',
-       },
-       'BucketName',
-     );
-     this.resourceTemplateObj?.addCfnOutput(
-       {
-         value: cdk.Fn.ref('AWS::Region'),
-       },
-       'Region',
-     );
-   }
+  _addOutputs = (): void => {
+    this.resourceTemplateObj?.addCfnOutput(
+      {
+        value: cdk.Fn.ref('S3Bucket'),
+        description: 'Bucket name for the S3 bucket',
+      },
+      'BucketName',
+    );
+    this.resourceTemplateObj?.addCfnOutput(
+      {
+        value: cdk.Fn.ref('AWS::Region'),
+      },
+      'Region',
+    );
+  }
 
    /**
    * adds cfn parameters to stack
    */
    _addParameters = (): void => {
-     const s3CfnParams: Array<AmplifyCfnParamType> = [
-       {
-         params: ['env', 'bucketName', 'authPolicyName', 'unauthPolicyName', 'authRoleName', 'unauthRoleName', 'triggerFunction'],
-         paramType: 'String',
-       },
-       {
-         params: ['s3PublicPolicy', 's3PrivatePolicy', 's3ProtectedPolicy', 's3UploadsPolicy', 's3ReadPolicy'],
-         paramType: 'String',
-         default: 'NONE',
-       },
-       {
-         params: [
-           's3PermissionsAuthenticatedPublic',
-           's3PermissionsAuthenticatedProtected',
-           's3PermissionsAuthenticatedPrivate',
-           's3PermissionsAuthenticatedUploads',
-           's3PermissionsGuestPublic',
-           's3PermissionsGuestUploads',
-           'AuthenticatedAllowList',
-           'GuestAllowList',
-         ],
-         paramType: 'String',
-         default: AmplifyBuildParamsPermissions.DISALLOW,
-       },
-       {
-         params: ['selectedGuestPermissions', 'selectedAuthenticatedPermissions'],
-         paramType: 'CommaDelimitedList',
-         default: 'NONE',
-       },
-     ];
+    const s3CfnParams: Array<AmplifyCfnParamType> = [
+      {
+        params: ['env', 'bucketName', 'authPolicyName', 'unauthPolicyName', 'authRoleName', 'unauthRoleName', 'triggerFunction'],
+        paramType: 'String',
+      },
+      {
+        params: ['s3PublicPolicy', 's3PrivatePolicy', 's3ProtectedPolicy', 's3UploadsPolicy', 's3ReadPolicy'],
+        paramType: 'String',
+        default: 'NONE',
+      },
+      {
+        params: [
+          's3PermissionsAuthenticatedPublic',
+          's3PermissionsAuthenticatedProtected',
+          's3PermissionsAuthenticatedPrivate',
+          's3PermissionsAuthenticatedUploads',
+          's3PermissionsGuestPublic',
+          's3PermissionsGuestUploads',
+          'AuthenticatedAllowList',
+          'GuestAllowList',
+        ],
+        paramType: 'String',
+        default: AmplifyBuildParamsPermissions.DISALLOW,
+      },
+      {
+        params: ['selectedGuestPermissions', 'selectedAuthenticatedPermissions'],
+        paramType: 'CommaDelimitedList',
+        default: 'NONE',
+      },
+    ];
 
-     s3CfnParams.map(params => this._setCFNParams(params));
-   }
+    s3CfnParams.map(params => this._setCFNParams(params));
+  }
 
-   /**
+  /**
    * Helper: Add CFN Resource Param definitions as CfnParameter
    */
-   _setCFNParams = (paramDefinitions: AmplifyCfnParamType): void => {
-     const { resourceTemplateObj } = this;
-     if (resourceTemplateObj) {
-       paramDefinitions.params.forEach(paramName => {
-         // set param type
-         const cfnParam: $TSAny = {
-           type: paramDefinitions.paramType,
-         };
-         // set param default if provided
-         if (paramDefinitions.default) {
-           cfnParam.default = paramDefinitions.default;
-         }
-         // configure param in resource template object
-         resourceTemplateObj.addCfnParameter(cfnParam, paramName);
-       });
-     } // else throw an exception TBD
-   }
+  _setCFNParams(paramDefinitions: AmplifyCfnParamType): void {
+    const { resourceTemplateObj } = this;
+    if (resourceTemplateObj) {
+      paramDefinitions.params.forEach(paramName => {
+        // set param type
+        const cfnParam: $TSObject = {
+          type: paramDefinitions.paramType,
+        };
+        // set param default if provided
+        if (paramDefinitions.default) {
+          cfnParam.default = paramDefinitions.default;
+        }
+        // configure param in resource template object
+        resourceTemplateObj.addCfnParameter(cfnParam, paramName);
+      });
+    } // else throw an exception TBD
+  }
 
-   /**
-   * Helper: Save files in local-filesystem
+  /**
+   * Helper: Save files in local file system
    */
-   _saveFilesToLocalFileSystem = (fileName: string, data: $TSAny): void => {
-     fs.ensureDirSync(this.cliInputsState.buildFilePath);
-     const cfnFilePath = path.resolve(path.join(this.cliInputsState.buildFilePath, fileName));
-     JSONUtilities.writeJson(cfnFilePath, data);
-   }
+  _saveFilesToLocalFileSystem(fileName: string, data: $TSAny): void {
+    fs.ensureDirSync(this.cliInputsState.buildFilePath);
+    const cfnFilePath = path.resolve(path.join(this.cliInputsState.buildFilePath, fileName));
+    JSONUtilities.writeJson(cfnFilePath, data);
+  }
 
-   /**
-   *  Helper: Save DependsOn entries to amplify-meta
+  /**
+   * Helper: Save DependsOn entries to amplify-meta
    */
-   _saveDependsOnToBackendConfig = (): void => {
-     if (this.resourceTemplateObj) {
-       // Get all collated resource dependencies
-       const s3DependsOnResources = this.resourceTemplateObj.getS3DependsOn();
-       const dependsOn = [...(s3DependsOnResources || [])];
-       this.context.amplify.updateamplifyMetaAfterResourceUpdate(AmplifyCategories.STORAGE, this.resourceName, 'dependsOn', dependsOn);
-     }
-   }
+  _saveDependsOnToBackendConfig(): void {
+    if (this.resourceTemplateObj) {
+      // Get all collated resource dependencies
+      const s3DependsOnResources = this.resourceTemplateObj.getS3DependsOn();
+      const dependsOn = [...(s3DependsOnResources || [])];
+      this.context.amplify.updateamplifyMetaAfterResourceUpdate(AmplifyCategories.STORAGE, this.resourceName, 'dependsOn', dependsOn);
+    }
+  }
 }

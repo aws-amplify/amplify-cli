@@ -1,4 +1,4 @@
-import { $TSContext, JSONUtilities, stateManager } from 'amplify-cli-core';
+import { $TSContext, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import { run } from '../initializer';
 import { prePushCfnTemplateModifier } from '../pre-push-cfn-processor/pre-push-cfn-modifier';
 import CloudFormation from '../aws-utils/aws-cfn';
@@ -15,6 +15,7 @@ jest.mock('../permissions-boundary/permissions-boundary');
 const CloudFormationMock = CloudFormation as jest.MockedClass<typeof CloudFormation>;
 const amplifyServiceManagerMock = amplifyServiceManager as jest.Mocked<typeof amplifyServiceManager>;
 const JSONUtilitiesMock = JSONUtilities as jest.Mocked<typeof JSONUtilities>;
+const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 
 describe('run', () => {
@@ -55,6 +56,7 @@ describe('run', () => {
     amplifyServiceManagerMock.init.mockResolvedValueOnce({} as any);
     JSONUtilitiesMock.readJson.mockReturnValueOnce({});
     stateManagerMock.getLocalEnvInfo.mockReturnValueOnce({});
+    pathManagerMock.getBackendDirPath.mockReturnValueOnce('mock/amplify/backend/dirPath');
 
     // execute
     await run(contextStub);

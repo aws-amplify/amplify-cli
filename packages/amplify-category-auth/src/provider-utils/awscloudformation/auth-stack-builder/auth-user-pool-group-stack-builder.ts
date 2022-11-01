@@ -4,7 +4,7 @@ import { CfnUserPoolGroup } from '@aws-cdk/aws-cognito';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { JSONUtilities } from 'amplify-cli-core';
+import { $TSAny, $TSObject, JSONUtilities } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 // eslint-disable-next-line import/no-cycle
 import { roleMapLambdaFilePath } from '../constants';
@@ -27,6 +27,7 @@ export type AmplifyAuthCognitoStackProps = {
 export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserPoolGroupStackTemplate {
   _scope: cdk.Construct;
   private _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
+  private _cfnParameterValues: $TSObject;
   private _cfnConditionMap: Map<string, cdk.CfnCondition> = new Map();
   userPoolGroup: Record<string, CfnUserPoolGroup>;
   userPoolGroupRole: Record<string, iam.CfnRole>;
@@ -41,6 +42,7 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
     this.templateOptions.description = ROOT_CFN_DESCRIPTION;
     this.userPoolGroup = {};
     this.userPoolGroupRole = {};
+    this._cfnParameterValues = {};
   }
 
   /**
@@ -60,7 +62,14 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
   }
 
   /**
-   * Add an output to the template
+   * Get CFN parameter values
+   */
+  getCfnParameterValues() {
+    return this._cfnParameterValues;
+  }
+
+  /**
+   * Add output to the template
    */
   addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void {
     try {
@@ -98,12 +107,15 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
   /**
    * Add a template parameter
    */
-  addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
+  addCfnParameter(props: cdk.CfnParameterProps, logicalId: string, value?: $TSAny): void {
     try {
       if (this._cfnParameterMap.has(logicalId)) {
         throw new Error('logical Id already Exists');
       }
       this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
+      if (value !== undefined) {
+        this._cfnParameterValues[logicalId] = value;
+      }
     } catch (error) {
       throw new Error(error);
     }

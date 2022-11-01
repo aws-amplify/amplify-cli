@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Test S3 transform generates correct CFN template Generated s3 template with all CLI configurations set with no overrides 1`] = `
+exports[`Test AmplifyS3ResourceStackTransform and run the cdk builder tool Generated S3 template with all CLI configurations set with no overrides 1`] = `
 Object {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Conditions": Object {

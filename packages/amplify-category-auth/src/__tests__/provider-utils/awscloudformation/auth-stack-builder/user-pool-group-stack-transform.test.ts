@@ -3,6 +3,7 @@ import { AmplifyUserPoolGroupTransform } from '../../../../provider-utils/awsclo
 
 jest.mock('amplify-cli-core', () => ({
   ...(jest.requireActual('amplify-cli-core') as Record<string, unknown>),
+  applyCategoryOverride: jest.fn().mockResolvedValue(undefined),
   stateManager: {
     getLocalEnvInfo: jest.fn().mockReturnValue('testEnv'),
   },
@@ -47,7 +48,6 @@ jest.mock('amplify-cli-core', () => ({
     stringify: jest.fn().mockImplementation(JSON.stringify),
     parse: jest.fn().mockImplementation(JSON.parse),
   },
-  buildOverrideDir: jest.fn().mockResolvedValue(false),
   writeCFNTemplate: jest.fn(),
 }));
 

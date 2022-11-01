@@ -3,10 +3,12 @@
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
+  $TSAny,
   $TSContext,
   $TSObject,
   AmplifyError,
   AmplifyFault,
+  applyOverride,
   JSONUtilities,
   PathConstants,
   pathManager,
@@ -17,8 +19,6 @@ import {
 import { AmplifySpinner, printer } from 'amplify-prompts';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
-import * as vm from 'vm2';
-
 import fs from 'fs-extra';
 import glob from 'glob';
 import moment from 'moment';
@@ -80,44 +80,30 @@ export const run = async (context: $TSContext): Promise<void> => {
     stackName = verifiedStackName;
     const Tags = context.amplify.getTags(context);
 
-    const authRoleName = `${stackName}-authRole`;
-    const unauthRoleName = `${stackName}-unauthRole`;
-
-    const configuration = {
+    const roleConfiguration = {
       authRole: {
-        roleName: authRoleName,
+        roleName: `${stackName}-authRole`,
       },
       unauthRole: {
-        roleName: unauthRoleName,
+        roleName: `${stackName}-unauthRole`,
       },
     };
 
-    try {
-      const backendDir = pathManager.getBackendDirPath();
-      const overrideFilePath = path.join(backendDir, 'awscloudformation', 'build', 'override.js');
-      const overrideCode: string = await fs.readFile(overrideFilePath, 'utf-8');
-      if (overrideCode) {
-        const sandboxNode = new vm.NodeVM({
-          console: 'inherit',
-          timeout: 5000,
-          sandbox: {},
-          require: {
-            context: 'sandbox',
-            builtin: ['path'],
-            external: true,
-          },
-        });
-        sandboxNode.run(overrideCode).override(configuration);
-      }
-    } catch (e) {
-      printer.debug(`Unable to apply auth role overrides: ${e.message}`);
-    }
+    const backendDir = pathManager.getBackendDirPath();
+    const overrideFilePath = path.join(backendDir, 'awscloudformation', 'build', 'override.js');
+    applyOverride(
+      backendDir,
+      overrideFilePath,
+      roleConfiguration,
+      (error: $TSAny) => printer.debug(`Unable to apply auth role overrides: ${error.message}`),
+    );
 
     const rootStack = JSONUtilities.readJson<Template>(initTemplateFilePath);
 
     await prePushCfnTemplateModifier(rootStack);
 
     rootStack.Description = getDefaultTemplateDescription(context, 'root');
+
 
     // deploy steps
     const params: ParamType = {
@@ -131,11 +117,11 @@ export const run = async (context: $TSContext): Promise<void> => {
         },
         {
           ParameterKey: 'AuthRoleName',
-          ParameterValue: configuration.authRole.roleName,
+          ParameterValue: roleConfiguration.authRole.roleName,
         },
         {
           ParameterKey: 'UnauthRoleName',
-          ParameterValue: configuration.unauthRole.roleName,
+          ParameterValue: roleConfiguration.unauthRole.roleName,
         },
       ],
       Tags,
@@ -155,9 +141,7 @@ export const run = async (context: $TSContext): Promise<void> => {
     // It allows the local project's env to be added to an existing Amplify Console project, as specified
     // by the appId, without unnecessarily creating another Amplify Console project by the post push migration.
     !context.exeInfo.isNewProject
-    && context.exeInfo.inputParams
-    && context.exeInfo.inputParams.amplify
-    && context.exeInfo.inputParams.amplify.appId
+    && context.exeInfo?.inputParams?.amplify?.appId
   ) {
     await amplifyServiceMigrate.run(context);
   } else {
@@ -258,12 +242,9 @@ export const onInitSuccessful = async (context: $TSContext): Promise<$TSContext>
  */
 export const storeRootStackTemplate = async (context: $TSContext, template?: Template): Promise<void> => {
   // generate template again as the folder structure was not created when root stack was initialized
-  if (template === undefined) {
-    // eslint-disable-next-line no-param-reassign
-    template = await transformRootStack(context);
-  }
+  const rootStackTemplate = template ?? await transformRootStack(context);
   // apply Modifiers
-  await prePushCfnTemplateModifier(template);
+  await prePushCfnTemplateModifier(rootStackTemplate);
   // RootStack deployed to backend/awscloudformation/build
   const projectRoot = pathManager.findProjectRoot();
   const rootStackBackendBuildDir = pathManager.getRootStackBuildDirPath(projectRoot);
@@ -271,7 +252,7 @@ export const storeRootStackTemplate = async (context: $TSContext, template?: Tem
 
   fs.ensureDirSync(rootStackBackendBuildDir);
   const rootStackBackendFilePath = path.join(rootStackBackendBuildDir, rootStackFileName);
-  JSONUtilities.writeJson(rootStackBackendFilePath, template, { minify: context.input.options?.minify });
+  JSONUtilities.writeJson(rootStackBackendFilePath, rootStackTemplate, { minify: context.input.options?.minify });
   // copy the awscloudformation backend to #current-cloud-backend
   fs.copySync(path.join(rootStackBackendBuildDir, '..'), path.join(rootStackCloudBackendBuildDir, '..'));
 };
@@ -341,7 +322,7 @@ const storeArtifactsForAmplifyService = async (context: $TSContext): Promise<voi
   await sequential(fileUploadTasks);
 });
 
-const uploadFile = async (s3, filePath: string, key): Promise<void> => {
+const uploadFile = async (s3: S3, filePath: string, key: string): Promise<void> => {
   if (fs.existsSync(filePath)) {
     const s3Params = {
       Body: fs.createReadStream(filePath),

@@ -134,7 +134,7 @@ export async function updateWalkthrough(context: $TSContext) {
       return;
     }
     //load existing cliInputs
-    let cliInputsState = new S3InputState(context, storageResourceName, undefined);
+    const cliInputsState = new S3InputState(context, storageResourceName, undefined);
 
     //Check if migration is required
     const headlessMigrate = context.input.options?.yes || context.input.options?.forcePush || context.input.options?.headless;
@@ -217,7 +217,7 @@ export function isMigrateStorageRequired(context: $TSContext, resourceName: stri
  * @param resourceName
  */
 export async function migrateStorageCategory(context: $TSContext, resourceName: string): Promise<string | undefined> {
-  let cliInputsState = new S3InputState(context, resourceName, undefined);
+  const cliInputsState = new S3InputState(context, resourceName, undefined);
   //Check if migration is required
   if (!cliInputsState.cliInputFileExists()) {
     await cliInputsState.migrate(context);

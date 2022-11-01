@@ -4,6 +4,7 @@ import { AmplifyAuthTransform } from '../../../../provider-utils/awscloudformati
 
 jest.mock('amplify-cli-core', () => ({
   ...(jest.requireActual('amplify-cli-core') as {}),
+  applyCategoryOverride: jest.fn().mockResolvedValue(undefined),
   stateManager: {
     getLocalEnvInfo: jest.fn().mockReturnValue('testenv'),
     getMeta: jest.fn().mockReturnValue({
@@ -24,7 +25,6 @@ jest.mock('amplify-cli-core', () => ({
   FeatureFlags: {
     getBoolean: jest.fn().mockReturnValue(true),
   },
-  buildOverrideDir: jest.fn().mockResolvedValue(false),
   writeCFNTemplate: jest.fn().mockImplementation(() => Promise.resolve()),
 }));
 

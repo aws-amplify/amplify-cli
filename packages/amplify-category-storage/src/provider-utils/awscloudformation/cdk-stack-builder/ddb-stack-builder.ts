@@ -1,6 +1,8 @@
-import { AmplifyDDBResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
-import * as ddb from '@aws-cdk/aws-dynamodb';
+/* eslint-disable no-new */
 import * as cdk from '@aws-cdk/core';
+import * as ddb from '@aws-cdk/aws-dynamodb';
+import { AmplifyDDBResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
+import { $TSAny, $TSObject } from 'amplify-cli-core';
 import { DynamoDBCLIInputs, DynamoDBCLIInputsKeyType } from '../service-walkthrough-types/dynamoDB-user-input-types';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
@@ -14,6 +16,7 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
   dynamoDBTable!: ddb.CfnTable;
   _props: DynamoDBCLIInputs;
   _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
+  _cfnParameterValues: $TSObject;
 
   constructor(scope: cdk.Construct, id: string, props: DynamoDBCLIInputs) {
     super(scope, id, undefined);
@@ -21,68 +24,63 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
     this._props = props;
     this.templateOptions.templateFormatVersion = CFN_TEMPLATE_FORMAT_VERSION;
     this.templateOptions.description = ROOT_CFN_DESCRIPTION;
+    this._cfnParameterValues = {};
   }
 
   /**
-   * adds  cfn output to stack
+   * add CloudFormation output to stack
+   * @param props : cdk.CfnOutputProps
+   * @param logicalId : logicalId of the Resource
    */
   addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void {
-    try {
-      // eslint-disable-next-line no-new
-      new cdk.CfnOutput(this, logicalId, props);
-    } catch (error) {
-      throw new Error(error);
-    }
+    new cdk.CfnOutput(this, logicalId, props);
   }
 
   /**
-   * adds cfn mapping to stack
+   * add CloudFormation mapping to stack
+   * @param props : cdk.CfnMappingProps
+   * @param logicalId : logicalId of the Resource
    */
   addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void {
-    try {
-      // eslint-disable-next-line no-new
-      new cdk.CfnMapping(this, logicalId, props);
-    } catch (error) {
-      throw new Error(error);
-    }
+    new cdk.CfnMapping(this, logicalId, props);
   }
 
   /**
-   * adds cfn condition to stack
+   * add CloudFormation condition to stack
+   * @param props : cdk.CfnConditionProps
+   * @param logicalId : logicalId of the Resource
    */
   addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void {
-    try {
-      // eslint-disable-next-line no-new
-      new cdk.CfnCondition(this, logicalId, props);
-    } catch (error) {
-      throw new Error(error);
-    }
+    new cdk.CfnCondition(this, logicalId, props);
   }
 
   /**
-   * adds cfn resource to stack
+   * add CloudFormation resource to stack
+   * @param props : cdk.CfnResourceProps
+   * @param logicalId : logicalId of the Resource
    */
   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void {
-    try {
-      // eslint-disable-next-line no-new
-      new cdk.CfnResource(this, logicalId, props);
-    } catch (error) {
-      throw new Error(error);
-    }
+    new cdk.CfnResource(this, logicalId, props);
   }
 
   /**
-   * adds cfn parameter to stack
+   * add CloudFormation parameter to stack
+   * @param props : cdk.CfnParameterProps
+   * @param logicalId : logical identifier of the parameter
+   * @param value ?: optional value to be stored in build/parameters.json
    */
-  addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
-    try {
-      if (this._cfnParameterMap.has(logicalId)) {
-        throw new Error('logical Id already Exists');
-      }
-      this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
-    } catch (error) {
-      throw new Error(error);
+  addCfnParameter(props: cdk.CfnParameterProps, logicalId: string, value?: $TSAny): void {
+    if (this._cfnParameterMap.has(logicalId)) {
+      throw new Error('logical Id already exists');
     }
+    this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
+    if (value !== undefined) {
+      this._cfnParameterValues[logicalId] = value;
+    }
+  }
+
+  getCfnParameterValues(): $TSObject {
+    return this._cfnParameterValues;
   }
 
   generateStackResources = async (): Promise<void> => {

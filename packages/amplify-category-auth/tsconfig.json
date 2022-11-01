@@ -20,6 +20,9 @@
       "path": "../amplify-cli-core"
     },
     {
+      "path": "../amplify-cli-extensibility-helper"
+    },
+    {
       "path": "../amplify-headless-interface"
     },
     {
@@ -33,6 +36,6 @@
     },
     {
       "path": "../amplify-environment-parameters"
-    },
+    }
   ]
 }

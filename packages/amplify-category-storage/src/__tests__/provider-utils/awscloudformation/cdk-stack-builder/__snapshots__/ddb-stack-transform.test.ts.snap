@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Test DDB transform generates correct CFN template Generated ddb template with all CLI configurations set with no overrides 1`] = `
+exports[`Test DDB transform generates correct CFN template Generated DDB template with all CLI configurations set with no override 1`] = `
 Object {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Conditions": Object {
@@ -101,7 +101,7 @@ Object {
         ],
         "GlobalSecondaryIndexes": Array [
           Object {
-            "IndexName": "gsiname",
+            "IndexName": "gsiName",
             "KeySchema": Array [
               Object {
                 "AttributeName": "name",
@@ -117,7 +117,7 @@ Object {
             },
           },
           Object {
-            "IndexName": "updategsiname",
+            "IndexName": "updateGsiName",
             "KeySchema": Array [
               Object {
                 "AttributeName": "col",
@@ -179,12 +179,12 @@ Object {
 }
 `;
 
-exports[`Test DDB transform generates correct CFN template Generated ddb template with all CLI configurations set with no overrides 2`] = `
+exports[`Test DDB transform generates correct CFN template Generated DDB template with all CLI configurations set with no override 2`] = `
 Object {
   "partitionKeyName": "id",
   "partitionKeyType": "S",
   "sortKeyName": "name",
   "sortKeyType": "N",
-  "tableName": "mocktablename",
+  "tableName": "mockTableName",
 }
 `;
