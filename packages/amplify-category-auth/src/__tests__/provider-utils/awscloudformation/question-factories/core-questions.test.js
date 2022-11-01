@@ -264,7 +264,7 @@ describe('When generating auth questions...', () => {
       input.type = 'multiselect';
       input.map = 'hostedUIProviders';
       const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
-      const correctChoices = res.choices && res.choices.length === 3 && res.choices.filter(i => i.disabled).length === 1;
+      const correctChoices = res.choices && res.choices.length === 4 && res.choices.filter(i => i.disabled).length === 1;
       expect(correctChoices).toBe(true);
     });
 
