@@ -142,7 +142,7 @@ describe('Device Location Tracker walkthrough works as expected', () => {
     mockAmplifyMeta.geo = {};
     stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
 
-    const { createDeviceLocationTrackingWalkthrough } = require('../../service-walkthroughs/deviceLocationTrackingWalkthrough');
+    const { createDeviceLocationTrackingWalkthrough } = await import('../../service-walkthroughs/deviceLocationTrackingWalkthrough');
     trackerParams = await createDeviceLocationTrackingWalkthrough(mockContext, trackerParams);
 
     expect(trackerParams).toMatchObject({ ...mockDeviceTrackerParameters, isDefault: true });
