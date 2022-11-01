@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "3.14.0",
+  "version": "3.14.1-delta-table-improvements.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -23,10 +23,10 @@
     "clean-e2e-resources": "ts-node ./src/cleanup-e2e-resources.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-auth": "2.13.0",
-    "@aws-amplify/amplify-e2e-core": "4.4.0",
+    "@aws-amplify/amplify-category-auth": "2.13.1-delta-table-improvements.0",
+    "@aws-amplify/amplify-e2e-core": "4.4.1-delta-table-improvements.0",
     "@aws-amplify/graphql-transformer-core": "^0.17.15-delta-table-improvements.0",
-    "amplify-cli-core": "3.3.0",
+    "amplify-cli-core": "3.3.1-delta-table-improvements.0",
     "amplify-headless-interface": "^1.15.0",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.5-delta-table-improvements.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.5.4...amplify-container-hosting@2.5.5-delta-table-improvements.0) (2022-11-01)
+
+**Note:** Version bump only for package amplify-container-hosting
+
+
+
+
+
 ## [2.5.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.5.3...amplify-container-hosting@2.5.4) (2022-10-27)
 
 **Note:** Version bump only for package amplify-container-hosting

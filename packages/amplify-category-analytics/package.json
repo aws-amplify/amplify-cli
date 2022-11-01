@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-analytics",
-  "version": "4.2.0",
+  "version": "4.2.1-delta-table-improvements.0",
   "description": "amplify-cli analytics plugin",
   "repository": {
     "type": "git",
@@ -21,8 +21,8 @@
     "test": "jest --logHeapUsage"
   },
   "dependencies": {
-    "@aws-amplify/amplify-environment-parameters": "1.2.0",
-    "amplify-cli-core": "3.3.0",
+    "@aws-amplify/amplify-environment-parameters": "1.2.1-delta-table-improvements.0",
+    "amplify-cli-core": "3.3.1-delta-table-improvements.0",
     "amplify-prompts": "2.6.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",
