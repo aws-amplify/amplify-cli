@@ -1,8 +1,8 @@
-import * as cdk from 'aws-cdk-lib';
 import { $TSAny, $TSObject } from 'amplify-cli-core';
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { cdkV1PrepareAppShim } from '../service-utils/prepare-app';
-
+import * as fs from 'fs-extra';
+import * as path from 'path';
 /**
  *  cfn template mapping type
  */
@@ -18,7 +18,7 @@ export class BaseStack extends cdk.Stack {
   protected regionMapping: cdk.CfnMapping;
 
   constructor(scope: Construct, id: string, props: TemplateMappings) {
-    super(scope, id);
+    super(scope, id, { synthesizer: new cdk.LegacyStackSynthesizer() });
     this.parameters = new Map();
 
     this.regionMapping = new cdk.CfnMapping(this, 'RegionMapping', {
@@ -42,9 +42,13 @@ export class BaseStack extends cdk.Stack {
    * converts to cfn
    */
   toCloudFormation = (): $TSAny => {
-    cdkV1PrepareAppShim(this);
-    const cfn = this._toCloudFormation();
-    return cfn;
+    const root = this.node.root as cdk.Stage;
+    const assembly = root.synth();
+    if (!this.nestedStackParent) {
+      return assembly.getStackArtifact(this.artifactId).template;
+    }
+    // if this is a nested stack ( i.e. it has a parent), then just read the template as a string
+    return JSON.parse(fs.readFileSync(path.join(assembly.directory, this.templateFile)).toString('utf-8'));
   }
 }
 
