@@ -1,6 +1,6 @@
 import { App } from '@aws-cdk/core';
 import {
-  $TSContext, $TSObject, pathManager, stateManager,
+  $TSContext, $TSObject, stateManager,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { category } from '../constants';

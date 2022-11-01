@@ -25,6 +25,7 @@ const defaultGeoConfig: GeoConfig = {
 const defaultSearchIndexQuestion = `Set this search index as the default? It will be used in Amplify search index API calls if no explicit reference is provided.`;
 const defaultMapQuestion = `Set this Map as the default? It will be used in Amplify Map API calls if no explicit reference is provided.`;
 const defaultGeofenceCollectionQuestion = `Set this geofence collection as the default? It will be used in Amplify geofence collection API calls if no explicit reference is provided.`;
+const defaultDeviceTrackerQuestion = `Set this device tracker as the default? It will be used in Amplify device tracker API calls if no explicit reference is provided.`;
 
 export function getGeoJSONFilePath(fileName: string): string {
   return path.join(__dirname, '..', '..', '..', 'amplify-e2e-tests', 'geo-json-files', fileName);
@@ -108,6 +109,41 @@ export function addGeofenceCollectionWithDefault(cwd: string, groupNames: string
 
   if (config.isAdditional === true) {
     chain.wait(defaultGeofenceCollectionQuestion);
+    if (config.isDefault === true) {
+      chain.sendYes();
+    } else {
+      chain.sendNo();
+    }
+  }
+  return chain.runAsync();
+}
+
+/**
+ * Add device tracker with default values. Assume auth and cognito group are configured
+ * @param cwd command directory
+ */
+ export function addDeviceTrackerWithDefault(cwd: string, trackerNames: string[], settings: GeoConfig = {}): Promise<void> {
+  const config = { ...defaultGeoConfig, ...settings };
+  const chain = spawn(getCLIPath(), ['geo', 'add'], { cwd, stripColors: true })
+    .wait('Select which capability you want to add:')
+    .sendKeyDown(3)
+    .sendCarriageReturn()
+    .wait('Provide a name for the device location tracker:')
+    .sendLine(config.resourceName)
+    .wait('Restrict access by?')
+    .sendCarriageReturn()
+    .wait('Select one or more cognito groups to give access:')
+    .sendCtrlA()
+    .sendCarriageReturn();
+
+  for (const trackerName of trackerNames){
+    chain.wait(`What kind of access do you want for ${trackerName} users? Select ALL that apply:`)
+      .sendCtrlA()
+      .sendCarriageReturn();
+  }
+
+  if (config.isAdditional === true) {
+    chain.wait(defaultDeviceTrackerQuestion);
     if (config.isDefault === true) {
       chain.sendYes();
     } else {
