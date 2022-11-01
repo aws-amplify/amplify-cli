@@ -79,7 +79,7 @@ export const pushResources = async (
   // no changes detected
   if (!hasChanges && !context.exeInfo.forcePush && !rebuild) {
     printer.info('\nNo changes detected');
-
+    context.usageData.stopCodePathTimer(ManuallyTimedCodePath.PUSH_TRANSFORM);
     return false;
   }
 
