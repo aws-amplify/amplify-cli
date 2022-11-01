@@ -7,6 +7,7 @@ jest.mock('amplify-cli-core');
 const mapServiceName = 'Map';
 const placeIndexServiceName = 'PlaceIndex';
 const geofenceCollectionServiceName = 'GeofenceCollection';
+const deviceLocationTrackerServiceName = 'DeviceLocationTracking';
 
 describe('Get current aws-exports', () => {
   let context;
@@ -132,6 +133,17 @@ describe('generate maps and search configuration', () => {
     };
   }
 
+  function constructDeviceLocationTrackerMeta(trackerName, isDefault, region) {
+    return {
+      service: deviceLocationTrackerServiceName,
+      output: {
+        Name: trackerName,
+        Region: region,
+      },
+      isDefault,
+    };
+  }
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -151,6 +163,10 @@ describe('generate maps and search configuration', () => {
         GeofenceCollection: [
           constructGeofenceCollectionMeta('collection12345', false),
           constructGeofenceCollectionMeta('defaultCollection12345', true),
+        ],
+        DeviceLocationTracking: [
+          constructDeviceLocationTrackerMeta('tracker12345', false),
+          constructDeviceLocationTrackerMeta('defaultTracker12345', true),
         ],
       },
       metadata: {
@@ -189,6 +205,10 @@ describe('generate maps and search configuration', () => {
         GeofenceCollection: [
           constructGeofenceCollectionMeta('collection12345', false, resourceRegion),
           constructGeofenceCollectionMeta('defaultCollection12345', true, resourceRegion),
+        ],
+        DeviceLocationTracking: [
+          constructDeviceLocationTrackerMeta('tracker12345', false, resourceRegion),
+          constructDeviceLocationTrackerMeta('defaultTracker12345', true, resourceRegion),
         ],
       },
       metadata: {

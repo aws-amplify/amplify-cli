@@ -254,6 +254,10 @@ function getAWSExportsObject(resources) {
         geoConfig.region = serviceResourceMapping[service][0].output.Region || projectRegion;
         geoConfig.geofenceCollections = getGeofenceCollectionConfig(serviceResourceMapping[service]);
         break;
+      case 'DeviceLocationTracking':
+        geoConfig.region = serviceResourceMapping[service][0].output.Region || projectRegion;
+        geoConfig.trackers = getDeviceLocationTrackerConfig(serviceResourceMapping[service]);
+        break;
       default:
         break;
     }
@@ -720,6 +724,22 @@ function getGeofenceCollectionConfig(geofenceCollectionResources) {
   });
   geofenceCollectionConfig.default = defaultGeofenceCollection;
   return geofenceCollectionConfig;
+}
+
+function getDeviceLocationTrackerConfig(deviceLocationTrackerResources) {
+  let defaultDeviceLocationTracker = '';
+  const deviceTrackerConfig = {
+    items: [],
+  };
+  deviceLocationTrackerResources.forEach(resource => {
+    const trackerName = resource.output.Name;
+    deviceTrackerConfig.items.push(trackerName);
+    if (resource.isDefault) {
+      defaultDeviceLocationTracker = trackerName;
+    }
+  });
+  deviceTrackerConfig.default = defaultDeviceLocationTracker;
+  return deviceTrackerConfig;
 }
 
 module.exports = {
