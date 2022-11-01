@@ -15,8 +15,7 @@ import { isMigrateProject, isRootOverrideFileModifiedSinceLastPush } from './roo
  * @param context
  * @returns
  */
-export async function transformResourceWithOverrides(context: $TSContext, resource?: IAmplifyResource) {
-  const flags = context.parameters.options;
+export const transformResourceWithOverrides = async (context: $TSContext, resource?: IAmplifyResource): Promise<void> => {
   let spinner: ora.Ora;
 
   try {
@@ -62,5 +61,6 @@ export async function transformResourceWithOverrides(context: $TSContext, resour
     if (spinner) {
       spinner.stop();
     }
+    throw err;
   }
-}
+};

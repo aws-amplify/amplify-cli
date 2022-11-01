@@ -1,6 +1,6 @@
 import {
   $TSAny,
-  $TSContext, getPackageManager, pathManager, ResourceTuple,
+  $TSContext, AmplifyError, getPackageManager, pathManager, ResourceTuple,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import execa from 'execa';
@@ -33,11 +33,12 @@ export const buildCustomResources = async (context: $TSContext, resourceName?: s
       await buildResource(context, resource);
     }
   } catch (err: $TSAny) {
-    printer.error('There was an error building the custom resources');
-    printer.error(err.stack);
     spinner.stop();
-    context.usageData.emitError(err);
-    process.exitCode = 1;
+    throw new AmplifyError('InvalidCustomResource', {
+      message: `There was an error building the custom resources`,
+      details: err.message,
+      resolution: 'There may be errors in your custom resource file. If so, fix the errors and try again.',
+    }, err);
   }
   spinner.stop();
 };
