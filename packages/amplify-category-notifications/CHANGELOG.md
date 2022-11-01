@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.21.0-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.20.3...amplify-category-notifications@2.21.0-cdkv2.0) (2022-11-01)
+
+
+### Bug Fixes
+
+* notifications status after env checkout ([#11197](https://github.com/aws-amplify/amplify-cli/issues/11197)) ([cba0ff6](https://github.com/aws-amplify/amplify-cli/commit/cba0ff6b048158e424d14c4c34e88cf35f902a6d))
+
+
+### Features
+
+* in app messaging notification ([#11067](https://github.com/aws-amplify/amplify-cli/issues/11067)) ([0c70a05](https://github.com/aws-amplify/amplify-cli/commit/0c70a05bf97943ddf6b4607b9bfe0bdff132aae1))
+* migrates analytics category to support in app messaging channel notifications ([#11158](https://github.com/aws-amplify/amplify-cli/issues/11158)) ([9dfbf6c](https://github.com/aws-amplify/amplify-cli/commit/9dfbf6c1aa1031814ea6ea097435e49f9029801a))
+* migrates notifications category to support in app messaging channel notifications ([#11170](https://github.com/aws-amplify/amplify-cli/issues/11170)) ([52f5787](https://github.com/aws-amplify/amplify-cli/commit/52f57870bf4b1e67a5aa879d6bcec403b049d6b8))
+
+
+
+
+
 ## [2.20.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.20.2...amplify-category-notifications@2.20.3) (2022-10-13)
 
 **Note:** Version bump only for package amplify-category-notifications
