@@ -47,3 +47,5 @@ export class BaseStack extends cdk.Stack {
     return cfn;
   }
 }
+
+// force major version bump for cdk v2

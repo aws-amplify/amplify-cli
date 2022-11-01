@@ -1225,3 +1225,5 @@ interface IAmplifyPolicyDefinition {
 type AmplifyS3Conditions = Record<string, cdk.CfnCondition>;
 
 type AmplifyS3CfnParameters = Record<string, cdk.CfnParameter>;
+
+// force major version bump for cdk v2
