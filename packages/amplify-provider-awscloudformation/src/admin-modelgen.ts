@@ -45,21 +45,13 @@ export const adminModelgen = async (context: $TSContext, resources: $TSAny[]): P
   const relativeTempOutputDir = 'amplify-codegen-temp';
   const absoluteTempOutputDir = path.join(pathManager.findProjectRoot(), relativeTempOutputDir);
   const forceJSCodegenProjectConfig = {
-    projectName: 'tempCodegen',
-    version: '3.1',
     frontend: 'javascript',
     javascript: {
       framework: 'none',
       config: {
         SourceDir: relativeTempOutputDir,
-        DistributionDir: 'dist',
-        BuildCommand: 'npm run-script build',
-        StartCommand: 'npm run-script start',
       },
     },
-    providers: [
-      'awscloudformation',
-    ],
   };
   const originalStdoutWrite = process.stdout.write;
   try {
