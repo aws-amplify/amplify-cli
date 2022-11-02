@@ -296,6 +296,32 @@ export function updateSecondGeofenceCollectionAsDefault(cwd: string, groupNames:
 }
 
 /**
+ * Update an existing device tracker with given settings. Assume auth is already configured
+ * @param cwd command directory
+ */
+ export function updateDeviceTrackerWithDefault(cwd: string, groupNames: string[]): Promise<void> {
+  const chain = spawn(getCLIPath(), ['geo', 'update'], { cwd, stripColors: true })
+    .wait('Select which capability you want to update:')
+    .sendKeyDown(3)
+    .sendCarriageReturn()
+    .wait('Select the device tracker you want to update')
+    .sendCarriageReturn()
+    .wait('Restrict access by?')
+    .sendCarriageReturn()
+    .wait('Select one or more cognito groups to give access:')
+    .sendCarriageReturn();
+
+  for (const groupName of groupNames){
+    chain.wait(`What kind of access do you want for ${groupName} users? Select ALL that apply:`)
+      .sendCarriageReturn();
+  }
+
+  return chain.wait(defaultDeviceTrackerQuestion)
+    .sendYes()
+    .runAsync();
+}
+
+/**
  * Remove an existing map. Assume auth is already configured
  * @param cwd command directory
  */
