@@ -72,7 +72,7 @@ export class AmplifyRootStackTransform {
         },
       });
 
-      sandboxNode.run(overrideCode).override(this._rootTemplateObj as AmplifyRootStackTemplate);
+      await sandboxNode.run(overrideCode).override(this._rootTemplateObj as AmplifyRootStackTemplate);
     }
   };
 
