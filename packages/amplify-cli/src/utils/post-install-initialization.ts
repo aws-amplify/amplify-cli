@@ -50,5 +50,5 @@ const copyPkgAssetRegistry = [
   'amplify-go-function-runtime-provider',
   'amplify-java-function-runtime-provider',
   'amplify-opensearch-simulator',
-  'amplify-python-function-runtime-provider'
+  'amplify-python-function-runtime-provider',
 ];

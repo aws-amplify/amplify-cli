@@ -60,10 +60,10 @@ export class OpenSearchEmulator {
     return `http://localhost:${this.port}/`;
   }
 
-  public terminate() {
+  public terminate(): Promise<unknown> {
     // already exited
-    if (this.proc?.exitCode != null) {
-      return this.proc?.exitCode;
+    if (this.proc?.exitCode !== null) {
+      return Promise.resolve(this.proc?.exitCode);
     }
     this.proc?.kill();
     return fromEvent(this.proc, 'exit');
@@ -357,12 +357,6 @@ export const getPathToOpenSearchBinary = async (pathToOpenSearchLocal?: string):
 export const getPackageAssetPaths: GetPackageAssetPaths = async () => [relativePathToOpensearchLocal];
 
 export const getOpensearchLocalDirectory = () => {
-  let opensearchLocalDir = join(pathManager.getAmplifyLibRoot(), packageName);
-  try {
-    opensearchLocalDir = pathManager.getAmplifyPackageLibDirPath(packageName);
-  }
-  catch(err) {
-    printer.info(`using ${opensearchLocalDir} as the directory that has the opensearch local binary`);
-  }
+  const opensearchLocalDir = pathManager.getAmplifyPackageLibDirPath(packageName);
   return join(opensearchLocalDir, relativePathToOpensearchLocal);
 }

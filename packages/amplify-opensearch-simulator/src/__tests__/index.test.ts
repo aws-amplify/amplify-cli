@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import { join } from 'path';
 import http from 'http';
 import * as openpgp from 'openpgp';
-import { $TSAny, isWindowsPlatform, pathManager } from 'amplify-cli-core';
+import { $TSAny, isWindowsPlatform } from 'amplify-cli-core';
 import { v4 } from 'uuid';
 import execa from 'execa';
 
@@ -11,21 +11,27 @@ jest.mock('execa');
 const execaMock = execa as jest.MockedFunction<typeof execa>;
 (execaMock as any).mockImplementation(async () => ({ stdout: 'mock-process-output' }));
 
+jest.mock('amplify-cli-core', () => ({
+  ...(jest.requireActual('amplify-cli-core') as {}),
+  pathManager: {
+    getAmplifyPackageLibDirPath: jest.fn().mockReturnValue('mock-path-to-lib'),
+  }
+}));
+
 describe('emulator operations', () => {
   const getMockSearchableFolder = (): string => {
     let pathToSearchableMockResources = join(__dirname, '..', '..', 'resources', );
-    while (true) {
+    do {
       pathToSearchableMockResources = join('/tmp', `amplify-cli-opensearch-emulator-${v4()}`, 'mock-api-resources', 'searchable');
-      if (!fs.existsSync(pathToSearchableMockResources)) break;
-    }
+    } while (fs.existsSync(pathToSearchableMockResources));
     return pathToSearchableMockResources;
   };
+  const pathToSearchableLocal = join('mock-path-to-lib', openSearchEmulator.relativePathToOpensearchLocal);
 
   const mockSearchableResourcePath = getMockSearchableFolder();
   const startupErrorMessage = 'Unable to start the Opensearch emulator. Please restart the mock process.';
   const pathToSearchableData = join(mockSearchableResourcePath, 'searchable-data');
   fs.ensureDirSync(pathToSearchableData);
-  const pathToSearchableLocal = join(pathManager.getAmplifyLibRoot(), openSearchEmulator.packageName, openSearchEmulator.relativePathToOpensearchLocal);
   const openSearchClusterOptions = {
     clusterName: 'mock-opensearch-cluster',
     nodeName: 'mock-opensearch-node-local',
@@ -107,10 +113,9 @@ describe('emulator operations', () => {
       // returns false when there is no local binary
       expect(openSearchExists).toEqual(false);
 
-      const nodefetch = require('node-fetch');
+      const nodeFetch = await import('node-fetch');
       jest.mock('node-fetch', ()=>jest.fn());
-      nodefetch.mockReturnValueOnce('');
-      expect(nodefetch).toBeCalledTimes(0);
+      expect(nodeFetch).toBeCalledTimes(0);
     });
     
     it('correctly generates opensearch args from given options', async () => {
