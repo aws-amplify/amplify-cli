@@ -177,10 +177,7 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
   public applyOverride = async (): Promise<void> => {
     const backendDir = pathManager.getBackendDirPath();
     const overrideDir = path.join(backendDir, this._category, this._resourceName);
-    const isBuild = await buildOverrideDir(backendDir, overrideDir).catch(error => {
-      printer.error(`Build error : ${error.message}`);
-      throw new Error(error);
-    });
+    const isBuild = await buildOverrideDir(backendDir, overrideDir);
     if (isBuild) {
       const overrideCode: string = await fs.readFile(path.join(overrideDir, 'build', 'override.js'), 'utf-8').catch(() => {
         formatter.list(['No override File Found', `To override ${this._resourceName} run amplify override auth`]);
@@ -192,7 +189,9 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
         sandbox: {},
       });
       try {
-        sandboxNode.run(overrideCode).override(this._userPoolGroupTemplateObj as AmplifyUserPoolGroupStack & AmplifyStackTemplate);
+        await sandboxNode
+          .run(overrideCode)
+          .override(this._userPoolGroupTemplateObj as AmplifyUserPoolGroupStack & AmplifyStackTemplate);
       } catch (err: $TSAny) {
         const error = new Error(`Skipping override due to ${err}${os.EOL}`);
         printer.error(`${error}`);

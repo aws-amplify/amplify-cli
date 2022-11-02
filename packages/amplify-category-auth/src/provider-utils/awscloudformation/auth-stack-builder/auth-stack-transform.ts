@@ -95,10 +95,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
   public applyOverride = async (): Promise<void> => {
     const backendDir = pathManager.getBackendDirPath();
     const overrideDir = path.join(backendDir, this._category, this.resourceName);
-    const isBuild = await buildOverrideDir(backendDir, overrideDir).catch(error => {
-      printer.error(`Build error : ${error.message}`);
-      throw new Error(error);
-    });
+    const isBuild = await buildOverrideDir(backendDir, overrideDir);
     if (isBuild) {
       const overrideCode: string = await fs.readFile(path.join(overrideDir, 'build', 'override.js'), 'utf-8').catch(() => {
         formatter.list(['No override File Found', `To override ${this.resourceName} run amplify override auth`]);

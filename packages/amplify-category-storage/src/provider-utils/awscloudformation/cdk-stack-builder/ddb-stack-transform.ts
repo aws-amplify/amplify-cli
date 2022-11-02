@@ -194,10 +194,7 @@ export class DDBStackTransform {
     const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, 'storage', this._resourceName);
     const overrideJSFilePath = path.resolve(path.join(resourceDirPath, 'build', 'override.js'));
 
-    const isBuild = await buildOverrideDir(backendDir, resourceDirPath).catch((error: $TSAny) => {
-      printer.error(`Build error : ${error.message}`);
-      throw new Error(error);
-    });
+    const isBuild = await buildOverrideDir(backendDir, resourceDirPath);
     // skip if packageManager or override.ts not found
     if (isBuild) {
       const { override } = await import(overrideJSFilePath).catch(() => {
@@ -222,7 +219,9 @@ export class DDBStackTransform {
           },
         });
         try {
-          await sandboxNode.run(overrideCode, overrideJSFilePath).override(this._resourceTemplateObj as AmplifyDDBResourceTemplate);
+          await sandboxNode
+            .run(overrideCode, overrideJSFilePath)
+            .override(this._resourceTemplateObj as AmplifyDDBResourceTemplate);
         } catch (err: $TSAny) {
           const error = new Error(`Skipping override due to ${err}${os.EOL}`);
           printer.error(`${error}`);

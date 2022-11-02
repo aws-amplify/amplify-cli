@@ -37,7 +37,10 @@ export const generateOverrideSkeleton = async (context: $TSContext, srcResourceD
 };
 
 /**
+ * Returns true if a Typescript overrides file is found, and compiled successfully into an overrides.js file.
+ * Returns false if no Typescript overrides file is found.
  *
+ * Throws if a Typescript overrides file is found, but does not compile.
  */
 export const buildOverrideDir = async (cwd: string, destDirPath: string): Promise<boolean> => {
   const overrideFileName = path.join(destDirPath, 'override.ts');
@@ -110,7 +113,7 @@ export const buildOverrideDir = async (cwd: string, destDirPath: string): Promis
       }, error);
     }
   }
-}
+};
 
 /**
  *
