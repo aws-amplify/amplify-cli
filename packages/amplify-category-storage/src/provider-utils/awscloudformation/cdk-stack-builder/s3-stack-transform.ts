@@ -197,10 +197,7 @@ export class AmplifyS3ResourceStackTransform {
      const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.STORAGE, this.resourceName);
      const overrideJSFilePath = path.resolve(path.join(resourceDirPath, 'build', 'override.js'));
 
-     const isBuild = await buildOverrideDir(backendDir, resourceDirPath).catch(error => {
-       printer.error(`Build error : ${error.message}`);
-       throw new Error(error);
-     });
+     const isBuild = await buildOverrideDir(backendDir, resourceDirPath);
      // Skip if packageManager or override.ts not found
      if (isBuild) {
        const { override } = await import(overrideJSFilePath).catch(() => {
@@ -225,7 +222,9 @@ export class AmplifyS3ResourceStackTransform {
            },
          });
          try {
-           await sandboxNode.run(overrideCode, overrideJSFilePath).override(this.resourceTemplateObj as AmplifyS3ResourceTemplate);
+           await sandboxNode
+             .run(overrideCode, overrideJSFilePath)
+             .override(this.resourceTemplateObj as AmplifyS3ResourceTemplate);
          } catch (err: $TSAny) {
            const error = new Error(`Skipping override due to ${err}${os.EOL}`);
            printer.error(`${error}`);
