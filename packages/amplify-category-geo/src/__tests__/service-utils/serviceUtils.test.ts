@@ -6,6 +6,7 @@ import { AccessType, DataProvider } from '../../service-utils/resourceParams';
 import { getCurrentMapParameters, getMapFriendlyNames } from '../../service-utils/mapUtils';
 import { getCurrentPlaceIndexParameters } from '../../service-utils/placeIndexUtils';
 import { getCurrentGeofenceCollectionParameters } from '../../service-utils/geofenceCollectionUtils';
+import { getCurrentTrackingParameters } from '../../service-utils/deviceLocationTrackingUtils';
 
 jest.mock('amplify-cli-core');
 
@@ -46,6 +47,12 @@ describe('Test resource utility functions', () => {
         providerPlugin: provider,
         accessType: AccessType.CognitoGroups
     };
+    const deviceTracker1Params = {
+        service: ServiceName.DeviceLocationTracking,
+        isDefault: false,
+        providerPlugin: provider,
+        accessType: AccessType.CognitoGroups,
+    };
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -55,7 +62,8 @@ describe('Test resource utility functions', () => {
                 map2: map2Params,
                 placeIndex1: placeIndex1Params,
                 placeIndex2: placeIndex2Params,
-                geofenceCollection1: geofenceCollection1Params
+                geofenceCollection1: geofenceCollection1Params,
+                deviceTracker1: deviceTracker1Params,
             }
         });
     });
@@ -108,6 +116,22 @@ describe('Test resource utility functions', () => {
             isDefault: geofenceCollection1Params.isDefault,
             groupPermissions: groupPermissions
         }).toEqual(geofenceCollectionParams);
+    });
+
+    it('gets current device tracker parameters', async() => {
+        const roleAndGroupPermissionsMap = {
+            mockCognitoGroup: [
+                "Update device position",
+            ]
+        }
+        stateManager.getResourceInputsJson = jest.fn().mockReturnValue({roleAndGroupPermissionsMap: roleAndGroupPermissionsMap});
+        const deviceTrackerParams = await getCurrentTrackingParameters('deviceTracker1');
+        expect({
+            isDefault: deviceTracker1Params.isDefault,
+            roleAndGroupPermissionsMap: roleAndGroupPermissionsMap,
+            accessType: deviceTracker1Params.accessType,
+            groupPermissions: [],
+        }).toEqual(deviceTrackerParams);
     });
 
 });

@@ -108,6 +108,8 @@ export const getServiceFriendlyName = (service: ServiceName): string => {
             return 'search index';
         case ServiceName.GeofenceCollection:
             return 'geofence collection';
+        case ServiceName.DeviceLocationTracking:
+            return 'device tracker';
         default:
             return service;
     }

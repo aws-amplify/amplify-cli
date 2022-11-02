@@ -5,69 +5,69 @@ import { run } from '../../../commands/geo/remove';
 
 const mockRemoveResource = removeResource as jest.MockedFunction< typeof removeResource >;
 const mockResource = 'resource12345';
-mockRemoveResource.mockImplementation((context: $TSContext, service: string): Promise<string> => {
-    return new Promise<string>((resolve) => {
-		resolve(mockResource);
-	});
-});
+mockRemoveResource.mockImplementation((context: $TSContext, service: string): Promise<string> => new Promise<string>(resolve => {
+  resolve(mockResource);
+}));
 
 jest.mock('amplify-cli-core');
 jest.mock('../../../provider-controllers');
 
-
 describe('remove command tests', () => {
-    const provider = 'awscloudformation';
-    let mockContext: $TSContext;
-    // construct mock amplify meta
-    const mockAmplifyMeta: $TSObject = {
-        providers: {}
+  const provider = 'awscloudformation';
+  let mockContext: $TSContext;
+  // construct mock amplify meta
+  const mockAmplifyMeta: $TSObject = {
+    providers: {},
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockContext = ({
+      print: {
+        info: jest.fn(),
+        warning: jest.fn(),
+      },
+      amplify: {},
+    } as unknown) as $TSContext;
+    mockAmplifyMeta.providers[provider] = {
+      Region: 'us-west-2',
     };
-    
-    beforeEach(() => {
-        jest.clearAllMocks();
-        mockContext = ({
-            print: {
-                info: jest.fn(),
-                warning: jest.fn()
-            },
-            amplify: {}
-        } as unknown) as $TSContext;
-        mockAmplifyMeta.providers[provider] = {
-            Region: 'us-west-2'
-        };
-        stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
-    });
+    stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
+  });
 
-    it('remove resource workflow is invoked for map service', async() => {
-        const service = ServiceName.Map;
-        mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation( async () => {
-            return { service: service, providerName: provider};
-        });
+  it('remove resource workflow is invoked for map service', async () => {
+    const service = ServiceName.Map;
+    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => ({ service, providerName: provider }));
 
-        await run(mockContext);
+    await run(mockContext);
 
-        expect(mockRemoveResource).toHaveBeenCalledWith(mockContext, service);
-    });
+    expect(mockRemoveResource).toHaveBeenCalledWith(mockContext, service);
+  });
 
-    it('remove resource workflow is invoked for place index service', async() => {
-        const service = ServiceName.PlaceIndex;
-        mockContext.amplify.serviceSelectionPrompt  = jest.fn().mockImplementation( async () => {
-            return { service: service, providerName: provider};
-        });
+  it('remove resource workflow is invoked for place index service', async () => {
+    const service = ServiceName.PlaceIndex;
+    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => ({ service, providerName: provider }));
 
-        await run(mockContext);
+    await run(mockContext);
 
-        expect(mockRemoveResource).toHaveBeenCalledWith(mockContext, service);
-    });
+    expect(mockRemoveResource).toHaveBeenCalledWith(mockContext, service);
+  });
 
-    it('remove resource workflow is invoked for geofence collection service', async() => {
-        const service = ServiceName.GeofenceCollection;
-        mockContext.amplify.serviceSelectionPrompt  = jest.fn().mockImplementation( async () => {
-            return { service: service, providerName: provider};
-        });
+  it('remove resource workflow is invoked for geofence collection service', async () => {
+    const service = ServiceName.GeofenceCollection;
+    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => ({ service, providerName: provider }));
 
-        await run(mockContext);
+    await run(mockContext);
 
-        expect(mockRemoveResource).toHaveBeenCalledWith(mockContext, service);
-    });
+    expect(mockRemoveResource).toHaveBeenCalledWith(mockContext, service);
+  });
+
+  it('remove resource workflow is invoked for device tracker service', async () => {
+    const service = ServiceName.DeviceLocationTracking;
+    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => ({ service, providerName: provider }));
+
+    await run(mockContext);
+
+    expect(mockRemoveResource).toHaveBeenCalledWith(mockContext, service);
+  });
 });

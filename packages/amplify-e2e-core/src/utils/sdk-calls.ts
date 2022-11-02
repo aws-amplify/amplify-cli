@@ -395,3 +395,10 @@ export const listGeofences = async (geofenceCollectionName: string, region: stri
     NextToken: nextToken,
   })).promise();
 };
+
+export const getDeviceLocationTracker = async (deviceTrackerName: string, region: string) => {
+  const service = new Location({ region });
+  return service.describeTracker({
+    TrackerName: deviceTrackerName,
+  }).promise();
+};

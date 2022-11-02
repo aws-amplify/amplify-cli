@@ -34,9 +34,7 @@ describe('add command tests', () => {
 
   it('add resource workflow is invoked for map service', async () => {
     const service = ServiceName.Map;
-    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => {
-      return { service: service, providerName: provider };
-    });
+    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => ({ service, providerName: provider }));
 
     await run(mockContext);
 
@@ -45,9 +43,7 @@ describe('add command tests', () => {
 
   it('add resource workflow is invoked for place index service', async () => {
     const service = ServiceName.PlaceIndex;
-    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => {
-      return { service: service, providerName: provider };
-    });
+    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => ({ service, providerName: provider }));
 
     await run(mockContext);
 
@@ -56,9 +52,16 @@ describe('add command tests', () => {
 
   it('add resource workflow is invoked for Geofence Collection service', async () => {
     const service = ServiceName.GeofenceCollection;
-    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => {
-      return { service: service, providerName: provider };
-    });
+    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => ({ service, providerName: provider }));
+
+    await run(mockContext);
+
+    expect(mockAddResource).toHaveBeenCalledWith(mockContext, service);
+  });
+
+  it('add resource workflow is invoked for Device Tracker service', async () => {
+    const service = ServiceName.DeviceLocationTracking;
+    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => ({ service, providerName: provider }));
 
     await run(mockContext);
 
@@ -70,9 +73,7 @@ describe('add command tests', () => {
       Region: 'eu-west-2',
     };
     const service = ServiceName.Map;
-    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => {
-      return { service: service, providerName: provider };
-    });
+    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => ({ service, providerName: provider }));
     stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
 
     await run(mockContext);
@@ -84,9 +85,7 @@ describe('add command tests', () => {
       Region: 'eu-west-2',
     };
     const service = ServiceName.PlaceIndex;
-    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => {
-      return { service: service, providerName: provider };
-    });
+    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => ({ service, providerName: provider }));
     stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
 
     await run(mockContext);
@@ -98,9 +97,19 @@ describe('add command tests', () => {
       Region: 'eu-west-2',
     };
     const service = ServiceName.GeofenceCollection;
-    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => {
-      return { service: service, providerName: provider };
-    });
+    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => ({ service, providerName: provider }));
+    stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
+
+    await run(mockContext);
+    expect(mockAddResource).toHaveBeenCalledWith(mockContext, service);
+  });
+
+  it('add resource workflow is invoked for Device Tracker service in unsupported region', async () => {
+    mockAmplifyMeta.providers[provider] = {
+      Region: 'eu-west-2',
+    };
+    const service = ServiceName.DeviceLocationTracking;
+    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => ({ service, providerName: provider }));
     stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
 
     await run(mockContext);

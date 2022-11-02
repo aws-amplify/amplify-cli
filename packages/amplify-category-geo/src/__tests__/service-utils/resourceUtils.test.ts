@@ -82,6 +82,22 @@ const geofenceCollection2Params = {
   groupPermissions: {},
   accessType: AccessType.CognitoGroups,
 };
+const deviceTracker1Params = {
+  service: ServiceName.DeviceLocationTracking,
+  isDefault: false,
+  providerPlugin: provider,
+  dataProvider: DataProvider.Esri,
+  groupPermissions: [],
+  roleAndGroupPermissionsMap: {},
+};
+const deviceTracker2Params = {
+  service: ServiceName.DeviceLocationTracking,
+  isDefault: true,
+  providerPlugin: provider,
+  dataProvider: DataProvider.Here,
+  groupPermissions: [],
+  roleAndGroupPermissionsMap: {},
+};
 
 const mockContext = ({
   amplify: {
@@ -101,6 +117,8 @@ describe('Test updating the default resource', () => {
         placeIndex2: placeIndex2Params,
         geofenceCollection1: geofenceCollection1Params,
         geofenceCollection2: geofenceCollection2Params,
+        deviceTracker1: deviceTracker1Params,
+        deviceTracker2: deviceTracker2Params,
       },
     });
     pathManager.getBackendDirPath = jest.fn().mockReturnValue('');
@@ -191,6 +209,33 @@ describe('Test updating the default resource', () => {
       category, 'geofenceCollection2', 'isDefault', false,
     );
   });
+
+  it('updates given device tracker as default in amplify meta', async () => {
+    mockContext.amplify.updateamplifyMetaAfterResourceUpdate = jest.fn();
+    await updateDefaultResource(mockContext, ServiceName.DeviceLocationTracking, 'deviceTracker1');
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledTimes(2);
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
+      category, 'deviceTracker1', 'isDefault', true,
+    );
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
+      category, 'deviceTracker2', 'isDefault', false,
+    );
+    expect(JSONUtilities.writeJson).toBeCalledTimes(2);
+    expect(JSONUtilities.writeJson).toBeCalledWith('geo/deviceTracker1/parameters.json', { isDefault: true });
+    expect(JSONUtilities.writeJson).toBeCalledWith('geo/deviceTracker2/parameters.json', { isDefault: false });
+  });
+
+  it('removes current default device tracker if none is specified', async () => {
+    mockContext.amplify.updateamplifyMetaAfterResourceUpdate = jest.fn();
+    await updateDefaultResource(mockContext, ServiceName.DeviceLocationTracking);
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledTimes(2);
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
+      category, 'deviceTracker1', 'isDefault', false,
+    );
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
+      category, 'deviceTracker2', 'isDefault', false,
+    );
+  });
 });
 
 describe('Test reading the resource meta information', () => {
@@ -204,6 +249,8 @@ describe('Test reading the resource meta information', () => {
         placeIndex2: placeIndex2Params,
         geofenceCollection1: geofenceCollection1Params,
         geofenceCollection2: geofenceCollection2Params,
+        deviceTracker1: deviceTracker1Params,
+        deviceTracker2: deviceTracker2Params,
       },
     });
   });
@@ -218,5 +265,8 @@ describe('Test reading the resource meta information', () => {
 
     const nonExistingGeofenceCollection = 'geofenceCollection12345';
     expect(async () => await readResourceMetaParameters(ServiceName.GeofenceCollection, nonExistingGeofenceCollection)).rejects.toThrowError(errorMessage(nonExistingGeofenceCollection));
+
+    const nonExistingDeviceTracker = 'deviceTracker12345';
+    expect(async () => await readResourceMetaParameters(ServiceName.DeviceLocationTracking, nonExistingDeviceTracker)).rejects.toThrowError(errorMessage(nonExistingDeviceTracker));
   });
 });

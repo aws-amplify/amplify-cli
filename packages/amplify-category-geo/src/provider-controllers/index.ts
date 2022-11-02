@@ -1,4 +1,6 @@
-import { $TSContext, $TSObject, AmplifyCategories, AmplifySupportedService, open, ProviderContext, stateManager } from 'amplify-cli-core';
+import {
+  $TSContext, $TSObject, AmplifyCategories, AmplifySupportedService, open, ProviderContext, stateManager,
+} from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
 import { validateAddGeoRequest, validateUpdateGeoRequest } from 'amplify-util-headless-input';
 import { TemplateMappings } from '../service-stacks/baseStack';
@@ -10,6 +12,7 @@ import {
   addMapResource, addMapResourceHeadless, removeMapResource, updateMapResource, updateMapResourceHeadless,
 } from './map';
 import { addPlaceIndexResource, removePlaceIndexResource, updatePlaceIndexResource } from './placeIndex';
+import { addDeviceLocationTrackingResource } from './deviceLocationTracking';
 
 /**
  * Entry point for creating a new Geo resource
@@ -29,6 +32,8 @@ export const addResource = async (context: $TSContext, service: string): Promise
       return addMapResource(context);
     case ServiceName.PlaceIndex:
       return addPlaceIndexResource(context);
+    case ServiceName.DeviceLocationTracking:
+      return addDeviceLocationTrackingResource(context);
     case ServiceName.GeofenceCollection:
       return addGeofenceCollectionResource(context);
     default:
@@ -68,9 +73,15 @@ export const removeResource = async (context: $TSContext, service: string): Prom
   }
 };
 
+/**
+ *
+ */
 export const projectHasAuth = (): boolean => !!Object.values(stateManager.getMeta()?.auth || {})
   .find(meta => (meta as $TSObject)?.service === AmplifySupportedService.COGNITO);
 
+/**
+ *
+ */
 export const printNextStepsSuccessMessage = () => {
   printer.blankLine();
   printer.success('Next steps:');
@@ -80,12 +91,18 @@ export const printNextStepsSuccessMessage = () => {
   );
 };
 
+/**
+ *
+ */
 export const setProviderContext = (context: $TSContext, service: string): ProviderContext => ({
   provider,
   service,
   projectName: context.amplify.getProjectDetails().projectConfig.projectName,
 });
 
+/**
+ *
+ */
 export const openConsole = (service: string) => {
   const amplifyMeta = stateManager.getMeta();
   const region = amplifyMeta.providers[provider].Region;
@@ -112,9 +129,14 @@ export const openConsole = (service: string) => {
 
 const badServiceError = (service: string): Error => new Error(`amplify-category-geo is not configured to provide service type ${service}`);
 
-export const insufficientInfoForUpdateError = (service: ServiceName): Error =>
-  new Error(`Insufficient information to update ${getServiceFriendlyName(service)}. Please re-try and provide all inputs.`);
+/**
+ *
+ */
+export const insufficientInfoForUpdateError = (service: ServiceName): Error => new Error(`Insufficient information to update ${getServiceFriendlyName(service)}. Please re-try and provide all inputs.`);
 
+/**
+ *
+ */
 export const getTemplateMappings = async (context: $TSContext): Promise<TemplateMappings> => {
   const Mappings: TemplateMappings = {
     RegionMapping: {},
