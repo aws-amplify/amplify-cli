@@ -3,14 +3,14 @@ import detectPort from 'detect-port';
 import execa from 'execa';
 import { ensureDir, writeFileSync, existsSync } from 'fs-extra';
 import gunzip from 'gunzip-maybe';
-import nodefetch from 'node-fetch';
+import nodeFetch from 'node-fetch';
 import { join } from 'path';
 import { pipeline, Readable } from 'stream';
 import tar from 'tar';
 import { promisify } from 'util';
 const { fromEvent } = require('promise-toolbox');
 import * as openpgp from 'openpgp';
-import { $TSAny, AmplifyFault, AMPLIFY_SUPPORT_DOCS, isWindowsPlatform, GetPackageAssetPaths, pathManager } from 'amplify-cli-core';
+import { $TSAny, AmplifyFault, AMPLIFY_SUPPORT_DOCS, isWindowsPlatform, GetPackageAssetPaths, pathManager, AmplifyError } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 
 // default port that opensearch chooses
@@ -117,7 +117,7 @@ export const launch = async (
   startTime: number = Date.now()
 ): Promise<OpenSearchEmulator> => { 
   if (isWindowsPlatform) {
-    throw new AmplifyFault('MockProcessFault', {
+    throw new AmplifyError('MockProcessError', {
       message: 'Cannot launch OpenSearch simulator on windows OS',
       link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
     });
@@ -146,7 +146,7 @@ export const launch = async (
   } else {
     const freePort = await detectPort(port);
     if (freePort !== port) {
-      throw new AmplifyFault('MockProcessFault', {
+      throw new AmplifyError('MockProcessError', {
         message: `Port ${port} is not free. Please use a different port`,
         link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
       });
@@ -293,10 +293,10 @@ export const ensureOpenSearchLocalExists = async (pathToOpenSearchData: string) 
 
   await ensureDir(pathToOpenSearchLocal);
 
-  const latestSig = (await nodefetch(sigFileUrl).then(res => res.buffer()));
+  const latestSig = (await nodeFetch(sigFileUrl).then(res => res.buffer()));
 
-  const latestPublicKey = (await nodefetch(publicKeyUrl).then(res => res.text()));
-  const opensearchSimulatorGunZippedTarball = await nodefetch(opensearchMinLinuxArtifactUrl).then(res => res.buffer());
+  const latestPublicKey = (await nodeFetch(publicKeyUrl).then(res => res.text()));
+  const opensearchSimulatorGunZippedTarball = await nodeFetch(opensearchMinLinuxArtifactUrl).then(res => res.buffer());
 
   const signature = await openpgp.signature.read(latestSig);
   const publickey = await openpgp.key.readArmored(latestPublicKey);

@@ -1,4 +1,4 @@
-import { $TSContext, AmplifyFault, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
+import { $TSContext, AmplifyFault, AMPLIFY_SUPPORT_DOCS, AmplifyError } from 'amplify-cli-core';
 import { DynamoDBStreams, Endpoint } from 'aws-sdk';
 import { invokeTrigger } from './lambda-invoke';
 import { isMockable } from 'amplify-category-function';
@@ -20,19 +20,19 @@ export const ddbLambdaTriggerHandler = async (
     localDynamoDBEndpoint?: Endpoint
 ): Promise<void> => {
     if (!lambdaTrigger || (!lambdaTrigger?.name && !lambdaTrigger?.config)) {
-        throw new AmplifyFault('MockProcessFault', {
+        throw new AmplifyError('MockProcessError', {
           message: 'Lambda trigger must be specified',
           link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
         });
     }
     if (!streamArn) {
-        throw new AmplifyFault('MockProcessFault', {
+        throw new AmplifyError('MockProcessError', {
           message: 'Stream Arn must be specified',
           link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
         });
     }
     if (!localDynamoDBEndpoint) {
-        throw new AmplifyFault('MockProcessFault', {
+        throw new AmplifyError('MockProcessError', {
           message: 'Local URL where DDB is running should be specified',
           link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
         });
@@ -42,7 +42,7 @@ export const ddbLambdaTriggerHandler = async (
         // Lambda functions with layers are not mockable
         const mockable = isMockable(context, lambdaTrigger?.name);
         if (!mockable.isMockable) {
-            throw new AmplifyFault('MockProcessFault', {
+            throw new AmplifyError('MockProcessError', {
               message: `Unable to mock ${lambdaTrigger?.name}. ${mockable.reason}`,
               link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
             });

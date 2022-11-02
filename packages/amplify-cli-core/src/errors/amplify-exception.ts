@@ -137,7 +137,8 @@ export type AmplifyErrorType =
   | 'ResourceNotReadyError'
   | 'StackNotFoundError'
   | 'StackStateError'
-  | 'UserInputError';
+  | 'UserInputError'
+  | 'MockProcessError';
 
 /**
  * Amplify fault types
