@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.9.1-rc.ac06cb27b.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.9.0...amplify-provider-awscloudformation@6.9.1-rc.ac06cb27b.0) (2022-11-02)
+
+
+### Bug Fixes
+
+* uploading multiple auth trigger files ([#11254](https://github.com/aws-amplify/amplify-cli/issues/11254)) ([#11267](https://github.com/aws-amplify/amplify-cli/issues/11267)) ([b7bdcec](https://github.com/aws-amplify/amplify-cli/commit/b7bdcec939ac71c4f70ae87ece8c2a7995d4ae72))
+
+
+
+## 10.3.2 (2022-10-25)
+
+
+
+
+
 # [6.9.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.8.1...amplify-provider-awscloudformation@6.9.0) (2022-10-27)
 
 
