@@ -37,7 +37,7 @@ export const handleException = async (exception: unknown): Promise<void> => {
     amplifyException = genericErrorToAmplifyException(exception);
   }
 
-  const deepestException = getDeepestException(amplifyException);
+  const deepestException = getDeepestAmplifyException(amplifyException);
   if (context && isHeadlessCommand(context)) {
     printHeadlessAmplifyException(deepestException);
   } else {
@@ -78,12 +78,12 @@ export const handleException = async (exception: unknown): Promise<void> => {
   process.exitCode = 1;
 };
 
-const getDeepestException = (amplifyException: AmplifyException): AmplifyException => {
-  if (amplifyException.downstreamException && amplifyException.downstreamException instanceof AmplifyException) {
-    return getDeepestException(amplifyException.downstreamException);
+const getDeepestAmplifyException = (amplifyException: AmplifyException): AmplifyException => {
+  let deepestAmplifyException = amplifyException;
+  while (deepestAmplifyException.downstreamException && amplifyException.downstreamException instanceof AmplifyException) {
+    deepestAmplifyException = amplifyException.downstreamException;
   }
-
-  return amplifyException;
+  return deepestAmplifyException;
 };
 
 /**
