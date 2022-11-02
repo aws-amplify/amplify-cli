@@ -97,9 +97,9 @@ export const adminModelgen = async (context: $TSContext, resources: $TSAny[]): P
 
     await uploadCMSArtifacts(await S3.getInstance(context), cmsArtifactLocalToS3KeyMap);
   } finally {
+    stateManager.setProjectConfig(undefined, originalProjectConfig);
     process.stdout.write = originalStdoutWrite;
     await fs.remove(absoluteTempOutputDir);
-    stateManager.setProjectConfig(undefined, originalProjectConfig);
   }
 };
 
