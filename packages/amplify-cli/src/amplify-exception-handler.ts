@@ -80,7 +80,7 @@ export const handleException = async (exception: unknown): Promise<void> => {
 
 const getDeepestAmplifyException = (amplifyException: AmplifyException): AmplifyException => {
   let deepestAmplifyException = amplifyException;
-  while (deepestAmplifyException.downstreamException && amplifyException.downstreamException instanceof AmplifyException) {
+  while (deepestAmplifyException.downstreamException && deepestAmplifyException.downstreamException instanceof AmplifyException) {
     deepestAmplifyException = amplifyException.downstreamException;
   }
   return deepestAmplifyException;
