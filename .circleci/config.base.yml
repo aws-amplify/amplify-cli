@@ -578,6 +578,18 @@ jobs:
           command: |
             bash ./.circleci/publish.sh
       - run: *scan_e2e_test_artifacts
+      context:
+            - amplify-ecr-image-pull
+            - npm-publish
+          requires:
+            - test
+            - mock_e2e_tests
+            - integration_test
+            - amplify_sudo_install_test
+          filters:
+            branches:
+              only:
+                - doublehooks-invoc
   github_prerelease:
     <<: *linux-e2e-executor
     steps:
