@@ -11,6 +11,11 @@ export function getMockSearchableTriggerDirectory(context: $TSContext) {
   return path.join(mockSearchableResourceDirectory, 'searchable-lambda-trigger');
 }
 
+export function getMockOpenseachDataDirectory(context: $TSContext) {
+  const mockSearchableResourceDirectory = getMockSearchableResourceDirectory(context);
+  return path.join(mockSearchableResourceDirectory, 'searchable-data');
+}
+
 export function getMockSearchableResourceDirectory(context: $TSContext) {
   const mockAPIResourceDirectory = getMockAPIResourceDirectory(context);
   return path.join(mockAPIResourceDirectory, 'searchable');

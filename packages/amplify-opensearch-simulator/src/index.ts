@@ -10,7 +10,7 @@ import tar from 'tar';
 import { promisify } from 'util';
 const { fromEvent } = require('promise-toolbox');
 import * as openpgp from 'openpgp';
-import { $TSAny, AmplifyFault, AMPLIFY_SUPPORT_DOCS, isWindowsPlatform } from 'amplify-cli-core';
+import { $TSAny, AmplifyFault, AMPLIFY_SUPPORT_DOCS, isWindowsPlatform, GetPackageAssetPaths, pathManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 
 // default port that opensearch chooses
@@ -26,7 +26,9 @@ const defaultOptions: Required<OpenSearchEmulatorOptions> = {
 
 const retryInterval = 20;
 const maxRetries = 5;
-const supportedOpenSearchVersion = '1.3.0'; // latest version of OpenSearch supported by AWS ES
+export const supportedOpenSearchVersion = '1.3.0'; // latest version of OpenSearch supported by AWS ES
+export const relativePathToOpensearchLocal = join('opensearch', supportedOpenSearchVersion);
+export const packageName = 'amplify-opensearch-simulator';
 
 type OpenSearchEmulatorOptions = {
   port?: number; 
@@ -82,7 +84,7 @@ const wait = (ms: number) => {
   };
 };
 
-export const buildArgs = (options: OpenSearchEmulatorOptions): string[] => {
+export const buildArgs = (options: OpenSearchEmulatorOptions, pathToOpenSearchData: string): string[] => {
   const args = [];
 
   if (options.clusterName) {
@@ -101,11 +103,15 @@ export const buildArgs = (options: OpenSearchEmulatorOptions): string[] => {
     args.push(`-Ediscovery.type=${options.type}`);
   }
 
+  if (pathToOpenSearchData) {
+    args.push(`-Epath.data=${pathToOpenSearchData}`);
+  }
+
   return args;
 };
 
 export const launch = async (
-  pathToOpenSearchLocal: string, 
+  pathToOpenSearchData: string,
   givenOptions: OpenSearchEmulatorOptions = {}, 
   retry:number = 0, 
   startTime: number = Date.now()
@@ -117,7 +123,6 @@ export const launch = async (
     });
   }
 
-  printer.info('launching OpenSearch Simulator with options: ' + JSON.stringify({ retry, givenOptions }));
   // launch will retry but ensure it will not retry indefinitely.
   if (retry >= maxRetries) {
     throw new AmplifyFault('MockProcessFault', {
@@ -127,7 +132,7 @@ export const launch = async (
   }
 
   try {
-    await ensureOpenSearchLocalExists(pathToOpenSearchLocal);
+    await ensureOpenSearchLocalExists(pathToOpenSearchData);
   } catch (error) {
     throw new AmplifyFault('MockProcessFault', {
       message: 'Failed to setup local OpenSearch simulator',
@@ -149,15 +154,15 @@ export const launch = async (
   }
   const opts: Required<OpenSearchEmulatorOptions> = { ...defaultOptions, ...givenOptions, port };
 
-  const args = buildArgs(opts);
-  printer.info('Spawning OpenSearch Simulator: ' + JSON.stringify({ args, cwd: pathToOpenSearchLocal }));
+  const args = buildArgs(opts, pathToOpenSearchData);
+  printer.info('Spawning OpenSearch Simulator with options: ' + JSON.stringify({ args, cwd: getOpensearchLocalDirectory() }));
   const openSearchBinPath = await getPathToOpenSearchBinary();
 
   const proc = execa(openSearchBinPath, args, {
-    cwd: pathToOpenSearchLocal,
+    cwd: getOpensearchLocalDirectory(),
   });
 
-  const emulator = await startOpensearchEmulator(opts, proc, port, startTime, givenOptions, pathToOpenSearchLocal, retry);
+  const emulator = await startOpensearchEmulator(opts, proc, port, startTime, givenOptions, getOpensearchLocalDirectory(), retry);
   if (!emulator) {
     throw new AmplifyFault('MockProcessFault', {
       message: 'Unable to start the Opensearch emulator. Please restart the mock process.',
@@ -173,7 +178,7 @@ export const startOpensearchEmulator = async (
   port: number, 
   startTime: number, 
   givenOptions: OpenSearchEmulatorOptions, 
-  pathToOpenSearchLocal: string, 
+  pathToOpenSearchData: string, 
   retry: number
 ): Promise<OpenSearchEmulator|undefined> => {
 
@@ -213,7 +218,7 @@ export const startOpensearchEmulator = async (
         throw new Error(`${givenOptions.port} is bound and unavailable`);
       }
       printer.info('Queue retry in' + retryInterval);
-      return wait(retryInterval).promise.then(() => launch(pathToOpenSearchLocal, givenOptions, retry + 1, startTime));
+      return wait(retryInterval).promise.then(() => launch(pathToOpenSearchData, givenOptions, retry + 1, startTime));
     }
     throw err;
   } finally {
@@ -249,7 +254,6 @@ export const startingEmulatorPromise = (opts: Required<OpenSearchEmulatorOptions
       if (stdout.indexOf(opts.port.toString()) !== -1) {
         proc?.stdout?.removeListener('data', readStdoutBuffer);
         proc?.stderr?.removeListener('data', readStderrBuffer);
-        printer.info('OpenSearch Simulator has started but need to verify socket');
         accept(
           waitPort({
             host: 'localhost',
@@ -276,7 +280,9 @@ export const exitingEmulatorPromise = (proc: execa.ExecaChildProcess<string>, pr
   });
 };
 
-export const ensureOpenSearchLocalExists = async (pathToOpenSearchLocal: string) => {
+export const ensureOpenSearchLocalExists = async (pathToOpenSearchData: string) => {
+  await ensureDir(pathToOpenSearchData);
+  const pathToOpenSearchLocal = getOpensearchLocalDirectory();
   if (await openSearchLocalExists(pathToOpenSearchLocal)) {
     return;
   }
@@ -347,3 +353,16 @@ export const getPathToOpenSearchBinary = async (pathToOpenSearchLocal?: string):
   }
   return join('opensearchLib', 'bin', 'opensearch');
 };
+
+export const getPackageAssetPaths: GetPackageAssetPaths = async () => [relativePathToOpensearchLocal];
+
+export const getOpensearchLocalDirectory = () => {
+  let opensearchLocalDir = join(pathManager.getAmplifyLibRoot(), packageName);
+  try {
+    opensearchLocalDir = pathManager.getAmplifyPackageLibDirPath(packageName);
+  }
+  catch(err) {
+    printer.info(`using ${opensearchLocalDir} as the directory that has the opensearch local binary`);
+  }
+  return join(opensearchLocalDir, relativePathToOpensearchLocal);
+}

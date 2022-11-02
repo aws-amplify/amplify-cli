@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import { join } from 'path';
 import http from 'http';
 import * as openpgp from 'openpgp';
-import { $TSAny, isWindowsPlatform } from 'amplify-cli-core';
+import { $TSAny, isWindowsPlatform, pathManager } from 'amplify-cli-core';
 import { v4 } from 'uuid';
 import execa from 'execa';
 
@@ -23,7 +23,9 @@ describe('emulator operations', () => {
 
   const mockSearchableResourcePath = getMockSearchableFolder();
   const startupErrorMessage = 'Unable to start the Opensearch emulator. Please restart the mock process.';
-
+  const pathToSearchableData = join(mockSearchableResourcePath, 'searchable-data');
+  fs.ensureDirSync(pathToSearchableData);
+  const pathToSearchableLocal = join(pathManager.getAmplifyLibRoot(), openSearchEmulator.packageName, openSearchEmulator.relativePathToOpensearchLocal);
   const openSearchClusterOptions = {
     clusterName: 'mock-opensearch-cluster',
     nodeName: 'mock-opensearch-node-local',
@@ -31,7 +33,6 @@ describe('emulator operations', () => {
     type: 'single-node',
     version: '1.3.0'
   };
-
   const openSearchClusterDefaultOptions = {
     clusterName: 'opensearch-cluster',
     nodeName: 'opensearch-node-local',
@@ -39,7 +40,6 @@ describe('emulator operations', () => {
     type: 'single-node',
     version: '1.3.0'
   };
-
   const ensureMockSearchableResourcePath = () => {
     fs.ensureDirSync(mockSearchableResourcePath);
     fs.emptyDirSync(mockSearchableResourcePath);
@@ -114,8 +114,8 @@ describe('emulator operations', () => {
     });
     
     it('correctly generates opensearch args from given options', async () => {
-      const resolvedBuildArgs = openSearchEmulator.buildArgs(openSearchClusterOptions);
-      const expectedCall = `-Ecluster.name=${openSearchClusterOptions.clusterName} -Enode.name=${openSearchClusterOptions.nodeName} -Ehttp.port=${openSearchClusterOptions.port} -Ediscovery.type=${openSearchClusterOptions.type}`;
+      const resolvedBuildArgs = openSearchEmulator.buildArgs(openSearchClusterOptions, pathToSearchableData);
+      const expectedCall = `-Ecluster.name=${openSearchClusterOptions.clusterName} -Enode.name=${openSearchClusterOptions.nodeName} -Ehttp.port=${openSearchClusterOptions.port} -Ediscovery.type=${openSearchClusterOptions.type} -Epath.data=${pathToSearchableData}`;
       expect(resolvedBuildArgs.join(' ')).toEqual(expectedCall);
     });
     
@@ -128,42 +128,49 @@ describe('emulator operations', () => {
       }
     });
 
-    it('should attempt settingup local instance of opensearch with default configuration', async () => {
+    it('should attempt setting up local instance of opensearch with default configuration', async () => {
       jest.spyOn(openSearchEmulator, 'writeOpensearchEmulatorArtifacts').mockReturnValueOnce(Promise.resolve());
       jest.spyOn(openSearchEmulator, 'startOpensearchEmulator').mockReturnValueOnce(Promise.resolve(undefined));
       try {
-        await openSearchEmulator.launch(mockSearchableResourcePath);
+        await openSearchEmulator.launch(pathToSearchableData);
       } catch(err) {
         expect(execaMock).toBeCalledWith(
           "opensearchLib/bin/opensearch", 
           [ `-Ecluster.name=${openSearchClusterDefaultOptions.clusterName}`, 
             `-Enode.name=${openSearchClusterDefaultOptions.nodeName}`, 
             `-Ehttp.port=${openSearchClusterDefaultOptions.port}`, 
-            `-Ediscovery.type=${openSearchClusterDefaultOptions.type}`
+            `-Ediscovery.type=${openSearchClusterDefaultOptions.type}`,
+            `-Epath.data=${pathToSearchableData}`
           ], 
-          { "cwd": mockSearchableResourcePath }
+          { "cwd": pathToSearchableLocal }
         );
         expect(err?.message).toEqual(startupErrorMessage);
       }
     });
 
-    it('should attempt settingup local instance of opensearch with custom configuration', async () => {
+    it('should attempt setting up local instance of opensearch with custom configuration', async () => {
       jest.spyOn(openSearchEmulator, 'writeOpensearchEmulatorArtifacts').mockReturnValueOnce(Promise.resolve());
       jest.spyOn(openSearchEmulator, 'startOpensearchEmulator').mockReturnValueOnce(Promise.resolve(undefined));
       try {
-        await openSearchEmulator.launch(mockSearchableResourcePath, openSearchClusterOptions);
+        await openSearchEmulator.launch(pathToSearchableData, openSearchClusterOptions);
       } catch(err) {
         expect(execaMock).toBeCalledWith(
           "opensearchLib/bin/opensearch", 
           [ `-Ecluster.name=${openSearchClusterOptions.clusterName}`, 
             `-Enode.name=${openSearchClusterOptions.nodeName}`, 
             `-Ehttp.port=${openSearchClusterOptions.port}`, 
-            `-Ediscovery.type=${openSearchClusterOptions.type}`
+            `-Ediscovery.type=${openSearchClusterDefaultOptions.type}`,
+            `-Epath.data=${pathToSearchableData}`
           ], 
-          { "cwd": mockSearchableResourcePath }
+          { "cwd": pathToSearchableLocal }
         );
         expect(err?.message).toEqual(startupErrorMessage);
       }
+    });
+
+    it('should resolve to correct opensearch local binary path', async () => {
+      const resolvedDirectory = openSearchEmulator.getOpensearchLocalDirectory();
+      expect(resolvedDirectory).toEqual(pathToSearchableLocal);
     });
   }
 });

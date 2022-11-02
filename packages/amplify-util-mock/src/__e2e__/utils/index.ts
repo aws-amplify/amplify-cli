@@ -20,7 +20,8 @@ export * from './graphql-client';
 jest.mock('amplify-cli-core', () => ({
   ...(jest.requireActual('amplify-cli-core') as {}),
   pathManager: {
-    getAmplifyPackageLibDirPath: jest.fn().mockReturnValue('../amplify-dynamodb-simulator')
+    getAmplifyPackageLibDirPath: jest.fn().mockReturnValue('../amplify-dynamodb-simulator'),
+    getAmplifyLibRoot: jest.fn().mockReturnValue('')
   }
 }));
 
@@ -157,8 +158,13 @@ export async function setupSearchableMockResources(pathToSearchableMockResources
   const searchableLambdaResourceDir = path.resolve(__dirname, '..', '..', '..', 'resources', 'mock-searchable-lambda-trigger');
   fs.copySync(searchableLambdaResourceDir, pathToSearchableTrigger, { overwrite: true });
 
+  const pathToOpensearchLocal = path.join(pathToSearchableMockResources, openSearchEmulator.packageName, openSearchEmulator.relativePathToOpensearchLocal);
+  fs.ensureDirSync(pathToOpensearchLocal);
+  const pathToOpensearchData = path.join(pathToSearchableMockResources, 'searchable-data');
+  fs.ensureDirSync(pathToOpensearchData);
+
   const emulator = await openSearchEmulator.launch(
-    pathToSearchableMockResources, {
+    pathToOpensearchData, {
       port: null,
     }
   );

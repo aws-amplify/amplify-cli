@@ -3,6 +3,7 @@ import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-tran
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { deploy, launchDDBLocal, logDebug, GraphQLClient, terminateDDB, setupSearchableMockResources } from '../__e2e__/utils';
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
+import * as openSearchEmulator from '@aws-amplify/amplify-opensearch-simulator';
 import { $TSAny, isWindowsPlatform } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -14,10 +15,9 @@ jest.setTimeout(2000000);
 let GRAPHQL_ENDPOINT: string;
 let GRAPHQL_CLIENT: GraphQLClient;
 let ddbEmulator = null;
-let openSearchEmulator = null;
+let openSearchSimulator = null;
 let dbPath = null;
 let server: AmplifyAppSyncSimulator;
-
 
 describe('@searchable transformer', () => {
   let pathToSearchableMockResources;
@@ -70,11 +70,11 @@ describe('@searchable transformer', () => {
           pathToSearchableMockResources = path.join('/tmp', `amplify-cli-emulator-opensearch-${v4()}`);
           if (!fs.existsSync(pathToSearchableMockResources)) break;
         }
-  
-        ({ emulator: openSearchEmulator } = await setupSearchableMockResources(pathToSearchableMockResources));
+        jest.spyOn(openSearchEmulator, 'getOpensearchLocalDirectory').mockReturnValue(path.join(pathToSearchableMockResources, openSearchEmulator.relativePathToOpensearchLocal));
+        ({ emulator: openSearchSimulator } = await setupSearchableMockResources(pathToSearchableMockResources));
       }
       
-      const result = await deploy(out, ddbClient, openSearchEmulator ? openSearchEmulator.url : undefined);
+      const result = await deploy(out, ddbClient, openSearchSimulator ? openSearchSimulator.url : undefined);
       server = result.simulator;
 
       GRAPHQL_ENDPOINT = server.url + '/graphql';
@@ -106,9 +106,9 @@ describe('@searchable transformer', () => {
 
       await terminateDDB(ddbEmulator, dbPath);
 
-      if (openSearchEmulator) {
-        await openSearchEmulator.terminate();
-        openSearchEmulator = null;
+      if (openSearchSimulator) {
+        await openSearchSimulator.terminate();
+        openSearchSimulator = null;
       }
 
       if (pathToSearchableMockResources) {
@@ -148,7 +148,7 @@ describe('@searchable transformer', () => {
       expect(resultItems.filter( item => item.id === todo101.id)[0]).toEqual(todo101);
       expect(resultItems.filter( item => item.id === todo102.id)[0]).toEqual(todo102);
     });
-  
+
     test('filter using supported string type operations', async () => {
       const { resultItems } = await searchTodos(
         {
@@ -395,7 +395,7 @@ describe('@searchable transformer', () => {
    * Test helper methods
    */
     const createTestRecords = async () => {
-    if (GRAPHQL_CLIENT && openSearchEmulator && openSearchEmulator.url) {
+    if (GRAPHQL_CLIENT && openSearchSimulator && openSearchSimulator.url) {
       const todo101Id = await createTodo(todo101.descriptions, todo101.myint, todo101.name, todo101.myfloat, todo101.myenum, todo101.mybool);
       todo101['id'] = todo101Id;
       const todo102Id = await createTodo(todo102.descriptions, todo102.myint, todo102.name, todo102.myfloat, todo102.myenum, todo102.mybool);
@@ -437,8 +437,8 @@ describe('@searchable transformer', () => {
     expect(response.data.createTodo.myenum).toEqual(myenum);
 
     const todoId = response.data.createTodo.id;
-    if (openSearchEmulator.url) {
-      const url = openSearchEmulator.url.replace(/\/+$/, '') + '/_bulk';
+    if (openSearchSimulator.url) {
+      const url = openSearchSimulator.url.replace(/\/+$/, '') + '/_bulk';
       const payload = [
         JSON.stringify({ "index": { "_index": "todo", "_id": todoId } }), 
         JSON.stringify({ id: todoId, descriptions: descriptions, myint: myint, name: name, myfloat: myfloat, myenum: myenum, mybool: mybool }), 

@@ -25,7 +25,7 @@ import { timeConstrainedInvoker } from '../func';
 import { ddbLambdaTriggerHandler } from './lambda-trigger-handler';
 import { TableDescription } from 'aws-sdk/clients/dynamodb';
 import { querySearchable } from '../utils/opensearch';
-import { getMockSearchableResourceDirectory } from '../utils/mock-directory';
+import { getMockOpenseachDataDirectory } from '../utils/mock-directory';
 import { buildLambdaTrigger } from './lambda-invoke';
 import { printer } from 'amplify-prompts';
 
@@ -395,9 +395,9 @@ export class APITest {
   private async startOpensearchLocalServer(context: $TSContext, isLocalDBEmpty: boolean) {
     try {
       const mockConfig = await getMockConfig(context);
-      const mockSearchableResourceDirectory = await this.createMockSearchableArtifacts(context);
+      await this.createMockSearchableArtifacts(context);
       this.opensearchEmulator = await opensearchEmulator.launch(
-        mockSearchableResourceDirectory, 
+        getMockOpenseachDataDirectory(context), 
         {
           port: null, // let the emulator choose the default
           ...mockConfig,
@@ -445,9 +445,9 @@ export class APITest {
     }
   }
 
-  private async createMockSearchableArtifacts(context: $TSContext): Promise<string> {
-    const mockSearchableResourceDirectory = getMockSearchableResourceDirectory(context);
-    await fs.ensureDirSync(mockSearchableResourceDirectory);
+  private async createMockSearchableArtifacts(context: $TSContext) {
+    const opensearchLocalDirectory = opensearchEmulator.getOpensearchLocalDirectory();
+    fs.ensureDirSync(opensearchLocalDirectory);
     const mockSearchableTriggerDirectory = getMockSearchableTriggerDirectory(context);
     fs.ensureDirSync(mockSearchableTriggerDirectory);
     const searchableLambdaResourceDir = path.resolve(__dirname, '..', '..', 'resources', 'mock-searchable-lambda-trigger');
@@ -456,8 +456,9 @@ export class APITest {
     // build the searchable lambda trigger
     const triggerConfig = getSearchableLambdaTriggerConfig(context, null);
     const runtimeManager = await context.amplify.loadRuntimePlugin(context, triggerConfig?.runtimePluginId);
+    printer.info('Building the searchable lambda trigger');
     await buildLambdaTrigger(runtimeManager, triggerConfig);
-    return mockSearchableResourceDirectory;
+    fs.ensureDirSync(getMockOpenseachDataDirectory(context));
   }
 
   private async getAPIBackendDirectory(context) {

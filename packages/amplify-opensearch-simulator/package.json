@@ -17,7 +17,7 @@
   ],
   "scripts": {
     "build": "tsc",
-    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules opensearch",
     "test": "jest"
   },
   "dependencies": {
