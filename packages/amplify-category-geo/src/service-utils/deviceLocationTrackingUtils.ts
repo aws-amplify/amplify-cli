@@ -49,7 +49,9 @@ export const createDeviceLocationTrackingResource = async (
   printer.success('Created device location tracking resources');
 };
 
-const saveCFNParameters = (parameters: Pick<DeviceLocationTrackingParameters, 'name' | 'dataProvider' | 'isDefault'>): void => {
+const saveCFNParameters = (
+  parameters: Pick<DeviceLocationTrackingParameters, 'name' | 'dataProvider' | 'isDefault' | 'positionFiltering'>,
+): void => {
   const params = {
     authRoleName: {
       Ref: 'AuthRoleName',
@@ -58,6 +60,7 @@ const saveCFNParameters = (parameters: Pick<DeviceLocationTrackingParameters, 'n
       Ref: 'UnauthRoleName',
     },
     trackerName: parameters.name,
+    positionFiltering: parameters.positionFiltering,
     isDefault: parameters.isDefault,
     pricingPlan: undefined,
   };
@@ -77,6 +80,7 @@ export const constructTrackingMetaParameters = (
     isDefault: params.isDefault,
     providerPlugin: provider,
     service: ServiceName.DeviceLocationTracking,
+    positionFiltering: params.positionFiltering,
     accessType: params.accessType,
     dependsOn: dependsOnResources,
   };
@@ -86,7 +90,7 @@ export const constructTrackingMetaParameters = (
 /**
  * The Meta information stored for a Device Location Tracking resource
  */
-export type DeviceLocationTrackingMetaParameters = Pick<DeviceLocationTrackingParameters, 'isDefault' | 'accessType'> & {
+export type DeviceLocationTrackingMetaParameters = Pick<DeviceLocationTrackingParameters, 'isDefault' | 'accessType' | 'positionFiltering'> & {
   providerPlugin: string;
   service: string;
   dependsOn: ResourceDependsOn[];
@@ -105,6 +109,7 @@ export const getCurrentTrackingParameters = async (trackerName: string): Promise
   return {
     accessType: currentTrackingMetaParameters.accessType,
     isDefault: currentTrackingMetaParameters.isDefault,
+    positionFiltering: currentTrackingMetaParameters.positionFiltering,
     groupPermissions: currentTrackingParameters?.groupPermissions || [],
     roleAndGroupPermissionsMap: currentTrackingParameters?.roleAndGroupPermissionsMap || {},
   };

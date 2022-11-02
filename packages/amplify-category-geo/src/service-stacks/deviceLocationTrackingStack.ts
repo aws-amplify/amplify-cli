@@ -45,6 +45,7 @@ export class DeviceLocationTrackingStack extends BaseStack {
       'trackerName',
       'env',
       'isDefault',
+      'positionFiltering',
     );
     this.parameters = this.constructInputParameters(inputParameters);
 
@@ -96,6 +97,8 @@ export class DeviceLocationTrackingStack extends BaseStack {
 
     // set up custom params
 
+    const positionFiltering = this.parameters.get('positionFiltering')!.valueAsString;
+
     const customTrackingLambdaCode = fs.readFileSync(customDeviceLocationTrackingLambdaCodePath, 'utf-8');
     const customTrackingLambda = new lambda.Function(this, 'customTrackingLambda', {
       code: lambda.Code.fromInline(customTrackingLambdaCode),
@@ -111,6 +114,7 @@ export class DeviceLocationTrackingStack extends BaseStack {
       resourceType: 'Custom::LambdaCallout',
       properties: {
         trackerName: this.trackerName,
+        positionFiltering,
         region: this.trackingRegion,
         env: cdk.Fn.ref('env'),
       },
