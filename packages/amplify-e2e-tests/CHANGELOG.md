@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.14.1-double-hooks.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.14.0...amplify-e2e-tests@3.14.1-double-hooks.0) (2022-11-03)
+
+
+### Bug Fixes
+
+* add function access to analytics ([#11276](https://github.com/aws-amplify/amplify-cli/issues/11276)) ([3939d41](https://github.com/aws-amplify/amplify-cli/commit/3939d41b2aca6cf64bd0a36a32ff0d45ae954eaf))
+* keeps hooks intact when attaching backend ([#11179](https://github.com/aws-amplify/amplify-cli/issues/11179)) ([41caa91](https://github.com/aws-amplify/amplify-cli/commit/41caa9149680b2ca712addbbacd5234b12c4c13f))
+* uploading multiple auth trigger files ([#11254](https://github.com/aws-amplify/amplify-cli/issues/11254)) ([#11267](https://github.com/aws-amplify/amplify-cli/issues/11267)) ([b7bdcec](https://github.com/aws-amplify/amplify-cli/commit/b7bdcec939ac71c4f70ae87ece8c2a7995d4ae72))
+
+
+
+
+
 # [3.14.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.13.3...amplify-e2e-tests@3.14.0) (2022-10-27)
 
 

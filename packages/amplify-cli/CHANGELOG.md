@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.1-double-hooks.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.4.0...@aws-amplify/cli-internal@10.4.1-double-hooks.0) (2022-11-03)
+
+
+### Bug Fixes
+
+* stop timer on early push resources exit ([#11287](https://github.com/aws-amplify/amplify-cli/issues/11287)) ([ac06cb2](https://github.com/aws-amplify/amplify-cli/commit/ac06cb27b1d9e83a09b2f7ac99571f0d8825a64e))
+* updates to error handler print format ([#11311](https://github.com/aws-amplify/amplify-cli/issues/11311)) ([0ac69bb](https://github.com/aws-amplify/amplify-cli/commit/0ac69bb5edbbeef13602d97650f55333f9e5c547))
+
+
+
+## 10.3.2 (2022-10-25)
+
+
+### Bug Fixes
+
+* keeps hooks intact when attaching backend ([#11179](https://github.com/aws-amplify/amplify-cli/issues/11179)) ([41caa91](https://github.com/aws-amplify/amplify-cli/commit/41caa9149680b2ca712addbbacd5234b12c4c13f))
+
+
+
+
+
 # [10.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.3.1...@aws-amplify/cli-internal@10.4.0) (2022-10-27)
 
 

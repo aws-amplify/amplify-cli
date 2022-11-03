@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.1-double-hooks.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@3.3.0...amplify-cli-core@3.3.1-double-hooks.0) (2022-11-03)
+
+
+### Bug Fixes
+
+* override dependency for auth ([#11255](https://github.com/aws-amplify/amplify-cli/issues/11255)) ([690a2f7](https://github.com/aws-amplify/amplify-cli/commit/690a2f71cdb3b40db0935dbca0095349dbdc2a7a))
+* uploading multiple auth trigger files ([#11254](https://github.com/aws-amplify/amplify-cli/issues/11254)) ([#11267](https://github.com/aws-amplify/amplify-cli/issues/11267)) ([b7bdcec](https://github.com/aws-amplify/amplify-cli/commit/b7bdcec939ac71c4f70ae87ece8c2a7995d4ae72))
+
+
+
+
+
 # [3.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@3.2.2...amplify-cli-core@3.3.0) (2022-10-27)
 
 
