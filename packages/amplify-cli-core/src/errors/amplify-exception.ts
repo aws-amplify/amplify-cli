@@ -137,11 +137,7 @@ export type AmplifyErrorType =
   | 'ResourceNotReadyError'
   | 'StackNotFoundError'
   | 'StackStateError'
-  | 'UserInputError'
-  | 'MockProcessError'
-  | 'SearchableMockUnsupportedPlatformError'
-  | 'SearchableMockUnavailablePortError'
-  | 'SearchableMockProcessError';
+  | 'UserInputError';
 
 /**
  * Amplify fault types
@@ -175,5 +171,4 @@ export type AmplifyFaultType =
   | 'TriggerUploadFault'
   | 'UnexpectedS3Fault'
   | 'UnknownFault'
-  | 'UnknownNodeJSFault'
-  | 'MockProcessFault';
+  | 'UnknownNodeJSFault';

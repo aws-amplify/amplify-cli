@@ -1,14 +1,17 @@
+import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import gql from 'graphql-tag';
 import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
 import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
-import { GraphQLClient } from './utils/graphql-client';
 import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
 import 'isomorphic-fetch';
 import { $TSAny } from 'amplify-cli-core';
 
 jest.setTimeout(2000000);
+
+const REGION = 'us-west-2';
 
 let ddbEmulator = null;
 let dbPath = null;
@@ -16,8 +19,8 @@ let server;
 
 let GRAPHQL_ENDPOINT = undefined;
 
-let APIKEY_GRAPHQL_CLIENT = undefined;
-let USER_POOL_AUTH_CLIENT = undefined;
+let APIKEY_GRAPHQL_CLIENT: AWSAppSyncClient<any> = undefined;
+let USER_POOL_AUTH_CLIENT: AWSAppSyncClient<any> = undefined;
 
 let USER_POOL_ID = 'fake_user_pool';
 
@@ -130,6 +133,7 @@ beforeAll(async () => {
   });
 
   try {
+    // Clean the bucket
     const out = transformer.transform(validSchema);
 
     let ddbClient;
@@ -151,12 +155,30 @@ beforeAll(async () => {
 
     const idToken = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME1, USERNAME1, []);
 
-    USER_POOL_AUTH_CLIENT = new GraphQLClient(GRAPHQL_ENDPOINT, {
-      Authorization: idToken,
+    USER_POOL_AUTH_CLIENT = new AWSAppSyncClient({
+      url: GRAPHQL_ENDPOINT,
+      region: REGION,
+      auth: {
+        type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
+        jwtToken: () => idToken,
+      },
+      offlineConfig: {
+        keyPrefix: 'userPools',
+      },
+      disableOffline: true,
     });
 
-    APIKEY_GRAPHQL_CLIENT = new GraphQLClient(GRAPHQL_ENDPOINT, { 
-      'x-api-key': apiKey 
+    APIKEY_GRAPHQL_CLIENT = new AWSAppSyncClient({
+      url: GRAPHQL_ENDPOINT,
+      region: REGION,
+      auth: {
+        type: AUTH_TYPE.API_KEY,
+        apiKey: apiKey,
+      },
+      offlineConfig: {
+        keyPrefix: 'apikey',
+      },
+      disableOffline: true,
     });
 
     // Wait for any propagation to avoid random
@@ -185,7 +207,7 @@ afterAll(async () => {
  */
 test(`Test 'public' authStrategy`, async () => {
   try {
-    const createMutation = `
+    const createMutation = gql`
       mutation {
         createPostPublic(input: { title: "Hello, World!" }) {
           id
@@ -194,7 +216,7 @@ test(`Test 'public' authStrategy`, async () => {
       }
     `;
 
-    const getQuery = `
+    const getQuery = gql`
       query ($id: ID!) {
         getPostPublic(id: $id) {
           id
@@ -203,10 +225,10 @@ test(`Test 'public' authStrategy`, async () => {
       }
     `;
 
-    const response = await APIKEY_GRAPHQL_CLIENT.query(
-      createMutation,
-      {}
-    );
+    const response = await APIKEY_GRAPHQL_CLIENT.mutate({
+      mutation: createMutation,
+      fetchPolicy: 'no-cache',
+    });
 
     const responseData = (response.data) as $TSAny;
     expect(responseData?.createPostPublic?.id).toBeDefined();
@@ -216,15 +238,17 @@ test(`Test 'public' authStrategy`, async () => {
 
     // Authenticate User Pools user must fail
     try {
-      const queryResult = await USER_POOL_AUTH_CLIENT.query(
-        getQuery,
-        {
-          id: postId
-        }
-      );
-      expect(queryResult.errors[0].message).toEqual('Not Authorized to access getPostPublic on type Query');
-    } catch (e) {
+      await USER_POOL_AUTH_CLIENT.query({
+        query: getQuery,
+        fetchPolicy: 'no-cache',
+        variables: {
+          id: postId,
+        },
+      });
+
       expect(true).toBe(false);
+    } catch (e) {
+      expect(e.message).toMatch('GraphQL error: Not Authorized to access getPostPublic on type Query');
     }
   } catch (e) {
     expect(true).toBe(false);
@@ -233,7 +257,7 @@ test(`Test 'public' authStrategy`, async () => {
 
 test(`Test 'private' authStrategy`, async () => {
   try {
-    const createMutation = `
+    const createMutation = gql`
       mutation {
         createPostPrivate(input: { title: "Hello, World!" }) {
           id
@@ -242,7 +266,7 @@ test(`Test 'private' authStrategy`, async () => {
       }
     `;
 
-    const getQuery = `
+    const getQuery = gql`
       query ($id: ID!) {
         getPostPrivate(id: $id) {
           id
@@ -251,10 +275,10 @@ test(`Test 'private' authStrategy`, async () => {
       }
     `;
 
-    const response = await USER_POOL_AUTH_CLIENT.query(
-      createMutation,
-      {}
-    );
+    const response = await USER_POOL_AUTH_CLIENT.mutate({
+      mutation: createMutation,
+      fetchPolicy: 'no-cache',
+    });
 
     const responseData = (response.data) as $TSAny;
     expect(responseData?.createPostPrivate?.id).toBeDefined();
@@ -264,15 +288,17 @@ test(`Test 'private' authStrategy`, async () => {
 
     // Authenticate API Key fail
     try {
-      const queryResult = await APIKEY_GRAPHQL_CLIENT.query(
-        getQuery,
-        {
-          id: postId
-        }
-      );
-      expect(queryResult.errors[0].message).toEqual('Not Authorized to access getPostPrivate on type Query');
+      await APIKEY_GRAPHQL_CLIENT.query({
+        query: getQuery,
+        fetchPolicy: 'no-cache',
+        variables: {
+          id: postId,
+        },
+      });
+
+      expect(true).toBe(false);
     } catch (e) {
-      expect(true).toEqual(false);
+      expect(e.message).toMatch('GraphQL error: Not Authorized to access getPostPrivate on type Query');
     }
   } catch (e) {
     console.error(e);
@@ -281,7 +307,7 @@ test(`Test 'private' authStrategy`, async () => {
 });
 
 describe(`Connection tests with @auth on type`, () => {
-  const createPostMutation = `
+  const createPostMutation = gql`
     mutation {
       createPostConnection(input: { title: "Hello, World!" }) {
         id
@@ -290,7 +316,7 @@ describe(`Connection tests with @auth on type`, () => {
     }
   `;
 
-  const createCommentMutation = `
+  const createCommentMutation = gql`
     mutation ($postId: ID!) {
       createCommentConnection(input: { content: "Comment", commentConnectionPostId: $postId }) {
         id
@@ -299,7 +325,7 @@ describe(`Connection tests with @auth on type`, () => {
     }
   `;
 
-  const getPostQuery = `
+  const getPostQuery = gql`
     query ($postId: ID!) {
       getPostConnection(id: $postId) {
         id
@@ -308,7 +334,7 @@ describe(`Connection tests with @auth on type`, () => {
     }
   `;
 
-  const getPostQueryWithComments = `
+  const getPostQueryWithComments = gql`
     query ($postId: ID!) {
       getPostConnection(id: $postId) {
         id
@@ -323,7 +349,7 @@ describe(`Connection tests with @auth on type`, () => {
     }
   `;
 
-  const getCommentQuery = `
+  const getCommentQuery = gql`
     query ($commentId: ID!) {
       getCommentConnection(id: $commentId) {
         id
@@ -332,7 +358,7 @@ describe(`Connection tests with @auth on type`, () => {
     }
   `;
 
-  const getCommentWithPostQuery = `
+  const getCommentWithPostQuery = gql`
     query ($commentId: ID!) {
       getCommentConnection(id: $commentId) {
         id
@@ -351,21 +377,22 @@ describe(`Connection tests with @auth on type`, () => {
   beforeAll(async () => {
     try {
       // Add a comment with ApiKey - Succeed
-      const response = await APIKEY_GRAPHQL_CLIENT.query(
-        createPostMutation,
-        {}
-      );
+      const response = await APIKEY_GRAPHQL_CLIENT.mutate({
+        mutation: createPostMutation,
+        fetchPolicy: 'no-cache',
+      });
 
       const responseData = (response.data) as $TSAny;
       postId = responseData?.createPostConnection?.id;
 
       // Add a comment with UserPool - Succeed
-      const commentResponse = await USER_POOL_AUTH_CLIENT.query(
-        createCommentMutation,
-        {
-          postId: postId
-        }
-      );
+      const commentResponse = await USER_POOL_AUTH_CLIENT.mutate({
+        mutation: createCommentMutation,
+        fetchPolicy: 'no-cache',
+        variables: {
+          postId,
+        },
+      });
 
       const commentResponseData = (commentResponse.data) as $TSAny;
       commentId = commentResponseData?.createCommentConnection?.id;
@@ -377,86 +404,99 @@ describe(`Connection tests with @auth on type`, () => {
 
   it('Create a Post with UserPool - Fail', async () => {
     expect.assertions(1);
-    const result = await USER_POOL_AUTH_CLIENT.query(
-      createPostMutation,
-      {}
-    );
-    expect(result.errors[0].message).toEqual('Not Authorized to access createPostConnection on type Mutation');
+    await expect(
+      USER_POOL_AUTH_CLIENT.mutate({
+        mutation: createPostMutation,
+        fetchPolicy: 'no-cache',
+      }),
+    ).rejects.toThrow('GraphQL error: Not Authorized to access createPostConnection on type Mutation');
   });
 
   it('Add a comment with ApiKey - Fail', async () => {
     expect.assertions(1);
-    const result = await APIKEY_GRAPHQL_CLIENT.query(
-      createCommentMutation,
-      {
-        postId: postId
-      }
-    );
-    expect(result.errors[0].message).toEqual('Not Authorized to access createCommentConnection on type Mutation');
+    await expect(
+      APIKEY_GRAPHQL_CLIENT.mutate({
+        mutation: createCommentMutation,
+        fetchPolicy: 'no-cache',
+        variables: {
+          postId,
+        },
+      }),
+    ).rejects.toThrow('Not Authorized to access createCommentConnection on type Mutation');
   });
 
   it('Get Post with ApiKey - Succeed', async () => {
-    const responseGetPost = await APIKEY_GRAPHQL_CLIENT.query(
-      getPostQuery,
-      {
-        postId: postId
-      }
-    );
+    const responseGetPost = await APIKEY_GRAPHQL_CLIENT.query<any>({
+      query: getPostQuery,
+      fetchPolicy: 'no-cache',
+      variables: {
+        postId,
+      },
+    });
     expect(responseGetPost.data.getPostConnection.id).toEqual(postId);
     expect(responseGetPost.data.getPostConnection.title).toEqual('Hello, World!');
   });
 
   it('Get Post+Comments with ApiKey - Fail', async () => {
     expect.assertions(1);
-    const result = await APIKEY_GRAPHQL_CLIENT.query(
-      getPostQueryWithComments,
-      {
-        postId: postId
-      }
-    );
-    expect(result.errors[0].message).toEqual('Not Authorized to access items on type ModelCommentConnectionConnection');
+    await expect(
+      APIKEY_GRAPHQL_CLIENT.query<any>({
+        query: getPostQueryWithComments,
+        fetchPolicy: 'no-cache',
+        variables: {
+          postId,
+        },
+      }),
+    ).rejects.toThrow('Not Authorized to access items on type ModelCommentConnectionConnection');
   });
 
   it('Get Post with UserPool - Fail', async () => {
     expect.assertions(1);
-    const result = await USER_POOL_AUTH_CLIENT.query(
-      getPostQuery,
-      {
-        postId: postId
-      }
-    );
-    expect(result.errors[0].message).toEqual('Not Authorized to access getPostConnection on type Query');
+    await expect(
+      USER_POOL_AUTH_CLIENT.query<any>({
+        query: getPostQuery,
+        fetchPolicy: 'no-cache',
+        variables: {
+          postId,
+        },
+      }),
+    ).rejects.toThrow('Not Authorized to access getPostConnection on type Query');
   });
 
   it('Get Comment with UserPool - Succeed', async () => {
-    const responseGetComment = await USER_POOL_AUTH_CLIENT.query(
-      getCommentQuery,
-      {
-        commentId: commentId
-      }
-    );
+    const responseGetComment = await USER_POOL_AUTH_CLIENT.query<any>({
+      query: getCommentQuery,
+      fetchPolicy: 'no-cache',
+      variables: {
+        commentId,
+      },
+    });
     expect(responseGetComment.data.getCommentConnection.id).toEqual(commentId);
     expect(responseGetComment.data.getCommentConnection.content).toEqual('Comment');
   });
 
   it('Get Comment with ApiKey - Fail', async () => {
     expect.assertions(1);
-    const result = await APIKEY_GRAPHQL_CLIENT.query(
-      getCommentQuery,
-      {
-        commentId: commentId
-      }
-    );
-    expect(result.errors[0].message).toEqual('Not Authorized to access getCommentConnection on type Query');
+    await expect(
+      APIKEY_GRAPHQL_CLIENT.query<any>({
+        query: getCommentQuery,
+        fetchPolicy: 'no-cache',
+        variables: {
+          commentId,
+        },
+      }),
+    ).rejects.toThrow('Not Authorized to access getCommentConnection on type Query');
   });
 
   it('Get Comment with Post with UserPool - Succeed, but null for Post field', async () => {
-    const responseGetComment = await USER_POOL_AUTH_CLIENT.query(
-      getCommentWithPostQuery,
-      {
-        commentId: commentId
-      }
-    );
+    const responseGetComment = await USER_POOL_AUTH_CLIENT.query<any>({
+      query: getCommentWithPostQuery,
+      errorPolicy: 'all',
+      fetchPolicy: 'no-cache',
+      variables: {
+        commentId,
+      },
+    });
     expect(responseGetComment.data.getCommentConnection.id).toEqual(commentId);
     expect(responseGetComment.data.getCommentConnection.content).toEqual('Comment');
     expect(responseGetComment.data.getCommentConnection.post).toBeNull();
