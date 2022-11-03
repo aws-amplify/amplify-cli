@@ -9,5 +9,10 @@
     "lib",
     "**/__mocks__/**/*",
     "**/__tests__/**/*"
+  ],
+  "references": [
+    {
+      "path": "../amplify-cli-core"
+    }
   ]
 }
