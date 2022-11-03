@@ -132,7 +132,7 @@ describe('amplify geo update', () => {
     expect(getGeoJSConfiguration(awsExport).region).toEqual(region);
   });
 
-  it.only('init a project with default auth config and add two device location tracker resources and update the first to be default', async () => {
+it('init a project with default auth config and add two device location tracker resources and update the first to be default', async () => {
     const [deviceTracker1Id, deviceTracker2Id] = generateResourceIdsInOrder(3);
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
