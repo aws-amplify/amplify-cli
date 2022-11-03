@@ -161,7 +161,6 @@ describe('Device Location Tracker walkthrough works as expected', () => {
       if (message === 'Do you want to update advanced settings?') {
         mockUserInput = false;
       } else if (message === 'Set this device tracker as the default? It will be used in Amplify geofence collection API calls if no explicit reference is provided.') {
-        console.log('here');
         mockUserInput = false;
       }
       return Promise.resolve(mockUserInput);
