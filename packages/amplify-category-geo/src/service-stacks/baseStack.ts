@@ -39,7 +39,10 @@ export class BaseStack extends cdk.Stack {
   }
 
   /**
-   * converts to cfn
+   * This function renderers a full CFN template for this stack.
+   * It is inspired by
+   * https://github.com/aws/aws-cdk/blob/bd056d1d38a2d3f43efe4f857c4d38b30fb9b681/packages/%40aws-cdk/assertions/lib/template.ts#L298-L310.
+   * This replaces private prepareApp (from CDK v1) and this._toCloudFormation() (the latter does not function properly without the former).
    */
   toCloudFormation = (): $TSAny => {
     const root = this.node.root as cdk.Stage;
@@ -48,7 +51,8 @@ export class BaseStack extends cdk.Stack {
       return assembly.getStackArtifact(this.artifactId).template;
     }
     // if this is a nested stack ( i.e. it has a parent), then just read the template as a string
-    return JSON.parse(fs.readFileSync(path.join(assembly.directory, this.templateFile)).toString('utf-8'));
+    const template = fs.readFileSync(path.join(assembly.directory, this.templateFile));
+    return JSON.parse(template.toString('utf-8'));
   }
 }
 
