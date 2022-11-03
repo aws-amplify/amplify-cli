@@ -22,7 +22,7 @@
     "test": "jest --logHeapUsage --coverage --passWithNoTests"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-api": "^5.1.0-cdkv2.1",
+    "@aws-amplify/amplify-category-api": "^5.1.0-cdkv2.2",
     "amplify-cli-core": "4.0.0-cdkv2.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",
