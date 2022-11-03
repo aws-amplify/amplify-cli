@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.6.0-rc.ffe42c542.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.5.0...@aws-amplify/amplify-console-integration-tests@2.6.0-rc.ffe42c542.0) (2022-11-03)
+
+
+### Features
+
+* add Searchable mocking feature ([#11089](https://github.com/aws-amplify/amplify-console-integration-tests/issues/11089)) ([899fe22](https://github.com/aws-amplify/amplify-console-integration-tests/commit/899fe225b31a3d0e88a8090e13b8da0c725b69a1))
+
+
+### Reverts
+
+* Revert "feat: add Searchable mocking feature (#11089)" (#11324) ([6dfe8ed](https://github.com/aws-amplify/amplify-console-integration-tests/commit/6dfe8ed16549a40c3ad72248612414287a444d8f)), closes [#11089](https://github.com/aws-amplify/amplify-console-integration-tests/issues/11089) [#11324](https://github.com/aws-amplify/amplify-console-integration-tests/issues/11324)
+
+
+
+
+
 # [2.5.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.4.3...@aws-amplify/amplify-console-integration-tests@2.5.0) (2022-10-27)
 
 
