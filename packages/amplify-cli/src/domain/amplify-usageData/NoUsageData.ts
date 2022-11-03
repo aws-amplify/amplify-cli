@@ -54,6 +54,13 @@ export class NoUsageData implements IUsageData, IFlowData {
   }
 
   /**
+   * Noop implementation of getSessionUuid
+   */
+  getSessionUuid(): string {
+    return '';
+  }
+
+  /**
    * Noop implementation of emitError
    */
   emitError(): Promise<void> {
