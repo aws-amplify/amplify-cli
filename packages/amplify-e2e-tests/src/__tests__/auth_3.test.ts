@@ -58,6 +58,15 @@ describe('amplify add auth...', () => {
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
 
     expect(userPool.UserPool).toBeDefined();
+    const { userPoolGroups } = meta.auth;
+    expect(userPoolGroups.service).toEqual('Cognito-UserPool-Groups');
+    expect(userPoolGroups.providerPlugin).toEqual('awscloudformation');
+    expect(userPoolGroups.dependsOn.length).toBe(1);
+    expect(userPoolGroups.dependsOn[0].category).toBe('auth');
+    expect(userPoolGroups.dependsOn[0].attributes.length).toBe(3);
+    expect(userPoolGroups.dependsOn[0].attributes).toContain('UserPoolId');
+    expect(userPoolGroups.dependsOn[0].attributes).toContain('AppClientIDWeb');
+    expect(userPoolGroups.dependsOn[0].attributes).toContain('AppClientID');
   });
 
   it('...should init a project where all possible options are selected', async () => {
@@ -85,5 +94,16 @@ describe('amplify add auth...', () => {
 
     expect(createFunction.Configuration.Environment.Variables.MODULES).toEqual('custom');
     expect(defineFunction.Configuration.Environment.Variables.MODULES).toEqual('custom');
+
+    const { userPoolGroups } = meta.auth;
+    expect(userPoolGroups.service).toEqual('Cognito-UserPool-Groups');
+    expect(userPoolGroups.providerPlugin).toEqual('awscloudformation');
+    expect(userPoolGroups.dependsOn.length).toBe(1);
+    expect(userPoolGroups.dependsOn[0].category).toBe('auth');
+    expect(userPoolGroups.dependsOn[0].attributes.length).toBe(4);
+    expect(userPoolGroups.dependsOn[0].attributes).toContain('UserPoolId');
+    expect(userPoolGroups.dependsOn[0].attributes).toContain('AppClientIDWeb');
+    expect(userPoolGroups.dependsOn[0].attributes).toContain('AppClientID');
+    expect(userPoolGroups.dependsOn[0].attributes).toContain('IdentityPoolId');
   });
 });

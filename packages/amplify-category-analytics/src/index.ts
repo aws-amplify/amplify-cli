@@ -1,9 +1,22 @@
-import { $TSContext, $TSAny } from 'amplify-cli-core';
+import { $TSContext, $TSAny, AmplifyFault } from 'amplify-cli-core';
 import * as path from 'path';
 import inquirer, { QuestionCollection } from 'inquirer';
 import { printer } from 'amplify-prompts';
 import * as pinpointHelper from './utils/pinpoint-helper';
 import * as kinesisHelper from './utils/kinesis-helper';
+import { migrationCheck } from './migrations';
+
+export { migrate } from './provider-utils/awscloudformation/service-walkthroughs/pinpoint-walkthrough';
+
+export {
+  analyticsPluginAPIGetResources,
+  analyticsPluginAPICreateResource,
+  analyticsPluginAPIToggleNotificationChannel,
+  analyticsPluginAPIPinpointHasInAppMessagingPolicy,
+  analyticsPluginAPIMigrations,
+  analyticsPluginAPIPostPush,
+  analyticsPluginAPIPush,
+} from './analytics-resource-api';
 
 const category = 'analytics';
 
@@ -58,12 +71,11 @@ export const getPermissionPolicies = async (context: $TSContext, resourceOpsMapp
   const permissionPolicies: $TSAny[] = [];
   const resourceAttributes: $TSAny[] = [];
 
-  Object.keys(resourceOpsMapping).forEach(resourceName => {
+  for (const resourceName of Object.keys(resourceOpsMapping)) {
     try {
       const providerName = amplifyMeta[category][resourceName].providerPlugin;
       if (providerName) {
-        // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
-        const providerController = require(`./provider-utils/${providerName}/index`);
+        const providerController = await import(`./provider-utils/${providerName}/index`);
         const { policy, attributes } = providerController.getPermissionPolicies(
           context,
           amplifyMeta[category][resourceName].service,
@@ -76,10 +88,11 @@ export const getPermissionPolicies = async (context: $TSContext, resourceOpsMapp
         printer.error(`Provider not configured for ${category}: ${resourceName}`);
       }
     } catch (e) {
-      printer.warn(`Could not get policies for ${category}: ${resourceName}`);
-      throw e;
+      throw new AmplifyFault('AnalyticsCategoryFault', {
+        message: `Could not get policies for ${category}: ${resourceName}`,
+      }, e);
     }
-  });
+  }
   return { permissionPolicies, resourceAttributes };
 };
 
@@ -88,15 +101,15 @@ export const getPermissionPolicies = async (context: $TSContext, resourceOpsMapp
  * @param context - Amplify CLI context
  */
 export const executeAmplifyCommand = async (context: $TSContext) : Promise<$TSAny> => {
-  let commandPath = path.normalize(path.join(__dirname, 'commands'));
-  if (context.input.command === 'help') {
-    commandPath = path.join(commandPath, category);
-  } else {
-    commandPath = path.join(commandPath, category, context.input.command);
-  }
+  context.exeInfo = context.amplify.getProjectDetails();
+  await migrationCheck(context);
 
-  // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
-  const commandModule = require(commandPath);
+  let commandPath = path.normalize(path.join(__dirname, 'commands'));
+  commandPath = context.input.command === 'help'
+    ? path.join(commandPath, category)
+    : path.join(commandPath, category, context.input.command);
+
+  const commandModule = await import(commandPath);
   await commandModule.run(context);
 };
 
@@ -109,5 +122,3 @@ export const handleAmplifyEvent = async (__context: $TSContext, args: $TSAny): P
   printer.info(`${category} handleAmplifyEvent to be implemented`);
   printer.info(`Received event args ${args}`);
 };
-
-export { migrate } from './provider-utils/awscloudformation/service-walkthroughs/pinpoint-walkthrough';

@@ -29,6 +29,10 @@
       {
         "name": "GraphQL Lambda Authorizer",
         "value": "lambda-auth"
+      },
+      {
+        "name": "AppSync - GraphQL API request (with IAM)",
+        "value": "appsync-request"
       }
     ]
   }

@@ -166,6 +166,9 @@ function filterInputs(input, question, getAllMaps, context, currentAnswers) {
             if (providerName === 'Loginwithamazon') {
               providerName = 'Login With Amazon';
             }
+            if (providerName === 'Signinwithapple') {
+              providerName = 'Sign in with Apple';
+            }
             choice.missingProviders = choice.missingProviders.length < 1 ? [providerName] : choice.missingProviders.concat(providerName);
           }
         });

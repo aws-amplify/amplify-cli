@@ -2,7 +2,7 @@ import { AttributeDefinition, GlobalSecondaryIndex, KeySchema } from 'cloudform-
 import { DynamoDB, IntrinsicFunction } from 'cloudform';
 
 import _ from 'lodash';
-import { AmplifyError, amplifyErrorWithTroubleshootingLink, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
+import { AmplifyError, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
 import { GSIRecord } from '../utils/amplify-resource-state-utils';
 
 export const MAX_GSI_PER_TABLE = 20;
@@ -54,7 +54,7 @@ export const addGSI = (index: GSIRecord, table: DynamoDB.Table): DynamoDB.Table 
   const existingIndices = getExistingIndexNames(table);
 
   if (existingIndices.length + 1 > MAX_GSI_PER_TABLE) {
-    throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
+    throw new AmplifyError('ConfigurationError', {
       message: `DynamoDB ${table.Properties.TableName || '{UnNamedTable}'} can have max of ${MAX_GSI_PER_TABLE} GSIs`,
     });
   }
@@ -63,7 +63,7 @@ export const addGSI = (index: GSIRecord, table: DynamoDB.Table): DynamoDB.Table 
   assertNotIntrinsicFunction(indexName);
 
   if (existingIndices.includes(indexName)) {
-    throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
+    throw new AmplifyError('ConfigurationError', {
       message: `An index with name ${indexName} already exists`,
     });
   }

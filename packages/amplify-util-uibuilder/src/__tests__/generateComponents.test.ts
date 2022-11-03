@@ -7,8 +7,11 @@ jest.mock('amplify-cli-core');
 const awsMock = aws as any;
 const utilsMock = utils as any;
 
-utilsMock.shouldRenderComponents = jest.fn().mockImplementation(() => true);
-utilsMock.notifyMissingPackages = jest.fn().mockImplementation(() => true);
+utilsMock.shouldRenderComponents = jest.fn().mockReturnValue(true);
+utilsMock.notifyMissingPackages = jest.fn().mockReturnValue(true);
+jest.mock('../commands/utils/featureFlags', () => ({
+  getTransformerVersion: jest.fn().mockImplementation(() => 2),
+}));
 
 describe('can generate components', () => {
   let context: any;
@@ -36,27 +39,52 @@ describe('can generate components', () => {
         },
       ],
     };
-    mockedExport = jest.fn(() => ({
+    mockedExport = jest.fn().mockReturnValue({
       entities: schemas.entities,
-    }));
-    awsMock.AmplifyUIBuilder = jest.fn(() => ({
-      exportComponents: jest.fn(() => ({
+    });
+    awsMock.AmplifyUIBuilder = jest.fn().mockReturnValue({
+      exportComponents: jest.fn().mockReturnValue({
         promise: () => mockedExport(),
-      })),
-      exportThemes: jest.fn(() => ({
+      }),
+      exportThemes: jest.fn().mockReturnValue({
         promise: () => mockedExport(),
-      })),
-    }));
-    utilsMock.generateUiBuilderComponents = jest.fn().mockImplementation(() => schemas.entities);
-    utilsMock.generateUiBuilderThemes = jest.fn().mockImplementation(() => schemas.entities);
-    utilsMock.getAmplifyDataSchema = jest.fn().mockImplementation(() => undefined);
-    utilsMock.generateAmplifyUiBuilderIndexFile = jest.fn().mockImplementation(() => true);
+      }),
+      exportForms: jest.fn().mockReturnValue({
+        promise: () => mockedExport(),
+      }),
+      exportViews: jest.fn().mockReturnValue({
+        promise: () => mockedExport(),
+      }),
+      getMetadata: jest.fn().mockReturnValue({
+        promise: jest.fn().mockReturnValue({
+          features: {
+            autoGenerateForms: 'true',
+            autoGenerateViews: 'true',
+          },
+        }),
+      }),
+    });
+    utilsMock.generateUiBuilderComponents = jest.fn().mockReturnValue(schemas.entities);
+    utilsMock.generateUiBuilderThemes = jest.fn().mockReturnValue(schemas.entities);
+    utilsMock.generateUiBuilderForms = jest.fn().mockReturnValue(schemas.entities);
+    utilsMock.getAmplifyDataSchema = jest.fn().mockReturnValue(undefined);
+    utilsMock.generateAmplifyUiBuilderIndexFile = jest.fn().mockReturnValue(true);
+    utilsMock.generateAmplifyUiBuilderUtilFile = jest.fn().mockReturnValue(true);
   });
 
   it('runs generateComponents', async () => {
     await run(context);
-    expect(mockedExport).toBeCalledTimes(2);
+    expect(mockedExport).toBeCalledTimes(3);
     expect(utilsMock.generateUiBuilderComponents).toBeCalledTimes(1);
     expect(utilsMock.generateUiBuilderThemes).toBeCalledTimes(1);
+    expect(utilsMock.generateUiBuilderForms).toBeCalledTimes(1);
+  });
+  it('does not run generateComponents if not Amplify Admin app', async () => {
+    utilsMock.shouldRenderComponents = jest.fn().mockReturnValue(false);
+    await run(context);
+    expect(mockedExport).toBeCalledTimes(0);
+    expect(utilsMock.generateUiBuilderComponents).toBeCalledTimes(0);
+    expect(utilsMock.generateUiBuilderThemes).toBeCalledTimes(0);
+    expect(utilsMock.generateUiBuilderForms).toBeCalledTimes(0);
   });
 });

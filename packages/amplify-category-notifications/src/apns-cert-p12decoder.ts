@@ -2,7 +2,7 @@ import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 import { execSync } from 'child_process';
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny, AmplifyError } from 'amplify-cli-core';
 
 /**
  * Certificate Info
@@ -17,7 +17,7 @@ export interface ICertificateInfo{
  * @param info filePath and Password for the decoder
  * @returns Certificate info
  */
-export const run = (info : $TSAny): ICertificateInfo => {
+export const run = (info: $TSAny): ICertificateInfo => {
   const { P12FilePath, P12FilePassword } = info;
   const pemFileContent = getPemFileContent(P12FilePath, P12FilePassword);
   const Certificate = getCertificate(pemFileContent);
@@ -30,12 +30,16 @@ export const run = (info : $TSAny): ICertificateInfo => {
   }
 
   if (!Certificate) {
-    const errorMessage = 'OpenSSL can not extract the Certificate from the p12 file';
-    throw new Error(errorMessage);
+    throw new AmplifyError('OpenSslCertificateError', {
+      message: 'OpenSSL can not extract the Certificate from the p12 file',
+      resolution: 'Check the p12 file and password and try again',
+    });
   }
   if (!PrivateKey) {
-    const errorMessage = 'OpenSSL can not extract the Private Key from the p12 file';
-    throw new Error(errorMessage);
+    throw new AmplifyError('OpenSslCertificateError', {
+      message: 'OpenSSL can not extract the Private Key from the p12 file',
+      resolution: 'Check the p12 file and password and try again',
+    });
   }
 
   return {
@@ -64,7 +68,7 @@ const getCertificate = (pemFileContent: $TSAny): string|undefined => {
     const endIndex = pemFileContent.indexOf(endMark, beginIndex);
     if (endIndex > -1) {
       certificate = pemFileContent.slice(beginIndex, endIndex).replace(/\s/g, '');
-      certificate = beginMark + os.EOL + certificate + os.EOL + endMark;
+      return beginMark + os.EOL + certificate + os.EOL + endMark;
     }
   }
   return certificate;
@@ -79,7 +83,7 @@ const getPrivateKey = (pemFileContent: $TSAny):string|undefined => {
     const endIndex = pemFileContent.indexOf(endMark, beginIndex);
     if (endIndex > -1) {
       privateKey = pemFileContent.slice(beginIndex, endIndex).replace(/\s/g, '');
-      privateKey = beginMark + os.EOL + privateKey + os.EOL + endMark;
+      return beginMark + os.EOL + privateKey + os.EOL + endMark;
     }
   }
   return privateKey;
@@ -94,7 +98,7 @@ const getRSAPrivateKey = (pemFileContent: $TSAny):string|undefined => {
     const endIndex = pemFileContent.indexOf(endMark, beginIndex);
     if (endIndex > -1) {
       privateKey = pemFileContent.slice(beginIndex, endIndex).replace(/\s/g, '');
-      privateKey = beginMark + os.EOL + privateKey + os.EOL + endMark;
+      return beginMark + os.EOL + privateKey + os.EOL + endMark;
     }
   }
   return privateKey;
@@ -109,7 +113,7 @@ const getEncryptedPrivateKey = (pemFileContent: $TSAny):string|undefined => {
     const endIndex = pemFileContent.indexOf(endMark, beginIndex);
     if (endIndex > -1) {
       privateKey = pemFileContent.slice(beginIndex, endIndex).replace(/\s/g, '');
-      privateKey = beginMark + os.EOL + privateKey + os.EOL + endMark;
+      return beginMark + os.EOL + privateKey + os.EOL + endMark;
     }
   }
   return privateKey;

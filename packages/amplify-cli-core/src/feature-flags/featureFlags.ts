@@ -6,6 +6,7 @@ import _ from 'lodash';
 import * as path from 'path';
 import { CLIEnvironmentProvider } from '../cliEnvironmentProvider';
 import { AmplifyError } from '../errors/amplify-error';
+import { AmplifyFault } from '../errors/amplify-fault';
 import { JSONUtilities } from '../jsonUtilities';
 import { pathManager, stateManager } from '../state-manager'; // eslint-disable-line import/no-cycle
 /* eslint-disable import/no-cycle */
@@ -158,7 +159,11 @@ export class FeatureFlags {
     FeatureFlags.ensureInitialized();
 
     if (!envNames) {
-      throw new Error("'envNames' argument is required");
+      // this is an internal issue, we either couldn't load the environment names
+      // or their configuration is invalid, further troubleshooting is needed
+      throw new AmplifyFault('ConfigurationFault', {
+        message: 'Environment names could not be loaded or were not provided.',
+      });
     }
 
     if (removeProjectConfiguration) {
@@ -657,7 +662,7 @@ export class FeatureFlags {
         name: 'populateOwnerFieldForStaticGroupAuth',
         type: 'boolean',
         defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: false,
+        defaultValueForNewProjects: true,
       },
     ]);
 

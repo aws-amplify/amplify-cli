@@ -36,13 +36,12 @@ import {
   readCFNTemplate,
   Template,
   ApiCategoryFacade,
-  amplifyErrorWithTroubleshootingLink,
-  amplifyFaultWithTroubleshootingLink,
+  AmplifyError,
+  AmplifyFault,
 } from 'amplify-cli-core';
-import ora from 'ora';
 import { Fn } from 'cloudform-types';
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import { printer } from 'amplify-prompts';
+import { AmplifySpinner, printer } from 'amplify-prompts';
 import { S3 } from './aws-utils/aws-s3';
 import Cloudformation from './aws-utils/aws-cfn';
 import { formUserAgentParam } from './aws-utils/user-agent';
@@ -79,6 +78,8 @@ import { storeRootStackTemplate } from './initializer';
 import { transformRootStack } from './override-manager';
 import { prePushTemplateDescriptionHandler } from './template-description-utils';
 import { buildOverridesEnabledResources } from './build-override-enabled-resources';
+
+import { invokePostPushAnalyticsUpdate } from './plugin-client-api-analytics';
 
 const logger = fileLogger('push-resources');
 
@@ -123,10 +124,11 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     let resources = !!context?.exeInfo?.forcePush || rebuild ? allResources : resourcesToBeCreated.concat(resourcesToBeUpdated);
 
     layerResources = resources.filter((r: { service: string; }) => r.service === AmplifySupportedService.LAMBDA_LAYER);
+    const eventMap = createEventMap(context, resources);
 
     if (deploymentStateManager.isDeploymentInProgress() && !deploymentStateManager.isDeploymentFinished()) {
       if (context.exeInfo?.forcePush || context.exeInfo?.iterativeRollback) {
-        await runIterativeRollback(context, cloudformationMeta, deploymentStateManager);
+        await runIterativeRollback(context, cloudformationMeta, deploymentStateManager, eventMap);
         if (context.exeInfo?.iterativeRollback) {
           return;
         }
@@ -154,7 +156,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
         const {
           exposedContainer,
           pipelineInfo: { consoleUrl },
-        } = await context.amplify.invokePluginMethod(context, 'api', undefined, 'generateContainersArtifacts', [context, resource]);
+        }: $TSObject = await context.amplify.invokePluginMethod(context, 'api', undefined, 'generateContainersArtifacts', [context, resource]);
         await context.amplify.updateamplifyMetaAfterResourceUpdate('api', resource.resourceName, 'exposedContainer', exposedContainer);
 
         printer.blankLine();
@@ -276,8 +278,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
       // if there are deploymentSteps, need to do an iterative update
       if (deploymentSteps.length > 0) {
         // create deployment manager
-        const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
-        const deploymentManager = await DeploymentManager.createInstance(context, cloudformationMeta.DeploymentBucketName, spinner, {
+        const deploymentManager = await DeploymentManager.createInstance(context, cloudformationMeta.DeploymentBucketName, eventMap, {
           userAgent: formUserAgentParam(context, generateUserAgentAction(resourcesToBeCreated, resourcesToBeUpdated)),
         });
 
@@ -324,21 +325,17 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
         // Non iterative update
 
         const nestedStack = await formNestedStack(context, context.amplify.getProjectDetails());
-        const eventMap = createEventMap(context, resourcesToBeCreated, resourcesToBeUpdated);
 
         try {
           await updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated, resourcesToBeUpdated, eventMap);
           await storeRootStackTemplate(context, nestedStack);
           // if the only root stack updates, function is called with empty resources . this fn copies amplifyMeta and backend Config to #current-cloud-backend
-          context.amplify.updateamplifyMetaAfterPush([]);
+          await context.amplify.updateamplifyMetaAfterPush([]);
         } catch (err) {
           if (err?.name === 'ValidationError' && err?.message === 'No updates are to be performed.') {
             return;
           }
-          throw amplifyFaultWithTroubleshootingLink('DeploymentFault', {
-            stack: err.stack,
-            message: err.message,
-          });
+          throw err;
         }
       }
       context.usageData.stopCodePathTimer('pushDeployment');
@@ -445,6 +442,13 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
       await context.amplify.updateamplifyMetaAfterPush(resources);
     }
 
+    // Generate frontend resources for any notifications channels enabled on analytics resources.
+    const analyticsResources = resourcesToBeCreated.filter((resource: { category: string; }) => resource.category === AmplifyCategories.ANALYTICS);
+    if (analyticsResources && analyticsResources.length > 0) {
+      context = await invokePostPushAnalyticsUpdate(context);
+      context.amplify.updateamplifyMetaAfterPush(analyticsResources);
+    }
+
     // Store current cloud backend in S3 deployment bucket
     await storeCurrentCloudBackend(context);
     await amplifyServiceManager.storeArtifactsForAmplifyService(context);
@@ -462,10 +466,9 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
       await deploymentStateManager.failDeployment();
     }
     rollbackLambdaLayers(layerResources);
-    throw amplifyFaultWithTroubleshootingLink('DeploymentFault', {
-      stack: error.stack,
+    throw new AmplifyFault('DeploymentFault', {
       message: error.message,
-    });
+    }, error);
   }
 };
 
@@ -521,11 +524,11 @@ export const updateStackForAPIMigration = async (context: $TSContext, category: 
       nestedStack = await formNestedStack(context, projectDetails, category);
     }
 
-    const eventMap = createEventMap(context, resourcesToBeCreated, resourcesToBeUpdated);
+    const eventMap = createEventMap(context, [...resourcesToBeCreated, ...resourcesToBeUpdated]);
     await updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated, resourcesToBeUpdated, eventMap);
   }
 
-  context.amplify.updateamplifyMetaAfterPush(resources);
+  await context.amplify.updateamplifyMetaAfterPush(resources);
 };
 
 /**
@@ -553,9 +556,9 @@ const uploadStudioBackendFiles = async (s3: S3, bucketName: string) => {
       Key: path.join(studioBackendDirName, filePath.replace('#current-cloud-backend', '')),
     }));
 
-  const spinner = ora('Uploading files.');
+  const spinner = new AmplifySpinner();
   try {
-    spinner.start();
+    spinner.start('Uploading files.');
     await Promise.all(uploadFileParams.map(params => s3.uploadFile(params, false)));
   } finally {
     spinner.stop();
@@ -651,7 +654,7 @@ const prepareResource = async (context: $TSContext, resource: $TSAny) => {
   });
 
   if (cfnFiles.length !== 1) {
-    throw amplifyErrorWithTroubleshootingLink('CloudFormationTemplateError', {
+    throw new AmplifyError('CloudFormationTemplateError', {
       message: cfnFiles.length > 1 ? 'Only one CloudFormation template is allowed in the resource directory' : 'No CloudFormation template found in the resource directory',
       details: `Resource directory: ${resourceDir}`,
     });
@@ -876,8 +879,7 @@ type EventMap = {
  */
 const createEventMap = (
   context: $TSContext,
-  resourcesToBeCreated: $TSAny,
-  resourcesToBeUpdated: $TSAny,
+  resourcesToBeCreatedOrUpdated: $TSAny,
 ): EventMap => {
   let eventMap = {} as EventMap;
 
@@ -894,16 +896,13 @@ const createEventMap = (
   eventMap.categories = [];
 
   // Type script throws an error unless I explicitly convert to string
-  const resourcesUpdated = getAllUniqueCategories(resourcesToBeUpdated).map(item => `${item}`);
-  const resourcesCreated = getAllUniqueCategories(resourcesToBeCreated).map(item => `${item}`);
+  const resources = getAllUniqueCategories(resourcesToBeCreatedOrUpdated).map(item => `${item}`);
 
   Object.keys(meta).forEach(category => {
     if (category !== 'providers') {
       Object.keys(meta[category]).forEach(resource => {
         eventMap.rootResources.push(createResourceObject(resource, category));
-        handleCfnFiles(eventMap,
-          category, resource,
-          _.union(resourcesUpdated, resourcesCreated));
+        handleCfnFiles(eventMap, category, resource, resources);
       });
     }
   });
@@ -1114,7 +1113,7 @@ export const formNestedStack = async (
               const dependentResource = _.get(amplifyMeta, [dependsOn[i].category, dependsOn[i].resourceName], undefined);
 
               if (!dependentResource && dependsOn[i].category) {
-                throw amplifyErrorWithTroubleshootingLink('PushResourcesError', {
+                throw new AmplifyError('PushResourcesError', {
                   message: `Cannot get resource: ${dependsOn[i].resourceName} from '${dependsOn[i].category}' category.`,
                 });
               }
@@ -1123,7 +1122,7 @@ export const formNestedStack = async (
                 const outputAttributeValue = _.get(dependentResource, ['output', attribute], undefined);
 
                 if (!outputAttributeValue) {
-                  throw amplifyErrorWithTroubleshootingLink('PushResourcesError', {
+                  throw new AmplifyError('PushResourcesError', {
                     message: `Cannot read the '${attribute}' dependent attribute value from the output section of resource: '${dependsOn[i].resourceName}'.`,
                   });
                 }

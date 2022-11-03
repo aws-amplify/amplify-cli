@@ -34,9 +34,9 @@ export type AddAuthIdentityPoolAndUserPoolWithOAuthSettings = AddAuthUserPoolOnl
   idpAppleAppId: string;
 };
 
-export function addAuthWithDefault(cwd: string, settings: any = {}): Promise<void> {
+export function addAuthWithDefault(cwd: string, settings: any = {}, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
+    spawn(getCLIPath(testingWithLatestCodebase), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication')
       .sendCarriageReturn()
       .wait('How do you want users to be able to sign in')
@@ -117,6 +117,41 @@ export function addAuthWithGroupTrigger(cwd: string, settings: any): Promise<voi
         }
       });
   });
+}
+
+export async function addAuthWithEmailVerificationAndUserPoolGroupTriggers(cwd: string): Promise<void> {
+  await spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
+    .wait('Do you want to use the default authentication and security configuration?')
+    .sendCarriageReturn()
+    .wait('How do you want users to be able to sign in')
+    .sendKeyDown() // Email
+    .sendCarriageReturn()
+    .wait('Do you want to configure advanced settings?')
+    .sendKeyDown()
+    .sendCarriageReturn()
+    .wait('What attributes are required for signing up?')
+    .sendKeyDown(8)
+    .send(' ') // Name
+    .sendCarriageReturn()
+    .wait('Do you want to enable any of the following capabilities?')
+    .sendKeyDown()
+    .send(' ') // Email Verifcation Link with Redirect
+    .sendKeyDown()
+    .send(' ') // Add User to Group
+    .sendCarriageReturn()
+    .wait('Enter the URL that your users will be redirected to upon account confirmation:')
+    .sendCarriageReturn()
+    .wait('Enter the subject for your custom account confirmation email:')
+    .sendCarriageReturn()
+    .wait('Enter the body text for your custom account confirmation email (this will appear before the link URL):')
+    .sendCarriageReturn()
+    .wait('Do you want to edit your verification-link function now?')
+    .sendConfirmNo()
+    .wait('Enter the name of the group to which users will be added.')
+    .sendLine('admin')
+    .wait('Do you want to edit your add-to-group function now?')
+    .sendConfirmNo()
+    .runAsync();
 }
 
 interface AddApiOptions {

@@ -8,9 +8,8 @@ import {
 import { AccessType, DataProvider } from '../../service-utils/resourceParams';
 import { provider, ServiceName, apiDocs } from '../../service-utils/constants';
 import { category } from '../../constants';
-
-const { createMapWalkthrough, updateMapWalkthrough } = require('../../service-walkthroughs/mapWalkthrough');
-const { removeWalkthrough } = require('../../service-walkthroughs/removeWalkthrough');
+import { createMapWalkthrough, updateMapWalkthrough } from '../../service-walkthroughs/mapWalkthrough';
+import { removeWalkthrough } from '../../service-walkthroughs/removeWalkthrough';
 
 jest.mock('amplify-cli-core');
 jest.mock('amplify-prompts');
@@ -191,13 +190,13 @@ describe('Map walkthrough works as expected', () => {
   });
 
   it('sets the resource to remove correctly', async () => {
-    expect(await (removeWalkthrough(mockContext, service))).toEqual(mockMapName);
+    expect(await (removeWalkthrough(service))).toEqual(mockMapName);
   });
 
   it('early returns and prints error if no map resource to remove', async () => {
     mockAmplifyMeta.geo = {};
     stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
-    await removeWalkthrough(mockContext, service);
+    await removeWalkthrough(service);
 
     expect(printer.error).toBeCalledWith('No Map exists in the project.');
   });

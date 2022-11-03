@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@3.2.2...amplify-cli-core@3.3.0) (2022-10-27)
+
+
+### Bug Fixes
+
+* prevent removal of analytics and auth when being depended on ([#11210](https://github.com/aws-amplify/amplify-cli/issues/11210)) ([9a1c725](https://github.com/aws-amplify/amplify-cli/commit/9a1c725f8bfedec2f96afea07c39c6166da3007d))
+
+
+### Features
+
+* in app messaging notification ([#11067](https://github.com/aws-amplify/amplify-cli/issues/11067)) ([0c70a05](https://github.com/aws-amplify/amplify-cli/commit/0c70a05bf97943ddf6b4607b9bfe0bdff132aae1))
+* migrates analytics category to support in app messaging channel notifications ([#11158](https://github.com/aws-amplify/amplify-cli/issues/11158)) ([9dfbf6c](https://github.com/aws-amplify/amplify-cli/commit/9dfbf6c1aa1031814ea6ea097435e49f9029801a))
+
+
+
+
+
+## [3.2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@3.2.1...amplify-cli-core@3.2.2) (2022-10-13)
+
+
+### Bug Fixes
+
+* Await Metadata file updates to avoid race conditions ([#11074](https://github.com/aws-amplify/amplify-cli/issues/11074)) ([0c745c4](https://github.com/aws-amplify/amplify-cli/commit/0c745c44773db3dfd09e75eaeb60ab2be97b91b7))
+* refactor pull flow to use amplify error handling framework ([#10974](https://github.com/aws-amplify/amplify-cli/issues/10974)) ([ee29583](https://github.com/aws-amplify/amplify-cli/commit/ee29583b2e0a4a4faafca36c410cbc58f20d96a3))
+* refactor push flow to use amplify error handling framework ([#10951](https://github.com/aws-amplify/amplify-cli/issues/10951)) ([38a8603](https://github.com/aws-amplify/amplify-cli/commit/38a8603db4965ec05beb2ddd1daaa3913096c9c6))
+* updateUserAttributeSetting during add/update/push flows ([#10773](https://github.com/aws-amplify/amplify-cli/issues/10773)) ([52c1e49](https://github.com/aws-amplify/amplify-cli/commit/52c1e49caa5098c37c32c9f2b6f095cfd60454b1))
+
+
+
+
+
+## [3.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@3.2.0...amplify-cli-core@3.2.1) (2022-10-03)
+
+
+### Bug Fixes
+
+* retain TPI on "restore backend" codepath, set stacktrace in AmplifyException, fix changelog script ([#11057](https://github.com/aws-amplify/amplify-cli/issues/11057)) ([cf54acc](https://github.com/aws-amplify/amplify-cli/commit/cf54accdca6c7bb1663371f98d48321edcaa76a1))
+
+
+
+
+
 # [3.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@3.0.0...amplify-cli-core@3.2.0) (2022-09-21)
 
 

@@ -1,5 +1,5 @@
 import {
-  amplifyErrorWithTroubleshootingLink, convertNumBytes, getFolderSize, pathManager,
+  AmplifyError, convertNumBytes, getFolderSize, pathManager,
 } from 'amplify-cli-core';
 import { LambdaLayer } from 'amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
@@ -49,7 +49,7 @@ export const packageFunction: Packager = async (context, resource) => {
   }
 
   if (functionSizeInBytes + layersSizeInBytes > lambdaPackageLimitInMB * 1024 ** 2) {
-    throw amplifyErrorWithTroubleshootingLink('FunctionTooLargeError', {
+    throw new AmplifyError('FunctionTooLargeError', {
       message: `The function is too large to package.`,
       details: `
 Total size of Lambda function ${
