@@ -1,5 +1,5 @@
 import {
-  $TSContext, FeatureFlags, IAmplifyResource, JSONUtilities, pathManager,
+  $TSContext, AmplifyErrorType, AmplifyException, FeatureFlags, IAmplifyResource, JSONUtilities, pathManager,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
@@ -58,9 +58,26 @@ export const transformResourceWithOverrides = async (context: $TSContext, resour
       }
     }
   } catch (err) {
+    // check for these specific Amplify Override/Custom Stack Errors,
+    // because we want the customer to fix invalid overrides or custom stack errors
+    // before deployments
+    const overrideOrCustomStackErrorsList: AmplifyErrorType[] = [
+      'MissingOverridesInstallationRequirementsError',
+      'InvalidOverrideError',
+      'InvalidCustomResourceError',
+    ];
+    if (err instanceof AmplifyException
+      && overrideOrCustomStackErrorsList.find(v => v === err.name)) {
+      throw err;
+    }
+
+    // Ignore other errors that were previously being ignored,
+    // such as GraphQL/Auth errors even if they are AmplifyExceptions.
+    // The CLI will trigger corrective walkthroughs/flows for those errors,
+    // such as in amplify-helpers/push-resources.ts.
+  } finally {
     if (spinner) {
       spinner.stop();
     }
-    throw err;
   }
 };
