@@ -1,24 +1,15 @@
-import { $TSContext } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { getMockDataDirectory, getMockAPIResourceDirectory } from './mock-directory';
+import { getMockDataDirectory } from './mock-data-directory';
 
-export function addMockDataToGitIgnore(context: $TSContext) {
-  addMockDirectoryToGitIgnore(context, getMockDataDirectory(context));
-}
-
-export function addMockAPIResourcesToGitIgnore(context: $TSContext) {
-  addMockDirectoryToGitIgnore(context, getMockAPIResourceDirectory(context));
-}
-
-function addMockDirectoryToGitIgnore(context: $TSContext, directory: string) {
+export function addMockDataToGitIgnore(context) {
   const gitIgnoreFilePath = context.amplify.pathManager.getGitIgnoreFilePath();
   if (fs.existsSync(gitIgnoreFilePath)) {
     const gitRoot = path.dirname(gitIgnoreFilePath);
-    const directoryRelativeToGitRoot = path.relative(gitRoot, directory).replace(/\\/g, '/');
+    const mockDataDirectory = path.relative(gitRoot, getMockDataDirectory(context)).replace(/\\/g, '/');
     let gitIgnoreContent = fs.readFileSync(gitIgnoreFilePath).toString();
-    if (gitIgnoreContent.search(RegExp(`^\\s*${directoryRelativeToGitRoot}\\w*$`, 'gm')) === -1) {
-      gitIgnoreContent += '\n' + directoryRelativeToGitRoot;
+    if (gitIgnoreContent.search(RegExp(`^\\s*${mockDataDirectory}\\w*$`, 'gm')) === -1) {
+      gitIgnoreContent += '\n' + mockDataDirectory;
       fs.writeFileSync(gitIgnoreFilePath, gitIgnoreContent);
     }
   }
