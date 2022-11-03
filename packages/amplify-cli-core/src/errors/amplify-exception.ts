@@ -138,7 +138,10 @@ export type AmplifyErrorType =
   | 'StackNotFoundError'
   | 'StackStateError'
   | 'UserInputError'
-  | 'MockProcessError';
+  | 'MockProcessError'
+  | 'SearchableMockUnsupportedPlatformError'
+  | 'SearchableMockUnavailablePortError'
+  | 'SearchableMockProcessError';
 
 /**
  * Amplify fault types

@@ -70,6 +70,7 @@ describe('emulator operations', () => {
 
   afterAll(async () => {
     ensureMockSearchableResourcePath();
+    fs.removeSync('mock-path-to-lib');
   });
 
   const fetchURL = async (url: string): Promise<string> => {

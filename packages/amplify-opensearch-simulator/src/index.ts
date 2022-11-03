@@ -60,10 +60,10 @@ export class OpenSearchEmulator {
     return `http://localhost:${this.port}/`;
   }
 
-  public terminate(): Promise<unknown> {
+  public terminate(): Promise<void> {
     // already exited
     if (this.proc?.exitCode !== null) {
-      return Promise.resolve(this.proc?.exitCode);
+      return Promise.resolve();
     }
     this.proc?.kill();
     return fromEvent(this.proc, 'exit');
@@ -117,7 +117,7 @@ export const launch = async (
   startTime: number = Date.now()
 ): Promise<OpenSearchEmulator> => { 
   if (isWindowsPlatform) {
-    throw new AmplifyError('MockProcessError', {
+    throw new AmplifyError('SearchableMockUnsupportedPlatformError', {
       message: 'Cannot launch OpenSearch simulator on windows OS',
       link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
     });
@@ -146,7 +146,7 @@ export const launch = async (
   } else {
     const freePort = await detectPort(port);
     if (freePort !== port) {
-      throw new AmplifyError('MockProcessError', {
+      throw new AmplifyError('SearchableMockUnavailablePortError', {
         message: `Port ${port} is not free. Please use a different port`,
         link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
       });
@@ -164,7 +164,7 @@ export const launch = async (
 
   const emulator = await startOpensearchEmulator(opts, proc, port, startTime, givenOptions, getOpensearchLocalDirectory(), retry);
   if (!emulator) {
-    throw new AmplifyFault('MockProcessFault', {
+    throw new AmplifyError('SearchableMockProcessError', {
       message: 'Unable to start the Opensearch emulator. Please restart the mock process.',
       link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
     });

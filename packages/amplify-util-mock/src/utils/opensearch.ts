@@ -1,4 +1,4 @@
-import { $TSObject, AMPLIFY_SUPPORT_DOCS, AmplifyError } from 'amplify-cli-core';
+import { $TSObject, AMPLIFY_SUPPORT_DOCS, AmplifyFault } from 'amplify-cli-core';
 import fetch from 'node-fetch';
 
 type OpensearchQueryConfig = {
@@ -28,7 +28,7 @@ type OpensearchQueryResult = {
 
 export const querySearchable = async (endpoint: string, searchConfig: OpensearchQueryConfig): Promise<OpensearchQueryResult> => {
   if (!endpoint) {
-    throw new AmplifyError('MockProcessError', {
+    throw new AmplifyFault('MockProcessFault', {
       message: 'The local opensearch endpoint is not found',
       link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
     });
@@ -38,10 +38,10 @@ export const querySearchable = async (endpoint: string, searchConfig: Opensearch
     searchConfig = searchConfig as OpensearchQueryConfig;
   }
   catch(e) {
-    throw new AmplifyError('MockProcessError', {
+    throw new AmplifyFault('MockProcessFault', {
       message: 'Given search query configuration is not valid',
       link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
-    });
+    }, e);
   }
 
   const url = endpoint.replace(/\/+$/, '') + searchConfig.path;
