@@ -34,7 +34,7 @@ export const buildCustomResources = async (context: $TSContext, resourceName?: s
     }
   } catch (err: $TSAny) {
     spinner.stop();
-    throw new AmplifyError('InvalidCustomResource', {
+    throw new AmplifyError('InvalidCustomResourceError', {
       message: `There was an error building the custom resources`,
       details: err.message,
       resolution: 'There may be errors in your custom resource file. If so, fix the errors and try again.',

@@ -62,7 +62,7 @@ export const buildOverrideDir = async (cwd: string, destDirPath: string): Promis
   const packageManager = getPackageManager(cwd);
 
   if (packageManager === null) {
-    throw new AmplifyError('MissingInstallationRequirementsError', {
+    throw new AmplifyError('MissingOverridesInstallationRequirementsError', {
       message: 'No package manager found.',
       resolution: 'Please install npm or yarn to compile overrides for this project.',
     });
@@ -89,7 +89,7 @@ export const buildOverrideDir = async (cwd: string, destDirPath: string): Promis
     const localTscExecutablePath = path.join(cwd, 'node_modules', '.bin', 'tsc');
 
     if (!fs.existsSync(localTscExecutablePath)) {
-      throw new AmplifyError('MissingInstallationRequirementsError', {
+      throw new AmplifyError('MissingOverridesInstallationRequirementsError', {
         message: 'Typescript executable not found.',
         resolution: 'Please add it as a dev-dependency in the package.json file for this resource.',
       });
@@ -102,7 +102,7 @@ export const buildOverrideDir = async (cwd: string, destDirPath: string): Promis
     return true;
   } catch (error: $TSAny) {
     if (error.code === 'ENOENT') {
-      throw new AmplifyError('MissingInstallationRequirementsError', {
+      throw new AmplifyError('MissingOverridesInstallationRequirementsError', {
         message: `Packaging overrides failed. Could not find ${packageManager} executable in the PATH.`,
       });
     } else {
