@@ -77,6 +77,7 @@ describe('execution manager', () => {
     assignProjectIdentifier: jest.fn(),
     getUsageDataPayload: jest.fn(),
     calculatePushNormalizationFactor: jest.fn(),
+    getSessionUuid: jest.fn(),
   };
 
   beforeEach(() => {

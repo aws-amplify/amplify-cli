@@ -37,10 +37,8 @@ const validateGithubRepo = async (repoUrl: string): Promise<void> => {
   } catch (e) {
     throw new AmplifyError('ProjectInitError', {
       message: 'Invalid remote github url',
-      details: e.message,
       link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
-      stack: e.stack,
-    });
+    }, e);
   }
 };
 
@@ -64,8 +62,7 @@ const cloneRepo = async (repoUrl: string): Promise<void> => {
       message: 'Unable to clone repository',
       details: e.message,
       link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
-      stack: e.stack,
-    });
+    }, e);
   }
 };
 

@@ -1,4 +1,4 @@
-const { ApiCategoryFacade, amplifyFaultWithTroubleshootingLink } = require('amplify-cli-core');
+const { ApiCategoryFacade, AmplifyFault } = require('amplify-cli-core');
 const awsRegions = require('./aws-regions');
 const { Lambda } = require('./aws-utils/aws-lambda');
 const DynamoDB = require('./aws-utils/aws-dynamodb');
@@ -17,6 +17,7 @@ const { fileLogger } = require('./utils/aws-logger');
 
 const logger = fileLogger('utility-functions');
 const { getAccountId } = require('./amplify-sts');
+const { getAwsConfig } = require('./configuration-manager');
 
 module.exports = {
   /**
@@ -135,10 +136,9 @@ module.exports = {
       const { code } = error;
 
       if (code !== 'ResourceNotFoundException') {
-        throw amplifyFaultWithTroubleshootingLink('ResourceNotFoundFault', {
+        throw new AmplifyFault('ResourceNotFoundFault', {
           message: error.message,
-          stack: error.stack,
-        });
+        }, error);
       }
     }
 
@@ -184,7 +184,7 @@ module.exports = {
   getTransformerDirectives: async (context, options) => {
     const { resourceDir } = options;
     if (!resourceDir) {
-      throw amplifyFaultWithTroubleshootingLink('ResourceNotFoundFault', {
+      throw new AmplifyFault('ResourceNotFoundFault', {
         message: 'Missing resource directory.',
       });
     }
@@ -423,4 +423,8 @@ module.exports = {
 
     return results;
   },
+  /**
+   * Provides the same AWS config used to push the amplify project
+   */
+  retrieveAwsConfig: async context => getAwsConfig(context),
 };

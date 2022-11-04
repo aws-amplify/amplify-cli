@@ -1,5 +1,7 @@
 name: Feature request
 description: Suggest an idea for the CLI
+labels: ["pending-triage"]
+
 body:
   - type: markdown
     attributes:

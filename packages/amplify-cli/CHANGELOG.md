@@ -3,6 +3,59 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [10.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.3.1...@aws-amplify/cli-internal@10.4.0) (2022-10-27)
+
+
+### Features
+
+* **amplify-util-uibuilder:** add studio forms ([#11165](https://github.com/aws-amplify/amplify-cli/issues/11165)) ([6f15294](https://github.com/aws-amplify/amplify-cli/commit/6f15294d6809639c7d7e7d3aa4378df894168b0b))
+* in app messaging notification ([#11067](https://github.com/aws-amplify/amplify-cli/issues/11067)) ([0c70a05](https://github.com/aws-amplify/amplify-cli/commit/0c70a05bf97943ddf6b4607b9bfe0bdff132aae1))
+
+
+
+
+
+## [10.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.3.0...@aws-amplify/cli-internal@10.3.1) (2022-10-21)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
+
+
+
+
+
+# [10.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.2.3...@aws-amplify/cli-internal@10.3.0) (2022-10-13)
+
+
+### Bug Fixes
+
+* exception handler should swallow encountered errors ([#11027](https://github.com/aws-amplify/amplify-cli/issues/11027)) ([f4b9e7b](https://github.com/aws-amplify/amplify-cli/commit/f4b9e7bd8ec995a35ac8def0b59e8229efc88729))
+* raise incorrect post event data ([#10954](https://github.com/aws-amplify/amplify-cli/issues/10954)) ([43666d5](https://github.com/aws-amplify/amplify-cli/commit/43666d537cf9619524eb1292a33deb3691aab353))
+* refactor pull flow to use amplify error handling framework ([#10974](https://github.com/aws-amplify/amplify-cli/issues/10974)) ([ee29583](https://github.com/aws-amplify/amplify-cli/commit/ee29583b2e0a4a4faafca36c410cbc58f20d96a3))
+* refactor push flow to use amplify error handling framework ([#10951](https://github.com/aws-amplify/amplify-cli/issues/10951)) ([38a8603](https://github.com/aws-amplify/amplify-cli/commit/38a8603db4965ec05beb2ddd1daaa3913096c9c6))
+* regression caused by new error thrown ([#11118](https://github.com/aws-amplify/amplify-cli/issues/11118)) ([c09e541](https://github.com/aws-amplify/amplify-cli/commit/c09e5413717b0dab3b2171cb3deed0cb241bab3d))
+* updated roleName in show auth ACM helper to include the groupClaim ([#10577](https://github.com/aws-amplify/amplify-cli/issues/10577)) ([f06c821](https://github.com/aws-amplify/amplify-cli/commit/f06c82191cd68d8ea7873c735a189d05c1e02df8)), closes [#10574](https://github.com/aws-amplify/amplify-cli/issues/10574) [#10574](https://github.com/aws-amplify/amplify-cli/issues/10574)
+* updateUserAttributeSetting during add/update/push flows ([#10773](https://github.com/aws-amplify/amplify-cli/issues/10773)) ([52c1e49](https://github.com/aws-amplify/amplify-cli/commit/52c1e49caa5098c37c32c9f2b6f095cfd60454b1))
+
+
+### Features
+
+* append whitespace to cli-inputs.json for updated build dir ([#11024](https://github.com/aws-amplify/amplify-cli/issues/11024)) ([92536d7](https://github.com/aws-amplify/amplify-cli/commit/92536d738a06379065b6377785790b5e60a4fb0e))
+
+
+
+
+
+## [10.2.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.2.2...@aws-amplify/cli-internal@10.2.3) (2022-10-10)
+
+
+### Bug Fixes
+
+* fallback to tpi when looking for existing envs on init ([#11137](https://github.com/aws-amplify/amplify-cli/issues/11137)) ([ed2ca3e](https://github.com/aws-amplify/amplify-cli/commit/ed2ca3ebfed71cbd7124ab172fa72272f86a51ea))
+
+
+
+
+
 ## [10.2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.2.1...@aws-amplify/cli-internal@10.2.2) (2022-10-05)
 
 

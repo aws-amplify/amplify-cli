@@ -10,6 +10,7 @@ import {
   getTeamProviderInfo,
   initJSProjectWithProfile,
   transformCurrentProjectToGitPulledProject,
+  updateAuthAddUserGroups,
   updatedInitNewEnvWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
 import * as specialCaseInit from '../init-special-cases';
@@ -42,6 +43,7 @@ describe('amplify init', () => {
     const resourceName = 'authConsoleTest';
     await initJSProjectWithProfile(projectRoot, { disableAmplifyAppCreation: false, name: resourceName, envName });
     await addAuthWithDefault(projectRoot, {});
+    await updateAuthAddUserGroups(projectRoot, ['group']);
     await amplifyPushAuth(projectRoot);
     const teamInfo = getTeamProviderInfo(projectRoot);
     expect(teamInfo).toBeDefined();

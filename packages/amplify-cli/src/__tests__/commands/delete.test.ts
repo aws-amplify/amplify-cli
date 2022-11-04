@@ -3,13 +3,14 @@
 //
 // https://stackoverflow.com/questions/46148169/stubbing-process-exit-with-jest
 
-import { UnknownArgumentError } from 'amplify-cli-core';
+import { UnknownArgumentError, AmplifyError } from 'amplify-cli-core';
 
-describe('amplify delete: ', () => {
+describe('amplify delete:', () => {
   const mockExit = jest.fn();
   jest.mock('amplify-cli-core', () => ({
     exitOnNextTick: mockExit,
-    UnknownArgumentError: UnknownArgumentError,
+    UnknownArgumentError,
+    AmplifyError,
   }));
   const { run } = require('../../commands/delete');
   const runDeleteCmd = run;
@@ -46,10 +47,7 @@ describe('amplify delete: ', () => {
         emitError: jest.fn(),
       },
     };
-    await runDeleteCmd(mockContextWithCLArgs);
-    expect(mockContextWithCLArgs.print.error).toBeCalledWith('"delete" command does not expect additional arguments.');
-    expect(mockContextWithCLArgs.print.error).toBeCalledWith('Perhaps you meant to use the "remove" command instead of "delete"?');
-    expect(mockExit).toBeCalledWith(1);
+    await expect(runDeleteCmd(mockContextWithCLArgs)).rejects.toThrow('The "delete" command does not expect additional arguments.');
   });
 
   const mockContextWithForceOption = {
@@ -64,7 +62,7 @@ describe('amplify delete: ', () => {
     },
   };
 
-  it('delete run method should call context.amplify.deleteProject()', async () => {
+  it('delete run method should call context.amplify.deleteProject() when using force option', async () => {
     await runDeleteCmd(mockContextWithForceOption);
     expect(mockContextWithForceOption.amplify.deleteProject).toBeCalled();
   });
@@ -86,12 +84,7 @@ describe('amplify delete: ', () => {
       emitError: jest.fn(),
     },
   };
-  it('delete run method should display an error message', async () => {
-    await runDeleteCmd(mockContextWithForceOptionAndCLArgs);
-    expect(mockContextWithForceOptionAndCLArgs.print.error).toBeCalledWith('"delete" command does not expect additional arguments.');
-    expect(mockContextWithForceOptionAndCLArgs.print.error).toBeCalledWith(
-      'Perhaps you meant to use the "remove" command instead of "delete"?',
-    );
-    expect(mockExit).toBeCalledWith(1);
+  it('delete run method should display an error message when using force option', async () => {
+    await expect(runDeleteCmd(mockContextWithForceOptionAndCLArgs)).rejects.toThrow('The "delete" command does not expect additional arguments.');
   });
 });

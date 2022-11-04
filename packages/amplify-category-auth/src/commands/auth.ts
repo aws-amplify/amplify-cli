@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as path from 'path';
 
@@ -9,10 +9,15 @@ type AuthCommandType = {
   description: string;
 };
 
-export const run = async (context: $TSContext) => {
+/**
+ * Execute all auth cli commands
+ * @param context amplify cli context
+ * @returns auth command response
+ */
+export const run = async (context: $TSContext): Promise<$TSAny> => {
   try {
-    const { run } = await import(path.join('.', name, context.parameters.first));
-    return run(context);
+    const { run: authRun } = await import(path.join('.', name, context.parameters.first));
+    return authRun(context);
   } catch (err) {
     const header = `amplify ${name} <subcommands>`;
 
@@ -46,4 +51,6 @@ export const run = async (context: $TSContext) => {
     context.amplify.showHelp(header, commands);
     printer.blankLine();
   }
+
+  return undefined;
 };
