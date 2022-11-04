@@ -32,7 +32,7 @@ describe('adding custom resources test', () => {
     await initJSProjectWithProfile(projRoot, {});
     await addCDKCustomResource(projRoot, { name: cdkResourceName });
 
-    const srcCustomResourceFilePath = path.join(__dirname, '..', '..', 'custom-resources', 'custom-cdk-stack.ts');
+    // this is where we will write our custom cdk stack logic to
     const destCustomResourceFilePath = path.join(projRoot, 'amplify', 'backend', 'custom', cdkResourceName, 'cdk-stack.ts');
     const cfnFilePath = path.join(
       projRoot,
@@ -44,6 +44,18 @@ describe('adding custom resources test', () => {
       `${cdkResourceName}-cloudformation-template.json`,
     );
 
+    // should throw error if compilation failure
+    const srcCompileErrorTest = path.join(__dirname, '..', '..', 'custom-resources', 'custom-cdk-stack-compile-error.txt');
+    fs.copyFileSync(srcCompileErrorTest, destCustomResourceFilePath);
+    await expect(amplifyPushAuth(projRoot)).rejects.toThrowError();
+
+    // should throw error on runtime failure
+    const srcRuntimeErrorTest = path.join(__dirname, '..', '..', 'custom-resources', 'custom-cdk-stack-runtime-error.txt');
+    fs.copyFileSync(srcRuntimeErrorTest, destCustomResourceFilePath);
+    await expect(amplifyPushAuth(projRoot)).rejects.toThrowError();
+
+    // happy path test (this custom stack compiles and runs successfully)
+    const srcCustomResourceFilePath = path.join(__dirname, '..', '..', 'custom-resources', 'custom-cdk-stack.ts');
     fs.copyFileSync(srcCustomResourceFilePath, destCustomResourceFilePath);
 
     await buildCustomResources(projRoot, {});
