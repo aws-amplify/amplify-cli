@@ -147,6 +147,7 @@
     ],
     "collectCoverage": true
   },
+  "publish:doublehooks-invoc": "lerna publish --exact --dist-tag=double-hooks --preid=double-hooks --conventional-commits --conventional-prerelease --message 'chore(release): Publish [ci skip]' --no-verify-access --yes",
   "amplify": {
     "officialPlugins": {
       "core": {
