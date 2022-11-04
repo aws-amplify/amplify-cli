@@ -1,0 +1,10 @@
+type Todo
+  @model
+  @auth(rules: [
+  { allow: owner },
+  { allow: public, provider: iam }
+]) {
+  id: ID!
+  task: String!
+  description: String
+}

@@ -1,3 +1,10 @@
+/* eslint-disable import/no-cycle */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-param-reassign */
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
+/* eslint-disable func-style */
+/* eslint-disable jsdoc/require-jsdoc */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
@@ -19,7 +26,7 @@ export function getSchemaPath(schemaName: string): string {
   return path.join(__dirname, '..', '..', '..', 'amplify-e2e-tests', 'schemas', schemaName);
 }
 
-export function apiGqlCompile(cwd: string, testingWithLatestCodebase: boolean = false) {
+export function apiGqlCompile(cwd: string, testingWithLatestCodebase = false) {
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['api', 'gql-compile'], { cwd, stripColors: true })
       .wait('GraphQL schema compiled successfully.')
@@ -243,6 +250,7 @@ export function addApiWithAllAuthModes(cwd: string, opts: Partial<AddApiOptions 
       .sendCarriageReturn()
       // OIDC
       .wait(/.*Enter a name for the OpenID Connect provider:.*/)
+      // eslint-disable-next-line spellcheck/spell-checker
       .sendLine('myoidcprovider')
       .wait(/.*Enter the OpenID Connect provider domain \(Issuer URL\).*/)
       .sendLine('https://facebook.com/')
@@ -280,7 +288,7 @@ export function addApiWithAllAuthModes(cwd: string, opts: Partial<AddApiOptions 
   });
 }
 
-export function updateApiSchema(cwd: string, projectName: string, schemaName: string, forceUpdate: boolean = false) {
+export function updateApiSchema(cwd: string, projectName: string, schemaName: string, forceUpdate = false) {
   const testSchemaPath = getSchemaPath(schemaName);
   let schemaText = fs.readFileSync(testSchemaPath).toString();
   if (forceUpdate) {
@@ -325,6 +333,7 @@ export function updateApiWithMultiAuth(cwd: string, settings?: { testingWithLate
       .sendCarriageReturn()
       // OIDC
       .wait(/.*Enter a name for the OpenID Connect provider:.*/)
+      // eslint-disable-next-line spellcheck/spell-checker
       .sendLine('myoidcprovider')
       .wait(/.*Enter the OpenID Connect provider domain \(Issuer URL\).*/)
       .sendLine('https://facebook.com/')
@@ -455,7 +464,7 @@ export type RestAPISettings = {
 };
 export function addRestApi(cwd: string, settings: RestAPISettings) {
   const isFirstRestApi = settings.isFirstRestApi ?? true;
-  let chain = spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
+  const chain = spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
     .wait('Select from one of the below mentioned services')
     .sendKeyDown()
     .sendCarriageReturn(); // REST
@@ -488,9 +497,8 @@ export function addRestApi(cwd: string, settings: RestAPISettings) {
       protectAPI(settings, chain);
       chain.wait('Do you want to add another path').sendNo().sendEof();
       return chain.runAsync();
-    } else {
-      chain.sendNo();
     }
+    chain.sendNo();
   }
 
   chain.wait('Provide a friendly name for your resource to be used as a label for this category in the project');
@@ -609,19 +617,20 @@ export function updateRestApi(cwd: string, settings: Partial<typeof updateRestAp
     default:
       throw new Error(`updateOperation ${completeSettings.updateOperation} is not implemented`);
   }
-  chain.wait('Restrict API access').sendNo().wait('Do you want to add another path').sendNo().wait('Successfully updated resource');
+  chain.wait('Restrict API access').sendNo().wait('Do you want to add another path').sendNo()
+    .wait('Successfully updated resource');
   return chain.runAsync();
 }
 
 const allAuthTypes = ['API key', 'Amazon Cognito User Pool', 'IAM', 'OpenID Connect'];
 
-export function addApi(projectDir: string, settings?: any) {
+export function addApi(projectDir: string, settings?: any, requireAuthSetup = true) {
   const transformerVersion = settings?.transformerVersion ?? 2;
   delete settings?.transformerVersion;
 
   let authTypesToSelectFrom = allAuthTypes.slice();
   return new Promise<void>((resolve, reject) => {
-    let chain = spawn(getCLIPath(defaultOptions.testingWithLatestCodebase), ['add', 'api'], { cwd: projectDir, stripColors: true })
+    const chain = spawn(getCLIPath(defaultOptions.testingWithLatestCodebase), ['add', 'api'], { cwd: projectDir, stripColors: true })
       .wait('Select from one of the below mentioned services:')
       .sendCarriageReturn();
 
@@ -635,7 +644,7 @@ export function addApi(projectDir: string, settings?: any) {
         .sendCarriageReturn();
 
       singleSelect(chain.wait('Choose the default authorization type for the API'), defaultType, authTypesToSelectFrom);
-      setupAuthType(defaultType, chain, settings);
+      if (requireAuthSetup) setupAuthType(defaultType, chain, settings);
 
       if (authTypesToAdd.length > 1) {
         authTypesToAdd.shift();
@@ -651,7 +660,7 @@ export function addApi(projectDir: string, settings?: any) {
         );
 
         authTypesToAdd.forEach(authType => {
-          setupAuthType(authType, chain, settings);
+          if (requireAuthSetup) setupAuthType(authType, chain, settings);
         });
       } else {
         chain.wait('Configure additional auth types?').sendLine('n');
@@ -695,6 +704,8 @@ function setupAuthType(authType: string, chain: any, settings?: any) {
     case 'OpenID Connect':
       setupOIDC(chain, settings);
       break;
+    default:
+      throw new Error(`Unknown auth type ${authType}`);
   }
 }
 
@@ -716,8 +727,8 @@ function setupCognitoUserPool(chain: any) {
     .sendCarriageReturn();
 }
 
-function setupIAM(chain: any) {
-  //no need to do anything
+function setupIAM(__chain: any) {
+  // no need to do anything
 }
 
 function setupOIDC(chain: any, settings?: any) {
@@ -735,9 +746,11 @@ function setupOIDC(chain: any, settings?: any) {
     .send(settings['OpenID Connect'].oidcClientId)
     .sendCarriageReturn()
     .wait('Enter the number of milliseconds a token is valid after being issued to a user')
+    // eslint-disable-next-line spellcheck/spell-checker
     .send(settings['OpenID Connect'].ttlaIssueInMillisecond)
     .sendCarriageReturn()
     .wait('Enter the number of milliseconds a token is valid after being authenticated')
+    // eslint-disable-next-line spellcheck/spell-checker
     .send(settings['OpenID Connect'].ttlaAuthInMillisecond)
     .sendCarriageReturn();
 }
@@ -797,6 +810,7 @@ export function addRestContainerApi(projectDir: string, opts: Partial<AddApiOpti
       .sendCarriageReturn()
       .wait('Do you want to restrict API access')
       .sendConfirmNo()
+      // eslint-disable-next-line spellcheck/spell-checker
       .wait('Select which container is the entrypoint')
       .sendCarriageReturn()
       .wait('"amplify publish" will build all your local backend and frontend resources')
@@ -838,6 +852,7 @@ export function addRestContainerApiForCustomPolicies(projectDir: string, setting
       .sendCarriageReturn()
       .wait('Do you want to restrict API access')
       .sendConfirmNo()
+      // eslint-disable-next-line spellcheck/spell-checker
       .wait('Select which container is the entrypoint')
       .sendCarriageReturn()
       .wait('"amplify publish" will build all your local backend and frontend resources')
@@ -850,7 +865,7 @@ export function modifyRestAPI(projectDir: string, apiName: string) {
   fs.writeFileSync(indexFilePath, modifiedApi);
 }
 
-export function cancelAmplifyMockApi(cwd: string, settings: any = {}): Promise<void> {
+export function cancelAmplifyMockApi(cwd: string, __settings: any = {}): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['mock', 'api'], { cwd, stripColors: true })
       .wait('AppSync Mock endpoint is running')
@@ -884,9 +899,10 @@ export async function validateRestApiMeta(projRoot: string, meta?: any) {
 
   expect(meta.function).toBeDefined();
   let seenAtLeastOneFunc = false;
-  for (let key of Object.keys(meta.function)) {
-    const { service, build, lastBuildTimeStamp, lastPackageTimeStamp, distZipFilename, lastPushTimeStamp, lastPushDirHash } =
-      meta.function[key];
+  for (const key of Object.keys(meta.function)) {
+    const {
+      service, build, lastBuildTimeStamp, lastPackageTimeStamp, distZipFilename, lastPushTimeStamp, lastPushDirHash,
+    } = meta.function[key];
     expect(service).toBe('Lambda');
     expect(build).toBeTruthy();
     expect(lastBuildTimeStamp).toBeDefined();
