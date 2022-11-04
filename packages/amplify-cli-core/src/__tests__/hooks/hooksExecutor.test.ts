@@ -3,6 +3,7 @@ import * as execa from 'execa';
 import * as fs from 'fs-extra';
 import { executeHooks, HooksMeta, skipHooksFilePath } from '../../hooks';
 import * as skipHooksModule from '../../hooks/skipHooks';
+import * as hooksExecutor from '../../hooks/hooksExecutor';
 import { pathManager, stateManager } from '../../state-manager';
 
 const pathToPython3Runtime = 'path/to/python3/runtime';
@@ -117,7 +118,7 @@ describe('hooksExecutioner tests', () => {
     expect(execa).toHaveBeenCalledTimes(0);
   });
 
-  test('should execute in specificity execution order', async () => {
+  test('should execute in specific execution order', async () => {
     await executeHooks(HooksMeta.getInstance({ command: 'add', plugin: 'auth' }, 'pre'));
     expect(execa).toHaveBeenNthCalledWith(1, pathToNodeRuntime, [path.join(testProjectHooksDirPath, preAddFileName)], expect.anything());
     expect(execa).toHaveBeenNthCalledWith(
@@ -135,6 +136,21 @@ describe('hooksExecutioner tests', () => {
       [path.join(testProjectHooksDirPath, postAddAuthFileName)],
       expect.anything(),
     );
+  });
+
+  test('release instance should be called after each execution', async () => {
+    const releaseInstanceMock = jest.spyOn(HooksMeta, 'releaseInstance');
+    await executeHooks(HooksMeta.getInstance({ command: 'pull', plugin: 'core' }, 'pre'));
+    await executeHooks(HooksMeta.getInstance({ command: 'push', plugin: 'core' }, 'pre'));
+    await executeHooks(HooksMeta.getInstance({ command: 'push', plugin: 'core' }, 'post'));
+    expect(releaseInstanceMock).toHaveBeenCalledTimes(3);
+  });
+
+  test('should call post push hooks only once when forcePush is enabled', async () => {
+    const execHelperMock = jest.spyOn(hooksExecutor, 'executeHooks');
+    stateManagerMock.getHooksConfigJson.mockReturnValueOnce({ extensions: { py: { runtime: 'python3' } } });
+    await executeHooks(HooksMeta.getInstance({ command: 'pull', plugin: 'core', options: { forcePush: true } }, 'post'));
+    expect(execHelperMock).toHaveBeenCalledTimes(1);
   });
 
   test('should determine runtime from hooks-config', async () => {
