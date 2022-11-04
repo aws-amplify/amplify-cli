@@ -7,6 +7,7 @@ export type DeviceLocationTrackingParameters = ResourceParameters & {
   groupPermissions: string[];
   roleAndGroupPermissionsMap: Record<string, string[]>;
   positionFiltering: string;
+  kmsKeyId: string;
 };
 
 /**

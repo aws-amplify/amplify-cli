@@ -13,6 +13,7 @@ const trackingResourceHandler = async (event, context) => {
         TrackerName: event.ResourceProperties.trackerName,
         PricingPlan: pricingPlan,
         PositionFiltering: event.ResourceProperties.positionFiltering,
+        KmsKeyId: event.ResourceProperties.kmsKeyId,
       };
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.createTracker(params).promise();

@@ -50,7 +50,7 @@ export const createDeviceLocationTrackingResource = async (
 };
 
 const saveCFNParameters = (
-  parameters: Pick<DeviceLocationTrackingParameters, 'name' | 'dataProvider' | 'isDefault' | 'positionFiltering'>,
+  parameters: Pick<DeviceLocationTrackingParameters, 'name' | 'dataProvider' | 'isDefault' | 'positionFiltering' | 'kmsKeyId'>,
 ): void => {
   const params = {
     authRoleName: {
@@ -61,6 +61,7 @@ const saveCFNParameters = (
     },
     trackerName: parameters.name,
     positionFiltering: parameters.positionFiltering,
+    kmsKeyId: parameters.kmsKeyId,
     isDefault: parameters.isDefault,
     pricingPlan: undefined,
   };
@@ -81,6 +82,7 @@ export const constructTrackingMetaParameters = (
     providerPlugin: provider,
     service: ServiceName.DeviceLocationTracking,
     positionFiltering: params.positionFiltering,
+    kmsKeyId: params.kmsKeyId,
     accessType: params.accessType,
     dependsOn: dependsOnResources,
   };
@@ -90,7 +92,7 @@ export const constructTrackingMetaParameters = (
 /**
  * The Meta information stored for a Device Location Tracking resource
  */
-export type DeviceLocationTrackingMetaParameters = Pick<DeviceLocationTrackingParameters, 'isDefault' | 'accessType' | 'positionFiltering'> & {
+export type DeviceLocationTrackingMetaParameters = Pick<DeviceLocationTrackingParameters, 'isDefault' | 'accessType' | 'positionFiltering' | 'kmsKeyId'> & {
   providerPlugin: string;
   service: string;
   dependsOn: ResourceDependsOn[];
@@ -110,6 +112,7 @@ export const getCurrentTrackingParameters = async (trackerName: string): Promise
     accessType: currentTrackingMetaParameters.accessType,
     isDefault: currentTrackingMetaParameters.isDefault,
     positionFiltering: currentTrackingMetaParameters.positionFiltering,
+    kmsKeyId: currentTrackingMetaParameters.kmsKeyId,
     groupPermissions: currentTrackingParameters?.groupPermissions || [],
     roleAndGroupPermissionsMap: currentTrackingParameters?.roleAndGroupPermissionsMap || {},
   };

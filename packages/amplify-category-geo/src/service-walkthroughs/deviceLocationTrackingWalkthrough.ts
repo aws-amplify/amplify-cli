@@ -1,5 +1,6 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, AmplifyCategories } from 'amplify-cli-core';
 import { v4 as uuid } from 'uuid';
+import type { KMS } from 'aws-sdk';
 import { merge } from 'lodash';
 import {
   prompter, alphanumeric, and, minLength, maxLength, Validator, byValues, printer,
@@ -10,6 +11,7 @@ import { ServiceName } from '../service-utils/constants';
 import { resourceAccessWalkthrough, defaultResourceQuestion } from './resourceWalkthrough';
 import { getGeoServiceMeta } from '../service-utils/resourceUtils';
 import { deviceLocationTrackingAdvancedSettings, deviceLocationTrackingCrudPermissionsMap, deviceLocationTrackingPositionFilteringTypes } from '../service-utils/deviceLocationTrackingConstants';
+import { learnMoreKMSLink } from '../constants';
 
 /**
  * Starting point for CLI walkthrough that creates a device location tracking resource
@@ -136,7 +138,7 @@ const deviceLocationTrackerAdvancedWalkthrough = async (
       break;
     // KMS Settings
     case deviceLocationTrackingAdvancedSettings.addKMSSettings:
-      // updatedParameters = merge(updatedParameters, await deviceLocationTrackerKMSSettingsWalkthrough(updatedParameters));
+      updatedParameters = merge(updatedParameters, await deviceLocationTrackerKMSSettingsWalkthrough(context, updatedParameters));
       break;
     // Position filtering method settings
     case deviceLocationTrackingAdvancedSettings.setPositionFilteringMethod:
@@ -154,8 +156,41 @@ const deviceLocationTrackerAdvancedWalkthrough = async (
 // const deviceLocationTrackerGeofenceLinkingWalkthrough = async (parameters: Partial<DeviceLocationTrackingParameters>): Promise<> => {
 // };
 
-// const deviceLocationTrackerKMSSettingsWalkthrough = async (parameters: Partial<DeviceLocationTrackingParameters>): Promise<> => {
-// };
+const getKMSClient = async (context: $TSContext, action: string): Promise<KMS> => {
+  const providerPlugins = context.amplify.getProviderPlugins(context);
+  const provider = await import(providerPlugins.awscloudformation);
+  const aws = await provider.getConfiguredAWSClient(context, AmplifyCategories.AUTH, action);
+  return new aws.KMS();
+};
+
+const deviceLocationTrackerKMSSettingsWalkthrough = async (
+  context: $TSContext,
+  parameters: Partial<DeviceLocationTrackingParameters>,
+): Promise<Partial<DeviceLocationTrackingParameters>> => {
+  const updatedParameters = { ...parameters };
+
+  const listKmsKeys = async (): Promise<KMS.ListKeysResponse> => {
+    const kmsClient = await getKMSClient(context, 'read');
+    return kmsClient.listKeys().promise();
+  };
+
+  printer.info(`Data is encrypted at rest by default. Learn more at ${learnMoreKMSLink}`);
+  if (await prompter.yesOrNo('Do you want to add a second layer of encryption for the data at rest?', false)) {
+    const listKeysResponse = await listKmsKeys();
+    if (listKeysResponse.Keys) {
+      const selectedKmsKey = await prompter.pick<'one', string>(
+        `Select the AWS Key Management Service Key ID:`,
+        listKeysResponse.Keys.map(key => key.KeyId!),
+        { returnSize: 'one' },
+      );
+      updatedParameters.kmsKeyId = selectedKmsKey;
+    } else {
+      printer.info('We could not find any AWS Key Management Service keys.');
+      printer.info(`Review this guide on how to create a new key: ...`);
+    }
+  }
+  return updatedParameters;
+};
 
 const deviceLocationTrackerFilteringMethodWalkthrough = async (
   parameters: Partial<DeviceLocationTrackingParameters>,
