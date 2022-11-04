@@ -14,7 +14,7 @@ import { LambdaTrigger, LambdaTriggerConfig } from "../utils/lambda/find-lambda-
  * @param data Data to be passed to the local lambda function invocation.
  */
 export const invokeTrigger = async (context: $TSContext, trigger: LambdaTrigger, data: $TSAny): Promise<void> => {
-  let invoker: $TSAny;
+  let invoker: ({ event }) => Promise<$TSAny>;
 
   if (trigger?.name) {
     const functionName = trigger.name;

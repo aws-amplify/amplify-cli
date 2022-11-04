@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { homedir } from 'os';
 // eslint-disable-next-line import/no-cycle
-import { overriddenCategories, projectNotInitializedError, stateManager, descopePackageName } from '..';
+import { overriddenCategories, projectNotInitializedError, stateManager } from '..';
 
 export const PathConstants = {
   // in home directory
@@ -81,7 +81,8 @@ export class PathManager {
   }
 
   getAmplifyPackageLibDirPath = (packageName: string): string => {
-    const result = path.join(this.getAmplifyLibRoot(), descopePackageName(packageName));
+    const descopedPackageName = packageName.replace(/^@/, '').replace(/\//, '-');
+    const result = path.join(this.getAmplifyLibRoot(), descopedPackageName);
     if (!process.env.AMPLIFY_SUPPRESS_NO_PKG_LIB && !fs.pathExistsSync(result)) {
       throw new Error(`Package lib at ${result} does not exist.`);
     }
