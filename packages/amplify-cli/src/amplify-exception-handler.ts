@@ -61,8 +61,8 @@ export const handleException = async (exception: unknown): Promise<void> => {
 
   await executeSafely(
     () => executeHooks(HooksMeta.getInstance(context.input, 'post', {
-      message: amplifyException.message ?? 'undefined error in Amplify process',
-      stack: amplifyException.stack ?? 'undefined error stack',
+      message: deepestException.message ?? 'undefined error in Amplify process',
+      stack: deepestException.stack ?? 'undefined error stack',
     })),
     'Failed to execute hooks',
   );
