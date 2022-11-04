@@ -68,3 +68,13 @@ export const getPackageManager = (rootPath?: string): PackageManager | null => {
 
   return packageManagers.npm;
 };
+
+/**
+ * This method transformes the package name to a valid directory name
+ * by removing the '@' and replacing '/' with '-'.
+ * @param packageName 
+ * @returns descoped package name
+ */
+export const descopePackageName = (packageName: string): string => {
+  return packageName.replace(/^@/, '').replace(/\//, '-');
+};

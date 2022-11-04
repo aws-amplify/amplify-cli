@@ -1,6 +1,6 @@
 import * as path from 'path';
 import which from 'which';
-import { getPackageManager } from '../utils';
+import { getPackageManager, descopePackageName } from '../utils';
 
 jest.mock('which');
 
@@ -61,5 +61,19 @@ describe('packageManager tests', () => {
     expect(which_mock.sync).toBeCalledTimes(1);
     expect(packageManager).toBeDefined();
     expect(packageManager!.packageManager).toEqual('npm');
+  });
+});
+
+describe('Descope package Name', () => {
+  it('should descope package name for scoped packages', () => {
+    const scopedPackageName = '@aws-amplify/amplify-opensearch-siumulator';
+    const descopedName = descopePackageName(scopedPackageName);
+    expect(descopedName).toEqual('aws-amplify-amplify-opensearch-siumulator');
+  });
+
+  it('should descope package name for non-scoped packages', () => {
+    const nonScopedPackageName = 'amplify-opensearch-siumulator';
+    const descopedName = descopePackageName(nonScopedPackageName);
+    expect(descopedName).toEqual(nonScopedPackageName);
   });
 });

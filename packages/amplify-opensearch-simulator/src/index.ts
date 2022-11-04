@@ -28,7 +28,7 @@ const retryInterval = 20;
 const maxRetries = 5;
 export const supportedOpenSearchVersion = '1.3.0'; // latest version of OpenSearch supported by AWS ES
 export const relativePathToOpensearchLocal = join('opensearch', supportedOpenSearchVersion);
-export const packageName = 'amplify-opensearch-simulator';
+export const packageName = '@aws-amplify/amplify-opensearch-simulator';
 
 type OpenSearchEmulatorOptions = {
   port?: number; 
