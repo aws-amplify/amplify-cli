@@ -2,14 +2,14 @@
 import * as cdk from '@aws-cdk/core';
 import {
   $TSAny, $TSContext, AmplifyCategories, AmplifyCategoryTransform,
+  AmplifyError,
   AmplifyStackTemplate, AmplifySupportedService, buildOverrideDir,
   CFNTemplateFormat, FeatureFlags, JSONUtilities, pathManager,
   stateManager, Template, writeCFNTemplate,
 } from 'amplify-cli-core';
-import { formatter, printer } from 'amplify-prompts';
+import { formatter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
-import os from 'os';
 import * as path from 'path';
 import * as vm from 'vm2';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
@@ -117,10 +117,11 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
           .run(overrideCode, path.join(overrideDir, 'build', 'override.js'))
           .override(this._authTemplateObj as AmplifyAuthCognitoStack & AmplifyStackTemplate);
       } catch (err: $TSAny) {
-        const error = new Error(`Skipping override due to ${err}${os.EOL}`);
-        printer.error(`${error}`);
-        error.stack = undefined;
-        throw error;
+        throw new AmplifyError('InvalidOverrideError', {
+          message: `Executing overrides failed.`,
+          details: err.message,
+          resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+        }, err);
       }
     }
   };

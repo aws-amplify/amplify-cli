@@ -1,15 +1,14 @@
 import * as cdk from '@aws-cdk/core';
 import {
   $TSAny, $TSContext,
-  AmplifyCategories, AmplifyCategoryTransform, AmplifyStackTemplate, AmplifySupportedService,
+  AmplifyCategories, AmplifyCategoryTransform, AmplifyError, AmplifyStackTemplate, AmplifySupportedService,
   buildOverrideDir,
   CFNTemplateFormat,
   JSONUtilities,
   pathManager, Template, writeCFNTemplate,
 } from 'amplify-cli-core';
-import { formatter, printer } from 'amplify-prompts';
+import { formatter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
-import os from 'os';
 import * as path from 'path';
 import * as vm from 'vm2';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
@@ -193,10 +192,11 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
           .run(overrideCode)
           .override(this._userPoolGroupTemplateObj as AmplifyUserPoolGroupStack & AmplifyStackTemplate);
       } catch (err: $TSAny) {
-        const error = new Error(`Skipping override due to ${err}${os.EOL}`);
-        printer.error(`${error}`);
-        error.stack = undefined;
-        throw error;
+        throw new AmplifyError('InvalidOverrideError', {
+          message: `Executing overrides failed.`,
+          details: err.message,
+          resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+        }, err);
       }
     }
   };
