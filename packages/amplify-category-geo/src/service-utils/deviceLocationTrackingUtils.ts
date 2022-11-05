@@ -50,7 +50,7 @@ export const createDeviceLocationTrackingResource = async (
 };
 
 const saveCFNParameters = (
-  parameters: Pick<DeviceLocationTrackingParameters, 'name' | 'dataProvider' | 'isDefault' | 'positionFiltering' | 'kmsKeyId'>,
+  parameters: Pick<DeviceLocationTrackingParameters, 'name' | 'dataProvider' | 'isDefault' | 'positionFiltering' | 'kmsKeyId' | 'linkedGeofenceCollections'>,
 ): void => {
   const params = {
     authRoleName: {
@@ -64,7 +64,12 @@ const saveCFNParameters = (
     kmsKeyId: parameters.kmsKeyId,
     isDefault: parameters.isDefault,
     pricingPlan: undefined,
+    linkedGeofenceCollections: parameters.linkedGeofenceCollections,
   };
+  printer.info(`params in saveCFNparameters: ${JSON.stringify(params)}`);
+  // if (parameters.positionFiltering) params.positionFiltering = parameters.positionFiltering;
+  // if (parameters.kmsKeyId) params.kmsKeyId = parameters.kmsKeyId;
+
   updateParametersFile(params, parameters.name, parametersFileName);
 };
 
@@ -83,6 +88,7 @@ export const constructTrackingMetaParameters = (
     service: ServiceName.DeviceLocationTracking,
     positionFiltering: params.positionFiltering,
     kmsKeyId: params.kmsKeyId,
+    linkedGeofenceCollections: params.linkedGeofenceCollections,
     accessType: params.accessType,
     dependsOn: dependsOnResources,
   };
@@ -92,7 +98,7 @@ export const constructTrackingMetaParameters = (
 /**
  * The Meta information stored for a Device Location Tracking resource
  */
-export type DeviceLocationTrackingMetaParameters = Pick<DeviceLocationTrackingParameters, 'isDefault' | 'accessType' | 'positionFiltering' | 'kmsKeyId'> & {
+export type DeviceLocationTrackingMetaParameters = Pick<DeviceLocationTrackingParameters, 'isDefault' | 'accessType' | 'positionFiltering' | 'kmsKeyId' | 'linkedGeofenceCollections'> & {
   providerPlugin: string;
   service: string;
   dependsOn: ResourceDependsOn[];
@@ -113,6 +119,7 @@ export const getCurrentTrackingParameters = async (trackerName: string): Promise
     isDefault: currentTrackingMetaParameters.isDefault,
     positionFiltering: currentTrackingMetaParameters.positionFiltering,
     kmsKeyId: currentTrackingMetaParameters.kmsKeyId,
+    linkedGeofenceCollections: currentTrackingMetaParameters.linkedGeofenceCollections,
     groupPermissions: currentTrackingParameters?.groupPermissions || [],
     roleAndGroupPermissionsMap: currentTrackingParameters?.roleAndGroupPermissionsMap || {},
   };

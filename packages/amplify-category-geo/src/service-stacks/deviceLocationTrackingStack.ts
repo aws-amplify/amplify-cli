@@ -1,6 +1,7 @@
 /* eslint-disable no-new */
 import * as cdk from '@aws-cdk/core';
 import * as iam from '@aws-cdk/aws-iam';
+import * as location from '@aws-cdk/aws-location';
 import * as fs from 'fs-extra';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Effect } from '@aws-cdk/aws-iam';
@@ -12,7 +13,7 @@ import { BaseStack, TemplateMappings } from './baseStack';
 import { customDeviceLocationTrackingLambdaCodePath } from '../service-utils/constants';
 import { deviceLocationTrackingCrudPermissionsMap } from '../service-utils/deviceLocationTrackingConstants';
 
-type DeviceLocationTrackingStackProps = Pick<DeviceLocationTrackingParameters, 'roleAndGroupPermissionsMap' | 'groupPermissions'> &
+type DeviceLocationTrackingStackProps = DeviceLocationTrackingParameters &
   TemplateMappings & { authResourceName: string };
 
 /**
@@ -38,6 +39,7 @@ export class DeviceLocationTrackingStack extends BaseStack {
       // eslint-disable-next-line spellcheck/spell-checker
       (group: string) => `authuserPoolGroups${group}GroupRole`,
     );
+    console.log(`props are ${JSON.stringify(this.props)}`);
     inputParameters.push(
       `auth${this.authResourceName}UserPoolId`,
       'authRoleName',
@@ -45,14 +47,17 @@ export class DeviceLocationTrackingStack extends BaseStack {
       'trackerName',
       'env',
       'isDefault',
-      'positionFiltering',
-      'kmsKeyId',
     );
+    if (this.props.positionFiltering) inputParameters.push('positionFiltering');
+    if (this.props.kmsKeyId) inputParameters.push('kmsKeyId');
+    if (this.props.linkedGeofenceCollections) inputParameters.push('linkedGeofenceCollections');
+
     this.parameters = this.constructInputParameters(inputParameters);
 
     this.trackerName = Fn.join('-', [this.parameters.get('trackerName')!.valueAsString, this.parameters.get('env')!.valueAsString]);
 
     this.trackingResource = this.constructTrackingResource();
+    // this.constructTrackerConsumerResource();
     this.constructTrackingPolicyResources(this.trackingResource);
     this.constructOutputs();
   }
@@ -98,8 +103,8 @@ export class DeviceLocationTrackingStack extends BaseStack {
 
     // set up custom params
 
-    const positionFiltering = this.parameters.get('positionFiltering')!.valueAsString;
-    const kmsKeyId = this.parameters.get('kmsKeyId')!.valueAsString;
+    const positionFiltering = this.parameters.get('positionFiltering')?.valueAsString;
+    const kmsKeyId = this.parameters.get('kmsKeyId')?.valueAsString;
 
     const customTrackingLambdaCode = fs.readFileSync(customDeviceLocationTrackingLambdaCodePath, 'utf-8');
     const customTrackingLambda = new lambda.Function(this, 'customTrackingLambda', {
@@ -124,6 +129,27 @@ export class DeviceLocationTrackingStack extends BaseStack {
     });
 
     return trackingCustomResource;
+  }
+
+  private constructTrackerConsumerResource(): void {
+    const linkedGeofenceCollection = this.parameters.get('linkedGeofenceCollections')!.valueAsString;
+    // const linkedGeofenceCollections = this.parameters.get('linkedGeofenceCollections')!.valueAsList;
+    const linkedGeofenceCollectionArn = cdk.Fn.sub('arn:aws:geo:${region}:${account}:geofence-collection/${linkedGeofenceCollection}', {
+      region: this.trackingRegion,
+      account: cdk.Fn.ref('AWS::AccountId'),
+      linkedGeofenceCollection,
+    });
+    // const linkedGeofenceCollectionArns = linkedGeofenceCollections.map(collection =>
+    // cdk.Fn.sub('arn:aws:geo:${region}:${account}:geofence-collection/${linkedGeofenceCollection}', {
+    //   region: this.trackingRegion,
+    //   account: cdk.Fn.ref('AWS::AccountId'),
+    //   linkedGeofenceCollection: collection,
+    // }));
+
+    new location.CfnTrackerConsumer(this, 'CfnTrackerConsumer', {
+      consumerArn: linkedGeofenceCollectionArn,
+      trackerName: this.trackerName,
+    });
   }
 
   // Grant read-only access to the Tracking Index for Authorized and/or Guest users

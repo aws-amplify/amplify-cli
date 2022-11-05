@@ -22,9 +22,10 @@
     "aws"
   ],
   "dependencies": {
-    "@aws-cdk/aws-iam": "^1.159.0",
-    "@aws-cdk/aws-lambda": "^1.159.0",
-    "@aws-cdk/core": "^1.159.0",
+    "@aws-cdk/aws-iam": "^1.180.0",
+    "@aws-cdk/aws-lambda": "^1.180.0",
+    "@aws-cdk/aws-location": "^1.180.0",
+    "@aws-cdk/core": "^1.180.0",
     "ajv": "^6.12.6",
     "amplify-cli-core": "3.3.0",
     "amplify-headless-interface": "1.15.0",
