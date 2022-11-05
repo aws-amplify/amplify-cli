@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-environment-parameters",
-  "version": "1.2.0",
+  "version": "1.2.1-double-hooks-invoc-fix.0",
   "description": "Amplify CLI environment parameter manager",
   "repository": {
     "type": "git",
@@ -25,7 +25,7 @@
     "test": "jest --logHeapUsage"
   },
   "dependencies": {
-    "amplify-cli-core": "3.3.0",
+    "amplify-cli-core": "3.3.1-double-hooks-invoc-fix.0",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
