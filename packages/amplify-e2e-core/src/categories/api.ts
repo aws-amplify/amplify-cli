@@ -5,6 +5,7 @@
 /* eslint-disable func-style */
 /* eslint-disable jsdoc/require-jsdoc */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
+import { $TSAny } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
@@ -624,9 +625,9 @@ export function updateRestApi(cwd: string, settings: Partial<typeof updateRestAp
 
 const allAuthTypes = ['API key', 'Amazon Cognito User Pool', 'IAM', 'OpenID Connect'];
 
-export function addApi(projectDir: string, settings?: any, requireAuthSetup = true) {
-  const transformerVersion = settings?.transformerVersion ?? 2;
-  delete settings?.transformerVersion;
+export function addApi(projectDir: string, authTypesConfig?: Record<string, $TSAny>, requireAuthSetup = true) {
+  const transformerVersion = authTypesConfig?.transformerVersion ?? 2;
+  delete authTypesConfig?.transformerVersion;
 
   let authTypesToSelectFrom = allAuthTypes.slice();
   return new Promise<void>((resolve, reject) => {
@@ -634,8 +635,8 @@ export function addApi(projectDir: string, settings?: any, requireAuthSetup = tr
       .wait('Select from one of the below mentioned services:')
       .sendCarriageReturn();
 
-    if (settings && Object.keys(settings).length > 0) {
-      const authTypesToAdd = Object.keys(settings);
+    if (authTypesConfig && Object.keys(authTypesConfig).length > 0) {
+      const authTypesToAdd = Object.keys(authTypesConfig);
       const defaultType = authTypesToAdd[0];
 
       chain
@@ -644,7 +645,7 @@ export function addApi(projectDir: string, settings?: any, requireAuthSetup = tr
         .sendCarriageReturn();
 
       singleSelect(chain.wait('Choose the default authorization type for the API'), defaultType, authTypesToSelectFrom);
-      if (requireAuthSetup) setupAuthType(defaultType, chain, settings);
+      if (requireAuthSetup) setupAuthType(defaultType, chain, authTypesConfig);
 
       if (authTypesToAdd.length > 1) {
         authTypesToAdd.shift();
@@ -660,7 +661,7 @@ export function addApi(projectDir: string, settings?: any, requireAuthSetup = tr
         );
 
         authTypesToAdd.forEach(authType => {
-          if (requireAuthSetup) setupAuthType(authType, chain, settings);
+          if (requireAuthSetup) setupAuthType(authType, chain, authTypesConfig);
         });
       } else {
         chain.wait('Configure additional auth types?').sendLine('n');
@@ -746,11 +747,9 @@ function setupOIDC(chain: any, settings?: any) {
     .send(settings['OpenID Connect'].oidcClientId)
     .sendCarriageReturn()
     .wait('Enter the number of milliseconds a token is valid after being issued to a user')
-    // eslint-disable-next-line spellcheck/spell-checker
     .send(settings['OpenID Connect'].ttlaIssueInMillisecond)
     .sendCarriageReturn()
     .wait('Enter the number of milliseconds a token is valid after being authenticated')
-    // eslint-disable-next-line spellcheck/spell-checker
     .send(settings['OpenID Connect'].ttlaAuthInMillisecond)
     .sendCarriageReturn();
 }
