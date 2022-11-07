@@ -12,11 +12,12 @@ import {
   initJSProjectWithProfile,
   removeFirstDefaultGeofenceCollection,
   updateAuthAddUserGroups,
+  addDeviceTrackerWithDefault,
+  removeFirstDefaultDeviceTracker,
 } from '@aws-amplify/amplify-e2e-core';
 import { existsSync } from 'fs';
 import path from 'path';
 import { getAWSExports } from '../aws-exports/awsExports';
-import { addDeviceTrackerWithDefault, removeFirstDefaultDeviceTracker } from '../../../amplify-e2e-core/src/categories/geo';
 
 describe('amplify geo remove', () => {
   let projRoot: string;

@@ -10,12 +10,12 @@ import {
   getGeoJSConfiguration,
   updateAuthAddUserGroups,
   addDeviceTrackerWithDefault,
+  getDeviceLocationTracker,
+  updateDeviceTrackerWithDefault,
 } from '@aws-amplify/amplify-e2e-core';
 import { existsSync } from 'fs';
 import path from 'path';
 import { getAWSExports } from '../aws-exports/awsExports';
-import { updateDeviceTrackerWithDefault } from '../../../amplify-e2e-core/src/categories/geo';
-import { getDeviceLocationTracker } from '../../../amplify-e2e-core/src/utils/sdk-calls';
 
 describe('amplify geo update', () => {
   let projRoot: string;
