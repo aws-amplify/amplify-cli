@@ -33,13 +33,13 @@
     "node": ">=12.0.0"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-api": "^4.0.5",
+    "@aws-amplify/amplify-category-api": "4.0.6-405patch1.0",
     "@aws-amplify/amplify-category-auth": "2.13.0",
     "@aws-amplify/amplify-category-custom": "2.5.4",
     "@aws-amplify/amplify-category-storage": "3.6.0",
     "@aws-amplify/amplify-environment-parameters": "1.2.0",
     "@aws-amplify/amplify-util-uibuilder": "1.6.0",
-    "@aws-amplify/graphql-auth-transformer": "^1.1.0",
+    "@aws-amplify/graphql-auth-transformer": "1.1.1-405patch1.0",
     "@aws-cdk/cloudformation-diff": "^1.159.0",
     "amplify-app": "4.3.4",
     "amplify-category-analytics": "4.2.0",
