@@ -22,6 +22,7 @@ packages/amplify-cli/amplify/.config/
 packages/amplify-appsync-simulator/public
 packages/amplify-dynamodb-simulator/emulator
 packages/amplify-dynamodb-simulator/__test__/dynamodb-data
+packages/amplify-opensearch-simulator/emulator
 .vscode/*
 .history/*
 !.vscode/settings.json
@@ -57,6 +58,7 @@ packages/amplify-util-import/lib
 packages/amplify-util-headless-input/lib
 packages/amplify-util-uibuilder/lib
 packages/amplify-cli-shared-interfaces/lib
+packages/amplify-opensearch-simulator/lib
 packages/*/node_modules
 packages/*/package-lock.json
 **/.env
