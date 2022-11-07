@@ -165,23 +165,17 @@ export class DeviceLocationTrackingStack extends BaseStack {
   }
 
   // Grant read-only access to the Tracking Index for Authorized and/or Guest users
-  private constructTrackingPolicyResources(trackingResource: location.CfnTracker): void {
+  private constructTrackingPolicyResources(trackerResource: location.CfnTracker): void {
     Object.keys(this.roleAndGroupPermissionsMap).forEach((group: string) => {
       const crudActions: string[] = _.uniq(_.flatten(this.roleAndGroupPermissionsMap[group]
         .map((permission: string) => deviceLocationTrackingCrudPermissionsMap[permission])));
 
-      // This is a work-around until the TrackingArn is included in the `UpdateTracker` output
-      const outputTrackingArn = cdk.Fn.sub('arn:aws:geo:${region}:${account}:tracker/${trackerName}', {
-        region: this.trackingRegion,
-        account: cdk.Fn.ref('AWS::AccountId'),
-        collectionName: trackingResource.getAtt('TrackerName').toString(),
-      });
       const policyDocument = new iam.PolicyDocument({
         statements: [
           new iam.PolicyStatement({
             effect: iam.Effect.ALLOW,
             actions: crudActions,
-            resources: [outputTrackingArn],
+            resources: [trackerResource.attrTrackerArn],
             conditions: {
               StringLike: {
                 'geo:DeviceIds': [
