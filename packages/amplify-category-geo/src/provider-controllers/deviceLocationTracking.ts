@@ -18,7 +18,6 @@ export const addDeviceLocationTrackingResource = async (
   };
   // populate the parameters for the resource
   const newParams = await createDeviceLocationTrackingWalkthrough(context, trackingParams);
-  printer.info(`Params from walkthrough are: ${JSON.stringify(newParams)}`);
   const resourceName = await addDeviceLocationTrackingWithParams(context, newParams);
   return resourceName;
 };

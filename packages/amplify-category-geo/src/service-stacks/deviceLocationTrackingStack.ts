@@ -22,7 +22,6 @@ type DeviceLocationTrackingStackProps = DeviceLocationTrackingParameters &
 export class DeviceLocationTrackingStack extends BaseStack {
   protected readonly groupPermissions: string[];
   protected readonly roleAndGroupPermissionsMap: Record<string, string[]>;
-  protected readonly trackingResource: cdk.CustomResource;
   protected readonly trackingRegion: string;
   protected readonly trackerName: string;
   protected readonly authResourceName: string;
@@ -39,7 +38,6 @@ export class DeviceLocationTrackingStack extends BaseStack {
       // eslint-disable-next-line spellcheck/spell-checker
       (group: string) => `authuserPoolGroups${group}GroupRole`,
     );
-    console.log(`props are ${JSON.stringify(this.props)}`);
     inputParameters.push(
       `auth${this.authResourceName}UserPoolId`,
       'authRoleName',
@@ -56,15 +54,15 @@ export class DeviceLocationTrackingStack extends BaseStack {
 
     this.trackerName = Fn.join('-', [this.parameters.get('trackerName')!.valueAsString, this.parameters.get('env')!.valueAsString]);
 
-    this.trackingResource = this.constructTrackingResource();
-    // this.constructTrackerConsumerResource();
-    this.constructTrackingPolicyResources(this.trackingResource);
+    const trackerResource = this.constructCfnTrackingResource();
+    this.constructCfnTrackerConsumerResource(trackerResource);
+    this.constructTrackingPolicyResources(trackerResource);
     this.constructOutputs();
   }
 
   private constructOutputs(): void {
     new cdk.CfnOutput(this, 'Name', {
-      value: this.trackingResource.getAtt('TrackerName').toString(),
+      value: this.trackerName,
     });
     new cdk.CfnOutput(this, 'Region', {
       value: this.trackingRegion,
@@ -74,7 +72,7 @@ export class DeviceLocationTrackingStack extends BaseStack {
     const outputTrackingArn = cdk.Fn.sub('arn:aws:geo:${region}:${account}:tracker/${trackerName}', {
       region: this.trackingRegion,
       account: cdk.Fn.ref('AWS::AccountId'),
-      collectionName: this.trackingResource.getAtt('TrackerName').toString(),
+      collectionName: this.trackerName,
     });
 
     new cdk.CfnOutput(this, 'Arn', {
@@ -116,6 +114,22 @@ export class DeviceLocationTrackingStack extends BaseStack {
     customTrackingLambda.addToRolePolicy(geoCreateTrackingStatement);
     customTrackingLambda.addToRolePolicy(geoUpdateDeleteTrackingStatement);
 
+    // if (kmsKeyId) {
+    //   const kmsKeyArn = cdk.Fn.sub('arn:aws:kms:${region}:${account}:key/${kmsKeyId}', {
+    //     region: this.trackingRegion,
+    //     account: cdk.Fn.ref('AWS::AccountId'),
+    //     kmsKeyId,
+    //   });
+    //   const geoAddKmsKeyStatement = new iam.PolicyStatement({
+    //     effect: Effect.ALLOW,
+    //   });
+    //   // const kmsKeyArn = 'arn:aws:kms:us-west-2:273187904046:key/3fe31f84-9974-4329-a6e6-dba6af5611cc';
+    //   console.log(`kmsArn: ${kmsKeyArn}`);
+    //   geoAddKmsKeyStatement.addActions('kms:DescribeKey', 'kms:CreateGrant');
+    //   geoAddKmsKeyStatement.addResources(kmsKeyArn);
+    //   customTrackingLambda.addToRolePolicy(geoAddKmsKeyStatement);
+    // }
+
     const trackingCustomResource = new cdk.CustomResource(this, 'CustomTracking', {
       serviceToken: customTrackingLambda.functionArn,
       resourceType: 'Custom::LambdaCallout',
@@ -131,29 +145,43 @@ export class DeviceLocationTrackingStack extends BaseStack {
     return trackingCustomResource;
   }
 
-  private constructTrackerConsumerResource(): void {
-    const linkedGeofenceCollection = this.parameters.get('linkedGeofenceCollections')!.valueAsString;
-    // const linkedGeofenceCollections = this.parameters.get('linkedGeofenceCollections')!.valueAsList;
-    const linkedGeofenceCollectionArn = cdk.Fn.sub('arn:aws:geo:${region}:${account}:geofence-collection/${linkedGeofenceCollection}', {
-      region: this.trackingRegion,
-      account: cdk.Fn.ref('AWS::AccountId'),
-      linkedGeofenceCollection,
-    });
-    // const linkedGeofenceCollectionArns = linkedGeofenceCollections.map(collection =>
-    // cdk.Fn.sub('arn:aws:geo:${region}:${account}:geofence-collection/${linkedGeofenceCollection}', {
-    //   region: this.trackingRegion,
-    //   account: cdk.Fn.ref('AWS::AccountId'),
-    //   linkedGeofenceCollection: collection,
-    // }));
+  private constructCfnTrackingResource(): location.CfnTracker {
+    const positionFiltering = this.parameters.get('positionFiltering')?.valueAsString;
+    const kmsKeyId = this.parameters.get('kmsKeyId')?.valueAsString;
 
-    new location.CfnTrackerConsumer(this, 'CfnTrackerConsumer', {
-      consumerArn: linkedGeofenceCollectionArn,
+    const trackerResource = new location.CfnTracker(this, `CfnTracker`, {
       trackerName: this.trackerName,
+      positionFiltering,
+      kmsKeyId,
+    });
+    return trackerResource;
+  }
+
+  private constructCfnTrackerConsumerResource(trackerResource: location.CfnTracker): void {
+    const { linkedGeofenceCollections } = this.props;
+    linkedGeofenceCollections?.forEach(linkedGeofenceCollection => {
+      const linkedGeofenceCollectionArn = cdk.Fn.sub(
+        'arn:aws:geo:${region}:${account}:geofence-collection/${linkedGeofenceCollection}',
+        {
+          region: this.trackingRegion,
+          account: cdk.Fn.ref('AWS::AccountId'),
+          linkedGeofenceCollection,
+        },
+      );
+      const trackerConsumerResource = new location.CfnTrackerConsumer(
+        this,
+        `CfnTrackerConsumer-${linkedGeofenceCollection}`,
+        {
+          consumerArn: linkedGeofenceCollectionArn,
+          trackerName: this.trackerName,
+        },
+      );
+      trackerConsumerResource.addDependsOn(trackerResource);
     });
   }
 
   // Grant read-only access to the Tracking Index for Authorized and/or Guest users
-  private constructTrackingPolicyResources(trackingResource: cdk.CustomResource): void {
+  private constructTrackingPolicyResources(trackingResource: location.CfnTracker): void {
     Object.keys(this.roleAndGroupPermissionsMap).forEach((group: string) => {
       const crudActions: string[] = _.uniq(_.flatten(this.roleAndGroupPermissionsMap[group]
         .map((permission: string) => deviceLocationTrackingCrudPermissionsMap[permission])));

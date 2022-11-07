@@ -6,9 +6,9 @@ import { ResourceParameters } from './resourceParams';
 export type DeviceLocationTrackingParameters = ResourceParameters & {
   groupPermissions: string[];
   roleAndGroupPermissionsMap: Record<string, string[]>;
-  linkedGeofenceCollections: string;
-  positionFiltering: string;
-  kmsKeyId: string;
+  linkedGeofenceCollections?: string[];
+  positionFiltering?: string;
+  kmsKeyId?: string;
 };
 
 /**

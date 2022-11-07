@@ -161,11 +161,11 @@ const deviceLocationTrackerGeofenceLinkingWalkthrough = async (
 
   const isExists = await checkGeoResourceTypeExists(ServiceName.GeofenceCollection);
   if (isExists) {
-    if (await prompter.yesOrNo('Do you want to link a geofence collection to this tracker?', false)) {
-      const selectedGeofenceCollections = await prompter.pick<'one', string>(
-        `Select the geofence collections you want to link to this tracker`,
+    if (await prompter.yesOrNo('Do you want to link geofence collection(s) to this tracker?', false)) {
+      const selectedGeofenceCollections = await prompter.pick<'many', string>(
+        `Select the geofence collection(s) you want to link to this tracker`,
         await getGeoResourcesByServiceType(ServiceName.GeofenceCollection),
-        { returnSize: 'one' },
+        { returnSize: 'many', pickAtLeast: 1 },
       );
       updatedParameters.linkedGeofenceCollections = selectedGeofenceCollections;
     }
