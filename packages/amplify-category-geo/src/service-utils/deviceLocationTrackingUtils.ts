@@ -66,9 +66,6 @@ const saveCFNParameters = (
     pricingPlan: undefined,
     linkedGeofenceCollections: parameters.linkedGeofenceCollections,
   };
-  printer.info(`params in saveCFNparameters: ${JSON.stringify(params)}`);
-  // if (parameters.positionFiltering) params.positionFiltering = parameters.positionFiltering;
-  // if (parameters.kmsKeyId) params.kmsKeyId = parameters.kmsKeyId;
 
   updateParametersFile(params, parameters.name, parametersFileName);
 };

@@ -114,22 +114,6 @@ export class DeviceLocationTrackingStack extends BaseStack {
     customTrackingLambda.addToRolePolicy(geoCreateTrackingStatement);
     customTrackingLambda.addToRolePolicy(geoUpdateDeleteTrackingStatement);
 
-    // if (kmsKeyId) {
-    //   const kmsKeyArn = cdk.Fn.sub('arn:aws:kms:${region}:${account}:key/${kmsKeyId}', {
-    //     region: this.trackingRegion,
-    //     account: cdk.Fn.ref('AWS::AccountId'),
-    //     kmsKeyId,
-    //   });
-    //   const geoAddKmsKeyStatement = new iam.PolicyStatement({
-    //     effect: Effect.ALLOW,
-    //   });
-    //   // const kmsKeyArn = 'arn:aws:kms:us-west-2:273187904046:key/3fe31f84-9974-4329-a6e6-dba6af5611cc';
-    //   console.log(`kmsArn: ${kmsKeyArn}`);
-    //   geoAddKmsKeyStatement.addActions('kms:DescribeKey', 'kms:CreateGrant');
-    //   geoAddKmsKeyStatement.addResources(kmsKeyArn);
-    //   customTrackingLambda.addToRolePolicy(geoAddKmsKeyStatement);
-    // }
-
     const trackingCustomResource = new cdk.CustomResource(this, 'CustomTracking', {
       serviceToken: customTrackingLambda.functionArn,
       resourceType: 'Custom::LambdaCallout',
