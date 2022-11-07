@@ -8,7 +8,7 @@ import {
 import { JSONUtilities } from '../jsonUtilities';
 
 /**
- *
+ * This method generates the default/template overrides file
  */
 export const generateOverrideSkeleton = async (context: $TSContext, srcResourceDirPath: string, destDirPath: string): Promise<void> => {
   // 1. Create skeleton package
@@ -116,7 +116,7 @@ export const buildOverrideDir = async (cwd: string, destDirPath: string): Promis
 };
 
 /**
- *
+ * this method adds the package.json & tsconfig.json files needed for overrides
  */
 export const generateAmplifyOverrideProjectBuildFiles = (backendDir: string, srcResourceDirPath: string): void => {
   const packageJSONFilePath = path.join(backendDir, 'package.json');
@@ -135,7 +135,7 @@ export const generateAmplifyOverrideProjectBuildFiles = (backendDir: string, src
 };
 
 /**
- *
+ * this method generates the tsconfig file template for overrides
  */
 export const generateTsConfigforProject = (srcResourceDirPath: string, destDirPath: string): void => {
   const overrideFileName = path.join(destDirPath, 'override.ts');
