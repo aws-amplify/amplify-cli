@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.1-update-data-dependencies-hotpatch-2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.6.0...amplify-util-mock@4.6.1-update-data-dependencies-hotpatch-2.0) (2022-11-07)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
 # [4.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.5.4...amplify-util-mock@4.6.0) (2022-10-27)
 
 
