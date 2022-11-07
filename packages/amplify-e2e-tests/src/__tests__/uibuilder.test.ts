@@ -75,7 +75,9 @@ describe('amplify pull with uibuilder', () => {
     expect(fileList).toContain('MyIcon.d.ts');
     expect(fileList).toContain('MyIcon.jsx');
     expect(fileList).toContain('index.js');
-    expect(fileList).toHaveLength(5);
+    expect(fileList).toContain('studioTheme.js');
+    expect(fileList).toContain('studioTheme.js.d.ts');
+    expect(fileList).toHaveLength(7);
 
     spawnSync(
       getNpmPath(),
