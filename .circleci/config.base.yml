@@ -170,6 +170,7 @@ jobs:
             yarn install
             cd ..
             yarn extract-api
+            git status
       - store_artifacts:
           path: packages/amplify-category-analytics/API.md
 
