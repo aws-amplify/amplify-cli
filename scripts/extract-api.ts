@@ -2,8 +2,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import {
   Extractor,
-  ExtractorConfig,
-  ExtractorResult
+  ExtractorConfig
 } from '@microsoft/api-extractor';
 
 const packagesDir = path.join(__dirname, '..', 'packages');
@@ -25,7 +24,7 @@ for (let pkg of packages) {
   fs.copySync(configTemplatePath, pkgConfigPath);
   try {
     const extractorConfig = ExtractorConfig.loadFileAndPrepare(pkgConfigPath);
-    const extractorResult: ExtractorResult = Extractor.invoke(
+    Extractor.invoke(
       extractorConfig,
       {
         localBuild: true,
