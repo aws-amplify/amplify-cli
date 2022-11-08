@@ -21,6 +21,7 @@ interface IUsageMetricsData {
   startCodePathTimer: (codePath: StartableTimedCodePath) => void;
   stopCodePathTimer: (codePath: StoppableTimedCodePath) => void;
   calculatePushNormalizationFactor: (events: { StackId: string, PhysicalResourceId: string } [], StackId: string) => void;
+  getSessionUuid: () => string;
 }
 
 /**

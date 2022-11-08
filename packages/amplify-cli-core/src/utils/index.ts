@@ -7,3 +7,4 @@ export * from './packageManager';
 export * from './recursiveOmit';
 /* eslint-enable */
 export * from './validate-path';
+export * from './windows-utils';

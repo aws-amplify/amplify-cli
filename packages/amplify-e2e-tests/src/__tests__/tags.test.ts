@@ -21,7 +21,16 @@ describe('generated tags test', () => {
   });
 
   afterEach(async () => {
+    const hostingBucket = extractHostingBucketInfo(projRoot);
+    await removeHosting(projRoot);
+    await amplifyPushWithoutCodegen(projRoot);
     await deleteProject(projRoot);
+    if (hostingBucket) {
+      try {
+        await deleteS3Bucket(hostingBucket);
+      // eslint-disable-next-line no-empty
+      } catch {}
+    }
     deleteProjectDir(projRoot);
   });
 
@@ -43,15 +52,7 @@ describe('generated tags test', () => {
     expect(rootStackInfo.Tags.filter(r => r.Key === 'user:Stack')[0].Value).toEqual(envName);
     expect(rootStackInfo.Tags.filter(r => r.Key === 'user:Application')[0].Value).toEqual(projName);
 
-    // clean up
-    const hostingBucket = extractHostingBucketInfo(projRoot);
-    await removeHosting(projRoot);
-    await amplifyPushWithoutCodegen(projRoot);
-    if (hostingBucket) {
-      try {
-        await deleteS3Bucket(hostingBucket);
-      } catch {}
-    }
+    
   });
 });
 

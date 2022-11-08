@@ -88,6 +88,7 @@ describe('test SIGINT with execute', () => {
       assignProjectIdentifier: jest.fn(),
       getUsageDataPayload: jest.fn(),
       calculatePushNormalizationFactor: jest.fn(),
+      getSessionUuid: jest.fn(),
     };
     mockContext.projectHasMobileHubResources = false;
 

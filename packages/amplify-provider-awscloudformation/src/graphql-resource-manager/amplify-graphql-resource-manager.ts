@@ -125,7 +125,6 @@ export class GraphQLResourceManager {
     } catch (err) {
       if (err.name !== 'InvalidGSIMigrationError') {
         throw new AmplifyFault('UnknownFault', {
-          stack: err.stack,
           message: err.message,
           link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
         }, err);

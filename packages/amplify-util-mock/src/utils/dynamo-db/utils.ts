@@ -1,5 +1,6 @@
 import { DynamoDB } from 'aws-sdk';
 import { CreateTableInput, GlobalSecondaryIndexUpdate, TableDescription, UpdateTableInput } from 'aws-sdk/clients/dynamodb';
+import _ from 'lodash';
 import { waitTillTableStateIsActive } from './helpers';
 
 export async function createTables(dynamoDbClient: DynamoDB, tables: CreateTableInput[]): Promise<void> {
@@ -24,6 +25,9 @@ export async function updateTables(dynamoDbClient: DynamoDB, tables: UpdateTable
 
 export async function describeTables(dynamoDbClient: DynamoDB, tableNames: string[]): Promise<Record<string, TableDescription>> {
   const tableDetails: Record<string, TableDescription> = {};
+  if (_.isEmpty(tableNames)) {
+    return tableDetails;
+  }
   for (let tableName of tableNames) {
     const tableDescription = await dynamoDbClient.describeTable({ TableName: tableName }).promise();
     if (tableDescription.Table) {

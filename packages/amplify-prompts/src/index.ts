@@ -5,3 +5,4 @@ export * from './validators';
 export * from './progressbars/progressbar';
 export * from './progressbars/multibar';
 export * from './progressbars/spinner';
+export * from './flags';

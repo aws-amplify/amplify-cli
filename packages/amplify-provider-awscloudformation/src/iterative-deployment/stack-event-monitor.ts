@@ -1,6 +1,6 @@
 import { StackEvent } from 'aws-sdk/clients/cloudformation';
 import * as aws from 'aws-sdk';
-import { amplifyFaultWithTroubleshootingLink } from 'amplify-cli-core';
+import { AmplifyFault } from 'amplify-cli-core';
 import { fileLogger, Logger } from '../utils/aws-logger';
 
 export interface StackEventMonitorOptions {
@@ -147,9 +147,8 @@ export class StackEventMonitor {
         return;
       }
       if (e.code !== 'Throttling') {
-        throw amplifyFaultWithTroubleshootingLink('NotImplementedFault', {
+        throw new AmplifyFault('NotImplementedFault', {
           message: e.message,
-          stack: e.stack,
         }, e);
       }
     }

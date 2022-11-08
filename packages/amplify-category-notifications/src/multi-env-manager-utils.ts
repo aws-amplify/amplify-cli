@@ -1,6 +1,6 @@
 import { ensureEnvParamManager, getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import {
-  $TSAny, $TSContext, $TSMeta, AmplifyCategories, amplifyFaultWithTroubleshootingLink, AmplifySupportedService, stateManager,
+  $TSAny, $TSContext, $TSMeta, AmplifyCategories, AmplifyFault, AmplifySupportedService, stateManager,
 } from 'amplify-cli-core';
 import { ChannelConfigDeploymentType, IChannelAPIResponse } from './channel-types';
 import { getEnabledChannelsFromAppMeta, getNotificationsAppMeta } from './notifications-amplify-meta-api';
@@ -99,7 +99,7 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
     const enabledChannels: Array<string> = await getEnabledChannelsFromAppMeta(context.exeInfo.amplifyMeta);
 
     if (!notificationsServiceMeta) {
-      throw amplifyFaultWithTroubleshootingLink('ConfigurationFault', {
+      throw new AmplifyFault('ConfigurationFault', {
         message: 'Failed to store notifications meta. Amplify Meta not found for Notifications.',
       });
     }

@@ -2,7 +2,7 @@ import {
   $TSAny,
   $TSContext,
   AmplifyCategories,
-  amplifyErrorWithTroubleshootingLink,
+  AmplifyError,
   AmplifySupportedService,
   INotificationsResourceMeta,
   stateManager,
@@ -38,7 +38,7 @@ export const generateMetaFromConfig = (envName: string, cfg:$TSAny): Partial<INo
   const outputRecords: Record<string, $TSAny>|undefined = (cfg?.channels?.length && cfg.channels.length > 0)
     ? buildPartialChannelMeta(cfg.channels) : undefined;
   if (cfg.resourceName === undefined) {
-    throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
+    throw new AmplifyError('ConfigurationError', {
       message: 'Pinpoint resource name is missing in the backend config',
     });
   }

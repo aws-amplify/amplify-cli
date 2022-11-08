@@ -1,5 +1,5 @@
 import {
-  stateManager, $TSContext, amplifyErrorWithTroubleshootingLink,
+  stateManager, $TSContext, AmplifyError,
 } from 'amplify-cli-core';
 
 /**
@@ -11,13 +11,13 @@ export const resolveAppId = (context: $TSContext): string => {
     if (meta?.providers?.awscloudformation?.AmplifyAppId) {
       return meta.providers.awscloudformation.AmplifyAppId;
     }
-    throw amplifyErrorWithTroubleshootingLink('ProjectAppIdResolveError', {
+    throw new AmplifyError('ProjectAppIdResolveError', {
       message: 'Could not find AmplifyAppId in amplify-meta.json.',
     });
   } else if (context?.exeInfo?.inputParams?.amplify?.appId) {
     return context.exeInfo.inputParams.amplify.appId;
   } else {
-    throw amplifyErrorWithTroubleshootingLink('ProjectAppIdResolveError', {
+    throw new AmplifyError('ProjectAppIdResolveError', {
       message: 'Failed to resolve appId.',
     });
   }
