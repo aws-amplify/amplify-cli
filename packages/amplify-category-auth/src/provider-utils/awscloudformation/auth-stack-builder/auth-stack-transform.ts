@@ -3,6 +3,7 @@ import {
   $TSContext,
   AmplifyCategories,
   AmplifyCategoryTransform,
+  AmplifyError,
   AmplifyStackTemplate,
   AmplifySupportedService,
   buildOverrideDir,
