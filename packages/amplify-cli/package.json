@@ -40,7 +40,7 @@
     "@aws-amplify/amplify-environment-parameters": "1.2.0",
     "@aws-amplify/amplify-util-uibuilder": "1.6.0",
     "@aws-amplify/graphql-auth-transformer": "^1.1.0",
-    "@aws-cdk/cloudformation-diff": "^1.180.0",
+    "@aws-cdk/cloudformation-diff": "~1.172.0",
     "amplify-app": "4.3.4",
     "amplify-category-analytics": "4.2.0",
     "amplify-category-function": "4.2.0",
