@@ -158,7 +158,7 @@ const deviceLocationTrackerOtherAccessWalkthrough = async (
   printer.info('Users in this group can only access their own device by default. Learn more at ...');
   const selectedUserGroups = await prompter.pick<'many', string>(
     `Select one or more users groups to give full access to:`,
-    ['authenticated', 'guest'],
+    ['authenticated', 'guest', ...(updatedParameters.groupPermissions ?? [])],
     { returnSize: 'many', pickAtLeast: 1 },
   );
   updatedParameters.selectedUserGroups = selectedUserGroups;
