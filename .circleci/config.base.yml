@@ -170,6 +170,8 @@ jobs:
             yarn install
             cd ..
             yarn extract-api
+      - store_artifacts:
+          path: packages/amplify-category-analytics/API.md
 
   mock_e2e_tests:
     <<: *linux-e2e-executor
