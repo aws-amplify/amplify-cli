@@ -280,6 +280,7 @@ module.exports = {
     '/amplify-category-interactions/lib',
     '/packages/amplify-category-custom/src/utils/generate-cfn-from-cdk.ts',
     '/packages/amplify-environment-parameters/lib',
+    '/packages/amplify-opensearch-simulator/lib',
 
     // Ignore CHANGELOG.md files
     '/packages/*/CHANGELOG.md',
