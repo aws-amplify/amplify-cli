@@ -156,7 +156,7 @@ jobs:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run: chmod +x .circleci/lint_pr.sh && ./.circleci/lint_pr.sh
 
-  extract-api:
+  verify-api-extract:
     <<: *linux-e2e-executor
     steps:
       - restore_cache:
@@ -170,12 +170,7 @@ jobs:
             yarn install
             cd ..
             yarn extract-api
-            git config user.email $GITHUB_EMAIL
-            git config user.name $GITHUB_USER
-            git status
-            git add */API.md
-            git commit -m "chore: update API.md"
-            git push
+            ./.circleci/verify_extract_api.sh
 
   mock_e2e_tests:
     <<: *linux-e2e-executor
@@ -739,7 +734,7 @@ workflows:
                 - release
                 - /release_rc\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
-      - extract-api:
+      - verify-api-extract:
           requires:
             - build
           filters:
