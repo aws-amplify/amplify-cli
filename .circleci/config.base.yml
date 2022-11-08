@@ -163,7 +163,13 @@ jobs:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - run: yarn extract-api
+      - run:
+          name: extract api
+          command: |
+            cd scripts
+            yarn install
+            cd ..
+            yarn extract-api
 
   mock_e2e_tests:
     <<: *linux-e2e-executor
