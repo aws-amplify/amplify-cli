@@ -131,7 +131,7 @@ const deviceLocationTrackerAdvancedWalkthrough = async (
   switch (selectedAdvancedSetting) {
     // Grant users access to devices other than their own
     case deviceLocationTrackingAdvancedSettings.grantOtherAccess:
-      // updatedParameters = merge(updatedParameters, await deviceLocationTrackerOtherAccessWalkthrough(updatedParameters));
+      updatedParameters = merge(updatedParameters, await deviceLocationTrackerOtherAccessWalkthrough(updatedParameters));
       break;
     // Link Geofence Collection Question
     case deviceLocationTrackingAdvancedSettings.linkGeofenceCollection:
@@ -151,8 +151,19 @@ const deviceLocationTrackerAdvancedWalkthrough = async (
   return updatedParameters;
 };
 
-// const deviceLocationTrackerOtherAccessWalkthrough = async (parameters: Partial<DeviceLocationTrackingParameters>): Promise<> => {
-// };
+const deviceLocationTrackerOtherAccessWalkthrough = async (
+  parameters: Partial<DeviceLocationTrackingParameters>,
+): Promise<Partial<DeviceLocationTrackingParameters>> => {
+  const updatedParameters = { ...parameters };
+  printer.info('Users in this group can only access their own device by default. Learn more at ...');
+  const selectedUserGroups = await prompter.pick<'many', string>(
+    `Select one or more users groups to give full access to:`,
+    ['authenticated', 'guest'],
+    { returnSize: 'many', pickAtLeast: 1 },
+  );
+  updatedParameters.selectedUserGroups = selectedUserGroups;
+  return updatedParameters;
+};
 
 const deviceLocationTrackerGeofenceLinkingWalkthrough = async (
   parameters: Partial<DeviceLocationTrackingParameters>,

@@ -9,6 +9,7 @@ export type DeviceLocationTrackingParameters = ResourceParameters & {
   linkedGeofenceCollections?: string[];
   positionFiltering?: string;
   kmsKeyId?: string;
+  selectedUserGroups?: string[];
 };
 
 /**

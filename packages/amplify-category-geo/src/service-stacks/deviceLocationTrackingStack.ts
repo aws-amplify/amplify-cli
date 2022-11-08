@@ -170,19 +170,23 @@ export class DeviceLocationTrackingStack extends BaseStack {
       const crudActions: string[] = _.uniq(_.flatten(this.roleAndGroupPermissionsMap[group]
         .map((permission: string) => deviceLocationTrackingCrudPermissionsMap[permission])));
 
+      let accessConditions;
+      if (!this.props.selectedUserGroups?.includes(group)) {
+        accessConditions = {
+          StringLike: {
+            'geo:DeviceIds': [
+              '${cognito-identity.amazonaws.com:sub}',
+            ],
+          },
+        };
+      }
       const policyDocument = new iam.PolicyDocument({
         statements: [
           new iam.PolicyStatement({
             effect: iam.Effect.ALLOW,
             actions: crudActions,
             resources: [trackerResource.attrTrackerArn],
-            conditions: {
-              StringLike: {
-                'geo:DeviceIds': [
-                  '${cognito-identity.amazonaws.com:sub}',
-                ],
-              },
-            },
+            conditions: accessConditions,
           }),
         ],
       });
