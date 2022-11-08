@@ -171,8 +171,9 @@ jobs:
             cd ..
             yarn extract-api
             git status
-      - store_artifacts:
-          path: packages/amplify-category-analytics/API.md
+            git add */API.md
+            git commit -m "chore: update API.md"
+            git push
 
   mock_e2e_tests:
     <<: *linux-e2e-executor
