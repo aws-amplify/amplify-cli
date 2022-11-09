@@ -11,7 +11,7 @@ import { ServiceName } from '../service-utils/constants';
 import { resourceAccessWalkthrough, defaultResourceQuestion } from './resourceWalkthrough';
 import { checkGeoResourceTypeExists, getGeoServiceMeta, getGeoResourcesByServiceType } from '../service-utils/resourceUtils';
 import { deviceLocationTrackingAdvancedSettings, deviceLocationTrackingCrudPermissionsMap, deviceLocationTrackingPositionFilteringTypes } from '../service-utils/deviceLocationTrackingConstants';
-import { learnMoreCreateGeofenceCollections, learnMoreKMSLink } from '../constants';
+import { defaultPositionFilteringMethodLink, learnMoreCreateGeofenceCollections, learnMoreKMSLink } from '../constants';
 
 /**
  * Starting point for CLI walkthrough that creates a device location tracking resource
@@ -126,7 +126,7 @@ export const deviceLocationTrackerAdvancedWalkthrough = async (
   updatedParameters.positionFiltering = deviceLocationTrackingPositionFilteringTypes['Time-based'];
   const selectedAdvancedSetting = await prompter.pick<'one', string>(
     `Here are the default advanced settings. Select a setting to edit or continue (Use arrow keys)`,
-    Object.values(deviceLocationTrackingAdvancedSettings),
+    [...Object.values(deviceLocationTrackingAdvancedSettings), 'Continue'],
     { returnSize: 'one' },
   );
   switch (selectedAdvancedSetting) {
@@ -139,15 +139,17 @@ export const deviceLocationTrackerAdvancedWalkthrough = async (
       updatedParameters = merge(updatedParameters, await deviceLocationTrackerGeofenceLinkingWalkthrough(updatedParameters));
       break;
     // KMS Settings
-    case deviceLocationTrackingAdvancedSettings.addKMSSettings:
-      updatedParameters = merge(updatedParameters, await deviceLocationTrackerKMSSettingsWalkthrough(context, updatedParameters));
-      break;
+    // case deviceLocationTrackingAdvancedSettings.addKMSSettings:
+    //   updatedParameters = merge(updatedParameters, await deviceLocationTrackerKMSSettingsWalkthrough(context, updatedParameters));
+    //   break;
     // Position filtering method settings
     case deviceLocationTrackingAdvancedSettings.setPositionFilteringMethod:
       updatedParameters = merge(updatedParameters, await deviceLocationTrackerFilteringMethodWalkthrough(updatedParameters));
       break;
+    case 'Continue':
+      break;
     default:
-      printer.error('something went wrong...');
+      printer.error('Invalid advanced setting option selected.');
   }
   return updatedParameters;
 };
@@ -227,7 +229,7 @@ const deviceLocationTrackerFilteringMethodWalkthrough = async (
   parameters: Partial<DeviceLocationTrackingParameters>,
 ): Promise<Partial<DeviceLocationTrackingParameters>> => {
   const updatedParameters = { ...parameters };
-  printer.info('The default position filtering method for trackers is Time-based filtering. Learn more at');
+  printer.info(`The default position filtering method for trackers is Time-based filtering. Learn more at ${defaultPositionFilteringMethodLink}`);
   if (await prompter.yesOrNo('Do you want to set the position filtering method for this tracker?', false)) {
     const selectedFilteringMethod = await prompter.pick<'one', string>(
       `Specify the position filtering method for this device tracker`,

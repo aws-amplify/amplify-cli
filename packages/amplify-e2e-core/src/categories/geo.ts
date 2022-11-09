@@ -186,14 +186,12 @@ export function addAdvancedSettingsOnDeviceTracker(chain: ExecutionContext, adva
         .wait('Do you want to link geofence collection(s) to this tracker?')
         .sendYes();
       break;
-    case 'addKMSSettings':
-      break;
     case 'setPositionFilteringMethod':
       chain
         .wait('Do you want to configure advanced settings?')
         .sendYes()
         .wait('Here are the default advanced settings. Select a setting to edit or continue (Use arrow keys)')
-        .sendKeyDown(3)
+        .sendKeyDown(2)
         .sendCarriageReturn()
         .wait('Do you want to set the position filtering method for this tracker?')
         .sendYes()
