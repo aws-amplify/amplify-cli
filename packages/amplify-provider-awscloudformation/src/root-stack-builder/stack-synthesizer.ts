@@ -1,5 +1,5 @@
 import { ISynthesisSession, LegacyStackSynthesizer, Stack } from 'aws-cdk-lib';
-import { amplifyFaultWithTroubleshootingLink, JSONUtilities, Template } from 'amplify-cli-core';
+import { AmplifyFault, JSONUtilities, Template } from 'amplify-cli-core';
 import { AmplifyRootStack, AmplifyRootStackOutputs } from './root-stack-builder';
 
 /**
@@ -16,7 +16,7 @@ export class RootStackSynthesizer extends LegacyStackSynthesizer {
       const templateName = stack.node.id;
       this.setStackAsset(templateName, template);
     } else {
-      throw amplifyFaultWithTroubleshootingLink('UnknownFault', {
+      throw new AmplifyFault('UnknownFault', {
         message: 'Error synthesizing the template. Expected Stack to be either instance of AmplifyRootStack',
       });
     }
@@ -46,7 +46,7 @@ export class RootStackSynthesizer extends LegacyStackSynthesizer {
       return this.stacks.get(stackName)!;
     }
 
-    throw amplifyFaultWithTroubleshootingLink('UnknownFault', {
+    throw new AmplifyFault('UnknownFault', {
       message: `Stack ${stackName} is not created`,
     });
   };

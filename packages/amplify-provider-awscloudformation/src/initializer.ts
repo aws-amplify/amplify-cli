@@ -5,8 +5,8 @@
 import {
   $TSContext,
   $TSObject,
-  amplifyErrorWithTroubleshootingLink,
-  amplifyFaultWithTroubleshootingLink,
+  AmplifyError,
+  AmplifyFault,
   JSONUtilities,
   PathConstants,
   pathManager,
@@ -107,9 +107,10 @@ export const run = async (context: $TSContext): Promise<void> => {
             external: true,
           },
         });
-        sandboxNode.run(overrideCode).override(configuration);
+        await sandboxNode.run(overrideCode).override(configuration);
       }
     } catch (e) {
+      // TODO: this always throws, and likely needs re-written
       printer.debug(`Unable to apply auth role overrides: ${e.message}`);
     }
 
@@ -201,7 +202,7 @@ const processStackCreationData = (context: $TSContext, amplifyAppId: string | un
 
     setCloudFormationOutputInContext(context, metadata);
   } else {
-    throw amplifyErrorWithTroubleshootingLink('StackNotFoundError', {
+    throw new AmplifyError('StackNotFoundError', {
       message: 'No stack data present',
     });
   }
@@ -304,7 +305,6 @@ const storeCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
   const zipFilePath = path.normalize(path.join(tempDir, zipFilename));
   const spinner = new AmplifySpinner();
 
-
   return archiver
     .run(currentCloudBackendDir, zipFilePath, undefined, cliJSONFiles)
     .then(result => {
@@ -322,9 +322,8 @@ const storeCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
     })
     .catch(ex => {
       spinner.stop('Deployment state save failed.', false);
-      throw amplifyFaultWithTroubleshootingLink('DeploymentFault', {
+      throw new AmplifyFault('DeploymentFault', {
         message: ex.message,
-        stack: ex.stack,
       }, ex);
     })
     .then(() => {

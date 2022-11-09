@@ -4,7 +4,7 @@
 import ora from 'ora';
 import chalk from 'chalk';
 import {
-  FeatureFlags, $TSContext, amplifyFaultWithTroubleshootingLink,
+  FeatureFlags, $TSContext, AmplifyFault,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { removeEnvFromCloud } from './remove-env-from-cloud';
@@ -49,9 +49,8 @@ export const deleteProject = async (context: $TSContext): Promise<void> => {
         spinner.succeed('Project already deleted in the cloud.');
       } else {
         spinner.fail('Project delete failed.');
-        throw amplifyFaultWithTroubleshootingLink('BackendDeleteFault', {
+        throw new AmplifyFault('BackendDeleteFault', {
           message: 'Project delete failed.',
-          stack: ex.stack,
           details: ex.message,
         }, ex);
       }

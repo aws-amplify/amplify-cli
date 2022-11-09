@@ -1,8 +1,10 @@
-import { Context } from './domain/context';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import importedColors from 'colors/safe';
 import CLITable from 'cli-table3';
+import importedColors from 'colors/safe';
+import ejs from 'ejs';
+import * as fs from 'fs-extra';
+import inquirer from 'inquirer';
+import * as path from 'path';
+import { Context } from './domain/context';
 
 importedColors.setTheme({
   highlight: 'cyan',
@@ -45,7 +47,6 @@ export function attachExtentions(context: Context) {
 }
 
 function attachPrompt(context: Context) {
-  const inquirer = require('inquirer');
   context.prompt = {
     confirm: async (message: string, defaultValue: boolean = false): Promise<boolean> => {
       const { yesno } = await inquirer.prompt({
@@ -313,7 +314,6 @@ const CLI_TABLE_MARKDOWN = {
 function attachTemplate(context: Context) {
   context.template = {
     async generate(opts: { template: string; target: string; props: object; directory: string }): Promise<string> {
-      const ejs = require('ejs');
       const template = opts.template;
       const target = opts.target;
       const props = opts.props || {};

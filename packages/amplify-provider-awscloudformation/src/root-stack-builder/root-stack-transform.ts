@@ -1,7 +1,7 @@
 import { AmplifyRootStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 import * as cdk from 'aws-cdk-lib';
 import {
-  $TSContext, amplifyFaultWithTroubleshootingLink, buildOverrideDir, CFNTemplateFormat, pathManager, Template, writeCFNTemplate,
+  $TSContext, AmplifyError, AmplifyFault, buildOverrideDir, CFNTemplateFormat, pathManager, Template, writeCFNTemplate,
 } from 'amplify-cli-core';
 import { formatter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
@@ -71,8 +71,15 @@ export class AmplifyRootStackTransform {
           external: true,
         },
       });
-
-      sandboxNode.run(overrideCode).override(this._rootTemplateObj as AmplifyRootStackTemplate);
+      try {
+        await sandboxNode.run(overrideCode).override(this._rootTemplateObj as AmplifyRootStackTemplate);
+      } catch (err) {
+        throw new AmplifyError('InvalidOverrideError', {
+          message: `Executing overrides failed.`,
+          details: err.message,
+          resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+        }, err);
+      }
     }
   };
 
@@ -213,7 +220,7 @@ export class AmplifyRootStackTransform {
       return this._rootTemplateObj;
     }
 
-    throw amplifyFaultWithTroubleshootingLink('RootStackNotFoundFault', {
+    throw new AmplifyFault('RootStackNotFoundFault', {
       message: `Root Stack Template doesn't exist.`,
     });
   }

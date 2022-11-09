@@ -50,6 +50,7 @@
     "vm2": "^3.9.8"
   },
   "devDependencies": {
+    "@types/mime-types": "^2.1.1",
     "cloudform-types": "^4.2.0",
     "rimraf": "^3.0.2"
   },

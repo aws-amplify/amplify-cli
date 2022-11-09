@@ -81,7 +81,8 @@ export class PathManager {
   }
 
   getAmplifyPackageLibDirPath = (packageName: string): string => {
-    const result = path.join(this.getAmplifyLibRoot(), packageName);
+    const descopedPackageName = packageName.replace(/^@/, '').replace(/\//, '-');
+    const result = path.join(this.getAmplifyLibRoot(), descopedPackageName);
     if (!process.env.AMPLIFY_SUPPRESS_NO_PKG_LIB && !fs.pathExistsSync(result)) {
       throw new Error(`Package lib at ${result} does not exist.`);
     }

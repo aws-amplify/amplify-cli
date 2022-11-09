@@ -29,7 +29,7 @@ export async function analyzeProject(context) {
   if (!frontend) {
     frontend = 'javascript';
   }
-  const frontendModule = require(frontendPlugins[frontend]);
+  const frontendModule = await import(frontendPlugins[frontend]);
   await frontendModule.displayFrontendDefaults(context, projectPath);
   context.print.info('');
 

@@ -9,8 +9,8 @@ import {
   IAnalyticsResource,
   INotificationsResourceMeta,
   $TSMeta,
-  amplifyErrorWithTroubleshootingLink,
-  amplifyFaultWithTroubleshootingLink,
+  AmplifyError,
+  AmplifyFault,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import {
@@ -255,7 +255,7 @@ export const updateContextFromAnalyticsOutput = async (
 export const createAnalyticsPinpointApp = async (context: $TSContext): Promise<void> => {
   const pushResponse = await invokeAnalyticsPush(context, AmplifySupportedService.PINPOINT);
   if (!pushResponse.status) {
-    throw amplifyFaultWithTroubleshootingLink('PushResourcesFault', {
+    throw new AmplifyFault('PushResourcesFault', {
       message: `Failed to create Pinpoint resource for the given environment: ${pushResponse.reasonMsg}`,
     });
   }
@@ -335,7 +335,7 @@ export const ensurePinpointApp = async (
         pinpointApp = await updateContextFromAnalyticsOutput(context, amplifyMeta, pinpointAppStatus);
         resourceName = pinpointAppStatus?.app?.resourceName;
         if (!resourceName) {
-          throw amplifyFaultWithTroubleshootingLink('ResourceNotFoundFault', {
+          throw new AmplifyFault('ResourceNotFoundFault', {
             message: `Pinpoint resource name is not found in amplify-meta.json : ${pinpointAppStatus?.app}`,
           });
         }
@@ -374,7 +374,7 @@ export const ensurePinpointApp = async (
       break;
     }
     default:
-      throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
+      throw new AmplifyError('ConfigurationError', {
         message: `Invalid Pinpoint App Status ${pinpointAppStatus.status} : App: ${pinpointAppStatus.app}`,
       });
   }

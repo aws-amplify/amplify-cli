@@ -5,7 +5,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 import {
-  $TSAny, $TSContext, AmplifyCategories, amplifyFaultWithTroubleshootingLink, AmplifySupportedService,
+  $TSAny, $TSContext, AmplifyCategories, AmplifyFault, AmplifySupportedService,
   IPluginCapabilityAPIResponse,
   NotificationChannels,
   stateManager,
@@ -71,7 +71,7 @@ const invokeInlineEnableInAppMessagingChannel = (
   __context: $TSContext,
   __pinpointAppStatus: IPinpointAppStatus,
 ): IPluginCapabilityAPIResponse => {
-  throw amplifyFaultWithTroubleshootingLink('ConfigurationFault', {
+  throw new AmplifyFault('ConfigurationFault', {
     message: 'Inline enable not supported for In-App Messaging channel.',
     details: 'Adding In-App Messaging to a project with Analytics or Push Notification enabled is currently not supported. Please refer to this Github issue for updates: https://github.com/aws-amplify/amplify-cli/issues/11087',
   });

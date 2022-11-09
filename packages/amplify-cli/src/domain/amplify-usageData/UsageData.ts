@@ -84,6 +84,13 @@ export class UsageData implements IUsageData {
   }
 
   /**
+   * returns current sessionUuid
+   */
+  getSessionUuid(): string {
+    return this.sessionUuid;
+  }
+
+  /**
    * Emit usage data on error
    */
   async emitError(error: Error | null): Promise<void> {

@@ -5,7 +5,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { AmplifyRootStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 import { IStackSynthesizer, ISynthesisSession } from 'aws-cdk-lib';
-import { amplifyErrorWithTroubleshootingLink, amplifyFaultWithTroubleshootingLink, JSONUtilities } from 'amplify-cli-core';
+import { AmplifyError, AmplifyFault, JSONUtilities } from 'amplify-cli-core';
 import { Construct } from 'constructs';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
@@ -68,7 +68,7 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
    */
   addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
     if (this._cfnParameterMap.has(logicalId)) {
-      throw amplifyErrorWithTroubleshootingLink('DuplicateLogicalIdError', {
+      throw new AmplifyError('DuplicateLogicalIdError', {
         message: `Logical Id already exists: ${logicalId}.`,
       });
     }
@@ -82,7 +82,7 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
     if (this._cfnParameterMap.has(logicalId)) {
       return this._cfnParameterMap.get(logicalId);
     }
-    throw amplifyErrorWithTroubleshootingLink('ParameterNotFoundError', {
+    throw new AmplifyError('ParameterNotFoundError', {
       message: `Cfn Parameter with LogicalId ${logicalId} doesn't exist`,
     });
   }
@@ -147,8 +147,8 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
    * adds cfn parameter to stack
    */
   // eslint-disable-next-line class-methods-use-this
-  addCfnParameter(): void {
-    throw amplifyFaultWithTroubleshootingLink('NotImplementedFault', {
+  addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
+    throw new AmplifyFault('NotImplementedFault', {
       message: 'Method not implemented.',
     });
   }
@@ -164,8 +164,8 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
    * adds cfn mapping to stack
    */
   // eslint-disable-next-line class-methods-use-this
-  addCfnMapping(): void {
-    throw amplifyFaultWithTroubleshootingLink('NotImplementedFault', {
+  addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void {
+    throw new AmplifyFault('NotImplementedFault', {
       message: 'Method not implemented.',
     });
   }
@@ -174,8 +174,8 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
    * adds cfn condition to stack
    */
   // eslint-disable-next-line class-methods-use-this
-  addCfnCondition(): void {
-    throw amplifyFaultWithTroubleshootingLink('NotImplementedFault', {
+  addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void {
+    throw new AmplifyFault('NotImplementedFault', {
       message: 'Method not implemented.',
     });
   }
@@ -184,8 +184,8 @@ export class AmplifyRootStackOutputs extends cdk.Stack implements AmplifyRootSta
    * adds cfn resource to stack
    */
   // eslint-disable-next-line class-methods-use-this
-  addCfnResource(): void {
-    throw amplifyFaultWithTroubleshootingLink('NotImplementedFault', {
+  addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void {
+    throw new AmplifyFault('NotImplementedFault', {
       message: 'Method not implemented.',
     });
   }

@@ -16,19 +16,19 @@ export async function initFrontend(context) {
     let suitableFrontend;
     let fitToHandleScore = -1;
 
-    Object.keys(frontendPlugins).forEach(key => {
-      const { scanProject } = require(frontendPlugins[key]);
+    for (const key of Object.keys(frontendPlugins)) {
+      const { scanProject } = await import(frontendPlugins[key]);
       const newScore = scanProject(context.exeInfo.localEnvInfo.projectPath);
       if (newScore > fitToHandleScore) {
         fitToHandleScore = newScore;
         suitableFrontend = key;
       }
-    });
+    }
 
     const frontend = await getFrontendHandler(context, frontendPlugins, suitableFrontend);
 
     context.exeInfo.projectConfig.frontend = frontend;
-    const frontendModule = require(frontendPlugins[frontend]);
+    const frontendModule = await import(frontendPlugins[frontend]);
     await frontendModule.init(context);
   }
 
