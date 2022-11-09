@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-appsync-simulator": "2.7.0-cdkv2.0",
+    "@aws-amplify/amplify-opensearch-simulator": "1.0.0",
     "@hapi/topo": "^5.0.0",
     "amplify-category-function": "4.2.0-cdkv2.0",
     "amplify-cli-core": "4.0.0-cdkv2.0",
