@@ -17,8 +17,8 @@ export const addDeviceLocationTrackingResource = async (
     providerContext: setProviderContext(context, ServiceName.DeviceLocationTracking),
   };
   // populate the parameters for the resource
-  const newParams = await createDeviceLocationTrackingWalkthrough(context, trackingParams);
-  const resourceName = await addDeviceLocationTrackingWithParams(context, newParams);
+  const trackerWalkthroughParameters = await createDeviceLocationTrackingWalkthrough(context, trackingParams);
+  const resourceName = await addDeviceLocationTrackingWithParams(context, trackerWalkthroughParameters);
   return resourceName;
 };
 

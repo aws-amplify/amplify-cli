@@ -11,7 +11,7 @@ import { ServiceName } from '../service-utils/constants';
 import { resourceAccessWalkthrough, defaultResourceQuestion } from './resourceWalkthrough';
 import { checkGeoResourceTypeExists, getGeoServiceMeta, getGeoResourcesByServiceType } from '../service-utils/resourceUtils';
 import { deviceLocationTrackingAdvancedSettings, deviceLocationTrackingCrudPermissionsMap, deviceLocationTrackingPositionFilteringTypes } from '../service-utils/deviceLocationTrackingConstants';
-import { learnMoreKMSLink } from '../constants';
+import { learnMoreCreateGeofenceCollections, learnMoreKMSLink } from '../constants';
 
 /**
  * Starting point for CLI walkthrough that creates a device location tracking resource
@@ -181,6 +181,8 @@ const deviceLocationTrackerGeofenceLinkingWalkthrough = async (
       );
       updatedParameters.linkedGeofenceCollections = selectedGeofenceCollections;
     }
+  } else {
+    printer.info(`We could not find any geofence collections. Review guide on how to create a geofence collection at ${learnMoreCreateGeofenceCollections}`);
   }
   return updatedParameters;
 };
@@ -204,21 +206,20 @@ const deviceLocationTrackerKMSSettingsWalkthrough = async (
   };
 
   printer.info(`Data is encrypted at rest by default. Learn more at ${learnMoreKMSLink}`);
-  if (await prompter.yesOrNo('Do you want to add a second layer of encryption for the data at rest?', false)) {
-    const listKeysResponse = await listKmsKeys();
-    if (listKeysResponse.Keys) {
+  const listKeysResponse = await listKmsKeys();
+  if (listKeysResponse.Keys && listKeysResponse.Keys.length > 0) {
+    if (await prompter.yesOrNo('Do you want to add a second layer of encryption for the data at rest?', false)) {
       const selectedKmsKey = await prompter.pick<'one', string>(
         `Select the AWS Key Management Service Key ID:`,
         listKeysResponse.Keys.map(key => key.KeyId!),
         { returnSize: 'one' },
       );
       updatedParameters.kmsKeyId = selectedKmsKey;
-    } else {
-      printer.info('We could not find any AWS Key Management Service keys.');
-      printer.info(`Review this guide on how to create a new key: ...`);
     }
+  } else {
+    printer.info('We could not find any AWS Key Management Service keys.');
+    printer.info(`Review this guide on how to create a new key: ${learnMoreKMSLink}`);
   }
-  printer.info(`Updated params: ${JSON.stringify(updatedParameters)}`);
   return updatedParameters;
 };
 

@@ -122,7 +122,7 @@ export function addGeofenceCollectionWithDefault(cwd: string, groupNames: string
  * Add device tracker with default values. Assume auth and cognito group are configured
  * @param cwd command directory
  */
- export function addDeviceTrackerWithDefault(cwd: string, trackerNames: string[], settings: GeoConfig = {}): Promise<void> {
+export function addDeviceTrackerWithDefault(cwd: string, trackerNames: string[], settings: GeoConfig = {}, advancedSetting?: string): Promise<void> {
   const config = { ...defaultGeoConfig, ...settings };
   const chain = spawn(getCLIPath(), ['geo', 'add'], { cwd, stripColors: true })
     .wait('Select which capability you want to add:')
@@ -142,6 +142,9 @@ export function addGeofenceCollectionWithDefault(cwd: string, groupNames: string
       .sendCarriageReturn();
   }
 
+  // Add advanced settings on device tracker
+  addAdvancedSettingsOnDeviceTracker(chain, advancedSetting);
+
   if (config.isAdditional === true) {
     chain.wait(defaultDeviceTrackerQuestion);
     if (config.isDefault === true) {
@@ -151,6 +154,54 @@ export function addGeofenceCollectionWithDefault(cwd: string, groupNames: string
     }
   }
   return chain.runAsync();
+}
+
+/**
+ * Add selected advanced setting on device tracker.
+ * @param chain execution context
+ * @param advancedSetting selected advanced setting option
+ */
+export function addAdvancedSettingsOnDeviceTracker(chain: ExecutionContext, advancedSetting: string): void {
+  switch (advancedSetting) {
+    case 'grantOtherAccess':
+      chain
+        .wait('Do you want to configure advanced settings?')
+        .sendYes()
+        .wait('Here are the default advanced settings. Select a setting to edit or continue (Use arrow keys)')
+        .sendCarriageReturn()
+        .wait('Users in this group can only access their own device by default. Learn more at ...')
+        .wait('Select one or more users groups to give full access to:')
+        .sendCtrlA()
+        .sendCarriageReturn();
+      break;
+    case 'linkGeofenceCollection':
+      chain
+        .wait('Do you want to configure advanced settings?')
+        .sendYes()
+        .wait('Here are the default advanced settings. Select a setting to edit or continue (Use arrow keys)')
+        .sendKeyDown(1)
+        .sendCarriageReturn()
+        .wait('Do you want to link geofence collection(s) to this tracker?')
+        .sendYes();
+      break;
+    case 'addKMSSettings':
+      break;
+    case 'setPositionFilteringMethod':
+      chain
+        .wait('Do you want to configure advanced settings?')
+        .sendYes()
+        .wait('Here are the default advanced settings. Select a setting to edit or continue (Use arrow keys)')
+        .sendKeyDown(3)
+        .sendCarriageReturn()
+        .wait('Do you want to set the position filtering method for this tracker?')
+        .sendYes()
+        .wait('Specify the position filtering method for this device tracker')
+        .sendCarriageReturn();
+      break;;
+    default:
+      chain.wait('Do you want to configure advanced settings?').sendNo();
+      break;
+  }
 }
 
 /**
