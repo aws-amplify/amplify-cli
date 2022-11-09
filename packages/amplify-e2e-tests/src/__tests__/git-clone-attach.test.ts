@@ -1,6 +1,6 @@
 /**
- * Tests for headless init/pull workflows on git-clones projects
- * These tests should exercise workflows that hosting executes during backend builds
+ * Tests for headless init/pull workflows on git-cloned projects
+ * These tests exercise workflows that hosting executes during backend builds
  */
 
 import {
@@ -9,7 +9,8 @@ import {
   amplifyPushAuth,
   buildOverrides,
   createNewProjectDir,
-  deleteProject, deleteProjectDir,
+  deleteProject,
+  deleteProjectDir,
   getAmplifyInitConfig,
   getAmplifyPullConfig,
   getProjectConfig,
@@ -112,7 +113,12 @@ describe('attach amplify to git-cloned project', () => {
 
     // expect no file changes
     const changedFiles = await gitChangedFiles(projRoot);
-    expect(changedFiles.length).toBe(2); // there is a .gitignore newline and the amplify/README.md file is modified after pull
+    expect(changedFiles).toMatchInlineSnapshot(`
+      Array [
+        ".gitignore",
+        "amplify/README.md",
+      ]
+    `); // there is a .gitignore newline and the amplify/README.md file is modified after pull
     expect(getTeamProviderInfo(projRoot)).toEqual(preCleanTpi);
   });
 });

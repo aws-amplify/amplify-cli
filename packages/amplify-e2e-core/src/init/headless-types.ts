@@ -1,13 +1,4 @@
 /**
- * Shape of `--amplify` payload for init/pull
- */
-export type AmplifyConfig = {
-  projectName: string,
-  envName: string,
-  defaultEditor: string,
-};
-
-/**
  * Shape of awscloudformation object within `--profile` payload for init/pull
  */
 export type AwsProviderConfig = {

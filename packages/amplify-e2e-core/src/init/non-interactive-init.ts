@@ -1,7 +1,7 @@
 import execa from 'execa';
 // eslint-disable-next-line import/no-cycle
 import { getCLIPath, TEST_PROFILE_NAME } from '..';
-import { CategoriesConfig, AmplifyConfig as AmplifyInitConfig, AwsProviderConfig } from './headless-types';
+import { CategoriesConfig, AwsProviderConfig } from './headless-types';
 
 /**
  * Executes a non-interactive init to attach a local project to an existing cloud environment
@@ -45,3 +45,12 @@ export const getAwsProviderConfig = (): AwsProviderConfig => ({
   useProfile: true,
   profileName: TEST_PROFILE_NAME,
 });
+
+/**
+ * Shape of `--amplify` payload for init/pull
+ */
+export type AmplifyInitConfig = {
+  projectName: string,
+  envName: string,
+  defaultEditor: string,
+};

@@ -29,5 +29,10 @@ export const gitCleanFdx = async (cwd: string): Promise<void> => {
  */
 export const gitChangedFiles = async (cwd: string): Promise<string[]> => {
   const { stdout } = await execa('git', ['diff', '--name-only'], { cwd });
-  return stdout.trim().split('\n').map(line => line.trim()).filter(line => line.length > 0);
+  return stdout
+    .trim()
+    .split('\n')
+    .map(line => line.trim())
+    .filter(line => line.length > 0)
+    .sort();
 };
