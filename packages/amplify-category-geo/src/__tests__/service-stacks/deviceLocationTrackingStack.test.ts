@@ -1,7 +1,23 @@
 import { App } from '@aws-cdk/core';
 import { DeviceLocationTrackingStack } from '../../service-stacks/deviceLocationTrackingStack';
+import { provider, ServiceName } from '../../service-utils/constants';
+import { DeviceLocationTrackingParameters } from '../../service-utils/deviceLocationTrackingParams';
+import { AccessType, DataProvider } from '../../service-utils/resourceParams';
 
 describe('cdk stack creation for device tracker service', () => {
+  const mockDeviceTrackerParameters: DeviceLocationTrackingParameters = {
+    providerContext: {
+      provider,
+      service: ServiceName.DeviceLocationTracking,
+      projectName: 'mockProject',
+    },
+    name: 'test',
+    dataProvider: DataProvider.Esri,
+    accessType: AccessType.AuthorizedAndGuestUsers,
+    isDefault: false,
+    groupPermissions: [],
+    roleAndGroupPermissionsMap: {},
+  };
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -16,6 +32,11 @@ describe('cdk stack creation for device tracker service', () => {
       groupPermissions: [],
       roleAndGroupPermissionsMap: {},
       authResourceName: 'mockAuthResource123',
+      providerContext: mockDeviceTrackerParameters.providerContext,
+      name: 'test',
+      accessType: AccessType.AuthorizedAndGuestUsers,
+      isDefault: false,
+      dataProvider: mockDeviceTrackerParameters.dataProvider,
     };
     const deviceTrackerStack = new DeviceLocationTrackingStack(new App(), 'DeviceLocationTrackingStack', stackProps);
     expect(deviceTrackerStack.toCloudFormation().Resources.deviceAdminDeviceLocationTrackingPolicy).toBeUndefined();
@@ -33,6 +54,11 @@ describe('cdk stack creation for device tracker service', () => {
         deviceAdmin: ['List device positions'],
       },
       authResourceName: 'mockAuthResource123',
+      providerContext: mockDeviceTrackerParameters.providerContext,
+      name: 'test',
+      accessType: AccessType.AuthorizedAndGuestUsers,
+      isDefault: false,
+      dataProvider: mockDeviceTrackerParameters.dataProvider,
     };
     const deviceTrackerStack = new DeviceLocationTrackingStack(new App(), 'DeviceLocationTrackingStack', stackProps);
     const deviceTrackerStackGroupAccessPolicy = deviceTrackerStack.toCloudFormation().Resources.deviceAdminDeviceLocationTrackingPolicy;

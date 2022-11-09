@@ -7,6 +7,8 @@ import { AccessType, DataProvider } from '../../service-utils/resourceParams';
 import { provider, ServiceName } from '../../service-utils/constants';
 import { category } from '../../constants';
 import { DeviceLocationTrackingParameters } from '../../service-utils/deviceLocationTrackingParams';
+import { deviceLocationTrackerAdvancedWalkthrough } from '../../service-walkthroughs/deviceLocationTrackingWalkthrough';
+import { deviceLocationTrackingAdvancedSettings } from '../../service-utils/deviceLocationTrackingConstants';
 
 const { updateGeofenceCollectionWalkthrough } = require('../../service-walkthroughs/geofenceCollectionWalkthrough');
 const { removeWalkthrough } = require('../../service-walkthroughs/removeWalkthrough');
@@ -147,5 +149,103 @@ describe('Device Location Tracker walkthrough works as expected', () => {
 
     expect(trackerParams).toMatchObject({ ...mockDeviceTrackerParameters, isDefault: true });
     expect(prompter.yesOrNo).not.toBeCalledWith('Set this geofence collection as the default? It will be used in Amplify geofence collection API calls if no explicit reference is provided.', true);
+  });
+
+  it('sets parameter to grant access to other devices based on user input for advanced device tracker walkthrough', async () => {
+    stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
+    prompter.yesOrNo = jest.fn().mockImplementation((message: string): Promise<boolean> => {
+      let mockUserInput = false;
+      if (message === 'Do you want to configure advanced settings?') {
+        mockUserInput = true;
+      } else if (message === 'Set this device tracker as the default? It will be used in Amplify geofence collection API calls if no explicit reference is provided.') {
+        mockUserInput = false;
+      }
+      return Promise.resolve(mockUserInput);
+    });
+    prompter.pick = jest.fn().mockImplementation((message: string): Promise<any> => {
+      let mockUserInput: string | string[] = 'mock';
+      if (message === 'Here are the default advanced settings. Select a setting to edit or continue (Use arrow keys)') {
+        mockUserInput = deviceLocationTrackingAdvancedSettings.grantOtherAccess;
+      } else if (message === 'Select one or more users groups to give full access to:') {
+        mockUserInput = 'authenticated';
+      }
+      return Promise.resolve(mockUserInput);
+    });
+
+    let trackerParams: Partial<DeviceLocationTrackingParameters> = mockDeviceTrackerParameters;
+
+    trackerParams = await deviceLocationTrackerAdvancedWalkthrough(mockContext, trackerParams);
+    expect(trackerParams).toMatchObject({ ...mockDeviceTrackerParameters, selectedUserGroups: 'authenticated' });
+  });
+
+  it('sets position filtering parameter based on user input for advanced device tracker walkthrough', async () => {
+    stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
+    prompter.yesOrNo = jest.fn().mockImplementation((message: string): Promise<boolean> => {
+      let mockUserInput = false;
+      if (message === 'Do you want to configure advanced settings?') {
+        mockUserInput = true;
+      } else if (message === 'Set this device tracker as the default? It will be used in Amplify geofence collection API calls if no explicit reference is provided.') {
+        mockUserInput = false;
+      } else if (message === 'Do you want to set the position filtering method for this tracker?') {
+        mockUserInput = true;
+      }
+      return Promise.resolve(mockUserInput);
+    });
+    prompter.pick = jest.fn().mockImplementation((message: string): Promise<any> => {
+      let mockUserInput: string | string[] = 'mock';
+      if (message === 'Here are the default advanced settings. Select a setting to edit or continue (Use arrow keys)') {
+        mockUserInput = deviceLocationTrackingAdvancedSettings.setPositionFilteringMethod;
+      } else if (message === 'Specify the position filtering method for this device tracker') {
+        mockUserInput = 'Accuracy-based';
+      }
+      return Promise.resolve(mockUserInput);
+    });
+
+    let trackerParams: Partial<DeviceLocationTrackingParameters> = mockDeviceTrackerParameters;
+
+    trackerParams = await deviceLocationTrackerAdvancedWalkthrough(mockContext, trackerParams);
+    expect(trackerParams).toMatchObject({ ...mockDeviceTrackerParameters, positionFiltering: 'AccuracyBased' });
+  });
+
+  it('sets linked geofence collections parameter based on user input for advanced device tracker walkthrough', async () => {
+    const mockAmplifyMetaWithGeofenceCollection: $TSObject = {
+      geo: {
+        geofenceCollection1: {
+          service: 'GeofenceCollection',
+        },
+        geofenceCollection2: {
+          service: 'GeofenceCollection',
+        },
+      },
+    };
+    stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMetaWithGeofenceCollection);
+    prompter.yesOrNo = jest.fn().mockImplementation((message: string): Promise<boolean> => {
+      let mockUserInput = false;
+      if (message === 'Do you want to configure advanced settings?') {
+        mockUserInput = true;
+      } else if (message === 'Set this device tracker as the default? It will be used in Amplify geofence collection API calls if no explicit reference is provided.') {
+        mockUserInput = false;
+      } else if (message === 'Do you want to link geofence collection(s) to this tracker?') {
+        mockUserInput = true;
+      }
+      return Promise.resolve(mockUserInput);
+    });
+    prompter.pick = jest.fn().mockImplementation((message: string): Promise<any> => {
+      let mockUserInput: string | string[] = 'mock';
+      if (message === 'Here are the default advanced settings. Select a setting to edit or continue (Use arrow keys)') {
+        mockUserInput = deviceLocationTrackingAdvancedSettings.linkGeofenceCollection;
+      } else if (message === 'Select the geofence collection(s) you want to link to this tracker') {
+        mockUserInput = [
+          'geofenceCollection1',
+          'geofenceCollection2',
+        ];
+      }
+      return Promise.resolve(mockUserInput);
+    });
+
+    let trackerParams: Partial<DeviceLocationTrackingParameters> = mockDeviceTrackerParameters;
+
+    trackerParams = await deviceLocationTrackerAdvancedWalkthrough(mockContext, trackerParams);
+    expect(trackerParams).toMatchObject({ ...mockDeviceTrackerParameters, linkedGeofenceCollections: ['geofenceCollection1', 'geofenceCollection2'] });
   });
 });

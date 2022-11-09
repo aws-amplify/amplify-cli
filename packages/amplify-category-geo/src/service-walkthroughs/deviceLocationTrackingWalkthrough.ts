@@ -30,8 +30,9 @@ export const createDeviceLocationTrackingWalkthrough = async (
   updatedParameters = merge(parameters, await deviceLocationTrackerAccessWalkthrough(context, updatedParameters));
 
   // optional advanced walkthrough
-  updatedParameters = merge(parameters, await deviceLocationTrackerAdvancedWalkthrough(context, updatedParameters));
-
+  if (await prompter.yesOrNo('Do you want to configure advanced settings?', false)) {
+    updatedParameters = merge(parameters, await deviceLocationTrackerAdvancedWalkthrough(context, updatedParameters));
+  }
   const currentDeviceLocationTrackerResources = await getGeoServiceMeta(ServiceName.DeviceLocationTracking);
   if (currentDeviceLocationTrackerResources && Object.keys(currentDeviceLocationTrackerResources).length > 0) {
     updatedParameters.isDefault = await prompter.yesOrNo(
@@ -117,7 +118,7 @@ export const deviceLocationTrackerAccessWalkthrough = async (
 /**
  * deviceLocationTrackerAdvancedWalkthrough
  */
-const deviceLocationTrackerAdvancedWalkthrough = async (
+export const deviceLocationTrackerAdvancedWalkthrough = async (
   context: $TSContext,
   parameters: Partial<DeviceLocationTrackingParameters>,
 ): Promise<Partial<DeviceLocationTrackingParameters>> => {
@@ -225,10 +226,10 @@ const deviceLocationTrackerFilteringMethodWalkthrough = async (
   parameters: Partial<DeviceLocationTrackingParameters>,
 ): Promise<Partial<DeviceLocationTrackingParameters>> => {
   const updatedParameters = { ...parameters };
-  printer.info('The default position filtering method for trackers is Accuracy-based filtering. Learn more at');
+  printer.info('The default position filtering method for trackers is Time-based filtering. Learn more at');
   if (await prompter.yesOrNo('Do you want to set the position filtering method for this tracker?', false)) {
     const selectedFilteringMethod = await prompter.pick<'one', string>(
-      `Specify the data provider of geospatial data for this search index`,
+      `Specify the position filtering method for this device tracker`,
       Object.keys(deviceLocationTrackingPositionFilteringTypes),
       { returnSize: 'one' },
     );
