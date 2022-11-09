@@ -2,7 +2,7 @@ import execa from 'execa';
 import { EOL } from 'os';
 // eslint-disable-next-line import/no-cycle
 import {
-  nspawn as spawn, getCLIPath, getAmplifyConfig, getAwsProviderConfig,
+  nspawn as spawn, getCLIPath, getAwsProviderConfig,
 } from '..';
 import { CategoriesConfig } from './headless-types';
 
@@ -57,17 +57,15 @@ export const pullProject = (cwd: string, settings: Partial<typeof defaultSetting
  */
 export const nonInteractivePullAttach = async (
   projRoot: string,
-  projectName: string,
-  envName: string,
+  amplifyPullConfig: AmplifyPullConfig,
   categoriesConfig?: CategoriesConfig,
   awsProviderConfig = getAwsProviderConfig(),
 ): Promise<void> => {
-  const amplifyConfig = getAmplifyConfig(projectName, envName);
   const args = [
     'pull',
     '--yes',
     '--amplify',
-    JSON.stringify(amplifyConfig),
+    JSON.stringify(amplifyPullConfig),
     '--providers',
     JSON.stringify({
       awscloudformation: awsProviderConfig,
@@ -78,3 +76,23 @@ export const nonInteractivePullAttach = async (
   }
   await execa(getCLIPath(), args, { cwd: projRoot });
 };
+
+/**
+ * Shape of `--amplify` parameter for pull
+ */
+export type AmplifyPullConfig = {
+  projectName: string,
+  envName: string,
+  appId: string,
+  defaultEditor: string,
+};
+
+/**
+ * Returns a default AmplifyPullConfig
+ */
+export const getAmplifyPullConfig = (projectName: string, envName: string, appId: string): AmplifyPullConfig => ({
+  projectName,
+  envName,
+  appId,
+  defaultEditor: 'code',
+});

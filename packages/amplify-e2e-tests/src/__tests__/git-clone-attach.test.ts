@@ -10,7 +10,10 @@ import {
   buildOverrides,
   createNewProjectDir,
   deleteProject, deleteProjectDir,
+  getAmplifyInitConfig,
+  getAmplifyPullConfig,
   getProjectConfig,
+  getSocialProviders,
   getTeamProviderInfo,
   gitChangedFiles,
   gitCleanFdx,
@@ -31,7 +34,7 @@ describe('attach amplify to git-cloned project', () => {
   beforeAll(async () => {
     await s3Client.createBucket({ Bucket: importBucketName }).promise();
     projRoot = await createNewProjectDir('clone-test');
-    await initJSProjectWithProfile(projRoot, { envName /* , disableAmplifyAppCreation: false */ });
+    await initJSProjectWithProfile(projRoot, { envName, disableAmplifyAppCreation: false });
     await addFunction(
       projRoot,
       {
@@ -69,7 +72,7 @@ describe('attach amplify to git-cloned project', () => {
         region: importBucketRegion,
       },
     };
-    await nonInteractiveInitAttach(projRoot, projectName, envName, categoriesConfig);
+    await nonInteractiveInitAttach(projRoot, getAmplifyInitConfig(projectName, envName), categoriesConfig);
     await buildOverrides(projRoot);
 
     // expect no file changes
@@ -82,21 +85,34 @@ describe('attach amplify to git-cloned project', () => {
     const { projectName } = getProjectConfig(projRoot);
     const preCleanTpi = getTeamProviderInfo(projRoot);
     const importBucketRegion = (Object.values(preCleanTpi[envName].categories.storage)[0] as any).region;
+    const appId = preCleanTpi[envName].awscloudformation.AmplifyAppId;
     gitCleanFdx(projRoot);
 
-    // execute headless pull
+    const socialProviders = getSocialProviders();
     const categoriesConfig = {
       storage: {
         bucketName: importBucketName,
         region: importBucketRegion,
       },
+      auth: {
+        facebookAppIdUserPool: socialProviders.FACEBOOK_APP_ID,
+        facebookAppSecretUserPool: socialProviders.FACEBOOK_APP_SECRET,
+        googleAppIdUserPool: socialProviders.GOOGLE_APP_ID,
+        googleAppSecretUserPool: socialProviders.GOOGLE_APP_SECRET,
+        // eslint-disable-next-line spellcheck/spell-checker
+        loginwithamazonAppIdUserPool: socialProviders.AMAZON_APP_ID,
+        // eslint-disable-next-line spellcheck/spell-checker
+        loginwithamazonAppSecretUserPool: socialProviders.AMAZON_APP_SECRET,
+      },
     };
-    await nonInteractivePullAttach(projRoot, projectName, envName, categoriesConfig);
+
+    // execute headless pull
+    await nonInteractivePullAttach(projRoot, getAmplifyPullConfig(projectName, envName, appId), categoriesConfig);
     await buildOverrides(projRoot);
 
     // expect no file changes
     const changedFiles = await gitChangedFiles(projRoot);
-    expect(changedFiles.length).toBe(0);
+    expect(changedFiles.length).toBe(2); // there is a .gitignore newline and the amplify/README.md file is modified after pull
     expect(getTeamProviderInfo(projRoot)).toEqual(preCleanTpi);
   });
 });
