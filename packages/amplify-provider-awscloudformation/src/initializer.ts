@@ -101,8 +101,6 @@ export const run = async (context: $TSContext): Promise<void> => {
     } catch (e) {
       // project not initialized
     }
-    // when a new environment is created, init is called, and we must apply overrides for the auth/unauth roles
-    // not sure why we only do this for auth...
     if (projectInitialized && fs.existsSync(overrideFilePath)) {
       try {
         const overrideCode: string = await fs.readFile(overrideFilePath, 'utf-8');
