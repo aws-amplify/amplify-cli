@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
 import { FunctionDependency, FunctionParameters } from 'amplify-function-plugin-interface';
 import * as TransformPackage from 'graphql-transformer-core';
 import inquirer, { CheckboxQuestion, DistinctChoice } from 'inquirer';
@@ -113,7 +113,7 @@ export const askExecRolePermissionsQuestions = async (
         selectedResources = _.concat(resourcesList);
       }
 
-      for (let resourceName of selectedResources) {
+      for (const resourceName of selectedResources) {
         // If the resource is AppSync, use GraphQL operations for permission policies.
         // Otherwise, default to CRUD permissions.
         const serviceType = _.get(amplifyMeta, [selectedCategory, resourceName, 'service']);
@@ -155,18 +155,15 @@ export const askExecRolePermissionsQuestions = async (
         }
       }
     } catch (e) {
-      if (e.name === 'MethodNotFound') {
+      if (e.name === 'PluginMethodNotFoundError') {
         context.print.warning(`${selectedCategory} category does not support resource policies yet.`);
+        context.usageData.emitError(e);
       } else {
-        context.print.warning(`Policies cannot be added for ${selectedCategory}`);
+        throw new AmplifyError('PluginPolicyAddError', {
+          message: `Policies cannot be added for ${selectedCategory}`,
+          details: e.message,
+        }, e);
       }
-
-      if (e.stack) {
-        context.print.info(e.stack);
-      }
-
-      context.usageData.emitError(e);
-      process.exitCode = 1;
     }
   }
 
