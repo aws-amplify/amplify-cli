@@ -100,11 +100,11 @@ exports[`upload Studio CMS assets on push of Studio enabled project uploads expe
                     \\"properties\\": {}
                 }
             ],
-+           \\"primaryKeyInfo\\": {
-+               \\"isCustomPrimaryKey\\": false,
-+               \\"primaryKeyFieldName\\": \\"id\\",
-+               \\"sortKeyFieldNames\\": []
-+           }
+            \\"primaryKeyInfo\\": {
+                \\"isCustomPrimaryKey\\": false,
+                \\"primaryKeyFieldName\\": \\"id\\",
+                \\"sortKeyFieldNames\\": []
+            }
         }
     },
     \\"enums\\": {},
