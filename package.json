@@ -47,7 +47,8 @@
     "promote-rc": "./scripts/promote-rc.sh",
     "finish-release": "./scripts/finish-release.sh",
     "update-data-packages": "./scripts/update-data-dependencies.sh && yarn",
-    "extract-api": "nx run-many --target=extract-api --all && git add packages/**/API.md"
+    "extract-api": "nx run-many --target=extract-api --all",
+    "extract-api-and-commit": "nx run-many --target=extract-api --all && git add packages/**/API.md && git commit -m \"chore: update API.md\" || echo \"No API.md changes\""
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-cli/issues"
@@ -62,7 +63,7 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-push": "yarn build-tests-changed && yarn split-e2e-tests",
+      "pre-push": "yarn extract-api-and-commit && yarn build-tests-changed && yarn split-e2e-tests",
       "pre-commit": "yarn verify-commit && yarn lint-fix"
     }
   },
