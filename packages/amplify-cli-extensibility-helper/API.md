@@ -36,6 +36,8 @@ export interface AmplifyApiGraphQlResourceStackTemplate {
     //
     // (undocumented)
     api?: Partial<AppsyncApiStack>;
+    // (undocumented)
+    foo?: string;
     // Warning: (ae-forgotten-export) The symbol "ModelDirectiveStack" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
