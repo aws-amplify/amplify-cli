@@ -21,7 +21,6 @@ export interface AmplifyApiGraphQlResourceStackTemplate {
   models?: Partial<Record<string, ModelDirectiveStack>>;
   opensearch?: Partial<OpenSearchDirectiveStack & AppsyncStackCommon>;
   predictions?: Partial<PredictionsDirectiveStack & AppsyncStackCommon>;
-  foo?: string;
 }
 
 /**
