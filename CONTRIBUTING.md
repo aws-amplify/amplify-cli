@@ -173,7 +173,7 @@ You will notice the extra actions carried out when you run the `git commit` or `
 "husky": {
     "hooks": {
         "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-        "pre-push": "yarn build-tests-changed && yarn split-e2e-tests && yarn extract-api",
+        "pre-push": "yarn verify-api-extract && yarn build-tests-changed && yarn split-e2e-tests",
         "pre-commit": "yarn verify-commit && yarn lint-fix"
     }
 }
