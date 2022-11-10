@@ -16,46 +16,37 @@
       }
     }
   },
+  "namedInputs": {
+    "default": [
+      "{projectRoot}/**/*",
+      "!{projectRoot}/**/*.md"
+    ]
+  },
   "targetDefaults": {
     "build": {
-      "inputs": [
-        "{projectRoot}/**/*",
-        "!{projectRoot}/**/*.md"
-      ]
+      "inputs": [ "default", "^default" ],
+      "dependsOn": [ "^build" ]
+    },
+    "prepare": {
+      "inputs": [ "default", "^default" ],
+      "dependsOn": [ "^prepare" ]
+    },
+    "package": {
+      "inputs": [ "default", "^default" ],
+      "dependsOn": [ "^package" ]
+    },
+    "test": {
+      "inputs": [ "default", "^default" ],
+      "dependsOn": [ "build" ]
     },
     "extract-api": {
-      "dependsOn": [
-        "build"
-      ],
+      "dependsOn": [ "build" ],
       "inputs": [
         "{projectRoot}/src/**/*",
-        "!{projectRoot}/src/__tests__/**/*",
-        "!{projectRoot}/API.md"
+        "!{projectRoot}/src/__tests__/**/*"
       ],
-      "outputs": [
-        "{projectRoot}/API.md"
-      ]
+      "outputs": [ "{projectRoot}/API.md" ]
     }
-  },
-  "targetDependencies": {
-    "build": [
-      {
-        "target": "build",
-        "projects": "dependencies"
-      }
-    ],
-    "prepare": [
-      {
-        "target": "prepare",
-        "projects": "dependencies"
-      }
-    ],
-    "package": [
-      {
-        "target": "package",
-        "projects": "dependencies"
-      }
-    ]
   },
   "affected": {
     "defaultBase": "dev"
