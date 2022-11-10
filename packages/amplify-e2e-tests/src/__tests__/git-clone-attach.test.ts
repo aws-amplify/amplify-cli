@@ -55,9 +55,12 @@ describe('attach amplify to git-cloned project', () => {
   });
 
   afterAll(async () => {
-    await deleteProject(projRoot);
-    deleteProjectDir(projRoot);
-    await s3Client.deleteBucket({ Bucket: importBucketName }).promise();
+    try {
+      await deleteProject(projRoot);
+      deleteProjectDir(projRoot);
+    } finally {
+      await s3Client.deleteBucket({ Bucket: importBucketName }).promise();
+    }
   });
 
   test('headless init can be used to attach existing environment', async () => {
