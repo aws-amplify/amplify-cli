@@ -7,6 +7,7 @@ import {
   stateManager,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
+import * as fs from 'fs-extra';
 
 const {
   readJson,
@@ -36,6 +37,7 @@ const showCognitoAttributesRequireVerificationBeforeUpdateMessage = async (
   }
 
   const { resourceName } = cognitoResource;
+  const authAlreadyPushed = fs.existsSync(path.join(currentCloudBackendDir, 'auth', resourceName));
   const cloudBackendUserAttrUpdateSettings = await readCfnTemplateUserAttributeSettings(currentCloudBackendDir, resourceName);
   const backendUserAttrUpdateSettings = await readCfnTemplateUserAttributeSettings(localBackendDir, resourceName);
   const updateNotInCloudBackend: boolean = !cloudBackendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate
@@ -43,7 +45,7 @@ const showCognitoAttributesRequireVerificationBeforeUpdateMessage = async (
   const updateInLocalBackend: boolean = backendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate.length === 1
     && backendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate[0] === 'email';
 
-  if (updateNotInCloudBackend && updateInLocalBackend) {
+  if (authAlreadyPushed && updateNotInCloudBackend && updateInLocalBackend) {
     printer.warn(
       `Amplify CLI now supports verifying a Cognito user email address that has been changed and will automatically update your auth \
 configuration. Read more: https://docs.amplify.aws/lib/auth/manageusers/q/platform/js/#updating-and-verifying-a-cognito-user-email-address`,
