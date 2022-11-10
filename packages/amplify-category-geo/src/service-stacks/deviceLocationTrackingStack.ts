@@ -47,7 +47,6 @@ export class DeviceLocationTrackingStack extends BaseStack {
       'isDefault',
     );
     if (this.props.positionFiltering) inputParameters.push('positionFiltering');
-    if (this.props.kmsKeyId) inputParameters.push('kmsKeyId');
     if (this.props.linkedGeofenceCollections) inputParameters.push('linkedGeofenceCollections');
 
     this.parameters = this.constructInputParameters(inputParameters);
@@ -102,7 +101,6 @@ export class DeviceLocationTrackingStack extends BaseStack {
     // set up custom params
 
     const positionFiltering = this.parameters.get('positionFiltering')?.valueAsString;
-    const kmsKeyId = this.parameters.get('kmsKeyId')?.valueAsString;
 
     const customTrackingLambdaCode = fs.readFileSync(customDeviceLocationTrackingLambdaCodePath, 'utf-8');
     const customTrackingLambda = new lambda.Function(this, 'customTrackingLambda', {
@@ -120,7 +118,6 @@ export class DeviceLocationTrackingStack extends BaseStack {
       properties: {
         trackerName: this.trackerName,
         positionFiltering,
-        kmsKeyId,
         region: this.trackingRegion,
         env: cdk.Fn.ref('env'),
       },
@@ -131,12 +128,10 @@ export class DeviceLocationTrackingStack extends BaseStack {
 
   private constructCfnTrackingResource(): location.CfnTracker {
     const positionFiltering = this.parameters.get('positionFiltering')?.valueAsString;
-    const kmsKeyId = this.parameters.get('kmsKeyId')?.valueAsString;
 
     const trackerResource = new location.CfnTracker(this, `CfnTracker`, {
       trackerName: this.trackerName,
       positionFiltering,
-      kmsKeyId,
     });
     return trackerResource;
   }

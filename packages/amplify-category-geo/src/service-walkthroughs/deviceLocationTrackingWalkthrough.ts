@@ -1,6 +1,5 @@
-import { $TSContext, AmplifyCategories } from 'amplify-cli-core';
+import { $TSContext } from 'amplify-cli-core';
 import { v4 as uuid } from 'uuid';
-import type { KMS } from 'aws-sdk';
 import { merge } from 'lodash';
 import {
   prompter, alphanumeric, and, minLength, maxLength, Validator, byValues, printer,
@@ -11,7 +10,9 @@ import { ServiceName } from '../service-utils/constants';
 import { resourceAccessWalkthrough, defaultResourceQuestion } from './resourceWalkthrough';
 import { checkGeoResourceTypeExists, getGeoServiceMeta, getGeoResourcesByServiceType } from '../service-utils/resourceUtils';
 import { deviceLocationTrackingAdvancedSettings, deviceLocationTrackingCrudPermissionsMap, deviceLocationTrackingPositionFilteringTypes } from '../service-utils/deviceLocationTrackingConstants';
-import { defaultPositionFilteringMethodLink, learnMoreCreateGeofenceCollections, learnMoreKMSLink } from '../constants';
+import {
+  defaultPositionFilteringMethodLink, learnMoreCognitoConditionKeysLink, learnMoreCreateGeofenceCollectionsLink,
+} from '../constants';
 
 /**
  * Starting point for CLI walkthrough that creates a device location tracking resource
@@ -138,10 +139,6 @@ export const deviceLocationTrackerAdvancedWalkthrough = async (
     case deviceLocationTrackingAdvancedSettings.linkGeofenceCollection:
       updatedParameters = merge(updatedParameters, await deviceLocationTrackerGeofenceLinkingWalkthrough(updatedParameters));
       break;
-    // KMS Settings
-    // case deviceLocationTrackingAdvancedSettings.addKMSSettings:
-    //   updatedParameters = merge(updatedParameters, await deviceLocationTrackerKMSSettingsWalkthrough(context, updatedParameters));
-    //   break;
     // Position filtering method settings
     case deviceLocationTrackingAdvancedSettings.setPositionFilteringMethod:
       updatedParameters = merge(updatedParameters, await deviceLocationTrackerFilteringMethodWalkthrough(updatedParameters));
@@ -158,7 +155,7 @@ const deviceLocationTrackerOtherAccessWalkthrough = async (
   parameters: Partial<DeviceLocationTrackingParameters>,
 ): Promise<Partial<DeviceLocationTrackingParameters>> => {
   const updatedParameters = { ...parameters };
-  printer.info('Users in this group can only access their own device by default. Learn more at ...');
+  printer.info(`Users in this group can only access their own device by default. Learn more at ${learnMoreCognitoConditionKeysLink}`);
   const selectedUserGroups = await prompter.pick<'many', string>(
     `Select one or more users groups to give full access to:`,
     ['authenticated', 'guest', ...(updatedParameters.groupPermissions ?? [])],
@@ -184,43 +181,7 @@ const deviceLocationTrackerGeofenceLinkingWalkthrough = async (
       updatedParameters.linkedGeofenceCollections = selectedGeofenceCollections;
     }
   } else {
-    printer.info(`We could not find any geofence collections. Review guide on how to create a geofence collection at ${learnMoreCreateGeofenceCollections}`);
-  }
-  return updatedParameters;
-};
-
-const getKMSClient = async (context: $TSContext, action: string): Promise<KMS> => {
-  const providerPlugins = context.amplify.getProviderPlugins(context);
-  const provider = await import(providerPlugins.awscloudformation);
-  const aws = await provider.getConfiguredAWSClient(context, AmplifyCategories.AUTH, action);
-  return new aws.KMS();
-};
-
-const deviceLocationTrackerKMSSettingsWalkthrough = async (
-  context: $TSContext,
-  parameters: Partial<DeviceLocationTrackingParameters>,
-): Promise<Partial<DeviceLocationTrackingParameters>> => {
-  const updatedParameters = { ...parameters };
-
-  const listKmsKeys = async (): Promise<KMS.ListKeysResponse> => {
-    const kmsClient = await getKMSClient(context, 'read');
-    return kmsClient.listKeys().promise();
-  };
-
-  printer.info(`Data is encrypted at rest by default. Learn more at ${learnMoreKMSLink}`);
-  const listKeysResponse = await listKmsKeys();
-  if (listKeysResponse.Keys && listKeysResponse.Keys.length > 0) {
-    if (await prompter.yesOrNo('Do you want to add a second layer of encryption for the data at rest?', false)) {
-      const selectedKmsKey = await prompter.pick<'one', string>(
-        `Select the AWS Key Management Service Key ID:`,
-        listKeysResponse.Keys.map(key => key.KeyId!),
-        { returnSize: 'one' },
-      );
-      updatedParameters.kmsKeyId = selectedKmsKey;
-    }
-  } else {
-    printer.info('We could not find any AWS Key Management Service keys.');
-    printer.info(`Review this guide on how to create a new key: ${learnMoreKMSLink}`);
+    printer.info(`We could not find any geofence collections. Review guide on how to create a geofence collection at ${learnMoreCreateGeofenceCollectionsLink}`);
   }
   return updatedParameters;
 };

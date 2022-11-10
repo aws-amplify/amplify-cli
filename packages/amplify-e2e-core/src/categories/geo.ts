@@ -171,7 +171,7 @@ export function addAdvancedSettingsOnDeviceTracker(chain: ExecutionContext, adva
         .sendYes()
         .wait('Here are the default advanced settings. Select a setting to edit or continue (Use arrow keys)')
         .sendCarriageReturn()
-        .wait('Users in this group can only access their own device by default. Learn more at ...')
+        .wait('Users in this group can only access their own device by default. Learn more at https://docs.aws.amazon.com/location/latest/developerguide/security_iam_service-with-iam.html#security_iam_service-with-iam-id-based-policies-conditionkeys')
         .wait('Select one or more users groups to give full access to:')
         .sendCtrlA()
         .sendCarriageReturn();
@@ -197,7 +197,7 @@ export function addAdvancedSettingsOnDeviceTracker(chain: ExecutionContext, adva
         .sendYes()
         .wait('Specify the position filtering method for this device tracker')
         .sendCarriageReturn();
-      break;;
+      break;
     default:
       chain.wait('Do you want to configure advanced settings?').sendNo();
       break;

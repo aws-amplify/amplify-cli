@@ -8,7 +8,6 @@ export type DeviceLocationTrackingParameters = ResourceParameters & {
   roleAndGroupPermissionsMap: Record<string, string[]>;
   linkedGeofenceCollections?: string[];
   positionFiltering?: string;
-  kmsKeyId?: string;
   selectedUserGroups?: string[];
 };
 

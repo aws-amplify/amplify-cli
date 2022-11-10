@@ -9,7 +9,6 @@ export const deviceLocationTrackingCrudPermissionsMap: Record<string, string[]> 
 export const deviceLocationTrackingAdvancedSettings: Record<string, string> = {
   grantOtherAccess: 'Grant users access to devices other than their own',
   linkGeofenceCollection: 'Link tracker to a geofence collection',
-  // addKMSSettings: 'Secondary layer of encryption for data at rest via KMS',
   setPositionFilteringMethod: 'Position filtering setting',
 };
 
