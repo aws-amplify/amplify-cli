@@ -1,6 +1,6 @@
 import { App } from '@aws-cdk/core';
 import {
-  $TSContext, $TSObject, pathManager, stateManager,
+  $TSContext, $TSObject, stateManager,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { category } from '../constants';
@@ -73,7 +73,7 @@ export const modifyDeviceLocationTrackingResource = async (
   generateTemplateFile(deviceLocationTrackingStack, parameters.name);
   saveCFNParameters(parameters);
   stateManager.setResourceInputsJson(
-    pathManager.findProjectRoot(),
+    undefined,
     category,
     parameters.name,
     { groupPermissions: parameters.groupPermissions, roleAndGroupPermissionsMap: parameters.roleAndGroupPermissionsMap },
