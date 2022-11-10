@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0-cdkv2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@3.0.0-cdkv2.0...amplify-category-geo@3.0.0-cdkv2.2) (2022-11-10)
+
+
+### Bug Fixes
+
+* removes preparepp()  cdkV1 shim layer ([#11313](https://github.com/aws-amplify/amplify-cli/issues/11313)) ([e3908c8](https://github.com/aws-amplify/amplify-cli/commit/e3908c821d3bd12c6a2a078026903e6f8848f913))
+
+
+
+
+
 # [3.0.0-cdkv2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@3.0.0-cdkv2.0...amplify-category-geo@3.0.0-cdkv2.1) (2022-11-04)
 
 
