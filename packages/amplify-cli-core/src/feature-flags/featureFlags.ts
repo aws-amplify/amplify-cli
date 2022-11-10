@@ -7,8 +7,7 @@ import * as path from 'path';
 import { CLIEnvironmentProvider } from '../cliEnvironmentProvider';
 // eslint-disable-next-line import/no-cycle
 import { AmplifyError } from '../errors/amplify-error';
-// eslint-disable-next-line import/no-cycle
-import { amplifyFaultWithTroubleshootingLink } from '../errors/amplify-fault';
+import { AmplifyFault } from '../errors/amplify-fault';
 import { JSONUtilities } from '../jsonUtilities';
 import { pathManager, stateManager } from '../state-manager'; // eslint-disable-line import/no-cycle
 /* eslint-disable import/no-cycle */
@@ -163,7 +162,7 @@ export class FeatureFlags {
     if (!envNames) {
       // this is an internal issue, we either couldn't load the environment names
       // or their configuration is invalid, further troubleshooting is needed
-      throw amplifyFaultWithTroubleshootingLink('ConfigurationFault', {
+      throw new AmplifyFault('ConfigurationFault', {
         message: 'Environment names could not be loaded or were not provided.',
       });
     }
@@ -646,7 +645,7 @@ export class FeatureFlags {
         name: 'enableAutoIndexQueryNames',
         type: 'boolean',
         defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: false,
+        defaultValueForNewProjects: true,
       },
       {
         name: 'respectPrimaryKeyAttributesOnConnectionField',
@@ -664,7 +663,7 @@ export class FeatureFlags {
         name: 'populateOwnerFieldForStaticGroupAuth',
         type: 'boolean',
         defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: false,
+        defaultValueForNewProjects: true,
       },
     ]);
 

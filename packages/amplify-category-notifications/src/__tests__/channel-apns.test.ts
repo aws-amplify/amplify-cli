@@ -155,12 +155,12 @@ describe('channel-APNS', () => {
     mockirer(inquirer, { DefaultAuthenticationMethod: 'Certificate' });
     const errCert: AmplifyFault = await getError(async () => channelAPNS.enable(mockContextReject as unknown as $TSContext, 'successMessage'));
     expect(mockContextReject.exeInfo.pinpointClient.updateApnsChannel).toBeCalled();
-    expect(errCert.details).toContain(mockPinpointResponseErr.message);
+    expect(errCert?.downstreamException?.message).toContain(mockPinpointResponseErr.message);
 
     mockirer(inquirer, { DefaultAuthenticationMethod: 'Key' });
     const errKey: AmplifyFault = await getError(async () => channelAPNS.enable(mockContextReject as unknown as $TSContext, 'successMessage'));
     expect(mockPinpointClient.updateApnsChannel).toBeCalled();
-    expect(errKey.details).toContain(mockPinpointResponseErr.message);
+    expect(errKey?.downstreamException?.message).toContain(mockPinpointResponseErr.message);
   });
 
   test('disable', async () => {
@@ -174,6 +174,6 @@ describe('channel-APNS', () => {
   test('disable unsuccessful', async () => {
     const errKey: AmplifyFault = await getError(async () => channelAPNS.disable(mockContextReject as unknown as $TSContext));
     expect(mockPinpointClient.updateApnsChannel).toBeCalled();
-    expect(errKey.details).toContain(mockPinpointResponseErr.message);
+    expect(errKey?.downstreamException?.message).toContain(mockPinpointResponseErr.message);
   });
 });

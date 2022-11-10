@@ -11,7 +11,7 @@ import {
   $TSContext,
   INotificationsResourceMeta,
   pathManager,
-  amplifyErrorWithTroubleshootingLink,
+  AmplifyError,
 } from 'amplify-cli-core';
 import { ICategoryMeta } from './notifications-amplify-meta-types';
 import { invokeGetLastPushTimeStamp } from './plugin-client-api-analytics';
@@ -190,7 +190,7 @@ export const getPinpointRegionMapping = async (context: $TSContext): Promise<str
   const projectPath = pathManager.findProjectRoot();
   const applicationRegion = stateManager.getCurrentRegion(projectPath);
   if (!applicationRegion) {
-    throw amplifyErrorWithTroubleshootingLink('ConfigurationError', {
+    throw new AmplifyError('ConfigurationError', {
       message: `Invalid Region for project at ${projectPath}`,
     });
   }

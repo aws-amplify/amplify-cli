@@ -8,7 +8,7 @@ export async function queryProvider(context) {
   const provider = await getProvider(context, providerPlugins);
   context.exeInfo.projectConfig.providers = [provider];
 
-  const providerModule = require(providerPlugins[provider]);
+  const providerModule = await import(providerPlugins[provider]);
   await providerModule.attachBackend(context);
 
   return context;

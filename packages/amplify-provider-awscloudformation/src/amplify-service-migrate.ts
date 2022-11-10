@@ -1,5 +1,5 @@
 import fs from 'fs-extra';
-import { amplifyErrorWithTroubleshootingLink, stateManager } from 'amplify-cli-core';
+import { AmplifyError, stateManager } from 'amplify-cli-core';
 import * as configurationManager from './configuration-manager';
 import { getConfiguredAmplifyClient } from './aws-utils/aws-amplify';
 import { checkAmplifyServiceIAMPermission } from './amplify-service-permission-check';
@@ -49,13 +49,13 @@ export const run = async (context): Promise<void> => {
   if (!amplifyClient) {
     // This happens when the Amplify service is not available in the region
     const message = `Amplify service is not available in the region ${awsConfigInfo.region ? awsConfigInfo.region : ''}`;
-    throw amplifyErrorWithTroubleshootingLink('RegionNotAvailableError', { message });
+    throw new AmplifyError('RegionNotAvailableError', { message });
   }
 
   const hasPermission = await checkAmplifyServiceIAMPermission(context, amplifyClient);
   if (!hasPermission) {
     const message = 'Permissions to access Amplify service is required.';
-    throw amplifyErrorWithTroubleshootingLink('PermissionsError', { message });
+    throw new AmplifyError('PermissionsError', { message });
   }
 
   const { inputParams } = context.exeInfo;
@@ -74,7 +74,7 @@ export const run = async (context): Promise<void> => {
         .promise();
       context.print.info(`Amplify AppID found: ${amplifyAppId}. Amplify App name is: ${getAppResult.app.name}`);
     } catch (e) {
-      throw amplifyErrorWithTroubleshootingLink('ProjectNotFoundError', {
+      throw new AmplifyError('ProjectNotFoundError', {
         message: `Amplify AppID: ${amplifyAppId} not found.`,
         resolution: `Please ensure your local profile matches the AWS account or region in which the Amplify app exists.`,
       }, e);
@@ -124,7 +124,7 @@ export const run = async (context): Promise<void> => {
       logger('run.amplifyClient.getBackendEnvironment', [getEnvParams])();
       const { backendEnvironment } = await amplifyClient.getBackendEnvironment(getEnvParams).promise();
       if (StackName !== backendEnvironment.stackName) {
-        throw amplifyErrorWithTroubleshootingLink('InvalidStackError', {
+        throw new AmplifyError('InvalidStackError', {
           message: `Stack name mismatch for the backend environment ${envName}. Local: ${StackName}, Amplify: ${backendEnvironment.stackName}`,
         });
       }

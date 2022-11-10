@@ -1,4 +1,8 @@
 import { generateFilterExpression } from './dynamodb-filter';
+import ElasticsearchHelper from '../elasticsearch-helper';
+import { $TSObject } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
+
 export const transformUtils = {
   toDynamoDBConditionExpression: condition => {
     const result = generateFilterExpression(condition.toJSON());
@@ -7,6 +11,7 @@ export const transformUtils = {
       expressionNames: result.expressionNames,
     });
   },
+
   toDynamoDBFilterExpression: filter => {
     const result = generateFilterExpression(filter.toJSON());
     return JSON.stringify({
@@ -15,4 +20,19 @@ export const transformUtils = {
       expressionValues: result.expressionValues,
     });
   },
+
+  toElasticsearchQueryDSL: filter => {
+    const elasticsearchHelper = new ElasticsearchHelper();
+    if (!filter) {
+      return null;
+    }
+
+    try {
+      const queryDSL: $TSObject = elasticsearchHelper.getQueryDSL(filter.toJSON());
+      return JSON.stringify(queryDSL);
+    } catch (err) {
+      printer.error("Error when constructing the Elasticsearch Query DSL using the model transform utils. {}");
+      return null;
+    }
+  }
 };

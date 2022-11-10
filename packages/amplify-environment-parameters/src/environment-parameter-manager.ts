@@ -1,5 +1,5 @@
 import {
-  amplifyFaultWithTroubleshootingLink, pathManager, stateManager,
+  AmplifyFault, pathManager, stateManager,
 } from 'amplify-cli-core';
 import _ from 'lodash';
 import { ResourceParameterManager } from './resource-parameter-manager';
@@ -30,7 +30,7 @@ export const getEnvParamManager = (envName: string = stateManager.getLocalEnvInf
   if (envParamManagerMap[envName]) {
     return envParamManagerMap[envName];
   }
-  throw amplifyFaultWithTroubleshootingLink('ProjectInitFault', {
+  throw new AmplifyFault('ProjectInitFault', {
     message: `EnvironmentParameterManager for ${envName} environment is not initialized.`,
   });
 };
@@ -63,7 +63,7 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
 
   getResourceParamManager(category: string, resource: string): ResourceParameterManager {
     if (!category || !resource) {
-      throw amplifyFaultWithTroubleshootingLink('ResourceNotFoundFault', {
+      throw new AmplifyFault('ResourceNotFoundFault', {
         message: 'Missing Category or Resource.',
       });
     }

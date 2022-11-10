@@ -27,6 +27,10 @@ const hostedUIProviders = [
     name: 'Loginwithamazon',
     value: 'Loginwithamazon',
   },
+  {
+    name: 'Signinwithapple',
+    value: 'Signinwithapple',
+  },
 ];
 const attributeProviderMap = {
   email: {
@@ -42,6 +46,10 @@ const attributeProviderMap = {
       attr: 'amazon_email',
       scope: 'default',
     },
+    signinwithapple: {
+      attr: 'apple_email',
+      scope: 'default',
+    },
   },
   address: {
     prov1: {
@@ -49,6 +57,7 @@ const attributeProviderMap = {
       scope: 'default',
     },
     prov2: {},
+    signinwithapple: {},
     loginwithamazon: {
       attr: 'amazon_address',
       scope: 'default',
@@ -61,11 +70,13 @@ const attributeProviderMap = {
       scope: 'default',
     },
     loginwithamazon: {},
+    signinwithapple: {},
   },
   name: {
     prov1: {},
     prov2: {},
     loginwithamazon: {},
+    signinwithapple: {},
   },
 };
 const { coreAttributes, updateFlowMap } = maps;
@@ -253,7 +264,7 @@ describe('When generating auth questions...', () => {
       input.type = 'multiselect';
       input.map = 'hostedUIProviders';
       const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
-      const correctChoices = res.choices && res.choices.length === 3 && res.choices.filter(i => i.disabled).length === 1;
+      const correctChoices = res.choices && res.choices.length === 4 && res.choices.filter(i => i.disabled).length === 2;
       expect(correctChoices).toBe(true);
     });
 
@@ -269,9 +280,9 @@ describe('When generating auth questions...', () => {
       const localeChoice = res.choices.find(i => i.value === 'locale');
       const nameChoice = res.choices.find(i => i.value === 'name');
       expect(emailChoice.name).toEqual('Email');
-      expect(addressChoice.name).toEqual('Address (This attribute is not supported by Prov2.)');
-      expect(localeChoice.name).toEqual('Locale (This attribute is not supported by Prov1, Login With Amazon.)');
-      expect(nameChoice.name).toEqual('Name (This attribute is not supported by Prov1, Prov2, Login With Amazon.)');
+      expect(addressChoice.name).toEqual('Address (This attribute is not supported by Prov2, Sign in with Apple.)');
+      expect(localeChoice.name).toEqual('Locale (This attribute is not supported by Prov1, Login With Amazon, Sign in with Apple.)');
+      expect(nameChoice.name).toEqual('Name (This attribute is not supported by Prov1, Prov2, Login With Amazon, Sign in with Apple.)');
     });
 
     it('should disable options based on the update flow (without social options)', () => {

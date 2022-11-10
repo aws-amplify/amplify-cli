@@ -1,5 +1,5 @@
 import {
-  $TSContext, amplifyErrorWithTroubleshootingLink, amplifyFaultWithTroubleshootingLink, IDeploymentStateManager,
+  $TSContext, AmplifyError, AmplifyFault, IDeploymentStateManager,
 } from 'amplify-cli-core';
 import { AmplifySpinner, printer as promptsPrinter } from 'amplify-prompts';
 import assert from 'assert';
@@ -93,10 +93,8 @@ export class DeploymentManager {
       assert(cred.region);
       return new DeploymentManager(cred, cred.region, deploymentBucket, eventMap, options);
     } catch (e) {
-      throw amplifyErrorWithTroubleshootingLink('DeploymentError', {
+      throw new AmplifyError('DeploymentError', {
         message: 'Could not load configuration',
-        stack: e.stack,
-        details: e.message,
       }, e);
     }
   };
@@ -366,12 +364,11 @@ export class DeploymentManager {
       await this.s3Client.headObject({ Bucket: this.deploymentBucket, Key: bucketKey }).promise();
       return true;
     } catch (e) {
-      throw amplifyErrorWithTroubleshootingLink('DeploymentError', {
+      throw new AmplifyError('DeploymentError', {
         message: e.code === 'NotFound'
           ? `The cloudformation template ${templatePath} was not found in deployment bucket ${this.deploymentBucket}`
           : e.message,
         details: e.message,
-        stack: e.stack,
       }, e);
     }
   };
@@ -390,9 +387,8 @@ export class DeploymentManager {
       if (err?.code === 'ResourceNotFoundException') {
         return true; // in the case of an iterative update that recreates a table, non-existence means the table has been fully removed
       }
-      throw amplifyFaultWithTroubleshootingLink('ServiceCallFault', {
+      throw new AmplifyFault('ServiceCallFault', {
         message: err.message,
-        stack: err.stack,
       }, err);
     }
   };

@@ -2,12 +2,12 @@ import {
   $TSAny,
   AmplifyException,
   AmplifyFaultType,
-  amplifyFaultWithTroubleshootingLink,
+  AmplifyFault,
   executeHooks,
   HooksMeta,
 } from 'amplify-cli-core';
-import { AmplifyPrinter, printer } from 'amplify-prompts';
 import { logger } from 'amplify-cli-logger';
+import { AmplifyPrinter, printer } from 'amplify-prompts';
 import { reportError } from './commands/diagnose';
 import { isHeadlessCommand } from './context-manager';
 import { Context } from './domain/context';
@@ -37,40 +37,53 @@ export const handleException = async (exception: unknown): Promise<void> => {
     amplifyException = genericErrorToAmplifyException(exception);
   }
 
-  if (context?.usageData) {
-    await executeSafely(
-      () => context?.usageData.emitError(amplifyException), 'Failed to emit error to usage data',
-    );
+  const deepestException = getDeepestAmplifyException(amplifyException);
+  if (context && isHeadlessCommand(context)) {
+    printHeadlessAmplifyException(deepestException);
+  } else {
+    printAmplifyException(deepestException);
   }
 
-  if (context && isHeadlessCommand(context)) {
-    printHeadlessAmplifyException(amplifyException);
-  } else {
-    printAmplifyException(amplifyException);
+  if (context?.usageData) {
+    await executeSafely(
+      () => {
+        context?.usageData.emitError(deepestException);
+        printer.blankLine();
+        printer.info(`Session Identifier: ${context?.usageData.getSessionUuid()}`);
+      }, 'Failed to emit error to usage data',
+    );
   }
 
   // Swallow and continue if any operations fail
   if (context) {
-    await executeSafely(() => reportError(context, amplifyException), 'Failed to report error');
+    await executeSafely(() => reportError(context, deepestException), 'Failed to report error');
   }
 
   await executeSafely(
     () => executeHooks(HooksMeta.getInstance(undefined, 'post', {
-      message: amplifyException.message ?? 'undefined error in Amplify process',
-      stack: amplifyException.stack ?? 'undefined error stack',
+      message: deepestException.message ?? 'undefined error in Amplify process',
+      stack: deepestException.stack ?? 'undefined error stack',
     })),
     'Failed to execute hooks',
   );
 
   await executeSafely(
     () => logger.logError({
-      message: amplifyException.message,
-      error: amplifyException,
+      message: deepestException.message,
+      error: deepestException,
     }),
     'Failed to log error',
   );
 
   process.exitCode = 1;
+};
+
+const getDeepestAmplifyException = (amplifyException: AmplifyException): AmplifyException => {
+  let deepestAmplifyException = amplifyException;
+  while (deepestAmplifyException.downstreamException && deepestAmplifyException.downstreamException instanceof AmplifyException) {
+    deepestAmplifyException = deepestAmplifyException.downstreamException;
+  }
+  return deepestAmplifyException;
 };
 
 /**
@@ -104,9 +117,22 @@ const printAmplifyException = (amplifyException: AmplifyException): void => {
   if (link) {
     printer.info(`Learn more at: ${link}`);
   }
-  printer.blankLine();
+
   if (stack) {
+    printer.debug('');
     printer.debug(stack);
+  }
+
+  if (amplifyException.downstreamException) {
+    printError(amplifyException.downstreamException);
+  }
+};
+
+const printError = (err: Error): void => {
+  printer.debug('');
+  printer.debug(err.message);
+  if (err.stack) {
+    printer.debug(err.stack);
   }
 };
 
@@ -115,27 +141,24 @@ const printHeadlessAmplifyException = (amplifyException: AmplifyException): void
   errorPrinter.error(JSON.stringify(amplifyException.toObject()));
 };
 
-const unknownErrorToAmplifyException = (err: unknown): AmplifyException => amplifyFaultWithTroubleshootingLink(
+const unknownErrorToAmplifyException = (err: unknown): AmplifyException => new AmplifyFault(
   unknownErrorTypeToAmplifyExceptionType(err), {
     message: (typeof err === 'object' && err !== null && 'message' in err) ? (err as $TSAny).message : 'Unknown error',
     resolution: mapUnknownErrorToResolution(err),
-    stack: (typeof err === 'object' && err !== null && 'stack' in err) ? (err as $TSAny).stack : undefined,
   },
 );
 
-const genericErrorToAmplifyException = (err: Error): AmplifyException => amplifyFaultWithTroubleshootingLink(
+const genericErrorToAmplifyException = (err: Error): AmplifyException => new AmplifyFault(
   genericErrorTypeToAmplifyExceptionType(err), {
     message: err.message,
     resolution: mapGenericErrorToResolution(err),
-    stack: err.stack,
   }, err,
 );
 
-const nodeErrorToAmplifyException = (err: NodeJS.ErrnoException): AmplifyException => amplifyFaultWithTroubleshootingLink(
+const nodeErrorToAmplifyException = (err: NodeJS.ErrnoException): AmplifyException => new AmplifyFault(
   nodeErrorTypeToAmplifyExceptionType(err), {
     message: err.message,
     resolution: mapNodeErrorToResolution(err),
-    stack: err.stack,
   }, err,
 );
 
