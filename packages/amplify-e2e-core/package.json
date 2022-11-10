@@ -19,8 +19,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "clean": "rimraf ./lib tsconfig.tsbuildinfo",
-    "extract-api": "ts-node ../../scripts/extract-api.ts"
+    "clean": "rimraf ./lib tsconfig.tsbuildinfo"
   },
   "dependencies": {
     "amplify-cli-core": "3.3.0",
