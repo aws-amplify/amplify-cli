@@ -47,7 +47,7 @@
     "promote-rc": "./scripts/promote-rc.sh",
     "finish-release": "./scripts/finish-release.sh",
     "update-data-packages": "./scripts/update-data-dependencies.sh && yarn",
-    "extract-api": "nx run-many --target=extract-api --all"
+    "extract-api": "nx run-many --target=extract-api --all && git add packages/**/API.md"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-cli/issues"
