@@ -10,9 +10,31 @@
           "test",
           "lint",
           "package",
-          "prepare"
+          "prepare",
+          "extract-api"
         ]
       }
+    }
+  },
+  "targetDefaults": {
+    "build": {
+      "inputs": [
+        "{projectRoot}/**/*",
+        "!{projectRoot}/**/*.md"
+      ]
+    },
+    "extract-api": {
+      "dependsOn": [
+        "build"
+      ],
+      "inputs": [
+        "{projectRoot}/src/**/*",
+        "!{projectRoot}/src/__tests__/**/*",
+        "!{projectRoot}/API.md"
+      ],
+      "outputs": [
+        "{projectRoot}/API.md"
+      ]
     }
   },
   "targetDependencies": {

@@ -5,7 +5,8 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
-    "test": "jest --logHeapUsage"
+    "test": "jest --logHeapUsage",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",

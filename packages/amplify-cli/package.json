@@ -27,7 +27,8 @@
     "test": "jest --logHeapUsage",
     "postinstall": "node scripts/post-install.js",
     "watch": "tsc -w",
-    "clean": "rimraf ./lib tsconfig.tsbuildinfo"
+    "clean": "rimraf ./lib tsconfig.tsbuildinfo",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "engines": {
     "node": ">=12.0.0"

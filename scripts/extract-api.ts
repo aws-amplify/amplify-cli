@@ -5,22 +5,19 @@ import {
   ExtractorConfig
 } from '@microsoft/api-extractor';
 
-const packagesDir = path.join(__dirname, '..', 'packages');
-
-const packages = fs.readdirSync(packagesDir)
 const configTemplatePath = path.join(__dirname, 'api-extractor.json');
 
-for (let pkg of packages) {
-  const hasTypeScript = fs.pathExistsSync(path.join(packagesDir, pkg, 'tsconfig.json'));
-  const hasEntryPoint = fs.pathExistsSync(path.join(packagesDir, pkg, 'lib', 'index.js'));
+const extractApi = (packagePath: string): void => {
+  const hasTypeScript = fs.pathExistsSync(path.join(packagePath, 'tsconfig.json'));
+  const hasEntryPoint = fs.pathExistsSync(path.join(packagePath, 'lib', 'index.js'));
   if (!hasTypeScript || !hasEntryPoint) {
-    console.log('Skipping ' + pkg);
-    continue;
+    console.log('Skipping ' + packagePath);
+    return;
   } else {
-    console.log('Extracting ' + pkg)
+    console.log('Extracting ' + packagePath)
   }
 
-  const pkgConfigPath = path.join(packagesDir, pkg, 'api-extractor.json');
+  const pkgConfigPath = path.join(packagePath, 'api-extractor.json');
   fs.copySync(configTemplatePath, pkgConfigPath);
   try {
     const extractorConfig = ExtractorConfig.loadFileAndPrepare(pkgConfigPath);
@@ -31,10 +28,12 @@ for (let pkg of packages) {
         showVerboseMessages: false
       });
   } finally {
-    const tmpPath = path.join(packagesDir, pkg, 'temp');
+    const tmpPath = path.join(packagePath, 'temp');
     if (fs.pathExistsSync(tmpPath)) {
       fs.removeSync(tmpPath);
     }
     fs.removeSync(pkgConfigPath);
   }
 }
+
+extractApi(process.cwd());

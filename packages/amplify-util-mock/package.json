@@ -25,7 +25,8 @@
     "watch": "tsc -w",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "velocity": "jest ./src/__tests__/velocity/*.test.ts",
-    "jest": "jest"
+    "jest": "jest",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
     "@aws-amplify/amplify-appsync-simulator": "2.7.0",
