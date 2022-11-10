@@ -169,8 +169,7 @@ jobs:
             cd scripts
             yarn install
             cd ..
-            yarn extract-api
-            ./.circleci/verify_extract_api.sh
+            yarn verify-api-extract
 
   mock_e2e_tests:
     <<: *linux-e2e-executor
