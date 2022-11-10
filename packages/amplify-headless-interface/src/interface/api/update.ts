@@ -15,4 +15,4 @@ export interface UpdateApiRequest {
  * A subset of the AppSyncServiceConfiguration that are mutable.
  */
 export type AppSyncServiceModification = Pick<AppSyncServiceConfiguration, 'serviceName'> &
-  Partial<Pick<AppSyncServiceConfiguration, 'transformSchema' | 'defaultAuthType' | 'additionalAuthTypes' | 'conflictResolution'>>;
+  Partial<Pick<AppSyncServiceConfiguration, 'transformSchema' | 'defaultAuthType' | 'additionalAuthTypes' | 'conflictResolution' | 'apiKeyExpiration'>>;
