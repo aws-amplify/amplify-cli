@@ -62,7 +62,7 @@
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
       "pre-push": "yarn build-tests-changed && yarn split-e2e-tests",
-      "pre-commit": "yarn verify-commit && yarn lint-fix"
+      "pre-commit": "yarn verify-commit"
     }
   },
   "author": "Amazon Web Services",
