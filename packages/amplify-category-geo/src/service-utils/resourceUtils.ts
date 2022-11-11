@@ -189,7 +189,23 @@ export const getServicePermissionPolicies = (
 export const checkAnyGeoResourceExists = async (): Promise<boolean> => {
   const geoMeta = stateManager.getMeta()?.[category];
   return geoMeta && Object.keys(geoMeta) && Object.keys(geoMeta).length > 0;
-}
+};
+
+/**
+ * Check if any Geo resource of input service type exists
+ */
+export const checkGeoResourceTypeExists = async (serviceName: string): Promise<boolean> => {
+  const geoMeta = stateManager.getMeta()?.[category];
+  return geoMeta && !!Object.keys(geoMeta).find(resource => geoMeta[resource].service === serviceName);
+};
+
+/**
+ * Get Geo resources of input service type
+ */
+export const getGeoResourcesByServiceType = async (serviceName: string): Promise<string[]> => {
+  const geoMeta = stateManager.getMeta()?.[category];
+  return geoMeta ? Object.keys(geoMeta).filter(resource => geoMeta[resource].service === serviceName) : [];
+};
 
 export const getAuthResourceName = async (context: $TSContext): Promise<string> => {
   const authMeta = stateManager.getMeta()?.[authCategoryName];

@@ -21,5 +21,5 @@ export enum ServiceName {
   Map = 'Map',
   PlaceIndex = 'PlaceIndex',
   GeofenceCollection = 'GeofenceCollection',
-  Tracker = 'Tracker',
+  DeviceLocationTracking = 'DeviceLocationTracking',
 }

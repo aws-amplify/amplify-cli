@@ -1,4 +1,6 @@
-import { $TSContext, $TSObject, AmplifyCategories, AmplifySupportedService, open, ProviderContext, stateManager } from 'amplify-cli-core';
+import {
+  $TSContext, $TSObject, AmplifyCategories, AmplifySupportedService, open, ProviderContext, stateManager,
+} from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
 import { validateAddGeoRequest, validateUpdateGeoRequest } from 'amplify-util-headless-input';
 import { TemplateMappings } from '../service-stacks/baseStack';
@@ -10,6 +12,7 @@ import {
   addMapResource, addMapResourceHeadless, removeMapResource, updateMapResource, updateMapResourceHeadless,
 } from './map';
 import { addPlaceIndexResource, removePlaceIndexResource, updatePlaceIndexResource } from './placeIndex';
+import { addDeviceLocationTrackingResource } from './deviceLocationTracking';
 
 /**
  * Entry point for creating a new Geo resource
@@ -29,6 +32,8 @@ export const addResource = async (context: $TSContext, service: string): Promise
       return addMapResource(context);
     case ServiceName.PlaceIndex:
       return addPlaceIndexResource(context);
+    case ServiceName.DeviceLocationTracking:
+      return addDeviceLocationTrackingResource(context);
     case ServiceName.GeofenceCollection:
       return addGeofenceCollectionResource(context);
     default:

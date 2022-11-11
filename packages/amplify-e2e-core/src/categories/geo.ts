@@ -1,4 +1,6 @@
-import { getCLIPath, nspawn as spawn, generateRandomShortId } from '..';
+import {
+  getCLIPath, nspawn as spawn, generateRandomShortId, ExecutionContext,
+} from '..';
 import path from 'path';
 import { readFileSync } from 'fs-extra';
 
@@ -25,6 +27,7 @@ const defaultGeoConfig: GeoConfig = {
 const defaultSearchIndexQuestion = `Set this search index as the default? It will be used in Amplify search index API calls if no explicit reference is provided.`;
 const defaultMapQuestion = `Set this Map as the default? It will be used in Amplify Map API calls if no explicit reference is provided.`;
 const defaultGeofenceCollectionQuestion = `Set this geofence collection as the default? It will be used in Amplify geofence collection API calls if no explicit reference is provided.`;
+const defaultDeviceTrackerQuestion = `Set this device tracker as the default? It will be used in Amplify device tracker API calls if no explicit reference is provided.`;
 
 export function getGeoJSONFilePath(fileName: string): string {
   return path.join(__dirname, '..', '..', '..', 'amplify-e2e-tests', 'geo-json-files', fileName);
@@ -135,6 +138,90 @@ export function importGeofencesWithDefault(cwd: string, settings: GeoConfig = {}
     .sendCarriageReturn() //custom property
   }
   return chain.runAsync();
+}
+
+/**
+ * Add device tracker with default values. Assume auth and cognito group are configured
+ * @param cwd command directory
+ */
+ export function addDeviceTrackerWithDefault(cwd: string, trackerNames: string[], settings: GeoConfig = {}, advancedSetting?: string): Promise<void> {
+  const config = { ...defaultGeoConfig, ...settings };
+  const chain = spawn(getCLIPath(), ['geo', 'add'], { cwd, stripColors: true })
+    .wait('Select which capability you want to add:')
+    .sendKeyDown(3)
+    .sendCarriageReturn()
+    .wait('Provide a name for the device location tracker:')
+    .sendLine(config.resourceName)
+    .wait('Restrict access by?')
+    .sendCarriageReturn()
+    .wait('Select one or more cognito groups to give access:')
+    .sendCtrlA()
+    .sendCarriageReturn();
+
+  for (const trackerName of trackerNames) {
+    chain.wait(`What kind of access do you want for ${trackerName} users? Select ALL that apply:`)
+      .sendCtrlA()
+      .sendCarriageReturn();
+  }
+
+  // Add advanced settings on device tracker
+  addAdvancedSettingsOnDeviceTracker(chain, advancedSetting);
+
+  if (config.isAdditional === true) {
+    chain.wait(defaultDeviceTrackerQuestion);
+    if (config.isDefault === true) {
+      chain.sendYes();
+    } else {
+      chain.sendNo();
+    }
+  }
+  return chain.runAsync();
+}
+
+/**
+ * Add selected advanced setting on device tracker.
+ * @param chain execution context
+ * @param advancedSetting selected advanced setting option
+ */
+export function addAdvancedSettingsOnDeviceTracker(chain: ExecutionContext, advancedSetting: string): void {
+  switch (advancedSetting) {
+    case 'grantOtherAccess':
+      chain
+        .wait('Do you want to configure advanced settings?')
+        .sendYes()
+        .wait('Here are the default advanced settings. Select a setting to edit or continue (Use arrow keys)')
+        .sendCarriageReturn()
+        .wait('Users in this group can only access their own device by default. Learn more at https://docs.aws.amazon.com/location/latest/developerguide/security_iam_service-with-iam.html#security_iam_service-with-iam-id-based-policies-conditionkeys')
+        .wait('Select one or more users groups to give full access to:')
+        .sendCtrlA()
+        .sendCarriageReturn();
+      break;
+    case 'linkGeofenceCollection':
+      chain
+        .wait('Do you want to configure advanced settings?')
+        .sendYes()
+        .wait('Here are the default advanced settings. Select a setting to edit or continue (Use arrow keys)')
+        .sendKeyDown(1)
+        .sendCarriageReturn()
+        .wait('Do you want to link geofence collection(s) to this tracker?')
+        .sendYes();
+      break;
+    case 'setPositionFilteringMethod':
+      chain
+        .wait('Do you want to configure advanced settings?')
+        .sendYes()
+        .wait('Here are the default advanced settings. Select a setting to edit or continue (Use arrow keys)')
+        .sendKeyDown(2)
+        .sendCarriageReturn()
+        .wait('Do you want to set the position filtering method for this tracker?')
+        .sendYes()
+        .wait('Specify the position filtering method for this device tracker')
+        .sendCarriageReturn();
+      break;
+    default:
+      chain.wait('Do you want to configure advanced settings?').sendNo();
+      break;
+  }
 }
 
 /**
