@@ -25,7 +25,15 @@ export * from './sleep';
 export * from './transformConfig';
 export * from './admin-ui';
 export * from './hooks';
-export * from './transform-current-project-to-git-pulled-project';
+export * from './git-operations';
+
+/**
+ * Whether the current environment is CircleCI or not
+ */
+export const isCI = (): boolean => process.env.CI && process.env.CIRCLECI;
+
+// eslint-disable-next-line spellcheck/spell-checker
+export const TEST_PROFILE_NAME = isCI() ? 'amplify-integ-test-user' : 'default';
 
 // run dotenv config to update env variable
 config();
