@@ -36,7 +36,7 @@ export const getEnvParamManager = (envName: string = stateManager.getLocalEnvInf
 };
 
 /**
- * Execute the save method of all currently initialized envParamManagers
+ * Execute the save method of all currently initialized IEnvironmentParameterManager instances
  */
 export const saveAll = async (): Promise<void> => {
   for (const envParamManager of Object.values(envParamManagerMap)) {
