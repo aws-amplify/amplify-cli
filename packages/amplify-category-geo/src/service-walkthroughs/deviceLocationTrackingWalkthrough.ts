@@ -2,17 +2,14 @@ import { $TSContext } from 'amplify-cli-core';
 import { v4 as uuid } from 'uuid';
 import { merge } from 'lodash';
 import {
-  printer, prompter, alphanumeric, and, minLength, maxLength, Validator, byValues,
+  prompter, alphanumeric, and, minLength, maxLength, Validator, byValues,
 } from 'amplify-prompts';
 import { DeviceLocationTrackingParameters } from '../service-utils/deviceLocationTrackingParams';
 import { AccessType } from '../service-utils/resourceParams';
 import { ServiceName } from '../service-utils/constants';
-import { resourceAccessWalkthrough, defaultResourceQuestion, getServiceFriendlyName } from './resourceWalkthrough';
-import { getGeoServiceMeta, getGeoResources, updateDefaultResource } from '../service-utils/resourceUtils';
+import { resourceAccessWalkthrough, defaultResourceQuestion } from './resourceWalkthrough';
+import { getGeoServiceMeta } from '../service-utils/resourceUtils';
 import { deviceLocationTrackingCrudPermissionsMap } from '../service-utils/deviceLocationTrackingConstants';
-import { getCurrentTrackingParameters } from '../service-utils/deviceLocationTrackingUtils';
-
-const trackingServiceFriendlyName = getServiceFriendlyName(ServiceName.DeviceLocationTracking);
 
 /**
  * Starting point for CLI walkthrough that creates a device location tracking resource
@@ -113,77 +110,4 @@ export const deviceLocationTrackerAccessWalkthrough = async (
   updatedParameters.groupPermissions = resourceAccessParams.groupPermissions;
   updatedParameters.roleAndGroupPermissionsMap = selectedGroupPermissions;
   return updatedParameters;
-};
-
-/**
- * updateDeviceLocationTrackerWalkthrough
- */
-export const updateDeviceLocationTrackerWalkthrough = async (
-  context: $TSContext,
-  parameters: Partial<DeviceLocationTrackingParameters>,
-  resourceToUpdate?: string,
-): Promise<Partial<DeviceLocationTrackingParameters>> => {
-  let resourceName = resourceToUpdate;
-  let updatedParameters = parameters;
-  const trackingResourceNames = await getGeoResources(ServiceName.DeviceLocationTracking);
-  if (trackingResourceNames.length === 0) {
-    printer.error(`No ${trackingServiceFriendlyName} resource to update. Use "amplify add geo" to create a new ${trackingServiceFriendlyName}.`);
-    return updatedParameters;
-  }
-
-  if (resourceName) {
-    if (!trackingResourceNames.includes(resourceName)) {
-      printer.error(`No ${trackingServiceFriendlyName} named ${resourceName} exists in the project.`);
-      return updatedParameters;
-    }
-  } else {
-    resourceName = await prompter.pick<'one', string>(`Select the ${trackingServiceFriendlyName} you want to update`, trackingResourceNames);
-  }
-
-  updatedParameters.name = resourceName;
-  updatedParameters = merge(updatedParameters, await getCurrentTrackingParameters(resourceName));
-
-  // overwrite the parameters based on user input
-
-  const deviceParams = await deviceLocationTrackerAccessWalkthrough(context, updatedParameters);
-  updatedParameters.groupPermissions = deviceParams.groupPermissions;
-  updatedParameters.roleAndGroupPermissionsMap = deviceParams.roleAndGroupPermissionsMap;
-
-  const otherTrackingResources = trackingResourceNames.filter(trackingResourceName => trackingResourceName !== resourceName);
-  // if this is the only device tracker, default cannot be removed
-  if (otherTrackingResources.length > 0) {
-    const isDefault = await prompter.yesOrNo(defaultResourceQuestion(ServiceName.DeviceLocationTracking), updatedParameters.isDefault);
-    // If a device tracker is updated, ask for new default
-    if (updatedParameters.isDefault && !isDefault) {
-      await updateDefaultDeviceTrackerWalkthrough(context, resourceName, otherTrackingResources);
-    }
-    updatedParameters.isDefault = isDefault;
-  } else {
-    updatedParameters.isDefault = true;
-  }
-  return updatedParameters;
-};
-
-/**
- * Walkthrough to choose a different default device tracker
- * @param context The Amplify Context object
- * @param currentDefault The current default device tracker name
- * @param availableDeviceTrackers The names of available device trackers
- * @returns name of the new default device tracker chosen
- */
-export const updateDefaultDeviceTrackerWalkthrough = async (
-  context: $TSContext,
-  currentDefault: string,
-  availableDeviceTrackers?: string[],
-): Promise<string> => {
-  let trackers = availableDeviceTrackers;
-  if (!trackers) {
-    trackers = await getGeoResources(ServiceName.DeviceLocationTracking);
-  }
-  const otherDeviceTrackers = trackers.filter(name => name !== currentDefault);
-  if (otherDeviceTrackers?.length > 0) {
-    const defaultIndexName = await prompter.pick(`Select the ${trackingServiceFriendlyName} you want to set as default:`, otherDeviceTrackers);
-    await updateDefaultResource(context, ServiceName.DeviceLocationTracking, defaultIndexName);
-  }
-  return currentDefault;
 };

@@ -1,9 +1,8 @@
-const configHelper = require("../../amplify-frontend-ios/lib/amplify-config-helper");
+const configHelper = require("../../amplify-frontend-android/lib/amplify-config-helper");
 jest.mock('amplify-cli-core');
 
 const mapServiceName = 'Map';
 const placeIndexServiceName = 'PlaceIndex';
-const deviceTrackerServiceName = 'DeviceLocationTracking';
 
 describe('generate maps and search configuration', () => {
     const mockAmplifyMeta = {
@@ -43,17 +42,6 @@ describe('generate maps and search configuration', () => {
         };
     }
 
-    function constructDeviceTrackerMeta(trackerName, isDefault, region) {
-        return {
-            service: deviceTrackerServiceName,
-            output: {
-                Name: trackerName,
-                Region: region
-            },
-            isDefault: isDefault
-        };
-    }
-
     beforeEach(() => {
         jest.clearAllMocks();
         mockContext = {
@@ -76,7 +64,7 @@ describe('generate maps and search configuration', () => {
         expect(generatedConfig).toMatchSnapshot();
     });
 
-    it('generates correct configuration for maps, search, and tracker geo resources with Region as CFN output', () => {
+    it('generates correct configuration for maps and search geo resources with Region as CFN output', () => {
         const resourceRegion = 'eu-west-1';
         const projectRegion = 'eu-west-2';
         mockContext.amplify.getProjectMeta = jest.fn().mockReturnValue({
@@ -89,9 +77,7 @@ describe('generate maps and search configuration', () => {
                 map12345: constructMapMeta('map12345', 'VectorEsriStreets', false, resourceRegion),
                 index12345: constructPlaceIndexMeta('index12345', false, resourceRegion),
                 defaultMap12345: constructMapMeta('defaultMap12345', 'VectorEsriStreets', true, resourceRegion),
-                defaultIndex12345: constructPlaceIndexMeta('defaultIndex12345', true, resourceRegion),
-                tracker12345: constructDeviceTrackerMeta('tracker12345', false, resourceRegion),
-                defaultTracker12345: constructDeviceTrackerMeta('defaultTracker12345', true, resourceRegion),
+                defaultIndex12345: constructPlaceIndexMeta('defaultIndex12345', true, resourceRegion)
             }
         });
         const generatedConfig = configHelper.generateConfig(mockContext, {});

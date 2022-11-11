@@ -204,10 +204,6 @@ function constructGeo(metadata, amplifyConfig) {
   const placeIndexConfig = {
     items: []
   };
-  let defaultDeviceTracker = '';
-  const deviceTrackerConfig = {
-    items: []
-  };
 
   Object.keys(metadata[categoryName]).forEach(r => {
     const resourceMeta = metadata[categoryName][r];
@@ -230,20 +226,11 @@ function constructGeo(metadata, amplifyConfig) {
           defaultPlaceIndex = placeIndexName;
         }
       }
-      else if (resourceMeta.service === 'DeviceLocationTracking') {
-        const deviceTrackerName = resourceMeta.output.Name;
-        geoRegion = resourceMeta.output.Region || geoRegion;
-        deviceTrackerConfig.items.push(deviceTrackerName);
-        if(resourceMeta.isDefault === true) {
-          defaultDeviceTracker = deviceTrackerName;
-        }
-      }
     }
   });
 
   mapConfig.default = defaultMap;
   placeIndexConfig.default = defaultPlaceIndex;
-  deviceTrackerConfig.default = defaultDeviceTracker;
 
   amplifyConfig[categoryName] = {
     plugins: {}
@@ -256,9 +243,6 @@ function constructGeo(metadata, amplifyConfig) {
   }
   if (placeIndexConfig.items.length > 0) {
     amplifyConfig[categoryName].plugins[pluginName]['searchIndices'] = placeIndexConfig;
-  }
-  if (deviceTrackerConfig.items.length > 0) {
-    amplifyConfig[categoryName].plugins[pluginName]['trackers'] = deviceTrackerConfig;
   }
 }
 

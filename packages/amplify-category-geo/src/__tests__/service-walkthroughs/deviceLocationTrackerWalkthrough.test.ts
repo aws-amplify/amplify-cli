@@ -7,7 +7,6 @@ import { AccessType, DataProvider } from '../../service-utils/resourceParams';
 import { provider, ServiceName } from '../../service-utils/constants';
 import { category } from '../../constants';
 import { DeviceLocationTrackingParameters } from '../../service-utils/deviceLocationTrackingParams';
-import { updateDeviceLocationTrackerWalkthrough } from '../../service-walkthroughs/deviceLocationTrackingWalkthrough';
 
 const { updateGeofenceCollectionWalkthrough } = require('../../service-walkthroughs/geofenceCollectionWalkthrough');
 const { removeWalkthrough } = require('../../service-walkthroughs/removeWalkthrough');
@@ -112,13 +111,13 @@ describe('Device Location Tracker walkthrough works as expected', () => {
         mockUserInput = mockDeviceTrackerParameters.groupPermissions;
       } else if (message === `What kind of access do you want for ${mockUserPoolGroup} users? Select ALL that apply:`) {
         mockUserInput = mockDeviceTrackerParameters.roleAndGroupPermissionsMap[mockUserPoolGroup];
-      } else if (message === 'Select the device tracker you want to update') {
+      } else if (message === 'Select the device location tracker you want to update') {
         mockUserInput = mockDeviceTrackerParameters.name;
-      } else if (message === 'Select the device tracker you want to set as default:') {
+      } else if (message === 'Select the device location tracker you want to set as default:') {
         mockUserInput = secondaryDeviceTrackerName;
-      } else if (message === 'Select the device tracker you want to remove') {
+      } else if (message === 'Select the device location tracker you want to remove') {
         mockUserInput = mockDeviceTrackerName;
-      } else if (message === 'Specify the data provider for device tracker. This will be only used to calculate billing.') {
+      } else if (message === 'Specify the data provider for device location tracker. This will be only used to calculate billing.') {
         mockUserInput = mockDeviceTrackerParameters.dataProvider;
       }
       return Promise.resolve(mockUserInput);
@@ -148,87 +147,5 @@ describe('Device Location Tracker walkthrough works as expected', () => {
 
     expect(trackerParams).toMatchObject({ ...mockDeviceTrackerParameters, isDefault: true });
     expect(prompter.yesOrNo).not.toBeCalledWith('Set this geofence collection as the default? It will be used in Amplify geofence collection API calls if no explicit reference is provided.', true);
-  });
-
-  it('sets parameters based on user input for update device tracker walkthrough', async () => {
-    // set initial device tracker parameters before update
-    mockAmplifyMeta.geo[mockDeviceTrackerName].isDefault = true;
-    stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
-
-    // update the collection's default settings to false; should set the secondary collection as default
-    prompter.yesOrNo = jest.fn().mockImplementation((message: string): Promise<boolean> => {
-      let mockUserInput = false;
-      if (message === 'Do you want to update advanced settings?') {
-        mockUserInput = false;
-      } else if (message === 'Set this device tracker as the default? It will be used in Amplify geofence collection API calls if no explicit reference is provided.') {
-        mockUserInput = false;
-      }
-      return Promise.resolve(mockUserInput);
-    });
-
-    let trackerParams: Partial<DeviceLocationTrackingParameters> = {
-      providerContext: mockDeviceTrackerParameters.providerContext,
-      dataProvider: mockDeviceTrackerParameters.dataProvider,
-    };
-
-    trackerParams = await updateDeviceLocationTrackerWalkthrough(mockContext, trackerParams, mockDeviceTrackerName);
-
-    // The default geofence collection is now changed to secondary geofence collection
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledTimes(2);
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate)
-      .toBeCalledWith(category, mockDeviceTrackerName, 'isDefault', false);
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate)
-      .toBeCalledWith(category, secondaryDeviceTrackerName, 'isDefault', true);
-
-    // The geofence collection parameters are updated
-    expect(trackerParams).toMatchObject(mockDeviceTrackerParameters);
-  });
-
-  it('early returns and prints error if no geofence collection resource to update', async () => {
-    mockAmplifyMeta.geo = {};
-    stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
-
-    const trackerParams: Partial<DeviceLocationTrackingParameters> = {
-      providerContext: mockDeviceTrackerParameters.providerContext,
-      dataProvider: mockDeviceTrackerParameters.dataProvider,
-    };
-
-    await updateDeviceLocationTrackerWalkthrough(mockContext, trackerParams, mockDeviceTrackerName);
-
-    expect(printer.error).toBeCalledWith('No device tracker resource to update. Use "amplify add geo" to create a new device tracker.');
-  });
-
-  it('sets the resource to remove correctly', async () => {
-    expect(await removeWalkthrough(service)).toEqual(mockDeviceTrackerName);
-  });
-
-  it('early returns and prints error if no device tracker resource to remove', async () => {
-    mockAmplifyMeta.geo = {};
-    stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
-
-    await removeWalkthrough(service);
-
-    expect(printer.error).toBeCalledWith(`No device tracker exists in the project.`);
-  });
-
-  it('updates default device tracker to another if it is removed', async () => {
-    mockContext.amplify.removeResource = jest.fn().mockReturnValue({
-      service: ServiceName.DeviceLocationTracking,
-      resourceName: mockDeviceTrackerName,
-    });
-
-    // given the geofence collection to be removed is default
-    mockAmplifyMeta.geo[mockDeviceTrackerName].isDefault = true;
-    stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
-
-    const { removeDeviceLocationTrackingResource } = await import('../../provider-controllers/deviceLocationTracking');
-
-    expect(await removeDeviceLocationTrackingResource(mockContext)).toEqual(mockDeviceTrackerName);
-    // The default geofence collection is now changed to secondary collection
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledTimes(2);
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate)
-      .toBeCalledWith(category, mockDeviceTrackerName, 'isDefault', false);
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate)
-      .toBeCalledWith(category, secondaryDeviceTrackerName, 'isDefault', true);
   });
 });

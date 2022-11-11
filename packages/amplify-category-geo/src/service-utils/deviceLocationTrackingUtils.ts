@@ -9,13 +9,7 @@ import { DeviceLocationTrackingStack } from '../service-stacks/deviceLocationTra
 import { parametersFileName, provider, ServiceName } from './constants';
 import { DeviceLocationTrackingParameters } from './deviceLocationTrackingParams';
 import {
-  generateTemplateFile,
-  getAuthResourceName,
-  getResourceDependencies,
-  readResourceMetaParameters,
-  ResourceDependsOn,
-  updateDefaultResource,
-  updateParametersFile,
+  generateTemplateFile, getAuthResourceName, getResourceDependencies, readResourceMetaParameters, ResourceDependsOn, updateDefaultResource, updateParametersFile,
 } from './resourceUtils';
 
 /**
@@ -53,44 +47,6 @@ export const createDeviceLocationTrackingResource = async (
   context.amplify.updateamplifyMetaAfterResourceAdd(category, parameters.name, deviceLocationTrackingMetaParameters);
 
   printer.success('Created device location tracking resources');
-};
-
-/**
- * modify amplify device tracking resource
- */
-export const modifyDeviceLocationTrackingResource = async (
-  context: $TSContext,
-  parameters: DeviceLocationTrackingParameters,
-): Promise<void> => {
-  const authResourceName = await getAuthResourceName(context);
-  // generate CFN files
-  const templateMappings = await getTemplateMappings(context);
-  const deviceLocationTrackingStack = new DeviceLocationTrackingStack(
-    new App(),
-    'DeviceTrackingStack',
-    { ...parameters, ...templateMappings, authResourceName },
-  );
-  generateTemplateFile(deviceLocationTrackingStack, parameters.name);
-  saveCFNParameters(parameters);
-  stateManager.setResourceInputsJson(
-    undefined,
-    category,
-    parameters.name,
-    { groupPermissions: parameters.groupPermissions, roleAndGroupPermissionsMap: parameters.roleAndGroupPermissionsMap },
-  );
-
-  // update the default Device Tracker
-  if (parameters.isDefault) {
-    await updateDefaultResource(context, ServiceName.DeviceLocationTracking, parameters.name);
-  }
-
-  const deviceTrackerMetaParameters = constructTrackingMetaParameters(parameters, authResourceName);
-
-  const paramsToUpdate = ['accessType', 'dependsOn'] as const;
-  paramsToUpdate.forEach(param => {
-    context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.name, param, deviceTrackerMetaParameters[param]);
-    context.amplify.updateBackendConfigAfterResourceUpdate(category, parameters.name, param, deviceTrackerMetaParameters[param]);
-  });
 };
 
 const saveCFNParameters = (parameters: Pick<DeviceLocationTrackingParameters, 'name' | 'dataProvider' | 'isDefault'>): void => {

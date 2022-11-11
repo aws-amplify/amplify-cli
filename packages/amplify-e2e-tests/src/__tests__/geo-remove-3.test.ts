@@ -12,8 +12,6 @@ import {
   initJSProjectWithProfile,
   removeFirstDefaultGeofenceCollection,
   updateAuthAddUserGroups,
-  addDeviceTrackerWithDefault,
-  removeFirstDefaultDeviceTracker,
 } from '@aws-amplify/amplify-e2e-core';
 import { existsSync } from 'fs';
 import path from 'path';
@@ -60,36 +58,6 @@ describe('amplify geo remove', () => {
     expect(getGeoJSConfiguration(awsExport).geofenceCollections.items).toContain(collection2Name);
     expect(getGeoJSConfiguration(awsExport).geofenceCollections.items).not.toContain(collection1Name);
     expect(getGeoJSConfiguration(awsExport).geofenceCollections.default).toEqual(collection2Name);
-    expect(getGeoJSConfiguration(awsExport).region).toEqual(region);
-  });
-
-  it('init a project with default auth config and multiple device tracker resources, then remove the default device tracker', async () => {
-    const [deviceTracker1Id, deviceTracker2Id, deviceTracker3Id] = generateResourceIdsInOrder(3);
-    await initJSProjectWithProfile(projRoot, {});
-    await addAuthWithDefault(projRoot);
-    const cognitoGroups = ['admin', 'admin1'];
-    await updateAuthAddUserGroups(projRoot, cognitoGroups);
-    await addDeviceTrackerWithDefault(projRoot, cognitoGroups, { resourceName: deviceTracker1Id });
-    await addDeviceTrackerWithDefault(projRoot, cognitoGroups, { resourceName: deviceTracker2Id, isAdditional: true, isDefault: false });
-    await addDeviceTrackerWithDefault(projRoot, cognitoGroups, { resourceName: deviceTracker3Id, isAdditional: true, isDefault: false });
-    await amplifyPushWithoutCodegen(projRoot);
-    const oldMeta = getProjectMeta(projRoot);
-    expect(oldMeta.geo[deviceTracker1Id].isDefault).toBe(true);
-    expect(oldMeta.geo[deviceTracker2Id].isDefault).toBe(false);
-    const tracker1Name = oldMeta.geo[deviceTracker1Id].output.Name;
-    const tracker2Name = oldMeta.geo[deviceTracker2Id].output.Name;
-    const region = oldMeta.geo[deviceTracker1Id].output.Region;
-
-    // remove deviceTracker
-    await removeFirstDefaultDeviceTracker(projRoot);
-    await amplifyPushUpdate(projRoot);
-    const newMeta = getProjectMeta(projRoot);
-    expect(newMeta.geo[deviceTracker1Id]).toBeUndefined();
-    expect(newMeta.geo[deviceTracker2Id].isDefault).toBe(true);
-    const awsExport: any = getAWSExports(projRoot).default;
-    expect(getGeoJSConfiguration(awsExport).trackers.items).toContain(tracker2Name);
-    expect(getGeoJSConfiguration(awsExport).trackers.items).not.toContain(tracker1Name);
-    expect(getGeoJSConfiguration(awsExport).trackers.default).toEqual(tracker2Name);
     expect(getGeoJSConfiguration(awsExport).region).toEqual(region);
   });
 });

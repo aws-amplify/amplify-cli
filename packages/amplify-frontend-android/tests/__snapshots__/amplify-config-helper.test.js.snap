@@ -33,13 +33,6 @@ Object {
             "defaultIndex12345",
           ],
         },
-        "trackers": Object {
-          "default": "defaultTracker12345",
-          "items": Array [
-            "tracker12345",
-            "defaultTracker12345",
-          ],
-        },
       },
     },
   },
