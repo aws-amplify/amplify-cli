@@ -1,6 +1,6 @@
 {
   "name": "amplify-util-mock",
-  "version": "4.6.0",
+  "version": "4.6.1-rc.dc24c5ab9.0",
   "description": "amplify cli plugin providing local testing",
   "repository": {
     "type": "git",
