@@ -56,26 +56,18 @@ export class DeviceLocationTrackingStack extends BaseStack {
     const trackerResource = this.constructCfnTrackingResource();
     this.constructCfnTrackerConsumerResource(trackerResource);
     this.constructTrackingPolicyResources(trackerResource);
-    this.constructOutputs();
+    this.constructOutputs(trackerResource);
   }
 
-  private constructOutputs(): void {
+  private constructOutputs(trackerResource: location.CfnTracker): void {
     new cdk.CfnOutput(this, 'Name', {
       value: this.trackerName,
     });
     new cdk.CfnOutput(this, 'Region', {
       value: this.trackingRegion,
     });
-
-    // This is a work-around until the TrackingArn is included in the `UpdateTracker` output
-    const outputTrackingArn = cdk.Fn.sub('arn:aws:geo:${region}:${account}:tracker/${trackerName}', {
-      region: this.trackingRegion,
-      account: cdk.Fn.ref('AWS::AccountId'),
-      collectionName: this.trackerName,
-    });
-
     new cdk.CfnOutput(this, 'Arn', {
-      value: outputTrackingArn,
+      value: trackerResource.attrTrackerArn,
     });
   }
 

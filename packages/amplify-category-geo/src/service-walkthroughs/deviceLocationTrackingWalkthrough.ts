@@ -8,7 +8,9 @@ import { DeviceLocationTrackingParameters } from '../service-utils/deviceLocatio
 import { AccessType } from '../service-utils/resourceParams';
 import { ServiceName } from '../service-utils/constants';
 import { resourceAccessWalkthrough, defaultResourceQuestion } from './resourceWalkthrough';
-import { checkGeoResourceTypeExists, getGeoServiceMeta, getGeoResourcesByServiceType } from '../service-utils/resourceUtils';
+import {
+  checkGeoResourceTypeExists, getGeoServiceMeta, getGeoResourcesByServiceType, checkGeoResourceExists,
+} from '../service-utils/resourceUtils';
 import { deviceLocationTrackingAdvancedSettings, deviceLocationTrackingCrudPermissionsMap, deviceLocationTrackingPositionFilteringTypes } from '../service-utils/deviceLocationTrackingConstants';
 import {
   defaultPositionFilteringMethodLink, learnMoreCognitoConditionKeysLink, learnMoreCreateGeofenceCollectionsLink,
@@ -50,9 +52,7 @@ export const createDeviceLocationTrackingWalkthrough = async (
 const deviceLocationTrackerNameWalkthrough = async (): Promise<Pick<DeviceLocationTrackingParameters, 'name'>> => {
   const initialTrackerId = uuid().split('-').join('');
   const nameValidationErrMsg = 'Device location tracker name can only use the following characters: a-z 0-9 and should have minimum 1 character and max of 95 characters';
-  const uniquenessValidation: Validator = () => true;
-  // const uniquenessValidation: Validator = async (input: string) =>
-  // await checkDeviceLocationTrackerExists(input) ? `Device location tracker ${input} already exists. Choose another name.` : true;
+  const uniquenessValidation: Validator = async (input: string) => (await checkGeoResourceExists(input) ? `Device location tracker ${input} already exists. Choose another name.` : true);
   const validator = and([
     alphanumeric(nameValidationErrMsg),
     minLength(1, nameValidationErrMsg),
