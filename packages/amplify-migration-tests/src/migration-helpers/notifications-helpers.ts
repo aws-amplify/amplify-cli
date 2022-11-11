@@ -27,3 +27,18 @@ export const addLegacySmsNotificationChannel = async (
     .sendEof()
     .runAsync();
 };
+
+/**
+ * Removes all notifications channels
+ */
+/**
+ * removes all the notification channel
+ */
+export const removeLegacyAllNotificationChannel = async (
+  cwd: string,
+): Promise<void> => spawn(getCLIPath(false), ['remove', 'notifications'], { cwd, stripColors: true })
+  .wait('Choose the notification channel to remove')
+  .sendLine('All channels on Pinpoint resource')
+  .wait(`All notifications have been disabled`)
+  .sendEof()
+  .runAsync();
