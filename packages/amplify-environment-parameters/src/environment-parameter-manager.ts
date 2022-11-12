@@ -2,6 +2,7 @@ import {
   AmplifyFault, pathManager, stateManager,
 } from 'amplify-cli-core';
 import _ from 'lodash';
+import { getBackendConfigParametersControllerSingleton, IParameterMapController } from './backend-config-parameters-controller';
 import { ResourceParameterManager } from './resource-parameter-manager';
 
 const envParamManagerMap: Record<string, EnvironmentParameterManager> = {};
@@ -13,7 +14,7 @@ export const ensureEnvParamManager = async (
   envName: string = stateManager.getLocalEnvInfo().envName,
 ): Promise<{instance: EnvironmentParameterManager}> => {
   if (!envParamManagerMap[envName]) {
-    const envManager = new EnvironmentParameterManager(envName);
+    const envManager = new EnvironmentParameterManager(envName, getBackendConfigParametersControllerSingleton());
     await envManager.init();
     envParamManagerMap[envName] = envManager;
   }
@@ -40,7 +41,7 @@ export const getEnvParamManager = (envName: string = stateManager.getLocalEnvInf
  */
 class EnvironmentParameterManager implements IEnvironmentParameterManager {
   private resourceParamManagers: Record<string, ResourceParameterManager> = {};
-  constructor(private readonly envName: string) {}
+  constructor(private readonly envName: string, private readonly parameterMapController: IParameterMapController) {}
   /**
    * For now this method is synchronous but it will eventually be async and load params from the service.
    * This is why it's not part of the class constructor
@@ -94,6 +95,24 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
       tpiContent[this.envName].categories = this.serializeTPICategories();
     }
     stateManager.setTeamProviderInfo(undefined, tpiContent);
+
+    // if this env manager is not for the currently checked out env, don't need to do anything else
+    if (this.envName !== stateManager.getLocalEnvInfo().envName) {
+      return;
+    }
+
+    // update param mapping
+    this.parameterMapController
+      .removeAllParameters();
+    Object.entries(this.resourceParamManagers).forEach(([resourceKey, paramManager]) => {
+      const [category, resourceName] = splitResourceKey(resourceKey);
+      const resourceParams = paramManager.getAllParams();
+      Object.entries(resourceParams).forEach(([paramName]) => {
+        const ssmParamName = getSSMParamName(resourceName, paramName);
+        this.parameterMapController.addParameter(ssmParamName, [{ category, resourceName }]);
+      });
+    });
+    this.parameterMapController.save();
   }
 
   private serializeTPICategories(): Record<string, unknown> {
@@ -122,3 +141,5 @@ export type IEnvironmentParameterManager = {
   getResourceParamManager: (category: string, resource: string) => ResourceParameterManager;
   save: () => void;
 }
+
+const getSSMParamName = (resourceName: string, paramName: string): string => `AMPLIFY_${resourceName}_${paramName}`;

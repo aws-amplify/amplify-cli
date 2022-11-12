@@ -19,11 +19,12 @@ const stubTPI = {
   },
 };
 stateManagerMock.getTeamProviderInfo.mockReturnValue(stubTPI);
+stateManagerMock.getBackendConfig.mockReturnValue({});
 
 const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
 pathManagerMock.findProjectRoot.mockReturnValue('test/project/root');
 
-let ensureEnvParamManager: () => Promise<{instance: IEnvironmentParameterManager}>;
+let ensureEnvParamManager: () => Promise<{ instance: IEnvironmentParameterManager }>;
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -77,5 +78,26 @@ describe('save', () => {
     expect(stateManagerMock.setTeamProviderInfo).toHaveBeenCalledWith(undefined, {
       testEnv: {},
     });
+  });
+
+  it('calls IParameterMapController.save if in the current environment', async () => {
+    const envParamManager = (await ensureEnvParamManager()).instance;
+    const resourceParamManager = envParamManager.getResourceParamManager('function', 'funcName');
+    resourceParamManager.setParam('testParam', 'testValue');
+    envParamManager.save();
+    expect(stateManagerMock.setBackendConfig.mock.calls[0][1]).toMatchInlineSnapshot(`
+      Object {
+        "parameters": Object {
+          "AMPLIFY_funcName_testParam": Object {
+            "usedBy": Array [
+              Object {
+                "category": "function",
+                "resourceName": "funcName",
+              },
+            ],
+          },
+        },
+      }
+    `);
   });
 });

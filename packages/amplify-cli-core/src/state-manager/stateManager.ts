@@ -144,14 +144,26 @@ export class StateManager {
 
   backendConfigFileExists = (projectPath?: string): boolean => this.doesExist(pathManager.getBackendConfigFilePath, projectPath);
 
-  getBackendConfig = (projectPath?: string, options?: GetOptions<$TSAny>): $TSAny => {
+  /**
+   * Returns `backend-config.json` as an object
+   *
+   * includeParameters should only be used by the BackendConfigParameterMapController to get the parameters from backend-config.json
+   */
+  getBackendConfig = (projectPath?: string, options?: GetOptions<$TSAny>, includeParameters = false): $TSAny => {
     const filePath = pathManager.getBackendConfigFilePath(projectPath);
     const mergedOptions = {
       throwIfNotExist: true,
       ...options,
     };
 
-    return this.getData<$TSAny>(filePath, mergedOptions);
+    const data = this.getData<$TSAny>(filePath, mergedOptions);
+
+    if (includeParameters) {
+      return data;
+    }
+    // omit parameters
+    _.omit(data, 'parameters');
+    return data;
   };
 
   getCurrentBackendConfig = (projectPath?: string, options?: GetOptions<$TSAny>): $TSAny => {

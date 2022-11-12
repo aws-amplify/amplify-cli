@@ -19,17 +19,21 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "yarn generate-schemas && tsc",
     "watch": "tsc -w",
-    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
-    "test": "jest --logHeapUsage"
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules src/schemas",
+    "test": "jest --logHeapUsage",
+    "generate-schemas": "mkdir -p lib/schemas src/schemas && ts-json-schema-generator --path 'src/parameter-map.ts' --type 'ParameterMap' --no-type-check | tee lib/schemas/ParameterMap.schema.json src/schemas/ParameterMap.schema.json > /dev/null"
   },
   "dependencies": {
     "amplify-cli-core": "3.3.0",
+    "ajv": "^6.12.6",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "aws-sdk": "^2.1233.0"
+    "aws-sdk": "^2.1233.0",
+    "typescript-json-schema": "~0.52.0",
+    "ts-json-schema-generator": "~1.1.2"
   },
   "jest": {
     "collectCoverage": true,
