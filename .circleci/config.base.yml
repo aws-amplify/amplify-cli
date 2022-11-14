@@ -93,6 +93,7 @@ jobs:
     executor: l
     steps:
       - checkout
+      - run: yarn config set script-shell $(which bash)
       - run: yarn run production-build
       - run:
           name: Build tests
@@ -121,6 +122,7 @@ jobs:
             equal: [*windows-setup-executor, << parameters.os >>]
           steps:
             - checkout
+            - run: yarn config set script-shell $(which bash)
             - run: yarn run production-build
             - run:
                 name: Build tests

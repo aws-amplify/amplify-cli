@@ -19,12 +19,10 @@
     "access": "public"
   },
   "scripts": {
-    "build": "yarn use-bash && yarn generate-schemas && tsc",
+    "build": "mkdirp lib/schemas src/schemas && ts-json-schema-generator --path 'src/parameter-map.ts' --type 'ParameterMap' --no-type-check --out lib/schemas/ParameterMap.schema.json && cp lib/schemas/ParameterMap.schema.json src/schemas/ParameterMap.schema.json && tsc",
     "watch": "tsc -w",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules src/schemas",
-    "test": "jest --logHeapUsage",
-    "use-bash": "yarn config set script-shell $(which bash)",
-    "generate-schemas": "mkdirp lib/schemas src/schemas && ts-json-schema-generator --path 'src/parameter-map.ts' --type 'ParameterMap' --no-type-check | tee lib/schemas/ParameterMap.schema.json src/schemas/ParameterMap.schema.json > /dev/null"
+    "test": "jest --logHeapUsage"
   },
   "dependencies": {
     "amplify-cli-core": "3.3.0",
