@@ -12,6 +12,8 @@ import {
   generateRandomShortId,
   getGeoJSConfiguration,
   updateAuthAddUserGroups,
+  addDeviceTrackerWithDefault,
+  getDeviceLocationTracker,
 } from '@aws-amplify/amplify-e2e-core';
 import { existsSync } from 'fs';
 import * as fs from 'fs-extra';
