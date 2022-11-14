@@ -181,9 +181,8 @@ export const updateDefaultDeviceTrackerWalkthrough = async (
     trackers = await getGeoResources(ServiceName.DeviceLocationTracking);
   }
   const otherDeviceTrackers = trackers.filter(name => name !== currentDefault);
-  if (otherDeviceTrackers?.length > 0) {
-    const defaultIndexName = await prompter.pick(`Select the ${trackingServiceFriendlyName} you want to set as default:`, otherDeviceTrackers);
-    await updateDefaultResource(context, ServiceName.DeviceLocationTracking, defaultIndexName);
-  }
+  const defaultIndexName = await prompter.pick(`Select the ${trackingServiceFriendlyName} you want to set as default:`, otherDeviceTrackers);
+  await updateDefaultResource(context, ServiceName.DeviceLocationTracking, defaultIndexName);
+
   return currentDefault;
 };
