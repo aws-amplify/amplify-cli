@@ -11,6 +11,7 @@ import { deleteS3Bucket } from '@aws-amplify/amplify-e2e-core';
 
 // Ensure to update scripts/split-e2e-tests.ts is also updated this gets updated
 const AWS_REGIONS_TO_RUN_TESTS = [
+  'us-east-1',
   'us-east-2',
   'us-west-2',
   'eu-west-2',
@@ -662,23 +663,40 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
 };
 
 const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, filterPredicate: JobFilterPredicate): Promise<void> => {
-  const appPromises = AWS_REGIONS_TO_RUN_TESTS.map(region => getAmplifyApps(account, region));
-  const stackPromises = AWS_REGIONS_TO_RUN_TESTS.map(region => getStacks(account, region));
-  const bucketPromise = getS3Buckets(account);
-  const orphanBucketPromise = getOrphanS3TestBuckets(account);
-  const orphanIamRolesPromise = getOrphanTestIamRoles(account);
+  // const appPromises = AWS_REGIONS_TO_RUN_TESTS.map(region => getAmplifyApps(account, region));
+  // const stackPromises = AWS_REGIONS_TO_RUN_TESTS.map(region => getStacks(account, region));
+  // const bucketPromise = getS3Buckets(account);
+  // const orphanBucketPromise = getOrphanS3TestBuckets(account);
+  // const orphanIamRolesPromise = getOrphanTestIamRoles(account);
+  //
+  // const apps = (await Promise.all(appPromises)).flat();
+  // const stacks = (await Promise.all(stackPromises)).flat();
+  // const buckets = await bucketPromise;
+  // const orphanBuckets = await orphanBucketPromise;
+  // const orphanIamRoles = await orphanIamRolesPromise;
+  //
+  // const allResources = mergeResourcesByCCIJob(apps, stacks, buckets, orphanBuckets, orphanIamRoles);
+  // const staleResources = _.pickBy(allResources, filterPredicate);
+  //
+  // generateReport(staleResources);
+  // await deleteResources(account, accountIndex, staleResources);
 
-  const apps = (await Promise.all(appPromises)).flat();
-  const stacks = (await Promise.all(stackPromises)).flat();
-  const buckets = await bucketPromise;
-  const orphanBuckets = await orphanBucketPromise;
-  const orphanIamRoles = await orphanIamRolesPromise;
+  for (let region of AWS_REGIONS_TO_RUN_TESTS) {
+    const pinpoint = new aws.Pinpoint(getAWSConfig(account, region));
+    const pinpointApps = await pinpoint.getApps({
+      PageSize: '200',
+    }).promise();
+    for (let app of pinpointApps.ApplicationsResponse.Item) {
+      console.log(app.Id + ' ' + app.Name);
+      if (app.Name.match(/integtest/)) {
+        console.log("deleting");
+        await pinpoint.deleteApp({
+          ApplicationId: app.Id,
+        }).promise();
+      }
+    }
+  }
 
-  const allResources = mergeResourcesByCCIJob(apps, stacks, buckets, orphanBuckets, orphanIamRoles);
-  const staleResources = _.pickBy(allResources, filterPredicate);
-
-  generateReport(staleResources);
-  await deleteResources(account, accountIndex, staleResources);
   console.log(`[ACCOUNT ${accountIndex}] Cleanup done!`);
 };
 
