@@ -178,6 +178,7 @@
   "uint",
   "unauth",
   "unlink",
+  "unstaged",
   "updateamplify",
   "urls",
   "userpool",

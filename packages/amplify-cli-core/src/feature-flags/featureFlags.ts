@@ -650,7 +650,7 @@ export class FeatureFlags {
         name: 'respectPrimaryKeyAttributesOnConnectionField',
         type: 'boolean',
         defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: false,
+        defaultValueForNewProjects: true,
       },
       {
         name: 'shouldDeepMergeDirectiveConfigDefaults',

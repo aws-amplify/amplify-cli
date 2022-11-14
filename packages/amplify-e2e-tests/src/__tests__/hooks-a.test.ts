@@ -7,8 +7,10 @@ import {
   deleteProjectDir,
   getBackendAmplifyMeta,
   getHooksDirPath,
+  gitCleanFdx,
+  gitCommitAll,
+  gitInit,
   initJSProjectWithProfile,
-  transformCurrentProjectToGitPulledProject,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -36,7 +38,9 @@ describe('runtime hooks', () => {
     await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
     await amplifyPushAuth(projRoot);
     // grab the appId from the meta file
-    transformCurrentProjectToGitPulledProject(projRoot);
+    await gitInit(projRoot);
+    await gitCommitAll(projRoot);
+    await gitCleanFdx(projRoot);
     await amplifyPullNonInteractive(projRoot, { appId, envName: 'staging' });
     expect(fs.existsSync(hooksDirPath)).toBe(true);
   });
