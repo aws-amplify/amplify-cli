@@ -101,7 +101,7 @@ const buildResource = async (context: $TSContext, resource: ResourceMeta): Promi
   const localTscExecutablePath = path.join(targetDir, 'node_modules', '.bin', 'tsc');
 
   if (!fs.existsSync(localTscExecutablePath)) {
-    throw new Error('Typescript executable not found. Please add it as a dev-dependency in the package.json file for this resource.');
+    throw new Error('TypeScript executable not found. Please add it as a dev-dependency in the package.json file for this resource.');
   }
 
   try {
