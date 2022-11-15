@@ -41,6 +41,6 @@ export const removeLegacyAllNotificationChannel = async (
   .sendKeyDown() // The Pinpoint application
   .sendCarriageReturn()
   .wait(`Confirm that you want to delete the associated Amazon Pinpoint application`)
-  .sendYes()
+  .sendConfirmYes()
   .sendEof()
   .runAsync();

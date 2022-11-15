@@ -36,11 +36,10 @@ describe('amplify add notifications', () => {
     await initJSProjectWithProfile(projectRoot, {}, false);
     await addLegacySmsNotificationChannel(projectRoot, settings.resourceName);
     await amplifyPushAuth(projectRoot, false);
-    await removeLegacyAllNotificationChannel(projectRoot);
-
     const appId = getAppId(projectRoot);
     expect(appId).toBeDefined();
 
+    await removeLegacyAllNotificationChannel(projectRoot);
     const projectRootPull = await createNewProjectDir('removed-notifications-pull');
     try {
       await amplifyPull(projectRootPull, { override: false, emptyDir: true, appId }, true);
