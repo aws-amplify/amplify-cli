@@ -160,13 +160,3 @@ export const pull = async (context: $TSContext, pinpointApp: $TSAny):Promise<$TS
     return undefined;
   }
 };
-
-const trimAnswers = (answers: Record<string, $TSAny>): Record<string, $TSAny> => {
-  for (const [key, value] of Object.entries(answers)) {
-    if (typeof answers[key] === 'string') {
-      // eslint-disable-next-line no-param-reassign
-      answers[key] = value.trim();
-    }
-  }
-  return answers;
-};
