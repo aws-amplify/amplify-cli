@@ -37,8 +37,10 @@ export const addLegacySmsNotificationChannel = async (
 export const removeLegacyAllNotificationChannel = async (
   cwd: string,
 ): Promise<void> => spawn(getCLIPath(false), ['remove', 'notifications'], { cwd, stripColors: true })
-  .wait('Choose the notification channel to remove')
-  .sendLine('All channels on Pinpoint resource')
-  .wait(`All notifications have been disabled`)
+  .wait('Choose what to remove. (Use arrow keys)')
+  .sendKeyDown() // The Pinpoint application
+  .sendCarriageReturn()
+  .wait(`Confirm that you want to delete the associated Amazon Pinpoint application`)
+  .sendYes()
   .sendEof()
   .runAsync();
