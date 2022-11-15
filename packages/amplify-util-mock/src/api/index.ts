@@ -1,10 +1,11 @@
 import { APITest } from './api';
-import { addMockDataToGitIgnore } from '../utils';
+import { addMockDataToGitIgnore, addMockAPIResourcesToGitIgnore } from '../utils';
 
 export async function start(context) {
   const testApi = new APITest();
   try {
     addMockDataToGitIgnore(context);
+    addMockAPIResourcesToGitIgnore(context);
     testApi.start(context);
   } catch (e) {
     console.log(e);

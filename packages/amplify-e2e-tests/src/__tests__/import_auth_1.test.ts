@@ -11,6 +11,7 @@ import {
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
+  getRootStackTemplate,
   initJSProjectWithProfile,
   updateApiSchema,
 } from '@aws-amplify/amplify-e2e-core';
@@ -225,12 +226,22 @@ describe('auth import userpool only', () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
     await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
     await addApi(projectRoot, {
+      'Amazon Cognito User Pool': {},
       IAM: {},
-      transformerVersion: 1,
-    });
-    await updateApiSchema(projectRoot, projectPrefix, 'model_with_iam_auth.graphql');
+      transformerVersion: 2,
+    }, false);
+    await updateApiSchema(projectRoot, projectPrefix, 'model_with_owner_and_iam_auth.graphql');
     await amplifyPush(projectRoot);
-    // successful push indicates iam auth works when only importing user pool
+
+    const rootStackTemplate = getRootStackTemplate(projectRoot);
+    const apiStackParams = rootStackTemplate?.Resources?.[`api${projectPrefix}`]?.Properties?.Parameters;
+    expect(apiStackParams).toBeDefined();
+    expect(apiStackParams.authRoleName).toEqual({
+      Ref: 'AuthRoleName',
+    });
+    expect(apiStackParams.unauthRoleName).toEqual({
+      Ref: 'UnauthRoleName',
+    });
   });
 
   it('should update parameters.json with auth configuration', async () => {

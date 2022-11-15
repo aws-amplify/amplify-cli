@@ -79,6 +79,7 @@ describe('can generate components', () => {
     expect(utilsMock.generateUiBuilderThemes).toBeCalledTimes(1);
     expect(utilsMock.generateUiBuilderForms).toBeCalledTimes(1);
   });
+
   it('does not run generateComponents if not Amplify Admin app', async () => {
     utilsMock.shouldRenderComponents = jest.fn().mockReturnValue(false);
     await run(context);

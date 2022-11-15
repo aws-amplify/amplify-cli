@@ -107,9 +107,10 @@ export const run = async (context: $TSContext): Promise<void> => {
             external: true,
           },
         });
-        sandboxNode.run(overrideCode).override(configuration);
+        await sandboxNode.run(overrideCode).override(configuration);
       }
     } catch (e) {
+      // TODO: this always throws, and likely needs re-written
       printer.debug(`Unable to apply auth role overrides: ${e.message}`);
     }
 

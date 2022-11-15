@@ -7,7 +7,7 @@ import {
   HooksMeta,
 } from 'amplify-cli-core';
 import { logger } from 'amplify-cli-logger';
-import { AmplifyPrinter, printer, isDebug } from 'amplify-prompts';
+import { AmplifyPrinter, printer } from 'amplify-prompts';
 import { reportError } from './commands/diagnose';
 import { isHeadlessCommand } from './context-manager';
 import { Context } from './domain/context';
@@ -37,53 +37,53 @@ export const handleException = async (exception: unknown): Promise<void> => {
     amplifyException = genericErrorToAmplifyException(exception);
   }
 
-  if (context?.usageData) {
-    await executeSafely(
-      () => context?.usageData.emitError(amplifyException), 'Failed to emit error to usage data',
-    );
+  const deepestException = getDeepestAmplifyException(amplifyException);
+  if (context && isHeadlessCommand(context)) {
+    printHeadlessAmplifyException(deepestException);
+  } else {
+    printAmplifyException(deepestException);
   }
 
-  if (context && isHeadlessCommand(context)) {
-    printHeadlessAmplifyException(amplifyException);
-  } else {
-    printAmplifyException(amplifyException);
-
-    let { downstreamException } = amplifyException;
-    while (isDebug && downstreamException) {
-      printer.blankLine();
-
-      if (downstreamException instanceof AmplifyException) {
-        printAmplifyException(downstreamException);
-        downstreamException = downstreamException.downstreamException;
-      } else {
-        printError(downstreamException);
-        downstreamException = undefined;
-      }
-    }
+  if (context?.usageData) {
+    await executeSafely(
+      () => {
+        context?.usageData.emitError(deepestException);
+        printer.blankLine();
+        printer.info(`Session Identifier: ${context?.usageData.getSessionUuid()}`);
+      }, 'Failed to emit error to usage data',
+    );
   }
 
   // Swallow and continue if any operations fail
   if (context) {
-    await executeSafely(() => reportError(context, amplifyException), 'Failed to report error');
+    await executeSafely(() => reportError(context, deepestException), 'Failed to report error');
   }
 
   await executeSafely(
     () => executeHooks(HooksMeta.getInstance(undefined, 'post', {
-      message: amplifyException.message ?? 'undefined error in Amplify process',
-      stack: amplifyException.stack ?? 'undefined error stack',
+      message: deepestException.message ?? 'undefined error in Amplify process',
+      stack: deepestException.stack ?? 'undefined error stack',
     })),
     'Failed to execute hooks',
   );
 
   await executeSafely(
     () => logger.logError({
-      message: amplifyException.message,
-      error: amplifyException,
+      message: deepestException.message,
+      error: deepestException,
     }),
     'Failed to log error',
   );
 
   process.exitCode = 1;
+};
+
+const getDeepestAmplifyException = (amplifyException: AmplifyException): AmplifyException => {
+  let deepestAmplifyException = amplifyException;
+  while (deepestAmplifyException.downstreamException && deepestAmplifyException.downstreamException instanceof AmplifyException) {
+    deepestAmplifyException = deepestAmplifyException.downstreamException;
+  }
+  return deepestAmplifyException;
 };
 
 /**
@@ -117,15 +117,20 @@ const printAmplifyException = (amplifyException: AmplifyException): void => {
   if (link) {
     printer.info(`Learn more at: ${link}`);
   }
-  printer.blankLine();
+
   if (stack) {
+    printer.debug('');
     printer.debug(stack);
+  }
+
+  if (amplifyException.downstreamException) {
+    printError(amplifyException.downstreamException);
   }
 };
 
 const printError = (err: Error): void => {
-  printer.error(err.message);
-  printer.blankLine();
+  printer.debug('');
+  printer.debug(err.message);
   if (err.stack) {
     printer.debug(err.stack);
   }

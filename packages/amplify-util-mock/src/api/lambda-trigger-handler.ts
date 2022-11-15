@@ -1,8 +1,9 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, AmplifyFault, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
 import { DynamoDBStreams, Endpoint } from 'aws-sdk';
-import { invokeLambda } from './lambda-invoke';
+import { invokeTrigger } from './lambda-invoke';
 import { isMockable } from 'amplify-category-function';
 import { printer } from 'amplify-prompts';
+import { LambdaTrigger } from '../utils/lambda/find-lambda-triggers';
 
 /**
  * Asynchronous function that handles invoking the given lambda trigger function
@@ -15,28 +16,42 @@ import { printer } from 'amplify-prompts';
 export const ddbLambdaTriggerHandler = async (
     context: $TSContext,
     streamArn?: string,
-    lambdaTriggerName?: string,
+    lambdaTrigger?: LambdaTrigger,
     localDynamoDBEndpoint?: Endpoint
 ): Promise<void> => {
-    if (!lambdaTriggerName) {
-        throw new Error('Name of the lambda trigger function must be specified');
+    if (!lambdaTrigger || (!lambdaTrigger?.name && !lambdaTrigger?.config)) {
+        throw new AmplifyFault('MockProcessFault', {
+          message: 'Lambda trigger must be specified',
+          link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+        });
     }
     if (!streamArn) {
-        throw new Error('Stream Arn must be specified');
+        throw new AmplifyFault('MockProcessFault', {
+          message: 'Stream Arn must be specified',
+          link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+        });
     }
     if (!localDynamoDBEndpoint) {
-        throw new Error('Local URL where DDB is running should be specified');
+        throw new AmplifyFault('MockProcessFault', {
+          message: 'Local URL where DDB is running should be specified',
+          link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+        });
     }
 
-    // Lambda functions with layers are not mockable
-    const mockable = isMockable(context, lambdaTriggerName);
-    if (!mockable.isMockable) {
-        throw new Error(`Unable to mock ${lambdaTriggerName}. ${mockable.reason}`);
+    if (lambdaTrigger?.name) {
+        // Lambda functions with layers are not mockable
+        const mockable = isMockable(context, lambdaTrigger?.name);
+        if (!mockable.isMockable) {
+            throw new AmplifyFault('MockProcessFault', {
+              message: `Unable to mock ${lambdaTrigger?.name}. ${mockable.reason}`,
+              link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+            });
+        }
     }
 
     const streams = getDDBStreamsClient(localDynamoDBEndpoint);
 
-    await pollDDBStreamAndInvokeLamba(context, streamArn, streams, lambdaTriggerName);
+    await pollDDBStreamAndInvokeLamba(context, streamArn, streams, lambdaTrigger);
 }
 
 /**
@@ -51,7 +66,10 @@ export const getLatestShardIterator = async (streamArn: string, streams: DynamoD
         .promise();
 
     if (!stream) {
-        throw new Error(`Local DynamoDB stream with ARN ${streamArn} cannot be found`);
+        throw new AmplifyFault('MockProcessFault', {
+          message: `Local DynamoDB stream with ARN ${streamArn} cannot be found`,
+          link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+        });
     }
 
     // Get the latest active shard
@@ -61,7 +79,10 @@ export const getLatestShardIterator = async (streamArn: string, streams: DynamoD
         )[0] || {}
 
     if (!shardId) {
-        throw new Error('There is no shard that is open');
+        throw new AmplifyFault('MockProcessFault', {
+          message: 'There is no shard that is open',
+          link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+        });
     }
 
     const { ShardIterator: start } = await streams
@@ -116,7 +137,7 @@ export const getStreamRecords = async (
  * Checks if there are any new DDB records available 
  * via stream to be processed in the trigger
  */
-export const pollDDBStreamAndInvokeLamba = async(context: $TSContext, streamArn: string, streams: DynamoDBStreams, lambdaTriggerName: string) => {
+export const pollDDBStreamAndInvokeLamba = async(context: $TSContext, streamArn: string, streams: DynamoDBStreams, lambdaTrigger: LambdaTrigger) => {
     let shardIterator = await getLatestShardIterator(streamArn, streams);
     while (shardIterator) {
         await getStreamRecords(shardIterator, streamArn, streams).then( async (result) => {
@@ -125,7 +146,7 @@ export const pollDDBStreamAndInvokeLamba = async(context: $TSContext, streamArn:
 
             if (data.Records.length) {
                 // when the records are available to be processed, trigger the local lambda
-                await invokeLambda(context, lambdaTriggerName, data).then( () => {
+                await invokeTrigger(context, lambdaTrigger, data).then( () => {
                     shardIterator = data.NextShardIterator;
                 });
             }

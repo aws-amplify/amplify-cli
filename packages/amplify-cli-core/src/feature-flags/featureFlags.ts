@@ -644,7 +644,7 @@ export class FeatureFlags {
         name: 'enableAutoIndexQueryNames',
         type: 'boolean',
         defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: false,
+        defaultValueForNewProjects: true,
       },
       {
         name: 'respectPrimaryKeyAttributesOnConnectionField',

@@ -110,11 +110,14 @@ export type AmplifyErrorType =
   | 'FunctionTooLargeError'
   | 'InputValidationError'
   | 'InvalidAmplifyAppIdError'
+  | 'InvalidCustomResourceError'
+  | 'InvalidOverrideError'
   | 'InvalidStackError'
   | 'IterativeRollbackError'
   | 'LambdaLayerDeleteError'
   | 'MigrationError'
   | 'MissingAmplifyMetaFileError'
+  | 'MissingOverridesInstallationRequirementsError'
   | 'ModelgenError'
   | 'NestedProjectInitError'
   | 'NoUpdateBackendError'
@@ -137,7 +140,11 @@ export type AmplifyErrorType =
   | 'ResourceNotReadyError'
   | 'StackNotFoundError'
   | 'StackStateError'
-  | 'UserInputError';
+  | 'UserInputError'
+  | 'MockProcessError'
+  | 'SearchableMockUnsupportedPlatformError'
+  | 'SearchableMockUnavailablePortError'
+  | 'SearchableMockProcessError';
 
 /**
  * Amplify fault types
@@ -171,4 +178,5 @@ export type AmplifyFaultType =
   | 'TriggerUploadFault'
   | 'UnexpectedS3Fault'
   | 'UnknownFault'
-  | 'UnknownNodeJSFault';
+  | 'UnknownNodeJSFault'
+  | 'MockProcessFault';

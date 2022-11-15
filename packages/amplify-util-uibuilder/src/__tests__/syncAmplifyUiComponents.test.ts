@@ -1,3 +1,4 @@
+/* eslint-disable spellcheck/spell-checker */
 import { AmplifyCategories, AmplifySupportedService, stateManager } from 'amplify-cli-core'; // eslint-disable-line import/no-extraneous-dependencies
 import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
 import {
@@ -235,6 +236,18 @@ describe('should sync amplify ui builder components', () => {
       throw new Error('ahh!');
     });
     const themes = generateUiBuilderThemes(context, [{}, {}]);
+    expect(themes.every(theme => theme.resultType === 'FAILURE')).toBeTruthy();
+  });
+  it('can generate ui builder default theme when no themes are passed', async () => {
+    createUiBuilderComponentDependencyMock.createUiBuilderTheme = jest.fn().mockImplementation(() => ({}));
+    const themes = generateUiBuilderThemes(context, []);
+    expect(themes.every(theme => theme.resultType === 'SUCCESS')).toBeTruthy();
+  });
+  it('can handle failed generation generate ui builder default theme when no themes are passed', async () => {
+    createUiBuilderComponentDependencyMock.createUiBuilderTheme = jest.fn().mockImplementation(() => {
+      throw new Error('ahh!');
+    });
+    const themes = generateUiBuilderThemes(context, []);
     expect(themes.every(theme => theme.resultType === 'FAILURE')).toBeTruthy();
   });
   it('can generate ui builder forms', async () => {
