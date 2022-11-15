@@ -12,12 +12,14 @@ if [ $# -eq 0 ]
     npx ncu \
         --deep \
         --upgrade \
+        --dep "prod,dev,peer,bundle,optional" \
         --filter "$FILTER"
   else 
     echo "Updating to $1 tag"
     npx ncu \
         --deep \
         --upgrade \
+        --dep "prod,dev,peer,bundle,optional" \
         --filter "$FILTER" \
         --target $1
 fi
