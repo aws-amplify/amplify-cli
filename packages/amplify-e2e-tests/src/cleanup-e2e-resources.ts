@@ -156,7 +156,9 @@ const getOrphanTestIamRoles = async (account: AWSAccountInfo): Promise<IamRoleIn
 
 const getOrphanPinpointApplications = async (account: AWSAccountInfo, region: string): Promise<PinpointAppInfo[]> => {
   const pinpoint = new aws.Pinpoint(getAWSConfig(account, region));
-  const apps = await pinpoint.getApps().promise();
+  const apps = await pinpoint.getApps({
+    PageSize: '200',
+  }).promise();
   const staleApps = apps.ApplicationsResponse.Item.filter(testPinpointAppStalenessFilter);
   return staleApps.map(it => ({
     id: it.Id, name: it.Name, arn: it.Arn, region,
@@ -729,7 +731,8 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const appPromises = AWS_REGIONS_TO_RUN_TESTS.map(region => getAmplifyApps(account, region));
   const stackPromises = AWS_REGIONS_TO_RUN_TESTS.map(region => getStacks(account, region));
   const bucketPromise = getS3Buckets(account);
-  const orphanPinpointApplicationsPromise = AWS_REGIONS_TO_RUN_TESTS.map(region => getOrphanPinpointApplications(account, region));
+  // include 'us-east-1' due to custom regional mapping for pinpoint resource: https://github.com/aws-amplify/amplify-cli/blob/main/packages/amplify-provider-awscloudformation/src/aws-utils/aws-pinpoint.js#L49-L74
+  const orphanPinpointApplicationsPromise = ['us-east-1', ...AWS_REGIONS_TO_RUN_TESTS].map(region => getOrphanPinpointApplications(account, region));
   const orphanBucketPromise = getOrphanS3TestBuckets(account);
   const orphanIamRolesPromise = getOrphanTestIamRoles(account);
 
