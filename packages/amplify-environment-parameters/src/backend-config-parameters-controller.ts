@@ -38,6 +38,10 @@ class BackendConfigParameterMapController implements IParameterMapController {
     if (Object.keys(this.parameterMap).length === 0) {
       return;
     }
+    // if there's no backend config file assume that the project has been deleted or something else has failed
+    if (!stateManager.backendConfigFileExists()) {
+      return;
+    }
     const backendConfig = stateManager.getBackendConfig(undefined, undefined, true);
     backendConfig.parameters = this.parameterMap;
     stateManager.setBackendConfig(undefined, backendConfig);
@@ -73,7 +77,7 @@ class BackendConfigParameterMapController implements IParameterMapController {
 }
 
 const backendConfigParameterMapSupplier = (): ParameterMap => {
-  const uncheckedParamMap = stateManager.getBackendConfig()?.parameters || {};
+  const uncheckedParamMap = stateManager.getBackendConfig(undefined, { throwIfNotExist: false })?.parameters || {};
   const ajv = new Ajv();
   const validator = ajv.compile(parameterMapSchema);
   if (!validator(uncheckedParamMap)) {

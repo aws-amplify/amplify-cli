@@ -21,9 +21,11 @@ export class ResourceParameterManager {
    * (see setAllParams)
    */
   setParams(params: Record<string, string>): void {
-    Object.entries(params).forEach(([key, value]) => {
-      this.params[key] = value;
-    });
+    Object.entries(params)
+      .filter(([, value]) => !!value) // filter out undefined values
+      .forEach(([key, value]) => {
+        this.params[key] = value;
+      });
   }
 
   // eslint-disable-next-line jsdoc/require-jsdoc

@@ -107,11 +107,13 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     Object.entries(this.resourceParamManagers).forEach(([resourceKey, paramManager]) => {
       const [category, resourceName] = splitResourceKey(resourceKey);
       const resourceParams = paramManager.getAllParams();
-      Object.entries(resourceParams).forEach(([paramName]) => {
-        const ssmParamName = getSSMParamName(resourceName, paramName);
-        this.parameterMapController.addParameter(ssmParamName, [{ category, resourceName }]);
-      });
+      Object.entries(resourceParams)
+        .forEach(([paramName]) => {
+          const ssmParamName = getSSMParamName(category, resourceName, paramName);
+          this.parameterMapController.addParameter(ssmParamName, [{ category, resourceName }]);
+        });
     });
+    // uploading values to PS will go here
     this.parameterMapController.save();
   }
 
@@ -142,4 +144,8 @@ export type IEnvironmentParameterManager = {
   save: () => void;
 }
 
-const getSSMParamName = (resourceName: string, paramName: string): string => `AMPLIFY_${resourceName}_${paramName}`;
+const getSSMParamName = (
+  categoryName: string,
+  resourceName: string,
+  paramName: string,
+): string => `AMPLIFY_${categoryName}_${resourceName}_${paramName}`;
