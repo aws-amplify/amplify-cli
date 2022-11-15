@@ -132,10 +132,6 @@ export const deviceLocationTrackerAdvancedWalkthrough = async (
     { returnSize: 'one' },
   );
   switch (selectedAdvancedSetting) {
-    // Grant users access to devices other than their own
-    case deviceLocationTrackingAdvancedSettings.grantOtherAccess:
-      updatedParameters = merge(updatedParameters, await deviceLocationTrackerOtherAccessWalkthrough(updatedParameters));
-      break;
     // Link Geofence Collection Question
     case deviceLocationTrackingAdvancedSettings.linkGeofenceCollection:
       updatedParameters = merge(updatedParameters, await deviceLocationTrackerGeofenceLinkingWalkthrough(updatedParameters));
@@ -149,20 +145,6 @@ export const deviceLocationTrackerAdvancedWalkthrough = async (
     default:
       printer.error('Invalid advanced setting option selected.');
   }
-  return updatedParameters;
-};
-
-const deviceLocationTrackerOtherAccessWalkthrough = async (
-  parameters: Partial<DeviceLocationTrackingParameters>,
-): Promise<Partial<DeviceLocationTrackingParameters>> => {
-  const updatedParameters = { ...parameters };
-  printer.info(`Users in this group can only access their own device by default. Learn more at ${learnMoreCognitoConditionKeysLink}`);
-  const selectedUserGroups = await prompter.pick<'many', string>(
-    `Select one or more users groups to give full access to:`,
-    ['authenticated', 'guest', ...(updatedParameters.groupPermissions ?? [])],
-    { returnSize: 'many', pickAtLeast: 1 },
-  );
-  updatedParameters.selectedUserGroups = selectedUserGroups;
   return updatedParameters;
 };
 

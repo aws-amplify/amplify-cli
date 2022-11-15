@@ -165,17 +165,6 @@ export function addDeviceTrackerWithDefault(cwd: string, trackerNames: string[],
  */
 export function addAdvancedSettingsOnDeviceTracker(chain: ExecutionContext, advancedSetting: string): void {
   switch (advancedSetting) {
-    case 'grantOtherAccess':
-      chain
-        .wait('Do you want to configure advanced settings?')
-        .sendYes()
-        .wait('Here are the default advanced settings. Select a setting to edit or continue (Use arrow keys)')
-        .sendCarriageReturn()
-        .wait('Users in this group can only access their own device by default. Learn more at https://docs.aws.amazon.com/location/latest/developerguide/security_iam_service-with-iam.html#security_iam_service-with-iam-id-based-policies-conditionkeys')
-        .wait('Select one or more users groups to give full access to:')
-        .sendCtrlA()
-        .sendCarriageReturn();
-      break;
     case 'linkGeofenceCollection':
       chain
         .wait('Do you want to configure advanced settings?')

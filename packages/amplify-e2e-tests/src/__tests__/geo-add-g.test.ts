@@ -89,22 +89,6 @@ describe('amplify geo add g', () => {
     expect(getGeoJSConfiguration(awsExport).region).toEqual(region);
   });
 
-  it('add a device location tracker resource with advanced setting - grant access to other devices', async () => {
-    const deviceTracker1Id = `deviceTracker${generateRandomShortId()}`;
-    await initJSProjectWithProfile(projRoot, {});
-    await addAuthWithDefault(projRoot);
-    const cognitoGroups = ['admin', 'admin1'];
-    await updateAuthAddUserGroups(projRoot, cognitoGroups);
-    await addDeviceTrackerWithDefault(projRoot, cognitoGroups, { resourceName: deviceTracker1Id }, 'grantOtherAccess');
-    await amplifyPushWithoutCodegen(projRoot);
-
-    const cfnTemplatePath: string = path.join(projRoot, 'amplify', '#current-cloud-backend', 'awscloudformation', 'build', 'geo', deviceTracker1Id, `${deviceTracker1Id}-cloudformation-template.json`);
-    const cfnTemplate = JSON.parse(fs.readFileSync(cfnTemplatePath, 'utf8'));
-    cognitoGroups.forEach(group => {
-      expect(cfnTemplate.Resources[`${group}DeviceLocationTrackingPolicy`].Properties.PolicyDocument.Statement.Condition).toBeUndefined();
-    });
-  });
-
   it('add a device location tracker resource with advanced setting - link geofence collection', async () => {
     const deviceTracker1Id = `deviceTracker${generateRandomShortId()}`;
     await initJSProjectWithProfile(projRoot, {});

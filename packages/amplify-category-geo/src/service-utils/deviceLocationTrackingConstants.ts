@@ -7,7 +7,6 @@ export const deviceLocationTrackingCrudPermissionsMap: Record<string, string[]> 
 };
 
 export const deviceLocationTrackingAdvancedSettings: Record<string, string> = {
-  grantOtherAccess: 'Grant users access to devices other than their own',
   linkGeofenceCollection: 'Link tracker to a geofence collection',
   setPositionFilteringMethod: 'Position filtering setting',
 };

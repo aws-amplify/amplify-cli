@@ -210,33 +210,6 @@ describe('Device Location Tracker walkthrough works as expected', () => {
       .toBeCalledWith(category, secondaryDeviceTrackerName, 'isDefault', true);
   });
 
-  it('sets parameter to grant access to other devices based on user input for advanced device tracker walkthrough', async () => {
-    stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
-    prompter.yesOrNo = jest.fn().mockImplementation((message: string): Promise<boolean> => {
-      let mockUserInput = false;
-      if (message === 'Do you want to configure advanced settings?') {
-        mockUserInput = true;
-      } else if (message === 'Set this device tracker as the default? It will be used in Amplify geofence collection API calls if no explicit reference is provided.') {
-        mockUserInput = false;
-      }
-      return Promise.resolve(mockUserInput);
-    });
-    prompter.pick = jest.fn().mockImplementation((message: string): Promise<any> => {
-      let mockUserInput: string | string[] = 'mock';
-      if (message === 'Here are the default advanced settings. Select a setting to edit or continue (Use arrow keys)') {
-        mockUserInput = deviceLocationTrackingAdvancedSettings.grantOtherAccess;
-      } else if (message === 'Select one or more users groups to give full access to:') {
-        mockUserInput = 'authenticated';
-      }
-      return Promise.resolve(mockUserInput);
-    });
-
-    let trackerParams: Partial<DeviceLocationTrackingParameters> = mockDeviceTrackerParameters;
-
-    trackerParams = await deviceLocationTrackerAdvancedWalkthrough(mockContext, trackerParams);
-    expect(trackerParams).toMatchObject({ ...mockDeviceTrackerParameters, selectedUserGroups: 'authenticated' });
-  });
-
   it('sets position filtering parameter based on user input for advanced device tracker walkthrough', async () => {
     stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
     prompter.yesOrNo = jest.fn().mockImplementation((message: string): Promise<boolean> => {

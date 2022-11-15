@@ -1,7 +1,6 @@
 /* eslint-disable no-new */
 import * as cdk from '@aws-cdk/core';
 import * as iam from '@aws-cdk/aws-iam';
-import * as location from '@aws-cdk/aws-location';
 import * as fs from 'fs-extra';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Effect } from '@aws-cdk/aws-iam';
@@ -151,23 +150,12 @@ export class DeviceLocationTrackingStack extends BaseStack {
         collectionName: trackingResource.getAtt('TrackerName').toString(),
       });
 
-      let accessConditions;
-      if (!this.props.selectedUserGroups?.includes(group)) {
-        accessConditions = {
-          StringLike: {
-            'geo:DeviceIds': [
-              '${cognito-identity.amazonaws.com:sub}',
-            ],
-          },
-        };
-      }
       const policyDocument = new iam.PolicyDocument({
         statements: [
           new iam.PolicyStatement({
             effect: iam.Effect.ALLOW,
             actions: crudActions,
             resources: [outputTrackingArn],
-            conditions: accessConditions,
           }),
         ],
       });
