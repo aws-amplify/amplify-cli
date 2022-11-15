@@ -46,7 +46,7 @@
     "release-rc": "./scripts/release-rc.sh",
     "promote-rc": "./scripts/promote-rc.sh",
     "finish-release": "./scripts/finish-release.sh",
-    "update-data-packages": "./scripts/update-data-dependencies.sh && yarn"
+    "update-data-packages": "./scripts/update-data-dependencies.sh @rds-support && yarn"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-cli/issues"
