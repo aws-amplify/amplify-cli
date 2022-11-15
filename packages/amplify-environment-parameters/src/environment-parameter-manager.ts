@@ -36,6 +36,16 @@ export const getEnvParamManager = (envName: string = stateManager.getLocalEnvInf
 };
 
 /**
+ * Execute the save method of all currently initialized IEnvironmentParameterManager instances
+ */
+export const saveAll = async (): Promise<void> => {
+  for (const envParamManager of Object.values(envParamManagerMap)) {
+    // save methods must be executed in sequence to avoid race conditions writing to the tpi file
+    await envParamManager.save();
+  }
+};
+
+/**
  * Class for interfacing with environment-specific parameters
  */
 class EnvironmentParameterManager implements IEnvironmentParameterManager {
@@ -53,8 +63,6 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
         this.getResourceParamManager(category, resource).setAllParams(parameters);
       });
     });
-
-    process.on('exit', () => this.save());
   }
 
   removeResourceParamManager(category: string, resource: string): void {
@@ -78,7 +86,7 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     return !!this.resourceParamManagers[getResourceKey(category, resource)];
   }
 
-  save(): void {
+  async save(): Promise<void> {
     if (!pathManager.findProjectRoot()) {
       // assume that the project is deleted if we cannot find a project root
       return;
