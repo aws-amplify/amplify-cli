@@ -27,11 +27,16 @@ export const adminLoginFlow = async (context: $TSContext, appId: string, envName
   }
 
   const url = adminVerifyUrl(appId, envName, region);
-  printer.info(`Opening link: ${url}`);
-  await open(url, { wait: false }).catch(e => {
-    printer.error(`Failed to open web browser: ${e?.message || e}`);
+  let spinner: ora.Ora;
+
+  await open(url, { wait: false }).then(() => {
+    printer.info(`Opening link: ${url}`);
+    spinner = ora('Confirm login in the browser or manually paste in your CLI login key:\n');
+  }).catch(e => {
+    spinner = ora('Attempt to open browser failed, please manually paste in your CLI login key:\n');
+  }).finally(() => {
+    spinner.start();
   });
-  const spinner = ora('Confirm login in the browser or manually paste in your CLI login key:\n').start();
 
   try {
     // spawn express server locally to get credentials
