@@ -82,6 +82,15 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 * feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+## [10.4.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.4.0...@aws-amplify/cli-internal@10.4.1) (2022-11-11)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
+
+
+
+
+
+# [10.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@10.3.1...@aws-amplify/cli-internal@10.4.0) (2022-10-27)
 
 
 ### Features

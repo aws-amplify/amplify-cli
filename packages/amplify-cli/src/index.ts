@@ -16,6 +16,7 @@ import { EventEmitter } from 'events';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { printer, prompter } from 'amplify-prompts';
+import { saveAll as saveAllEnvParams } from '@aws-amplify/amplify-environment-parameters';
 import { logInput } from './conditional-local-logging-init';
 import { attachUsageData, constructContext } from './context-manager';
 import { displayBannerMessages } from './display-banner-messages';
@@ -195,6 +196,8 @@ export const run = async (startTime: number): Promise<void> => {
     // Checks for available update, defaults to a 1 day interval for notification
     notify({ defer: true, isGlobal: true });
   }
+
+  await saveAllEnvParams();
 };
 
 const ensureFilePermissions = (filePath: string): void => {

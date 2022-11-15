@@ -54,6 +54,15 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 # [4.6.0-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.5.4...amplify-util-mock@4.6.0-cdkv2.0) (2022-11-01)
+## [4.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.6.0...amplify-util-mock@4.6.1) (2022-11-11)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+# [4.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.5.4...amplify-util-mock@4.6.0) (2022-10-27)
 
 
 ### Features

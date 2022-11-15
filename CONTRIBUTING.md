@@ -119,7 +119,7 @@ If the change is a breaking change ([as defined by semantic versioning](https://
    - Use grouping tokens at the beginning of the branch names. For e.g, if you are working on changes specific to `amplify-category-auth`, then you could start the branch name as `category-auth/...`
    - Use slashes to separate parts of branch names
 1. Once your work is committed and you're ready to share, run `yarn test`. Manually test your changes in a sample app with different edge cases and also test across different platforms if possible.
-1. Run `yarn lint` to find any linting errors
+1. Run `yarn lint-fix` to find and fix any linting errors
 1. Then, push your branch: `git push origin HEAD` (pushes the current branch to origin remote)
 1. Open GitHub to create a PR from your newly published branch. Fill out the PR template and submit a PR.
 1. Finally, the Amplify CLI team will review your PR. Add reviewers based on the core member who is tracking the issue with you or code owners. _In the meantime, address any automated check that fail (such as linting, unit tests, etc. in CI)_
@@ -174,7 +174,7 @@ You will notice the extra actions carried out when you run the `git commit` or `
     "hooks": {
         "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
         "pre-push": "yarn build-tests-changed && yarn split-e2e-tests",
-        "pre-commit": "yarn verify-commit && yarn lint-fix"
+        "pre-commit": "yarn verify-commit"
     }
 }
 ```

@@ -1,6 +1,5 @@
-/* eslint-disable spellcheck/spell-checker */
 import { pathManager, stateManager } from 'amplify-cli-core';
-import { IEnvironmentParameterManager } from '../environment-parameter-manager';
+import { IEnvironmentParameterManager, saveAll } from '../environment-parameter-manager';
 
 jest.mock('amplify-cli-core');
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
@@ -34,20 +33,8 @@ beforeEach(() => {
 
 describe('init', () => {
   it('loads params and registers save on exit listener', async () => {
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    const processEventListeners: Record<string | symbol, Function[]> = {};
-    jest.spyOn(process, 'on').mockImplementation((event, func) => {
-      if (Array.isArray(processEventListeners[event])) {
-        processEventListeners[event].push(func);
-      } else {
-        processEventListeners[event] = [func];
-      }
-      return process;
-    });
     await ensureEnvParamManager();
-    // it's important that the save callback is registered on exit instead of beforeExit
-    // because if save fails, beforeExit will be called again
-    processEventListeners.exit.forEach(fn => fn(0));
+    await saveAll();
     expect(stateManagerMock.setTeamProviderInfo).toHaveBeenCalledWith(undefined, stubTPI);
   });
 });
