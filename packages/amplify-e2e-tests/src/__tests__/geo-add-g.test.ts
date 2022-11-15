@@ -14,13 +14,12 @@ import {
   updateAuthAddUserGroups,
   addDeviceTrackerWithDefault,
   getDeviceLocationTracker,
+  addGeofenceCollectionWithDefault,
 } from '@aws-amplify/amplify-e2e-core';
 import { existsSync } from 'fs';
 import * as fs from 'fs-extra';
 import path from 'path';
 import { getAWSExports } from '../aws-exports/awsExports';
-import { addDeviceTrackerWithDefault, addGeofenceCollectionWithDefault } from '../../../amplify-e2e-core/src/categories/geo';
-import { getDeviceLocationTracker } from '../../../amplify-e2e-core/src/utils/sdk-calls';
 
 describe('amplify geo add g', () => {
   let projRoot: string;
