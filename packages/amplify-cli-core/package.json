@@ -1,6 +1,6 @@
 {
   "name": "amplify-cli-core",
-  "version": "3.3.0",
+  "version": "3.4.0-rc.6c1d5e642.0",
   "description": "Amplify CLI Core",
   "repository": {
     "type": "git",
@@ -28,7 +28,7 @@
     "@aws-amplify/graphql-transformer-interfaces": "^1.14.9",
     "ajv": "^6.12.6",
     "amplify-cli-logger": "1.2.1",
-    "amplify-prompts": "2.6.0",
+    "amplify-prompts": "2.6.1-rc.6c1d5e642.0",
     "chalk": "^4.1.1",
     "ci-info": "^2.0.0",
     "cloudform-types": "^4.2.0",

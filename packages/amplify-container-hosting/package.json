@@ -1,6 +1,6 @@
 {
   "name": "amplify-container-hosting",
-  "version": "2.5.5",
+  "version": "2.5.6-rc.6c1d5e642.0",
   "description": "amplify-cli hosting plugin for containers",
   "repository": {
     "type": "git",
@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-category-api": "^4.0.9",
-    "amplify-cli-core": "3.3.0",
+    "amplify-cli-core": "3.4.0-rc.6c1d5e642.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",
     "mime-types": "^2.1.26",
