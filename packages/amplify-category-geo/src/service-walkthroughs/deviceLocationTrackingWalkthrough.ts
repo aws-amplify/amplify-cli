@@ -14,6 +14,7 @@ import { getCurrentTrackingParameters } from '../service-utils/deviceLocationTra
 import {
   defaultPositionFilteringMethodLink, learnMoreCognitoConditionKeysLink, learnMoreCreateGeofenceCollectionsLink,
 } from '../constants';
+
 const trackingServiceFriendlyName = getServiceFriendlyName(ServiceName.DeviceLocationTracking);
 
 /**
@@ -173,15 +174,32 @@ const deviceLocationTrackerGeofenceLinkingWalkthrough = async (
   const isExists = await checkGeoResourceTypeExists(ServiceName.GeofenceCollection);
   if (isExists) {
     if (await prompter.yesOrNo('Do you want to link geofence collection(s) to this tracker?', false)) {
+      const defaults = parameters?.linkedGeofenceCollections || [];
       const selectedGeofenceCollections = await prompter.pick<'many', string>(
         `Select the geofence collection(s) you want to link to this tracker`,
         await getGeoResourcesByServiceType(ServiceName.GeofenceCollection),
-        { returnSize: 'many', pickAtLeast: 1 },
+        { returnSize: 'many', initial: byValues(defaults), pickAtLeast: 1 },
       );
       updatedParameters.linkedGeofenceCollections = selectedGeofenceCollections;
     }
   } else {
     printer.info(`We could not find any geofence collections. Review guide on how to create a geofence collection at ${learnMoreCreateGeofenceCollectionsLink}`);
+  }
+  return updatedParameters;
+};
+
+const deviceLocationTrackerFilteringMethodWalkthrough = async (
+  parameters: Partial<DeviceLocationTrackingParameters>,
+): Promise<Partial<DeviceLocationTrackingParameters>> => {
+  const updatedParameters = { ...parameters };
+  printer.info(`The default position filtering method for trackers is Time-based filtering. Learn more at ${defaultPositionFilteringMethodLink}`);
+  if (await prompter.yesOrNo('Do you want to set the position filtering method for this tracker?', false)) {
+    const selectedFilteringMethod = await prompter.pick<'one', string>(
+      `Specify the position filtering method for this device tracker`,
+      Object.keys(deviceLocationTrackingPositionFilteringTypes),
+      { returnSize: 'one' },
+    );
+    updatedParameters.positionFiltering = deviceLocationTrackingPositionFilteringTypes[selectedFilteringMethod];
   }
   return updatedParameters;
 };
@@ -212,7 +230,7 @@ export const updateDeviceLocationTrackerWalkthrough = async (
   }
 
   updatedParameters.name = resourceName;
-  updatedParameters = merge(updatedParameters, await getCurrentTrackingParameters(resourceName));
+  updatedParameters = merge(updatedParameters, await getCurrentTrackingParameters(resourceName!));
 
   // overwrite the parameters based on user input
 
@@ -220,33 +238,22 @@ export const updateDeviceLocationTrackerWalkthrough = async (
   updatedParameters.groupPermissions = deviceParams.groupPermissions;
   updatedParameters.roleAndGroupPermissionsMap = deviceParams.roleAndGroupPermissionsMap;
 
+  // optional advanced walkthrough
+  if (await prompter.yesOrNo('Do you want to configure advanced settings?', false)) {
+    updatedParameters = merge(parameters, await deviceLocationTrackerAdvancedWalkthrough(context, updatedParameters));
+  }
+
   const otherTrackingResources = trackingResourceNames.filter(trackingResourceName => trackingResourceName !== resourceName);
   // if this is the only device tracker, default cannot be removed
   if (otherTrackingResources.length > 0) {
     const isDefault = await prompter.yesOrNo(defaultResourceQuestion(ServiceName.DeviceLocationTracking), updatedParameters.isDefault);
     // If a device tracker is updated, ask for new default
     if (updatedParameters.isDefault && !isDefault) {
-      await updateDefaultDeviceTrackerWalkthrough(context, resourceName, otherTrackingResources);
+      await updateDefaultDeviceTrackerWalkthrough(context, resourceName!, otherTrackingResources);
     }
     updatedParameters.isDefault = isDefault;
   } else {
     updatedParameters.isDefault = true;
-  }
-  return updatedParameters;
-};
-
-const deviceLocationTrackerFilteringMethodWalkthrough = async (
-  parameters: Partial<DeviceLocationTrackingParameters>,
-): Promise<Partial<DeviceLocationTrackingParameters>> => {
-  const updatedParameters = { ...parameters };
-  printer.info(`The default position filtering method for trackers is Time-based filtering. Learn more at ${defaultPositionFilteringMethodLink}`);
-  if (await prompter.yesOrNo('Do you want to set the position filtering method for this tracker?', false)) {
-    const selectedFilteringMethod = await prompter.pick<'one', string>(
-      `Specify the position filtering method for this device tracker`,
-      Object.keys(deviceLocationTrackingPositionFilteringTypes),
-      { returnSize: 'one' },
-    );
-    updatedParameters.positionFiltering = deviceLocationTrackingPositionFilteringTypes[selectedFilteringMethod];
   }
   return updatedParameters;
 };

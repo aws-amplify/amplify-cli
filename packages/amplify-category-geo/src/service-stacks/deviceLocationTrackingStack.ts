@@ -22,6 +22,7 @@ type DeviceLocationTrackingStackProps = DeviceLocationTrackingParameters &
 export class DeviceLocationTrackingStack extends BaseStack {
   protected readonly groupPermissions: string[];
   protected readonly roleAndGroupPermissionsMap: Record<string, string[]>;
+  protected readonly trackingResource: cdk.CustomResource;
   protected readonly trackingRegion: string;
   protected readonly trackerName: string;
   protected readonly authResourceName: string;
@@ -53,21 +54,25 @@ export class DeviceLocationTrackingStack extends BaseStack {
 
     this.trackerName = Fn.join('-', [this.parameters.get('trackerName')!.valueAsString, this.parameters.get('env')!.valueAsString]);
 
-    const trackerResource = this.constructCfnTrackingResource();
-    this.constructCfnTrackerConsumerResource(trackerResource);
-    this.constructTrackingPolicyResources(trackerResource);
-    this.constructOutputs(trackerResource);
+    this.trackingResource = this.constructTrackingResource();
+    this.constructTrackingPolicyResources(this.trackingResource);
+    this.constructOutputs();
   }
 
-  private constructOutputs(trackerResource: location.CfnTracker): void {
+  private constructOutputs(): void {
     new cdk.CfnOutput(this, 'Name', {
-      value: this.trackerName,
+      value: this.trackingResource.getAtt('TrackerName').toString(),
     });
     new cdk.CfnOutput(this, 'Region', {
       value: this.trackingRegion,
     });
+    const outputTrackingArn = cdk.Fn.sub('arn:aws:geo:${region}:${account}:tracker/${trackerName}', {
+      region: this.trackingRegion,
+      account: cdk.Fn.ref('AWS::AccountId'),
+      collectionName: this.trackingResource.getAtt('TrackerName').toString(),
+    });
     new cdk.CfnOutput(this, 'Arn', {
-      value: trackerResource.attrTrackerArn,
+      value: outputTrackingArn,
     });
   }
 
@@ -90,6 +95,12 @@ export class DeviceLocationTrackingStack extends BaseStack {
     geoUpdateDeleteTrackingStatement.addActions('geo:UpdateTracker', 'geo:DeleteTracker');
     geoUpdateDeleteTrackingStatement.addResources(trackingARN);
 
+    const geoTrackerConsumerStatement = new iam.PolicyStatement({
+      effect: Effect.ALLOW,
+    });
+    geoTrackerConsumerStatement.addActions('geo:AssociateTrackerConsumer', 'geo:ListTrackerConsumers', 'geo:DisassociateTrackerConsumer');
+    geoTrackerConsumerStatement.addResources(trackingARN);
+
     // set up custom params
 
     const positionFiltering = this.parameters.get('positionFiltering')?.valueAsString;
@@ -103,12 +114,22 @@ export class DeviceLocationTrackingStack extends BaseStack {
     });
     customTrackingLambda.addToRolePolicy(geoCreateTrackingStatement);
     customTrackingLambda.addToRolePolicy(geoUpdateDeleteTrackingStatement);
+    customTrackingLambda.addToRolePolicy(geoTrackerConsumerStatement);
 
+    const linkedGeofenceCollectionArns = this.props.linkedGeofenceCollections?.map(collection => cdk.Fn.sub(
+      'arn:aws:geo:${region}:${account}:geofence-collection/${collection}',
+      {
+        region: this.trackingRegion,
+        account: cdk.Fn.ref('AWS::AccountId'),
+        collection,
+      },
+    ));
     const trackingCustomResource = new cdk.CustomResource(this, 'CustomTracking', {
       serviceToken: customTrackingLambda.functionArn,
       resourceType: 'Custom::LambdaCallout',
       properties: {
         trackerName: this.trackerName,
+        linkedGeofenceCollectionArns,
         positionFiltering,
         region: this.trackingRegion,
         env: cdk.Fn.ref('env'),
@@ -118,44 +139,17 @@ export class DeviceLocationTrackingStack extends BaseStack {
     return trackingCustomResource;
   }
 
-  private constructCfnTrackingResource(): location.CfnTracker {
-    const positionFiltering = this.parameters.get('positionFiltering')?.valueAsString;
-
-    const trackerResource = new location.CfnTracker(this, `CfnTracker`, {
-      trackerName: this.trackerName,
-      positionFiltering,
-    });
-    return trackerResource;
-  }
-
-  private constructCfnTrackerConsumerResource(trackerResource: location.CfnTracker): void {
-    const { linkedGeofenceCollections } = this.props;
-    linkedGeofenceCollections?.forEach(linkedGeofenceCollection => {
-      const linkedGeofenceCollectionArn = cdk.Fn.sub(
-        'arn:aws:geo:${region}:${account}:geofence-collection/${linkedGeofenceCollection}',
-        {
-          region: this.trackingRegion,
-          account: cdk.Fn.ref('AWS::AccountId'),
-          linkedGeofenceCollection,
-        },
-      );
-      const trackerConsumerResource = new location.CfnTrackerConsumer(
-        this,
-        `CfnTrackerConsumer-${linkedGeofenceCollection}`,
-        {
-          consumerArn: linkedGeofenceCollectionArn,
-          trackerName: this.trackerName,
-        },
-      );
-      trackerConsumerResource.addDependsOn(trackerResource);
-    });
-  }
-
   // Grant read-only access to the Tracking Index for Authorized and/or Guest users
-  private constructTrackingPolicyResources(trackerResource: location.CfnTracker): void {
+  private constructTrackingPolicyResources(trackingResource: cdk.CustomResource): void {
     Object.keys(this.roleAndGroupPermissionsMap).forEach((group: string) => {
       const crudActions: string[] = _.uniq(_.flatten(this.roleAndGroupPermissionsMap[group]
         .map((permission: string) => deviceLocationTrackingCrudPermissionsMap[permission])));
+
+      const outputTrackingArn = cdk.Fn.sub('arn:aws:geo:${region}:${account}:tracker/${trackerName}', {
+        region: this.trackingRegion,
+        account: cdk.Fn.ref('AWS::AccountId'),
+        collectionName: trackingResource.getAtt('TrackerName').toString(),
+      });
 
       let accessConditions;
       if (!this.props.selectedUserGroups?.includes(group)) {
@@ -172,7 +166,7 @@ export class DeviceLocationTrackingStack extends BaseStack {
           new iam.PolicyStatement({
             effect: iam.Effect.ALLOW,
             actions: crudActions,
-            resources: [trackerResource.attrTrackerArn],
+            resources: [outputTrackingArn],
             conditions: accessConditions,
           }),
         ],

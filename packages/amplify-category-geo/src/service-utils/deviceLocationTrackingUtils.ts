@@ -40,7 +40,12 @@ export const createDeviceLocationTrackingResource = async (
     undefined,
     category,
     parameters.name,
-    { groupPermissions: parameters.groupPermissions, roleAndGroupPermissionsMap: parameters.roleAndGroupPermissionsMap },
+    {
+      groupPermissions: parameters.groupPermissions,
+      roleAndGroupPermissionsMap: parameters.roleAndGroupPermissionsMap,
+      positionFiltering: parameters.positionFiltering,
+      linkedGeofenceCollections: parameters.linkedGeofenceCollections,
+    },
   );
 
   const deviceLocationTrackingMetaParameters = constructTrackingMetaParameters(parameters, authResourceName);
@@ -76,7 +81,12 @@ export const modifyDeviceLocationTrackingResource = async (
     undefined,
     category,
     parameters.name,
-    { groupPermissions: parameters.groupPermissions, roleAndGroupPermissionsMap: parameters.roleAndGroupPermissionsMap },
+    {
+      groupPermissions: parameters.groupPermissions,
+      roleAndGroupPermissionsMap: parameters.roleAndGroupPermissionsMap,
+      positionFiltering: parameters.positionFiltering,
+      linkedGeofenceCollections: parameters.linkedGeofenceCollections,
+    },
   );
 
   // update the default Device Tracker
