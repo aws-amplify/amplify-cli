@@ -49,9 +49,8 @@ export const enable = async (context: $TSContext, successMessage: string | undef
       channelOutput = context.exeInfo.serviceMeta.output[channelName];
     }
     answers = {
-      ApiKey: await prompter.input('ApiKey', { initial: channelOutput.ApiKey }),
+      ApiKey: await prompter.input('ApiKey', { initial: channelOutput.ApiKey, transform: input => input.trim() }),
     };
-    answers = trimAnswers(answers);
   }
 
   const params = {
@@ -106,9 +105,8 @@ export const disable = async (context: $TSContext): Promise<$TSAny> => {
       channelOutput = context.exeInfo.serviceMeta.output[channelName];
     }
     answers = {
-      ApiKey: await prompter.input('ApiKey', { initial: channelOutput.ApiKey }),
+      ApiKey: await prompter.input('ApiKey', { initial: channelOutput.ApiKey, transform: input => input.trim() }),
     };
-    answers = trimAnswers(answers);
   }
 
   const params = {

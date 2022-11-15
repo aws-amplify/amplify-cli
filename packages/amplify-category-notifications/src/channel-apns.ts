@@ -61,7 +61,7 @@ export const enable = async (context: $TSContext, successMessage: string | undef
     if (context.exeInfo.serviceMeta.output[channelName]) {
       channelOutput = context.exeInfo.serviceMeta.output[channelName];
     }
-    const authMethod = await prompter.pick('Select the authentication method for the APNS channel', ['Certificate', 'Key'], channelOutput.DefaultAuthenticationMethod || 'Certificate');
+    const authMethod = await prompter.pick('Select the authentication method for the APNS channel', ['Certificate', 'Key'], { initial: channelOutput.DefaultAuthenticationMethod || 'Certificate' });
     answers = {
       DefaultAuthenticationMethod: authMethod,
     };

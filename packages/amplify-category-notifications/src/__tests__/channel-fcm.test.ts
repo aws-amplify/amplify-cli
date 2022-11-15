@@ -7,6 +7,10 @@ import * as channelFCM from '../channel-fcm';
 import { ChannelAction, ChannelConfigDeploymentType, IChannelAPIResponse } from '../channel-types';
 import { ChannelType } from '../notifications-backend-cfg-channel-api';
 
+const apiKey = 'ApiKey-abc123';
+jest.mock('amplify-prompts');
+const prompterMock = prompter as jest.Mocked<typeof prompter>;
+
 class NoErrorThrownError extends Error {}
 const getError = async <TError>(call: () => unknown): Promise<TError> => {
   try {
@@ -81,12 +85,10 @@ describe('channel-FCM', () => {
 
   test('configure', async () => {
     mockChannelEnabledOutput.Enabled = true;
-    prompter.yesOrNo = jest
-      .fn()
+    prompterMock.yesOrNo
       .mockResolvedValueOnce(true);
-    prompter.input = jest
-      .fn()
-      .mockResolvedValueOnce('ApiKey-abc123');
+    prompterMock.input
+      .mockResolvedValueOnce(apiKey);
 
     const mockContextObj = mockContext(mockChannelEnabledOutput, mockPinpointClient);
     await channelFCM.configure(mockContextObj).then(() => {
@@ -94,16 +96,14 @@ describe('channel-FCM', () => {
     });
 
     mockChannelEnabledOutput.Enabled = true;
-    prompter.yesOrNo = jest
-      .fn()
+    prompterMock.yesOrNo
       .mockResolvedValueOnce(false);
     await channelFCM.configure(mockContext(mockChannelEnabledOutput, mockPinpointClient)).then(() => {
       expect(mockPinpointClient.updateGcmChannel).toBeCalled();
     });
 
     mockChannelEnabledOutput.Enabled = false;
-    prompter.yesOrNo = jest
-      .fn()
+    prompterMock.yesOrNo
       .mockResolvedValueOnce(true);
     await channelFCM.configure(mockContext(mockChannelEnabledOutput, mockPinpointClient)).then(() => {
       expect(mockPinpointClient.updateGcmChannel).toBeCalled();
@@ -111,9 +111,8 @@ describe('channel-FCM', () => {
   });
 
   test('enable', async () => {
-    prompter.input = jest
-      .fn()
-      .mockResolvedValueOnce('ApiKey-abc123');
+    prompterMock.input
+      .mockResolvedValueOnce(apiKey);
     const mockContextObj = mockContext(mockChannelEnabledOutput, mockPinpointClient);
     const data = await channelFCM.enable(mockContextObj, 'successMessage');
     expect(mockPinpointClient.updateGcmChannel).toBeCalled();
@@ -121,15 +120,14 @@ describe('channel-FCM', () => {
   });
 
   test('enable with newline', async () => {
-    prompter.input = jest
-      .fn()
-      .mockResolvedValueOnce('ApiKey-abc123\n');
+    prompterMock.input
+      .mockResolvedValueOnce(`${apiKey}\n`);
     const data = await channelFCM.enable(mockContext(mockChannelEnabledOutput, mockPinpointClient), 'successMessage');
     expect(mockPinpointClient.updateGcmChannel).toBeCalledWith(
       {
         ApplicationId: undefined,
         GCMChannelRequest: {
-          ApiKey: 'ApiKey-abc123',
+          ApiKey: apiKey,
           Enabled: true,
         },
       },
@@ -138,9 +136,8 @@ describe('channel-FCM', () => {
   });
 
   test('enable unsuccessful', async () => {
-    prompter.input = jest
-      .fn()
-      .mockResolvedValueOnce('ApiKey-abc123');
+    prompterMock.input
+      .mockResolvedValueOnce(apiKey);
 
     const context = mockContextReject(mockServiceOutput, mockPinpointClientReject);
     const errCert: AmplifyFault = await getError(async () => channelFCM.enable(context as unknown as $TSContext, 'successMessage'));

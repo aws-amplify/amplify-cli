@@ -46,14 +46,14 @@ export const enable = async (context:$TSContext, successMessage: string|undefine
   if (context.exeInfo.pinpointInputParams?.[channelName]) {
     answers = validateInputParams(context.exeInfo.pinpointInputParams[channelName]);
   } else {
-    let channelOutput:$TSAny = {};
+    let channelOutput: $TSAny = {};
     if (context.exeInfo.serviceMeta.output[channelName]) {
       channelOutput = context.exeInfo.serviceMeta.output[channelName];
     }
     answers = {
-      FromAddress: await prompter.input(`The 'From' Email address used to send emails`, channelOutput.FromAddress),
-      Identity: await prompter.input('The ARN of an identity verified with SES', channelOutput.Identity),
-      RoleArn: await prompter.input(`The ARN of an IAM Role used to submit events to Mobile notifications' event ingestion service`, channelOutput.RoleArn),
+      FromAddress: await prompter.input(`The 'From' Email address used to send emails`, { initial: channelOutput.FromAddress }),
+      Identity: await prompter.input('The ARN of an identity verified with SES', { initial: channelOutput.Identity }),
+      RoleArn: await prompter.input(`The ARN of an IAM Role used to submit events to Mobile notifications' event ingestion service`, { initial: channelOutput.RoleArn }),
     };
   }
 

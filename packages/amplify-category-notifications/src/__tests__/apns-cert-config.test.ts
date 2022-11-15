@@ -4,6 +4,8 @@ import * as p12decoder from '../apns-cert-p12decoder';
 import { ICertificateInfo } from '../apns-cert-p12decoder';
 
 jest.mock('../apns-cert-p12decoder');
+jest.mock('amplify-prompts');
+const prompterMock = prompter as jest.Mocked<typeof prompter>;
 
 describe('apns-cert-config', () => {
   const mockFilePath = 'mock_p12_file_path';
@@ -21,8 +23,7 @@ describe('apns-cert-config', () => {
   });
 
   test('p12decoder invoked', async () => {
-    prompter.input = jest
-      .fn()
+    prompterMock.input
       .mockResolvedValueOnce(mockFilePath)
       .mockResolvedValueOnce(mockPassword);
 
