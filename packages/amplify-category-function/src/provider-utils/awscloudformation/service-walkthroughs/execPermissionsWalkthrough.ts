@@ -1,5 +1,6 @@
 import { $TSAny, $TSContext, AmplifyError, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
 import { FunctionDependency, FunctionParameters } from 'amplify-function-plugin-interface';
+import { printer } from 'amplify-prompts';
 import * as TransformPackage from 'graphql-transformer-core';
 import inquirer, { CheckboxQuestion, DistinctChoice } from 'inquirer';
 import _ from 'lodash';
@@ -97,7 +98,7 @@ export const askExecRolePermissionsQuestions = async (
     }
 
     if (_.isEmpty(resourcesList)) {
-      context.print.warning(`No resources found for ${selectedCategory}`);
+      printer.warn(`No resources found for ${selectedCategory}`);
       continue;
     }
 
@@ -130,7 +131,7 @@ export const askExecRolePermissionsQuestions = async (
         // In case of some resources they are not in the meta file so check for resource existence as well
         const isMobileHubImportedResource = _.get(amplifyMeta, [selectedCategory, resourceName, 'mobileHubMigrated'], false);
         if (isMobileHubImportedResource) {
-          context.print.warning(
+          printer.warn(
             `Policies cannot be added for ${selectedCategory}/${resourceName}, since it is a MobileHub imported resource.`,
           );
           continue;
@@ -156,8 +157,7 @@ export const askExecRolePermissionsQuestions = async (
       }
     } catch (e) {
       if (e.name === 'PluginMethodNotFoundError') {
-        context.print.warning(`${selectedCategory} category does not support resource policies yet.`);
-        context.usageData.emitError(e);
+        printer.warn(`${selectedCategory} category does not support resource policies yet.`);
       } else {
         throw new AmplifyError('PluginPolicyAddError', {
           message: `Policies cannot be added for ${selectedCategory}`,
@@ -316,7 +316,7 @@ export async function generateEnvVariablesForCfn(context: $TSContext, resources:
   const envVarStringList = Array.from(envVars).sort().join('\n\t');
 
   if (envVarStringList) {
-    context.print.info(`${envVarPrintoutPrefix}${envVarStringList}`);
+    printer.info(`${envVarPrintoutPrefix}${envVarStringList}`);
   }
   return { environmentMap, dependsOn, envVarStringList };
 }
