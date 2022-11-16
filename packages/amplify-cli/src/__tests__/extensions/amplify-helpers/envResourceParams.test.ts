@@ -19,6 +19,7 @@ jest.mock('amplify-cli-core', () => ({
     getDeploymentSecrets: jest.fn(),
     setDeploymentSecrets: jest.fn(),
     getLocalEnvInfo: jest.fn().mockReturnValue({ envName: 'testEnv' }),
+    getBackendConfig: jest.fn(),
     getMeta: jest.fn().mockReturnValue({
       providers: {
         awscloudformation: {

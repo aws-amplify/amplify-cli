@@ -16,6 +16,7 @@ const testParams = {
   },
 };
 
+stateManagerMock.backendConfigFileExists.mockReturnValue(true);
 stateManagerMock.getBackendConfig.mockReturnValue({
   someCategory: {
     other: 'stuff',
