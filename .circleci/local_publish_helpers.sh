@@ -13,14 +13,15 @@ function startLocalRegistry {
 }
 
 function uploadPkgCli {
-    aws configure --profile=s3-uploader set aws_access_key_id $S3_ACCESS_KEY
-    aws configure --profile=s3-uploader set aws_secret_access_key $S3_SECRET_ACCESS_KEY
-    aws configure --profile=s3-uploader set aws_session_token $S3_AWS_SESSION_TOKEN
     cd out/
     export hash=$(git rev-parse HEAD | cut -c 1-12)
     export version=$(./amplify-pkg-linux-x64 --version)
 
     if [[ "$CIRCLE_BRANCH" == "release" ]] || [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
+        aws configure --profile=s3-uploader set aws_access_key_id $S3_ACCESS_KEY
+        aws configure --profile=s3-uploader set aws_secret_access_key $S3_SECRET_ACCESS_KEY
+        aws configure --profile=s3-uploader set aws_session_token $S3_AWS_SESSION_TOKEN
+
         tar -czvf amplify-pkg-linux-arm64.tgz amplify-pkg-linux-arm64
         tar -czvf amplify-pkg-linux-x64.tgz amplify-pkg-linux-x64
         tar -czvf amplify-pkg-macos-x64.tgz amplify-pkg-macos-x64
@@ -49,7 +50,11 @@ function uploadPkgCli {
         aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-arm64.tgz
         aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64.tgz
 
-    else
+    elif [[ "$CIRCLE_BRANCH" == "dev" ]] || [[ "$CIRCLE_BRANCH" =~ ^run-e2e\/.* ]]; then
+        aws configure --profile=s3-uploader set aws_access_key_id $S3_ACCESS_KEY
+        aws configure --profile=s3-uploader set aws_secret_access_key $S3_SECRET_ACCESS_KEY
+        aws configure --profile=s3-uploader set aws_session_token $S3_AWS_SESSION_TOKEN
+
         tar -czvf amplify-pkg-linux-x64.tgz amplify-pkg-linux-x64
         aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64-$(echo $hash).tgz
     fi
