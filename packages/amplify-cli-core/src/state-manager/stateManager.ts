@@ -162,8 +162,7 @@ export class StateManager {
       return data;
     }
     // omit parameters
-    _.omit(data, 'parameters');
-    return data;
+    return _.omit(data, 'parameters');
   };
 
   getCurrentBackendConfig = (projectPath?: string, options?: GetOptions<$TSAny>): $TSAny => {
@@ -301,13 +300,13 @@ export class StateManager {
   setBackendConfig = (projectPath: string | undefined, backendConfig: $TSAny): void => {
     const filePath = pathManager.getBackendConfigFilePath(projectPath);
 
-    JSONUtilities.writeJson(filePath, backendConfig);
+    JSONUtilities.writeJson(filePath, backendConfig, { stable: true });
   };
 
   setCurrentBackendConfig = (projectPath: string | undefined, backendConfig: $TSAny): void => {
     const filePath = pathManager.getCurrentBackendConfigFilePath(projectPath);
 
-    JSONUtilities.writeJson(filePath, backendConfig);
+    JSONUtilities.writeJson(filePath, backendConfig, { stable: true });
   };
 
   setMeta = (projectPath: string | undefined, meta: $TSMeta): void => {
@@ -382,9 +381,7 @@ export class StateManager {
   setCLIJSON = (projectPath: string, cliJSON: $TSAny, env?: string): void => {
     const filePath = pathManager.getCLIJSONFilePath(projectPath, env);
 
-    JSONUtilities.writeJson(filePath, cliJSON, {
-      keepComments: true,
-    });
+    JSONUtilities.writeJson(filePath, cliJSON);
   };
 
   getResourceFromMeta = (
