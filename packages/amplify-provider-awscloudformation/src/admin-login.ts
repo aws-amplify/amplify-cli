@@ -28,12 +28,14 @@ export const adminLoginFlow = async (context: $TSContext, appId: string, envName
   const url = adminVerifyUrl(appId, envName, region);
   const spinner = new AmplifySpinner();
 
-  await open(url, { wait: false }).then(() => {
+  try {
+    await open(url, { wait: false });
     printer.info(`Opening link: ${url}`);
     spinner.start('Confirm login in the browser or manually paste in your CLI login key:\n');
-  }).catch(() => {
-    spinner.start('Attempt to open browser failed, please manually paste in your CLI login key:\n');
-  });
+  } catch(_) {
+    printer.info(`Attempt to open the following link failed: ${url}`)
+    spinner.start('Please manually paste in your CLI login key:\n');
+  }
 
   try {
     // spawn express server locally to get credentials

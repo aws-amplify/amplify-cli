@@ -40,13 +40,13 @@ describe('adminLoginFlow', () => {
     const appId = 'appid';
     const region = 'us-east-2';
 
-    let spinnerStartMock = jest.spyOn(AmplifySpinner.prototype, 'start');
-    let spinnerStopMock = jest.spyOn(AmplifySpinner.prototype, 'stop');
+    const spinnerStartMock = jest.spyOn(AmplifySpinner.prototype, 'start');
+    const spinnerStopMock = jest.spyOn(AmplifySpinner.prototype, 'stop');
 
     await adminLoginFlow(contextStub, appId, undefined, region);
 
     expect(spinnerStartMock).toBeCalledTimes(1);
-    expect(spinnerStartMock).toBeCalledWith('Attempt to open browser failed, please manually paste in your CLI login key:\n');
+    expect(spinnerStartMock).toBeCalledWith('Please manually paste in your CLI login key:\n');
 
     expect(spinnerStopMock).toBeCalledTimes(1);
     expect(spinnerStopMock).toBeCalledWith("Successfully received Amplify Studio tokens.");
