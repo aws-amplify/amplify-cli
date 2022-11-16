@@ -5,7 +5,7 @@ import {
   $TSAny, $TSContext, AmplifyFault,
 } from 'amplify-cli-core';
 
-import { printer, prompter } from 'amplify-prompts';
+import { byValue, printer, prompter } from 'amplify-prompts';
 import * as configureKey from './apns-key-config';
 import * as configureCertificate from './apns-cert-config';
 import { ChannelAction, IChannelAPIResponse, ChannelConfigDeploymentType } from './channel-types';
@@ -61,7 +61,11 @@ export const enable = async (context: $TSContext, successMessage: string | undef
     if (context.exeInfo.serviceMeta.output[channelName]) {
       channelOutput = context.exeInfo.serviceMeta.output[channelName];
     }
-    const authMethod = await prompter.pick('Select the authentication method for the APNS channel', ['Certificate', 'Key'], { initial: byValue(channelOutput.DefaultAuthenticationMethod || 'Certificate') });
+    const authMethod = await prompter.pick(
+      'Select the authentication method for the APNS channel',
+      ['Certificate', 'Key'],
+      { initial: byValue(channelOutput.DefaultAuthenticationMethod || 'Certificate') },
+    );
     answers = {
       DefaultAuthenticationMethod: authMethod,
     };
