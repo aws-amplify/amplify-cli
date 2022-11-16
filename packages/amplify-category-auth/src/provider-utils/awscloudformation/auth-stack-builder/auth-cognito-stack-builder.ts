@@ -615,7 +615,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
-      runtime: 'nodejs14.x',
+      runtime: 'nodejs16.x',
       timeout: 300,
     });
     this.userPoolClientLambda.addDependsOn(this.userPoolClientRole);
@@ -689,7 +689,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
-      runtime: 'nodejs14.x',
+      runtime: 'nodejs16.x',
       timeout: 300,
     });
     this.hostedUICustomResource.addDependsOn(this.userPoolClientRole!);
@@ -770,7 +770,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
-      runtime: 'nodejs14.x',
+      runtime: 'nodejs16.x',
       timeout: 300,
     });
     this.hostedUIProvidersCustomResource.addDependsOn(this.userPoolClientRole!);
@@ -853,7 +853,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
-      runtime: 'nodejs14.x',
+      runtime: 'nodejs16.x',
       timeout: 300,
     });
 
@@ -987,7 +987,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('MFALambdaRole', 'Arn').toString(),
-      runtime: 'nodejs14.x',
+      runtime: 'nodejs16.x',
       timeout: 300,
     });
     this.mfaLambda.addDependsOn(this.mfaLambdaRole);
@@ -1130,7 +1130,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('OpenIdLambdaRole', 'Arn').toString(),
-      runtime: 'nodejs14.x',
+      runtime: 'nodejs16.x',
       timeout: 300,
     });
     this.openIdLambda.addDependsOn(this.openIdLambdaRole);
