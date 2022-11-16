@@ -21,7 +21,7 @@ const trackingResourceHandler = async (event, context) => {
       const res = await locationClient.createTracker(params).promise();
       console.log(`create resource response data ${JSON.stringify(res)}`);
       if (res.TrackerName && res.TrackerArn) {
-        linkedGeofenceCollectionArns.forEach(async geofenceCollectionArn => {
+        linkedGeofenceCollectionArns?.forEach(async geofenceCollectionArn => {
           await locationClient.associateTrackerConsumer({ TrackerName: trackerName, ConsumerArn: geofenceCollectionArn }).promise();
         });
         await response.send(event, context, response.SUCCESS, res, params.TrackerName);
@@ -38,17 +38,17 @@ const trackingResourceHandler = async (event, context) => {
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region });
       const currentTrackerConsumers = await locationClient.listTrackerConsumers({ TrackerName: trackerName }).promise();
       // remove existing trackerConsumers if they are de-selected when updating tracker
-      currentTrackerConsumers.ConsumerArns.forEach(async consumerArn => {
-        if (linkedGeofenceCollectionArns.indexOf(consumerArn) < 0) {
+      currentTrackerConsumers.ConsumerArns?.forEach(async consumerArn => {
+        if (linkedGeofenceCollectionArns?.indexOf(consumerArn) < 0) {
           await locationClient.disassociateTrackerConsumer({ TrackerName: trackerName, ConsumerArn: consumerArn }).promise();
         }
       });
       const res = await locationClient.updateTracker(params).promise();
       console.log(`update resource response data${JSON.stringify(res)}`);
       if (res.TrackerName && res.TrackerArn) {
-        linkedGeofenceCollectionArns.forEach(async geofenceCollectionArn => {
+        linkedGeofenceCollectionArns?.forEach(async geofenceCollectionArn => {
           // create trackerConsumer resources only if not already available
-          if (currentTrackerConsumers.ConsumerArns.indexOf(geofenceCollectionArn) < 0) {
+          if (currentTrackerConsumers?.ConsumerArns?.indexOf(geofenceCollectionArn) < 0) {
             await locationClient.associateTrackerConsumer({ TrackerName: trackerName, ConsumerArn: geofenceCollectionArn }).promise();
           }
         });
@@ -63,7 +63,7 @@ const trackingResourceHandler = async (event, context) => {
       };
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region });
       const currentTrackerConsumers = await locationClient.listTrackerConsumers({ TrackerName: trackerName }).promise();
-      currentTrackerConsumers.ConsumerArns.forEach(async consumerArn => {
+      currentTrackerConsumers.ConsumerArns?.forEach(async consumerArn => {
         await locationClient.disassociateTrackerConsumer({ TrackerName: trackerName, ConsumerArn: consumerArn }).promise();
       });
       const res = await locationClient.deleteTracker(params).promise();

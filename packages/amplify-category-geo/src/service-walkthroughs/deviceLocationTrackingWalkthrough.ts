@@ -125,7 +125,7 @@ export const deviceLocationTrackerAdvancedWalkthrough = async (
   parameters: Partial<DeviceLocationTrackingParameters>,
 ): Promise<Partial<DeviceLocationTrackingParameters>> => {
   let updatedParameters = { ...parameters };
-  updatedParameters.positionFiltering = deviceLocationTrackingPositionFilteringTypes['Time-based'];
+  updatedParameters.positionFiltering = parameters?.positionFiltering ?? deviceLocationTrackingPositionFilteringTypes['Time-based'];
   const selectedAdvancedSetting = await prompter.pick<'one', string>(
     `Here are the default advanced settings. Select a setting to edit or continue (Use arrow keys)`,
     [...Object.values(deviceLocationTrackingAdvancedSettings), 'Continue'],
@@ -176,10 +176,13 @@ const deviceLocationTrackerFilteringMethodWalkthrough = async (
   const updatedParameters = { ...parameters };
   printer.info(`The default position filtering method for trackers is Time-based filtering. Learn more at ${defaultPositionFilteringMethodLink}`);
   if (await prompter.yesOrNo('Do you want to set the position filtering method for this tracker?', false)) {
+    const defaultSelection = parameters?.positionFiltering ?? deviceLocationTrackingPositionFilteringTypes['Time-based'];
+    const defaultSelectionIndex = Object.values(deviceLocationTrackingPositionFilteringTypes)
+      .findIndex(filteringType => filteringType === defaultSelection);
     const selectedFilteringMethod = await prompter.pick<'one', string>(
       `Specify the position filtering method for this device tracker`,
       Object.keys(deviceLocationTrackingPositionFilteringTypes),
-      { returnSize: 'one' },
+      { returnSize: 'one', initial: defaultSelectionIndex },
     );
     updatedParameters.positionFiltering = deviceLocationTrackingPositionFilteringTypes[selectedFilteringMethod];
   }
