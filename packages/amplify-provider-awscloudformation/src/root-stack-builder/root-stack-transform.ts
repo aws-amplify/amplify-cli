@@ -1,6 +1,8 @@
 import { AmplifyRootStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 import * as cdk from '@aws-cdk/core';
-import { $TSContext, amplifyFaultWithTroubleshootingLink, buildOverrideDir, CFNTemplateFormat, pathManager, Template, writeCFNTemplate } from 'amplify-cli-core';
+import {
+  $TSContext, AmplifyError, AmplifyFault, buildOverrideDir, CFNTemplateFormat, pathManager, Template, writeCFNTemplate,
+} from 'amplify-cli-core';
 import { formatter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -8,6 +10,9 @@ import * as vm from 'vm2';
 import { AmplifyRootStack, AmplifyRootStackOutputs } from './root-stack-builder';
 import { RootStackSynthesizer } from './stack-synthesizer';
 
+/**
+ * class to manage stack lifecycle
+ */
 export class AmplifyRootStackTransform {
   private app: cdk.App | undefined;
   private _rootTemplateObj: AmplifyRootStack; // Props to modify Root stack data
@@ -66,8 +71,15 @@ export class AmplifyRootStackTransform {
           external: true,
         },
       });
-
-      sandboxNode.run(overrideCode).override(this._rootTemplateObj as AmplifyRootStackTemplate);
+      try {
+        await sandboxNode.run(overrideCode).override(this._rootTemplateObj as AmplifyRootStackTemplate);
+      } catch (err) {
+        throw new AmplifyError('InvalidOverrideError', {
+          message: `Executing overrides failed.`,
+          details: err.message,
+          resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+        }, err);
+      }
     }
   };
 
@@ -178,8 +190,7 @@ export class AmplifyRootStackTransform {
   };
 
   /**
-   *
-   * @returns return CFN templates synthesized by app
+   * return CFN templates synthesized by app
    */
   private synthesizeTemplates = async (): Promise<Template> => {
     this.app?.synth();
@@ -201,12 +212,15 @@ export class AmplifyRootStackTransform {
     });
   };
 
+  /**
+   * return root stack
+   */
   public getRootStack(): AmplifyRootStack {
     if (this._rootTemplateObj) {
       return this._rootTemplateObj;
     }
 
-    throw amplifyFaultWithTroubleshootingLink('RootStackNotFoundFault', {
+    throw new AmplifyFault('RootStackNotFoundFault', {
       message: `Root Stack Template doesn't exist.`,
     });
   }

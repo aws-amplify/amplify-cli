@@ -1,11 +1,17 @@
 import * as cdk from '@aws-cdk/core';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
-import { $TSObject } from 'amplify-cli-core';
+import { $TSAny, $TSObject } from 'amplify-cli-core';
 
+/**
+ *  cfn template mapping type
+ */
 export type TemplateMappings = {
   RegionMapping: $TSObject;
 };
 
+/**
+ * base class for cfn stack generation
+ */
 export class BaseStack extends cdk.Stack {
   protected parameters: Map<string, cdk.CfnParameter>;
   protected regionMapping: cdk.CfnMapping;
@@ -19,9 +25,11 @@ export class BaseStack extends cdk.Stack {
     });
   }
 
-  // construct the stack CFN input parameters
+  /**
+   * construct the stack CFN input parameters
+   */
   constructInputParameters(parameterNames: Array<string>): Map<string, cdk.CfnParameter> {
-    let parametersMap: Map<string, cdk.CfnParameter> = new Map();
+    const parametersMap: Map<string, cdk.CfnParameter> = new Map();
     parameterNames.forEach(parameterName => {
       const inputParameter = new cdk.CfnParameter(this, parameterName, { type: 'String' });
       parametersMap.set(parameterName, inputParameter);
@@ -29,7 +37,10 @@ export class BaseStack extends cdk.Stack {
     return parametersMap;
   }
 
-  toCloudFormation() {
+  /**
+   * converts to cfn
+   */
+  toCloudFormation = (): $TSAny => {
     prepareApp(this);
     const cfn = this._toCloudFormation();
     return cfn;

@@ -86,6 +86,8 @@ export const mapStyleWalkthrough = async (parameters: Partial<MapParameters>): P
         { name: 'Berlin (data provided by HERE)', value: MapStyle.VectorHereBerlin },
         { name: 'Explore (data provided by HERE)', value: MapStyle.VectorHereExplore },
         { name: 'ExploreTruck (data provided by HERE)', value: MapStyle.VectorHereExploreTruck },
+        { name: 'RasterSatellite (data provided by HERE)', value: MapStyle.RasterHereExploreSatellite },
+        { name: 'HybridSatellite (data provided by HERE)', value: MapStyle.HybridHereExploreSatellite },
         { name: 'Topographic (data provided by Esri)', value: MapStyle.VectorEsriTopographic },
         { name: 'Navigation (data provided by Esri)', value: MapStyle.VectorEsriNavigation },
         { name: 'LightGrayCanvas (data provided by Esri)', value: MapStyle.VectorEsriLightGrayCanvas },

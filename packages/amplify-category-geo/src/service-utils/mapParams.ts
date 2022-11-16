@@ -27,7 +27,9 @@ export enum EsriMapStyleType {
  export enum HereMapStyleType {
    Berlin = "Berlin",
    Explore = "Explore",
-   ExploreTruck = "ExploreTruck"
+   ExploreTruck = "ExploreTruck",
+   RasterSatellite = "RasterSatellite",
+   HybridSatellite = "HybridSatellite"
  }
 
 export type MapStyleType = EsriMapStyleType | HereMapStyleType;
@@ -44,7 +46,9 @@ export enum MapStyle {
     RasterEsriImagery = "RasterEsriImagery",
     VectorHereBerlin = "VectorHereBerlin",
     VectorHereExplore = "VectorHereExplore",
-    VectorHereExploreTruck = "VectorHereExploreTruck"
+    VectorHereExploreTruck = "VectorHereExploreTruck",
+    RasterHereExploreSatellite = "RasterHereExploreSatellite",
+    HybridHereExploreSatellite = "HybridHereExploreSatellite"
 }
 
 /**
@@ -67,7 +71,13 @@ export const convertToCompleteMapParams = (partial: Partial<MapParameters>): Map
  * Constructs the Amazon Location Map Style from available map parameters
  */
 export const getGeoMapStyle = (dataProvider: DataProvider, mapStyleType: MapStyleType) => {
-    if (dataProvider === DataProvider.Here) {
+    if (dataProvider === DataProvider.Here && mapStyleType === HereMapStyleType.RasterSatellite) {
+      return MapStyle.RasterHereExploreSatellite;
+    }
+    else if (dataProvider === DataProvider.Here && mapStyleType === HereMapStyleType.HybridSatellite) {
+      return MapStyle.HybridHereExploreSatellite;
+    }
+    else if (dataProvider === DataProvider.Here) {
       return `VectorHere${mapStyleType}`;
     }
     else if (dataProvider === DataProvider.Esri && mapStyleType === EsriMapStyleType.Imagery) {
@@ -99,6 +109,10 @@ export const getMapStyleComponents = (mapStyle: string): Pick<MapParameters, 'da
             return { dataProvider: DataProvider.Here, mapStyleType: HereMapStyleType.Explore };
         case MapStyle.VectorHereExploreTruck:
             return { dataProvider: DataProvider.Here, mapStyleType: HereMapStyleType.ExploreTruck };
+        case MapStyle.RasterHereExploreSatellite:
+            return { dataProvider: DataProvider.Here, mapStyleType: HereMapStyleType.RasterSatellite };
+        case MapStyle.HybridHereExploreSatellite:
+            return { dataProvider: DataProvider.Here, mapStyleType: HereMapStyleType.HybridSatellite };
         default:
             throw new Error(`Invalid map style ${mapStyle}`);
     }

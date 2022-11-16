@@ -51,9 +51,22 @@ describe('s3 override tests', () => {
 
     const resourcePath = path.join(projRoot, 'amplify', 'backend', 'storage');
     const resourceName = fs.readdirSync(resourcePath)[0];
-    const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-storage-s3.ts');
+
+    // this is where we will write overrides to
     const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'storage', resourceName, 'override.ts');
 
+    // test override file in compilation error state
+    const srcInvalidOverrideCompileError = path.join(__dirname, '..', '..', 'overrides', 'override-compile-error.txt');
+    fs.copyFileSync(srcInvalidOverrideCompileError, destOverrideFilePath);
+    await expect(amplifyPushAuth(projRoot)).rejects.toThrowError();
+
+    // test override file in runtime error state
+    const srcInvalidOverrideRuntimeError = path.join(__dirname, '..', '..', 'overrides', 'override-runtime-error.txt');
+    fs.copyFileSync(srcInvalidOverrideRuntimeError, destOverrideFilePath);
+    await expect(amplifyPushAuth(projRoot)).rejects.toThrowError();
+
+    // test happy path
+    const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-storage-s3.ts');
     const cfnFilePath = path.join(projRoot, 'amplify', 'backend', 'storage', resourceName, 'build', 'cloudformation-template.json');
     fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
     await buildOverrideStorage(projRoot, {});
@@ -164,8 +177,23 @@ describe('ddb override tests', () => {
     await addSimpleDDB(projRoot, { name: resourceName });
     await overrideDDB(projRoot, {});
 
-    const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-storage-ddb.ts');
+    // this is where we will write our override logic to
     const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'storage', resourceName, 'override.ts');
+
+    // build overrides should throw an error if there are compilation errors in override file
+    const srcInvalidOverrideCompileError = path.join(__dirname, '..', '..', 'overrides', 'override-compile-error.txt');
+    fs.copyFileSync(srcInvalidOverrideCompileError, destOverrideFilePath);
+    await expect(buildOverrideStorage(projRoot, {})).rejects.toThrowError();
+    await expect(amplifyPushAuth(projRoot)).rejects.toThrowError();
+
+    // build overrides should throw an error if there are runtime errors in override file
+    const srcInvalidOverrideRuntimeError = path.join(__dirname, '..', '..', 'overrides', 'override-runtime-error.txt');
+    fs.copyFileSync(srcInvalidOverrideRuntimeError, destOverrideFilePath);
+    await expect(buildOverrideStorage(projRoot, {})).rejects.toThrowError();
+    await expect(amplifyPushAuth(projRoot)).rejects.toThrowError();
+
+    // test happy path
+    const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-storage-ddb.ts');
     const cfnFilePath = path.join(
       projRoot,
       'amplify',

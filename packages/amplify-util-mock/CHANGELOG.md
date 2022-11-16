@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.6.0...amplify-util-mock@4.6.1) (2022-11-11)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+# [4.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.5.4...amplify-util-mock@4.6.0) (2022-10-27)
+
+
+### Features
+
+* **amplify-util-uibuilder:** add studio forms ([#11165](https://github.com/aws-amplify/amplify-cli/issues/11165)) ([6f15294](https://github.com/aws-amplify/amplify-cli/commit/6f15294d6809639c7d7e7d3aa4378df894168b0b))
+
+
+
+
+
+## [4.5.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.5.3...amplify-util-mock@4.5.4) (2022-10-21)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [4.5.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.5.2...amplify-util-mock@4.5.3) (2022-10-13)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
 ## [4.5.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.5.1...amplify-util-mock@4.5.2) (2022-10-03)
 
 **Note:** Version bump only for package amplify-util-mock

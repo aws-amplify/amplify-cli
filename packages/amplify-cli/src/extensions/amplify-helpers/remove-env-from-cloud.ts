@@ -1,4 +1,4 @@
-import { $TSAny, amplifyFaultWithTroubleshootingLink } from 'amplify-cli-core';
+import { $TSAny, AmplifyFault } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { getProjectConfig } from './get-project-config';
 import { getAllCategoryPluginInfo } from './get-all-category-pluginInfos';
@@ -31,13 +31,11 @@ export const removeEnvFromCloud = async (context, envName, deleteS3): Promise<vo
   try {
     await Promise.all(providerPromises);
     await raiseInternalOnlyPostEnvRemoveEvent(context, envName);
-  } catch (e) {
-    if (e.code !== 'NotFoundException') {
-      throw amplifyFaultWithTroubleshootingLink('BackendDeleteFault', {
+  } catch (ex) {
+    if (ex?.name !== 'BucketNotFoundError') {
+      throw new AmplifyFault('BackendDeleteFault', {
         message: `Error occurred while deleting env: ${envName}.`,
-        details: e.message,
-        stack: e.stack,
-      });
+      }, ex);
     }
   }
 };

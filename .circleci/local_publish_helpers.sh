@@ -31,7 +31,15 @@ function uploadPkgCli {
         aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-arm64-$(echo $hash).tgz
         aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64-$(echo $hash).tgz
 
-        if [ "0" -ne "$(aws s3 ls s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64 | egrep -v "amplify-pkg-linux-x64-.*" | wc -l)" ]; then
+        ALREADY_EXISTING_FILES="$(set -o pipefail && aws --profile=s3-uploader s3 ls s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64 | ( egrep -v "amplify-pkg-linux-x64-.*" || true ) | wc -l | xargs)"
+        INCORRECT_PERMISSIONS=$?
+
+        if [ INCORRECT_PERMISSIONS -ne "0" ]; then
+            echo "Insufficient permissions to list s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64"
+            exit 1
+        fi
+
+        if [ ALREADY_EXISTING_FILES -ne "0" ]; then
             echo "Cannot overwrite existing file at s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64.tgz"
             exit 1
         fi
@@ -71,12 +79,17 @@ function generatePkgCli {
   # Build pkg cli
   cp package.json ../build/node_modules/package.json
   if [[ "$CIRCLE_BRANCH" == "release" ]] || [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
-    npx pkg -t node14-macos-x64,node14-linux-x64,node14-linux-arm64,node14-win-x64 ../build/node_modules --out-path ../out
+    # This will generate a file our arm64 binary
+    npx pkg --no-bytecode --public-packages "*" --public -t node14-linux-arm64 ../build/node_modules -o ../out/amplify-pkg-linux-arm64
+    # This will generate files for our x64 binaries.
+    npx pkg -t node14-macos-x64 ../build/node_modules -o ../out/amplify-pkg-macos-x64
+    npx pkg -t node14-linux-x64 ../build/node_modules -o ../out/amplify-pkg-linux-x64
+    npx pkg -t node14-win-x64 ../build/node_modules -o ../out/amplify-pkg-win-x64.exe
   else
-    npx pkg -t node14-macos-x64,node14-linux-x64,node14-win-x64 ../build/node_modules --out-path ../out
-    mv ../out/amplify-pkg-macos ../out/amplify-pkg-macos-x64
-    mv ../out/amplify-pkg-linux ../out/amplify-pkg-linux-x64
-    mv ../out/amplify-pkg-win.exe ../out/amplify-pkg-win-x64.exe
+    # This will generate files for our x64 binaries.
+    npx pkg -t node14-macos-x64 ../build/node_modules -o ../out/amplify-pkg-macos-x64
+    npx pkg -t node14-linux-x64 ../build/node_modules -o ../out/amplify-pkg-linux-x64
+    npx pkg -t node14-win-x64 ../build/node_modules -o ../out/amplify-pkg-win-x64.exe
   fi
 
 

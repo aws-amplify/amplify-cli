@@ -59,6 +59,11 @@ export const getCloudBackendConfig = (projectRoot: string): $TSAny => {
   return JSON.parse(fs.readFileSync(currentCloudPath, 'utf8'));
 };
 
+export const getRootStackTemplate = (projectRoot: string): $TSAny => {
+  const rootStackPath = path.join(projectRoot, 'amplify', 'backend', 'awscloudformation', 'build', 'root-cloudformation-stack.json');
+  return JSON.parse(fs.readFileSync(rootStackPath, 'utf8'));
+};
+
 const getParameterPath = (projectRoot: string, category: string, resourceName: string): string => path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'build', 'parameters.json');
 
 const getCLIInputsPath = (projectRoot: string, category: string, resourceName: string): string => path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'cli-inputs.json');
