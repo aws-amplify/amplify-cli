@@ -1,6 +1,6 @@
 import { printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
-import { showBuildDirChangesMessage } from '../../utils/auto-updates';
+import { showBuildDirChangesMessage } from '../../../extensions/amplify-helpers/auto-updates';
 
 const cloudBackendCfnTemplatePath = '/amplify/#cloud-backend/auth/cognito/build/cognito-cloudformation-template.json';
 const backendCfnTemplatePath = '/amplify/backend/auth/cognito/build/cognito-cloudformation-template.json';
