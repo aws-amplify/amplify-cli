@@ -13,6 +13,9 @@ export class ResourceParameterManager {
 
   // eslint-disable-next-line jsdoc/require-jsdoc
   setParam(name: string, value: string): void {
+    if (value === undefined) {
+      return;
+    }
     this.params[name] = value;
   }
 
@@ -44,7 +47,8 @@ export class ResourceParameterManager {
    * Set the resource parameters equal to the given parameters. This will remove any parameters that are not present in the input.
    */
   setAllParams(params: Record<string, string>): void {
-    this.params = { ...params };
+    this.params = {};
+    this.setParams(params);
   }
 
   /**

@@ -35,15 +35,16 @@ class BackendConfigParameterMapController implements IParameterMapController {
   constructor(private parameterMap: ParameterMap) {}
 
   async save(): Promise<void> {
-    if (Object.keys(this.parameterMap).length === 0) {
-      return;
-    }
     // if there's no backend config file assume that the project has been deleted or something else has failed
     if (!stateManager.backendConfigFileExists()) {
       return;
     }
     const backendConfig = stateManager.getBackendConfig(undefined, undefined, true);
-    backendConfig.parameters = this.parameterMap;
+    if (Object.keys(this.parameterMap).length === 0) {
+      delete backendConfig.parameters;
+    } else {
+      backendConfig.parameters = this.parameterMap;
+    }
     stateManager.setBackendConfig(undefined, backendConfig);
   }
 
