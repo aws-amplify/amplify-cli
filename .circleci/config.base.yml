@@ -762,16 +762,6 @@ workflows:
           requires:
             - build
       - publish_to_local_registry:
-          filters:
-            branches:
-              only:
-                - dev
-                - release
-                - /release_rc\/.*/
-                - /run-e2e-with-rc\/.*/
-                - /tagged-release\/.*/
-                - /tagged-release-without-e2e-tests\/.*/
-                - /run-e2e\/.*/
           requires:
             - build
       - build_pkg_binaries:
