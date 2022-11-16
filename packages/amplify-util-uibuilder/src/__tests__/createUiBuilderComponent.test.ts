@@ -1,3 +1,4 @@
+/* eslint-disable spellcheck/spell-checker */
 import * as codegen from '@aws-amplify/codegen-ui'; // eslint-disable-line import/no-extraneous-dependencies
 import {
   generateAmplifyUiBuilderIndexFile,
@@ -54,6 +55,10 @@ describe('can create a ui builder component', () => {
   });
   it('calls the renderManager for themes', () => {
     createUiBuilderTheme(context, schema);
+    expect(new codegenMock.StudioTemplateRendererManager().renderSchemaToTemplate).toBeCalled();
+  });
+  it('calls the renderManager for default theme', () => {
+    createUiBuilderTheme(context, schema, { renderDefaultTheme: true });
     expect(new codegenMock.StudioTemplateRendererManager().renderSchemaToTemplate).toBeCalled();
   });
   it('calls the renderManager for forms', () => {

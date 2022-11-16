@@ -28,6 +28,15 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 ## [2.5.4-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.5.3...amplify-container-hosting@2.5.4-cdkv2.0) (2022-11-01)
+## [2.5.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.5.4...amplify-container-hosting@2.5.5) (2022-11-11)
+
+**Note:** Version bump only for package amplify-container-hosting
+
+
+
+
+
+## [2.5.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@2.5.3...amplify-container-hosting@2.5.4) (2022-10-27)
 
 **Note:** Version bump only for package amplify-container-hosting
 
