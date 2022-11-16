@@ -33,8 +33,8 @@ export const adminLoginFlow = async (context: $TSContext, appId: string, envName
     printer.info(`Opening link: ${url}`);
     spinner.start('Confirm login in the browser or manually paste in your CLI login key:\n');
   } catch(_) {
-    printer.info(`Attempt to open the following link failed: ${url}`)
-    spinner.start('Please manually paste in your CLI login key:\n');
+    printer.info(`Could not open ${url} in the current environment`)
+    spinner.start('Manually enter your CLI login key:\n');
   }
 
   try {

@@ -46,7 +46,7 @@ describe('adminLoginFlow', () => {
     await adminLoginFlow(contextStub, appId, undefined, region);
 
     expect(spinnerStartMock).toBeCalledTimes(1);
-    expect(spinnerStartMock).toBeCalledWith('Please manually paste in your CLI login key:\n');
+    expect(spinnerStartMock).toBeCalledWith('Manually enter your CLI login key:\n');
 
     expect(spinnerStopMock).toBeCalledTimes(1);
     expect(spinnerStopMock).toBeCalledWith("Successfully received Amplify Studio tokens.");
