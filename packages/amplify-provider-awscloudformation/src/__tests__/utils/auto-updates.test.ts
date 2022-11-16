@@ -83,7 +83,7 @@ describe('showBuildDirChangesMessage', () => {
     fsMock.existsSync.mockReturnValue(true);
   });
 
-  describe('project does not have auth', () => {
+  describe('project does not have auth in current-cloud-backend directory', () => {
     beforeEach(() => {
       setInCloudBackendDir = false;
       setInCloudBackendDirWithoutRequireVerification = false;
@@ -98,7 +98,7 @@ describe('showBuildDirChangesMessage', () => {
     });
   });
 
-  describe('project does not have auth 2', () => {
+  describe('project does not have auth AttributesRequireVerificationBeforeUpdate attribute in template', () => {
     beforeEach(() => {
       setInCloudBackendDir = false;
       setInCloudBackendDirWithoutRequireVerification = false;
