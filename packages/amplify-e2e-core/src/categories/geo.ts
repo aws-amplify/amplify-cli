@@ -1,8 +1,8 @@
+import path from 'path';
+import { readFileSync } from 'fs-extra';
 import {
   getCLIPath, nspawn as spawn, generateRandomShortId, ExecutionContext,
 } from '..';
-import path from 'path';
-import { readFileSync } from 'fs-extra';
 
 export type GeoConfig = {
   isFirstGeoResource?: boolean;
@@ -121,30 +121,10 @@ export function addGeofenceCollectionWithDefault(cwd: string, groupNames: string
 }
 
 /**
- * Add geofence collection with default values. Assume auth and cognito group are configured
- * @param cwd command directory
- */
-export function importGeofencesWithDefault(cwd: string, settings: GeoConfig = {}): Promise<void> {
-  const config = { ...defaultGeoConfig, ...settings };
-  const chain = spawn(getCLIPath(), ['geo', 'import'], { cwd, stripColors: true })
-    .wait('Provide the path to GeoJSON file containing the Geofences')
-    .sendLine(getGeoJSONFilePath(config.geoJSONFileName))
-    .wait('Select the property to use as the Geofence feature identifier:');
-  if (config.isRootLevelID) {
-    chain.sendCarriageReturn(); //root level ID
-  } else {
-    chain
-    .sendKeyDown()
-    .sendCarriageReturn() //custom property
-  }
-  return chain.runAsync();
-}
-
-/**
  * Add device tracker with default values. Assume auth and cognito group are configured
  * @param cwd command directory
  */
- export function addDeviceTrackerWithDefault(cwd: string, trackerNames: string[], settings: GeoConfig = {}, advancedSetting?: string): Promise<void> {
+export function addDeviceTrackerWithDefault(cwd: string, trackerNames: string[], settings: GeoConfig = {}, advancedSetting?: string): Promise<void> {
   const config = { ...defaultGeoConfig, ...settings };
   const chain = spawn(getCLIPath(), ['geo', 'add'], { cwd, stripColors: true })
     .wait('Select which capability you want to add:')
@@ -158,7 +138,7 @@ export function importGeofencesWithDefault(cwd: string, settings: GeoConfig = {}
     .sendCtrlA()
     .sendCarriageReturn();
 
-  for (const trackerName of trackerNames) {
+  for (const trackerName of trackerNames){
     chain.wait(`What kind of access do you want for ${trackerName} users? Select ALL that apply:`)
       .sendCtrlA()
       .sendCarriageReturn();
@@ -185,17 +165,6 @@ export function importGeofencesWithDefault(cwd: string, settings: GeoConfig = {}
  */
 export function addAdvancedSettingsOnDeviceTracker(chain: ExecutionContext, advancedSetting: string): void {
   switch (advancedSetting) {
-    case 'grantOtherAccess':
-      chain
-        .wait('Do you want to configure advanced settings?')
-        .sendYes()
-        .wait('Here are the default advanced settings. Select a setting to edit or continue (Use arrow keys)')
-        .sendCarriageReturn()
-        .wait('Users in this group can only access their own device by default. Learn more at https://docs.aws.amazon.com/location/latest/developerguide/security_iam_service-with-iam.html#security_iam_service-with-iam-id-based-policies-conditionkeys')
-        .wait('Select one or more users groups to give full access to:')
-        .sendCtrlA()
-        .sendCarriageReturn();
-      break;
     case 'linkGeofenceCollection':
       chain
         .wait('Do you want to configure advanced settings?')
@@ -222,6 +191,26 @@ export function addAdvancedSettingsOnDeviceTracker(chain: ExecutionContext, adva
       chain.wait('Do you want to configure advanced settings?').sendNo();
       break;
   }
+}
+
+/**
+ * Add geofence collection with default values. Assume auth and cognito group are configured
+ * @param cwd command directory
+ */
+export function importGeofencesWithDefault(cwd: string, settings: GeoConfig = {}): Promise<void> {
+  const config = { ...defaultGeoConfig, ...settings };
+  const chain = spawn(getCLIPath(), ['geo', 'import'], { cwd, stripColors: true })
+    .wait('Provide the path to GeoJSON file containing the Geofences')
+    .sendLine(getGeoJSONFilePath(config.geoJSONFileName))
+    .wait('Select the property to use as the Geofence feature identifier:');
+  if (config.isRootLevelID) {
+    chain.sendCarriageReturn(); //root level ID
+  } else {
+    chain
+    .sendKeyDown()
+    .sendCarriageReturn() //custom property
+  }
+  return chain.runAsync();
 }
 
 /**
@@ -347,6 +336,32 @@ export function updateSecondGeofenceCollectionAsDefault(cwd: string, groupNames:
 }
 
 /**
+ * Update an existing device tracker with given settings. Assume auth is already configured
+ * @param cwd command directory
+ */
+ export function updateDeviceTrackerWithDefault(cwd: string, groupNames: string[]): Promise<void> {
+  const chain = spawn(getCLIPath(), ['geo', 'update'], { cwd, stripColors: true })
+    .wait('Select which capability you want to update:')
+    .sendKeyDown(3)
+    .sendCarriageReturn()
+    .wait('Select the device tracker you want to update')
+    .sendCarriageReturn()
+    .wait('Restrict access by?')
+    .sendCarriageReturn()
+    .wait('Select one or more cognito groups to give access:')
+    .sendCarriageReturn();
+
+  for (const groupName of groupNames){
+    chain.wait(`What kind of access do you want for ${groupName} users? Select ALL that apply:`)
+      .sendCarriageReturn();
+  }
+
+  return chain.wait(defaultDeviceTrackerQuestion)
+    .sendYes()
+    .runAsync();
+}
+
+/**
  * Remove an existing map. Assume auth is already configured
  * @param cwd command directory
  */
@@ -445,6 +460,25 @@ export function removeFirstDefaultGeofenceCollection(cwd: string): Promise<void>
     .sendCarriageReturn()
     .runAsync()
 }
+
+/**
+ * Remove an existing default device tracker. Assume auth is already configured and three device trackers added with first default
+ * @param cwd command directory
+ */
+ export function removeFirstDefaultDeviceTracker(cwd: string): Promise<void> {
+  return spawn(getCLIPath(), ['geo', 'remove'], { cwd, stripColors: true })
+    .wait('Select which capability you want to remove:')
+    .sendKeyDown(3)
+    .sendCarriageReturn()
+    .wait('Select the device tracker you want to remove')
+    .sendCarriageReturn()
+    .wait('Are you sure you want to delete the resource?')
+    .sendConfirmYes()
+    .wait('Select the device tracker you want to set as default:')
+    .sendCarriageReturn()
+    .runAsync();
+}
+
 
 
 /**

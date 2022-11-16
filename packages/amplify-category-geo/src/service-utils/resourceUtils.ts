@@ -1,4 +1,6 @@
-import { JSONUtilities, pathManager, $TSObject, stateManager, $TSContext } from 'amplify-cli-core';
+import {
+  JSONUtilities, pathManager, $TSObject, stateManager, $TSContext,
+} from 'amplify-cli-core';
 import { category, authCategoryName } from '../constants';
 import path from 'path';
 import _ from 'lodash';
@@ -176,7 +178,7 @@ export const getServicePermissionPolicies = (
     case ServiceName.PlaceIndex:
       return getPlaceIndexIamPolicies(resourceName, crudOptions);
     case ServiceName.GeofenceCollection:
-        return getGeofenceCollectionIamPolicies(resourceName, crudOptions);
+      return getGeofenceCollectionIamPolicies(resourceName, crudOptions);
     default:
       printer.warn(`${service} not supported in category ${category}`);
   }

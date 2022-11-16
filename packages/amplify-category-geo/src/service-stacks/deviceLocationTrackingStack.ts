@@ -1,22 +1,28 @@
 /* eslint-disable no-new */
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as location from 'aws-cdk-lib/aws-location';
-import _ from 'lodash';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as fs from 'fs-extra';
+import { Effect } from 'aws-cdk-lib/aws-iam';
+import { Duration, Fn } from 'aws-cdk-lib';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
+import _ from 'lodash';
 import { DeviceLocationTrackingParameters } from '../service-utils/deviceLocationTrackingParams';
 import { BaseStack, TemplateMappings } from './baseStack';
+import { customDeviceLocationTrackingLambdaCodePath } from '../service-utils/constants';
 import { deviceLocationTrackingCrudPermissionsMap } from '../service-utils/deviceLocationTrackingConstants';
 
 type DeviceLocationTrackingStackProps = DeviceLocationTrackingParameters &
   TemplateMappings & { authResourceName: string };
 
 /**
- * Device location tracking stack class
+ * DeviceLocationTrackingStack
  */
 export class DeviceLocationTrackingStack extends BaseStack {
   protected readonly groupPermissions: string[];
   protected readonly roleAndGroupPermissionsMap: Record<string, string[]>;
+  protected readonly trackingResource: cdk.CustomResource;
   protected readonly trackingRegion: string;
   protected readonly trackerName: string;
   protected readonly authResourceName: string;
@@ -30,6 +36,7 @@ export class DeviceLocationTrackingStack extends BaseStack {
     this.trackingRegion = this.regionMapping.findInMap(cdk.Fn.ref('AWS::Region'), 'locationServiceRegion');
 
     const inputParameters: string[] = this.groupPermissions.map(
+      // eslint-disable-next-line spellcheck/spell-checker
       (group: string) => `authuserPoolGroups${group}GroupRole`,
     );
     inputParameters.push(
@@ -45,82 +52,111 @@ export class DeviceLocationTrackingStack extends BaseStack {
 
     this.parameters = this.constructInputParameters(inputParameters);
 
-    this.trackerName = cdk.Fn.join('-', [this.parameters.get('trackerName')!.valueAsString, this.parameters.get('env')!.valueAsString]);
+    this.trackerName = Fn.join('-', [this.parameters.get('trackerName')!.valueAsString, this.parameters.get('env')!.valueAsString]);
 
-    const trackerResource = this.constructCfnTrackingResource();
-    this.constructCfnTrackerConsumerResource(trackerResource);
-    this.constructTrackingPolicyResources(trackerResource);
-    this.constructOutputs(trackerResource);
+    this.trackingResource = this.constructTrackingResource();
+    this.constructTrackingPolicyResources(this.trackingResource);
+    this.constructOutputs();
   }
 
-  private constructOutputs(trackerResource: location.CfnTracker): void {
+  private constructOutputs(): void {
     new cdk.CfnOutput(this, 'Name', {
-      value: this.trackerName,
+      value: this.trackingResource.getAtt('TrackerName').toString(),
     });
     new cdk.CfnOutput(this, 'Region', {
       value: this.trackingRegion,
     });
+    const outputTrackingArn = cdk.Fn.sub('arn:aws:geo:${region}:${account}:tracker/${trackerName}', {
+      region: this.trackingRegion,
+      account: cdk.Fn.ref('AWS::AccountId'),
+      collectionName: this.trackingResource.getAtt('TrackerName').toString(),
+    });
     new cdk.CfnOutput(this, 'Arn', {
-      value: trackerResource.attrTrackerArn,
+      value: outputTrackingArn,
     });
   }
 
-  private constructCfnTrackingResource(): location.CfnTracker {
+  private constructTrackingResource(): cdk.CustomResource {
+    const geoCreateTrackingStatement = new iam.PolicyStatement({
+      effect: Effect.ALLOW,
+    });
+    geoCreateTrackingStatement.addActions('geo:CreateTracker');
+    geoCreateTrackingStatement.addAllResources();
+
+    const trackingARN = cdk.Fn.sub('arn:aws:geo:${region}:${account}:tracker/${trackerName}', {
+      region: this.trackingRegion,
+      account: cdk.Fn.ref('AWS::AccountId'),
+      trackerName: this.trackerName,
+    });
+
+    const geoUpdateDeleteTrackingStatement = new iam.PolicyStatement({
+      effect: Effect.ALLOW,
+    });
+    geoUpdateDeleteTrackingStatement.addActions('geo:UpdateTracker', 'geo:DeleteTracker');
+    geoUpdateDeleteTrackingStatement.addResources(trackingARN);
+
+    const geoTrackerConsumerStatement = new iam.PolicyStatement({
+      effect: Effect.ALLOW,
+    });
+    geoTrackerConsumerStatement.addActions('geo:AssociateTrackerConsumer', 'geo:ListTrackerConsumers', 'geo:DisassociateTrackerConsumer');
+    geoTrackerConsumerStatement.addResources(trackingARN);
+
+    // set up custom params
+
     const positionFiltering = this.parameters.get('positionFiltering')?.valueAsString;
 
-    const trackerResource = new location.CfnTracker(this, `CfnTracker`, {
-      trackerName: this.trackerName,
-      positionFiltering,
+    const customTrackingLambdaCode = fs.readFileSync(customDeviceLocationTrackingLambdaCodePath, 'utf-8');
+    const customTrackingLambda = new lambda.Function(this, 'customTrackingLambda', {
+      code: lambda.Code.fromInline(customTrackingLambdaCode),
+      handler: 'index.handler',
+      runtime: Runtime.NODEJS_14_X,
+      timeout: Duration.seconds(300),
     });
-    return trackerResource;
-  }
+    customTrackingLambda.addToRolePolicy(geoCreateTrackingStatement);
+    customTrackingLambda.addToRolePolicy(geoUpdateDeleteTrackingStatement);
+    customTrackingLambda.addToRolePolicy(geoTrackerConsumerStatement);
 
-  private constructCfnTrackerConsumerResource(trackerResource: location.CfnTracker): void {
-    const { linkedGeofenceCollections } = this.props;
-    linkedGeofenceCollections?.forEach(linkedGeofenceCollection => {
-      const linkedGeofenceCollectionArn = cdk.Fn.sub(
-        'arn:aws:geo:${region}:${account}:geofence-collection/${linkedGeofenceCollection}',
-        {
-          region: this.trackingRegion,
-          account: cdk.Fn.ref('AWS::AccountId'),
-          linkedGeofenceCollection,
-        },
-      );
-      const trackerConsumerResource = new location.CfnTrackerConsumer(
-        this,
-        `CfnTrackerConsumer-${linkedGeofenceCollection}`,
-        {
-          consumerArn: linkedGeofenceCollectionArn,
-          trackerName: this.trackerName,
-        },
-      );
-      trackerConsumerResource.addDependsOn(trackerResource);
+    const linkedGeofenceCollectionArns = this.props.linkedGeofenceCollections?.map(collection => cdk.Fn.sub(
+      'arn:aws:geo:${region}:${account}:geofence-collection/${collection}',
+      {
+        region: this.trackingRegion,
+        account: cdk.Fn.ref('AWS::AccountId'),
+        collection,
+      },
+    ));
+    const trackingCustomResource = new cdk.CustomResource(this, 'CustomTracking', {
+      serviceToken: customTrackingLambda.functionArn,
+      resourceType: 'Custom::LambdaCallout',
+      properties: {
+        trackerName: this.trackerName,
+        linkedGeofenceCollectionArns,
+        positionFiltering,
+        region: this.trackingRegion,
+        env: cdk.Fn.ref('env'),
+      },
     });
+
+    return trackingCustomResource;
   }
 
   // Grant read-only access to the Tracking Index for Authorized and/or Guest users
-  private constructTrackingPolicyResources(trackerResource: location.CfnTracker): void {
+  private constructTrackingPolicyResources(trackingResource: cdk.CustomResource): void {
     Object.keys(this.roleAndGroupPermissionsMap).forEach((group: string) => {
       const crudActions: string[] = _.uniq(_.flatten(this.roleAndGroupPermissionsMap[group]
         .map((permission: string) => deviceLocationTrackingCrudPermissionsMap[permission])));
 
-      let accessConditions;
-      if (!this.props.selectedUserGroups?.includes(group)) {
-        accessConditions = {
-          StringLike: {
-            'geo:DeviceIds': [
-              '${cognito-identity.amazonaws.com:sub}',
-            ],
-          },
-        };
-      }
+      const outputTrackingArn = cdk.Fn.sub('arn:aws:geo:${region}:${account}:tracker/${trackerName}', {
+        region: this.trackingRegion,
+        account: cdk.Fn.ref('AWS::AccountId'),
+        collectionName: trackingResource.getAtt('TrackerName').toString(),
+      });
+
       const policyDocument = new iam.PolicyDocument({
         statements: [
           new iam.PolicyStatement({
             effect: iam.Effect.ALLOW,
             actions: crudActions,
-            resources: [trackerResource.attrTrackerArn],
-            conditions: accessConditions,
+            resources: [outputTrackingArn],
           }),
         ],
       });
