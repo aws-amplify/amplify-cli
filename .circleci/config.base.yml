@@ -598,6 +598,7 @@ jobs:
             mv amplify-pkg-win-x64.exe amplify-pkg-win.exe
             tar zcvf amplify-pkg-macos.tgz amplify-pkg-macos
             tar zcvf amplify-pkg-linux.tgz amplify-pkg-linux
+            tar zcvf amplify-pkg-linux-arm64.tgz amplify-pkg-linux-arm64
             tar zcvf amplify-pkg-win.exe.tgz amplify-pkg-win.exe
       - run:
           name: Publish Amplify CLI GitHub prerelease
