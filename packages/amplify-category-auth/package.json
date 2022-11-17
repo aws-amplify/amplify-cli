@@ -52,8 +52,7 @@
   "devDependencies": {
     "@types/mime-types": "^2.1.1",
     "cloudform-types": "^4.2.0",
-    "rimraf": "^3.0.2",
-    "@aws-cdk/aws-lambda": "^1.180.0"
+    "rimraf": "^3.0.2"
   },
   "jest": {
     "collectCoverage": true,
