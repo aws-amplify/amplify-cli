@@ -85,21 +85,20 @@ function generatePkgCli {
     npx pkg -t node14-linux-x64 ../build/node_modules -o ../out/amplify-pkg-linux-x64
     npx pkg -t node14-win-x64 ../build/node_modules -o ../out/amplify-pkg-win-x64.exe
     # This will compress the binary
-    tar -czvf amplify-pkg-linux-arm64.tgz amplify-pkg-linux-arm64
-    tar -czvf amplify-pkg-linux-x64.tgz amplify-pkg-linux-x64
-    tar -czvf amplify-pkg-macos-x64.tgz amplify-pkg-macos-x64
-    tar -czvf amplify-pkg-win-x64.tgz amplify-pkg-win-x64.exe
+    tar -czvf ../out/amplify-pkg-linux-arm64.tgz ../out/amplify-pkg-linux-arm64
+    tar -czvf ../out/amplify-pkg-linux-x64.tgz ../out/amplify-pkg-linux-x64
+    tar -czvf ../out/amplify-pkg-macos-x64.tgz ../out/amplify-pkg-macos-x64
+    tar -czvf ../out/amplify-pkg-win-x64.tgz ../out/amplify-pkg-win-x64.exe
   else
     # This will generate files for our x64 binaries.
     npx pkg -t node14-macos-x64 ../build/node_modules -o ../out/amplify-pkg-macos-x64
     npx pkg -t node14-linux-x64 ../build/node_modules -o ../out/amplify-pkg-linux-x64
     npx pkg -t node14-win-x64 ../build/node_modules -o ../out/amplify-pkg-win-x64.exe
     # This will compress the binary
-    tar -czvf amplify-pkg-linux-x64.tgz amplify-pkg-linux-x64
-    tar -czvf amplify-pkg-macos-x64.tgz amplify-pkg-macos-x64
-    tar -czvf amplify-pkg-win-x64.tgz amplify-pkg-win-x64.exe
+    tar -czvf ../out/amplify-pkg-linux-x64.tgz ../out/amplify-pkg-linux-x64
+    tar -czvf ../out/amplify-pkg-macos-x64.tgz ../out/amplify-pkg-macos-x64
+    tar -czvf ../out/amplify-pkg-win-x64.tgz ../out/amplify-pkg-win-x64.exe
   fi
-
 
   cd ..
 }
@@ -109,6 +108,27 @@ function verifyPkgCli {
     du -h out/*
     echo "Sizes in bytes"
     du out/*
+
+    linux_compressed_binary_threshold_in_bytes=12
+    linux_compressed_binary_size=$(wc -c out/amplify-pkg-linux-x64.tgz | awk '{print $1}')
+    if (( linux_compressed_binary_size > linux_compressed_binary_threshold_in_bytes )); then
+      echo "Linux binary size has grown over $linux_compressed_binary_threshold_in_bytes bytes"
+      exit 1
+    fi
+
+    macos_compressed_binary_threshold_in_bytes=12
+    macos_compressed_binary_size=$(wc -c out/amplify-pkg-macos-x64.tgz | awk '{print $1}')
+    if (( macos_compressed_binary_size > macos_compressed_binary_threshold_in_bytes )); then
+      echo "MacOS binary size has grown over $macos_compressed_binary_threshold_in_bytes bytes"
+      exit 1
+    fi
+
+    win_compressed_binary_threshold_in_bytes=12
+    win_compressed_binary_size=$(wc -c out/amplify-pkg-win-x64.tgz | awk '{print $1}')
+    if (( win_compressed_binary_size > win_compressed_binary_threshold_in_bytes )); then
+      echo "Windows binary size has grown over $win_compressed_binary_threshold_in_bytes bytes"
+      exit 1
+    fi
 }
 
 function unsetNpmRegistryUrl {
