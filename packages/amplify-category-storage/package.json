@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-storage",
-  "version": "4.0.0-cdkv2.2",
+  "version": "4.0.1-beta.0",
   "description": "amplify-cli storage plugin",
   "repository": {
     "type": "git",

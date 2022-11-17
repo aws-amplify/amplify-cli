@@ -36,7 +36,7 @@
     "@aws-amplify/amplify-category-api": "^5.1.0-cdkv2.3",
     "@aws-amplify/amplify-category-auth": "3.0.0-cdkv2.2",
     "@aws-amplify/amplify-category-custom": "3.0.0-cdkv2.2",
-    "@aws-amplify/amplify-category-storage": "4.0.0-cdkv2.2",
+    "@aws-amplify/amplify-category-storage": "4.0.1-beta.0",
     "@aws-amplify/amplify-environment-parameters": "1.2.0-cdkv2.2",
     "@aws-amplify/amplify-util-uibuilder": "1.6.0-cdkv2.2",
     "@aws-amplify/graphql-auth-transformer": "^2.1.0-cdkv2.3",
