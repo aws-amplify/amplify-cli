@@ -1,5 +1,5 @@
 import { $TSAny } from 'amplify-cli-core';
-import inquirer from 'inquirer';
+import { prompter } from 'amplify-prompts';
 import { run as p12decoderRun, ICertificateInfo } from './apns-cert-p12decoder';
 import { validateFilePath } from './validate-filepath';
 
@@ -11,20 +11,12 @@ export const run = async (channelInput: $TSAny): Promise<ICertificateInfo> => {
     return p12decoderRun(channelInput);
   }
 
-  const questions = [
-    {
-      name: 'P12FilePath',
-      type: 'input',
-      message: 'The certificate file path (.p12): ',
-      validate: validateFilePath,
-    },
-    {
-      name: 'P12FilePassword',
-      type: 'input',
-      message: 'The certificate password (if any): ',
-    },
-  ];
+  const p12FilePath = await prompter.input('The certificate file path (.p12): ', { validate: validateFilePath });
+  const p12FilePassword = await prompter.input('The certificate password (if any): ');
+  const answers = {
+    P12FilePath: p12FilePath,
+    P12FilePassword: p12FilePassword,
+  };
 
-  const answers = await inquirer.prompt(questions);
   return p12decoderRun(answers);
 };
