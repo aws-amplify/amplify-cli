@@ -147,6 +147,19 @@ jobs:
     environment:
       NODE_OPTIONS: --max-old-space-size=4096
 
+  validate_cdk_version:
+    <<: *linux-e2e-executor
+    steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Validate cdk version
+          command: |
+            source .circleci/validate_cdk_version.sh
+            validateCDKVersion
+
   lint:
     <<: *linux-e2e-executor
     steps:
@@ -729,6 +742,9 @@ workflows:
                 - release
                 - /release_rc\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
+      - validate_cdk_version:
+          requires:
+            - build
       - mock_e2e_tests:
           requires:
             - build
