@@ -31,9 +31,6 @@ export const addLegacySmsNotificationChannel = async (
 /**
  * Removes all notifications channels
  */
-/**
- * removes all the notification channel
- */
 export const removeLegacyAllNotificationChannel = async (
   cwd: string,
 ): Promise<void> => spawn(getCLIPath(false), ['remove', 'notifications'], { cwd, stripColors: true })
