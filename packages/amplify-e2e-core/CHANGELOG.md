@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.4.0...@aws-amplify/amplify-e2e-core@4.5.0) (2022-11-17)
+
+
+### Bug Fixes
+
+* add default ref for unauthrole for imported auth ([#10848](https://github.com/aws-amplify/amplify-cli/issues/10848)) ([bd71707](https://github.com/aws-amplify/amplify-cli/commit/bd717077a9fe88adf66244d621aa48d7157387a8))
+* eliminate circular dependency when generating CMS assets ([#11304](https://github.com/aws-amplify/amplify-cli/issues/11304)) ([2d7e8d0](https://github.com/aws-amplify/amplify-cli/commit/2d7e8d0e6549f680a979b9cdfb0cd28bf98fb349))
+* keeps hooks intact when attaching backend ([#11179](https://github.com/aws-amplify/amplify-cli/issues/11179)) ([41caa91](https://github.com/aws-amplify/amplify-cli/commit/41caa9149680b2ca712addbbacd5234b12c4c13f))
+* parse true and false strings from env vars ([#11386](https://github.com/aws-amplify/amplify-cli/issues/11386)) ([5ed67f5](https://github.com/aws-amplify/amplify-cli/commit/5ed67f52001429b05fb902d9ec2e06960cf2a3ad))
+* uploading multiple auth trigger files ([#11254](https://github.com/aws-amplify/amplify-cli/issues/11254)) ([#11267](https://github.com/aws-amplify/amplify-cli/issues/11267)) ([b7bdcec](https://github.com/aws-amplify/amplify-cli/commit/b7bdcec939ac71c4f70ae87ece8c2a7995d4ae72))
+
+
+### Features
+
+* Nodejs graphql IAM template ([#10997](https://github.com/aws-amplify/amplify-cli/issues/10997)) ([880f7eb](https://github.com/aws-amplify/amplify-cli/commit/880f7eb3996133b31c0f498136a66488d1c8ceeb))
+
+
+
+
+
 # [4.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.3.0...@aws-amplify/amplify-e2e-core@4.4.0) (2022-10-27)
 
 
