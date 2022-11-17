@@ -84,7 +84,10 @@ class AmplifyCLIExecutionReporter {
               // this ensures only alphanumeric values are in the file name
               sanitizedSections.push(section.replace(/[^a-z0-9]/gi, '_').toLowerCase());
             }
-            const suffix = sanitizedSections.join('_');
+            let suffix = sanitizedSections.join('_');
+            if(suffix.length > 30){
+              suffix = suffix.substring(0, 30);
+            }
             const castFile = `${new Date().getTime()}_${index}_${suffix}.cast`;
             const castFilePath = path.join(publicPath, castFile);
             fs.writeFileSync(castFilePath, r.recording);
