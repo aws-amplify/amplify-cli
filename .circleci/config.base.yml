@@ -237,6 +237,19 @@ jobs:
           paths:
             - ~/repo/out
 
+  verify_pkg_binaries:
+    <<: *linux-e2e-executor
+    steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: Verify packaged CLI
+          command: |
+            source .circleci/local_publish_helpers.sh
+            verifyPkgCli
+
   graphql_e2e_tests:
     <<: *defaults
     steps:
@@ -771,6 +784,9 @@ workflows:
             - amplify-s3-upload
           requires:
             - publish_to_local_registry
+      - verify_pkg_binaries:
+          requires:
+            - build_pkg_binaries
       - amplify_sudo_install_test:
           context: amplify-ecr-image-pull
           requires:

@@ -22,11 +22,6 @@ function uploadPkgCli {
         aws configure --profile=s3-uploader set aws_secret_access_key $S3_SECRET_ACCESS_KEY
         aws configure --profile=s3-uploader set aws_session_token $S3_AWS_SESSION_TOKEN
 
-        tar -czvf amplify-pkg-linux-arm64.tgz amplify-pkg-linux-arm64
-        tar -czvf amplify-pkg-linux-x64.tgz amplify-pkg-linux-x64
-        tar -czvf amplify-pkg-macos-x64.tgz amplify-pkg-macos-x64
-        tar -czvf amplify-pkg-win-x64.tgz amplify-pkg-win-x64.exe
-
         aws --profile=s3-uploader s3 cp amplify-pkg-win-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win-x64-$(echo $hash).tgz
         aws --profile=s3-uploader s3 cp amplify-pkg-macos-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos-x64-$(echo $hash).tgz
         aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-arm64-$(echo $hash).tgz
@@ -55,7 +50,6 @@ function uploadPkgCli {
         aws configure --profile=s3-uploader set aws_secret_access_key $S3_SECRET_ACCESS_KEY
         aws configure --profile=s3-uploader set aws_session_token $S3_AWS_SESSION_TOKEN
 
-        tar -czvf amplify-pkg-linux-x64.tgz amplify-pkg-linux-x64
         aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64-$(echo $hash).tgz
     fi
 
@@ -90,16 +84,33 @@ function generatePkgCli {
     npx pkg -t node14-macos-x64 ../build/node_modules -o ../out/amplify-pkg-macos-x64
     npx pkg -t node14-linux-x64 ../build/node_modules -o ../out/amplify-pkg-linux-x64
     npx pkg -t node14-win-x64 ../build/node_modules -o ../out/amplify-pkg-win-x64.exe
+    # This will compress the binary
+    tar -czvf amplify-pkg-linux-arm64.tgz amplify-pkg-linux-arm64
+    tar -czvf amplify-pkg-linux-x64.tgz amplify-pkg-linux-x64
+    tar -czvf amplify-pkg-macos-x64.tgz amplify-pkg-macos-x64
+    tar -czvf amplify-pkg-win-x64.tgz amplify-pkg-win-x64.exe
   else
     # This will generate files for our x64 binaries.
     npx pkg -t node14-macos-x64 ../build/node_modules -o ../out/amplify-pkg-macos-x64
     npx pkg -t node14-linux-x64 ../build/node_modules -o ../out/amplify-pkg-linux-x64
     npx pkg -t node14-win-x64 ../build/node_modules -o ../out/amplify-pkg-win-x64.exe
+    # This will compress the binary
+    tar -czvf amplify-pkg-linux-x64.tgz amplify-pkg-linux-x64
+    tar -czvf amplify-pkg-macos-x64.tgz amplify-pkg-macos-x64
+    tar -czvf amplify-pkg-win-x64.tgz amplify-pkg-win-x64.exe
   fi
 
 
   cd ..
 }
+
+function verifyPkgCli {
+    echo "Human readable sizes"
+    du -h out/*
+    echo "Sizes in bytes"
+    du out/*
+}
+
 function unsetNpmRegistryUrl {
     # Restore the original NPM and Yarn registry URLs
     npm set registry "https://registry.npmjs.org/"
