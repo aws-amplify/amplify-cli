@@ -237,6 +237,30 @@ jobs:
           paths:
             - ~/repo/out
 
+  build_pkg_binaries_linux:
+    <<: *linux-e2e-executor
+    steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - restore_cache:
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: Start verdaccio and package CLI
+          command: |
+            source .circleci/local_publish_helpers.sh
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setNpmRegistryUrlToLocal
+            changeNpmGlobalPath
+            generatePkgCliLinux
+            unsetNpmRegistryUrl
+            uploadPkgCli
+      - save_cache:
+          key: amplify-pkg-binaries-linux-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ~/repo/out
+
   verify_pkg_binaries:
     <<: *linux-e2e-executor
     steps:
@@ -778,6 +802,13 @@ workflows:
           requires:
             - build
       - build_pkg_binaries:
+          context:
+            - e2e-auth-credentials
+            - e2e-test-context
+            - amplify-s3-upload
+          requires:
+            - publish_to_local_registry
+      - build_pkg_binaries_linux:
           context:
             - e2e-auth-credentials
             - e2e-test-context

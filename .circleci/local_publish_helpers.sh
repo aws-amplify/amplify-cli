@@ -103,6 +103,42 @@ function generatePkgCli {
   cd ..
 }
 
+function generatePkgCliLinux {
+  cd pkg
+
+  # install package depedencies
+  cp ../yarn.lock ./
+  yarn --production
+
+  # Optimize package size
+  yarn rimraf **/*.d.ts **/*.js.map **/*.d.ts.map **/README.md **/readme.md **/Readme.md **/CHANGELOG.md **/changelog.md **/Changelog.md **/HISTORY.md **/history.md **/History.md
+
+  # Restore .d.ts files required by @aws-amplify/codegen-ui at runtime
+  cp ../node_modules/typescript/lib/*.d.ts node_modules/typescript/lib/
+
+  # Transpile code for packaging
+  npx babel node_modules --extensions '.js,.jsx,.es6,.es,.ts' --copy-files --include-dotfiles -d ../build/node_modules
+
+  # Include third party licenses
+  cp ../Third_Party_Licenses.txt ../build/node_modules
+
+  # Build pkg cli
+  cp package.json ../build/node_modules/package.json
+  if [[ "$CIRCLE_BRANCH" == "release" ]] || [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
+    # This will generate files for our x64 binaries.
+    npx pkg -t node14-linux-x64 ../build/node_modules -o ../out/amplify-pkg-linux-x64
+    # This will compress the binary
+    tar -czvf ../out/amplify-pkg-linux-x64.tgz ../out/amplify-pkg-linux-x64
+  else
+    # This will generate files for our x64 binaries.
+    npx pkg -t node14-linux-x64 ../build/node_modules -o ../out/amplify-pkg-linux-x64
+    # This will compress the binary
+    tar -czvf ../out/amplify-pkg-linux-x64.tgz ../out/amplify-pkg-linux-x64
+  fi
+
+  cd ..
+}
+
 function verifyPkgCli {
     echo "Human readable sizes"
     du -h out/*
