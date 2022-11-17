@@ -107,26 +107,26 @@ function verifyPkgCli {
     echo "Human readable sizes"
     du -h out/*
     echo "Sizes in bytes"
-    du out/*
+    wc -c out/*
 
-    linux_compressed_binary_threshold_in_bytes=12
+    linux_compressed_binary_threshold_in_bytes=$((200 * 1024 * 1024))
     linux_compressed_binary_size=$(wc -c out/amplify-pkg-linux-x64.tgz | awk '{print $1}')
     if (( linux_compressed_binary_size > linux_compressed_binary_threshold_in_bytes )); then
-      echo "Linux binary size has grown over $linux_compressed_binary_threshold_in_bytes bytes"
+      echo "Linux compressed binary size has grown over $linux_compressed_binary_threshold_in_bytes bytes"
       exit 1
     fi
 
-    macos_compressed_binary_threshold_in_bytes=12
+    macos_compressed_binary_threshold_in_bytes=$((200 * 1024 * 1024))
     macos_compressed_binary_size=$(wc -c out/amplify-pkg-macos-x64.tgz | awk '{print $1}')
     if (( macos_compressed_binary_size > macos_compressed_binary_threshold_in_bytes )); then
-      echo "MacOS binary size has grown over $macos_compressed_binary_threshold_in_bytes bytes"
+      echo "MacOS compressed binary size has grown over $macos_compressed_binary_threshold_in_bytes bytes"
       exit 1
     fi
 
-    win_compressed_binary_threshold_in_bytes=12
+    win_compressed_binary_threshold_in_bytes=$((200 * 1024 * 1024))
     win_compressed_binary_size=$(wc -c out/amplify-pkg-win-x64.tgz | awk '{print $1}')
     if (( win_compressed_binary_size > win_compressed_binary_threshold_in_bytes )); then
-      echo "Windows binary size has grown over $win_compressed_binary_threshold_in_bytes bytes"
+      echo "Windows compressed binary size has grown over $win_compressed_binary_threshold_in_bytes bytes"
       exit 1
     fi
 }
