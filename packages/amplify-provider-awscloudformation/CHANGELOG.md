@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.9.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.9.0...amplify-provider-awscloudformation@6.9.1) (2022-11-17)
+
+
+### Bug Fixes
+
+* add default ref for unauthrole for imported auth ([#10848](https://github.com/aws-amplify/amplify-cli/issues/10848)) ([bd71707](https://github.com/aws-amplify/amplify-cli/commit/bd717077a9fe88adf66244d621aa48d7157387a8))
+* eliminate circular dependency when generating CMS assets ([#11304](https://github.com/aws-amplify/amplify-cli/issues/11304)) ([2d7e8d0](https://github.com/aws-amplify/amplify-cli/commit/2d7e8d0e6549f680a979b9cdfb0cd28bf98fb349))
+* uploading multiple auth trigger files ([#11254](https://github.com/aws-amplify/amplify-cli/issues/11254)) ([#11267](https://github.com/aws-amplify/amplify-cli/issues/11267)) ([b7bdcec](https://github.com/aws-amplify/amplify-cli/commit/b7bdcec939ac71c4f70ae87ece8c2a7995d4ae72))
+
+
+
+## 10.3.2 (2022-10-25)
+
+
+
+
+
 # [6.9.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@6.8.1...amplify-provider-awscloudformation@6.9.0) (2022-10-27)
 
 
