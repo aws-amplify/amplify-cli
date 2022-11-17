@@ -27,8 +27,8 @@
     "@aws-amplify/amplify-category-custom": "3.0.0-cdkv2.2",
     "@aws-amplify/amplify-environment-parameters": "1.2.0-cdkv2.2",
     "@aws-amplify/cli-extensibility-helper": "3.0.0-cdkv2.2",
-    "@aws-amplify/graphql-transformer-core": "^1.1.0-cdkv2.1",
-    "@aws-amplify/graphql-transformer-interfaces": "^2.1.0-cdkv2.1",
+    "@aws-amplify/graphql-transformer-core": "^1.1.0-cdkv2.2",
+    "@aws-amplify/graphql-transformer-interfaces": "^2.1.0-cdkv2.2",
     "amplify-cli-core": "4.0.0-cdkv2.2",
     "amplify-cli-logger": "1.2.1",
     "amplify-codegen": "^3.3.1",
@@ -69,7 +69,7 @@
     "xstate": "^4.14.0"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-interfaces": "^2.1.0-cdkv2.1",
+    "@aws-amplify/graphql-transformer-interfaces": "^2.1.0-cdkv2.2",
     "@types/columnify": "^1.5.0",
     "@types/deep-diff": "^1.0.0",
     "@types/folder-hash": "^4.0.1",
