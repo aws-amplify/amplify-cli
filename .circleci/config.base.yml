@@ -157,8 +157,7 @@ jobs:
       - run:
           name: Validate cdk version
           command: |
-            source .circleci/validate_cdk_version.sh
-            validateCDKVersion
+            yarn ts-node .circleci/validate_cdk_version.ts
 
   lint:
     <<: *linux-e2e-executor
