@@ -47,7 +47,7 @@ export class JSONUtilities {
       mode?: number;
       minify?: boolean;
       secureFile?: boolean;
-      stable?: boolean; // if true, will print object keys in alphabetical order
+      orderedKeys?: boolean; // if true, will print object keys in alphabetical order
     },
   ): void => {
     if (!fileName) {
@@ -66,7 +66,7 @@ export class JSONUtilities {
 
     const jsonString = JSONUtilities.stringify(data, {
       minify: mergedOptions.minify,
-      stable: mergedOptions.stable,
+      orderedKeys: mergedOptions.orderedKeys,
     });
 
     // Create nested directories if needed
@@ -122,7 +122,7 @@ export class JSONUtilities {
     data: unknown,
     options?: {
       minify?: boolean;
-      stable?: boolean; // if true, will print object keys in alphabetical order
+      orderedKeys?: boolean; // if true, will print object keys in alphabetical order
     },
   ): string | undefined => {
     if (!data) {
@@ -131,7 +131,7 @@ export class JSONUtilities {
 
     const mergedOptions = {
       minify: false,
-      stable: false,
+      orderedKeys: false,
       ...options,
     };
 
@@ -139,7 +139,7 @@ export class JSONUtilities {
 
     let sortKeys;
 
-    if (mergedOptions.stable) {
+    if (mergedOptions.orderedKeys) {
       const allKeys: string[] = [];
       // using JSON.stringify to walk the object and push all keys onto a list
       JSON.stringify(data, (k, v) => { allKeys.push(k); return v; });

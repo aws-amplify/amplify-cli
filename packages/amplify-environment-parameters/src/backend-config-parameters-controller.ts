@@ -4,35 +4,40 @@ import {
   AmplifyError,
 } from 'amplify-cli-core';
 import Ajv from 'ajv';
-import { ParameterMap } from './parameter-map';
-import parameterMapSchema from './schemas/ParameterMap.schema.json';
+import { BackendParameters } from './backend-parameters';
+import parameterMapSchema from './schemas/BackendParameters.schema.json';
 
 /**
  * Interface for controller that maps parameters to resources that depend on those parameters
  */
-export type IParameterMapController = {
+export type IBackendParametersController = {
   save: () => Promise<void>,
-  addParameter: (name: string, usedBy: ResourceTuple[]) => IParameterMapController,
-  addAllParameters: (parameterMap: ParameterMap) => IParameterMapController,
-  removeParameter: (name: string) => IParameterMapController,
-  removeAllParameters: () => IParameterMapController,
-  getParameters: () => Readonly<ParameterMap>,
+  addParameter: (name: string, usedBy: ResourceTuple[]) => IBackendParametersController,
+  addAllParameters: (parameterMap: BackendParameters) => IBackendParametersController,
+  removeParameter: (name: string) => IBackendParametersController,
+  removeAllParameters: () => IBackendParametersController,
+  getParameters: () => Readonly<BackendParameters>,
 }
 
-let backendConfigParametersControllerInstance: IParameterMapController;
+let localBackendParametersController: IBackendParametersController;
 
 /**
- * Get a singleton instance of an IParameterMapController that uses the `backend-config.json` file to store the mapping
+ * Get a singleton instance of an IParameterMapController
+ *
+ * The underlying instance is an instance of LocalBackendParametersController
  */
-export const getBackendConfigParametersControllerSingleton = (): IParameterMapController => {
-  if (backendConfigParametersControllerInstance === undefined) {
-    backendConfigParametersControllerInstance = new BackendConfigParameterMapController(backendConfigParameterMapSupplier());
+export const getParametersControllerInstance = (): IBackendParametersController => {
+  if (localBackendParametersController === undefined) {
+    localBackendParametersController = new LocalBackendParametersController(backendConfigParameterMapSupplier());
   }
-  return backendConfigParametersControllerInstance;
+  return localBackendParametersController;
 };
 
-class BackendConfigParameterMapController implements IParameterMapController {
-  constructor(private parameterMap: ParameterMap) {}
+/**
+ * Implementation of IBackendParametersController that writes the parameter map to the `backend-config.json` file
+ */
+class LocalBackendParametersController implements IBackendParametersController {
+  constructor(private parameterMap: BackendParameters) {}
 
   async save(): Promise<void> {
     // if there's no backend config file assume that the project has been deleted or something else has failed
@@ -48,37 +53,37 @@ class BackendConfigParameterMapController implements IParameterMapController {
     stateManager.setBackendConfig(undefined, backendConfig);
   }
 
-  addParameter(name: string, usedBy: ResourceTuple[]): IParameterMapController {
+  addParameter(name: string, usedBy: ResourceTuple[]): IBackendParametersController {
     this.parameterMap[name] = {
       usedBy,
     };
     return this;
   }
 
-  addAllParameters(parameterMap: ParameterMap): IParameterMapController {
+  addAllParameters(parameterMap: BackendParameters): IBackendParametersController {
     Object.entries(parameterMap).forEach(([parameterName, parameterConfig]) => {
       this.parameterMap[parameterName] = parameterConfig;
     });
     return this;
   }
 
-  removeParameter(name: string): IParameterMapController {
+  removeParameter(name: string): IBackendParametersController {
     delete this.parameterMap[name];
     return this;
   }
 
-  removeAllParameters(): IParameterMapController {
+  removeAllParameters(): IBackendParametersController {
     this.parameterMap = {};
     return this;
   }
 
-  getParameters(): Readonly<ParameterMap> {
+  getParameters(): Readonly<BackendParameters> {
     return this.parameterMap;
   }
 }
 
-const backendConfigParameterMapSupplier = (): ParameterMap => {
-  const uncheckedParamMap = stateManager.getBackendConfig(undefined, { throwIfNotExist: false })?.parameters || {};
+const backendConfigParameterMapSupplier = (): BackendParameters => {
+  const uncheckedParamMap = stateManager.getBackendConfig(undefined, { throwIfNotExist: false }, true)?.parameters || {};
   const ajv = new Ajv();
   const validator = ajv.compile(parameterMapSchema);
   if (!validator(uncheckedParamMap)) {
@@ -89,5 +94,5 @@ const backendConfigParameterMapSupplier = (): ParameterMap => {
       details: validator.errors?.map(err => JSON.stringify(err, undefined, 2)).join('\n'),
     });
   }
-  return uncheckedParamMap as ParameterMap;
+  return uncheckedParamMap as BackendParameters;
 };

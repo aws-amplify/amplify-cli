@@ -23,7 +23,7 @@
     "watch": "tsc -w",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules src/schemas",
     "test": "jest --logHeapUsage",
-    "generate-schemas": "mkdirp lib/schemas src/schemas && ts-json-schema-generator --path 'src/parameter-map.ts' --type 'ParameterMap' --no-type-check --out lib/schemas/ParameterMap.schema.json && cp lib/schemas/ParameterMap.schema.json src/schemas/ParameterMap.schema.json"
+    "generate-schemas": "mkdirp lib/schemas src/schemas && ts-json-schema-generator --path 'src/backend-parameters.d.ts' --type 'BackendParameters' --no-type-check --out lib/schemas/BackendParameters.schema.json && cp lib/schemas/BackendParameters.schema.json src/schemas/BackendParameters.schema.json"
   },
   "dependencies": {
     "amplify-cli-core": "3.3.0",

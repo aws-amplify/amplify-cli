@@ -2,7 +2,7 @@ import {
   AmplifyFault, pathManager, stateManager,
 } from 'amplify-cli-core';
 import _ from 'lodash';
-import { getBackendConfigParametersControllerSingleton, IParameterMapController } from './backend-config-parameters-controller';
+import { getParametersControllerInstance, IBackendParametersController } from './backend-config-parameters-controller';
 import { ResourceParameterManager } from './resource-parameter-manager';
 
 const envParamManagerMap: Record<string, EnvironmentParameterManager> = {};
@@ -14,7 +14,7 @@ export const ensureEnvParamManager = async (
   envName: string = stateManager.getLocalEnvInfo().envName,
 ): Promise<{instance: EnvironmentParameterManager}> => {
   if (!envParamManagerMap[envName]) {
-    const envManager = new EnvironmentParameterManager(envName, getBackendConfigParametersControllerSingleton());
+    const envManager = new EnvironmentParameterManager(envName, getParametersControllerInstance());
     await envManager.init();
     envParamManagerMap[envName] = envManager;
   }
@@ -51,7 +51,7 @@ export const saveAll = async (): Promise<void> => {
  */
 class EnvironmentParameterManager implements IEnvironmentParameterManager {
   private resourceParamManagers: Record<string, ResourceParameterManager> = {};
-  constructor(private readonly envName: string, private readonly parameterMapController: IParameterMapController) {}
+  constructor(private readonly envName: string, private readonly parameterMapController: IBackendParametersController) {}
   /**
    * For now this method is synchronous but it will eventually be async and load params from the service.
    * This is why it's not part of the class constructor
@@ -117,7 +117,7 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
       const resourceParams = paramManager.getAllParams();
       Object.entries(resourceParams)
         .forEach(([paramName]) => {
-          const ssmParamName = getSSMParamName(category, resourceName, paramName);
+          const ssmParamName = getParameterStoreKey(category, resourceName, paramName);
           this.parameterMapController.addParameter(ssmParamName, [{ category, resourceName }]);
         });
     });
@@ -152,7 +152,7 @@ export type IEnvironmentParameterManager = {
   save: () => void;
 }
 
-const getSSMParamName = (
+const getParameterStoreKey = (
   categoryName: string,
   resourceName: string,
   paramName: string,

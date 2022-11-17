@@ -5,7 +5,7 @@ import { ResourceTuple } from 'amplify-cli-core';
  *
  * If you rename this type, you'll need to update the generate-schemas script in package.json to reference the new name
  */
-export type ParameterMap = Record<ParameterName, ParameterConfig>;
+export type BackendParameters = Record<ParameterName, ParameterConfig>;
 
 type ParameterName = string;
 

@@ -49,7 +49,7 @@ const getSelectedResources = async (context: $TSContext, resourceName?: string) 
 export const generateDependentResourcesType = async (): Promise<void> => {
   const resourceDirPath = path.join(pathManager.getBackendDirPath(), TYPES_DIR_NAME);
   const target = path.join(resourceDirPath, AMPLIFY_RESOURCES_TYPE_DEF_FILENAME);
-  const dependentResourceAttributesFileContent = `export type AmplifyDependentResourcesAttributes = ${JSONUtilities.stringify(getAllResources(), { stable: true })}`;
+  const dependentResourceAttributesFileContent = `export type AmplifyDependentResourcesAttributes = ${JSONUtilities.stringify(getAllResources(), { orderedKeys: true })}`;
 
   await fs.ensureDir(path.dirname(target));
   await fs.writeFile(target, dependentResourceAttributesFileContent);

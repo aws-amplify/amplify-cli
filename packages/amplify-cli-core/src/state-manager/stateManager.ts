@@ -300,13 +300,13 @@ export class StateManager {
   setBackendConfig = (projectPath: string | undefined, backendConfig: $TSAny): void => {
     const filePath = pathManager.getBackendConfigFilePath(projectPath);
 
-    JSONUtilities.writeJson(filePath, backendConfig, { stable: true });
+    JSONUtilities.writeJson(filePath, backendConfig, { orderedKeys: true });
   };
 
   setCurrentBackendConfig = (projectPath: string | undefined, backendConfig: $TSAny): void => {
     const filePath = pathManager.getCurrentBackendConfigFilePath(projectPath);
 
-    JSONUtilities.writeJson(filePath, backendConfig, { stable: true });
+    JSONUtilities.writeJson(filePath, backendConfig, { orderedKeys: true });
   };
 
   setMeta = (projectPath: string | undefined, meta: $TSMeta): void => {
