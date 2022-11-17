@@ -122,6 +122,13 @@ function verifyPkgCli {
       echo "Windows compressed binary size has grown over $win_compressed_binary_threshold_in_bytes bytes"
       exit 1
     fi
+
+    arm_compressed_binary_threshold_in_bytes=$((150 * 1024 * 1024))
+    arm_compressed_binary_size=$(wc -c out/amplify-pkg-linux-arm64.tgz | awk '{print $1}')
+    if (( arm_compressed_binary_size > arm_compressed_binary_threshold_in_bytes )); then
+      echo "Windows compressed binary size has grown over $arm_compressed_binary_threshold_in_bytes bytes"
+      exit 1
+    fi
 }
 
 function unsetNpmRegistryUrl {
