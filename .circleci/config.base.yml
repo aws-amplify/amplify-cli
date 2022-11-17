@@ -36,12 +36,21 @@ executors:
     environment:
       AMPLIFY_DIR: C:/home/circleci/repo/out
       AMPLIFY_PATH: C:/home/circleci/repo/out/amplify.exe
-
-  l: &linux-e2e-executor
+# If you update this name, make sure to update it in split-e2e-tests.ts as well
+  l_large: &linux-e2e-executor-large
     docker:
       - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
     resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
+# If you update this name, make sure to update it in split-e2e-tests.ts as well
+  l_medium: &linux-e2e-executor-medium
+    docker:
+      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
+    resource_class: medium
     environment:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
@@ -51,7 +60,7 @@ defaults: &defaults
   parameters:
     os:
       type: executor
-      default: l
+      default: l_medium
   executor: << parameters.os >>
 
 clean_e2e_resources: &clean_e2e_resources
@@ -89,8 +98,8 @@ jobs:
     parameters:
       os:
         type: executor
-        default: l
-    executor: l
+        default: l_large
+    executor: l_large
     steps:
       - checkout
       - run: yarn run production-build
@@ -132,7 +141,7 @@ jobs:
                   - .cache
                   - .ssh
   test:
-    <<: *linux-e2e-executor
+    <<: *linux-e2e-executor-large
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -148,7 +157,7 @@ jobs:
       NODE_OPTIONS: --max-old-space-size=4096
 
   lint:
-    <<: *linux-e2e-executor
+    <<: *linux-e2e-executor-large
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -157,7 +166,7 @@ jobs:
       - run: chmod +x .circleci/lint_pr.sh && ./.circleci/lint_pr.sh
 
   mock_e2e_tests:
-    <<: *linux-e2e-executor
+    <<: *linux-e2e-executor-large
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -176,7 +185,7 @@ jobs:
           path: packages/amplify-util-mock/
 
   publish_to_local_registry:
-    <<: *linux-e2e-executor
+    <<: *linux-e2e-executor-large
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -214,7 +223,7 @@ jobs:
             - ~/repo/.amplify-pkg-version
 
   upload_pkg_binaries:
-    <<: *linux-e2e-executor
+    <<: *linux-e2e-executor-large
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -237,7 +246,7 @@ jobs:
             - ~/repo/out
 
   build_pkg_binaries_linux:
-    <<: *linux-e2e-executor
+    <<: *linux-e2e-executor-large
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -260,7 +269,7 @@ jobs:
             - ~/repo/out
 
   build_pkg_binaries_macos:
-    <<: *linux-e2e-executor
+    <<: *linux-e2e-executor-large
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -283,7 +292,7 @@ jobs:
             - ~/repo/out
 
   build_pkg_binaries_win:
-    <<: *linux-e2e-executor
+    <<: *linux-e2e-executor-large
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -306,7 +315,7 @@ jobs:
             - ~/repo/out
 
   build_pkg_binaries_arm:
-    <<: *linux-e2e-executor
+    <<: *linux-e2e-executor-large
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -329,7 +338,7 @@ jobs:
             - ~/repo/out
 
   verify_pkg_binaries:
-    <<: *linux-e2e-executor
+    <<: *linux-e2e-executor-large
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -392,7 +401,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: l
+        default: l_medium
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -404,7 +413,9 @@ jobs:
                 at: ~/.
       - when:
           condition:
-            equal: [*linux-e2e-executor, << parameters.os >>]
+            or:
+              - equal: [*linux-e2e-executor-large, << parameters.os >>]
+              - equal: [*linux-e2e-executor-medium, << parameters.os >>]
           steps:
             - restore_cache:
                 key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -665,7 +676,7 @@ jobs:
           path: /root/aws-amplify-cypress-api/cypress/screenshots
 
   deploy:
-    <<: *linux-e2e-executor
+    <<: *linux-e2e-executor-large
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -689,7 +700,7 @@ jobs:
             bash ./.circleci/publish.sh
       - run: *scan_e2e_test_artifacts
   github_prerelease:
-    <<: *linux-e2e-executor
+    <<: *linux-e2e-executor-large
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -717,7 +728,7 @@ jobs:
             yarn ts-node scripts/github-prerelease.ts $version $commit
 
   github_prerelease_install_sanity_check:
-    <<: *linux-e2e-executor
+    <<: *linux-e2e-executor-large
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -734,7 +745,7 @@ jobs:
           command: |
             amplify version
   github_release:
-    <<: *linux-e2e-executor
+    <<: *linux-e2e-executor-large
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -749,7 +760,7 @@ jobs:
             version=$(cat .amplify-pkg-version)
             yarn ts-node scripts/github-release.ts $version $commit
   cleanup_resources:
-    <<: *linux-e2e-executor
+    <<: *linux-e2e-executor-large
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -767,7 +778,7 @@ jobs:
     working_directory: ~/repo
 
   cleanup_resources_after_e2e_runs:
-    <<: *linux-e2e-executor
+    <<: *linux-e2e-executor-large
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -785,7 +796,7 @@ jobs:
     working_directory: ~/repo
 
   wait_for_all:
-    <<: *linux-e2e-executor
+    <<: *linux-e2e-executor-medium
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -802,7 +813,7 @@ jobs:
     working_directory: ~/repo
 
 workflows:
-  version: 2
+  version: 3
   build_test_deploy:
     jobs:
       - build:
@@ -1104,7 +1115,7 @@ commands:
     parameters:
       os:
         type: executor
-        default: l
+        default: l_large
     steps:
       - when:
           condition:
@@ -1129,7 +1140,9 @@ commands:
 
       - when:
           condition:
-            equal: [*linux-e2e-executor, << parameters.os >>]
+            or:
+              - equal: [*linux-e2e-executor-large, << parameters.os >>]
+              - equal: [*linux-e2e-executor-medium, << parameters.os >>]
           steps:
             - run:
                 name: Symlink Amplify packaged CLI
@@ -1161,7 +1174,7 @@ commands:
     parameters:
       os:
         type: executor
-        default: l
+        default: l_medium
     steps:
       - when:
           condition:
@@ -1177,7 +1190,9 @@ commands:
                 no_output_timeout: 60m
       - when:
           condition:
-            equal: [*linux-e2e-executor, << parameters.os >>]
+            or:
+              - equal: [*linux-e2e-executor-large, << parameters.os >>]
+              - equal: [*linux-e2e-executor-medium, << parameters.os >>]
           steps:
             - run:
                 name: Run E2e Tests
@@ -1192,7 +1207,7 @@ commands:
     parameters:
       os:
         type: executor
-        default: l
+        default: l_large
     steps:
       - run:
           name: Scan E2E artifacts
@@ -1209,7 +1224,7 @@ commands:
     parameters:
       os:
         type: executor
-        default: l
+        default: l_large
     steps:
       - run:
           name: Clean job resources

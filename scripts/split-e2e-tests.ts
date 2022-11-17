@@ -85,6 +85,10 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
   'auth_5f_pkg',
 ];
 
+// some tests may require a larger executor, specify those here
+const USE_LINUX_LARGE_VM: string[] = [
+];
+
 // Ensure to update packages/amplify-e2e-tests/src/cleanup-e2e-resources.ts is also updated this gets updated
 const AWS_REGIONS_TO_RUN_TESTS = [
   'us-east-2',
@@ -334,13 +338,15 @@ function splitTests(
           if (typeof workflowJob === 'string') {
             return newJobName;
           } else {
+            // for the most up-to-date list of executors for e2e, see the config.base.yml file
+            let linuxVMSize = USE_LINUX_LARGE_VM.includes(newJobName) ? 'l_large' : 'l_medium';
             return {
               [newJobName]: {
                 ...Object.values(workflowJob)[0],
                 requires: [...(requires ? [requires] : workflowJob[jobName].requires || [])],
                 matrix: {
                   parameters: {
-                    os: WINDOWS_TEST_ALLOWLIST.includes(newJobName) ? ['l', 'w'] : ['l'],
+                    os: WINDOWS_TEST_ALLOWLIST.includes(newJobName) ? [linuxVMSize, 'w'] : [linuxVMSize],
                   },
                 },
               },
