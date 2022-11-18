@@ -41,6 +41,17 @@ describe('init', () => {
   });
 });
 
+describe('setParam', () => {
+  it('removes key when value is set to undefined', async () => {
+    const envParamManager = (await ensureEnvParamManager()).instance;
+    const testParamManager = envParamManager.getResourceParamManager('test', 'testing');
+    testParamManager.setParam('something', 'a value');
+    testParamManager.setParam('something', undefined as unknown as string);
+    expect(testParamManager.getAllParams()).toEqual({});
+    envParamManager.removeResourceParamManager('test', 'testing');
+  });
+});
+
 describe('save', () => {
   it('stores resources with no params as empty object', async () => {
     const envParamManager = (await ensureEnvParamManager()).instance;
