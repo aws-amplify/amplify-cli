@@ -5,14 +5,14 @@ import _ from 'lodash';
 import { getParametersControllerInstance, IBackendParametersController } from './backend-config-parameters-controller';
 import { ResourceParameterManager } from './resource-parameter-manager';
 
-const envParamManagerMap: Record<string, EnvironmentParameterManager> = {};
+const envParamManagerMap: Record<string, IEnvironmentParameterManager> = {};
 
 /**
  * Returns singleton instance of param manager for the given environment, or initializes one if it doesn't exist
  */
 export const ensureEnvParamManager = async (
   envName: string = stateManager.getLocalEnvInfo().envName,
-): Promise<{instance: EnvironmentParameterManager}> => {
+): Promise<{instance: IEnvironmentParameterManager}> => {
   if (!envParamManagerMap[envName]) {
     const envManager = new EnvironmentParameterManager(envName, getParametersControllerInstance());
     await envManager.init();
@@ -27,7 +27,7 @@ export const ensureEnvParamManager = async (
  * Returns the singleton instance of param manager for the given environment, or throws if it doesn't exist.
  * This function provides a way to get a reference to the parameter manager synchronously as long as it has previously been initialized
  */
-export const getEnvParamManager = (envName: string = stateManager.getLocalEnvInfo().envName): EnvironmentParameterManager => {
+export const getEnvParamManager = (envName: string = stateManager.getLocalEnvInfo().envName): IEnvironmentParameterManager => {
   if (envParamManagerMap[envName]) {
     return envParamManagerMap[envName];
   }
