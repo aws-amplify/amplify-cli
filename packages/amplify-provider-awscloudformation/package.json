@@ -21,7 +21,8 @@
     "test": "yarn jest",
     "test-ci": "yarn jest --ci",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
     "@aws-amplify/amplify-category-custom": "2.5.5",

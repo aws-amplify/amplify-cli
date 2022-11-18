@@ -26,7 +26,8 @@
     "clean": "rimraf ./lib tsconfig.tsbuildinfo tsconfig.tests.tsbuildinfo node_modules",
     "watch": "tsc -w",
     "start": "node ./lib/index.js",
-    "test": "jest --logHeapUsage --forceExit"
+    "test": "jest --logHeapUsage --forceExit",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
     "@graphql-tools/schema": "^8.3.1",
