@@ -1,7 +1,6 @@
 # Amplify CLI Team owns the full repo by default.
 * @aws-amplify/amplify-cli
 
-# Add Data team folks focused on GQL transform/codegen to ownership for packages which will be migrated, in addition to the existing cli team. We are using individuals, since we don't want to expose write permissions for all 20 people in the `data` team currently..
-/packages/amplify-category-api @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
-/packages/amplify-graphiql-explorer @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
-/packages/amplify-velocity-template @aws-amplify/amplify-cli @marcvberg @phani-srikar @sundersc @alharris-at
+# Add Data team folks focused on GQL transform/codegen to ownership for packages which will be migrated, in addition to the existing cli team.
+/packages/amplify-graphiql-explorer @aws-amplify/amplify-cli @aws-amplify/amplify-data-buildtime
+/packages/amplify-velocity-template @aws-amplify/amplify-cli @aws-amplify/amplify-data-buildtime

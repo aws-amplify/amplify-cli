@@ -72,5 +72,7 @@ export enum AccessType {
   RasterEsriImagery = "RasterEsriImagery",
   VectorHereBerlin = "VectorHereBerlin",
   VectorHereExplore = "VectorHereExplore",
-  VectorHereExploreTruck = "VectorHereExploreTruck"
+  VectorHereExploreTruck = "VectorHereExploreTruck",
+  RasterHereExploreSatellite = "RasterHereExploreSatellite",
+  HybridHereExploreSatellite = "HybridHereExploreSatellite"
 }

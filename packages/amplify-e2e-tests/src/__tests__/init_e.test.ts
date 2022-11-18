@@ -65,5 +65,12 @@ describe('amplify init e', () => {
     await addEnvironment(projRoot, { envName: 'envb' });
     const newestEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(newestEnvMeta.AuthRoleName).toContain('mockRole');
+
+    // test special scenario where override.js is manually edited by customer & is invalid
+    // this should throw when creating a new environment
+    const destOverrideJSFilePath = path.join(projRoot, 'amplify', 'backend', 'awscloudformation', 'build', 'override.js');
+    const srcInvalidOverrideJSRuntimeError = path.join(__dirname, '..', '..', 'overrides', 'override-js-error.txt');
+    fs.copyFileSync(srcInvalidOverrideJSRuntimeError, destOverrideJSFilePath);
+    await expect(addEnvironment(projRoot, { envName: 'envc' })).rejects.toThrowError();
   });
 });
