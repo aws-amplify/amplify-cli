@@ -164,10 +164,16 @@ function filterInputs(input, question, getAllMaps, context, currentAnswers) {
             const providerKey = Object.keys(attrMap[choice.value])[index];
             let providerName = providerKey.charAt(0).toUpperCase() + providerKey.slice(1);
             if (providerName === 'Loginwithamazon') {
-              providerName = 'Login With Amazon';
+              providerName = 'Login with Amazon';
             }
             if (providerName === 'Signinwithapple') {
               providerName = 'Sign in with Apple';
+            }
+            if(providerName === 'Facebook'){
+              providerName = 'Facebook Login'
+            }
+            if(providerName === 'Google'){
+              providerName = 'Sign in with Google'
             }
             choice.missingProviders = choice.missingProviders.length < 1 ? [providerName] : choice.missingProviders.concat(providerName);
           }
