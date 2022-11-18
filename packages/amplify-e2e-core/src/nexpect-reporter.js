@@ -64,15 +64,31 @@ class AmplifyCLIExecutionReporter {
     fs.ensureDirSync(publicPath);
 
     const processedResults = results.testResults.map(result => {
+      // result is Array of TestResult: https://github.com/facebook/jest/blob/ac57282299c383320845fb9a026719de7ed3ee5e/packages/jest-test-result/src/types.ts#L90
       const resultCopy = { ...result };
       delete resultCopy.CLITestRunner;
       return {
         ...resultCopy,
+        // each test result has an array of 'AssertionResult'
         testResults: result.testResults.map(r => {
           const recordings = mergeCliLog(r, result.CLITestRunner.logs.children, r.ancestorTitles);
 
-          const recordingWithPath = recordings.map(r => {
-            const castFile = `${uuid()}.cast`;
+          const recordingWithPath = recordings.map((r, index) => {
+            // the first command is always 'amplify', but r.cmd is the full path to the cli.. so this is more readable
+            const commandAndParams = ['amplify'];
+            if(r.params){
+              commandAndParams.push(...r.params);
+            }
+            let sanitizedSections = [];
+            for(let section of commandAndParams){
+              // this ensures only alphanumeric values are in the file name
+              sanitizedSections.push(section.replace(/[^a-z0-9]/gi, '_').toLowerCase());
+            }
+            let suffix = sanitizedSections.join('_');
+            if(suffix.length > 30){
+              suffix = suffix.substring(0, 30);
+            }
+            const castFile = `${new Date().getTime()}_${index}_${suffix}.cast`;
             const castFilePath = path.join(publicPath, castFile);
             fs.writeFileSync(castFilePath, r.recording);
             const rCopy = { ...r };

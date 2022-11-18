@@ -1,5 +1,5 @@
 import {
-  $TSContext, FeatureFlags, IAmplifyResource, JSONUtilities, pathManager,
+  $TSContext, AmplifyError, AmplifyErrorType, AmplifyException, FeatureFlags, IAmplifyResource, JSONUtilities, pathManager,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
@@ -15,8 +15,7 @@ import { isMigrateProject, isRootOverrideFileModifiedSinceLastPush } from './roo
  * @param context
  * @returns
  */
-export async function transformResourceWithOverrides(context: $TSContext, resource?: IAmplifyResource) {
-  const flags = context.parameters.options;
+export const transformResourceWithOverrides = async (context: $TSContext, resource?: IAmplifyResource): Promise<void> => {
   let spinner: ora.Ora;
 
   try {
@@ -59,8 +58,41 @@ export async function transformResourceWithOverrides(context: $TSContext, resour
       }
     }
   } catch (err) {
+    // check for these specific Amplify Override/Custom Stack Errors,
+    // because we want the customer to fix invalid overrides or custom stack errors
+    // before deployments
+    const overrideOrCustomStackErrorsList: AmplifyErrorType[] = [
+      'MissingOverridesInstallationRequirementsError',
+      'InvalidOverrideError',
+      'InvalidCustomResourceError',
+    ];
+    if (
+      (err instanceof AmplifyException
+      && overrideOrCustomStackErrorsList.find(v => v === err.name))
+      // this is a special exception for the API category which would otherwise have a
+      // circular dependency if it imported AmplifyException
+      || err['_amplifyErrorType'] === 'InvalidOverrideError') {
+      
+      // if the exception is not already an AmplifyException re-throw it as an AmplifyException
+      // so that user's get the appropriate resolution steps that we intended
+      if(err['_amplifyErrorType'] === 'InvalidOverrideError') {
+        throw new AmplifyError('InvalidOverrideError', {
+          message: `Executing overrides failed.`,
+          details: err.message,
+          resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+        }, err);
+      }
+      // otherwise just rethrow the AmplifyException
+      throw err;
+    }
+
+    // Ignore other errors that were previously being ignored,
+    // such as GraphQL/Auth errors even if they are AmplifyExceptions.
+    // The CLI will trigger corrective walkthroughs/flows for those errors,
+    // such as in amplify-helpers/push-resources.ts.
+  } finally {
     if (spinner) {
       spinner.stop();
     }
   }
-}
+};

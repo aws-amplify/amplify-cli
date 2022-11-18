@@ -49,7 +49,7 @@ exports[`upload Studio CMS assets on push of Studio enabled project uploads expe
     },
     \\"enums\\": {},
     \\"nonModels\\": {},
-    \\"codegenVersion\\": \\"3.3.1\\",
+    \\"codegenVersion\\": \\"3.3.2\\",
     \\"version\\": \\"6f85ca0ee370ac8e0674a44cc5a4f6a6\\"
 };"
 `;
@@ -99,7 +99,12 @@ exports[`upload Studio CMS assets on push of Studio enabled project uploads expe
                     \\"type\\": \\"model\\",
                     \\"properties\\": {}
                 }
-            ]
+            ],
+            \\"primaryKeyInfo\\": {
+                \\"isCustomPrimaryKey\\": false,
+                \\"primaryKeyFieldName\\": \\"id\\",
+                \\"sortKeyFieldNames\\": []
+            }
         }
     },
     \\"enums\\": {},

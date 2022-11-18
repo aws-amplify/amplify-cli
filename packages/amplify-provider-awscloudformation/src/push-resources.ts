@@ -1203,7 +1203,7 @@ export const formNestedStack = async (
           }
 
           if (parameters.unauthRoleName) {
-            parameters.unauthRoleName = unauthRoleName;
+            parameters.unauthRoleName = unauthRoleName || { Ref: 'UnauthRoleName' }; // if only a user pool is imported, we ref the root stack UnauthRoleName because the child stacks still need this parameter
           }
         }
         if (resourceDetails.providerMetadata) {

@@ -14,7 +14,6 @@ import { queryProvider } from './attach-backend-steps/a10-queryProvider';
 import { analyzeProject } from './attach-backend-steps/a20-analyzeProject';
 import { initFrontend } from './attach-backend-steps/a30-initFrontend';
 import { generateFiles } from './attach-backend-steps/a40-generateFiles';
-import { getAmplifyAppId } from './extensions/amplify-helpers/get-amplify-appId';
 import { initializeEnv } from './initialize-env';
 
 const backupAmplifyDirName = 'amplify-backup';
@@ -225,7 +224,8 @@ const updateContextForNoUpdateBackendProjects = (context: $TSContext): void => {
     context.exeInfo.inputParams.amplify.envName = context.exeInfo.inputParams.amplify.envName || envName;
     context.exeInfo.inputParams.amplify.frontend = context.exeInfo.inputParams.amplify.frontend
     || context.exeInfo.existingProjectConfig.frontend;
-    context.exeInfo.inputParams.amplify.appId = context.exeInfo.inputParams.amplify.appId || getAmplifyAppId();
+    context.exeInfo.inputParams.amplify.appId = context.exeInfo.inputParams.amplify.appId
+      || context.exeInfo.existingTeamProviderInfo[envName].awscloudformation?.AmplifyAppId;
     // eslint-disable-next-line max-len
     context.exeInfo.inputParams[context.exeInfo.inputParams.amplify.frontend] = context.exeInfo.inputParams[context.exeInfo.inputParams.amplify.frontend]
       || context.exeInfo.existingProjectConfig[context.exeInfo.inputParams.amplify.frontend];

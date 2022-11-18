@@ -40,8 +40,22 @@ describe('amplify init e', () => {
 
     // override new env
     await amplifyOverrideRoot(projRoot, { testingWithLatestCodebase: true });
-    const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-root.ts');
+
+    // this is where we will write overrides to
     const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'awscloudformation', 'override.ts');
+
+    // test override file in compilation error state
+    const srcInvalidOverrideCompileError = path.join(__dirname, '..', '..', 'overrides', 'override-compile-error.txt');
+    fs.copyFileSync(srcInvalidOverrideCompileError, destOverrideFilePath);
+    await expect(amplifyPushOverride(projRoot)).rejects.toThrowError();
+
+    // test override file in runtime error state
+    const srcInvalidOverrideRuntimeError = path.join(__dirname, '..', '..', 'overrides', 'override-runtime-error.txt');
+    fs.copyFileSync(srcInvalidOverrideRuntimeError, destOverrideFilePath);
+    await expect(amplifyPushOverride(projRoot)).rejects.toThrowError();
+
+    // test happy path
+    const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-root.ts');
     fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
     await amplifyPushOverride(projRoot);
     const newEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
@@ -51,5 +65,12 @@ describe('amplify init e', () => {
     await addEnvironment(projRoot, { envName: 'envb' });
     const newestEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(newestEnvMeta.AuthRoleName).toContain('mockRole');
+
+    // test special scenario where override.js is manually edited by customer & is invalid
+    // this should throw when creating a new environment
+    const destOverrideJSFilePath = path.join(projRoot, 'amplify', 'backend', 'awscloudformation', 'build', 'override.js');
+    const srcInvalidOverrideJSRuntimeError = path.join(__dirname, '..', '..', 'overrides', 'override-js-error.txt');
+    fs.copyFileSync(srcInvalidOverrideJSRuntimeError, destOverrideJSFilePath);
+    await expect(addEnvironment(projRoot, { envName: 'envc' })).rejects.toThrowError();
   });
 });

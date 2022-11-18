@@ -2,11 +2,10 @@ import { AmplifyDDBResourceTemplate } from '@aws-amplify/cli-extensibility-helpe
 import * as cdk from '@aws-cdk/core';
 import { App } from '@aws-cdk/core';
 import {
-  $TSAny, $TSContext, buildOverrideDir, JSONUtilities, pathManager,
+  $TSAny, $TSContext, AmplifyError, buildOverrideDir, JSONUtilities, pathManager,
 } from 'amplify-cli-core';
-import { formatter, printer } from 'amplify-prompts';
+import { formatter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
-import os from 'os';
 import * as path from 'path';
 import * as vm from 'vm2';
 import { getDdbAttrType } from '../cfn-template-utils';
@@ -194,10 +193,7 @@ export class DDBStackTransform {
     const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, 'storage', this._resourceName);
     const overrideJSFilePath = path.resolve(path.join(resourceDirPath, 'build', 'override.js'));
 
-    const isBuild = await buildOverrideDir(backendDir, resourceDirPath).catch((error: $TSAny) => {
-      printer.error(`Build error : ${error.message}`);
-      throw new Error(error);
-    });
+    const isBuild = await buildOverrideDir(backendDir, resourceDirPath);
     // skip if packageManager or override.ts not found
     if (isBuild) {
       const { override } = await import(overrideJSFilePath).catch(() => {
@@ -222,12 +218,15 @@ export class DDBStackTransform {
           },
         });
         try {
-          await sandboxNode.run(overrideCode, overrideJSFilePath).override(this._resourceTemplateObj as AmplifyDDBResourceTemplate);
+          await sandboxNode
+            .run(overrideCode, overrideJSFilePath)
+            .override(this._resourceTemplateObj as AmplifyDDBResourceTemplate);
         } catch (err: $TSAny) {
-          const error = new Error(`Skipping override due to ${err}${os.EOL}`);
-          printer.error(`${error}`);
-          error.stack = undefined;
-          throw error;
+          throw new AmplifyError('InvalidOverrideError', {
+            message: `Executing overrides failed.`,
+            details: err.message,
+            resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+          }, err);
         }
       }
     }

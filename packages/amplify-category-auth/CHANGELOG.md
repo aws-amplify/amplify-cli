@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.13.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.13.0...@aws-amplify/amplify-category-auth@2.13.1) (2022-11-17)
+
+
+### Bug Fixes
+
+* uploading multiple auth trigger files ([#11254](https://github.com/aws-amplify/amplify-cli/issues/11254)) ([#11267](https://github.com/aws-amplify/amplify-cli/issues/11267)) ([b7bdcec](https://github.com/aws-amplify/amplify-cli/commit/b7bdcec939ac71c4f70ae87ece8c2a7995d4ae72))
+
+
+
+
+
 # [2.13.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.12.4...@aws-amplify/amplify-category-auth@2.13.0) (2022-10-27)
 
 
