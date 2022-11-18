@@ -21,10 +21,13 @@ export type IEnvironmentParameterManager = {
     save: () => void;
 };
 
+// @public (undocumented)
+export const saveAll: () => Promise<void>;
+
 // Warnings were encountered during analysis:
 //
 // src/environment-parameter-manager.ts:14:13 - (ae-forgotten-export) The symbol "EnvironmentParameterManager" needs to be exported by the entry point index.d.ts
-// src/environment-parameter-manager.ts:122:3 - (ae-forgotten-export) The symbol "ResourceParameterManager" needs to be exported by the entry point index.d.ts
+// src/environment-parameter-manager.ts:130:3 - (ae-forgotten-export) The symbol "ResourceParameterManager" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

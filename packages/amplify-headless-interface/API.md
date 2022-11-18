@@ -71,6 +71,12 @@ export interface AppSyncAPIKeyAuthType {
 }
 
 // @public (undocumented)
+export interface AppSyncAPIKeyExpiration {
+    // (undocumented)
+    days: number;
+}
+
+// @public (undocumented)
 export type AppSyncAuthType = AppSyncAPIKeyAuthType | AppSyncAWSIAMAuthType | AppSyncCognitoUserPoolsAuthType | AppSyncOpenIDConnectAuthType | AppSyncLambdaAuthType;
 
 // @public (undocumented)
@@ -118,6 +124,8 @@ export interface AppSyncServiceConfiguration {
     // (undocumented)
     additionalAuthTypes?: AppSyncAuthType[];
     // (undocumented)
+    apiKeyExpiration?: AppSyncAPIKeyExpiration;
+    // (undocumented)
     apiName: string;
     // (undocumented)
     conflictResolution?: ConflictResolution;
@@ -130,7 +138,7 @@ export interface AppSyncServiceConfiguration {
 }
 
 // @public (undocumented)
-export type AppSyncServiceModification = Pick<AppSyncServiceConfiguration, 'serviceName'> & Partial<Pick<AppSyncServiceConfiguration, 'transformSchema' | 'defaultAuthType' | 'additionalAuthTypes' | 'conflictResolution'>>;
+export type AppSyncServiceModification = Pick<AppSyncServiceConfiguration, 'serviceName'> & Partial<Pick<AppSyncServiceConfiguration, 'transformSchema' | 'defaultAuthType' | 'additionalAuthTypes' | 'conflictResolution' | 'apiKeyExpiration'>>;
 
 // @public (undocumented)
 export interface BaseCognitoServiceConfiguration {
@@ -509,7 +517,11 @@ export interface MapModification {
 // @public (undocumented)
 export enum MapStyle {
     // (undocumented)
+    HybridHereExploreSatellite = "HybridHereExploreSatellite",
+    // (undocumented)
     RasterEsriImagery = "RasterEsriImagery",
+    // (undocumented)
+    RasterHereExploreSatellite = "RasterHereExploreSatellite",
     // (undocumented)
     VectorEsriDarkGrayCanvas = "VectorEsriDarkGrayCanvas",
     // (undocumented)

@@ -45,7 +45,7 @@ export const rootStackFileName = "root-cloudformation-stack.json";
 export const storeRootStackTemplate: (context: $TSContext, template?: Template) => Promise<void>;
 
 // @public (undocumented)
-export function transformResourceWithOverrides(context: $TSContext, resource?: IAmplifyResource): Promise<void>;
+export const transformResourceWithOverrides: (context: $TSContext, resource?: IAmplifyResource) => Promise<void>;
 
 // (No @packageDocumentation comment for this package)
 
