@@ -12,6 +12,7 @@ import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { showResourceTable } from './resource-status';
 import { isValidGraphQLAuthError, handleValidGraphQLAuthError } from './apply-auth-mode';
 import { ManuallyTimedCodePath } from '../../domain/amplify-usageData/UsageDataTypes';
+import { showBuildDirChangesMessage } from './auto-updates';
 
 /**
  * Entry point for pushing resources to the cloud
@@ -90,6 +91,7 @@ export const pushResources = async (
     if (context.exeInfo.iterativeRollback) {
       printer.info('The CLI will rollback the last known iterative deployment.');
     }
+    await showBuildDirChangesMessage();
     continueToPush = await context.amplify.confirmPrompt('Are you sure you want to continue?');
   }
 

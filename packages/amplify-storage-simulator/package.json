@@ -19,7 +19,8 @@
   "scripts": {
     "test": "jest --logHeapUsage",
     "build": "tsc",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
     "body-parser": "^1.19.2",

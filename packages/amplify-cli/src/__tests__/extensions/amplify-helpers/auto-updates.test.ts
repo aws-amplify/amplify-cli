@@ -1,5 +1,6 @@
 import { printer } from 'amplify-prompts';
-import { showBuildDirChangesMessage } from '../../utils/auto-updates';
+import * as fs from 'fs-extra';
+import { showBuildDirChangesMessage } from '../../../extensions/amplify-helpers/auto-updates';
 
 const cloudBackendCfnTemplatePath = '/amplify/#cloud-backend/auth/cognito/build/cognito-cloudformation-template.json';
 const backendCfnTemplatePath = '/amplify/backend/auth/cognito/build/cognito-cloudformation-template.json';
@@ -7,6 +8,10 @@ const backendCfnTemplatePath = '/amplify/backend/auth/cognito/build/cognito-clou
 let setInCloudBackendDir: boolean;
 let setInCloudBackendDirWithoutRequireVerification: boolean;
 let setInBackendDir: boolean;
+
+jest.mock('fs-extra');
+const fsMock = fs as jest.Mocked<typeof fs>;
+fsMock.existsSync.mockReturnValue(true);
 
 jest.mock('amplify-prompts');
 jest.mock('amplify-cli-core', () => {
@@ -74,9 +79,34 @@ describe('showBuildDirChangesMessage', () => {
     setInCloudBackendDir = false;
     setInCloudBackendDirWithoutRequireVerification = false;
     setInBackendDir = false;
+
+    fsMock.existsSync.mockReturnValue(true);
   });
 
-  describe('project does not have auth', () => {
+  describe('project does not have auth in current-cloud-backend directory', () => {
+    beforeEach(() => {
+      setInCloudBackendDir = false;
+      setInCloudBackendDirWithoutRequireVerification = false;
+      setInBackendDir = true;
+
+      fsMock.existsSync.mockReturnValue(false);
+    });
+
+    it('does not call warn', async () => {
+      await showBuildDirChangesMessage();
+      expect(printerMock.warn).not.toBeCalled();
+    });
+  });
+
+  describe('project does not have auth AttributesRequireVerificationBeforeUpdate attribute in template', () => {
+    beforeEach(() => {
+      setInCloudBackendDir = false;
+      setInCloudBackendDirWithoutRequireVerification = false;
+      setInBackendDir = false;
+
+      fsMock.existsSync.mockReturnValue(true);
+    });
+
     it('does not call warn', async () => {
       await showBuildDirChangesMessage();
       expect(printerMock.warn).not.toBeCalled();

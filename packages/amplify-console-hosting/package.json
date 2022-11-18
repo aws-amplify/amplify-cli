@@ -22,6 +22,7 @@
   "scripts": {
     "build": "tsc && copyfiles -u 1 \"./src/hosting/templates/*.json\" \"./lib\"",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   }
 }

@@ -128,6 +128,7 @@ export type AmplifyErrorType =
   | 'PermissionsError'
   | 'PluginMethodNotFoundError'
   | 'PluginNotFoundError'
+  | 'PluginPolicyAddError'
   | 'ProfileConfigurationError'
   | 'ProjectAppIdResolveError'
   | 'ProjectInitError'
