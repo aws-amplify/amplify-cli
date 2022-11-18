@@ -87,6 +87,18 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
 
 // some tests may require a larger executor, specify those here
 const USE_LINUX_LARGE_VM: string[] = [
+  'api-migration-a_v6',
+  'auth_migration_update_v6',
+  'function-migration_pkg',
+  'geo-add-f_pkg',
+  'geo-import-1_pkg',
+  'import_auth_2_pkg',
+  'import_s3_2a_pkg',
+  'model-migration_pkg',
+  'notifications-migration-2_v5',
+  'schema-auth-14_pkg',
+  'schema-auth-15_pkg',
+  'schema-searchable_pkg',
 ];
 
 // Ensure to update packages/amplify-e2e-tests/src/cleanup-e2e-resources.ts is also updated this gets updated
@@ -480,21 +492,21 @@ function main(): void {
   const splitPkgTests = splitTests(
     config,
     'amplify_e2e_tests_pkg',
-    'build_test_deploy',
+    'build_test_deploy_v3',
     join(repoRoot, 'packages', 'amplify-e2e-tests'),
     CONCURRENCY,
   );
   const splitGqlTests = splitTests(
     splitPkgTests,
     'graphql_e2e_tests',
-    'build_test_deploy',
+    'build_test_deploy_v3',
     join(repoRoot, 'packages', 'graphql-transformers-e2e-tests'),
     CONCURRENCY,
   );
   const splitV5MigrationTests = splitTests(
     splitGqlTests,
     'amplify_migration_tests_v5',
-    'build_test_deploy',
+    'build_test_deploy_v3',
     join(repoRoot, 'packages', 'amplify-migration-tests'),
     CONCURRENCY,
     true,
@@ -502,7 +514,7 @@ function main(): void {
   const splitV6MigrationTests = splitTests(
     splitV5MigrationTests,
     'amplify_migration_tests_v6',
-    'build_test_deploy',
+    'build_test_deploy_v3',
     join(repoRoot, 'packages', 'amplify-migration-tests'),
     CONCURRENCY,
     true,

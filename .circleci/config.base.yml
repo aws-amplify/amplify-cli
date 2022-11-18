@@ -443,7 +443,11 @@ jobs:
       #     os: << parameters.os >>
 
   amplify_migration_tests_v5:
-    <<: *defaults
+    parameters:
+      os:
+        type: executor
+        default: l_large
+    executor: << parameters.os >>
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -469,7 +473,11 @@ jobs:
   amplify_migration_tests_v6:
     environment:
       AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
-    <<: *defaults
+    parameters:
+      os:
+        type: executor
+        default: l_large
+    executor: << parameters.os >>
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -493,7 +501,11 @@ jobs:
     working_directory: ~/repo
 
   amplify_migration_tests_non_multi_env_layers:
-    <<: *defaults
+    parameters:
+      os:
+        type: executor
+        default: l_large
+    executor: << parameters.os >>
     environment:
       AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
     steps:
@@ -519,7 +531,11 @@ jobs:
     working_directory: ~/repo
 
   amplify_migration_tests_multi_env_layers:
-    <<: *defaults
+    parameters:
+      os:
+        type: executor
+        default: l_large
+    executor: << parameters.os >>
     environment:
       AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
     steps:
@@ -545,7 +561,11 @@ jobs:
     working_directory: ~/repo
 
   amplify_console_integration_tests:
-    <<: *defaults
+    parameters:
+      os:
+        type: executor
+        default: l_large
+    executor: << parameters.os >>
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -814,7 +834,7 @@ jobs:
 
 workflows:
   version: 3
-  build_test_deploy:
+  build_test_deploy_v3:
     jobs:
       - build:
           filters:
