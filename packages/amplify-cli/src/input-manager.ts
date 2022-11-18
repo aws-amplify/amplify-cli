@@ -98,6 +98,11 @@ function normalizeInput(input: Input): Input {
 export function verifyInput(pluginPlatform: PluginPlatform, input: Input): InputVerificationResult {
   const result = new InputVerificationResult();
 
+  // Normalize status command options
+  if (input.command === 'status') {
+    input = normalizeStatusCommandOptions(input);
+  }
+
   input.plugin = input.plugin || constants.CORE;
 
   normalizeInput(input);
@@ -206,3 +211,47 @@ function aliasArgs(argv: string[]) {
     insertAmplifyIgnore(gitIgnoreFilePath);
   }
 }
+
+const convertKeysToLowerCase = <T>(obj: Record<string, T>): Record<string, T> => {
+  const newObj = {};
+  Object.entries(obj).forEach(([key, value]) => { newObj[key.toLowerCase()] = value; });
+  return newObj;
+};
+
+const normalizeStatusCommandOptions = (input: Input): Input => {
+  const options = input.options ? input.options : {};
+  const allowedVerboseIndicators = [constants.VERBOSE, 'v'];
+  // Normalize 'amplify status -v' to verbose, since -v is interpreted as 'version'
+  allowedVerboseIndicators.forEach(verboseFlag => {
+    if (options[verboseFlag] !== undefined) {
+      if (typeof options[verboseFlag] === 'string') {
+        const pluginName = (options[verboseFlag] as string).toLowerCase();
+        options[pluginName] = true;
+      }
+      delete options[verboseFlag];
+      options.verbose = true;
+    }
+  });
+
+  // Merge plugins and sub-commands as options (except help/verbose)
+  const returnInput = input;
+  if (returnInput.plugin) {
+    options[returnInput.plugin] = true;
+    delete returnInput.plugin;
+  }
+  if (returnInput.subCommands) {
+    const allowedSubCommands = [constants.HELP, constants.VERBOSE]; // list of sub-commands supported in Status
+    const inputSubCommands: string[] = [];
+    returnInput.subCommands.forEach(subCommand => {
+      // plugins are inferred as sub-commands when positionally supplied
+      if (!allowedSubCommands.includes(subCommand)) {
+        options[subCommand.toLowerCase()] = true;
+      } else {
+        inputSubCommands.push(subCommand);
+      }
+    });
+    returnInput.subCommands = inputSubCommands;
+  }
+  returnInput.options = convertKeysToLowerCase(options); // normalize keys to lower case
+  return returnInput;
+};
