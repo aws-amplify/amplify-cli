@@ -1,4 +1,4 @@
-import { addApi, amplifyPush } from '@aws-amplify/amplify-e2e-core';
+import { addApi, amplifyPush, getTeamProviderInfo, setTeamProviderInfo } from '@aws-amplify/amplify-e2e-core';
 
 import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../authHelper';
 
@@ -7,6 +7,12 @@ import { updateSchemaInTestProject, testMutations, testQueries } from '../common
 export async function runTest(projectDir: string, testModule: any) {
   await addApi(projectDir, { transformerVersion: 1 });
   updateSchemaInTestProject(projectDir, testModule.schema);
+  
+  // override to use medium instance instead of small
+  const tpi = getTeamProviderInfo(projectDir);
+  (tpi.integtest.categories.api)[0]['OpenSearchInstanceType'] = 't2.medium.elasticsearch';
+  setTeamProviderInfo(projectDir, tpi);
+
   await amplifyPush(projectDir);
   await new Promise<void>(res => setTimeout(() => res(), 60000));
 
