@@ -8,10 +8,10 @@ import _ from 'lodash';
 import fs from 'fs-extra';
 import path from 'path';
 import { deleteS3Bucket } from '@aws-amplify/amplify-e2e-core';
-import { ApplicationResponse } from 'aws-sdk/clients/pinpoint';
 
 // Ensure to update scripts/split-e2e-tests.ts is also updated this gets updated
 const AWS_REGIONS_TO_RUN_TESTS = [
+  'us-east-1',
   'us-east-2',
   'us-west-2',
   'eu-west-2',
@@ -694,8 +694,8 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
     const orgAccounts = await orgApi.listAccounts().promise();
     const allAccounts = orgAccounts.Accounts;
     let nextToken = orgAccounts.NextToken;
-    while(nextToken){
-      const nextPage = await orgApi.listAccounts({"NextToken": nextToken }).promise();
+    while (nextToken) {
+      const nextPage = await orgApi.listAccounts({ NextToken: nextToken }).promise();
       allAccounts.push(...nextPage.Accounts);
       nextToken = nextPage.NextToken;
     }
@@ -740,8 +740,7 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const appPromises = AWS_REGIONS_TO_RUN_TESTS.map(region => getAmplifyApps(account, region));
   const stackPromises = AWS_REGIONS_TO_RUN_TESTS.map(region => getStacks(account, region));
   const bucketPromise = getS3Buckets(account);
-  // include 'us-east-1' due to custom regional mapping for pinpoint resource: https://github.com/aws-amplify/amplify-cli/blob/main/packages/amplify-provider-awscloudformation/src/aws-utils/aws-pinpoint.js#L49-L74
-  const orphanPinpointApplicationsPromise = ['us-east-1', ...AWS_REGIONS_TO_RUN_TESTS].map(region => getOrphanPinpointApplications(account, region));
+  const orphanPinpointApplicationsPromise = AWS_REGIONS_TO_RUN_TESTS.map(region => getOrphanPinpointApplications(account, region));
   const orphanBucketPromise = getOrphanS3TestBuckets(account);
   const orphanIamRolesPromise = getOrphanTestIamRoles(account);
 
