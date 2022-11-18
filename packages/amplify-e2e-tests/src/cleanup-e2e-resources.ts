@@ -8,6 +8,7 @@ import _ from 'lodash';
 import fs from 'fs-extra';
 import path from 'path';
 import { deleteS3Bucket } from '@aws-amplify/amplify-e2e-core';
+import { ApplicationResponse } from 'aws-sdk/clients/pinpoint';
 
 // Ensure to update scripts/split-e2e-tests.ts is also updated this gets updated
 const AWS_REGIONS_TO_RUN_TESTS = [
@@ -156,13 +157,21 @@ const getOrphanTestIamRoles = async (account: AWSAccountInfo): Promise<IamRoleIn
 
 const getOrphanPinpointApplications = async (account: AWSAccountInfo, region: string): Promise<PinpointAppInfo[]> => {
   const pinpoint = new aws.Pinpoint(getAWSConfig(account, region));
-  const apps = await pinpoint.getApps({
-    PageSize: '200',
-  }).promise();
-  const staleApps = apps.ApplicationsResponse.Item.filter(testPinpointAppStalenessFilter);
-  return staleApps.map(it => ({
-    id: it.Id, name: it.Name, arn: it.Arn, region,
-  }));
+  const apps: PinpointAppInfo[] = [];
+  let nextToken = null;
+
+  do {
+    const result = await pinpoint.getApps({
+      Token: nextToken,
+    }).promise();
+    apps.push(...result.ApplicationsResponse.Item.filter(testPinpointAppStalenessFilter).map(it => ({
+      id: it.Id, name: it.Name, arn: it.Arn, region,
+    })));
+
+    nextToken = result.ApplicationsResponse.NextToken;
+  } while (nextToken);
+
+  return apps;
 };
 
 /**
