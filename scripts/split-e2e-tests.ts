@@ -86,7 +86,7 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
 ];
 
 // some tests may require a larger executor, specify those here
-const USE_LINUX_LARGE_VM: string[] = [
+const JOBS_RUNNING_ON_LINUX_LARGE_VM: string[] = [
   'api-migration-a_v6',
   'auth_migration_update_v6',
   'function-migration_pkg',
@@ -351,7 +351,7 @@ function splitTests(
             return newJobName;
           } else {
             // for the most up-to-date list of executors for e2e, see the config.base.yml file
-            let linuxVMSize = USE_LINUX_LARGE_VM.includes(newJobName) ? 'l_large' : 'l_medium';
+            let linuxVMSize = JOBS_RUNNING_ON_LINUX_LARGE_VM.includes(newJobName) ? 'l_large' : 'l_medium';
             return {
               [newJobName]: {
                 ...Object.values(workflowJob)[0],
