@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.0...@aws-amplify/amplify-util-uibuilder@1.6.1) (2022-11-17)
+
+
+### Bug Fixes
+
+* generate default theme if user has no themes ([#11343](https://github.com/aws-amplify/amplify-cli/issues/11343)) ([13a02ac](https://github.com/aws-amplify/amplify-cli/commit/13a02ac32de717a518336871b1c741aa2714562b))
+
+
+
+
+
+# [1.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.5.0...@aws-amplify/amplify-util-uibuilder@1.6.0) (2022-10-27)
+
+
+### Bug Fixes
+
+* **amplify-util-uibuilder:** make studio app check static ([#11220](https://github.com/aws-amplify/amplify-cli/issues/11220)) ([b1fdc86](https://github.com/aws-amplify/amplify-cli/commit/b1fdc8634f10da558272aa2e98dfdffc28edd74c))
+
+
+### Features
+
+* **amplify-util-uibuilder:** add studio forms ([#11165](https://github.com/aws-amplify/amplify-cli/issues/11165)) ([6f15294](https://github.com/aws-amplify/amplify-cli/commit/6f15294d6809639c7d7e7d3aa4378df894168b0b))
+
+
+
+
+
+# [1.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.4.2...@aws-amplify/amplify-util-uibuilder@1.5.0) (2022-10-13)
+
+
+### Bug Fixes
+
+* updateUserAttributeSetting during add/update/push flows ([#10773](https://github.com/aws-amplify/amplify-cli/issues/10773)) ([52c1e49](https://github.com/aws-amplify/amplify-cli/commit/52c1e49caa5098c37c32c9f2b6f095cfd60454b1))
+
+
+### Features
+
+* **amplify-util-uibuilder:** update codegen-ui with responsive app support ([#11028](https://github.com/aws-amplify/amplify-cli/issues/11028)) ([2088309](https://github.com/aws-amplify/amplify-cli/commit/2088309f91f32069765cf514d91067600770a0ac))
+
+
+
+
+
 ## [1.4.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.4.1...@aws-amplify/amplify-util-uibuilder@1.4.2) (2022-10-03)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder

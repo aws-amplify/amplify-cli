@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-function",
-  "version": "4.1.2",
+  "version": "4.2.1",
   "description": "amplify-cli function plugin",
   "repository": {
     "type": "git",
@@ -14,27 +14,28 @@
   "scripts": {
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
-    "test": "jest",
-    "watch": "tsc -w"
+    "test": "jest --logHeapUsage",
+    "watch": "tsc -w",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "keywords": [
     "amplify",
     "aws"
   ],
   "dependencies": {
-    "@aws-amplify/amplify-environment-parameters": "1.1.2",
-    "amplify-cli-core": "3.2.1",
+    "@aws-amplify/amplify-environment-parameters": "1.2.1",
+    "amplify-cli-core": "3.4.0",
     "amplify-function-plugin-interface": "1.9.5",
-    "amplify-prompts": "2.5.0",
+    "amplify-prompts": "2.6.1",
     "archiver": "^5.3.0",
-    "aws-sdk": "^2.1169.0",
+    "aws-sdk": "^2.1233.0",
     "chalk": "^4.1.1",
     "cloudform-types": "^4.2.0",
     "enquirer": "^2.3.6",
     "folder-hash": "^4.0.2",
     "fs-extra": "^8.1.0",
     "globby": "^11.0.3",
-    "graphql-transformer-core": "^7.6.5",
+    "graphql-transformer-core": "^7.6.6",
     "inquirer": "^7.3.3",
     "inquirer-datepicker": "^2.0.0",
     "jstreemap": "^1.28.2",

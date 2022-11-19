@@ -1,5 +1,5 @@
 import {
-  amplifyFaultWithTroubleshootingLink, pathManager, stateManager,
+  AmplifyFault, pathManager, stateManager,
 } from 'amplify-cli-core';
 import _ from 'lodash';
 import { ResourceParameterManager } from './resource-parameter-manager';
@@ -30,9 +30,19 @@ export const getEnvParamManager = (envName: string = stateManager.getLocalEnvInf
   if (envParamManagerMap[envName]) {
     return envParamManagerMap[envName];
   }
-  throw amplifyFaultWithTroubleshootingLink('ProjectInitFault', {
+  throw new AmplifyFault('ProjectInitFault', {
     message: `EnvironmentParameterManager for ${envName} environment is not initialized.`,
   });
+};
+
+/**
+ * Execute the save method of all currently initialized IEnvironmentParameterManager instances
+ */
+export const saveAll = async (): Promise<void> => {
+  for (const envParamManager of Object.values(envParamManagerMap)) {
+    // save methods must be executed in sequence to avoid race conditions writing to the tpi file
+    await envParamManager.save();
+  }
 };
 
 /**
@@ -53,8 +63,6 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
         this.getResourceParamManager(category, resource).setAllParams(parameters);
       });
     });
-
-    process.on('beforeExit', () => this.save());
   }
 
   removeResourceParamManager(category: string, resource: string): void {
@@ -63,7 +71,7 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
 
   getResourceParamManager(category: string, resource: string): ResourceParameterManager {
     if (!category || !resource) {
-      throw amplifyFaultWithTroubleshootingLink('ResourceNotFoundFault', {
+      throw new AmplifyFault('ResourceNotFoundFault', {
         message: 'Missing Category or Resource.',
       });
     }
@@ -78,16 +86,19 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
     return !!this.resourceParamManagers[getResourceKey(category, resource)];
   }
 
-  save(): void {
+  async save(): Promise<void> {
     if (!pathManager.findProjectRoot()) {
       // assume that the project is deleted if we cannot find a project root
       return;
     }
-    const tpiContent = stateManager.getTeamProviderInfo();
+    const tpiContent = stateManager.getTeamProviderInfo(undefined, { throwIfNotExist: false, default: {} });
     const categoriesContent = this.serializeTPICategories();
     if (Object.keys(categoriesContent).length === 0) {
-      delete tpiContent[this.envName].categories;
+      delete tpiContent?.[this.envName]?.categories;
     } else {
+      if (!tpiContent[this.envName]) {
+        tpiContent[this.envName] = {};
+      }
       tpiContent[this.envName].categories = this.serializeTPICategories();
     }
     stateManager.setTeamProviderInfo(undefined, tpiContent);

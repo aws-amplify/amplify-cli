@@ -1,7 +1,11 @@
-import { stateManager } from 'amplify-cli-core';
+import { $TSMeta, AmplifyCategories, stateManager } from 'amplify-cli-core';
 
-export function getResourceOutputs(amplifyMeta) {
+/**
+ * Get the outputs of a resource
+ */
+export const getResourceOutputs = (amplifyMeta: $TSMeta) => {
   if (!amplifyMeta) {
+    // eslint-disable-next-line no-param-reassign
     amplifyMeta = stateManager.getMeta();
   }
 
@@ -25,9 +29,10 @@ export function getResourceOutputs(amplifyMeta) {
   if (amplifyMeta) {
     Object.keys(amplifyMeta).forEach(category => {
       const categoryMeta = amplifyMeta[category];
+      const isVirtualCategory = checkIfVirtualCategory(category);
       Object.keys(categoryMeta).forEach(resourceName => {
         const resourceMeta = categoryMeta[resourceName];
-        if (resourceMeta.output && resourceMeta.lastPushTimeStamp) {
+        if (resourceMeta.output && (resourceMeta.lastPushTimeStamp || isVirtualCategory)) {
           const { providerPlugin } = resourceMeta;
           if (!outputsByProvider[providerPlugin]) {
             outputsByProvider[providerPlugin] = {
@@ -68,4 +73,14 @@ export function getResourceOutputs(amplifyMeta) {
     outputsForFrontend.testMode = true;
   }
   return { outputsByProvider, outputsByCategory, outputsForFrontend };
-}
+};
+
+/**
+ * A virtual category is a category where its resource is allocated and managed by a different plugin.
+ * e.g. Notifications category only manages channel configuration on a Pinpoint resource managed by the Analytics category.
+ * @param category amplify category
+ */
+const checkIfVirtualCategory = (category: string): boolean => {
+  const virtualCategoryTable = [AmplifyCategories.NOTIFICATIONS];
+  return virtualCategoryTable.includes(category);
+};

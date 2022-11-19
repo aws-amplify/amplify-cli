@@ -19,8 +19,7 @@ export const initFrontend = async (context: $TSContext): Promise<$TSContext> => 
   const frontend = await getFrontendHandler(context, frontendPlugins, suitableFrontend);
 
   context.exeInfo.projectConfig.frontend = frontend;
-  // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
-  const frontendModule = require(frontendPlugins[frontend]);
+  const frontendModule = await import(frontendPlugins[frontend]);
   await frontendModule.init(context);
 
   return context;

@@ -1,11 +1,15 @@
-import { UnknownArgumentError, exitOnNextTick } from 'amplify-cli-core';
+import { $TSContext, AmplifyError } from 'amplify-cli-core';
 
-export const run = async context => {
+/**
+ * Execute the 'delete' command
+ */
+export const run = async (context: $TSContext) : Promise<void> => {
   if (Array.isArray(context.parameters.array) && context.parameters.array.length > 0) {
-    context.print.error('"delete" command does not expect additional arguments.');
-    context.print.error('Perhaps you meant to use the "remove" command instead of "delete"?');
-    context.usageData.emitError(new UnknownArgumentError());
-    exitOnNextTick(1);
+    throw new AmplifyError('CommandNotSupportedError', {
+      message: 'The "delete" command does not expect additional arguments.',
+      details: 'Perhaps you meant to use the "remove" command instead of "delete"?',
+      resolution: 'If you intend to delete this project and all backend resources, try the "delete" command again without any additional arguments.',
+    });
   }
 
   await context.amplify.deleteProject(context);

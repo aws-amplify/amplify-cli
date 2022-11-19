@@ -1,12 +1,13 @@
 {
   "name": "amplify-headless-interface",
-  "version": "1.15.0",
+  "version": "1.16.0",
   "description": "interfaces for amplify headless mode payloads",
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
-    "generateSchemas": "ts-node ./scripts/generateSchemas.ts"
+    "generateSchemas": "ts-node ./scripts/generateSchemas.ts",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "keywords": [
     "amplify",

@@ -1,6 +1,6 @@
 /* eslint-disable no-continue */
 import {
-  $TSContext, amplifyErrorWithTroubleshootingLink,
+  $TSContext, AmplifyError,
 } from 'amplify-cli-core';
 import * as _ from 'lodash';
 import Cloudformation from './aws-utils/aws-cfn';
@@ -38,7 +38,7 @@ export const run = async (context: $TSContext, stackName: string): Promise<void>
 
   // if stack isn't found mostly because the stack isn't accessible by the credentials
   if (!rootStack) {
-    throw amplifyErrorWithTroubleshootingLink('StackNotFoundError', {
+    throw new AmplifyError('StackNotFoundError', {
       message: `${stackName} could not be found.`,
       resolution: 'Please check the stack name and credentials.',
     });
@@ -46,7 +46,7 @@ export const run = async (context: $TSContext, stackName: string): Promise<void>
 
   // if the stack is found and is not in valid state
   if (rootStack.StackStatus !== 'UPDATE_COMPLETE' && rootStack.StackStatus !== 'CREATE_COMPLETE') {
-    throw amplifyErrorWithTroubleshootingLink('StackNotFoundError', {
+    throw new AmplifyError('StackNotFoundError', {
       message: `${stackName} not in UPDATE_COMPLETE or CREATE_COMPLETE state`,
     });
   }

@@ -1,11 +1,10 @@
 import {
-  createNewProjectDir, deleteProject, deleteProjectDir, isCI,
+  createNewProjectDir, deleteProject, deleteProjectDir, TEST_PROFILE_NAME,
 } from '@aws-amplify/amplify-e2e-core';
 import execa from 'execa';
 import * as path from 'path';
 
 const scriptPath = path.join(__dirname, '..', 'frontend-config-drift.sh');
-const awsProfile = isCI() ? 'amplify-integ-test-user' : 'default';
 
 beforeAll(async () => {
   await execa.command(`chmod +x ${scriptPath}`);
@@ -24,14 +23,14 @@ afterEach(async () => {
 
 describe('android config file', () => {
   it('has expected properties', async () => {
-    await execa(scriptPath, ['android', awsProfile], { cwd: projRoot, stdio: 'inherit' });
+    await execa(scriptPath, ['android', TEST_PROFILE_NAME], { cwd: projRoot, stdio: 'inherit' });
     // if script succeeds, test succeeds
   });
 });
 
 describe('ios config file', () => {
   it('has expected properties', async () => {
-    await execa(scriptPath, ['ios', awsProfile], { cwd: projRoot, stdio: 'inherit' });
+    await execa(scriptPath, ['ios', TEST_PROFILE_NAME], { cwd: projRoot, stdio: 'inherit' });
     // if script succeeds, test succeeds
   });
 });

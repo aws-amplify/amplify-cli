@@ -12,6 +12,7 @@ import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { showResourceTable } from './resource-status';
 import { isValidGraphQLAuthError, handleValidGraphQLAuthError } from './apply-auth-mode';
 import { ManuallyTimedCodePath } from '../../domain/amplify-usageData/UsageDataTypes';
+import { showBuildDirChangesMessage } from './auto-updates';
 
 /**
  * Entry point for pushing resources to the cloud
@@ -79,7 +80,7 @@ export const pushResources = async (
   // no changes detected
   if (!hasChanges && !context.exeInfo.forcePush && !rebuild) {
     printer.info('\nNo changes detected');
-
+    context.usageData.stopCodePathTimer(ManuallyTimedCodePath.PUSH_TRANSFORM);
     return false;
   }
 
@@ -90,6 +91,7 @@ export const pushResources = async (
     if (context.exeInfo.iterativeRollback) {
       printer.info('The CLI will rollback the last known iterative deployment.');
     }
+    await showBuildDirChangesMessage();
     continueToPush = await context.amplify.confirmPrompt('Are you sure you want to continue?');
   }
 
@@ -117,10 +119,9 @@ export const pushResources = async (
         }
         throw new AmplifyFault('PushResourcesFault', {
           message: err.message,
-          stack: err.stack,
           link: isAuthError ? AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url : AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
           resolution: isAuthError ? 'Some @auth rules are defined in the GraphQL schema without enabling the corresponding auth providers. Run `amplify update api` to configure your GraphQL API to include the appropriate auth providers as an authorization mode.' : undefined,
-        });
+        }, err);
       }
     }
   } while (retryPush);

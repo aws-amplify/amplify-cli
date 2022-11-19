@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { uploadFiles } from '../../provider-utils/awscloudformation/utils/trigger-file-uploader';
 
 export const name = 'push';
@@ -7,7 +7,7 @@ const category = 'auth';
 /**
  * entry point for the auth push
  */
-export const run = async (context: $TSContext) => {
+export const run = async (context: $TSContext): Promise<$TSAny> => {
   const { amplify, parameters } = context;
   const resourceName = parameters.first;
   context.amplify.constructExeInfo(context);
