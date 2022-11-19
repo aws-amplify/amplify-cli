@@ -5,12 +5,17 @@ import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } fro
 import { updateSchemaInTestProject, testMutations, testQueries } from '../common';
 
 export async function runTest(projectDir: string, testModule: any) {
-  await addApi(projectDir, { transformerVersion: 1 });
+  const apiName = 'searchablerand1';
+  await addApi(projectDir, { transformerVersion: 1 }, true, apiName);
   updateSchemaInTestProject(projectDir, testModule.schema);
   
   // override to use medium instance instead of small
   const tpi = getTeamProviderInfo(projectDir);
-  (tpi.integtest.categories.api)[0]['OpenSearchInstanceType'] = 't2.medium.elasticsearch';
+  tpi.integtest.categories = {};
+  tpi.integtest.categories.api = {};
+  tpi.integtest.categories.api[apiName] = {
+    'OpenSearchInstanceType': 'c6g.xlarge.elasticsearch'
+  };
   setTeamProviderInfo(projectDir, tpi);
 
   await amplifyPush(projectDir);

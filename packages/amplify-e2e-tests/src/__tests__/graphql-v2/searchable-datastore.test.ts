@@ -39,7 +39,10 @@ describe('transformer model searchable migration test', () => {
 
     // override to use medium instance instead of small
     const tpi = getTeamProviderInfo(projRoot);
-    (tpi.integtest.categories.api)[0]['OpenSearchInstanceType'] = 't2.medium.elasticsearch';
+    tpi.integtest.categories.api = {};
+    tpi.integtest.categories.api[projectName] = {
+      'OpenSearchInstanceType': 'c6g.xlarge.elasticsearch'
+    };
     setTeamProviderInfo(projRoot, tpi);
 
     await amplifyPush(projRoot);

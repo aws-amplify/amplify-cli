@@ -625,7 +625,7 @@ export function updateRestApi(cwd: string, settings: Partial<typeof updateRestAp
 
 const allAuthTypes = ['API key', 'Amazon Cognito User Pool', 'IAM', 'OpenID Connect'];
 
-export function addApi(projectDir: string, authTypesConfig?: Record<string, $TSAny>, requireAuthSetup = true) {
+export function addApi(projectDir: string, authTypesConfig?: Record<string, $TSAny>, requireAuthSetup = true, apiName?: string) {
   const transformerVersion = authTypesConfig?.transformerVersion ?? 2;
   delete authTypesConfig?.transformerVersion;
 
@@ -666,6 +666,15 @@ export function addApi(projectDir: string, authTypesConfig?: Record<string, $TSA
       } else {
         chain.wait('Configure additional auth types?').sendLine('n');
       }
+    }
+
+    if(apiName){
+      chain
+      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
+      .sendKeyUp(3)
+      .sendCarriageReturn()
+      .wait('Provide API name:')
+      .sendLine(apiName)
     }
 
     chain
