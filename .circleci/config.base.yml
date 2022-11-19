@@ -168,9 +168,6 @@ jobs:
       - run:
           name: extract api
           command: |
-            cd scripts
-            yarn install
-            cd ..
             yarn verify-api-extract
 
   mock_e2e_tests:
