@@ -41,6 +41,7 @@ describe('transformer model searchable migration test', () => {
     const tpi = getTeamProviderInfo(projRoot);
     tpi.integtest.categories.api = {};
     tpi.integtest.categories.api[projectName] = {
+      // c6 is the latest compute focused instance type, reduces test speed significantly
       'OpenSearchInstanceType': 'c6g.xlarge.elasticsearch'
     };
     setTeamProviderInfo(projRoot, tpi);

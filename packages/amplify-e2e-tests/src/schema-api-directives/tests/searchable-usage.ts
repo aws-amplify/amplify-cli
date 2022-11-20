@@ -8,12 +8,13 @@ export async function runTest(projectDir: string, testModule: any, projectName?:
   await addApi(projectDir, { transformerVersion: 1 }, true, projectName);
   updateSchemaInTestProject(projectDir, testModule.schema);
   
-  // override to use medium instance instead of small
+  // override to use larger instance instead of small
   const tpi = getTeamProviderInfo(projectDir);
   tpi.integtest.categories = {};
   tpi.integtest.categories.api = {};
   tpi.integtest.categories.api[projectName] = {
-    'OpenSearchInstanceType': 'c6g.xlarge.elasticsearch'
+    // c5 is used because c6 types are not supported on elastic search
+    'ElasticSearchInstanceType': 'c5.xlarge.elasticsearch'
   };
   setTeamProviderInfo(projectDir, tpi);
 
