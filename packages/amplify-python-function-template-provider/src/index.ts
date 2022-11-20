@@ -1,6 +1,7 @@
 import { FunctionTemplateContributorFactory, FunctionTemplateParameters } from 'amplify-function-plugin-interface';
 import fs from 'fs-extra';
 import { $TSContext, AmplifySupportedService, exitOnNextTick } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 
 const pathToTemplateFiles = `${__dirname}/../resources/hello-world`;
 const pathToGraphqlTemplateFiles = `${__dirname}/../resources/appsync-request`;
@@ -41,20 +42,29 @@ export function helloWorld(): Promise<FunctionTemplateParameters> {
  * Graphql request to an AppSync API using Python runtime Lambda function
  */
 export async function graphqlRequest(context: $TSContext): Promise<FunctionTemplateParameters> {
-  const { allResources } = await context.amplify.getResourceStatus();
-  const apiResource = allResources.filter((resource: { service: string }) => resource.service === AmplifySupportedService.APPSYNC);
+  const { allResources } = await context.amplify.getResourceStatus('api');
 
-  if (apiResource.length === 0) {
-    context.print.error(`${AmplifySupportedService.APPSYNC} API does not exist. To add an api, use "amplify add api".`);
+  const apiResource = allResources.find((resource: { service: string }) => resource.service === AmplifySupportedService.APPSYNC);
+
+  if (!apiResource) {
+    printer.error(`${AmplifySupportedService.APPSYNC} API does not exist. To add an api, use "amplify add api".`);
     exitOnNextTick(0);
   }
 
-  const authConfigs = allResources[1].output.authConfig;
+  const AWS_IAM = 'AWS_IAM';
+  function isIAM(authType: string) {
+    return authType === AWS_IAM;
+  }
 
-  const additionalAuth = authConfigs.additionalAuthenticationProviders.filter((obj: { authenticationType: string; }) => obj.authenticationType === 'AWS_IAM');
+  function isAppSyncWithIAM(config : any) {
+    const { authConfig } = config.output;
+    return [authConfig.defaultAuthentication.authenticationType, ...authConfig.additionalAuthenticationProviders.map((provider : any) => provider.authenticationType)].some(isIAM);
+  }
 
-  if (authConfigs.defaultAuthentication.authenticationType !== 'AWS_IAM' && Object.keys(additionalAuth).length === 0) {
-    context.print.error(`IAM Auth not enabled for ${AmplifySupportedService.APPSYNC} API. To update an api, use "amplify update api".`);
+  const iamCheck = isAppSyncWithIAM(apiResource);
+
+  if (!iamCheck) {
+    printer.error(`IAM Auth not enabled for ${AmplifySupportedService.APPSYNC} API. To update an api, use "amplify update api".`);
     exitOnNextTick(0);
   }
 
