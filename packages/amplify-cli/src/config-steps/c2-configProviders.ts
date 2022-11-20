@@ -13,15 +13,15 @@ export async function configProviders(context) {
   const initializationTasks: (() => Promise<any>)[] = [];
   const onInitSuccessfulTasks: (() => Promise<any>)[] = [];
 
-  selectedProviders.forEach(provider => {
-    const providerModule = require(providerPlugins[provider]);
+  for (const provider of selectedProviders) {
+    const providerModule = await import(providerPlugins[provider]);
     if (currentProviders.includes(provider)) {
       configTasks.push(() => providerModule.configure(context));
     } else {
       initializationTasks.push(() => providerModule.init(context));
       onInitSuccessfulTasks.push(() => providerModule.onInitSuccessful(context));
     }
-  });
+  }
 
   await sequential(configTasks);
   await sequential(initializationTasks);

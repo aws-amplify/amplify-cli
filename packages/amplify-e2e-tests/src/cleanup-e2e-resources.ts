@@ -624,7 +624,14 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
   });
   try {
     const orgAccounts = await orgApi.listAccounts().promise();
-    const accountCredentialPromises = orgAccounts.Accounts.map(async account => {
+    const allAccounts = orgAccounts.Accounts;
+    let nextToken = orgAccounts.NextToken;
+    while(nextToken){
+      const nextPage = await orgApi.listAccounts({"NextToken": nextToken }).promise();
+      allAccounts.push(...nextPage.Accounts);
+      nextToken = nextPage.NextToken;
+    }
+    const accountCredentialPromises = allAccounts.map(async account => {
       if (account.Id === parentAccountIdentity.Account) {
         return {
           accessKeyId: process.env.AWS_ACCESS_KEY_ID,

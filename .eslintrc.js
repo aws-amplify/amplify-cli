@@ -276,9 +276,11 @@ module.exports = {
     '/packages/amplify-container-hosting/lib/',
     '/packages/amplify-category-predictions/lib',
     '/packages/amplify-category-analytics/lib',
+    '/packages/amplify-category-notifications/lib',
     '/amplify-category-interactions/lib',
     '/packages/amplify-category-custom/src/utils/generate-cfn-from-cdk.ts',
     '/packages/amplify-environment-parameters/lib',
+    '/packages/amplify-opensearch-simulator/lib',
 
     // Ignore CHANGELOG.md files
     '/packages/*/CHANGELOG.md',

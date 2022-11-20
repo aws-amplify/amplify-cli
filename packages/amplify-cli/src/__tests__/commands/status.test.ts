@@ -36,7 +36,7 @@ describe('amplify status:', () => {
   const { run } = require('../../commands/status');
   const runStatusCmd = run;
   const statusPluginInfo = `${process.cwd()}/../amplify-console-hosting`;
-  const mockPath = './';
+  const mockPath = './help';
 
   afterAll(() => {
     jest.clearAllMocks();
@@ -53,6 +53,7 @@ describe('amplify status:', () => {
         showGlobalSandboxModeWarning: jest.fn(),
         showHelpfulProviderLinks: jest.fn(),
         getCategoryPluginInfo: jest.fn().mockReturnValue({ packageLocation: mockPath }),
+        pathManager: pathManagerMock,
       },
       parameters: {
         input: {
@@ -75,6 +76,7 @@ describe('amplify status:', () => {
         showGlobalSandboxModeWarning: jest.fn(),
         showHelpfulProviderLinks: jest.fn(),
         getCategoryPluginInfo: jest.fn().mockReturnValue({ packageLocation: statusPluginInfo }),
+        pathManager: pathManagerMock,
       },
       input: {
         command: 'status',
@@ -94,6 +96,7 @@ describe('amplify status:', () => {
         showGlobalSandboxModeWarning: jest.fn(),
         showHelpfulProviderLinks: jest.fn(),
         getCategoryPluginInfo: jest.fn().mockReturnValue({ packageLocation: statusPluginInfo }),
+        pathManager: pathManagerMock,
       },
       input: {
         command: 'status',
@@ -116,6 +119,7 @@ describe('amplify status:', () => {
         showGlobalSandboxModeWarning: jest.fn(),
         showHelpfulProviderLinks: jest.fn(),
         getCategoryPluginInfo: jest.fn().mockReturnValue({ packageLocation: statusPluginInfo }),
+        pathManager: pathManagerMock,
       },
       input: {
         command: 'status',
@@ -123,7 +127,6 @@ describe('amplify status:', () => {
       },
     };
     runStatusCmd(mockContextWithHelpSubcommandAndCLArgs);
-    // TBD: to move ViewResourceTableParams into a separate file for mocking instance functions.
     expect(mockContextWithHelpSubcommandAndCLArgs.amplify.showStatusTable.mock.calls.length).toBe(0);
   });
 
@@ -135,6 +138,7 @@ describe('amplify status:', () => {
         showGlobalSandboxModeWarning: jest.fn(),
         showHelpfulProviderLinks: jest.fn(),
         getCategoryPluginInfo: jest.fn().mockReturnValue({ packageLocation: statusPluginInfo }),
+        pathManager: pathManagerMock,
       },
       input: {
         command: 'status',

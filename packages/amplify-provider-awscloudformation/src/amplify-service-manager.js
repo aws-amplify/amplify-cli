@@ -8,7 +8,7 @@ const { S3 } = require('./aws-utils/aws-s3');
 const { getConfiguredAmplifyClient } = require('./aws-utils/aws-amplify');
 const { ProviderName, AmplifyAppIdLabel } = require('./constants');
 const { checkAmplifyServiceIAMPermission } = require('./amplify-service-permission-check');
-const { stateManager, amplifyFaultWithTroubleshootingLink, AmplifyError } = require('amplify-cli-core');
+const { stateManager, AmplifyFault, AmplifyError } = require('amplify-cli-core');
 const { fileLogger } = require('./utils/aws-logger');
 const { loadConfigurationForEnv } = require('./configuration-manager');
 const logger = fileLogger('amplify-service-manager');
@@ -59,7 +59,7 @@ async function init(amplifyServiceParams) {
       throw new AmplifyError('ProjectNotFoundError', {
         message: `Amplify AppID ${inputAmplifyAppId} not found.`,
         resolution: `Please ensure your local profile matches the AWS account or region in which the Amplify app exists.`,
-      })
+      }, e)
     }
   }
 
@@ -135,10 +135,9 @@ async function init(amplifyServiceParams) {
       ) {
         // Do nothing
       } else {
-        throw amplifyFaultWithTroubleshootingLink('ProjectInitFault', {
+        throw new AmplifyFault('ProjectInitFault', {
           message: e.message,
-          stack: e.stack,
-        });
+        }, e);
       }
     }
   }
@@ -230,10 +229,9 @@ async function deleteEnv(context, envName, awsConfigInfo) {
         if (ex.code === 'NotFoundException') {
           context.print.warning(ex.message);
         } else {
-          throw amplifyFaultWithTroubleshootingLink('ProjectDeleteFault', {
+          throw new AmplifyFault('ProjectDeleteFault', {
             message: ex.message,
-            stack: ex.stack,
-          });
+          }, ex);
         }
       }
     }
@@ -318,10 +316,9 @@ async function postPushCheck(context) {
         ) {
           // Do nothing
         } else {
-          throw amplifyFaultWithTroubleshootingLink('ProjectInitFault', {
+          throw new AmplifyFault('ProjectInitFault', {
             message: e.message,
-            stack: e.stack,
-          });
+          }, e);
         }
       }
     }

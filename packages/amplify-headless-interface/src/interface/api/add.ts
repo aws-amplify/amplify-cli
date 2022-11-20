@@ -40,6 +40,10 @@ export interface AppSyncServiceConfiguration {
    * The strategy for resolving API write conflicts.
    */
   conflictResolution?: ConflictResolution;
+  /**
+   * Configuration for how long to extend an API key from current set expiration
+   */
+  apiKeyExpiration?: AppSyncAPIKeyExpiration;
 }
 
 /**
@@ -133,6 +137,13 @@ export interface AppSyncAPIKeyAuthType {
   expirationTime?: number;
   apiKeyExpirationDate?: Date;
   keyDescription?: string;
+}
+
+/**
+ * Specifies how to extend an AppSync API key
+ */
+export interface AppSyncAPIKeyExpiration {
+  days: number;
 }
 
 /**

@@ -26,6 +26,8 @@ export const removeFilesForTeam = (projectRootDirPath: string): void => {
 
   const currentCloudBackendDirPath = path.join(amplifyDirPath, '#current-cloud-backend');
   const mockDataDirPath = path.join(amplifyDirPath, 'mock-data');
+  const mockAPIResourcesDirPath = path.join(amplifyDirPath, 'mock-api-resources');
+  fs.removeSync(mockAPIResourcesDirPath);
   fs.removeSync(mockDataDirPath);
   fs.removeSync(currentCloudBackendDirPath);
 

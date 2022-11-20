@@ -12,7 +12,7 @@ const { S3 } = require('./aws-s3');
 const providerName = require('../constants').ProviderName;
 const { formUserAgentParam } = require('./user-agent');
 const configurationManager = require('../configuration-manager');
-const { stateManager, pathManager, AmplifyError, AmplifyException, amplifyFaultWithTroubleshootingLink, amplifyErrorWithTroubleshootingLink } = require('amplify-cli-core');
+const { stateManager, pathManager, AmplifyError, AmplifyException, AmplifyFault } = require('amplify-cli-core');
 const { fileLogger } = require('../utils/aws-logger');
 const logger = fileLogger('aws-cfn');
 const { pagedAWSCall } = require('./paged-call');
@@ -389,10 +389,9 @@ class CloudFormation {
         throw error;
       }
 
-      throw amplifyFaultWithTroubleshootingLink('ResourceNotReadyFault', {
-        message: error.message,
-        stack: error.stack,
-      });
+      throw new AmplifyFault('ResourceNotReadyFault', {
+        message: error.message
+      }, error);
     }
   }
 
@@ -564,7 +563,7 @@ class CloudFormation {
     const meta = stateManager.getMeta();
     stackId = stackId || _.get(meta, ['providers', providerName, 'StackName'], undefined);
     if (!stackId) {
-      throw amplifyErrorWithTroubleshootingLink('StackNotFoundError', {
+      throw new AmplifyError('StackNotFoundError', {
         message: `StackId not found in amplify-meta for provider ${providerName}`,
       });
     }
@@ -577,7 +576,7 @@ class CloudFormation {
     const providerInfo = teamProviderInfo?.[envName]?.[providerName];
     const stackName = providerInfo?.StackName;
     if (!stackName) {
-      throw amplifyErrorWithTroubleshootingLink('StackNotFoundError', {
+      throw new AmplifyError('StackNotFoundError', {
         message: `Stack not defined for the environment.`,
       });
     }

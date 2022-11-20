@@ -18,7 +18,7 @@ describe('DynamoDB Utils', () => {
       AWSMock.mock('DynamoDB', 'describeTable', describeTableMock);
     });
 
-    it('should call call DynamoDB Clients describe table and collect the results', async () => {
+    it('should call DynamoDB Clients describe table and collect the results', async () => {
       const tableNames = ['table1', 'table2'];
       const describeTableResult: Record<string, DescribeTableOutput> = {
         table1: {
@@ -80,6 +80,13 @@ describe('DynamoDB Utils', () => {
       expect(describeTableMock).toHaveBeenCalledTimes(2);
       expect(describeTableMock.mock.calls[0][0]).toEqual({ TableName: 'table1' });
       expect(describeTableMock.mock.calls[1][0]).toEqual({ TableName: 'table2' });
+    });
+
+    it('should early exit for empty tables', async () => {
+      const tableNames = [];
+      const client = new AWS.DynamoDB();
+      await expect(ddbUtils.describeTables(client, tableNames)).resolves.toEqual({});
+      expect(describeTableMock).toHaveBeenCalledTimes(0);
     });
   });
 

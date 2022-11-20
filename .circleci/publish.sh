@@ -1,6 +1,27 @@
 #!/bin/bash -e
-git config --global user.email $GITHUB_EMAIL
-git config --global user.name $GITHUB_USER
+
+if [ -z "$GITHUB_EMAIL" ]; then
+  if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
+    git config --global user.email not@used.com
+  else
+    echo "GITHUB_EMAIL email is missing"
+    exit 1
+  fi
+else
+  git config --global user.email $GITHUB_EMAIL
+fi
+
+if [ -z "$GITHUB_USER" ]; then
+  if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
+    git config --global user.name "Doesnt Matter"
+  else
+    echo "GITHUB_USER email is missing"
+    exit 1
+  fi
+else
+  git config --global user.name $GITHUB_USER
+fi
+
 if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
   if [[ "$CIRCLE_BRANCH" =~ ^tagged-release-without-e2e-tests\/.* ]]; then
     # Remove tagged-release-without-e2e-tests/
@@ -62,7 +83,7 @@ elif [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^r
     force_publish_local_args="--force-publish '@aws-amplify/cli-internal'"
   fi
   # create release commit and release tags
-  npx lerna version --preid=rc.$(git rev-parse --short HEAD) --exact --conventional-prerelease --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish rc [ci skip]" $(echo $force_publish_local_args)
+  npx lerna version --preid=rc.$(git rev-parse --short HEAD) --exact --conventional-prerelease --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish rc [ci skip]" $(echo $force_publish_local_args) --no-commit-hooks
 
   # if publishing locally to verdaccio
   if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then

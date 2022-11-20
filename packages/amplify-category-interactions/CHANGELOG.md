@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@4.1.4...amplify-category-interactions@4.1.5) (2022-11-17)
+
+**Note:** Version bump only for package amplify-category-interactions
+
+
+
+
+
+## [4.1.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@4.1.3...amplify-category-interactions@4.1.4) (2022-10-27)
+
+**Note:** Version bump only for package amplify-category-interactions
+
+
+
+
+
+## [4.1.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@4.1.2...amplify-category-interactions@4.1.3) (2022-10-13)
+
+**Note:** Version bump only for package amplify-category-interactions
+
+
+
+
+
+## [4.1.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@4.1.1...amplify-category-interactions@4.1.2) (2022-10-03)
+
+**Note:** Version bump only for package amplify-category-interactions
+
+
+
+
+
+## [4.1.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@4.0.12...amplify-category-interactions@4.1.1) (2022-09-21)
+
+**Note:** Version bump only for package amplify-category-interactions
+
+
+
+
+
 ## [4.0.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@4.0.12-rc.224a2e0e4.0...amplify-category-interactions@4.0.12) (2022-09-06)
 
 **Note:** Version bump only for package amplify-category-interactions

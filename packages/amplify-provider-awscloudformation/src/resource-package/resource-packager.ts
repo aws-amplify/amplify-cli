@@ -245,7 +245,7 @@ export abstract class ResourcePackager {
     switch (resource.category) {
       case API_CATEGORY.NAME:
         if (resource.service === API_CATEGORY.SERVICE.ELASTIC_CONTAINER) {
-          const { exposedContainer } = await this.context.amplify.invokePluginMethod(
+          const { exposedContainer }: $TSAny = await this.context.amplify.invokePluginMethod(
             this.context,
             'api',
             undefined,

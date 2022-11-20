@@ -241,12 +241,12 @@ export class CronExpression {
         throw new Error("Illegal character after '?': " + s.charAt(i) + String(i));
       }
       if (type != DAY_OF_WEEK && type != DAY_OF_MONTH) {
-        throw new Error("'?' can only be specfied for Day-of-Month or Day-of-Week." + String(i));
+        throw new Error("'?' can only be specified for Day-of-Month or Day-of-Week." + String(i));
       }
       if (type === DAY_OF_WEEK && !this.lastdayOfMonth) {
         let val: number = this.daysOfMonth.last();
         if (val === NO_SPEC_INT) {
-          throw new Error("'?' can only be specfied for Day-of-Month -OR- Day-of-Week." + String(i));
+          throw new Error("'?' can only be specified for Day-of-Month -OR- Day-of-Week." + String(i));
         }
       }
 

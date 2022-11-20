@@ -3,6 +3,53 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.7.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.7.0...amplify-frontend-javascript@3.7.1) (2022-11-17)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
+# [3.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.6.3...amplify-frontend-javascript@3.7.0) (2022-10-27)
+
+
+### Features
+
+* in app messaging notification ([#11067](https://github.com/aws-amplify/amplify-cli/issues/11067)) ([0c70a05](https://github.com/aws-amplify/amplify-cli/commit/0c70a05bf97943ddf6b4607b9bfe0bdff132aae1))
+
+
+
+
+
+## [3.6.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.6.2...amplify-frontend-javascript@3.6.3) (2022-10-13)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
+## [3.6.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.6.1...amplify-frontend-javascript@3.6.2) (2022-10-03)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
+## [3.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.5.5...amplify-frontend-javascript@3.6.1) (2022-09-21)
+
+
+### Bug Fixes
+
+* aws-exports to be read regardless of JS project type ([#10918](https://github.com/aws-amplify/amplify-cli/issues/10918)) ([c9586c7](https://github.com/aws-amplify/amplify-cli/commit/c9586c7933b656b264bdfbe3c57e97c0b865b430))
+* babel transform of aws-exports.js file when user defined babel configuration ([#11041](https://github.com/aws-amplify/amplify-cli/issues/11041)) ([ba43751](https://github.com/aws-amplify/amplify-cli/commit/ba4375129f4e1f8b7c8a50b10188582b0991d5a9)), closes [#11029](https://github.com/aws-amplify/amplify-cli/issues/11029)
+
+
+
+
+
 ## [3.5.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@3.5.5-rc.224a2e0e4.0...amplify-frontend-javascript@3.5.5) (2022-09-06)
 
 **Note:** Version bump only for package amplify-frontend-javascript

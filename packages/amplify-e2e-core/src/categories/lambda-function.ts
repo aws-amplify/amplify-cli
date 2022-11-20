@@ -32,6 +32,7 @@ const nodeJSTemplateChoices = [
   'Hello World',
   'Lambda trigger',
   'Serverless ExpressJS function (Integration with API Gateway)',
+  'AppSync - GraphQL API request (with IAM)',
 ];
 
 const pythonTemplateChoices = [

@@ -1,5 +1,5 @@
 import {
-  $TSAny, $TSContext, $TSObject, amplifyErrorWithTroubleshootingLink, pathManager,
+  $TSAny, $TSContext, $TSObject, AmplifyError, pathManager,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import extract from 'extract-zip';
@@ -89,7 +89,7 @@ const copyFilesToSrc = (context: $TSContext, apiName: string, framework: string)
       }
       break;
     default:
-      throw amplifyErrorWithTroubleshootingLink('FrameworkNotSupportedError', {
+      throw new AmplifyError('FrameworkNotSupportedError', {
         message: `Unsupported framework. ${framework}`,
       });
   }
@@ -129,7 +129,7 @@ const getAPIGWRequestParams = (resource: $TSObject, framework: string): $TSAny =
       };
 
     default:
-      throw amplifyErrorWithTroubleshootingLink('FrameworkNotSupportedError', {
+      throw new AmplifyError('FrameworkNotSupportedError', {
         message: `Unsupported framework. ${framework}`,
       });
   }

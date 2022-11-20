@@ -125,10 +125,9 @@ export class GraphQLResourceManager {
     } catch (err) {
       if (err.name !== 'InvalidGSIMigrationError') {
         throw new AmplifyFault('UnknownFault', {
-          stack: err.stack,
           message: err.message,
           link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
-        });
+        }, err);
       }
     }
     if (!this.rebuildAllTables) {
@@ -328,7 +327,12 @@ export class GraphQLResourceManager {
         diffs
           // diff.path looks like [ "stacks", "ModelName.json", "Resources", "TableName", "Properties", "KeySchema", 0, "AttributeName"]
           .filter(
-            diff => (diff.kind === 'E' && diff.path.length === 8 && diff.path[5] === 'KeySchema') || diff.path.includes('LocalSecondaryIndexes'),
+            diff => {
+              const keySchemaModified = diff.kind === 'E' && diff.path.length === 8 && diff.path[5] === 'KeySchema';
+              const sortKeyAddedOrRemoved = diff.kind === 'A' && diff.path.length === 6 && diff.path[5] === 'KeySchema' && diff.index === 1;
+              const localSecondaryIndexModified = diff.path.some(pathEntry => pathEntry === 'LocalSecondaryIndexes');
+              return keySchemaModified || sortKeyAddedOrRemoved || localSecondaryIndexModified;
+            },
           ) // filter diffs with changes that require replacement
           .map(diff => ({
             // extract table name and stack name from diff path
