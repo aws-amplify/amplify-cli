@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli-internal",
-  "version": "10.5.0",
+  "version": "10.5.1",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
@@ -39,7 +39,7 @@
     "@aws-amplify/amplify-category-custom": "2.5.5",
     "@aws-amplify/amplify-category-storage": "3.6.1",
     "@aws-amplify/amplify-environment-parameters": "1.2.1",
-    "@aws-amplify/amplify-util-uibuilder": "1.6.1",
+    "@aws-amplify/amplify-util-uibuilder": "1.6.2",
     "@aws-amplify/graphql-auth-transformer": "^1.1.4",
     "@aws-cdk/cloudformation-diff": "~1.172.0",
     "amplify-app": "4.3.5",
