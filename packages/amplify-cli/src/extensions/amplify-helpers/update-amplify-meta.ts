@@ -1,17 +1,15 @@
 /* eslint-disable spellcheck/spell-checker */
 /* eslint-disable import/no-extraneous-dependencies */
-import { buildTypeKeyMap, ServiceName } from 'amplify-category-function';
-import {
-  $TSAny, $TSMeta, $TSObject, JSONUtilities, pathManager, ResourceTuple, stateManager,
-} from 'amplify-cli-core';
-import { BuildType } from 'amplify-function-plugin-interface';
-import * as fs from 'fs-extra';
-import glob from 'glob';
-import _ from 'lodash';
-import * as path from 'path';
-import { ensureAmplifyMetaFrontendConfig } from './on-category-outputs-change';
-import { getHashForResourceDir } from './resource-status';
-import { updateBackendConfigAfterResourceAdd, updateBackendConfigAfterResourceUpdate } from './update-backend-config';
+import { buildTypeKeyMap, ServiceName } from "amplify-category-function";
+import { $TSAny, $TSMeta, $TSObject, JSONUtilities, pathManager, ResourceTuple, stateManager } from "amplify-cli-core";
+import { BuildType } from "amplify-function-plugin-interface";
+import * as fs from "fs-extra";
+import glob from "glob";
+import _ from "lodash";
+import * as path from "path";
+import { ensureAmplifyMetaFrontendConfig } from "./on-category-outputs-change";
+import { getHashForResourceDir } from "./resource-status";
+import { updateBackendConfigAfterResourceAdd, updateBackendConfigAfterResourceUpdate } from "./update-backend-config";
 
 /**
  * Generic resource function to update any arbitrary value in amplify-meta.json and save.
@@ -29,7 +27,7 @@ export const updateAwsMetaFile = (
   resourceName: string,
   attribute: $TSAny,
   value: $TSAny,
-  timestamp: $TSAny,
+  timestamp: $TSAny
 ): $TSMeta => {
   const amplifyMeta = JSONUtilities.readJson<$TSMeta>(filePath);
 
@@ -42,7 +40,7 @@ export const updateAwsMetaFile = (
   if (!amplifyMeta[category][resourceName][attribute]) {
     amplifyMeta[category][resourceName][attribute] = {};
   }
-  if (typeof value === 'object' && !Array.isArray(value)) {
+  if (typeof value === "object" && !Array.isArray(value)) {
     if (!amplifyMeta[category][resourceName][attribute]) {
       amplifyMeta[category][resourceName][attribute] = {};
     }
@@ -64,13 +62,13 @@ const moveBackendResourcesToCurrentCloudBackend = (resources: $TSObject[]): void
   const amplifyCloudMetaFilePath = pathManager.getCurrentAmplifyMetaFilePath();
   const backendConfigFilePath = pathManager.getBackendConfigFilePath();
   const backendConfigCloudFilePath = pathManager.getCurrentBackendConfigFilePath();
-  const overridePackageJsonBackendFilePath = path.join(pathManager.getBackendDirPath(), 'package.json');
-  const overrideTsConfigJsonBackendFilePath = path.join(pathManager.getBackendDirPath(), 'tsconfig.json');
-  const overridePackageJsonCurrentCloudBackendFilePath = path.join(pathManager.getCurrentCloudBackendDirPath(), 'package.json');
-  const overrideTsConfigJsonCurrentCloudBackendFilePath = path.join(pathManager.getCurrentCloudBackendDirPath(), 'tsconfig.json');
+  const overridePackageJsonBackendFilePath = path.join(pathManager.getBackendDirPath(), "package.json");
+  const overrideTsConfigJsonBackendFilePath = path.join(pathManager.getBackendDirPath(), "tsconfig.json");
+  const overridePackageJsonCurrentCloudBackendFilePath = path.join(pathManager.getCurrentCloudBackendDirPath(), "package.json");
+  const overrideTsConfigJsonCurrentCloudBackendFilePath = path.join(pathManager.getCurrentCloudBackendDirPath(), "tsconfig.json");
 
   for (const resource of resources) {
-    const sourceDir = path.normalize(path.join(pathManager.getBackendDirPath(), resource.category, resource.resourceName));
+    const sourceDir = path.normalize(path.join(pathManager.getBackendSnapshotPath(), resource.category, resource.resourceName));
     const targetDir = path.normalize(path.join(pathManager.getCurrentCloudBackendDirPath(), resource.category, resource.resourceName));
 
     if (fs.pathExistsSync(targetDir)) {
@@ -82,7 +80,7 @@ const moveBackendResourcesToCurrentCloudBackend = (resources: $TSObject[]): void
     // in the case that the resource is being deleted, the sourceDir won't exist
     if (fs.pathExistsSync(sourceDir)) {
       fs.copySync(sourceDir, targetDir);
-      if (resource?.service === ServiceName.LambdaFunction || (resource?.service && resource?.service.includes('custom'))) {
+      if (resource?.service === ServiceName.LambdaFunction || (resource?.service && resource?.service.includes("custom"))) {
         removeNodeModulesDir(targetDir);
       }
     }
@@ -96,7 +94,7 @@ const moveBackendResourcesToCurrentCloudBackend = (resources: $TSObject[]): void
   try {
     fs.writeFileSync(overridePackageJsonCurrentCloudBackendFilePath, fs.readFileSync(overridePackageJsonBackendFilePath));
   } catch (err) {
-    if (err.code !== 'ENOENT') {
+    if (err.code !== "ENOENT") {
       throw err;
     }
   }
@@ -104,16 +102,16 @@ const moveBackendResourcesToCurrentCloudBackend = (resources: $TSObject[]): void
   try {
     fs.writeFileSync(overrideTsConfigJsonCurrentCloudBackendFilePath, fs.readFileSync(overrideTsConfigJsonBackendFilePath));
   } catch (err) {
-    if (err.code !== 'ENOENT') {
+    if (err.code !== "ENOENT") {
       throw err;
     }
   }
 };
 
-const removeNodeModulesDir = (currentCloudBackendDir: string):void => {
-  const nodeModulesDirs = glob.sync('**/node_modules', {
+const removeNodeModulesDir = (currentCloudBackendDir: string): void => {
+  const nodeModulesDirs = glob.sync("**/node_modules", {
     cwd: currentCloudBackendDir,
-    absolute: true,
+    absolute: true
   });
   for (const nodeModulesPath of nodeModulesDirs) {
     if (fs.existsSync(nodeModulesPath)) {
@@ -128,9 +126,9 @@ const removeNodeModulesDir = (currentCloudBackendDir: string):void => {
 export const updateamplifyMetaAfterResourceAdd = (
   category: string,
   resourceName: string,
-  metadataResource: { dependsOn?: [{ category: string; resourceName: string; }] } = {},
+  metadataResource: { dependsOn?: [{ category: string; resourceName: string }] } = {},
   backendConfigResource?: { dependsOn?: $TSAny },
-  overwriteObjectIfExists?: boolean,
+  overwriteObjectIfExists?: boolean
 ): void => {
   const amplifyMeta = stateManager.getMeta();
 
@@ -188,13 +186,13 @@ export const updateamplifyMetaAfterResourceUpdate = (category: string, resourceN
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const currentTimestamp = new Date();
 
-  if (attribute === 'dependsOn') {
+  if (attribute === "dependsOn") {
     checkForCyclicDependencies(category, resourceName, value);
   }
 
   const updatedMeta = updateAwsMetaFile(amplifyMetaFilePath, category, resourceName, attribute, value, currentTimestamp);
 
-  if (['dependsOn', 'service', 'frontendAuthConfig'].includes(attribute)) {
+  if (["dependsOn", "service", "frontendAuthConfig"].includes(attribute)) {
     updateBackendConfigAfterResourceUpdate(category, resourceName, attribute, value);
   }
 
@@ -207,24 +205,24 @@ export const updateamplifyMetaAfterResourceUpdate = (category: string, resourceN
  * b. Timestamp of last push
  * @param resources all resources from amplify-meta.json
  */
-export const updateamplifyMetaAfterPush = async (resources: $TSObject[]):Promise<void> => {
+export const updateamplifyMetaAfterPush = async (resources: $TSObject[]): Promise<void> => {
   const amplifyMeta = stateManager.getMeta();
   const currentTimestamp = new Date();
 
   for (const resource of resources) {
     // Skip hash calculation for imported resources
-    if (resource.serviceType !== 'imported') {
+    if (resource.serviceType !== "imported") {
       const sourceDir = path.normalize(path.join(pathManager.getBackendDirPath(), resource.category, resource.resourceName));
       // skip hashing deleted resources
       if (fs.pathExistsSync(sourceDir)) {
         let hashDir: string | undefined;
 
-        if (resource.category === 'hosting' && resource.service === 'ElasticContainer') {
+        if (resource.category === "hosting" && resource.service === "ElasticContainer") {
           const {
             frontend,
             [frontend]: {
-              config: { SourceDir },
-            },
+              config: { SourceDir }
+            }
           } = stateManager.getProjectConfig();
           // build absolute path for Dockerfile and docker-compose.yaml
           const projectRootPath = pathManager.findProjectRoot();
@@ -234,9 +232,9 @@ export const updateamplifyMetaAfterPush = async (resources: $TSObject[]):Promise
 
             // Generate the hash for this file, cfn files are autogenerated based on Dockerfile and resource settings
             // Hash is generated by this files and not cfn files
-            hashDir = await getHashForResourceDir(sourceAbsolutePath, ['Dockerfile', 'docker-compose.yaml', 'docker-compose.yml']);
+            hashDir = await getHashForResourceDir(sourceAbsolutePath, ["Dockerfile", "docker-compose.yaml", "docker-compose.yml"]);
           }
-        } else if (resource.category === 'function' && resource.service === ServiceName.LambdaLayer) {
+        } else if (resource.category === "function" && resource.service === ServiceName.LambdaLayer) {
           // Layers does not require lastPushDirHash as they are hashed differently
         } else {
           // Every other resource type gets standard hashing
@@ -253,7 +251,7 @@ export const updateamplifyMetaAfterPush = async (resources: $TSObject[]):Promise
 
     // If the operation was a remove-sync then for imported resources we cannot set timestamp
     // but those are still in the received array as this method is operation agnostic.
-    if (resource.serviceType === 'imported' && amplifyMeta[resource.category] && amplifyMeta[resource.category][resource.resourceName]) {
+    if (resource.serviceType === "imported" && amplifyMeta[resource.category] && amplifyMeta[resource.category][resource.resourceName]) {
       amplifyMeta[resource.category][resource.resourceName].lastPushTimeStamp = currentTimestamp;
     }
   }
@@ -272,7 +270,7 @@ export const updateamplifyMetaAfterPush = async (resources: $TSObject[]):Promise
 export const updateamplifyMetaAfterBuild = ({ category, resourceName }: ResourceTuple, buildType: BuildType = BuildType.PROD): void => {
   const amplifyMeta = stateManager.getMeta();
   _.set(amplifyMeta, [category, resourceName, buildTypeKeyMap[buildType]], new Date());
-  _.set(amplifyMeta, [category, resourceName, 'lastBuildType'], buildType);
+  _.set(amplifyMeta, [category, resourceName, "lastBuildType"], buildType);
   stateManager.setMeta(undefined, amplifyMeta);
 };
 
@@ -285,11 +283,11 @@ export const updateamplifyMetaAfterBuild = ({ category, resourceName }: Resource
 export const updateAmplifyMetaAfterPackage = (
   { category, resourceName }: ResourceTuple,
   zipFilename: string,
-  hash?: { resourceKey: string; hashValue: string },
+  hash?: { resourceKey: string; hashValue: string }
 ): void => {
   const amplifyMeta = stateManager.getMeta();
-  _.set(amplifyMeta, [category, resourceName, 'lastPackageTimeStamp'], new Date());
-  _.set(amplifyMeta, [category, resourceName, 'distZipFilename'], zipFilename);
+  _.set(amplifyMeta, [category, resourceName, "lastPackageTimeStamp"], new Date());
+  _.set(amplifyMeta, [category, resourceName, "distZipFilename"], zipFilename);
   if (hash) {
     _.set(amplifyMeta, [category, resourceName, hash.resourceKey], hash.hashValue);
   }
@@ -303,7 +301,7 @@ export const updateAmplifyMetaAfterPackage = (
  * @param category category of the resource
  * @param resourceName logical name of the resource
  */
-export const updateamplifyMetaAfterResourceDelete = (category: string, resourceName: string):void => {
+export const updateamplifyMetaAfterResourceDelete = (category: string, resourceName: string): void => {
   const currentMeta = stateManager.getCurrentMeta();
 
   const resourceDir = path.normalize(path.join(pathManager.getCurrentCloudBackendDirPath(), category, resourceName));
@@ -320,7 +318,7 @@ export const updateamplifyMetaAfterResourceDelete = (category: string, resourceN
 const checkForCyclicDependencies = (
   category: $TSAny,
   resourceName: string,
-  dependsOn: [{ category:string; resourceName:string }],
+  dependsOn: [{ category: string; resourceName: string }]
 ): void => {
   const amplifyMeta = stateManager.getMeta();
   let cyclicDependency = false;
