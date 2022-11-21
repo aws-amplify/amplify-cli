@@ -123,44 +123,41 @@ const constructPinpointNotificationsMeta = async (context: $TSContext) : Promise
   // from cloud meta and as no new resources are created during pull, we should not look for
   // Pinpoint app in analytics category.
   const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
+  const currentAmplifyMeta = stateManager.getCurrentMeta(undefined, {
+    throwIfNotExist: false,
+  });
 
-  if (isPulling) {
-    const currentAmplifyMeta = stateManager.getCurrentMeta(undefined, {
-      throwIfNotExist: false,
-    });
+  if (isPulling && currentAmplifyMeta) {
+    const currentNotificationsMeta = currentAmplifyMeta[AmplifyCategories.NOTIFICATIONS];
 
-    if (currentAmplifyMeta) {
-      const currentNotificationsMeta = currentAmplifyMeta[AmplifyCategories.NOTIFICATIONS];
-
-      // We only support single Pinpoint across notifications and analytics categories
-      if (currentNotificationsMeta && Object.keys(currentNotificationsMeta).length > 0) {
-        const pinpointResource = _.get(currentNotificationsMeta, Object.keys(currentNotificationsMeta)[0], undefined);
-        // if pinpoint resource ID is not found in Notifications, we will ge it from the Analytics category
-        if (!(pinpointResource.output.Id)) {
-          const analyticsPinpointApp: Partial<ICategoryMeta>|undefined = getPinpointAppFromAnalyticsMeta(currentAmplifyMeta);
-          // eslint-disable-next-line max-depth
-          if (analyticsPinpointApp) {
-            pinpointResource.output.Id = analyticsPinpointApp.Id;
-            pinpointResource.output.Region = analyticsPinpointApp.Region;
-            pinpointResource.output.Name = analyticsPinpointApp.Name;
-            pinpointResource.ResourceName = analyticsPinpointApp.regulatedResourceName;
-          }
+    // We only support single Pinpoint across notifications and analytics categories
+    if (currentNotificationsMeta && Object.keys(currentNotificationsMeta).length > 0) {
+      const pinpointResource = _.get(currentNotificationsMeta, Object.keys(currentNotificationsMeta)[0], undefined);
+      // if pinpoint resource ID is not found in Notifications, we will ge it from the Analytics category
+      if (!(pinpointResource.output.Id)) {
+        const analyticsPinpointApp: Partial<ICategoryMeta>|undefined = getPinpointAppFromAnalyticsMeta(currentAmplifyMeta);
+        // eslint-disable-next-line max-depth
+        if (analyticsPinpointApp) {
+          pinpointResource.output.Id = analyticsPinpointApp.Id;
+          pinpointResource.output.Region = analyticsPinpointApp.Region;
+          pinpointResource.output.Name = analyticsPinpointApp.Name;
+          pinpointResource.ResourceName = analyticsPinpointApp.regulatedResourceName;
         }
-
-        if (!pinpointResource.output.Id) {
-          throw new AmplifyError('ResourceNotReadyError', {
-            message: 'Pinpoint resource ID not found.',
-            resolution: 'Run "amplify add analytics" to create a new Pinpoint resource.',
-          });
-        }
-
-        pinpointApp = {
-          Id: pinpointResource.output.Id,
-        };
-        pinpointApp.Name = pinpointResource.output.Name || pinpointResource.output.appName;
-        pinpointApp.Region = pinpointResource.output.Region;
-        pinpointApp.lastPushTimeStamp = pinpointResource.lastPushTimeStamp;
       }
+
+      if (!pinpointResource.output.Id) {
+        throw new AmplifyError('ResourceNotReadyError', {
+          message: 'Pinpoint resource ID not found.',
+          resolution: 'Run "amplify add analytics" to create a new Pinpoint resource.',
+        });
+      }
+
+      pinpointApp = {
+        Id: pinpointResource.output.Id,
+      };
+      pinpointApp.Name = pinpointResource.output.Name || pinpointResource.output.appName;
+      pinpointApp.Region = pinpointResource.output.Region;
+      pinpointApp.lastPushTimeStamp = pinpointResource.lastPushTimeStamp;
     }
   }
 
@@ -214,7 +211,7 @@ const constructPinpointNotificationsMeta = async (context: $TSContext) : Promise
       }
     }
 
-    if (pinpointApp) {
+    if (pinpointApp && (!isPulling || (isPulling && currentAmplifyMeta[AmplifyCategories.NOTIFICATIONS]))) {
       await notificationManager.pullAllChannels(context, pinpointApp);
       pinpointNotificationsMeta = {
         Name: pinpointApp.Name,
