@@ -14,7 +14,7 @@ export async function runTest(projectDir: string, testModule: any, projectName?:
   tpi.integtest.categories.api = {};
   tpi.integtest.categories.api[projectName] = {
     // c5 is used because c6 types are not supported on elastic search
-    'ElasticSearchInstanceType': 'c5.xlarge.elasticsearch'
+    'ElasticSearchInstanceType': 'c5.2xlarge.elasticsearch'
   };
   setTeamProviderInfo(projectDir, tpi);
 
