@@ -1204,7 +1204,7 @@ const supportedServices = {
         key: 'signinwithappleClientIdUserPool',
         prefix:
           " \n You've opted to allow users to authenticate via Sign in with Apple. If you haven't already, you'll need to go to https://developer.apple.com/account/#/welcome and configure Sign in with Apple. \n",
-        question: 'Enter your Services ID for your OAuth flow: ',
+        question: 'Enter your Apple Apple Services ID for your OAuth flow: ',
         required: true,
         andConditions: [
           {
@@ -1216,7 +1216,7 @@ const supportedServices = {
       },
       {
         key: 'signinwithappleTeamIdUserPool',
-        question: 'Enter your Team ID for your OAuth flow: ',
+        question: 'Enter your Apple Team ID for your OAuth flow: ',
         required: true,
         andConditions: [
           {
@@ -1228,7 +1228,7 @@ const supportedServices = {
       },
       {
         key: 'signinwithappleKeyIdUserPool',
-        question: 'Enter your Key ID for your OAuth flow: ',
+        question: 'Enter your Apple Key ID for your OAuth flow: ',
         required: true,
         andConditions: [
           {
@@ -1240,7 +1240,7 @@ const supportedServices = {
       },
       {
         key: 'signinwithapplePrivateKeyUserPool',
-        question: 'Enter your Private Key for your OAuth flow: ',
+        question: 'Enter your Apple Private Key for your OAuth flow: ',
         required: true,
         andConditions: [
           {
