@@ -87,6 +87,7 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
 
 // Ensure to update packages/amplify-e2e-tests/src/cleanup-e2e-resources.ts is also updated this gets updated
 const AWS_REGIONS_TO_RUN_TESTS = [
+  'us-east-1',
   'us-east-2',
   'us-west-2',
   'eu-west-2',
