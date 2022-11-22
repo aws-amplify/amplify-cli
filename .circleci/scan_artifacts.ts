@@ -4,7 +4,7 @@ const DEFAULT_SEARCH_FOLDER = path.normalize(path.join(__dirname, '..'));
 export const hasMatchingContentInFolder = (
   patterns: string[],
   folder = DEFAULT_SEARCH_FOLDER,
-  excludeFolder = '{node_modules,.cache,.git,verdaccio-cache,lib}',
+  excludeFolder = '{node_modules,\.cache,\.git,verdaccio-cache,lib,.cache,.git}',
 ): boolean => {
   const patternParam = patterns.reduce<string[]>((acc, v) => [...acc, '-e', v], []);
   try {
