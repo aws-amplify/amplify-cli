@@ -19,7 +19,7 @@ parameters:
     default: true
 
 executors:
-  linux: &linux-e2e-executor
+  l_large: &linux-e2e-executor-large
     docker:
       - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
@@ -31,7 +31,7 @@ executors:
 # our defined job, and its steps
 jobs:
   setup:
-    executor: 'linux'
+    executor: 'l_large'
     steps:
       - checkout # checkout code
       - run: # run a command
@@ -46,7 +46,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: linux
+        default: l_large
     executor: << parameters.os >>
     steps:
       - checkout
@@ -126,7 +126,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: linux
+        default: l_large
     executor: << parameters.os >>
     steps:
       - attach_workspace:
