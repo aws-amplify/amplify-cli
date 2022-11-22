@@ -58,6 +58,7 @@ type AmplifyAppInfo = {
 type S3BucketInfo = {
   name: string;
   cciInfo?: CircleCIJobDetails;
+  createTime: Date;
 };
 
 type PinpointAppInfo = {
@@ -66,11 +67,13 @@ type PinpointAppInfo = {
   arn: string;
   region: string;
   cciInfo?: CircleCIJobDetails;
+  createTime: Date;
 };
 
 type IamRoleInfo = {
   name: string;
   cciInfo?: CircleCIJobDetails;
+  createTime: Date;
 };
 
 type ReportEntry = {
@@ -120,14 +123,12 @@ const handleExpiredTokenException = (): void => {
 const testBucketStalenessFilter = (resource: aws.S3.Bucket): boolean => {
   const isTestResource = resource.Name.match(BUCKET_TEST_REGEX);
   const isStaleResource = (new Date().getUTCMilliseconds() - resource.CreationDate.getUTCMilliseconds()) > STALE_DURATION_MS;
-  console.log(`Bucket creation time (PST): ${resource.CreationDate.toLocaleDateString('en-US', { timeZone: 'America/Los_Angeles' })}`);
   return isTestResource && isStaleResource;
 };
 
 const testRoleStalenessFilter = (resource: aws.IAM.Role): boolean => {
   const isTestResource = resource.RoleName.match(IAM_TEST_REGEX);
   const isStaleResource = (new Date().getUTCMilliseconds() - resource.CreateDate.getUTCMilliseconds()) > STALE_DURATION_MS;
-  console.log(`Role creation time (PST): ${resource.CreateDate.toLocaleDateString('en-US', { timeZone: 'America/Los_Angeles' })}`);
   return isTestResource && isStaleResource;
 };
 
@@ -144,7 +145,7 @@ const getOrphanS3TestBuckets = async (account: AWSAccountInfo): Promise<S3Bucket
   const s3Client = new aws.S3(getAWSConfig(account));
   const listBucketResponse = await s3Client.listBuckets().promise();
   const staleBuckets = listBucketResponse.Buckets.filter(testBucketStalenessFilter);
-  return staleBuckets.map(it => ({ name: it.Name }));
+  return staleBuckets.map(it => ({ name: it.Name, createTime: it.CreationDate }));
 };
 
 /**
@@ -154,7 +155,7 @@ const getOrphanTestIamRoles = async (account: AWSAccountInfo): Promise<IamRoleIn
   const iamClient = new aws.IAM(getAWSConfig(account));
   const listRoleResponse = await iamClient.listRoles({ MaxItems: 1000 }).promise();
   const staleRoles = listRoleResponse.Roles.filter(testRoleStalenessFilter);
-  return staleRoles.map(it => ({ name: it.RoleName }));
+  return staleRoles.map(it => ({ name: it.RoleName, createTime: it.CreateDate }));
 };
 
 const getOrphanPinpointApplications = async (account: AWSAccountInfo, region: string): Promise<PinpointAppInfo[]> => {
@@ -167,7 +168,7 @@ const getOrphanPinpointApplications = async (account: AWSAccountInfo, region: st
       Token: nextToken,
     }).promise();
     apps.push(...result.ApplicationsResponse.Item.filter(testPinpointAppStalenessFilter).map(it => ({
-      id: it.Id, name: it.Name, arn: it.Arn, region,
+      id: it.Id, name: it.Name, arn: it.Arn, region, createTime: new Date(it.CreationDate),
     })));
 
     nextToken = result.ApplicationsResponse.NextToken;
@@ -344,6 +345,7 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
         result.push({
           name: bucket.Name,
           cciInfo: await getJobCircleCIDetails(jobId),
+          createTime: bucket.CreationDate,
         });
       }
     } catch (e) {
@@ -352,6 +354,7 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
       }
       result.push({
         name: bucket.Name,
+        createTime: bucket.CreationDate,
       });
     }
   }
@@ -490,6 +493,7 @@ const deleteIamRole = async (account: AWSAccountInfo, accountIndex: number, role
   const { name: roleName } = role;
   try {
     console.log(`[ACCOUNT ${accountIndex}] Deleting Iam Role ${roleName}`);
+    console.log(`Role creation time (PST): ${role.createTime.toLocaleTimeString('en-US', { timeZone: 'America/Los_Angeles' })}`);
     const iamClient = new aws.IAM(getAWSConfig(account));
     await deleteAttachedRolePolicies(account, accountIndex, roleName);
     await deleteRolePolicies(account, accountIndex, roleName);
@@ -566,6 +570,7 @@ const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucke
   const { name } = bucket;
   try {
     console.log(`[ACCOUNT ${accountIndex}] Deleting S3 Bucket ${name}`);
+    console.log(`Bucket creation time (PST): ${bucket.createTime.toLocaleTimeString('en-US', { timeZone: 'America/Los_Angeles' })}`);
     const s3 = new aws.S3(getAWSConfig(account));
     await deleteS3Bucket(name, s3);
   } catch (e) {
@@ -586,6 +591,7 @@ const deletePinpointApp = async (account: AWSAccountInfo, accountIndex: number, 
   } = app;
   try {
     console.log(`[ACCOUNT ${accountIndex}] Deleting Pinpoint App ${name}`);
+    console.log(`Pinpoint creation time (PST): ${app.createTime.toLocaleTimeString('en-US', { timeZone: 'America/Los_Angeles' })}`);
     const pinpoint = new aws.Pinpoint(getAWSConfig(account, region));
     await pinpoint.deleteApp({ ApplicationId: id }).promise();
   } catch (e) {
