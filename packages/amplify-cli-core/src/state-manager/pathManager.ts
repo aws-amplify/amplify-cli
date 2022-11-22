@@ -24,6 +24,7 @@ export const PathConstants = {
 
   // resource level
   BuildDirName: 'build',
+  SchemaSnapshot: '.snapshot',
   // 2nd Level
   OverrideDirName: 'overrides',
   ProviderName: 'awscloudformation',
@@ -107,6 +108,10 @@ export class PathManager {
 
   getBackendDirPath = (projectPath?: string): string => this.constructPath(
     projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName],
+  );
+
+  getBackendSnapshotVFSPath = (projectPath?: string): string => this.constructPath(
+    projectPath, [PathConstants.AmplifyDirName, PathConstants.SchemaSnapshot],
   );
 
   getCurrentCloudBackendDirPath = (projectPath?: string): string => this.constructPath(

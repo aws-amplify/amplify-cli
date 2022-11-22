@@ -17,6 +17,7 @@
 /* eslint-disable no-await-in-loop */
 import _ from 'lodash';
 import * as fs from 'fs-extra';
+import { fs as vfs } from 'memfs';
 import * as path from 'path';
 import glob from 'glob';
 import {
@@ -274,6 +275,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
       || rebuild
     ) {
       context.usageData.stopCodePathTimer('pushTransform');
+      takeBackendSnapshotVFS();
       context.usageData.startCodePathTimer('pushDeployment');
       // if there are deploymentSteps, need to do an iterative update
       if (deploymentSteps.length > 0) {
@@ -469,6 +471,48 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     throw new AmplifyFault('DeploymentFault', {
       message: error.message,
     }, error);
+  } finally {
+    deleteBackendSnapshotVFS();
+  }
+};
+
+const takeBackendSnapshotVFS = (): void => {
+  const sourceDir = path.normalize(path.join(pathManager.getBackendDirPath()));
+  const targetDir = path.normalize(path.join(pathManager.getBackendSnapshotVFSPath()));
+  copyFromFStoVFSSync(sourceDir, targetDir);
+};
+
+const deleteBackendSnapshotVFS = (): void => {
+  const targetDir = path.normalize(path.join(pathManager.getBackendSnapshotVFSPath()));
+  if (vfs.existsSync(targetDir)) removeVFSDirRecursive(targetDir);
+};
+
+const copyFromFStoVFSSync = (src: string, dest: string) => {
+  const exists = fs.existsSync(src);
+  const stats = exists && fs.statSync(src);
+  const isDirectory = exists && stats.isDirectory();
+  if (isDirectory) {
+    vfs.mkdirSync(dest, { recursive: true });
+    fs.readdirSync(src).forEach(childItemName => {
+      copyFromFStoVFSSync(path.join(src, childItemName),
+        path.join(dest, childItemName));
+    });
+  } else {
+    vfs.writeFileSync(dest, fs.readFileSync(src));
+  }
+};
+
+const removeVFSDirRecursive = (directoryPath: string) => {
+  if (vfs.existsSync(directoryPath)) {
+    vfs.readdirSync(directoryPath).forEach(file => {
+      const curPath = path.join(directoryPath, file);
+      if (vfs.lstatSync(curPath).isDirectory()) {
+        removeVFSDirRecursive(curPath);
+      } else {
+        vfs.unlinkSync(curPath);
+      }
+    });
+    vfs.rmdirSync(directoryPath);
   }
 };
 

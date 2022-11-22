@@ -1,3 +1,4 @@
+import { Stats } from 'fs';
 /* eslint-disable spellcheck/spell-checker */
 /* eslint-disable import/no-extraneous-dependencies */
 import { buildTypeKeyMap, ServiceName } from 'amplify-category-function';
@@ -6,6 +7,7 @@ import {
 } from 'amplify-cli-core';
 import { BuildType } from 'amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
+import { fs as vfs } from 'memfs';
 import glob from 'glob';
 import _ from 'lodash';
 import * as path from 'path';
@@ -59,6 +61,21 @@ export const updateAwsMetaFile = (
   return amplifyMeta;
 };
 
+const copyFromVFStoFSSync = (src: string, dest: string): void => {
+  const exists = vfs.existsSync(src);
+  const stats = exists && vfs.statSync(src);
+  const isDirectory = exists && (stats as Stats).isDirectory();
+  if (isDirectory) {
+    fs.mkdirSync(dest, { recursive: true });
+    vfs.readdirSync(src).forEach(childItemName => {
+      copyFromVFStoFSSync(path.join(src, childItemName),
+        path.join(dest, childItemName));
+    });
+  } else {
+    fs.writeFileSync(dest, vfs.readFileSync(src));
+  }
+};
+
 const moveBackendResourcesToCurrentCloudBackend = (resources: $TSObject[]): void => {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyCloudMetaFilePath = pathManager.getCurrentAmplifyMetaFilePath();
@@ -70,7 +87,7 @@ const moveBackendResourcesToCurrentCloudBackend = (resources: $TSObject[]): void
   const overrideTsConfigJsonCurrentCloudBackendFilePath = path.join(pathManager.getCurrentCloudBackendDirPath(), 'tsconfig.json');
 
   for (const resource of resources) {
-    const sourceDir = path.normalize(path.join(pathManager.getBackendDirPath(), resource.category, resource.resourceName));
+    const sourceDir = path.normalize(path.join(pathManager.getBackendSnapshotVFSPath(), resource.category, resource.resourceName));
     const targetDir = path.normalize(path.join(pathManager.getCurrentCloudBackendDirPath(), resource.category, resource.resourceName));
 
     if (fs.pathExistsSync(targetDir)) {
@@ -80,8 +97,8 @@ const moveBackendResourcesToCurrentCloudBackend = (resources: $TSObject[]): void
     fs.ensureDirSync(targetDir);
 
     // in the case that the resource is being deleted, the sourceDir won't exist
-    if (fs.pathExistsSync(sourceDir)) {
-      fs.copySync(sourceDir, targetDir);
+    if (vfs.existsSync(sourceDir)) {
+      copyFromVFStoFSSync(sourceDir, targetDir);
       if (resource?.service === ServiceName.LambdaFunction || (resource?.service && resource?.service.includes('custom'))) {
         removeNodeModulesDir(targetDir);
       }
@@ -109,7 +126,6 @@ const moveBackendResourcesToCurrentCloudBackend = (resources: $TSObject[]): void
     }
   }
 };
-
 const removeNodeModulesDir = (currentCloudBackendDir: string):void => {
   const nodeModulesDirs = glob.sync('**/node_modules', {
     cwd: currentCloudBackendDir,
