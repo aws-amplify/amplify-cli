@@ -119,19 +119,21 @@ const handleExpiredTokenException = (): void => {
  */
 const testBucketStalenessFilter = (resource: aws.S3.Bucket): boolean => {
   const isTestResource = resource.Name.match(BUCKET_TEST_REGEX);
-  const isStaleResource = (Date.now() - resource.CreationDate.getMilliseconds()) > STALE_DURATION_MS;
+  const isStaleResource = (new Date().getUTCMilliseconds() - resource.CreationDate.getUTCMilliseconds()) > STALE_DURATION_MS;
+  console.log(`Bucket creation time (PST): ${resource.CreationDate.toLocaleDateString('en-US', { timeZone: 'America/Los_Angeles' })}`);
   return isTestResource && isStaleResource;
 };
 
 const testRoleStalenessFilter = (resource: aws.IAM.Role): boolean => {
   const isTestResource = resource.RoleName.match(IAM_TEST_REGEX);
-  const isStaleResource = (Date.now() - resource.CreateDate.getMilliseconds()) > STALE_DURATION_MS;
+  const isStaleResource = (new Date().getUTCMilliseconds() - resource.CreateDate.getUTCMilliseconds()) > STALE_DURATION_MS;
+  console.log(`Role creation time (PST): ${resource.CreateDate.toLocaleDateString('en-US', { timeZone: 'America/Los_Angeles' })}`);
   return isTestResource && isStaleResource;
 };
 
 const testPinpointAppStalenessFilter = (resource: aws.Pinpoint.ApplicationResponse): boolean => {
   const isTestResource = resource.Name.match(PINPOINT_TEST_REGEX);
-  const isStaleResource = (Date.now() - new Date(resource.CreationDate).getTime()) > STALE_DURATION_MS;
+  const isStaleResource = (new Date().getUTCMilliseconds() - new Date(resource.CreationDate).getUTCMilliseconds()) > STALE_DURATION_MS;
   return isTestResource && isStaleResource;
 };
 
@@ -603,7 +605,7 @@ const deleteCfnStack = async (account: AWSAccountInfo, accountIndex: number, sta
     const cfnClient = new aws.CloudFormation(getAWSConfig(account, region));
     await cfnClient.deleteStack({ StackName: stackName, RetainResources: resourceToRetain }).promise();
     // we'll only wait up to 10 minutes before moving on
-    await cfnClient.waitFor('stackDeleteComplete', { StackName: stackName, $waiter: { 'maxAttempts': 20 }}).promise();
+    await cfnClient.waitFor('stackDeleteComplete', { StackName: stackName, $waiter: { maxAttempts: 20 } }).promise();
   } catch (e) {
     console.log(`Deleting CloudFormation stack ${stackName} failed with error ${e.message}`);
     if (e.code === 'ExpiredTokenException') {
