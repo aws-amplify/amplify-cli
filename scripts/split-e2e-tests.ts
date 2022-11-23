@@ -3,6 +3,7 @@ import * as glob from 'glob';
 import { join } from 'path';
 import * as fs from 'fs-extra';
 import * as execa from 'execa';
+import { ARTIFACT_STORAGE_PATH_ALLOW_LIST } from './artifact-storage-path-allow-list';
 
 const CONCURRENCY = 35;
 // Some our e2e tests are known to fail when run on windows hosts
@@ -380,6 +381,37 @@ function verifyConfig() {
 
 function main(): void {
   const config = loadConfig();
+  
+  // make sure that only valid paths are used to store artifacts/results
+  const storagePathsUsedInConfig = new Set();
+  const invalidPaths = new Set();
+  for(let key of Object.keys(config.jobs)) {
+    const job = config.jobs[key];
+    const steps = job.steps;
+    
+    for(let i = 0; i < steps.length; i ++){
+      const resultsPath = steps[i].store_test_results;
+      const artifactsPath = steps[i].store_artifacts;
+      if(resultsPath){ storagePathsUsedInConfig.add(resultsPath.path)}
+      if(artifactsPath){ storagePathsUsedInConfig.add(artifactsPath.path)}
+      if(resultsPath && ARTIFACT_STORAGE_PATH_ALLOW_LIST.indexOf(resultsPath.path) === -1){
+        console.log('Invalid Test Results Storage Path:', resultsPath);
+        invalidPaths.add(resultsPath);
+      }
+      if(artifactsPath && ARTIFACT_STORAGE_PATH_ALLOW_LIST.indexOf(artifactsPath.path) === -1){
+        console.log('Invalid Artifact Storage Path:', artifactsPath);
+        invalidPaths.add(resultsPath);
+      }
+    }
+  }
+  if(invalidPaths.size > 0){
+    console.log("You are storing artifacts in an unregistered location.");
+    console.log("Please update artifact-storage-path-allow-list.ts to include the new storage paths:")
+    console.log("Update the list to match this:", storagePathsUsedInConfig);
+    console.log("Doing so will register these unregistered paths:", invalidPaths);
+    process.exit(1);
+  }
+
   const splitPkgTests = splitTests(
     config,
     'amplify_e2e_tests_pkg',
