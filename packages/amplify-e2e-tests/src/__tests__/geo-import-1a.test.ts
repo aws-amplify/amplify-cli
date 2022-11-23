@@ -56,15 +56,4 @@ describe('amplify geo import', () => {
     const geofence = await getGeofence(collectionName, geofenceID, region);
     expect(geofence.GeofenceId).toEqual(geofenceID);
   });
-  it('should upload a valid GeoJSON file with custom property to provisioned geofence collection', async () => {
-    const geoJSONFileName = 'valid-custom-property.json';
-    const config = { geoJSONFileName, isRootLevelID: false, customProperty: 'name' };
-    await expect(importGeofencesWithDefault(projRoot, config)).resolves.not.toThrow();
-    // check if geofence is provisioned in collection
-    const { features } = getGeoJSONObj(geoJSONFileName);
-    const geofenceID = features.map(feature => feature.properties.name)[0];
-    expect(geofenceID).toBeDefined();
-    const geofence = await getGeofence(collectionName, geofenceID, region);
-    expect(geofence.GeofenceId).toEqual(geofenceID);
-  });
 });
