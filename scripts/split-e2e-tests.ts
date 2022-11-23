@@ -98,7 +98,6 @@ const JOBS_RUNNING_ON_LINUX_LARGE_VM: string[] = [
   'auth_migration_update_v6',
   'function-migration_pkg',
   'geo-add-f_pkg',
-  'import_auth_2_pkg',
   'import_s3_2a_pkg',
   'model-migration_pkg',
   'notifications-migration-2_v5',
