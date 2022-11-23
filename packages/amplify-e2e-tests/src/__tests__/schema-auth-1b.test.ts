@@ -16,11 +16,6 @@ describe('api directives @auth batch 1', () => {
     deleteProjectDir(projectDir);
   });
 
-  it('auth owner1', async () => {
-    const testresult = await testSchema(projectDir, 'auth', 'owner1');
-    expect(testresult).toBeTruthy();
-  });
-
   it('auth owner2', async () => {
     const testresult = await testSchema(projectDir, 'auth', 'owner2');
     expect(testresult).toBeTruthy();
