@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.2-searchable-mocking-test.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.2.1...amplify-category-function@4.2.2-searchable-mocking-test.0) (2022-11-23)
+
+
+### Bug Fixes
+
+* handle lambda permissions for notifications category ([#11357](https://github.com/aws-amplify/amplify-cli/issues/11357)) ([163ab8f](https://github.com/aws-amplify/amplify-cli/commit/163ab8f74e846f9ea43081c5c045e7d65f28f05c))
+
+
+
+
+
 ## [4.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@4.2.0...amplify-category-function@4.2.1) (2022-11-17)
 
 **Note:** Version bump only for package amplify-category-function
