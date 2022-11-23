@@ -271,8 +271,9 @@ function runE2eTest {
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then
         # read the content of failed tests
         failedTests=$(<$FAILED_TEST_REGEX_FILE)
-        yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE -t "$failedTests"
+        # adding --force-exit per https://github.com/facebook/jest/issues/9473
+        yarn run e2e --force-exit --detectOpenHandles --maxWorkers=3 $TEST_SUITE -t "$failedTests"
     else
-        yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
+        yarn run e2e --force-exit --detectOpenHandles --maxWorkers=3 $TEST_SUITE
     fi
 }
