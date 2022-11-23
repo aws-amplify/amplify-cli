@@ -11,7 +11,7 @@ export const hasMatchingContentInFolder = (
   const patternParam = patterns.reduce<string[]>((acc, v) => [...acc, '-e', v], []);
 
   let actualFolder = folder;
-  if(folder.startsWith("~/")){
+  if(folder.startsWith("~/") || folder.startsWith("~\\")){
     actualFolder = folder.replace("~", REPO_FOLDER);
   }
 
@@ -36,12 +36,10 @@ const main = () => {
   const values = envVarNameWithCredentialValues.map(v => process.env[v]).filter(Boolean);
   if (values.length) {
     for(let folder of ARTIFACT_STORAGE_PATH_ALLOW_LIST){
-      console.log("Original folder:", folder);
       const normalizedFolder = path.normalize(folder);
-      console.log("Normalized folder:", normalizedFolder);
-      const hasContent = hasMatchingContentInFolder(values, path.normalize(folder));
+      const hasContent = hasMatchingContentInFolder(values, normalizedFolder);
       if (hasContent) {
-        console.log('Scanning artifact has found secret value. Failing the build');
+        console.log('Scanning artifact has found secret value. Failing the build: ', normalizedFolder);
         process.exit(1);
       }
     }
