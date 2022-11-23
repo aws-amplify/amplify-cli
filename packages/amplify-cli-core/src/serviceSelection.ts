@@ -1,5 +1,8 @@
+/**
+ *
+ */
 export type ServiceSelection = {
-  provider: string;
+  provider?: string;
   service: string;
   providerName: string;
 };

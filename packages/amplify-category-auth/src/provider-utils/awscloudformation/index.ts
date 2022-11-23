@@ -1,25 +1,32 @@
 // TODO enable eslint after converting to TS
 /* eslint-disable */
-const inquirer = require('inquirer');
-const _ = require('lodash');
-const { stateManager, open } = require('amplify-cli-core');
-const { ensureEnvParamManager } = require('@aws-amplify/amplify-environment-parameters');
-const { getAuthResourceName } = require('../../utils/getAuthResourceName');
-const { copyCfnTemplate, saveResourceParameters } = require('./utils/synthesize-resources');
-const {
+import inquirer from 'inquirer';
+import _ from 'lodash'
+import { stateManager, open } from 'amplify-cli-core';
+import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
+import { getAuthResourceName } from '../../utils/getAuthResourceName';
+import { copyCfnTemplate, saveResourceParameters } from './utils/synthesize-resources';
+import {
   ENV_SPECIFIC_PARAMS, AmplifyAdmin, UserPool, IdentityPool, BothPools, privateKeys,
-} = require('./constants');
-const { getAddAuthHandler, getUpdateAuthHandler } = require('./handlers/resource-handlers');
-const { getSupportedServices } = require('../supported-services');
-const { importResource, importedAuthEnvInit } = require('./import');
+} from './constants';
+import { getAddAuthHandler, getUpdateAuthHandler } from './handlers/resource-handlers';
+import { getSupportedServices } from '../supported-services';
+import { importResource, importedAuthEnvInit } from './import';
 
-const serviceQuestions = (context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata) => {
+export { importResource } from './import';
+
+
+const serviceQuestions = (context:any,
+  defaultValuesFilename:any,
+  stringMapsFilename: any,
+  serviceWalkthroughFilename: any,
+  serviceMetadata: any) => {
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { serviceWalkthrough } = require(serviceWalkthroughSrc);
   return serviceWalkthrough(context, defaultValuesFilename, stringMapsFilename, serviceMetadata);
 };
 
-const addResource = async (context, service, skipNextSteps = false) => {
+export const addResource = async (context: any, service: any, skipNextSteps = false) => {
   const serviceMetadata = getSupportedServices()[service];
   const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename } = serviceMetadata;
   return getAddAuthHandler(
@@ -28,7 +35,7 @@ const addResource = async (context, service, skipNextSteps = false) => {
   )(await serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata));
 };
 
-const updateResource = async (context, { service }) => {
+export const updateResource = async (context: any, { service }: {service:any}) => {
   const serviceMetadata = getSupportedServices()[service];
   const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename } = serviceMetadata;
   return getUpdateAuthHandler(context)(
@@ -36,7 +43,7 @@ const updateResource = async (context, { service }) => {
   );
 };
 
-const updateConfigOnEnvInit = async (context, category, service) => {
+export const updateConfigOnEnvInit = async (context: any, category: any, service: any) => {
   const srvcMetaData = getSupportedServices().Cognito;
   const {
     defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, provider,
@@ -129,17 +136,17 @@ const updateConfigOnEnvInit = async (context, category, service) => {
 
   // legacy headless mode (only supports init)
   if (isInHeadlessMode(context)) {
-    const envParams = {};
-    let mergedValues;
+    const envParams: {[key: string]: any} = {};
+    let mergedValues: {[key: string]: any} | undefined;
     if (resourceParams.thirdPartyAuth || hostedUIProviderMeta) {
       const authParams = getHeadlessParams(context);
       const projectType = context.amplify.getProjectConfig().frontend;
       mergedValues = { ...resourceParams, ...authParams, ...currentEnvSpecificValues };
       const requiredParams = getRequiredParamsForHeadlessInit(projectType, resourceParams);
-      const missingParams = [];
+      const missingParams: any[] = [];
       requiredParams.forEach(p => {
-        if (Object.keys(mergedValues).includes(p)) {
-          envParams[p] = mergedValues[p];
+        if (Object.keys(mergedValues!).includes(p)) {
+          envParams[p] = mergedValues![p];
         } else {
           missingParams.push(p);
         }
@@ -159,7 +166,7 @@ const updateConfigOnEnvInit = async (context, category, service) => {
     || (context.input.command === 'env' && context.input.subCommands && !context.input.subCommands.includes('add'));
   // don't ask for env_specific params when checking out env or pulling
   srvcMetaData.inputs = srvcMetaData.inputs.filter(
-    input => ENV_SPECIFIC_PARAMS.includes(input.key) && !Object.keys(currentEnvSpecificValues).includes(input.key) && !isPullingOrEnv,
+    (input: any) => ENV_SPECIFIC_PARAMS.includes(input.key) && !Object.keys(currentEnvSpecificValues).includes(input.key) && !isPullingOrEnv,
   );
 
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
@@ -182,7 +189,7 @@ const updateConfigOnEnvInit = async (context, category, service) => {
   return envParams;
 };
 
-const migrate = async context => {
+export const migrate = async context => {
   const category = 'auth';
   const { amplify } = context;
   const existingAuth = context.migrationInfo.amplifyMeta.auth || {};
@@ -338,7 +345,7 @@ const getRequiredParamsForHeadlessInit = (projectType, previousValues) => {
   return requiredParams;
 };
 
-const console = async (context, amplifyMeta) => {
+export const console = async (context, amplifyMeta) => {
   const cognitoOutput = getCognitoOutput(amplifyMeta);
   if (cognitoOutput) {
     const { AmplifyAppId, Region } = amplifyMeta.providers.awscloudformation;
@@ -435,7 +442,7 @@ const openIdentityPoolConsole = async (context, region, identityPoolId) => {
   context.print.success(identityPoolConsoleUrl);
 };
 
-const getPermissionPolicies = (context, service, resourceName, crudOptions) => {
+export const getPermissionPolicies = (context, service, resourceName, crudOptions) => {
   const { serviceWalkthroughFilename } = getSupportedServices()[service];
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { getIAMPolicies } = require(serviceWalkthroughSrc);
@@ -448,12 +455,3 @@ const getPermissionPolicies = (context, service, resourceName, crudOptions) => {
   return getIAMPolicies(context, resourceName, crudOptions);
 };
 
-module.exports = {
-  addResource,
-  updateResource,
-  updateConfigOnEnvInit,
-  migrate,
-  console,
-  getPermissionPolicies,
-  importResource,
-};
