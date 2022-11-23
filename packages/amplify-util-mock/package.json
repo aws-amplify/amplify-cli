@@ -1,7 +1,7 @@
 {
   "name": "amplify-util-mock",
   "version": "4.7.0",
-  "description": "amplify cli plugin providing local testing",
+  "description": "amplify cli plugin providing local testing.",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-cli.git",
