@@ -1,16 +1,22 @@
 import * as execa from 'execa';
 import * as path from 'path';
 import { ARTIFACT_STORAGE_PATH_ALLOW_LIST } from '../scripts/artifact-storage-path-allow-list';
-
+const REPO_FOLDER = path.normalize(path.join(__dirname, '..', '..'));
 export const hasMatchingContentInFolder = (
   patterns: string[],
-  folder,
+  folder: string,
   excludeFolder = '{node_modules,.cache,.git,\.cache,\.git}',
 ): boolean => {
   console.log("Scanning folder:", folder);
   const patternParam = patterns.reduce<string[]>((acc, v) => [...acc, '-e', v], []);
+
+  let actualFolder = folder;
+  if(folder.startsWith("~/")){
+    actualFolder = folder.replace("~", REPO_FOLDER);
+  }
+
   try {
-    execa.sync('grep', ['-r', `--exclude-dir=${excludeFolder}`, ...patternParam, folder]);
+    execa.sync('grep', ['-r', `--exclude-dir=${excludeFolder}`, ...patternParam, actualFolder]);
     return true;
   } catch (e) {
     // When there is no match exit code is set to 1
@@ -18,7 +24,7 @@ export const hasMatchingContentInFolder = (
       return false;
     }
     if (e.message.includes('No such file or directory')){
-      console.log("No artifacts found at:", folder);
+      console.log("No artifacts found at:", actualFolder);
       return false;
     }
     throw new Error('Scanning artifacts failed');
