@@ -20,8 +20,4 @@ describe('api directives @auth batch 2', () => {
     const testresult = await testSchema(projectDir, 'auth', 'owner5');
     expect(testresult).toBeTruthy();
   });
-  it('auth owner6', async () => {
-    const testresult = await testSchema(projectDir, 'auth', 'owner6');
-    expect(testresult).toBeTruthy();
-  });
 });
