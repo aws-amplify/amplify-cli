@@ -4,7 +4,7 @@ const DEFAULT_SEARCH_FOLDER = path.normalize(path.join(__dirname, '..'));
 export const hasMatchingContentInFolder = (
   patterns: string[],
   folder = DEFAULT_SEARCH_FOLDER,
-  excludeFolder = '{node_modules,\.cache,\.git,verdaccio-cache,lib,.cache,.git,out}',
+  excludeFolder = '{node_modules,.cache,.git,\.cache,\.git,verdaccio-cache,lib,out,pkg,aws,.yarn,\.yarn,lib,public,.npm-global,\.npm-global}',
 ): boolean => {
   const patternParam = patterns.reduce<string[]>((acc, v) => [...acc, '-e', v], []);
   try {
@@ -20,6 +20,7 @@ export const hasMatchingContentInFolder = (
 };
 
 const main = () => {
+  console.log("SCANNING DIR:", DEFAULT_SEARCH_FOLDER);
   const envVarNameWithCredentialValues = (process.env.ENV_VAR_WITH_SECRETS || '').split(',').map(v => v.trim());
   const values = envVarNameWithCredentialValues.map(v => process.env[v]).filter(Boolean);
   if (values.length) {
