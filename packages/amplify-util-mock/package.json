@@ -1,6 +1,6 @@
 {
   "name": "amplify-util-mock",
-  "version": "4.8.0-searchable-mocking-test.1",
+  "version": "4.8.0-searchable-mocking-test.2",
   "description": "amplify cli plugin providing local testing.",
   "repository": {
     "type": "git",

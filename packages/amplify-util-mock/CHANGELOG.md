@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.8.0-searchable-mocking-test.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.8.0-searchable-mocking-test.1...amplify-util-mock@4.8.0-searchable-mocking-test.2) (2022-11-24)
+
+
+### Bug Fixes
+
+* rename the src folder of searchable lambda resource ([b7c8912](https://github.com/aws-amplify/amplify-cli/commit/b7c8912c1d6ae527ca3141d8b73d956a1fbda524))
+
+
+
+
+
 # [4.8.0-searchable-mocking-test.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.8.0-searchable-mocking-test.0...amplify-util-mock@4.8.0-searchable-mocking-test.1) (2022-11-24)
 
 
