@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.2-searchable-mocking-test.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.2.1...@aws-amplify/amplify-environment-parameters@1.2.2-searchable-mocking-test.0) (2022-11-23)
+
+
+### Bug Fixes
+
+* async persist env params on success ([#11367](https://github.com/aws-amplify/amplify-cli/issues/11367)) ([0433431](https://github.com/aws-amplify/amplify-cli/commit/043343159020b4f7b566e4d3d356aebe68df9b6a))
+
+
+
+
+
 ## [1.2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.2.0...@aws-amplify/amplify-environment-parameters@1.2.1) (2022-11-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-environment-parameters

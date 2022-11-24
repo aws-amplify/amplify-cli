@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-util-uibuilder",
-  "version": "1.6.2",
+  "version": "1.6.3-searchable-mocking-test.0",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -16,8 +16,8 @@
   "dependencies": {
     "@aws-amplify/codegen-ui": "2.5.5",
     "@aws-amplify/codegen-ui-react": "2.5.5",
-    "amplify-cli-core": "3.4.0",
-    "amplify-prompts": "2.6.1",
+    "amplify-cli-core": "3.4.1-searchable-mocking-test.0",
+    "amplify-prompts": "2.6.2-searchable-mocking-test.0",
     "aws-sdk": "^2.1233.0",
     "fs-extra": "^8.1.0",
     "ora": "^4.0.3"

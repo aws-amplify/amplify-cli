@@ -1,6 +1,6 @@
 {
   "name": "amplify-dotnet-function-template-provider",
-  "version": "2.3.5",
+  "version": "2.3.6-searchable-mocking-test.0",
   "description": ".NET Core templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
@@ -23,8 +23,8 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "amplify-cli-core": "3.4.0",
-    "amplify-function-plugin-interface": "1.9.5",
+    "amplify-cli-core": "3.4.1-searchable-mocking-test.0",
+    "amplify-function-plugin-interface": "1.9.6-searchable-mocking-test.0",
     "graphql-transformer-core": "^7.6.6"
   },
   "devDependencies": {
