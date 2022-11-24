@@ -39,8 +39,7 @@ const main = () => {
   if (values.length) {
     for(let folder of ARTIFACT_STORAGE_PATH_ALLOW_LIST){
       if (folder.startsWith("~/")) {
-        folder.replace("~", ROOT_FOLDER_ABSOLUTE_PATH);
-        const normalizedFolder = path.normalize(folder);
+        const normalizedFolder = path.normalize(folder.replace("~", ROOT_FOLDER_ABSOLUTE_PATH));
         const hasContent = hasMatchingContentInFolder(values, normalizedFolder);
         if (hasContent) {
           console.log('Scanning artifact has found secret value. Failing the build: ', normalizedFolder);
