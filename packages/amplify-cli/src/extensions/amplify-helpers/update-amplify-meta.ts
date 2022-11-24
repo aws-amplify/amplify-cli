@@ -1,4 +1,3 @@
-import { Stats } from 'fs';
 /* eslint-disable spellcheck/spell-checker */
 /* eslint-disable import/no-extraneous-dependencies */
 import { buildTypeKeyMap, ServiceName } from 'amplify-category-function';
@@ -7,10 +6,10 @@ import {
 } from 'amplify-cli-core';
 import { BuildType } from 'amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
-import { fs as vfs } from 'memfs';
 import glob from 'glob';
 import _ from 'lodash';
 import * as path from 'path';
+import { existsVFSSync, copyFromVFStoFSSync } from 'amplify-provider-awscloudformation';
 import { ensureAmplifyMetaFrontendConfig } from './on-category-outputs-change';
 import { getHashForResourceDir } from './resource-status';
 import { updateBackendConfigAfterResourceAdd, updateBackendConfigAfterResourceUpdate } from './update-backend-config';
@@ -61,21 +60,6 @@ export const updateAwsMetaFile = (
   return amplifyMeta;
 };
 
-const copyFromVFStoFSSync = (src: string, dest: string): void => {
-  const exists = vfs.existsSync(src);
-  const stats = exists && vfs.statSync(src);
-  const isDirectory = exists && (stats as Stats).isDirectory();
-  if (isDirectory) {
-    fs.mkdirSync(dest, { recursive: true });
-    vfs.readdirSync(src).forEach(childItemName => {
-      copyFromVFStoFSSync(path.join(src, childItemName),
-        path.join(dest, childItemName));
-    });
-  } else {
-    fs.writeFileSync(dest, vfs.readFileSync(src));
-  }
-};
-
 const moveBackendResourcesToCurrentCloudBackend = (resources: $TSObject[]): void => {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyCloudMetaFilePath = pathManager.getCurrentAmplifyMetaFilePath();
@@ -97,7 +81,7 @@ const moveBackendResourcesToCurrentCloudBackend = (resources: $TSObject[]): void
     fs.ensureDirSync(targetDir);
 
     // in the case that the resource is being deleted, the sourceDir won't exist
-    if (vfs.existsSync(sourceDir)) {
+    if (existsVFSSync(sourceDir)) {
       copyFromVFStoFSSync(sourceDir, targetDir);
       if (resource?.service === ServiceName.LambdaFunction || (resource?.service && resource?.service.includes('custom'))) {
         removeNodeModulesDir(targetDir);

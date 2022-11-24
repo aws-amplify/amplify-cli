@@ -32,10 +32,12 @@ import CloudFormation from './aws-utils/aws-cfn';
 import { $TSContext, ApiCategoryFacade } from 'amplify-cli-core';
 import * as resourceExport from './export-resources';
 import * as exportUpdateMeta from './export-update-amplify-meta';
+import { copyFromVFStoFSSync, existsVFSSync } from './utils/vfs-helpers';
 
 export { resolveAppId } from './utils/resolve-appId';
 export { loadConfigurationForEnv } from './configuration-manager';
 export { getLocationSupportedRegion, getLocationRegionMapping } from './aws-utils/aws-location';
+export { copyFromVFStoFSSync, existsVFSSync } from './utils/vfs-helpers';
 import { updateEnv } from './update-env';
 
 export const cfnRootStackFileName = 'root-cloudformation-stack.json';
@@ -198,4 +200,6 @@ module.exports = {
   hashDirectory,
   prePushCfnTemplateModifier,
   getApiKeyConfig,
+  copyFromVFStoFSSync,
+  existsVFSSync,
 };
