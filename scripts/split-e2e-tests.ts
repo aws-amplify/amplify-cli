@@ -403,10 +403,10 @@ function validateArtifactStoragePaths(config: CircleCIConfig) {
       if(artifactsPath){
         storagePathsUsedInConfig.add(artifactsPath.path);
         if(ARTIFACT_STORAGE_PATH_ALLOW_LIST.indexOf(artifactsPath.path) === -1){
-          unregisteredPaths.add(resultsPath.path);
+          unregisteredPaths.add(artifactsPath.path);
         }
         if (!artifactsPath.path.startsWith("~/")){
-          invalidPaths.add(resultsPath.path);
+          invalidPaths.add(artifactsPath.path);
         }
       }
     }
