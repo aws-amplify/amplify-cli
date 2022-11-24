@@ -1287,7 +1287,7 @@ export const SecretFileMode = 384;
 
 // @public (undocumented)
 export type ServiceSelection = {
-    provider: string;
+    provider?: string;
     service: string;
     providerName: string;
 };

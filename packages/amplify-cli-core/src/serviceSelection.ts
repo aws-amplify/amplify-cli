@@ -1,8 +1,6 @@
-/**
- *
- */
+/* eslint-disable jsdoc/require-jsdoc */
 export type ServiceSelection = {
-  provider?: string;
+  provider: string;
   service: string;
   providerName: string;
 };
