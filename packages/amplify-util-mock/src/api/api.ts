@@ -450,11 +450,26 @@ export class APITest {
     fs.ensureDirSync(opensearchLocalDirectory);
     const mockSearchableTriggerDirectory = getMockSearchableTriggerDirectory(context);
     fs.ensureDirSync(mockSearchableTriggerDirectory);
+    fs.ensureDirSync(path.join(mockSearchableTriggerDirectory, 'src'));
     const searchableLambdaResourceDir = path.resolve(__dirname, '..', '..', 'resources', 'mock-searchable-lambda-trigger');
+
+    // copy the Pipfile first
+    const pipFileName = 'Pipfile';
+    fs.copySync(
+      path.join(searchableLambdaResourceDir, pipFileName), 
+      path.join(mockSearchableTriggerDirectory, pipFileName),
+      { overwrite: true }
+    );
+
+    // copy the source files
+    fs.copySync(
+      path.join(searchableLambdaResourceDir, 'source-files'), 
+      path.join(mockSearchableTriggerDirectory, 'src'),
+      { overwrite: true }
+    );
     fs.readdirSync(searchableLambdaResourceDir).forEach(file => {
       printer.debug('found file in resource dir: ' + file);
     });    
-    fs.copySync(searchableLambdaResourceDir, mockSearchableTriggerDirectory, { overwrite: true, recursive: true });
 
     // build the searchable lambda trigger
     const triggerConfig = getSearchableLambdaTriggerConfig(context, null);
