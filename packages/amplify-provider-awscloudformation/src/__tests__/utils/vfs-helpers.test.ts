@@ -56,5 +56,11 @@ describe('VFSHelperFunctions', () => {
     takeBackendSnapshotVFS();
     expect(existsVFSSync('.mock_snapshot/file1.txt')).toBe(true);
     expect(existsVFSSync('.mock_snapshot/nonExistant.txt')).toBe(false);
+    deleteBackendSnapshotVFS();
+    expect(existsVFSSync('.mock_snapshot/file1.txt')).toBe(false);
+  });
+  afterAll(() => {
+    fsMock.rmdirSync('mockBackendDirPath', { recursive: true });
+    fsMock.rmdirSync('mockCloudCurrentResourcesPath', { recursive: true });
   });
 });
