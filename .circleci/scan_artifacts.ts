@@ -1,7 +1,14 @@
 import * as execa from 'execa';
 import * as path from 'path';
+
+// This list contains a platform agnostic list of paths where artifacts are stored after each test.
 import { ARTIFACT_STORAGE_PATH_ALLOW_LIST } from '../scripts/artifact-storage-path-allow-list';
-const REPO_FOLDER = path.normalize(path.join(__dirname, '..', '..'));
+
+// ROOT_FOLDER_ABSOLUTE_PATH resolves to the absolute value of ~
+// This is because of the location of this file in ~/repo/.circleci/scan_artifacts
+const ROOT_FOLDER_ABSOLUTE_PATH = path.normalize(path.join(__dirname, '..', '..'));
+
+
 export const hasMatchingContentInFolder = (
   patterns: string[],
   folder: string,
@@ -10,13 +17,8 @@ export const hasMatchingContentInFolder = (
   console.log("Scanning folder:", folder);
   const patternParam = patterns.reduce<string[]>((acc, v) => [...acc, '-e', v], []);
 
-  let actualFolder = folder;
-  if(folder.startsWith("~/") || folder.startsWith("~\\")){
-    actualFolder = folder.replace("~", REPO_FOLDER);
-  }
-
   try {
-    execa.sync('grep', ['-r', `--exclude-dir=${excludeFolder}`, ...patternParam, actualFolder]);
+    execa.sync('grep', ['-r', `--exclude-dir=${excludeFolder}`, ...patternParam, folder]);
     return true;
   } catch (e) {
     // When there is no match exit code is set to 1
@@ -24,7 +26,7 @@ export const hasMatchingContentInFolder = (
       return false;
     }
     if (e.message.includes('No such file or directory')){
-      console.log("No artifacts found at:", actualFolder);
+      console.log("No artifacts found at:", folder);
       return false;
     }
     throw new Error('Scanning artifacts failed');
@@ -36,10 +38,17 @@ const main = () => {
   const values = envVarNameWithCredentialValues.map(v => process.env[v]).filter(Boolean);
   if (values.length) {
     for(let folder of ARTIFACT_STORAGE_PATH_ALLOW_LIST){
-      const normalizedFolder = path.normalize(folder);
-      const hasContent = hasMatchingContentInFolder(values, normalizedFolder);
-      if (hasContent) {
-        console.log('Scanning artifact has found secret value. Failing the build: ', normalizedFolder);
+      if (folder.startsWith("~/")) {
+        folder.replace("~", ROOT_FOLDER_ABSOLUTE_PATH);
+        const normalizedFolder = path.normalize(folder);
+        const hasContent = hasMatchingContentInFolder(values, normalizedFolder);
+        if (hasContent) {
+          console.log('Scanning artifact has found secret value. Failing the build: ', normalizedFolder);
+          process.exit(1);
+        }
+      } else {
+        console.log('Paths in ARTIFACT_STORAGE_PATH_ALLOW_LIST must start with ~/');
+        console.log('Update the path to use ~/ and make sure to do the same in the config.yaml/config.base.yaml files');
         process.exit(1);
       }
     }
