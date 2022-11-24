@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.8.0-searchable-mocking-test.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.8.0-searchable-mocking-test.0...amplify-util-mock@4.8.0-searchable-mocking-test.1) (2022-11-24)
+
+
+### Bug Fixes
+
+* set recursive flag for copy lambda assets ([2841027](https://github.com/aws-amplify/amplify-cli/commit/28410274278376dfab52e5face2349fe52e77426))
+
+
+
+
+
 # [4.8.0-searchable-mocking-test.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.7.0...amplify-util-mock@4.8.0-searchable-mocking-test.0) (2022-11-23)
 
 
