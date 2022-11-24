@@ -383,11 +383,10 @@ function verifyConfig() {
   }
 }
 
-function main(): void {
-  const config = loadConfig();
-  
+function validateArtifactStoragePaths(config: CircleCIConfig) {
   // make sure that only valid paths are used to store artifacts/results
   const storagePathsUsedInConfig = new Set();
+  const unregisteredPaths = new Set();
   const invalidPaths = new Set();
   for(let key of Object.keys(config.jobs)) {
     const job = config.jobs[key];
@@ -396,25 +395,49 @@ function main(): void {
     for(let i = 0; i < steps.length; i ++){
       const resultsPath = steps[i].store_test_results;
       const artifactsPath = steps[i].store_artifacts;
-      if(resultsPath){ storagePathsUsedInConfig.add(resultsPath.path)}
-      if(artifactsPath){ storagePathsUsedInConfig.add(artifactsPath.path)}
-      if(resultsPath && ARTIFACT_STORAGE_PATH_ALLOW_LIST.indexOf(resultsPath.path) === -1){
-        console.log('Invalid Test Results Storage Path:', resultsPath);
-        invalidPaths.add(resultsPath);
+      if(resultsPath){
+        storagePathsUsedInConfig.add(resultsPath.path);
+        if(ARTIFACT_STORAGE_PATH_ALLOW_LIST.indexOf(resultsPath.path) === -1){
+          unregisteredPaths.add(resultsPath.path);
+        }
+        if (!resultsPath.path.startsWith("~/")){
+          invalidPaths.add(resultsPath.path);
+        }
       }
-      if(artifactsPath && ARTIFACT_STORAGE_PATH_ALLOW_LIST.indexOf(artifactsPath.path) === -1){
-        console.log('Invalid Artifact Storage Path:', artifactsPath);
-        invalidPaths.add(resultsPath);
+      if(artifactsPath){
+        storagePathsUsedInConfig.add(artifactsPath.path);
+        if(ARTIFACT_STORAGE_PATH_ALLOW_LIST.indexOf(artifactsPath.path) === -1){
+          unregisteredPaths.add(artifactsPath.path);
+        }
+        if (!artifactsPath.path.startsWith("~/")){
+          invalidPaths.add(artifactsPath.path);
+        }
       }
     }
   }
-  if(invalidPaths.size > 0){
-    console.log("You are storing artifacts in an unregistered location.");
-    console.log("Please update artifact-storage-path-allow-list.ts to include the new storage paths:")
-    console.log("Update the list to match this:", storagePathsUsedInConfig);
-    console.log("Doing so will register these unregistered paths:", invalidPaths);
+  if(unregisteredPaths.size > 0 || invalidPaths.size > 0){
+    console.log("There are errors in your configuration.\n");
+
+    if(invalidPaths.size > 0){
+      const errors = Array.from(invalidPaths);
+      console.log("Fix these paths. They must start with ~/",errors, "\n");
+    }
+    if(unregisteredPaths.size > 0){
+      const newList = Array.from(storagePathsUsedInConfig);
+      const unregisteredList = Array.from(unregisteredPaths);
+      console.log("You are storing artifacts in an unregistered location.");
+      console.log("Please update artifact-storage-path-allow-list.ts to include the new storage paths.");
+      console.log("Update the list to match this:", newList);
+      console.log("Doing so will register these unregistered paths:", unregisteredList);
+    }
     process.exit(1);
   }
+}
+
+function main(): void {
+  const config = loadConfig();
+  
+  validateArtifactStoragePaths(config);
 
   const splitPkgTests = splitTests(
     config,
