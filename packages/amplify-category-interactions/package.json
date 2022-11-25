@@ -18,7 +18,8 @@
     "build": "tsc && yarn copy-templates",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "watch": "tsc --watch",
-    "copy-templates": "copyfiles -u 4 src/provider-utils/awscloudformation/cloudformation-templates/* lib/provider-utils/awscloudformation/cloudformation-templates/ && yarn copyfiles -u 4 src/provider-utils/awscloudformation/function-template-dir/*.ejs lib/provider-utils/awscloudformation/function-template-dir/"
+    "copy-templates": "copyfiles -u 4 src/provider-utils/awscloudformation/cloudformation-templates/* lib/provider-utils/awscloudformation/cloudformation-templates/ && yarn copyfiles -u 4 src/provider-utils/awscloudformation/function-template-dir/*.ejs lib/provider-utils/awscloudformation/function-template-dir/",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
     "amplify-cli-core": "4.0.0-beta.1",

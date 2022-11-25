@@ -19,7 +19,8 @@
   ],
   "scripts": {
     "build": "tsc",
-    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules"
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
     "amplify-function-plugin-interface": "1.9.5",

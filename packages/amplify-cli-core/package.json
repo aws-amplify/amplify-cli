@@ -21,7 +21,8 @@
     "test-ci": "jest --ci -i",
     "build": "tsc",
     "watch": "tsc -w",
-    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules"
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
     "@aws-amplify/graphql-transformer-core": "^1.1.0-beta.0",

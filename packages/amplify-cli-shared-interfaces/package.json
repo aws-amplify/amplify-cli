@@ -7,7 +7,8 @@
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
     "demo": "yarn build && node lib/demo/demo.js",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "repository": {
     "type": "git",

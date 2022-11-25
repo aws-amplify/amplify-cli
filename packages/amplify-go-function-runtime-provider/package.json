@@ -18,7 +18,8 @@
   ],
   "scripts": {
     "build": "tsc",
-    "clean": "rimraf lib tsconfig.tsbuildinfo resources/localinvoke/go.sum resources/localinvoke/main resources/localinvoke/main.exe"
+    "clean": "rimraf lib tsconfig.tsbuildinfo resources/localinvoke/go.sum resources/localinvoke/main resources/localinvoke/main.exe",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
     "amplify-cli-core": "4.0.0-beta.1",

@@ -10,30 +10,43 @@
           "test",
           "lint",
           "package",
-          "prepare"
+          "prepare",
+          "extract-api"
         ]
       }
     }
   },
-  "targetDependencies": {
-    "build": [
-      {
-        "target": "build",
-        "projects": "dependencies"
-      }
-    ],
-    "prepare": [
-      {
-        "target": "prepare",
-        "projects": "dependencies"
-      }
-    ],
-    "package": [
-      {
-        "target": "package",
-        "projects": "dependencies"
-      }
+  "namedInputs": {
+    "default": [
+      "{projectRoot}/**/*",
+      "!{projectRoot}/**/*.md"
     ]
+  },
+  "targetDefaults": {
+    "build": {
+      "inputs": [ "default", "^default" ],
+      "dependsOn": [ "^build" ]
+    },
+    "prepare": {
+      "inputs": [ "default", "^default" ],
+      "dependsOn": [ "^prepare" ]
+    },
+    "package": {
+      "inputs": [ "default", "^default" ],
+      "dependsOn": [ "^package" ]
+    },
+    "test": {
+      "inputs": [ "default", "^default" ],
+      "dependsOn": [ "build" ]
+    },
+    "extract-api": {
+      "dependsOn": [ "build" ],
+      "inputs": [
+        "{projectRoot}/src/**/*",
+        "!{projectRoot}/src/__tests__/**/*"
+      ],
+      "outputs": [ "{projectRoot}/API.md" ]
+    }
   },
   "affected": {
     "defaultBase": "dev"

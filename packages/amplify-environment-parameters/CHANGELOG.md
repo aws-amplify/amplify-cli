@@ -39,6 +39,15 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 # [1.2.0-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.1.3...@aws-amplify/amplify-environment-parameters@1.2.0-cdkv2.0) (2022-11-01)
+## [1.2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.2.0...@aws-amplify/amplify-environment-parameters@1.2.1) (2022-11-17)
+
+**Note:** Version bump only for package @aws-amplify/amplify-environment-parameters
+
+
+
+
+
+# [1.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.1.3...@aws-amplify/amplify-environment-parameters@1.2.0) (2022-10-27)
 
 
 ### Features
