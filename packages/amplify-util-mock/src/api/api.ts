@@ -446,7 +446,7 @@ export class APITest {
   }
 
   private async createMockSearchableArtifacts(context: $TSContext) {
-    const opensearchLocalDirectory = opensearchEmulator.getOpensearchLocalDirectory();
+    const opensearchLocalDirectory = opensearchEmulator?.getOpensearchLocalDirectory();
     fs.ensureDirSync(opensearchLocalDirectory);
     const mockSearchableTriggerDirectory = getMockSearchableTriggerDirectory(context);
     fs.ensureDirSync(mockSearchableTriggerDirectory);
