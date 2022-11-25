@@ -1,8 +1,6 @@
 import {
   AddAuthIdentityPoolAndUserPoolWithOAuthSettings,
   addAuthIdentityPoolAndUserPoolWithOAuth,
-  addS3Storage,
-  amplifyPull,
   amplifyPushAuth,
   amplifyStatus,
   createNewProjectDir,
@@ -16,14 +14,12 @@ import {
   AuthProjectDetails,
   createIDPAndUserPoolWithOAuthSettings,
   expectAuthLocalAndOGMetaFilesOutputMatching,
-  expectAuthProjectDetailsMatch,
   expectLocalAndCloudMetaFilesMatching,
   expectLocalAndPulledBackendConfigMatching,
   getAuthProjectDetails,
   getOGAuthProjectDetails,
   getShortId,
   headlessPull,
-  headlessPullExpectError,
   importIdentityPoolAndUserPool,
 } from '../import-helpers';
 
@@ -104,89 +100,6 @@ describe('auth import identity pool and userpool', () => {
     }
 
     deleteProjectDir(projectRoot);
-  });
-
-  it('auth import identitypool and userpool', async () => {
-    await initJSProjectWithProfile(projectRoot, projectSettings);
-    await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
-
-    let projectDetails = getAuthProjectDetails(projectRoot);
-
-    expectAuthProjectDetailsMatch(projectDetails, ogProjectDetails);
-
-    await amplifyStatus(projectRoot, 'Import');
-    await amplifyPushAuth(projectRoot);
-    await amplifyStatus(projectRoot, 'No Change');
-
-    expectLocalAndCloudMetaFilesMatching(projectRoot);
-  });
-
-  it('auth pull into empty directory', async () => {
-    await initJSProjectWithProfile(projectRoot, {
-      ...projectSettings,
-      disableAmplifyAppCreation: false,
-    });
-    await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
-
-    await amplifyPushAuth(projectRoot);
-
-    const appId = getAppId(projectRoot);
-    expect(appId).toBeDefined();
-
-    let projectRootPull;
-
-    try {
-      projectRootPull = await createNewProjectDir('authidp-pull');
-
-      await amplifyPull(projectRootPull, { override: false, emptyDir: true, appId });
-
-      expectLocalAndCloudMetaFilesMatching(projectRoot);
-      expectLocalAndPulledBackendConfigMatching(projectRoot, projectRootPull);
-      expectAuthLocalAndOGMetaFilesOutputMatching(projectRoot, projectRootPull);
-    } finally {
-      deleteProjectDir(projectRootPull);
-    }
-  });
-
-  it('auth headless pull missing parameters', async () => {
-    await initJSProjectWithProfile(projectRoot, {
-      ...projectSettings,
-      disableAmplifyAppCreation: false,
-    });
-
-    await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
-
-    await amplifyPushAuth(projectRoot);
-
-    const appId = getAppId(projectRoot);
-    expect(appId).toBeDefined();
-
-    let projectRootPull;
-
-    try {
-      projectRootPull = await createNewProjectDir('authidp-pull');
-
-      const envName = 'integtest';
-      const providersParam = {
-        awscloudformation: {
-          configLevel: 'project',
-          useProfile: true,
-          profileName,
-        },
-      };
-
-      await expect(
-        headlessPullExpectError(
-          projectRootPull,
-          { envName, appId },
-          providersParam,
-          'Error: auth headless is missing the following inputParams userPoolId, webClientId, nativeClientId, identityPoolId',
-          {},
-        ),
-      ).rejects.toThrowError('Process exited with non zero exit code 1');
-    } finally {
-      deleteProjectDir(projectRootPull);
-    }
   });
 
   it('auth headless pull successful', async () => {

@@ -1,25 +1,18 @@
 import {
   addApiWithoutSchema,
   updateApiSchema,
-  addAuthWithDefault,
   addFunction,
-  addS3StorageWithSettings,
   addSimpleDDB,
-  AddStorageSettings,
   amplifyPush,
   amplifyPushAuth,
-  amplifyPushForce,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
-  getFunctionSrcNode,
   getProjectMeta,
   initJSProjectWithProfile,
   invokeFunction,
   overrideFunctionSrcNode,
   updateFunction,
-  addAuthWithGroupsAndAdminAPI,
-  getFunction,
   loadFunctionTestFile,
   createRandomName,
   generateRandomShortId,
@@ -36,79 +29,6 @@ describe('nodejs', () => {
     afterEach(async () => {
       await deleteProject(projRoot);
       deleteProjectDir(projRoot);
-    });
-
-    it('add lambda with AdminQueries API permissions', async () => {
-      await initJSProjectWithProfile(projRoot, {});
-      const fnName = `integtestfn${generateRandomShortId()}`;
-      await addAuthWithGroupsAndAdminAPI(projRoot, {});
-      await addFunction(
-        projRoot,
-        {
-          name: fnName,
-          functionTemplate: 'Hello World',
-          additionalPermissions: {
-            permissions: ['api'],
-            resources: ['AdminQueries'],
-            choices: ['auth', 'function', 'api'],
-            operations: ['create', 'update', 'read', 'delete'],
-          },
-        },
-        'nodejs',
-      );
-      await amplifyPushAuth(projRoot);
-      const meta = getProjectMeta(projRoot);
-      const { Arn: functionArn, Name: functionName, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
-      expect(functionArn).toBeDefined();
-      expect(functionName).toBeDefined();
-      expect(region).toBeDefined();
-      const cloudFunction = await getFunction(functionName, region);
-      expect(cloudFunction.Configuration.FunctionArn).toEqual(functionArn);
-    });
-
-    it('lambda with s3 permissions should be able to call listObjects', async () => {
-      await initJSProjectWithProfile(projRoot, {});
-      const random = generateRandomShortId();
-      const fnName = `integtestfn${random}`;
-      const s3Name = `integtestfn${random}`;
-      const options: AddStorageSettings = {
-        resourceName: s3Name,
-        bucketName: s3Name,
-      };
-      await addAuthWithDefault(projRoot);
-      await addS3StorageWithSettings(projRoot, options);
-      await addFunction(
-        projRoot,
-        {
-          name: fnName,
-          functionTemplate: 'Hello World',
-          additionalPermissions: {
-            permissions: ['storage'],
-            resources: [s3Name],
-            choices: ['auth', 'storage', 'function', 'api'],
-            operations: ['create', 'update', 'read', 'delete'],
-          },
-        },
-        'nodejs',
-      );
-
-      const functionCode = loadFunctionTestFile('s3-list-objects.js');
-
-      // Update the env var name in function code
-      functionCode.replace('{{bucketEnvVar}}', `STORAGE_INTEGTESTFN${random}_BUCKETNAME`);
-
-      overrideFunctionSrcNode(projRoot, fnName, functionCode);
-
-      await amplifyPushForce(projRoot);
-      const meta = getProjectMeta(projRoot);
-      const { BucketName: bucketName, Region: region } = Object.keys(meta.storage).map(key => meta.storage[key])[0].output;
-      expect(bucketName).toBeDefined();
-      expect(region).toBeDefined();
-      const { Name: functionName } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
-      expect(functionName).toBeDefined();
-      const result1 = await invokeFunction(functionName, null, region);
-      expect(result1.StatusCode).toBe(200);
-      expect(result1.Payload).toBeDefined();
     });
 
     it('lambda with dynamoDB permissions should be able to scan ddb', async () => {
@@ -236,37 +156,6 @@ describe('nodejs', () => {
       expect(payload.Items).toBeDefined();
       expect(payload.Count).toBeDefined();
       expect(payload.ScannedCount).toBeDefined();
-    });
-
-    it('@model-backed lambda function should generate envvars TODOTABLE_NAME, TODOTABLE_ARN, GRAPHQLAPIIDOUTPUT', async () => {
-      await initJSProjectWithProfile(projRoot, {
-        name: 'modelbackedlambda',
-      });
-      await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
-      await updateApiSchema(projRoot, 'modelbackedlambda', 'simple_model.graphql');
-
-      const fnName = `integtestfn${generateRandomShortId()}`;
-
-      await addFunction(
-        projRoot,
-        {
-          name: fnName,
-          functionTemplate: 'Hello World',
-          additionalPermissions: {
-            permissions: ['storage'],
-            choices: ['api', 'storage'],
-            resources: ['Todo:@model(appsync)'],
-            resourceChoices: ['Todo:@model(appsync)'],
-            operations: ['read'],
-          },
-        },
-        'nodejs',
-      );
-
-      const lambdaSource = getFunctionSrcNode(projRoot, fnName);
-      expect(lambdaSource.includes('TODOTABLE_NAME')).toBeTruthy();
-      expect(lambdaSource.includes('TODOTABLE_ARN')).toBeTruthy();
-      expect(lambdaSource.includes('GRAPHQLAPIIDOUTPUT')).toBeTruthy();
     });
   });
 });

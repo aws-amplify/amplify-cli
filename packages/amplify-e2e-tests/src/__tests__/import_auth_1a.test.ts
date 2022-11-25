@@ -1,6 +1,5 @@
-import { $TSObject, JSONUtilities, stateManager } from 'amplify-cli-core';
+import { $TSObject, JSONUtilities } from 'amplify-cli-core';
 import {
-  addApi,
   addApiWithCognitoUserPoolAuthTypeWhenAuthExists,
   addAuthUserPoolOnlyWithOAuth,
   AddAuthUserPoolOnlyWithOAuthSettings,
@@ -11,18 +10,14 @@ import {
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
-  getRootStackTemplate,
   initJSProjectWithProfile,
-  updateApiSchema,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import {
-  addS3WithAuthConfigurationMismatchErrorExit,
   AuthProjectDetails,
   createUserPoolOnlyWithOAuthSettings,
   expectApiHasCorrectAuthConfig,
-  expectAuthParametersMatch,
   expectAuthProjectDetailsMatch,
   expectLocalAndCloudMetaFilesMatching,
   expectLocalTeamInfoHasNoCategories,
@@ -210,58 +205,5 @@ describe('auth import userpool only', () => {
     expect(functionStack.Resources?.AmplifyResourcesPolicy?.Properties?.PolicyDocument?.Statement[0].Resource[0]['Fn::Join'][1][5]).toEqual(
       projectDetails.meta.UserPoolId,
     );
-  });
-
-  it('imported userpool only auth, s3 storage add should fail with error', async () => {
-    await initJSProjectWithProfile(projectRoot, projectSettings);
-    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
-
-    // Imported auth resources cannot be used together with \'storage\' category\'s authenticated and unauthenticated access.
-    await expect(addS3WithAuthConfigurationMismatchErrorExit(projectRoot, {})).rejects.toThrowError(
-      'Process exited with non zero exit code 1',
-    );
-  });
-
-  it('imported user pool only should allow iam auth in graphql api', async () => {
-    await initJSProjectWithProfile(projectRoot, projectSettings);
-    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
-    await addApi(projectRoot, {
-      'Amazon Cognito User Pool': {},
-      IAM: {},
-      transformerVersion: 2,
-    }, false);
-    await updateApiSchema(projectRoot, projectPrefix, 'model_with_owner_and_iam_auth.graphql');
-    await amplifyPush(projectRoot);
-
-    const rootStackTemplate = getRootStackTemplate(projectRoot);
-    const apiStackParams = rootStackTemplate?.Resources?.[`api${projectPrefix}`]?.Properties?.Parameters;
-    expect(apiStackParams).toBeDefined();
-    expect(apiStackParams.authRoleName).toEqual({
-      Ref: 'AuthRoleName',
-    });
-    expect(apiStackParams.unauthRoleName).toEqual({
-      Ref: 'UnauthRoleName',
-    });
-  });
-
-  it('should update parameters.json with auth configuration', async () => {
-    await initJSProjectWithProfile(projectRoot, projectSettings);
-    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
-
-    const ogProjectAuthParameters = stateManager.getResourceParametersJson(ogProjectRoot, 'auth', ogProjectDetails.authResourceName);
-
-    let projectDetails = getAuthProjectDetails(projectRoot);
-    let projectAuthParameters = stateManager.getResourceParametersJson(projectRoot, 'auth', projectDetails.authResourceName);
-    expectAuthParametersMatch(projectAuthParameters, ogProjectAuthParameters);
-
-    await amplifyStatus(projectRoot, 'Import');
-    await amplifyPushAuth(projectRoot);
-    await amplifyStatus(projectRoot, 'No Change');
-
-    expectLocalAndCloudMetaFilesMatching(projectRoot);
-
-    projectDetails = getAuthProjectDetails(projectRoot);
-    projectAuthParameters = stateManager.getResourceParametersJson(projectRoot, 'auth', projectDetails.authResourceName);
-    expectAuthParametersMatch(projectAuthParameters, ogProjectAuthParameters);
   });
 });
