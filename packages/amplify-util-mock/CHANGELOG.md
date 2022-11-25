@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.8.0-searchable-mocking-test.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.8.0-searchable-mocking-test.2...amplify-util-mock@4.8.0-searchable-mocking-test.3) (2022-11-25)
+
+
+### Bug Fixes
+
+* move early return logic to caller method ([ab3edb5](https://github.com/aws-amplify/amplify-cli/commit/ab3edb5291f679c885156df61c72e4cd2457b51a))
+
+
+
+
+
 # [4.8.0-searchable-mocking-test.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.8.0-searchable-mocking-test.1...amplify-util-mock@4.8.0-searchable-mocking-test.2) (2022-11-24)
 
 
