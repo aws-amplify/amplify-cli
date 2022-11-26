@@ -46,6 +46,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 # 1.1.0 (2022-11-10)
+# 1.1.0 (2022-11-17)
 
 
 ### Features

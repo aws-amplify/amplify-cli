@@ -12,37 +12,31 @@ const {
  * Updates Cognito files that are tracked so that the diff is detected for an `amplify push`
  */
 export const updateCognitoTrackedFiles = async (): Promise<void> => {
+  if (await detectCognitoAttributesRequireVerificationBeforeUpdateDiff()) {
+    const { resourceName } = stateManager.getResourceFromMeta(stateManager.getMeta(), 'auth', 'Cognito', undefined, false)!;
+    await addExtraLineToCliInputsJson(pathManager.getBackendDirPath(), resourceName);
+  }
+};
+
+/**
+ * Detects Cognito AttributesRequireVerificationBeforeUpdate attribute drift
+ */
+export const detectCognitoAttributesRequireVerificationBeforeUpdateDiff = async (): Promise<boolean> => {
   const currentCloudBackendDir = pathManager.getCurrentCloudBackendDirPath();
   const localBackendDir = pathManager.getBackendDirPath();
+
   const amplifyMeta = stateManager.getMeta();
   const cognitoResource = stateManager.getResourceFromMeta(amplifyMeta, 'auth', 'Cognito', undefined, false);
 
   if (!fs.existsSync(currentCloudBackendDir) || !cognitoResource) {
-    return;
+    return false;
   }
 
   const { resourceName } = cognitoResource;
-
-  if (await detectCognitoDiff(currentCloudBackendDir, localBackendDir, resourceName)) {
-    await addExtraLineToCliInputsJson(localBackendDir, resourceName);
+  if (!fs.existsSync(path.join(currentCloudBackendDir, 'auth', resourceName))) {
+    return false;
   }
-};
 
-const detectCognitoDiff = async (
-  currentCloudBackendDir: string,
-  localBackendDir: string,
-  resourceName: string,
-): Promise<boolean> => detectCognitoAttributesRequireVerificationBeforeUpdateDiff(
-  currentCloudBackendDir,
-  localBackendDir,
-  resourceName,
-);
-
-const detectCognitoAttributesRequireVerificationBeforeUpdateDiff = async (
-  currentCloudBackendDir: string,
-  localBackendDir: string,
-  resourceName: string,
-): Promise<boolean> => {
   const cloudBackendUserAttrUpdateSettings = await readCfnTemplateUserAttributeSettings(currentCloudBackendDir, resourceName);
   const backendUserAttrUpdateSettings = await readCfnTemplateUserAttributeSettings(localBackendDir, resourceName);
   const updateNotInCloudBackend: boolean = !cloudBackendUserAttrUpdateSettings?.AttributesRequireVerificationBeforeUpdate

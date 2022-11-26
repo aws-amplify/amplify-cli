@@ -24,7 +24,8 @@
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "test": "jest --logHeapUsage",
     "test-watch": "jest --watch",
-    "generateSchemas": "ts-node ./scripts/generateAuthSchemas.ts"
+    "generateSchemas": "ts-node ./scripts/generateAuthSchemas.ts",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
     "@aws-amplify/amplify-environment-parameters": "1.2.0-beta.1",

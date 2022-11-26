@@ -1,10 +1,9 @@
 import {
   $TSAny, $TSContext, AmplifyError, AmplifyFault,
 } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
 
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import inquirer from 'inquirer';
 import ora from 'ora';
 import { ChannelAction, ChannelConfigDeploymentType } from './channel-types';
 import { buildPinpointChannelResponseSuccess } from './pinpoint-helper';
@@ -22,26 +21,16 @@ export const configure = async (context: $TSContext):Promise<void> => {
 
   if (isChannelEnabled) {
     printer.info(`The ${channelName} channel is currently enabled`);
-    const answer = await inquirer.prompt({
-      name: 'disableChannel',
-      type: 'confirm',
-      message: `Do you want to disable the ${channelName} channel`,
-      default: false,
-    });
-    if (answer.disableChannel) {
+    const disableChannel = await prompter.yesOrNo(`Do you want to disable the ${channelName} channel`, false);
+    if (disableChannel) {
       await disable(context);
     } else {
       const successMessage = `The ${channelName} channel has been successfully updated.`;
       await enable(context, successMessage);
     }
   } else {
-    const answer = await inquirer.prompt({
-      name: 'enableChannel',
-      type: 'confirm',
-      message: `Do you want to enable the ${channelName} channel`,
-      default: true,
-    });
-    if (answer.enableChannel) {
+    const enableChannel = await prompter.yesOrNo(`Do you want to enable the ${channelName} channel`, true);
+    if (enableChannel) {
       await enable(context, undefined);
     }
   }
@@ -57,31 +46,15 @@ export const enable = async (context:$TSContext, successMessage: string|undefine
   if (context.exeInfo.pinpointInputParams?.[channelName]) {
     answers = validateInputParams(context.exeInfo.pinpointInputParams[channelName]);
   } else {
-    let channelOutput:$TSAny = {};
+    let channelOutput: $TSAny = {};
     if (context.exeInfo.serviceMeta.output[channelName]) {
       channelOutput = context.exeInfo.serviceMeta.output[channelName];
     }
-    const questions = [
-      {
-        name: 'FromAddress',
-        type: 'input',
-        message: "The 'From' Email address used to send emails",
-        default: channelOutput.FromAddress,
-      },
-      {
-        name: 'Identity',
-        type: 'input',
-        message: 'The ARN of an identity verified with SES',
-        default: channelOutput.Identity,
-      },
-      {
-        name: 'RoleArn',
-        type: 'input',
-        message: "The ARN of an IAM Role used to submit events to Mobile notifications' event ingestion service",
-        default: channelOutput.RoleArn,
-      },
-    ];
-    answers = await inquirer.prompt(questions);
+    answers = {
+      FromAddress: await prompter.input(`The 'From' Email address used to send emails`, { initial: channelOutput.FromAddress }),
+      Identity: await prompter.input('The ARN of an identity verified with SES', { initial: channelOutput.Identity }),
+      RoleArn: await prompter.input(`The ARN of an IAM Role used to submit events to Mobile notifications' event ingestion service`, { initial: channelOutput.RoleArn }),
+    };
   }
 
   const params = {

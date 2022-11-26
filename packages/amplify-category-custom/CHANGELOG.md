@@ -23,6 +23,15 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 # [3.0.0-cdkv2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.0.0-cdkv2.0...@aws-amplify/amplify-category-custom@3.0.0-cdkv2.2) (2022-11-10)
+## [2.5.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.5.4...@aws-amplify/amplify-category-custom@2.5.5) (2022-11-17)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-custom
+
+
+
+
+
+## [2.5.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@2.5.3...@aws-amplify/amplify-category-custom@2.5.4) (2022-10-27)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-custom
 

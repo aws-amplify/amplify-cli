@@ -69,6 +69,18 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 * feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+# [2.10.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.9.0...amplify-category-geo@2.10.0) (2022-11-17)
+
+
+### Features
+
+* **category-geo:** add two new map styles 2022.10 ([#11262](https://github.com/aws-amplify/amplify-cli/issues/11262)) ([77a473e](https://github.com/aws-amplify/amplify-cli/commit/77a473ed78a945681d98b2c14822474aef966dcf))
+
+
+
+
+
+# [2.9.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.8.3...amplify-category-geo@2.9.0) (2022-10-27)
 
 
 ### Features

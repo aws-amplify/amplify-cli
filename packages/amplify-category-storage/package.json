@@ -16,7 +16,8 @@
     "test": "jest --logHeapUsage",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "watch": "tsc -w",
-    "generateSchemas": "ts-node ./resources/genInputSchema.ts"
+    "generateSchemas": "ts-node ./resources/genInputSchema.ts",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "keywords": [
     "amplify",

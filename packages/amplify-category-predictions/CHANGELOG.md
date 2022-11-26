@@ -36,6 +36,15 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 # [4.2.0-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@4.1.3...amplify-category-predictions@4.2.0-cdkv2.0) (2022-11-01)
+## [4.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@4.2.0...amplify-category-predictions@4.2.1) (2022-11-17)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+# [4.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@4.1.3...amplify-category-predictions@4.2.0) (2022-10-27)
 
 
 ### Features

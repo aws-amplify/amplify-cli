@@ -15,6 +15,7 @@ export const amplifyPull = (
     envName?: string;
     yesFlag?: boolean;
   },
+  testingWithLatestCodebase = false,
 ): Promise<void> => {
   // Note:- Table checks have been removed since they are not necessary for push/pull flows and prone to breaking because
   // of stylistic changes. A simpler content based check will be added in the future.
@@ -36,7 +37,7 @@ export const amplifyPull = (
     args.push('--yes');
   }
 
-  const chain = spawn(getCLIPath(), args, { cwd, stripColors: true });
+  const chain = spawn(getCLIPath(testingWithLatestCodebase), args, { cwd, stripColors: true });
 
   if (settings.emptyDir) {
     chain

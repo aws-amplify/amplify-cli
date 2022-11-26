@@ -11,6 +11,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [1.9.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.9.6...amplify-util-headless-input@1.9.7) (2022-11-17)
+
+**Note:** Version bump only for package amplify-util-headless-input
+
+
+
+
+
 ## [1.9.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.9.5...amplify-util-headless-input@1.9.6) (2022-10-13)
 
 **Note:** Version bump only for package amplify-util-headless-input

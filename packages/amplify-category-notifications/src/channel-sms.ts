@@ -1,7 +1,6 @@
 import { $TSAny, $TSContext, AmplifyFault } from 'amplify-cli-core';
-import inquirer from 'inquirer';
 import ora from 'ora';
-import { printer } from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
 import { ChannelAction, ChannelConfigDeploymentType } from './channel-types';
 import { buildPinpointChannelResponseSuccess } from './pinpoint-helper';
 
@@ -18,23 +17,13 @@ export const configure = async (context : $TSContext):Promise<void> => {
 
   if (isChannelEnabled) {
     printer.info(`The ${channelName} channel is currently enabled`);
-    const answer = await inquirer.prompt({
-      name: 'disableChannel',
-      type: 'confirm',
-      message: `Do you want to disable the ${channelName} channel`,
-      default: false,
-    });
-    if (answer.disableChannel) {
+    const disableChannel = await prompter.yesOrNo(`Do you want to disable the ${channelName} channel`, false);
+    if (disableChannel) {
       await disable(context);
     }
   } else {
-    const answer = await inquirer.prompt({
-      name: 'enableChannel',
-      type: 'confirm',
-      message: `Do you want to enable the ${channelName} channel`,
-      default: true,
-    });
-    if (answer.enableChannel) {
+    const enableChannel = await prompter.yesOrNo(`Do you want to enable the ${channelName} channel`, true);
+    if (enableChannel) {
       await enable(context);
     }
   }

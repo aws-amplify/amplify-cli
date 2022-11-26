@@ -27,7 +27,8 @@
     "test": "jest --logHeapUsage",
     "postinstall": "node scripts/post-install.js",
     "watch": "tsc -w",
-    "clean": "rimraf ./lib tsconfig.tsbuildinfo"
+    "clean": "rimraf ./lib tsconfig.tsbuildinfo",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "engines": {
     "node": ">=12.0.0"
@@ -53,7 +54,7 @@
     "amplify-cli-core": "4.0.0-beta.1",
     "amplify-cli-logger": "1.2.1",
     "amplify-cli-shared-interfaces": "1.1.0",
-    "amplify-codegen": "^3.2.0",
+    "amplify-codegen": "^3.3.3",
     "amplify-console-hosting": "2.3.4-beta.1",
     "amplify-container-hosting": "2.5.4-beta.1",
     "amplify-dotnet-function-runtime-provider": "1.6.10",

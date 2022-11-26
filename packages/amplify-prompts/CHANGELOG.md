@@ -27,6 +27,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [2.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@2.6.0...amplify-prompts@2.6.1) (2022-11-17)
+
+**Note:** Version bump only for package amplify-prompts
+
+
+
+
+
 # [2.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@2.5.0...amplify-prompts@2.6.0) (2022-10-13)
 
 

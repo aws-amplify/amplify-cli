@@ -11,6 +11,7 @@ import { deleteS3Bucket } from '@aws-amplify/amplify-e2e-core';
 
 // Ensure to update scripts/split-e2e-tests.ts is also updated this gets updated
 const AWS_REGIONS_TO_RUN_TESTS = [
+  'us-east-1',
   'us-east-2',
   'us-west-2',
   'eu-west-2',
@@ -59,6 +60,14 @@ type S3BucketInfo = {
   cciInfo?: CircleCIJobDetails;
 };
 
+type PinpointAppInfo = {
+  id: string;
+  name: string;
+  arn: string;
+  region: string;
+  cciInfo?: CircleCIJobDetails;
+};
+
 type IamRoleInfo = {
   name: string;
   cciInfo?: CircleCIJobDetails;
@@ -73,6 +82,7 @@ type ReportEntry = {
   stacks: Record<string, StackInfo>;
   buckets: Record<string, S3BucketInfo>;
   roles: Record<string, IamRoleInfo>;
+  pinpointApps: Record<string, PinpointAppInfo>;
 };
 
 type JobFilterPredicate = (job: ReportEntry) => boolean;
@@ -91,6 +101,7 @@ type AWSAccountInfo = {
   sessionToken: string;
 };
 
+const PINPOINT_TEST_REGEX = /integtest/;
 const BUCKET_TEST_REGEX = /test/;
 const IAM_TEST_REGEX = /!RotateE2eAwsToken-e2eTestContextRole|-integtest$|^amplify-|^eu-|^us-|^ap-/;
 const STALE_DURATION_MS = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
@@ -118,6 +129,12 @@ const testRoleStalenessFilter = (resource: aws.IAM.Role): boolean => {
   return isTestResource && isStaleResource;
 };
 
+const testPinpointAppStalenessFilter = (resource: aws.Pinpoint.ApplicationResponse): boolean => {
+  const isTestResource = resource.Name.match(PINPOINT_TEST_REGEX);
+  const isStaleResource = (Date.now() - new Date(resource.CreationDate).getTime()) > STALE_DURATION_MS;
+  return isTestResource && isStaleResource;
+};
+
 /**
  * Get all S3 buckets in the account, and filter down to the ones we consider stale.
  */
@@ -136,6 +153,25 @@ const getOrphanTestIamRoles = async (account: AWSAccountInfo): Promise<IamRoleIn
   const listRoleResponse = await iamClient.listRoles({ MaxItems: 1000 }).promise();
   const staleRoles = listRoleResponse.Roles.filter(testRoleStalenessFilter);
   return staleRoles.map(it => ({ name: it.RoleName }));
+};
+
+const getOrphanPinpointApplications = async (account: AWSAccountInfo, region: string): Promise<PinpointAppInfo[]> => {
+  const pinpoint = new aws.Pinpoint(getAWSConfig(account, region));
+  const apps: PinpointAppInfo[] = [];
+  let nextToken = null;
+
+  do {
+    const result = await pinpoint.getApps({
+      Token: nextToken,
+    }).promise();
+    apps.push(...result.ApplicationsResponse.Item.filter(testPinpointAppStalenessFilter).map(it => ({
+      id: it.Id, name: it.Name, arn: it.Arn, region,
+    })));
+
+    nextToken = result.ApplicationsResponse.NextToken;
+  } while (nextToken);
+
+  return apps;
 };
 
 /**
@@ -342,6 +378,7 @@ const mergeResourcesByCCIJob = (
   s3Buckets: S3BucketInfo[],
   orphanS3Buckets: S3BucketInfo[],
   orphanIamRoles: IamRoleInfo[],
+  orphanPinpointApplications: PinpointAppInfo[],
 ): Record<string, ReportEntry> => {
   const result: Record<string, ReportEntry> = {};
 
@@ -410,6 +447,16 @@ const mergeResourcesByCCIJob = (
     ...val,
     jobId: key,
     roles: src,
+  }));
+
+  const orphanPinpointApps = {
+    [ORPHAN]: orphanPinpointApplications,
+  };
+
+  _.mergeWith(result, orphanPinpointApps, (val, src, key) => ({
+    ...val,
+    jobId: key,
+    pinpointApps: src,
   }));
 
   return result;
@@ -527,6 +574,23 @@ const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucke
   }
 };
 
+const deletePinpointApps = async (account: AWSAccountInfo, accountIndex: number, apps: PinpointAppInfo[]): Promise<void> => {
+  await Promise.all(apps.map(app => deletePinpointApp(account, accountIndex, app)));
+};
+
+const deletePinpointApp = async (account: AWSAccountInfo, accountIndex: number, app: PinpointAppInfo): Promise<void> => {
+  const {
+    id, name, region,
+  } = app;
+  try {
+    console.log(`[ACCOUNT ${accountIndex}] Deleting Pinpoint App ${name}`);
+    const pinpoint = new aws.Pinpoint(getAWSConfig(account, region));
+    await pinpoint.deleteApp({ ApplicationId: id }).promise();
+  } catch (e) {
+    console.log(`[ACCOUNT ${accountIndex}] Deleting pinpoint app ${name} failed with error ${e.message}`);
+  }
+};
+
 const deleteCfnStacks = async (account: AWSAccountInfo, accountIndex: number, stacks: StackInfo[]): Promise<void> => {
   await Promise.all(stacks.map(stack => deleteCfnStack(account, accountIndex, stack)));
 };
@@ -538,7 +602,8 @@ const deleteCfnStack = async (account: AWSAccountInfo, accountIndex: number, sta
   try {
     const cfnClient = new aws.CloudFormation(getAWSConfig(account, region));
     await cfnClient.deleteStack({ StackName: stackName, RetainResources: resourceToRetain }).promise();
-    await cfnClient.waitFor('stackDeleteComplete', { StackName: stackName }).promise();
+    // we'll only wait up to 10 minutes before moving on
+    await cfnClient.waitFor('stackDeleteComplete', { StackName: stackName, $waiter: { 'maxAttempts': 20 }}).promise();
   } catch (e) {
     console.log(`Deleting CloudFormation stack ${stackName} failed with error ${e.message}`);
     if (e.code === 'ExpiredTokenException') {
@@ -577,6 +642,10 @@ const deleteResources = async (
 
     if (resources.roles) {
       await deleteIamRoles(account, accountIndex, Object.values(resources.roles));
+    }
+
+    if (resources.pinpointApps) {
+      await deletePinpointApps(account, accountIndex, Object.values(resources.pinpointApps));
     }
   }
 };
@@ -624,7 +693,14 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
   });
   try {
     const orgAccounts = await orgApi.listAccounts().promise();
-    const accountCredentialPromises = orgAccounts.Accounts.map(async account => {
+    const allAccounts = orgAccounts.Accounts;
+    let nextToken = orgAccounts.NextToken;
+    while (nextToken) {
+      const nextPage = await orgApi.listAccounts({ NextToken: nextToken }).promise();
+      allAccounts.push(...nextPage.Accounts);
+      nextToken = nextPage.NextToken;
+    }
+    const accountCredentialPromises = allAccounts.map(async account => {
       if (account.Id === parentAccountIdentity.Account) {
         return {
           accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -665,6 +741,7 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const appPromises = AWS_REGIONS_TO_RUN_TESTS.map(region => getAmplifyApps(account, region));
   const stackPromises = AWS_REGIONS_TO_RUN_TESTS.map(region => getStacks(account, region));
   const bucketPromise = getS3Buckets(account);
+  const orphanPinpointApplicationsPromise = AWS_REGIONS_TO_RUN_TESTS.map(region => getOrphanPinpointApplications(account, region));
   const orphanBucketPromise = getOrphanS3TestBuckets(account);
   const orphanIamRolesPromise = getOrphanTestIamRoles(account);
 
@@ -673,8 +750,9 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const buckets = await bucketPromise;
   const orphanBuckets = await orphanBucketPromise;
   const orphanIamRoles = await orphanIamRolesPromise;
+  const orphanPinpointApplications = (await Promise.all(orphanPinpointApplicationsPromise)).flat();
 
-  const allResources = mergeResourcesByCCIJob(apps, stacks, buckets, orphanBuckets, orphanIamRoles);
+  const allResources = mergeResourcesByCCIJob(apps, stacks, buckets, orphanBuckets, orphanIamRoles, orphanPinpointApplications);
   const staleResources = _.pickBy(allResources, filterPredicate);
 
   generateReport(staleResources);
