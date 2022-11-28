@@ -16,16 +16,6 @@ describe('api directives @auth batch 7', () => {
     deleteProjectDir(projectDir);
   });
 
-  it('auth fieldLevelAuth1', async () => {
-    const testresult = await testSchema(projectDir, 'auth', 'fieldLevelAuth1');
-    expect(testresult).toBeTruthy();
-  });
-
-  it('auth fieldLevelAuth2', async () => {
-    const testresult = await testSchema(projectDir, 'auth', 'fieldLevelAuth2');
-    expect(testresult).toBeTruthy();
-  });
-
   it('auth fieldLevelAuth3', async () => {
     const testresult = await testSchema(projectDir, 'auth', 'fieldLevelAuth3');
     expect(testresult).toBeTruthy();

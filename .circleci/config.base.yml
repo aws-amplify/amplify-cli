@@ -194,7 +194,7 @@ jobs:
           environment:
             JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
       - store_test_results:
-          path: packages/amplify-util-mock/
+          path: ~/repo/packages/amplify-util-mock/
 
   publish_to_local_registry:
     <<: *linux-e2e-executor-large
@@ -385,7 +385,7 @@ jobs:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
           no_output_timeout: 90m
       - store_test_results:
-          path: packages/graphql-transformers-e2e-tests/
+          path: ~/repo/packages/graphql-transformers-e2e-tests/
   amplify_sudo_install_test:
     <<: *defaults
     steps:
@@ -448,9 +448,9 @@ jobs:
       - scan_e2e_test_artifacts:
           os: << parameters.os >>
       - store_test_results:
-          path: packages/amplify-e2e-tests/
+          path: ~/repo/packages/amplify-e2e-tests/
       - store_artifacts:
-          path: packages/amplify-e2e-tests/amplify-e2e-reports
+          path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
       # - clean_e2e_resources:
       #     os: << parameters.os >>
 
@@ -477,7 +477,7 @@ jobs:
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
-          path: packages/amplify-migration-tests/
+          path: ~/repo/packages/amplify-migration-tests/
       - store_artifacts:
           path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
     working_directory: ~/repo
@@ -507,7 +507,7 @@ jobs:
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
-          path: packages/amplify-migration-tests/
+          path: ~/repo/packages/amplify-migration-tests/
       - store_artifacts:
           path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
     working_directory: ~/repo
@@ -537,7 +537,7 @@ jobs:
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
-          path: packages/amplify-migration-tests/
+          path: ~/repo/packages/amplify-migration-tests/
       - store_artifacts:
           path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
     working_directory: ~/repo
@@ -567,7 +567,7 @@ jobs:
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
-          path: packages/amplify-migration-tests/
+          path: ~/repo/packages/amplify-migration-tests/
       - store_artifacts:
           path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
     working_directory: ~/repo
@@ -596,7 +596,7 @@ jobs:
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
-          path: packages/amplify-console-integration-tests/
+          path: ~/repo/packages/amplify-console-integration-tests/
       - store_artifacts:
           path: ~/repo/packages/amplify-console-integration-tests/console-integration-reports
     working_directory: ~/repo
@@ -699,13 +699,13 @@ jobs:
       - run: expect .circleci/delete_api.exp
       - run: *scan_e2e_test_artifacts
       - store_artifacts:
-          path: /root/aws-amplify-cypress-auth/cypress/videos
+          path: ~/aws-amplify-cypress-auth/cypress/videos
       - store_artifacts:
-          path: /root/aws-amplify-cypress-auth/cypress/screenshots
+          path: ~/aws-amplify-cypress-auth/cypress/screenshots
       - store_artifacts:
-          path: /root/aws-amplify-cypress-api/cypress/videos
+          path: ~/aws-amplify-cypress-api/cypress/videos
       - store_artifacts:
-          path: /root/aws-amplify-cypress-api/cypress/screenshots
+          path: ~/aws-amplify-cypress-api/cypress/screenshots
 
   deploy:
     <<: *linux-e2e-executor-large
@@ -1228,8 +1228,8 @@ commands:
                 command: |
                   source .circleci/local_publish_helpers.sh
                   cd packages/amplify-e2e-tests
-                  retry yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
-                no_output_timeout: 60m
+                  retry yarn run e2e --force-exit --detectOpenHandles --maxWorkers=3 $TEST_SUITE
+                no_output_timeout: 45m
       - when:
           condition:
             or:
@@ -1243,7 +1243,7 @@ commands:
                   source $BASH_ENV
                   amplify version
                   retry runE2eTest
-                no_output_timeout: 60m
+                no_output_timeout: 45m
   scan_e2e_test_artifacts:
     description: 'Scan And Cleanup E2E Test Artifacts'
     parameters:

@@ -446,12 +446,27 @@ export class APITest {
   }
 
   private async createMockSearchableArtifacts(context: $TSContext) {
-    const opensearchLocalDirectory = opensearchEmulator.getOpensearchLocalDirectory();
+    const opensearchLocalDirectory = opensearchEmulator?.getOpensearchLocalDirectory();
     fs.ensureDirSync(opensearchLocalDirectory);
     const mockSearchableTriggerDirectory = getMockSearchableTriggerDirectory(context);
     fs.ensureDirSync(mockSearchableTriggerDirectory);
+    fs.ensureDirSync(path.join(mockSearchableTriggerDirectory, 'src'));
     const searchableLambdaResourceDir = path.resolve(__dirname, '..', '..', 'resources', 'mock-searchable-lambda-trigger');
-    fs.copySync(searchableLambdaResourceDir, mockSearchableTriggerDirectory, { overwrite: true });
+
+    // copy the Pipfile first
+    const pipFileName = 'Pipfile';
+    fs.copySync(
+      path.join(searchableLambdaResourceDir, pipFileName), 
+      path.join(mockSearchableTriggerDirectory, pipFileName),
+      { overwrite: true }
+    );
+
+    // copy the source files
+    fs.copySync(
+      path.join(searchableLambdaResourceDir, 'source-files'), 
+      path.join(mockSearchableTriggerDirectory, 'src'),
+      { overwrite: true }
+    );
 
     // build the searchable lambda trigger
     const triggerConfig = getSearchableLambdaTriggerConfig(context, null);

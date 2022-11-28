@@ -3,6 +3,7 @@ import * as glob from 'glob';
 import { join } from 'path';
 import * as fs from 'fs-extra';
 import * as execa from 'execa';
+import { ARTIFACT_STORAGE_PATH_ALLOW_LIST } from './artifact-storage-path-allow-list';
 
 const CONCURRENCY = 35;
 // Some our e2e tests are known to fail when run on windows hosts
@@ -29,7 +30,9 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
   'notifications_pkg',
   'interactions_pkg',
   'analytics_pkg',
-  'schema-auth-7_pkg',
+  'schema-auth-7a_pkg',
+  'schema-auth-7b_pkg',
+  'schema-auth-7c_pkg',
   'schema-auth-11-a_pkg',
   'schema-auth-11-b_pkg',
   'schema-auth-11-c_pkg',
@@ -51,7 +54,9 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
   'schema-auth-10_pkg',
   'schema-searchable_pkg',
   'schema-auth-6_pkg',
-  'auth_8_pkg',
+  'auth_8a_pkg',
+  'auth_8b_pkg',
+  'auth_8c_pkg',
   's3-sse_pkg',
   'storage-2_pkg',
   'schema-auth-4a_pkg',
@@ -67,8 +72,10 @@ const WINDOWS_TEST_ALLOWLIST: string[] = [
   'auth_1a_pkg',
   'auth_1b_pkg',
   'auth_1c_pkg',
-  'schema-auth-1_pkg',
-  'schema-auth-2_pkg',
+  'schema-auth-1a_pkg',
+  'schema-auth-1b_pkg',
+  'schema-auth-2a_pkg',
+  'schema-auth-2b_pkg',
   'container-hosting_pkg',
   'schema-auth-13_pkg',
   'init_a_pkg',
@@ -91,8 +98,6 @@ const JOBS_RUNNING_ON_LINUX_LARGE_VM: string[] = [
   'auth_migration_update_v6',
   'function-migration_pkg',
   'geo-add-f_pkg',
-  'geo-import-1_pkg',
-  'import_auth_2_pkg',
   'import_s3_2a_pkg',
   'model-migration_pkg',
   'notifications-migration-2_v5',
@@ -378,8 +383,62 @@ function verifyConfig() {
   }
 }
 
+function validateArtifactStoragePaths(config: CircleCIConfig) {
+  // make sure that only valid paths are used to store artifacts/results
+  const storagePathsUsedInConfig = new Set();
+  const unregisteredPaths = new Set();
+  const invalidPaths = new Set();
+  for(let key of Object.keys(config.jobs)) {
+    const job = config.jobs[key];
+    const steps = job.steps;
+    
+    for(let i = 0; i < steps.length; i ++){
+      const resultsPath = steps[i].store_test_results;
+      const artifactsPath = steps[i].store_artifacts;
+      if(resultsPath){
+        storagePathsUsedInConfig.add(resultsPath.path);
+        if(ARTIFACT_STORAGE_PATH_ALLOW_LIST.indexOf(resultsPath.path) === -1){
+          unregisteredPaths.add(resultsPath.path);
+        }
+        if (!resultsPath.path.startsWith("~/")){
+          invalidPaths.add(resultsPath.path);
+        }
+      }
+      if(artifactsPath){
+        storagePathsUsedInConfig.add(artifactsPath.path);
+        if(ARTIFACT_STORAGE_PATH_ALLOW_LIST.indexOf(artifactsPath.path) === -1){
+          unregisteredPaths.add(artifactsPath.path);
+        }
+        if (!artifactsPath.path.startsWith("~/")){
+          invalidPaths.add(artifactsPath.path);
+        }
+      }
+    }
+  }
+  if(unregisteredPaths.size > 0 || invalidPaths.size > 0){
+    console.log("There are errors in your configuration.\n");
+
+    if(invalidPaths.size > 0){
+      const errors = Array.from(invalidPaths);
+      console.log("Fix these paths. They must start with ~/",errors, "\n");
+    }
+    if(unregisteredPaths.size > 0){
+      const newList = Array.from(storagePathsUsedInConfig);
+      const unregisteredList = Array.from(unregisteredPaths);
+      console.log("You are storing artifacts in an unregistered location.");
+      console.log("Please update artifact-storage-path-allow-list.ts to include the new storage paths.");
+      console.log("Update the list to match this:", newList);
+      console.log("Doing so will register these unregistered paths:", unregisteredList);
+    }
+    process.exit(1);
+  }
+}
+
 function main(): void {
   const config = loadConfig();
+  
+  validateArtifactStoragePaths(config);
+
   const splitPkgTests = splitTests(
     config,
     'amplify_e2e_tests_pkg',
