@@ -79,7 +79,9 @@ export const updateConfigOnEnvInit = async (context: any, category: any, service
         context,
         {
           providerName: provider,
-          provider: undefined, // We don't have the resolved directory of the provider we pass in an instance
+          // this coercion was done to avoid making `provider` on the ServiceSelection type nullable, a larger, potentially breaking change.
+          // Once ServiceSelection is refactored, this should be removed, and provider should be set to undefined without type coercion.
+          provider: undefined as unknown as string, // We don't have the resolved directory of the provider we pass in an instance
           service: 'Cognito',
         },
         resourceParams,
