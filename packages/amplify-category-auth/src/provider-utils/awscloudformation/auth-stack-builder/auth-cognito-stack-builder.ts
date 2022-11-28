@@ -536,7 +536,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         && !_.isEmpty(props.authProviders)
         && !(Object.keys(props.authProviders).length === 1 && props.authProviders[0] === 'accounts.google.com' && props.audiences)
       ) {
-        this.identityPool.supportedLoginProviders = cdk.Lazy.anyValue({
+        this.identityPool.supportedLoginProviders = cdk.Lazy.any({
           produce: () => {
             const supportedProvider: $TSAny = {};
             props.authProviders?.forEach(provider => {

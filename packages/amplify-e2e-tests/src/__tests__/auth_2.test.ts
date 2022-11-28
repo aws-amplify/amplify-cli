@@ -1,4 +1,15 @@
 import {
+  addAuthWithDefaultSocial,
+  amplifyPull,
+  amplifyPush,
+  amplifyPushAuth,
+  addAuthWithGroupTrigger,
+  addAuthViaAPIWithTrigger,
+  addUserToUserPool,
+  // eslint-disable-next-line spellcheck/spell-checker
+  addAuthWithRecaptchaTrigger,
+  // eslint-disable-next-line spellcheck/spell-checker
+  addAuthwithUserPoolGroupsViaAPIWithTrigger,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -8,9 +19,11 @@ import {
   getUserPool,
   getUserPoolClients,
   initJSProjectWithProfile,
+  invokeFunction,
   isDeploymentSecretForEnvExists,
   removeAuthWithDefault,
   updateFunction,
+  listUserPoolGroupsForUser,
   validateNodeModulesDirRemoval,
 } from '@aws-amplify/amplify-e2e-core';
 
@@ -108,6 +121,7 @@ describe('amplify add auth...', () => {
 
   it('...should allow the user to add auth via API category, with a trigger and function dependsOn API', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
+    // eslint-disable-next-line spellcheck/spell-checker
     await addAuthwithUserPoolGroupsViaAPIWithTrigger(projRoot, { transformerVersion: 1 });
     await updateFunction(
       projRoot,
@@ -126,6 +140,7 @@ describe('amplify add auth...', () => {
     await amplifyPush(projRoot);
     const meta = getProjectMeta(projRoot);
     const authKey = Object.keys(meta.auth).find(key => meta.auth[key].service === 'Cognito');
+    // eslint-disable-next-line spellcheck/spell-checker
     const functionName = `${authKey}PostConfirmation-integtest`;
     const authMeta = meta.auth[authKey];
     const id = authMeta.output.UserPoolId;
@@ -155,6 +170,7 @@ describe('amplify add auth...', () => {
 
   it('...should init a project and add 3 custom auth flow triggers for Google reCaptcha', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
+    // eslint-disable-next-line spellcheck/spell-checker
     await addAuthWithRecaptchaTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);

@@ -3,12 +3,13 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { CustomResource } from '@aws-cdk/core';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
-import { JSONUtilities, pathManager } from 'amplify-cli-core';
+import { $TSAny, JSONUtilities, pathManager } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
+import _ from 'lodash';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import { authTriggerAssetFilePath } from '../constants';
-import { AuthTriggerConnection, CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
+import { AuthTriggerConnection, AuthTriggerPermissions, CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
 
 type CustomResourceAuthStackProps = Readonly<{
   description: string;
@@ -64,7 +65,7 @@ export class CustomResourceAuthStack extends cdk.Stack {
       }
     });
 
-    createCustomResource(this, props.authTriggerConnections, userpoolId);
+    createCustomResource(this, props.authTriggerConnections, userpoolId, userpoolArn);
   }
 
   /**
@@ -126,6 +127,7 @@ const createCustomResource = (
   stack: cdk.Stack,
   authTriggerConnections: AuthTriggerConnection[],
   userpoolId: cdk.CfnParameter,
+  userpoolArn: cdk.CfnParameter,
 ): CustomResource => {
   const triggerCode = fs.readFileSync(authTriggerAssetFilePath, 'utf-8');
   const authTriggerFn = new lambda.Function(stack, 'authTriggerFn', {
@@ -133,14 +135,13 @@ const createCustomResource = (
     code: lambda.Code.fromInline(triggerCode),
     handler: 'index.handler',
   });
-  // reason to add iam::PassRole
-  // AccessDeniedException: User: <IAM User> is not authorized to perform: iam:PassRole on resource: <auth trigger role>
+
   if (authTriggerFn.role) {
-    authTriggerFn.role.addToPrincipalPolicy(
+    authTriggerFn.role.addToPolicy(
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
-        actions: ['cognito-idp:DescribeUserPool', 'cognito-idp:DescribeUserPoolClient', 'cognito-idp:UpdateUserPool', 'iam:PassRole'],
-        resources: ['*'],
+        actions: ['cognito-idp:DescribeUserPool', 'cognito-idp:UpdateUserPool'],
+        resources: [userpoolArn.valueAsString],
       }),
     );
   }
@@ -167,7 +168,7 @@ const createPermissionToInvokeLambda = (
     principal: 'cognito-idp.amazonaws.com',
     sourceArn: userpoolArn.valueAsString,
   });
-}
+};
 
 const createPermissionsForAuthTrigger = (
   stack: cdk.Stack,
