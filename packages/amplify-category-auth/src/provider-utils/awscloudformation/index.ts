@@ -448,10 +448,12 @@ const openIdentityPoolConsole = async (context: any, region: any, identityPoolId
   context.print.success(identityPoolConsoleUrl);
 };
 
-export const getPermissionPolicies = async (context: any, service: any, resourceName: any, crudOptions: any): Promise<any> => {
+export const getPermissionPolicies = (context: any, service: any, resourceName: any, crudOptions: any): any => {
   const { serviceWalkthroughFilename } = getSupportedServices()[service];
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
-  const { getIAMPolicies } = await import(serviceWalkthroughSrc);
+  /* eslint-disable */
+  const { getIAMPolicies } = require(serviceWalkthroughSrc);
+  /* eslint-enable */
 
   if (!getPermissionPolicies) {
     context.print.info(`No policies found for ${resourceName}`);
