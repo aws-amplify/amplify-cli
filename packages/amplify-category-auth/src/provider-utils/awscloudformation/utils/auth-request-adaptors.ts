@@ -108,7 +108,7 @@ const oauthMap = (
   oauthConfig?: Partial<CognitoOAuthConfiguration>,
   requiredAttributes: string[] = [],
 ): (OAuthResult & SocialProviderResult
-) | {} => {
+) | Record<string, unknown> => {
   if (!oauthConfig) return {};
   if (isEmpty(oauthConfig)) {
     return {
