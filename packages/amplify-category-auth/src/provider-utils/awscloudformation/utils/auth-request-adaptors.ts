@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/require-jsdoc */
 import {
   AddAuthRequest,
   CognitoUserAliasAttributes,
@@ -35,14 +36,8 @@ import {
   AutoVerifiedAttributesResult,
 } from '../service-walkthrough-types/cognito-user-input-types';
 
-/**
- *
- */
 export type AddAuthRequestAdaptorFactory = (projectType: string) => AddAuthRequestAdaptor;
 
-/**
- *
- */
 export type AddAuthRequestAdaptor = (request: AddAuthRequest) => ServiceQuestionHeadlessResult;
 /**
  * Factory function that returns a function to convert an AddAuthRequest into the existing CognitoConfiguation output format
@@ -61,9 +56,6 @@ export const getAddAuthRequestAdaptor: AddAuthRequestAdaptorFactory = projectTyp
   };
 };
 
-/**
- *
- */
 export const getUpdateAuthRequestAdaptor = (projectType: string, requiredAttributes: string[]) => ({ serviceModification }: UpdateAuthRequest): ServiceQuestionHeadlessResult => {
   const idPoolModification = serviceModification.includeIdentityPool ? serviceModification.identityPoolModification : undefined;
   return {

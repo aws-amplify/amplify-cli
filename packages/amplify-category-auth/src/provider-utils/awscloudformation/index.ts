@@ -448,15 +448,15 @@ const openIdentityPoolConsole = async (context: any, region: any, identityPoolId
   context.print.success(identityPoolConsoleUrl);
 };
 
-// const getPermissionPolicies = (context: any, service: any, resourceName: any, crudOptions: any): Promise<any> => {
-//   const { serviceWalkthroughFilename } = getSupportedServices()[service];
-//   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
-//   const { getIAMPolicies } = require(serviceWalkthroughSrc);
+export const getPermissionPolicies = async (context: any, service: any, resourceName: any, crudOptions: any): Promise<any> => {
+  const { serviceWalkthroughFilename } = getSupportedServices()[service];
+  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
+  const { getIAMPolicies } = await import(serviceWalkthroughSrc);
 
-//   if (!getPermissionPolicies) {
-//     context.print.info(`No policies found for ${resourceName}`);
-//     return;
-//   }
+  if (!getPermissionPolicies) {
+    context.print.info(`No policies found for ${resourceName}`);
+    return undefined;
+  }
 
-//   return getIAMPolicies(context, resourceName, crudOptions);
-// };
+  return getIAMPolicies(context, resourceName, crudOptions);
+};
