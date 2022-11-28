@@ -563,7 +563,7 @@ export const parseOAuthCreds = (providers: any, metadata: any, envCreds: any): a
         }
         providerKeys[`${lowerCaseEl}AuthorizeScopes`] = provider.authorize_scopes.split(',');
       } catch (e) {
-        // ignore
+        return null;
       }
     });
   } catch (e) {
