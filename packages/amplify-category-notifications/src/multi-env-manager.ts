@@ -9,7 +9,7 @@ import {
   getPinpointAppFromAnalyticsOutput,
   getPinpointAppStatus,
   getPinpointClient,
-  isPinpointAppDeployed,
+  IPinpointAppStatus,
   isPinpointDeploymentRequired,
   pushAuthAndAnalyticsPinpointResources,
   scanCategoryMetaForPinpoint,
@@ -21,7 +21,7 @@ import { ICategoryMeta } from './notifications-amplify-meta-types';
 import { PinpointName } from './pinpoint-name';
 import { writeData } from './multi-env-manager-utils';
 import { viewShowInlineModeInstructionsFail, viewShowInlineModeInstructionsStart, viewShowInlineModeInstructionsStop } from './display-utils';
-import { getAvailableChannels, isChannelDeploymentDeferred } from './notifications-backend-cfg-channel-api';
+import { getAvailableChannels } from './notifications-backend-cfg-channel-api';
 
 /**
  * Create Pinpoint resource in Analytics, Create Pinpoint Meta for Notifications category and
@@ -338,15 +338,18 @@ const getEnabledDisabledChannelsFromConfigAndMeta = (
  * @param channelName channel to be enabled
  * @param pinpointAppStatus Deployment status of the Pinpoint resource
  */
-export const checkAndCreatePinpointApp = async (context: $TSContext, channelName: string, pinpointAppStatus: $TSAny) : Promise<$TSAny> => {
+export const checkAndCreatePinpointApp = async (
+  context: $TSContext,
+  channelName: string,
+  pinpointAppStatus: IPinpointAppStatus,
+) : Promise<IPinpointAppStatus> => {
+  let updatedPinpointAppStatus = pinpointAppStatus;
   if (isPinpointDeploymentRequired(channelName, pinpointAppStatus)) {
     await viewShowInlineModeInstructionsStart(channelName);
     try {
       // updates the pinpoint app status
-      // eslint-disable-next-line no-param-reassign
-      pinpointAppStatus = await pushAuthAndAnalyticsPinpointResources(context, pinpointAppStatus);
-      // eslint-disable-next-line no-param-reassign
-      pinpointAppStatus = await ensurePinpointApp(context, pinpointAppStatus);
+      updatedPinpointAppStatus = await pushAuthAndAnalyticsPinpointResources(context, pinpointAppStatus);
+      updatedPinpointAppStatus = await ensurePinpointApp(context, updatedPinpointAppStatus);
       await viewShowInlineModeInstructionsStop(channelName);
     } catch (err) {
       // if the push fails, the user will be prompted to deploy the resource manually
@@ -360,13 +363,10 @@ export const checkAndCreatePinpointApp = async (context: $TSContext, channelName
     context = pinpointAppStatus.context;
   }
 
-  if (isPinpointAppDeployed(pinpointAppStatus.status) || isChannelDeploymentDeferred(channelName)) {
-    const channelAPIResponse = await notificationManager.enableChannel(context, channelName);
-    await writeData(context, channelAPIResponse);
-  }
+  return updatedPinpointAppStatus;
 };
 
-const pushChanges = async (context: $TSContext, pinpointNotificationsMeta: $TSAny):Promise<Array<IChannelAPIResponse|undefined>> => {
+const pushChanges = async (context: $TSContext, pinpointNotificationsMeta: $TSAny): Promise<Array<IChannelAPIResponse|undefined>> => {
   let pinpointInputParams : $TSAny;
 
   if (context?.exeInfo?.inputParams?.categories?.[AmplifyCategories.NOTIFICATIONS]?.[AmplifySupportedService.PINPOINT]
@@ -399,10 +399,12 @@ const pushChanges = async (context: $TSContext, pinpointNotificationsMeta: $TSAn
   );
 
   for (const channel of channelsToEnable) {
+    await checkAndCreatePinpointApp(context, channel, pinpointAppStatus);
     results.push(await notificationManager.enableChannel(context, channel));
   }
 
   for (const channel of channelsToDisable) {
+    await checkAndCreatePinpointApp(context, channel, pinpointAppStatus);
     results.push(await notificationManager.disableChannel(context, channel));
   }
 

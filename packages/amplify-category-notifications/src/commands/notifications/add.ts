@@ -2,7 +2,7 @@
 import { $TSContext, AmplifyError } from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
 import {
-  ensurePinpointApp, isPinpointAppDeployed, isPinpointDeploymentRequired, pushAuthAndAnalyticsPinpointResources,
+  ensurePinpointApp, isPinpointAppDeployed,
 } from '../../pinpoint-helper';
 import { enableChannel } from '../../notifications-manager';
 
@@ -11,14 +11,12 @@ import { writeData } from '../../multi-env-manager-utils';
 import {
   viewShowAllChannelsEnabledWarning,
   viewShowDeferredModeInstructions,
-  viewShowInlineModeInstructionsFail,
-  viewShowInlineModeInstructionsStart,
-  viewShowInlineModeInstructionsStop,
 } from '../../display-utils';
 import {
   getChannelViewName, getChannelNameFromView, getAvailableChannels, isValidChannel, isChannelDeploymentDeferred,
 } from '../../notifications-backend-cfg-channel-api';
 import { checkMigratedFromMobileHub, getDisabledChannelsFromAmplifyMeta } from '../../notifications-amplify-meta-api';
+import { checkAndCreatePinpointApp } from '../../multi-env-manager';
 
 export const name = 'add';
 export const alias = 'enable';
@@ -72,29 +70,11 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
 
   channelName = await viewQuestionAskNotificationChannelToBeEnabled(availableChannels, disabledChannels, channelName);
   if (isValidChannel(channelName)) {
-    let pinpointAppStatus = await ensurePinpointApp(context, undefined);
-    context = pinpointAppStatus.context;
-    // In-line deployment now requires an amplify-push to create the Pinpoint resource
-    if (isPinpointDeploymentRequired(channelName, pinpointAppStatus)) {
-      await viewShowInlineModeInstructionsStart(channelName);
-      try {
-        // updates the pinpoint app status
-        pinpointAppStatus = await pushAuthAndAnalyticsPinpointResources(context, pinpointAppStatus);
-        pinpointAppStatus = await ensurePinpointApp(context, pinpointAppStatus);
-        await viewShowInlineModeInstructionsStop(channelName);
-      } catch (err) {
-        // if the push fails, the user will be prompted to deploy the resource manually
-        await viewShowInlineModeInstructionsFail(channelName, err);
-        throw new AmplifyError('DeploymentError', {
-          message: 'Failed to deploy Auth and Pinpoint resources.',
-          resolution: 'Deploy the Auth and Pinpoint resources manually.',
-        }, err);
-      }
-      context = pinpointAppStatus.context;
-    }
+    const pinpointAppStatus = await checkAndCreatePinpointApp(context, channelName, await ensurePinpointApp(context, undefined));
+
     // enable the channel
     if (isPinpointAppDeployed(pinpointAppStatus.status) || isChannelDeploymentDeferred(channelName)) {
-      const channelAPIResponse : IChannelAPIResponse|undefined = await enableChannel(context, channelName);
+      const channelAPIResponse = await enableChannel(context, channelName);
       await writeData(context, channelAPIResponse);
       if (channelAPIResponse?.deploymentType === ChannelConfigDeploymentType.DEFERRED) {
         viewShowDeferredModeInstructions();
