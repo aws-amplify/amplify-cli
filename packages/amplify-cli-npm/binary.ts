@@ -74,9 +74,9 @@ const getCompressedBinaryUrl = (): string => {
   const compressedBinaryName = getPlatformCompressedBinaryName();
   let url = `${BINARY_LOCATION}/${version}/${compressedBinaryName}`;
 
-  // if (process.env.IS_AMPLIFY_CI) {
-  //   url = url.replace('.tgz', `-${getCommitHash()}.tgz`);
-  // }
+  if (process.env.IS_AMPLIFY_CI) {
+    url = url.replace('.tgz', `-${getCommitHash()}.tgz`);
+  }
 
   return url;
 };
