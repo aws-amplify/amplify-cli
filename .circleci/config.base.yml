@@ -516,8 +516,6 @@ jobs:
     working_directory: ~/repo
 
   amplify_migration_tests_v10:
-    environment:
-      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
     parameters:
       os:
         type: executor
