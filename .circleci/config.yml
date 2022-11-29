@@ -50,6 +50,9 @@ jobs:
     executor: << parameters.os >>
     steps:
       - checkout
+      - restore_cache:
+          key: >-
+            amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run: yarn run production-build
       - save_cache:
           key: >-
