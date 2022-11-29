@@ -102,6 +102,9 @@ jobs:
     executor: l_large
     steps:
       - checkout
+      - restore_cache:
+          key: >-
+            amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run: yarn run production-build
       - run:
           name: Build tests
