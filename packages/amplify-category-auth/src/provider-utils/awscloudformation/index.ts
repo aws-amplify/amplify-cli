@@ -2,7 +2,9 @@
 /* eslint-disable jsdoc/require-jsdoc */
 import inquirer from 'inquirer';
 import _ from 'lodash';
-import { stateManager, open } from 'amplify-cli-core';
+import {
+  stateManager, open, $TSContext, $TSObject,
+} from 'amplify-cli-core';
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { getAuthResourceName } from '../../utils/getAuthResourceName';
 import { copyCfnTemplate, saveResourceParameters } from './utils/synthesize-resources';
@@ -25,7 +27,7 @@ const serviceQuestions = async (context:any,
   return serviceWalkthrough(context, defaultValuesFilename, stringMapsFilename, serviceMetadata);
 };
 
-export const addResource = async (context: any, service: any): Promise<any> => {
+export const addResource = async (context: $TSContext, service: string): Promise<string> => {
   const serviceMetadata = getSupportedServices()[service];
   const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename } = serviceMetadata;
   return getAddAuthHandler(
@@ -33,7 +35,7 @@ export const addResource = async (context: any, service: any): Promise<any> => {
   )(await serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata));
 };
 
-export const updateResource = async (context: any, { service }: {service:any}): Promise<any> => {
+export const updateResource = async (context: $TSContext, { service }: {service:any}): Promise<any> => {
   const serviceMetadata = getSupportedServices()[service];
   const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename } = serviceMetadata;
   return getUpdateAuthHandler(context)(
@@ -41,7 +43,7 @@ export const updateResource = async (context: any, { service }: {service:any}): 
   );
 };
 
-export const updateConfigOnEnvInit = async (context: any, category: any, service: any): Promise<any> => {
+export const updateConfigOnEnvInit = async (context: $TSContext, category: any, service: string): Promise<any> => {
   const serviceMetadata = getSupportedServices().Cognito;
   const {
     defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, provider,
@@ -136,8 +138,8 @@ export const updateConfigOnEnvInit = async (context: any, category: any, service
 
   // legacy headless mode (only supports init)
   if (isInHeadlessMode(context)) {
-    const envParams: {[key: string]: any} = {};
-    let mergedValues: {[key: string]: any} | undefined;
+    const envParams: $TSObject = {};
+    let mergedValues: $TSObject | undefined;
     if (resourceParams.thirdPartyAuth || hostedUIProviderMeta) {
       const authParams = getHeadlessParams(context);
       const projectType = context.amplify.getProjectConfig().frontend;
@@ -190,7 +192,7 @@ export const updateConfigOnEnvInit = async (context: any, category: any, service
   return envParams;
 };
 
-export const migrate = async (context: any): Promise<any> => {
+export const migrate = async (context: $TSContext): Promise<void> => {
   const category = 'auth';
   const { amplify } = context;
   const existingAuth = context.migrationInfo.amplifyMeta.auth || {};
@@ -213,9 +215,9 @@ export const migrate = async (context: any): Promise<any> => {
   saveResourceParameters(context, provider, category, resourceName, { ...roles, ...props }, ENV_SPECIFIC_PARAMS);
 };
 
-const isInHeadlessMode = (context: any): any => context.exeInfo.inputParams.yes;
+const isInHeadlessMode = (context: $TSContext): any => context.exeInfo.inputParams.yes;
 
-const getHeadlessParams = (context: any): any => {
+const getHeadlessParams = (context: $TSContext): any => {
   const { inputParams } = context.exeInfo;
   try {
     // If the input given is a string validate it using JSON parse
@@ -351,7 +353,7 @@ const getRequiredParamsForHeadlessInit = (projectType: any, previousValues: any)
   return requiredParams;
 };
 
-export const console = async (context: any, amplifyMeta: any): Promise<any> => {
+export const console = async (context: $TSContext, amplifyMeta: any): Promise<any> => {
   const cognitoOutput = getCognitoOutput(amplifyMeta);
   if (cognitoOutput) {
     const { AmplifyAppId, Region } = amplifyMeta.providers.awscloudformation;
@@ -425,7 +427,7 @@ const getCognitoOutput = (amplifyMeta: any): any => {
   return cognitoOutput;
 };
 
-const openAdminUI = async (context: any, appId: any, region: any): Promise<any> => {
+const openAdminUI = async (context: $TSContext, appId: any, region: any): Promise<any> => {
   const { envName } = context.amplify.getEnvInfo();
   const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
   const baseUrl = providerPlugin.adminBackendMap[region].amplifyAdminUrl;
@@ -434,21 +436,21 @@ const openAdminUI = async (context: any, appId: any, region: any): Promise<any> 
   context.print.success(adminUrl);
 };
 
-const openUserPoolConsole = async (context: any, region: any, userPoolId: any): Promise<any> => {
+const openUserPoolConsole = async (context: $TSContext, region: any, userPoolId: any): Promise<any> => {
   const userPoolConsoleUrl = `https://${region}.console.aws.amazon.com/cognito/users/?region=${region}#/pool/${userPoolId}/details`;
   await open(userPoolConsoleUrl, { wait: false });
   context.print.info('User Pool console:');
   context.print.success(userPoolConsoleUrl);
 };
 
-const openIdentityPoolConsole = async (context: any, region: any, identityPoolId: any): Promise<any> => {
+const openIdentityPoolConsole = async (context: $TSContext, region: any, identityPoolId: any): Promise<any> => {
   const identityPoolConsoleUrl = `https://${region}.console.aws.amazon.com/cognito/pool/?region=${region}&id=${identityPoolId}`;
   await open(identityPoolConsoleUrl, { wait: false });
   context.print.info('Identity Pool console:');
   context.print.success(identityPoolConsoleUrl);
 };
 
-export const getPermissionPolicies = (context: any, service: any, resourceName: any, crudOptions: any): any => {
+export const getPermissionPolicies = (context: $TSContext, service: string, resourceName: any, crudOptions: any): any => {
   const { serviceWalkthroughFilename } = getSupportedServices()[service];
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   /* eslint-disable */
