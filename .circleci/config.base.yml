@@ -541,12 +541,12 @@ jobs:
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: Run tests migrating from CLI v10.5.0
+          name: Run tests migrating from CLI v10.5.1
           command: |
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v10.5.0 --maxWorkers=3 $TEST_SUITE
+            retry yarn run migration_v10.5.1 --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
