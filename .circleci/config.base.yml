@@ -1229,7 +1229,7 @@ commands:
                   source .circleci/local_publish_helpers.sh
                   cd packages/amplify-e2e-tests
                   retry yarn run e2e --force-exit --detectOpenHandles --maxWorkers=3 $TEST_SUITE
-                no_output_timeout: 45m
+                no_output_timeout: 60m
       - when:
           condition:
             or:
@@ -1243,7 +1243,7 @@ commands:
                   source $BASH_ENV
                   amplify version
                   retry runE2eTest
-                no_output_timeout: 45m
+                no_output_timeout: 60m
   scan_e2e_test_artifacts:
     description: 'Scan And Cleanup E2E Test Artifacts'
     parameters:
