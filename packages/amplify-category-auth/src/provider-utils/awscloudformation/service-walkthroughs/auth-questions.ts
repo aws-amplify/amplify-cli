@@ -7,6 +7,7 @@ import path from 'path';
 // const { parseTriggerSelections } = require('../utils/trigger-flow-auth-helper');
 // @ts-ignore
 import { Sort } from 'enquirer';
+import { $TSContext } from 'amplify-cli-core';
 import { extractApplePrivateKey } from '../utils/extract-apple-private-key';
 import { authProviders, attributeProviderMap, capabilities } from '../assets/string-maps';
 
@@ -19,7 +20,7 @@ export const serviceWalkthrough = async (
   stringMapsFilename:any,
   serviceMetadata:any,
   coreAnswers: {[key: string]: any} = {},
-): Promise<any> => {
+): Promise<Record<string, unknown>> => {
   const { inputs } = serviceMetadata;
   const { amplify } = context;
   const { parseInputs } = await import(`${__dirname}/../question-factories/core-questions.js`);
@@ -221,7 +222,7 @@ export const serviceWalkthrough = async (
 };
 /* eslint-enable no-param-reassign */
 
-const updateUserPoolGroups = async (context: any): Promise<any> => {
+const updateUserPoolGroups = async (context: any): Promise<string[]> => {
   let userPoolGroupList = [];
   let existingGroups;
 
@@ -342,7 +343,7 @@ const updateUserPoolGroups = async (context: any): Promise<any> => {
   return sortedUserPoolGroupList;
 };
 
-const updateAdminQuery = async (context: any, userPoolGroupList: any[]): Promise<any> => {
+const updateAdminQuery = async (context: $TSContext, userPoolGroupList: any[]): Promise<string> => {
   let adminGroup;
   // Clone user pool group list
   const userPoolGroupListClone = userPoolGroupList.slice(0);
@@ -486,7 +487,7 @@ export const userPoolProviders = (oAuthProviders: any, coreAnswers: any, prevAns
 /*
   Format hosted UI oAuth data per lambda spec
 */
-export const structureOAuthMetadata = (coreAnswers: any, context: any, defaults: any, amplify: any): any => {
+export const structureOAuthMetadata = (coreAnswers: any, context: $TSContext, defaults: any, amplify: any): any => {
   if (coreAnswers.useDefault === 'default' && context.updatingAuth) {
     delete context.updatingAuth.oAuthMetadata;
     return null;
@@ -532,7 +533,7 @@ export const structureOAuthMetadata = (coreAnswers: any, context: any, defaults:
 /*
   Deserialize oAuthData for CLI update flow
 */
-const parseOAuthMetaData = (previousAnswers: any): any => {
+const parseOAuthMetaData = (previousAnswers: any): void => {
   if (previousAnswers && previousAnswers.oAuthMetadata) {
     previousAnswers = Object.assign(previousAnswers, JSON.parse(previousAnswers.oAuthMetadata));
     delete previousAnswers.oAuthMetadata;
@@ -542,8 +543,8 @@ const parseOAuthMetaData = (previousAnswers: any): any => {
 /**
  * Deserialize oAuthCredentials for CLI update flow
  */
-export const parseOAuthCreds = (providers: any, metadata: any, envCreds: any): any => {
-  const providerKeys: any = {};
+export const parseOAuthCreds = (providers: any, metadata: any, envCreds: any): Record<string, unknown> => {
+  const providerKeys: Record<string, unknown> = {};
   try {
     const parsedMetaData = JSON.parse(metadata);
     const parsedCreds = JSON.parse(envCreds);
@@ -563,7 +564,7 @@ export const parseOAuthCreds = (providers: any, metadata: any, envCreds: any): a
         }
         providerKeys[`${lowerCaseEl}AuthorizeScopes`] = provider.authorize_scopes.split(',');
       } catch (e) {
-        return null;
+        // ignore
       }
     });
   } catch (e) {
@@ -576,7 +577,7 @@ export const parseOAuthCreds = (providers: any, metadata: any, envCreds: any): a
   Handle updates
 */
 /* eslint-disable no-param-reassign */
-const handleUpdates = (context: any, coreAnswers: any): any => {
+const handleUpdates = (context: $TSContext, coreAnswers: any): any => {
   if (context.updatingAuth && context.updatingAuth.triggers) {
     coreAnswers.triggers = {};
     coreAnswers.triggers = context.updatingAuth.triggers;
@@ -602,12 +603,12 @@ const handleUpdates = (context: any, coreAnswers: any): any => {
 /*
   Adding lambda triggers
 */
-const lambdaFlow = async (context: any, answers: any):Promise<any> => {
+const lambdaFlow = async (context: $TSContext, answers: any):Promise<any> => {
   const triggers = await context.amplify.triggerFlow(context, 'cognito', 'auth', answers);
   return triggers || answers;
 };
 
-export const getIAMPolicies = (context: any, resourceName: any, crudOptions: any):any => {
+export const getIAMPolicies = (context: $TSContext, resourceName: any, crudOptions: any):any => {
   let policy = {};
   const actions: any[] = [];
 
