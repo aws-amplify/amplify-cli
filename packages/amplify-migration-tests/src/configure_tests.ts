@@ -8,13 +8,7 @@ import { amplifyConfigure as configure, isCI, installAmplifyCLI, injectSessionTo
 
 async function setupAmplify(version: string = 'latest') {
   // install CLI to be used for migration test initial project
-  if(version === "10.5.1" && process.env.IS_AMPLIFY_CI){
-    process.env.IS_AMPLIFY_CI = undefined;
-    await installAmplifyCLI(version);
-    process.env.IS_AMPLIFY_CI = "1";
-  } else {
-    await installAmplifyCLI(version);
-  }
+  await installAmplifyCLI(version);
   
   console.log("INSTALLED CLI:", version);
 
