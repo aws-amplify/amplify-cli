@@ -547,6 +547,8 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
+            unset IS_AMPLIFY_CI
+            echo $IS_AMPLIFY_CI
             retry yarn run migration_v10.5.1 --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
