@@ -33,15 +33,18 @@ declare global {
 const amplifyTestsDir = 'amplify-e2e-tests';
 
 export function getCLIPath(testingWithLatestCodebase = false) {
+  console.log(`using latest codebase: ${testingWithLatestCodebase}`);
   if (!testingWithLatestCodebase) {
     if (process.env.AMPLIFY_PATH && fs.existsSync(process.env.AMPLIFY_PATH)) {
+      console.log("CLIPATH1 ", process.env.AMPLIFY_PATH);
       return process.env.AMPLIFY_PATH;
     }
-
+    console.log("CLIPATH2: ", process.platform === 'win32' ? 'amplify.exe' : 'amplify');
     return process.platform === 'win32' ? 'amplify.exe' : 'amplify';
   }
-
+  
   const amplifyScriptPath = path.join(__dirname, '..', '..', 'amplify-cli', 'bin', 'amplify');
+  console.log("CLIPATH3: ", amplifyScriptPath);
   return amplifyScriptPath;
 }
 
