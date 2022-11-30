@@ -6,7 +6,7 @@ import {
 } from '../../pinpoint-helper';
 import { enableChannel } from '../../notifications-manager';
 
-import { ChannelConfigDeploymentType, IChannelAPIResponse } from '../../channel-types';
+import { ChannelConfigDeploymentType } from '../../channel-types';
 import { writeData } from '../../multi-env-manager-utils';
 import {
   viewShowAllChannelsEnabledWarning,

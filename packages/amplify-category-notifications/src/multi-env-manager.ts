@@ -359,8 +359,6 @@ export const checkAndCreatePinpointApp = async (
         resolution: 'Deploy the Auth and Pinpoint resources manually.',
       }, err);
     }
-    // eslint-disable-next-line no-param-reassign
-    context = pinpointAppStatus.context;
   }
 
   return updatedPinpointAppStatus;
