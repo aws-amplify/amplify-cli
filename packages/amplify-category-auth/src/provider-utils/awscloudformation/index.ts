@@ -336,7 +336,7 @@ const getRequiredParamsForHeadlessInit = (projectType: any, previousValues: any)
   }
 
   if (previousValues.hostedUIProviderMeta) {
-    const oAuthProviders = JSON.parse(previousValues.hostedUIProviderMeta).map((h: any) => h.ProviderName);
+    const oAuthProviders = JSON.parse(previousValues.hostedUIProviderMeta).map((hostedUIProvider: any) => hostedUIProvider.ProviderName);
     if (oAuthProviders && oAuthProviders.length > 0) {
       oAuthProviders.forEach((provider: any) => {
         const lowerCaseProvider = provider.toLowerCase();
@@ -436,14 +436,14 @@ const openAdminUI = async (context: $TSContext, appId: any, region: any): Promis
   context.print.success(adminUrl);
 };
 
-const openUserPoolConsole = async (context: $TSContext, region: any, userPoolId: any): Promise<any> => {
+const openUserPoolConsole = async (context: $TSContext, region: any, userPoolId: any): Promise<void> => {
   const userPoolConsoleUrl = `https://${region}.console.aws.amazon.com/cognito/users/?region=${region}#/pool/${userPoolId}/details`;
   await open(userPoolConsoleUrl, { wait: false });
   context.print.info('User Pool console:');
   context.print.success(userPoolConsoleUrl);
 };
 
-const openIdentityPoolConsole = async (context: $TSContext, region: any, identityPoolId: any): Promise<any> => {
+const openIdentityPoolConsole = async (context: $TSContext, region: any, identityPoolId: any): Promise<void> => {
   const identityPoolConsoleUrl = `https://${region}.console.aws.amazon.com/cognito/pool/?region=${region}&id=${identityPoolId}`;
   await open(identityPoolConsoleUrl, { wait: false });
   context.print.info('Identity Pool console:');

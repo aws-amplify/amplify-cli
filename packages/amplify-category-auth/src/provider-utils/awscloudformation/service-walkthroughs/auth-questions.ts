@@ -38,10 +38,10 @@ export const serviceWalkthrough = async (
     const questionObj = inputs[j];
 
     // CREATE QUESTION OBJECT
-    const q = await parseInputs(questionObj, amplify, defaultValuesFilename, stringMapsFilename, coreAnswers, context);
+    const question = await parseInputs(questionObj, amplify, defaultValuesFilename, stringMapsFilename, coreAnswers, context);
 
     // ASK QUESTION
-    const answer: any = await inquirer.prompt(q);
+    const answer: any = await inquirer.prompt(question);
 
     /* eslint-disable spellcheck/spell-checker */
     if ('signinwithapplePrivateKeyUserPool' in answer) {
@@ -390,20 +390,20 @@ const updateAdminQuery = async (context: $TSContext, userPoolGroupList: any[]): 
 /* eslint-disable no-param-reassign */
 export const identityPoolProviders = (coreAnswers: any, projectType: any): any => {
   coreAnswers.selectedParties = {};
-  authProviders.forEach((e: any) => {
+  authProviders.forEach((provider: any) => {
     // don't send google value in cf if native project, since we need to make an openid provider
-    if (projectType === 'javascript' || e.answerHashKey !== 'googleClientId') {
-      if (coreAnswers[e.answerHashKey]) {
-        coreAnswers.selectedParties[e.value] = coreAnswers[e.answerHashKey];
+    if (projectType === 'javascript' || provider.answerHashKey !== 'googleClientId') {
+      if (coreAnswers[provider.answerHashKey]) {
+        coreAnswers.selectedParties[provider.value] = coreAnswers[provider.answerHashKey];
       }
       /*
         certain third party providers require multiple values,
         which Cognito requires to be a concatenated string -
         so here we build the string using 'concatKeys' defined in the thirdPartyMap
       */
-      if (coreAnswers[e.answerHashKey] && e.concatKeys) {
-        e.concatKeys.forEach((i: any) => {
-          coreAnswers.selectedParties[e.value] = coreAnswers.selectedParties[e.value].concat(';', coreAnswers[i]);
+      if (coreAnswers[provider.answerHashKey] && provider.concatKeys) {
+        provider.concatKeys.forEach((i: any) => {
+          coreAnswers.selectedParties[provider.value] = coreAnswers.selectedParties[provider.value].concat(';', coreAnswers[i]);
         });
       }
     }
@@ -435,9 +435,9 @@ export const userPoolProviders = (oAuthProviders: any, coreAnswers: any, prevAns
   const res: {[key: string]: any} = {};
   if (answers.hostedUI) {
     res.hostedUIProviderMeta = JSON.stringify(
-      oAuthProviders.map((el: any) => {
-        const lowerCaseEl = el.toLowerCase();
-        const delimiter = el === 'Facebook' ? ',' : ' ';
+      oAuthProviders.map((providerName: any) => {
+        const lowerCaseEl = providerName.toLowerCase();
+        const delimiter = providerName === 'Facebook' ? ',' : ' ';
         const scopes: any[] = [];
         const maps: any = {};
         attributesForMapping.forEach((attribute: keyof typeof attributeProviderMap) => {
@@ -447,7 +447,7 @@ export const userPoolProviders = (oAuthProviders: any, coreAnswers: any, prevAns
               scopes.push(attributeKey[`${lowerCaseEl}`].scope);
             }
           }
-          if (el === 'Google' && !scopes.includes('openid')) {
+          if (providerName === 'Google' && !scopes.includes('openid')) {
             scopes.unshift('openid');
           }
           if (attributeKey && attributeKey[`${lowerCaseEl}`] && attributeKey[`${lowerCaseEl}`].attr) {
@@ -455,7 +455,7 @@ export const userPoolProviders = (oAuthProviders: any, coreAnswers: any, prevAns
           }
         });
         return {
-          ProviderName: el,
+          ProviderName: providerName,
           authorize_scopes: scopes.join(delimiter),
           AttributeMapping: maps,
         };
