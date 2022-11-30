@@ -427,7 +427,7 @@ const getCognitoOutput = (amplifyMeta: any): any => {
   return cognitoOutput;
 };
 
-const openAdminUI = async (context: $TSContext, appId: any, region: any): Promise<any> => {
+const openAdminUI = async (context: $TSContext, appId: string, region: string): Promise<any> => {
   const { envName } = context.amplify.getEnvInfo();
   const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
   const baseUrl = providerPlugin.adminBackendMap[region].amplifyAdminUrl;
@@ -436,21 +436,21 @@ const openAdminUI = async (context: $TSContext, appId: any, region: any): Promis
   context.print.success(adminUrl);
 };
 
-const openUserPoolConsole = async (context: $TSContext, region: any, userPoolId: any): Promise<void> => {
+const openUserPoolConsole = async (context: $TSContext, region: string, userPoolId: string): Promise<void> => {
   const userPoolConsoleUrl = `https://${region}.console.aws.amazon.com/cognito/users/?region=${region}#/pool/${userPoolId}/details`;
   await open(userPoolConsoleUrl, { wait: false });
   context.print.info('User Pool console:');
   context.print.success(userPoolConsoleUrl);
 };
 
-const openIdentityPoolConsole = async (context: $TSContext, region: any, identityPoolId: any): Promise<void> => {
+const openIdentityPoolConsole = async (context: $TSContext, region: string, identityPoolId: string): Promise<void> => {
   const identityPoolConsoleUrl = `https://${region}.console.aws.amazon.com/cognito/pool/?region=${region}&id=${identityPoolId}`;
   await open(identityPoolConsoleUrl, { wait: false });
   context.print.info('Identity Pool console:');
   context.print.success(identityPoolConsoleUrl);
 };
 
-export const getPermissionPolicies = (context: $TSContext, service: string, resourceName: any, crudOptions: any): any => {
+export const getPermissionPolicies = (context: $TSContext, service: string, resourceName: string, crudOptions: any): any => {
   const { serviceWalkthroughFilename } = getSupportedServices()[service];
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   /* eslint-disable */

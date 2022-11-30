@@ -15,7 +15,7 @@ const category = 'auth';
 
 /* eslint-disable no-param-reassign */
 export const serviceWalkthrough = async (
-  context:any,
+  context:$TSContext,
   defaultValuesFilename:any,
   stringMapsFilename:any,
   serviceMetadata:any,
@@ -543,29 +543,25 @@ const parseOAuthMetaData = (previousAnswers: any): void => {
 /**
  * Deserialize oAuthCredentials for CLI update flow
  */
-export const parseOAuthCreds = (providers: any, metadata: any, envCreds: any): Record<string, unknown> => {
+export const parseOAuthCreds = (providers: string[], metadata: any, envCreds: any): Record<string, unknown> => {
   const providerKeys: Record<string, unknown> = {};
   try {
     const parsedMetaData = JSON.parse(metadata);
     const parsedCreds = JSON.parse(envCreds);
-    providers.forEach((el: any) => {
-      const lowerCaseEl = el.toLowerCase();
-      try {
-        const provider = parsedMetaData.find((i: any) => i.ProviderName === el);
-        const creds = parsedCreds.find((i: any) => i.ProviderName === el);
-        if (el === 'SignInWithApple') {
-          providerKeys[`${lowerCaseEl}ClientIdUserPool`] = creds.client_id;
-          providerKeys[`${lowerCaseEl}TeamIdUserPool`] = creds.team_id;
-          providerKeys[`${lowerCaseEl}KeyIdUserPool`] = creds.key_id;
-          providerKeys[`${lowerCaseEl}PrivateKeyUserPool`] = creds.private_key;
-        } else {
-          providerKeys[`${lowerCaseEl}AppIdUserPool`] = creds.client_id;
-          providerKeys[`${lowerCaseEl}AppSecretUserPool`] = creds.client_secret;
-        }
-        providerKeys[`${lowerCaseEl}AuthorizeScopes`] = provider.authorize_scopes.split(',');
-      } catch (e) {
-        // ignore
+    providers.forEach((providerName: string) => {
+      const lowerCaseEl = providerName.toLowerCase();
+      const provider: {authorize_scopes: string} | undefined = parsedMetaData.find((currentProvider: any) => currentProvider.ProviderName === providerName);
+      const creds = parsedCreds.find((currentProvider: any) => currentProvider.ProviderName === providerName);
+      if (providerName === 'SignInWithApple') {
+        providerKeys[`${lowerCaseEl}ClientIdUserPool`] = creds?.client_id;
+        providerKeys[`${lowerCaseEl}TeamIdUserPool`] = creds?.team_id;
+        providerKeys[`${lowerCaseEl}KeyIdUserPool`] = creds?.key_id;
+        providerKeys[`${lowerCaseEl}PrivateKeyUserPool`] = creds?.private_key;
+      } else {
+        providerKeys[`${lowerCaseEl}AppIdUserPool`] = creds?.client_id;
+        providerKeys[`${lowerCaseEl}AppSecretUserPool`] = creds?.client_secret;
       }
+      providerKeys[`${lowerCaseEl}AuthorizeScopes`] = provider?.authorize_scopes?.split?.(',');
     });
   } catch (e) {
     return {};
