@@ -1,5 +1,4 @@
-import { DeploymentResources as DeploymentResourcesV2 } from '@aws-amplify/graphql-transformer-core';
-import { DeploymentResources as DeploymentResourcesV1 } from 'graphql-transformer-core';
+import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 // eslint-disable-next-line import/no-cycle
 import {
   $TSAny,
@@ -33,7 +32,7 @@ export class ApiCategoryFacade {
   static async transformGraphQLSchema(
     context: $TSContext,
     options: $TSAny,
-  ): Promise<DeploymentResourcesV2 | DeploymentResourcesV1 | undefined> {
+  ): Promise<DeploymentResources | undefined> {
     return context.amplify.invokePluginMethod(context, API_CATEGORY_NAME, undefined, 'transformGraphQLSchema', [context, options]);
   }
 }

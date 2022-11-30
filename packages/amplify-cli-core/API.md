@@ -8,8 +8,7 @@ import Ajv from 'ajv';
 import { ApiKeyConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import * as cdk from 'aws-cdk-lib';
 import { ChildProcess } from 'child_process';
-import { DeploymentResources } from '@aws-amplify/graphql-transformer-core';
-import { DeploymentResources as DeploymentResources_2 } from 'graphql-transformer-core';
+import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import opn from 'open';
 import { Ora } from 'ora';
 import { Template as Template_2 } from 'cloudform-types';
@@ -237,7 +236,7 @@ export class ApiCategoryFacade {
     // (undocumented)
     static getTransformerVersion(context: $TSContext): Promise<number>;
     // (undocumented)
-    static transformGraphQLSchema(context: $TSContext, options: $TSAny): Promise<DeploymentResources | DeploymentResources_2 | undefined>;
+    static transformGraphQLSchema(context: $TSContext, options: $TSAny): Promise<DeploymentResources | undefined>;
 }
 
 // @public (undocumented)
