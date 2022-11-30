@@ -259,8 +259,8 @@ const formatCredentialsForEnvParams = (currentEnvSpecificValues: any, result: an
     if (resourceParams.hostedUIProviderMeta) {
       const currentProviders = JSON.parse(resourceParams.hostedUIProviderMeta).map((h: any) => h.ProviderName);
       currentProviders.forEach((currentProvider: any) => {
-        const previousProvider = previousResult.find((p: any) => p.ProviderName === currentProvider);
-        const resultProvider = inputResult.find((r: any) => r.ProviderName === currentProvider);
+        const previousProvider = previousResult.find((provider: any) => provider.ProviderName === currentProvider);
+        const resultProvider = inputResult.find((provider: any) => provider.ProviderName === currentProvider);
         partialParams.hostedUIProviderCreds.push(Object.assign(resultProvider, previousProvider));
       });
       partialParams.hostedUIProviderCreds = JSON.stringify(partialParams.hostedUIProviderCreds);
