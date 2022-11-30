@@ -548,20 +548,19 @@ export const parseOAuthCreds = (providers: string[], metadata: any, envCreds: an
   try {
     const parsedMetaData = JSON.parse(metadata);
     const parsedCreds = JSON.parse(envCreds);
-    providers.forEach((providerName: string) => {
-      const lowerCaseEl = providerName.toLowerCase();
+    providers.map(providerName => providerName.toLowerCase()).forEach((providerName: string) => {
       const provider: {authorize_scopes: string} | undefined = parsedMetaData.find((currentProvider: any) => currentProvider.ProviderName === providerName);
       const creds = parsedCreds.find((currentProvider: any) => currentProvider.ProviderName === providerName);
       if (providerName === 'SignInWithApple') {
-        providerKeys[`${lowerCaseEl}ClientIdUserPool`] = creds?.client_id;
-        providerKeys[`${lowerCaseEl}TeamIdUserPool`] = creds?.team_id;
-        providerKeys[`${lowerCaseEl}KeyIdUserPool`] = creds?.key_id;
-        providerKeys[`${lowerCaseEl}PrivateKeyUserPool`] = creds?.private_key;
+        providerKeys[`${providerName}ClientIdUserPool`] = creds?.client_id;
+        providerKeys[`${providerName}TeamIdUserPool`] = creds?.team_id;
+        providerKeys[`${providerName}KeyIdUserPool`] = creds?.key_id;
+        providerKeys[`${providerName}PrivateKeyUserPool`] = creds?.private_key;
       } else {
-        providerKeys[`${lowerCaseEl}AppIdUserPool`] = creds?.client_id;
-        providerKeys[`${lowerCaseEl}AppSecretUserPool`] = creds?.client_secret;
+        providerKeys[`${providerName}AppIdUserPool`] = creds?.client_id;
+        providerKeys[`${providerName}AppSecretUserPool`] = creds?.client_secret;
       }
-      providerKeys[`${lowerCaseEl}AuthorizeScopes`] = provider?.authorize_scopes?.split?.(',');
+      providerKeys[`${providerName}AuthorizeScopes`] = provider?.authorize_scopes?.split?.(',');
     });
   } catch (e) {
     return {};
