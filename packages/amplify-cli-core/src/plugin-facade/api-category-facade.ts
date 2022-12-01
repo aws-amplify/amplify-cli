@@ -4,6 +4,7 @@ import { DeploymentResources as DeploymentResourcesV1 } from 'graphql-transforme
 import {
   $TSAny,
   $TSContext,
+  $TSObject,
 } from '..';
 
 const API_CATEGORY_NAME = 'api';
@@ -35,5 +36,28 @@ export class ApiCategoryFacade {
     options: $TSAny,
   ): Promise<DeploymentResourcesV2 | DeploymentResourcesV1 | undefined> {
     return context.amplify.invokePluginMethod(context, API_CATEGORY_NAME, undefined, 'transformGraphQLSchema', [context, options]);
+  }
+
+  /**
+   * Add a new auth mode to the API.
+   */
+  static async addGraphQLAuthorizationMode(
+    context: $TSContext,
+    authType: string,
+  ): Promise<void> {
+    return context.amplify.invokePluginMethod(context, API_CATEGORY_NAME, undefined, 'addGraphQLAuthorizationMode', [
+      context,
+      { authType, printLeadText: true, authSettings: undefined },
+    ]);
+  }
+
+  /**
+   * Generates an ECS Stack and metadata for the given resource object.
+   */
+  static async generateContainersArtifacts(
+    context: $TSContext,
+    resource: $TSAny,
+  ): Promise<$TSObject> {
+    return context.amplify.invokePluginMethod(context, 'api', undefined, 'generateContainersArtifacts', [context, resource]);
   }
 }

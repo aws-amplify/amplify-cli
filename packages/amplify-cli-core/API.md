@@ -233,6 +233,10 @@ export class AngularConfigNotFoundError extends Error {
 // @public (undocumented)
 export class ApiCategoryFacade {
     // (undocumented)
+    static addGraphQLAuthorizationMode(context: $TSContext, authType: string): Promise<void>;
+    // (undocumented)
+    static generateContainersArtifacts(context: $TSContext, resource: $TSAny): Promise<$TSObject>;
+    // (undocumented)
     static getDirectiveDefinitions(context: $TSContext, resourceDir: string): Promise<string>;
     // (undocumented)
     static getTransformerVersion(context: $TSContext): Promise<number>;
@@ -403,6 +407,14 @@ export class CloudformationProviderFacade {
     }>;
     // (undocumented)
     static prePushCfnTemplateModifier(context: $TSContext, template: Template_2): Promise<(template: Template_2) => Promise<void>>;
+}
+
+// @public (undocumented)
+export class CodegenUtilityFacade {
+    // (undocumented)
+    static generateModelIntrospection(context: $TSContext, outputDir: string): Promise<void>;
+    // (undocumented)
+    static generateModels(context: $TSContext): Promise<void>;
 }
 
 // @public (undocumented)

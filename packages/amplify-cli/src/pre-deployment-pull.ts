@@ -1,6 +1,6 @@
 import { run } from 'amplify-app';
 import {
-  $TSContext, AmplifyError, AMPLIFY_SUPPORT_DOCS, pathManager,
+  $TSContext, AmplifyError, AMPLIFY_SUPPORT_DOCS, CodegenUtilityFacade, pathManager,
 } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import fetch from 'node-fetch';
@@ -52,7 +52,7 @@ export const preDeployPullBackend = async (context: $TSContext, sandboxId: strin
   replaceSchema(resJson.schema);
 
   // Generate models
-  await context.amplify.invokePluginMethod(context, 'codegen', undefined, 'generateModels', [context]);
+  await CodegenUtilityFacade.generateModels(context);
 };
 
 const replaceSchema = (schema: string): void => {

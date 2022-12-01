@@ -155,7 +155,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
         const {
           exposedContainer,
           pipelineInfo: { consoleUrl },
-        }: $TSObject = await context.amplify.invokePluginMethod(context, 'api', undefined, 'generateContainersArtifacts', [context, resource]);
+        }: $TSObject = await ApiCategoryFacade.generateContainersArtifacts(context, resource);
         await context.amplify.updateamplifyMetaAfterResourceUpdate('api', resource.resourceName, 'exposedContainer', exposedContainer);
 
         printer.blankLine();

@@ -1,5 +1,5 @@
 import {
-  $TSObject, $TSContext, pathManager, stateManager,
+  $TSObject, $TSContext, pathManager, stateManager, CodegenUtilityFacade,
 } from 'amplify-cli-core';
 import { isDataStoreEnabled } from 'graphql-transformer-core';
 import * as path from 'path';
@@ -44,6 +44,6 @@ export const postPullCodegen = async (context: $TSContext): Promise<void> => {
     return;
   }
   if (await isDataStoreEnabled(path.join(pathManager.getBackendDirPath(), 'api', gqlApiName))) {
-    await context.amplify.invokePluginMethod(context, 'codegen', undefined, 'generateModels', [context]);
+    await CodegenUtilityFacade.generateModels(context);
   }
 };

@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSContext, ApiCategoryFacade } from 'amplify-cli-core';
 import { getProjectMeta } from './get-project-meta';
 
 const errAuthMissingIAM = `@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.`;
@@ -19,42 +19,32 @@ export const isValidGraphQLAuthError = (message: string): boolean => [
  */
 export const handleValidGraphQLAuthError = async (context: $TSContext, message: string): Promise<boolean> => {
   if (message === errAuthMissingIAM) {
-    await addGraphQLAuthRequirement(context, 'AWS_IAM');
+    await ApiCategoryFacade.addGraphQLAuthorizationMode(context, 'AWS_IAM');
     return true;
   }
 
   if (checkIfAuthExists() && message === errAuthMissingUserPools) {
-    await addGraphQLAuthRequirement(context, 'AMAZON_COGNITO_USER_POOLS');
+    await ApiCategoryFacade.addGraphQLAuthorizationMode(context, 'AMAZON_COGNITO_USER_POOLS');
     return true;
   }
 
   if (!context?.parameters?.options?.yes) {
     if (message === errAuthMissingUserPools) {
-      await addGraphQLAuthRequirement(context, 'AMAZON_COGNITO_USER_POOLS');
+      await ApiCategoryFacade.addGraphQLAuthorizationMode(context, 'AMAZON_COGNITO_USER_POOLS');
       return true;
     } if (message === errAuthMissingOIDC) {
-      await addGraphQLAuthRequirement(context, 'OPENID_CONNECT');
+      await ApiCategoryFacade.addGraphQLAuthorizationMode(context, 'OPENID_CONNECT');
       return true;
     } if (message === errAuthMissingApiKey) {
-      await addGraphQLAuthRequirement(context, 'API_KEY');
+      await ApiCategoryFacade.addGraphQLAuthorizationMode(context, 'API_KEY');
       return true;
     } if (message === errAuthMissingLambda) {
-      await addGraphQLAuthRequirement(context, 'AWS_LAMBDA');
+      await ApiCategoryFacade.addGraphQLAuthorizationMode(context, 'AWS_LAMBDA');
       return true;
     }
   }
   return false;
 };
-
-const addGraphQLAuthRequirement = async (context, authType)
-  : Promise<$TSAny> => context.amplify.invokePluginMethod(context, 'api', undefined, 'addGraphQLAuthorizationMode', [
-  context,
-  {
-    authType,
-    printLeadText: true,
-    authSettings: undefined,
-  },
-]);
 
 /**
  * Query Amplify Meta file and check if Auth is configured

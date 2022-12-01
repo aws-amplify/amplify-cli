@@ -1,4 +1,6 @@
-import { $TSContext, stateManager, pathManager } from 'amplify-cli-core';
+import {
+  $TSContext, stateManager, pathManager, CodegenUtilityFacade,
+} from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import { isDataStoreEnabled } from 'graphql-transformer-core';
 import { adminModelgen } from '../admin-modelgen';
@@ -11,6 +13,7 @@ jest.mock('amplify-cli-core');
 jest.mock('graphql-transformer-core');
 jest.mock('../utils/admin-helpers');
 
+const codegenUtilityFacadeMock = CodegenUtilityFacade as jest.Mocked<typeof CodegenUtilityFacade>;
 const fsMock = fs as jest.Mocked<typeof fs>;
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
@@ -59,25 +62,18 @@ const resources = [
   },
 ];
 
-const invokePluginMock = jest.fn();
-
 let contextStub: $TSContext;
 
 beforeEach(() => {
   jest.clearAllMocks();
-  contextStub = ({
-    amplify: {
-      invokePluginMethod: invokePluginMock,
-    },
-  } as unknown) as $TSContext;
+  contextStub = ({} as unknown) as $TSContext;
 });
 
 it('invokes codegen functions and writes assets to S3', async () => {
   await adminModelgen(contextStub, resources);
 
-  expect(invokePluginMock.mock.calls.length).toBe(2);
-  expect(invokePluginMock.mock.calls[0][3]).toBe('generateModels');
-  expect(invokePluginMock.mock.calls[1][3]).toBe('generateModelIntrospection');
+  expect(codegenUtilityFacadeMock.generateModels).toHaveBeenCalled();
+  expect(codegenUtilityFacadeMock.generateModelIntrospection).toHaveBeenCalled();
   expect(s3Mock.uploadFile.mock.calls).toMatchInlineSnapshot(`
     Array [
       Array [
@@ -106,7 +102,7 @@ it('invokes codegen functions and writes assets to S3', async () => {
 });
 
 it('resets js config on error', async () => {
-  invokePluginMock.mockRejectedValue(new Error('test error'));
+  codegenUtilityFacadeMock.generateModels.mockRejectedValue(new Error('test error'));
   await expect(() => adminModelgen(contextStub, resources)).rejects.toThrowErrorMatchingInlineSnapshot(`"test error"`);
   expect(stateManagerMock.setProjectConfig.mock.calls.length).toBe(2);
   expect(stateManagerMock.setProjectConfig.mock.calls[1][1]).toBe(originalProjectConfig);
@@ -114,13 +110,13 @@ it('resets js config on error', async () => {
 
 it('resets stdout on error', async () => {
   const initialStdoutWriter = process.stdout.write;
-  invokePluginMock.mockRejectedValue(new Error('test error'));
+  codegenUtilityFacadeMock.generateModels.mockRejectedValue(new Error('test error'));
   await expect(() => adminModelgen(contextStub, resources)).rejects.toThrowErrorMatchingInlineSnapshot(`"test error"`);
   expect(process.stdout.write).toBe(initialStdoutWriter);
 });
 
 it('removes temp dir on error', async () => {
-  invokePluginMock.mockRejectedValue(new Error('test error'));
+  codegenUtilityFacadeMock.generateModels.mockRejectedValue(new Error('test error'));
   await expect(adminModelgen(contextStub, resources)).rejects.toThrowErrorMatchingInlineSnapshot(`"test error"`);
   expect(fsMock.remove.mock.calls.length).toBe(1);
   expect(fsMock.remove.mock.calls[0][0]).toMatchInlineSnapshot(`"mock/project/root/amplify-codegen-temp"`);

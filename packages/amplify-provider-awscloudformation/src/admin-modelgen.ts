@@ -1,5 +1,5 @@
 import {
-  $TSAny, $TSContext, pathManager, stateManager,
+  $TSAny, $TSContext, CodegenUtilityFacade, pathManager, stateManager,
 } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import { isDataStoreEnabled } from 'graphql-transformer-core';
@@ -65,13 +65,10 @@ export const adminModelgen = async (context: $TSContext, resources: $TSAny[]): P
     process.stdout.write = tempStdoutWrite.write.bind(tempStdoutWrite);
 
     // invokes https://github.com/aws-amplify/amplify-codegen/blob/main/packages/amplify-codegen/src/commands/models.js#L60
-    await context.amplify.invokePluginMethod(context, 'codegen', undefined, 'generateModels', [context]);
-
-    // generateModelIntrospection expects --output-dir option to be set
-    _.set(context, ['parameters', 'options', 'output-dir'], relativeTempOutputDir);
+    await CodegenUtilityFacade.generateModels(context);
 
     // invokes https://github.com/aws-amplify/amplify-codegen/blob/main/packages/amplify-codegen/src/commands/model-intropection.js#L8
-    await context.amplify.invokePluginMethod(context, 'codegen', undefined, 'generateModelIntrospection', [context]);
+    await CodegenUtilityFacade.generateModelIntrospection(context, relativeTempOutputDir);
 
     const localSchemaPath = path.join(pathManager.getResourceDirectoryPath(undefined, 'api', resourceName), 'schema.graphql');
     const localSchemaJsPath = path.join(absoluteTempOutputDir, 'models', 'schema.js');
