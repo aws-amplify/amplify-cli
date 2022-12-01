@@ -18,7 +18,9 @@ RUN sudo apt-get install -y \
   groff \
   python \
   python-pip \
-  libpython-dev
+  libpython-dev \
+  less \
+  tree
 
 RUN sudo pip install awscli
 
