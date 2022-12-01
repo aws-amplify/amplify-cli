@@ -1,6 +1,6 @@
 import {
   $TSAny,
-  $TSContext, AmplifyError, getPackageManager, pathManager, ResourceTuple,
+  $TSContext, AmplifyError, getPackageManager, JSONUtilities, pathManager, ResourceTuple,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import execa from 'execa';
@@ -10,9 +10,6 @@ import * as path from 'path';
 import { categoryName, TYPES_DIR_NAME, AMPLIFY_RESOURCES_TYPE_DEF_FILENAME } from './constants';
 import { getAllResources } from './dependency-management-utils';
 import { generateCloudFormationFromCDK } from './generate-cfn-from-cdk';
-
-const resourcesDirRoot = path.normalize(path.join(__dirname, '../../resources'));
-const amplifyDependentResourcesFilename = 'amplify-dependent-resources-ref.ejs';
 
 type ResourceMeta = ResourceTuple & {
   service: string;
@@ -30,7 +27,7 @@ export const buildCustomResources = async (context: $TSContext, resourceName?: s
 
     const resourcesToBuild = (await getSelectedResources(context, resourceName)).filter(resource => resource.service === 'customCDK');
     for await (const resource of resourcesToBuild) {
-      await buildResource(context, resource);
+      await buildResource(resource);
     }
   } catch (err: $TSAny) {
     throw new AmplifyError('InvalidCustomResourceError', {
@@ -48,33 +45,21 @@ const getSelectedResources = async (context: $TSContext, resourceName?: string) 
 
 /**
  *  generates dependent resource type
- * @param context object
  */
-export const generateDependentResourcesType = async (context: $TSContext): Promise<void> => {
+export const generateDependentResourcesType = async (): Promise<void> => {
   const resourceDirPath = path.join(pathManager.getBackendDirPath(), TYPES_DIR_NAME);
+  const target = path.join(resourceDirPath, AMPLIFY_RESOURCES_TYPE_DEF_FILENAME);
+  const dependentResourceAttributesFileContent = `export type AmplifyDependentResourcesAttributes = ${JSONUtilities.stringify(getAllResources(), { orderedKeys: true })}`;
 
-  const copyJobs = [
-    {
-      dir: resourcesDirRoot,
-      template: amplifyDependentResourcesFilename,
-      target: path.join(resourceDirPath, AMPLIFY_RESOURCES_TYPE_DEF_FILENAME),
-    },
-  ];
-
-  const allResources = getAllResources();
-
-  const params = {
-    dependentResourcesType: allResources,
-  };
-
-  await context.amplify.copyBatch(context, copyJobs, params, true);
+  await fs.ensureDir(path.dirname(target));
+  await fs.writeFile(target, dependentResourceAttributesFileContent);
 };
 
-const buildResource = async (context: $TSContext, resource: ResourceMeta): Promise<void> => {
+const buildResource = async (resource: ResourceMeta): Promise<void> => {
   const targetDir = path.resolve(path.join(pathManager.getBackendDirPath(), categoryName, resource.resourceName));
 
   // generate dynamic types for Amplify resources
-  await generateDependentResourcesType(context);
+  await generateDependentResourcesType();
 
   const packageManager = getPackageManager(targetDir);
 

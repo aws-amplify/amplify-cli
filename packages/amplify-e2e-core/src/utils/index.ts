@@ -30,7 +30,7 @@ export * from './git-operations';
 /**
  * Whether the current environment is CircleCI or not
  */
-export const isCI = (): boolean => JSON.parse(process.env.CI) && JSON.parse(process.env.CIRCLECI);
+export const isCI = (): boolean => process.env.CI && process.env.CIRCLECI && JSON.parse(process.env.CI) && JSON.parse(process.env.CIRCLECI);
 
 // eslint-disable-next-line spellcheck/spell-checker
 export const TEST_PROFILE_NAME = isCI() ? 'amplify-integ-test-user' : 'default';
