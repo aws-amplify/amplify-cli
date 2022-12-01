@@ -5,10 +5,9 @@ import * as fs from 'fs-extra';
  * @param filePath - path to file
  * @returns true on success
  */
-export const validateFilePath = (filePath: string): boolean|string => {
-  let result = false;
-  if (filePath) {
-    result = fs.existsSync(filePath);
+export const validateFilePath = (filePath: string): string | true => {
+  if (filePath && fs.existsSync(filePath)) {
+    return true;
   }
-  return result || 'file path must be valid';
+  return 'file path must be valid';
 };

@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.0.0-beta.0...@aws-amplify/amplify-category-auth@3.0.0-beta.1) (2022-11-19)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
+# [3.0.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.0.0-cdkv2.0...@aws-amplify/amplify-category-auth@3.0.0-beta.0) (2022-11-17)
+
+
+### Bug Fixes
+
+* update override templates use extensibility helper with CDK v2 ([#11379](https://github.com/aws-amplify/amplify-cli/issues/11379)) ([086f3f4](https://github.com/aws-amplify/amplify-cli/commit/086f3f4cbde7cacb7ee8c098c5cc27d48c9e3f56))
+* uploading multiple auth trigger files ([#11254](https://github.com/aws-amplify/amplify-cli/issues/11254)) ([#11267](https://github.com/aws-amplify/amplify-cli/issues/11267)) ([b7bdcec](https://github.com/aws-amplify/amplify-cli/commit/b7bdcec939ac71c4f70ae87ece8c2a7995d4ae72))
+
+
+
+
+
 # [3.0.0-cdkv2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.0.0-cdkv2.0...@aws-amplify/amplify-category-auth@3.0.0-cdkv2.2) (2022-11-10)
 
 
@@ -26,6 +46,18 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 # [3.0.0-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.12.4...@aws-amplify/amplify-category-auth@3.0.0-cdkv2.0) (2022-11-01)
+## [2.13.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.13.0...@aws-amplify/amplify-category-auth@2.13.1) (2022-11-17)
+
+
+### Bug Fixes
+
+* uploading multiple auth trigger files ([#11254](https://github.com/aws-amplify/amplify-cli/issues/11254)) ([#11267](https://github.com/aws-amplify/amplify-cli/issues/11267)) ([b7bdcec](https://github.com/aws-amplify/amplify-cli/commit/b7bdcec939ac71c4f70ae87ece8c2a7995d4ae72))
+
+
+
+
+
+# [2.13.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.12.4...@aws-amplify/amplify-category-auth@2.13.0) (2022-10-27)
 
 
 ### Bug Fixes

@@ -15,7 +15,8 @@
     "build": "tsc",
     "test": "jest --logHeapUsage",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "keywords": [
     "amplify",

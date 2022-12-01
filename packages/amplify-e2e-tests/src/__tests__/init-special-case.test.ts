@@ -8,8 +8,10 @@ import {
   getParameters,
   getProjectMeta,
   getTeamProviderInfo,
+  gitCleanFdx,
+  gitCommitAll,
+  gitInit,
   initJSProjectWithProfile,
-  transformCurrentProjectToGitPulledProject,
   updateAuthAddUserGroups,
   updatedInitNewEnvWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
@@ -57,7 +59,9 @@ describe('amplify init', () => {
     const authResourceName = Object.keys(meta.auth)[0];
     const category = 'auth';
 
-    transformCurrentProjectToGitPulledProject(projectRoot);
+    await gitInit(projectRoot);
+    await gitCommitAll(projectRoot);
+    await gitCleanFdx(projectRoot);
     expect(() => {
       getParameters(projectRoot, category, authResourceName);
     }).toThrow();

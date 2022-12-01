@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@3.0.0-beta.0...@aws-amplify/cli-extensibility-helper@3.0.0-beta.1) (2022-11-19)
+
+**Note:** Version bump only for package @aws-amplify/cli-extensibility-helper
+
+
+
+
+
+# [3.0.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@3.0.0-cdkv2.0...@aws-amplify/cli-extensibility-helper@3.0.0-beta.0) (2022-11-17)
+## [2.4.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.4.4...@aws-amplify/cli-extensibility-helper@2.4.5) (2022-11-17)
+
+**Note:** Version bump only for package @aws-amplify/cli-extensibility-helper
+
+
+
+
+
+## [2.4.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.4.3...@aws-amplify/cli-extensibility-helper@2.4.4) (2022-10-27)
+
+**Note:** Version bump only for package @aws-amplify/cli-extensibility-helper
+
+
+
+
+
 # [3.0.0-cdkv2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@3.0.0-cdkv2.0...@aws-amplify/cli-extensibility-helper@3.0.0-cdkv2.2) (2022-11-10)
 
 **Note:** Version bump only for package @aws-amplify/cli-extensibility-helper

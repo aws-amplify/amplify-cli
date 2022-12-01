@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-graphiql-explorer@2.5.0...@aws-amplify/amplify-graphiql-explorer@2.5.2-beta.0) (2022-11-17)
+
+**Note:** Version bump only for package @aws-amplify/amplify-graphiql-explorer
+
+
+
+
+
 ## [2.5.2-cdkv2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-graphiql-explorer@2.5.0...@aws-amplify/amplify-graphiql-explorer@2.5.2-cdkv2.0) (2022-11-10)
 
 **Note:** Version bump only for package @aws-amplify/amplify-graphiql-explorer
@@ -12,6 +20,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 ## [2.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-graphiql-explorer@2.5.0...@aws-amplify/amplify-graphiql-explorer@2.5.1) (2022-11-10)
+
+**Note:** Version bump only for package @aws-amplify/amplify-graphiql-explorer
+
+
+
+
+
+## [2.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-graphiql-explorer@2.5.0...@aws-amplify/amplify-graphiql-explorer@2.5.1) (2022-11-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-graphiql-explorer
 

@@ -84,7 +84,7 @@ describe('zero config auth', () => {
     expect(userPool.UserPool).toBeDefined();
 
     // override new env
-    await amplifyOverrideAuth(projRoot, {});
+    await amplifyOverrideAuth(projRoot);
 
     // this is where we will write our override logic to
     const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'auth', `${authResourceName}`, 'override.ts');

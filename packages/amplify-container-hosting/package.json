@@ -19,10 +19,11 @@
     "test-ci": "yarn jest --ci",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "watch": "tsc --watch",
-    "test": "jest --logHeapUsage --coverage --passWithNoTests"
+    "test": "jest --logHeapUsage --coverage --passWithNoTests",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-api": "^5.1.0-cdkv2.2",
+    "@aws-amplify/amplify-category-api": "5.1.0-beta.1",
     "amplify-cli-core": "4.0.0-cdkv2.2",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",

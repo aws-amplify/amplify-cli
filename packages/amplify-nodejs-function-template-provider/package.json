@@ -18,12 +18,13 @@
   ],
   "scripts": {
     "build": "tsc",
-    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules"
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
     "amplify-cli-core": "4.0.0-cdkv2.2",
     "amplify-function-plugin-interface": "1.9.5",
-    "graphql-transformer-core": "^7.6.6",
+    "graphql-transformer-core": "8.0.0-beta.1",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
