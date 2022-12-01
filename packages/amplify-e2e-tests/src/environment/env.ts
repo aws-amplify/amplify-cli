@@ -1,4 +1,5 @@
 import { nspawn as spawn, getCLIPath, getSocialProviders, isCI } from '@aws-amplify/amplify-e2e-core';
+import { EOL } from 'os';
 
 export function addEnvironment(cwd: string, settings: { envName: string; numLayers?: number }): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -147,16 +148,32 @@ export function getEnvironment(cwd: string, settings: { envName: string }): Prom
   but nexpect can't wait() on the spinner output
   See amplify-cli/src/initialize-env.js
 */
-export function pullEnvironment(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['env', 'pull'], { cwd, stripColors: true }).run((err: Error) => {
-      if (!err) {
-        resolve();
-      } else {
-        reject(err);
-      }
-    });
-  });
+
+const defaultPullEnvironmentSettings = {
+  noUpdateBackend: true,
+  appId: EOL,
+  envName: EOL,
+};
+
+export function pullEnvironment(
+  cwd: string,
+  settings?: Partial<typeof defaultPullEnvironmentSettings>,
+  testingWithLatestCodebase = false,
+): Promise<void> {
+  const s = { ...defaultPullEnvironmentSettings, ...settings };
+  const args = ['env', 'pull'];
+
+  if (s.appId) {
+    args.push('--appId', s.appId);
+  }
+
+  if (s.envName) {
+    args.push('--envName', s.envName);
+  }
+
+  const chain = spawn(getCLIPath(testingWithLatestCodebase), args, { cwd, stripColors: true });
+  chain.wait('Successfully pulled backend environment dev from the cloud.');
+  return chain.runAsync();
 }
 
 export function addEnvironmentHostedUI(cwd: string, settings: { envName: string }): Promise<void> {
