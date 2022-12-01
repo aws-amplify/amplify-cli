@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.4.0-cdkv2.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.5.0...@aws-amplify/amplify-e2e-core@4.4.0-cdkv2.3) (2022-12-01)
+
+
+### Bug Fixes
+
+* add human readable names to artifact files ([#11420](https://github.com/aws-amplify/amplify-cli/issues/11420)) ([5c41046](https://github.com/aws-amplify/amplify-cli/commit/5c4104686a1e2ac96a25c02ffec40f34cea70769))
+* pull project with removed notifications ([#11378](https://github.com/aws-amplify/amplify-cli/issues/11378)) ([091d1d6](https://github.com/aws-amplify/amplify-cli/commit/091d1d68e0553c2e04e3f73db1d3b52d3655bd70))
+
+
+
+
+
 # [4.4.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.4.0-beta.0...@aws-amplify/amplify-e2e-core@4.4.0-beta.1) (2022-11-19)
 
 **Note:** Version bump only for package @aws-amplify/amplify-e2e-core

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.6.0-cdkv2.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.7.0...amplify-util-mock@4.6.0-cdkv2.4) (2022-12-01)
+
+
+### Bug Fixes
+
+* searchable mock packaging ([#11472](https://github.com/aws-amplify/amplify-cli/issues/11472)) ([7e3e399](https://github.com/aws-amplify/amplify-cli/commit/7e3e3998caf0fd3cfa9e995b1ddd7dd2410a33e8))
+
+
+
+
+
 # [4.6.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.6.0-beta.0...amplify-util-mock@4.6.0-beta.1) (2022-11-19)
 
 **Note:** Version bump only for package amplify-util-mock

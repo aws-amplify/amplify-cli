@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.21.0-cdkv2.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.21.1...amplify-category-notifications@2.21.0-cdkv2.3) (2022-12-01)
+
+
+### Bug Fixes
+
+* pull project with removed notifications ([#11378](https://github.com/aws-amplify/amplify-cli/issues/11378)) ([091d1d6](https://github.com/aws-amplify/amplify-cli/commit/091d1d68e0553c2e04e3f73db1d3b52d3655bd70))
+
+
+
+
+
 # [2.21.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.21.0-beta.0...amplify-category-notifications@2.21.0-beta.1) (2022-11-19)
 
 **Note:** Version bump only for package amplify-category-notifications
