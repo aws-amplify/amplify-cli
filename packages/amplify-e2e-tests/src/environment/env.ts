@@ -150,7 +150,6 @@ export function getEnvironment(cwd: string, settings: { envName: string }): Prom
 */
 
 const defaultPullEnvironmentSettings = {
-  noUpdateBackend: true,
   appId: EOL,
   envName: EOL,
 };
@@ -160,15 +159,15 @@ export function pullEnvironment(
   settings?: Partial<typeof defaultPullEnvironmentSettings>,
   testingWithLatestCodebase = false,
 ): Promise<void> {
-  const s = { ...defaultPullEnvironmentSettings, ...settings };
+  const { appId, envName } = { ...defaultPullEnvironmentSettings, ...settings };
   const args = ['env', 'pull'];
 
-  if (s.appId) {
-    args.push('--appId', s.appId);
+  if (appId) {
+    args.push('--appId', appId);
   }
 
-  if (s.envName) {
-    args.push('--envName', s.envName);
+  if (envName) {
+    args.push('--envName', envName);
   }
 
   const chain = spawn(getCLIPath(testingWithLatestCodebase), args, { cwd, stripColors: true });

@@ -59,7 +59,7 @@ import {
       const appId = getAppId(projRoot);
       await amplifyPull(projRoot2, { override: false, noUpdateBackend: true, emptyDir: true, appId });
       await listEnvironment(projRoot2, {});
-      await pullEnvironment(projRoot2, { noUpdateBackend: true, appId, envName: 'dir' });
+      await pullEnvironment(projRoot2, { appId, envName: 'dir' });
       await listEnvironment(projRoot2, { numEnv: 2 });
     });
   
@@ -71,7 +71,7 @@ import {
   
       var failed = false;
       try {
-        await pullEnvironment(projRoot, { noUpdateBackend: true, appId, envName: 'doesnotexist' });
+        await pullEnvironment(projRoot, { appId, envName: 'doesnotexist' });
       } catch (e) {
         failed = true;
       }
