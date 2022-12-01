@@ -75,7 +75,7 @@ export const handleException = async (exception: unknown): Promise<void> => {
     'Failed to log error',
   );
 
-  process.exitCode = 1;
+  process.exit(1);
 };
 
 const getDeepestAmplifyException = (amplifyException: AmplifyException): AmplifyException => {
