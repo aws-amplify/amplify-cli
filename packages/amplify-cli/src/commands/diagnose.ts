@@ -126,7 +126,7 @@ const createZip = async (context: Context, error: Error | undefined): Promise<st
   if (!rootPath) {
     throw projectNotInitializedError();
   }
-  const backend = stateManager.getBackendConfig(rootPath);
+  const backend = stateManager.getBackendConfig(rootPath, { throwIfNotExist: false, default: {} });
   const resources: { category: string; resourceName: string; service: string }[] = [];
   const categoryResources = Object.keys(backend).reduce((array, key) => {
     Object.keys(backend[key]).forEach(resourceKey => {
@@ -240,6 +240,6 @@ const hashedProjectIdentifiers = (): { projectIdentifier: string; projectEnvIden
 };
 
 const getAppId = (): string => {
-  const meta = stateManager.getMeta();
-  return _.get(meta, ['providers', 'awscloudformation', 'AmplifyAppId']);
+  const meta = stateManager.getMeta(undefined, { throwIfNotExist: false });
+  return meta?.providers?.awscloudformation?.AmplifyAppId ?? 'noAppIdFound';
 };
