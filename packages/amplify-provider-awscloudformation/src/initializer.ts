@@ -332,7 +332,7 @@ const storeCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
     spinner.stop('Deployment state saved successfully.');
   } catch (ex) {
     spinner.stop('Deployment state save failed.', false);
-    throw new AmplifyFault('DeploymentFault', {
+    throw new AmplifyFault('InitDeploymentFault', {
       message: ex.message,
     }, ex);
   } finally {

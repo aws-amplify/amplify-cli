@@ -9,6 +9,7 @@ export abstract class AmplifyException extends Error {
   public readonly resolution?: string;
   public readonly details?: string;
   public readonly link?: string;
+  public readonly code?: string;
 
   /**
    * You should use AmplifyError or AmplifyFault to throw an exception.
@@ -41,6 +42,7 @@ export abstract class AmplifyException extends Error {
     this.message = options.message;
     this.details = options.details;
     this.resolution = options.resolution;
+    this.code = options.code;
     this.link = options.link ?? AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url;
   }
 
@@ -68,6 +70,9 @@ export type AmplifyExceptionOptions = {
   details?: string,
   resolution?: string,
   link?: string,
+
+  // Cloudformation or NodeJS error codes
+  code?: string,
 };
 
 /**
@@ -158,7 +163,7 @@ export type AmplifyFaultType =
   | 'ConfigurationFault'
   | 'BackendDeleteFault'
   | 'ConfigurationFault'
-  | 'DeploymentFault'
+  | 'InitDeploymentFault'
   | 'NotificationsChannelAPNSFault'
   | 'NotificationsChannelEmailFault'
   | 'NotificationsChannelFCMFault'
@@ -169,6 +174,8 @@ export type AmplifyFaultType =
   | 'ProjectInitFault'
   | 'PluginNotLoadedFault'
   | 'PushResourcesFault'
+  | 'PushDeploymentFault'
+  | 'PullDeploymentFault'
   | 'PullBackendFault'
   | 'ResourceExportFault'
   | 'ResourceNotFoundFault'
@@ -176,6 +183,7 @@ export type AmplifyFaultType =
   | 'ResourceRemoveFault'
   | 'RootStackNotFoundFault'
   | 'ServiceCallFault'
+  | 'SnsSandboxModeCheckFault'
   | 'TimeoutFault'
   | 'TriggerUploadFault'
   | 'UnexpectedS3Fault'
