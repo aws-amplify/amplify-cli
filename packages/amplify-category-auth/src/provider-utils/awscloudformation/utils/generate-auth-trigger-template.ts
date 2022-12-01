@@ -91,7 +91,7 @@ export const generateNestedAuthTriggerTemplate = async (
   }
 };
 
-const createCustomResourceForAuthTrigger = (authTriggerConnections: AuthTriggerConnection[]): Record<string, unknown> => {
+export const createCustomResourceForAuthTrigger = (authTriggerConnections: AuthTriggerConnection[]): Record<string, unknown> => {
   const stack = new CustomResourceAuthStack(undefined as unknown as Construct, 'Amplify', {
     description: 'Custom Resource stack for Auth Trigger created using Amplify CLI',
     authTriggerConnections,
