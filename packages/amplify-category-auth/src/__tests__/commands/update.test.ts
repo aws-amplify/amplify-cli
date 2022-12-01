@@ -58,6 +58,7 @@ jest.mock('amplify-cli-core', () => ({
       }),
     getLocalEnvInfo: jest.fn().mockReturnValue({ envName: 'testEnv' }),
     getTeamProviderInfo: jest.fn(),
+    getBackendConfig: jest.fn(),
   },
 }));
 

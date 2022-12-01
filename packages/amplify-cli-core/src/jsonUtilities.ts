@@ -1,7 +1,10 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as hjson from 'hjson';
+import * as jsonReader from 'hjson';
 
+/**
+ * Wrappers around reading and writing JSON strings
+ */
 export class JSONUtilities {
   public static readJson = <T>(
     fileName: string,
@@ -39,12 +42,12 @@ export class JSONUtilities {
 
   public static writeJson = (
     fileName: string,
-    data: any,
+    data: unknown,
     options?: {
-      keepComments?: boolean;
       mode?: number;
       minify?: boolean;
       secureFile?: boolean;
+      orderedKeys?: boolean; // if true, will print object keys in alphabetical order
     },
   ): void => {
     if (!fileName) {
@@ -56,7 +59,6 @@ export class JSONUtilities {
     }
 
     const mergedOptions = {
-      keepComments: false,
       minify: false,
       secureFile: false,
       ...options,
@@ -64,7 +66,7 @@ export class JSONUtilities {
 
     const jsonString = JSONUtilities.stringify(data, {
       minify: mergedOptions.minify,
-      keepComments: mergedOptions.keepComments,
+      orderedKeys: mergedOptions.orderedKeys,
     });
 
     // Create nested directories if needed
@@ -106,7 +108,7 @@ export class JSONUtilities {
         cleanString = cleanString.slice(1);
       }
 
-      data = hjson.parse(cleanString, {
+      data = jsonReader.parse(cleanString, {
         keepWsc: mergedOptions.preserveComments,
       });
     } else {
@@ -117,10 +119,10 @@ export class JSONUtilities {
   };
 
   public static stringify = (
-    data: any,
+    data: unknown,
     options?: {
       minify?: boolean;
-      keepComments?: boolean;
+      orderedKeys?: boolean; // if true, will print object keys in alphabetical order
     },
   ): string | undefined => {
     if (!data) {
@@ -129,26 +131,25 @@ export class JSONUtilities {
 
     const mergedOptions = {
       minify: false,
-      keepComments: false,
+      orderedKeys: false,
       ...options,
     };
 
     let jsonString = '';
 
-    // For minification use builtin JSON.stringify as hjson has no option for it
+    let sortKeys;
+
+    if (mergedOptions.orderedKeys) {
+      const allKeys: string[] = [];
+      // using JSON.stringify to walk the object and push all keys onto a list
+      JSON.stringify(data, (k, v) => { allKeys.push(k); return v; });
+      sortKeys = allKeys.sort();
+    }
+
     if (mergedOptions.minify) {
-      jsonString = JSON.stringify(data);
+      jsonString = JSON.stringify(data, sortKeys);
     } else {
-      // Temporarily fallback to builtin stringify until 'undefined' serialization can be solved with hjson
-      // This only affects comment roundtripping which we don't use explicitly anywhere yet.
-      jsonString = JSON.stringify(data, null, 2);
-      // jsonString = hjson.stringify(data, {
-      //   bracesSameLine: true,
-      //   space: 2,
-      //   separator: true,
-      //   quotes: 'all',
-      //   keepWsc: mergedOptions.keepComments,
-      // });
+      jsonString = JSON.stringify(data, sortKeys, 2);
     }
 
     return jsonString;
