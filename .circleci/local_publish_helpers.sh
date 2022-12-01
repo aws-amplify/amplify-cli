@@ -64,6 +64,9 @@ function generatePkgCli {
   # Restore .d.ts files required by @aws-amplify/codegen-ui at runtime
   cp ../node_modules/typescript/lib/*.d.ts node_modules/typescript/lib/
 
+  # Set NODE_ENV to production
+  sed -i "2s/^/process.env.NODE_ENV = 'production';\n/" node_modules/@aws-amplify/cli-internal/bin/amplify
+
   # Transpile code for packaging
   npx babel node_modules --extensions '.js,.jsx,.es6,.es,.ts' --copy-files --include-dotfiles -d ../build/node_modules
 
