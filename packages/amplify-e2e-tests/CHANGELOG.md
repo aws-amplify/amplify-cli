@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.15.0...amplify-e2e-tests@4.0.0-beta.2) (2022-12-01)
+
+
+### Bug Fixes
+
+* fixes custom resources e2e ([#11295](https://github.com/aws-amplify/amplify-cli/issues/11295)) ([d051dcd](https://github.com/aws-amplify/amplify-cli/commit/d051dcdbdc782892e96d560fc75478e261bb3fe3))
+* handle lambda permissions for notifications category ([#11357](https://github.com/aws-amplify/amplify-cli/issues/11357)) ([163ab8f](https://github.com/aws-amplify/amplify-cli/commit/163ab8f74e846f9ea43081c5c045e7d65f28f05c))
+* pull project with removed notifications ([#11378](https://github.com/aws-amplify/amplify-cli/issues/11378)) ([091d1d6](https://github.com/aws-amplify/amplify-cli/commit/091d1d68e0553c2e04e3f73db1d3b52d3655bd70))
+* resource usage cost ([#11433](https://github.com/aws-amplify/amplify-cli/issues/11433)) ([a42d017](https://github.com/aws-amplify/amplify-cli/commit/a42d0170b3e84bec4a58a4d3ddab75b47977e07b))
+* upgrade e2e tests for cdkv2 ([#11282](https://github.com/aws-amplify/amplify-cli/issues/11282)) ([ddf66f2](https://github.com/aws-amplify/amplify-cli/commit/ddf66f20aed847d36e4cac60b7030be295a716c6))
+
+
+* feat!: breaking change commit to update cli to aws cdk v2 (#11300) ([80dce09](https://github.com/aws-amplify/amplify-cli/commit/80dce0942ec20b8eee6e69b78242f91656c1aacf)), closes [#11300](https://github.com/aws-amplify/amplify-cli/issues/11300)
+
+
+### BREAKING CHANGES
+
+* upgrades cli to cdk v2
+
+* chore: added cli core pkg for  major version
+* convert cli to cdk v2
+
+Co-authored-by: Akshay Upadhyay <akz@amazon.com>
+
+
+
+
+
 # [4.0.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.0.0-beta.0...amplify-e2e-tests@4.0.0-beta.1) (2022-11-19)
 
 **Note:** Version bump only for package amplify-e2e-tests
